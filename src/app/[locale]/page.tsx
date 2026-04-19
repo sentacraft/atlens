@@ -10,7 +10,7 @@ export default function Home() {
   const h = useTranslations("Home");
 
   return (
-    <div className="flex flex-col min-h-[calc(100svh-var(--nav-height))]">
+    <div className="flex flex-col h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] overflow-clip">
       {/* Hero */}
       <section className="flex flex-col items-center justify-center text-center px-4 py-16 flex-1">
         <Iris config={IRIS_HERO} uid="hero" />
