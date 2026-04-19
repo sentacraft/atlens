@@ -136,7 +136,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 This project does not accept code contributions at this time.
 
-To report a data issue (wrong spec, broken image) or suggest a missing lens, use the feedback links inside the app, or open a [GitHub Issue](https://github.com/ericzeyuzhang/x-glass/issues).
+To report a data issue (wrong spec, broken image) or suggest a missing lens, use the feedback links inside the app, or open a [GitHub Issue](https://github.com/sentacraft/x-glass/issues).
 
 ## Acknowledgments
 

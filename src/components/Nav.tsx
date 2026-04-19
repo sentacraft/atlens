@@ -127,7 +127,7 @@ export default function Nav() {
             </Link>
           )}
           <a
-            href="https://github.com/ericzeyuzhang/x-glass"
+            href="https://github.com/sentacraft/x-glass"
             target="_blank"
             rel="noopener noreferrer"
             className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
