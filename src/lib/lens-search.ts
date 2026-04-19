@@ -176,13 +176,14 @@ function isBoundaryPrefix(token: string, query: string): boolean {
 
   const nextChar = token[query.length];
 
-  // Prefer complete numeric chunks such as "40" in "40mm" over broader
-  // numeric prefixes such as "40" in "400mm".
   if (/^\d+$/.test(query)) {
+    // digit query: boundary when next char is non-digit (e.g. "40" in "40mm")
     return /\D/.test(nextChar);
   }
 
-  return true;
+  // alpha/mixed query: boundary only when next char is a digit (e.g. "xf" in "xf35").
+  // alpha→alpha is not a meaningful boundary ("art" in "artisans" should not match).
+  return /\d/.test(nextChar);
 }
 
 function matchStrength(tokens: string[], query: string): MatchStrength {
