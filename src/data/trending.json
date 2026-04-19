@@ -1,0 +1,102 @@
+{
+  "presets": [
+    {
+      "slug": "standard-zoom-showdown",
+      "title": {
+        "zh": "APS-C 标准变焦：原厂 vs 副厂",
+        "en": "APS-C Standard Zooms: Fuji vs Third-party"
+      },
+      "subtitle": {
+        "zh": "轻便、光圈、防抖——四支标准变焦的取舍",
+        "en": "Weight, aperture, stabilization — four standard zooms compared"
+      },
+      "lensIds": [
+        "fujifilm-xf-18-55mmf28-4-r-lm-ois-xf",
+        "fujifilm-xf-16-50mmf28-48-r-lm-wr-xf",
+        "sigma-contemporary-18-50mm-f28-dc-dn-xf",
+        "tamron-17-70mm-f28-di-iii-a-vc-rxd-xf"
+      ]
+    },
+    {
+      "slug": "35mm-equiv-primes",
+      "title": {
+        "zh": "等效 35mm 定焦：23mm 焦段横评",
+        "en": "35mm-equiv Primes: 23mm Roundup"
+      },
+      "subtitle": {
+        "zh": "原厂大光圈、轻便版、适马与唯卓仕副厂——如何取舍？",
+        "en": "First-party large-aperture vs. compact vs. third-party alternatives"
+      },
+      "lensIds": [
+        "fujifilm-xf-23mmf14-r-lm-wr-xf",
+        "fujifilm-xf-23mmf2-r-wr-xf",
+        "sigma-contemporary-23mm-f14-dc-dn-xf",
+        "viltrox-af-25mm-f17-air-xf"
+      ]
+    },
+    {
+      "slug": "50mm-equiv-fuji-primes",
+      "title": {
+        "zh": "等效 50mm 定焦：富士 35mm / 33mm 焦段对比",
+        "en": "50mm-equiv Fuji Primes: 35/33mm Compared"
+      },
+      "subtitle": {
+        "zh": "老 35/1.4 的氛围感、新 33/1.4 的光学素质、35/2 的便携三防",
+        "en": "Old-school rendering vs. modern resolution vs. compact weather-resistant"
+      },
+      "lensIds": [
+        "fujifilm-xf-35mmf14-r-xf",
+        "fujifilm-xf-33mmf14-r-lm-wr-xf",
+        "fujifilm-xf-35mmf2-r-wr-xf"
+      ]
+    },
+    {
+      "slug": "portrait-56mm",
+      "title": {
+        "zh": "56mm 人像定焦：原厂 vs 副厂",
+        "en": "56mm Portrait Primes: Fuji vs Third-party"
+      },
+      "subtitle": {
+        "zh": "f/1.2 极致虚化 vs 副厂轻便性价比",
+        "en": "Ultimate bokeh at f/1.2 vs. lighter, more affordable alternatives"
+      },
+      "lensIds": [
+        "fujifilm-xf-56mmf12-r-wr-xf",
+        "sigma-contemporary-56mm-f14-dc-dn-xf",
+        "viltrox-af-56mm-f17-air-xf"
+      ]
+    },
+    {
+      "slug": "all-in-one-superzooms",
+      "title": {
+        "zh": "一镜走天下：超长焦变焦对比",
+        "en": "All-in-one Superzooms"
+      },
+      "subtitle": {
+        "zh": "旅游首选：适马、腾龙、富士原厂的焦段与画质取舍",
+        "en": "Sigma vs Tamron vs Fuji — focal range and image quality trade-offs"
+      },
+      "lensIds": [
+        "sigma-contemporary-16-300mm-f35-67-dc-os-xf",
+        "tamron-18-300mm-f35-63-di-iii-a-vc-vxd-xf",
+        "fujifilm-xf-18-135mmf35-56-r-lm-ois-wr-xf"
+      ]
+    },
+    {
+      "slug": "tele-zoom-entry",
+      "title": {
+        "zh": "长焦变焦入门：XC 50-230 vs XF 55-200 vs XF 70-300",
+        "en": "Entry Tele Zooms: XC 50-230 vs XF 55-200 vs XF 70-300"
+      },
+      "subtitle": {
+        "zh": "打鸟、演唱会、日常远摄——三支长焦变焦的价位与画质",
+        "en": "Wildlife, concerts, reach — comparing price and performance"
+      },
+      "lensIds": [
+        "fujifilm-xc-50-230mmf45-67-ois-ii-xf",
+        "fujifilm-xf-55-200mmf35-48-r-lm-ois-xf",
+        "fujifilm-xf-70-300mmf4-56-r-lm-ois-wr-xf"
+      ]
+    }
+  ]
+}

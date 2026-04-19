@@ -1,0 +1,15 @@
+{
+  "N": 9,
+  "aperture": 0.33,
+  "bladeStroke": 4,
+  "ringStroke": 0,
+  "halfSpread": 0.6,
+  "overlap": 0.9,
+  "curve": 1,
+  "twist": 0.9,
+  "shadowIntensity": 0.8,
+  "bladeLightness": 0,
+  "showTicks": false,
+  "showDot": false,
+  "showLabel": false
+}
