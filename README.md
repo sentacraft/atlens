@@ -2,9 +2,9 @@
 
 Browse, filter, and compare every Fujifilm X-mount lens side by side — native Fujifilm and all major third-party brands.
 
-**[xglass.sentacraft.com](https://xglass.sentacraft.com)**
+**[xglass.sentacraft.com](https://xglass.sentacraft.com/en)**
 
-If you find X-Glass useful, a ⭐ on this repo goes a long way — and if you'd like to support the project, [donations are welcome](https://xglass.sentacraft.com/about#donation).
+If you find X-Glass useful, a ⭐ on this repo goes a long way — and if you'd like to support the project, [donations are welcome](https://xglass.sentacraft.com/en/about#donation).
 
 **Desktop**
 
@@ -36,7 +36,7 @@ X-Glass is a web app — open it in any browser and start using it right away.
 
 It also supports installation as a **Progressive Web App (PWA)**: add it to your home screen (iOS / Android) or dock (macOS) for full-screen access, offline support, and a more native feel — no App Store required.
 
-**[Get the app →](https://xglass.sentacraft.com/get)**
+**[Get the app →](https://xglass.sentacraft.com/en/get)**
 
 ## Tech Stack
 
