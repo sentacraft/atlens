@@ -5,6 +5,8 @@
 // by scripts, the pipeline, and future packages in a monorepo.
 
 export interface SiteConfig {
+  /** Canonical production URL — no trailing slash. */
+  url: string;
   /** Full display name shown in browser chrome and install prompts. */
   name: string;
   /** Short name for home screen icons (≤ 12 chars recommended). */
@@ -23,6 +25,7 @@ export interface SiteConfig {
 }
 
 export const SITE: SiteConfig = {
+  url: "https://xglass.sentacraft.com",
   name: "X-Glass",
   shortName: "X-Glass",
   pwaDescription:
