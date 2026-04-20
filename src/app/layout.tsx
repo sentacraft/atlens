@@ -26,6 +26,9 @@ export const metadata: Metadata = {
     : process.env.VERCEL_URL
     ? new URL(`https://${process.env.VERCEL_URL}`)
     : new URL("http://localhost:3000"),
+  verification: {
+    google: "ou7kky4gmKroC87dxmfS3xjA7gqjXkNcZaKbtIRCflQ",
+  },
 };
 
 export default function RootLayout({
