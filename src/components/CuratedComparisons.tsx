@@ -15,6 +15,7 @@ export function PresetCard({ preset, onSelect }: { preset: TrendingPreset; onSel
   const locale = useLocale();
   const lang = locale === "zh" ? "zh" : "en";
   const { buildCompareUrl } = useCompareUrl();
+  const tBrand = useTranslations("Brands");
 
   const lenses = preset.lensIds
     .map((id) => allLenses.find((l) => l.id === id))
@@ -46,7 +47,7 @@ export function PresetCard({ preset, onSelect }: { preset: TrendingPreset; onSel
               key={lens.id}
               className="inline-block rounded-md bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
             >
-              {lens.brand.charAt(0).toUpperCase() + lens.brand.slice(1)} {lens.model}
+              {tBrand(lens.brand)} {lens.model}
             </span>
           );
         })}
