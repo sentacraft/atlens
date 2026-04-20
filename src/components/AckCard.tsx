@@ -40,7 +40,7 @@ export default function AckCard({
           background: `radial-gradient(ellipse at center, ${glowColor} 0%, transparent 70%)`,
         }}
       >
-        <div className="flex-1 text-right">
+        <div className="flex-1 min-w-0 text-right">
           {roles.map((role) => (
             <p
               key={role}
