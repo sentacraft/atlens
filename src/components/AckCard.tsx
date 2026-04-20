@@ -7,10 +7,7 @@ interface AckCardProps {
   roles: string[];
   company: string;
   product: string;
-  logo: string;
-  logoAlt: string;
-  logoClassName: string;
-  logoSize: number;
+  logoComponent: React.ReactNode;
   glowColor: string;
   body: string;
   isClaudeCard?: boolean;
@@ -21,10 +18,7 @@ export default function AckCard({
   roles,
   company,
   product,
-  logo,
-  logoAlt,
-  logoClassName,
-  logoSize,
+  logoComponent,
   glowColor,
   body,
   isClaudeCard,
@@ -56,15 +50,7 @@ export default function AckCard({
             </p>
           ))}
         </div>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={logo}
-          alt={logoAlt}
-          width={logoSize}
-          height={logoSize}
-          className={`flex-shrink-0 ${logoClassName}`}
-          loading="lazy"
-        />
+        <span className="flex-shrink-0">{logoComponent}</span>
         <div className="flex-1 flex items-center gap-3">
           <div className="flex flex-col gap-0.5">
             <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 whitespace-nowrap">

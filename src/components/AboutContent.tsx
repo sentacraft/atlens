@@ -2,6 +2,8 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { Flag, Mail } from "lucide-react";
 import Image from "next/image";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
+import AnthropicLogo from "@/components/logos/AnthropicLogo";
+import GeminiLogo from "@/components/logos/GeminiLogo";
 import { ExternalLink } from "@/components/ui/external-link";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -61,20 +63,14 @@ export default async function AboutContent() {
       roles: [t("ackClaudeArchitect"), t("ackClaudeEngineer")],
       company: "Anthropic",
       product: "Claude Code",
-      logo: "/logos/anthropic.svg",
-      logoAlt: "Anthropic Claude",
-      logoClassName: "",
-      logoSize: 37,
+      logoComponent: <AnthropicLogo size={37} />,
       glowColor: "rgba(226, 112, 37, 0.06)",
     },
     {
       roles: [t("ackGeminiDesigner"), t("ackGeminiBrandStrategist")],
       company: "Google",
       product: "Gemini",
-      logo: "/logos/google-gemini.svg",
-      logoAlt: "Google Gemini",
-      logoClassName: "",
-      logoSize: 37,
+      logoComponent: <GeminiLogo size={37} />,
       glowColor: "rgba(66, 133, 244, 0.06)",
     },
   ];
@@ -289,7 +285,7 @@ export default async function AboutContent() {
 
         {/* Card + story pairs — card IS the accordion trigger */}
         <div className="flex flex-col divide-y divide-zinc-100 dark:divide-zinc-800">
-          {ackCredits.map(({ roles, company, product, logo, logoAlt, logoClassName, logoSize, glowColor }, i) => {
+          {ackCredits.map(({ roles, company, product, logoComponent, glowColor }, i) => {
             const storyKey = i === 0 ? "1" : "2";
             const body = t(`ackStory${storyKey}Body` as "ackStory1Body");
             return (
@@ -298,10 +294,7 @@ export default async function AboutContent() {
                 roles={roles}
                 company={company}
                 product={product}
-                logo={logo}
-                logoAlt={logoAlt}
-                logoClassName={logoClassName}
-                logoSize={logoSize}
+                logoComponent={logoComponent}
                 glowColor={glowColor}
                 body={body}
                 isClaudeCard={i === 0}
