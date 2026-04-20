@@ -39,16 +39,19 @@ export function PresetCard({ preset, onSelect }: { preset: TrendingPreset; onSel
 
       {/* Lens model badge strip */}
       <div className="mt-2.5 flex flex-wrap gap-1">
-        {lenses.map((lens) => (
-          lens && (
+        {lenses.map((lens) => {
+          if (!lens) return null;
+          const isFuji = lens.brand === "fujifilm";
+          return (
             <span
               key={lens.id}
               className="inline-block rounded-md bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
             >
+              {!isFuji && <>{lens.brand.charAt(0).toUpperCase() + lens.brand.slice(1)} </>}
               {lens.model}
             </span>
-          )
-        ))}
+          );
+        })}
       </div>
 
       {/* CTA — fades in on hover */}
