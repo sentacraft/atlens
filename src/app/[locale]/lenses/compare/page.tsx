@@ -6,6 +6,7 @@ import CompareTable from "@/components/CompareTable";
 import ComparePageHeader from "@/components/ComparePageHeader";
 import CuratedComparisons from "@/components/CuratedComparisons";
 import BackButton from "@/components/BackButton";
+import { buildAlternates } from "@/lib/seo";
 
 export async function generateMetadata({
   params,
@@ -19,23 +20,26 @@ export async function generateMetadata({
   const { ids, preset } = await searchParams;
   const lenses = parseLensIds(ids);
 
+  const alternates = buildAlternates(locale, "lenses/compare");
+
   if (preset) {
     const found = getPresetBySlug(preset);
     if (found) {
       const lang = locale === "zh" ? "zh" : "en";
       const title = found.title[lang];
-      return { title, openGraph: { title: `${title} | X-Glass` } };
+      return { title, openGraph: { title: `${title} | X-Glass` }, alternates };
     }
   }
 
   if (lenses.length < 2) {
-    return { title: t("title") };
+    return { title: t("title"), alternates };
   }
 
   const title = lenses.map((l) => l.model).join(" vs ");
   return {
     title,
     openGraph: { title: `${title} | X-Glass` },
+    alternates,
   };
 }
 

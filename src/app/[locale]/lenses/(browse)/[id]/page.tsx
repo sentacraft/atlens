@@ -17,6 +17,7 @@ import FeedbackTrigger from "@/components/FeedbackTrigger";
 import { ACTION_OUTLINE_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
+import { buildAlternates } from "@/lib/seo";
 
 type Params = Promise<{ locale: string; id: string }>;
 
@@ -25,7 +26,7 @@ export async function generateMetadata({
 }: {
   params: Params;
 }): Promise<Metadata> {
-  const { id } = await params;
+  const { locale, id } = await params;
   const t = await getTranslations("LensDetail");
   const lens = allLenses.find((l) => l.id === id);
   if (!lens) {
@@ -34,6 +35,7 @@ export async function generateMetadata({
   return {
     title: lens.model,
     openGraph: { title: `${lens.model} | X-Glass` },
+    alternates: buildAlternates(locale, `lenses/${id}`),
   };
 }
 

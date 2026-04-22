@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { allLenses } from "@/lib/lens";
 import LensListClient from "@/components/LensListClient";
 import LensesLoading from "./loading";
+import { buildAlternates } from "@/lib/seo";
 
 export async function generateMetadata({
   params,
@@ -14,6 +15,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "LensList" });
   return {
     title: t("title"),
+    alternates: buildAlternates(locale, "lenses"),
   };
 }
 
