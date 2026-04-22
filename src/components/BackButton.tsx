@@ -19,10 +19,18 @@ export default function BackButton({ fallbackHref, className }: BackButtonProps)
   const router = useRouter();
   const t = useTranslations("Common");
 
+  function handleBack() {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push(fallbackHref);
+    }
+  }
+
   return (
     <button
       type="button"
-      onClick={() => router.push(fallbackHref)}
+      onClick={handleBack}
       className={cn(ICON_NAV_BTN_CLS, "h-8 w-8", className)}
       aria-label={t("goBack")}
     >
