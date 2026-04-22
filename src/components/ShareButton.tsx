@@ -135,7 +135,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     sectionDetails: tImage("sectionDetails"),
     minFocusLabel: tImage("minFocusLabel"),
     maxMagLabel: tImage("maxMagLabel"),
-    macroLabel: tImage("macroLabel"),
+    normalLabel: tImage("normalLabel"),
     weightLabel: tImage("weightLabel"),
     dimensionsLabel: tImage("dimensionsLabel"),
     retractedLabel: tImage("retractedLabel"),
