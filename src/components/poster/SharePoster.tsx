@@ -14,6 +14,8 @@ import {
   weightDisplay,
   filterSizeDisplay,
   dimensionsPrimaryDisplay,
+  dimensionsVariantsDisplay,
+  tStopDisplay,
   specialtyTagsDisplay,
 } from "@/lib/lens.format";
 import type { SpecialtyTag, FieldNoteKey } from "@/lib/types";
@@ -39,13 +41,17 @@ export interface PosterLabels {
   // Stat labels (shown below values)
   minFocusLabel: string;
   maxMagLabel: string;
+  macroLabel: string;
   weightLabel: string;
   dimensionsLabel: string;
+  retractedLabel: string;
   filterLabel: string;
   focusMotorLabel: string;
+  tStopLabel: string;
   lensConfigLabel: string;
   // Feature names
   featureWR: string;
+  wrPartialSub: string;
   featureOIS: string;
   featureAF: string;
   featureApertureRing: string;
@@ -432,6 +438,11 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   <span className={cn("font-semibold tabular-nums text-zinc-900 leading-none", apertureSize)}>
                     {apertureDisplay(lens.maxAperture)}
                   </span>
+                  {tStopDisplay(lens.maxTStop) && (
+                    <span className="font-medium tabular-nums text-zinc-500 leading-none" style={{ fontSize: 11 }}>
+                      {tStopDisplay(lens.maxTStop)}
+                    </span>
+                  )}
                   <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                     Aperture
                   </span>
@@ -473,15 +484,46 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
             <PosterSection title={labels.sectionSizeWeight}>
               {/* Dimensions */}
               {showDimensions && (
-                <div style={gridStyle(n)}>
-                  {lenses.map((lens, i) => (
-                    <PosterStatBlock
-                      key={i}
-                      value={dimensionsPrimaryDisplay(lens.diameterMm, lens.length)}
-                      label={labels.dimensionsLabel}
-                      valueClassName={cn("text-base font-medium")}
-                    />
-                  ))}
+                <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
+                  {lenses.map((lens, i) => {
+                    const primary = dimensionsPrimaryDisplay(lens.diameterMm, lens.length);
+                    const variants = dimensionsVariantsDisplay(lens.length, {
+                      retracted: labels.retractedLabel,
+                      wide: labels.wide,
+                      tele: labels.tele,
+                    });
+                    if (!primary) {
+                      return (
+                        <PosterStatBlock
+                          key={i}
+                          value={undefined}
+                          label={labels.dimensionsLabel}
+                          valueClassName={cn("text-base font-medium")}
+                        />
+                      );
+                    }
+                    return (
+                      <div
+                        key={i}
+                        style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}
+                      >
+                        <span className="font-medium tabular-nums text-zinc-900 leading-tight text-base">
+                          {primary}
+                        </span>
+                        {variants && (
+                          <span
+                            className="font-medium tabular-nums text-zinc-500 leading-tight"
+                            style={{ fontSize: 10, whiteSpace: "pre-line", textAlign: "center" }}
+                          >
+                            {variants.replace(/\n/g, " · ")}
+                          </span>
+                        )}
+                        <span className="text-[10px] uppercase tracking-wider text-zinc-400">
+                          {labels.dimensionsLabel}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 
@@ -512,21 +554,58 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
             <PosterSection title={labels.sectionFocus}>
               {/* Min focus distance */}
               {showMinFocus && (
-                <div style={{ ...gridStyle(n), alignItems: "center" }}>
+                <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
                   {lenses.map((lens, i) => {
-                    const lines = getFocusVariantLines(
-                      lens.minFocusDistance,
+                    const mfd = lens.minFocusDistance;
+                    const sup = noteSup(i, "minFocusDistance");
+                    if (!mfd) {
+                      return (
+                        <PosterStatBlock
+                          key={i}
+                          value={undefined}
+                          label={labels.minFocusLabel}
+                          valueClassName={statSize}
+                          sup={sup}
+                        />
+                      );
+                    }
+                    const primaryLines = getFocusVariantLines(
+                      mfd,
                       (v) => `${v}cm`,
                       wideTeleLabels
                     );
-                    const sup = noteSup(i, "minFocusDistance");
-                    if (lines) {
-                      return (
-                        <div
-                          key={i}
-                          style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}
-                        >
-                          {lines.map((line, j) => (
+                    // Suppress macro line when it matches the normal-mode value(s) — pure noise.
+                    const hasMacroVariants =
+                      (mfd.macroVariants?.wide !== undefined &&
+                        mfd.macroVariants.wide !== mfd.variants?.wide) ||
+                      (mfd.macroVariants?.tele !== undefined &&
+                        mfd.macroVariants.tele !== mfd.variants?.tele);
+                    const hasMacroCm =
+                      mfd.macroCm !== undefined && mfd.macroCm !== mfd.cm;
+                    const macroLines: Array<{ label?: string; value: string }> | null =
+                      hasMacroVariants
+                        ? [
+                            mfd.macroVariants?.wide !== undefined &&
+                            mfd.macroVariants.wide !== mfd.variants?.wide
+                              ? { label: labels.wide, value: `${mfd.macroVariants.wide}cm` }
+                              : null,
+                            mfd.macroVariants?.tele !== undefined &&
+                            mfd.macroVariants.tele !== mfd.variants?.tele
+                              ? { label: labels.tele, value: `${mfd.macroVariants.tele}cm` }
+                              : null,
+                          ].filter((v): v is { label: string; value: string } => v !== null)
+                        : hasMacroCm
+                        ? [{ value: `${mfd.macroCm}cm` }]
+                        : null;
+
+                    return (
+                      <div
+                        key={i}
+                        style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}
+                      >
+                        {/* Primary value(s) */}
+                        {primaryLines ? (
+                          primaryLines.map((line, j) => (
                             <div key={j} style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
                               <span className="text-zinc-400" style={{ fontSize: 9, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
                                 {line.label}
@@ -535,24 +614,35 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                                 {line.value}
                               </span>
                             </div>
-                          ))}
-                          <span className="text-zinc-400" style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                            {labels.minFocusLabel}
-                            {sup !== undefined && (
-                              <span style={{ fontSize: "0.7em", verticalAlign: "super", marginLeft: 1 }}>{sup}</span>
-                            )}
+                          ))
+                        ) : (
+                          <span className={cn("font-semibold tabular-nums text-zinc-900 leading-tight", statSize)}>
+                            {mfd.cm}cm
                           </span>
-                        </div>
-                      );
-                    }
-                    return (
-                      <PosterStatBlock
-                        key={i}
-                        value={lens.minFocusDistance ? `${lens.minFocusDistance.cm}cm` : undefined}
-                        label={labels.minFocusLabel}
-                        valueClassName={statSize}
-                        sup={sup}
-                      />
+                        )}
+                        {/* Macro mode */}
+                        {macroLines && (
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1, marginTop: 1 }}>
+                            {macroLines.map((line, j) => (
+                              <div key={j} style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+                                <span className="text-zinc-400" style={{ fontSize: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                                  {line.label ? `${labels.macroLabel} · ${line.label}` : labels.macroLabel}
+                                </span>
+                                <span className="font-medium tabular-nums text-zinc-600 leading-tight" style={{ fontSize: 12 }}>
+                                  {line.value}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {/* Row label */}
+                        <span className="text-zinc-400" style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                          {labels.minFocusLabel}
+                          {sup !== undefined && (
+                            <span style={{ fontSize: "0.7em", verticalAlign: "super", marginLeft: 1 }}>{sup}</span>
+                          )}
+                        </span>
+                      </div>
                     );
                   })}
                 </div>
@@ -637,7 +727,13 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                 // Inner div stays left-aligned so icon + text baseline stays consistent.
                 <div key={i} style={{ display: "flex", justifyContent: "center" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-                  <PosterFeatureItem present={lens.wr} label={labels.featureWR} sup={noteSup(i, "wr")} icon={FEATURE_ICONS.wr} />
+                  <PosterFeatureItem
+                    present={lens.wr}
+                    label={labels.featureWR}
+                    sub={lens.wr === "partial" ? labels.wrPartialSub : undefined}
+                    sup={noteSup(i, "wr")}
+                    icon={FEATURE_ICONS.wr}
+                  />
                   <PosterFeatureItem
                     present={lens.ois}
                     label={labels.featureOIS}
