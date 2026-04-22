@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { allLenses } from "@/lib/lens";
 import LensListClient from "@/components/LensListClient";
+import LensesLoading from "./loading";
 
 export async function generateMetadata({
   params,
@@ -17,6 +19,8 @@ export async function generateMetadata({
 
 export default function LensesPage() {
   return (
-    <LensListClient lenses={allLenses} />
+    <Suspense fallback={<LensesLoading />}>
+      <LensListClient lenses={allLenses} />
+    </Suspense>
   );
 }
