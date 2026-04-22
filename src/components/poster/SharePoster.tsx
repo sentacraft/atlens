@@ -482,50 +482,59 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
           <div className="h-px bg-zinc-200" />
           <div style={{ padding: `20px ${POSTER_PX}px` }}>
             <PosterSection title={labels.sectionSizeWeight}>
-              {/* Dimensions */}
-              {showDimensions && (
-                <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
-                  {lenses.map((lens, i) => {
-                    const primary = dimensionsPrimaryDisplay(lens.diameterMm, lens.length);
-                    const variants = dimensionsVariantsDisplay(lens.length, {
-                      retracted: labels.retractedLabel,
-                      wide: labels.wide,
-                      tele: labels.tele,
-                    });
-                    if (!primary) {
-                      return (
-                        <PosterStatBlock
+              {/* Dimensions — row-based so label baselines align when only some
+                  lenses expose length variants. */}
+              {showDimensions && (() => {
+                const perLens = lenses.map((lens) => ({
+                  primary: dimensionsPrimaryDisplay(lens.diameterMm, lens.length),
+                  variants: dimensionsVariantsDisplay(lens.length, {
+                    retracted: labels.retractedLabel,
+                    wide: labels.wide,
+                    tele: labels.tele,
+                  }),
+                }));
+                const anyVariants = perLens.some((x) => x.variants);
+                return (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                    <div style={gridStyle(n)}>
+                      {perLens.map((x, i) => (
+                        <span
                           key={i}
-                          value={undefined}
-                          label={labels.dimensionsLabel}
-                          valueClassName={cn("text-base font-medium")}
-                        />
-                      );
-                    }
-                    return (
-                      <div
-                        key={i}
-                        style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}
-                      >
-                        <span className="font-medium tabular-nums text-zinc-900 leading-tight text-base">
-                          {primary}
+                          className={cn(
+                            "text-base font-medium tabular-nums leading-tight text-center",
+                            x.primary ? "text-zinc-900" : "text-zinc-300"
+                          )}
+                        >
+                          {x.primary ?? "—"}
                         </span>
-                        {variants && (
+                      ))}
+                    </div>
+                    {anyVariants && (
+                      <div style={gridStyle(n)}>
+                        {perLens.map((x, i) => (
                           <span
-                            className="font-medium tabular-nums text-zinc-500 leading-tight"
-                            style={{ fontSize: 10, whiteSpace: "pre-line", textAlign: "center" }}
+                            key={i}
+                            className="font-medium tabular-nums text-zinc-500 leading-tight text-center"
+                            style={{ fontSize: 10 }}
                           >
-                            {variants.replace(/\n/g, " · ")}
+                            {x.variants ? x.variants.replace(/\n/g, " · ") : ""}
                           </span>
-                        )}
-                        <span className="text-[10px] uppercase tracking-wider text-zinc-400">
+                        ))}
+                      </div>
+                    )}
+                    <div style={gridStyle(n)}>
+                      {perLens.map((_, i) => (
+                        <span
+                          key={i}
+                          className="text-[10px] uppercase tracking-wider text-zinc-400 text-center"
+                        >
                           {labels.dimensionsLabel}
                         </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Filter size */}
               {showFilter && (
@@ -552,101 +561,119 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
           <div className="h-px bg-zinc-200" />
           <div style={{ padding: `20px ${POSTER_PX}px` }}>
             <PosterSection title={labels.sectionFocus}>
-              {/* Min focus distance */}
-              {showMinFocus && (
-                <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
-                  {lenses.map((lens, i) => {
-                    const mfd = lens.minFocusDistance;
-                    const sup = noteSup(i, "minFocusDistance");
-                    if (!mfd) {
-                      return (
-                        <PosterStatBlock
+              {/* Min focus distance — row-based layout keeps label baselines aligned
+                  across lenses even when only some have macro mode. */}
+              {showMinFocus && (() => {
+                const perLens = lenses.map((lens, i) => {
+                  const mfd = lens.minFocusDistance;
+                  const sup = noteSup(i, "minFocusDistance");
+                  if (!mfd) return { sup, primary: null, macro: null };
+                  const primary = getFocusVariantLines(
+                    mfd,
+                    (v) => `${v}cm`,
+                    wideTeleLabels
+                  ) ?? [{ label: undefined as string | undefined, value: `${mfd.cm}cm` }];
+                  const hasMacroVariants =
+                    (mfd.macroVariants?.wide !== undefined &&
+                      mfd.macroVariants.wide !== mfd.variants?.wide) ||
+                    (mfd.macroVariants?.tele !== undefined &&
+                      mfd.macroVariants.tele !== mfd.variants?.tele);
+                  const hasMacroCm =
+                    mfd.macroCm !== undefined && mfd.macroCm !== mfd.cm;
+                  const macro: Array<{ label?: string; value: string }> | null =
+                    hasMacroVariants
+                      ? [
+                          mfd.macroVariants?.wide !== undefined &&
+                          mfd.macroVariants.wide !== mfd.variants?.wide
+                            ? { label: labels.wide, value: `${mfd.macroVariants.wide}cm` }
+                            : null,
+                          mfd.macroVariants?.tele !== undefined &&
+                          mfd.macroVariants.tele !== mfd.variants?.tele
+                            ? { label: labels.tele, value: `${mfd.macroVariants.tele}cm` }
+                            : null,
+                        ].filter((v): v is { label: string; value: string } => v !== null)
+                      : hasMacroCm
+                      ? [{ value: `${mfd.macroCm}cm` }]
+                      : null;
+                  return { sup, primary, macro };
+                });
+                const anyMacro = perLens.some((x) => x.macro);
+                return (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    {/* Primary value row */}
+                    <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
+                      {perLens.map((x, i) => (
+                        <div
                           key={i}
-                          value={undefined}
-                          label={labels.minFocusLabel}
-                          valueClassName={statSize}
-                          sup={sup}
-                        />
-                      );
-                    }
-                    const primaryLines = getFocusVariantLines(
-                      mfd,
-                      (v) => `${v}cm`,
-                      wideTeleLabels
-                    );
-                    // Suppress macro line when it matches the normal-mode value(s) — pure noise.
-                    const hasMacroVariants =
-                      (mfd.macroVariants?.wide !== undefined &&
-                        mfd.macroVariants.wide !== mfd.variants?.wide) ||
-                      (mfd.macroVariants?.tele !== undefined &&
-                        mfd.macroVariants.tele !== mfd.variants?.tele);
-                    const hasMacroCm =
-                      mfd.macroCm !== undefined && mfd.macroCm !== mfd.cm;
-                    const macroLines: Array<{ label?: string; value: string }> | null =
-                      hasMacroVariants
-                        ? [
-                            mfd.macroVariants?.wide !== undefined &&
-                            mfd.macroVariants.wide !== mfd.variants?.wide
-                              ? { label: labels.wide, value: `${mfd.macroVariants.wide}cm` }
-                              : null,
-                            mfd.macroVariants?.tele !== undefined &&
-                            mfd.macroVariants.tele !== mfd.variants?.tele
-                              ? { label: labels.tele, value: `${mfd.macroVariants.tele}cm` }
-                              : null,
-                          ].filter((v): v is { label: string; value: string } => v !== null)
-                        : hasMacroCm
-                        ? [{ value: `${mfd.macroCm}cm` }]
-                        : null;
-
-                    return (
-                      <div
-                        key={i}
-                        style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}
-                      >
-                        {/* Primary value(s) */}
-                        {primaryLines ? (
-                          primaryLines.map((line, j) => (
-                            <div key={j} style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-                              <span className="text-zinc-400" style={{ fontSize: 9, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                                {line.label}
-                              </span>
-                              <span className={cn("font-semibold tabular-nums text-zinc-900 leading-tight", statSize)}>
-                                {line.value}
-                              </span>
-                            </div>
-                          ))
-                        ) : (
-                          <span className={cn("font-semibold tabular-nums text-zinc-900 leading-tight", statSize)}>
-                            {mfd.cm}cm
-                          </span>
-                        )}
-                        {/* Macro mode */}
-                        {macroLines && (
-                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1, marginTop: 1 }}>
-                            {macroLines.map((line, j) => (
-                              <div key={j} style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-                                <span className="text-zinc-400" style={{ fontSize: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                                  {line.label ? `${labels.macroLabel} · ${line.label}` : labels.macroLabel}
-                                </span>
-                                <span className="font-medium tabular-nums text-zinc-600 leading-tight" style={{ fontSize: 12 }}>
+                          style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}
+                        >
+                          {x.primary ? (
+                            x.primary.map((line, j) =>
+                              line.label ? (
+                                <div key={j} style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+                                  <span className="text-zinc-400" style={{ fontSize: 9, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                                    {line.label}
+                                  </span>
+                                  <span className={cn("font-semibold tabular-nums text-zinc-900 leading-tight", statSize)}>
+                                    {line.value}
+                                  </span>
+                                </div>
+                              ) : (
+                                <span key={j} className={cn("font-semibold tabular-nums text-zinc-900 leading-tight", statSize)}>
                                   {line.value}
                                 </span>
-                              </div>
-                            ))}
+                              )
+                            )
+                          ) : (
+                            <span className={cn("font-semibold tabular-nums leading-tight text-zinc-300", statSize)}>
+                              —
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    {/* Macro row — renders across all columns so label baselines stay aligned. */}
+                    {anyMacro && (
+                      <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
+                        {perLens.map((x, i) => (
+                          <div
+                            key={i}
+                            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}
+                          >
+                            {x.macro ? (
+                              x.macro.map((line, j) => (
+                                <div key={j} style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+                                  <span className="text-zinc-400" style={{ fontSize: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                                    {line.label ? `${labels.macroLabel} · ${line.label}` : labels.macroLabel}
+                                  </span>
+                                  <span className="font-medium tabular-nums text-zinc-600 leading-tight" style={{ fontSize: 12 }}>
+                                    {line.value}
+                                  </span>
+                                </div>
+                              ))
+                            ) : null}
                           </div>
-                        )}
-                        {/* Row label */}
-                        <span className="text-zinc-400" style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                        ))}
+                      </div>
+                    )}
+                    {/* Label row */}
+                    <div style={gridStyle(n)}>
+                      {perLens.map((x, i) => (
+                        <span
+                          key={i}
+                          className="text-zinc-400"
+                          style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", textAlign: "center" }}
+                        >
                           {labels.minFocusLabel}
-                          {sup !== undefined && (
-                            <span style={{ fontSize: "0.7em", verticalAlign: "super", marginLeft: 1 }}>{sup}</span>
+                          {x.sup !== undefined && (
+                            <span style={{ fontSize: "0.7em", verticalAlign: "super", marginLeft: 1 }}>{x.sup}</span>
                           )}
                         </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Max magnification */}
               {showMaxMag && (
