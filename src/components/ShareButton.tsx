@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { Popover } from "@base-ui/react/popover";
 import { Drawer } from "@base-ui/react/drawer";
 import { Tabs } from "@base-ui/react/tabs";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Share2, Copy, Check, Download, Loader2, Expand, SlidersHorizontal, ChevronDown, X } from "lucide-react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
@@ -43,6 +43,7 @@ interface ShareButtonProps {
 
 export function ShareButton({ lenses, variant = "default", triggerClassName, presetTitle }: ShareButtonProps) {
   const t = useTranslations("Share");
+  const locale = useLocale();
   const tImage = useTranslations("ShareImage");
   const tBrand = useTranslations("Brands");
   const [open, setOpen] = useState(false);
@@ -124,7 +125,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   // Build poster labels from i18n
   const posterLabels: PosterLabels = {
     appName: "X-Glass",
-    siteUrl: "xglass.sentacraft.com",
+    siteUrl: `xglass.sentacraft.com/${locale}`,
     cta: lenses.length === 1 ? tImage("ctaSingle") : tImage("cta"),
     comparison: computedPosterTitle,
     sectionFocalCoverage: tImage("sectionFocalCoverage"),
