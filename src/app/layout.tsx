@@ -5,6 +5,7 @@ import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import RegisterSW from "@/components/RegisterSW";
+import { getLocale } from "next-intl/server";
 
 const sourceSerif4 = localFont({
   src: [
@@ -31,13 +32,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // getLocale() reads the locale set by next-intl middleware. Falls back to
+  // "en" for routes outside the locale tree (e.g. /offline).
+  const locale = await getLocale().catch(() => "en");
   return (
-    <html className={`${GeistSans.variable} ${GeistMono.variable} ${sourceSerif4.variable} font-sans antialiased`}>
+    <html lang={locale} className={`${GeistSans.variable} ${GeistMono.variable} ${sourceSerif4.variable} font-sans antialiased`}>
       <body>
         {children}
         <RegisterSW />

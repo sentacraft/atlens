@@ -97,28 +97,26 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <div lang={locale}>
-      <NextIntlClientProvider messages={messages}>
-        <CompareProvider>
-          <ScrollContainerProvider>
-            <ConsoleEgg />
-            <Nav />
-            {/* Offset fixed nav and iOS home indicator. Body also carries
-                bg-background, so the safe-area strip and any short-page gap
-                render as a single seamless canvas color. */}
-            <div className="pt-[var(--nav-height)] pb-[var(--safe-inset-bottom)] min-h-svh">
-              {TESTHOOK_ALLOWED ? (
-                <TestHookProvider>
-                  {children}
-                  <TestHookPanel />
-                </TestHookProvider>
-              ) : (
-                children
-              )}
-            </div>
-          </ScrollContainerProvider>
-        </CompareProvider>
-      </NextIntlClientProvider>
-    </div>
+    <NextIntlClientProvider messages={messages}>
+      <CompareProvider>
+        <ScrollContainerProvider>
+          <ConsoleEgg />
+          <Nav />
+          {/* Offset fixed nav and iOS home indicator. Body also carries
+              bg-background, so the safe-area strip and any short-page gap
+              render as a single seamless canvas color. */}
+          <div className="pt-[var(--nav-height)] pb-[var(--safe-inset-bottom)] min-h-svh">
+            {TESTHOOK_ALLOWED ? (
+              <TestHookProvider>
+                {children}
+                <TestHookPanel />
+              </TestHookProvider>
+            ) : (
+              children
+            )}
+          </div>
+        </ScrollContainerProvider>
+      </CompareProvider>
+    </NextIntlClientProvider>
   );
 }
