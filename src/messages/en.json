@@ -277,7 +277,6 @@
     "coverageTitle": "Lens Coverage",
     "coverageBody": "X-Glass's vision is to cover every X-mount lens ever made, including discontinued models. Due to the enormous scale of the data pipeline, the current index starts from lenses listed on each brand's official website, so some discontinued lenses no longer featured there are temporarily missing. Eight major brands are covered in this first release; expanding to more active brands is on the roadmap for a future phase. Adapted lenses from other mounts are outside the current scope.",
     "coverageBrands": "Currently indexed brands",
-    "coverageBrandList": "Fujifilm · Sigma · Tamron · Viltrox · TTArtisan · 7Artisans · Brightin Star · SG Image",
 
     "dataAccuracyTitle": "Data & Accuracy",
     "dataAccuracyIntro": "For a database built on objective information, accuracy isn't a bonus — it's the foundation. If users can't trust the data, the site has no reason to exist.",

@@ -173,8 +173,27 @@ export function filterLenses(lenses: Lens[], filters: FilterState): Lens[] {
   });
 }
 
+// Fujifilm first, then major Japanese brands, then Chinese brands by pinyin initial.
+export const BRAND_DISPLAY_ORDER: string[] = [
+  "fujifilm",
+  "tamron",
+  "sigma",
+  "ttartisan",
+  "7artisans",
+  "sgimage",
+  "viltrox",
+  "brightinstar",
+];
+
 export function getUniqueBrands(lenses: Lens[]): string[] {
   return [...new Set(lenses.map((l) => l.brand))].sort();
+}
+
+export function getOrderedUniqueBrands(lenses: Lens[]): string[] {
+  const present = new Set(lenses.map((l) => l.brand));
+  const ordered = BRAND_DISPLAY_ORDER.filter((b) => present.has(b));
+  const rest = [...present].filter((b) => !BRAND_DISPLAY_ORDER.includes(b)).sort();
+  return [...ordered, ...rest];
 }
 
 // Returns the locale-appropriate official link with no fallback:

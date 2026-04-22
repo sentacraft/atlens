@@ -8,6 +8,7 @@ import { ExternalLink } from "@/components/ui/external-link";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import type { FeedbackType } from "@/components/FeedbackDialog";
+import { allLenses, getOrderedUniqueBrands } from "@/lib/lens";
 import AckCard from "@/components/AckCard";
 
 function Section({
@@ -30,10 +31,15 @@ function Section({
 }
 
 export default async function AboutContent() {
-  const [t, locale] = await Promise.all([
+  const [t, tBrand, locale] = await Promise.all([
     getTranslations("About"),
+    getTranslations("Brands"),
     getLocale(),
   ]);
+
+  const brandList = getOrderedUniqueBrands(allLenses)
+    .map((b) => tBrand(b as Parameters<typeof tBrand>[0]))
+    .join(" · ");
 
   const faqItems = [
     { q: t("faq1Q"), a: t("faq1A") },
@@ -130,7 +136,7 @@ export default async function AboutContent() {
             {t("coverageBrands")}
           </p>
           <p className="text-sm text-zinc-700 dark:text-zinc-300">
-            {t("coverageBrandList")}
+            {brandList}
           </p>
         </div>
       </Section>
