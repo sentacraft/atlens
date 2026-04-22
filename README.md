@@ -2,9 +2,9 @@
 
 Browse, filter, and compare every Fujifilm X-mount lens side by side — native Fujifilm and all major third-party brands.
 
-**[xglass.sentacraft.com](https://xglass.sentacraft.com/en)**
+**[中文](https://xglass.sentacraft.com/zh)** · **[English](https://xglass.sentacraft.com/en)**
 
-If you find X-Glass useful, a ⭐ on this repo goes a long way — and if you'd like to support the project, [donations are welcome](https://xglass.sentacraft.com/en/about#donation).
+If you find X-Glass useful, a ⭐ on this repo goes a long way — and if you'd like to support the project: [donate](https://xglass.sentacraft.com/en/about#donation) · [打赏](https://xglass.sentacraft.com/zh/about#donation)
 
 **Desktop**
 
