@@ -424,12 +424,12 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
               <span className="text-zinc-300" style={{ fontSize: 8, letterSpacing: 1 }}>QR</span>
             )}
           </div>
-          {/* CTA + site URL (faded) */}
+          {/* CTA + site URL */}
           <div style={{ textAlign: "right" }}>
             <div className="text-zinc-700" style={{ fontSize: 9, fontWeight: 600, lineHeight: 1.5 }}>
               {labels.cta}
             </div>
-            <div className="text-zinc-300" style={{ fontSize: 8, marginTop: 2 }}>
+            <div className="text-zinc-700" style={{ fontSize: 8, fontWeight: 600, marginTop: 2 }}>
               {labels.siteUrl}
             </div>
           </div>
