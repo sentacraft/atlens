@@ -274,12 +274,6 @@ export function makeAllowlistKey(a: string, b: string): string {
   return a < b ? `${a}|${b}` : `${b}|${a}`;
 }
 export const KNOWN_DISTINCT_PAIRS = new Set([
-  // PRO has F5.6–F22 iris (5 blades); non-PRO is fixed F5.6. Collect error on
-  // the non-PRO minAperture field (currently 5.6, should be 22) makes the diff
-  // appear smaller than it is — re-collect to clean up.
-  makeAllowlistKey(
-    "brightinstar-mf-10mm-f56-xf",
-    "brightinstar-mf-10mm-f56-pro-xf"),
   // Tilt-shift mechanism adds tilt/shift axes; lensConfiguration and
   // specialtyTags differ even though optical formula is the same.
   makeAllowlistKey(
