@@ -141,6 +141,35 @@ This project does not accept code contributions at this time.
 
 To report a data issue (wrong spec, broken image) or suggest a missing lens, use the feedback links inside the app, or open a [GitHub Issue](https://github.com/sentacraft/x-glass/issues).
 
+## Forking for Other Mounts
+
+X-Glass currently focuses on the Fujifilm X mount, with the Fujifilm GF mount as a possible future expansion. Beyond Fujifilm, there are no plans to cover other systems — so if you'd like to build something similar for Sony E, Nikon Z, Canon RF, L-mount, or any other system, I'd genuinely love to see it happen. The code is MIT-licensed and you're very welcome to fork it; no permission needed. The notes below are meant to save you time, not to gatekeep.
+
+**What's in the box, and what isn't.**
+- ✅ **Source code** is MIT-licensed. Fork, modify, deploy, ship commercially — all fine. Just keep the `LICENSE` file and copyright notice intact.
+- ✅ **Schema and field design** (`src/lib/types.ts`, Zod schemas, UI taxonomy) are part of the MIT code and free to reuse.
+- ❌ **Lens data** (`src/data/lenses.json`) is under a separate proprietary license and isn't transferable — please don't copy it or use it as seed data, even for a different mount. See [`LICENSE-DATA`](LICENSE-DATA).
+- ❌ **The data pipeline** (`x-glass-pipeline`) is a separate private repository and isn't part of this fork. You'll need to build your own collection and review workflow.
+
+**Why the pipeline isn't open source (yet).** I get asked this a lot, so to be upfront about it:
+
+1. **It's still rough.** The pipeline is evolving quickly and has plenty of sharp edges. Open-sourcing it in this state would create more confusion than value.
+2. **It's overfit to the brands currently covered.** The extraction logic, prompts, and review steps are tuned to a specific set of manufacturers and page layouts — they aren't generic enough to be useful as a reference implementation for someone else. This is also why the diagram above stays at the workflow level and doesn't go deeper: I'd rather show the shape than publish details that would mislead.
+3. **Legal exposure around scraped content.** The pipeline pulls raw product descriptions and images from many manufacturer sites. Even if the final published data is carefully curated, open-sourcing the intermediate scraping layer would put that raw material in public view, which I'm not comfortable with.
+
+If the pipeline matures and those concerns ease over time, I'm open to revisiting. Until then, building your own collection layer is genuinely the right call — your mount, your source sites, your edge cases.
+
+**Expect some refactoring.** The codebase has Fujifilm-specific assumptions baked in: APS-C ×1.5 equivalent focal length math, X-mount flange distance, generation-versioning conventions, and a few mount-specific field shapes. Supporting a full-frame or different-crop system means abstracting these, not just swapping constants. It's not a huge lift, but worth planning for.
+
+**A few small asks around branding.**
+- Please pick a distinct project name — something other than "X-Glass" or close variants like "E-Glass" / "Z-Glass". I'd like to keep that name scoped to the Fujifilm project, and a fresh name will also help your project build its own identity.
+- A short note in your README saying your project is an independent fork, not affiliated with or endorsed by X-Glass or SentaCraft, would be appreciated.
+- Mount names (X, E, Z, RF, L) and manufacturer names are trademarks of their respective owners. Nominative use like "a tool for Sony E-mount lenses" is totally fine; just avoid using brand logos as your own project logo.
+
+**Staying in sync is optional.** I'm not committing to ongoing coordination, but if you make improvements that aren't mount-specific — better schema abstractions, shared UI primitives, accessibility fixes, performance wins — PRs back upstream are very welcome. A quick issue first to align on scope helps both of us avoid wasted effort.
+
+Questions about licensing, collaboration, or anything else: [xglass@sentacraft.com](mailto:xglass@sentacraft.com). Good luck — really hope to see your project out in the wild.
+
 ## Acknowledgments
 
 Built with significant help from [Claude Code](https://claude.ai/code) (architecture and engineering) and [Google Gemini](https://gemini.google.com) (UX design).
