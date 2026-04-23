@@ -265,35 +265,101 @@ export const lensPatchSchema = lensObjectSchema.partial().superRefine((value, ct
   applyLensBusinessRules(value, ctx);
 });
 
-// Pairs of lens IDs that share identical spec tuples but are confirmed distinct.
-// Format: "idA|idB" with IDs sorted alphabetically.
-function makeAllowlistKey(a: string, b: string): string {
+// Pairs of lens IDs confirmed to be distinct despite scoring above the spec
+// similarity threshold. Also used by the pipeline image dedupe gate.
+// Format: "idA|idB" with IDs sorted alphabetically. Add a comment explaining
+// what actually distinguishes the pair — the gate error output shows you the
+// equalFields / diffFields diff to inform that decision.
+export function makeAllowlistKey(a: string, b: string): string {
   return a < b ? `${a}|${b}` : `${b}|${a}`;
 }
-const KNOWN_DISTINCT_SPEC_PAIRS = new Set([
-  makeAllowlistKey(
-    "fujifilm-xf-56mm-f12-r-xf",
-    "fujifilm-xf-56mm-f12-r-apd-xf"),
-  // PRO variant has a distinct optical design despite identical measured specs
+export const KNOWN_DISTINCT_PAIRS = new Set([
+  // PRO has F5.6–F22 iris (5 blades); non-PRO is fixed F5.6. Collect error on
+  // the non-PRO minAperture field (currently 5.6, should be 22) makes the diff
+  // appear smaller than it is — re-collect to clean up.
   makeAllowlistKey(
     "brightinstar-mf-10mm-f56-xf",
     "brightinstar-mf-10mm-f56-pro-xf"),
-  // Tilt variant adds shift/tilt mechanism; mechanically and optically distinct
-  makeAllowlistKey(
-    "ttartisan-aps-c-35mm-f14-xf",
-    "ttartisan-tilt-aps-c-35mm-f14-xf"),
-  // Tilt-shift variant adds tilt/shift mechanism; mechanically distinct from standard macro
+  // Tilt-shift mechanism adds tilt/shift axes; lensConfiguration and
+  // specialtyTags differ even though optical formula is the same.
   makeAllowlistKey(
     "ttartisan-100mm-f28-2x-macro-xf",
     "ttartisan-tilt-shift-100mm-f28-2x-macro-xf"),
 ]);
+
+// Fields excluded from the spec similarity comparison.
+// Identifiers, human-readable labels, links, and freeform notes are excluded;
+// all measurable optical/physical fields are included automatically.
+const SIMILARITY_EXCLUDE = new Set([
+  "id", "brand", "model", "series", "officialLinks", "fieldNotes",
+]);
+
+// Threshold above which two same-brand lenses are flagged as suspiciously similar.
+// Calibrated against the full catalog: the two legitimate high-scoring pairs sit
+// at 0.895 and 0.870; the next-highest unrelated pair is 0.762.
+const SPEC_SIMILARITY_THRESHOLD = 0.85;
+
+type JsonValue = string | number | boolean | null | JsonValue[] | { [k: string]: JsonValue };
+
+function normalizeForComparison(v: unknown): JsonValue {
+  if (Array.isArray(v)) {
+    return (v as unknown[])
+      .map(normalizeForComparison)
+      .sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
+  }
+  if (v !== null && typeof v === "object") {
+    return Object.fromEntries(
+      Object.entries(v as Record<string, unknown>)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([k, w]) => [k, normalizeForComparison(w)])
+    );
+  }
+  return v as JsonValue;
+}
+
+function specSimilarity(
+  a: Lens,
+  b: Lens,
+): { score: number; equalFields: string[]; diffFields: string[] } {
+  const ra = a as unknown as Record<string, unknown>;
+  const rb = b as unknown as Record<string, unknown>;
+  const keys = new Set([
+    ...Object.keys(ra),
+    ...Object.keys(rb),
+  ].filter(k => !SIMILARITY_EXCLUDE.has(k)));
+
+  const equalFields: string[] = [];
+  const diffFields: string[] = [];
+  let compared = 0;
+
+  for (const k of keys) {
+    const av = ra[k];
+    const bv = rb[k];
+    if (av === undefined || bv === undefined) continue;
+    compared++;
+    if (JSON.stringify(normalizeForComparison(av)) === JSON.stringify(normalizeForComparison(bv))) {
+      equalFields.push(k);
+    } else {
+      diffFields.push(k);
+    }
+  }
+
+  return {
+    score: compared > 0 ? equalFields.length / compared : 0,
+    equalFields,
+    diffFields,
+  };
+}
 
 export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) => {
   const seenIds = new Map<string, number>();
   const seenCnLinks = new Map<string, number>();
   const seenGlobalLinks = new Map<string, number>();
   const seenBrandModels = new Map<string, number>();
-  const seenSpecTuples = new Map<string, number>();
+
+  // Group by brand for pairwise similarity comparison (within-brand only,
+  // matching the scope of the previous tuple-based check).
+  const byBrand = new Map<string, { lens: Lens; index: number }[]>();
 
   lenses.forEach((lens, index) => {
     const previousIndex = seenIds.get(lens.id);
@@ -350,33 +416,34 @@ export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) =
       seenBrandModels.set(brandModelKey, index);
     }
 
-    const specTupleKey = [
-      lens.brand,
-      lens.series ?? "<none>",
-      lens.focalLengthMin,
-      lens.focalLengthMax,
-      lens.maxAperture,
-      lens.af ? "af" : "no-af",
-      lens.ois ? "ois" : "no-ois",
-      lens.wr ? "wr" : "no-wr",
-      lens.apertureRing ? "aperture-ring" : "no-aperture-ring",
-      lens.generation ?? "<none>",
-    ].join("|");
-    const previousSpecTupleIndex = seenSpecTuples.get(specTupleKey);
-    if (previousSpecTupleIndex !== undefined) {
-      const prevId = lenses[previousSpecTupleIndex].id;
-      const pairKey = makeAllowlistKey(prevId, lens.id);
-      if (!KNOWN_DISTINCT_SPEC_PAIRS.has(pairKey)) {
+    const group = byBrand.get(lens.brand) ?? [];
+    group.push({ lens, index });
+    byBrand.set(lens.brand, group);
+  });
+
+  // Pairwise spec similarity check within each brand.
+  for (const group of byBrand.values()) {
+    for (let i = 0; i < group.length; i++) {
+      for (let j = i + 1; j < group.length; j++) {
+        const { lens: a, index: ai } = group[i];
+        const { lens: b, index: bj } = group[j];
+        const { score, equalFields, diffFields } = specSimilarity(a, b);
+        if (score < SPEC_SIMILARITY_THRESHOLD) continue;
+        const pairKey = makeAllowlistKey(a.id, b.id);
+        if (KNOWN_DISTINCT_PAIRS.has(pairKey)) continue;
         ctx.addIssue({
           code: "custom",
-          message: `Duplicate brand/spec/features/generation combination also appears at index ${previousSpecTupleIndex}`,
-          path: [index, "focalLengthMin"],
+          message: [
+            `Suspiciously similar specs (score=${score.toFixed(2)}) — also at index ${ai}.`,
+            `  equal=[${equalFields.join(", ")}]`,
+            `  diff=[${diffFields.length > 0 ? diffFields.join(", ") : "(none)"}]`,
+            `  If confirmed distinct, add makeAllowlistKey("${a.id}", "${b.id}") to KNOWN_DISTINCT_PAIRS.`,
+          ].join("\n"),
+          path: [bj, "focalLengthMin"],
         });
       }
-    } else {
-      seenSpecTuples.set(specTupleKey, index);
     }
-  });
+  }
 });
 
 // Compile-time assertion: Lens interface and lensSchema's inferred type must stay
