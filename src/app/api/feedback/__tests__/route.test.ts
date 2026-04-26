@@ -120,6 +120,39 @@ describe("POST /api/feedback — description validation", () => {
   });
 });
 
+describe("POST /api/feedback — lensBrand", () => {
+  beforeAll(() => {
+    mockFetch.mockResolvedValue(
+      new Response(JSON.stringify({ number: 1 }), { status: 201 })
+    );
+  });
+
+  it("includes brand and model together in the Lens line", async () => {
+    await POST(
+      makeRequest({
+        type: "data_issue",
+        description: "Wrong value",
+        context: { lensId: "l1", lensBrand: "Sony", lensModel: "FE 35mm F2.8" },
+      })
+    );
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body as string) as { body: string };
+    expect(body.body).toContain("**Lens:** Sony FE 35mm F2.8");
+  });
+
+  it("shows only model when lensBrand is absent", async () => {
+    await POST(
+      makeRequest({
+        type: "data_issue",
+        description: "Wrong value",
+        context: { lensId: "l1", lensModel: "FE 35mm F2.8" },
+      })
+    );
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body as string) as { body: string };
+    expect(body.body).toContain("**Lens:** FE 35mm F2.8");
+    expect(body.body).not.toMatch(/\*\*Lens:\*\* \S+ \S+ FE/);
+  });
+});
+
 describe("POST /api/feedback — replyEmail", () => {
   beforeAll(() => {
     mockFetch.mockResolvedValue(
