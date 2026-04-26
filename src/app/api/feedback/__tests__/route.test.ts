@@ -120,6 +120,28 @@ describe("POST /api/feedback — description validation", () => {
   });
 });
 
+describe("POST /api/feedback — replyEmail", () => {
+  beforeAll(() => {
+    mockFetch.mockResolvedValue(
+      new Response(JSON.stringify({ number: 1 }), { status: 201 })
+    );
+  });
+
+  it("includes replyEmail in the issue body when provided", async () => {
+    await POST(
+      makeRequest({ type: "general", description: "Great app!", replyEmail: "user@example.com" })
+    );
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body as string) as { body: string };
+    expect(body.body).toContain("**Reply-to:** user@example.com");
+  });
+
+  it("omits Reply-to line when replyEmail is not provided", async () => {
+    await POST(makeRequest({ type: "general", description: "Great app!" }));
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body as string) as { body: string };
+    expect(body.body).not.toContain("Reply-to");
+  });
+});
+
 describe("POST /api/feedback — type validation", () => {
   it("rejects an invalid type", async () => {
     const res = await POST(makeRequest({ type: "unknown", description: "Test" }));
