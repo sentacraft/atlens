@@ -8,6 +8,7 @@ interface FeedbackPayload {
   replyEmail?: string;
   context?: {
     lensId?: string;
+    lensBrand?: string;
     lensModel?: string;
     searchQuery?: string;
     field?: string;
@@ -55,7 +56,10 @@ function buildIssue(payload: FeedbackPayload): {
   if (type === "data_issue") {
     lines.push(`**Type:** Data issue`);
     if (context?.lensModel) {
-      lines.push(`**Lens:** ${context.lensModel}`);
+      const lensLabel = context.lensBrand
+        ? `${context.lensBrand} ${context.lensModel}`
+        : context.lensModel;
+      lines.push(`**Lens:** ${lensLabel}`);
     }
     if (context?.lensId) {
       lines.push(`**Lens ID:** \`${context.lensId}\``);
