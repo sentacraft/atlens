@@ -5,6 +5,7 @@ type FeedbackType = "data_issue" | "missing_lens" | "general";
 interface FeedbackPayload {
   type: FeedbackType;
   description: string;
+  replyEmail?: string;
   context?: {
     lensId?: string;
     lensModel?: string;
@@ -48,7 +49,7 @@ function buildIssue(payload: FeedbackPayload): {
   body: string;
   labels: string[];
 } {
-  const { type, description, context } = payload;
+  const { type, description, replyEmail, context } = payload;
   const lines: string[] = [];
 
   if (type === "data_issue") {
@@ -75,6 +76,10 @@ function buildIssue(payload: FeedbackPayload): {
     }
   } else {
     lines.push(`**Type:** General feedback`);
+  }
+
+  if (replyEmail) {
+    lines.push(`**Reply-to:** ${replyEmail}`);
   }
 
   if (description.trim()) {
