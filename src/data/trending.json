@@ -11,10 +11,10 @@
         "en": "Weight, aperture, stabilization — four standard zooms compared"
       },
       "lensIds": [
-        "fujifilm-xf-18-55mmf28-4-r-lm-ois-xf",
-        "fujifilm-xf-16-50mmf28-48-r-lm-wr-xf",
-        "sigma-contemporary-18-50mm-f28-dc-dn-xf",
-        "tamron-17-70mm-f28-di-iii-a-vc-rxd-xf"
+        "fujifilm-xf-18-55mmf28-4-r-lm-ois-x",
+        "fujifilm-xf-16-50mmf28-48-r-lm-wr-x",
+        "sigma-contemporary-18-50mm-f28-dc-dn-x",
+        "tamron-17-70mm-f28-di-iii-a-vc-rxd-x"
       ]
     },
     {
@@ -28,10 +28,10 @@
         "en": "First-party large-aperture vs. compact vs. third-party alternatives"
       },
       "lensIds": [
-        "fujifilm-xf-23mmf14-r-lm-wr-xf",
-        "fujifilm-xf-23mmf2-r-wr-xf",
-        "sigma-contemporary-23mm-f14-dc-dn-xf",
-        "viltrox-af-25mm-f17-air-xf"
+        "fujifilm-xf-23mmf14-r-lm-wr-x",
+        "fujifilm-xf-23mmf2-r-wr-x",
+        "sigma-contemporary-23mm-f14-dc-dn-x",
+        "viltrox-af-25mm-f17-air-x"
       ]
     },
     {
@@ -45,9 +45,9 @@
         "en": "Old-school rendering vs. modern resolution vs. compact weather-resistant"
       },
       "lensIds": [
-        "fujifilm-xf-35mmf14-r-xf",
-        "fujifilm-xf-33mmf14-r-lm-wr-xf",
-        "fujifilm-xf-35mmf2-r-wr-xf"
+        "fujifilm-xf-35mmf14-r-x",
+        "fujifilm-xf-33mmf14-r-lm-wr-x",
+        "fujifilm-xf-35mmf2-r-wr-x"
       ]
     },
     {
@@ -61,9 +61,9 @@
         "en": "Ultimate bokeh at f/1.2 vs. lighter, more affordable alternatives"
       },
       "lensIds": [
-        "fujifilm-xf-56mmf12-r-wr-xf",
-        "sigma-contemporary-56mm-f14-dc-dn-xf",
-        "viltrox-af-56mm-f17-air-xf"
+        "fujifilm-xf-56mmf12-r-wr-x",
+        "sigma-contemporary-56mm-f14-dc-dn-x",
+        "viltrox-af-56mm-f17-air-x"
       ]
     },
     {
@@ -77,9 +77,9 @@
         "en": "Sigma vs Tamron vs Fuji — focal range and image quality trade-offs"
       },
       "lensIds": [
-        "sigma-contemporary-16-300mm-f35-67-dc-os-xf",
-        "tamron-18-300mm-f35-63-di-iii-a-vc-vxd-xf",
-        "fujifilm-xf-18-135mmf35-56-r-lm-ois-wr-xf"
+        "sigma-contemporary-16-300mm-f35-67-dc-os-x",
+        "tamron-18-300mm-f35-63-di-iii-a-vc-vxd-x",
+        "fujifilm-xf-18-135mmf35-56-r-lm-ois-wr-x"
       ]
     },
     {
@@ -93,9 +93,9 @@
         "en": "Wildlife, concerts, reach — comparing price and performance"
       },
       "lensIds": [
-        "fujifilm-xc-50-230mmf45-67-ois-ii-xf",
-        "fujifilm-xf-55-200mmf35-48-r-lm-ois-xf",
-        "fujifilm-xf-70-300mmf4-56-r-lm-ois-wr-xf"
+        "fujifilm-xc-50-230mmf45-67-ois-ii-x",
+        "fujifilm-xf-55-200mmf35-48-r-lm-ois-x",
+        "fujifilm-xf-70-300mmf4-56-r-lm-ois-wr-x"
       ]
     }
   ]
