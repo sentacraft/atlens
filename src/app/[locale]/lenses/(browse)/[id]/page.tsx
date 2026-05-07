@@ -282,13 +282,14 @@ export default async function LensDetailPage({ params }: { params: Params }) {
                 {t("whereToBuyHeading")}
               </span>
               <div className="flex flex-wrap gap-2">
-                {shopLinks.map((link) => (
+                {shopLinks.map((link, i) => (
                   <ExternalLink
-                    key={link.market}
+                    key={`${link.market}-${i}`}
                     href={link.url}
                     className={ACTION_OUTLINE_CLS}
                   >
-                    {link.market === "cn" ? t("whereToBuyCn") : t("whereToBuyGlobal")}
+                    <span>{link.market === "cn" ? t("whereToBuyCn") : t("whereToBuyGlobal")}</span>
+                    <span className="text-xs text-zinc-400 dark:text-zinc-500">· {link.kind}</span>
                   </ExternalLink>
                 ))}
               </div>
