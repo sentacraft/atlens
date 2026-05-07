@@ -1,8 +1,8 @@
 import { test, expect } from "@playwright/test";
 
 // Two stable Fujifilm lenses from the dataset
-const LENS_A = "fujifilm-mkx-18-55mmt29-xf";
-const LENS_B = "fujifilm-mkx-50-135mmt29-xf";
+const LENS_A = "fujifilm-mkx-18-55mmt29-x";
+const LENS_B = "fujifilm-mkx-50-135mmt29-x";
 const LENS_A_MODEL = "MKX 18-55mmT2.9";
 const LENS_B_MODEL = "MKX 50-135mmT2.9";
 

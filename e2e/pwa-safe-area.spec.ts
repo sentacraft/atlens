@@ -42,8 +42,8 @@ async function computedPx(page: Page, selector: string, property: string): Promi
   );
 }
 
-const LENS_A = "fujifilm-mkx-18-55mmt29-xf";
-const LENS_B = "fujifilm-mkx-50-135mmt29-xf";
+const LENS_A = "fujifilm-mkx-18-55mmt29-x";
+const LENS_B = "fujifilm-mkx-50-135mmt29-x";
 
 // ─── Nav ────────────────────────────────────────────────────────────────────
 
