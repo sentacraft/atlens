@@ -104,6 +104,7 @@ function formatApertureNum(n: number): string {
 
 function apertureTokens(lens: Lens): string[] {
   const tokens: string[] = [];
+  if (lens.maxAperture === undefined) return tokens;
   for (const n of apertureNums(lens.maxAperture)) {
     const s = formatApertureNum(n);
     const noDot = s.replace(".", "");

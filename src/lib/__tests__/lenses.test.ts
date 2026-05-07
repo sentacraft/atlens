@@ -155,6 +155,109 @@ describe("lensSchema aperture business rules", () => {
     expect(result.success).toBe(false);
     expect(result.error?.issues.some((issue) => issue.path.join(".") === "maxAperture")).toBe(true);
   });
+
+  it("accepts a cine lens that publishes only T-stop", () => {
+    const result = lensSchema.safeParse(
+      makeLens({
+        focalLengthMin: 35,
+        focalLengthMax: 35,
+        maxAperture: undefined,
+        minAperture: undefined,
+        maxTStop: 2.1,
+        minTStop: 16,
+        specialtyTags: ["cine"],
+      })
+    );
+
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts a lens that publishes both f-stop and T-stop pairs", () => {
+    const result = lensSchema.safeParse(
+      makeLens({
+        focalLengthMin: 35,
+        focalLengthMax: 35,
+        maxAperture: 2.0,
+        minAperture: 16,
+        maxTStop: 2.1,
+        minTStop: 16,
+        specialtyTags: ["cine"],
+      })
+    );
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects a lens with neither aperture pair fully populated", () => {
+    const result = lensSchema.safeParse(
+      makeLens({
+        focalLengthMin: 35,
+        focalLengthMax: 35,
+        maxAperture: undefined,
+        minAperture: undefined,
+      })
+    );
+
+    expect(result.success).toBe(false);
+    expect(
+      result.error?.issues.some(
+        (issue) =>
+          issue.path.join(".") === "maxAperture" &&
+          issue.message.includes("must be fully populated")
+      )
+    ).toBe(true);
+  });
+
+  it("rejects a lens with only one half of the f-stop pair (no T-stop)", () => {
+    const result = lensSchema.safeParse(
+      makeLens({
+        focalLengthMin: 35,
+        focalLengthMax: 35,
+        maxAperture: 1.4,
+        minAperture: undefined,
+      })
+    );
+
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("lensSchema apertureBladeCount", () => {
+  it("accepts a positive integer", () => {
+    const result = lensSchema.safeParse(
+      makeLens({
+        focalLengthMin: 35,
+        focalLengthMax: 35,
+        apertureBladeCount: 9,
+      })
+    );
+
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts the SPEC_NA sentinel for fixed-aperture lenses", () => {
+    const result = lensSchema.safeParse(
+      makeLens({
+        focalLengthMin: 24,
+        focalLengthMax: 24,
+        apertureBladeCount: "N/A",
+      })
+    );
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects 0 (would be ambiguous with missing data)", () => {
+    const result = lensSchema.safeParse(
+      makeLens({
+        focalLengthMin: 24,
+        focalLengthMax: 24,
+        apertureBladeCount: 0 as unknown as number,
+      })
+    );
+
+    expect(result.success).toBe(false);
+  });
 });
 
 // ---------------------------------------------------------------------------

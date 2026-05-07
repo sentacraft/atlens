@@ -539,9 +539,11 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                 {/* Aperture */}
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
                   <span className={cn("font-semibold tabular-nums text-zinc-900 leading-none", apertureSize)}>
-                    {apertureDisplay(lens.maxAperture)}
+                    {lens.maxAperture !== undefined
+                      ? apertureDisplay(lens.maxAperture)
+                      : tStopDisplay(lens.maxTStop) ?? ""}
                   </span>
-                  {tStopDisplay(lens.maxTStop) && (
+                  {lens.maxAperture !== undefined && tStopDisplay(lens.maxTStop) && (
                     <span className="font-medium tabular-nums text-zinc-500 leading-none" style={{ fontSize: 11 }}>
                       {tStopDisplay(lens.maxTStop)}
                     </span>
