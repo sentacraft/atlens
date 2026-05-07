@@ -264,10 +264,16 @@ describe("searchLenses — focal & aperture tokens", () => {
 
 // ---------------------------------------------------------------------------
 // Brand alias matching
+//
+// Aliases come exclusively from the i18n catalog's `Brands.<key>` display
+// names. Prefix abbreviations ("Fuji" → Fujifilm, "唯卓" → 唯卓仕) still
+// work via the search engine's wordPrefix matching. Non-prefix variants
+// ("Fujinon", "フジ") are not covered and would require an explicit alias
+// table to recover.
 // ---------------------------------------------------------------------------
 
 describe("searchLenses — brand aliases", () => {
-  it("'Fuji' (abbreviation) matches Fujifilm lenses", () => {
+  it("'Fuji' (prefix abbreviation) matches Fujifilm lenses", () => {
     const results = searchLenses(lenses, "Fuji");
     const ids = results.map((l) => l.id);
     expect(ids).toContain("fuji-xf35-14");
