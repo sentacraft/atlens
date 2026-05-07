@@ -1,5 +1,18 @@
 import type { ApertureValue, Lens } from "./types";
-import { getAliasesForBrand } from "./brand-aliases";
+import enMessages from "@/messages/en.json";
+import zhMessages from "@/messages/zh.json";
+
+const EN_BRAND_NAMES = enMessages.Brands as Record<string, string>;
+const ZH_BRAND_NAMES = zhMessages.Brands as Record<string, string>;
+
+/**
+ * Brand display names from the i18n message catalogs serve as the only
+ * search aliases. Variant spellings ("Fuji", "Fujinon", "フジ") are deliberately
+ * not maintained — the canonical display name in each locale is enough.
+ */
+function getBrandSearchAliases(brandKey: string): string[] {
+  return [EN_BRAND_NAMES[brandKey], ZH_BRAND_NAMES[brandKey]].filter(Boolean);
+}
 
 // ---------------------------------------------------------------------------
 // Normalisation & tokenisation
@@ -141,8 +154,7 @@ function normTokens(text: string): string[] {
 }
 
 function createSearchableLensEntry(lens: Lens): SearchableLensEntry {
-  const aliases = [lens.brand, ...getAliasesForBrand(lens.brand)];
-  const aliasTokens = aliases.flatMap((a) => normTokens(a));
+  const aliasTokens = getBrandSearchAliases(lens.brand).flatMap(normTokens);
 
   const buckets: TokenBucket = {
     brand: normTokens(lens.brand),
