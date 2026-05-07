@@ -83,6 +83,7 @@ function makeLens(overrides: Partial<Lens> = {}): Lens {
   return {
     id: "test-lens",
     brand: "fujifilm",
+    mount: "X",
     model: "Test Lens",
     officialLinks: {},
     focalLengthMin: 18,
