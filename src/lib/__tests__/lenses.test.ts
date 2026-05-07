@@ -13,6 +13,8 @@ import {
   focalEquiv,
   focalRangeDisplay,
   apertureDisplay,
+  primaryApertureDisplay,
+  secondaryApertureDisplay,
 } from "../lens.format";
 import { lensSchema } from "../lens-schema";
 
@@ -97,6 +99,42 @@ describe("apertureDisplay", () => {
 
   it("shows a minimum aperture range when the zoom closes down differently", () => {
     expect(apertureDisplay([16, 22])).toBe("f/16–22");
+  });
+});
+
+describe("primaryApertureDisplay / secondaryApertureDisplay", () => {
+  it("non-cine lens shows f-stop primary, no secondary", () => {
+    const lens = makeLens({ focalLengthMin: 35, focalLengthMax: 35 });
+    expect(primaryApertureDisplay(lens)).toBe("f/1.4");
+    expect(secondaryApertureDisplay(lens)).toBeUndefined();
+  });
+
+  it("cine lens with only T-stop shows T-stop primary, no secondary", () => {
+    const lens = makeLens({
+      focalLengthMin: 35,
+      focalLengthMax: 35,
+      maxAperture: undefined,
+      minAperture: undefined,
+      maxTStop: 2.1,
+      minTStop: 16,
+      specialtyTags: ["cine"],
+    });
+    expect(primaryApertureDisplay(lens)).toBe("T2.1");
+    expect(secondaryApertureDisplay(lens)).toBeUndefined();
+  });
+
+  it("hybrid lens with both shows f-stop primary and T-stop secondary", () => {
+    const lens = makeLens({
+      focalLengthMin: 35,
+      focalLengthMax: 35,
+      maxAperture: 2.0,
+      minAperture: 16,
+      maxTStop: 2.1,
+      minTStop: 16,
+      specialtyTags: ["cine"],
+    });
+    expect(primaryApertureDisplay(lens)).toBe("f/2");
+    expect(secondaryApertureDisplay(lens)).toBe("T2.1");
   });
 });
 
