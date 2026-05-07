@@ -1,0 +1,72 @@
+{
+  "_source": "Hand-derived from x-glass-pipeline/shop-links.yaml as of 2026-05-07. Until the pipeline publish step automates emission, keep this in sync manually when shop-links.yaml changes.",
+  "fujifilm": {
+    "cn": [
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-393016.html?keyword={q}" },
+      { "kind": "tmall", "search_url": "https://fujifilm.tmall.com/search.htm?q={q}" }
+    ],
+    "global": [
+      { "kind": "shop", "region": "us", "search_url": "https://shopusa.fujifilm-x.com/catalogsearch/result/?q={q}" }
+    ]
+  },
+  "7artisans": {
+    "cn": [
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-865569.html?keyword={q}" },
+      { "kind": "tmall", "search_url": "https://qigongjiang.tmall.com/search.htm?q={q}" }
+    ],
+    "global": [
+      { "kind": "shop", "search_url": "https://7artisans.store/search?q={q}" }
+    ]
+  },
+  "brightinstar": {
+    "cn": [
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-1105421.html?keyword={q}" },
+      { "kind": "tmall", "search_url": "https://brightinstar.tmall.com/search.htm?q={q}" }
+    ],
+    "global": [
+      { "kind": "shop", "search_url": "https://brightinstar.com/search?q={q}" }
+    ]
+  },
+  "sgimage": {
+    "cn": [
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-4356556.html?keyword={q}" },
+      { "kind": "taobao", "search_url": "https://pm31iqy38k9atgxw6r79ylmp0nwqa9s.taobao.com/search.htm?q={q}" }
+    ]
+  },
+  "sigma": {
+    "cn": [
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-419338.html?keyword={q}" },
+      { "kind": "tmall", "search_url": "https://shima.tmall.com/search.htm?q={q}" }
+    ],
+    "global": [
+      { "kind": "shop", "region": "us", "search_url": "https://www.sigmaphoto.com/catalogsearch/result/?q={q}" }
+    ]
+  },
+  "tamron": {
+    "cn": [
+      { "kind": "tmall", "search_url": "https://tamron.tmall.com/search.htm?q={q}" },
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-671400.html?keyword={q}" }
+    ],
+    "global": [
+      { "kind": "where_to_buy", "region": "us", "search_url": "https://www.tamron-americas.com/?s={q}" }
+    ]
+  },
+  "ttartisan": {
+    "cn": [
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-1820040.html?keyword={q}" },
+      { "kind": "tmall", "search_url": "https://ttartisan.tmall.com/search.htm?keyword={q}" }
+    ],
+    "global": [
+      { "kind": "shop", "search_url": "https://ttartisan.store/search?q={q}" }
+    ]
+  },
+  "viltrox": {
+    "cn": [
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-797836.html?keyword={q}" },
+      { "kind": "tmall", "search_url": "https://viltrox.tmall.com/search.htm?q={q}" }
+    ],
+    "global": [
+      { "kind": "shop", "search_url": "https://viltrox.com/search?q={q}" }
+    ]
+  }
+}
