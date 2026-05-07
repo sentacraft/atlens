@@ -15,14 +15,16 @@
  *
  *   - Chinese brands (7artisans / ttartisan / brightinstar / sgimage /
  *     viltrox) — query is constructed from structured fields:
- *       [AF if af] <focal> <aperture>
- *     e.g. "MF 4mm F2.8" → "4 2.8", "AF 25mm F1.8 LITE" → "AF 25 1.8".
- *     Their retail listings use loose, inconsistent naming (no MF tag,
- *     lowercase f, joined "AF25mmF1.8" tokens, generation suffixes that
- *     drop off as new SKUs replace old), so a structurally-derived query
- *     gets cleaner recall than any regex on lens.model. Variant suffixes
- *     like "LITE" / "PRO" are intentionally dropped — the user picks
- *     from results when both variants share focal/aperture/af.
+ *       [AF if af] <focal>mm f<maxAperture>
+ *     For variable-aperture zooms, the two ends of maxAperture are
+ *     space-separated (not dash):
+ *       prime  "MF 4mm F2.8"            → "4mm f2.8"
+ *       prime  "AF 25mm F1.8 LITE"      → "AF 25mm f1.8"
+ *       zoom   "AF 18-50mm F2.8-4"      → "AF 18-50mm f2.8 4"
+ *     This drops only the parts of lens.model that hurt retail recall:
+ *     MF tag (retail listings don't carry it), generation suffix (II /
+ *     III drops off as new SKUs replace old), and variant tags (LITE /
+ *     PRO — user picks from results when both share focal/aperture/af).
  *
  *   - Japanese brands (fujifilm / sigma / tamron) — query is the lens.model
  *     verbatim. Their retail listings (mostly self-op flagship stores)
@@ -73,11 +75,11 @@ function buildSearchQuery(lens: Lens): string {
   }
   const focal =
     lens.focalLengthMin === lens.focalLengthMax
-      ? String(lens.focalLengthMin)
-      : `${lens.focalLengthMin}-${lens.focalLengthMax}`;
+      ? `${lens.focalLengthMin}mm`
+      : `${lens.focalLengthMin}-${lens.focalLengthMax}mm`;
   const aperture = Array.isArray(lens.maxAperture)
-    ? `${lens.maxAperture[0]}-${lens.maxAperture[1]}`
-    : String(lens.maxAperture);
+    ? `f${lens.maxAperture[0]} ${lens.maxAperture[1]}`
+    : `f${lens.maxAperture}`;
   return [lens.af ? "AF" : null, focal, aperture].filter(Boolean).join(" ");
 }
 
