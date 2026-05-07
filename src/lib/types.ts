@@ -261,12 +261,24 @@ export const FIELD_NOTE_KEYS = [
 export type FieldNoteKey = (typeof FIELD_NOTE_KEYS)[number];
 
 /**
+ * Fujifilm camera mount that the lens is being catalogued under.
+ * "X" = Fujifilm X mount (APS-C bodies).
+ * "G" = Fujifilm G mount (GFX medium-format bodies).
+ *
+ * The same physical lens design from a third-party brand may exist for
+ * multiple systems; in this catalogue each mount is a separate record.
+ */
+export type Mount = "X" | "G";
+
+/**
  * Canonical lens record used by the X-Glass app.
  */
 export interface Lens {
   /**
    * Stable unique slug for routing, comparison state, and cross-file references.
-   * @example "xf35mm-f14-r"
+   * The trailing "-x" / "-g" reflects the mount.
+   * @example "fujifilm-xf-35mm-f14-r-x"
+   * @example "fujifilm-gf-50mm-f35-r-lm-wr-g"
    */
   id: string;
 
@@ -276,6 +288,13 @@ export interface Lens {
    * @example "Sigma"
    */
   brand: string;
+
+  /**
+   * Camera mount this lens record covers. Determines which dataset the lens
+   * belongs to (lenses.json for X, lenses-g.json for G) and which front-end
+   * routes serve it.
+   */
+  mount: Mount;
 
   /**
    * Product line or series name as used by the manufacturer.

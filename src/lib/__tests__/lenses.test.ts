@@ -25,6 +25,7 @@ function makeLens(
   return {
     id: "test-lens",
     brand: "Fujifilm",
+    mount: "X",
     series: "XF",
     model: "XF35mmF1.4 R",
     maxAperture: 1.4,
