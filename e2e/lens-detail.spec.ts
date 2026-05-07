@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const LENS_ID = "fujifilm-mkx-18-55mmt29-xf";
+const LENS_ID = "fujifilm-mkx-18-55mmt29-x";
 const LENS_MODEL = "MKX 18-55mmT2.9";
 
 test.describe("Lens detail page", () => {

@@ -297,8 +297,8 @@ export const KNOWN_DISTINCT_PAIRS = new Set([
   // Tilt-shift mechanism adds tilt/shift axes; lensConfiguration and
   // specialtyTags differ even though optical formula is the same.
   makeAllowlistKey(
-    "ttartisan-100mm-f28-2x-macro-xf",
-    "ttartisan-tilt-shift-100mm-f28-2x-macro-xf"),
+    "ttartisan-100mm-f28-2x-macro-x",
+    "ttartisan-tilt-shift-100mm-f28-2x-macro-x"),
 ]);
 
 // Fields excluded from the spec similarity comparison.
