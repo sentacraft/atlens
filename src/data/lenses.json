@@ -2,6 +2,7 @@
   {
     "id": "7artisans-mf-12mm-t29-aps-c-cine-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "12mm T2.9 APS-C Cine",
     "focalLengthMin": 12,
     "focalLengthMax": 12,
@@ -51,6 +52,7 @@
   {
     "id": "7artisans-25mm-f095-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "25mm F0.95",
     "focalLengthMin": 25,
     "focalLengthMax": 25,
@@ -105,6 +107,7 @@
   {
     "id": "7artisans-af-10mm-f28-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "AF 10mm F2.8",
     "focalLengthMin": 10,
     "focalLengthMax": 10,
@@ -153,6 +156,7 @@
   {
     "id": "7artisans-af-25mm-f18-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "AF 25mm F1.8 LITE",
     "focalLengthMin": 25,
     "focalLengthMax": 25,
@@ -195,6 +199,7 @@
   {
     "id": "7artisans-af-27mm-f28-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "AF 27mm F2.8",
     "focalLengthMin": 27,
     "focalLengthMax": 27,
@@ -233,6 +238,7 @@
   {
     "id": "7artisans-af-35mm-f14-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "AF 35mm F1.4",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -270,6 +276,7 @@
   {
     "id": "7artisans-af-35mm-f18-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "AF 35mm F1.8 LITE",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -312,6 +319,7 @@
   {
     "id": "7artisans-af-50mm-f18-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "AF 50mm F1.8 LITE",
     "focalLengthMin": 50,
     "focalLengthMax": 50,
@@ -354,6 +362,7 @@
   {
     "id": "7artisans-10mm-t21-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "Hope Prime 10mm T2.1",
     "focalLengthMin": 10,
     "focalLengthMax": 10,
@@ -400,6 +409,7 @@
   {
     "id": "7artisans-16mm-t21-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "Hope Prime 16mm T2.1",
     "focalLengthMin": 16,
     "focalLengthMax": 16,
@@ -445,6 +455,7 @@
   {
     "id": "7artisans-25mm-t21-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "Hope Prime 25mm T2.1",
     "focalLengthMin": 25,
     "focalLengthMax": 25,
@@ -490,6 +501,7 @@
   {
     "id": "7artisans-35mm-t21-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "Hope Prime 35mm T2.1",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -535,6 +547,7 @@
   {
     "id": "7artisans-50mm-t21-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "Hope Prime 50mm T2.1",
     "focalLengthMin": 50,
     "focalLengthMax": 50,
@@ -580,6 +593,7 @@
   {
     "id": "7artisans-85mm-t21-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "Hope Prime 85mm T2.1",
     "focalLengthMin": 85,
     "focalLengthMax": 85,
@@ -620,6 +634,7 @@
   {
     "id": "7artisans-4mm-f28-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "MF 4mm F2.8",
     "focalLengthMin": 4,
     "focalLengthMax": 4,
@@ -665,6 +680,7 @@
   {
     "id": "7artisans-6mm-f2-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "MF 6mm F2.0",
     "focalLengthMin": 6,
     "focalLengthMax": 6,
@@ -711,6 +727,7 @@
   {
     "id": "7artisans-7p5mm-f28-ii-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "MF 7.5mm F2.8 II",
     "generation": 2,
     "focalLengthMin": 7.5,
@@ -762,6 +779,7 @@
   {
     "id": "7artisans-10mm-f35-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "MF 10mm F3.5",
     "focalLengthMin": 10,
     "focalLengthMax": 10,
@@ -805,6 +823,7 @@
   {
     "id": "7artisans-12mm-f28-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "MF 12mm F2.8 II",
     "generation": 2,
     "focalLengthMin": 12,
@@ -851,6 +870,7 @@
   {
     "id": "7artisans-18mm-f63-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "MF 18mm F6.3",
     "focalLengthMin": 18,
     "focalLengthMax": 18,
@@ -898,6 +918,7 @@
   {
     "id": "7artisans-25mm-f18-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "MF 25mm F1.8",
     "focalLengthMin": 25,
     "focalLengthMax": 25,
@@ -941,6 +962,7 @@
   {
     "id": "7artisans-35mm-f12-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "MF 35mm F1.2 II",
     "generation": 2,
     "focalLengthMin": 35,
@@ -986,6 +1008,7 @@
   {
     "id": "7artisans-35mm-f14-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "MF 35mm F1.4",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -1031,6 +1054,7 @@
   {
     "id": "7artisans-50mm-f14-ts-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "MF 50mm F1.4 Tilt",
     "focalLengthMin": 50,
     "focalLengthMax": 50,
@@ -1076,6 +1100,7 @@
   {
     "id": "7artisans-50mm-f18-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "MF 50mm F1.8",
     "focalLengthMin": 50,
     "focalLengthMax": 50,
@@ -1119,6 +1144,7 @@
   {
     "id": "7artisans-55mm-f14-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "MF 55mm F1.4",
     "focalLengthMin": 55,
     "focalLengthMax": 55,
@@ -1157,6 +1183,7 @@
   {
     "id": "7artisans-60mm-f28-x",
     "brand": "7artisans",
+    "mount": "X",
     "model": "MF 60mm F2.8 Macro",
     "focalLengthMin": 60,
     "focalLengthMax": 60,
@@ -1206,6 +1233,7 @@
   {
     "id": "brightinstar-mf-35mm-f14-x",
     "brand": "brightinstar",
+    "mount": "X",
     "model": "35mm F1.4",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -1252,6 +1280,7 @@
   {
     "id": "brightinstar-mf-60mm-f28-x",
     "brand": "brightinstar",
+    "mount": "X",
     "model": "60mm F2.8 Macro 2X",
     "focalLengthMin": 60,
     "focalLengthMax": 60,
@@ -1305,6 +1334,7 @@
   {
     "id": "brightinstar-mf-60mm-f28-ii-x",
     "brand": "brightinstar",
+    "mount": "X",
     "model": "60mm F2.8 Macro 2X II",
     "generation": 2,
     "focalLengthMin": 60,
@@ -1361,6 +1391,7 @@
   {
     "id": "brightinstar-af-50mm-f14-x",
     "brand": "brightinstar",
+    "mount": "X",
     "model": "AF 50mm F1.4",
     "focalLengthMin": 50,
     "focalLengthMax": 50,
@@ -1403,6 +1434,7 @@
   {
     "id": "brightinstar-mf-7p5mm-f28-x",
     "brand": "brightinstar",
+    "mount": "X",
     "model": "MF 7.5mm F2.8 III",
     "generation": 3,
     "focalLengthMin": 7.5,
@@ -1455,6 +1487,7 @@
   {
     "id": "brightinstar-mf-10mm-f56-x",
     "brand": "brightinstar",
+    "mount": "X",
     "model": "MF 10mm F5.6",
     "focalLengthMin": 10,
     "focalLengthMax": 10,
@@ -1505,6 +1538,7 @@
   {
     "id": "brightinstar-mf-10mm-f56-pro-x",
     "brand": "brightinstar",
+    "mount": "X",
     "model": "MF 10mm F5.6 PRO",
     "focalLengthMin": 10,
     "focalLengthMax": 10,
@@ -1554,6 +1588,7 @@
   {
     "id": "brightinstar-mf-12mm-f20-x",
     "brand": "brightinstar",
+    "mount": "X",
     "model": "MF 12mm F2.0 III",
     "generation": 3,
     "focalLengthMin": 12,
@@ -1593,6 +1628,7 @@
   {
     "id": "brightinstar-mf-25mm-f18-x",
     "brand": "brightinstar",
+    "mount": "X",
     "model": "MF 25mm F1.8",
     "focalLengthMin": 25,
     "focalLengthMax": 25,
@@ -1634,6 +1670,7 @@
   {
     "id": "brightinstar-mf-35mm-f095-x",
     "brand": "brightinstar",
+    "mount": "X",
     "model": "MF 35mm F0.95",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -1679,6 +1716,7 @@
   {
     "id": "brightinstar-mf-35mm-f12-x",
     "brand": "brightinstar",
+    "mount": "X",
     "model": "MF 35mm F1.2",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -1715,6 +1753,7 @@
   {
     "id": "brightinstar-mf-35mm-f17-x",
     "brand": "brightinstar",
+    "mount": "X",
     "model": "MF 35mm F1.7",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -1752,6 +1791,7 @@
   {
     "id": "brightinstar-mf-50mm-f095-x",
     "brand": "brightinstar",
+    "mount": "X",
     "model": "MF 50mm F0.95",
     "focalLengthMin": 50,
     "focalLengthMax": 50,
@@ -1798,6 +1838,7 @@
   {
     "id": "brightinstar-mf-50mm-f14-x",
     "brand": "brightinstar",
+    "mount": "X",
     "model": "MF 50mm F1.4 III",
     "generation": 3,
     "focalLengthMin": 50,
@@ -1837,6 +1878,7 @@
   {
     "id": "brightinstar-mf-50mm-f18-x",
     "brand": "brightinstar",
+    "mount": "X",
     "model": "MF 50mm F1.8",
     "focalLengthMin": 50,
     "focalLengthMax": 50,
@@ -1880,6 +1922,7 @@
   {
     "id": "fujifilm-mkx-18-55mmt29-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "MKX",
     "model": "MKX 18-55mmT2.9",
     "focalLengthMin": 18,
@@ -1947,6 +1990,7 @@
   {
     "id": "fujifilm-mkx-50-135mmt29-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "MKX",
     "model": "MKX 50-135mmT2.9",
     "focalLengthMin": 50,
@@ -2014,6 +2058,7 @@
   {
     "id": "fujifilm-xc-13-33mmf35-63-ois-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XC",
     "model": "XC 13-33mm F3.5-6.3 OIS",
     "focalLengthMin": 13,
@@ -2078,6 +2123,7 @@
   {
     "id": "fujifilm-xc-15-45mmf35-56-ois-pz-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XC",
     "model": "XC 15-45mm F3.5-5.6 OIS PZ",
     "focalLengthMin": 15,
@@ -2148,6 +2194,7 @@
   {
     "id": "fujifilm-xc-35mmf2-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XC",
     "model": "XC 35mm F2",
     "focalLengthMin": 35,
@@ -2195,6 +2242,7 @@
   {
     "id": "fujifilm-xc-50-230mmf45-67-ois-ii-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XC",
     "model": "XC 50-230mm F4.5-6.7 OIS II",
     "generation": 2,
@@ -2266,6 +2314,7 @@
   {
     "id": "fujifilm-xf-8-16mmf28-r-lm-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 8-16mm F2.8 R LM WR",
     "focalLengthMin": 8,
@@ -2327,6 +2376,7 @@
   {
     "id": "fujifilm-xf-8mmf35-r-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 8mm F3.5 R WR",
     "focalLengthMin": 8,
@@ -2376,6 +2426,7 @@
   {
     "id": "fujifilm-xf-10-24mmf4-r-ois-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 10-24mm F4 R OIS WR",
     "focalLengthMin": 10,
@@ -2430,6 +2481,7 @@
   {
     "id": "fujifilm-xf-14mmf28-r-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 14mm F2.8 R",
     "focalLengthMin": 14,
@@ -2474,6 +2526,7 @@
   {
     "id": "fujifilm-xf-16-50mmf28-48-r-lm-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 16-50mm F2.8-4.8 R LM WR",
     "focalLengthMin": 16,
@@ -2533,6 +2586,7 @@
   {
     "id": "fujifilm-xf-16-55mmf28-r-lm-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 16-55mm F2.8 R LM WR",
     "focalLengthMin": 16,
@@ -2595,6 +2649,7 @@
   {
     "id": "fujifilm-xf-16-55mmf28-r-lm-wr-ii-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 16-55mm F2.8 R LM WR II",
     "generation": 2,
@@ -2658,6 +2713,7 @@
   {
     "id": "fujifilm-xf-16-80mmf4-r-ois-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 16-80mm F4 R OIS WR",
     "focalLengthMin": 16,
@@ -2723,6 +2779,7 @@
   {
     "id": "fujifilm-xf-16mmf14-r-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 16mm F1.4 R WR",
     "focalLengthMin": 16,
@@ -2771,6 +2828,7 @@
   {
     "id": "fujifilm-xf-16mmf28-r-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 16mm F2.8 R WR",
     "focalLengthMin": 16,
@@ -2822,6 +2880,7 @@
   {
     "id": "fujifilm-xf-18-55mmf28-4-r-lm-ois-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 18-55mm F2.8-4 R LM OIS",
     "focalLengthMin": 18,
@@ -2888,6 +2947,7 @@
   {
     "id": "fujifilm-xf-18-120mmf4-lm-pz-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 18-120mm F4 LM PZ WR",
     "focalLengthMin": 18,
@@ -2942,6 +3002,7 @@
   {
     "id": "fujifilm-xf-18-135mmf35-56-r-lm-ois-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 18-135mm F3.5-5.6 R LM OIS WR",
     "focalLengthMin": 18,
@@ -3004,6 +3065,7 @@
   {
     "id": "fujifilm-xf-18mmf14-r-lm-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 18mm F1.4 R LM WR",
     "focalLengthMin": 18,
@@ -3052,6 +3114,7 @@
   {
     "id": "fujifilm-xf-18mmf2-r-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 18mm F2 R",
     "focalLengthMin": 18,
@@ -3095,6 +3158,7 @@
   {
     "id": "fujifilm-xf-23mmf14-r-lm-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 23mm F1.4 R LM WR",
     "focalLengthMin": 23,
@@ -3140,6 +3204,7 @@
   {
     "id": "fujifilm-xf-23mmf2-r-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 23mm F2 R WR",
     "focalLengthMin": 23,
@@ -3190,6 +3255,7 @@
   {
     "id": "fujifilm-xf-23mmf28-r-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 23mm F2.8 R WR",
     "focalLengthMin": 23,
@@ -3239,6 +3305,7 @@
   {
     "id": "fujifilm-xf-27mmf28-r-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 27mm F2.8 R WR",
     "focalLengthMin": 27,
@@ -3281,6 +3348,7 @@
   {
     "id": "fujifilm-xf-30mmf28-r-lm-wr-macro-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 30mm F2.8 R LM WR Macro",
     "focalLengthMin": 30,
@@ -3329,6 +3397,7 @@
   {
     "id": "fujifilm-xf-33mmf14-r-lm-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 33mm F1.4 R LM WR",
     "focalLengthMin": 33,
@@ -3374,6 +3443,7 @@
   {
     "id": "fujifilm-xf-35mmf14-r-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 35mm F1.4 R",
     "focalLengthMin": 35,
@@ -3425,6 +3495,7 @@
   {
     "id": "fujifilm-xf-35mmf2-r-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 35mm F2 R WR",
     "focalLengthMin": 35,
@@ -3475,6 +3546,7 @@
   {
     "id": "fujifilm-xf-50-140mmf28-r-lm-ois-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 50-140mm F2.8 R LM OIS WR",
     "focalLengthMin": 50,
@@ -3540,6 +3612,7 @@
   {
     "id": "fujifilm-xf-50mmf10-r-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 50mm F1.0 R WR",
     "focalLengthMin": 50,
@@ -3583,6 +3656,7 @@
   {
     "id": "fujifilm-xf-50mmf2-r-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 50mm F2 R WR",
     "focalLengthMin": 50,
@@ -3634,6 +3708,7 @@
   {
     "id": "fujifilm-xf-55-200mmf35-48-r-lm-ois-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 55-200mm F3.5-4.8 R LM OIS",
     "focalLengthMin": 55,
@@ -3699,6 +3774,7 @@
   {
     "id": "fujifilm-xf-56mmf12-r-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 56mm F1.2 R WR",
     "focalLengthMin": 56,
@@ -3748,6 +3824,7 @@
   {
     "id": "fujifilm-xf-60mmf24-r-macro-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 60mm F2.4 R Macro",
     "focalLengthMin": 60,
@@ -3797,6 +3874,7 @@
   {
     "id": "fujifilm-xf-70-300mmf4-56-r-lm-ois-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 70-300mm F4-5.6 R LM OIS WR",
     "focalLengthMin": 70,
@@ -3858,6 +3936,7 @@
   {
     "id": "fujifilm-xf-80mmf28-r-lm-ois-wr-macro-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 80mm F2.8 R LM OIS WR Macro",
     "focalLengthMin": 80,
@@ -3915,6 +3994,7 @@
   {
     "id": "fujifilm-xf-90mmf2-r-lm-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 90mm F2 R LM WR",
     "focalLengthMin": 90,
@@ -3958,6 +4038,7 @@
   {
     "id": "fujifilm-xf-100-400mmf45-56-r-lm-ois-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 100-400mm F4.5-5.6 R LM OIS WR",
     "focalLengthMin": 100,
@@ -4019,6 +4100,7 @@
   {
     "id": "fujifilm-xf-150-600mmf56-8-r-lm-ois-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 150-600mm F5.6-8 R LM OIS WR",
     "focalLengthMin": 150,
@@ -4085,6 +4167,7 @@
   {
     "id": "fujifilm-xf-200mmf2-r-lm-ois-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 200mm F2 R LM OIS WR",
     "focalLengthMin": 200,
@@ -4138,6 +4221,7 @@
   {
     "id": "fujifilm-xf-500mmf56-r-lm-ois-wr-x",
     "brand": "fujifilm",
+    "mount": "X",
     "series": "XF",
     "model": "XF 500mm F5.6 R LM OIS WR",
     "focalLengthMin": 500,
@@ -4191,6 +4275,7 @@
   {
     "id": "sgimage-mf-12mm-f28-aps-c-ultra-wide-x",
     "brand": "sgimage",
+    "mount": "X",
     "model": "12mm F2.8",
     "focalLengthMin": 12,
     "focalLengthMax": 12,
@@ -4231,6 +4316,7 @@
   {
     "id": "sgimage-mf-24mm-f63-full-frame-ultra-slim-pancake-x",
     "brand": "sgimage",
+    "mount": "X",
     "model": "24mm F6.3",
     "focalLengthMin": 24,
     "focalLengthMax": 24,
@@ -4279,6 +4365,7 @@
   {
     "id": "sgimage-af-25mm-f18-aps-c-mirrorless-lens-x",
     "brand": "sgimage",
+    "mount": "X",
     "model": "AF 25mm F1.8",
     "focalLengthMin": 25,
     "focalLengthMax": 25,
@@ -4325,6 +4412,7 @@
   {
     "id": "sgimage-af-55mm-f18-full-frame-lens-x",
     "brand": "sgimage",
+    "mount": "X",
     "model": "AF 55mm F1.8",
     "focalLengthMin": 55,
     "focalLengthMax": 55,
@@ -4362,6 +4450,7 @@
   {
     "id": "sgimage-mf-7p5mm-f28-aps-c-fisheye-lens-x",
     "brand": "sgimage",
+    "mount": "X",
     "model": "MF 7.5mm F2.8",
     "focalLengthMin": 7.5,
     "focalLengthMax": 7.5,
@@ -4414,6 +4503,7 @@
   {
     "id": "sgimage-mf-18mm-f63-aps-c-ultra-slim-pancake-lens-x",
     "brand": "sgimage",
+    "mount": "X",
     "model": "MF 18mm F6.3",
     "focalLengthMin": 18,
     "focalLengthMax": 18,
@@ -4461,6 +4551,7 @@
   {
     "id": "sgimage-mf-25mm-f18-aps-c-lens-x",
     "brand": "sgimage",
+    "mount": "X",
     "model": "MF 25mm F1.8",
     "focalLengthMin": 25,
     "focalLengthMax": 25,
@@ -4508,6 +4599,7 @@
   {
     "id": "sgimage-mf-35mm-f095-ultra-bright-aps-c-lens-x",
     "brand": "sgimage",
+    "mount": "X",
     "model": "MF 35mm F0.95",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -4554,6 +4646,7 @@
   {
     "id": "sgimage-mf-35mm-f12-aps-c-lens-x",
     "brand": "sgimage",
+    "mount": "X",
     "model": "MF 35mm F1.2",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -4601,6 +4694,7 @@
   {
     "id": "sgimage-mf-50mm-f14-aps-c-lens-x",
     "brand": "sgimage",
+    "mount": "X",
     "model": "MF 50mm F1.4",
     "focalLengthMin": 50,
     "focalLengthMax": 50,
@@ -4647,6 +4741,7 @@
   {
     "id": "sgimage-mf-50mm-f18-full-frame-lens-with-shaped-aperture-x",
     "brand": "sgimage",
+    "mount": "X",
     "model": "MF 50mm F1.8",
     "focalLengthMin": 50,
     "focalLengthMax": 50,
@@ -4696,6 +4791,7 @@
   {
     "id": "sigma-contemporary-10-18mm-f28-dc-dn-x",
     "brand": "sigma",
+    "mount": "X",
     "series": "Contemporary",
     "model": "10-18mm F2.8 DC DN",
     "focalLengthMin": 10,
@@ -4766,6 +4862,7 @@
   {
     "id": "sigma-contemporary-12mm-f14-dc-x",
     "brand": "sigma",
+    "mount": "X",
     "series": "Contemporary",
     "model": "12mm F1.4 DC",
     "focalLengthMin": 12,
@@ -4823,6 +4920,7 @@
   {
     "id": "sigma-contemporary-15mm-f14-dc-x",
     "brand": "sigma",
+    "mount": "X",
     "series": "Contemporary",
     "model": "15mm F1.4 DC",
     "focalLengthMin": 15,
@@ -4881,6 +4979,7 @@
   {
     "id": "sigma-contemporary-16-300mm-f35-67-dc-os-x",
     "brand": "sigma",
+    "mount": "X",
     "series": "Contemporary",
     "model": "16-300mm F3.5-6.7 DC OS",
     "focalLengthMin": 16,
@@ -4962,6 +5061,7 @@
   {
     "id": "sigma-contemporary-16mm-f14-dc-dn-x",
     "brand": "sigma",
+    "mount": "X",
     "series": "Contemporary",
     "model": "16mm F1.4 DC DN",
     "focalLengthMin": 16,
@@ -5020,6 +5120,7 @@
   {
     "id": "sigma-art-17-40mm-f18-dc-x",
     "brand": "sigma",
+    "mount": "X",
     "series": "Art",
     "model": "17-40mm F1.8 DC",
     "focalLengthMin": 17,
@@ -5084,6 +5185,7 @@
   {
     "id": "sigma-contemporary-18-50mm-f28-dc-dn-x",
     "brand": "sigma",
+    "mount": "X",
     "series": "Contemporary",
     "model": "18-50mm F2.8 DC DN",
     "focalLengthMin": 18,
@@ -5153,6 +5255,7 @@
   {
     "id": "sigma-contemporary-23mm-f14-dc-dn-x",
     "brand": "sigma",
+    "mount": "X",
     "series": "Contemporary",
     "model": "23mm F1.4 DC DN",
     "focalLengthMin": 23,
@@ -5207,6 +5310,7 @@
   {
     "id": "sigma-contemporary-30mm-f14-dc-dn-x",
     "brand": "sigma",
+    "mount": "X",
     "series": "Contemporary",
     "model": "30mm F1.4 DC DN",
     "focalLengthMin": 30,
@@ -5262,6 +5366,7 @@
   {
     "id": "sigma-contemporary-56mm-f14-dc-dn-x",
     "brand": "sigma",
+    "mount": "X",
     "series": "Contemporary",
     "model": "56mm F1.4 DC DN",
     "focalLengthMin": 56,
@@ -5317,6 +5422,7 @@
   {
     "id": "sigma-contemporary-100-400mm-f5-63-dg-dn-os-x",
     "brand": "sigma",
+    "mount": "X",
     "series": "Contemporary",
     "model": "100-400mm F5-6.3 DG DN OS",
     "focalLengthMin": 100,
@@ -5387,6 +5493,7 @@
   {
     "id": "tamron-11-20mm-f28-di-iii-a-rxd-x",
     "brand": "tamron",
+    "mount": "X",
     "model": "11-20mm F/2.8 Di III-A RXD",
     "generation": 3,
     "focalLengthMin": 11,
@@ -5454,6 +5561,7 @@
   {
     "id": "tamron-17-70mm-f28-di-iii-a-vc-rxd-x",
     "brand": "tamron",
+    "mount": "X",
     "model": "17-70mm F/2.8 Di III-A VC RXD",
     "generation": 3,
     "focalLengthMin": 17,
@@ -5520,6 +5628,7 @@
   {
     "id": "tamron-18-300mm-f35-63-di-iii-a-vc-vxd-x",
     "brand": "tamron",
+    "mount": "X",
     "model": "18-300mm F/3.5-6.3 Di III-A VC VXD",
     "generation": 3,
     "focalLengthMin": 18,
@@ -5594,6 +5703,7 @@
   {
     "id": "tamron-150-500mm-f5-67-di-iii-vc-vxd-x-x",
     "brand": "tamron",
+    "mount": "X",
     "model": "150-500mm F/5-6.7 Di III VC VXD X",
     "generation": 3,
     "focalLengthMin": 150,
@@ -5663,6 +5773,7 @@
   {
     "id": "ttartisan-35mm-t21-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "35mm T2.1",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -5711,6 +5822,7 @@
   {
     "id": "ttartisan-100mm-f28-2x-macro-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "100mm F2.8 Macro 2X",
     "focalLengthMin": 100,
     "focalLengthMax": 100,
@@ -5771,6 +5883,7 @@
   {
     "id": "ttartisan-af-14mm-f35-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "AF 14mm F3.5",
     "focalLengthMin": 14,
     "focalLengthMax": 14,
@@ -5816,6 +5929,7 @@
   {
     "id": "ttartisan-af-17mm-f18-air-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "AF 17mm F1.8 Air",
     "focalLengthMin": 17,
     "focalLengthMax": 17,
@@ -5864,6 +5978,7 @@
   {
     "id": "ttartisan-af-23mm-f18-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "AF 23mm F1.8",
     "focalLengthMin": 23,
     "focalLengthMax": 23,
@@ -5911,6 +6026,7 @@
   {
     "id": "ttartisan-af-27mm-f28-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "AF 27mm F2.8",
     "focalLengthMin": 27,
     "focalLengthMax": 27,
@@ -5958,6 +6074,7 @@
   {
     "id": "ttartisan-af-35mm-f18-ii-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "AF 35mm F1.8 II",
     "generation": 2,
     "focalLengthMin": 35,
@@ -6013,6 +6130,7 @@
   {
     "id": "ttartisan-af-56mm-f18-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "AF 56mm F1.8",
     "focalLengthMin": 56,
     "focalLengthMax": 56,
@@ -6067,6 +6185,7 @@
   {
     "id": "ttartisan-af-75mm-f2-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "AF 75mm F2",
     "focalLengthMin": 75,
     "focalLengthMax": 75,
@@ -6117,6 +6236,7 @@
   {
     "id": "ttartisan-aps-c-7p5mm-f2-fisheye-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "APS-C 7.5mm F2 Fisheye",
     "focalLengthMin": 7.5,
     "focalLengthMax": 7.5,
@@ -6171,6 +6291,7 @@
   {
     "id": "ttartisan-aps-c-10mm-f20-asph-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "APS-C 10mm F2 ASPH.",
     "focalLengthMin": 10,
     "focalLengthMax": 10,
@@ -6222,6 +6343,7 @@
   {
     "id": "ttartisan-aps-c-23mm-f14-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "APS-C 23mm F1.4",
     "focalLengthMin": 23,
     "focalLengthMax": 23,
@@ -6275,6 +6397,7 @@
   {
     "id": "ttartisan-aps-c-25mm-f2-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "APS-C 25mm F2",
     "focalLengthMin": 25,
     "focalLengthMax": 25,
@@ -6325,6 +6448,7 @@
   {
     "id": "ttartisan-aps-c-35mm-f095-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "APS-C 35mm F0.95",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -6374,6 +6498,7 @@
   {
     "id": "ttartisan-aps-c-35mm-f14-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "APS-C 35mm F1.4",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -6420,6 +6545,7 @@
   {
     "id": "ttartisan-aps-c-40mm-f28-macro-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "APS-C 40mm F2.8 Macro",
     "focalLengthMin": 40,
     "focalLengthMax": 40,
@@ -6476,6 +6602,7 @@
   {
     "id": "ttartisan-aps-c-50mm-f095-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "APS-C 50mm F0.95",
     "focalLengthMin": 50,
     "focalLengthMax": 50,
@@ -6521,6 +6648,7 @@
   {
     "id": "ttartisan-aps-c-50mm-f12-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "APS-C 50mm F1.2",
     "focalLengthMin": 50,
     "focalLengthMax": 50,
@@ -6567,6 +6695,7 @@
   {
     "id": "ttartisan-tilt-50mm-f14-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "Tilt 50mm F1.4",
     "focalLengthMin": 50,
     "focalLengthMax": 50,
@@ -6615,6 +6744,7 @@
   {
     "id": "ttartisan-tilt-aps-c-35mm-f14-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "Tilt APS-C 35mm F1.4",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -6667,6 +6797,7 @@
   {
     "id": "ttartisan-tilt-shift-100mm-f28-2x-macro-x",
     "brand": "ttartisan",
+    "mount": "X",
     "model": "Tilt-Shift 100mm F2.8 Macro 2X",
     "focalLengthMin": 100,
     "focalLengthMax": 100,
@@ -6734,6 +6865,7 @@
   {
     "id": "viltrox-af-9mm-f28-air-x",
     "brand": "viltrox",
+    "mount": "X",
     "series": "Air",
     "model": "AF 9mm F2.8",
     "focalLengthMin": 9,
@@ -6782,6 +6914,7 @@
   {
     "id": "viltrox-af-13mm-f14-x",
     "brand": "viltrox",
+    "mount": "X",
     "model": "AF 13mm F1.4",
     "focalLengthMin": 13,
     "focalLengthMax": 13,
@@ -6834,6 +6967,7 @@
   {
     "id": "viltrox-af-15mm-f17-air-x",
     "brand": "viltrox",
+    "mount": "X",
     "series": "Air",
     "model": "AF 15mm F1.7",
     "focalLengthMin": 15,
@@ -6882,6 +7016,7 @@
   {
     "id": "viltrox-af-23mm-f14-x",
     "brand": "viltrox",
+    "mount": "X",
     "model": "AF 23mm F1.4",
     "focalLengthMin": 23,
     "focalLengthMax": 23,
@@ -6936,6 +7071,7 @@
   {
     "id": "viltrox-af-25mm-f17-air-x",
     "brand": "viltrox",
+    "mount": "X",
     "series": "Air",
     "model": "AF 25mm F1.7",
     "focalLengthMin": 25,
@@ -6982,6 +7118,7 @@
   {
     "id": "viltrox-af-27mm-f12-pro-x",
     "brand": "viltrox",
+    "mount": "X",
     "series": "Pro",
     "model": "AF 27mm F1.2",
     "focalLengthMin": 27,
@@ -7030,6 +7167,7 @@
   {
     "id": "viltrox-af-28mm-f45-x",
     "brand": "viltrox",
+    "mount": "X",
     "model": "AF 28mm F4.5",
     "focalLengthMin": 28,
     "focalLengthMax": 28,
@@ -7073,6 +7211,7 @@
   {
     "id": "viltrox-af-33mm-f14-x",
     "brand": "viltrox",
+    "mount": "X",
     "model": "AF 33mm F1.4",
     "focalLengthMin": 33,
     "focalLengthMax": 33,
@@ -7121,6 +7260,7 @@
   {
     "id": "viltrox-af-35mm-f17-air-x",
     "brand": "viltrox",
+    "mount": "X",
     "series": "Air",
     "model": "AF 35mm F1.7",
     "focalLengthMin": 35,
@@ -7170,6 +7310,7 @@
   {
     "id": "viltrox-af-56mm-f12-pro-x",
     "brand": "viltrox",
+    "mount": "X",
     "series": "Pro",
     "model": "AF 56mm F1.2",
     "focalLengthMin": 56,
@@ -7215,6 +7356,7 @@
   {
     "id": "viltrox-af-56mm-f14-x",
     "brand": "viltrox",
+    "mount": "X",
     "model": "AF 56mm F1.4",
     "focalLengthMin": 56,
     "focalLengthMax": 56,
@@ -7259,6 +7401,7 @@
   {
     "id": "viltrox-af-56mm-f17-air-x",
     "brand": "viltrox",
+    "mount": "X",
     "series": "Air",
     "model": "AF 56mm F1.7",
     "focalLengthMin": 56,
@@ -7306,6 +7449,7 @@
   {
     "id": "viltrox-af-75mm-f12-pro-x",
     "brand": "viltrox",
+    "mount": "X",
     "series": "Pro",
     "model": "AF 75mm F1.2",
     "focalLengthMin": 75,
@@ -7355,6 +7499,7 @@
   {
     "id": "viltrox-af-85mm-f18-ii-x",
     "brand": "viltrox",
+    "mount": "X",
     "model": "AF 85mm F1.8 II",
     "generation": 2,
     "focalLengthMin": 85,

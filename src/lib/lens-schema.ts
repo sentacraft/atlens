@@ -38,6 +38,7 @@ export const magnificationVariantsSchema = z.strictObject({
 const lensBaseShape = {
   id: z.string().min(1).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   brand: nonEmptyStringSchema,
+  mount: z.enum(["X", "G"]),
   series: optionalNonEmptyStringSchema,
   model: nonEmptyStringSchema,
   generation: z.number().int().positive().optional(),
