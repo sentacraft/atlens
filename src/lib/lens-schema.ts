@@ -153,6 +153,7 @@ const fieldNotesSchema = z.strictObject({
   ois: nonEmptyStringSchema.optional(),
   focusMotor: nonEmptyStringSchema.optional(),
   maxAperture: nonEmptyStringSchema.optional(),
+  minAperture: nonEmptyStringSchema.optional(),
   apertureBladeCount: nonEmptyStringSchema.optional(),
 });
 

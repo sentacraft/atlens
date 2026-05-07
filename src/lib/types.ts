@@ -255,6 +255,7 @@ export const FIELD_NOTE_KEYS = [
   "ois",
   "focusMotor",
   "maxAperture",
+  "minAperture",
   "apertureBladeCount",
 ] as const;
 export type FieldNoteKey = (typeof FIELD_NOTE_KEYS)[number];
