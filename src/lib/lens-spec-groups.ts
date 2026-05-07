@@ -1,4 +1,4 @@
-import type { Lens, FieldNoteKey, SpecialtyTag } from "./types";
+import { SPEC_NA, type Lens, type FieldNoteKey, type SpecialtyTag } from "./types";
 import type { LensConfigurationLabels } from "./lens.format";
 import { classifyFocusMotor, type FocusMotorClass } from "./lens";
 import * as fmt from "./lens.format";
@@ -381,17 +381,24 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
         {
           kind: "numeric",
           label: labels.maxAperture,
-          hasData: () => true,
-          getDisplayValue: (l) => fmt.apertureDisplay(l.maxAperture),
+          fieldNoteKey: "maxAperture" as FieldNoteKey,
+          hasData: (l) => l.maxAperture !== undefined,
+          getDisplayValue: (l) =>
+            l.maxAperture !== undefined ? fmt.apertureDisplay(l.maxAperture) : "",
           toComparable: (l) =>
-            Array.isArray(l.maxAperture) ? l.maxAperture[0] : l.maxAperture,
+            l.maxAperture === undefined
+              ? undefined
+              : Array.isArray(l.maxAperture)
+                ? l.maxAperture[0]
+                : l.maxAperture,
           bestDir: "min",
         },
         {
           kind: "text",
           label: labels.minAperture,
-          hasData: () => true,
-          getDisplayValue: (l) => fmt.apertureDisplay(l.minAperture),
+          hasData: (l) => l.minAperture !== undefined,
+          getDisplayValue: (l) =>
+            l.minAperture !== undefined ? fmt.apertureDisplay(l.minAperture) : "",
         },
         {
           kind: "text",
@@ -420,9 +427,16 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
         {
           kind: "numeric",
           label: labels.apertureBladeCount,
+          fieldNoteKey: "apertureBladeCount" as FieldNoteKey,
           hasData: (l) => l.apertureBladeCount !== undefined,
-          getDisplayValue: (l) => fmt.optionalNumber(l.apertureBladeCount, ""),
-          toComparable: (l) => l.apertureBladeCount,
+          getDisplayValue: (l) =>
+            l.apertureBladeCount === SPEC_NA
+              ? SPEC_NA
+              : fmt.optionalNumber(l.apertureBladeCount, ""),
+          toComparable: (l) =>
+            typeof l.apertureBladeCount === "number"
+              ? l.apertureBladeCount
+              : undefined,
           bestDir: "max",
         },
         {

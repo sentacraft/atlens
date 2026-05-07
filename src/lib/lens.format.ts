@@ -27,7 +27,7 @@ export function focalRangeDisplay(min: number, max: number): string {
   return min === max ? `${min}mm` : `${min}–${max}mm`;
 }
 
-export function apertureDisplay(aperture: Lens["maxAperture"]): string {
+export function apertureDisplay(aperture: NonNullable<Lens["maxAperture"]>): string {
   return Array.isArray(aperture)
     ? `f/${aperture[0]}–${aperture[1]}`
     : `f/${aperture}`;
@@ -38,6 +38,26 @@ export function tStopDisplay(
 ): string | undefined {
   if (tStop === undefined) return undefined;
   return Array.isArray(tStop) ? `T${tStop[0]}–${tStop[1]}` : `T${tStop}`;
+}
+
+/**
+ * Primary aperture string for prominent UI slots (card titles, posters).
+ * Cine lenses without a published f-stop show T-stop in the primary slot.
+ * Returns undefined when neither value is available.
+ */
+export function primaryApertureDisplay(lens: Lens): string | undefined {
+  if (lens.maxAperture !== undefined) return apertureDisplay(lens.maxAperture);
+  return tStopDisplay(lens.maxTStop);
+}
+
+/**
+ * Secondary aperture string shown beneath the primary slot when both an
+ * f-stop and a T-stop are published. Returns undefined when only one (or
+ * neither) is available, so callers can suppress the secondary line.
+ */
+export function secondaryApertureDisplay(lens: Lens): string | undefined {
+  if (lens.maxAperture === undefined) return undefined;
+  return tStopDisplay(lens.maxTStop);
 }
 
 export function optionalNumber(

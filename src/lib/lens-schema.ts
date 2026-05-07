@@ -23,6 +23,7 @@ const minApertureSchema = createApertureSchema("minAperture");
 const maxTStopSchema = createApertureSchema("maxTStop");
 const minTStopSchema = createApertureSchema("minTStop");
 const specialtyTagSchema = z.enum(SPECIALTY_TAGS);
+export const specNaSchema = z.literal(SPEC_NA);
 
 export const focusDistanceVariantsSchema = z.strictObject({
   wide: positiveNumberSchema.optional(),
@@ -42,8 +43,8 @@ const lensBaseShape = {
   generation: z.number().int().positive().optional(),
   focalLengthMin: positiveNumberSchema,
   focalLengthMax: positiveNumberSchema,
-  maxAperture: maxApertureSchema,
-  minAperture: minApertureSchema,
+  maxAperture: maxApertureSchema.optional(),
+  minAperture: minApertureSchema.optional(),
   maxTStop: maxTStopSchema.optional(),
   minTStop: minTStopSchema.optional(),
   specialtyTags: z.array(specialtyTagSchema).min(1).optional(),
@@ -95,14 +96,12 @@ const lensBaseShape = {
       { message: "angleOfViewCalc tuple must be [wideEnd, teleEnd] with wide > tele" }
     ),
   ]).optional(),
-  apertureBladeCount: z.number().int().positive().optional(),
+  apertureBladeCount: z.union([z.number().int().positive(), specNaSchema]).optional(),
   releaseYear: z.number().int().min(1900).max(2100).optional(),
   compatibleMounts: z.array(nonEmptyStringSchema).min(1).optional(),
   accessories: z.array(nonEmptyStringSchema).min(1).optional(),
   lensMaterial: optionalNonEmptyStringSchema,
 } as const;
-
-export const specNaSchema = z.literal(SPEC_NA);
 
 export const officialLinksSchema = z
   .strictObject({
@@ -153,6 +152,9 @@ const fieldNotesSchema = z.strictObject({
   lensConfiguration: nonEmptyStringSchema.optional(),
   ois: nonEmptyStringSchema.optional(),
   focusMotor: nonEmptyStringSchema.optional(),
+  maxAperture: nonEmptyStringSchema.optional(),
+  minAperture: nonEmptyStringSchema.optional(),
+  apertureBladeCount: nonEmptyStringSchema.optional(),
 });
 
 const lensObjectSchema = z.strictObject({
@@ -243,6 +245,24 @@ function applyLensBusinessRules(
       code: "custom",
       message: "focalLengthMin cannot be greater than focalLengthMax",
       path: ["focalLengthMin"],
+    });
+  }
+
+  // At least one fully-populated aperture pair must be present. f-stop is the
+  // primary path for stills lenses; T-stop is allowed as the sole path for
+  // cine lenses whose source publishes only T-stop. Schema is intentionally
+  // tag-independent — the cine vs non-cine distinction is enforced by the
+  // pipeline's readiness gate, not here.
+  const hasFStopPair =
+    value.maxAperture !== undefined && value.minAperture !== undefined;
+  const hasTStopPair =
+    value.maxTStop !== undefined && value.minTStop !== undefined;
+  if (!hasFStopPair && !hasTStopPair) {
+    ctx.addIssue({
+      code: "custom",
+      message:
+        "At least one of (maxAperture+minAperture) or (maxTStop+minTStop) must be fully populated",
+      path: ["maxAperture"],
     });
   }
 

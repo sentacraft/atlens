@@ -1,6 +1,15 @@
 /**
- * Sentinel value for a field where the concept does not apply to this lens.
- * For example, filterMm is N/A on fisheye lenses that have no front filter thread.
+ * Sentinel value for a field where the concept does not apply to this lens
+ * (as opposed to "data missing"). Examples:
+ * - filterMm = "N/A" on bulbous fisheye lenses (no front filter thread)
+ * - focusMotor = "N/A" on manual-focus lenses (no AF motor)
+ * - apertureBladeCount = "N/A" on fixed-aperture lenses (no diaphragm at all)
+ *
+ * Use this whenever a structured field's domain is undefined for a class of
+ * lenses, rather than picking 0 / 1 / -1 placeholder values that would be
+ * ambiguous with real data. When a field uses "N/A", consider also adding
+ * an entry in {@link Lens.fieldNotes} to explain to the end user *why* the
+ * concept doesn't apply.
  */
 export const SPEC_NA = "N/A" as const;
 
@@ -245,6 +254,9 @@ export const FIELD_NOTE_KEYS = [
   "lensConfiguration",
   "ois",
   "focusMotor",
+  "maxAperture",
+  "minAperture",
+  "apertureBladeCount",
 ] as const;
 export type FieldNoteKey = (typeof FIELD_NOTE_KEYS)[number];
 
@@ -315,10 +327,14 @@ export interface Lens {
    *
    * Source text like "F1.4", "f/1.4", "1:1.4" should all be stored as 1.4.
    *
+   * Optional because some cine lenses publish only T-stop. Either this pair
+   * (maxAperture+minAperture) or the T-stop pair (maxTStop+minTStop) must be
+   * fully populated; both pairs together is also valid.
+   *
    * @example 1.4
    * @example [3.5, 6.3]
    */
-  maxAperture: ApertureValue;
+  maxAperture?: ApertureValue;
 
   /**
    * Smallest available aperture as a bare f-number (numeric value only, no
@@ -326,10 +342,12 @@ export interface Lens {
    * - Prime or constant-aperture zoom: single number (e.g. 16).
    * - Variable-aperture zoom: [wideEnd, teleEnd] tuple (e.g. [16, 22]).
    *
+   * Same population rules as {@link maxAperture}.
+   *
    * @example 16
    * @example [16, 22]
    */
-  minAperture: ApertureValue;
+  minAperture?: ApertureValue;
 
   /**
    * Largest available transmission stop as a bare T-number (numeric only).
@@ -584,9 +602,14 @@ export interface Lens {
 
   /**
    * Number of aperture blades.
+   * Use {@link SPEC_NA} for fixed-aperture lenses that have no diaphragm at
+   * all (pinhole, body cap, mirror/reflex, "shaped aperture" lenses). When
+   * using "N/A", add a {@link fieldNotes} entry for "apertureBladeCount"
+   * explaining why the concept does not apply.
    * @example 9
+   * @example "N/A"
    */
-  apertureBladeCount?: number;
+  apertureBladeCount?: number | typeof SPEC_NA;
 
   /**
    * Year the lens was first officially announced or released by the

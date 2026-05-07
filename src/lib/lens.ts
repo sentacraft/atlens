@@ -217,7 +217,12 @@ export function parseLensIds(ids: string | undefined): Lens[] {
 export type SortKey = "focalLength" | "maxAperture" | "weightG";
 
 function getSortableMaxAperture(lens: Lens): number {
-  return Array.isArray(lens.maxAperture) ? lens.maxAperture[0] : lens.maxAperture;
+  // Fall back to T-stop wide end when f-stop is unpublished (cine lenses).
+  // T-stop is numerically slightly larger than f-stop but ordering is preserved
+  // for sort purposes within the cine cohort.
+  const value = lens.maxAperture ?? lens.maxTStop;
+  if (value === undefined) return Number.POSITIVE_INFINITY;
+  return Array.isArray(value) ? value[0] : value;
 }
 
 export function sortLenses(

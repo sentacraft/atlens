@@ -10,10 +10,10 @@ import { cn } from "@/lib/utils";
 import { classifyFocusMotor } from "@/lib/lens";
 import { getLensImageUrl } from "@/lib/lens-image";
 import {
-  apertureDisplay,
   filterSizeDisplay,
   dimensionsPrimaryDisplay,
-  tStopDisplay,
+  primaryApertureDisplay,
+  secondaryApertureDisplay,
   specialtyTagsDisplay,
 } from "@/lib/lens.format";
 import type { SpecialtyTag, FieldNoteKey } from "@/lib/types";
@@ -539,11 +539,11 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                 {/* Aperture */}
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
                   <span className={cn("font-semibold tabular-nums text-zinc-900 leading-none", apertureSize)}>
-                    {apertureDisplay(lens.maxAperture)}
+                    {primaryApertureDisplay(lens) ?? ""}
                   </span>
-                  {tStopDisplay(lens.maxTStop) && (
+                  {secondaryApertureDisplay(lens) && (
                     <span className="font-medium tabular-nums text-zinc-500 leading-none" style={{ fontSize: 11 }}>
-                      {tStopDisplay(lens.maxTStop)}
+                      {secondaryApertureDisplay(lens)}
                     </span>
                   )}
                   <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
