@@ -69,6 +69,12 @@ const CN_BRANDS = new Set([
   "viltrox",
 ]);
 
+function formatStop(value: number | [number, number], prefix: string): string {
+  return Array.isArray(value)
+    ? `${prefix}${value[0]} ${value[1]}`
+    : `${prefix}${value}`;
+}
+
 function buildSearchQuery(lens: Lens): string {
   if (!CN_BRANDS.has(lens.brand)) {
     return lens.model;
@@ -77,10 +83,14 @@ function buildSearchQuery(lens: Lens): string {
     lens.focalLengthMin === lens.focalLengthMax
       ? `${lens.focalLengthMin}mm`
       : `${lens.focalLengthMin}-${lens.focalLengthMax}mm`;
-  const aperture = Array.isArray(lens.maxAperture)
-    ? `f${lens.maxAperture[0]} ${lens.maxAperture[1]}`
-    : `f${lens.maxAperture}`;
-  return [lens.af ? "AF" : null, focal, aperture].filter(Boolean).join(" ");
+  // Prefer F-stop; fall back to T-stop for cine lenses where maxAperture is null.
+  const stop =
+    lens.maxAperture != null
+      ? formatStop(lens.maxAperture, "f")
+      : lens.maxTStop != null
+        ? formatStop(lens.maxTStop, "T")
+        : null;
+  return [lens.af ? "AF" : null, focal, stop].filter(Boolean).join(" ");
 }
 
 function buildUrl(template: string, lens: Lens): string {
