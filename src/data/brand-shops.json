@@ -2,7 +2,7 @@
   "_source": "Hand-derived from x-glass-pipeline/shop-links.yaml as of 2026-05-07. Until the pipeline publish step automates emission, keep this in sync manually when shop-links.yaml changes.",
   "fujifilm": {
     "cn": [
-      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-393016.html?keyword={q}" },
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-393016-1000000858-1000000858-0-0-0-0-1-1-60.html?keyword={q}" },
       { "kind": "tmall", "search_url": "https://fujifilm.tmall.com/search.htm?q={q}" }
     ],
     "global": [
@@ -11,7 +11,7 @@
   },
   "7artisans": {
     "cn": [
-      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-865569.html?keyword={q}" },
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-865569-741948-737443-0-0-0-0-1-1-60.html?keyword={q}" },
       { "kind": "tmall", "search_url": "https://qigongjiang.tmall.com/search.htm?q={q}" }
     ],
     "global": [
@@ -20,7 +20,7 @@
   },
   "brightinstar": {
     "cn": [
-      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-1105421.html?keyword={q}" },
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-1105421-10005989-840555-0-0-0-0-1-1-60.html?keyword={q}" },
       { "kind": "tmall", "search_url": "https://brightinstar.tmall.com/search.htm?q={q}" }
     ],
     "global": [
@@ -29,13 +29,13 @@
   },
   "sgimage": {
     "cn": [
-      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-4356556.html?keyword={q}" },
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-4356556-16036578-14677522-0-0-0-0-1-1-60.html?keyword={q}" },
       { "kind": "taobao", "search_url": "https://pm31iqy38k9atgxw6r79ylmp0nwqa9s.taobao.com/search.htm?q={q}" }
     ]
   },
   "sigma": {
     "cn": [
-      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-419338.html?keyword={q}" },
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-419338-1000003346-1000003346-0-0-0-0-1-1-60.html?keyword={q}" },
       { "kind": "tmall", "search_url": "https://shima.tmall.com/search.htm?q={q}" }
     ],
     "global": [
@@ -45,7 +45,7 @@
   "tamron": {
     "cn": [
       { "kind": "tmall", "search_url": "https://tamron.tmall.com/search.htm?q={q}" },
-      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-671400.html?keyword={q}" }
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-671400-662984-658257-0-0-0-0-1-1-60.html?keyword={q}" }
     ],
     "global": [
       { "kind": "where_to_buy", "region": "us", "search_url": "https://www.tamron-americas.com/?s={q}" }
@@ -53,7 +53,7 @@
   },
   "ttartisan": {
     "cn": [
-      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-1820040.html?keyword={q}" },
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-1820040-10510219-10300425-0-0-0-0-1-1-60.html?keyword={q}" },
       { "kind": "tmall", "search_url": "https://ttartisan.tmall.com/search.htm?keyword={q}" }
     ],
     "global": [
@@ -62,7 +62,7 @@
   },
   "viltrox": {
     "cn": [
-      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-797836.html?keyword={q}" },
+      { "kind": "jd", "search_url": "https://mall.jd.com/view_search-797836-725900-720971-0-0-0-0-1-1-60.html?keyword={q}" },
       { "kind": "tmall", "search_url": "https://viltrox.tmall.com/search.htm?q={q}" }
     ],
     "global": [

@@ -11,31 +11,28 @@
  * surfacing all sources for evaluation). Quality-based filtering / merging
  * happens later, before re-enabling auto-deploy.
  *
- * Search query strategy splits by brand origin:
+ * Search query is constructed from structured Lens fields (whitelist),
+ * uniformly for all brands:
+ *     [AF if af] <focal>mm f<maxAperture>
+ * For cine lenses where maxAperture is null, fall back to maxTStop with a
+ * "T" prefix. For variable-aperture zooms, the two ends are space-separated
+ * (not dash):
+ *     prime cine    "MF 12mm T2.9 APS-C Cine"      → "12mm T2.9"
+ *     prime         "MF 4mm F2.8"                  → "4mm f2.8"
+ *     prime         "AF 25mm F1.8 LITE"            → "AF 25mm f1.8"
+ *     zoom variable "AF 18-300mm F/3.5-6.3"        → "AF 18-300mm f3.5 6.3"
+ *     fuji prime    "XF 35mm F1.4 R"               → "AF 35mm f1.4"
+ *     tamron zoom   "11-20mm F/2.8 Di III-A RXD"   → "AF 11-20mm f2.8"
  *
- *   - Chinese brands (7artisans / ttartisan / brightinstar / sgimage /
- *     viltrox) — query is constructed from structured fields:
- *       [AF if af] <focal>mm f<maxAperture>
- *     For variable-aperture zooms, the two ends of maxAperture are
- *     space-separated (not dash):
- *       prime  "MF 4mm F2.8"            → "4mm f2.8"
- *       prime  "AF 25mm F1.8 LITE"      → "AF 25mm f1.8"
- *       zoom   "AF 18-50mm F2.8-4"      → "AF 18-50mm f2.8 4"
- *     This drops only the parts of lens.model that hurt retail recall:
- *     MF tag (retail listings don't carry it), generation suffix (II /
- *     III drops off as new SKUs replace old), and variant tags (LITE /
- *     PRO — user picks from results when both share focal/aperture/af).
- *
- *   - Japanese brands (fujifilm / sigma / tamron) — query is the lens.model
- *     verbatim. Their retail listings (mostly self-op flagship stores)
- *     keep faithful product names with full marketing strings ("XF 35mm
- *     F1.4 R", "18-50mm F2.8 DC DN", "11-20mm F/2.8 Di III-A RXD"), so
- *     letting the user search for the exact model name produces precise
- *     matches and preserves generation / lens-line distinctions.
- *
- * Brand name is NOT prepended to the query: each search_url already
- * targets a brand-official store. Including a CJK brand prefix would also
- * reignite Tmall's GBK/UTF-8 decoding ambiguity for non-ASCII queries.
+ * Trade-offs accepted:
+ *   - Variant suffixes (LITE / PRO / Macro / WR) and generation markers
+ *     (II / III) are dropped. When two SKUs share focal/aperture/af, both
+ *     appear in the result list and the user picks. Empirically safer
+ *     than including the marker — JP retail listings drop "MF" and
+ *     fuzzy-match badly when forced to include the model verbatim.
+ *   - The brand name is NOT prepended; each search_url already targets a
+ *     brand-official store. ASCII-only queries also sidestep Tmall's
+ *     GBK/UTF-8 decoding ambiguity for non-ASCII text.
  */
 
 import type { Lens } from "@/lib/types";
@@ -61,14 +58,6 @@ export interface ShopLink {
   url: string;
 }
 
-const CN_BRANDS = new Set([
-  "7artisans",
-  "ttartisan",
-  "brightinstar",
-  "sgimage",
-  "viltrox",
-]);
-
 function formatStop(value: number | [number, number], prefix: string): string {
   return Array.isArray(value)
     ? `${prefix}${value[0]} ${value[1]}`
@@ -76,9 +65,6 @@ function formatStop(value: number | [number, number], prefix: string): string {
 }
 
 function buildSearchQuery(lens: Lens): string {
-  if (!CN_BRANDS.has(lens.brand)) {
-    return lens.model;
-  }
   const focal =
     lens.focalLengthMin === lens.focalLengthMax
       ? `${lens.focalLengthMin}mm`
