@@ -11,11 +11,30 @@
  * surfacing all sources for evaluation). Quality-based filtering / merging
  * happens later, before re-enabling auto-deploy.
  *
- * Search query: just `lens.model` (no brand prefix). Each search_url already
- * targets the brand's official store, so the brand name in the query is
- * redundant — and dropping it sidesteps the Tmall/Taobao GBK-vs-UTF-8
- * decoding ambiguity that surfaced in early testing (Tmall defaulted to
- * GBK and rendered the URL-encoded UTF-8 brand bytes as garbage Chinese).
+ * Search query is derived from `lens.model` with two transforms calibrated
+ * against JD store-search recall (verified on 七工匠's JD store):
+ *   - Strip leading "MF " — manual-focus lenses on retail listings never
+ *     get the "MF" tag (it's the implicit default), so requiring "MF" as a
+ *     query token forces JD into a fuzzy fallback that misfires badly.
+ *   - "AF " is intentionally kept — autofocus lenses do get the "AF" tag,
+ *     and keeping it cleanly disambiguates the AF SKU from any MF sibling
+ *     of the same focal/aperture (a real situation for 7artisans /
+ *     brightinstar / sgimage et al).
+ *   - "F<digit>" → "<digit>" — JD listings render aperture as "f2.8"
+ *     (lowercase, sometimes joined like "AF25mmF1.8"), and JD's tokenizer
+ *     treats "F2.8" as two tokens "F" + "2.8" that fail to match the
+ *     compound. Dropping the "F" lets the bare numeric token substring-
+ *     match across all rendering variants.
+ *
+ * Trade-off: an MF lens detail page may surface both MF and AF siblings in
+ * the search result list (since the query lacks the differentiator). The
+ * user can pick. This is acceptable vs. the alternatives (0 results or
+ * wrong product).
+ *
+ * Brand name is NOT included in the query: each search_url already targets
+ * a brand-official store. Including a CJK brand prefix would also reignite
+ * Tmall's GBK/UTF-8 decoding ambiguity for non-ASCII queries; ASCII-only
+ * queries sidestep it entirely.
  */
 
 import type { Lens } from "@/lib/types";
@@ -41,8 +60,14 @@ export interface ShopLink {
   url: string;
 }
 
+function normalizeForSearch(model: string): string {
+  return model
+    .replace(/^MF\s+/, "")
+    .replace(/\bF(\d)/g, "$1");
+}
+
 function buildUrl(template: string, model: string): string {
-  return template.replace(/\{q\}/g, encodeURIComponent(model));
+  return template.replace(/\{q\}/g, encodeURIComponent(normalizeForSearch(model)));
 }
 
 function expandMarket(
