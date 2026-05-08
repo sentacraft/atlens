@@ -270,6 +270,18 @@ export type FieldNoteKey = (typeof FIELD_NOTE_KEYS)[number];
  */
 export type Mount = "X" | "G";
 
+/** A single price observation — shared by new and used entries across all markets. */
+export interface LensPriceEntry {
+  price: number;
+  currency: "CNY" | "USD";
+  /** Platform the price was sampled from, e.g. "jd", "tmall", "xianyu". */
+  source?: string;
+  /** Store listing or search-result URL where the price was observed. */
+  url?: string;
+  /** ISO date YYYY-MM-DD when sampled. */
+  sampledAt: string;
+}
+
 /**
  * Canonical lens record used by the X-Glass app.
  */
@@ -656,48 +668,8 @@ export interface Lens {
    *   5     ≥ 15,000            ≥ 1,500
    */
   pricing?: {
-    cn?: {
-      new?: {
-        /** Official retail price in CNY. */
-        price: number;
-        currency: "CNY";
-        /** Platform, e.g. "jd", "tmall". */
-        source?: string;
-        /** Store listing or search-result URL. */
-        url?: string;
-        /** ISO date YYYY-MM-DD when sampled. */
-        sampledAt: string;
-      };
-      used?: {
-        /** Median of secondary-market asking prices in CNY. */
-        price: number;
-        currency: "CNY";
-        /** Platform, e.g. "xianyu". */
-        source?: string;
-        /** Search-result URL. */
-        url?: string;
-        /** ISO date YYYY-MM-DD when sampled. */
-        sampledAt: string;
-      };
-    };
-    global?: {
-      new?: {
-        /** Official retail price in USD. */
-        price: number;
-        currency: "USD";
-        source?: string;
-        url?: string;
-        sampledAt: string;
-      };
-      used?: {
-        /** Median of secondary-market asking prices in USD. */
-        price: number;
-        currency: "USD";
-        source?: string;
-        url?: string;
-        sampledAt: string;
-      };
-    };
+    cn?: { new?: LensPriceEntry; used?: LensPriceEntry };
+    global?: { new?: LensPriceEntry; used?: LensPriceEntry };
   };
 
   /**
