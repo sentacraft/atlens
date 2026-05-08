@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { getLensesByMount } from "@/lib/lens";
@@ -31,6 +31,29 @@ export default function CompareBar() {
     [compareIds, mount]
   );
 
+  // Track bar height and expose it as a CSS variable so other fixed elements
+  // (BackToTopButton, page bottom padding) can stay above the bar dynamically.
+  const barRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = barRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      document.documentElement.style.setProperty(
+        "--compare-bar-height",
+        `${entry.contentRect.height}px`
+      );
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (selectedLenses.length === 0) {
+      document.documentElement.style.setProperty("--compare-bar-height", "0px");
+    }
+  }, [selectedLenses.length]);
+
   // Extract lens ID if currently on a lens detail page (/lenses/[mount]/[id])
   const currentLensId = useMemo(() => {
     const seg = mountToUrlSegment(mount);
@@ -54,6 +77,7 @@ export default function CompareBar() {
           animate={{ y: 0 }}
           exit={{ y: "100%" }}
           transition={spring.snappy}
+          ref={barRef}
           data-testid="compare-bar"
           className={`fixed bottom-0 left-0 right-0 ${Z.fixed} border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-black/95 backdrop-blur-sm pb-[var(--safe-inset-bottom)]`}
         >
