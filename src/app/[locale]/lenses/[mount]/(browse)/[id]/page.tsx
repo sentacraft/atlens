@@ -224,7 +224,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
       {/* Back button */}
       <BackButton fallbackHref={`/lenses/${mount}`} />
 
-      {/* Main content */}
+      {/* Header: image + key info side by side */}
       <div className="flex flex-col sm:flex-row gap-8">
         {/* Image */}
         <div className="w-full max-w-56 mx-auto sm:mx-0 shrink-0 sm:w-56">
@@ -243,7 +243,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           </div>
         </div>
 
-        {/* Info */}
+        {/* Info: title → price → actions */}
         <div className="flex-1 flex flex-col gap-5">
           {/* Title */}
           <div>
@@ -255,6 +255,9 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               {lens.model}
             </h1>
           </div>
+
+          {/* Price */}
+          <PriceSection lens={lens} />
 
           {/* Actions */}
           <div className="flex flex-col gap-2">
@@ -281,12 +284,11 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               {t("reportIssue")}
             </FeedbackTrigger>
           </div>
+        </div>
+      </div>
 
-          {/* Price section — expanded display with inline note */}
-          <PriceSection lens={lens} />
-
-          {/* Grouped spec table */}
-          <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+      {/* Grouped spec table — full-width section below the header */}
+      <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
             {resolvedGroups.map((group, groupIdx) => (
               <div
                 key={group.label}
@@ -326,8 +328,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               </div>
             ))}
           </div>
-        </div>
-      </div>
     </div>
     <BackToTopButton />
     </>
