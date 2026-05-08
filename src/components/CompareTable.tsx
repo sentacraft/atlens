@@ -380,12 +380,12 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
       fields.push({ label: td("fieldLensImage"), currentValue: getLensImageUrl(lens.id), group: mediaGroupLabel, hideCurrentValue: true });
       const priceSelection = pickPriceEntry(lens.pricing, locale);
       if (priceSelection) {
-        fields.push({ label: priceFieldLabel, currentValue: formatPriceForReport(priceSelection, locale), group: priceGroupLabel });
+        fields.push({ label: priceFieldLabel, currentValue: formatPriceForReport(priceSelection, locale, tPricing), group: priceGroupLabel });
       }
       map.set(lens.id, fields);
     }
     return map;
-  }, [resolvedPerLens, allGroups, orderedLenses, td, priceFieldLabel, priceGroupLabel]);
+  }, [resolvedPerLens, allGroups, orderedLenses, td, tPricing, priceFieldLabel, priceGroupLabel]);
 
   const totalColSpan = orderedLenses.length + 1 + emptySlotCount;
   const { lockNav } = useNavLock();

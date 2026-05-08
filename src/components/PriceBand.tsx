@@ -29,7 +29,7 @@ function PriceInfoPopover({
   const symbol = locale === "zh" ? "¥" : "$";
   const priceDisplay = formatPrice(entry.price, entry.currency, locale, condition);
   const rangeDisplay = formatTierRange(tier, entry.currency, locale);
-  const sourceDisplay = formatSource(entry.source, locale);
+  const sourceDisplay = formatSource(entry.source, t);
   const sampledDisplay = formatSampledAt(entry.sampledAt, locale);
 
   return (
