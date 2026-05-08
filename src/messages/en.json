@@ -36,8 +36,8 @@
   },
   "MountSwitcher": {
     "label": "Switch mount system",
-    "x": "X Series",
-    "gfx": "GFX Series"
+    "x": "X Mount",
+    "gfx": "G Mount"
   },
   "Home": {
     "cta": "Browse Lenses",
@@ -278,15 +278,12 @@
   },
   "About": {
     "pageTitle": "About X-Glass",
-
     "backgroundTitle": "Background",
     "backgroundBody1": "The Fujifilm X-mount lens ecosystem has grown from a handful of native options in its early days to today's landscape of dozens of brands and hundreds of lenses. Yet specs are scattered across brand websites and various platforms in inconsistent formats, making meaningful comparison a slow and frustrating exercise. X-Glass was built to pull all of that fragmented information into one place — a normalized, comparable database that lets the data speak for itself.",
     "backgroundBody2": "I'm a web front-end engineer, and X-Glass is a project I develop and maintain entirely on my own. I've always had a strong conviction and passion for building products that don't compromise on engineering quality, user experience, or aesthetic design — and that drive is one of the key forces behind why this project exists.",
-
     "coverageTitle": "Lens Coverage",
     "coverageBody": "X-Glass's vision is to cover every X-mount lens ever made, including discontinued models. Due to the enormous scale of the data pipeline, the current index starts from lenses listed on each brand's official website, so some discontinued lenses no longer featured there are temporarily missing. Eight major brands are covered in this first release; expanding to more active brands is on the roadmap for a future phase. Adapted lenses from other mounts are outside the current scope.",
     "coverageBrands": "Currently indexed brands",
-
     "dataAccuracyTitle": "Data & Accuracy",
     "dataAccuracyIntro": "For a database built on objective information, accuracy isn't a bonus — it's the foundation. If users can't trust the data, the site has no reason to exist.",
     "dataPrinciple1Title": "All data is sourced from official manufacturer information",
@@ -306,7 +303,6 @@
     "pipelinePDesc": "Data validity checks, normalization, and final merge into the database",
     "dataUpdateNote": "The database is updated when new lenses launch or when existing data needs correction.",
     "dataVersionNote": "The version number and last-updated timestamp in the footer reflect the latest published data release.",
-
     "faqTitle": "FAQ",
     "faq1Q": "A lens I'm looking for isn't here. Why?",
     "faq1A": "We're working toward complete X-mount coverage, but the database grows incrementally and some lenses may still be missing. Use the feedback links at the bottom of this page to suggest one. That's the fastest way to put it on our radar.",
@@ -316,24 +312,20 @@
     "faq3A": "A dash means the data hasn't been collected yet, or the manufacturer hasn't publicly published that spec.",
     "faq4Q": "Why is there no pricing information?",
     "faq4A": "Price data is extremely difficult to keep accurate: distributor networks vary by region, promotions frequently push actual prices well below list price, and prices change constantly. My principle is — if I can't guarantee the data quality of a field, I'd rather leave it out entirely. Inaccurate price data is more misleading than no data at all, and risks undermining trust in the database as a whole.",
-
     "disclaimerTitle": "Disclaimer",
     "disclaimerAccuracy": "X-Glass data is sourced from public materials and refined through manual review. We make every effort to keep specs accurate and up to date, but errors and delays are inevitable. Always verify key specifications on the manufacturer's official page before making a purchase decision.",
     "disclaimerLiability": "X-Glass is not responsible for any decisions made based on information presented here.",
     "disclaimerIndependent": "X-Glass is an independent third-party tool and is not affiliated with, endorsed by, or sponsored by Fujifilm or any lens manufacturer.",
     "disclaimerCopyright": "Product images and brand trademarks are the property of their respective owners. If you are a rights holder and believe your content has been used improperly, please contact xglass@sentacraft.com.",
-
     "privacyTitle": "Privacy",
     "privacyBody": "X-Glass does not require registration, does not collect personal information, and does not use cookies.",
     "privacyAnalytics": "This site uses Vercel Analytics to collect aggregated, anonymous data such as page views, referrers, and device types — solely to help improve the product. No personally identifiable information is collected.",
-
     "donationTitle": "Support the Project",
     "donationBody": "X-Glass is open source on GitHub. Every spec in this database went through tedious data extraction and manual cross-checking. If it helped you find the right lens — or saved you some time — consider supporting the project.",
     "donationComingSoon": "Sponsorship options are being set up — check back soon.",
     "donationKofi": "Support on Ko-fi",
     "donationWechatLabel": "WeChat Pay",
     "donationWechatQrAlt": "WeChat appreciation QR code",
-
     "ackTitle": "Acknowledgments",
     "ackBody": "Over the past year, large language models have shown capabilities that once felt out of reach. I could not have imagined completing a project at this scale on my own — let alone shipping it in under a month. Without large language models and AI coding agents, this project might have stayed an idea forever. I am grateful to live in an era where the technology dividend is real, and where a spark of inspiration can actually become something in the hands of a solo developer.",
     "ackStory1Tag": "Claude Code",
@@ -345,11 +337,9 @@
     "ackGeminiDesigner": "UX Designer",
     "ackGeminiBrandStrategist": "Brand Strategist",
     "ackClosing": "My deepest gratitude to the AI collaborators whose contributions were decisive in making this project a reality.",
-
     "installTitle": "Get the App",
     "installBody": "X-Glass is a web app — open it in any browser, no installation needed. It also supports installation as a Progressive Web App (PWA) for full-screen access, offline support, and a more native feel.",
     "installCta": "Install X-Glass →",
-
     "feedbackTitle": "Feedback & Contact",
     "feedbackBody": "Spotted incorrect data or a missing lens? Your report goes straight to the maintainer.",
     "feedbackReport": "Report an issue",
@@ -393,15 +383,12 @@
     "pageTitle": "Get the App",
     "headline": "Add X-Glass to your home screen",
     "subheadline": "Faster access, full-screen experience, works offline.",
-
     "installedTitle": "You're all set",
     "installedBody": "X-Glass is already installed on this device.",
     "openApp": "Open X-Glass",
-
     "promptTitle": "Install X-Glass",
     "promptBody": "X-Glass is a web app that also supports installation as a Progressive Web App (PWA) — no App Store needed. Add it to your home screen or app launcher for one-tap access and a more native feel.",
     "installButton": "Install",
-
     "iosTitle": "Add to Home Screen",
     "iosSubtitle": "Follow these steps in Safari:",
     "iosStep1": "Tap the Share button (the square with an arrow) at the bottom of Safari",
@@ -412,7 +399,6 @@
     "macosStep1": "Click the Share button (the square with an arrow) in the Safari toolbar",
     "macosStep2": "Choose \"Add to Dock\"",
     "macosStep3": "Click \"Add\" to confirm",
-
     "genericTitle": "Add to Home Screen",
     "genericBody": "X-Glass is a web app that also supports installation as a Progressive Web App (PWA) — no App Store needed. Open your browser menu and look for \"Add to Home Screen\" or \"Install app\"."
   }

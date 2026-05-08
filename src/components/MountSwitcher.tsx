@@ -50,7 +50,7 @@ export default function MountSwitcher() {
     { mount: "G", label: t("gfx") },
   ];
 
-  const shortLabel: Record<Mount, string> = { X: "X", G: "GFX" };
+  const shortLabel: Record<Mount, string> = { X: "X", G: "G" };
   const fullLabel = effectiveMount === "X" ? t("x") : t("gfx");
 
   return (
