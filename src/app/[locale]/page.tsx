@@ -46,12 +46,6 @@ export default function Home() {
               {h("ctaCompare")} →
             </Link>
           </div>
-          <Link
-            href="/lenses/gfx"
-            className="text-sm text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-          >
-            {h("ctaGfx")} →
-          </Link>
           <DataInfo />
         </div>
       </section>

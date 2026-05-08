@@ -39,8 +39,7 @@
     "gfx": "GFX 系统"
   },
   "Home": {
-    "cta": "浏览 X 系统镜头",
-    "ctaGfx": "浏览 GFX 系统镜头",
+    "cta": "浏览镜头",
     "ctaCompare": "对比",
     "dataSnapshot": "lens.json loaded ✓",
     "dataSnapshotCount": "{count} 支镜头 · {brands} 个品牌 · 0 hallucination",

@@ -39,8 +39,7 @@
     "gfx": "GFX Series"
   },
   "Home": {
-    "cta": "Browse X Series",
-    "ctaGfx": "Browse GFX Series",
+    "cta": "Browse Lenses",
     "ctaCompare": "Compare",
     "dataSnapshot": "lens.json loaded ✓",
     "dataSnapshotCount": "{count} lenses · {brands} brands · 0 hallucination",
