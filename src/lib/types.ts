@@ -270,14 +270,18 @@ export type FieldNoteKey = (typeof FIELD_NOTE_KEYS)[number];
  */
 export type Mount = "X" | "G";
 
+export const PRICE_SOURCE_KEYS = [
+  "jd",
+  "tmall",
+  "xianyu",
+] as const;
+export type PriceSourceKey = (typeof PRICE_SOURCE_KEYS)[number];
+
 /** A single price observation — shared by new and used entries across all markets. */
 export interface LensPriceEntry {
   price: number;
   currency: "CNY" | "USD";
-  /** Platform the price was sampled from, e.g. "jd", "tmall", "xianyu". */
-  source?: string;
-  /** Store listing or search-result URL where the price was observed. */
-  url?: string;
+  source: PriceSourceKey;
   /** ISO date YYYY-MM-DD when sampled. */
   sampledAt: string;
 }
@@ -669,30 +673,12 @@ export interface Lens {
    */
   pricing?: {
     cn?: {
-      /** Retail price in CNY at time of sampling. */
-      price: number;
-      currency: "CNY";
-      /** Whether the price reflects a new (official store) or used (secondary market) listing. */
-      condition: "new" | "used";
-      /** Platform the price was sampled from, e.g. "jd", "tmall", "xianyu". */
-      source?: string;
-      /** Store listing or search-result URL where the price was observed. */
-      url?: string;
-      /** ISO date YYYY-MM-DD when sampled. */
-      sampledAt: string;
+      new?: LensPriceEntry;
+      used?: LensPriceEntry;
     };
     global?: {
-      /** Retail price in USD at time of sampling. */
-      price: number;
-      currency: "USD";
-      /** Whether the price reflects a new (official store) or used (secondary market) listing. */
-      condition: "new" | "used";
-      /** Platform the price was sampled from. */
-      source?: string;
-      /** Store listing or search-result URL where the price was observed. */
-      url?: string;
-      /** ISO date YYYY-MM-DD when sampled. */
-      sampledAt: string;
+      new?: LensPriceEntry;
+      used?: LensPriceEntry;
     };
   };
 
