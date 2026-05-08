@@ -30,6 +30,8 @@ import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { buildSpecGroups, resolveSpecRow } from "@/lib/lens-spec-groups";
 import type { StructuredLine, ResolvedSpecRow } from "@/lib/lens-spec-groups";
 import type { Lens } from "@/lib/types";
+import { PriceBand } from "@/components/PriceBand";
+import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
 
 // --- LensHeaderContent: shared inner card content ---
 
@@ -171,7 +173,10 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const t = useTranslations("Compare");
   const td = useTranslations("LensDetail");
   const tBrand = useTranslations("Brands");
+  const tPricing = useTranslations("Pricing");
   const locale = useLocale();
+  const priceFieldLabel = tPricing("fieldLabel");
+  const priceGroupLabel = tPricing("groupLabel");
   const router = useRouter();
   const { replaceCompare } = useMountedCompare();
   const { buildCompareUrl } = useCompareUrl();
@@ -198,7 +203,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
 
   const handleAddLens = useCallback(
     (lens: Lens) => {
-      if (orderedIds.includes(lens.id) || orderedIds.length >= MAX_COMPARE) return;
+      if (orderedIds.includes(lens.id) || orderedIds.length >= MAX_COMPARE) {return;}
       const nextIds = [...orderedIds, lens.id];
       replaceCompare(nextIds);
       setOrderedIds(nextIds);
@@ -245,7 +250,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   function handleShiftLens(lensId: string, direction: -1 | 1) {
     const index = orderedIds.indexOf(lensId);
     const newIndex = index + direction;
-    if (newIndex < 0 || newIndex >= orderedIds.length) return;
+    if (newIndex < 0 || newIndex >= orderedIds.length) {return;}
     const next = [...orderedIds];
     [next[index], next[newIndex]] = [next[newIndex], next[index]];
     updateCompare(next);
@@ -333,7 +338,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
       for (const group of allGroups) {
         for (const row of group.rows) {
           const resolved = resolveSpecRow(row, lens, valueCellLabels);
-          if (resolved) rowMap.set(row.label, resolved);
+          if (resolved) {rowMap.set(row.label, resolved);}
         }
       }
       map.set(lens.id, rowMap);
@@ -362,21 +367,25 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
     const mediaGroupLabel = td("fieldGroupMedia");
     for (const lens of orderedLenses) {
       const rowMap = resolvedPerLens.get(lens.id);
-      if (!rowMap) continue;
+      if (!rowMap) {continue;}
       const fields: FeedbackField[] = [];
       for (const group of allGroups) {
         for (const row of group.rows) {
           const resolved = rowMap.get(row.label);
-          if (resolved) fields.push({ label: resolved.label, currentValue: resolved.plainText, group: group.label });
+          if (resolved) {fields.push({ label: resolved.label, currentValue: resolved.plainText, group: group.label });}
         }
       }
       const url = getLensUrl(lens, locale);
-      if (url) fields.push({ label: td("fieldOfficialLink"), currentValue: url, group: mediaGroupLabel });
+      if (url) {fields.push({ label: td("fieldOfficialLink"), currentValue: url, group: mediaGroupLabel });}
       fields.push({ label: td("fieldLensImage"), currentValue: getLensImageUrl(lens.id), group: mediaGroupLabel, hideCurrentValue: true });
+      const priceSelection = pickPriceEntry(lens.pricing, locale);
+      if (priceSelection) {
+        fields.push({ label: priceFieldLabel, currentValue: formatPriceForReport(priceSelection, locale, tPricing), group: priceGroupLabel });
+      }
       map.set(lens.id, fields);
     }
     return map;
-  }, [resolvedPerLens, allGroups, orderedLenses, td]);
+  }, [resolvedPerLens, allGroups, orderedLenses, td, tPricing, priceFieldLabel, priceGroupLabel]);
 
   const totalColSpan = orderedLenses.length + 1 + emptySlotCount;
   const { lockNav } = useNavLock();
@@ -391,7 +400,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
 
   useEffect(() => {
     const thead = theadRef.current;
-    if (!thead) return;
+    if (!thead) {return;}
     const observer = new IntersectionObserver(
       ([entry]) => setShowPhantom(!entry.isIntersecting),
       { root: null, rootMargin: "0px", threshold: 0 },
@@ -405,13 +414,13 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const phantomVisible = showPhantom && orderedLenses.length > 0;
 
   useEffect(() => {
-    if (!isPwa) lockNav(phantomVisible);
+    if (!isPwa) {lockNav(phantomVisible);}
   }, [phantomVisible, lockNav, isPwa]);
 
   useEffect(() => {
     const container = containerRef.current;
     const thead = theadRef.current;
-    if (!container || !thead) return;
+    if (!container || !thead) {return;}
 
     const update = () => {
       const row = thead.querySelector("tr");
@@ -429,7 +438,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   useEffect(() => {
     const container = containerRef.current;
     const thead = theadRef.current;
-    if (!container || !thead) return;
+    if (!container || !thead) {return;}
     const onScroll = () => {
       if (phantomInnerRef.current) {
         phantomInnerRef.current.style.transform = `translateX(-${container.scrollLeft}px)`;
@@ -568,6 +577,44 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
               ))}
             </React.Fragment>
           ))}
+
+          {/* Pricing group — shown when at least one lens has pricing data */}
+          {orderedLenses.length > 0 && orderedLenses.some(l => pickPriceEntry(l.pricing, locale) !== null) && (
+            <React.Fragment>
+              <tr className="border-b border-zinc-100 bg-zinc-100/80 dark:border-zinc-800/60 dark:bg-zinc-800/60">
+                <td colSpan={totalColSpan} className="h-8 text-center">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                    {tPricing("groupLabel")}
+                  </span>
+                </td>
+              </tr>
+              <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
+                <td className="sticky left-0 z-10 px-3 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900 break-words">
+                  {tPricing("fieldLabel")}
+                </td>
+                {orderedLenses.map((lens) => {
+                  const sel = pickPriceEntry(lens.pricing, locale);
+                  if (!sel) {
+                    return (
+                      <td key={lens.id} className="px-3 py-3 text-center text-zinc-400 dark:text-zinc-600">
+                        {valueCellLabels.missing}
+                      </td>
+                    );
+                  }
+                  return (
+                    <td key={lens.id} className="px-3 py-3">
+                      <div className="flex justify-center">
+                        <PriceBand lens={lens} compact />
+                      </div>
+                    </td>
+                  );
+                })}
+                {Array.from({ length: emptySlotCount }).map((_, i) => (
+                  <td key={`empty-price-${i}`} className="border-l border-zinc-100 bg-white dark:border-zinc-800/60 dark:bg-zinc-950" />
+                ))}
+              </tr>
+            </React.Fragment>
+          )}
 
           {/* Populated table: only rendered when at least one lens is selected */}
           {orderedLenses.length > 0 && visibleGroups.map((group) => {
