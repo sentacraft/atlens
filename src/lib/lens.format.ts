@@ -4,11 +4,11 @@ import type {
   LensLength,
   MaxMagnification,
   MinFocusDistance,
+  Mount,
   SpecialtyTag,
 } from "./types";
 import { SPEC_NA } from "./types";
-
-const CROP_FACTOR = 1.5;
+import { CROP_FACTOR } from "./lens";
 
 export function oisDisplay(
   ois: boolean,
@@ -19,8 +19,8 @@ export function oisDisplay(
   return oisStops !== undefined ? `${labels.yes} (${oisStops}-stop)` : labels.yes;
 }
 
-export function focalEquiv(n: number): number {
-  return Math.round(n * CROP_FACTOR);
+export function focalEquiv(n: number, mount: Mount = "X"): number {
+  return Math.round(n * CROP_FACTOR[mount]);
 }
 
 export function focalRangeDisplay(min: number, max: number): string {

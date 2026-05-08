@@ -16,7 +16,7 @@ import {
   type SpecialtyTag,
 } from "@/lib/lens";
 import { serializeFilters, parseFilters } from "@/lib/filter-params";
-import { useCompare } from "@/context/CompareProvider";
+import { useMountedCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import { Z } from "@/config/ui";
 import { ArrowDownNarrowWide, ArrowUpNarrowWide } from "lucide-react";
@@ -47,7 +47,7 @@ export default function LensListClient({ lenses }: Props) {
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
-  const { compareIds, toggleCompare, canToggle } = useCompare();
+  const { compareIds, toggleCompare, canToggle } = useMountedCompare();
 
   const brands = useMemo(() => getUniqueBrands(lenses), [lenses]);
 

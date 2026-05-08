@@ -6,6 +6,7 @@ import Nav from "@/components/Nav";
 import ConsoleEgg from "@/components/ConsoleEgg";
 import TestHookPanel from "@/components/TestHookPanel";
 import { CompareProvider } from "@/context/CompareProvider";
+import { MountPreferenceProvider } from "@/context/MountPreferenceProvider";
 import { ScrollContainerProvider } from "@/context/ScrollContainerContext";
 import { TestHookProvider } from "@/context/TestHookProvider";
 import { TESTHOOK_ALLOWED } from "@/lib/testhook";
@@ -98,6 +99,7 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
+      <MountPreferenceProvider>
       <CompareProvider>
         <ScrollContainerProvider>
           <ConsoleEgg />
@@ -117,6 +119,7 @@ export default async function LocaleLayout({
           </div>
         </ScrollContainerProvider>
       </CompareProvider>
+      </MountPreferenceProvider>
     </NextIntlClientProvider>
   );
 }
