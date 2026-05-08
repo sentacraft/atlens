@@ -77,9 +77,13 @@
     "apertureBladeCount": 13,
     "pricing": {
       "cn": {
-        "price": 1299,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 1299,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10038643493366.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -139,9 +143,13 @@
     "apertureBladeCount": 7,
     "pricing": {
       "cn": {
-        "price": 939,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 939,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10187125174593.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -195,9 +203,13 @@
     "apertureBladeCount": 9,
     "pricing": {
       "cn": {
-        "price": 599,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 599,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10212588856782.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -283,9 +295,13 @@
     "apertureBladeCount": 7,
     "pricing": {
       "cn": {
-        "price": 699,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 699,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10144266042361.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "lensMaterial": "Metal+polymer plastic",
@@ -329,9 +345,13 @@
     "apertureBladeCount": 9,
     "pricing": {
       "cn": {
-        "price": 599,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 599,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10212592143407.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -379,9 +399,13 @@
     "apertureBladeCount": 9,
     "pricing": {
       "cn": {
-        "price": 599,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 599,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10213996269124.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -701,9 +725,13 @@
     "apertureBladeCount": 7,
     "pricing": {
       "cn": {
-        "price": 670,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 670,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10062473752141.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -754,9 +782,13 @@
     "apertureBladeCount": 9,
     "pricing": {
       "cn": {
-        "price": 1090,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 1090,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10204898752312.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -812,9 +844,13 @@
     "apertureBladeCount": 5,
     "pricing": {
       "cn": {
-        "price": 639,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 639,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10027028201649.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -867,9 +903,13 @@
     "apertureBladeCount": 5,
     "pricing": {
       "cn": {
-        "price": 499,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 499,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10160933790025.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -919,9 +959,13 @@
     "apertureBladeCount": 5,
     "pricing": {
       "cn": {
-        "price": 593,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 593,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10164361585110.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -972,9 +1016,13 @@
     "apertureBladeCount": "N/A",
     "pricing": {
       "cn": {
-        "price": 270,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 270,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10068170968055.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -1027,9 +1075,13 @@
     "apertureBladeCount": 12,
     "pricing": {
       "cn": {
-        "price": 394,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 394,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/22071562982.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -1079,9 +1131,13 @@
     "apertureBladeCount": 10,
     "pricing": {
       "cn": {
-        "price": 369,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 369,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10023827550733.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -1131,9 +1187,13 @@
     "apertureBladeCount": 9,
     "pricing": {
       "cn": {
-        "price": 329,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 329,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10200036685867.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -1187,9 +1247,13 @@
     "apertureBladeCount": 12,
     "pricing": {
       "cn": {
-        "price": 969,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 969,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10160356865706.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -1237,9 +1301,13 @@
     "apertureBladeCount": 12,
     "pricing": {
       "cn": {
-        "price": 299,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 299,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/23196870151.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -1284,9 +1352,13 @@
     "apertureBladeCount": 14,
     "pricing": {
       "cn": {
-        "price": 494,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 494,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/23702204564.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -1340,9 +1412,13 @@
     "apertureBladeCount": 9,
     "pricing": {
       "cn": {
-        "price": 899,
-        "sampledAt": "2026-05-08",
-        "currency": "CNY"
+        "new": {
+          "price": 899,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10034452578266.html",
+          "sampledAt": "2026-05-08"
+        }
       }
     },
     "compatibleMounts": [
@@ -1443,6 +1519,17 @@
     "angleOfView": 26.5,
     "angleOfViewCalc": 26.5,
     "apertureBladeCount": 9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 999,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10210192269614.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Canon EF-M",
@@ -1547,6 +1634,17 @@
     "angleOfView": 32,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 899,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10109759393601.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X"
@@ -1646,6 +1744,17 @@
     "angleOfView": 172,
     "angleOfViewCalc": 109.5,
     "apertureBladeCount": "N/A",
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 259,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10039170180560.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -1697,6 +1806,17 @@
     "angleOfView": 175,
     "angleOfViewCalc": 109.5,
     "apertureBladeCount": 5,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 529,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10206375369431.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -1745,6 +1865,17 @@
     "angleOfView": 97,
     "angleOfViewCalc": 99.4,
     "apertureBladeCount": 10,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 799,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10100484539176.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 62,
     "lensConfiguration": {
       "groups": 9,
@@ -1826,6 +1957,17 @@
     "angleOfView": 44,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 12,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 999,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10161505403978.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -1909,6 +2051,17 @@
     "angleOfView": 42,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 10,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 379,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/35521215376.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "lensMaterial": "Metal",
     "filterMm": 43,
     "lensConfiguration": {
@@ -1947,6 +2100,17 @@
     "angleOfView": 32,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 13,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 999,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10120084186243.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -1995,6 +2159,17 @@
     "angleOfView": 29.5,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 509,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10136248141644.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 55,
     "lensConfiguration": {
       "groups": 5,
@@ -2034,6 +2209,17 @@
     "angleOfView": 32,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 10,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 299,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10081229168136.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -2095,6 +2281,17 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2018,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 8800,
+          "currency": "CNY",
+          "source": "xianyu",
+          "url": "https://www.goofish.com",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Tripod collar foot",
       "Support foot",
@@ -2163,6 +2360,17 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2018,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 7666,
+          "currency": "CNY",
+          "source": "xianyu",
+          "url": "https://www.goofish.com",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Tripod collar foot",
       "Support foot",
@@ -2235,6 +2443,17 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2025,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2550,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/100239539021.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap FLCP-49",
       "Rear lens cap"
@@ -2663,6 +2882,17 @@
     "angleOfViewCalc": 121,
     "apertureBladeCount": 9,
     "releaseYear": 2023,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 5490,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10076684016873.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap FLCP-62 II",
       "Rear lens cap RLCP-001",
@@ -2721,6 +2951,17 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2014,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 1725,
+          "currency": "CNY",
+          "source": "xianyu",
+          "url": "https://www.goofish.com",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Fujifilm X"
     ],
@@ -2779,6 +3020,17 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2020,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 6990,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10025233765523.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 72,
     "lensConfiguration": {
       "groups": 10,
@@ -2824,6 +3076,17 @@
     "angleOfViewCalc": 90.6,
     "apertureBladeCount": 7,
     "releaseYear": 2012,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 1098,
+          "currency": "CNY",
+          "source": "xianyu",
+          "url": "https://www.goofish.com",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 58,
     "lensConfiguration": {
       "groups": 7,
@@ -2878,6 +3141,17 @@
       31.6
     ],
     "releaseYear": 2024,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 4990,
+          "currency": "CNY",
+          "source": "tmall",
+          "url": "https://fujifilm.tmall.com/category-1106901591.htm",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap FLCP-58 II",
       "Rear lens cap RLCP-001",
@@ -2947,6 +3221,17 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2015,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 5600,
+          "currency": "CNY",
+          "source": "xianyu",
+          "url": "https://www.goofish.com",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 77,
     "lensConfiguration": {
       "groups": 12,
@@ -3004,6 +3289,17 @@
     ],
     "apertureBladeCount": 11,
     "releaseYear": 2024,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 8100,
+          "currency": "CNY",
+          "source": "xianyu",
+          "url": "https://www.goofish.com",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap FLCP-72 II",
       "Rear lens cap RLCP-001",
@@ -3071,6 +3367,17 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2019,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 2640,
+          "currency": "CNY",
+          "source": "xianyu",
+          "url": "https://www.goofish.com",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap FLCP-72II",
       "Rear lens cap RLCP-001",
@@ -3123,6 +3430,17 @@
     "angleOfViewCalc": 83,
     "apertureBladeCount": 9,
     "releaseYear": 2015,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 6620,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/33779863063.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Lens hood LH-XF16"
     ],
@@ -3172,6 +3490,17 @@
     "angleOfViewCalc": 83,
     "apertureBladeCount": 9,
     "releaseYear": 2019,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2680,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/41634837954.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-49",
       "Lens rear cap RLCP-001",
@@ -3245,6 +3574,17 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2012,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 1565,
+          "currency": "CNY",
+          "source": "xianyu",
+          "url": "https://www.goofish.com",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 58,
     "lensConfiguration": {
       "groups": 10,
@@ -3300,6 +3640,17 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 5990,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10060482260075.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 72,
     "lensConfiguration": {
       "groups": 12,
@@ -3363,6 +3714,17 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2014,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 2700,
+          "currency": "CNY",
+          "source": "xianyu",
+          "url": "https://www.goofish.com",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 67,
     "lensConfiguration": {
       "groups": 12,
@@ -3409,6 +3771,17 @@
     "angleOfViewCalc": 76.3,
     "apertureBladeCount": 9,
     "releaseYear": 2021,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 6490,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10031234224839.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Lens hood LH-XF18"
     ],
@@ -3457,6 +3830,17 @@
     "angleOfViewCalc": 76.3,
     "apertureBladeCount": 7,
     "releaseYear": 2012,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 1600,
+          "currency": "CNY",
+          "source": "xianyu",
+          "url": "https://www.goofish.com",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 52,
     "lensConfiguration": {
       "groups": 7,
@@ -3502,6 +3886,17 @@
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 7,
     "releaseYear": 2013,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 1599,
+          "currency": "CNY",
+          "source": "xianyu",
+          "url": "https://www.goofish.com",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Fujifilm X"
     ],
@@ -3550,6 +3945,17 @@
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 9,
     "releaseYear": 2021,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 5840,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10045634723640.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 58,
     "lensConfiguration": {
       "groups": 10,
@@ -3596,6 +4002,17 @@
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 9,
     "releaseYear": 2016,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 1274,
+          "currency": "CNY",
+          "source": "xianyu",
+          "url": "https://www.goofish.com",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-43",
       "Lens rear cap RLCP-001",
@@ -3645,6 +4062,17 @@
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 11,
     "releaseYear": 2025,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2890,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10199711725340.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap FLCP-39 II",
       "Rear lens cap RLCP-001",
@@ -3697,6 +4125,17 @@
     "angleOfViewCalc": 55.3,
     "apertureBladeCount": 7,
     "releaseYear": 2013,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 1519,
+          "currency": "CNY",
+          "source": "xianyu",
+          "url": "https://www.goofish.com",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Fujifilm X"
     ],
@@ -3743,6 +4182,17 @@
     "angleOfViewCalc": 55.3,
     "apertureBladeCount": 7,
     "releaseYear": 2021,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2690,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10026515405137.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 39,
     "lensConfiguration": {
       "groups": 5,
@@ -3791,6 +4241,17 @@
     "angleOfViewCalc": 50.5,
     "apertureBladeCount": 9,
     "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 4190,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10065781422895.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 43,
     "lensConfiguration": {
       "groups": 9,
@@ -3837,6 +4298,17 @@
     "angleOfViewCalc": 46.4,
     "apertureBladeCount": 9,
     "releaseYear": 2021,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 5190,
+          "currency": "CNY",
+          "source": "tmall",
+          "url": "https://fujifilm.tmall.com/category-1106914229.htm",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 58,
     "lensConfiguration": {
       "groups": 10,
@@ -3882,6 +4354,17 @@
     "angleOfViewCalc": 44,
     "apertureBladeCount": 7,
     "releaseYear": 2012,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3890,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/33787100217.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Lens cap",
       "Rear cap",
@@ -3935,6 +4418,17 @@
     "angleOfViewCalc": 44,
     "apertureBladeCount": 9,
     "releaseYear": 2015,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3390,
+          "currency": "CNY",
+          "source": "tmall",
+          "url": "https://fujifilm.tmall.com/category-1106914229.htm",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-43",
       "Lens rear cap RLCP-001",
@@ -3996,6 +4490,17 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2014,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 9990,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/33782092981.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Lens cap",
       "Lens rear cap",
@@ -4050,6 +4555,17 @@
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 9,
     "releaseYear": 2020,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 10490,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10021170089659.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 77,
     "lensConfiguration": {
       "groups": 9,
@@ -4096,6 +4612,17 @@
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3590,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/33782496055.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-46",
       "Lens rear cap RLCP-001",
@@ -4165,6 +4692,17 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2013,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 4370,
+          "currency": "CNY",
+          "source": "tmall",
+          "url": "https://fujifilm.tmall.com/category-1106901591.htm",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 62,
     "lensConfiguration": {
       "groups": 10,
@@ -4214,6 +4752,17 @@
     "angleOfViewCalc": 28.4,
     "apertureBladeCount": 7,
     "releaseYear": 2014,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 2350,
+          "currency": "CNY",
+          "source": "xianyu",
+          "url": "https://www.goofish.com",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Fujifilm X"
     ],
@@ -4263,6 +4812,17 @@
     "angleOfViewCalc": 28.4,
     "apertureBladeCount": 7,
     "releaseYear": 2015,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 2300,
+          "currency": "CNY",
+          "source": "xianyu",
+          "url": "https://www.goofish.com",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Fujifilm X"
     ],
@@ -4313,6 +4873,17 @@
     "angleOfViewCalc": 28.4,
     "apertureBladeCount": 11,
     "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 6620,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10060490640801.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap FLCP-67 II",
       "Rear lens cap RLCP-001",
@@ -4367,6 +4938,17 @@
     "angleOfViewCalc": 26.5,
     "apertureBladeCount": 9,
     "releaseYear": 2012,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 4280,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/33785721932.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 39,
     "lensConfiguration": {
       "groups": 8,
@@ -4431,6 +5013,17 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2021,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 5390,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10026515756821.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 67,
     "lensConfiguration": {
       "groups": 12,
@@ -4481,6 +5074,17 @@
     "angleOfViewCalc": 20.1,
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 7790,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/33782885268.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-62II",
       "Lens rear cap RLCP-002",
@@ -4534,6 +5138,17 @@
     "angleOfViewCalc": 17.9,
     "apertureBladeCount": 7,
     "releaseYear": 2015,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 6320,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/33783537607.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 62,
     "lensConfiguration": {
       "groups": 8,
@@ -4595,6 +5210,17 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2016,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 12600,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/33786122769.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "filterMm": 77,
     "lensConfiguration": {
       "groups": 14,
@@ -4654,6 +5280,17 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 13500,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10054683248070.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap FLCP-82",
       "Rear lens cap RLCP-001",
@@ -4709,6 +5346,17 @@
     "angleOfViewCalc": 8.1,
     "apertureBladeCount": 9,
     "releaseYear": 2018,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 33900,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/35290356605.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-105",
       "Lens rear cap RLCP-001",
@@ -4762,6 +5410,17 @@
     "angleOfViewCalc": 3.2,
     "apertureBladeCount": 9,
     "releaseYear": 2024,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 21400,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10126095152653.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap FLCP-95",
       "Rear lens cap RLCP-001",
@@ -4810,6 +5469,17 @@
     "angleOfView": 98,
     "angleOfViewCalc": 99.4,
     "apertureBladeCount": 7,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 558,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10099680846804.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "lensMaterial": "Metal",
     "filterMm": "N/A",
     "lensConfiguration": {
@@ -4851,6 +5521,17 @@
     "angleOfView": 76.2,
     "angleOfViewCalc": 61,
     "apertureBladeCount": "N/A",
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 309,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10136094933725.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Leica L",
       "Sony E",
@@ -4899,6 +5580,17 @@
     "angleOfView": 58,
     "angleOfViewCalc": 59,
     "apertureBladeCount": 9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 512,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10158405812933.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Micro Four Thirds",
@@ -4946,6 +5638,17 @@
     "angleOfView": 42,
     "angleOfViewCalc": 28.9,
     "apertureBladeCount": 9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 799,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10124734591556.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "lensMaterial": "Metal",
     "filterMm": 58,
     "lensConfiguration": {
@@ -4988,6 +5691,17 @@
     "angleOfView": 168,
     "angleOfViewCalc": 124.1,
     "apertureBladeCount": 7,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 568,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10100008898701.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -5038,6 +5752,17 @@
     "angleOfView": 76,
     "angleOfViewCalc": 76.3,
     "apertureBladeCount": "N/A",
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 252,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10115511730826.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Micro Four Thirds",
@@ -5086,6 +5811,17 @@
     "angleOfView": 58,
     "angleOfViewCalc": 59,
     "apertureBladeCount": 7,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 283,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10099370400666.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Micro Four Thirds",
@@ -5134,6 +5870,17 @@
     "angleOfView": 44,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 12,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 853,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10099433049702.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Micro Four Thirds",
@@ -5181,6 +5928,17 @@
     "angleOfView": 44,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 444,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10099455378783.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Micro Four Thirds",
@@ -5229,6 +5987,17 @@
     "angleOfView": 32,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 10,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 283,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10098959961168.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Micro Four Thirds",
@@ -5276,6 +6045,17 @@
     "angleOfView": 44,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": "N/A",
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 739,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10110017394939.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -5345,6 +6125,17 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2023,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 4288,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/100072186956.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "L-Mount",
       "Canon RF",
@@ -5402,6 +6193,17 @@
     "angleOfViewCalc": 99.4,
     "apertureBladeCount": 9,
     "releaseYear": 2025,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3699,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/100274443690.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Canon RF",
       "Fujifilm X",
@@ -5460,6 +6262,17 @@
     "angleOfViewCalc": 86.7,
     "apertureBladeCount": 9,
     "releaseYear": 2026,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3099,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/100330541518.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Canon RF",
       "Fujifilm X",
@@ -5541,6 +6354,17 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2025,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 4110,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/100172087733.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "L-Mount",
       "Canon RF",
@@ -5601,6 +6425,17 @@
     "angleOfViewCalc": 83,
     "apertureBladeCount": 9,
     "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2699,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/100021314769.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "L-Mount",
       "Canon EF-M",
@@ -5739,6 +6574,17 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3499,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/100047896457.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "L-Mount",
       "Canon RF",
@@ -5794,6 +6640,17 @@
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 9,
     "releaseYear": 2023,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2999,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/100068628585.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "L-Mount",
       "Canon RF",
@@ -5849,6 +6706,17 @@
     "angleOfViewCalc": 50.5,
     "apertureBladeCount": 9,
     "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1799,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/100021314771.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "L-Mount",
       "Canon EF-M",
@@ -5905,6 +6773,17 @@
     "angleOfViewCalc": 28.4,
     "apertureBladeCount": 9,
     "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2143,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/100037105170.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "L-Mount",
       "Canon EF-M",
@@ -5977,6 +6856,17 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2023,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 5999,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/100067255806.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "L-Mount",
       "Fujifilm X",
@@ -6047,6 +6937,17 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2023,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3680,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10031655006587.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -6115,6 +7016,17 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3690,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10054566167214.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X"
@@ -6188,6 +7100,17 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2021,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3490,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10037876010935.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -6263,6 +7186,17 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 9790,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10034053993321.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "accessories": [
       "Round-shaped hood",
       "Front cap",
@@ -6777,6 +7711,17 @@
     "angleOfView": 180,
     "angleOfViewCalc": 124.1,
     "apertureBladeCount": 7,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 649,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10033949140156.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -6829,6 +7774,17 @@
     "angleOfView": 105,
     "angleOfViewCalc": 109.5,
     "apertureBladeCount": 8,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 859,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10110060888492.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -6881,6 +7837,17 @@
     "angleOfView": 62,
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 10,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 483,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10041957148824.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -6986,6 +7953,17 @@
     "angleOfView": 45,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 10,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 960,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10066384828041.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7033,6 +8011,17 @@
     "angleOfView": 45,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 10,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 364,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10028349066041.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7089,6 +8078,17 @@
     "angleOfView": 40,
     "angleOfViewCalc": 39,
     "apertureBladeCount": 11,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 547,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10037583292173.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7137,6 +8137,17 @@
     "angleOfView": 32,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 10,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1056,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10052067280271.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7183,6 +8194,17 @@
     "angleOfView": 32,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 10,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 547,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10035387713862.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7233,6 +8255,17 @@
     "angleOfView": 45,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 13,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1152,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10067041960631.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7285,6 +8318,17 @@
     "angleOfView": 45,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 10,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 940,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10154324990901.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7404,6 +8448,17 @@
     "angleOfView": 113.8,
     "angleOfViewCalc": 115.1,
     "apertureBladeCount": 7,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 989,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10191680555976.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -7449,6 +8504,17 @@
     },
     "angleOfViewCalc": 94.9,
     "apertureBladeCount": 9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2499,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10043014538126.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7506,6 +8572,17 @@
     "angleOfView": 84.9,
     "angleOfViewCalc": 86.7,
     "apertureBladeCount": 9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1169,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10168304095945.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -7555,6 +8632,17 @@
     "angleOfView": 63.4,
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1399,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10051437102084.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7611,6 +8699,17 @@
     "angleOfView": 60,
     "angleOfViewCalc": 59,
     "apertureBladeCount": 9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 889,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10134997624694.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -7658,6 +8757,17 @@
     "angleOfView": 55.3,
     "angleOfViewCalc": 55.3,
     "apertureBladeCount": 11,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3099,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10083825353058.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -7703,6 +8813,17 @@
     "angleOfView": 52.07,
     "angleOfViewCalc": 53.6,
     "apertureBladeCount": "N/A",
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 499,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10135735360417.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "lensMaterial": "Metal",
     "filterMm": "N/A",
     "lensConfiguration": {
@@ -7750,6 +8871,17 @@
     "angleOfView": 45.7,
     "angleOfViewCalc": 46.4,
     "apertureBladeCount": 9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1299,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10020003359669.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7800,6 +8932,17 @@
     "angleOfView": 45,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 889,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10130606883411.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -7844,6 +8987,17 @@
       "cm": 50
     },
     "angleOfViewCalc": 28.4,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3459,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10177532158029.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X"
@@ -7890,6 +9044,17 @@
       "cm": 60
     },
     "angleOfViewCalc": 28.4,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1299,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10021830637202.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7941,6 +9106,17 @@
     "angleOfView": 29.8,
     "angleOfViewCalc": 28.4,
     "apertureBladeCount": 9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 889,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10099827998683.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Fujifilm X",
       "Nikon Z"
@@ -7985,6 +9161,17 @@
     },
     "angleOfViewCalc": 21.4,
     "apertureBladeCount": 11,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2999,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/10067505672155.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -8030,6 +9217,17 @@
       "mm": 92
     },
     "angleOfViewCalc": 18.9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1699,
+          "currency": "CNY",
+          "source": "jd",
+          "url": "https://item.jd.com/43305473025.html",
+          "sampledAt": "2026-05-08"
+        }
+      }
+    },
     "lensMaterial": "Metal",
     "filterMm": 72,
     "lensConfiguration": {
