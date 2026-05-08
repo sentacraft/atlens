@@ -644,15 +644,15 @@ export interface Lens {
    * without committing to a specific day-to-day price. Markets are kept
    * separate so the UI can localize tier display per audience.
    *
-   * Tier definitions are calibrated to typical CN-market retail prices
-   * (CNY) and approximated to USD for the global market:
+   * Tier definitions are independently calibrated per market against the
+   * actual retail price distribution of X-mount lenses in that market:
    *
-   *                  CNY (cn)         USD (global, ≈ ¥7:$1)
-   *   1: entry         < 500             < 70
-   *   2: budget        500 - 1,500       70 - 200
-   *   3: mid           1,500 - 5,000     200 - 700
-   *   4: premium       5,000 - 15,000    700 - 2,000
-   *   5: pro           > 15,000          > 2,000
+   *                  CNY (cn)         USD (global)
+   *   1: entry         < 500             < 150
+   *   2: budget        500 - 1,500       150 - 399
+   *   3: mid           1,500 - 5,000     400 - 799
+   *   4: premium       5,000 - 15,000    800 - 1,499
+   *   5: pro           > 15,000          ≥ 1,500
    *
    * Currently only `cn` is populated by the pipeline; `global` is reserved
    * for future per-market calibration. Both fields are optional — omit the
