@@ -663,8 +663,12 @@ export interface Lens {
       /** Retail price in CNY at time of sampling. */
       price: number;
       currency: "CNY";
-      /** Direct purchase page URL (product page or in-store search result). */
-      buyUrl?: string;
+      /** Whether the price reflects a new (official store) or used (secondary market) listing. */
+      condition: "new" | "used";
+      /** Platform the price was sampled from, e.g. "jd", "tmall", "xianyu". */
+      source?: string;
+      /** Store listing or search-result URL where the price was observed. */
+      url?: string;
       /** ISO date YYYY-MM-DD when sampled. */
       sampledAt: string;
     };
@@ -672,8 +676,12 @@ export interface Lens {
       /** Retail price in USD at time of sampling. */
       price: number;
       currency: "USD";
-      /** Direct purchase page URL (product page or in-store search result). */
-      buyUrl?: string;
+      /** Whether the price reflects a new (official store) or used (secondary market) listing. */
+      condition: "new" | "used";
+      /** Platform the price was sampled from. */
+      source?: string;
+      /** Store listing or search-result URL where the price was observed. */
+      url?: string;
       /** ISO date YYYY-MM-DD when sampled. */
       sampledAt: string;
     };
