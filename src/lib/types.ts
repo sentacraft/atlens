@@ -640,6 +640,32 @@ export interface Lens {
   releaseYear?: number;
 
   /**
+   * Approximate price tier (1-5, log-scaled). Captures buying-intent class
+   * without committing to a specific day-to-day price. Markets are kept
+   * separate so the UI can localize tier display per audience.
+   *
+   * Tier definitions are calibrated to typical CN-market retail prices
+   * (CNY) and approximated to USD for the global market:
+   *
+   *                  CNY (cn)         USD (global, ≈ ¥7:$1)
+   *   1: entry         < 500             < 70
+   *   2: budget        500 - 1,500       70 - 200
+   *   3: mid           1,500 - 5,000     200 - 700
+   *   4: premium       5,000 - 15,000    700 - 2,000
+   *   5: pro           > 15,000          > 2,000
+   *
+   * Currently only `cn` is populated by the pipeline; `global` is reserved
+   * for future per-market calibration. Both fields are optional — omit the
+   * tier (or the whole object) when no reliable price source is available.
+   *
+   * @example { cn: 3 }
+   */
+  priceBand?: {
+    cn?: 1 | 2 | 3 | 4 | 5;
+    global?: 1 | 2 | 3 | 4 | 5;
+  };
+
+  /**
    * Mount systems this lens is available for, as stated by the manufacturer.
    * Use short canonical names to ensure consistency across all lenses:
    * "Fujifilm X", "Sony E", "Nikon Z", "Nikon F", "Canon RF", "Canon EF",
