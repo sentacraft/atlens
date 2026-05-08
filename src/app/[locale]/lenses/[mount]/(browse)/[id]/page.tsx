@@ -260,27 +260,25 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           <PriceSection lens={lens} />
 
           {/* Actions */}
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap gap-3">
-              <AddToCompareButton lensId={lens.id} />
-              {url ? (
-                <ExternalLink href={url} className={ACTION_OUTLINE_CLS}>
-                  {t("officialSite")}
-                </ExternalLink>
-              ) : (
-                <span className={ACTION_OUTLINE_CLS + " cursor-not-allowed opacity-40"}>
-                  {t("officialSite")}
-                </span>
-              )}
-              <ShareButton lenses={[lens]} triggerClassName={ACTION_OUTLINE_CLS} />
-            </div>
+          <div className="flex flex-wrap gap-3">
+            <AddToCompareButton lensId={lens.id} />
+            {url ? (
+              <ExternalLink href={url} className={ACTION_OUTLINE_CLS}>
+                {t("officialSite")}
+              </ExternalLink>
+            ) : (
+              <span className={ACTION_OUTLINE_CLS + " cursor-not-allowed opacity-40"}>
+                {t("officialSite")}
+              </span>
+            )}
+            <ShareButton lenses={[lens]} triggerClassName={ACTION_OUTLINE_CLS} />
             <FeedbackTrigger
               type="data_issue"
               context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
               fields={reportableFields}
-              className="inline-flex items-center gap-1 text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors self-start"
+              className={ACTION_OUTLINE_CLS}
             >
-              <Flag size={11} />
+              <Flag size={14} />
               {t("reportIssue")}
             </FeedbackTrigger>
           </div>

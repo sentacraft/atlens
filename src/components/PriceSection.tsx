@@ -2,22 +2,24 @@
 
 // Expanded price display for the lens detail page.
 //
-// Unlike PriceBand (which compresses everything into ¥¥¥ + a popover for use
-// in the compare table), PriceSection surfaces the full price context inline:
+// Layout:
+//   ┌─────────────────────────────────────────┐  ← island (light bg + border)
+//   │  ¥1,299  [二手]  官方店（京东）· 采样于…   │
+//   │  ⚠ 价格仅供参考 ▾  (collapsible note)    │
+//   └─────────────────────────────────────────┘
 //
-//   ¥3,299   官方店（京东）  ·  采样于 2026年5月8日
-//   ¥¥¥  1,500–4,999
-//   价格仅供参考。电商平台标价变动频繁……
+// The tier/range (¥¥¥ 500–1,499) is intentionally omitted — on the detail
+// page the exact price is visible, so the range adds no information.
 //
-// All strings are reused from the existing Pricing i18n namespace — no new
-// copy needed.
+// All strings are reused from the existing Pricing i18n namespace.
 
+import { useState } from "react";
+import { AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { priceTier } from "@/lib/lens";
 import {
   pickPriceEntry,
   formatPrice,
-  formatTierRange,
   formatSampledAt,
   formatSource,
 } from "@/lib/lens-pricing";
@@ -30,6 +32,7 @@ interface Props {
 export function PriceSection({ lens }: Props) {
   const t = useTranslations("Pricing");
   const locale = useLocale();
+  const [noteOpen, setNoteOpen] = useState(false);
 
   const selection = pickPriceEntry(lens.pricing, locale);
   if (!selection) return null;
@@ -39,22 +42,20 @@ export function PriceSection({ lens }: Props) {
   if (tier === undefined) return null;
 
   const isUsed = condition === "used";
-  const symbol = t("tierSymbol");
 
   const priceDisplay = formatPrice(entry.price, entry.currency, locale, condition, t);
-  const rangeDisplay = formatTierRange(tier, entry.currency, locale);
   const sourceDisplay = formatSource(entry.source, t);
   const sampledDisplay = formatSampledAt(entry.sampledAt, locale);
 
   return (
-    <div className="flex flex-col gap-2">
-      {/* Row 1: actual price + used badge + source · sampled date */}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+    <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 px-4 py-3 flex flex-col gap-2.5 dark:border-zinc-800 dark:bg-zinc-900/40">
+      {/* Price + used badge + source · sampled date — all one tight group */}
+      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
         <span className="text-xl font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
           {priceDisplay}
         </span>
         {isUsed && (
-          <span className="inline-flex items-center rounded bg-zinc-100 px-1.5 py-px text-[11px] font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+          <span className="inline-flex items-center rounded bg-zinc-200/70 px-1.5 py-px text-[11px] font-medium text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400">
             {t("conditionUsed")}
           </span>
         )}
@@ -65,17 +66,25 @@ export function PriceSection({ lens }: Props) {
         </span>
       </div>
 
-      {/* Row 2: tier symbols + numeric range in parens — matches compare table style */}
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
-        <span className="font-semibold tracking-wide">{symbol.repeat(tier)}</span>
-        {" "}
-        <span className="tabular-nums">({rangeDisplay})</span>
-      </p>
-
-      {/* Row 3: inline note, smaller than body text */}
-      <p className="text-[11px] leading-relaxed text-zinc-400 dark:text-zinc-500">
-        {isUsed ? t("usedNote") : t("newNote")}
-      </p>
+      {/* Collapsible disclaimer */}
+      <div>
+        <button
+          onClick={() => setNoteOpen((v) => !v)}
+          className="inline-flex items-center gap-1.5 text-[11px] text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 transition-colors"
+        >
+          <AlertTriangle className="size-3 shrink-0 text-amber-500" />
+          <span>{t("disclaimerTrigger")}</span>
+          {noteOpen
+            ? <ChevronUp className="size-3 shrink-0" />
+            : <ChevronDown className="size-3 shrink-0" />
+          }
+        </button>
+        {noteOpen && (
+          <p className="mt-1.5 text-[11px] leading-relaxed text-zinc-400 dark:text-zinc-500">
+            {isUsed ? t("usedNote") : t("newNote")}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
