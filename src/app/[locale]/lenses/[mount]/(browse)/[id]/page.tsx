@@ -19,6 +19,8 @@ import { ACTION_OUTLINE_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates } from "@/lib/seo";
+import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
+import { PriceBand } from "@/components/PriceBand";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
 
@@ -116,6 +118,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
   const t = await getTranslations("LensDetail");
   const tBrand = await getTranslations("Brands");
+  const tPricing = await getTranslations("Pricing");
   const url = getLensUrl(lens, locale);
 
   const specGroups = buildSpecGroups({
@@ -203,10 +206,14 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   // Field options for the Report Dialog — taken directly from resolved values,
   // identical to what is rendered in the spec table below.
   const mediaGroupLabel = t("fieldGroupMedia");
+  const priceSelection = pickPriceEntry(lens.pricing, locale);
   const reportableFields = [
     ...resolvedGroups.flatMap((group) =>
       group.rows.map((row) => ({ label: row.label, currentValue: row.plainText, group: group.label }))
     ),
+    ...(priceSelection
+      ? [{ label: tPricing("fieldLabel"), currentValue: formatPriceForReport(priceSelection, locale), group: tPricing("groupLabel") }]
+      : []),
     ...(url ? [{ label: t("fieldOfficialLink"), currentValue: url, group: mediaGroupLabel }] : []),
     { label: t("fieldLensImage"), currentValue: getLensImageUrl(lens.id), group: mediaGroupLabel, hideCurrentValue: true },
   ];
@@ -274,6 +281,9 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               {t("reportIssue")}
             </FeedbackTrigger>
           </div>
+
+          {/* Price band */}
+          <PriceBand lens={lens} />
 
           {/* Grouped spec table */}
           <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
