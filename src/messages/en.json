@@ -34,8 +34,13 @@
     "view": "Open",
     "generation": "Gen {value}"
   },
+  "MountSwitcher": {
+    "x": "X Series",
+    "gfx": "GFX Series"
+  },
   "Home": {
-    "cta": "Browse Lenses",
+    "cta": "Browse X Series",
+    "ctaGfx": "Browse GFX Series",
     "ctaCompare": "Compare",
     "dataSnapshot": "lens.json loaded ✓",
     "dataSnapshotCount": "{count} lenses · {brands} brands · 0 hallucination",

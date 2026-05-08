@@ -21,9 +21,10 @@ import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { useRouter } from "@/i18n/navigation";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 import type { FeedbackField } from "@/components/FeedbackDialog";
-import { useCompare } from "@/context/CompareProvider";
+import { useMountedCompare } from "@/context/CompareProvider";
 import { useCompareUrl } from "@/hooks/useCompareUrl";
-import { allLenses, getLensUrl, MAX_COMPARE } from "@/lib/lens";
+import { getLensesByMount, getLensUrl, MAX_COMPARE } from "@/lib/lens";
+import { useMountParam } from "@/hooks/useMountParam";
 import LensSearchDialog from "@/components/LensSearchDialog";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { buildSpecGroups, resolveSpecRow } from "@/lib/lens-spec-groups";
@@ -172,8 +173,9 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const tBrand = useTranslations("Brands");
   const locale = useLocale();
   const router = useRouter();
-  const { replaceCompare } = useCompare();
+  const { replaceCompare } = useMountedCompare();
   const { buildCompareUrl } = useCompareUrl();
+  const mount = useMountParam() ?? "X";
   const initialLensIds = useMemo(
     () => initialLenses.map((lens) => lens.id),
     [initialLenses]
@@ -188,7 +190,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   }, [initialLensIds, replaceCompare]);
 
   const orderedLenses = orderedIds
-    .map((id) => allLenses.find((lens) => lens.id === id))
+    .map((id) => getLensesByMount(mount).find((lens) => lens.id === id))
     .filter((lens): lens is Lens => lens !== undefined);
 
   // Number of empty slot columns to render (search triggers filling up to minColumns)

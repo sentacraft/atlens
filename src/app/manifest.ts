@@ -37,7 +37,7 @@ export default function manifest(): MetadataRoute.Manifest {
         name: "Compare Lenses",
         short_name: "Compare",
         description: "Compare lenses side by side",
-        url: "/lenses/compare",
+        url: "/lenses/x/compare",
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],
       },
     ],

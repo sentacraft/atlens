@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCompareUrl } from "@/hooks/useCompareUrl";
-import { useCompare } from "@/context/CompareProvider";
+import { useMountedCompare } from "@/context/CompareProvider";
 import { trendingPresets, type TrendingPreset } from "@/lib/trending";
 import { allLenses } from "@/lib/lens";
 import { cn } from "@/lib/utils";
@@ -62,7 +62,7 @@ export function PresetCard({ preset, onSelect }: { preset: TrendingPreset; onSel
 }
 
 export default function CuratedComparisons() {
-  const { compareIds } = useCompare();
+  const { compareIds } = useMountedCompare();
   const t = useTranslations("Compare");
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);

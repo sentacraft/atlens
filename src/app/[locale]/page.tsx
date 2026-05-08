@@ -34,18 +34,24 @@ export default function Home() {
         <div className="mt-8 flex flex-col items-center gap-3">
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
-              href="/lenses"
+              href="/lenses/x"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-zinc-800 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 font-medium text-sm hover:opacity-90 transition-opacity"
             >
               {h("cta")} →
             </Link>
             <Link
-              href={{ pathname: "/lenses/compare", query: { from: "home" } }}
+              href={{ pathname: "/lenses/x/compare", query: { from: "home" } }}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
             >
               {h("ctaCompare")} →
             </Link>
           </div>
+          <Link
+            href="/lenses/gfx"
+            className="text-sm text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+          >
+            {h("ctaGfx")} →
+          </Link>
           <DataInfo />
         </div>
       </section>

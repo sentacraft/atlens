@@ -8,6 +8,8 @@ import LensSearchDialog from "@/components/LensSearchDialog";
 import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import { useCompare } from "@/context/CompareProvider";
+import { useMountParam } from "@/hooks/useMountParam";
+import { mountToUrlSegment } from "@/lib/mount";
 import { useNavLock } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
 import { cn } from "@/lib/utils";
@@ -15,7 +17,9 @@ import { cn } from "@/lib/utils";
 export default function Nav() {
   const t = useTranslations("Nav");
   const pathname = usePathname();
-  const { compareIds } = useCompare();
+  const { compareState } = useCompare();
+  const mount = useMountParam() ?? "X";
+  const compareIds = compareState[mount];
   const { navLocked, lockNav } = useNavLock();
   const isPwa = usePwa();
   const [hidden, setHidden] = useState(false);
@@ -54,10 +58,12 @@ export default function Nav() {
     if (!navLocked) setHidden(false);
   }, [navLocked]);
 
+  const seg = mountToUrlSegment(mount);
+  const browseHref = `/lenses/${seg}`;
   const compareHref =
     compareIds.length > 0
-      ? `/lenses/compare?ids=${compareIds.join(",")}`
-      : "/lenses/compare";
+      ? `/lenses/${seg}/compare?ids=${compareIds.join(",")}`
+      : `/lenses/${seg}/compare`;
 
   return (
     <header
@@ -82,10 +88,9 @@ export default function Nav() {
         </Link>
         <div className="flex items-center gap-3">
           <Link
-            href="/lenses"
+            href={browseHref}
             className={`text-sm transition-colors ${
-              pathname === "/lenses" ||
-              (pathname.startsWith("/lenses/") && !pathname.startsWith("/lenses/compare"))
+              pathname.startsWith("/lenses/") && !pathname.includes("/compare")
                 ? "text-zinc-900 dark:text-zinc-50 font-medium"
                 : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
             }`}
@@ -95,7 +100,7 @@ export default function Nav() {
           <Link
             href={compareHref}
             className={`text-sm transition-colors ${
-              pathname.startsWith("/lenses/compare")
+              pathname.includes("/lenses/") && pathname.includes("/compare")
                 ? "text-zinc-900 dark:text-zinc-50 font-medium"
                 : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
             }`}
