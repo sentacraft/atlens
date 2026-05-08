@@ -49,7 +49,7 @@ export function PriceSection({ lens }: Props) {
   return (
     <div className="flex flex-col gap-2">
       {/* Row 1: actual price + used badge + source · sampled date */}
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <span className="text-xl font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
           {priceDisplay}
         </span>
@@ -60,20 +60,20 @@ export function PriceSection({ lens }: Props) {
         )}
         <span className="text-xs text-zinc-400 dark:text-zinc-500">
           {sourceDisplay}
-          <span className="mx-1 opacity-50">·</span>
+          <span className="mx-1.5 opacity-40">·</span>
           {t("sampledAt", { date: sampledDisplay })}
         </span>
       </div>
 
-      {/* Row 2: tier symbols + numeric range */}
+      {/* Row 2: tier symbols + numeric range in parens — matches compare table style */}
       <p className="text-sm text-zinc-500 dark:text-zinc-400">
         <span className="font-semibold tracking-wide">{symbol.repeat(tier)}</span>
-        {"  "}
-        <span className="tabular-nums">{rangeDisplay}</span>
+        {" "}
+        <span className="tabular-nums">({rangeDisplay})</span>
       </p>
 
-      {/* Row 3: inline note — no popover needed on the detail page */}
-      <p className="text-xs leading-relaxed text-zinc-400 dark:text-zinc-500">
+      {/* Row 3: inline note, smaller than body text */}
+      <p className="text-[11px] leading-relaxed text-zinc-400 dark:text-zinc-500">
         {isUsed ? t("usedNote") : t("newNote")}
       </p>
     </div>
