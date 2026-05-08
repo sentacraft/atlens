@@ -12,6 +12,7 @@ export async function generateMetadata({
 }
 import DataInfo from "@/components/DataFooter";
 import HomeCta from "@/components/HomeCta";
+import MountTag from "@/components/MountTag";
 import Tagline from "@/components/Tagline";
 import Iris from "@/components/Iris";
 import { IRIS_HERO } from "@/config/iris-config";
@@ -27,6 +28,9 @@ export default function Home() {
         <h1 className="mt-8 text-5xl sm:text-6xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50 font-heading">
           {t("appName")}
         </h1>
+        <div className="mt-2">
+          <MountTag />
+        </div>
         <p className="mt-4 text-lg text-zinc-500 dark:text-zinc-400 max-w-sm">
           {t("appDesc")}
         </p>

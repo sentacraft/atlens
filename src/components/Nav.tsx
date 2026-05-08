@@ -82,6 +82,16 @@ export default function Nav() {
         </div>
         <div className="flex items-center gap-1 sm:gap-2">
           <Link
+            href={`/lenses/${seg}`}
+            className={`text-sm transition-colors px-2 ${
+              pathname.startsWith("/lenses") && !pathname.includes("/compare")
+                ? "text-zinc-900 dark:text-zinc-50 font-medium"
+                : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
+            }`}
+          >
+            {t("lenses")}
+          </Link>
+          <Link
             href={compareHref}
             className={`text-sm transition-colors px-2 ${
               pathname.includes("/compare")

@@ -35,6 +35,7 @@
     "generation": "Gen {value}"
   },
   "MountSwitcher": {
+    "label": "Switch mount system",
     "x": "X Series",
     "gfx": "GFX Series"
   },

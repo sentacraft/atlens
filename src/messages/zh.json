@@ -35,6 +35,7 @@
     "generation": "第 {value} 代"
   },
   "MountSwitcher": {
+    "label": "切换卡口系统",
     "x": "X 系统",
     "gfx": "GFX 系统"
   },
