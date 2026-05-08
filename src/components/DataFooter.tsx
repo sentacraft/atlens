@@ -38,13 +38,13 @@ export default function DataInfo() {
   return (
     <div className="flex flex-col items-center gap-0.5 mt-3">
       <p
-        className="text-xs text-zinc-400 dark:text-zinc-500 font-mono"
+        className="text-[11px] tracking-wider text-zinc-400 dark:text-zinc-500 font-mono"
         title={h("dataTooltip")}
       >
         {h("dataSnapshotCount", { count: lensCount, brands: brandCount })}
       </p>
       <p
-        className="text-xs text-zinc-400 dark:text-zinc-500 font-mono cursor-pointer hover:text-zinc-300 dark:hover:text-zinc-400 transition-colors"
+        className="text-[11px] tracking-wider text-zinc-400 dark:text-zinc-500 font-mono cursor-pointer hover:text-zinc-300 dark:hover:text-zinc-400 transition-colors"
         onClick={cycle}
       >
         {dateLabel}
