@@ -13,6 +13,12 @@ const nextConfig: NextConfig = {
         destination: "/lenses/x/:id",
         permanent: false,
       },
+      // Same redirect but with locale prefix
+      {
+        source: "/:locale(en|zh)/lenses/:id((?!x$|gfx$|compare$).*)",
+        destination: "/:locale/lenses/x/:id",
+        permanent: false,
+      },
     ];
   },
 };
