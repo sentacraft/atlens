@@ -311,6 +311,16 @@ export const KNOWN_DISTINCT_PAIRS = new Set([
   makeAllowlistKey(
     "ttartisan-100mm-f28-2x-macro-x",
     "ttartisan-tilt-shift-100mm-f28-2x-macro-x"),
+  // APD version adds apodization filter: same optical formula but different bokeh
+  // rendering, ~1-stop light loss (T~1.7), and slower AF vs non-APD.
+  makeAllowlistKey(
+    "fujifilm-xf-56mmf12-r-apd-x",
+    "fujifilm-xf-56mmf12-r-x"),
+  // XC 50-230mm OIS II is visually identical to the original; shared raw image
+  // is intentional, not a collect-stage error.
+  makeAllowlistKey(
+    "fujifilm-xc-50-230mmf45-67-ois-ii-x",
+    "fujifilm-xc-50-230mmf45-67-ois-x"),
 ]);
 
 // Fields excluded from the spec similarity comparison.
