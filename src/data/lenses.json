@@ -657,6 +657,14 @@
     "angleOfView": 225,
     "angleOfViewCalc": 148.4,
     "apertureBladeCount": 7,
+    "pricing": {
+      "cn": {
+        "price": 670,
+        "buyUrl": "https://item.jd.com/10062473752141.html",
+        "sampledAt": "2026-05-08",
+        "currency": "CNY"
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -703,6 +711,14 @@
     "angleOfView": 220,
     "angleOfViewCalc": 134,
     "apertureBladeCount": 9,
+    "pricing": {
+      "cn": {
+        "price": 1090,
+        "buyUrl": "https://item.jd.com/10204898752312.html",
+        "sampledAt": "2026-05-08",
+        "currency": "CNY"
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -754,6 +770,14 @@
     "angleOfView": 190,
     "angleOfViewCalc": 124.1,
     "apertureBladeCount": 5,
+    "pricing": {
+      "cn": {
+        "price": 639,
+        "buyUrl": "https://item.jd.com/10027028201649.html",
+        "sampledAt": "2026-05-08",
+        "currency": "CNY"
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Micro Four Thirds",
@@ -802,6 +826,14 @@
     "angleOfView": 108,
     "angleOfViewCalc": 109.5,
     "apertureBladeCount": 5,
+    "pricing": {
+      "cn": {
+        "price": 499,
+        "buyUrl": "https://item.jd.com/10160933790025.html",
+        "sampledAt": "2026-05-08",
+        "currency": "CNY"
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -2192,6 +2224,71 @@
     }
   },
   {
+    "id": "fujifilm-xc-16-50mmf35-56-ois-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XC",
+    "model": "XC 16-50mm F3.5-5.6 OIS",
+    "focalLengthMin": 16,
+    "focalLengthMax": 50,
+    "maxAperture": [
+      3.5,
+      5.6
+    ],
+    "minAperture": 22,
+    "af": true,
+    "ois": true,
+    "wr": false,
+    "apertureRing": false,
+    "powerZoom": false,
+    "focusMotor": "STM",
+    "weightG": 195,
+    "diameterMm": 62.6,
+    "length": {
+      "mm": 98.3,
+      "variants": {
+        "wide": 65.2,
+        "tele": 98.3
+      }
+    },
+    "minFocusDistance": {
+      "cm": 30,
+      "macroVariants": {
+        "wide": 30,
+        "tele": 40
+      }
+    },
+    "maxMagnification": {
+      "value": 0.15
+    },
+    "angleOfView": [
+      83.2,
+      31.7
+    ],
+    "angleOfViewCalc": [
+      83,
+      31.6
+    ],
+    "apertureBladeCount": 7,
+    "releaseYear": 2013,
+    "compatibleMounts": [
+      "Fujifilm X"
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 12,
+      "aspherical": 3,
+      "ed": 1,
+      "sourceText": "12 elements in 10 groups (includes 3 aspherical elements, 1 extra low dispersion element)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc16-50mmf35-56-ois/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xc16-50mmf35-56-ois/"
+    }
+  },
+  {
     "id": "fujifilm-xc-35mmf2-x",
     "brand": "fujifilm",
     "mount": "X",
@@ -2237,6 +2334,68 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc35mmf2/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xc35mmf2/"
+    }
+  },
+  {
+    "id": "fujifilm-xc-50-230mmf45-67-ois-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XC",
+    "model": "XC 50-230mm F4.5-6.7 OIS",
+    "focalLengthMin": 50,
+    "focalLengthMax": 230,
+    "maxAperture": [
+      4.5,
+      6.7
+    ],
+    "minAperture": 22,
+    "af": true,
+    "ois": true,
+    "wr": false,
+    "apertureRing": false,
+    "powerZoom": false,
+    "focusMotor": "STM",
+    "weightG": 375,
+    "diameterMm": 69.5,
+    "length": {
+      "mm": 177,
+      "variants": {
+        "wide": 111,
+        "tele": 177
+      }
+    },
+    "minFocusDistance": {
+      "cm": 110,
+      "macroCm": 110
+    },
+    "maxMagnification": {
+      "value": 0.2
+    },
+    "angleOfView": [
+      31.7,
+      7.1
+    ],
+    "angleOfViewCalc": [
+      31.6,
+      7
+    ],
+    "apertureBladeCount": 7,
+    "releaseYear": 2013,
+    "compatibleMounts": [
+      "Fujifilm X"
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 13,
+      "aspherical": 1,
+      "ed": 1,
+      "sourceText": "13 elements in 10 groups (includes 1 aspherical element, 1 extra low dispersion element)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc50-230mmf45-67-ois/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xc50-230mmf45-67-ois/"
     }
   },
   {
@@ -2421,6 +2580,61 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf8mmf35-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf8mmf35-r-wr/"
+    }
+  },
+  {
+    "id": "fujifilm-xf-10-24mmf4-r-ois-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XF",
+    "model": "XF 10-24mm F4 R OIS",
+    "focalLengthMin": 10,
+    "focalLengthMax": 24,
+    "maxAperture": 4,
+    "minAperture": 22,
+    "af": true,
+    "ois": true,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "DC motor",
+    "weightG": 410,
+    "diameterMm": 78,
+    "length": {
+      "mm": 87
+    },
+    "minFocusDistance": {
+      "cm": 24,
+      "macroCm": 24
+    },
+    "maxMagnification": {
+      "value": 0.16
+    },
+    "angleOfView": [
+      110,
+      61.2
+    ],
+    "angleOfViewCalc": [
+      109.5,
+      61
+    ],
+    "apertureBladeCount": 7,
+    "releaseYear": 2014,
+    "compatibleMounts": [
+      "Fujifilm X"
+    ],
+    "filterMm": 72,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 14,
+      "aspherical": 4,
+      "ed": 4,
+      "sourceText": "14 elements in 10 groups (includes 4 aspherical and 4 extra low dispersion elements)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf10-24mmf4-r-ois/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xf10-24mmf4-r-ois/"
     }
   },
   {
@@ -3156,6 +3370,54 @@
     }
   },
   {
+    "id": "fujifilm-xf-23mmf14-r-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XF",
+    "model": "XF 23mm F1.4 R",
+    "focalLengthMin": 23,
+    "focalLengthMax": 23,
+    "maxAperture": 1.4,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "DC motor",
+    "weightG": 300,
+    "diameterMm": 72,
+    "length": {
+      "mm": 63
+    },
+    "minFocusDistance": {
+      "cm": 28,
+      "macroCm": 28
+    },
+    "maxMagnification": {
+      "value": 0.1
+    },
+    "angleOfView": 63.4,
+    "angleOfViewCalc": 63.2,
+    "apertureBladeCount": 7,
+    "releaseYear": 2013,
+    "compatibleMounts": [
+      "Fujifilm X"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 11,
+      "aspherical": 1,
+      "sourceText": "11 elements in 8 groups (includes 1 aspherical element)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf23mmf14-r/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xf23mmf14-r/"
+    }
+  },
+  {
     "id": "fujifilm-xf-23mmf14-r-lm-wr-x",
     "brand": "fujifilm",
     "mount": "X",
@@ -3300,6 +3562,54 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf23mmf28-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf23mmf28-r-wr/"
+    }
+  },
+  {
+    "id": "fujifilm-xf-27mmf28-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XF",
+    "model": "XF 27mm F2.8",
+    "focalLengthMin": 27,
+    "focalLengthMax": 27,
+    "maxAperture": 2.8,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "powerZoom": false,
+    "focusMotor": "DC motor",
+    "weightG": 78,
+    "diameterMm": 61.2,
+    "length": {
+      "mm": 23
+    },
+    "minFocusDistance": {
+      "cm": 34,
+      "macroCm": 34
+    },
+    "maxMagnification": {
+      "value": 0.1
+    },
+    "angleOfView": 55.5,
+    "angleOfViewCalc": 55.3,
+    "apertureBladeCount": 7,
+    "releaseYear": 2013,
+    "compatibleMounts": [
+      "Fujifilm X"
+    ],
+    "filterMm": 39,
+    "lensConfiguration": {
+      "groups": 5,
+      "elements": 7,
+      "aspherical": 1,
+      "sourceText": "7 elements in 5 groups (includes 1 aspherical element)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf27mmf28/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xf27mmf28/"
     }
   },
   {
@@ -3769,6 +4079,107 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf55-200mmf35-48-r-lm-ois/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf55-200mmf35-48-r-lm-ois/"
+    }
+  },
+  {
+    "id": "fujifilm-xf-56mmf12-r-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XF",
+    "model": "XF 56mm F1.2 R",
+    "focalLengthMin": 56,
+    "focalLengthMax": 56,
+    "maxAperture": 1.2,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "DC motor",
+    "weightG": 405,
+    "diameterMm": 73.2,
+    "length": {
+      "mm": 69.7
+    },
+    "minFocusDistance": {
+      "cm": 70,
+      "macroCm": 70
+    },
+    "maxMagnification": {
+      "value": 0.09
+    },
+    "angleOfView": 28.5,
+    "angleOfViewCalc": 28.4,
+    "apertureBladeCount": 7,
+    "releaseYear": 2014,
+    "compatibleMounts": [
+      "Fujifilm X"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 11,
+      "aspherical": 1,
+      "ed": 2,
+      "sourceText": "11 elements in 8 groups (includes 1 aspherical and 2 extra low dispersion elements)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf56mmf12-r/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xf56mmf12-r/"
+    }
+  },
+  {
+    "id": "fujifilm-xf-56mmf12-r-apd-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XF",
+    "model": "XF 56mm F1.2 R APD",
+    "focalLengthMin": 56,
+    "focalLengthMax": 56,
+    "maxAperture": 1.2,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "DC motor",
+    "weightG": 405,
+    "diameterMm": 73.2,
+    "length": {
+      "mm": 69.7
+    },
+    "minFocusDistance": {
+      "cm": 70,
+      "macroCm": 70
+    },
+    "maxMagnification": {
+      "value": 0.09
+    },
+    "angleOfView": 28.5,
+    "angleOfViewCalc": 28.4,
+    "apertureBladeCount": 7,
+    "releaseYear": 2015,
+    "compatibleMounts": [
+      "Fujifilm X"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 11,
+      "aspherical": 1,
+      "ed": 2,
+      "sourceText": "11 elements in 8 groups (includes one aspherical lens, two extra-low dispersion lens, apodization filter)"
+    },
+    "fieldNotes": {
+      "lensConfiguration": "Includes apodization filter for enhanced bokeh rendering.",
+      "maxAperture": "f/1.2 is the geometric aperture; the APD filter reduces actual light transmission by ~1 stop (effective T-stop ~1.7). Depth of field remains equivalent to f/1.2."
+    },
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf56mmf12-r-apd/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xf56mmf12-r-apd/"
     }
   },
   {
