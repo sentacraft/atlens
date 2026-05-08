@@ -418,6 +418,7 @@
     "usedBadge": "二手",
     "conditionNew": "新品",
     "conditionUsed": "二手",
+    "cnyAmount": "{value} 元",
     "source": {
       "jd": "官方店（京东）",
       "tmall": "官方店（天猫）",

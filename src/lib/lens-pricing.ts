@@ -12,6 +12,23 @@ export interface PriceSelection {
 type PricingBucket = { new?: LensPriceEntry; used?: LensPriceEntry };
 type PricingData = { cn?: PricingBucket; global?: PricingBucket };
 
+// Translator is loosely typed so callers can pass next-intl's `t` function from
+// either useTranslations (client) or getTranslations (server) without coupling
+// this module to next-intl.
+type Translator = (key: string, values?: Record<string, string | number>) => string;
+
+// Maps app locale → BCP-47 tag for Intl APIs. Project locales are always
+// {zh, en}; fall back to en-US for any unexpected value.
+function intlLocaleFor(locale: string): string {
+  return locale === "zh" ? "zh-CN" : "en-US";
+}
+
+function formatNumber(value: number, locale: string): string {
+  return new Intl.NumberFormat(intlLocaleFor(locale), {
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
 export function pickPriceEntry(
   pricing: PricingData | undefined,
   locale: string
@@ -48,30 +65,25 @@ export function formatTierRange(
   locale: string
 ): string {
   const { min, max } = tierRange(tier, currency);
-  const intlLocale = locale === "zh" ? "zh-CN" : "en-US";
-  const fmt = (n: number) =>
-    new Intl.NumberFormat(intlLocale, { maximumFractionDigits: 0 }).format(n);
   if (max === null) {
-    return `${fmt(min)}+`;
+    return `${formatNumber(min, locale)}+`;
   }
-  return `${fmt(min)}–${fmt(max)}`;
+  return `${formatNumber(min, locale)}–${formatNumber(max, locale)}`;
 }
 
 export function formatPrice(
   price: number,
   currency: "CNY" | "USD",
   locale: string,
-  condition: Condition
+  condition: Condition,
+  t: Translator
 ): string {
-  const intlLocale = locale === "zh" ? "zh-CN" : "en-US";
   let formatted: string;
   if (currency === "CNY") {
-    // "5,490 元" — value with thousand separators, suffix " 元"
-    formatted = `${new Intl.NumberFormat(intlLocale, {
-      maximumFractionDigits: 0,
-    }).format(price)} 元`;
+    // CNY display template lives in i18n: "{value} 元" in zh, "¥{value}" in en.
+    formatted = t("cnyAmount", { value: formatNumber(price, locale) });
   } else {
-    formatted = new Intl.NumberFormat(intlLocale, {
+    formatted = new Intl.NumberFormat(intlLocaleFor(locale), {
       style: "currency",
       currency: "USD",
       maximumFractionDigits: 0,
@@ -83,17 +95,12 @@ export function formatPrice(
 export function formatSampledAt(date: string, locale: string): string {
   const [year, month, day] = date.split("-").map(Number);
   const d = new Date(year, month - 1, day);
-  return d.toLocaleDateString(locale === "zh" ? "zh-CN" : "en-US", {
+  return d.toLocaleDateString(intlLocaleFor(locale), {
     year: "numeric",
     month: "short",
     day: "numeric",
   });
 }
-
-// Translator is loosely typed so callers can pass next-intl's `t` function from
-// either useTranslations (client) or getTranslations (server) without coupling
-// this module to next-intl.
-type Translator = (key: string) => string;
 
 export function formatSource(source: string, t: Translator): string {
   return t(`source.${source}`);
@@ -105,7 +112,7 @@ export function formatPriceForReport(
   t: Translator
 ): string {
   const { entry, condition } = selection;
-  const price = formatPrice(entry.price, entry.currency, locale, condition);
+  const price = formatPrice(entry.price, entry.currency, locale, condition, t);
   const source = formatSource(entry.source, t);
   const conditionLabel = t(condition === "new" ? "conditionNew" : "conditionUsed");
   return `${price} · ${source} · ${entry.sampledAt} · ${conditionLabel}`;
