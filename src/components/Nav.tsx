@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Smartphone, EllipsisVertical } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
@@ -104,14 +104,22 @@ export default function Nav() {
       style={{ paddingTop: "calc(var(--safe-inset-top) + var(--titlebar-height))" }}
     >
       <nav className="wco-no-drag max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-        {/* Left: Iris home link + brand name (= mount switcher) */}
-        <div className="flex items-center gap-1.5">
+        {/* Left: brand = home link, then standalone mount switcher */}
+        <div className="flex items-center gap-1">
           <Link
             href="/"
-            className="flex items-center text-zinc-900 dark:text-zinc-50"
+            className="flex items-center gap-1.5 font-bold font-heading text-zinc-900 dark:text-zinc-50 text-lg tracking-tight hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
             aria-label="Home"
           >
             <Iris config={IRIS_NAV} uid="nav" size={16} />
+            <span className="relative">
+              X-Glass
+              {effectiveMount === "G" && (
+                <span className="absolute -top-2 -right-1.5 text-[0.5rem] font-semibold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
+                  GFX
+                </span>
+              )}
+            </span>
           </Link>
           <MountSwitcher />
         </div>
@@ -148,43 +156,45 @@ export default function Nav() {
           </a>
         </div>
 
-        {/* Mobile menu trigger */}
-        <div ref={menuRef} className="relative sm:hidden">
-          <button
-            onClick={() => setMobileMenuOpen((v) => !v)}
-            className="p-2 -mr-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-            aria-label="Menu"
-            aria-expanded={mobileMenuOpen}
-          >
-            <EllipsisVertical className="h-5 w-5" />
-          </button>
+        {/* Mobile: primary links inline + secondary in overflow menu */}
+        <div className="flex items-center sm:hidden gap-0.5">
+          <Link href={browseHref} className={linkCls(isBrowseActive)}>
+            {t("lenses")}
+          </Link>
+          <Link href={compareHref} className={linkCls(isCompareActive)}>
+            {t("compare")}
+          </Link>
+          <div ref={menuRef} className="relative">
+            <button
+              onClick={() => setMobileMenuOpen((v) => !v)}
+              className="p-2 -mr-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+              aria-label="Menu"
+              aria-expanded={mobileMenuOpen}
+            >
+              <EllipsisVertical className="h-5 w-5" />
+            </button>
 
-          {mobileMenuOpen && (
-            <div className="absolute right-0 top-full mt-1.5 w-48 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden">
-              <Link href={browseHref} className={mobileLinkCls(isBrowseActive)}>
-                {t("lenses")}
-              </Link>
-              <Link href={compareHref} className={mobileLinkCls(isCompareActive)}>
-                {t("compare")}
-              </Link>
-              <Link href="/about" className={mobileLinkCls(pathname === "/about")}>
-                {t("about")}
-              </Link>
-              {!isPwa && (
-                <Link href="/get" className={mobileLinkCls(pathname === "/get")}>
-                  {t("getApp")}
+            {mobileMenuOpen && (
+              <div className="absolute right-0 top-full mt-1.5 w-48 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden">
+                <Link href="/about" className={mobileLinkCls(pathname === "/about")}>
+                  {t("about")}
                 </Link>
-              )}
-              <a
-                href="https://github.com/sentacraft/x-glass"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={mobileLinkCls(false)}
-              >
-                GitHub
-              </a>
-            </div>
-          )}
+                {!isPwa && (
+                  <Link href="/get" className={mobileLinkCls(pathname === "/get")}>
+                    {t("getApp")}
+                  </Link>
+                )}
+                <a
+                  href="https://github.com/sentacraft/x-glass"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={mobileLinkCls(false)}
+                >
+                  GitHub
+                </a>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
     </header>
