@@ -57,6 +57,10 @@ function PriceInfoPopover({
                   · {sourceDisplay}
                 </span>
               </p>
+              {/* Sampled date — directly annotates the price above */}
+              <p className="text-[10px] text-zinc-400 dark:text-zinc-500">
+                {t("sampledAt", { date: sampledDisplay })}
+              </p>
               {/* Tier symbols + numeric range */}
               <p className="text-zinc-500 dark:text-zinc-400">
                 <span className="font-semibold tracking-wide">{symbol.repeat(tier)}</span>{" "}
@@ -65,10 +69,6 @@ function PriceInfoPopover({
               {/* Condition-specific disclaimer */}
               <p className="text-zinc-400 dark:text-zinc-500">
                 {isUsed ? t("usedNote") : t("newNote")}
-              </p>
-              {/* Sampled date — metadata, de-emphasised at the bottom */}
-              <p className="text-[10px] text-zinc-400 dark:text-zinc-600">
-                {t("sampledAt", { date: sampledDisplay })}
               </p>
             </div>
           </Popover.Popup>
