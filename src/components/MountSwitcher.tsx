@@ -62,7 +62,7 @@ export default function MountSwitcher() {
         <span className="relative">
           X-Glass
           {effectiveMount === "G" && (
-            <span className="absolute -top-1.5 -right-[1.85rem] text-[0.55rem] font-semibold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
+            <span className="absolute -top-1.5 -right-[1.55rem] text-[0.55rem] font-semibold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
               GFX
             </span>
           )}
