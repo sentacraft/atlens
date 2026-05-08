@@ -56,12 +56,13 @@ export default function MountSwitcher() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold tracking-wide text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+        className="flex items-center gap-1 rounded-full bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 text-xs font-semibold tracking-wide text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
         aria-haspopup="listbox"
         aria-expanded={open}
+        aria-label={t("label")}
       >
         {MOUNT_LABEL[effectiveMount]}
-        <ChevronDown className="h-3 w-3" />
+        <ChevronDown className="h-3 w-3 opacity-50" />
       </button>
 
       {open && (
