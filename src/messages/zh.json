@@ -41,8 +41,8 @@
   },
   "MountSwitcher": {
     "label": "切换卡口系统",
-    "x": "X 系统",
-    "gfx": "GFX 系统"
+    "x": "X Mount",
+    "gfx": "G Mount"
   },
   "Home": {
     "cta": "浏览镜头",
@@ -283,15 +283,12 @@
   },
   "About": {
     "pageTitle": "关于 X-Glass",
-
     "backgroundTitle": "项目缘起",
     "backgroundBody1": "富士 X 卡口的镜头生态，已经从早年的原厂主导，成长为如今数十个品牌、上百颗镜头并存的繁荣局面。然而，镜头参数散落在各品牌官网与各类平台之间，格式不一，横向对比极其低效。X-Glass 的初衷，正是把这些碎片化的信息汇聚到一处，建立一个规范化、可横向对比的数据库，让选镜头这件事回归客观数据本身。",
     "backgroundBody2": "我是一名 Web 前端工程师，X-Glass 目前完全由我一人开发并维护。对打造一个在工程质量，用户体验和美学设计上都不妥协的产品，我一直有很强的执念与热情——这份热情，同样是这个项目得以实现的重要驱动力之一。",
-
     "coverageTitle": "收录范围",
     "coverageBody": "X-Glass 的愿景是收录富士 X 卡口有史以来的所有镜头，包括已经停产的型号。由于 data pipeline 的巨大工作量，目前以各品牌官网的在列镜头为索引起点，部分已下架的停产型号暂未纳入。当前已收录 8 个头部品牌；扩充更多活跃品牌的计划已列入 roadmap，将在后续阶段推进。其他卡口的转接镜头暂不在收录范围内。",
     "coverageBrands": "当前收录品牌",
-
     "dataAccuracyTitle": "数据与准确性",
     "dataAccuracyIntro": "对于以客观信息为核心的数据库，准确性不是加分项，而是一切的根基。一旦用户对数据失去信任，网站本身便失去了存在的意义。",
     "dataPrinciple1Title": "数据来源于厂商官方发布的信息",
@@ -311,7 +308,6 @@
     "pipelinePDesc": "数据合法性校验、归一化、合并写入",
     "dataUpdateNote": "新镜头上市或已有数据需要修正时，数据库将随之更新。",
     "dataVersionNote": "页面底部显示的版本号和更新时间，对应的是最近一次正式发布的数据版本。",
-
     "faqTitle": "常见问题",
     "faq1Q": "我找的镜头不在列表里，为什么？",
     "faq1A": "我们的目标是把 X 卡口镜头尽量收齐，但数据库还在持续补全中，有些镜头可能暂时还没录入。你可以通过页面底部的反馈入口告诉我们，这是最快的方式。",
@@ -321,24 +317,20 @@
     "faq3A": "「—」表示这项数据暂时还没采集到，或者厂商没有公开。",
     "faq4Q": "为什么没有价格信息？",
     "faq4A": "价格数据的准确性很难保证：各地区经销商网络复杂，平台促销活动频繁，实际成交价与标价往往相差悬殊，而且价格本身也在持续变动。我的原则是——对某个字段的数据质量没有足够的把握，宁可不放。标注不准确的价格，比没有价格更容易误导用户，也会动摇整个数据库的可信度。",
-
     "disclaimerTitle": "免责声明",
     "disclaimerAccuracy": "X-Glass 的数据来自公开资料，并经过人工校准。我们已尽力保证规格的时效性与准确性，但数据难免存在错误或滞后。涉及购买决策时，请务必在厂商官方页面核实关键参数。",
     "disclaimerLiability": "X-Glass 不对基于本站信息所做的任何决定承担责任。",
     "disclaimerIndependent": "X-Glass 是独立的第三方对比工具，与富士及任何镜头厂商无官方关联，未获其背书或赞助。",
     "disclaimerCopyright": "本站展示的产品图片及品牌商标，版权归各自所有者所有。如您是权利人并认为存在侵权问题，请联系 xglass@sentacraft.com。",
-
     "privacyTitle": "隐私",
     "privacyBody": "X-Glass 不要求注册，不收集任何个人信息，也不使用 Cookie。",
     "privacyAnalytics": "本站接入了 Vercel Analytics，用于统计页面访问量、来源及设备类型等聚合匿名数据，以便持续改善产品体验。这些数据不包含任何可识别个人身份的信息。",
-
     "donationTitle": "捐赠与支持",
     "donationBody": "X-Glass 代码已在 GitHub 开源。这里的每一组镜头参数，都经历了繁琐的数据抓取与人工交叉校准。如果你觉得这个数据库帮你选到了心仪的镜头，或者为你节省了时间，欢迎赞赏支持。",
     "donationComingSoon": "",
     "donationKofi": "Support on Ko-fi",
     "donationWechatLabel": "微信赞赏码",
     "donationWechatQrAlt": "微信赞赏码",
-
     "ackTitle": "致谢",
     "ackBody": "过去的这一年，大语言模型展现出了超凡的能力。过去，我很难想象仅凭一己之力就能完成如此规模的项目，更不敢奢望在不到一个月内将其落地。如果没有大语言模型和 AI Coding Agent，这个项目可能永远只会停留在构想阶段。感谢这个时代的技术红利，让那些曾经只是灵感火花的想法，能够在一个独立开发者手中真正变成现实。",
     "ackStory1Tag": "Claude Code",
@@ -350,11 +342,9 @@
     "ackGeminiDesigner": "UX 设计师",
     "ackGeminiBrandStrategist": "品牌策略师",
     "ackClosing": "向在这个项目开发过程中给予了决定性帮助的 AI 协作者们，致以最诚挚的感激。",
-
     "installTitle": "获取应用",
     "installBody": "X-Glass 是一款网页应用，在浏览器中打开即可直接使用。同时支持以 PWA（渐进式网页应用）形式安装，添加到手机主屏幕或电脑程序坞后，可全屏启动、支持离线，体验更接近原生 App。",
     "installCta": "安装 X-Glass →",
-
     "feedbackTitle": "反馈与联系",
     "feedbackBody": "如果你发现数据有误，或者想补充缺失镜头，可以直接在这里告诉我们。",
     "feedbackReport": "反馈问题",
@@ -398,15 +388,12 @@
     "pageTitle": "安装应用",
     "headline": "将 X-Glass 添加到主屏幕",
     "subheadline": "像 App 一样打开，全屏体验，支持离线使用。",
-
     "installedTitle": "已完成安装",
     "installedBody": "X-Glass 已安装在此设备上。",
     "openApp": "打开 X-Glass",
-
     "promptTitle": "安装 X-Glass",
     "promptBody": "X-Glass 是一款网页应用，同时支持 PWA 安装——无需通过 App Store，直接添加到设备，以后一键打开，体验更接近原生 App。",
     "installButton": "安装",
-
     "iosTitle": "添加到主屏幕",
     "iosSubtitle": "在 Safari 中按以下步骤操作：",
     "iosStep1": "点击 Safari 菜单中的「分享」按钮",
@@ -417,7 +404,6 @@
     "macosStep1": "点击 Safari 工具栏中的「分享」按钮（带箭头的方框图标）",
     "macosStep2": "选择「添加到程序坞」",
     "macosStep3": "点击「添加」确认",
-
     "genericTitle": "添加到主屏幕",
     "genericBody": "X-Glass 是一款网页应用，同时支持 PWA 安装，体验更接近原生 App。打开浏览器菜单，寻找「添加到主屏幕」或「安装应用」选项。"
   }

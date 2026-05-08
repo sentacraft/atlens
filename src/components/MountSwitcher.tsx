@@ -50,24 +50,19 @@ export default function MountSwitcher() {
     { mount: "G", label: t("gfx") },
   ];
 
+  const fullLabel = effectiveMount === "X" ? t("x") : t("gfx");
+
   return (
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 font-bold font-heading text-zinc-900 dark:text-zinc-50 text-lg tracking-tight hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+        className="group flex items-center gap-0.5 font-heading font-medium text-base text-zinc-600 dark:text-zinc-400 tracking-tight hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 px-1.5 py-0.5 -ml-1.5 rounded-md transition-all whitespace-nowrap"
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={t("label")}
       >
-        <span className="relative">
-          X-Glass
-          {effectiveMount === "G" && (
-            <span className="absolute -top-2 -right-1.5 text-[0.5rem] font-semibold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
-              GFX
-            </span>
-          )}
-        </span>
-        <ChevronDown className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" />
+        {fullLabel}
+        <ChevronDown className="h-3.5 w-3.5 opacity-60 group-hover:opacity-100 transition-opacity" />
       </button>
 
       {open && (
