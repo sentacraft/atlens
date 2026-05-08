@@ -246,3 +246,24 @@ export function sortLenses(
     return dir === "asc" ? delta : -delta;
   });
 }
+
+export function priceTier(price: number, currency: "CNY" | "USD"): 1 | 2 | 3 | 4 | 5 {
+  if (currency === "CNY") {
+    if (price < 500)   return 1;
+    if (price < 1500)  return 2;
+    if (price < 5000)  return 3;
+    if (price < 15000) return 4;
+    return 5;
+  } else {
+    if (price < 150)  return 1;
+    if (price < 400)  return 2;
+    if (price < 800)  return 3;
+    if (price < 1500) return 4;
+    return 5;
+  }
+}
+
+export function defaultMarketForLocale(locale: string): "cn" | "global" {
+  return locale === "zh" ? "cn" : "global";
+}
+
