@@ -8,7 +8,7 @@ import { ExternalLink } from "@/components/ui/external-link";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import type { FeedbackType } from "@/components/FeedbackDialog";
-import { allLenses, getOrderedUniqueBrands } from "@/lib/lens";
+import { xLenses, gfxLenses, getOrderedUniqueBrands } from "@/lib/lens";
 import AckCard from "@/components/AckCard";
 
 function Section({
@@ -37,7 +37,10 @@ export default async function AboutContent() {
     getLocale(),
   ]);
 
-  const brandList = getOrderedUniqueBrands(allLenses)
+  const xBrandList = getOrderedUniqueBrands(xLenses)
+    .map((b) => tBrand(b as Parameters<typeof tBrand>[0]))
+    .join(" · ");
+  const gBrandList = getOrderedUniqueBrands(gfxLenses)
     .map((b) => tBrand(b as Parameters<typeof tBrand>[0]))
     .join(" · ");
 
@@ -131,13 +134,24 @@ export default async function AboutContent() {
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("coverageBody")}
         </p>
-        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3 mt-1">
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">
+        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3 mt-1 flex flex-col gap-2.5">
+          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
             {t("coverageBrands")}
           </p>
-          <p className="text-sm text-zinc-700 dark:text-zinc-300">
-            {brandList}
-          </p>
+          <div className="flex flex-col gap-2">
+            <div>
+              <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 mb-0.5">
+                {t("coverageBrandsX")}
+              </p>
+              <p className="text-sm text-zinc-700 dark:text-zinc-300">{xBrandList}</p>
+            </div>
+            <div>
+              <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 mb-0.5">
+                {t("coverageBrandsG")}
+              </p>
+              <p className="text-sm text-zinc-700 dark:text-zinc-300">{gBrandList}</p>
+            </div>
+          </div>
         </div>
       </Section>
 
