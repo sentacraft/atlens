@@ -49,7 +49,7 @@ function PriceInfoPopover({
               <p className={cn("text-sm font-semibold tabular-nums text-zinc-900 dark:text-zinc-100", isUsed && "text-zinc-500 dark:text-zinc-400")}>
                 {priceDisplay}
                 {isUsed && (
-                  <span className="ml-1.5 text-[10px] font-normal text-zinc-400 dark:text-zinc-500">
+                  <span className="ml-1.5 inline-flex items-center rounded bg-zinc-100 px-1 py-px text-[10px] font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
                     {t("usedBadge")}
                   </span>
                 )}
@@ -61,13 +61,13 @@ function PriceInfoPopover({
               </p>
               {/* Source */}
               <p className="text-zinc-500 dark:text-zinc-400">{sourceDisplay}</p>
-              {/* Sampled date */}
-              <p className="text-zinc-500 dark:text-zinc-400">
-                {t("sampledAt", { date: sampledDisplay })}
-              </p>
               {/* Condition-specific disclaimer */}
-              <p className="mt-1 text-zinc-400 dark:text-zinc-500">
+              <p className="text-zinc-400 dark:text-zinc-500">
                 {isUsed ? t("usedNote") : t("newNote")}
+              </p>
+              {/* Sampled date — metadata, de-emphasised at the bottom */}
+              <p className="text-[10px] text-zinc-400 dark:text-zinc-600">
+                {t("sampledAt", { date: sampledDisplay })}
               </p>
             </div>
           </Popover.Popup>
@@ -117,7 +117,7 @@ export function PriceBand({ lens, compact = false }: Props) {
         {symbol.repeat(tier)}
       </span>
       {isUsed && (
-        <span className="shrink-0 text-[10px] font-medium text-zinc-400 dark:text-zinc-500">
+        <span className="inline-flex shrink-0 items-center rounded bg-zinc-100 px-1 py-px text-[10px] font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
           {t("usedBadge")}
         </span>
       )}
