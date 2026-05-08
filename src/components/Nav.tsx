@@ -112,14 +112,7 @@ export default function Nav() {
             aria-label="Home"
           >
             <Iris config={IRIS_NAV} uid="nav" size={16} />
-            <span className="relative">
-              X-Glass
-              {effectiveMount === "G" && (
-                <span className="absolute -top-2 -right-1.5 text-[0.5rem] font-semibold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
-                  GFX
-                </span>
-              )}
-            </span>
+            X-Glass
           </Link>
           <MountSwitcher />
         </div>
