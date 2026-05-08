@@ -72,6 +72,7 @@
   --titlebar-height: env(titlebar-area-height, 0px);
 
   --nav-height: calc(3.5rem + var(--safe-inset-top) + var(--titlebar-height));
+  --compare-bar-height: 0px;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);

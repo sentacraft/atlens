@@ -37,7 +37,7 @@ function SkeletonCard() {
 
 export default function LensesLoading() {
   return (
-    <div className="w-full max-w-7xl mx-auto px-5 sm:px-6 py-8 flex flex-col gap-6 pb-24">
+    <div className="w-full max-w-7xl mx-auto px-5 sm:px-6 pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col gap-6">
       {/* Header */}
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
