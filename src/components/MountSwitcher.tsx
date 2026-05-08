@@ -1,38 +1,28 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Link, usePathname } from "@/i18n/navigation";
-import type { MountSegment } from "@/lib/mount";
+import { Link } from "@/i18n/navigation";
+import { useMountParam } from "@/hooks/useMountParam";
 
-interface Props {
-  currentMount: MountSegment;
-}
-
-export default function MountSwitcher({ currentMount }: Props) {
+export default function MountSwitcher({ className }: { className?: string }) {
   const t = useTranslations("MountSwitcher");
-  const pathname = usePathname();
+  const mount = useMountParam();
 
-  // Swap mount segment in current path for the switcher link
-  function getHrefForMount(target: MountSegment): string {
-    // Replace /lenses/x or /lenses/gfx prefix with the target mount
-    return pathname.replace(/^(\/lenses\/)(x|gfx)(\b|$)/, `$1${target}$3`) || `/lenses/${target}`;
-  }
-
-  const tabs: { segment: MountSegment; label: string }[] = [
-    { segment: "x", label: t("x") },
-    { segment: "gfx", label: t("gfx") },
-  ];
+  const tabs = [
+    { href: "/lenses/x", label: t("x"), active: mount === "X" },
+    { href: "/lenses/gfx", label: t("gfx"), active: mount === "G" },
+  ] as const;
 
   return (
-    <div className="flex items-center gap-1 border-b border-zinc-200 dark:border-zinc-800 px-4 sm:px-6 max-w-7xl mx-auto w-full">
-      {tabs.map(({ segment, label }) => (
+    <div className={className}>
+      {tabs.map(({ href, label, active }) => (
         <Link
-          key={segment}
-          href={getHrefForMount(segment)}
-          className={`px-3 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
-            currentMount === segment
-              ? "border-zinc-900 dark:border-zinc-50 text-zinc-900 dark:text-zinc-50"
-              : "border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
+          key={href}
+          href={href}
+          className={`text-sm font-medium px-2.5 py-1 rounded-lg transition-colors ${
+            active
+              ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50"
+              : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
           }`}
         >
           {label}
