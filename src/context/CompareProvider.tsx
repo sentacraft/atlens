@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { MAX_COMPARE } from "@/lib/lens";
-import { useMountParam } from "@/hooks/useMountParam";
+import { useEffectiveMount } from "@/hooks/useMountParam";
 import type { Mount } from "@/lib/types";
 
 type CompareState = { X: string[]; G: string[] };
@@ -80,7 +80,7 @@ export function useCompare() {
 // Automatically reads the current mount from URL params.
 export function useMountedCompare() {
   const ctx = useCompare();
-  const mount = useMountParam() ?? "X";
+  const mount = useEffectiveMount();
   return {
     compareIds: ctx.compareState[mount],
     toggleCompare: (id: string) => ctx.toggleCompare(id, mount),

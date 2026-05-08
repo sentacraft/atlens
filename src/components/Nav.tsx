@@ -7,7 +7,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import { useCompare } from "@/context/CompareProvider";
-import { useMountParam } from "@/hooks/useMountParam";
+import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useNavLock } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
@@ -18,7 +18,7 @@ export default function Nav() {
   const t = useTranslations("Nav");
   const pathname = usePathname();
   const { compareState } = useCompare();
-  const mount = useMountParam();
+  const effectiveMount = useEffectiveMount();
   const { navLocked, lockNav } = useNavLock();
   const isPwa = usePwa();
   const [hidden, setHidden] = useState(false);
@@ -51,7 +51,6 @@ export default function Nav() {
     if (!navLocked) setHidden(false);
   }, [navLocked]);
 
-  const effectiveMount = mount ?? "X";
   const compareIds = compareState[effectiveMount];
   const seg = mountToUrlSegment(effectiveMount);
   const compareHref = compareIds.length > 0

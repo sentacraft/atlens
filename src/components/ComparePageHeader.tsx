@@ -7,7 +7,7 @@ import { ShareButton } from "@/components/ShareButton";
 import CompareAddLensButton from "@/components/CompareAddLensButton";
 import BackButton from "@/components/BackButton";
 import { useMountedCompare } from "@/context/CompareProvider";
-import { useMountParam } from "@/hooks/useMountParam";
+import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useRouter } from "@/i18n/navigation";
 import type { Lens } from "@/lib/types";
@@ -25,7 +25,7 @@ export default function ComparePageHeader({ lenses, fallbackHref, minColumns = 0
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
   const { clearCompare } = useMountedCompare();
-  const mount = useMountParam() ?? "X";
+  const mount = useEffectiveMount();
   const router = useRouter();
   const headerRef = useRef<HTMLDivElement>(null);
   const [showFab, setShowFab] = useState(false);

@@ -24,7 +24,7 @@ import type { FeedbackField } from "@/components/FeedbackDialog";
 import { useMountedCompare } from "@/context/CompareProvider";
 import { useCompareUrl } from "@/hooks/useCompareUrl";
 import { getLensesByMount, getLensUrl, MAX_COMPARE } from "@/lib/lens";
-import { useMountParam } from "@/hooks/useMountParam";
+import { useEffectiveMount } from "@/hooks/useMountParam";
 import LensSearchDialog from "@/components/LensSearchDialog";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { buildSpecGroups, resolveSpecRow } from "@/lib/lens-spec-groups";
@@ -175,7 +175,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const router = useRouter();
   const { replaceCompare } = useMountedCompare();
   const { buildCompareUrl } = useCompareUrl();
-  const mount = useMountParam() ?? "X";
+  const mount = useEffectiveMount();
   const initialLensIds = useMemo(
     () => initialLenses.map((lens) => lens.id),
     [initialLenses]

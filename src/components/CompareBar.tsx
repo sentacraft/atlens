@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { getLensesByMount } from "@/lib/lens";
 import { useMountedCompare } from "@/context/CompareProvider";
-import { useMountParam } from "@/hooks/useMountParam";
+import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
 import { motion, AnimatePresence } from "motion/react";
 import { spring } from "@/lib/animation";
@@ -20,7 +20,7 @@ export default function CompareBar() {
   const tCompare = useTranslations("Compare");
   const router = useRouter();
   const pathname = usePathname();
-  const mount = useMountParam() ?? "X";
+  const mount = useEffectiveMount();
   const { compareIds, toggleCompare, clearCompare } = useMountedCompare();
 
   const selectedLenses = useMemo(

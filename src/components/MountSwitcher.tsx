@@ -2,18 +2,29 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
 import { ChevronDown } from "lucide-react";
-import { useMountParam } from "@/hooks/useMountParam";
+import { useRouter } from "@/i18n/navigation";
+import { useMountParam, useEffectiveMount } from "@/hooks/useMountParam";
+import { useMountPreference } from "@/context/MountPreferenceProvider";
+import { mountToUrlSegment } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
 
 const MOUNT_LABEL: Record<Mount, string> = { X: "X", G: "GFX" };
 
 export default function MountSwitcher() {
   const t = useTranslations("MountSwitcher");
-  const mount = useMountParam();
+  const router = useRouter();
+  const urlMount = useMountParam();
+  const effectiveMount = useEffectiveMount();
+  const { setPreference } = useMountPreference();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  // Sync URL mount → preference so navigating to /lenses/gfx
+  // keeps the badge on GFX after navigating away.
+  useEffect(() => {
+    if (urlMount) setPreference(urlMount);
+  }, [urlMount, setPreference]);
 
   // Close on outside click
   useEffect(() => {
@@ -27,11 +38,18 @@ export default function MountSwitcher() {
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [open]);
 
-  const effectiveMount = mount ?? "X";
+  const handleSelect = (mount: Mount) => {
+    setPreference(mount);
+    setOpen(false);
+    // On /lenses/[mount]/* pages, also navigate to keep URL in sync
+    if (urlMount !== null) {
+      router.push(`/lenses/${mountToUrlSegment(mount)}`);
+    }
+  };
 
-  const options: { mount: Mount; label: string; href: string }[] = [
-    { mount: "X", label: t("x"), href: "/lenses/x" },
-    { mount: "G", label: t("gfx"), href: "/lenses/gfx" },
+  const options: { mount: Mount; label: string }[] = [
+    { mount: "X", label: t("x") },
+    { mount: "G", label: t("gfx") },
   ];
 
   return (
@@ -52,23 +70,23 @@ export default function MountSwitcher() {
           className="absolute left-0 top-full mt-1.5 z-50 min-w-[7rem] rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden"
         >
           {options.map((opt) => (
-            <Link
+            <button
               key={opt.mount}
-              href={opt.href}
+              type="button"
               role="option"
               aria-selected={opt.mount === effectiveMount}
-              onClick={() => setOpen(false)}
-              className={`flex items-center gap-2 px-3 py-2 text-sm transition-colors ${
+              onClick={() => handleSelect(opt.mount)}
+              className={`flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors ${
                 opt.mount === effectiveMount
                   ? "text-zinc-900 dark:text-zinc-50 font-medium bg-zinc-50 dark:bg-zinc-900"
                   : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-900"
               }`}
             >
               {opt.label}
-              {opt.mount === mount && (
+              {opt.mount === effectiveMount && (
                 <span className="ml-auto h-1.5 w-1.5 rounded-full bg-zinc-900 dark:bg-zinc-50" />
               )}
-            </Link>
+            </button>
           ))}
         </div>
       )}

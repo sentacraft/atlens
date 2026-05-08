@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useMountParam } from "@/hooks/useMountParam";
+import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
 
 /**
@@ -10,7 +10,7 @@ import { mountToUrlSegment } from "@/lib/mount";
  */
 export function useCompareUrl() {
   const searchParams = useSearchParams();
-  const mount = useMountParam() ?? "X";
+  const mount = useEffectiveMount();
 
   function buildCompareUrl(ids: string[], extra?: { preset?: string }) {
     const params = new URLSearchParams();

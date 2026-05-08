@@ -14,7 +14,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { getLensesByMount } from "@/lib/lens";
 import { mountToUrlSegment } from "@/lib/mount";
-import { useMountParam } from "@/hooks/useMountParam";
+import { useEffectiveMount } from "@/hooks/useMountParam";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -50,7 +50,7 @@ export default function LensSearchDialog({
   const t = useTranslations("Search");
   const tBrand = useTranslations("Brands");
   const router = useRouter();
-  const mount = useMountParam() ?? "X";
+  const mount = useEffectiveMount();
   const lensSearchIndex = useMemo(() => buildLensSearchIndex(getLensesByMount(mount)), [mount]);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
