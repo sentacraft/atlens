@@ -6,6 +6,11 @@
     "backToTop": "Back to top",
     "additionalInfo": "Additional information"
   },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "home": "Back to Home"
+  },
   "Metadata": {
     "seoTitle": "X-Glass | Fujifilm X-Mount Lens Database & Comparison",
     "seoDescription": "Every Fujifilm X-Mount lens, normalized and ready to compare — XF, XC, MK, Sigma, Tamron, Viltrox, TTArtisan, 7Artisans, Brightin Star, SG Image. One database, zero bias."

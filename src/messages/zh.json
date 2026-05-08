@@ -6,6 +6,11 @@
     "backToTop": "回到顶部",
     "additionalInfo": "补充说明"
   },
+  "NotFound": {
+    "title": "页面不存在",
+    "description": "你访问的页面不存在，或已被移动到其他位置。",
+    "home": "返回首页"
+  },
   "Metadata": {
     "seoTitle": "X-Glass | 富士 X 卡口镜头参数库",
     "seoDescription": "富士 X 卡口镜头数据库，收录富士 XF / XC / MK、适马、腾龙、唯卓仕、铭匠、七工匠、星曜、深光影像全品牌参数。规格统一标准，支持跨品牌横向对比。"
