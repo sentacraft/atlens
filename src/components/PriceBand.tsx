@@ -7,6 +7,7 @@ import { priceTier } from "@/lib/lens";
 import {
   pickPriceEntry,
   formatPrice,
+  formatTierRange,
   formatSampledAt,
   formatSource,
   type PriceSelection,
@@ -23,8 +24,11 @@ function PriceInfoPopover({
 }) {
   const t = useTranslations("Pricing");
   const { entry, condition } = selection;
+  const tier = priceTier(entry.price, entry.currency);
   const isUsed = condition === "used";
+  const symbol = locale === "zh" ? "¥" : "$";
   const priceDisplay = formatPrice(entry.price, entry.currency, locale, condition);
+  const rangeDisplay = formatTierRange(tier, entry.currency, locale);
   const sourceDisplay = formatSource(entry.source, locale);
   const sampledDisplay = formatSampledAt(entry.sampledAt, locale);
 
@@ -38,27 +42,32 @@ function PriceInfoPopover({
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner side="top" align="center" sideOffset={6}>
-          <Popover.Popup className="max-w-60 origin-(--transform-origin) rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-xs leading-relaxed text-zinc-700 shadow-lg duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+          <Popover.Popup className="max-w-72 origin-(--transform-origin) rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-xs leading-relaxed text-zinc-700 shadow-lg duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
             <div className="flex flex-col gap-1.5">
-              <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                {t("popoverTitle")}
+              {/* Price (title) */}
+              <p className={cn("text-sm font-semibold tabular-nums text-zinc-900 dark:text-zinc-100", isUsed && "text-zinc-500 dark:text-zinc-400")}>
+                {priceDisplay}
                 {isUsed && (
                   <span className="ml-1.5 text-[10px] font-normal text-zinc-400 dark:text-zinc-500">
                     {t("usedBadge")}
                   </span>
                 )}
               </p>
-              <p className={cn("tabular-nums", isUsed && "text-zinc-500 dark:text-zinc-400")}>
-                {priceDisplay}
+              {/* Tier symbols + numeric range */}
+              <p className="text-zinc-500 dark:text-zinc-400">
+                <span className="font-semibold tracking-wide">{symbol.repeat(tier)}</span>{" "}
+                <span className="tabular-nums">{rangeDisplay}</span>
               </p>
+              {/* Source */}
               <p className="text-zinc-500 dark:text-zinc-400">{sourceDisplay}</p>
+              {/* Sampled date */}
               <p className="text-zinc-500 dark:text-zinc-400">
                 {t("sampledAt", { date: sampledDisplay })}
               </p>
-              {isUsed && (
-                <p className="text-zinc-400 dark:text-zinc-500">{t("usedNote")}</p>
-              )}
-              <p className="text-zinc-400 dark:text-zinc-500">{t("disclaimerInline")}</p>
+              {/* Condition-specific disclaimer */}
+              <p className="mt-1 text-zinc-400 dark:text-zinc-500">
+                {isUsed ? t("usedNote") : t("newNote")}
+              </p>
             </div>
           </Popover.Popup>
         </Popover.Positioner>

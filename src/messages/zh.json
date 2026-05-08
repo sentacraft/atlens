@@ -414,11 +414,10 @@
     "fieldLabel": "价格",
     "groupLabel": "价格",
     "infoTriggerLabel": "价格详情",
-    "popoverTitle": "档位",
     "tierAriaLabel": "档位 {tier}/5",
     "usedBadge": "二手",
-    "usedNote": "二手价格波动大，~ 表示参考价",
-    "sampledAt": "采样于 {date}",
-    "disclaimerInline": "价格仅供参考，实际以电商平台当下价格为准"
+    "newNote": "价格仅供参考。由于电商平台价格变动频繁，可能会有优惠活动，请以实际下单时的价格为准。此外，采样的价格仅代表采样当时官方某一渠道商店的价格。",
+    "usedNote": "二手价格波动较大且因成色而异，很难给出一个具体、准确且客观的价格。目前显示的价格为中位数价格，但也只能代表采样日期当时的一个情况。",
+    "sampledAt": "采样于 {date}"
   }
 }

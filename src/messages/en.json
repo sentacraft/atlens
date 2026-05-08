@@ -414,11 +414,10 @@
     "fieldLabel": "Price",
     "groupLabel": "Pricing",
     "infoTriggerLabel": "Price details",
-    "popoverTitle": "Tier",
     "tierAriaLabel": "Tier {tier} of 5",
     "usedBadge": "Used",
-    "usedNote": "Used prices vary; ~ indicates a reference price",
-    "sampledAt": "Sampled {date}",
-    "disclaimerInline": "For reference only — verify pricing on the platform before buying"
+    "newNote": "Pricing is for reference only. E-commerce platforms change prices frequently and run promotions, so the actual checkout price may differ. The sampled figure reflects only one official storefront at the time of sampling.",
+    "usedNote": "Used prices fluctuate widely with condition and listing, so any single number is at best an approximation. The figure shown is a median estimate from the time of sampling and may not reflect today's market.",
+    "sampledAt": "Sampled {date}"
   }
 }

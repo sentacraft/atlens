@@ -27,6 +27,36 @@ export function pickPriceEntry(
   return null;
 }
 
+const CNY_THRESHOLDS: readonly number[] = [0, 500, 1500, 5000, 15000];
+const USD_THRESHOLDS: readonly number[] = [0, 150, 400, 800, 1500];
+
+export function tierRange(
+  tier: 1 | 2 | 3 | 4 | 5,
+  currency: "CNY" | "USD"
+): { min: number; max: number | null } {
+  const thresholds = currency === "CNY" ? CNY_THRESHOLDS : USD_THRESHOLDS;
+  const min = thresholds[tier - 1];
+  const max = tier < 5 ? thresholds[tier] - 1 : null;
+  return { min, max };
+}
+
+// Numeric-only range, no currency symbol — the caller pairs it with $$$ / ¥¥¥.
+// Examples: "1,500–4,999", "15,000+"
+export function formatTierRange(
+  tier: 1 | 2 | 3 | 4 | 5,
+  currency: "CNY" | "USD",
+  locale: string
+): string {
+  const { min, max } = tierRange(tier, currency);
+  const intlLocale = locale === "zh" ? "zh-CN" : "en-US";
+  const fmt = (n: number) =>
+    new Intl.NumberFormat(intlLocale, { maximumFractionDigits: 0 }).format(n);
+  if (max === null) {
+    return `${fmt(min)}+`;
+  }
+  return `${fmt(min)}–${fmt(max)}`;
+}
+
 export function formatPrice(
   price: number,
   currency: "CNY" | "USD",
