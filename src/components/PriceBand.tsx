@@ -27,7 +27,7 @@ function PriceInfoPopover({
   const tier = priceTier(entry.price, entry.currency);
   const isUsed = condition === "used";
   const symbol = locale === "zh" ? "¥" : "$";
-  const priceDisplay = formatPrice(entry.price, entry.currency, locale, condition);
+  const priceDisplay = formatPrice(entry.price, entry.currency, locale, condition, t);
   const rangeDisplay = formatTierRange(tier, entry.currency, locale);
   const sourceDisplay = formatSource(entry.source, t);
   const sampledDisplay = formatSampledAt(entry.sampledAt, locale);
