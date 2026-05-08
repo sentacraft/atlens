@@ -24,6 +24,13 @@ const maxTStopSchema = createApertureSchema("maxTStop");
 const minTStopSchema = createApertureSchema("minTStop");
 const specialtyTagSchema = z.enum(SPECIALTY_TAGS);
 export const specNaSchema = z.literal(SPEC_NA);
+const priceBandTierSchema = z.union([
+  z.literal(1),
+  z.literal(2),
+  z.literal(3),
+  z.literal(4),
+  z.literal(5),
+]);
 
 export const focusDistanceVariantsSchema = z.strictObject({
   wide: positiveNumberSchema.optional(),
@@ -99,6 +106,10 @@ const lensBaseShape = {
   ]).optional(),
   apertureBladeCount: z.union([z.number().int().positive(), specNaSchema]).optional(),
   releaseYear: z.number().int().min(1900).max(2100).optional(),
+  priceBand: z.strictObject({
+    cn: priceBandTierSchema.optional(),
+    global: priceBandTierSchema.optional(),
+  }).optional(),
   compatibleMounts: z.array(nonEmptyStringSchema).min(1).optional(),
   accessories: z.array(nonEmptyStringSchema).min(1).optional(),
   lensMaterial: optionalNonEmptyStringSchema,
