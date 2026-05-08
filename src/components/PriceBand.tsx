@@ -121,7 +121,9 @@ export function PriceBand({ lens, compact = false }: Props) {
       </div>
       {/* Range subtext — matches the subValue pattern used elsewhere in CompareTable */}
       <p className="tabular-nums text-[11px] text-zinc-400 dark:text-zinc-500">
-        ({rangeDisplay})
+        {entry.currency === "CNY"
+          ? t("cnyAmount", { value: rangeDisplay })
+          : `$${rangeDisplay}`}
       </p>
     </div>
   );
