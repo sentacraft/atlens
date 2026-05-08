@@ -416,8 +416,8 @@
     "infoTriggerLabel": "Price details",
     "tierAriaLabel": "Tier {tier} of 5",
     "usedBadge": "Used",
-    "newNote": "Pricing is for reference only. E-commerce platforms change prices frequently and run promotions, so the actual checkout price may differ. The sampled figure reflects only one official storefront at the time of sampling.",
-    "usedNote": "Used prices fluctuate widely with condition and listing, so any single number is at best an approximation. The figure shown is a median estimate from the time of sampling and may not reflect today's market.",
+    "newNote": "Pricing is for reference only. E-commerce list prices change frequently and are often paired with promotions or coupons, so the actual checkout price may differ; the sampled figure reflects one official storefront at one moment in time, not the lowest available price.",
+    "usedNote": "Pricing is for reference only. Used prices vary widely with condition, included accessories, and seller, so any single number is at best an approximation; this is a median across listings at the time of sampling and only reflects the market at that moment.",
     "sampledAt": "Sampled {date}"
   }
 }

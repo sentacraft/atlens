@@ -56,7 +56,7 @@ function PriceInfoPopover({
               {/* Tier symbols + numeric range */}
               <p className="text-zinc-500 dark:text-zinc-400">
                 <span className="font-semibold tracking-wide">{symbol.repeat(tier)}</span>{" "}
-                <span className="tabular-nums">{rangeDisplay}</span>
+                <span className="tabular-nums">({rangeDisplay})</span>
               </p>
               {/* Source */}
               <p className="text-zinc-500 dark:text-zinc-400">{sourceDisplay}</p>
