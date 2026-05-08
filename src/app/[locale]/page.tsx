@@ -39,12 +39,6 @@ export default function Home() {
             >
               {h("cta")} →
             </Link>
-            <Link
-              href={{ pathname: "/lenses/x/compare", query: { from: "home" } }}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
-            >
-              {h("ctaCompare")} →
-            </Link>
           </div>
           <DataInfo />
         </div>
