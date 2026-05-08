@@ -1,1 +1,54 @@
-[]
+[
+  {
+    "id": "fujifilm-gf-50mmf35-r-lm-wr-g",
+    "brand": "fujifilm",
+    "mount": "G",
+    "series": "GF",
+    "model": "GF 50mm F3.5 R LM WR",
+    "focalLengthMin": 50,
+    "focalLengthMax": 50,
+    "maxAperture": 3.5,
+    "minAperture": 32,
+    "af": true,
+    "ois": false,
+    "wr": true,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "LM",
+    "internalFocusing": true,
+    "weightG": 335,
+    "diameterMm": 84,
+    "length": {
+      "mm": 48
+    },
+    "minFocusDistance": {
+      "cm": 55
+    },
+    "maxMagnification": {
+      "value": 0.1
+    },
+    "angleOfView": 57.4,
+    "angleOfViewCalc": 57.4,
+    "apertureBladeCount": 9,
+    "releaseYear": 2020,
+    "accessories": [
+      "Front lens cap FLCP-62II",
+      "Rear lens cap RLCP-002",
+      "Lens hood",
+      "Hood cap FLCP-43",
+      "Wrapping cloth"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 6,
+      "elements": 9,
+      "aspherical": 1,
+      "sourceText": "9 elements in 6 groups (includes 1 aspherical element)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf50mmf35-r-lm-wr/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/gf50mmf35-r-lm-wr/"
+    }
+  }
+]
