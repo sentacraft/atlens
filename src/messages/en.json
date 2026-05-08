@@ -418,6 +418,7 @@
     "conditionNew": "New",
     "conditionUsed": "Used",
     "cnyAmount": "¥{value}",
+    "tierSymbol": "$",
     "source": {
       "jd": "Official store (JD.com)",
       "tmall": "Official store (Tmall)",

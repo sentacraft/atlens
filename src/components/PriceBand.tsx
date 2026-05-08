@@ -27,7 +27,7 @@ function PriceInfoPopover({
   const t = useTranslations("Pricing");
   const { entry, condition } = selection;
   const isUsed = condition === "used";
-  const symbol = locale === "zh" ? "¥" : "$";
+  const symbol = t("tierSymbol");
   const priceDisplay = formatPrice(entry.price, entry.currency, locale, condition, t);
   const rangeDisplay = formatTierRange(tier, entry.currency, locale);
   const sourceDisplay = formatSource(entry.source, t);
@@ -100,7 +100,7 @@ export function PriceBand({ lens, compact = false }: Props) {
     return null;
   }
   const isUsed = condition === "used";
-  const symbol = locale === "zh" ? "¥" : "$";
+  const symbol = t("tierSymbol");
 
   return (
     <div className="inline-flex items-center gap-1.5">
