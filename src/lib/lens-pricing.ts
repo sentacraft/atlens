@@ -18,22 +18,13 @@ export function pickPriceEntry(
 ): PriceSelection | null {
   const market: Market = locale === "zh" ? "cn" : "global";
   const bucket = pricing?.[market];
-  if (bucket?.new) {return { entry: bucket.new, market, condition: "new" };}
-  if (bucket?.used) {return { entry: bucket.used, market, condition: "used" };}
+  if (bucket?.new) {
+    return { entry: bucket.new, market, condition: "new" };
+  }
+  if (bucket?.used) {
+    return { entry: bucket.used, market, condition: "used" };
+  }
   return null;
-}
-
-const CNY_THRESHOLDS: readonly number[] = [0, 500, 1500, 5000, 15000];
-const USD_THRESHOLDS: readonly number[] = [0, 150, 400, 800, 1500];
-
-export function tierRange(
-  tier: 1 | 2 | 3 | 4 | 5,
-  currency: "CNY" | "USD"
-): { min: number; max: number | null } {
-  const thresholds = currency === "CNY" ? CNY_THRESHOLDS : USD_THRESHOLDS;
-  const min = thresholds[tier - 1];
-  const max = tier < 5 ? thresholds[tier] - 1 : null;
-  return { min, max };
 }
 
 export function formatPrice(
@@ -43,29 +34,20 @@ export function formatPrice(
   condition: Condition
 ): string {
   const intlLocale = locale === "zh" ? "zh-CN" : "en-US";
-  const formatted = new Intl.NumberFormat(intlLocale, {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(price);
-  return condition === "used" ? `~${formatted}` : formatted;
-}
-
-export function formatTierRange(
-  tier: 1 | 2 | 3 | 4 | 5,
-  currency: "CNY" | "USD",
-  locale: string
-): string {
-  const { min, max } = tierRange(tier, currency);
-  const intlLocale = locale === "zh" ? "zh-CN" : "en-US";
-  const fmt = (n: number) =>
-    new Intl.NumberFormat(intlLocale, {
-      style: "currency",
-      currency,
+  let formatted: string;
+  if (currency === "CNY") {
+    // "5,490 元" — value with thousand separators, suffix " 元"
+    formatted = `${new Intl.NumberFormat(intlLocale, {
       maximumFractionDigits: 0,
-    }).format(n);
-  if (max === null) {return `${fmt(min)}+`;}
-  return `${fmt(min)} – ${fmt(max)}`;
+    }).format(price)} 元`;
+  } else {
+    formatted = new Intl.NumberFormat(intlLocale, {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    }).format(price);
+  }
+  return condition === "used" ? `~${formatted}` : formatted;
 }
 
 export function formatSampledAt(date: string, locale: string): string {
@@ -78,9 +60,19 @@ export function formatSampledAt(date: string, locale: string): string {
   });
 }
 
+// Source labels emphasize whether the price comes from an official storefront
+// or a second-hand marketplace, so users can judge reliability at a glance.
 const SOURCE_LABELS: Record<string, Record<string, string>> = {
-  zh: { jd: "京东", tmall: "天猫", xianyu: "闲鱼" },
-  en: { jd: "JD.com", tmall: "Tmall", xianyu: "Xianyu" },
+  zh: {
+    jd: "官方店（京东）",
+    tmall: "官方店（天猫）",
+    xianyu: "闲鱼",
+  },
+  en: {
+    jd: "Official store (JD.com)",
+    tmall: "Official store (Tmall)",
+    xianyu: "Xianyu",
+  },
 };
 
 export function formatSource(source: string, locale: string): string {

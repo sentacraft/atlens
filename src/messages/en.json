@@ -414,9 +414,10 @@
     "fieldLabel": "Price",
     "groupLabel": "Pricing",
     "infoTriggerLabel": "Price details",
+    "popoverTitle": "Tier",
+    "tierAriaLabel": "Tier {tier} of 5",
     "usedBadge": "Used",
     "usedNote": "Used prices vary; ~ indicates a reference price",
-    "tierLabel": "Tier {tier}/5 · {range}",
     "sampledAt": "Sampled {date}",
     "disclaimerInline": "For reference only — verify pricing on the platform before buying"
   }

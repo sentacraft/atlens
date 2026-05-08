@@ -414,9 +414,10 @@
     "fieldLabel": "价格",
     "groupLabel": "价格",
     "infoTriggerLabel": "价格详情",
+    "popoverTitle": "档位",
+    "tierAriaLabel": "档位 {tier}/5",
     "usedBadge": "二手",
     "usedNote": "二手价格波动大，~ 表示参考价",
-    "tierLabel": "档位 {tier}/5 · {range}",
     "sampledAt": "采样于 {date}",
     "disclaimerInline": "价格仅供参考，实际以电商平台当下价格为准"
   }
