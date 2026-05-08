@@ -213,7 +213,11 @@ export default function Iris({
       setTheta(next);
       const delta = Math.abs(next - targetThetaRef.current);
       if (delta > 0.01) hasMovedSignificantly = true;
-      if (hasMovedSignificantly && delta < 0.001) {
+      // Do not stop chasing while an animation tick is still driving the target
+      // (initAnimRef.current !== null). Stopping mid-animation would leave the
+      // iris frozen at an intermediate position (e.g. thetaMax at Phase-1 end)
+      // even though Phase 2 is about to move the target back to defaultTheta.
+      if (hasMovedSignificantly && delta < 0.001 && initAnimRef.current === null) {
         thetaRef.current = targetThetaRef.current;
         setTheta(targetThetaRef.current);
         chaseRef.current = null;
