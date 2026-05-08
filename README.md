@@ -79,7 +79,10 @@ flowchart TD
     S2c["<b>Stage 2c · Image Processing</b><br/>Normalizes product images"]
     SR["<b>Stage R · Human Review</b><br/>Maintainer inspects and applies corrections"]
 
-    SPr["<b>Stage Pr · Price Sample</b><br/>AI Agent scrapes marketplace prices via stealth browser"]
+    subgraph spr["Stage Pr · Price Sample"]
+      SPrNew["<b>New Price</b><br/>AI Agent visits official storefronts<br/>Short-circuits on first valid price"]
+      SPrUsed["<b>Used Price</b><br/>AI Agent samples secondary-market listings<br/>Median computed at publish time"]
+    end
 
     subgraph sp["Stage P · Publish Gate"]
       SP1["<b>Zod schema validation</b><br/>Intra-lens + cross-lens checks"]
@@ -101,8 +104,9 @@ flowchart TD
   S2a --> S2b
   S2b & S2c --> SR
   SR --> SP1
-  PRICING_SOURCES -->|"channel search URLs"| SPr
-  SPr --> SP1
+  PRICING_SOURCES -->|"channel search URLs"| SPrNew
+  PRICING_SOURCES -->|"search queries"| SPrUsed
+  SPrNew & SPrUsed --> SP1
   SP1 --> SP2
   SP2 -->|"writes src/data/lenses.json"| DB[("x-glass<br/>(this repo)")]
 
@@ -113,7 +117,7 @@ flowchart TD
   classDef config fill:#f1f5f9,stroke:#64748b,color:#1e293b
 
   class S0,S2b,S2c script
-  class S1p1,S1p2,S1b,S2a,SPr agent
+  class S1p1,S1p2,S1b,S2a,SPrNew,SPrUsed agent
   class S1r,S1h,SR human
   class SP1,SP2 gate
   class SOURCES,PRICING_SOURCES config
