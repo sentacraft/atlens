@@ -1,7 +1,15 @@
-import { test, expect } from "@playwright/test";
+import { type Page, test, expect } from "@playwright/test";
 
 const LENS_A = "fujifilm-mkx-18-55mmt29-x";
 const LENS_B = "fujifilm-mkx-50-135mmt29-x";
+
+/** Returns the current --compare-bar-height CSS variable value in pixels (0 if unset). */
+async function getCompareBarHeightVar(page: Page): Promise<number> {
+  return page.evaluate(() => {
+    const raw = getComputedStyle(document.documentElement).getPropertyValue("--compare-bar-height").trim();
+    return parseFloat(raw) || 0;
+  });
+}
 
 // Scrolls the page via window.scrollBy so the browser fires a real scroll event
 // on window (which is what Nav and other components now listen to).
@@ -183,5 +191,142 @@ test.describe("Lens list scroll-to-top button", () => {
     await btn.click();
     await page.waitForFunction(() => window.scrollY < 50, { timeout: 3000 });
     await expect(btn).toBeHidden({ timeout: 3000 });
+  });
+});
+
+// ─── CompareBar height CSS variable ─────────────────────────────────────────
+//
+// Regression tests for the bug where the CompareBar (fixed bottom-0) covered
+// the last rows of spec tables and the BackToTopButton on mobile viewports.
+// The fix uses ResizeObserver in CompareBar to keep --compare-bar-height in
+// sync with the bar's actual rendered height. These tests verify the variable
+// lifecycle and that dependent elements use it correctly.
+
+test.describe("CompareBar --compare-bar-height CSS variable", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/en/lenses");
+    await page.waitForLoadState("networkidle");
+  });
+
+  test("variable is 0 when no lenses are selected", async ({ page }) => {
+    const height = await getCompareBarHeightVar(page);
+    expect(height).toBe(0);
+  });
+
+  test("variable becomes positive once compare bar appears", async ({ page }) => {
+    await page.getByRole("button", { name: /add to compare/i }).first().click();
+    await page.locator('[data-testid="compare-bar"]').waitFor({ state: "visible" });
+
+    const height = await getCompareBarHeightVar(page);
+    expect(height).toBeGreaterThan(0);
+  });
+
+  test("variable resets to 0 after compare bar is dismissed", async ({ page }) => {
+    await page.getByRole("button", { name: /add to compare/i }).first().click();
+    const bar = page.locator('[data-testid="compare-bar"]');
+    await bar.waitFor({ state: "visible" });
+
+    await page.getByRole("button", { name: /clear/i }).click();
+    // Wait for exit animation to finish and variable to be reset
+    await page.waitForFunction(
+      () =>
+        parseFloat(
+          getComputedStyle(document.documentElement).getPropertyValue("--compare-bar-height")
+        ) === 0,
+      { timeout: 3000 }
+    );
+
+    const height = await getCompareBarHeightVar(page);
+    expect(height).toBe(0);
+  });
+
+  test("variable accurately reflects the bar's rendered height", async ({ page }) => {
+    await page.getByRole("button", { name: /add to compare/i }).first().click();
+    const bar = page.locator('[data-testid="compare-bar"]');
+    await bar.waitFor({ state: "visible" });
+
+    const [cssVar, domHeight] = await page.evaluate(() => {
+      const el = document.querySelector('[data-testid="compare-bar"]') as HTMLElement;
+      const varVal = parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue("--compare-bar-height")
+      );
+      return [varVal, el.getBoundingClientRect().height];
+    });
+
+    // Allow 1px rounding tolerance between ResizeObserver contentRect and getBoundingClientRect
+    expect(Math.abs(cssVar - domHeight)).toBeLessThanOrEqual(1);
+  });
+});
+
+test.describe("CompareBar does not obscure BackToTopButton or page content", () => {
+  test("BackToTopButton bottom edge stays above CompareBar when both visible", async ({ page }) => {
+    await page.goto("/en/lenses");
+    await page.waitForLoadState("networkidle");
+    await waitForScrollable(page, 200);
+
+    // Trigger compare bar
+    await page.getByRole("button", { name: /add to compare/i }).first().click();
+    await page.locator('[data-testid="compare-bar"]').waitFor({ state: "visible" });
+
+    // Scroll enough to reveal the BackToTopButton (threshold: 400px)
+    await scrollBy(page, 500);
+    const btn = page.getByRole("button", { name: /back to top/i });
+    await expect(btn).toBeVisible({ timeout: 3000 });
+
+    const [btnBottom, barTop] = await page.evaluate(() => {
+      const button = document.querySelector('[aria-label]') as Element;
+      // Find the back-to-top button via aria-label text (locale-agnostic: any button near bottom-right)
+      const allBtns = Array.from(document.querySelectorAll("button[aria-label]"));
+      const backTop = allBtns.find((b) =>
+        (b.getAttribute("aria-label") ?? "").toLowerCase().includes("top")
+      );
+      const bar = document.querySelector('[data-testid="compare-bar"]') as HTMLElement;
+      if (!backTop || !bar) throw new Error("Elements not found");
+      return [
+        backTop.getBoundingClientRect().bottom,
+        bar.getBoundingClientRect().top,
+      ];
+    });
+
+    expect(btnBottom).toBeLessThanOrEqual(barTop + 1); // +1 for sub-pixel tolerance
+  });
+
+  test("lens list content padding-bottom exceeds compare bar height", async ({ page }) => {
+    await page.goto("/en/lenses");
+    await page.waitForLoadState("networkidle");
+
+    await page.getByRole("button", { name: /add to compare/i }).first().click();
+    await page.locator('[data-testid="compare-bar"]').waitFor({ state: "visible" });
+
+    const barHeight = await getCompareBarHeightVar(page);
+
+    // The content wrapper uses pb-[max(6rem, calc(--compare-bar-height + 2rem))].
+    // Read the actual computed padding-bottom and verify it exceeds the bar height.
+    const paddingBottom = await page.evaluate(() => {
+      // The lens list wrapper is the first div.max-w-7xl inside the page body
+      const el = document.querySelector(".max-w-7xl") as HTMLElement;
+      if (!el) throw new Error("Lens list container not found");
+      return parseFloat(getComputedStyle(el).paddingBottom);
+    });
+
+    expect(paddingBottom).toBeGreaterThan(barHeight);
+  });
+
+  test("lens detail content padding-bottom exceeds compare bar height", async ({ page }) => {
+    await page.goto(`/en/lenses/${LENS_A}`);
+    await page.waitForLoadState("networkidle");
+
+    await page.getByRole("button", { name: /add to compare/i }).click();
+    await page.locator('[data-testid="compare-bar"]').waitFor({ state: "visible" });
+
+    const barHeight = await getCompareBarHeightVar(page);
+
+    const paddingBottom = await page.evaluate(() => {
+      const el = document.querySelector(".max-w-4xl") as HTMLElement;
+      if (!el) throw new Error("Lens detail container not found");
+      return parseFloat(getComputedStyle(el).paddingBottom);
+    });
+
+    expect(paddingBottom).toBeGreaterThan(barHeight);
   });
 });
