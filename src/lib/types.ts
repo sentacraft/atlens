@@ -661,15 +661,7 @@ export interface Lens {
    * and the UI renders them as separate data points.
    *
    * Markets are independent; omit a market when no price data is available.
-   *
-   * Price tiers (used for UI bucketing) map a sampled price to a 1–5 band:
-   *
-   *   tier  CNY (cn)            USD (global)
-   *   1     < 500               < 150
-   *   2     500 – 1,499         150 – 399
-   *   3     1,500 – 4,999       400 – 799
-   *   4     5,000 – 14,999      800 – 1,499
-   *   5     ≥ 15,000            ≥ 1,500
+   * For UI bucketing into tiers 1–5, see `priceTier()` in lens.ts.
    */
   pricing?: {
     cn?: {
