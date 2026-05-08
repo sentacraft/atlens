@@ -9,7 +9,6 @@ import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { mountToUrlSegment } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
 
-const BRAND_NAME: Record<Mount, string> = { X: "X-Glass", G: "G-Glass" };
 
 export default function MountSwitcher() {
   const t = useTranslations("MountSwitcher");
@@ -60,7 +59,14 @@ export default function MountSwitcher() {
         aria-expanded={open}
         aria-label={t("label")}
       >
-        {BRAND_NAME[effectiveMount]}
+        <span className="relative">
+          X-Glass
+          {effectiveMount === "G" && (
+            <span className="absolute -top-1.5 -right-[1.85rem] text-[0.55rem] font-semibold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
+              GFX
+            </span>
+          )}
+        </span>
         <ChevronDown className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" />
       </button>
 
