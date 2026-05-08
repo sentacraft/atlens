@@ -20,7 +20,7 @@ import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates } from "@/lib/seo";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
-import { PriceBand } from "@/components/PriceBand";
+import { PriceSection } from "@/components/PriceSection";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
 
@@ -282,8 +282,8 @@ export default async function LensDetailPage({ params }: { params: Params }) {
             </FeedbackTrigger>
           </div>
 
-          {/* Price band */}
-          <PriceBand lens={lens} />
+          {/* Price section — expanded display with inline note */}
+          <PriceSection lens={lens} />
 
           {/* Grouped spec table */}
           <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
