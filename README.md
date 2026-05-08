@@ -61,6 +61,7 @@ Lens data and images are maintained in a private pipeline repo and written into 
 flowchart TD
   subgraph pipeline["x-glass-pipeline (private)"]
     SOURCES[("sources.yaml")]
+    PRICING_SOURCES[("pricing-sources.yaml")]
 
     S0["<b>Stage 0 · Index</b><br/>Discovers X Mount and G Mount lenses from brand listing pages"]
 
@@ -77,6 +78,8 @@ flowchart TD
     S2b["<b>Stage 2b · Compute</b><br/>Script derives deterministic fields"]
     S2c["<b>Stage 2c · Image Processing</b><br/>Normalizes product images"]
     SR["<b>Stage R · Human Review</b><br/>Maintainer inspects and applies corrections"]
+
+    SPr["<b>Stage Pr · Price Sample</b><br/>AI Agent scrapes marketplace prices via stealth browser"]
 
     subgraph sp["Stage P · Publish Gate"]
       SP1["<b>Zod schema validation</b><br/>Intra-lens + cross-lens checks"]
@@ -98,6 +101,8 @@ flowchart TD
   S2a --> S2b
   S2b & S2c --> SR
   SR --> SP1
+  PRICING_SOURCES -->|"channel search URLs"| SPr
+  SPr --> SP1
   SP1 --> SP2
   SP2 -->|"writes src/data/lenses.json"| DB[("x-glass<br/>(this repo)")]
 
@@ -108,10 +113,10 @@ flowchart TD
   classDef config fill:#f1f5f9,stroke:#64748b,color:#1e293b
 
   class S0,S2b,S2c script
-  class S1p1,S1p2,S1b,S2a agent
+  class S1p1,S1p2,S1b,S2a,SPr agent
   class S1r,S1h,SR human
   class SP1,SP2 gate
-  class SOURCES config
+  class SOURCES,PRICING_SOURCES config
 ```
 
 **Key principles:**
