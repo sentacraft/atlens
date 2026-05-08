@@ -212,7 +212,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
       group.rows.map((row) => ({ label: row.label, currentValue: row.plainText, group: group.label }))
     ),
     ...(priceSelection
-      ? [{ label: tPricing("fieldLabel"), currentValue: formatPriceForReport(priceSelection, locale), group: tPricing("groupLabel") }]
+      ? [{ label: tPricing("fieldLabel"), currentValue: formatPriceForReport(priceSelection, locale, tPricing), group: tPricing("groupLabel") }]
       : []),
     ...(url ? [{ label: t("fieldOfficialLink"), currentValue: url, group: mediaGroupLabel }] : []),
     { label: t("fieldLensImage"), currentValue: getLensImageUrl(lens.id), group: mediaGroupLabel, hideCurrentValue: true },

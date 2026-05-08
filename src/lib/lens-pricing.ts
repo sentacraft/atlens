@@ -90,33 +90,23 @@ export function formatSampledAt(date: string, locale: string): string {
   });
 }
 
-// Source labels emphasize whether the price comes from an official storefront
-// or a second-hand marketplace, so users can judge reliability at a glance.
-const SOURCE_LABELS: Record<string, Record<string, string>> = {
-  zh: {
-    jd: "官方店（京东）",
-    tmall: "官方店（天猫）",
-    xianyu: "闲鱼",
-  },
-  en: {
-    jd: "Official store (JD.com)",
-    tmall: "Official store (Tmall)",
-    xianyu: "Xianyu",
-  },
-};
+// Translator is loosely typed so callers can pass next-intl's `t` function from
+// either useTranslations (client) or getTranslations (server) without coupling
+// this module to next-intl.
+type Translator = (key: string) => string;
 
-export function formatSource(source: string, locale: string): string {
-  const map = SOURCE_LABELS[locale === "zh" ? "zh" : "en"];
-  return map[source] ?? source;
+export function formatSource(source: string, t: Translator): string {
+  return t(`source.${source}`);
 }
 
-export function formatPriceForReport(selection: PriceSelection, locale: string): string {
+export function formatPriceForReport(
+  selection: PriceSelection,
+  locale: string,
+  t: Translator
+): string {
   const { entry, condition } = selection;
   const price = formatPrice(entry.price, entry.currency, locale, condition);
-  const source = formatSource(entry.source, locale);
-  const conditionLabel =
-    condition === "new"
-      ? locale === "zh" ? "新品" : "New"
-      : locale === "zh" ? "二手" : "Used";
+  const source = formatSource(entry.source, t);
+  const conditionLabel = t(condition === "new" ? "conditionNew" : "conditionUsed");
   return `${price} · ${source} · ${entry.sampledAt} · ${conditionLabel}`;
 }
