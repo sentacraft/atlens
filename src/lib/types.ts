@@ -270,6 +270,18 @@ export type FieldNoteKey = (typeof FIELD_NOTE_KEYS)[number];
  */
 export type Mount = "X" | "G";
 
+/** A single price observation — shared by new and used entries across all markets. */
+export interface LensPriceEntry {
+  price: number;
+  currency: "CNY" | "USD";
+  /** Platform the price was sampled from, e.g. "jd", "tmall", "xianyu". */
+  source?: string;
+  /** Store listing or search-result URL where the price was observed. */
+  url?: string;
+  /** ISO date YYYY-MM-DD when sampled. */
+  sampledAt: string;
+}
+
 /**
  * Canonical lens record used by the X-Glass app.
  */
@@ -640,14 +652,13 @@ export interface Lens {
   releaseYear?: number;
 
   /**
-   * Sampled retail price per market. Each market entry records a price
-   * observed in an official brand store at a point in time.
+   * Sampled prices per market. Each market holds independent `new` (official
+   * store) and `used` (secondary market) price entries — both may be present
+   * and the UI renders them as separate data points.
    *
-   * Markets are independent — `cn` and `global` may be sampled at different
-   * times and point to different stores. Omit a market entry when no reliable
-   * price source is available.
+   * Markets are independent; omit a market when no price data is available.
    *
-   * The UI derives display tiers from `price` using these thresholds:
+   * Price tiers (used for UI bucketing) map a sampled price to a 1–5 band:
    *
    *   tier  CNY (cn)            USD (global)
    *   1     < 500               < 150
@@ -655,8 +666,6 @@ export interface Lens {
    *   3     1,500 – 4,999       400 – 799
    *   4     5,000 – 14,999      800 – 1,499
    *   5     ≥ 15,000            ≥ 1,500
-   *
-   * @example { cn: { price: 3746, currency: "CNY", sampledAt: "2026-05-08" } }
    */
   pricing?: {
     cn?: {

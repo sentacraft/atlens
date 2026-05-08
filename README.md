@@ -1,6 +1,6 @@
 # X-Glass
 
-Browse, filter, and compare every Fujifilm X-mount lens side by side — native Fujifilm and all major third-party brands.
+Browse, filter, and compare every Fujifilm X Mount and G Mount lens side by side — native Fujifilm and all major third-party brands.
 
 **English**：[xglass.sentacraft.com/en](https://xglass.sentacraft.com/en)
 
@@ -62,7 +62,7 @@ flowchart TD
   subgraph pipeline["x-glass-pipeline (private)"]
     SOURCES[("sources.yaml")]
 
-    S0["<b>Stage 0 · Index</b><br/>Discovers X-mount lenses from brand listing pages"]
+    S0["<b>Stage 0 · Index</b><br/>Discovers X Mount and G Mount lenses from brand listing pages"]
 
     subgraph s1["Stage 1 · Collect"]
       S1p1["<b>Phase 1 · Locate & Image</b><br/>Detail page URLs + main product image"]
@@ -143,7 +143,7 @@ To report a data issue (wrong spec, broken image) or suggest a missing lens, use
 
 ## Forking for Other Mounts
 
-X-Glass currently focuses on the Fujifilm X mount, with the Fujifilm GF mount as a possible future expansion. Beyond Fujifilm, there are no plans to cover other systems — so if you'd like to build something similar for Sony E, Nikon Z, Canon RF, L-mount, or any other system, I'd genuinely love to see it happen. The code is MIT-licensed and you're very welcome to fork it; no permission needed. The notes below are meant to save you time, not to gatekeep.
+X-Glass covers both the Fujifilm X mount (APS-C) and the Fujifilm G mount (GFX medium format). Beyond Fujifilm, there are no plans to cover other systems — so if you'd like to build something similar for Sony E, Nikon Z, Canon RF, L-mount, or any other system, I'd genuinely love to see it happen. The code is MIT-licensed and you're very welcome to fork it; no permission needed. The notes below are meant to save you time, not to gatekeep.
 
 **What's in the box, and what isn't.**
 - ✅ **Source code** is MIT-licensed. Fork, modify, deploy, ship commercially — all fine. Just keep the `LICENSE` file and copyright notice intact.
@@ -159,7 +159,7 @@ X-Glass currently focuses on the Fujifilm X mount, with the Fujifilm GF mount as
 
 If the pipeline matures and those concerns ease over time, I'm open to revisiting. Until then, building your own collection layer is genuinely the right call — your mount, your source sites, your edge cases.
 
-**Expect some refactoring.** The codebase has Fujifilm-specific assumptions baked in: APS-C ×1.5 equivalent focal length math, X-mount flange distance, generation-versioning conventions, and a few mount-specific field shapes. Supporting a full-frame or different-crop system means abstracting these, not just swapping constants. It's not a huge lift, but worth planning for.
+**Expect some refactoring.** The codebase has Fujifilm-specific assumptions baked in: per-mount crop factor math (APS-C ×1.5 for X, medium format for GFX), mount flange distances, generation-versioning conventions, and a few mount-specific field shapes. Supporting a non-Fujifilm system means abstracting these, not just swapping constants. It's not a huge lift, but worth planning for.
 
 **A few small asks around branding.**
 - Please pick a distinct project name — something other than "X-Glass" or close variants like "E-Glass" / "Z-Glass". I'd like to keep that name scoped to the Fujifilm project, and a fresh name will also help your project build its own identity.
