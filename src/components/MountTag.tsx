@@ -49,18 +49,18 @@ export default function HeroBrand() {
   return (
     <span>
       X-Glass
-      <span className="font-light text-zinc-300 dark:text-zinc-600"> /</span>
+      <span className="font-light text-zinc-200 dark:text-zinc-700 px-1">/</span>
       {/* Inline scope selector — valid phrasing content inside <h1> */}
       <span ref={ref} className="relative inline-block">
         <button
           onClick={() => setOpen((v) => !v)}
-          className="group inline-flex items-center gap-1.5 font-medium text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors cursor-pointer"
+          className="group inline-flex items-center gap-1.5 font-heading font-bold text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors cursor-pointer"
           aria-haspopup="listbox"
           aria-expanded={open}
           aria-label={t("label")}
         >
           {" GFX"}
-          <ChevronDown className="h-5 w-5 opacity-20 group-hover:opacity-60 transition-opacity" />
+          <ChevronDown className="h-5 w-5 opacity-30 group-hover:opacity-70 group-hover:translate-y-0.5 transition-all" />
         </button>
 
         {open && (
