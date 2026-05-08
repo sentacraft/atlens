@@ -51,16 +51,12 @@ export default function Nav() {
     if (!navLocked) setHidden(false);
   }, [navLocked]);
 
-  // Compare href is only computed when inside a mount context.
-  const compareHref = mount
-    ? (() => {
-        const ids = compareState[mount];
-        const seg = mountToUrlSegment(mount);
-        return ids.length > 0
-          ? `/lenses/${seg}/compare?ids=${ids.join(",")}`
-          : `/lenses/${seg}/compare`;
-      })()
-    : null;
+  const effectiveMount = mount ?? "X";
+  const compareIds = compareState[effectiveMount];
+  const seg = mountToUrlSegment(effectiveMount);
+  const compareHref = compareIds.length > 0
+    ? `/lenses/${seg}/compare?ids=${compareIds.join(",")}`
+    : `/lenses/${seg}/compare`;
 
   return (
     <header
@@ -86,18 +82,16 @@ export default function Nav() {
           <MountSwitcher />
         </div>
         <div className="flex items-center gap-1 sm:gap-2">
-          {compareHref && (
-            <Link
-              href={compareHref}
-              className={`text-sm transition-colors px-2 ${
-                pathname.includes("/compare")
-                  ? "text-zinc-900 dark:text-zinc-50 font-medium"
-                  : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
-              }`}
-            >
-              {t("compare")}
-            </Link>
-          )}
+          <Link
+            href={compareHref}
+            className={`text-sm transition-colors px-2 ${
+              pathname.includes("/compare")
+                ? "text-zinc-900 dark:text-zinc-50 font-medium"
+                : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
+            }`}
+          >
+            {t("compare")}
+          </Link>
           <Link
             href="/about"
             className={`text-sm transition-colors px-2 ${

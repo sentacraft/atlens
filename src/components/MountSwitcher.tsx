@@ -27,8 +27,7 @@ export default function MountSwitcher() {
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [open]);
 
-  // Not inside a lens route — show nothing
-  if (!mount) return null;
+  const effectiveMount = mount ?? "X";
 
   const options: { mount: Mount; label: string; href: string }[] = [
     { mount: "X", label: t("x"), href: "/lenses/x" },
@@ -43,7 +42,7 @@ export default function MountSwitcher() {
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        {MOUNT_LABEL[mount]}
+        {MOUNT_LABEL[effectiveMount]}
         <ChevronDown className="h-3 w-3" />
       </button>
 
@@ -57,10 +56,10 @@ export default function MountSwitcher() {
               key={opt.mount}
               href={opt.href}
               role="option"
-              aria-selected={opt.mount === mount}
+              aria-selected={opt.mount === effectiveMount}
               onClick={() => setOpen(false)}
               className={`flex items-center gap-2 px-3 py-2 text-sm transition-colors ${
-                opt.mount === mount
+                opt.mount === effectiveMount
                   ? "text-zinc-900 dark:text-zinc-50 font-medium bg-zinc-50 dark:bg-zinc-900"
                   : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-900"
               }`}
