@@ -61,11 +61,6 @@ function PriceInfoPopover({
               <p className="text-[10px] text-zinc-400 dark:text-zinc-500">
                 {t("sampledAt", { date: sampledDisplay })}
               </p>
-              {/* Tier symbols + numeric range */}
-              <p className="text-zinc-500 dark:text-zinc-400">
-                <span className="font-semibold tracking-wide">{symbol.repeat(tier)}</span>{" "}
-                <span className="tabular-nums">({rangeDisplay})</span>
-              </p>
               {/* Condition-specific disclaimer */}
               <p className="text-zinc-400 dark:text-zinc-500">
                 {isUsed ? t("usedNote") : t("newNote")}
@@ -102,25 +97,34 @@ export function PriceBand({ lens, compact = false }: Props) {
   }
   const isUsed = condition === "used";
   const symbol = t("tierSymbol");
+  const rangeDisplay = formatTierRange(tier, entry.currency, locale);
 
   return (
-    <div className="inline-flex items-center gap-1.5">
-      <span
-        className={cn(
-          "font-semibold tabular-nums tracking-wide",
-          compact ? "text-sm" : "text-base",
-          "text-zinc-700 dark:text-zinc-200"
-        )}
-        aria-hidden="true"
-      >
-        {symbol.repeat(tier)}
-      </span>
-      {isUsed && (
-        <span className="inline-flex shrink-0 items-center rounded bg-zinc-100 px-1 py-px text-[10px] font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
-          {t("usedBadge")}
+    <div className="flex flex-col items-center gap-0.5">
+      <div className="inline-flex items-center gap-1.5">
+        <span
+          className={cn(
+            "font-semibold tabular-nums tracking-wide",
+            compact ? "text-sm" : "text-base",
+            "text-zinc-700 dark:text-zinc-200"
+          )}
+          aria-hidden="true"
+        >
+          {symbol.repeat(tier)}
         </span>
-      )}
-      <PriceInfoPopover selection={selection} locale={locale} tier={tier} />
+        {isUsed && (
+          <span className="inline-flex shrink-0 items-center rounded bg-zinc-100 px-1 py-px text-[10px] font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+            {t("usedBadge")}
+          </span>
+        )}
+        <PriceInfoPopover selection={selection} locale={locale} tier={tier} />
+      </div>
+      {/* Range subtext — matches the subValue pattern used elsewhere in CompareTable */}
+      <p className="tabular-nums text-[11px] text-zinc-400 dark:text-zinc-500">
+        {entry.currency === "CNY"
+          ? t("cnyAmount", { value: rangeDisplay })
+          : `$${rangeDisplay}`}
+      </p>
     </div>
   );
 }

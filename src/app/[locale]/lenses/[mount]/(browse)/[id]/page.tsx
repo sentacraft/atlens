@@ -20,7 +20,7 @@ import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates } from "@/lib/seo";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
-import { PriceBand } from "@/components/PriceBand";
+import { PriceSection } from "@/components/PriceSection";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
 
@@ -224,7 +224,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
       {/* Back button */}
       <BackButton fallbackHref={`/lenses/${mount}`} />
 
-      {/* Main content */}
+      {/* Header: image + key info side by side */}
       <div className="flex flex-col sm:flex-row gap-8">
         {/* Image */}
         <div className="w-full max-w-56 mx-auto sm:mx-0 shrink-0 sm:w-56">
@@ -243,7 +243,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           </div>
         </div>
 
-        {/* Info */}
+        {/* Info: title → price → actions */}
         <div className="flex-1 flex flex-col gap-5">
           {/* Title */}
           <div>
@@ -256,37 +256,37 @@ export default async function LensDetailPage({ params }: { params: Params }) {
             </h1>
           </div>
 
+          {/* Price */}
+          <PriceSection lens={lens} />
+
           {/* Actions */}
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap gap-3">
-              <AddToCompareButton lensId={lens.id} />
-              {url ? (
-                <ExternalLink href={url} className={ACTION_OUTLINE_CLS}>
-                  {t("officialSite")}
-                </ExternalLink>
-              ) : (
-                <span className={ACTION_OUTLINE_CLS + " cursor-not-allowed opacity-40"}>
-                  {t("officialSite")}
-                </span>
-              )}
-              <ShareButton lenses={[lens]} triggerClassName={ACTION_OUTLINE_CLS} />
-            </div>
+          <div className="flex flex-wrap gap-3">
+            <AddToCompareButton lensId={lens.id} />
+            {url ? (
+              <ExternalLink href={url} className={ACTION_OUTLINE_CLS}>
+                {t("officialSite")}
+              </ExternalLink>
+            ) : (
+              <span className={ACTION_OUTLINE_CLS + " cursor-not-allowed opacity-40"}>
+                {t("officialSite")}
+              </span>
+            )}
+            <ShareButton lenses={[lens]} triggerClassName={ACTION_OUTLINE_CLS} />
             <FeedbackTrigger
               type="data_issue"
               context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
               fields={reportableFields}
-              className="inline-flex items-center gap-1 text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors self-start"
+              className={ACTION_OUTLINE_CLS}
             >
-              <Flag size={11} />
+              <Flag size={14} />
               {t("reportIssue")}
             </FeedbackTrigger>
           </div>
+        </div>
+      </div>
 
-          {/* Price band */}
-          <PriceBand lens={lens} />
-
-          {/* Grouped spec table */}
-          <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+      {/* Grouped spec table — full-width section below the header */}
+      <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
             {resolvedGroups.map((group, groupIdx) => (
               <div
                 key={group.label}
@@ -326,8 +326,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               </div>
             ))}
           </div>
-        </div>
-      </div>
     </div>
     <BackToTopButton />
     </>

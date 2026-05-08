@@ -187,7 +187,7 @@
     "addToCompare": "Add to Compare",
     "removeFromCompare": "Remove",
     "officialSite": "Official site",
-    "reportIssue": "Report a data issue",
+    "reportIssue": "Report an issue",
     "fieldOfficialLink": "Official Link",
     "fieldLensImage": "Lens Image",
     "fieldGroupMedia": "Media & Links",
@@ -424,8 +424,9 @@
       "tmall": "Official store (Tmall)",
       "xianyu": "Xianyu"
     },
-    "newNote": "Pricing is for reference only. E-commerce list prices change frequently and are often paired with promotions or coupons, so the actual checkout price may differ; the sampled figure reflects one official storefront at one moment in time, not the lowest available price.",
-    "usedNote": "Pricing is for reference only. Used prices vary widely with condition, included accessories, and seller, so any single number is at best an approximation. This is the median of a sampled batch of listings on the platform shown above, but it can still be skewed by factors out of our control — sellers tend to list optimistically, which pulls the median above typical sale prices.",
+    "disclaimerTrigger": "For reference only",
+    "newNote": "The price tier is meant to give you a quick sense of the lens's price range — the exact figure is for reference only. E-commerce list prices change frequently and are often affected by promotions or coupons. The sampled figure reflects one official storefront at one point in time and does not represent the lowest available price.",
+    "usedNote": "The price tier is meant to give you a quick sense of the lens's price range — the exact figure is for reference only. Used prices vary widely with condition, included accessories, and seller, making it difficult to pin down an objective number. This is the median of a sampled batch of listings at the time of sampling; actual sale prices may differ.",
     "sampledAt": "Sampled {date}"
   }
 }
