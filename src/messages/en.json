@@ -317,10 +317,11 @@
     "faq2A": "Always treat the manufacturer's official page as the source of truth. Our data can contain mistakes or lag behind spec revisions. If you spot a mismatch, use the \"Report a data issue\" link on the lens detail page.",
     "faq3Q": "Why do some fields show \"—\"?",
     "faq3A": "A dash means the data hasn't been collected yet, or the manufacturer hasn't publicly published that spec.",
-    "faq4Q": "Why is there no pricing information?",
-    "faq4A": "Price data is extremely difficult to keep accurate: distributor networks vary by region, promotions frequently push actual prices well below list price, and prices change constantly. My principle is — if I can't guarantee the data quality of a field, I'd rather leave it out entirely. Inaccurate price data is more misleading than no data at all, and risks undermining trust in the database as a whole.",
+    "faq4Q": "Where does the price data come from? How accurate is it?",
+    "faq4A": "New prices are sampled from official online stores (e.g. JD.com), and used prices from second-hand platforms (e.g. Xianyu). Because prices change constantly, discounts and coupons are hard to capture, and used prices fluctuate widely, the numbers shown are point-in-time snapshots and should be treated as rough reference only. The price band gives you a quick sense of the tier; tap the info icon for the exact sampled figure and its date. Always verify the current price on the platform before buying.",
     "disclaimerTitle": "Disclaimer",
     "disclaimerAccuracy": "X-Glass data is sourced from public materials and refined through manual review. We make every effort to keep specs accurate and up to date, but errors and delays are inevitable. Always verify key specifications on the manufacturer's official page before making a purchase decision.",
+    "disclaimerPricing": "Pricing is shown for tier reference only. Sampled prices may not reflect current promotions, coupons, or regional variations. Always verify the actual price on the relevant platform before making a purchase decision.",
     "disclaimerLiability": "X-Glass is not responsible for any decisions made based on information presented here.",
     "disclaimerIndependent": "X-Glass is an independent third-party tool and is not affiliated with, endorsed by, or sponsored by Fujifilm or any lens manufacturer.",
     "disclaimerCopyright": "Product images and brand trademarks are the property of their respective owners. If you are a rights holder and believe your content has been used improperly, please contact xglass@sentacraft.com.",
@@ -408,5 +409,22 @@
     "macosStep3": "Click \"Add\" to confirm",
     "genericTitle": "Add to Home Screen",
     "genericBody": "X-Glass is a web app that also supports installation as a Progressive Web App (PWA) — no App Store needed. Open your browser menu and look for \"Add to Home Screen\" or \"Install app\"."
+  },
+  "Pricing": {
+    "fieldLabel": "Price",
+    "groupLabel": "Pricing",
+    "infoTriggerLabel": "Price details",
+    "usedBadge": "Used",
+    "conditionNew": "New",
+    "conditionUsed": "Used",
+    "cnyAmount": "¥{value}",
+    "source": {
+      "jd": "Official store (JD.com)",
+      "tmall": "Official store (Tmall)",
+      "xianyu": "Xianyu"
+    },
+    "newNote": "Pricing is for reference only. E-commerce list prices change frequently and are often paired with promotions or coupons, so the actual checkout price may differ; the sampled figure reflects one official storefront at one moment in time, not the lowest available price.",
+    "usedNote": "Pricing is for reference only. Used prices vary widely with condition, included accessories, and seller, so any single number is at best an approximation. This is the median of a sampled batch of listings on the platform shown above, but it can still be skewed by factors out of our control — sellers tend to list optimistically, which pulls the median above typical sale prices.",
+    "sampledAt": "Sampled {date}"
   }
 }
