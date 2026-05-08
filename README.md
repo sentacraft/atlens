@@ -60,28 +60,34 @@ Lens data and images are maintained in a private pipeline repo and written into 
 ```mermaid
 flowchart TD
   subgraph pipeline["x-glass-pipeline (private)"]
-    SOURCES[("sources.yaml")]
-    PRICING_SOURCES[("pricing-sources.yaml")]
 
-    S0["<b>Stage 0 · Index</b><br/>Discovers X Mount and G Mount lenses from brand listing pages"]
+    subgraph spec["Spec Pipeline"]
+      SOURCES[("sources.yaml")]
 
-    subgraph s1["Stage 1 · Collect"]
-      S1p1["<b>Phase 1 · Locate & Image</b><br/>Detail page URLs + main product image"]
-      S1p2["<b>Phase 2 · Fetch Raw Content</b><br/>Retrieves spec text, product descriptions, and feature images"]
-      S1r["<b>Maintainer · Review</b>"]
-      S1h["<b>Maintainer · Manual Fetch</b>"]
-      S1b["<b>AI Agent · Read & Merge</b><br/>Vision on spec images + text merge<br/>No field extraction"]
-      S1out(["High-recall product description"])
+      S0["<b>Stage 0 · Index</b><br/>Discovers X Mount and G Mount lenses from brand listing pages"]
+
+      subgraph s1["Stage 1 · Collect"]
+        S1p1["<b>Phase 1 · Locate & Image</b><br/>Detail page URLs + main product image"]
+        S1p2["<b>Phase 2 · Fetch Raw Content</b><br/>Retrieves spec text, product descriptions, and feature images"]
+        S1r["<b>Maintainer · Review</b>"]
+        S1h["<b>Maintainer · Manual Fetch</b>"]
+        S1b["<b>AI Agent · Read & Merge</b><br/>Vision on spec images + text merge<br/>No field extraction"]
+        S1out(["High-recall product description"])
+      end
+
+      S2a["<b>Stage 2a · Derive</b><br/>AI extracts semantic fields from rawSpecs"]
+      S2b["<b>Stage 2b · Compute</b><br/>Script derives deterministic fields"]
+      S2c["<b>Stage 2c · Image Processing</b><br/>Normalizes product images"]
+      SR["<b>Stage R · Human Review</b><br/>Maintainer inspects and applies corrections"]
     end
 
-    S2a["<b>Stage 2a · Derive</b><br/>AI extracts semantic fields from rawSpecs"]
-    S2b["<b>Stage 2b · Compute</b><br/>Script derives deterministic fields"]
-    S2c["<b>Stage 2c · Image Processing</b><br/>Normalizes product images"]
-    SR["<b>Stage R · Human Review</b><br/>Maintainer inspects and applies corrections"]
+    subgraph price["Price Pipeline"]
+      PRICING_SOURCES[("pricing-sources.yaml")]
 
-    subgraph spr["Stage Pr · Price Sample"]
-      SPrNew["<b>New Price</b><br/>AI Agent visits official storefronts<br/>Short-circuits on first valid price"]
-      SPrUsed["<b>Used Price</b><br/>AI Agent samples secondary-market listings<br/>Median computed at publish time"]
+      subgraph spr["Stage Pr · Price Sample"]
+        SPrNew["<b>New Price</b><br/>AI Agent visits official storefronts"]
+        SPrUsed["<b>Used Price</b><br/>AI Agent samples secondary-market listings<br/>Median computed at publish time"]
+      end
     end
 
     subgraph sp["Stage P · Publish Gate"]
@@ -104,8 +110,8 @@ flowchart TD
   S2a --> S2b
   S2b & S2c --> SR
   SR --> SP1
-  PRICING_SOURCES -->|"channel search URLs"| SPrNew
-  PRICING_SOURCES -->|"search queries"| SPrUsed
+  PRICING_SOURCES -->|"storefront search URLs"| SPrNew
+  SPrUsed
   SPrNew & SPrUsed --> SP1
   SP1 --> SP2
   SP2 -->|"writes src/data/lenses.json"| DB[("x-glass<br/>(this repo)")]
