@@ -24,13 +24,17 @@ const maxTStopSchema = createApertureSchema("maxTStop");
 const minTStopSchema = createApertureSchema("minTStop");
 const specialtyTagSchema = z.enum(SPECIALTY_TAGS);
 export const specNaSchema = z.literal(SPEC_NA);
-const pricingEntryBaseSchema = z.object({
+const lensPriceEntrySchema = z.object({
   price: z.number().positive(),
-  buyUrl: z.string().url().optional(),
+  currency: z.enum(["CNY", "USD"]),
+  source: z.string().min(1).optional(),
+  url: z.string().url().optional(),
   sampledAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });
-const pricingCnSchema = pricingEntryBaseSchema.extend({ currency: z.literal("CNY") });
-const pricingGlobalSchema = pricingEntryBaseSchema.extend({ currency: z.literal("USD") });
+const pricingMarketSchema = z.strictObject({
+  new: lensPriceEntrySchema.optional(),
+  used: lensPriceEntrySchema.optional(),
+});
 
 export const focusDistanceVariantsSchema = z.strictObject({
   wide: positiveNumberSchema.optional(),
@@ -107,8 +111,8 @@ const lensBaseShape = {
   apertureBladeCount: z.union([z.number().int().positive(), specNaSchema]).optional(),
   releaseYear: z.number().int().min(1900).max(2100).optional(),
   pricing: z.strictObject({
-    cn: pricingCnSchema.optional(),
-    global: pricingGlobalSchema.optional(),
+    cn: pricingMarketSchema.optional(),
+    global: pricingMarketSchema.optional(),
   }).optional(),
   compatibleMounts: z.array(nonEmptyStringSchema).min(1).optional(),
   accessories: z.array(nonEmptyStringSchema).min(1).optional(),
