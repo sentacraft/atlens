@@ -9,7 +9,7 @@ import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { mountToUrlSegment } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
 
-const MOUNT_LABEL: Record<Mount, string> = { X: "X", G: "GFX" };
+const BRAND_NAME: Record<Mount, string> = { X: "X-Glass", G: "G-Glass" };
 
 export default function MountSwitcher() {
   const t = useTranslations("MountSwitcher");
@@ -41,7 +41,6 @@ export default function MountSwitcher() {
   const handleSelect = (mount: Mount) => {
     setPreference(mount);
     setOpen(false);
-    // On /lenses/[mount]/* pages, also navigate to keep URL in sync
     if (urlMount !== null) {
       router.push(`/lenses/${mountToUrlSegment(mount)}`);
     }
@@ -56,19 +55,19 @@ export default function MountSwitcher() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 rounded-full bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 text-xs font-semibold tracking-wide text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+        className="flex items-center gap-1 font-bold font-heading text-zinc-900 dark:text-zinc-50 text-lg tracking-tight hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={t("label")}
       >
-        {MOUNT_LABEL[effectiveMount]}
-        <ChevronDown className="h-3 w-3 opacity-50" />
+        {BRAND_NAME[effectiveMount]}
+        <ChevronDown className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" />
       </button>
 
       {open && (
         <div
           role="listbox"
-          className="absolute left-0 top-full mt-1.5 z-50 min-w-[7rem] rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden"
+          className="absolute left-0 top-full mt-1.5 z-50 min-w-[8.5rem] rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden"
         >
           {options.map((opt) => (
             <button
