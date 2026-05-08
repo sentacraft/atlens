@@ -640,29 +640,43 @@ export interface Lens {
   releaseYear?: number;
 
   /**
-   * Approximate price tier (1-5, log-scaled). Captures buying-intent class
-   * without committing to a specific day-to-day price. Markets are kept
-   * separate so the UI can localize tier display per audience.
+   * Sampled retail price per market. Each market entry records a price
+   * observed in an official brand store at a point in time.
    *
-   * Tier definitions are independently calibrated per market against the
-   * actual retail price distribution of X-mount lenses in that market:
+   * Markets are independent — `cn` and `global` may be sampled at different
+   * times and point to different stores. Omit a market entry when no reliable
+   * price source is available.
    *
-   *                  CNY (cn)         USD (global)
-   *   1: entry         < 500             < 150
-   *   2: budget        500 - 1,500       150 - 399
-   *   3: mid           1,500 - 5,000     400 - 799
-   *   4: premium       5,000 - 15,000    800 - 1,499
-   *   5: pro           > 15,000          ≥ 1,500
+   * The UI derives display tiers from `price` using these thresholds:
    *
-   * Currently only `cn` is populated by the pipeline; `global` is reserved
-   * for future per-market calibration. Both fields are optional — omit the
-   * tier (or the whole object) when no reliable price source is available.
+   *   tier  CNY (cn)            USD (global)
+   *   1     < 500               < 150
+   *   2     500 – 1,499         150 – 399
+   *   3     1,500 – 4,999       400 – 799
+   *   4     5,000 – 14,999      800 – 1,499
+   *   5     ≥ 15,000            ≥ 1,500
    *
-   * @example { cn: 3 }
+   * @example { cn: { price: 3746, currency: "CNY", sampledAt: "2026-05-08" } }
    */
   priceBand?: {
-    cn?: 1 | 2 | 3 | 4 | 5;
-    global?: 1 | 2 | 3 | 4 | 5;
+    cn?: {
+      /** Retail price in CNY at time of sampling. */
+      price: number;
+      currency: "CNY";
+      /** Direct purchase page URL (product page or in-store search result). */
+      buyUrl?: string;
+      /** ISO date YYYY-MM-DD when sampled. */
+      sampledAt: string;
+    };
+    global?: {
+      /** Retail price in USD at time of sampling. */
+      price: number;
+      currency: "USD";
+      /** Direct purchase page URL (product page or in-store search result). */
+      buyUrl?: string;
+      /** ISO date YYYY-MM-DD when sampled. */
+      sampledAt: string;
+    };
   };
 
   /**
