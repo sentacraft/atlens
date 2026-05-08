@@ -18,15 +18,16 @@ import { cn } from "@/lib/utils";
 function PriceInfoPopover({
   selection,
   locale,
+  tier,
 }: {
   selection: PriceSelection;
   locale: string;
+  tier: 1 | 2 | 3 | 4 | 5;
 }) {
   const t = useTranslations("Pricing");
   const { entry, condition } = selection;
-  const tier = priceTier(entry.price, entry.currency);
   const isUsed = condition === "used";
-  const symbol = locale === "zh" ? "¥" : "$";
+  const symbol = t("tierSymbol");
   const priceDisplay = formatPrice(entry.price, entry.currency, locale, condition, t);
   const rangeDisplay = formatTierRange(tier, entry.currency, locale);
   const sourceDisplay = formatSource(entry.source, t);
@@ -91,9 +92,15 @@ export function PriceBand({ lens, compact = false }: Props) {
   }
 
   const { entry, condition } = selection;
+  // priceTier returns undefined for unknown currency (defensive switch/case in
+  // lens.ts). The schema constrains currency to "CNY" | "USD" so this is
+  // unreachable at runtime, but the narrowing is needed for type safety.
   const tier = priceTier(entry.price, entry.currency);
+  if (tier === undefined) {
+    return null;
+  }
   const isUsed = condition === "used";
-  const symbol = locale === "zh" ? "¥" : "$";
+  const symbol = t("tierSymbol");
 
   return (
     <div className="inline-flex items-center gap-1.5">
@@ -114,7 +121,7 @@ export function PriceBand({ lens, compact = false }: Props) {
           {t("usedBadge")}
         </span>
       )}
-      <PriceInfoPopover selection={selection} locale={locale} />
+      <PriceInfoPopover selection={selection} locale={locale} tier={tier} />
     </div>
   );
 }
