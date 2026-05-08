@@ -5,20 +5,15 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const nextConfig: NextConfig = {
   async redirects() {
+    // Backward compat: old /lenses/[id] → /lenses/x/[id].
+    // All lens IDs contain at least one hyphen (e.g. "fujifilm-xf-35mmf14-r-x"),
+    // while every reserved sub-path (x, gfx, compare) does not.
+    // Matching on "must contain a hyphen" is a safe whitelist that won't
+    // collide with static assets, mount segments, or future sub-routes.
+    const legacyLensId = ":id([a-z0-9]+-[a-z0-9-]+)";
     return [
-      // Backward compat: old /lenses/[id] → /lenses/x/[id]
-      // Excludes known static paths (compare, x, gfx) and static assets (.webp etc.)
-      {
-        source: "/lenses/:id((?!x$|gfx$|compare$)[^.]+)",
-        destination: "/lenses/x/:id",
-        permanent: false,
-      },
-      // Same redirect but with locale prefix
-      {
-        source: "/:locale(en|zh)/lenses/:id((?!x$|gfx$|compare$)[^.]+)",
-        destination: "/:locale/lenses/x/:id",
-        permanent: false,
-      },
+      { source: `/lenses/${legacyLensId}`, destination: "/lenses/x/:id", permanent: false },
+      { source: `/:locale(en|zh)/lenses/${legacyLensId}`, destination: "/:locale/lenses/x/:id", permanent: false },
     ];
   },
 };
