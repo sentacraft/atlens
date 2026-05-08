@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Smartphone } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
-import LensSearchDialog from "@/components/LensSearchDialog";
 import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import { useCompare } from "@/context/CompareProvider";
