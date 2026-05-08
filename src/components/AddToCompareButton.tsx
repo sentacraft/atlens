@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useCompare } from "@/context/CompareProvider";
+import { useMountedCompare } from "@/context/CompareProvider";
 import { ACTION_PRIMARY_CLS } from "@/lib/ui-tokens";
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 
 export default function AddToCompareButton({ lensId }: Props) {
   const t = useTranslations("LensDetail");
-  const { compareIds, toggleCompare, canToggle } = useCompare();
+  const { compareIds, toggleCompare, canToggle } = useMountedCompare();
 
   const isSelected = compareIds.includes(lensId);
   const disabled = !isSelected && !canToggle(lensId);

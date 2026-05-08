@@ -374,8 +374,8 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
           hasData: () => true,
           getDisplayValue: (l) =>
             fmt.focalRangeDisplay(
-              fmt.focalEquiv(l.focalLengthMin),
-              fmt.focalEquiv(l.focalLengthMax)
+              fmt.focalEquiv(l.focalLengthMin, l.mount),
+              fmt.focalEquiv(l.focalLengthMax, l.mount)
             ),
         },
         {

@@ -3,8 +3,10 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
-import { allLenses } from "@/lib/lens";
-import { useCompare } from "@/context/CompareProvider";
+import { getLensesByMount } from "@/lib/lens";
+import { useMountedCompare } from "@/context/CompareProvider";
+import { useEffectiveMount } from "@/hooks/useMountParam";
+import { mountToUrlSegment } from "@/lib/mount";
 import { motion, AnimatePresence } from "motion/react";
 import { spring } from "@/lib/animation";
 import { X } from "lucide-react";
@@ -18,26 +20,29 @@ export default function CompareBar() {
   const tCompare = useTranslations("Compare");
   const router = useRouter();
   const pathname = usePathname();
-  const { compareIds, toggleCompare, clearCompare } = useCompare();
+  const mount = useEffectiveMount();
+  const { compareIds, toggleCompare, clearCompare } = useMountedCompare();
 
   const selectedLenses = useMemo(
     () =>
       compareIds
-        .map((id) => allLenses.find((l) => l.id === id))
+        .map((id) => getLensesByMount(mount).find((l) => l.id === id))
         .filter((lens) => lens !== undefined),
-    [compareIds]
+    [compareIds, mount]
   );
 
-  // Extract lens ID if currently on a lens detail page (/lenses/[id])
+  // Extract lens ID if currently on a lens detail page (/lenses/[mount]/[id])
   const currentLensId = useMemo(() => {
-    const match = pathname.match(/\/lenses\/(?!compare\b)([^/]+)$/);
+    const seg = mountToUrlSegment(mount);
+    const match = pathname.match(new RegExp(`\\/lenses\\/${seg}\\/(?!compare\\b)([^/]+)$`));
     return match?.[1] ?? null;
-  }, [pathname]);
+  }, [pathname, mount]);
 
   function handleCompare() {
     const ids = selectedLenses.map((l) => l.id).join(",");
+    const seg = mountToUrlSegment(mount);
     const fromParam = currentLensId ? `&from=lens&lensId=${currentLensId}` : "";
-    router.push(`/lenses/compare?ids=${ids}${fromParam}`);
+    router.push(`/lenses/${seg}/compare?ids=${ids}${fromParam}`);
   }
 
   return (

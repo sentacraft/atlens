@@ -6,7 +6,9 @@ import { useTranslations } from "next-intl";
 import { ShareButton } from "@/components/ShareButton";
 import CompareAddLensButton from "@/components/CompareAddLensButton";
 import BackButton from "@/components/BackButton";
-import { useCompare } from "@/context/CompareProvider";
+import { useMountedCompare } from "@/context/CompareProvider";
+import { useEffectiveMount } from "@/hooks/useMountParam";
+import { mountToUrlSegment } from "@/lib/mount";
 import { useRouter } from "@/i18n/navigation";
 import type { Lens } from "@/lib/types";
 
@@ -22,7 +24,8 @@ interface Props {
 export default function ComparePageHeader({ lenses, fallbackHref, minColumns = 0, presetTitle }: Props) {
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
-  const { clearCompare } = useCompare();
+  const { clearCompare } = useMountedCompare();
+  const mount = useEffectiveMount();
   const router = useRouter();
   const headerRef = useRef<HTMLDivElement>(null);
   const [showFab, setShowFab] = useState(false);
@@ -48,7 +51,7 @@ export default function ComparePageHeader({ lenses, fallbackHref, minColumns = 0
         {lenses.length >= minColumns && <CompareAddLensButton lenses={lenses} />}
         {lenses.length > 0 && (
           <button
-            onClick={() => { clearCompare(); router.replace("/lenses/compare"); }}
+            onClick={() => { clearCompare(); router.replace(`/lenses/${mountToUrlSegment(mount)}/compare`); }}
             className="shrink-0 text-sm font-medium px-3 py-2 rounded-xl text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
           >
             {tList("clearCompare")}

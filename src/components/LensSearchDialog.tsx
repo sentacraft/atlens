@@ -12,7 +12,9 @@ import {
 import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { allLenses } from "@/lib/lens";
+import { getLensesByMount } from "@/lib/lens";
+import { mountToUrlSegment } from "@/lib/mount";
+import { useEffectiveMount } from "@/hooks/useMountParam";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -29,8 +31,6 @@ interface LensSearchResultState {
   actionLabel?: string;
   disabled?: boolean;
 }
-
-const lensSearchIndex = buildLensSearchIndex(allLenses);
 
 interface LensSearchDialogProps {
   onSelectLens?: (lens: Lens) => void;
@@ -50,6 +50,8 @@ export default function LensSearchDialog({
   const t = useTranslations("Search");
   const tBrand = useTranslations("Brands");
   const router = useRouter();
+  const mount = useEffectiveMount();
+  const lensSearchIndex = useMemo(() => buildLensSearchIndex(getLensesByMount(mount)), [mount]);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -103,7 +105,7 @@ export default function LensSearchDialog({
       return;
     }
 
-    router.push(`/lenses/${lens.id}`);
+    router.push(`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`);
   }
 
   function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {

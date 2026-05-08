@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Aperture, Plus, Check } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { mountToUrlSegment } from "@/lib/mount";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
 import { ACTION_PRIMARY_CLS, CARD_SELECTED_BORDER_CLS } from "@/lib/ui-tokens";
 import type { Lens } from "@/lib/types";
@@ -30,7 +31,7 @@ export default function LensCard({
   const t = useTranslations("LensList");
   const tBrand = useTranslations("Brands");
   const hookAttr = useUiHookAttr();
-  const equivDisplay = fmt.focalRangeDisplay(fmt.focalEquiv(lens.focalLengthMin), fmt.focalEquiv(lens.focalLengthMax));
+  const equivDisplay = fmt.focalRangeDisplay(fmt.focalEquiv(lens.focalLengthMin, lens.mount), fmt.focalEquiv(lens.focalLengthMax, lens.mount));
   const mfdDisplay = lens.minFocusDistance ? `${lens.minFocusDistance.cm}cm` : "—";
   const filterDisplay = fmt.filterSizeDisplay(lens.filterMm);
   const weightDisplay = fmt.weightDisplay(lens.weightG, "g") ?? "—";
@@ -76,7 +77,7 @@ export default function LensCard({
     >
       {/* Clickable detail area */}
       <Link
-        href={`/lenses/${lens.id}`}
+        href={`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`}
         className="flex-1 flex flex-col hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors max-[499px]:flex-row"
       >
         <div

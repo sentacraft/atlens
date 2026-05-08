@@ -34,6 +34,11 @@
     "view": "Open",
     "generation": "Gen {value}"
   },
+  "MountSwitcher": {
+    "label": "Switch mount system",
+    "x": "X Series",
+    "gfx": "GFX Series"
+  },
   "Home": {
     "cta": "Browse Lenses",
     "ctaCompare": "Compare",

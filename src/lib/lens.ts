@@ -1,13 +1,27 @@
 import lensesData from "../data/lenses.json";
+import gfxLensesData from "../data/lenses-g.json";
 import metaData from "../data/meta.json";
 import { lensCatalogSchema } from "./lens-schema";
-import type { Lens, LensCatalog, SpecialtyTag } from "./types";
+import type { Lens, LensCatalog, Mount, SpecialtyTag } from "./types";
 export type { SpecialtyTag };
 
-export const allLenses: Lens[] = lensCatalogSchema.parse(lensesData) as LensCatalog;
+export const xLenses: Lens[] = lensCatalogSchema.parse(lensesData) as LensCatalog;
+export const gfxLenses: Lens[] = lensCatalogSchema.parse(gfxLensesData) as LensCatalog;
+// allLenses combines both mounts — use only for aggregate contexts (About, sitemap, search index).
+// Within a mount-specific route, use getLensesByMount() or xLenses / gfxLenses directly.
+export const allLenses: Lens[] = [...xLenses, ...gfxLenses];
 export const meta = metaData;
-export const brandCount = new Set(allLenses.map((l) => l.brand)).size;
+export const brandCount = new Set(xLenses.map((l) => l.brand)).size;
 export const MAX_COMPARE = 4;
+
+export const CROP_FACTOR: Record<Mount, number> = {
+  X: 1.5,
+  G: 0.79, // GFX 44×33 mm diagonal ≈54.78 mm vs FF ≈43.3 mm
+};
+
+export function getLensesByMount(mount: Mount): Lens[] {
+  return mount === "G" ? gfxLenses : xLenses;
+}
 
 export type LensType = "prime" | "zoom";
 export const LENS_TYPES = ["prime", "zoom"] as const satisfies readonly LensType[];
@@ -75,8 +89,9 @@ export type FocalCategory = (typeof FOCAL_CATEGORIES)[number]["key"];
 export function getFocalCategoriesOf(lens: {
   focalLengthMin: number;
   focalLengthMax: number;
+  mount?: Mount;
 }): FocalCategory[] {
-  const cropFactor = 1.5;
+  const cropFactor = CROP_FACTOR[lens.mount ?? "X"];
   const lensEquivMin = lens.focalLengthMin * cropFactor;
   const lensEquivMax = lens.focalLengthMax * cropFactor;
 
@@ -205,12 +220,13 @@ export function getLensUrl(lens: Lens, locale?: string): string | undefined {
   return lens.officialLinks?.global;
 }
 
-export function parseLensIds(ids: string | undefined): Lens[] {
+export function parseLensIds(ids: string | undefined, mount: Mount): Lens[] {
+  const pool = getLensesByMount(mount);
   return (ids ?? "")
     .split(",")
     .filter(Boolean)
     .slice(0, MAX_COMPARE)
-    .map((id) => allLenses.find((l) => l.id === id))
+    .map((id) => pool.find((l) => l.id === id))
     .filter((l): l is Lens => l !== undefined);
 }
 

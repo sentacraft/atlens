@@ -3,7 +3,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Flag } from "lucide-react";
-import { allLenses, getLensUrl } from "@/lib/lens";
+import { getLensesByMount, getLensUrl } from "@/lib/lens";
+import { urlSegmentToMount } from "@/lib/mount";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { buildSpecGroups, resolveSpecGroups } from "@/lib/lens-spec-groups";
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens-spec-groups";
@@ -19,23 +20,24 @@ import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates } from "@/lib/seo";
 
-type Params = Promise<{ locale: string; id: string }>;
+type Params = Promise<{ locale: string; mount: string; id: string }>;
 
 export async function generateMetadata({
   params,
 }: {
   params: Params;
 }): Promise<Metadata> {
-  const { locale, id } = await params;
+  const { locale, mount, id } = await params;
   const t = await getTranslations("LensDetail");
-  const lens = allLenses.find((l) => l.id === id);
+  const lenses = getLensesByMount(urlSegmentToMount(mount) ?? "X");
+  const lens = lenses.find((l) => l.id === id);
   if (!lens) {
     return { title: t("notFoundTitle") };
   }
   return {
     title: lens.model,
     openGraph: { title: `${lens.model} | X-Glass` },
-    alternates: buildAlternates(locale, `lenses/${id}`),
+    alternates: buildAlternates(locale, `lenses/${mount}/${id}`),
   };
 }
 
@@ -104,8 +106,9 @@ function renderRowValue(
 }
 
 export default async function LensDetailPage({ params }: { params: Params }) {
-  const { id, locale } = await params;
-  const lens = allLenses.find((l) => l.id === id);
+  const { id, locale, mount } = await params;
+  const lenses = getLensesByMount(urlSegmentToMount(mount) ?? "X");
+  const lens = lenses.find((l) => l.id === id);
 
   if (!lens) {
     notFound();
@@ -212,7 +215,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     <>
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-24 flex flex-col gap-8">
       {/* Back button */}
-      <BackButton fallbackHref="/lenses" />
+      <BackButton fallbackHref={`/lenses/${mount}`} />
 
       {/* Main content */}
       <div className="flex flex-col sm:flex-row gap-8">
