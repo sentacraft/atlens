@@ -45,24 +45,24 @@ export default function MountSwitcher() {
     }
   };
 
-  const mountLabel: Record<Mount, string> = { X: "X", G: "GFX" };
-
   const options: { mount: Mount; label: string }[] = [
     { mount: "X", label: t("x") },
     { mount: "G", label: t("gfx") },
   ];
 
+  const currentLabel = effectiveMount === "X" ? t("x") : t("gfx");
+
   return (
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md border border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors text-[11px] font-medium leading-none"
+        className="flex items-center gap-1 font-bold font-heading text-zinc-500 dark:text-zinc-400 text-lg tracking-tight hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={t("label")}
       >
-        {mountLabel[effectiveMount]}
-        <ChevronDown className="h-3 w-3 opacity-60" />
+        {currentLabel}
+        <ChevronDown className="h-3.5 w-3.5 opacity-60" />
       </button>
 
       {open && (
