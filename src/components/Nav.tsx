@@ -114,7 +114,7 @@ export default function Nav() {
             <Iris config={IRIS_NAV} uid="nav" size={16} />
             X-Glass
           </Link>
-          <span className="text-zinc-300 dark:text-zinc-700 select-none font-light text-lg" aria-hidden="true">/</span>
+          <span className="text-zinc-400 dark:text-zinc-600 select-none font-light text-lg px-0.5" aria-hidden="true">/</span>
           <MountSwitcher />
         </div>
 
