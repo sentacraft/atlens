@@ -203,7 +203,6 @@ export default function Iris({
   function startChase() {
     if (chaseRef.current) return;
     lastFrameRef.current = performance.now();
-    let hasMovedSignificantly = false;
     function chaseTick(now: number) {
       const dt   = Math.min(now - lastFrameRef.current, 64);
       lastFrameRef.current = now;
@@ -212,12 +211,18 @@ export default function Iris({
       thetaRef.current = next;
       setTheta(next);
       const delta = Math.abs(next - targetThetaRef.current);
-      if (delta > 0.01) hasMovedSignificantly = true;
-      // Do not stop chasing while an animation tick is still driving the target
-      // (initAnimRef.current !== null). Stopping mid-animation would leave the
-      // iris frozen at an intermediate position (e.g. thetaMax at Phase-1 end)
-      // even though Phase 2 is about to move the target back to defaultTheta.
-      if (hasMovedSignificantly && delta < 0.001 && initAnimRef.current === null) {
+      // Stop only when the iris has settled at the target AND no animation tick is
+      // actively driving the target. The initAnimRef guard is load-bearing:
+      //
+      // Without it, the chase could exit at the Phase-1/Phase-2 boundary (when
+      // theta momentarily equals thetaMax) and never drive the iris back to
+      // defaultTheta — the root cause of the "iris frozen at minimum aperture" bug.
+      //
+      // hasMovedSignificantly was the previous guard but it was both insufficient
+      // (didn't fix the animation-phase bug) and harmful (if startChase is called
+      // with theta === target and no animation running, the loop never exits because
+      // hasMovedSignificantly stays false — an infinite rAF loop).
+      if (delta < 0.001 && initAnimRef.current === null) {
         thetaRef.current = targetThetaRef.current;
         setTheta(targetThetaRef.current);
         chaseRef.current = null;
@@ -288,12 +293,14 @@ export default function Iris({
   // Derived from theta so the strip can mirror the iris position during any
   // animation and after release easing. Uses f = f_open × (r_open / r).
 
+  // currentFStop is always computed (not gated by apertureStrip) so it can be
+  // exposed as a data attribute for E2E testing regardless of whether the strip
+  // is rendered. apertureStrip consumers still receive it via props as before.
   const currentFStop = useMemo(() => {
-    if (!apertureStrip) return undefined;
     const r = apertureInradius(theta, dc);
     if (r <= 0 || inradiusOpen <= 0) return closedFStop;
     return Math.min(closedFStop, rawConfig.openFStop * inradiusOpen / r);
-  }, [apertureStrip, theta, dc, inradiusOpen, closedFStop, rawConfig.openFStop]);
+  }, [theta, dc, inradiusOpen, closedFStop, rawConfig.openFStop]);
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -304,6 +311,9 @@ export default function Iris({
     <div
       className={className}
       style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}
+      data-testid="iris"
+      data-fstop={currentFStop?.toFixed(2)}
+      data-animating={isAnimating}
     >
       {/* Hotzone wrapper — captures mouse/tap events */}
       <div
