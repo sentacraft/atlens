@@ -658,7 +658,7 @@ export interface Lens {
    *
    * Markets are independent; omit a market when no price data is available.
    *
-   * The UI derives display tiers from the new price using these thresholds:
+   * Price tiers (used for UI bucketing) map a sampled price to a 1–5 band:
    *
    *   tier  CNY (cn)            USD (global)
    *   1     < 500               < 150
