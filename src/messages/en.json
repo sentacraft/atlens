@@ -414,7 +414,6 @@
     "fieldLabel": "Price",
     "groupLabel": "Pricing",
     "infoTriggerLabel": "Price details",
-    "tierAriaLabel": "Tier {tier} of 5",
     "usedBadge": "Used",
     "conditionNew": "New",
     "conditionUsed": "Used",

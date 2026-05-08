@@ -414,7 +414,6 @@
     "fieldLabel": "价格",
     "groupLabel": "价格",
     "infoTriggerLabel": "价格详情",
-    "tierAriaLabel": "档位 {tier}/5",
     "usedBadge": "二手",
     "conditionNew": "新品",
     "conditionUsed": "二手",

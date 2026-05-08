@@ -105,7 +105,7 @@ export function PriceBand({ lens, compact = false }: Props) {
             ? "text-zinc-400 dark:text-zinc-500 italic"
             : "text-zinc-700 dark:text-zinc-200"
         )}
-        aria-label={t("tierAriaLabel", { tier })}
+        aria-hidden="true"
       >
         {symbol.repeat(tier)}
       </span>
