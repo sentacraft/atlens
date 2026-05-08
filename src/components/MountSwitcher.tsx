@@ -50,18 +50,21 @@ export default function MountSwitcher() {
     { mount: "G", label: t("gfx") },
   ];
 
-  const currentLabel = effectiveMount === "X" ? t("x") : t("gfx");
+  const shortLabel: Record<Mount, string> = { X: "X", G: "GFX" };
+  const fullLabel = effectiveMount === "X" ? t("x") : t("gfx");
 
   return (
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 font-bold font-heading text-zinc-500 dark:text-zinc-400 text-lg tracking-tight hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+        className="flex items-center gap-1 font-bold font-heading text-zinc-500 dark:text-zinc-400 text-lg tracking-tight hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors whitespace-nowrap"
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={t("label")}
       >
-        {currentLabel}
+        {/* Abbreviated on mobile, full name on desktop */}
+        <span className="sm:hidden">{shortLabel[effectiveMount]}</span>
+        <span className="hidden sm:inline">{fullLabel}</span>
         <ChevronDown className="h-3.5 w-3.5 opacity-60" />
       </button>
 
