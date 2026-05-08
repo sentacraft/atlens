@@ -45,22 +45,23 @@ function PriceInfoPopover({
         <Popover.Positioner side="top" align="center" sideOffset={6}>
           <Popover.Popup className="max-w-72 origin-(--transform-origin) rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-xs leading-relaxed text-zinc-700 shadow-lg duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
             <div className="flex flex-col gap-1.5">
-              {/* Price (title) */}
-              <p className={cn("text-sm font-semibold tabular-nums text-zinc-900 dark:text-zinc-100", isUsed && "text-zinc-500 dark:text-zinc-400")}>
+              {/* Price + used badge + source on one line */}
+              <p className={cn("flex items-center gap-1.5 text-sm font-semibold tabular-nums text-zinc-900 dark:text-zinc-100", isUsed && "text-zinc-500 dark:text-zinc-400")}>
                 {priceDisplay}
                 {isUsed && (
-                  <span className="ml-1.5 inline-flex items-center rounded bg-zinc-100 px-1 py-px text-[10px] font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+                  <span className="inline-flex items-center rounded bg-zinc-100 px-1 py-px text-[10px] font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
                     {t("usedBadge")}
                   </span>
                 )}
+                <span className="text-[10px] font-normal text-zinc-400 dark:text-zinc-500">
+                  · {sourceDisplay}
+                </span>
               </p>
               {/* Tier symbols + numeric range */}
               <p className="text-zinc-500 dark:text-zinc-400">
                 <span className="font-semibold tracking-wide">{symbol.repeat(tier)}</span>{" "}
                 <span className="tabular-nums">({rangeDisplay})</span>
               </p>
-              {/* Source */}
-              <p className="text-zinc-500 dark:text-zinc-400">{sourceDisplay}</p>
               {/* Condition-specific disclaimer */}
               <p className="text-zinc-400 dark:text-zinc-500">
                 {isUsed ? t("usedNote") : t("newNote")}
