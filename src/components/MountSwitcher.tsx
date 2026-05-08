@@ -50,7 +50,6 @@ export default function MountSwitcher() {
     { mount: "G", label: t("gfx") },
   ];
 
-  const shortLabel: Record<Mount, string> = { X: "X", G: "G" };
   const fullLabel = effectiveMount === "X" ? t("x") : t("gfx");
 
   return (
@@ -62,9 +61,7 @@ export default function MountSwitcher() {
         aria-expanded={open}
         aria-label={t("label")}
       >
-        {/* Abbreviated on mobile, full name on desktop */}
-        <span className="sm:hidden">{shortLabel[effectiveMount]}</span>
-        <span className="hidden sm:inline">{fullLabel}</span>
+        {fullLabel}
         <ChevronDown className="h-3.5 w-3.5 opacity-60 group-hover:opacity-100 transition-opacity" />
       </button>
 
