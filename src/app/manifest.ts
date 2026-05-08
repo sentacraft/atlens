@@ -30,7 +30,7 @@ export default function manifest(): MetadataRoute.Manifest {
         name: "Browse Lenses",
         short_name: "Browse",
         description: "Browse and filter all X-mount lenses",
-        url: "/lenses",
+        url: "/lenses/x",
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],
       },
       {
