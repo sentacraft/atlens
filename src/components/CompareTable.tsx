@@ -385,7 +385,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
       map.set(lens.id, fields);
     }
     return map;
-  }, [resolvedPerLens, allGroups, orderedLenses, td, priceFieldLabel, priceGroupLabel, locale]);
+  }, [resolvedPerLens, allGroups, orderedLenses, td, priceFieldLabel, priceGroupLabel]);
 
   const totalColSpan = orderedLenses.length + 1 + emptySlotCount;
   const { lockNav } = useNavLock();
