@@ -13,9 +13,8 @@ export async function generateMetadata({
 import DataInfo from "@/components/DataFooter";
 import HomeCta from "@/components/HomeCta";
 import HeroBrand from "@/components/MountTag";
+import HeroIris from "@/components/HeroIris";
 import Tagline from "@/components/Tagline";
-import Iris from "@/components/Iris";
-import { IRIS_HERO } from "@/config/iris-config";
 
 export default function Home() {
   const t = useTranslations("Common");
@@ -24,7 +23,7 @@ export default function Home() {
     <div className="flex flex-col h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] overflow-clip">
       {/* Hero */}
       <section className="flex flex-col items-center justify-center text-center px-4 py-16 flex-1">
-        <Iris config={IRIS_HERO} uid="hero" />
+        <HeroIris />
         <h1 className="mt-8 text-5xl sm:text-6xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50 font-heading">
           <HeroBrand />
         </h1>
