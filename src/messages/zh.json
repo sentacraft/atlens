@@ -40,7 +40,7 @@
   },
   "Home": {
     "cta": "浏览镜头",
-    "ctaCompare": "对比镜头",
+    "ctaCompare": "对比",
     "dataSnapshot": "lens.json loaded ✓",
     "dataSnapshotCount": "{count} 支镜头 · {brands} 个品牌 · 0 hallucination",
     "dataTooltip": "数据直接来自厂商官方规格，不靠 AI 猜。"

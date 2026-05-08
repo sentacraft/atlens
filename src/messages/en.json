@@ -40,7 +40,7 @@
   },
   "Home": {
     "cta": "Browse Lenses",
-    "ctaCompare": "Compare Lenses",
+    "ctaCompare": "Compare",
     "dataSnapshot": "lens.json loaded ✓",
     "dataSnapshotCount": "{count} lenses · {brands} brands · 0 hallucination",
     "dataTooltip": "Verified from manufacturer data. No AI-generated specs."
