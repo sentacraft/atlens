@@ -12,23 +12,19 @@ import { mountToUrlSegment } from "@/lib/mount";
 import { useNavLock } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
 import { cn } from "@/lib/utils";
+import MountSwitcher from "@/components/MountSwitcher";
 
 export default function Nav() {
   const t = useTranslations("Nav");
   const pathname = usePathname();
   const { compareState } = useCompare();
-  const mount = useMountParam() ?? "X";
-  const compareIds = compareState[mount];
+  const mount = useMountParam();
   const { navLocked, lockNav } = useNavLock();
   const isPwa = usePwa();
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
 
-  // Hide on scroll-down, reveal on scroll-up (mobile only — sm: always visible via CSS).
-  // In PWA mode the nav is always pinned, so skip the scroll listener entirely.
-  // Threshold is derived from the header's actual rendered height so it stays
-  // in sync if the nav height ever changes.
   useEffect(() => {
     if (isPwa) return;
     const onScroll = () => {
@@ -45,24 +41,26 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [isPwa]);
 
-  // Always reveal when navigating to a new page, and release any nav lock.
   useEffect(() => {
     setHidden(false);
     lastScrollY.current = 0;
     lockNav(false);
   }, [pathname, setHidden, lockNav]);
 
-  // When the nav lock is released, immediately snap nav back to visible.
   useEffect(() => {
     if (!navLocked) setHidden(false);
   }, [navLocked]);
 
-  const seg = mountToUrlSegment(mount);
-  const browseHref = `/lenses/${seg}`;
-  const compareHref =
-    compareIds.length > 0
-      ? `/lenses/${seg}/compare?ids=${compareIds.join(",")}`
-      : `/lenses/${seg}/compare`;
+  // Compare href is only computed when inside a mount context.
+  const compareHref = mount
+    ? (() => {
+        const ids = compareState[mount];
+        const seg = mountToUrlSegment(mount);
+        return ids.length > 0
+          ? `/lenses/${seg}/compare?ids=${ids.join(",")}`
+          : `/lenses/${seg}/compare`;
+      })()
+    : null;
 
   return (
     <header
@@ -76,7 +74,6 @@ export default function Nav() {
       )}
       style={{ paddingTop: "calc(var(--safe-inset-top) + var(--titlebar-height))" }}
     >
-      {/* wco-no-drag: nav links must remain clickable inside the drag region */}
       <nav className="wco-no-drag max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         <Link
           href="/"
@@ -85,30 +82,23 @@ export default function Nav() {
           <Iris config={IRIS_NAV} uid="nav" size={16} />
           X-Glass
         </Link>
-        <div className="flex items-center gap-3">
-          <Link
-            href={browseHref}
-            className={`text-sm transition-colors ${
-              pathname.startsWith("/lenses/") && !pathname.includes("/compare")
-                ? "text-zinc-900 dark:text-zinc-50 font-medium"
-                : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
-            }`}
-          >
-            {t("lenses")}
-          </Link>
-          <Link
-            href={compareHref}
-            className={`text-sm transition-colors ${
-              pathname.includes("/lenses/") && pathname.includes("/compare")
-                ? "text-zinc-900 dark:text-zinc-50 font-medium"
-                : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
-            }`}
-          >
-            {t("compare")}
-          </Link>
+        <div className="flex items-center gap-1 sm:gap-2">
+          <MountSwitcher className="flex items-center gap-0.5" />
+          {compareHref && (
+            <Link
+              href={compareHref}
+              className={`text-sm transition-colors px-2 ${
+                pathname.includes("/compare")
+                  ? "text-zinc-900 dark:text-zinc-50 font-medium"
+                  : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
+              }`}
+            >
+              {t("compare")}
+            </Link>
+          )}
           <Link
             href="/about"
-            className={`text-sm transition-colors ${
+            className={`text-sm transition-colors px-2 ${
               pathname === "/about"
                 ? "text-zinc-900 dark:text-zinc-50 font-medium"
                 : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
@@ -120,7 +110,7 @@ export default function Nav() {
             <Link
               href="/get"
               aria-label={t("getApp")}
-              className={`transition-colors ${
+              className={`transition-colors px-1 ${
                 pathname === "/get"
                   ? "text-zinc-900 dark:text-zinc-50 font-medium"
                   : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
@@ -134,7 +124,7 @@ export default function Nav() {
             href="https://github.com/sentacraft/x-glass"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+            className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors px-1"
             aria-label="GitHub"
           >
             <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true">
