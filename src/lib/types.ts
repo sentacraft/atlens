@@ -658,7 +658,7 @@ export interface Lens {
    *
    * @example { cn: { price: 3746, currency: "CNY", sampledAt: "2026-05-08" } }
    */
-  priceBand?: {
+  pricing?: {
     cn?: {
       /** Retail price in CNY at time of sampling. */
       price: number;
