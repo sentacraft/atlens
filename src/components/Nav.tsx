@@ -104,8 +104,8 @@ export default function Nav() {
       style={{ paddingTop: "calc(var(--safe-inset-top) + var(--titlebar-height))" }}
     >
       <nav className="wco-no-drag max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-        {/* Left: brand = home link, then standalone mount switcher */}
-        <div className="flex items-center gap-1">
+        {/* Left: brand / mount-scope path (GitHub namespace pattern) */}
+        <div className="flex items-center gap-1.5">
           <Link
             href="/"
             className="flex items-center gap-1.5 font-bold font-heading text-zinc-900 dark:text-zinc-50 text-lg tracking-tight hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
@@ -114,6 +114,7 @@ export default function Nav() {
             <Iris config={IRIS_NAV} uid="nav" size={16} />
             X-Glass
           </Link>
+          <span className="text-zinc-300 dark:text-zinc-700 select-none font-light text-lg" aria-hidden="true">/</span>
           <MountSwitcher />
         </div>
 
