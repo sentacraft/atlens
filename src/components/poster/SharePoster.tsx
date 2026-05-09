@@ -73,7 +73,6 @@ export interface PosterLabels {
   // Pricing
   priceLabel: string;
   tierSymbol: string;
-  priceCnyAmount: string;
   // Fallback
   na: string;
   // Locale hint for formatting
@@ -608,7 +607,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
               }
               const rangeDisplay = formatTierRange(tier, sel.entry.currency, labels.locale);
               const rangeFormatted = sel.entry.currency === "CNY"
-                ? labels.priceCnyAmount.replace("{value}", rangeDisplay)
+                ? `¥${rangeDisplay}`
                 : `$${rangeDisplay}`;
               return (
                 <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
