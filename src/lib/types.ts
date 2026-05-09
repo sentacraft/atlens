@@ -270,12 +270,7 @@ export type FieldNoteKey = (typeof FIELD_NOTE_KEYS)[number];
  */
 export type Mount = "X" | "G";
 
-export const PRICE_SOURCES = [
-  "jd",
-  "tmall",
-  "xianyu",
-] as const;
-export type PriceSource = (typeof PRICE_SOURCES)[number];
+export type PriceSource = string;
 
 /** A single price observation — shared by new and used entries across all markets. */
 export interface LensPriceEntry {
