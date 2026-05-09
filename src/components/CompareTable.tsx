@@ -1,7 +1,6 @@
 "use client";
 
 import React, {
-  startTransition,
   useCallback,
   useEffect,
   useMemo,
@@ -18,7 +17,6 @@ import { cn } from "@/lib/utils";
 import { ICON_CLOSE_BTN_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
-import { useRouter } from "@/i18n/navigation";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 import type { FeedbackField } from "@/components/FeedbackDialog";
 import { useMountedCompare } from "@/context/CompareProvider";
@@ -177,54 +175,62 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const locale = useLocale();
   const priceFieldLabel = tPricing("fieldLabel");
   const priceGroupLabel = tPricing("groupLabel");
-  const router = useRouter();
-  const { replaceCompare } = useMountedCompare();
-  const { buildCompareUrl } = useCompareUrl();
+  const { compareIds, replaceCompare } = useMountedCompare();
+  const { buildLocalizedCompareUrl } = useCompareUrl();
   const mount = useEffectiveMount();
   const initialLensIds = useMemo(
     () => initialLenses.map((lens) => lens.id),
     [initialLenses]
   );
-  const [orderedIds, setOrderedIds] = useState(initialLensIds);
 
-  // URL is the single source of truth. Sync context and local state whenever
-  // the server-rendered lens list changes (navigation, lens add/remove).
+  // Context is the single client-side source of truth. The URL is a write-only
+  // projection updated via history.replaceState (no RSC round-trip).
+  // This effect seeds Context from the URL on initial render and on subsequent
+  // navigations (e.g., a curated preset link click that re-renders the server
+  // component with new searchParams). It is a no-op for in-page mutations
+  // because those don't change initialLenses.
   useEffect(() => {
     replaceCompare(initialLensIds);
-    setOrderedIds(initialLensIds);
   }, [initialLensIds, replaceCompare]);
 
-  const orderedLenses = orderedIds
+  const orderedLenses = compareIds
     .map((id) => getLensesByMount(mount).find((lens) => lens.id === id))
     .filter((lens): lens is Lens => lens !== undefined);
 
   // Number of empty slot columns to render (search triggers filling up to minColumns)
   const emptySlotCount = Math.max(0, minColumns - orderedLenses.length);
 
+  const updateCompare = useCallback(
+    (nextIds: string[]) => {
+      replaceCompare(nextIds);
+      // Update only the address bar — avoids RSC round-trip and the redundant
+      // server-side re-parse of ids that the client already computed.
+      // Use the locale-prefixed form because replaceState writes the path
+      // verbatim (next-intl's router would have auto-prefixed it for us).
+      window.history.replaceState(null, "", buildLocalizedCompareUrl(nextIds));
+    },
+    [replaceCompare, buildLocalizedCompareUrl]
+  );
+
   const handleAddLens = useCallback(
     (lens: Lens) => {
-      if (orderedIds.includes(lens.id) || orderedIds.length >= MAX_COMPARE) {return;}
-      const nextIds = [...orderedIds, lens.id];
-      replaceCompare(nextIds);
-      setOrderedIds(nextIds);
-      startTransition(() => {
-        router.replace(buildCompareUrl(nextIds));
-      });
+      if (compareIds.includes(lens.id) || compareIds.length >= MAX_COMPARE) {return;}
+      updateCompare([...compareIds, lens.id]);
     },
-    [orderedIds, replaceCompare, router, buildCompareUrl]
+    [compareIds, updateCompare]
   );
 
   const getAddResultState = useCallback(
     (candidate: Lens) => ({
-      actionLabel: orderedIds.includes(candidate.id)
+      actionLabel: compareIds.includes(candidate.id)
         ? t("alreadyAdded")
-        : orderedIds.length >= MAX_COMPARE
+        : compareIds.length >= MAX_COMPARE
           ? t("compareFull")
           : t("addToCompareAction"),
       disabled:
-        orderedIds.includes(candidate.id) || orderedIds.length >= MAX_COMPARE,
+        compareIds.includes(candidate.id) || compareIds.length >= MAX_COMPARE,
     }),
-    [orderedIds, t]
+    [compareIds, t]
   );
 
   const valueCellLabels = {
@@ -235,23 +241,15 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
     missing: td("missing"),
   };
 
-  function updateCompare(nextIds: string[]) {
-    replaceCompare(nextIds);
-    setOrderedIds(nextIds);
-    startTransition(() => {
-      router.replace(buildCompareUrl(nextIds));
-    });
-  }
-
   function handleRemoveLens(lensId: string) {
-    updateCompare(orderedIds.filter((id) => id !== lensId));
+    updateCompare(compareIds.filter((id) => id !== lensId));
   }
 
   function handleShiftLens(lensId: string, direction: -1 | 1) {
-    const index = orderedIds.indexOf(lensId);
+    const index = compareIds.indexOf(lensId);
     const newIndex = index + direction;
-    if (newIndex < 0 || newIndex >= orderedIds.length) {return;}
-    const next = [...orderedIds];
+    if (newIndex < 0 || newIndex >= compareIds.length) {return;}
+    const next = [...compareIds];
     [next[index], next[newIndex]] = [next[newIndex], next[index]];
     updateCompare(next);
   }
@@ -433,7 +431,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
     const observer = new ResizeObserver(update);
     observer.observe(container);
     return () => observer.disconnect();
-  }, [orderedIds]);
+  }, [compareIds]);
 
   useEffect(() => {
     const container = containerRef.current;

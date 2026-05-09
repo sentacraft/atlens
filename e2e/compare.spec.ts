@@ -101,4 +101,65 @@ test.describe("Compare flow", () => {
 
     await expect(page.getByText(LENS_A_MODEL).first()).toBeVisible();
   });
+
+  // Regression guard: when the compare table renders from Context (not local
+  // state), any mutation must persist — the Context-seeding effect must not
+  // clobber it on the next render. This was broken when the scoped
+  // replaceCompare wrapper had an unstable identity across state changes,
+  // causing the seeding effect to re-fire and overwrite every mutation.
+  test("removing a lens column from the compare table actually removes it", async ({
+    page,
+  }) => {
+    await page.goto(`/en/lenses/x/compare?ids=${LENS_A},${LENS_B}`);
+
+    await expect(page.getByText(LENS_A_MODEL).first()).toBeVisible();
+    await expect(page.getByText(LENS_B_MODEL).first()).toBeVisible();
+
+    // Hover the second column header to reveal the controls (they're
+    // sm:opacity-0 sm:group-hover:opacity-100 by default on desktop).
+    const secondColumnRemove = page
+      .getByRole("button", { name: new RegExp(`Remove ${LENS_B_MODEL}`, "i") });
+    await secondColumnRemove.click();
+
+    // After removal, LENS_B should no longer be in the table headers.
+    await expect(page.getByText(LENS_B_MODEL)).toHaveCount(0);
+    // LENS_A should still be there.
+    await expect(page.getByText(LENS_A_MODEL).first()).toBeVisible();
+    // URL should be updated to drop LENS_B.
+    await expect(page).toHaveURL(new RegExp(`ids=${LENS_A}(?!,)`));
+  });
+
+  test("shifting a lens column left swaps order and updates URL", async ({
+    page,
+  }) => {
+    await page.goto(`/en/lenses/x/compare?ids=${LENS_A},${LENS_B}`);
+
+    await expect(page.getByText(LENS_A_MODEL).first()).toBeVisible();
+    await expect(page.getByText(LENS_B_MODEL).first()).toBeVisible();
+
+    // Click the "move left" arrow on the second (rightmost) column header.
+    // There's exactly one move-left button enabled (the first column's is disabled).
+    const shiftLeft = page.getByRole("button", { name: /Move left/i }).first();
+    await shiftLeft.click();
+
+    // After the swap, the URL ids should be reversed.
+    await expect(page).toHaveURL(new RegExp(`ids=${LENS_B},${LENS_A}`));
+  });
+
+  test("compare URL preserves commas literally (no %2C encoding)", async ({
+    page,
+  }) => {
+    await page.goto(`/en/lenses`);
+
+    const addButtons = page.getByRole("button", { name: /Add to Compare/i });
+    await addButtons.nth(0).click();
+    await addButtons.nth(1).click();
+
+    await page.getByRole("button", { name: /Compare \(2\)/i }).click();
+
+    await page.waitForURL(/\/lenses\/[^/]+\/compare/);
+    const url = page.url();
+    expect(url).toContain("ids=");
+    expect(url).not.toContain("%2C");
+  });
 });
