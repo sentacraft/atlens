@@ -13,6 +13,8 @@ export default async function MountLayout({
   children: React.ReactNode;
 }) {
   const { mount } = await params;
-  if (!urlSegmentToMount(mount)) notFound();
+  if (!urlSegmentToMount(mount)) {
+    notFound();
+  }
   return <>{children}</>;
 }

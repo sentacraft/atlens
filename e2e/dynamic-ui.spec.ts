@@ -281,7 +281,9 @@ test.describe("CompareBar does not obscure BackToTopButton or page content", () 
         (b.getAttribute("aria-label") ?? "").toLowerCase().includes("top")
       );
       const bar = document.querySelector('[data-testid="compare-bar"]') as HTMLElement;
-      if (!backTop || !bar) throw new Error("Elements not found");
+      if (!backTop || !bar) {
+        throw new Error("Elements not found");
+      }
       return [
         backTop.getBoundingClientRect().bottom,
         bar.getBoundingClientRect().top,
@@ -305,7 +307,9 @@ test.describe("CompareBar does not obscure BackToTopButton or page content", () 
     const paddingBottom = await page.evaluate(() => {
       // The lens list wrapper is the first div.max-w-7xl inside the page body
       const el = document.querySelector(".max-w-7xl") as HTMLElement;
-      if (!el) throw new Error("Lens list container not found");
+      if (!el) {
+        throw new Error("Lens list container not found");
+      }
       return parseFloat(getComputedStyle(el).paddingBottom);
     });
 
@@ -323,7 +327,9 @@ test.describe("CompareBar does not obscure BackToTopButton or page content", () 
 
     const paddingBottom = await page.evaluate(() => {
       const el = document.querySelector(".max-w-4xl") as HTMLElement;
-      if (!el) throw new Error("Lens detail container not found");
+      if (!el) {
+        throw new Error("Lens detail container not found");
+      }
       return parseFloat(getComputedStyle(el).paddingBottom);
     });
 

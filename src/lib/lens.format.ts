@@ -15,7 +15,9 @@ export function oisDisplay(
   oisStops: number | undefined,
   labels: { yes: string; no: string }
 ): string {
-  if (!ois) return labels.no;
+  if (!ois) {
+    return labels.no;
+  }
   return oisStops !== undefined ? `${labels.yes} (${oisStops}-stop)` : labels.yes;
 }
 
@@ -36,7 +38,9 @@ export function apertureDisplay(aperture: NonNullable<Lens["maxAperture"]>): str
 export function tStopDisplay(
   tStop: Lens["maxTStop"] | undefined
 ): string | undefined {
-  if (tStop === undefined) return undefined;
+  if (tStop === undefined) {
+    return undefined;
+  }
   return Array.isArray(tStop) ? `T${tStop[0]}–${tStop[1]}` : `T${tStop}`;
 }
 
@@ -46,7 +50,9 @@ export function tStopDisplay(
  * Returns undefined when neither value is available.
  */
 export function primaryApertureDisplay(lens: Lens): string | undefined {
-  if (lens.maxAperture !== undefined) return apertureDisplay(lens.maxAperture);
+  if (lens.maxAperture !== undefined) {
+    return apertureDisplay(lens.maxAperture);
+  }
   return tStopDisplay(lens.maxTStop);
 }
 
@@ -56,7 +62,9 @@ export function primaryApertureDisplay(lens: Lens): string | undefined {
  * neither) is available, so callers can suppress the secondary line.
  */
 export function secondaryApertureDisplay(lens: Lens): string | undefined {
-  if (lens.maxAperture === undefined) return undefined;
+  if (lens.maxAperture === undefined) {
+    return undefined;
+  }
   return tStopDisplay(lens.maxTStop);
 }
 
@@ -71,8 +79,12 @@ export function weightDisplay(
   weightG: number | [number, number] | undefined,
   unit: string
 ): string | undefined {
-  if (weightG === undefined) return undefined;
-  if (Array.isArray(weightG)) return `${weightG[0]}–${weightG[1]}${unit}`;
+  if (weightG === undefined) {
+    return undefined;
+  }
+  if (Array.isArray(weightG)) {
+    return `${weightG[0]}–${weightG[1]}${unit}`;
+  }
   return `${weightG}${unit}`;
 }
 
@@ -80,8 +92,12 @@ export function wrDisplay(
   wr: boolean | "partial",
   labels: { yes: string; no: string; partial: string }
 ): string {
-  if (wr === true) return labels.yes;
-  if (wr === "partial") return labels.partial;
+  if (wr === true) {
+    return labels.yes;
+  }
+  if (wr === "partial") {
+    return labels.partial;
+  }
   return labels.no;
 }
 
@@ -100,15 +116,21 @@ export function filterSizeDisplay(
 export function angleOfViewDisplay(
   angleOfView: number | [number, number] | undefined,
 ): string | undefined {
-  if (angleOfView === undefined) return undefined;
-  if (Array.isArray(angleOfView)) return `${angleOfView[0]}°–${angleOfView[1]}°`;
+  if (angleOfView === undefined) {
+    return undefined;
+  }
+  if (Array.isArray(angleOfView)) {
+    return `${angleOfView[0]}°–${angleOfView[1]}°`;
+  }
   return `${angleOfView}°`;
 }
 
 export function magnificationDisplay(
   maxMagnification: MaxMagnification | undefined,
 ): string | undefined {
-  if (maxMagnification === undefined) return undefined;
+  if (maxMagnification === undefined) {
+    return undefined;
+  }
   return `${maxMagnification.value}x`;
 }
 
@@ -125,7 +147,9 @@ export function dimensionsRichDisplay(
 ): string | undefined {
   const hasDiameter = diameterMm !== undefined;
   const hasLength = length?.mm !== undefined;
-  if (!hasDiameter && !hasLength) return undefined;
+  if (!hasDiameter && !hasLength) {
+    return undefined;
+  }
 
   const parts: string[] = [];
 
@@ -165,7 +189,9 @@ export function minFocusDistanceRichDisplay(
   mfd: MinFocusDistance | undefined,
   labels: { wide: string; tele: string; macro: string }
 ): string | undefined {
-  if (!mfd) return undefined;
+  if (!mfd) {
+    return undefined;
+  }
 
   const lines: string[] = [];
 
@@ -213,7 +239,9 @@ export function maxMagnificationRichDisplay(
   maxMag: MaxMagnification | undefined,
   labels: { wide: string; tele: string }
 ): string | undefined {
-  if (!maxMag) return undefined;
+  if (!maxMag) {
+    return undefined;
+  }
 
   if (maxMag.variants?.wide !== undefined || maxMag.variants?.tele !== undefined) {
     const parts = [
@@ -237,7 +265,9 @@ export function specialtyTagsDisplay(
   tags: SpecialtyTag[] | undefined,
   labels: Record<SpecialtyTag, string>
 ): string | undefined {
-  if (!tags || tags.length === 0) return undefined;
+  if (!tags || tags.length === 0) {
+    return undefined;
+  }
   return tags.map((tag) => labels[tag]).join(", ");
 }
 
@@ -250,9 +280,15 @@ export function dimensionsPrimaryDisplay(
 ): string | undefined {
   const hasDiameter = diameterMm !== undefined;
   const hasLength = length?.mm !== undefined;
-  if (!hasDiameter && !hasLength) return undefined;
-  if (hasDiameter && hasLength) return `⌀${diameterMm} × ${length!.mm}mm`;
-  if (hasDiameter) return `⌀${diameterMm}mm`;
+  if (!hasDiameter && !hasLength) {
+    return undefined;
+  }
+  if (hasDiameter && hasLength) {
+    return `⌀${diameterMm} × ${length!.mm}mm`;
+  }
+  if (hasDiameter) {
+    return `⌀${diameterMm}mm`;
+  }
   return `${length!.mm}mm`;
 }
 
@@ -262,7 +298,9 @@ export function dimensionsVariantsDisplay(
   labels: { retracted: string; wide: string; tele: string }
 ): string | undefined {
   const variants = length?.variants;
-  if (!variants) return undefined;
+  if (!variants) {
+    return undefined;
+  }
   const parts = [
     variants.retracted !== undefined
       ? `${labels.retracted} ${variants.retracted}mm`
@@ -283,7 +321,9 @@ export function minFocusDistancePrimaryDisplay(
   mfd: MinFocusDistance | undefined,
   labels: { wide: string; tele: string }
 ): string | undefined {
-  if (!mfd) return undefined;
+  if (!mfd) {
+    return undefined;
+  }
   if (mfd.variants?.wide !== undefined || mfd.variants?.tele !== undefined) {
     const parts = [
       mfd.variants.wide !== undefined
@@ -306,7 +346,9 @@ export function minFocusDistanceSecondaryDisplay(
   mfd: MinFocusDistance | undefined,
   labels: { wide: string; tele: string; macro: string }
 ): string | undefined {
-  if (!mfd) return undefined;
+  if (!mfd) {
+    return undefined;
+  }
 
   if (
     mfd.macroVariants?.wide !== undefined ||
@@ -338,7 +380,9 @@ export function maxMagnificationPrimaryDisplay(
   maxMag: MaxMagnification | undefined,
   labels: { wide: string; tele: string }
 ): string | undefined {
-  if (!maxMag) return undefined;
+  if (!maxMag) {
+    return undefined;
+  }
   if (maxMag.variants?.wide !== undefined || maxMag.variants?.tele !== undefined) {
     const parts = [
       maxMag.variants.wide !== undefined
@@ -358,7 +402,9 @@ export function maxMagnificationSecondaryDisplay(
   maxMag: MaxMagnification | undefined,
   labels: { wide: string; tele: string }
 ): string | undefined {
-  if (!maxMag?.variants) return undefined;
+  if (!maxMag?.variants) {
+    return undefined;
+  }
   const parts = [
     maxMag.variants.wide !== undefined
       ? `${labels.wide} ${maxMag.variants.wide}x`
@@ -395,13 +441,21 @@ function mergedElementLine(
   vendorLabel: string,
   inclLabel: string
 ): string | null {
-  if (base === undefined && vendor === undefined) return null;
+  if (base === undefined && vendor === undefined) {
+    return null;
+  }
   const baseCount = base ?? 0;
   const vendorCount = vendor ?? 0;
   const total = baseCount + vendorCount;
-  if (total === 0) return null;
-  if (vendorCount === 0) return `${total} ${baseLabel}`;
-  if (baseCount === 0) return `${total} ${baseLabel} (${vendorCount} ${vendorLabel})`;
+  if (total === 0) {
+    return null;
+  }
+  if (vendorCount === 0) {
+    return `${total} ${baseLabel}`;
+  }
+  if (baseCount === 0) {
+    return `${total} ${baseLabel} (${vendorCount} ${vendorLabel})`;
+  }
   return `${total} ${baseLabel} (${inclLabel} ${vendorCount} ${vendorLabel})`;
 }
 
@@ -410,7 +464,9 @@ export function lensConfigurationPrimaryDisplay(
   configuration: LensConfiguration | undefined,
   labels: LensConfigurationLabels
 ): string | undefined {
-  if (!configuration) return undefined;
+  if (!configuration) {
+    return undefined;
+  }
   return `${configuration.groups} ${labels.groups} / ${configuration.elements} ${labels.elements}`;
 }
 
@@ -422,7 +478,9 @@ export function lensConfigurationSecondaryDisplay(
   configuration: LensConfiguration | undefined,
   labels: LensConfigurationLabels
 ): string | undefined {
-  if (!configuration) return undefined;
+  if (!configuration) {
+    return undefined;
+  }
   const parts = [
     configuration.aspherical !== undefined
       ? `${configuration.aspherical} ${labels.aspherical}`
@@ -452,7 +510,9 @@ export function lensConfigurationDisplay(
   configuration: LensConfiguration | undefined,
   labels: LensConfigurationLabels
 ): string | undefined {
-  if (!configuration) return undefined;
+  if (!configuration) {
+    return undefined;
+  }
   const primary = lensConfigurationPrimaryDisplay(configuration, labels);
   const secondary = lensConfigurationSecondaryDisplay(configuration, labels);
   return [primary, secondary].filter(Boolean).join("\n");

@@ -26,7 +26,9 @@ export async function generateMetadata({
 export default async function LensesPage({ params }: { params: Params }) {
   const { mount } = await params;
   const resolvedMount = urlSegmentToMount(mount);
-  if (!resolvedMount) notFound();
+  if (!resolvedMount) {
+    notFound();
+  }
   const lenses = getLensesByMount(resolvedMount);
 
   return (

@@ -30,7 +30,9 @@ const ANIMATION_SETTLE_MS = 3000;
 async function getIrisFStop(page: Page): Promise<number> {
   return page.evaluate(() => {
     const el = document.querySelector('[data-testid="iris"]');
-    if (!el) throw new Error("Iris element not found");
+    if (!el) {
+      throw new Error("Iris element not found");
+    }
     return parseFloat(el.getAttribute("data-fstop") ?? "NaN");
   });
 }
@@ -39,7 +41,9 @@ async function getIrisFStop(page: Page): Promise<number> {
 async function getIrisAnimating(page: Page): Promise<boolean> {
   return page.evaluate(() => {
     const el = document.querySelector('[data-testid="iris"]');
-    if (!el) throw new Error("Iris element not found");
+    if (!el) {
+      throw new Error("Iris element not found");
+    }
     return el.getAttribute("data-animating") === "true";
   });
 }

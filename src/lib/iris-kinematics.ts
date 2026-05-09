@@ -92,7 +92,9 @@ function solveGuidePinRadius(
   const { pivotRadius: Rp, pinDistance: d, slotOffset: delta } = config;
   const angle = delta + theta; // β - φ_i  (same for all blades)
   const discriminant = d * d - Rp * Rp * Math.sin(angle) * Math.sin(angle);
-  if (discriminant < 0) return null;
+  if (discriminant < 0) {
+    return null;
+  }
   return Rp * Math.cos(angle) + Math.sqrt(discriminant);
 }
 
@@ -106,7 +108,9 @@ export function solveAllBlades(
 ): BladeState[] {
   const { N, pivotRadius: Rp, slotOffset: delta } = config;
   const r = solveGuidePinRadius(theta, config);
-  if (r === null || r <= 0) return [];
+  if (r === null || r <= 0) {
+    return [];
+  }
 
   const step = (2 * Math.PI) / N;
   const slotDir = delta + theta; // β_0 = φ_0 + δ + θ = 0 + δ + θ (blade 0)
@@ -312,7 +316,9 @@ export function computeBladeCurvature(
   const cx = L / 2;
   const Rt = housingRadius - hw;
   const disc = Rt * Rt - cx * cx;
-  if (disc < 0) return 0;
+  if (disc < 0) {
+    return 0;
+  }
   return (Rt - Math.sqrt(disc)) / (hw * 1.2);
 }
 
@@ -341,7 +347,9 @@ export function computeThetaOpen(
 
   function apexRadius(theta: number): number {
     const blades = solveAllBlades(theta, config);
-    if (!blades.length) return 0;
+    if (!blades.length) {
+      return 0;
+    }
     const b = blades[0];
     const ca = Math.cos(b.bladeAngle), sa = Math.sin(b.bladeAngle);
     const wx = b.pivotPos.x + ca * OMidX - sa * OMidY;
@@ -353,13 +361,21 @@ export function computeThetaOpen(
   const lo = -config.slotOffset;
   const hi = kinRange.max;
 
-  if (apexRadius(lo) < housingRadius) return lo;
-  if (apexRadius(hi) >= housingRadius) return hi;
+  if (apexRadius(lo) < housingRadius) {
+
+    return lo;
+
+  }
+  if (apexRadius(hi) >= housingRadius) {
+    return hi;
+  }
 
   let a = lo, b = hi;
   for (let i = 0; i < 60; i++) {
     const m = (a + b) / 2;
-    if (apexRadius(m) >= housingRadius) a = m; else b = m;
+    if (apexRadius(m) >= housingRadius) {
+      a = m;
+    } else {b = m;}
   }
   return a;
 }
@@ -415,20 +431,30 @@ export function tNormToTheta(
  */
 export function apertureInradius(theta: number, dc: IrisMechanismConfig): number {
   const blades = solveAllBlades(theta, dc);
-  if (blades.length < 2) return 0;
+  if (blades.length < 2) {
+    return 0;
+  }
 
   const { bladeLength: L, bladeWidth: W, bladeCurvature: C } = dc;
   const hw = W / 2;
   const cx = L / 2;
 
-  if (C < 0.005) return 0;
+  if (C < 0.005) {
+
+    return 0;
+
+  }
 
   const s   = C * hw * 1.2;
   const Ro  = (cx * cx + s * s) / (2 * s);
   const cyL = Ro - s;
   const Ri  = Ro - hw;
 
-  if (Ri <= 0) return 0;
+  if (Ri <= 0) {
+
+    return 0;
+
+  }
 
   function arcCenter(b: (typeof blades)[0]) {
     const ca = Math.cos(b.bladeAngle), sa = Math.sin(b.bladeAngle);
@@ -444,8 +470,14 @@ export function apertureInradius(theta: number, dc: IrisMechanismConfig): number
   const dy  = c1.y - c0.y;
   const d   = Math.sqrt(dx * dx + dy * dy);
 
-  if (d < 0.001) return Ri;
-  if (d >= 2 * Ri) return 0;
+  if (d < 0.001) {
+
+    return Ri;
+
+  }
+  if (d >= 2 * Ri) {
+    return 0;
+  }
 
   const mx = (c0.x + c1.x) / 2;
   const my = (c0.y + c1.y) / 2;
@@ -469,8 +501,12 @@ export function findThetaForInradius(
   let hi = range.max;
   for (let i = 0; i < 48; i++) {
     const mid = (lo + hi) / 2;
-    if (apertureInradius(mid, dc) > targetR) lo = mid;
-    else hi = mid;
+    if (apertureInradius(mid, dc) > targetR) {
+      lo = mid;
+    }
+    else {
+      hi = mid;
+    }
   }
   return (lo + hi) / 2;
 }
@@ -489,14 +525,20 @@ export function findThetaForFStop(
   openFStop = 1.4,
 ): number {
   const rOpen = apertureInradius(range.min, dc);
-  if (rOpen <= 0) return range.min;
+  if (rOpen <= 0) {
+    return range.min;
+  }
   const targetR = (openFStop * rOpen) / targetFStop;
   let lo = range.min;
   let hi = range.max;
   for (let i = 0; i < 48; i++) {
     const mid = (lo + hi) / 2;
-    if (apertureInradius(mid, dc) > targetR) lo = mid;
-    else hi = mid;
+    if (apertureInradius(mid, dc) > targetR) {
+      lo = mid;
+    }
+    else {
+      hi = mid;
+    }
   }
   return (lo + hi) / 2;
 }
