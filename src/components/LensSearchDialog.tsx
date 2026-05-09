@@ -26,6 +26,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import FeedbackTrigger from "./FeedbackTrigger";
+import { LIST_ITEM_ACTIVE_CLS } from "@/lib/ui-tokens";
 
 interface LensSearchResultState {
   actionLabel?: string;
@@ -271,7 +272,7 @@ export default function LensSearchDialog({
                         isDisabled
                           ? "cursor-not-allowed border-transparent bg-zinc-50/80 opacity-60 dark:bg-zinc-900/60"
                           : isActive
-                            ? "border-zinc-200 bg-zinc-50/80 dark:border-zinc-700 dark:bg-zinc-800/50"
+                            ? LIST_ITEM_ACTIVE_CLS
                             : "border-transparent bg-white hover:bg-zinc-50 dark:bg-zinc-950 dark:hover:bg-zinc-900"
                       )}
                     >

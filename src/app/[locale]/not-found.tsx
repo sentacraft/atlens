@@ -1,5 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
+import { ACTION_PRIMARY_CLS } from "@/lib/ui-tokens";
 
 export default function NotFound() {
   const t = useTranslations("NotFound");
@@ -17,7 +19,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+        className={cn(ACTION_PRIMARY_CLS, "mt-4 inline-flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-medium")}
       >
         {t("home")}
       </Link>
