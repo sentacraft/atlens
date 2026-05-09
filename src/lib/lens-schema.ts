@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { SPEC_NA, SPECIALTY_TAGS, PRICE_SOURCES } from "./types.ts";
+import { SPEC_NA, SPECIALTY_TAGS } from "./types.ts";
 import type { ApertureValue, Lens } from "./types.ts";
 
 const positiveNumberSchema = z.number().positive();
@@ -27,7 +27,7 @@ export const specNaSchema = z.literal(SPEC_NA);
 const lensPriceEntrySchema = z.strictObject({
   price: z.number().positive(),
   currency: z.enum(["CNY", "USD"]),
-  source: z.enum(PRICE_SOURCES),
+  source: z.string().min(1),
   sampledAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });
 const pricingMarketSchema = z.strictObject({
