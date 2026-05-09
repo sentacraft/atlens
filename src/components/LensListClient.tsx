@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { useRouter, usePathname, Link } from "@/i18n/navigation";
+import { usePathname, Link } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { useTranslations } from "next-intl";
 import type { Lens } from "@/lib/types";
@@ -42,9 +42,7 @@ export default function LensListClient({ lenses }: Props) {
   const t = useTranslations("LensList");
   const hookAttr = useUiHookAttr();
   const searchParams = useSearchParams();
-  const router = useRouter();
   const pathname = usePathname();
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
   const { compareIds, toggleCompare, canToggle } = useMountedCompare();
@@ -80,13 +78,9 @@ export default function LensListClient({ lenses }: Props) {
   function updateFilters(updater: FilterState | ((prev: FilterState) => FilterState)) {
     setFilters((prev) => {
       const next = typeof updater === "function" ? updater(prev) : updater;
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-      debounceRef.current = setTimeout(() => {
-        const qs = serializeFilters(next).toString();
-        router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-      }, 300);
+      const qs = serializeFilters(next).toString();
+      const path = qs ? `${pathname}?${qs}` : pathname;
+      window.history.replaceState(null, "", path);
       return next;
     });
   }
