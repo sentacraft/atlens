@@ -613,18 +613,18 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
               const isUsed = sel.condition === "used";
               return (
                 <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
-                  <span className={cn("font-semibold tabular-nums tracking-wide text-zinc-700 leading-none", statSize)}>
-                    {labels.tierSymbol.repeat(tier)}
-                  </span>
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                    <span className="tabular-nums text-zinc-400" style={{ fontSize: 10 }}>
-                      {rangeFormatted}
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                    <span className={cn("font-semibold tabular-nums tracking-wide text-zinc-700 leading-none", statSize)}>
+                      {labels.tierSymbol.repeat(tier)}
                     </span>
                     {isUsed && (
                       <span className="rounded bg-zinc-200 px-1 py-px text-zinc-500" style={{ fontSize: 8, fontWeight: 500 }}>
                         {labels.usedBadge}
                       </span>
                     )}
+                  </span>
+                  <span className="tabular-nums text-zinc-400" style={{ fontSize: 10 }}>
+                    {rangeFormatted}
                   </span>
                   <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                     {labels.priceLabel}
