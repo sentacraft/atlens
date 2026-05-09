@@ -352,6 +352,18 @@
     "feedbackReport": "Report an issue",
     "feedbackEmailLabel": "xglass@sentacraft.com"
   },
+  "Coverage": {
+    "pageTitle": "Lens Coverage",
+    "intro": "A snapshot of what's currently indexed in X-Glass. Lens counts are derived from the live database. Notes are maintained manually and reflect coverage completeness beyond what the data alone can express.",
+    "xMountTitle": "X Mount",
+    "gMountTitle": "G Mount",
+    "colBrand": "Brand",
+    "colCount": "Lenses",
+    "colNotes": "Notes",
+    "rowTotal": "Total",
+    "githubCta": "View source on GitHub →",
+    "backToAbout": "← About"
+  },
   "Footer": {
     "updatedPrefix": "Updated",
     "tagline1": "Data over opinions",

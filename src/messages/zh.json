@@ -352,6 +352,18 @@
     "feedbackReport": "反馈问题",
     "feedbackEmailLabel": "xglass@sentacraft.com"
   },
+  "Coverage": {
+    "pageTitle": "收录范围",
+    "intro": "当前 X-Glass 数据库的镜头收录快照。镜头数量由数据库实时派生，备注由人工维护，用于补充数据本身无法表达的覆盖完整度信息。",
+    "xMountTitle": "X 卡口",
+    "gMountTitle": "G 卡口",
+    "colBrand": "品牌",
+    "colCount": "镜头数",
+    "colNotes": "备注",
+    "rowTotal": "合计",
+    "githubCta": "在 GitHub 上查看源码 →",
+    "backToAbout": "← 关于"
+  },
   "Footer": {
     "updatedPrefix": "更新于",
     "tagline1": "Data over opinions",
