@@ -80,27 +80,6 @@ export interface PosterCustom {
 
 // ── Helpers ────────────────────────────────────────────────────────
 
-/**
- * Returns labeled wide/tele lines whenever at least one end is present.
- * Labeling single-variant cases (e.g. tele-only) is critical: without the
- * label, a zoom's "0.27x achievable only at tele" reads as "0.27x across
- * the whole range" when compared side-by-side with lenses that do carry
- * wide/tele breakdowns. Returns null only when neither end is present.
- */
-function getFocusVariantLines(
-  data: { variants?: { wide?: number; tele?: number } } | undefined,
-  format: (v: number) => string,
-  labels: { wide: string; tele: string }
-): Array<{ label: string; value: string }> | null {
-  const wide = data?.variants?.wide;
-  const tele = data?.variants?.tele;
-  if (wide === undefined && tele === undefined) return null;
-  return [
-    wide !== undefined ? { label: labels.wide, value: format(wide) } : null,
-    tele !== undefined ? { label: labels.tele, value: format(tele) } : null,
-  ].filter((v): v is { label: string; value: string } => v !== null);
-}
-
 // ── Constants ──────────────────────────────────────────────────────
 
 const POSTER_W = 750;
@@ -119,10 +98,23 @@ function gridStyle(n: number): React.CSSProperties {
 
 /** Primary weight value for normalisation (use lower bound for ranges). */
 function primaryWeight(w: Lens["weightG"]): number | undefined {
-  if (w === undefined) return undefined;
+  if (w === undefined) {
+    return undefined;
+  }
   return Array.isArray(w) ? w[0] : w;
 }
 
+function hasVariantValue<T>(variants: { wide?: T; tele?: T } | undefined): boolean {
+  return variants?.wide !== undefined || variants?.tele !== undefined;
+}
+
+/**
+ * Returns labeled wide/tele lines whenever at least one end is present.
+ * Labeling single-variant cases (e.g. tele-only) is critical: without the
+ * label, a zoom's "0.27x achievable only at tele" reads as "0.27x across
+ * the whole range" when compared side-by-side with lenses that do carry
+ * wide/tele breakdowns.
+ */
 function toVariantLines<T>(
   variants: { wide?: T; tele?: T } | undefined,
   format: (v: T) => string,
@@ -271,7 +263,9 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   // ── Conditional Details visibility ────────────────────────────
   const focusMotorValues = lenses.map((l) => {
     const cls = classifyFocusMotor(l);
-    if (!cls) return undefined;
+    if (!cls) {
+      return undefined;
+    }
     return cls === "linear"
       ? labels.motorLinear
       : cls === "stepping"
@@ -293,7 +287,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
 
   // ── Size & Weight visibility ───────────────────────────────────
   const weights = lenses.map((l) => primaryWeight(l.weightG));
-  const maxWeightG = Math.max(0, ...weights.filter((w): w is number => w !== undefined));
   const showWeight = weights.some((w) => w !== undefined);
   const showDimensions = lenses.some(
     (l) => l.diameterMm !== undefined || l.length !== undefined
@@ -317,9 +310,13 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
 
   const collectNote = (lensIndex: number, key: FieldNoteKey, fieldLabel: string) => {
     const note = lenses[lensIndex].fieldNotes?.[key];
-    if (!note) return;
+    if (!note) {
+      return;
+    }
     const lensMapKey = `${lensIndex}:${key}`;
-    if (noteMap.has(lensMapKey)) return;
+    if (noteMap.has(lensMapKey)) {
+      return;
+    }
     // Aggregate: if an identical note already exists for this field, reuse its sup
     const dedupKey = `${key}::${note}`;
     const existingIdx = dedupMap.get(dedupKey);
@@ -338,12 +335,20 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   // Collect in section display order, lenses left-to-right within each field.
   // Weight variance is intentionally omitted from the poster (shown on compare
   // and detail pages instead), so no weightG footnote.
-  if (showMinFocus)      lenses.forEach((_, i) => collectNote(i, "minFocusDistance", labels.minFocusLabel));
-  if (showMaxMag)        lenses.forEach((_, i) => collectNote(i, "maxMagnification", labels.maxMagLabel));
-  if (showFilter)        lenses.forEach((_, i) => collectNote(i, "filterMm", labels.filterLabel));
+  if (showMinFocus) {
+    lenses.forEach((_, i) => collectNote(i, "minFocusDistance", labels.minFocusLabel));
+  }
+  if (showMaxMag) {
+    lenses.forEach((_, i) => collectNote(i, "maxMagnification", labels.maxMagLabel));
+  }
+  if (showFilter) {
+    lenses.forEach((_, i) => collectNote(i, "filterMm", labels.filterLabel));
+  }
   /* Features always rendered */    lenses.forEach((_, i) => collectNote(i, "ois", labels.featureOIS));
   /* Features always rendered */    lenses.forEach((_, i) => collectNote(i, "wr", labels.featureWR));
-  if (showFocusMotorRow) lenses.forEach((_, i) => collectNote(i, "focusMotor", labels.focusMotorLabel));
+  if (showFocusMotorRow) {
+    lenses.forEach((_, i) => collectNote(i, "focusMotor", labels.focusMotorLabel));
+  }
 
   // Helper: look up superscript for a given lens + field (undefined if no note)
   const noteSup = (lensIndex: number, key: FieldNoteKey): number | undefined =>
@@ -459,11 +464,8 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                     justifyContent: "center",
                   }}
                 >
-                  {/*
-                    * eslint-disable-next-line @next/next/no-img-element
-                    * Must use native <img> here — canvas capture libraries (html2canvas etc.)
-                    * cannot handle Next.js <Image>'s wrapper divs and srcset attributes.
-                    */}
+                  {/* Must use native img here because canvas capture cannot handle Next Image wrappers/srcset. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={getLensImageUrl(lens.id)}
                     alt={lens.model}
@@ -650,10 +652,8 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                       );
                     }
 
-                    const hasNormalVariants =
-                      mfd.variants?.wide !== undefined || mfd.variants?.tele !== undefined;
-                    const hasMacroVariants =
-                      mfd.macroVariants?.wide !== undefined || mfd.macroVariants?.tele !== undefined;
+                    const hasNormalVariants = hasVariantValue(mfd.variants);
+                    const hasMacroVariants = hasVariantValue(mfd.macroVariants);
                     const macroScalarShorter =
                       mfd.macroCm !== undefined && mfd.macroCm < mfd.cm;
 
@@ -717,9 +717,11 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                         </ParamColumn>
                       );
                     }
-                    const lines = getFocusVariantLines(mag, (v) => `${v}x`, wideTeleLabels) ?? [
-                      { label: undefined as string | undefined, value: `${mag.value}x` },
-                    ];
+                    const variantLines = toVariantLines(mag.variants, (v) => `${v}x`, wideTeleLabels);
+                    const lines =
+                      variantLines.length > 0
+                        ? variantLines
+                        : [{ label: undefined as string | undefined, value: `${mag.value}x` }];
                     return (
                       <ParamColumn key={i} label={labels.maxMagLabel} sup={sup}>
                         <HeroValueLine lines={lines} statSize={statSize} />
