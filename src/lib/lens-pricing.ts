@@ -44,8 +44,8 @@ export function pickPriceEntry(
   return null;
 }
 
-const CNY_THRESHOLDS: readonly number[] = [0, 500, 1500, 5000, 15000];
-const USD_THRESHOLDS: readonly number[] = [0, 150, 400, 800, 1500];
+export const CNY_THRESHOLDS: readonly number[] = [0, 500, 1500, 5000, 15000];
+export const USD_THRESHOLDS: readonly number[] = [0, 150, 400, 800, 1500];
 
 export function tierRange(
   tier: 1 | 2 | 3 | 4 | 5,
