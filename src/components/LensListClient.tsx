@@ -78,8 +78,6 @@ export default function LensListClient({ lenses }: Props) {
   function updateFilters(updater: FilterState | ((prev: FilterState) => FilterState)) {
     const next = typeof updater === "function" ? updater(filters) : updater;
     setFilters(next);
-    // history.replaceState runs after setFilters (not inside its updater) to
-    // avoid a React warning about updating a component while rendering another.
     const qs = serializeFilters(next).toString();
     const path = qs ? `${pathname}?${qs}` : pathname;
     window.history.replaceState(null, "", path);
