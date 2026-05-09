@@ -48,7 +48,7 @@ export function PriceSection({ lens }: Props) {
 
   return (
     <div className="flex flex-col gap-2.5">
-      {/* Price + used badge + source · sampled date — all one tight group */}
+      {/* Price + used badge */}
       <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
         <span className="text-xl font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
           {priceDisplay}
@@ -58,21 +58,22 @@ export function PriceSection({ lens }: Props) {
             {t("conditionUsed")}
           </span>
         )}
-        <span className="text-xs text-zinc-400 dark:text-zinc-500">
-          {sourceDisplay}
-          <span className="mx-1.5 opacity-40">·</span>
-          {t("sampledAt", { date: sampledDisplay })}
-        </span>
       </div>
 
-      {/* Collapsible disclaimer */}
+      {/* Source + sampled date + collapsible disclaimer — merged into one block */}
       <div>
         <button
           onClick={() => setNoteOpen((v) => !v)}
           className="inline-flex items-center gap-1.5 text-[11px] text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 transition-colors"
         >
           <AlertTriangle className="size-3 shrink-0 text-amber-500" />
-          <span>{t("disclaimerTrigger")}</span>
+          <span>
+            {sourceDisplay}
+            <span className="mx-1 opacity-40">·</span>
+            {t("sampledAt", { date: sampledDisplay })}
+            <span className="mx-1 opacity-40">·</span>
+            {t("disclaimerTrigger")}
+          </span>
           {noteOpen
             ? <ChevronUp className="size-3 shrink-0" />
             : <ChevronDown className="size-3 shrink-0" />
@@ -80,7 +81,7 @@ export function PriceSection({ lens }: Props) {
         </button>
         {noteOpen && (
           <p className="mt-1.5 text-[11px] leading-relaxed text-zinc-400 dark:text-zinc-500">
-            {isUsed ? t("usedNote") : t("newNote")}
+            {isUsed ? t("detailUsedNote") : t("detailNewNote")}
           </p>
         )}
       </div>

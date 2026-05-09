@@ -418,15 +418,15 @@
   "Pricing": {
     "fieldLabel": "Price",
     "groupLabel": "Pricing",
-    "infoTriggerLabel": "Price details",
     "usedBadge": "Used",
     "conditionNew": "New",
     "conditionUsed": "Used",
     "cnyAmount": "¥{value}",
     "tierSymbol": "$",
     "disclaimerTrigger": "For reference only",
-    "newNote": "The price tier is meant to give you a quick sense of the lens's price range — the exact figure is for reference only. E-commerce list prices change frequently and are often affected by promotions or coupons. The sampled figure reflects one official storefront at one point in time and does not represent the lowest available price.",
-    "usedNote": "The price tier is meant to give you a quick sense of the lens's price range — the exact figure is for reference only. Used prices vary widely with condition, included accessories, and seller, making it difficult to pin down an objective number. This is the median of a sampled batch of listings at the time of sampling; actual sale prices may differ.",
+    "detailNewNote": "This price was sampled from one official storefront at one point in time. E-commerce list prices change frequently and are often affected by promotions or coupons — the figure shown does not represent the lowest available price.",
+    "detailUsedNote": "Used prices vary widely with condition, included accessories, and seller. This is the median of a sampled batch of listings at the time of sampling; actual sale prices may differ.",
+    "tierNote": "The price tier is meant to give you a quick sense of the lens's price range, not an exact figure. Prices are sampled from a single storefront at one point in time and may not reflect current or lowest prices.",
     "sampledAt": "Sampled {date}"
   }
 }

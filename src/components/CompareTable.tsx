@@ -588,7 +588,10 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
               </tr>
               <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
                 <td className="sticky left-0 z-10 px-3 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900 break-words">
-                  {tPricing("fieldLabel")}
+                  <span className="inline-flex items-center justify-end gap-1">
+                    <FieldNotePopover note={tPricing("tierNote")} variant="warning" />
+                    {tPricing("fieldLabel")}
+                  </span>
                 </td>
                 {orderedLenses.map((lens) => {
                   const sel = pickPriceEntry(lens.pricing, locale);
