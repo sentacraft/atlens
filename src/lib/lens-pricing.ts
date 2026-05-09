@@ -102,10 +102,6 @@ export function formatSampledAt(date: string, locale: string): string {
   });
 }
 
-export function formatSource(source: string, t: Translator): string {
-  return t(`source.${source}`);
-}
-
 export function formatPriceForReport(
   selection: PriceSelection,
   locale: string,
@@ -113,7 +109,6 @@ export function formatPriceForReport(
 ): string {
   const { entry, condition } = selection;
   const price = formatPrice(entry.price, entry.currency, locale, condition, t);
-  const source = formatSource(entry.source, t);
   const conditionLabel = t(condition === "new" ? "conditionNew" : "conditionUsed");
-  return `${price} · ${source} · ${entry.sampledAt} · ${conditionLabel}`;
+  return `${price} · ${entry.source} · ${entry.sampledAt} · ${conditionLabel}`;
 }
