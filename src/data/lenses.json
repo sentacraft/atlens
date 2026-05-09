@@ -1743,6 +1743,14 @@
     "angleOfViewCalc": 44,
     "apertureBladeCount": 10,
     "pricing": {
+      "cn": {
+        "new": {
+          "price": 639,
+          "currency": "CNY",
+          "source": "京东·星曜光学官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
       "global": {
         "new": {
           "price": 190,
@@ -1871,6 +1879,14 @@
     "angleOfViewCalc": 26.5,
     "apertureBladeCount": 10,
     "pricing": {
+      "cn": {
+        "new": {
+          "price": 939,
+          "currency": "CNY",
+          "source": "京东·星曜光学官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
       "global": {
         "new": {
           "price": 230,
@@ -1996,6 +2012,14 @@
     "angleOfViewCalc": 124.1,
     "apertureBladeCount": 5,
     "pricing": {
+      "cn": {
+        "new": {
+          "price": 539,
+          "currency": "CNY",
+          "source": "京东·星曜光学官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
       "global": {
         "new": {
           "price": 140,
@@ -2355,6 +2379,16 @@
     "angleOfView": 43,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 10,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 399,
+          "currency": "CNY",
+          "source": "天猫·brightinstar旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "lensMaterial": "Metal",
     "filterMm": 43,
     "lensConfiguration": {
@@ -3245,6 +3279,14 @@
     "apertureBladeCount": 9,
     "releaseYear": 2018,
     "pricing": {
+      "cn": {
+        "new": {
+          "price": 9990,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
       "global": {
         "new": {
           "price": 1799.95,
@@ -7302,6 +7344,14 @@
     "apertureBladeCount": 11,
     "releaseYear": 2025,
     "pricing": {
+      "cn": {
+        "new": {
+          "price": 5999,
+          "currency": "CNY",
+          "source": "天猫·sigma旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
       "global": {
         "new": {
           "price": 919,
@@ -8119,6 +8169,14 @@
     "angleOfViewCalc": 44,
     "apertureBladeCount": 11,
     "pricing": {
+      "cn": {
+        "new": {
+          "price": 1930,
+          "currency": "CNY",
+          "source": "京东·铭匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
       "global": {
         "new": {
           "price": 380,
@@ -8185,6 +8243,14 @@
     "angleOfViewCalc": 16.1,
     "apertureBladeCount": 12,
     "pricing": {
+      "cn": {
+        "new": {
+          "price": 1890,
+          "currency": "CNY",
+          "source": "京东·铭匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
       "global": {
         "new": {
           "price": 339,
@@ -8246,6 +8312,14 @@
     "angleOfViewCalc": 90.6,
     "apertureBladeCount": 7,
     "pricing": {
+      "cn": {
+        "new": {
+          "price": 610,
+          "currency": "CNY",
+          "source": "京东·铭匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
       "global": {
         "new": {
           "price": 129,
@@ -8305,6 +8379,14 @@
     "angleOfViewCalc": 79.5,
     "apertureBladeCount": 6,
     "pricing": {
+      "cn": {
+        "new": {
+          "price": 790,
+          "currency": "CNY",
+          "source": "京东·铭匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
       "global": {
         "new": {
           "price": 148,
@@ -8361,6 +8443,14 @@
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 9,
     "pricing": {
+      "cn": {
+        "new": {
+          "price": 630,
+          "currency": "CNY",
+          "source": "京东·铭匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
       "global": {
         "new": {
           "price": 127,
@@ -8422,6 +8512,14 @@
     "angleOfViewCalc": 55.3,
     "apertureBladeCount": 7,
     "pricing": {
+      "cn": {
+        "new": {
+          "price": 598,
+          "currency": "CNY",
+          "source": "京东·铭匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
       "global": {
         "new": {
           "price": 160,
@@ -8481,6 +8579,14 @@
     "angleOfViewCalc": 44,
     "apertureBladeCount": 9,
     "pricing": {
+      "cn": {
+        "new": {
+          "price": 650,
+          "currency": "CNY",
+          "source": "京东·铭匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
       "global": {
         "new": {
           "price": 125,
@@ -8546,6 +8652,14 @@
     "angleOfViewCalc": 28.4,
     "apertureBladeCount": 9,
     "pricing": {
+      "cn": {
+        "new": {
+          "price": 698,
+          "currency": "CNY",
+          "source": "京东·铭匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
       "global": {
         "new": {
           "price": 129,
@@ -8611,6 +8725,14 @@
     "angleOfViewCalc": 21.4,
     "apertureBladeCount": 9,
     "pricing": {
+      "cn": {
+        "new": {
+          "price": 1150,
+          "currency": "CNY",
+          "source": "京东·铭匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
       "global": {
         "new": {
           "price": 199,
@@ -8887,6 +9009,14 @@
     "angleOfViewCalc": 59,
     "apertureBladeCount": 7,
     "pricing": {
+      "cn": {
+        "new": {
+          "price": 364,
+          "currency": "CNY",
+          "source": "京东·铭匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
       "global": {
         "new": {
           "price": 64,
