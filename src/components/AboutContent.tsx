@@ -8,8 +8,69 @@ import { ExternalLink } from "@/components/ui/external-link";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import type { FeedbackType } from "@/components/FeedbackDialog";
-import { xLenses, gfxLenses, getOrderedUniqueBrands } from "@/lib/lens";
+import { xLenses, gfxLenses } from "@/lib/lens";
+import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/AckCard";
+
+type CoverageMeta = { active: boolean; discontinued: boolean; notes: string };
+
+function Check() {
+  return <span className="text-zinc-700 dark:text-zinc-300 text-sm">✓</span>;
+}
+function Dash() {
+  return <span className="text-zinc-300 dark:text-zinc-600 text-sm">—</span>;
+}
+
+function MountCoverageTable({
+  title, brands, counts, meta, brandNames, col, rowTotal,
+}: {
+  title: string;
+  brands: string[];
+  counts: Record<string, number>;
+  meta: Record<string, CoverageMeta>;
+  brandNames: Record<string, string>;
+  col: { brand: string; count: string; active: string; discontinued: string };
+  rowTotal: string;
+}) {
+  const total = brands.reduce((s, b) => s + (counts[b] ?? 0), 0);
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500">{title}</p>
+      <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden self-start">
+        <table className="text-sm">
+          <thead>
+            <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+              <th className="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 w-28">{col.brand}</th>
+              <th className="px-3 py-2 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 w-14">{col.count}</th>
+              <th className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 w-14">{col.active}</th>
+              <th className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 w-20">{col.discontinued}</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+            {brands.map((b) => {
+              const m: CoverageMeta = (meta as Record<string, CoverageMeta>)[b] ?? { active: false, discontinued: false, notes: "" };
+              return (
+                <tr key={b}>
+                  <td className="px-3 py-2 font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap">{brandNames[b] ?? b}</td>
+                  <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">{counts[b] ?? 0}</td>
+                  <td className="px-3 py-2 text-center">{m.active ? <Check /> : <Dash />}</td>
+                  <td className="px-3 py-2 text-center">{m.discontinued ? <Check /> : <Dash />}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot>
+            <tr className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+              <td className="px-3 py-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">{rowTotal}</td>
+              <td className="px-3 py-2 text-right tabular-nums text-xs font-semibold text-zinc-700 dark:text-zinc-300">{total}</td>
+              <td colSpan={2} />
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  );
+}
 
 function Section({
   id,
@@ -37,12 +98,14 @@ export default async function AboutContent() {
     getLocale(),
   ]);
 
-  const xBrandList = getOrderedUniqueBrands(xLenses)
-    .map((b) => tBrand(b as Parameters<typeof tBrand>[0]))
-    .join(" · ");
-  const gBrandList = getOrderedUniqueBrands(gfxLenses)
-    .map((b) => tBrand(b as Parameters<typeof tBrand>[0]))
-    .join(" · ");
+  const xCounts = (xLenses as { brand: string }[]).reduce<Record<string, number>>(
+    (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
+  );
+  const gCounts = (gfxLenses as { brand: string }[]).reduce<Record<string, number>>(
+    (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
+  );
+  const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage"];
+  const G_BRANDS = ["fujifilm"];
 
   const faqItems = [
     { q: t("faq1Q"), a: t("faq1A") },
@@ -103,7 +166,6 @@ export default async function AboutContent() {
           { id: "privacy", label: t("privacyTitle") },
           { id: "donation", label: t("donationTitle") },
           { id: "ack", label: t("ackTitle") },
-          { id: "install", label: t("installTitle") },
           { id: "feedback", label: t("feedbackTitle") },
         ].map(({ id, label }, i) => (
           <a
@@ -134,24 +196,22 @@ export default async function AboutContent() {
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("coverageBody")}
         </p>
-        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3 mt-1 flex flex-col gap-2.5">
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-            {t("coverageBrands")}
-          </p>
-          <div className="flex flex-col gap-2">
-            <div>
-              <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 mb-0.5">
-                {t("coverageBrandsX")}
-              </p>
-              <p className="text-sm text-zinc-700 dark:text-zinc-300">{xBrandList}</p>
-            </div>
-            <div>
-              <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 mb-0.5">
-                {t("coverageBrandsG")}
-              </p>
-              <p className="text-sm text-zinc-700 dark:text-zinc-300">{gBrandList}</p>
-            </div>
-          </div>
+        <div className="flex flex-col gap-4 mt-1">
+          {([
+            { key: "coverageBrandsX", brands: X_BRANDS, counts: xCounts, meta: coverageMeta.x },
+            { key: "coverageBrandsG", brands: G_BRANDS, counts: gCounts, meta: coverageMeta.g },
+          ] as const).map(({ key, brands, counts, meta }) => (
+            <MountCoverageTable
+              key={key}
+              title={t(key)}
+              brands={[...brands]}
+              counts={counts}
+              meta={meta as Record<string, CoverageMeta>}
+              brandNames={Object.fromEntries(brands.map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
+              col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), active: t("coverageColActive"), discontinued: t("coverageColDiscontinued") }}
+              rowTotal={t("coverageRowTotal")}
+            />
+          ))}
         </div>
       </Section>
 
@@ -209,6 +269,14 @@ export default async function AboutContent() {
         <p className="text-xs text-zinc-500 dark:text-zinc-500">
           {t("dataUpdateNote")}{"  "}{t("dataVersionNote")}
         </p>
+
+        {/* GitHub link */}
+        <ExternalLink
+          href="https://github.com/sentacraft/x-glass"
+          className="inline-flex items-center gap-0.5 self-start text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+        >
+          {t("dataGitHubCta")}
+        </ExternalLink>
       </Section>
 
       {/* FAQ */}
@@ -332,25 +400,6 @@ export default async function AboutContent() {
           <p className="text-xs text-zinc-400 dark:text-zinc-500 leading-relaxed">
             {t("ackClosing")}
           </p>
-        </div>
-      </Section>
-
-      {/* Install */}
-      <Section id="install" title={t("installTitle")}>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 px-4 py-4">
-          <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/icons/icon-192-white.png" alt="X-Glass" className="w-10 h-10 rounded-[22%] shadow-sm shrink-0" />
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              {t("installBody")}
-            </p>
-          </div>
-          <Link
-            href="/get"
-            className="shrink-0 text-sm font-medium text-zinc-900 dark:text-zinc-50 hover:opacity-70 transition-opacity whitespace-nowrap"
-          >
-            {t("installCta")}
-          </Link>
         </div>
       </Section>
 

@@ -1,0 +1,15 @@
+{
+  "x": {
+    "fujifilm":    { "active": true,  "discontinued": true,  "notes": "" },
+    "sigma":       { "active": true,  "discontinued": false, "notes": "" },
+    "tamron":      { "active": true,  "discontinued": false, "notes": "" },
+    "viltrox":     { "active": true,  "discontinued": false, "notes": "" },
+    "7artisans":   { "active": true,  "discontinued": false, "notes": "" },
+    "ttartisan":   { "active": true,  "discontinued": false, "notes": "" },
+    "brightinstar":{ "active": true,  "discontinued": false, "notes": "" },
+    "sgimage":     { "active": true,  "discontinued": false, "notes": "" }
+  },
+  "g": {
+    "fujifilm":    { "active": true,  "discontinued": false, "notes": "" }
+  }
+}

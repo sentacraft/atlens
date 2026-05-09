@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { useRouter, usePathname } from "@/i18n/navigation";
+import { useRouter, usePathname, Link } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { useTranslations } from "next-intl";
 import type { Lens } from "@/lib/types";
@@ -204,6 +204,12 @@ export default function LensListClient({ lenses }: Props) {
                   {t("suggestLensLink")}
                 </FeedbackTrigger>
               </p>
+              <Link
+                href="/about#coverage"
+                className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+              >
+                {t("coverageLink")}
+              </Link>
             </motion.div>
           ) : (
             <motion.div
