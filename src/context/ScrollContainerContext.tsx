@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 
 // navLocked: when true, Nav stays hidden regardless of scroll direction.
 // Used by pages that have their own sticky header (e.g. CompareTable phantom header)
@@ -21,9 +21,13 @@ export function ScrollContainerProvider({
   children: React.ReactNode;
 }) {
   const [navLocked, setNavLocked] = useState(false);
+  const value = useMemo(
+    () => ({ navLocked, lockNav: setNavLocked }),
+    [navLocked]
+  );
 
   return (
-    <ScrollContainerContext.Provider value={{ navLocked, lockNav: setNavLocked }}>
+    <ScrollContainerContext.Provider value={value}>
       {children}
     </ScrollContainerContext.Provider>
   );
