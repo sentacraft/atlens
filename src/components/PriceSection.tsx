@@ -3,10 +3,10 @@
 // Expanded price display for the lens detail page.
 //
 // Layout:
-//   $139  [Used]
-//   source · Sampled date · For reference only (i)
+//   $139  [Used]  ⚠ For reference only
+//   source | Sampled date
 //
-// The (i) icon opens a popover with the full disclaimer.
+// The ⚠ disclaimer opens a popover with the full note.
 // The tier/range is intentionally omitted — on the detail page the exact
 // price is visible, so the range adds no information.
 
@@ -44,7 +44,7 @@ export function PriceSection({ lens }: Props) {
 
   return (
     <div className="flex flex-col gap-1">
-      {/* Price + used badge */}
+      {/* Row 1: Price + used badge + disclaimer */}
       <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
         <span className="text-xl font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
           {priceDisplay}
@@ -54,23 +54,12 @@ export function PriceSection({ lens }: Props) {
             {t("conditionUsed")}
           </span>
         )}
-      </div>
-
-      {/* Source + sampled date + disclaimer popover */}
-      <div className="inline-flex items-center gap-1.5 text-[11px] text-zinc-400 dark:text-zinc-500">
-        <span>
-          {sourceDisplay}
-          <span className="mx-1.5 opacity-30">|</span>
-          {t("sampledAt", { date: sampledDisplay })}
-          <span className="mx-1.5 opacity-30">|</span>
-          {t("disclaimerTrigger")}
-        </span>
         <Popover.Root>
           <Popover.Trigger
-            className="inline-flex shrink-0 items-center justify-center rounded-full text-amber-500 outline-none transition-colors hover:text-amber-600 focus-visible:ring-2 focus-visible:ring-amber-400 dark:text-amber-400 dark:hover:text-amber-300"
-            aria-label={t("disclaimerTrigger")}
+            className="inline-flex shrink-0 items-center gap-1 rounded-sm text-[11px] text-amber-500 outline-none transition-colors hover:text-amber-600 focus-visible:ring-2 focus-visible:ring-amber-400 dark:text-amber-400 dark:hover:text-amber-300"
           >
-            <TriangleAlert className="size-3.5" />
+            <TriangleAlert className="size-3" />
+            <span>{t("disclaimerTrigger")}</span>
           </Popover.Trigger>
           <Popover.Portal>
             <Popover.Positioner side="top" align="center" sideOffset={6}>
@@ -80,6 +69,13 @@ export function PriceSection({ lens }: Props) {
             </Popover.Positioner>
           </Popover.Portal>
         </Popover.Root>
+      </div>
+
+      {/* Row 2: Source + sampled date */}
+      <div className="text-[11px] text-zinc-400 dark:text-zinc-500">
+        {sourceDisplay}
+        <span className="mx-1.5 opacity-30">|</span>
+        {t("sampledAt", { date: sampledDisplay })}
       </div>
     </div>
   );
