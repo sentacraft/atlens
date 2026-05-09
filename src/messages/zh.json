@@ -283,7 +283,8 @@
     "tagFisheye": "鱼眼",
     "tagProbe": "探针镜头",
     "priceLabel": "价格",
-    "tierSymbol": "¥"
+    "tierSymbol": "¥",
+    "usedBadge": "二手"
   },
   "About": {
     "pageTitle": "关于 X-Glass",

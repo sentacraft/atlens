@@ -73,6 +73,7 @@ export interface PosterLabels {
   // Pricing
   priceLabel: string;
   tierSymbol: string;
+  usedBadge: string;
   // Fallback
   na: string;
   // Locale hint for formatting
@@ -609,6 +610,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
               const rangeFormatted = sel.entry.currency === "CNY"
                 ? `¥${rangeDisplay}`
                 : `$${rangeDisplay}`;
+              const isUsed = sel.condition === "used";
               return (
                 <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
                   <span className={cn("font-semibold tabular-nums tracking-wide text-zinc-700 leading-none", statSize)}>
@@ -617,8 +619,13 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   <span className="tabular-nums text-zinc-400" style={{ fontSize: 10 }}>
                     {rangeFormatted}
                   </span>
-                  <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase", display: "inline-flex", alignItems: "center", gap: 4 }}>
                     {labels.priceLabel}
+                    {isUsed && (
+                      <span className="rounded bg-zinc-200 px-1 py-px text-zinc-500" style={{ fontSize: 8, fontWeight: 500 }}>
+                        {labels.usedBadge}
+                      </span>
+                    )}
                   </span>
                 </div>
               );

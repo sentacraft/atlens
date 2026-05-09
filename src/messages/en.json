@@ -283,7 +283,8 @@
     "tagFisheye": "Fisheye",
     "tagProbe": "Probe",
     "priceLabel": "Price",
-    "tierSymbol": "$"
+    "tierSymbol": "$",
+    "usedBadge": "Used"
   },
   "About": {
     "pageTitle": "About X-Glass",
