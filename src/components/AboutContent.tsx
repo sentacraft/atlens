@@ -35,15 +35,15 @@ function MountCoverageTable({
   const total = brands.reduce((s, b) => s + (counts[b] ?? 0), 0);
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500">{title}</p>
+      <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">{title}</p>
       <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden self-start">
         <table className="text-sm">
           <thead>
             <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
               <th className="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 w-28">{col.brand}</th>
-              <th className="px-3 py-2 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 w-14">{col.count}</th>
               <th className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 w-14">{col.active}</th>
-              <th className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 w-20">{col.discontinued}</th>
+              <th className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 w-14">{col.discontinued}</th>
+              <th className="px-3 py-2 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 whitespace-nowrap">{col.count}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
@@ -52,9 +52,9 @@ function MountCoverageTable({
               return (
                 <tr key={b}>
                   <td className="px-3 py-2 font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap">{brandNames[b] ?? b}</td>
-                  <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">{counts[b] ?? 0}</td>
                   <td className="px-3 py-2 text-center">{m.active ? <Check /> : <Dash />}</td>
                   <td className="px-3 py-2 text-center">{m.discontinued ? <Check /> : <Dash />}</td>
+                  <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">{counts[b] ?? 0}</td>
                 </tr>
               );
             })}
@@ -62,8 +62,8 @@ function MountCoverageTable({
           <tfoot>
             <tr className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
               <td className="px-3 py-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">{rowTotal}</td>
-              <td className="px-3 py-2 text-right tabular-nums text-xs font-semibold text-zinc-700 dark:text-zinc-300">{total}</td>
               <td colSpan={2} />
+              <td className="px-3 py-2 text-right tabular-nums text-xs font-semibold text-zinc-700 dark:text-zinc-300">{total}</td>
             </tr>
           </tfoot>
         </table>
@@ -193,10 +193,7 @@ export default async function AboutContent() {
 
       {/* Coverage */}
       <Section id="coverage" title={t("coverageTitle")}>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-          {t("coverageBody")}
-        </p>
-        <div className="flex flex-col gap-4 mt-1">
+        <div className="flex flex-col gap-4">
           {([
             { key: "coverageBrandsX", brands: X_BRANDS, counts: xCounts, meta: coverageMeta.x },
             { key: "coverageBrandsG", brands: G_BRANDS, counts: gCounts, meta: coverageMeta.g },
@@ -272,7 +269,7 @@ export default async function AboutContent() {
 
         {/* GitHub link */}
         <ExternalLink
-          href="https://github.com/sentacraft/x-glass"
+          href="https://github.com/sentacraft/x-glass#data-pipeline"
           className="inline-flex items-center gap-0.5 self-start text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
         >
           {t("dataGitHubCta")}
