@@ -3,6 +3,7 @@ import gfxLensesData from "../data/lenses-g.json";
 import metaData from "../data/meta.json";
 import { lensCatalogSchema } from "./lens-schema";
 import type { Lens, LensCatalog, Mount, SpecialtyTag } from "./types";
+import { CNY_THRESHOLDS, USD_THRESHOLDS } from "./lens-pricing";
 export type { SpecialtyTag };
 
 export const xLenses: Lens[] = lensCatalogSchema.parse(lensesData) as LensCatalog;
@@ -264,22 +265,11 @@ export function sortLenses(
 }
 
 export function priceTier(price: number, currency: "CNY" | "USD"): 1 | 2 | 3 | 4 | 5 | undefined {
-  switch (currency) {
-    case "CNY":
-      if (price < 500)   return 1;
-      if (price < 1500)  return 2;
-      if (price < 5000)  return 3;
-      if (price < 15000) return 4;
-      return 5;
-    case "USD":
-      if (price < 150)  return 1;
-      if (price < 400)  return 2;
-      if (price < 800)  return 3;
-      if (price < 1500) return 4;
-      return 5;
-    default:
-      return undefined;
+  const thresholds = currency === "CNY" ? CNY_THRESHOLDS : USD_THRESHOLDS;
+  for (let i = thresholds.length - 1; i >= 0; i--) {
+    if (price >= thresholds[i]) return (i + 1) as 1 | 2 | 3 | 4 | 5;
   }
+  return undefined;
 }
 
 export function defaultMarketForLocale(locale: string): "cn" | "global" {
