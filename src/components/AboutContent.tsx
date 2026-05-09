@@ -5,8 +5,6 @@ import FeedbackTrigger from "@/components/FeedbackTrigger";
 import AnthropicLogo from "@/components/logos/AnthropicLogo";
 import GeminiLogo from "@/components/logos/GeminiLogo";
 import { ExternalLink } from "@/components/ui/external-link";
-import { Link } from "@/i18n/navigation";
-import { cn } from "@/lib/utils";
 import type { FeedbackType } from "@/components/FeedbackDialog";
 import { xLenses, gfxLenses } from "@/lib/lens";
 import coverageMeta from "@/data/coverage-meta.json";
@@ -22,7 +20,13 @@ function Dash() {
 }
 
 function MountCoverageTable({
-  title, brands, counts, meta, brandNames, col, rowTotal,
+  title,
+  brands,
+  counts,
+  meta,
+  brandNames,
+  col,
+  rowTotal,
 }: {
   title: string;
   brands: string[];
@@ -35,35 +39,59 @@ function MountCoverageTable({
   const total = brands.reduce((s, b) => s + (counts[b] ?? 0), 0);
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">{title}</p>
+      <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+        {title}
+      </p>
       <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden self-start">
         <table className="text-sm">
           <thead>
             <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
-              <th className="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 w-28">{col.brand}</th>
-              <th className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 w-14">{col.active}</th>
-              <th className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 w-14">{col.discontinued}</th>
-              <th className="px-3 py-2 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 whitespace-nowrap">{col.count}</th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 w-28">
+                {col.brand}
+              </th>
+              <th className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 w-14">
+                {col.active}
+              </th>
+              <th className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 w-14">
+                {col.discontinued}
+              </th>
+              <th className="px-3 py-2 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
+                {col.count}
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
             {brands.map((b) => {
-              const m: CoverageMeta = (meta as Record<string, CoverageMeta>)[b] ?? { active: false, discontinued: false, notes: "" };
+              const m: CoverageMeta = (meta as Record<string, CoverageMeta>)[
+                b
+              ] ?? { active: false, discontinued: false, notes: "" };
               return (
                 <tr key={b}>
-                  <td className="px-3 py-2 font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap">{brandNames[b] ?? b}</td>
-                  <td className="px-3 py-2 text-center">{m.active ? <Check /> : <Dash />}</td>
-                  <td className="px-3 py-2 text-center">{m.discontinued ? <Check /> : <Dash />}</td>
-                  <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">{counts[b] ?? 0}</td>
+                  <td className="px-3 py-2 font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap">
+                    {brandNames[b] ?? b}
+                  </td>
+                  <td className="px-3 py-2 text-center">
+                    {m.active ? <Check /> : <Dash />}
+                  </td>
+                  <td className="px-3 py-2 text-center">
+                    {m.discontinued ? <Check /> : <Dash />}
+                  </td>
+                  <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">
+                    {counts[b] ?? 0}
+                  </td>
                 </tr>
               );
             })}
           </tbody>
           <tfoot>
             <tr className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
-              <td className="px-3 py-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">{rowTotal}</td>
+              <td className="px-3 py-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                {rowTotal}
+              </td>
               <td colSpan={2} />
-              <td className="px-3 py-2 text-right tabular-nums text-xs font-semibold text-zinc-700 dark:text-zinc-300">{total}</td>
+              <td className="px-3 py-2 text-right tabular-nums text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                {total}
+              </td>
             </tr>
           </tfoot>
         </table>
@@ -98,13 +126,28 @@ export default async function AboutContent() {
     getLocale(),
   ]);
 
-  const xCounts = (xLenses as { brand: string }[]).reduce<Record<string, number>>(
-    (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
-  );
-  const gCounts = (gfxLenses as { brand: string }[]).reduce<Record<string, number>>(
-    (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
-  );
-  const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage"];
+  const xCounts = (xLenses as { brand: string }[]).reduce<
+    Record<string, number>
+  >((acc, l) => {
+    acc[l.brand] = (acc[l.brand] ?? 0) + 1;
+    return acc;
+  }, {});
+  const gCounts = (gfxLenses as { brand: string }[]).reduce<
+    Record<string, number>
+  >((acc, l) => {
+    acc[l.brand] = (acc[l.brand] ?? 0) + 1;
+    return acc;
+  }, {});
+  const X_BRANDS = [
+    "fujifilm",
+    "sigma",
+    "tamron",
+    "viltrox",
+    "7artisans",
+    "ttartisan",
+    "brightinstar",
+    "sgimage",
+  ];
   const G_BRANDS = ["fujifilm"];
 
   const faqItems = [
@@ -119,7 +162,11 @@ export default async function AboutContent() {
     type: FeedbackType;
     icon: React.ReactNode;
   }[] = [
-    { label: t("feedbackReport"), type: "data_issue", icon: <Flag size={13} /> },
+    {
+      label: t("feedbackReport"),
+      type: "data_issue",
+      icon: <Flag size={13} />,
+    },
   ];
 
   const pipelineStages = [
@@ -194,18 +241,40 @@ export default async function AboutContent() {
       {/* Coverage */}
       <Section id="coverage" title={t("coverageTitle")}>
         <div className="flex flex-col gap-4">
-          {([
-            { key: "coverageBrandsX", brands: X_BRANDS, counts: xCounts, meta: coverageMeta.x },
-            { key: "coverageBrandsG", brands: G_BRANDS, counts: gCounts, meta: coverageMeta.g },
-          ] as const).map(({ key, brands, counts, meta }) => (
+          {(
+            [
+              {
+                key: "coverageBrandsX",
+                brands: X_BRANDS,
+                counts: xCounts,
+                meta: coverageMeta.x,
+              },
+              {
+                key: "coverageBrandsG",
+                brands: G_BRANDS,
+                counts: gCounts,
+                meta: coverageMeta.g,
+              },
+            ] as const
+          ).map(({ key, brands, counts, meta }) => (
             <MountCoverageTable
               key={key}
               title={t(key)}
               brands={[...brands]}
               counts={counts}
               meta={meta as Record<string, CoverageMeta>}
-              brandNames={Object.fromEntries(brands.map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
-              col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), active: t("coverageColActive"), discontinued: t("coverageColDiscontinued") }}
+              brandNames={Object.fromEntries(
+                brands.map((b) => [
+                  b,
+                  tBrand(b as Parameters<typeof tBrand>[0]),
+                ])
+              )}
+              col={{
+                brand: t("coverageColBrand"),
+                count: t("coverageColCount"),
+                active: t("coverageColActive"),
+                discontinued: t("coverageColDiscontinued"),
+              }}
               rowTotal={t("coverageRowTotal")}
             />
           ))}
@@ -264,7 +333,9 @@ export default async function AboutContent() {
 
         {/* Update cadence */}
         <p className="text-xs text-zinc-500 dark:text-zinc-500">
-          {t("dataUpdateNote")}{"  "}{t("dataVersionNote")}
+          {t("dataUpdateNote")}
+          {"  "}
+          {t("dataVersionNote")}
         </p>
 
         {/* GitHub link */}
@@ -356,8 +427,17 @@ export default async function AboutContent() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 text-sm font-semibold text-zinc-800 dark:text-zinc-200 transition-all duration-200 hover:scale-[1.02] hover:shadow-sm"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z" fill="#FF5E5B"/>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"
+                  fill="#FF5E5B"
+                />
               </svg>
               {t("donationKofi")}
             </a>
@@ -373,23 +453,24 @@ export default async function AboutContent() {
 
         {/* Card + story pairs — card IS the accordion trigger */}
         <div className="flex flex-col divide-y divide-zinc-100 dark:divide-zinc-800">
-          {ackCredits.map(({ roles, company, product, logoComponent, glowColor }, i) => {
-            const storyKey = i === 0 ? "1" : "2";
-            const body = t(`ackStory${storyKey}Body` as "ackStory1Body");
-            return (
-              <AckCard
-                key={`${company}-${product}`}
-                roles={roles}
-                company={company}
-                product={product}
-                logoComponent={logoComponent}
-                glowColor={glowColor}
-                body={body}
-                isClaudeCard={i === 0}
-                locale={locale}
-              />
-            );
-          })}
+          {ackCredits.map(
+            ({ roles, company, product, logoComponent, glowColor }, i) => {
+              const storyKey = i === 0 ? "1" : "2";
+              const body = t(`ackStory${storyKey}Body` as "ackStory1Body");
+              return (
+                <AckCard
+                  key={`${company}-${product}`}
+                  roles={roles}
+                  company={company}
+                  product={product}
+                  logoComponent={logoComponent}
+                  glowColor={glowColor}
+                  body={body}
+                  isClaudeCard={i === 0}
+                />
+              );
+            }
+          )}
         </div>
 
         {/* Closing line */}
@@ -420,7 +501,9 @@ export default async function AboutContent() {
             href="mailto:xglass@sentacraft.com"
             className="inline-flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors self-start"
           >
-            <span className="text-zinc-400 dark:text-zinc-500"><Mail size={13} /></span>
+            <span className="text-zinc-400 dark:text-zinc-500">
+              <Mail size={13} />
+            </span>
             {t("feedbackEmailLabel")}
           </a>
         </div>

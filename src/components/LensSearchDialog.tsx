@@ -51,15 +51,16 @@ export default function LensSearchDialog({
   const tBrand = useTranslations("Brands");
   const router = useRouter();
   const mount = useEffectiveMount();
-  const lensSearchIndex = useMemo(() => buildLensSearchIndex(getLensesByMount(mount)), [mount]);
+  const lensSearchIndex = useMemo(
+    () => buildLensSearchIndex(getLensesByMount(mount)),
+    [mount]
+  );
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputId = useId();
-  const titleId = useId();
-  const descriptionId = useId();
   const resultsId = useId();
   const deferredQuery = useDeferredValue(query);
 
@@ -74,18 +75,20 @@ export default function LensSearchDialog({
     }
   }, [open]);
 
-  // Reset state on close
-  useEffect(() => {
-    if (!open) {
+  function handleOpenChange(nextOpen: boolean) {
+    setOpen(nextOpen);
+    if (!nextOpen) {
       setQuery("");
       setActiveIndex(0);
     }
-  }, [open]);
+  }
 
   // Scroll active result into view when navigating with keyboard
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container) return;
+    if (!container) {
+      return;
+    }
     const activeItem = container.querySelector('[aria-selected="true"]');
     if (activeItem) {
       (activeItem as HTMLElement).scrollIntoView({ block: "nearest" });
@@ -94,11 +97,11 @@ export default function LensSearchDialog({
 
   const results = useMemo(
     () => searchLensIndex(lensSearchIndex, deferredQuery),
-    [deferredQuery]
+    [lensSearchIndex, deferredQuery]
   );
 
   function handleSelect(lens: Lens) {
-    setOpen(false);
+    handleOpenChange(false);
 
     if (onSelectLens) {
       onSelectLens(lens);
@@ -111,15 +114,21 @@ export default function LensSearchDialog({
   function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      if (results.length === 0) return;
+      if (results.length === 0) {
+        return;
+      }
       setActiveIndex((current) => (current + 1) % results.length);
       return;
     }
 
     if (event.key === "ArrowUp") {
       event.preventDefault();
-      if (results.length === 0) return;
-      setActiveIndex((current) => (current - 1 + results.length) % results.length);
+      if (results.length === 0) {
+        return;
+      }
+      setActiveIndex(
+        (current) => (current - 1 + results.length) % results.length
+      );
       return;
     }
 
@@ -145,9 +154,7 @@ export default function LensSearchDialog({
           triggerClassName
         )}
       >
-        {triggerVariant === "icon" && (
-          <Search className="h-4 w-4" />
-        )}
+        {triggerVariant === "icon" && <Search className="h-4 w-4" />}
         {triggerVariant === "button" && (
           <>
             <Search className="h-4 w-4" />
@@ -164,7 +171,7 @@ export default function LensSearchDialog({
         )}
       </button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent
           className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-2xl shadow-zinc-950/20 dark:border-zinc-800 dark:bg-zinc-950"
           showCloseButton
@@ -285,7 +292,9 @@ export default function LensSearchDialog({
                         <p className="truncate text-xs uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
                           {tBrand(lens.brand)}
                           {lens.series ? ` · ${lens.series}` : ""}
-                          {lens.generation ? ` · ${t("generation", { value: lens.generation })}` : ""}
+                          {lens.generation
+                            ? ` · ${t("generation", { value: lens.generation })}`
+                            : ""}
                         </p>
                         <p className="mt-0.5 truncate text-sm font-medium text-zinc-900 dark:text-zinc-50">
                           {lens.model}

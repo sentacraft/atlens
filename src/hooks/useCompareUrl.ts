@@ -31,13 +31,21 @@ export function useCompareUrl() {
 
   function buildQuery(ids: string[], extra?: { preset?: string }): string {
     const parts: string[] = [];
-    if (ids.length > 0) parts.push(`ids=${ids.join(",")}`);
-    if (extra?.preset) parts.push(`preset=${encodeURIComponent(extra.preset)}`);
+    if (ids.length > 0) {
+      parts.push(`ids=${ids.join(",")}`);
+    }
+    if (extra?.preset) {
+      parts.push(`preset=${encodeURIComponent(extra.preset)}`);
+    }
 
     const from = searchParams.get("from");
     const lensId = searchParams.get("lensId");
-    if (from) parts.push(`from=${encodeURIComponent(from)}`);
-    if (lensId) parts.push(`lensId=${encodeURIComponent(lensId)}`);
+    if (from) {
+      parts.push(`from=${encodeURIComponent(from)}`);
+    }
+    if (lensId) {
+      parts.push(`lensId=${encodeURIComponent(lensId)}`);
+    }
 
     return parts.join("&");
   }
@@ -48,7 +56,10 @@ export function useCompareUrl() {
     return qs ? `/lenses/${seg}/compare?${qs}` : `/lenses/${seg}/compare`;
   }
 
-  function buildLocalizedCompareUrl(ids: string[], extra?: { preset?: string }) {
+  function buildLocalizedCompareUrl(
+    ids: string[],
+    extra?: { preset?: string }
+  ) {
     const seg = mountToUrlSegment(mount);
     const qs = buildQuery(ids, extra);
     const path = `/${locale}/lenses/${seg}/compare`;

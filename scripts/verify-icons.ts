@@ -13,7 +13,12 @@ import { readFileSync, existsSync, statSync } from "node:fs";
 import { inflateSync } from "node:zlib";
 import { resolve } from "node:path";
 
-import { SPLASH_DEVICES, SPLASH_BG, splashUrl, type SplashScheme } from "../src/config/splash.ts";
+import {
+  SPLASH_DEVICES,
+  SPLASH_BG,
+  splashUrl,
+  type SplashScheme,
+} from "../src/config/splash.ts";
 
 // ── Minimal PNG decoder (8-bit RGBA only — matches resvg output) ────────────
 
@@ -45,11 +50,15 @@ function decodePng(path: string): Png {
       colorType = body.readUInt8(9);
     } else if (type === "IDAT") {
       idat.push(body);
-    } else if (type === "IEND") break;
+    } else if (type === "IEND") {
+      break;
+    }
     i += 8 + len + 4;
   }
   if (colorType !== 6 || bitDepth !== 8) {
-    throw new Error(`unsupported PNG format (colorType=${colorType} bitDepth=${bitDepth})`);
+    throw new Error(
+      `unsupported PNG format (colorType=${colorType} bitDepth=${bitDepth})`
+    );
   }
   const raw = inflateSync(Buffer.concat(idat));
   const bpp = 4;
@@ -65,10 +74,18 @@ function decodePng(path: string): Png {
       const upLeft = x >= bpp ? prev[x - bpp] : 0;
       let recon: number;
       switch (filter) {
-        case 0: recon = 0; break;
-        case 1: recon = left; break;
-        case 2: recon = up; break;
-        case 3: recon = (left + up) >> 1; break;
+        case 0:
+          recon = 0;
+          break;
+        case 1:
+          recon = left;
+          break;
+        case 2:
+          recon = up;
+          break;
+        case 3:
+          recon = (left + up) >> 1;
+          break;
         case 4: {
           const p = left + up - upLeft;
           const pa = Math.abs(p - left);
@@ -77,7 +94,8 @@ function decodePng(path: string): Png {
           recon = pa <= pb && pa <= pc ? left : pb <= pc ? up : upLeft;
           break;
         }
-        default: throw new Error(`unknown PNG filter ${filter}`);
+        default:
+          throw new Error(`unknown PNG filter ${filter}`);
       }
       row[x] = (row[x] + recon) & 0xff;
     }
@@ -96,7 +114,12 @@ function pixel(img: Png, x: number, y: number): Rgba {
 
 function hexToRgba(hex: string): Rgba {
   const h = hex.replace("#", "");
-  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16), 255];
+  return [
+    parseInt(h.slice(0, 2), 16),
+    parseInt(h.slice(2, 4), 16),
+    parseInt(h.slice(4, 6), 16),
+    255,
+  ];
 }
 
 function rgbaEq(a: Rgba, b: Rgba): boolean {
@@ -120,8 +143,12 @@ interface Expectation {
 }
 
 function expectedCorner(bg: BgContract): Rgba {
-  if (bg === "transparent") return [0, 0, 0, 0];
-  if (bg === "opaque-white") return [255, 255, 255, 255];
+  if (bg === "transparent") {
+    return [0, 0, 0, 0];
+  }
+  if (bg === "opaque-white") {
+    return [255, 255, 255, 255];
+  }
   return bg;
 }
 
@@ -129,25 +156,79 @@ const ICON_EXPECTATIONS: Expectation[] = [
   // PWA manifest purpose="any" — transparent, so Chrome's omnibox install
   // chip, the macOS Dock, and Windows taskbar render the bare mark without
   // a white square around it.
-  { path: "public/icons/icon-192.png",  width: 192,  height: 192,  bg: "transparent", mark: true },
-  { path: "public/icons/icon-512.png",  width: 512,  height: 512,  bg: "transparent", mark: true },
-  { path: "public/icons/icon-1024.png", width: 1024, height: 1024, bg: "transparent", mark: true },
+  {
+    path: "public/icons/icon-192.png",
+    width: 192,
+    height: 192,
+    bg: "transparent",
+    mark: true,
+  },
+  {
+    path: "public/icons/icon-512.png",
+    width: 512,
+    height: 512,
+    bg: "transparent",
+    mark: true,
+  },
+  {
+    path: "public/icons/icon-1024.png",
+    width: 1024,
+    height: 1024,
+    bg: "transparent",
+    mark: true,
+  },
 
   // iOS apple-touch-icon — must be opaque. iOS fills transparent pixels with
   // an uncontrolled color on the home screen, so we ship a baked white
   // background specifically for this surface.
-  { path: "public/icons/icon-192-white.png",  width: 192,  height: 192,  bg: "opaque-white", mark: true },
-  { path: "public/icons/icon-512-white.png",  width: 512,  height: 512,  bg: "opaque-white", mark: true },
-  { path: "public/icons/icon-1024-white.png", width: 1024, height: 1024, bg: "opaque-white", mark: true },
+  {
+    path: "public/icons/icon-192-white.png",
+    width: 192,
+    height: 192,
+    bg: "opaque-white",
+    mark: true,
+  },
+  {
+    path: "public/icons/icon-512-white.png",
+    width: 512,
+    height: 512,
+    bg: "opaque-white",
+    mark: true,
+  },
+  {
+    path: "public/icons/icon-1024-white.png",
+    width: 1024,
+    height: 1024,
+    bg: "opaque-white",
+    mark: true,
+  },
 
   // Android maskable — transparent canvas, Android supplies its own adaptive
   // background. Mark lives inside the 80% safe zone (enforced by the padding
   // constant in gen-icons.tsx, validated here by the mark presence).
-  { path: "public/icons/icon-maskable-192.png", width: 192, height: 192, bg: "transparent", mark: true },
-  { path: "public/icons/icon-maskable-512.png", width: 512, height: 512, bg: "transparent", mark: true },
+  {
+    path: "public/icons/icon-maskable-192.png",
+    width: 192,
+    height: 192,
+    bg: "transparent",
+    mark: true,
+  },
+  {
+    path: "public/icons/icon-maskable-512.png",
+    width: 512,
+    height: 512,
+    bg: "transparent",
+    mark: true,
+  },
 
   // Next.js file-convention browser favicon (src/app/icon.png).
-  { path: "src/app/icon.png", width: 32, height: 32, bg: "transparent", mark: true },
+  {
+    path: "src/app/icon.png",
+    width: 32,
+    height: 32,
+    bg: "transparent",
+    mark: true,
+  },
 ];
 
 const SPLASH_EXPECTATIONS: Expectation[] = SPLASH_DEVICES.flatMap((device) =>
@@ -180,7 +261,9 @@ function hasMark(img: Png): boolean {
   let opaque = 0;
   const total = img.width * img.height;
   for (let i = 3; i < img.data.length; i += 4) {
-    if (img.data[i] > 0) opaque++;
+    if (img.data[i] > 0) {
+      opaque++;
+    }
   }
   return opaque / total > 0.01;
 }
@@ -195,7 +278,10 @@ function checkCorner(img: Png, expected: Rgba, path: string): void {
   for (const [x, y] of corners) {
     const got = pixel(img, x, y);
     if (!rgbaEq(got, expected)) {
-      fail(path, `corner (${x},${y}) expected ${JSON.stringify(expected)}, got ${JSON.stringify(got)}`);
+      fail(
+        path,
+        `corner (${x},${y}) expected ${JSON.stringify(expected)}, got ${JSON.stringify(got)}`
+      );
       return; // one corner failure is enough — don't spam
     }
   }
@@ -215,7 +301,10 @@ function checkExpectation(exp: Expectation): void {
     return;
   }
   if (img.width !== exp.width || img.height !== exp.height) {
-    fail(exp.path, `expected ${exp.width}×${exp.height}, got ${img.width}×${img.height}`);
+    fail(
+      exp.path,
+      `expected ${exp.width}×${exp.height}, got ${img.width}×${img.height}`
+    );
   }
   checkCorner(img, expectedCorner(exp.bg), exp.path);
   if (exp.mark && !hasMark(img)) {
@@ -239,11 +328,16 @@ for (const { path, minBytes } of EXISTENCE_ONLY) {
   }
 }
 
-const totalChecked = ICON_EXPECTATIONS.length + SPLASH_EXPECTATIONS.length + EXISTENCE_ONLY.length;
+const totalChecked =
+  ICON_EXPECTATIONS.length + SPLASH_EXPECTATIONS.length + EXISTENCE_ONLY.length;
 
 if (errors.length > 0) {
-  console.error(`\n✗ Icon verification failed (${errors.length} issue${errors.length === 1 ? "" : "s"}):\n`);
-  for (const line of errors) console.error(line);
+  console.error(
+    `\n✗ Icon verification failed (${errors.length} issue${errors.length === 1 ? "" : "s"}):\n`
+  );
+  for (const line of errors) {
+    console.error(line);
+  }
   console.error("");
   process.exit(1);
 }

@@ -6,8 +6,12 @@ import type { Lens, LensCatalog, Mount, SpecialtyTag } from "./types";
 import { CNY_THRESHOLDS, USD_THRESHOLDS } from "./lens-pricing";
 export type { SpecialtyTag };
 
-export const xLenses: Lens[] = lensCatalogSchema.parse(lensesData) as LensCatalog;
-export const gfxLenses: Lens[] = lensCatalogSchema.parse(gfxLensesData) as LensCatalog;
+export const xLenses: Lens[] = lensCatalogSchema.parse(
+  lensesData
+) as LensCatalog;
+export const gfxLenses: Lens[] = lensCatalogSchema.parse(
+  gfxLensesData
+) as LensCatalog;
 // allLenses combines both mounts — use only for aggregate contexts (About, sitemap, search index).
 // Within a mount-specific route, use getLensesByMount() or xLenses / gfxLenses directly.
 export const allLenses: Lens[] = [...xLenses, ...gfxLenses];
@@ -25,7 +29,10 @@ export function getLensesByMount(mount: Mount): Lens[] {
 }
 
 export type LensType = "prime" | "zoom";
-export const LENS_TYPES = ["prime", "zoom"] as const satisfies readonly LensType[];
+export const LENS_TYPES = [
+  "prime",
+  "zoom",
+] as const satisfies readonly LensType[];
 
 export function isZoom(lens: Lens): boolean {
   return lens.focalLengthMin !== lens.focalLengthMax;
@@ -97,8 +104,10 @@ export function getFocalCategoriesOf(lens: {
   const lensEquivMax = lens.focalLengthMax * cropFactor;
 
   return FOCAL_CATEGORIES.filter((cat) => {
-    const catMin = "equivMinInclusive" in cat ? cat.equivMinInclusive : -Infinity;
-    const catMax = "equivMaxExclusive" in cat ? cat.equivMaxExclusive : Infinity;
+    const catMin =
+      "equivMinInclusive" in cat ? cat.equivMinInclusive : -Infinity;
+    const catMax =
+      "equivMaxExclusive" in cat ? cat.equivMaxExclusive : Infinity;
     // overlap: lens range intersects [catMin, catMax)
     return lensEquivMin < catMax && lensEquivMax >= catMin;
   }).map((cat) => cat.key);
@@ -112,17 +121,27 @@ export type FocusMotorClass = "linear" | "stepping" | "other";
  * AF lenses with an undocumented motor type return "other".
  */
 export function classifyFocusMotor(lens: Lens): FocusMotorClass | undefined {
-  if (!lens.af) return undefined;
+  if (!lens.af) {
+    return undefined;
+  }
   const m = lens.focusMotor;
-  if (!m) return "other"; // AF but motor type not documented → treated as Other
+  if (!m) {
+    return "other";
+  } // AF but motor type not documented → treated as Other
 
   const s = m.toLowerCase();
   // Linear family: LM, HLA, VXD, VCM, Triple/Quad Linear, Dual HyperVCM
-  if (/\b(lm|hla|vxd|vcm)\b/.test(s) || s.includes("linear") || s.includes("hypervcm"))
+  if (
+    /\b(lm|hla|vxd|vcm)\b/.test(s) ||
+    s.includes("linear") ||
+    s.includes("hypervcm")
+  ) {
     return "linear";
+  }
   // Stepping family: STM, RXD, "Stepping Motor", "STM+Lead screw"
-  if (/\b(stm|rxd)\b/.test(s) || s.includes("stepping"))
+  if (/\b(stm|rxd)\b/.test(s) || s.includes("stepping")) {
     return "stepping";
+  }
   return "other";
 }
 
@@ -156,18 +175,31 @@ export function filterLenses(lenses: Lens[], filters: FilterState): Lens[] {
       return false;
     }
 
-    if (filters.typeFilter && filters.typeFilter !== (isZoom(lens) ? "zoom" : "prime")) {
+    if (
+      filters.typeFilter &&
+      filters.typeFilter !== (isZoom(lens) ? "zoom" : "prime")
+    ) {
       return false;
     }
 
-    if (filters.focusFilter === "auto" && !lens.af) return false;
-    if (filters.focusFilter === "manual" && lens.af) return false;
-
-    if (filters.specialtyTag && !lens.specialtyTags?.includes(filters.specialtyTag)) {
+    if (filters.focusFilter === "auto" && !lens.af) {
+      return false;
+    }
+    if (filters.focusFilter === "manual" && lens.af) {
       return false;
     }
 
-    if (filters.focusMotorClass && classifyFocusMotor(lens) !== filters.focusMotorClass) {
+    if (
+      filters.specialtyTag &&
+      !lens.specialtyTags?.includes(filters.specialtyTag)
+    ) {
+      return false;
+    }
+
+    if (
+      filters.focusMotorClass &&
+      classifyFocusMotor(lens) !== filters.focusMotorClass
+    ) {
       return false;
     }
 
@@ -208,7 +240,9 @@ export function getUniqueBrands(lenses: Lens[]): string[] {
 export function getOrderedUniqueBrands(lenses: Lens[]): string[] {
   const present = new Set(lenses.map((l) => l.brand));
   const ordered = BRAND_DISPLAY_ORDER.filter((b) => present.has(b));
-  const rest = [...present].filter((b) => !BRAND_DISPLAY_ORDER.includes(b)).sort();
+  const rest = [...present]
+    .filter((b) => !BRAND_DISPLAY_ORDER.includes(b))
+    .sort();
   return [...ordered, ...rest];
 }
 
@@ -238,7 +272,9 @@ function getSortableMaxAperture(lens: Lens): number {
   // T-stop is numerically slightly larger than f-stop but ordering is preserved
   // for sort purposes within the cine cohort.
   const value = lens.maxAperture ?? lens.maxTStop;
-  if (value === undefined) return Number.POSITIVE_INFINITY;
+  if (value === undefined) {
+    return Number.POSITIVE_INFINITY;
+  }
   return Array.isArray(value) ? value[0] : value;
 }
 
@@ -264,10 +300,15 @@ export function sortLenses(
   });
 }
 
-export function priceTier(price: number, currency: "CNY" | "USD"): 1 | 2 | 3 | 4 | 5 | undefined {
+export function priceTier(
+  price: number,
+  currency: "CNY" | "USD"
+): 1 | 2 | 3 | 4 | 5 | undefined {
   const thresholds = currency === "CNY" ? CNY_THRESHOLDS : USD_THRESHOLDS;
   for (let i = thresholds.length - 1; i >= 0; i--) {
-    if (price >= thresholds[i]) return (i + 1) as 1 | 2 | 3 | 4 | 5;
+    if (price >= thresholds[i]) {
+      return (i + 1) as 1 | 2 | 3 | 4 | 5;
+    }
   }
   return undefined;
 }
@@ -275,4 +316,3 @@ export function priceTier(price: number, currency: "CNY" | "USD"): 1 | 2 | 3 | 4
 export function defaultMarketForLocale(locale: string): "cn" | "global" {
   return locale === "zh" ? "cn" : "global";
 }
-

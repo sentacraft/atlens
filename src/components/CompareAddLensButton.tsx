@@ -14,7 +14,10 @@ interface Props {
   triggerClassName?: string;
 }
 
-export default function CompareAddLensButton({ lenses, triggerClassName }: Props) {
+export default function CompareAddLensButton({
+  lenses,
+  triggerClassName,
+}: Props) {
   const t = useTranslations("Compare");
   const router = useRouter();
   const { buildCompareUrl } = useCompareUrl();
@@ -24,7 +27,9 @@ export default function CompareAddLensButton({ lenses, triggerClassName }: Props
 
   const handleSelectLens = useCallback(
     (lens: Lens) => {
-      if (currentIds.includes(lens.id) || currentIds.length >= MAX_COMPARE) return;
+      if (currentIds.includes(lens.id) || currentIds.length >= MAX_COMPARE) {
+        return;
+      }
       const nextIds = [...currentIds, lens.id];
       router.replace(buildCompareUrl(nextIds));
     },
@@ -39,8 +44,7 @@ export default function CompareAddLensButton({ lenses, triggerClassName }: Props
           ? t("compareFull")
           : t("addToCompareAction"),
       disabled:
-        currentIds.includes(candidate.id) ||
-        currentIds.length >= MAX_COMPARE,
+        currentIds.includes(candidate.id) || currentIds.length >= MAX_COMPARE,
     }),
     [currentIds, t]
   );
@@ -54,7 +58,9 @@ export default function CompareAddLensButton({ lenses, triggerClassName }: Props
       timerRef.current = setTimeout(() => setHintOpen(false), 1500);
     }
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
     };
   }, [hintOpen]);
 

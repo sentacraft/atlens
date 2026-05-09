@@ -7,8 +7,6 @@ import {
   bladeShapePath,
   buildDerivedConfig,
   computeThetaOpen,
-  computeBladeCurvature,
-  tNormToTheta,
   DEFAULT_IRIS_CONFIG,
   apertureInradius,
   findThetaForInradius,
@@ -25,16 +23,23 @@ import Iris from "@/components/Iris";
 const VIEWBOX = "-150 -150 300 300";
 
 // ── F-stop ring constants ─────────────────────────────────────────────────────
-// Ring sits just inside the housing cover plate: inner radius = R_HOUSING − bladeWidth.
-// Ring radius is computed dynamically from bladeWidth in IrisStage.
-const FSTOP_RING_GAP = 4;                                    // inset from inner housing edge (SVG units)
-
 // Sequence: "A" (Auto) replaces f/1 and is drawn in red.
 // Arc spans 125° total across 9 equal steps (10 values → 9 gaps → 125/9 ≈ 13.9° per step).
-const FSTOP_SEQUENCE: (number | "A")[] = ["A", 1.4, 2, 2.8, 4, 5.6, 8, 11, 16, 22];
-const FSTOP_ARC_SPAN = 125;                                  // degrees
-const FSTOP_ANGLE_STEP = FSTOP_ARC_SPAN / (FSTOP_SEQUENCE.length - 1);  // ~13.9° per step
-const FSTOP_A_COLOR = "#f87171";                             // Auto marker red (Tailwind red-400)
+const FSTOP_SEQUENCE: (number | "A")[] = [
+  "A",
+  1.4,
+  2,
+  2.8,
+  4,
+  5.6,
+  8,
+  11,
+  16,
+  22,
+];
+const FSTOP_ARC_SPAN = 125; // degrees
+const FSTOP_ANGLE_STEP = FSTOP_ARC_SPAN / (FSTOP_SEQUENCE.length - 1); // ~13.9° per step
+const FSTOP_A_COLOR = "#f87171"; // Auto marker red (Tailwind red-400)
 
 // Continuous angle (degrees) in ring frame for a given f-stop value.
 // Uses the same log₂ scale as the sequence: f/1→0°, f/1.4→STEP, …, f/22→ARC_SPAN.
@@ -80,10 +85,17 @@ function IrisStage({
   const shape = useMemo(
     () => bladeShapePath(config),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [config.bladeLength, config.bladeWidth, config.bladeCurvature, config.pinDistance]
+    [
+      config.bladeLength,
+      config.bladeWidth,
+      config.bladeCurvature,
+      config.pinDistance,
+    ]
   );
 
-  if (blades.length === 0) return null;
+  if (blades.length === 0) {
+    return null;
+  }
 
   const b0 = blades[0];
   const b0AngleDeg = (b0.bladeAngle * 180) / Math.PI;
@@ -193,7 +205,12 @@ function IrisStage({
           <g key={i} mask={`url(#mask-stroke-${i}-${uid})`}>
             <g transform={`rotate(${(stepDeg * i).toFixed(3)})`}>
               <g transform={b0Transform}>
-                <path d={shape} fill="none" stroke={strokeColor} strokeWidth={strokeWidth} />
+                <path
+                  d={shape}
+                  fill="none"
+                  stroke={strokeColor}
+                  strokeWidth={strokeWidth}
+                />
               </g>
             </g>
           </g>
@@ -216,8 +233,7 @@ function IrisStage({
           />
           {/* Radial slots (one per blade) */}
           {Array.from({ length: N }, (_, i) => {
-            const slotAngle =
-              (i * 2 * Math.PI) / N + config.slotOffset + theta;
+            const slotAngle = (i * 2 * Math.PI) / N + config.slotOffset + theta;
             const r1 = 30;
             const r2 = R_HOUSING + 28;
             return (
@@ -263,87 +279,92 @@ function IrisStage({
       )}
 
       {/* ── Housing ring ── */}
-      <circle
-        r={R_HOUSING}
-        fill="none"
-        stroke="#d6d3d1"
-        strokeWidth="0.8"
-      />
-      <circle
-        r={R_HOUSING + 5}
-        fill="none"
-        stroke="#e7e5e4"
-        strokeWidth="2"
-      />
+      <circle r={R_HOUSING} fill="none" stroke="#d6d3d1" strokeWidth="0.8" />
+      <circle r={R_HOUSING + 5} fill="none" stroke="#e7e5e4" strokeWidth="2" />
 
       {/* ── F-stop ring overlay ── */}
-      {showFStopRing && (() => {
-        // The boundary between the visible dark iris body and the cream cover-plate zone
-        // is the inner edge of the housing cover plate: R_HOUSING − bladeWidth.
-        //
-        // Outer mode: ring circle at that boundary; labels go OUTWARD into the cream zone.
-        // Inner mode: ring circle at that boundary; labels go INWARD into the dark blade zone.
-        // The housing ring position is irrelevant to either mode.
-        const blackEdge = R_HOUSING - config.bladeWidth;
-        const ringR     = blackEdge;
-        // Outer mode: labels hug the iris black edge, tick above the text.
-        // Inner mode: labels sit inward of the ring circle.
-        const labelR    = fStopRingOuter ? blackEdge + 4 : blackEdge - 10;
+      {showFStopRing &&
+        (() => {
+          // The boundary between the visible dark iris body and the cream cover-plate zone
+          // is the inner edge of the housing cover plate: R_HOUSING − bladeWidth.
+          //
+          // Outer mode: ring circle at that boundary; labels go OUTWARD into the cream zone.
+          // Inner mode: ring circle at that boundary; labels go INWARD into the dark blade zone.
+          // The housing ring position is irrelevant to either mode.
+          const blackEdge = R_HOUSING - config.bladeWidth;
+          const ringR = blackEdge;
+          // Outer mode: labels hug the iris black edge, tick above the text.
+          // Inner mode: labels sit inward of the ring circle.
+          const labelR = fStopRingOuter ? blackEdge + 4 : blackEdge - 10;
 
-        const isValid = isFinite(fStop) && fStop >= 1;
-        // Rotate ring so that the current f-stop lands at 12 o'clock (-90° in SVG).
-        const ringRot = isValid ? -90 - fStopToRingAngle(fStop) : -90;
-        const ringRotStr = ringRot.toFixed(3);
+          const isValid = isFinite(fStop) && fStop >= 1;
+          // Rotate ring so that the current f-stop lands at 12 o'clock (-90° in SVG).
+          const ringRot = isValid ? -90 - fStopToRingAngle(fStop) : -90;
+          const ringRotStr = ringRot.toFixed(3);
 
-        // Fixed index marker position.
-        // Outer: above the text (further from centre) — starts 2 px beyond labelR.
-        // Inner: inward of the ring circle (unchanged).
-        const markerNear = fStopRingOuter ? labelR + 2    : ringR - 2;
-        const markerFar  = fStopRingOuter ? labelR + 7.6  : ringR - 7.6;
-        return (
-          <g>
-            {/* Fixed index mark at 12 o'clock — white, 5.6 px (70 % of original 8 px). */}
-            <line
-              x1="0" y1={-markerNear}
-              x2="0" y2={-markerFar}
-              stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round"
-            />
-            {/* Rotating group: ring arc + labels */}
-            <g transform={`rotate(${ringRotStr})`}>
-              <circle r={ringR} fill="none" stroke="#d4d4d8" strokeWidth="0.6" />
-              {FSTOP_SEQUENCE.map((f, i) => {
-                const deg = i * FSTOP_ANGLE_STEP;
-                const rad = (deg * Math.PI) / 180;
-                const cos = Math.cos(rad);
-                const sin = Math.sin(rad);
-                const lx = labelR * cos;
-                const ly = labelR * sin;
-                const isA = f === "A";
-                const label = isA ? "A"
-                  : (f === 1.4 || f === 2.8 || f === 5.6) ? (f as number).toFixed(1)
-                  : String(f);
-                // Radial orientation: text bottom faces the iris centre.
-                // deg=0 (12 o'clock within the rotating group) → rotate +90 = upright.
-                // Labels at the sides tilt to follow the arc curvature.
-                return (
-                  <g key={label}>
-                    <text
-                      x={lx.toFixed(3)} y={ly.toFixed(3)}
-                      textAnchor="middle" dominantBaseline="central"
-                      fontSize="7" fill={isA ? FSTOP_A_COLOR : "#71717a"}
-                      fontWeight={isA ? "600" : "normal"}
-                      fontFamily="ui-monospace, SFMono-Regular, monospace"
-                      transform={`rotate(${(deg + 90).toFixed(3)}, ${lx.toFixed(3)}, ${ly.toFixed(3)})`}
-                    >
-                      {label}
-                    </text>
-                  </g>
-                );
-              })}
+          // Fixed index marker position.
+          // Outer: above the text (further from centre) — starts 2 px beyond labelR.
+          // Inner: inward of the ring circle (unchanged).
+          const markerNear = fStopRingOuter ? labelR + 2 : ringR - 2;
+          const markerFar = fStopRingOuter ? labelR + 7.6 : ringR - 7.6;
+          return (
+            <g>
+              {/* Fixed index mark at 12 o'clock — white, 5.6 px (70 % of original 8 px). */}
+              <line
+                x1="0"
+                y1={-markerNear}
+                x2="0"
+                y2={-markerFar}
+                stroke="#ffffff"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              {/* Rotating group: ring arc + labels */}
+              <g transform={`rotate(${ringRotStr})`}>
+                <circle
+                  r={ringR}
+                  fill="none"
+                  stroke="#d4d4d8"
+                  strokeWidth="0.6"
+                />
+                {FSTOP_SEQUENCE.map((f, i) => {
+                  const deg = i * FSTOP_ANGLE_STEP;
+                  const rad = (deg * Math.PI) / 180;
+                  const cos = Math.cos(rad);
+                  const sin = Math.sin(rad);
+                  const lx = labelR * cos;
+                  const ly = labelR * sin;
+                  const isA = f === "A";
+                  const label = isA
+                    ? "A"
+                    : f === 1.4 || f === 2.8 || f === 5.6
+                      ? (f as number).toFixed(1)
+                      : String(f);
+                  // Radial orientation: text bottom faces the iris centre.
+                  // deg=0 (12 o'clock within the rotating group) → rotate +90 = upright.
+                  // Labels at the sides tilt to follow the arc curvature.
+                  return (
+                    <g key={label}>
+                      <text
+                        x={lx.toFixed(3)}
+                        y={ly.toFixed(3)}
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        fontSize="7"
+                        fill={isA ? FSTOP_A_COLOR : "#71717a"}
+                        fontWeight={isA ? "600" : "normal"}
+                        fontFamily="ui-monospace, SFMono-Regular, monospace"
+                        transform={`rotate(${(deg + 90).toFixed(3)}, ${lx.toFixed(3)}, ${ly.toFixed(3)})`}
+                      >
+                        {label}
+                      </text>
+                    </g>
+                  );
+                })}
+              </g>
             </g>
-          </g>
-        );
-      })()}
+          );
+        })()}
     </svg>
   );
 }
@@ -355,16 +376,17 @@ function IrisStage({
 const FSTOP_OPTIONS = FSTOP_SEQUENCE.filter((f): f is number => f !== "A");
 
 function formatFStop(f: number): string {
-  if (!isFinite(f) || f > 22) return "f/—";
+  if (!isFinite(f) || f > 22) {
+    return "f/—";
+  }
   return `f/${f.toFixed(1)}`;
 }
-
-
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function ApertureV2Lab() {
-  const [config, setConfig] = useState<IrisMechanismConfig>(DEFAULT_IRIS_CONFIG);
+  const [config, setConfig] =
+    useState<IrisMechanismConfig>(DEFAULT_IRIS_CONFIG);
 
   // Studio profiles: all three read/write iris-config.ts via server actions.
   // The workspace seeds from IRIS_LAB on mount.
@@ -378,7 +400,7 @@ export default function ApertureV2Lab() {
   const [exportStatus, setExportStatus] = useState<string | null>(null);
 
   const setField = (patch: Partial<IrisMechanismConfig>) => {
-    setConfig(prev => {
+    setConfig((prev) => {
       const next = { ...prev, ...patch };
       // Keep pinDistance inside [Rp, bladeLength − 1] after any change.
       // Rp is derived from bladeWidth, so it shifts when bladeWidth changes.
@@ -393,19 +415,31 @@ export default function ApertureV2Lab() {
 
   // Load the selected profile's params into the workspace.
   async function handleLoad() {
-    const key = selectedProfile === "production:hero" ? "IRIS_HERO"
-      : selectedProfile === "production:nav" ? "IRIS_NAV" : "IRIS_LAB";
+    const key =
+      selectedProfile === "production:hero"
+        ? "IRIS_HERO"
+        : selectedProfile === "production:nav"
+          ? "IRIS_NAV"
+          : "IRIS_LAB";
     const v = await readFromConfig(key);
-    if (!v) return;
+    if (!v) {
+      return;
+    }
     applyConfig(v);
   }
 
   // Apply a loaded IrisConfig to all workspace state variables.
   function applyConfig(v: IrisConfig) {
     setConfig(buildDerivedConfig(v, R_HOUSING));
-    if (v.bladeColor)  setBladeGray(parseInt(v.bladeColor.slice(1, 3), 16));
-    if (v.strokeColor) setStrokeGray(parseInt(v.strokeColor.slice(1, 3), 16));
-    if (v.strokeWidth !== undefined) setStrokeWidth(v.strokeWidth);
+    if (v.bladeColor) {
+      setBladeGray(parseInt(v.bladeColor.slice(1, 3), 16));
+    }
+    if (v.strokeColor) {
+      setStrokeGray(parseInt(v.strokeColor.slice(1, 3), 16));
+    }
+    if (v.strokeWidth !== undefined) {
+      setStrokeWidth(v.strokeWidth);
+    }
     setOpenFStop(v.openFStop);
     setDefaultFStop(v.defaultFStop);
     const hc = v.interactive?.type === "hover" ? v.interactive : null;
@@ -425,8 +459,12 @@ export default function ApertureV2Lab() {
   // Export current workspace params to the selected profile.
   async function handleExport() {
     setExportStatus("Saving…");
-    const profileSize = selectedProfile === "production:hero" ? IRIS_HERO.size
-      : selectedProfile === "production:nav" ? IRIS_NAV.size : IRIS_LAB.size;
+    const profileSize =
+      selectedProfile === "production:hero"
+        ? IRIS_HERO.size
+        : selectedProfile === "production:nav"
+          ? IRIS_NAV.size
+          : IRIS_LAB.size;
     const stored: IrisConfig = {
       N: config.N,
       pinDistance: config.pinDistance,
@@ -439,35 +477,52 @@ export default function ApertureV2Lab() {
       bladeColor: grayHex(bladeGray),
       strokeColor: grayHex(strokeGray),
       strokeWidth,
-      interactive: interactive ? {
-        type: "hover" as const,
-        hotzoneScaleH,
-        hotzoneScaleV,
-        easeOutMs,
-        catchupMs,
-      } : undefined,
+      interactive: interactive
+        ? {
+            type: "hover" as const,
+            hotzoneScaleH,
+            hotzoneScaleV,
+            easeOutMs,
+            catchupMs,
+          }
+        : undefined,
       onMount,
       closedFStop,
       chaseTauMs,
     };
-    const key = selectedProfile === "production:hero" ? "IRIS_HERO"
-      : selectedProfile === "production:nav" ? "IRIS_NAV" : "IRIS_LAB";
+    const key =
+      selectedProfile === "production:hero"
+        ? "IRIS_HERO"
+        : selectedProfile === "production:nav"
+          ? "IRIS_NAV"
+          : "IRIS_LAB";
     const res = await exportToConfig(key, stored);
     setExportStatus(res.ok ? `✓ Written to ${key}` : `✗ ${res.error}`);
-    if (res.ok) setTimeout(() => setExportStatus(null), 3000);
+    if (res.ok) {
+      setTimeout(() => setExportStatus(null), 3000);
+    }
   }
 
   // Seed the workspace from IRIS_LAB on first mount.
   useEffect(() => {
-    readFromConfig("IRIS_LAB").then(v => { if (v) applyConfig(v); });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    readFromConfig("IRIS_LAB").then((v) => {
+      if (v) {
+        applyConfig(v);
+      }
+    });
+  }, []);
 
   // Derive geometry-constrained parameters via the shared helper.
   const derivedConfig = useMemo(
     () => buildDerivedConfig(config, R_HOUSING),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [config.N, config.pinDistance, config.slotOffset,
-     config.bladeLength, config.bladeWidth]
+    [
+      config.N,
+      config.pinDistance,
+      config.slotOffset,
+      config.bladeLength,
+      config.bladeWidth,
+    ]
   );
 
   // Physical range: [θ_open, kinRange.max]
@@ -500,7 +555,7 @@ export default function ApertureV2Lab() {
   const [hotzoneScaleH, setHotzoneScaleH] = useState(1.5);
   const [hotzoneScaleV, setHotzoneScaleV] = useState(1.0);
   const [strokeWidth, setStrokeWidth] = useState(0.5);
-  const [bladeGray, setBladeGray] = useState(24);   // 0=black … 255=white; default ≈ zinc-900
+  const [bladeGray, setBladeGray] = useState(24); // 0=black … 255=white; default ≈ zinc-900
   const [strokeGray, setStrokeGray] = useState(63); // default ≈ zinc-700
 
   function grayHex(v: number) {
@@ -512,26 +567,41 @@ export default function ApertureV2Lab() {
   // stays in sync with every slider/input change without requiring a Load.
   // The small right-panel preview renders as non-interactive (interactive: false)
   // to avoid mouse-follow in a thumbnail; the full-size DL stage handles that.
-  const previewConfig = useMemo((): IrisConfig => ({
-    N: config.N,
-    pinDistance: config.pinDistance,
-    slotOffset: config.slotOffset,
-    bladeLength: config.bladeLength,
-    bladeWidth: config.bladeWidth,
-    openFStop,
-    defaultFStop,
-    size: previewSize,
-    bladeColor: grayHex(bladeGray),
-    strokeColor: grayHex(strokeGray),
-    strokeWidth,
-    interactive: undefined,
-    onMount,
-    closedFStop,
-    chaseTauMs,
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [config.N, config.pinDistance, config.slotOffset, config.bladeLength, config.bladeWidth,
-      openFStop, defaultFStop, closedFStop, chaseTauMs,
-      previewSize, bladeGray, strokeGray, strokeWidth, onMount]);
+  const previewConfig = useMemo(
+    (): IrisConfig => ({
+      N: config.N,
+      pinDistance: config.pinDistance,
+      slotOffset: config.slotOffset,
+      bladeLength: config.bladeLength,
+      bladeWidth: config.bladeWidth,
+      openFStop,
+      defaultFStop,
+      size: previewSize,
+      bladeColor: grayHex(bladeGray),
+      strokeColor: grayHex(strokeGray),
+      strokeWidth,
+      interactive: undefined,
+      onMount,
+      closedFStop,
+      chaseTauMs,
+    }),
+    [
+      config.N,
+      config.pinDistance,
+      config.slotOffset,
+      config.bladeLength,
+      config.bladeWidth,
+      openFStop,
+      defaultFStop,
+      closedFStop,
+      chaseTauMs,
+      previewSize,
+      bladeGray,
+      strokeGray,
+      strokeWidth,
+      onMount,
+    ]
+  );
 
   // Animation: theta oscillates between range.min and range.max
   const rafRef = useRef<number | undefined>(undefined);
@@ -545,7 +615,9 @@ export default function ApertureV2Lab() {
 
   useEffect(() => {
     if (!isPlaying) {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
       startRef.current = undefined;
       return;
     }
@@ -572,7 +644,9 @@ export default function ApertureV2Lab() {
 
     rafRef.current = requestAnimationFrame(tick);
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
     };
   }, [isPlaying, speed, range]);
 
@@ -595,37 +669,54 @@ export default function ApertureV2Lab() {
   const inradiusCurrent = useMemo(
     () => apertureInradius(theta, derivedConfig),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [theta, derivedConfig.N, derivedConfig.pivotRadius, derivedConfig.pinDistance,
-     derivedConfig.slotOffset, derivedConfig.bladeLength, derivedConfig.bladeWidth,
-     derivedConfig.bladeCurvature]
+    [
+      theta,
+      derivedConfig.N,
+      derivedConfig.pivotRadius,
+      derivedConfig.pinDistance,
+      derivedConfig.slotOffset,
+      derivedConfig.bladeLength,
+      derivedConfig.bladeWidth,
+      derivedConfig.bladeCurvature,
+    ]
   );
   const inradiusOpen = useMemo(
     () => apertureInradius(range.min, derivedConfig),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [range.min, derivedConfig.N, derivedConfig.pivotRadius, derivedConfig.pinDistance,
-     derivedConfig.slotOffset, derivedConfig.bladeLength, derivedConfig.bladeWidth,
-     derivedConfig.bladeCurvature]
+    [
+      range.min,
+      derivedConfig.N,
+      derivedConfig.pivotRadius,
+      derivedConfig.pinDistance,
+      derivedConfig.slotOffset,
+      derivedConfig.bladeLength,
+      derivedConfig.bladeWidth,
+      derivedConfig.bladeCurvature,
+    ]
   );
-  const fStop = inradiusCurrent > 0.5
-    ? openFStop * (inradiusOpen / inradiusCurrent)
-    : Infinity;
+  const fStop =
+    inradiusCurrent > 0.5
+      ? openFStop * (inradiusOpen / inradiusCurrent)
+      : Infinity;
 
   // In Auto mode (openPct === 0) the ring stays pinned at "A" (ring angle 0 = f/1.0 position).
   // The blades render at the theta corresponding to defaultFStop (configurable, default f/5.6).
   const autoTheta = useMemo(
     () => findThetaForFStop(defaultFStop, derivedConfig, range, openFStop),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [defaultFStop, openFStop, range.min, range.max, derivedConfig.N, derivedConfig.pivotRadius,
-     derivedConfig.pinDistance, derivedConfig.slotOffset, derivedConfig.bladeLength,
-     derivedConfig.bladeWidth, derivedConfig.bladeCurvature]
-  );
-  // Theta corresponding to the far-closed end of the follow-mouse range (f/22).
-  const thetaF22 = useMemo(
-    () => findThetaForFStop(22, derivedConfig, range, openFStop),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [openFStop, range.min, range.max, derivedConfig.N, derivedConfig.pivotRadius,
-     derivedConfig.pinDistance, derivedConfig.slotOffset, derivedConfig.bladeLength,
-     derivedConfig.bladeWidth, derivedConfig.bladeCurvature]
+    [
+      defaultFStop,
+      openFStop,
+      range.min,
+      range.max,
+      derivedConfig.N,
+      derivedConfig.pivotRadius,
+      derivedConfig.pinDistance,
+      derivedConfig.slotOffset,
+      derivedConfig.bladeLength,
+      derivedConfig.bladeWidth,
+      derivedConfig.bladeCurvature,
+    ]
   );
   // Ring shows "A" (ring angle 0 → position 0 → f=1.0 in the log-scale mapping)
   // so that the pointer stays at "A" instead of rotating to 5.6.
@@ -646,37 +737,52 @@ export default function ApertureV2Lab() {
   // Entry:  offset recorded on first hotzone frame, decays (1-p)^2 over 300 ms.
   // Leave:  cubic ease-out back to autoTheta over 700 ms.
   // chaseTauMs / easeOutMs / catchupMs / hotzoneScale / closedFStop come from state (controls).
-  const followTargetRef      = useRef(0);
+  const followTargetRef = useRef(0);
   const followEntryOffsetRef = useRef(0);
-  const followEntryTimeRef   = useRef(0);
-  const wasInHotzoneRef      = useRef(false);
-  const followChaseRafRef    = useRef<number | null>(null);
-  const followLeaveRafRef    = useRef<number | null>(null);
-  const followLastFrameRef   = useRef(0);
+  const followEntryTimeRef = useRef(0);
+  const wasInHotzoneRef = useRef(false);
+  const followChaseRafRef = useRef<number | null>(null);
+  const followLeaveRafRef = useRef<number | null>(null);
+  const followLastFrameRef = useRef(0);
 
   // Cleanup all RAFs on unmount.
-  useEffect(() => () => {
-    if (followChaseRafRef.current) cancelAnimationFrame(followChaseRafRef.current);
-    if (followLeaveRafRef.current) cancelAnimationFrame(followLeaveRafRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (followChaseRafRef.current) {
+        cancelAnimationFrame(followChaseRafRef.current);
+      }
+      if (followLeaveRafRef.current) {
+        cancelAnimationFrame(followLeaveRafRef.current);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     if (!interactive) {
       wasInHotzoneRef.current = false;
-      if (followChaseRafRef.current) { cancelAnimationFrame(followChaseRafRef.current); followChaseRafRef.current = null; }
-      if (followLeaveRafRef.current) { cancelAnimationFrame(followLeaveRafRef.current); followLeaveRafRef.current = null; }
+      if (followChaseRafRef.current) {
+        cancelAnimationFrame(followChaseRafRef.current);
+        followChaseRafRef.current = null;
+      }
+      if (followLeaveRafRef.current) {
+        cancelAnimationFrame(followLeaveRafRef.current);
+        followLeaveRafRef.current = null;
+      }
       return;
     }
 
     // Chase loop: runs while in hotzone, smoothly tracks followTargetRef.
     function startChase() {
-      if (followChaseRafRef.current) return; // already running
+      if (followChaseRafRef.current) {
+        return;
+      } // already running
       followLastFrameRef.current = performance.now();
       function chaseTick(now: number) {
         const dt = Math.min(now - followLastFrameRef.current, 64); // cap at ~4 frames
         followLastFrameRef.current = now;
-        const k    = 1 - Math.exp(-dt / chaseTauMs);
-        const cur  = thetaRef.current;
+        const k = 1 - Math.exp(-dt / chaseTauMs);
+        const cur = thetaRef.current;
         const next = cur + (followTargetRef.current - cur) * k;
         setTheta(next);
         thetaRef.current = next;
@@ -686,47 +792,59 @@ export default function ApertureV2Lab() {
     }
 
     function stopChase() {
-      if (followChaseRafRef.current) { cancelAnimationFrame(followChaseRafRef.current); followChaseRafRef.current = null; }
+      if (followChaseRafRef.current) {
+        cancelAnimationFrame(followChaseRafRef.current);
+        followChaseRafRef.current = null;
+      }
     }
 
     function handleMouseMove(e: MouseEvent) {
-      if (!irisContainerRef.current) return;
+      if (!irisContainerRef.current) {
+        return;
+      }
       const rect = irisContainerRef.current.getBoundingClientRect();
 
       // D = actual iris diameter in CSS px.
       // SVG viewBox is 300 units wide; iris black body radius = R_HOUSING − bladeWidth.
-      const scale    = rect.width / 300;
+      const scale = rect.width / 300;
       const irisSVGR = R_HOUSING - derivedConfig.bladeWidth;
-      const D        = 2 * irisSVGR * scale;
+      const D = 2 * irisSVGR * scale;
 
-      const cx = rect.left + rect.width  / 2;
-      const cy = rect.top  + rect.height / 2;
-      const hotLeft   = cx - D * hotzoneScaleH;
-      const hotRight  = cx + D * hotzoneScaleH;
-      const hotTop    = cy - D * hotzoneScaleV;
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const hotLeft = cx - D * hotzoneScaleH;
+      const hotRight = cx + D * hotzoneScaleH;
+      const hotTop = cy - D * hotzoneScaleV;
       const hotBottom = cy + D * hotzoneScaleV;
 
       const inHot =
-        e.clientX >= hotLeft && e.clientX <= hotRight &&
-        e.clientY >= hotTop  && e.clientY <= hotBottom;
+        e.clientX >= hotLeft &&
+        e.clientX <= hotRight &&
+        e.clientY >= hotTop &&
+        e.clientY <= hotBottom;
 
       if (!inHot) {
         if (wasInHotzoneRef.current) {
           wasInHotzoneRef.current = false;
           stopChase();
           // Cubic ease-out back to autoTheta over easeOutMs
-          if (followLeaveRafRef.current) cancelAnimationFrame(followLeaveRafRef.current);
+          if (followLeaveRafRef.current) {
+            cancelAnimationFrame(followLeaveRafRef.current);
+          }
           const fromTheta = thetaRef.current;
-          const toTheta   = autoTheta;
-          const startMs   = performance.now();
+          const toTheta = autoTheta;
+          const startMs = performance.now();
           function leaveTick(now: number) {
-            const p     = Math.min(1, (now - startMs) / easeOutMs);
+            const p = Math.min(1, (now - startMs) / easeOutMs);
             const eased = 1 - (1 - p) ** 3;
-            const v     = fromTheta + (toTheta - fromTheta) * eased;
+            const v = fromTheta + (toTheta - fromTheta) * eased;
             setTheta(v);
             thetaRef.current = v;
-            if (p < 1) followLeaveRafRef.current = requestAnimationFrame(leaveTick);
-            else followLeaveRafRef.current = null;
+            if (p < 1) {
+              followLeaveRafRef.current = requestAnimationFrame(leaveTick);
+            } else {
+              followLeaveRafRef.current = null;
+            }
           }
           followLeaveRafRef.current = requestAnimationFrame(leaveTick);
         }
@@ -734,31 +852,40 @@ export default function ApertureV2Lab() {
       }
 
       // Cancel any in-progress leave animation and ensure chase is running
-      if (followLeaveRafRef.current) { cancelAnimationFrame(followLeaveRafRef.current); followLeaveRafRef.current = null; }
+      if (followLeaveRafRef.current) {
+        cancelAnimationFrame(followLeaveRafRef.current);
+        followLeaveRafRef.current = null;
+      }
       startChase();
 
       // Map horizontal position within hotzone → aperture diameter (inradius) linearly.
       // Left = max open (rOpen), right = r at f/22. Then binary-search for theta.
       // This is a log transform in f-stop space: large-aperture end feels "faster",
       // small-aperture end feels "slower" — matching a physical aperture ring.
-      const t       = Math.max(0, Math.min(1, (e.clientX - hotLeft) / (hotRight - hotLeft)));
-      const rOpen   = inradiusOpen;
-      const r22     = (openFStop * rOpen) / closedFStop;
+      const t = Math.max(
+        0,
+        Math.min(1, (e.clientX - hotLeft) / (hotRight - hotLeft))
+      );
+      const rOpen = inradiusOpen;
+      const r22 = (openFStop * rOpen) / closedFStop;
       const targetR = rOpen + t * (r22 - rOpen); // linear in diameter
       const rawTarget = findThetaForInradius(targetR, derivedConfig, range);
 
       if (!wasInHotzoneRef.current) {
         // First frame: record entry offset for smooth catchup
         followEntryOffsetRef.current = thetaRef.current - rawTarget;
-        followEntryTimeRef.current   = performance.now();
-        wasInHotzoneRef.current      = true;
+        followEntryTimeRef.current = performance.now();
+        wasInHotzoneRef.current = true;
       }
 
       // Quadratic ease-out on entry offset: (1-p)^2 over catchupMs
-      const p                  = Math.min(1, (performance.now() - followEntryTimeRef.current) / catchupMs);
-      const off                = followEntryOffsetRef.current * (1 - p) ** 2;
-      followTargetRef.current  = rawTarget + off; // chase RAF reads this every frame
-      startRef.current         = undefined;
+      const p = Math.min(
+        1,
+        (performance.now() - followEntryTimeRef.current) / catchupMs
+      );
+      const off = followEntryOffsetRef.current * (1 - p) ** 2;
+      followTargetRef.current = rawTarget + off; // chase RAF reads this every frame
+      startRef.current = undefined;
     }
 
     document.addEventListener("mousemove", handleMouseMove);
@@ -767,11 +894,28 @@ export default function ApertureV2Lab() {
       stopChase();
       wasInHotzoneRef.current = false;
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [interactive, openFStop, closedFStop, chaseTauMs, easeOutMs, catchupMs, hotzoneScaleH, hotzoneScaleV,
-      range.min, range.max, inradiusOpen, autoTheta, derivedConfig.bladeWidth,
-      derivedConfig.N, derivedConfig.pivotRadius, derivedConfig.pinDistance,
-      derivedConfig.slotOffset, derivedConfig.bladeLength, derivedConfig.bladeCurvature]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    interactive,
+    openFStop,
+    closedFStop,
+    chaseTauMs,
+    easeOutMs,
+    catchupMs,
+    hotzoneScaleH,
+    hotzoneScaleV,
+    range.min,
+    range.max,
+    inradiusOpen,
+    autoTheta,
+    derivedConfig.bladeWidth,
+    derivedConfig.N,
+    derivedConfig.pivotRadius,
+    derivedConfig.pinDistance,
+    derivedConfig.slotOffset,
+    derivedConfig.bladeLength,
+    derivedConfig.bladeCurvature,
+  ]);
 
   return (
     <main
@@ -779,7 +923,10 @@ export default function ApertureV2Lab() {
       className="flex flex-col"
     >
       {/* Header */}
-      <div className="pt-8 pb-4" style={{ paddingLeft: 100, paddingRight: 100 }}>
+      <div
+        className="pt-8 pb-4"
+        style={{ paddingLeft: 100, paddingRight: 100 }}
+      >
         <div className="text-xs text-zinc-600 uppercase tracking-wider mb-1">
           Design Lab
         </div>
@@ -787,19 +934,19 @@ export default function ApertureV2Lab() {
           Iris — Kinematic Parameter Studio
         </h1>
         <p className="text-sm text-zinc-500 mt-1">
-          3-body kinematic model · base plate + actuator ring + {config.N}{" "}
-          rigid blades · solved analytically
+          3-body kinematic model · base plate + actuator ring + {config.N} rigid
+          blades · solved analytically
         </p>
       </div>
 
       {/* Body */}
-      <div className="flex-1 flex pb-8 gap-8 items-start" style={{ paddingLeft: 100, paddingRight: 100 }}>
+      <div
+        className="flex-1 flex pb-8 gap-8 items-start"
+        style={{ paddingLeft: 100, paddingRight: 100 }}
+      >
         {/* Iris display */}
         <div className="flex flex-col items-center gap-5">
-          <div
-            ref={irisContainerRef}
-            style={{ width: 480, height: 480 }}
-          >
+          <div ref={irisContainerRef} style={{ width: 480, height: 480 }}>
             <IrisStage
               config={derivedConfig}
               theta={displayTheta}
@@ -834,19 +981,20 @@ export default function ApertureV2Lab() {
             <div className="flex justify-between text-xs font-mono mt-1">
               <span className="text-zinc-500">open</span>
               <span className="text-zinc-600">
-                {openPct}%
-                <span className="text-zinc-400 ml-2">·</span>
+                {openPct}%<span className="text-zinc-400 ml-2">·</span>
                 <span className="ml-2">{formatFStop(fStop)}</span>
               </span>
               <span className="text-zinc-500">closed</span>
             </div>
           </div>
-
         </div>
 
         {/* Production preview — renders the current config via the real Iris
             component at its actual production pixel size. Stays live with controls. */}
-        <div className="flex flex-col items-center gap-2" style={{ paddingTop: 4 }}>
+        <div
+          className="flex flex-col items-center gap-2"
+          style={{ paddingTop: 4 }}
+        >
           <span className="text-xs font-mono text-zinc-400">
             {previewConfig.size} px
           </span>
@@ -854,75 +1002,130 @@ export default function ApertureV2Lab() {
         </div>
 
         {/* Controls — 3-column grid */}
-        <div style={{ flexShrink: 0, width: 580, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", columnGap: 32, paddingTop: 4 }}>
-
+        <div
+          style={{
+            flexShrink: 0,
+            width: 580,
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            columnGap: 32,
+            paddingTop: 4,
+          }}
+        >
           {/* ── Col 1: Playback & View ── */}
           <div className="space-y-5">
             <section className="space-y-2.5">
-              <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">Studio</p>
+              <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">
+                Studio
+              </p>
               {/* Profile selector — switching does not load; only Load/Export act */}
               <div className="flex gap-1.5">
-                {(["lab", "production:hero", "production:nav"] as const).map((profile) => (
-                  <button
-                    key={profile}
-                    onClick={() => setSelectedProfile(profile)}
-                    className="flex-1 rounded py-1.5 text-xs font-mono font-medium transition-colors"
-                    style={selectedProfile === profile
-                      ? { background: "#18181b", color: "#fff", border: "1px solid #18181b" }
-                      : { background: "#fff", color: "#3f3f46", border: "1px solid #d4d4d8" }}
-                  >
-                    {profile === "lab" ? "Lab"
-                      : profile === "production:hero" ? "Hero"
-                      : "Nav"}
-                  </button>
-                ))}
+                {(["lab", "production:hero", "production:nav"] as const).map(
+                  (profile) => (
+                    <button
+                      key={profile}
+                      onClick={() => setSelectedProfile(profile)}
+                      className="flex-1 rounded py-1.5 text-xs font-mono font-medium transition-colors"
+                      style={
+                        selectedProfile === profile
+                          ? {
+                              background: "#18181b",
+                              color: "#fff",
+                              border: "1px solid #18181b",
+                            }
+                          : {
+                              background: "#fff",
+                              color: "#3f3f46",
+                              border: "1px solid #d4d4d8",
+                            }
+                      }
+                    >
+                      {profile === "lab"
+                        ? "Lab"
+                        : profile === "production:hero"
+                          ? "Hero"
+                          : "Nav"}
+                    </button>
+                  )
+                )}
               </div>
               <div className="flex gap-1.5">
                 <button
                   onClick={handleLoad}
                   className="flex-1 rounded py-1.5 text-xs font-medium transition-colors"
-                  style={{ background: "#fff", color: "#3f3f46", border: "1px solid #d4d4d8" }}
+                  style={{
+                    background: "#fff",
+                    color: "#3f3f46",
+                    border: "1px solid #d4d4d8",
+                  }}
                 >
                   Load
                 </button>
                 <button
                   onClick={handleExport}
                   className="flex-1 rounded py-1.5 text-xs font-medium transition-colors"
-                  style={{ background: "#18181b", color: "#fff", border: "1px solid #18181b" }}
+                  style={{
+                    background: "#18181b",
+                    color: "#fff",
+                    border: "1px solid #18181b",
+                  }}
                 >
                   → Export
                 </button>
               </div>
-              {exportStatus && (
-                exportStatus.startsWith("✓") ? (
-                  <p className="text-xs font-mono text-green-600">{exportStatus}</p>
+              {exportStatus &&
+                (exportStatus.startsWith("✓") ? (
+                  <p className="text-xs font-mono text-green-600">
+                    {exportStatus}
+                  </p>
                 ) : (
                   <pre className="text-xs font-mono text-red-500 whitespace-pre-wrap break-all max-h-48 overflow-y-auto rounded bg-red-50 p-2 border border-red-200">
                     {exportStatus}
                   </pre>
-                )
-              )}
+                ))}
               {/* Production size indicator */}
               {selectedProfile !== "lab" && (
                 <p className="text-xs font-mono text-zinc-400">
-                  {selectedProfile === "production:hero" ? IRIS_HERO.size : IRIS_NAV.size} px production
+                  {selectedProfile === "production:hero"
+                    ? IRIS_HERO.size
+                    : IRIS_NAV.size}{" "}
+                  px production
                 </p>
               )}
             </section>
 
             <section className="space-y-3">
-              <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">Animation</p>
+              <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">
+                Animation
+              </p>
               <button
                 onClick={() => {
-                  if (interactive) return; // disabled in follow-mouse mode
+                  if (interactive) {
+                    return;
+                  } // disabled in follow-mouse mode
                   setIsPlaying((p) => !p);
                 }}
                 className="w-full rounded py-2 text-sm font-medium transition-colors"
-                style={interactive
-                  ? { background: "#fff", color: "#a1a1aa", border: "1px solid #e4e4e7", cursor: "not-allowed" }
-                  : isPlaying
-                    ? { background: "#18181b", color: "#fff", border: "1px solid #18181b" }
-                    : { background: "#fff", color: "#3f3f46", border: "1px solid #d4d4d8" }}
+                style={
+                  interactive
+                    ? {
+                        background: "#fff",
+                        color: "#a1a1aa",
+                        border: "1px solid #e4e4e7",
+                        cursor: "not-allowed",
+                      }
+                    : isPlaying
+                      ? {
+                          background: "#18181b",
+                          color: "#fff",
+                          border: "1px solid #18181b",
+                        }
+                      : {
+                          background: "#fff",
+                          color: "#3f3f46",
+                          border: "1px solid #d4d4d8",
+                        }
+                }
               >
                 {isPlaying && !interactive ? "⏸ Pause" : "▶ Play"}
               </button>
@@ -931,9 +1134,15 @@ export default function ApertureV2Lab() {
                   <span>Speed</span>
                   <span className="font-mono">{speed.toFixed(2)} Hz</span>
                 </div>
-                <input type="range" min={0.05} max={1.5} step={0.05} value={speed}
+                <input
+                  type="range"
+                  min={0.05}
+                  max={1.5}
+                  step={0.05}
+                  value={speed}
                   onChange={(e) => setSpeed(parseFloat(e.target.value))}
-                  className="w-full" style={{ accentColor: "#18181b" }}
+                  className="w-full"
+                  style={{ accentColor: "#18181b" }}
                 />
               </div>
               {/* Interactive (follow mouse) toggle */}
@@ -966,8 +1175,14 @@ export default function ApertureV2Lab() {
                   checked={onMount !== undefined}
                   onChange={(e) => {
                     const checked = e.target.checked;
-                    setOnMount(checked ? { type: "sweep", sweepMs: 800, totalMs: 1000 } : undefined);
-                    if (checked) setPreviewAnimKey(k => k + 1);
+                    setOnMount(
+                      checked
+                        ? { type: "sweep", sweepMs: 800, totalMs: 1000 }
+                        : undefined
+                    );
+                    if (checked) {
+                      setPreviewAnimKey((k) => k + 1);
+                    }
                   }}
                   style={{ accentColor: "#18181b", width: 14, height: 14 }}
                 />
@@ -978,31 +1193,49 @@ export default function ApertureV2Lab() {
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs">
                       <span className="text-zinc-500">Sweep</span>
-                      <span className="text-zinc-700 font-mono">{onMount.sweepMs} ms</span>
+                      <span className="text-zinc-700 font-mono">
+                        {onMount.sweepMs} ms
+                      </span>
                     </div>
-                    <input type="range" min={200} max={2000} step={50} value={onMount.sweepMs}
+                    <input
+                      type="range"
+                      min={200}
+                      max={2000}
+                      step={50}
+                      value={onMount.sweepMs}
                       onChange={(e) => {
                         const sweepMs = parseFloat(e.target.value);
-                        setOnMount((prev): IrisAnimation | undefined => prev ? { ...prev, sweepMs } : prev);
-                        setPreviewAnimKey(k => k + 1);
+                        setOnMount((prev): IrisAnimation | undefined =>
+                          prev ? { ...prev, sweepMs } : prev
+                        );
+                        setPreviewAnimKey((k) => k + 1);
                       }}
-                      className="w-full" style={{ accentColor: "#18181b" }}
+                      className="w-full"
+                      style={{ accentColor: "#18181b" }}
                     />
                   </div>
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs">
                       <span className="text-zinc-500">Total</span>
-                      <span className="text-zinc-700 font-mono">{onMount.totalMs} ms</span>
+                      <span className="text-zinc-700 font-mono">
+                        {onMount.totalMs} ms
+                      </span>
                     </div>
-                    <input type="range"
-                      min={onMount.sweepMs + 100} max={3000} step={50}
+                    <input
+                      type="range"
+                      min={onMount.sweepMs + 100}
+                      max={3000}
+                      step={50}
                       value={onMount.totalMs}
                       onChange={(e) => {
                         const totalMs = parseFloat(e.target.value);
-                        setOnMount((prev): IrisAnimation | undefined => prev ? { ...prev, totalMs } : prev);
-                        setPreviewAnimKey(k => k + 1);
+                        setOnMount((prev): IrisAnimation | undefined =>
+                          prev ? { ...prev, totalMs } : prev
+                        );
+                        setPreviewAnimKey((k) => k + 1);
                       }}
-                      className="w-full" style={{ accentColor: "#18181b" }}
+                      className="w-full"
+                      style={{ accentColor: "#18181b" }}
                     />
                   </div>
                 </>
@@ -1019,16 +1252,25 @@ export default function ApertureV2Lab() {
                     const v = parseFloat(e.target.value);
                     setOpenFStop(v);
                     // Clamp defaultFStop to be ≥ the new openFStop.
-                    if (defaultFStop < v) setDefaultFStop(v);
+                    if (defaultFStop < v) {
+                      setDefaultFStop(v);
+                    }
                   }}
                   style={{
-                    width: "100%", padding: "5px 8px", borderRadius: 4,
-                    border: "1px solid #d4d4d8", background: "#fff",
-                    color: "#3f3f46", fontSize: 12, fontFamily: "ui-monospace, monospace",
+                    width: "100%",
+                    padding: "5px 8px",
+                    borderRadius: 4,
+                    border: "1px solid #d4d4d8",
+                    background: "#fff",
+                    color: "#3f3f46",
+                    fontSize: 12,
+                    fontFamily: "ui-monospace, monospace",
                   }}
                 >
-                  {FSTOP_OPTIONS.map(f => (
-                    <option key={f} value={f}>{formatFStop(f)}</option>
+                  {FSTOP_OPTIONS.map((f) => (
+                    <option key={f} value={f}>
+                      {formatFStop(f)}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -1042,13 +1284,20 @@ export default function ApertureV2Lab() {
                   value={defaultFStop}
                   onChange={(e) => setDefaultFStop(parseFloat(e.target.value))}
                   style={{
-                    width: "100%", padding: "5px 8px", borderRadius: 4,
-                    border: "1px solid #d4d4d8", background: "#fff",
-                    color: "#3f3f46", fontSize: 12, fontFamily: "ui-monospace, monospace",
+                    width: "100%",
+                    padding: "5px 8px",
+                    borderRadius: 4,
+                    border: "1px solid #d4d4d8",
+                    background: "#fff",
+                    color: "#3f3f46",
+                    fontSize: 12,
+                    fontFamily: "ui-monospace, monospace",
                   }}
                 >
-                  {FSTOP_OPTIONS.filter(f => f >= openFStop).map(f => (
-                    <option key={f} value={f}>{formatFStop(f)}</option>
+                  {FSTOP_OPTIONS.filter((f) => f >= openFStop).map((f) => (
+                    <option key={f} value={f}>
+                      {formatFStop(f)}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -1062,13 +1311,20 @@ export default function ApertureV2Lab() {
                   value={closedFStop}
                   onChange={(e) => setClosedFStop(parseFloat(e.target.value))}
                   style={{
-                    width: "100%", padding: "5px 8px", borderRadius: 4,
-                    border: "1px solid #d4d4d8", background: "#fff",
-                    color: "#3f3f46", fontSize: 12, fontFamily: "ui-monospace, monospace",
+                    width: "100%",
+                    padding: "5px 8px",
+                    borderRadius: 4,
+                    border: "1px solid #d4d4d8",
+                    background: "#fff",
+                    color: "#3f3f46",
+                    fontSize: 12,
+                    fontFamily: "ui-monospace, monospace",
                   }}
                 >
-                  {FSTOP_OPTIONS.filter(f => f > openFStop).map(f => (
-                    <option key={f} value={f}>{formatFStop(f)}</option>
+                  {FSTOP_OPTIONS.filter((f) => f > openFStop).map((f) => (
+                    <option key={f} value={f}>
+                      {formatFStop(f)}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -1076,76 +1332,138 @@ export default function ApertureV2Lab() {
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-500">Chase τ</span>
-                  <span className="text-zinc-700 font-mono">{chaseTauMs} ms</span>
+                  <span className="text-zinc-700 font-mono">
+                    {chaseTauMs} ms
+                  </span>
                 </div>
-                <input type="range" min={10} max={200} step={5} value={chaseTauMs}
+                <input
+                  type="range"
+                  min={10}
+                  max={200}
+                  step={5}
+                  value={chaseTauMs}
                   onChange={(e) => setChaseTauMs(parseFloat(e.target.value))}
-                  className="w-full" style={{ accentColor: "#18181b" }}
+                  className="w-full"
+                  style={{ accentColor: "#18181b" }}
                 />
               </div>
               {/* Ease Out — cubic ease-out return duration after mouse leaves (ms). */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-500">Ease Out</span>
-                  <span className="text-zinc-700 font-mono">{easeOutMs} ms</span>
+                  <span className="text-zinc-700 font-mono">
+                    {easeOutMs} ms
+                  </span>
                 </div>
-                <input type="range" min={100} max={2000} step={50} value={easeOutMs}
+                <input
+                  type="range"
+                  min={100}
+                  max={2000}
+                  step={50}
+                  value={easeOutMs}
                   onChange={(e) => setEaseOutMs(parseFloat(e.target.value))}
-                  className="w-full" style={{ accentColor: "#18181b" }}
+                  className="w-full"
+                  style={{ accentColor: "#18181b" }}
                 />
               </div>
               {/* Catchup — entry offset decay duration (ms). */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-500">Catchup</span>
-                  <span className="text-zinc-700 font-mono">{catchupMs} ms</span>
+                  <span className="text-zinc-700 font-mono">
+                    {catchupMs} ms
+                  </span>
                 </div>
-                <input type="range" min={50} max={1000} step={10} value={catchupMs}
+                <input
+                  type="range"
+                  min={50}
+                  max={1000}
+                  step={10}
+                  value={catchupMs}
                   onChange={(e) => setCatchupMs(parseFloat(e.target.value))}
-                  className="w-full" style={{ accentColor: "#18181b" }}
+                  className="w-full"
+                  style={{ accentColor: "#18181b" }}
                 />
               </div>
               {/* Hotzone Scale H — horizontal multiplier on iris diameter. */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-500">Hotzone H</span>
-                  <span className="text-zinc-700 font-mono">{hotzoneScaleH.toFixed(1)}×</span>
+                  <span className="text-zinc-700 font-mono">
+                    {hotzoneScaleH.toFixed(1)}×
+                  </span>
                 </div>
-                <input type="range" min={0.5} max={3} step={0.1} value={hotzoneScaleH}
+                <input
+                  type="range"
+                  min={0.5}
+                  max={3}
+                  step={0.1}
+                  value={hotzoneScaleH}
                   onChange={(e) => setHotzoneScaleH(parseFloat(e.target.value))}
-                  className="w-full" style={{ accentColor: "#18181b" }}
+                  className="w-full"
+                  style={{ accentColor: "#18181b" }}
                 />
               </div>
               {/* Hotzone Scale V — vertical multiplier on iris diameter. */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-500">Hotzone V</span>
-                  <span className="text-zinc-700 font-mono">{hotzoneScaleV.toFixed(1)}×</span>
+                  <span className="text-zinc-700 font-mono">
+                    {hotzoneScaleV.toFixed(1)}×
+                  </span>
                 </div>
-                <input type="range" min={0.5} max={3} step={0.1} value={hotzoneScaleV}
+                <input
+                  type="range"
+                  min={0.5}
+                  max={3}
+                  step={0.1}
+                  value={hotzoneScaleV}
                   onChange={(e) => setHotzoneScaleV(parseFloat(e.target.value))}
-                  className="w-full" style={{ accentColor: "#18181b" }}
+                  className="w-full"
+                  style={{ accentColor: "#18181b" }}
                 />
               </div>
             </section>
 
             <section className="space-y-2">
-              <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">Overlay</p>
+              <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">
+                Overlay
+              </p>
               <button
                 onClick={() => setShowMechanics((v) => !v)}
                 className="w-full rounded py-2 text-sm font-medium text-left px-3 transition-colors"
-                style={showMechanics
-                  ? { background: "#18181b", color: "#fff", border: "1px solid #18181b" }
-                  : { background: "#fff", color: "#3f3f46", border: "1px solid #d4d4d8" }}
+                style={
+                  showMechanics
+                    ? {
+                        background: "#18181b",
+                        color: "#fff",
+                        border: "1px solid #18181b",
+                      }
+                    : {
+                        background: "#fff",
+                        color: "#3f3f46",
+                        border: "1px solid #d4d4d8",
+                      }
+                }
               >
                 {showMechanics ? "◆ " : "◇ "}Mechanics
               </button>
               <button
                 onClick={() => setShowFStopRing((v) => !v)}
                 className="w-full rounded py-2 text-sm font-medium text-left px-3 transition-colors"
-                style={showFStopRing
-                  ? { background: "#18181b", color: "#fff", border: "1px solid #18181b" }
-                  : { background: "#fff", color: "#3f3f46", border: "1px solid #d4d4d8" }}
+                style={
+                  showFStopRing
+                    ? {
+                        background: "#18181b",
+                        color: "#fff",
+                        border: "1px solid #18181b",
+                      }
+                    : {
+                        background: "#fff",
+                        color: "#3f3f46",
+                        border: "1px solid #d4d4d8",
+                      }
+                }
               >
                 {showFStopRing ? "◆ " : "◇ "}F-stop Ring
               </button>
@@ -1153,9 +1471,19 @@ export default function ApertureV2Lab() {
                 <button
                   onClick={() => setFStopRingOuter((v) => !v)}
                   className="w-full rounded py-1.5 text-xs font-medium text-left px-3 transition-colors"
-                  style={fStopRingOuter
-                    ? { background: "#18181b", color: "#fff", border: "1px solid #18181b" }
-                    : { background: "#fff", color: "#3f3f46", border: "1px solid #d4d4d8" }}
+                  style={
+                    fStopRingOuter
+                      ? {
+                          background: "#18181b",
+                          color: "#fff",
+                          border: "1px solid #18181b",
+                        }
+                      : {
+                          background: "#fff",
+                          color: "#3f3f46",
+                          border: "1px solid #d4d4d8",
+                        }
+                  }
                 >
                   {fStopRingOuter ? "● " : "○ "}Outer
                 </button>
@@ -1166,40 +1494,80 @@ export default function ApertureV2Lab() {
           {/* ── Col 2: Mechanism ── */}
           <div className="space-y-5">
             <section className="space-y-2.5">
-              <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">Blades</p>
+              <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">
+                Blades
+              </p>
               <div className="flex gap-1.5">
                 {[5, 6, 7, 9].map((n) => (
                   <button
                     key={n}
                     onClick={() => setField({ N: n })}
                     className="flex-1 rounded py-1.5 text-sm font-mono font-medium transition-colors"
-                    style={config.N === n
-                      ? { background: "#18181b", color: "#fff", border: "1px solid #18181b" }
-                      : { background: "#fff", color: "#3f3f46", border: "1px solid #d4d4d8" }}
+                    style={
+                      config.N === n
+                        ? {
+                            background: "#18181b",
+                            color: "#fff",
+                            border: "1px solid #18181b",
+                          }
+                        : {
+                            background: "#fff",
+                            color: "#3f3f46",
+                            border: "1px solid #d4d4d8",
+                          }
+                    }
                   >
                     {n}
                   </button>
                 ))}
               </div>
-              {([
-                { label: "Length", field: "bladeLength" as const, min: 80, max: 160, step: 1, fmt: (v: number) => v + " px" },
-                { label: "Width",  field: "bladeWidth"  as const, min: 10, max: 45,  step: 1, fmt: (v: number) => v + " px" },
-              ] as const).map(({ label, field, min, max, step, fmt }) => (
+              {(
+                [
+                  {
+                    label: "Length",
+                    field: "bladeLength" as const,
+                    min: 80,
+                    max: 160,
+                    step: 1,
+                    fmt: (v: number) => v + " px",
+                  },
+                  {
+                    label: "Width",
+                    field: "bladeWidth" as const,
+                    min: 10,
+                    max: 45,
+                    step: 1,
+                    fmt: (v: number) => v + " px",
+                  },
+                ] as const
+              ).map(({ label, field, min, max, step, fmt }) => (
                 <div key={field} className="space-y-1">
                   <div className="flex justify-between text-xs">
                     <span className="text-zinc-500">{label}</span>
-                    <span className="text-zinc-700 font-mono">{fmt(config[field])}</span>
+                    <span className="text-zinc-700 font-mono">
+                      {fmt(config[field])}
+                    </span>
                   </div>
-                  <input type="range" min={min} max={max} step={step} value={config[field]}
-                    onChange={(e) => setField({ [field]: parseFloat(e.target.value) })}
-                    className="w-full" style={{ accentColor: "#18181b" }}
+                  <input
+                    type="range"
+                    min={min}
+                    max={max}
+                    step={step}
+                    value={config[field]}
+                    onChange={(e) =>
+                      setField({ [field]: parseFloat(e.target.value) })
+                    }
+                    className="w-full"
+                    style={{ accentColor: "#18181b" }}
                   />
                 </div>
               ))}
             </section>
 
             <section className="space-y-2.5">
-              <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">Mechanism</p>
+              <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">
+                Mechanism
+              </p>
               <div className="flex justify-between text-xs">
                 <span className="text-zinc-500">Pivot r</span>
                 <span className="text-zinc-500 font-mono">
@@ -1210,13 +1578,21 @@ export default function ApertureV2Lab() {
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-500">Pin dist</span>
-                  <span className="text-zinc-700 font-mono">{config.pinDistance} px</span>
+                  <span className="text-zinc-700 font-mono">
+                    {config.pinDistance} px
+                  </span>
                 </div>
-                <input type="range"
-                  min={derivedConfig.pivotRadius} max={config.bladeLength - 1} step={1}
+                <input
+                  type="range"
+                  min={derivedConfig.pivotRadius}
+                  max={config.bladeLength - 1}
+                  step={1}
                   value={config.pinDistance}
-                  onChange={(e) => setField({ pinDistance: parseFloat(e.target.value) })}
-                  className="w-full" style={{ accentColor: "#18181b" }}
+                  onChange={(e) =>
+                    setField({ pinDistance: parseFloat(e.target.value) })
+                  }
+                  className="w-full"
+                  style={{ accentColor: "#18181b" }}
                 />
                 <div className="flex justify-between text-xs text-zinc-400 font-mono">
                   <span>{Math.ceil(derivedConfig.pivotRadius)}</span>
@@ -1226,13 +1602,21 @@ export default function ApertureV2Lab() {
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-500">Slot δ</span>
-                  <span className="text-zinc-700 font-mono">{((config.slotOffset * 180) / Math.PI).toFixed(0)}°</span>
+                  <span className="text-zinc-700 font-mono">
+                    {((config.slotOffset * 180) / Math.PI).toFixed(0)}°
+                  </span>
                 </div>
-                <input type="range"
-                  min={Math.PI / 18} max={7 * Math.PI / 18} step={0.01}
+                <input
+                  type="range"
+                  min={Math.PI / 18}
+                  max={(7 * Math.PI) / 18}
+                  step={0.01}
                   value={config.slotOffset}
-                  onChange={(e) => setField({ slotOffset: parseFloat(e.target.value) })}
-                  className="w-full" style={{ accentColor: "#18181b" }}
+                  onChange={(e) =>
+                    setField({ slotOffset: parseFloat(e.target.value) })
+                  }
+                  className="w-full"
+                  style={{ accentColor: "#18181b" }}
                 />
               </div>
             </section>
@@ -1241,20 +1625,38 @@ export default function ApertureV2Lab() {
           {/* ── Col 3: Shape & Appearance ── */}
           <div className="space-y-5">
             <section className="space-y-2.5">
-              <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">Appearance</p>
+              <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">
+                Appearance
+              </p>
 
               {/* Blade fill gray */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs items-center">
                   <span className="text-zinc-500">Fill</span>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-zinc-700 font-mono">{grayHex(bladeGray)}</span>
-                    <div style={{ width: 12, height: 12, borderRadius: 2, background: grayHex(bladeGray), border: "1px solid #d4d4d8" }} />
+                    <span className="text-zinc-700 font-mono">
+                      {grayHex(bladeGray)}
+                    </span>
+                    <div
+                      style={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: 2,
+                        background: grayHex(bladeGray),
+                        border: "1px solid #d4d4d8",
+                      }}
+                    />
                   </div>
                 </div>
-                <input type="range" min={0} max={255} step={1} value={bladeGray}
+                <input
+                  type="range"
+                  min={0}
+                  max={255}
+                  step={1}
+                  value={bladeGray}
                   onChange={(e) => setBladeGray(parseFloat(e.target.value))}
-                  className="w-full" style={{ accentColor: "#18181b" }}
+                  className="w-full"
+                  style={{ accentColor: "#18181b" }}
                 />
               </div>
 
@@ -1263,13 +1665,29 @@ export default function ApertureV2Lab() {
                 <div className="flex justify-between text-xs items-center">
                   <span className="text-zinc-500">Stroke color</span>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-zinc-700 font-mono">{grayHex(strokeGray)}</span>
-                    <div style={{ width: 12, height: 12, borderRadius: 2, background: grayHex(strokeGray), border: "1px solid #d4d4d8" }} />
+                    <span className="text-zinc-700 font-mono">
+                      {grayHex(strokeGray)}
+                    </span>
+                    <div
+                      style={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: 2,
+                        background: grayHex(strokeGray),
+                        border: "1px solid #d4d4d8",
+                      }}
+                    />
                   </div>
                 </div>
-                <input type="range" min={0} max={255} step={1} value={strokeGray}
+                <input
+                  type="range"
+                  min={0}
+                  max={255}
+                  step={1}
+                  value={strokeGray}
                   onChange={(e) => setStrokeGray(parseFloat(e.target.value))}
-                  className="w-full" style={{ accentColor: "#18181b" }}
+                  className="w-full"
+                  style={{ accentColor: "#18181b" }}
                 />
               </div>
 
@@ -1277,14 +1695,21 @@ export default function ApertureV2Lab() {
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-500">Stroke width</span>
-                  <span className="text-zinc-700 font-mono">{strokeWidth.toFixed(1)} px</span>
+                  <span className="text-zinc-700 font-mono">
+                    {strokeWidth.toFixed(1)} px
+                  </span>
                 </div>
-                <input type="range" min={0} max={10} step={0.1} value={strokeWidth}
+                <input
+                  type="range"
+                  min={0}
+                  max={10}
+                  step={0.1}
+                  value={strokeWidth}
                   onChange={(e) => setStrokeWidth(parseFloat(e.target.value))}
-                  className="w-full" style={{ accentColor: "#18181b" }}
+                  className="w-full"
+                  style={{ accentColor: "#18181b" }}
                 />
               </div>
-
             </section>
 
             <button
@@ -1294,12 +1719,15 @@ export default function ApertureV2Lab() {
                 startRef.current = undefined;
               }}
               className="w-full rounded py-1.5 text-xs font-medium transition-colors"
-              style={{ background: "#fff", color: "#71717a", border: "1px solid #d4d4d8" }}
+              style={{
+                background: "#fff",
+                color: "#71717a",
+                border: "1px solid #d4d4d8",
+              }}
             >
               Reset defaults
             </button>
           </div>
-
         </div>
       </div>
     </main>

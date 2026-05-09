@@ -134,7 +134,9 @@ export default function FeedbackDialog({
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (status === "submitting") return;
+    if (status === "submitting") {
+      return;
+    }
     if (!hasContent) {
       setSubmitAttempted(true);
       return;
@@ -154,16 +156,20 @@ export default function FeedbackDialog({
           context: {
             ...(context ?? {}),
             ...(selectedFieldLabel ? { field: selectedFieldLabel } : {}),
-            ...(selectedField?.currentValue ? { currentValue: selectedField.currentValue } : {}),
-            ...(suggestedCorrection.trim() ? { suggestedCorrection: suggestedCorrection.trim() } : {}),
+            ...(selectedField?.currentValue
+              ? { currentValue: selectedField.currentValue }
+              : {}),
+            ...(suggestedCorrection.trim()
+              ? { suggestedCorrection: suggestedCorrection.trim() }
+              : {}),
           },
         }),
       });
 
       if (!res.ok) {
-        const data = (await res.json().catch(() => null)) as
-          | { error?: string }
-          | null;
+        const data = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
         throw new Error(data?.error ?? "request_failed");
       }
 
@@ -180,13 +186,12 @@ export default function FeedbackDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        layerRef={dialogLayerRef}
-        className="max-w-md"
-      >
+      <DialogContent layerRef={dialogLayerRef} className="max-w-md">
         <DialogHeader>
           <DialogTitle>{t(titleKey)}</DialogTitle>
-          {status !== "success" && <DialogDescription>{t(descriptionKey)}</DialogDescription>}
+          {status !== "success" && (
+            <DialogDescription>{t(descriptionKey)}</DialogDescription>
+          )}
         </DialogHeader>
 
         {status === "success" ? (
@@ -194,7 +199,10 @@ export default function FeedbackDialog({
             {t("success")}
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3 px-5 pb-2">
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-3 px-5 pb-2"
+          >
             {lensHeader && (
               <div className="flex flex-col gap-0.5 border-b border-zinc-200 dark:border-zinc-800 pb-3">
                 <span className="text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
@@ -230,7 +238,10 @@ export default function FeedbackDialog({
                     setSelectedFieldLabel(v ?? "");
                     setSuggestedCorrection("");
                   }}
-                  items={fields.map((f) => ({ value: f.label, label: f.label }))}
+                  items={fields.map((f) => ({
+                    value: f.label,
+                    label: f.label,
+                  }))}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={t("fieldPickerPlaceholder")} />
@@ -238,7 +249,9 @@ export default function FeedbackDialog({
                   <SelectContent portalContainer={dialogLayerRef}>
                     {groupedFields.map((group) => (
                       <SelectGroup key={group.label}>
-                        {group.label && <SelectLabel>{group.label}</SelectLabel>}
+                        {group.label && (
+                          <SelectLabel>{group.label}</SelectLabel>
+                        )}
                         {group.fields.map((f) => (
                           <SelectItem key={f.label} value={f.label}>
                             {f.label}
@@ -251,16 +264,17 @@ export default function FeedbackDialog({
 
                 {selectedField && (
                   <div className="flex flex-col gap-2 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-3 py-2.5">
-                    {selectedField.currentValue && !selectedField.hideCurrentValue && (
-                      <div className="flex items-baseline gap-2">
-                        <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">
-                          {t("currentValueLabel")}
-                        </span>
-                        <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                          {selectedField.currentValue}
-                        </span>
-                      </div>
-                    )}
+                    {selectedField.currentValue &&
+                      !selectedField.hideCurrentValue && (
+                        <div className="flex items-baseline gap-2">
+                          <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">
+                            {t("currentValueLabel")}
+                          </span>
+                          <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                            {selectedField.currentValue}
+                          </span>
+                        </div>
+                      )}
                     <div className="flex flex-col gap-1">
                       <label
                         htmlFor={correctionId}

@@ -15,7 +15,9 @@ export function PosterWeightBar({
   maxWeightG,
   lensIndex,
 }: PosterWeightBarProps) {
-  if (!weightG || maxWeightG <= 0) return null;
+  if (!weightG || maxWeightG <= 0) {
+    return null;
+  }
 
   const primary = Array.isArray(weightG) ? weightG[0] : weightG;
   const fraction = Math.min(1, primary / maxWeightG);

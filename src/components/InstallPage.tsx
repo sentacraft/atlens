@@ -11,19 +11,21 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 type Platform =
-  | "loading"       // initial — waiting for beforeinstallprompt or timeout
-  | "installed"     // already running as a standalone PWA
-  | "prompt"        // Chrome/Edge/Android — programmatic install available
-  | "ios"           // iOS — manual Add to Home Screen flow
-  | "macos-safari"  // macOS Safari — Share → Add to Dock
-  | "generic";      // everything else — show browser menu hint
+  | "loading" // initial — waiting for beforeinstallprompt or timeout
+  | "installed" // already running as a standalone PWA
+  | "prompt" // Chrome/Edge/Android — programmatic install available
+  | "ios" // iOS — manual Add to Home Screen flow
+  | "macos-safari" // macOS Safari — Share → Add to Dock
+  | "generic"; // everything else — show browser menu hint
 
 function detectSync(): Platform | null {
   // Check standalone mode first (works everywhere).
   const standalone =
     window.matchMedia("(display-mode: standalone)").matches ||
     (navigator as { standalone?: boolean }).standalone === true;
-  if (standalone) return "installed";
+  if (standalone) {
+    return "installed";
+  }
 
   const ua = navigator.userAgent;
   if (/iPad|iPhone|iPod/.test(ua)) {
@@ -43,13 +45,17 @@ const MACOS_STEPS = ["macosStep1", "macosStep2", "macosStep3"] as const;
 
 export default function InstallPage() {
   const t = useTranslations("Install");
-  const [platform, setPlatform] = useState<Platform>("loading");
-  const [promptEvent, setPromptEvent] = useState<BeforeInstallPromptEvent | null>(null);
+  const [platform, setPlatform] = useState<Platform>(() => {
+    if (typeof window === "undefined") {
+      return "loading";
+    }
+    return detectSync() ?? "loading";
+  });
+  const [promptEvent, setPromptEvent] =
+    useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
-    const sync = detectSync();
-    if (sync) {
-      setPlatform(sync);
+    if (platform !== "loading") {
       return;
     }
 
@@ -69,17 +75,23 @@ export default function InstallPage() {
       window.removeEventListener("beforeinstallprompt", handler);
       clearTimeout(timer);
     };
-  }, []);
+  }, [platform]);
 
   async function handleInstall() {
-    if (!promptEvent) return;
+    if (!promptEvent) {
+      return;
+    }
     await promptEvent.prompt();
     const { outcome } = await promptEvent.userChoice;
-    if (outcome === "accepted") setPlatform("installed");
+    if (outcome === "accepted") {
+      setPlatform("installed");
+    }
   }
 
   // Render nothing during the brief detection window to avoid layout flash.
-  if (platform === "loading") return null;
+  if (platform === "loading") {
+    return null;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-full px-6 py-16 text-center">
@@ -96,7 +108,9 @@ export default function InstallPage() {
           <h1 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
             {t("installedTitle")}
           </h1>
-          <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">{t("installedBody")}</p>
+          <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">
+            {t("installedBody")}
+          </p>
           <Link
             href="/lenses/x"
             className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-zinc-800 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 font-medium text-sm hover:opacity-90 transition-opacity"
@@ -111,7 +125,9 @@ export default function InstallPage() {
           <h1 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
             {t("promptTitle")}
           </h1>
-          <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">{t("promptBody")}</p>
+          <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">
+            {t("promptBody")}
+          </p>
           <button
             onClick={handleInstall}
             className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-zinc-800 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 font-medium text-sm hover:opacity-90 transition-opacity"
@@ -126,7 +142,9 @@ export default function InstallPage() {
           <h1 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
             {t("iosTitle")}
           </h1>
-          <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">{t("iosSubtitle")}</p>
+          <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">
+            {t("iosSubtitle")}
+          </p>
           <ol className="mt-6 space-y-3 text-left">
             {IOS_STEPS.map((key, i) => (
               <li
@@ -136,7 +154,9 @@ export default function InstallPage() {
                 <span className="shrink-0 w-6 h-6 rounded-full bg-zinc-800 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 text-xs font-bold flex items-center justify-center mt-0.5">
                   {i + 1}
                 </span>
-                <span className="text-sm text-zinc-700 dark:text-zinc-300">{t(key)}</span>
+                <span className="text-sm text-zinc-700 dark:text-zinc-300">
+                  {t(key)}
+                </span>
               </li>
             ))}
           </ol>
@@ -148,7 +168,9 @@ export default function InstallPage() {
           <h1 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
             {t("macosTitle")}
           </h1>
-          <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">{t("macosSubtitle")}</p>
+          <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">
+            {t("macosSubtitle")}
+          </p>
           <ol className="mt-6 space-y-3 text-left">
             {MACOS_STEPS.map((key, i) => (
               <li
@@ -158,7 +180,9 @@ export default function InstallPage() {
                 <span className="shrink-0 w-6 h-6 rounded-full bg-zinc-800 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 text-xs font-bold flex items-center justify-center mt-0.5">
                   {i + 1}
                 </span>
-                <span className="text-sm text-zinc-700 dark:text-zinc-300">{t(key)}</span>
+                <span className="text-sm text-zinc-700 dark:text-zinc-300">
+                  {t(key)}
+                </span>
               </li>
             ))}
           </ol>
@@ -170,7 +194,9 @@ export default function InstallPage() {
           <h1 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
             {t("genericTitle")}
           </h1>
-          <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">{t("genericBody")}</p>
+          <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">
+            {t("genericBody")}
+          </p>
         </div>
       )}
     </div>

@@ -9,7 +9,6 @@ import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { mountToUrlSegment } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
 
-
 export default function MountSwitcher() {
   const t = useTranslations("MountSwitcher");
   const router = useRouter();
@@ -22,12 +21,16 @@ export default function MountSwitcher() {
   // Sync URL mount → preference so navigating to /lenses/gfx
   // keeps the badge on GFX after navigating away.
   useEffect(() => {
-    if (urlMount) setPreference(urlMount);
+    if (urlMount) {
+      setPreference(urlMount);
+    }
   }, [urlMount, setPreference]);
 
   // Close on outside click
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      return;
+    }
     function onPointerDown(e: PointerEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);

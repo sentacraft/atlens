@@ -6,15 +6,16 @@ import type { ApertureValue, Lens } from "./types.ts";
 const positiveNumberSchema = z.number().positive();
 const nonEmptyStringSchema = z.string().trim().min(1);
 const optionalNonEmptyStringSchema = nonEmptyStringSchema.optional();
-function createApertureSchema(fieldName: "maxAperture" | "minAperture" | "maxTStop" | "minTStop") {
+function createApertureSchema(
+  fieldName: "maxAperture" | "minAperture" | "maxTStop" | "minTStop"
+) {
   return z.union([
     positiveNumberSchema,
-    z.tuple([positiveNumberSchema, positiveNumberSchema]).refine(
-      (arr) => arr[0] < arr[1],
-      {
+    z
+      .tuple([positiveNumberSchema, positiveNumberSchema])
+      .refine((arr) => arr[0] < arr[1], {
         message: `When ${fieldName} is an array, the first value (wide) must be less than the second (tele)`,
-      }
-    ),
+      }),
   ]);
 }
 
@@ -46,7 +47,10 @@ export const magnificationVariantsSchema = z.strictObject({
 });
 
 const lensBaseShape = {
-  id: z.string().min(1).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  id: z
+    .string()
+    .min(1)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   brand: nonEmptyStringSchema,
   mount: z.enum(["X", "G"]),
   series: optionalNonEmptyStringSchema,
@@ -67,52 +71,76 @@ const lensBaseShape = {
   powerZoom: z.boolean().optional(),
   focusMotor: optionalNonEmptyStringSchema,
   internalFocusing: z.boolean().optional(),
-  weightG: z.union([
-    positiveNumberSchema,
-    z.tuple([positiveNumberSchema, positiveNumberSchema]).refine(
-      (arr) => arr[0] < arr[1],
-      { message: "weightG range: first value (min) must be less than second (max)" }
-    ),
-  ]).optional(),
+  weightG: z
+    .union([
+      positiveNumberSchema,
+      z
+        .tuple([positiveNumberSchema, positiveNumberSchema])
+        .refine((arr) => arr[0] < arr[1], {
+          message:
+            "weightG range: first value (min) must be less than second (max)",
+        }),
+    ])
+    .optional(),
   diameterMm: positiveNumberSchema.optional(),
-  length: z.strictObject({
-    mm: positiveNumberSchema,
-    variants: z.strictObject({
-      retracted: positiveNumberSchema.optional(),
-      wide: positiveNumberSchema.optional(),
-      tele: positiveNumberSchema.optional(),
-    }).optional(),
-  }).optional(),
-  minFocusDistance: z.strictObject({
-    cm: positiveNumberSchema,
-    macroCm: positiveNumberSchema.optional(),
-    variants: focusDistanceVariantsSchema.optional(),
-    macroVariants: focusDistanceVariantsSchema.optional(),
-  }).optional(),
-  maxMagnification: z.strictObject({
-    value: positiveNumberSchema,
-    variants: magnificationVariantsSchema.optional(),
-  }).optional(),
-  angleOfView: z.union([
-    positiveNumberSchema,
-    z.tuple([positiveNumberSchema, positiveNumberSchema]).refine(
-      (arr) => arr[0] > arr[1],
-      { message: "angleOfView tuple must be [wideEnd, teleEnd] with wide > tele" }
-    ),
-  ]).optional(),
-  angleOfViewCalc: z.union([
-    positiveNumberSchema,
-    z.tuple([positiveNumberSchema, positiveNumberSchema]).refine(
-      (arr) => arr[0] > arr[1],
-      { message: "angleOfViewCalc tuple must be [wideEnd, teleEnd] with wide > tele" }
-    ),
-  ]).optional(),
-  apertureBladeCount: z.union([z.number().int().positive(), specNaSchema]).optional(),
+  length: z
+    .strictObject({
+      mm: positiveNumberSchema,
+      variants: z
+        .strictObject({
+          retracted: positiveNumberSchema.optional(),
+          wide: positiveNumberSchema.optional(),
+          tele: positiveNumberSchema.optional(),
+        })
+        .optional(),
+    })
+    .optional(),
+  minFocusDistance: z
+    .strictObject({
+      cm: positiveNumberSchema,
+      macroCm: positiveNumberSchema.optional(),
+      variants: focusDistanceVariantsSchema.optional(),
+      macroVariants: focusDistanceVariantsSchema.optional(),
+    })
+    .optional(),
+  maxMagnification: z
+    .strictObject({
+      value: positiveNumberSchema,
+      variants: magnificationVariantsSchema.optional(),
+    })
+    .optional(),
+  angleOfView: z
+    .union([
+      positiveNumberSchema,
+      z
+        .tuple([positiveNumberSchema, positiveNumberSchema])
+        .refine((arr) => arr[0] > arr[1], {
+          message:
+            "angleOfView tuple must be [wideEnd, teleEnd] with wide > tele",
+        }),
+    ])
+    .optional(),
+  angleOfViewCalc: z
+    .union([
+      positiveNumberSchema,
+      z
+        .tuple([positiveNumberSchema, positiveNumberSchema])
+        .refine((arr) => arr[0] > arr[1], {
+          message:
+            "angleOfViewCalc tuple must be [wideEnd, teleEnd] with wide > tele",
+        }),
+    ])
+    .optional(),
+  apertureBladeCount: z
+    .union([z.number().int().positive(), specNaSchema])
+    .optional(),
   releaseYear: z.number().int().min(1900).max(2100).optional(),
-  pricing: z.strictObject({
-    cn: pricingMarketSchema.optional(),
-    global: pricingMarketSchema.optional(),
-  }).optional(),
+  pricing: z
+    .strictObject({
+      cn: pricingMarketSchema.optional(),
+      global: pricingMarketSchema.optional(),
+    })
+    .optional(),
   compatibleMounts: z.array(nonEmptyStringSchema).min(1).optional(),
   accessories: z.array(nonEmptyStringSchema).min(1).optional(),
   lensMaterial: optionalNonEmptyStringSchema,
@@ -149,7 +177,8 @@ export const lensConfigurationSchema = z
     if (value.groups > value.elements) {
       ctx.addIssue({
         code: "custom",
-        message: "lensConfiguration.groups cannot exceed lensConfiguration.elements",
+        message:
+          "lensConfiguration.groups cannot exceed lensConfiguration.elements",
         path: ["groups"],
       });
     }
@@ -196,7 +225,7 @@ function validateAperturePair(
   labels: {
     maxField: "maxAperture" | "maxTStop";
     minField: "minAperture" | "minTStop";
-  },
+  }
 ): void {
   if (maxValue === undefined || minValue === undefined) {
     return;
@@ -204,8 +233,12 @@ function validateAperturePair(
 
   const maxEndpoints = getApertureEndpoints(maxValue);
   const minEndpoints = getApertureEndpoints(minValue);
-  const maxWidePath = Array.isArray(maxValue) ? [labels.maxField, 0] : [labels.maxField];
-  const maxTelePath = Array.isArray(maxValue) ? [labels.maxField, 1] : [labels.maxField];
+  const maxWidePath = Array.isArray(maxValue)
+    ? [labels.maxField, 0]
+    : [labels.maxField];
+  const maxTelePath = Array.isArray(maxValue)
+    ? [labels.maxField, 1]
+    : [labels.maxField];
 
   if (maxEndpoints.wide > minEndpoints.wide) {
     ctx.addIssue({
@@ -232,9 +265,10 @@ function validateAperturePair(
   ) {
     ctx.addIssue({
       code: "custom",
-      message: minEndpoints.tele !== undefined
-        ? `${labels.maxField} tele-end cannot be greater than ${labels.minField} tele-end`
-        : `${labels.maxField} tele-end cannot be greater than ${labels.minField}`,
+      message:
+        minEndpoints.tele !== undefined
+          ? `${labels.maxField} tele-end cannot be greater than ${labels.minField} tele-end`
+          : `${labels.maxField} tele-end cannot be greater than ${labels.minField}`,
       path: maxTelePath,
     });
   }
@@ -296,9 +330,11 @@ export const lensSchema = lensObjectSchema.superRefine((value, ctx) => {
   applyLensBusinessRules(value, ctx);
 });
 
-export const lensPatchSchema = lensObjectSchema.partial().superRefine((value, ctx) => {
-  applyLensBusinessRules(value, ctx);
-});
+export const lensPatchSchema = lensObjectSchema
+  .partial()
+  .superRefine((value, ctx) => {
+    applyLensBusinessRules(value, ctx);
+  });
 
 // Pairs of lens IDs confirmed to be distinct despite scoring above the spec
 // similarity threshold. Also used by the pipeline image dedupe gate.
@@ -313,24 +349,29 @@ export const KNOWN_DISTINCT_PAIRS = new Set([
   // specialtyTags differ even though optical formula is the same.
   makeAllowlistKey(
     "ttartisan-100mm-f28-2x-macro-x",
-    "ttartisan-tilt-shift-100mm-f28-2x-macro-x"),
+    "ttartisan-tilt-shift-100mm-f28-2x-macro-x"
+  ),
   // APD version adds apodization filter: same optical formula but different bokeh
   // rendering, ~1-stop light loss (T~1.7), and slower AF vs non-APD.
-  makeAllowlistKey(
-    "fujifilm-xf-56mmf12-r-apd-x",
-    "fujifilm-xf-56mmf12-r-x"),
+  makeAllowlistKey("fujifilm-xf-56mmf12-r-apd-x", "fujifilm-xf-56mmf12-r-x"),
   // XC 50-230mm OIS II is visually identical to the original; shared raw image
   // is intentional, not a collect-stage error.
   makeAllowlistKey(
     "fujifilm-xc-50-230mmf45-67-ois-ii-x",
-    "fujifilm-xc-50-230mmf45-67-ois-x"),
+    "fujifilm-xc-50-230mmf45-67-ois-x"
+  ),
 ]);
 
 // Fields excluded from the spec similarity comparison.
 // Identifiers, human-readable labels, links, and freeform notes are excluded;
 // all measurable optical/physical fields are included automatically.
 const SIMILARITY_EXCLUDE = new Set([
-  "id", "brand", "model", "series", "officialLinks", "fieldNotes",
+  "id",
+  "brand",
+  "model",
+  "series",
+  "officialLinks",
+  "fieldNotes",
 ]);
 
 // Threshold above which two same-brand lenses are flagged as suspiciously similar.
@@ -338,7 +379,13 @@ const SIMILARITY_EXCLUDE = new Set([
 // at 0.895 and 0.870; the next-highest unrelated pair is 0.762.
 const SPEC_SIMILARITY_THRESHOLD = 0.85;
 
-type JsonValue = string | number | boolean | null | JsonValue[] | { [k: string]: JsonValue };
+type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | { [k: string]: JsonValue };
 
 function normalizeForComparison(v: unknown): JsonValue {
   if (Array.isArray(v)) {
@@ -358,14 +405,15 @@ function normalizeForComparison(v: unknown): JsonValue {
 
 function specSimilarity(
   a: Lens,
-  b: Lens,
+  b: Lens
 ): { score: number; equalFields: string[]; diffFields: string[] } {
   const ra = a as unknown as Record<string, unknown>;
   const rb = b as unknown as Record<string, unknown>;
-  const keys = new Set([
-    ...Object.keys(ra),
-    ...Object.keys(rb),
-  ].filter(k => !SIMILARITY_EXCLUDE.has(k)));
+  const keys = new Set(
+    [...Object.keys(ra), ...Object.keys(rb)].filter(
+      (k) => !SIMILARITY_EXCLUDE.has(k)
+    )
+  );
 
   const equalFields: string[] = [];
   const diffFields: string[] = [];
@@ -374,9 +422,14 @@ function specSimilarity(
   for (const k of keys) {
     const av = ra[k];
     const bv = rb[k];
-    if (av === undefined || bv === undefined) continue;
+    if (av === undefined || bv === undefined) {
+      continue;
+    }
     compared++;
-    if (JSON.stringify(normalizeForComparison(av)) === JSON.stringify(normalizeForComparison(bv))) {
+    if (
+      JSON.stringify(normalizeForComparison(av)) ===
+      JSON.stringify(normalizeForComparison(bv))
+    ) {
       equalFields.push(k);
     } else {
       diffFields.push(k);
@@ -390,108 +443,115 @@ function specSimilarity(
   };
 }
 
-export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) => {
-  const seenIds = new Map<string, number>();
-  const seenCnLinks = new Map<string, number>();
-  const seenGlobalLinks = new Map<string, number>();
-  const seenBrandModels = new Map<string, number>();
+export const lensCatalogSchema = z
+  .array(lensSchema)
+  .superRefine((lenses, ctx) => {
+    const seenIds = new Map<string, number>();
+    const seenCnLinks = new Map<string, number>();
+    const seenGlobalLinks = new Map<string, number>();
+    const seenBrandModels = new Map<string, number>();
 
-  // Group by brand for pairwise similarity comparison (within-brand only,
-  // matching the scope of the previous tuple-based check).
-  const byBrand = new Map<string, { lens: Lens; index: number }[]>();
+    // Group by brand for pairwise similarity comparison (within-brand only,
+    // matching the scope of the previous tuple-based check).
+    const byBrand = new Map<string, { lens: Lens; index: number }[]>();
 
-  lenses.forEach((lens, index) => {
-    const previousIndex = seenIds.get(lens.id);
-    if (previousIndex !== undefined) {
-      ctx.addIssue({
-        code: "custom",
-        message: `Duplicate lens id "${lens.id}" also appears at index ${previousIndex}`,
-        path: [index, "id"],
-      });
-      return;
-    }
-
-    seenIds.set(lens.id, index);
-
-    if (lens.officialLinks.cn) {
-      const previousCnIndex = seenCnLinks.get(lens.officialLinks.cn);
-      if (previousCnIndex !== undefined) {
+    lenses.forEach((lens, index) => {
+      const previousIndex = seenIds.get(lens.id);
+      if (previousIndex !== undefined) {
         ctx.addIssue({
           code: "custom",
-          message: `Duplicate officialLinks.cn also appears at index ${previousCnIndex}`,
-          path: [index, "officialLinks", "cn"],
+          message: `Duplicate lens id "${lens.id}" also appears at index ${previousIndex}`,
+          path: [index, "id"],
         });
-      } else {
-        seenCnLinks.set(lens.officialLinks.cn, index);
+        return;
       }
-    }
 
-    if (lens.officialLinks.global) {
-      const previousGlobalIndex = seenGlobalLinks.get(lens.officialLinks.global);
-      if (previousGlobalIndex !== undefined) {
+      seenIds.set(lens.id, index);
+
+      if (lens.officialLinks.cn) {
+        const previousCnIndex = seenCnLinks.get(lens.officialLinks.cn);
+        if (previousCnIndex !== undefined) {
+          ctx.addIssue({
+            code: "custom",
+            message: `Duplicate officialLinks.cn also appears at index ${previousCnIndex}`,
+            path: [index, "officialLinks", "cn"],
+          });
+        } else {
+          seenCnLinks.set(lens.officialLinks.cn, index);
+        }
+      }
+
+      if (lens.officialLinks.global) {
+        const previousGlobalIndex = seenGlobalLinks.get(
+          lens.officialLinks.global
+        );
+        if (previousGlobalIndex !== undefined) {
+          ctx.addIssue({
+            code: "custom",
+            message: `Duplicate officialLinks.global also appears at index ${previousGlobalIndex}`,
+            path: [index, "officialLinks", "global"],
+          });
+        } else {
+          seenGlobalLinks.set(lens.officialLinks.global, index);
+        }
+      }
+
+      const brandModelKey = [
+        lens.brand,
+        lens.model,
+        lens.generation ?? "<none>",
+      ].join("|");
+      const previousBrandModelIndex = seenBrandModels.get(brandModelKey);
+      if (previousBrandModelIndex !== undefined) {
         ctx.addIssue({
           code: "custom",
-          message: `Duplicate officialLinks.global also appears at index ${previousGlobalIndex}`,
-          path: [index, "officialLinks", "global"],
+          message: `Duplicate brand/model/generation combination also appears at index ${previousBrandModelIndex}`,
+          path: [index, "model"],
         });
       } else {
-        seenGlobalLinks.set(lens.officialLinks.global, index);
+        seenBrandModels.set(brandModelKey, index);
+      }
+
+      const group = byBrand.get(lens.brand) ?? [];
+      group.push({ lens, index });
+      byBrand.set(lens.brand, group);
+    });
+
+    // Pairwise spec similarity check within each brand.
+    for (const group of byBrand.values()) {
+      for (let i = 0; i < group.length; i++) {
+        for (let j = i + 1; j < group.length; j++) {
+          const { lens: a, index: ai } = group[i];
+          const { lens: b, index: bj } = group[j];
+          const { score, equalFields, diffFields } = specSimilarity(a, b);
+          if (score < SPEC_SIMILARITY_THRESHOLD) {
+            continue;
+          }
+          const pairKey = makeAllowlistKey(a.id, b.id);
+          if (KNOWN_DISTINCT_PAIRS.has(pairKey)) {
+            continue;
+          }
+          ctx.addIssue({
+            code: "custom",
+            message: [
+              `Suspiciously similar specs (score=${score.toFixed(2)}) — also at index ${ai}.`,
+              `  equal=[${equalFields.join(", ")}]`,
+              `  diff=[${diffFields.length > 0 ? diffFields.join(", ") : "(none)"}]`,
+              `  If confirmed distinct, add makeAllowlistKey("${a.id}", "${b.id}") to KNOWN_DISTINCT_PAIRS.`,
+            ].join("\n"),
+            path: [bj, "focalLengthMin"],
+          });
+        }
       }
     }
-
-    const brandModelKey = [
-      lens.brand,
-      lens.model,
-      lens.generation ?? "<none>",
-    ].join("|");
-    const previousBrandModelIndex = seenBrandModels.get(brandModelKey);
-    if (previousBrandModelIndex !== undefined) {
-      ctx.addIssue({
-        code: "custom",
-        message: `Duplicate brand/model/generation combination also appears at index ${previousBrandModelIndex}`,
-        path: [index, "model"],
-      });
-    } else {
-      seenBrandModels.set(brandModelKey, index);
-    }
-
-    const group = byBrand.get(lens.brand) ?? [];
-    group.push({ lens, index });
-    byBrand.set(lens.brand, group);
   });
-
-  // Pairwise spec similarity check within each brand.
-  for (const group of byBrand.values()) {
-    for (let i = 0; i < group.length; i++) {
-      for (let j = i + 1; j < group.length; j++) {
-        const { lens: a, index: ai } = group[i];
-        const { lens: b, index: bj } = group[j];
-        const { score, equalFields, diffFields } = specSimilarity(a, b);
-        if (score < SPEC_SIMILARITY_THRESHOLD) continue;
-        const pairKey = makeAllowlistKey(a.id, b.id);
-        if (KNOWN_DISTINCT_PAIRS.has(pairKey)) continue;
-        ctx.addIssue({
-          code: "custom",
-          message: [
-            `Suspiciously similar specs (score=${score.toFixed(2)}) — also at index ${ai}.`,
-            `  equal=[${equalFields.join(", ")}]`,
-            `  diff=[${diffFields.length > 0 ? diffFields.join(", ") : "(none)"}]`,
-            `  If confirmed distinct, add makeAllowlistKey("${a.id}", "${b.id}") to KNOWN_DISTINCT_PAIRS.`,
-          ].join("\n"),
-          path: [bj, "focalLengthMin"],
-        });
-      }
-    }
-  }
-});
 
 // Compile-time assertion: Lens interface and lensSchema's inferred type must stay
 // bidirectionally compatible. A type error here means the two have drifted —
 // update whichever definition is stale.
-type _AssertExtends<T, U extends T> = true;
-type _LensSchemaCheck = [
-  _AssertExtends<Lens, z.infer<typeof lensSchema>>,
-  _AssertExtends<z.infer<typeof lensSchema>, Lens>,
+export type LensSchemaCheck = [
+  z.infer<typeof lensSchema> extends Lens ? true : never,
+  Lens extends z.infer<typeof lensSchema> ? true : never,
 ];
 
 export function formatZodIssues(error: z.ZodError): string[] {

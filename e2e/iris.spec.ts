@@ -30,7 +30,9 @@ const ANIMATION_SETTLE_MS = 3000;
 async function getIrisFStop(page: Page): Promise<number> {
   return page.evaluate(() => {
     const el = document.querySelector('[data-testid="iris"]');
-    if (!el) throw new Error("Iris element not found");
+    if (!el) {
+      throw new Error("Iris element not found");
+    }
     return parseFloat(el.getAttribute("data-fstop") ?? "NaN");
   });
 }
@@ -39,7 +41,9 @@ async function getIrisFStop(page: Page): Promise<number> {
 async function getIrisAnimating(page: Page): Promise<boolean> {
   return page.evaluate(() => {
     const el = document.querySelector('[data-testid="iris"]');
-    if (!el) throw new Error("Iris element not found");
+    if (!el) {
+      throw new Error("Iris element not found");
+    }
     return el.getAttribute("data-animating") === "true";
   });
 }
@@ -56,16 +60,24 @@ test.describe("Hero Iris mount animation", () => {
     // The mount animation fires immediately — data-animating should be true
     // before totalMs (1500 ms) has elapsed. We check within the first second.
     const animating = await page.waitForFunction(
-      () => document.querySelector('[data-testid="iris"]')?.getAttribute("data-animating") === "true",
+      () =>
+        document
+          .querySelector('[data-testid="iris"]')
+          ?.getAttribute("data-animating") === "true",
       { timeout: 1000 }
     );
     expect(animating).toBeTruthy();
   });
 
-  test("iris returns to defaultFStop (f/4) after animation completes", async ({ page }) => {
+  test("iris returns to defaultFStop (f/4) after animation completes", async ({
+    page,
+  }) => {
     // Wait for animation to finish — data-animating transitions to "false".
     await page.waitForFunction(
-      () => document.querySelector('[data-testid="iris"]')?.getAttribute("data-animating") === "false",
+      () =>
+        document
+          .querySelector('[data-testid="iris"]')
+          ?.getAttribute("data-animating") === "false",
       { timeout: ANIMATION_SETTLE_MS }
     );
 
@@ -87,7 +99,9 @@ test.describe("Hero Iris mount animation", () => {
     // (when theta momentarily equalled thetaMax), leaving the iris at f/22.
     await page.waitForFunction(
       () =>
-        document.querySelector('[data-testid="iris"]')?.getAttribute("data-animating") === "false",
+        document
+          .querySelector('[data-testid="iris"]')
+          ?.getAttribute("data-animating") === "false",
       { timeout: ANIMATION_SETTLE_MS }
     );
     await page.waitForTimeout(300);
@@ -105,7 +119,9 @@ test.describe("Hero Iris mount animation", () => {
     // If the iris gets stuck or flickers, this sequence would be violated.
     await page.waitForFunction(
       () =>
-        document.querySelector('[data-testid="iris"]')?.getAttribute("data-animating") === "false",
+        document
+          .querySelector('[data-testid="iris"]')
+          ?.getAttribute("data-animating") === "false",
       { timeout: ANIMATION_SETTLE_MS }
     );
     // After settling, it must not re-enter animating state spontaneously.
@@ -123,27 +139,35 @@ test.describe("Hero Iris tap animation", () => {
     // Let the mount animation finish before testing tap.
     await page.waitForFunction(
       () =>
-        document.querySelector('[data-testid="iris"]')?.getAttribute("data-animating") === "false",
+        document
+          .querySelector('[data-testid="iris"]')
+          ?.getAttribute("data-animating") === "false",
       { timeout: ANIMATION_SETTLE_MS }
     );
     await page.waitForTimeout(300);
   });
 
-  test("tapping iris restarts animation and returns to defaultFStop", async ({ page }) => {
+  test("tapping iris restarts animation and returns to defaultFStop", async ({
+    page,
+  }) => {
     const iris = page.locator('[data-testid="iris"]');
     await iris.click();
 
     // Animation should start
     await page.waitForFunction(
       () =>
-        document.querySelector('[data-testid="iris"]')?.getAttribute("data-animating") === "true",
+        document
+          .querySelector('[data-testid="iris"]')
+          ?.getAttribute("data-animating") === "true",
       { timeout: 1000 }
     );
 
     // And must finish at defaultFStop, not stuck at f/22
     await page.waitForFunction(
       () =>
-        document.querySelector('[data-testid="iris"]')?.getAttribute("data-animating") === "false",
+        document
+          .querySelector('[data-testid="iris"]')
+          ?.getAttribute("data-animating") === "false",
       { timeout: ANIMATION_SETTLE_MS }
     );
     await page.waitForTimeout(300);

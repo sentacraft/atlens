@@ -24,14 +24,19 @@ export default function DataInfo() {
     );
 
   const formatDate = (dateStr: string) =>
-    new Intl.DateTimeFormat(locale, { year: "numeric", month: "long", day: "numeric" }).format(
-      new Date(dateStr)
-    );
+    new Intl.DateTimeFormat(locale, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(new Date(dateStr));
 
   const dateLabel = (() => {
-    if (clickState === "version")
+    if (clickState === "version") {
       return `${meta.version} Build ${meta.buildNumber}`;
-    if (clickState === "easter") return h("dataSnapshot");
+    }
+    if (clickState === "easter") {
+      return h("dataSnapshot");
+    }
     return `${t("updatedPrefix")} ${formatDate(meta.lastUpdated)}`;
   })();
 

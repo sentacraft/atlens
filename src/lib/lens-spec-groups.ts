@@ -1,4 +1,9 @@
-import { SPEC_NA, type Lens, type FieldNoteKey, type SpecialtyTag } from "./types";
+import {
+  SPEC_NA,
+  type Lens,
+  type FieldNoteKey,
+  type SpecialtyTag,
+} from "./types";
 import type { LensConfigurationLabels } from "./lens.format";
 import { classifyFocusMotor, type FocusMotorClass } from "./lens";
 import * as fmt from "./lens.format";
@@ -150,7 +155,10 @@ export interface ResolvedBoolRow {
   plainText: string;
 }
 
-export type ResolvedSpecRow = ResolvedTextRow | ResolvedNumericRow | ResolvedBoolRow;
+export type ResolvedSpecRow =
+  | ResolvedTextRow
+  | ResolvedNumericRow
+  | ResolvedBoolRow;
 
 export interface ResolvedSpecGroup {
   label: string;
@@ -235,7 +243,9 @@ export function resolveSpecRow(
   lens: Lens,
   labels: SpecValueTextLabels
 ): ResolvedSpecRow | null {
-  if (!row.hasData(lens)) return null;
+  if (!row.hasData(lens)) {
+    return null;
+  }
 
   const note =
     (row.fieldNoteKey ? lens.fieldNotes?.[row.fieldNoteKey] : undefined) ??
@@ -304,7 +314,11 @@ export function resolveSpecRow(
     note,
     displayValue,
     subValue,
-    plainText: joinParts(displayValue ?? labels.missing, subValue, note && `(${note})`),
+    plainText: joinParts(
+      displayValue ?? labels.missing,
+      subValue,
+      note && `(${note})`
+    ),
   };
 }
 
@@ -341,9 +355,6 @@ export function resolveSpecGroups(
  */
 export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
   const {
-    yes,
-    no,
-    partial,
     retracted,
     wide,
     tele,
@@ -384,7 +395,9 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
           fieldNoteKey: "maxAperture" as FieldNoteKey,
           hasData: (l) => l.maxAperture !== undefined,
           getDisplayValue: (l) =>
-            l.maxAperture !== undefined ? fmt.apertureDisplay(l.maxAperture) : "",
+            l.maxAperture !== undefined
+              ? fmt.apertureDisplay(l.maxAperture)
+              : "",
           toComparable: (l) =>
             l.maxAperture === undefined
               ? undefined
@@ -398,7 +411,9 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
           label: labels.minAperture,
           hasData: (l) => l.minAperture !== undefined,
           getDisplayValue: (l) =>
-            l.minAperture !== undefined ? fmt.apertureDisplay(l.minAperture) : "",
+            l.minAperture !== undefined
+              ? fmt.apertureDisplay(l.minAperture)
+              : "",
         },
         {
           kind: "text",
@@ -471,8 +486,7 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
         {
           kind: "text",
           label: labels.dimensions,
-          hasData: (l) =>
-            l.diameterMm !== undefined || l.length !== undefined,
+          hasData: (l) => l.diameterMm !== undefined || l.length !== undefined,
           getDisplayValue: (l) =>
             fmt.dimensionsPrimaryDisplay(l.diameterMm, l.length),
           getSubValue: (l) =>
@@ -530,12 +544,16 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
             }),
           getStructuredLines: (l) => {
             const mfd = l.minFocusDistance;
-            if (!mfd?.variants) return undefined;
+            if (!mfd?.variants) {
+              return undefined;
+            }
             const lines: StructuredLine[] = [];
-            if (mfd.variants.wide !== undefined)
+            if (mfd.variants.wide !== undefined) {
               lines.push({ value: `${mfd.variants.wide}cm`, label: wide });
-            if (mfd.variants.tele !== undefined)
+            }
+            if (mfd.variants.tele !== undefined) {
               lines.push({ value: `${mfd.variants.tele}cm`, label: tele });
+            }
             return lines.length > 0 ? lines : undefined;
           },
           getSubValue: (l) =>
@@ -561,12 +579,16 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
             }),
           getStructuredLines: (l) => {
             const mag = l.maxMagnification;
-            if (!mag?.variants) return undefined;
+            if (!mag?.variants) {
+              return undefined;
+            }
             const lines: StructuredLine[] = [];
-            if (mag.variants.wide !== undefined)
+            if (mag.variants.wide !== undefined) {
               lines.push({ value: `${mag.variants.wide}x`, label: wide });
-            if (mag.variants.tele !== undefined)
+            }
+            if (mag.variants.tele !== undefined) {
               lines.push({ value: `${mag.variants.tele}x`, label: tele });
+            }
             return lines.length > 0 ? lines : undefined;
           },
           toComparable: (l) => l.maxMagnification?.value,
@@ -627,7 +649,8 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
           label: labels.specialtyTags,
           hasData: (l) =>
             l.specialtyTags !== undefined && l.specialtyTags.length > 0,
-          getDisplayValue: (l) => fmt.specialtyTagsDisplay(l.specialtyTags, tags),
+          getDisplayValue: (l) =>
+            fmt.specialtyTagsDisplay(l.specialtyTags, tags),
         },
       ] satisfies SpecRow[],
     },

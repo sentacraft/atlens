@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Aperture, Plus, Check } from "lucide-react";
+import { Plus, Check } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
@@ -31,8 +31,13 @@ export default function LensCard({
   const t = useTranslations("LensList");
   const tBrand = useTranslations("Brands");
   const hookAttr = useUiHookAttr();
-  const equivDisplay = fmt.focalRangeDisplay(fmt.focalEquiv(lens.focalLengthMin, lens.mount), fmt.focalEquiv(lens.focalLengthMax, lens.mount));
-  const mfdDisplay = lens.minFocusDistance ? `${lens.minFocusDistance.cm}cm` : "—";
+  const equivDisplay = fmt.focalRangeDisplay(
+    fmt.focalEquiv(lens.focalLengthMin, lens.mount),
+    fmt.focalEquiv(lens.focalLengthMax, lens.mount)
+  );
+  const mfdDisplay = lens.minFocusDistance
+    ? `${lens.minFocusDistance.cm}cm`
+    : "—";
   const filterDisplay = fmt.filterSizeDisplay(lens.filterMm);
   const weightDisplay = fmt.weightDisplay(lens.weightG, "g") ?? "—";
   const badges = [
@@ -176,7 +181,11 @@ export default function LensCard({
               : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
         }`}
       >
-        {isSelected ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+        {isSelected ? (
+          <Check className="h-4 w-4" />
+        ) : (
+          <Plus className="h-4 w-4" />
+        )}
       </button>
 
       {/* Compare toggle */}

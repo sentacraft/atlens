@@ -11,7 +11,6 @@ interface AckCardProps {
   glowColor: string;
   body: string;
   isClaudeCard?: boolean;
-  locale?: string;
 }
 
 export default function AckCard({
@@ -22,7 +21,6 @@ export default function AckCard({
   glowColor,
   body,
   isClaudeCard,
-  locale,
 }: AckCardProps) {
   const [open, setOpen] = useState(false);
   const paragraphs = body.split("\n\n");
@@ -56,7 +54,9 @@ export default function AckCard({
             <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 whitespace-nowrap">
               {product}
             </p>
-            <p className="text-xs text-zinc-400 dark:text-zinc-500">{company}</p>
+            <p className="text-xs text-zinc-400 dark:text-zinc-500">
+              {company}
+            </p>
           </div>
           <span className="ml-auto flex items-center justify-center w-6 h-6 rounded-full transition-colors group-hover:bg-zinc-100 dark:group-hover:bg-zinc-800">
             <svg
@@ -90,18 +90,26 @@ export default function AckCard({
               if (isClaudeCard && j === 0) {
                 const parts = para.split("Iris");
                 return (
-                  <p key={j} className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p
+                    key={j}
+                    className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed"
+                  >
                     {parts.map((part, k) => (
                       <span key={k}>
                         {part}
-                        {k < parts.length - 1 && <IrisTooltip>Iris</IrisTooltip>}
+                        {k < parts.length - 1 && (
+                          <IrisTooltip>Iris</IrisTooltip>
+                        )}
                       </span>
                     ))}
                   </p>
                 );
               }
               return (
-                <p key={j} className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                <p
+                  key={j}
+                  className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed"
+                >
                   {para}
                 </p>
               );

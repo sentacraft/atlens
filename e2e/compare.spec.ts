@@ -12,20 +12,15 @@ test.describe("Compare flow", () => {
   }) => {
     await page.goto("/en/lenses");
 
-    // Add first lens — "Add to Compare" buttons are inside each card footer
-    const firstAddBtn = page
-      .locator('a[href*="/en/lenses/"]:not([href="/en/lenses"])')
-      .first()
-      .locator("..")  // card root
-      .getByRole("button", { name: /Add to Compare/i });
-
     // Simpler: find all "Add to Compare" buttons and click the first two
     const addButtons = page.getByRole("button", { name: /Add to Compare/i });
     await addButtons.nth(0).click();
     await addButtons.nth(1).click();
 
     // Compare bar should now show "Compare (2)"
-    await expect(page.getByRole("button", { name: /Compare \(2\)/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /Compare \(2\)/i })
+    ).toBeVisible();
   });
 
   test("compare bar button navigates to compare page", async ({ page }) => {
@@ -41,9 +36,7 @@ test.describe("Compare flow", () => {
   });
 
   test("compare page via URL shows both lens columns", async ({ page }) => {
-    await page.goto(
-      `/en/lenses/compare?ids=${LENS_A},${LENS_B}`
-    );
+    await page.goto(`/en/lenses/compare?ids=${LENS_A},${LENS_B}`);
 
     await expect(page.getByText(LENS_A_MODEL).first()).toBeVisible();
     await expect(page.getByText(LENS_B_MODEL).first()).toBeVisible();
@@ -57,19 +50,25 @@ test.describe("Compare flow", () => {
     await expect(page.locator("body")).toBeVisible();
   });
 
-  test("removing a lens from the compare bar decrements count", async ({ page }) => {
+  test("removing a lens from the compare bar decrements count", async ({
+    page,
+  }) => {
     await page.goto("/en/lenses");
 
     const addButtons = page.getByRole("button", { name: /Add to Compare/i });
     await addButtons.nth(0).click();
     await addButtons.nth(1).click();
-    await expect(page.getByRole("button", { name: /Compare \(2\)/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /Compare \(2\)/i })
+    ).toBeVisible();
 
     // Click the X button on the first chip in the compare bar
     const removeBtn = page.getByRole("button", { name: /^Remove /i }).first();
     await removeBtn.click();
 
-    await expect(page.getByRole("button", { name: /Compare \(1\)/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /Compare \(1\)/i })
+    ).toBeVisible();
   });
 
   test("clear compare button dismisses the compare bar", async ({ page }) => {
@@ -78,12 +77,16 @@ test.describe("Compare flow", () => {
     const addButtons = page.getByRole("button", { name: /Add to Compare/i });
     await addButtons.nth(0).click();
     await addButtons.nth(1).click();
-    await expect(page.getByRole("button", { name: /Compare \(2\)/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /Compare \(2\)/i })
+    ).toBeVisible();
 
     await page.getByRole("button", { name: /Clear/i }).click();
 
     // Compare bar should disappear entirely
-    await expect(page.getByRole("button", { name: /Compare \(/i })).not.toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /Compare \(/i })
+    ).not.toBeVisible();
   });
 
   test("adding from detail page then navigating to compare includes that lens", async ({
@@ -117,8 +120,9 @@ test.describe("Compare flow", () => {
 
     // Hover the second column header to reveal the controls (they're
     // sm:opacity-0 sm:group-hover:opacity-100 by default on desktop).
-    const secondColumnRemove = page
-      .getByRole("button", { name: new RegExp(`Remove ${LENS_B_MODEL}`, "i") });
+    const secondColumnRemove = page.getByRole("button", {
+      name: new RegExp(`Remove ${LENS_B_MODEL}`, "i"),
+    });
     await secondColumnRemove.click();
 
     // After removal, LENS_B should no longer be in the table headers.

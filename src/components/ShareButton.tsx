@@ -6,7 +6,17 @@ import { Popover } from "@base-ui/react/popover";
 import { Drawer } from "@base-ui/react/drawer";
 import { Tabs } from "@base-ui/react/tabs";
 import { useTranslations, useLocale } from "next-intl";
-import { Share2, Copy, Check, Download, Loader2, Expand, SlidersHorizontal, ChevronDown, X } from "lucide-react";
+import {
+  Share2,
+  Copy,
+  Check,
+  Download,
+  Loader2,
+  Expand,
+  SlidersHorizontal,
+  ChevronDown,
+  X,
+} from "lucide-react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { Z } from "@/config/ui";
@@ -16,15 +26,18 @@ import { rasterizePoster } from "@/lib/share-image";
 // ── Poster title / slogan auto-generation ────────────────────────────────────
 
 /** One title line per lens: "{Brand} {model}" */
-function computePosterTitle(lenses: Lens[], tBrand: (key: string) => string): string[] {
+function computePosterTitle(
+  lenses: Lens[],
+  tBrand: (key: string) => string
+): string[] {
   return lenses.map((l) => `${tBrand(l.brand)} ${l.model}`);
 }
 
-import { SharePoster, type PosterLabels } from "@/components/poster/SharePoster";
 import {
-  Dialog,
-  DialogContent,
-} from "@/components/ui/dialog";
+  SharePoster,
+  type PosterLabels,
+} from "@/components/poster/SharePoster";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 // Scale the 750px poster down to fit the panel content area
 const POSTER_W = 750;
@@ -41,7 +54,12 @@ interface ShareButtonProps {
   presetTitle?: string;
 }
 
-export function ShareButton({ lenses, variant = "default", triggerClassName, presetTitle }: ShareButtonProps) {
+export function ShareButton({
+  lenses,
+  variant = "default",
+  triggerClassName,
+  presetTitle,
+}: ShareButtonProps) {
   const t = useTranslations("Share");
   const locale = useLocale();
   const tImage = useTranslations("ShareImage");
@@ -85,7 +103,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     if ("canShare" in navigator) {
       const testFile = new File(["x"], "test.png", { type: "image/png" });
       setCanShareFile(
-        (navigator as Navigator & { canShare: (d: object) => boolean }).canShare({
+        (
+          navigator as Navigator & { canShare: (d: object) => boolean }
+        ).canShare({
           files: [testFile],
         })
       );
@@ -111,7 +131,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
 
   // Keep shareUrl in sync when panel opens
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      return;
+    }
     setShareUrl(window.location.href);
     slugRef.current = lenses
       .map((l) => l.model.replace(/\s+/g, "-").toLowerCase())
@@ -187,7 +209,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   }, [lenses]);
 
   const handleDownload = useCallback(async () => {
-    if (!posterRef.current) return;
+    if (!posterRef.current) {
+      return;
+    }
     setPosterGenerating(true);
     try {
       const url = await rasterizePoster(posterRef.current);
@@ -203,7 +227,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   }, []);
 
   const handleShareImage = useCallback(async () => {
-    if (!posterRef.current) return;
+    if (!posterRef.current) {
+      return;
+    }
     setPosterGenerating(true);
     let url: string | undefined;
     try {
@@ -218,7 +244,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       });
     } catch (err) {
       // User cancelled — no fallback needed
-      if (err instanceof Error && err.name === "AbortError") return;
+      if (err instanceof Error && err.name === "AbortError") {
+        return;
+      }
       // Share API unsupported or failed — fall back to download
       if (url) {
         const link = document.createElement("a");
@@ -233,7 +261,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
 
   const handleOpenLightbox = useCallback(async () => {
     setLightboxOpen(true);
-    if (!posterRef.current) return;
+    if (!posterRef.current) {
+      return;
+    }
     setLightboxImageLoading(true);
     try {
       const url = await rasterizePoster(posterRef.current);
@@ -248,7 +278,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   const truncatedUrl =
     shareUrl.length > 56 ? shareUrl.slice(0, 56) + "…" : shareUrl;
 
-  const lensCaption = lenses.map((l) => `${tBrand(l.brand)} · ${l.model}`).join(" / ");
+  const lensCaption = lenses
+    .map((l) => `${tBrand(l.brand)} · ${l.model}`)
+    .join(" / ");
 
   const triggerLabel = (
     <>
@@ -386,7 +418,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
               backdropClassName="bg-zinc-950/75 transition-[background-color] duration-150"
               showCloseButton={false}
               onClick={(e) => {
-                if (e.target === e.currentTarget) setLightboxOpen(false);
+                if (e.target === e.currentTarget) {
+                  setLightboxOpen(false);
+                }
               }}
             >
               {/* Wrapper: anchor for the mobile close button only; NOT the resize-observed element */}
@@ -411,22 +445,33 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
                   <div
                     ref={lightboxScrollRef}
                     className="max-h-[calc(100svh-3rem-10px)] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:max-h-[calc(100svh-3rem)]"
-                    onScroll={() => { if (!hasScrolled) setHasScrolled(true); }}
+                    onScroll={() => {
+                      if (!hasScrolled) {
+                        setHasScrolled(true);
+                      }
+                    }}
                   >
                     {lightboxImageLoading ? (
                       <div className="flex h-48 items-center justify-center">
                         <Loader2 className="size-6 animate-spin text-zinc-400" />
                       </div>
                     ) : lightboxImageUrl ? (
-                      <img
-                        src={lightboxImageUrl}
-                        alt=""
-                        className="w-full"
-                        onLoad={() => {
-                          const el = lightboxScrollRef.current;
-                          if (el) setIsScrollable(el.scrollHeight > el.clientHeight + 1);
-                        }}
-                      />
+                      <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={lightboxImageUrl}
+                          alt=""
+                          className="w-full"
+                          onLoad={() => {
+                            const el = lightboxScrollRef.current;
+                            if (el) {
+                              setIsScrollable(
+                                el.scrollHeight > el.clientHeight + 1
+                              );
+                            }
+                          }}
+                        />
+                      </>
                     ) : null}
                   </div>
 
@@ -444,83 +489,96 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
 
           {/* Action row — Customize Popover on the left, share actions on the right */}
           <div className="flex gap-2">
-              {/* Customize — Popover anchored to this trigger button */}
-              <Popover.Root open={customOpen} onOpenChange={setCustomOpen}>
-                <Popover.Trigger
-                  title={t("customize")}
-                  className={cn(
-                    "flex items-center justify-center rounded-lg border px-3 py-2.5 outline-none transition-colors",
-                    customOpen
-                      ? "border-zinc-900 bg-zinc-900 text-zinc-50 dark:border-zinc-50 dark:bg-zinc-50 dark:text-zinc-900"
-                      : "border-zinc-200 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
-                  )}
+            {/* Customize — Popover anchored to this trigger button */}
+            <Popover.Root open={customOpen} onOpenChange={setCustomOpen}>
+              <Popover.Trigger
+                title={t("customize")}
+                className={cn(
+                  "flex items-center justify-center rounded-lg border px-3 py-2.5 outline-none transition-colors",
+                  customOpen
+                    ? "border-zinc-900 bg-zinc-900 text-zinc-50 dark:border-zinc-50 dark:bg-zinc-50 dark:text-zinc-900"
+                    : "border-zinc-200 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                )}
+              >
+                <SlidersHorizontal className="size-4" />
+              </Popover.Trigger>
+              <Popover.Portal>
+                <Popover.Positioner
+                  side="top"
+                  align="start"
+                  sideOffset={8}
+                  className={Z.overlay}
                 >
-                  <SlidersHorizontal className="size-4" />
-                </Popover.Trigger>
-                <Popover.Portal>
-                  <Popover.Positioner side="top" align="start" sideOffset={8} className={Z.overlay}>
-                    <Popover.Popup className="w-72 origin-(--transform-origin) rounded-xl border border-zinc-200 bg-white p-3 shadow-lg duration-100 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
-                      <div className="flex flex-col gap-3">
-                        <div className="flex flex-col gap-1">
-                          <label className="text-xs text-zinc-400 dark:text-zinc-500">
-                            {t("customizeTitle")}
-                          </label>
-                          <input
-                            type="text"
-                            value={customTitle}
-                            onChange={(e) => setCustomTitle(e.target.value)}
-                            placeholder={computedPosterTitle.join(" · ")}
-                            className={inputClass}
-                          />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                          <label className="text-xs text-zinc-400 dark:text-zinc-500">
-                            {t("customizeSlogan")}
-                          </label>
-                          <input
-                            type="text"
-                            value={customSlogan}
-                            onChange={(e) => setCustomSlogan(e.target.value)}
-                            placeholder={t("customizeSloganPlaceholder")}
-                            className={inputClass}
-                          />
-                        </div>
+                  <Popover.Popup className="w-72 origin-(--transform-origin) rounded-xl border border-zinc-200 bg-white p-3 shadow-lg duration-100 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-1">
+                        <label className="text-xs text-zinc-400 dark:text-zinc-500">
+                          {t("customizeTitle")}
+                        </label>
+                        <input
+                          type="text"
+                          value={customTitle}
+                          onChange={(e) => setCustomTitle(e.target.value)}
+                          placeholder={computedPosterTitle.join(" · ")}
+                          className={inputClass}
+                        />
                       </div>
-                    </Popover.Popup>
-                  </Popover.Positioner>
-                </Popover.Portal>
-              </Popover.Root>
+                      <div className="flex flex-col gap-1">
+                        <label className="text-xs text-zinc-400 dark:text-zinc-500">
+                          {t("customizeSlogan")}
+                        </label>
+                        <input
+                          type="text"
+                          value={customSlogan}
+                          onChange={(e) => setCustomSlogan(e.target.value)}
+                          placeholder={t("customizeSloganPlaceholder")}
+                          className={inputClass}
+                        />
+                      </div>
+                    </div>
+                  </Popover.Popup>
+                </Popover.Positioner>
+              </Popover.Portal>
+            </Popover.Root>
 
-              {/* Share + Download */}
-              {canShareFile ? (
-                <>
-                  <button
-                    onClick={handleShareImage}
-                    disabled={posterGenerating}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-700 disabled:opacity-40 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
-                  >
-                    {posterGenerating ? <Loader2 className="size-4 animate-spin" /> : <Share2 className="size-4" />}
-                    {t("posterShare")}
-                  </button>
-                  <button
-                    onClick={handleDownload}
-                    disabled={posterGenerating}
-                    title={t("posterDownload")}
-                    className="flex items-center justify-center rounded-lg border border-zinc-200 px-3 py-2.5 text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                  >
-                    <Download className="size-4" />
-                  </button>
-                </>
-              ) : (
+            {/* Share + Download */}
+            {canShareFile ? (
+              <>
                 <button
-                  onClick={handleDownload}
+                  onClick={handleShareImage}
                   disabled={posterGenerating}
                   className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-700 disabled:opacity-40 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
                 >
-                  {posterGenerating ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
-                  {t("posterDownload")}
+                  {posterGenerating ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Share2 className="size-4" />
+                  )}
+                  {t("posterShare")}
                 </button>
-              )}
+                <button
+                  onClick={handleDownload}
+                  disabled={posterGenerating}
+                  title={t("posterDownload")}
+                  className="flex items-center justify-center rounded-lg border border-zinc-200 px-3 py-2.5 text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                >
+                  <Download className="size-4" />
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={handleDownload}
+                disabled={posterGenerating}
+                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-700 disabled:opacity-40 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+              >
+                {posterGenerating ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Download className="size-4" />
+                )}
+                {t("posterDownload")}
+              </button>
+            )}
           </div>
         </Tabs.Panel>
       </Tabs.Root>
@@ -536,11 +594,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   const fabTriggerClass =
     "flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-zinc-900 text-white shadow-lg outline-none transition-colors hover:bg-zinc-700 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200";
 
-  const triggerContent = isFab ? (
-    <Share2 className="size-5" />
-  ) : (
-    triggerLabel
-  );
+  const triggerContent = isFab ? <Share2 className="size-5" /> : triggerLabel;
 
   // Before mount: static placeholder — must use the same class as the
   // mounted trigger so there is no visual jump after hydration.
@@ -548,17 +602,27 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     <button
       disabled
       aria-hidden
-      className={isFab ? fabTriggerClass + " cursor-default opacity-0" : defaultTriggerClass}
+      className={
+        isFab
+          ? fabTriggerClass + " cursor-default opacity-0"
+          : defaultTriggerClass
+      }
     >
       {triggerContent}
     </button>
   ) : isDesktop ? (
     <Popover.Root open={open} onOpenChange={(nextOpen) => setOpen(nextOpen)}>
-      <Popover.Trigger className={isFab ? fabTriggerClass : defaultTriggerClass}>
+      <Popover.Trigger
+        className={isFab ? fabTriggerClass : defaultTriggerClass}
+      >
         {triggerContent}
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Positioner side={isFab ? "top" : "bottom"} align="end" sideOffset={8}>
+        <Popover.Positioner
+          side={isFab ? "top" : "bottom"}
+          align="end"
+          sideOffset={8}
+        >
           <Popover.Popup className="w-96 max-h-[calc(100svh-80px)] overflow-y-auto origin-(--transform-origin) rounded-xl bg-white shadow-lg ring-1 ring-zinc-200 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:bg-zinc-900 dark:ring-zinc-800">
             {panelContent}
           </Popover.Popup>
@@ -577,18 +641,20 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       <Drawer.Portal>
         {/* When the lightbox is open its own backdrop (z-60) covers everything;
             suppress the Drawer backdrop to avoid double-darkening the top half. */}
-        <Drawer.Backdrop className={cn(
-          `fixed inset-0 ${Z.overlay} transition-colors duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0`,
-          lightboxOpen ? "bg-transparent" : "bg-black/40"
-        )} />
-        <Drawer.Popup className={`fixed inset-x-0 bottom-0 ${Z.overlay} max-h-[85svh] flex flex-col rounded-t-2xl bg-white pb-[var(--safe-inset-bottom)] ring-1 ring-zinc-200 duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:bg-zinc-900 dark:ring-zinc-800`}>
+        <Drawer.Backdrop
+          className={cn(
+            `fixed inset-0 ${Z.overlay} transition-colors duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0`,
+            lightboxOpen ? "bg-transparent" : "bg-black/40"
+          )}
+        />
+        <Drawer.Popup
+          className={`fixed inset-x-0 bottom-0 ${Z.overlay} max-h-[85svh] flex flex-col rounded-t-2xl bg-white pb-[var(--safe-inset-bottom)] ring-1 ring-zinc-200 duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:bg-zinc-900 dark:ring-zinc-800`}
+        >
           {/* Handle sits outside the scroll container so swipe-down reaches the drawer */}
           <div className="flex shrink-0 touch-none justify-center pb-1 pt-3">
             <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
           </div>
-          <div className="overflow-y-auto pb-8">
-            {panelContent}
-          </div>
+          <div className="overflow-y-auto pb-8">{panelContent}</div>
         </Drawer.Popup>
       </Drawer.Portal>
     </Drawer.Root>
@@ -600,7 +666,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   const copiedToast =
     mounted && copied && !isDesktop
       ? createPortal(
-          <div className={`pointer-events-none fixed top-4 left-1/2 ${Z.overlay} flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-lg animate-in fade-in slide-in-from-top-2 duration-150`}>
+          <div
+            className={`pointer-events-none fixed top-4 left-1/2 ${Z.overlay} flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-lg animate-in fade-in slide-in-from-top-2 duration-150`}
+          >
             <Check className="size-4" />
             {t("copied")}
           </div>,

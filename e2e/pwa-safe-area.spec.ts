@@ -31,11 +31,17 @@ async function simulateNotch(page: Page) {
 }
 
 /** Returns the computed numeric value (px) of a CSS property for a selector. */
-async function computedPx(page: Page, selector: string, property: string): Promise<number> {
+async function computedPx(
+  page: Page,
+  selector: string,
+  property: string
+): Promise<number> {
   return page.evaluate(
     ([sel, prop]) => {
       const el = document.querySelector(sel as string);
-      if (!el) throw new Error(`Element not found: ${sel}`);
+      if (!el) {
+        throw new Error(`Element not found: ${sel}`);
+      }
       return parseFloat(getComputedStyle(el).getPropertyValue(prop as string));
     },
     [selector, property]
@@ -54,13 +60,14 @@ test.describe("Nav top inset", () => {
     await simulateNotch(page);
   });
 
-  test("nav paddingTop equals --safe-inset-top when --titlebar-height is 0", async ({ page }) => {
+  test("nav paddingTop equals --safe-inset-top when --titlebar-height is 0", async ({
+    page,
+  }) => {
     // In a standalone PWA on iPhone there is no WCO, so --titlebar-height stays 0.
     // paddingTop should therefore equal exactly NOTCH_TOP.
     const paddingTop = await computedPx(page, "header", "padding-top");
     expect(paddingTop).toBe(NOTCH_TOP);
   });
-
 });
 
 // ─── Compare page phantom header ────────────────────────────────────────────
@@ -68,14 +75,22 @@ test.describe("Nav top inset", () => {
 test.describe("Compare phantom header top inset", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(`/en/lenses/compare?ids=${LENS_A},${LENS_B}`);
-    await page.locator('[data-testid="compare-phantom-header"]').waitFor({ state: "attached" });
+    await page
+      .locator('[data-testid="compare-phantom-header"]')
+      .waitFor({ state: "attached" });
     await simulateNotch(page);
   });
 
-  test("sticky container top equals --safe-inset-top on mobile viewport", async ({ page }) => {
+  test("sticky container top equals --safe-inset-top on mobile viewport", async ({
+    page,
+  }) => {
     // On mobile (< 640px) the container uses top-[var(--safe-inset-top)].
     // Confirm the computed top matches our injected value.
-    const top = await computedPx(page, '[data-testid="compare-phantom-container"]', "top");
+    const top = await computedPx(
+      page,
+      '[data-testid="compare-phantom-container"]',
+      "top"
+    );
     expect(top).toBe(NOTCH_TOP);
   });
 });
@@ -89,17 +104,25 @@ test.describe("CompareBar bottom inset", () => {
     await simulateNotch(page);
   });
 
-  test("compare bar paddingBottom equals --safe-inset-bottom", async ({ page }) => {
+  test("compare bar paddingBottom equals --safe-inset-bottom", async ({
+    page,
+  }) => {
     // iPhone 15 viewport is 390px < 499px, so the icon button (max-[499px]:flex)
     // is visible. Use its aria-label to trigger the compare bar.
-    const addBtn = page.getByRole("button", { name: /add to compare/i }).first();
+    const addBtn = page
+      .getByRole("button", { name: /add to compare/i })
+      .first();
     await addBtn.waitFor({ state: "visible" });
     await addBtn.click();
 
     const bar = page.locator('[data-testid="compare-bar"]');
     await bar.waitFor({ state: "attached" });
 
-    const paddingBottom = await computedPx(page, '[data-testid="compare-bar"]', "padding-bottom");
+    const paddingBottom = await computedPx(
+      page,
+      '[data-testid="compare-bar"]',
+      "padding-bottom"
+    );
     expect(paddingBottom).toBe(HOME_BAR);
   });
 });
@@ -113,13 +136,17 @@ test.describe("Layout body bottom inset", () => {
     await simulateNotch(page);
   });
 
-  test("page body wrapper paddingBottom equals --safe-inset-bottom", async ({ page }) => {
+  test("page body wrapper paddingBottom equals --safe-inset-bottom", async ({
+    page,
+  }) => {
     // The main layout div uses pb-[var(--safe-inset-bottom)] to push content
     // above the iOS home indicator bar.
     const paddingBottom = await page.evaluate(() => {
       // The layout wrapper sits directly under <body> — find by nav-height pt class
       const el = document.querySelector(".pt-\\[var\\(--nav-height\\)\\]");
-      if (!el) throw new Error("Layout wrapper not found");
+      if (!el) {
+        throw new Error("Layout wrapper not found");
+      }
       return parseFloat(getComputedStyle(el).paddingBottom);
     });
     expect(paddingBottom).toBe(HOME_BAR);

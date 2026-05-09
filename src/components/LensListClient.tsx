@@ -18,7 +18,6 @@ import {
 import { serializeFilters, parseFilters } from "@/lib/filter-params";
 import { useMountedCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
-import { Z } from "@/config/ui";
 import { ArrowDownNarrowWide, ArrowUpNarrowWide } from "lucide-react";
 import BackToTopButton from "@/components/BackToTopButton";
 import { Button } from "@/components/ui/button";
@@ -46,14 +45,18 @@ export default function LensListClient({ lenses }: Props) {
   const pathname = usePathname();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
-  const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
+  const [filters, setFilters] = useState<FilterState>(() =>
+    parseFilters(searchParams)
+  );
   const { compareIds, toggleCompare, canToggle } = useMountedCompare();
 
   const brands = useMemo(() => getUniqueBrands(lenses), [lenses]);
 
   const availableSpecialtyTags = useMemo(
     () =>
-      [...new Set(lenses.flatMap((l) => l.specialtyTags ?? []))] as SpecialtyTag[],
+      [
+        ...new Set(lenses.flatMap((l) => l.specialtyTags ?? [])),
+      ] as SpecialtyTag[],
     [lenses]
   );
 
@@ -77,10 +80,14 @@ export default function LensListClient({ lenses }: Props) {
     { value: "weightG", label: t("sortWeight") },
   ] as const satisfies readonly { value: SortKey; label: string }[];
 
-  function updateFilters(updater: FilterState | ((prev: FilterState) => FilterState)) {
+  function updateFilters(
+    updater: FilterState | ((prev: FilterState) => FilterState)
+  ) {
     setFilters((prev) => {
       const next = typeof updater === "function" ? updater(prev) : updater;
-      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
       debounceRef.current = setTimeout(() => {
         const qs = serializeFilters(next).toString();
         router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
@@ -112,7 +119,9 @@ export default function LensListClient({ lenses }: Props) {
           <div>
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
-                <p className="whitespace-nowrap">{t("resultsCount", { count: displayed.length })}</p>
+                <p className="whitespace-nowrap">
+                  {t("resultsCount", { count: displayed.length })}
+                </p>
                 {hasActiveFilters ? (
                   <button
                     type="button"

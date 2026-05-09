@@ -21,7 +21,12 @@ interface Props {
   presetTitle?: string;
 }
 
-export default function ComparePageHeader({ lenses, fallbackHref, minColumns = 0, presetTitle }: Props) {
+export default function ComparePageHeader({
+  lenses,
+  fallbackHref,
+  minColumns = 0,
+  presetTitle,
+}: Props) {
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
   const { clearCompare } = useMountedCompare();
@@ -32,10 +37,12 @@ export default function ComparePageHeader({ lenses, fallbackHref, minColumns = 0
   // Show the FAB when the header row scrolls behind the nav bar
   useEffect(() => {
     const el = headerRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     const observer = new IntersectionObserver(
       ([entry]) => setShowFab(!entry.isIntersecting),
-      { root: null, rootMargin: "0px", threshold: 0 },
+      { root: null, rootMargin: "0px", threshold: 0 }
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -48,10 +55,15 @@ export default function ComparePageHeader({ lenses, fallbackHref, minColumns = 0
         <h1 className="hidden sm:block text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           {t("title")}
         </h1>
-        {lenses.length >= minColumns && <CompareAddLensButton lenses={lenses} />}
+        {lenses.length >= minColumns && (
+          <CompareAddLensButton lenses={lenses} />
+        )}
         {lenses.length > 0 && (
           <button
-            onClick={() => { clearCompare(); router.replace(`/lenses/${mountToUrlSegment(mount)}/compare`); }}
+            onClick={() => {
+              clearCompare();
+              router.replace(`/lenses/${mountToUrlSegment(mount)}/compare`);
+            }}
             className="shrink-0 text-sm font-medium px-3 py-2 rounded-xl text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
           >
             {tList("clearCompare")}

@@ -92,7 +92,9 @@ function solveGuidePinRadius(
   const { pivotRadius: Rp, pinDistance: d, slotOffset: delta } = config;
   const angle = delta + theta; // β - φ_i  (same for all blades)
   const discriminant = d * d - Rp * Rp * Math.sin(angle) * Math.sin(angle);
-  if (discriminant < 0) return null;
+  if (discriminant < 0) {
+    return null;
+  }
   return Rp * Math.cos(angle) + Math.sqrt(discriminant);
 }
 
@@ -106,7 +108,9 @@ export function solveAllBlades(
 ): BladeState[] {
   const { N, pivotRadius: Rp, slotOffset: delta } = config;
   const r = solveGuidePinRadius(theta, config);
-  if (r === null || r <= 0) return [];
+  if (r === null || r <= 0) {
+    return [];
+  }
 
   const step = (2 * Math.PI) / N;
   const slotDir = delta + theta; // β_0 = φ_0 + δ + θ = 0 + δ + θ (blade 0)
@@ -229,21 +233,25 @@ export function bladeShapePath(config: IrisMechanismConfig): string {
     ].join(" ");
   }
 
-  const cx = L / 2;                                        // half-chord = arc center x
-  const s  = C * hw * 1.2;                                 // sagitta
-  const R  = (cx * cx + s * s) / (2 * s);                 // arc radius
-  const cy = R - s;                                        // arc center y (below chord)
-  const f  = hw / R;                                       // radial fraction
-  const Ro = R + hw;                                       // outer arc radius
-  const Ri = R - hw;                                       // inner arc radius
+  const cx = L / 2; // half-chord = arc center x
+  const s = C * hw * 1.2; // sagitta
+  const R = (cx * cx + s * s) / (2 * s); // arc radius
+  const cy = R - s; // arc center y (below chord)
+  const f = hw / R; // radial fraction
+  const Ro = R + hw; // outer arc radius
+  const Ri = R - hw; // inner arc radius
 
   // Outer arc endpoints (above chord: negative y)
-  const OTailX = -cx * f,        OTailY = -cy * f;
-  const OTipX  =  cx * (2 + f),  OTipY  = OTailY;
+  const OTailX = -cx * f,
+    OTailY = -cy * f;
+  const OTipX = cx * (2 + f),
+    OTipY = OTailY;
 
   // Inner arc endpoints (below chord: positive y)
-  const ITailX =  cx * f,        ITailY =  cy * f;
-  const ITipX  =  cx * (2 - f),  ITipY  = ITailY;
+  const ITailX = cx * f,
+    ITailY = cy * f;
+  const ITipX = cx * (2 - f),
+    ITipY = ITailY;
 
   return [
     `M ${fmt(OTailX)} ${fmt(OTailY)}`,
@@ -312,7 +320,9 @@ export function computeBladeCurvature(
   const cx = L / 2;
   const Rt = housingRadius - hw;
   const disc = Rt * Rt - cx * cx;
-  if (disc < 0) return 0;
+  if (disc < 0) {
+    return 0;
+  }
   return (Rt - Math.sqrt(disc)) / (hw * 1.2);
 }
 
@@ -341,9 +351,12 @@ export function computeThetaOpen(
 
   function apexRadius(theta: number): number {
     const blades = solveAllBlades(theta, config);
-    if (!blades.length) return 0;
+    if (!blades.length) {
+      return 0;
+    }
     const b = blades[0];
-    const ca = Math.cos(b.bladeAngle), sa = Math.sin(b.bladeAngle);
+    const ca = Math.cos(b.bladeAngle),
+      sa = Math.sin(b.bladeAngle);
     const wx = b.pivotPos.x + ca * OMidX - sa * OMidY;
     const wy = b.pivotPos.y + sa * OMidX + ca * OMidY;
     return Math.sqrt(wx * wx + wy * wy);
@@ -353,13 +366,22 @@ export function computeThetaOpen(
   const lo = -config.slotOffset;
   const hi = kinRange.max;
 
-  if (apexRadius(lo) < housingRadius) return lo;
-  if (apexRadius(hi) >= housingRadius) return hi;
+  if (apexRadius(lo) < housingRadius) {
+    return lo;
+  }
+  if (apexRadius(hi) >= housingRadius) {
+    return hi;
+  }
 
-  let a = lo, b = hi;
+  let a = lo,
+    b = hi;
   for (let i = 0; i < 60; i++) {
     const m = (a + b) / 2;
-    if (apexRadius(m) >= housingRadius) a = m; else b = m;
+    if (apexRadius(m) >= housingRadius) {
+      a = m;
+    } else {
+      b = m;
+    }
   }
   return a;
 }
@@ -373,7 +395,10 @@ export function computeThetaOpen(
  * also has pivotRadius/bladeCurvature). The `t` and derived fields are ignored.
  */
 export function buildDerivedConfig(
-  stored: Pick<StoredIrisParams, "N" | "pinDistance" | "slotOffset" | "bladeLength" | "bladeWidth">,
+  stored: Pick<
+    StoredIrisParams,
+    "N" | "pinDistance" | "slotOffset" | "bladeLength" | "bladeWidth"
+  >,
   housingRadius: number
 ): IrisMechanismConfig {
   const bladeCurvature = computeBladeCurvature(
@@ -413,25 +438,35 @@ export function tNormToTheta(
  * intersection point to the iris centre is the aperture vertex; its distance
  * equals the inradius.
  */
-export function apertureInradius(theta: number, dc: IrisMechanismConfig): number {
+export function apertureInradius(
+  theta: number,
+  dc: IrisMechanismConfig
+): number {
   const blades = solveAllBlades(theta, dc);
-  if (blades.length < 2) return 0;
+  if (blades.length < 2) {
+    return 0;
+  }
 
   const { bladeLength: L, bladeWidth: W, bladeCurvature: C } = dc;
   const hw = W / 2;
   const cx = L / 2;
 
-  if (C < 0.005) return 0;
+  if (C < 0.005) {
+    return 0;
+  }
 
-  const s   = C * hw * 1.2;
-  const Ro  = (cx * cx + s * s) / (2 * s);
+  const s = C * hw * 1.2;
+  const Ro = (cx * cx + s * s) / (2 * s);
   const cyL = Ro - s;
-  const Ri  = Ro - hw;
+  const Ri = Ro - hw;
 
-  if (Ri <= 0) return 0;
+  if (Ri <= 0) {
+    return 0;
+  }
 
   function arcCenter(b: (typeof blades)[0]) {
-    const ca = Math.cos(b.bladeAngle), sa = Math.sin(b.bladeAngle);
+    const ca = Math.cos(b.bladeAngle),
+      sa = Math.sin(b.bladeAngle);
     return {
       x: b.pivotPos.x + cx * ca - cyL * sa,
       y: b.pivotPos.y + cx * sa + cyL * ca,
@@ -440,18 +475,22 @@ export function apertureInradius(theta: number, dc: IrisMechanismConfig): number
 
   const c0 = arcCenter(blades[0]);
   const c1 = arcCenter(blades[1]);
-  const dx  = c1.x - c0.x;
-  const dy  = c1.y - c0.y;
-  const d   = Math.sqrt(dx * dx + dy * dy);
+  const dx = c1.x - c0.x;
+  const dy = c1.y - c0.y;
+  const d = Math.sqrt(dx * dx + dy * dy);
 
-  if (d < 0.001) return Ri;
-  if (d >= 2 * Ri) return 0;
+  if (d < 0.001) {
+    return Ri;
+  }
+  if (d >= 2 * Ri) {
+    return 0;
+  }
 
   const mx = (c0.x + c1.x) / 2;
   const my = (c0.y + c1.y) / 2;
-  const h  = Math.sqrt(Math.max(0, Ri * Ri - (d / 2) * (d / 2)));
+  const h = Math.sqrt(Math.max(0, Ri * Ri - (d / 2) * (d / 2)));
   const px = (-dy / d) * h;
-  const py = ( dx / d) * h;
+  const py = (dx / d) * h;
 
   return Math.min(Math.hypot(mx + px, my + py), Math.hypot(mx - px, my - py));
 }
@@ -463,14 +502,17 @@ export function apertureInradius(theta: number, dc: IrisMechanismConfig): number
 export function findThetaForInradius(
   targetR: number,
   dc: IrisMechanismConfig,
-  range: { min: number; max: number },
+  range: { min: number; max: number }
 ): number {
   let lo = range.min;
   let hi = range.max;
   for (let i = 0; i < 48; i++) {
     const mid = (lo + hi) / 2;
-    if (apertureInradius(mid, dc) > targetR) lo = mid;
-    else hi = mid;
+    if (apertureInradius(mid, dc) > targetR) {
+      lo = mid;
+    } else {
+      hi = mid;
+    }
   }
   return (lo + hi) / 2;
 }
@@ -486,17 +528,22 @@ export function findThetaForFStop(
   targetFStop: number,
   dc: IrisMechanismConfig,
   range: { min: number; max: number },
-  openFStop = 1.4,
+  openFStop = 1.4
 ): number {
   const rOpen = apertureInradius(range.min, dc);
-  if (rOpen <= 0) return range.min;
+  if (rOpen <= 0) {
+    return range.min;
+  }
   const targetR = (openFStop * rOpen) / targetFStop;
   let lo = range.min;
   let hi = range.max;
   for (let i = 0; i < 48; i++) {
     const mid = (lo + hi) / 2;
-    if (apertureInradius(mid, dc) > targetR) lo = mid;
-    else hi = mid;
+    if (apertureInradius(mid, dc) > targetR) {
+      lo = mid;
+    } else {
+      hi = mid;
+    }
   }
   return (lo + hi) / 2;
 }

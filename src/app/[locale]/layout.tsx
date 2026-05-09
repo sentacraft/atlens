@@ -20,7 +20,7 @@ export const viewport: Viewport = {
   viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: SITE.themeColor.light },
-    { media: "(prefers-color-scheme: dark)",  color: SITE.themeColor.dark  },
+    { media: "(prefers-color-scheme: dark)", color: SITE.themeColor.dark },
   ],
 };
 
@@ -61,7 +61,7 @@ export async function generateMetadata({
       // instead of a white flash during the WebKit startup gap.
       startupImage: SPLASH_DEVICES.flatMap((device) =>
         (["light", "dark"] as const).map((scheme) => ({
-          url:   splashUrl(device.label, scheme),
+          url: splashUrl(device.label, scheme),
           media: splashMedia(device, scheme),
         }))
       ),
@@ -89,36 +89,34 @@ export function generateStaticParams() {
 
 export default async function LocaleLayout({
   children,
-  params,
 }: {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
   const messages = await getMessages();
 
   return (
     <NextIntlClientProvider messages={messages}>
       <MountPreferenceProvider>
-      <CompareProvider>
-        <ScrollContainerProvider>
-          <ConsoleEgg />
-          <Nav />
-          {/* Offset fixed nav and iOS home indicator. Body also carries
+        <CompareProvider>
+          <ScrollContainerProvider>
+            <ConsoleEgg />
+            <Nav />
+            {/* Offset fixed nav and iOS home indicator. Body also carries
               bg-background, so the safe-area strip and any short-page gap
               render as a single seamless canvas color. */}
-          <div className="pt-[var(--nav-height)] pb-[var(--safe-inset-bottom)] min-h-svh">
-            {TESTHOOK_ALLOWED ? (
-              <TestHookProvider>
-                {children}
-                <TestHookPanel />
-              </TestHookProvider>
-            ) : (
-              children
-            )}
-          </div>
-        </ScrollContainerProvider>
-      </CompareProvider>
+            <div className="pt-[var(--nav-height)] pb-[var(--safe-inset-bottom)] min-h-svh">
+              {TESTHOOK_ALLOWED ? (
+                <TestHookProvider>
+                  {children}
+                  <TestHookPanel />
+                </TestHookProvider>
+              ) : (
+                children
+              )}
+            </div>
+          </ScrollContainerProvider>
+        </CompareProvider>
       </MountPreferenceProvider>
     </NextIntlClientProvider>
   );

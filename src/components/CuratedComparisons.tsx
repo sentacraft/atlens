@@ -10,7 +10,13 @@ import { trendingPresets, type TrendingPreset } from "@/lib/trending";
 import { allLenses } from "@/lib/lens";
 import { cn } from "@/lib/utils";
 
-export function PresetCard({ preset, onSelect }: { preset: TrendingPreset; onSelect?: () => void }) {
+export function PresetCard({
+  preset,
+  onSelect,
+}: {
+  preset: TrendingPreset;
+  onSelect?: () => void;
+}) {
   const router = useRouter();
   const locale = useLocale();
   const lang = locale === "zh" ? "zh" : "en";
@@ -41,7 +47,9 @@ export function PresetCard({ preset, onSelect }: { preset: TrendingPreset; onSel
       {/* Lens model badge strip */}
       <div className="mt-2.5 flex flex-wrap gap-1">
         {lenses.map((lens) => {
-          if (!lens) return null;
+          if (!lens) {
+            return null;
+          }
           return (
             <span
               key={lens.id}
@@ -70,14 +78,18 @@ export default function CuratedComparisons() {
 
   function updateScrollState() {
     const el = scrollRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     setCanScrollLeft(el.scrollLeft > 4);
     setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
   }
 
   useEffect(() => {
     const el = scrollRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     updateScrollState();
     el.addEventListener("scroll", updateScrollState, { passive: true });
     const ro = new ResizeObserver(updateScrollState);
@@ -90,12 +102,16 @@ export default function CuratedComparisons() {
 
   function scrollToDir(dir: -1 | 1) {
     const el = scrollRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     const approxCardWidth = el.scrollWidth / trendingPresets.length;
     el.scrollBy({ left: dir * approxCardWidth, behavior: "smooth" });
   }
 
-  if (compareIds.length > 0) return null;
+  if (compareIds.length > 0) {
+    return null;
+  }
 
   return (
     <div className="mb-2">
@@ -111,7 +127,9 @@ export default function CuratedComparisons() {
           aria-label="Scroll left"
           className={cn(
             "absolute left-0 top-0 bottom-0 z-10 flex items-center pl-1 pr-6 bg-gradient-to-r from-white/90 to-transparent transition-opacity dark:from-zinc-950/90",
-            canScrollLeft ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            canScrollLeft
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
           )}
         >
           <ChevronLeft className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
@@ -124,7 +142,10 @@ export default function CuratedComparisons() {
         >
           <div className="flex items-stretch gap-2 px-4 pb-0.5">
             {trendingPresets.map((preset) => (
-              <div key={preset.slug} className="shrink-0 snap-start w-[calc((100vw-2.5rem)/1.5)]">
+              <div
+                key={preset.slug}
+                className="shrink-0 snap-start w-[calc((100vw-2.5rem)/1.5)]"
+              >
                 <PresetCard preset={preset} />
               </div>
             ))}
@@ -138,7 +159,9 @@ export default function CuratedComparisons() {
           aria-label="Scroll right"
           className={cn(
             "absolute right-0 top-0 bottom-0 z-10 flex items-center pl-6 pr-1 bg-gradient-to-l from-white/90 to-transparent transition-opacity dark:from-zinc-950/90",
-            canScrollRight ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            canScrollRight
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
           )}
         >
           <ChevronRight className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />

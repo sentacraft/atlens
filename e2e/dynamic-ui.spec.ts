@@ -6,7 +6,9 @@ const LENS_B = "fujifilm-mkx-50-135mmt29-x";
 /** Returns the current --compare-bar-height CSS variable value in pixels (0 if unset). */
 async function getCompareBarHeightVar(page: Page): Promise<number> {
   return page.evaluate(() => {
-    const raw = getComputedStyle(document.documentElement).getPropertyValue("--compare-bar-height").trim();
+    const raw = getComputedStyle(document.documentElement)
+      .getPropertyValue("--compare-bar-height")
+      .trim();
     return parseFloat(raw) || 0;
   });
 }
@@ -25,7 +27,10 @@ async function scrollToTop(page: import("@playwright/test").Page) {
 }
 
 // Waits until the document has enough content height to allow scrolling.
-async function waitForScrollable(page: import("@playwright/test").Page, minDelta = 200) {
+async function waitForScrollable(
+  page: import("@playwright/test").Page,
+  minDelta = 200
+) {
   await page.waitForFunction(
     (minY) => document.documentElement.scrollHeight > window.innerHeight + minY,
     minDelta,
@@ -48,7 +53,9 @@ test.describe("Nav auto-hide (mobile only)", () => {
 
   test("nav is visible on page load", async ({ page }) => {
     const header = page.locator("header").first();
-    const isOnScreen = await header.evaluate((el) => el.getBoundingClientRect().bottom > 0);
+    const isOnScreen = await header.evaluate(
+      (el) => el.getBoundingClientRect().bottom > 0
+    );
     expect(isOnScreen).toBe(true);
   });
 
@@ -58,27 +65,39 @@ test.describe("Nav auto-hide (mobile only)", () => {
     // waiting for the 300ms CSS transition and is unaffected by Playwright's synthetic
     // scroll event timing in mobile emulation.
     const header = page.locator("header").first();
-    await expect(header).toHaveAttribute("data-hidden", "true", { timeout: 3000 });
+    await expect(header).toHaveAttribute("data-hidden", "true", {
+      timeout: 3000,
+    });
   });
 
   test("nav reappears after scrolling back up", async ({ page }) => {
     const header = page.locator("header").first();
 
     await scrollBy(page, 300);
-    await expect(header).toHaveAttribute("data-hidden", "true", { timeout: 3000 });
+    await expect(header).toHaveAttribute("data-hidden", "true", {
+      timeout: 3000,
+    });
 
     await scrollBy(page, -400);
-    await expect(header).toHaveAttribute("data-hidden", "false", { timeout: 3000 });
+    await expect(header).toHaveAttribute("data-hidden", "false", {
+      timeout: 3000,
+    });
   });
 
-  test("nav resets to visible when navigating to a new page", async ({ page }) => {
+  test("nav resets to visible when navigating to a new page", async ({
+    page,
+  }) => {
     const header = page.locator("header").first();
 
     await scrollBy(page, 300);
-    await expect(header).toHaveAttribute("data-hidden", "true", { timeout: 3000 });
+    await expect(header).toHaveAttribute("data-hidden", "true", {
+      timeout: 3000,
+    });
 
     await page.goto("/en/about");
-    await expect(header).toHaveAttribute("data-hidden", "false", { timeout: 3000 });
+    await expect(header).toHaveAttribute("data-hidden", "false", {
+      timeout: 3000,
+    });
   });
 });
 
@@ -88,11 +107,15 @@ test.describe("Compare table phantom header", () => {
   // (via lockNav) so two top-chrome elements never compete on mobile.
   test.beforeEach(async ({ page }) => {
     await page.goto(`/en/lenses/compare?ids=${LENS_A},${LENS_B}`);
-    await page.locator('[data-testid="compare-phantom-header"]').waitFor({ state: "attached" });
+    await page
+      .locator('[data-testid="compare-phantom-header"]')
+      .waitFor({ state: "attached" });
     await waitForScrollable(page, 200);
   });
 
-  test("phantom header is hidden when at the top of the page", async ({ page }) => {
+  test("phantom header is hidden when at the top of the page", async ({
+    page,
+  }) => {
     const phantom = page.locator('[data-testid="compare-phantom-header"]');
     await expect(phantom).toHaveAttribute("data-visible", "false");
   });
@@ -102,20 +125,30 @@ test.describe("Compare table phantom header", () => {
   }) => {
     await scrollBy(page, 400);
     const phantom = page.locator('[data-testid="compare-phantom-header"]');
-    await expect(phantom).toHaveAttribute("data-visible", "true", { timeout: 3000 });
+    await expect(phantom).toHaveAttribute("data-visible", "true", {
+      timeout: 3000,
+    });
   });
 
-  test("phantom header hides again after scrolling back to top", async ({ page }) => {
+  test("phantom header hides again after scrolling back to top", async ({
+    page,
+  }) => {
     const phantom = page.locator('[data-testid="compare-phantom-header"]');
 
     await scrollBy(page, 400);
-    await expect(phantom).toHaveAttribute("data-visible", "true", { timeout: 3000 });
+    await expect(phantom).toHaveAttribute("data-visible", "true", {
+      timeout: 3000,
+    });
 
     await scrollToTop(page);
-    await expect(phantom).toHaveAttribute("data-visible", "false", { timeout: 3000 });
+    await expect(phantom).toHaveAttribute("data-visible", "false", {
+      timeout: 3000,
+    });
   });
 
-  test("nav is locked hidden while phantom header is visible", async ({ page }) => {
+  test("nav is locked hidden while phantom header is visible", async ({
+    page,
+  }) => {
     // On mobile, the phantom header locks the nav so they don't both occupy the top
     const viewport = page.viewportSize();
     if (!viewport || viewport.width >= 640) {
@@ -126,10 +159,14 @@ test.describe("Compare table phantom header", () => {
 
     await scrollBy(page, 400);
     const phantom = page.locator('[data-testid="compare-phantom-header"]');
-    await expect(phantom).toHaveAttribute("data-visible", "true", { timeout: 3000 });
+    await expect(phantom).toHaveAttribute("data-visible", "true", {
+      timeout: 3000,
+    });
 
     const header = page.locator("header").first();
-    await expect(header).toHaveAttribute("data-hidden", "true", { timeout: 3000 });
+    await expect(header).toHaveAttribute("data-hidden", "true", {
+      timeout: 3000,
+    });
   });
 });
 
@@ -137,7 +174,9 @@ test.describe("Compare page share FAB", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(`/en/lenses/compare?ids=${LENS_A},${LENS_B}`);
     // Wait for the FAB to be rendered before any interaction
-    await page.locator('[data-testid="compare-share-fab"]').waitFor({ state: "attached" });
+    await page
+      .locator('[data-testid="compare-share-fab"]')
+      .waitFor({ state: "attached" });
   });
 
   test("FAB is hidden when header is in view", async ({ page }) => {
@@ -149,14 +188,18 @@ test.describe("Compare page share FAB", () => {
     await scrollBy(page, 300);
 
     const fab = page.locator('[data-testid="compare-share-fab"]');
-    await expect(fab).toHaveAttribute("aria-hidden", "false", { timeout: 3000 });
+    await expect(fab).toHaveAttribute("aria-hidden", "false", {
+      timeout: 3000,
+    });
   });
 
   test("FAB hides again after scrolling back to top", async ({ page }) => {
     // Show FAB
     await scrollBy(page, 300);
     const fab = page.locator('[data-testid="compare-share-fab"]');
-    await expect(fab).toHaveAttribute("aria-hidden", "false", { timeout: 3000 });
+    await expect(fab).toHaveAttribute("aria-hidden", "false", {
+      timeout: 3000,
+    });
 
     // Hide FAB by returning to top
     await scrollToTop(page);
@@ -178,7 +221,9 @@ test.describe("Lens list scroll-to-top button", () => {
     await expect(btn).toBeHidden();
   });
 
-  test("scroll-to-top button appears after scrolling down", async ({ page }) => {
+  test("scroll-to-top button appears after scrolling down", async ({
+    page,
+  }) => {
     await scrollBy(page, 500);
     const btn = page.getByRole("button", { name: /back to top/i });
     await expect(btn).toBeVisible({ timeout: 3000 });
@@ -213,16 +258,28 @@ test.describe("CompareBar --compare-bar-height CSS variable", () => {
     expect(height).toBe(0);
   });
 
-  test("variable becomes positive once compare bar appears", async ({ page }) => {
-    await page.getByRole("button", { name: /add to compare/i }).first().click();
-    await page.locator('[data-testid="compare-bar"]').waitFor({ state: "visible" });
+  test("variable becomes positive once compare bar appears", async ({
+    page,
+  }) => {
+    await page
+      .getByRole("button", { name: /add to compare/i })
+      .first()
+      .click();
+    await page
+      .locator('[data-testid="compare-bar"]')
+      .waitFor({ state: "visible" });
 
     const height = await getCompareBarHeightVar(page);
     expect(height).toBeGreaterThan(0);
   });
 
-  test("variable resets to 0 after compare bar is dismissed", async ({ page }) => {
-    await page.getByRole("button", { name: /add to compare/i }).first().click();
+  test("variable resets to 0 after compare bar is dismissed", async ({
+    page,
+  }) => {
+    await page
+      .getByRole("button", { name: /add to compare/i })
+      .first()
+      .click();
     const bar = page.locator('[data-testid="compare-bar"]');
     await bar.waitFor({ state: "visible" });
 
@@ -231,7 +288,9 @@ test.describe("CompareBar --compare-bar-height CSS variable", () => {
     await page.waitForFunction(
       () =>
         parseFloat(
-          getComputedStyle(document.documentElement).getPropertyValue("--compare-bar-height")
+          getComputedStyle(document.documentElement).getPropertyValue(
+            "--compare-bar-height"
+          )
         ) === 0,
       { timeout: 3000 }
     );
@@ -240,15 +299,24 @@ test.describe("CompareBar --compare-bar-height CSS variable", () => {
     expect(height).toBe(0);
   });
 
-  test("variable accurately reflects the bar's rendered height", async ({ page }) => {
-    await page.getByRole("button", { name: /add to compare/i }).first().click();
+  test("variable accurately reflects the bar's rendered height", async ({
+    page,
+  }) => {
+    await page
+      .getByRole("button", { name: /add to compare/i })
+      .first()
+      .click();
     const bar = page.locator('[data-testid="compare-bar"]');
     await bar.waitFor({ state: "visible" });
 
     const [cssVar, domHeight] = await page.evaluate(() => {
-      const el = document.querySelector('[data-testid="compare-bar"]') as HTMLElement;
+      const el = document.querySelector(
+        '[data-testid="compare-bar"]'
+      ) as HTMLElement;
       const varVal = parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue("--compare-bar-height")
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--compare-bar-height"
+        )
       );
       return [varVal, el.getBoundingClientRect().height];
     });
@@ -259,14 +327,21 @@ test.describe("CompareBar --compare-bar-height CSS variable", () => {
 });
 
 test.describe("CompareBar does not obscure BackToTopButton or page content", () => {
-  test("BackToTopButton bottom edge stays above CompareBar when both visible", async ({ page }) => {
+  test("BackToTopButton bottom edge stays above CompareBar when both visible", async ({
+    page,
+  }) => {
     await page.goto("/en/lenses");
     await page.waitForLoadState("networkidle");
     await waitForScrollable(page, 200);
 
     // Trigger compare bar
-    await page.getByRole("button", { name: /add to compare/i }).first().click();
-    await page.locator('[data-testid="compare-bar"]').waitFor({ state: "visible" });
+    await page
+      .getByRole("button", { name: /add to compare/i })
+      .first()
+      .click();
+    await page
+      .locator('[data-testid="compare-bar"]')
+      .waitFor({ state: "visible" });
 
     // Scroll enough to reveal the BackToTopButton (threshold: 400px)
     await scrollBy(page, 500);
@@ -274,14 +349,19 @@ test.describe("CompareBar does not obscure BackToTopButton or page content", () 
     await expect(btn).toBeVisible({ timeout: 3000 });
 
     const [btnBottom, barTop] = await page.evaluate(() => {
-      const button = document.querySelector('[aria-label]') as Element;
       // Find the back-to-top button via aria-label text (locale-agnostic: any button near bottom-right)
-      const allBtns = Array.from(document.querySelectorAll("button[aria-label]"));
+      const allBtns = Array.from(
+        document.querySelectorAll("button[aria-label]")
+      );
       const backTop = allBtns.find((b) =>
         (b.getAttribute("aria-label") ?? "").toLowerCase().includes("top")
       );
-      const bar = document.querySelector('[data-testid="compare-bar"]') as HTMLElement;
-      if (!backTop || !bar) throw new Error("Elements not found");
+      const bar = document.querySelector(
+        '[data-testid="compare-bar"]'
+      ) as HTMLElement;
+      if (!backTop || !bar) {
+        throw new Error("Elements not found");
+      }
       return [
         backTop.getBoundingClientRect().bottom,
         bar.getBoundingClientRect().top,
@@ -291,12 +371,19 @@ test.describe("CompareBar does not obscure BackToTopButton or page content", () 
     expect(btnBottom).toBeLessThanOrEqual(barTop + 1); // +1 for sub-pixel tolerance
   });
 
-  test("lens list content padding-bottom exceeds compare bar height", async ({ page }) => {
+  test("lens list content padding-bottom exceeds compare bar height", async ({
+    page,
+  }) => {
     await page.goto("/en/lenses");
     await page.waitForLoadState("networkidle");
 
-    await page.getByRole("button", { name: /add to compare/i }).first().click();
-    await page.locator('[data-testid="compare-bar"]').waitFor({ state: "visible" });
+    await page
+      .getByRole("button", { name: /add to compare/i })
+      .first()
+      .click();
+    await page
+      .locator('[data-testid="compare-bar"]')
+      .waitFor({ state: "visible" });
 
     const barHeight = await getCompareBarHeightVar(page);
 
@@ -305,25 +392,33 @@ test.describe("CompareBar does not obscure BackToTopButton or page content", () 
     const paddingBottom = await page.evaluate(() => {
       // The lens list wrapper is the first div.max-w-7xl inside the page body
       const el = document.querySelector(".max-w-7xl") as HTMLElement;
-      if (!el) throw new Error("Lens list container not found");
+      if (!el) {
+        throw new Error("Lens list container not found");
+      }
       return parseFloat(getComputedStyle(el).paddingBottom);
     });
 
     expect(paddingBottom).toBeGreaterThan(barHeight);
   });
 
-  test("lens detail content padding-bottom exceeds compare bar height", async ({ page }) => {
+  test("lens detail content padding-bottom exceeds compare bar height", async ({
+    page,
+  }) => {
     await page.goto(`/en/lenses/${LENS_A}`);
     await page.waitForLoadState("networkidle");
 
     await page.getByRole("button", { name: /add to compare/i }).click();
-    await page.locator('[data-testid="compare-bar"]').waitFor({ state: "visible" });
+    await page
+      .locator('[data-testid="compare-bar"]')
+      .waitFor({ state: "visible" });
 
     const barHeight = await getCompareBarHeightVar(page);
 
     const paddingBottom = await page.evaluate(() => {
       const el = document.querySelector(".max-w-4xl") as HTMLElement;
-      if (!el) throw new Error("Lens detail container not found");
+      if (!el) {
+        throw new Error("Lens detail container not found");
+      }
       return parseFloat(getComputedStyle(el).paddingBottom);
     });
 

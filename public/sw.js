@@ -1,12 +1,12 @@
 // X-Glass Service Worker
 // Bump CACHE_VERSION whenever the caching logic changes to force all clients to
 // pick up the new worker and discard stale caches.
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = "v2";
 
 const CACHE = {
-  shell:  `x-glass-shell-${CACHE_VERSION}`,   // offline page + navigation
-  static: `x-glass-static-${CACHE_VERSION}`,  // _next/static/** (hashed, permanent)
-  images: `x-glass-images-${CACHE_VERSION}`,  // /lenses/** lens photos
+  shell: `x-glass-shell-${CACHE_VERSION}`, // offline page + navigation
+  static: `x-glass-static-${CACHE_VERSION}`, // _next/static/** (hashed, permanent)
+  images: `x-glass-images-${CACHE_VERSION}`, // /lenses/** lens photos
 };
 
 const ALL_CACHES = Object.values(CACHE);
@@ -14,14 +14,14 @@ const ALL_CACHES = Object.values(CACHE);
 // Pages to pre-cache on install so they're available offline immediately.
 // Including the locale home pages means the app works even on the very first
 // offline launch, before the user has browsed any pages while online.
-const PRECACHE_URLS = ['/offline', '/en/', '/zh/'];
+const PRECACHE_URLS = ["/offline", "/en/", "/zh/"];
 
 // How long (seconds) lens images stay in the cache before a background refresh.
 const IMAGE_TTL_S = 30 * 24 * 60 * 60; // 30 days
 
 // ── Lifecycle ─────────────────────────────────────────────────────────────────
 
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE.shell)
@@ -33,7 +33,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener("activate", (event) => {
   // Delete caches from previous versions.
   event.waitUntil(
     caches
@@ -52,35 +52,39 @@ self.addEventListener('activate', (event) => {
 
 // ── Fetch routing ─────────────────────────────────────────────────────────────
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
   // Only handle same-origin GET requests.
-  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+  if (request.method !== "GET" || url.origin !== self.location.origin) {
+    return;
+  }
 
   // Skip API routes entirely — always go to the network.
-  if (url.pathname.startsWith('/api/')) return;
+  if (url.pathname.startsWith("/api/")) {
+    return;
+  }
 
   // _next/static — content-hashed files, safe to cache forever.
-  if (url.pathname.startsWith('/_next/static/')) {
+  if (url.pathname.startsWith("/_next/static/")) {
     event.respondWith(cacheFirst(request, CACHE.static));
     return;
   }
 
   // Lens photos, PWA icons, and splash screens — cache first, refresh after TTL.
   if (
-    url.pathname.startsWith('/lenses/') ||
-    url.pathname.startsWith('/icons/') ||
-    url.pathname.startsWith('/screenshots/') ||
-    url.pathname.startsWith('/splash/')
+    url.pathname.startsWith("/lenses/") ||
+    url.pathname.startsWith("/icons/") ||
+    url.pathname.startsWith("/screenshots/") ||
+    url.pathname.startsWith("/splash/")
   ) {
     event.respondWith(cacheFirst(request, CACHE.images, IMAGE_TTL_S));
     return;
   }
 
   // HTML navigation — network first, fall back to cached page or /offline.
-  if (request.mode === 'navigate') {
+  if (request.mode === "navigate") {
     event.respondWith(networkFirstWithOfflineFallback(request));
     return;
   }
@@ -101,7 +105,7 @@ async function cacheFirst(request, cacheName, maxAgeSeconds) {
 
   if (cached) {
     if (maxAgeSeconds) {
-      const date = cached.headers.get('date');
+      const date = cached.headers.get("date");
       const ageSeconds = date
         ? (Date.now() - new Date(date).getTime()) / 1000
         : 0;
@@ -124,7 +128,7 @@ async function networkFirst(request) {
     return await fetch(request);
   } catch {
     const cached = await caches.match(request);
-    return cached ?? new Response('Network error', { status: 503 });
+    return cached ?? new Response("Network error", { status: 503 });
   }
 }
 
@@ -136,20 +140,29 @@ async function networkFirstWithOfflineFallback(request) {
   const cache = await caches.open(CACHE.shell);
   try {
     const response = await fetch(request);
-    if (response.ok) cache.put(request, response.clone());
+    if (response.ok) {
+      cache.put(request, response.clone());
+    }
     return response;
   } catch {
     const cached = await cache.match(request);
-    if (cached) return cached;
+    if (cached) {
+      return cached;
+    }
     // When the PWA is launched via the home screen icon (start_url = '/'), the
     // locale middleware can't run offline so there's no cached entry for '/'.
     // Fall back to the precached English home page so the app is usable.
     const url = new URL(request.url);
-    if (url.pathname === '/') {
-      const home = await cache.match('/en/');
-      if (home) return home;
+    if (url.pathname === "/") {
+      const home = await cache.match("/en/");
+      if (home) {
+        return home;
+      }
     }
-    return (await cache.match('/offline')) ?? new Response('Offline', { status: 503 });
+    return (
+      (await cache.match("/offline")) ??
+      new Response("Offline", { status: 503 })
+    );
   }
 }
 
@@ -159,6 +172,8 @@ async function networkFirstWithOfflineFallback(request) {
  */
 async function fetchAndStore(request, cache) {
   const response = await fetch(request);
-  if (response.ok) cache.put(request, response.clone());
+  if (response.ok) {
+    cache.put(request, response.clone());
+  }
   return response;
 }

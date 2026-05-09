@@ -17,18 +17,20 @@ import { cn } from "@/lib/utils";
 function PriceInfoPopover({
   selection,
   locale,
-  tier,
 }: {
   selection: PriceSelection;
   locale: string;
-  tier: 1 | 2 | 3 | 4 | 5;
 }) {
   const t = useTranslations("Pricing");
   const { entry, condition } = selection;
   const isUsed = condition === "used";
-  const symbol = t("tierSymbol");
-  const priceDisplay = formatPrice(entry.price, entry.currency, locale, condition, t);
-  const rangeDisplay = formatTierRange(tier, entry.currency, locale);
+  const priceDisplay = formatPrice(
+    entry.price,
+    entry.currency,
+    locale,
+    condition,
+    t
+  );
   const sourceDisplay = entry.source;
   const sampledDisplay = formatSampledAt(entry.sampledAt, locale);
 
@@ -116,7 +118,7 @@ export function PriceBand({ lens, compact = false }: Props) {
             {t("usedBadge")}
           </span>
         )}
-        <PriceInfoPopover selection={selection} locale={locale} tier={tier} />
+        <PriceInfoPopover selection={selection} locale={locale} />
       </div>
       {/* Range subtext — matches the subValue pattern used elsewhere in CompareTable */}
       <p className="tabular-nums text-[11px] text-zinc-400 dark:text-zinc-500">

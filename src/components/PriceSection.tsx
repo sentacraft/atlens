@@ -34,15 +34,25 @@ export function PriceSection({ lens }: Props) {
   const [noteOpen, setNoteOpen] = useState(false);
 
   const selection = pickPriceEntry(lens.pricing, locale);
-  if (!selection) return null;
+  if (!selection) {
+    return null;
+  }
 
   const { entry, condition } = selection;
   const tier = priceTier(entry.price, entry.currency);
-  if (tier === undefined) return null;
+  if (tier === undefined) {
+    return null;
+  }
 
   const isUsed = condition === "used";
 
-  const priceDisplay = formatPrice(entry.price, entry.currency, locale, condition, t);
+  const priceDisplay = formatPrice(
+    entry.price,
+    entry.currency,
+    locale,
+    condition,
+    t
+  );
   const sourceDisplay = entry.source;
   const sampledDisplay = formatSampledAt(entry.sampledAt, locale);
 
@@ -73,10 +83,11 @@ export function PriceSection({ lens }: Props) {
         >
           <AlertTriangle className="size-3 shrink-0 text-amber-500" />
           <span>{t("disclaimerTrigger")}</span>
-          {noteOpen
-            ? <ChevronUp className="size-3 shrink-0" />
-            : <ChevronDown className="size-3 shrink-0" />
-          }
+          {noteOpen ? (
+            <ChevronUp className="size-3 shrink-0" />
+          ) : (
+            <ChevronDown className="size-3 shrink-0" />
+          )}
         </button>
         {noteOpen && (
           <p className="mt-1.5 text-[11px] leading-relaxed text-zinc-400 dark:text-zinc-500">

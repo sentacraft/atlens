@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Popover } from "@base-ui/react/popover";
 import { Drawer } from "@base-ui/react/drawer";
 import { LayoutGrid } from "lucide-react";
@@ -10,26 +10,28 @@ import { trendingPresets } from "@/lib/trending";
 import { PresetCard } from "@/components/CuratedComparisons";
 import { ICON_NAV_BTN_CLS } from "@/lib/ui-tokens";
 
+function subscribeToDesktopChange(onChange: () => void) {
+  const query = window.matchMedia("(min-width: 640px)");
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+}
+
+function getDesktopSnapshot() {
+  return window.matchMedia("(min-width: 640px)").matches;
+}
+
+function useIsDesktop() {
+  return useSyncExternalStore(
+    subscribeToDesktopChange,
+    getDesktopSnapshot,
+    () => true
+  );
+}
+
 export default function CuratedPresetsButton() {
   const t = useTranslations("Compare");
   const [open, setOpen] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(true);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const mq = window.matchMedia("(min-width: 640px)");
-    setIsDesktop(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
-
-  const trigger = (
-    <span className={`${ICON_NAV_BTN_CLS} h-8 w-8`} title={t("curatedTitle")}>
-      <LayoutGrid className="h-4 w-4" />
-    </span>
-  );
+  const isDesktop = useIsDesktop();
 
   const panelContent = (
     <div className="p-3 flex flex-col gap-2">
@@ -46,18 +48,13 @@ export default function CuratedPresetsButton() {
     </div>
   );
 
-  if (!mounted) {
-    return (
-      <button className={`${ICON_NAV_BTN_CLS} h-8 w-8`} aria-label={t("curatedTitle")}>
-        <LayoutGrid className="h-4 w-4" />
-      </button>
-    );
-  }
-
   if (isDesktop) {
     return (
       <Popover.Root open={open} onOpenChange={setOpen}>
-        <Popover.Trigger className={`${ICON_NAV_BTN_CLS} h-8 w-8`} aria-label={t("curatedTitle")}>
+        <Popover.Trigger
+          className={`${ICON_NAV_BTN_CLS} h-8 w-8`}
+          aria-label={t("curatedTitle")}
+        >
           <LayoutGrid className="h-4 w-4" />
         </Popover.Trigger>
         <Popover.Portal>
@@ -73,18 +70,23 @@ export default function CuratedPresetsButton() {
 
   return (
     <Drawer.Root open={open} onOpenChange={setOpen} swipeDirection="down">
-      <Drawer.Trigger className={`${ICON_NAV_BTN_CLS} h-8 w-8`} aria-label={t("curatedTitle")}>
+      <Drawer.Trigger
+        className={`${ICON_NAV_BTN_CLS} h-8 w-8`}
+        aria-label={t("curatedTitle")}
+      >
         <LayoutGrid className="h-4 w-4" />
       </Drawer.Trigger>
       <Drawer.Portal>
-        <Drawer.Backdrop className={`fixed inset-0 ${Z.overlay} bg-black/40 transition-colors duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0`} />
-        <Drawer.Popup className={`fixed inset-x-0 bottom-0 ${Z.overlay} max-h-[85svh] flex flex-col rounded-t-2xl bg-white pb-[var(--safe-inset-bottom)] ring-1 ring-zinc-200 duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:bg-zinc-900 dark:ring-zinc-800`}>
+        <Drawer.Backdrop
+          className={`fixed inset-0 ${Z.overlay} bg-black/40 transition-colors duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0`}
+        />
+        <Drawer.Popup
+          className={`fixed inset-x-0 bottom-0 ${Z.overlay} max-h-[85svh] flex flex-col rounded-t-2xl bg-white pb-[var(--safe-inset-bottom)] ring-1 ring-zinc-200 duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:bg-zinc-900 dark:ring-zinc-800`}
+        >
           <div className="flex shrink-0 touch-none justify-center pb-1 pt-3">
             <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
           </div>
-          <div className="overflow-y-auto pb-8">
-            {panelContent}
-          </div>
+          <div className="overflow-y-auto pb-8">{panelContent}</div>
         </Drawer.Popup>
       </Drawer.Portal>
     </Drawer.Root>

@@ -39,7 +39,9 @@ export function TestHookProvider({ children }: { children: ReactNode }) {
 
   // Strip testhook params from URL after cold-start init
   useEffect(() => {
-    if (!state.testHook) return;
+    if (!state.testHook) {
+      return;
+    }
     const clean = new URLSearchParams(searchParams.toString());
     clean.delete(TESTHOOK_QUERY_KEYS.testHook);
     for (const option of TESTHOOK_OPTION_DEFINITIONS) {
@@ -47,11 +49,13 @@ export function TestHookProvider({ children }: { children: ReactNode }) {
     }
     const query = clean.toString();
     router.replace(`${pathname}${query ? `?${query}` : ""}`, { scroll: false });
-  }, []);
+  }, [pathname, router, searchParams, state.testHook]);
 
   // Sync state → CSS injection
   useEffect(() => {
-    let styleElement = document.getElementById("testhook-css") as HTMLStyleElement | null;
+    let styleElement = document.getElementById(
+      "testhook-css"
+    ) as HTMLStyleElement | null;
     if (!styleElement) {
       styleElement = document.createElement("style");
       styleElement.id = "testhook-css";

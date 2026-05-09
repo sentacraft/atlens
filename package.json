@@ -11,7 +11,7 @@
     "validate:lenses": "node --experimental-strip-types scripts/validate-lenses.mts",
     "build": "npm run gen:icons && npm run verify:icons && npm run validate:lenses && next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint --fix && git diff --name-only --diff-filter=ACMR | xargs prettier --write --ignore-unknown && eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

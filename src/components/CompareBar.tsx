@@ -37,7 +37,9 @@ export default function CompareBar() {
 
   useEffect(() => {
     const el = barRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     const observer = new ResizeObserver(([entry]) => {
       document.documentElement.style.setProperty(
         "--compare-bar-height",
@@ -57,7 +59,9 @@ export default function CompareBar() {
   // Extract lens ID if currently on a lens detail page (/lenses/[mount]/[id])
   const currentLensId = useMemo(() => {
     const seg = mountToUrlSegment(mount);
-    const match = pathname.match(new RegExp(`\\/lenses\\/${seg}\\/(?!compare\\b)([^/]+)$`));
+    const match = pathname.match(
+      new RegExp(`\\/lenses\\/${seg}\\/(?!compare\\b)([^/]+)$`)
+    );
     return match?.[1] ?? null;
   }, [pathname, mount]);
 
@@ -108,8 +112,13 @@ export default function CompareBar() {
                       </span>
                       <button
                         onClick={() => toggleCompare(lens.id)}
-                        className={cn(ICON_CLOSE_BTN_CLS, "h-5 w-5 -mr-0.5 mt-0.5")}
-                        aria-label={tCompare("removeLens", { model: displayName })}
+                        className={cn(
+                          ICON_CLOSE_BTN_CLS,
+                          "h-5 w-5 -mr-0.5 mt-0.5"
+                        )}
+                        aria-label={tCompare("removeLens", {
+                          model: displayName,
+                        })}
                       >
                         <X className="h-3 w-3" />
                       </button>
