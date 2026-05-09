@@ -111,7 +111,6 @@ export default async function AboutContent() {
     { q: t("faq1Q"), a: t("faq1A") },
     { q: t("faq2Q"), a: t("faq2A") },
     { q: t("faq3Q"), a: t("faq3A") },
-    { q: t("faq4Q"), a: t("faq4A") },
   ];
 
   const feedbackLinks: {
@@ -274,6 +273,16 @@ export default async function AboutContent() {
         >
           {t("dataGitHubCta")}
         </ExternalLink>
+
+        {/* Pricing data subsection */}
+        <div className="mt-2">
+          <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1">
+            {t("dataPricingTitle")}
+          </p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            {t("dataPricingBody")}
+          </p>
+        </div>
       </Section>
 
       {/* FAQ */}
