@@ -29,7 +29,7 @@ function MountCoverageTable({
   counts: Record<string, number>;
   meta: Record<string, CoverageMeta>;
   brandNames: Record<string, string>;
-  col: { brand: string; count: string; active: string; discontinued: string; notes: string };
+  col: { brand: string; count: string; active: string; discontinued: string };
   rowTotal: string;
 }) {
   const total = brands.reduce((s, b) => s + (counts[b] ?? 0), 0);
@@ -44,7 +44,6 @@ function MountCoverageTable({
               <th className="px-3 py-2 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 w-14">{col.count}</th>
               <th className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 w-14">{col.active}</th>
               <th className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 w-20">{col.discontinued}</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 w-40">{col.notes}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
@@ -56,7 +55,6 @@ function MountCoverageTable({
                   <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">{counts[b] ?? 0}</td>
                   <td className="px-3 py-2 text-center">{m.active ? <Check /> : <Dash />}</td>
                   <td className="px-3 py-2 text-center">{m.discontinued ? <Check /> : <Dash />}</td>
-                  <td className="px-3 py-2 text-zinc-500 dark:text-zinc-400 text-xs">{m.notes}</td>
                 </tr>
               );
             })}
@@ -65,7 +63,7 @@ function MountCoverageTable({
             <tr className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
               <td className="px-3 py-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">{rowTotal}</td>
               <td className="px-3 py-2 text-right tabular-nums text-xs font-semibold text-zinc-700 dark:text-zinc-300">{total}</td>
-              <td colSpan={3} />
+              <td colSpan={2} />
             </tr>
           </tfoot>
         </table>
@@ -210,7 +208,7 @@ export default async function AboutContent() {
               counts={counts}
               meta={meta as Record<string, CoverageMeta>}
               brandNames={Object.fromEntries(brands.map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
-              col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), active: t("coverageColActive"), discontinued: t("coverageColDiscontinued"), notes: t("coverageColNotes") }}
+              col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), active: t("coverageColActive"), discontinued: t("coverageColDiscontinued") }}
               rowTotal={t("coverageRowTotal")}
             />
           ))}
