@@ -24,7 +24,9 @@ export default function CompareAddLensButton({ lenses, triggerClassName }: Props
 
   const handleSelectLens = useCallback(
     (lens: Lens) => {
-      if (currentIds.includes(lens.id) || currentIds.length >= MAX_COMPARE) return;
+      if (currentIds.includes(lens.id) || currentIds.length >= MAX_COMPARE) {
+        return;
+      }
       const nextIds = [...currentIds, lens.id];
       router.replace(buildCompareUrl(nextIds));
     },
@@ -54,7 +56,9 @@ export default function CompareAddLensButton({ lenses, triggerClassName }: Props
       timerRef.current = setTimeout(() => setHintOpen(false), 1500);
     }
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
     };
   }, [hintOpen]);
 

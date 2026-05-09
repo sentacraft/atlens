@@ -113,28 +113,36 @@ function ApertureRingControl({ value, onChange }: {
   function tFromOffset(raw: number) {
     const w = containerRef.current?.offsetWidth ?? 400;
     const pos = (w / 2 - raw) / RING_SPACING - 0.5;
-    if (pos <= 0) return RING_VALUES[0].t;
-    if (pos >= RING_VALUES.length - 1) return RING_VALUES[RING_VALUES.length - 1].t;
+    if (pos <= 0) {
+      return RING_VALUES[0].t;
+    }
+    if (pos >= RING_VALUES.length - 1) {
+      return RING_VALUES[RING_VALUES.length - 1].t;
+    }
     const lo = Math.floor(pos);
     return RING_VALUES[lo].t + (RING_VALUES[lo + 1].t - RING_VALUES[lo].t) * (pos - lo);
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { setOffset(offsetForIndex(indexForValue(value))); }, []);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { if (!isDragging.current) setOffset(offsetForIndex(indexForValue(value))); }, [value]);
+   
+  useEffect(() => { if (!isDragging.current) {setOffset(offsetForIndex(indexForValue(value)));} }, [value]);
 
   function onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
     e.currentTarget.setPointerCapture(e.pointerId);
     isDragging.current = true; dragStart.current = { x: e.clientX, offset }; setSnapping(false);
   }
   function onPointerMove(e: React.PointerEvent<HTMLDivElement>) {
-    if (!isDragging.current || !dragStart.current) return;
+    if (!isDragging.current || !dragStart.current) {
+      return;
+    }
     const neo = dragStart.current.offset + (e.clientX - dragStart.current.x);
     setOffset(neo); onChange(tFromOffset(neo));
   }
   function onPointerUp(e: React.PointerEvent<HTMLDivElement>) {
-    if (!isDragging.current || !dragStart.current) return;
+    if (!isDragging.current || !dragStart.current) {
+      return;
+    }
     const neo = dragStart.current.offset + (e.clientX - dragStart.current.x);
     isDragging.current = false; dragStart.current = null;
     const idx = nearestIndex(neo);
@@ -285,25 +293,35 @@ export default function IrisPhenoLab() {
   // Keep lgTRef in sync; mirror to display when not hovering
   useEffect(() => {
     lgTRef.current = lgT;
-    if (!lgHoveringRef.current) setLgDisplayT(lgT);
-  }, [lgT]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!lgHoveringRef.current) {
+      setLgDisplayT(lgT);
+    }
+  }, [lgT]);  
 
-  useEffect(() => () => { if (lgEaseRaf.current) cancelAnimationFrame(lgEaseRaf.current); }, []);
+  useEffect(() => () => { if (lgEaseRaf.current) {cancelAnimationFrame(lgEaseRaf.current);} }, []);
 
   function lgMouseEnter(e: React.MouseEvent<HTMLDivElement>) {
-    if (lgEaseRaf.current) { cancelAnimationFrame(lgEaseRaf.current); lgEaseRaf.current = null; }
+    if (lgEaseRaf.current) {
+      cancelAnimationFrame(lgEaseRaf.current); lgEaseRaf.current = null;
+    }
     lgHoveringRef.current = true;
     const rect = lgPreviewRef.current?.getBoundingClientRect();
-    if (!rect) return;
+    if (!rect) {
+      return;
+    }
     const absT = Math.max(0.02, Math.min(0.98, (e.clientX - rect.left) / rect.width));
     lgEntryOffset.current = lgDisplayTRef.current - absT;
     lgEntryTime.current   = performance.now();
   }
 
   function lgMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    if (!lgHoveringRef.current) return;
+    if (!lgHoveringRef.current) {
+      return;
+    }
     const rect = lgPreviewRef.current?.getBoundingClientRect();
-    if (!rect) return;
+    if (!rect) {
+      return;
+    }
     const absT = Math.max(0.02, Math.min(0.98, (e.clientX - rect.left) / rect.width));
     const p    = Math.min(1, (performance.now() - lgEntryTime.current) / 180);
     const off  = lgEntryOffset.current * (1 - p) ** 2;
@@ -319,8 +337,12 @@ export default function IrisPhenoLab() {
       const p     = Math.min(1, (now - startMs) / 700);
       const eased = 1 - (1 - p) ** 3;
       setLgDisplayT(fromT + (toT - fromT) * eased);
-      if (p < 1) lgEaseRaf.current = requestAnimationFrame(tick);
-      else lgEaseRaf.current = null;
+      if (p < 1) {
+        lgEaseRaf.current = requestAnimationFrame(tick);
+      }
+      else {
+        lgEaseRaf.current = null;
+      }
     }
     lgEaseRaf.current = requestAnimationFrame(tick);
   }
