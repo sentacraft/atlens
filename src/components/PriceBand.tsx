@@ -66,7 +66,8 @@ function TierPopover({
               </p>
               <p className="text-[10px] text-zinc-400 dark:text-zinc-500">
                 {entry.source}
-                <span className="mx-1 opacity-40">·</span>
+              </p>
+              <p className="text-[10px] text-zinc-400 dark:text-zinc-500">
                 {t("sampledAt", { date: sampledDisplay })}
               </p>
               {isUsed && (

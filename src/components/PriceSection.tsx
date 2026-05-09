@@ -60,9 +60,9 @@ export function PriceSection({ lens }: Props) {
       <div className="inline-flex items-center gap-1.5 text-[11px] text-zinc-400 dark:text-zinc-500">
         <span>
           {sourceDisplay}
-          <span className="mx-1 opacity-40">·</span>
+          <span className="mx-1.5 opacity-30">|</span>
           {t("sampledAt", { date: sampledDisplay })}
-          <span className="mx-1 opacity-40">·</span>
+          <span className="mx-1.5 opacity-30">|</span>
           {t("disclaimerTrigger")}
         </span>
         <Popover.Root>
