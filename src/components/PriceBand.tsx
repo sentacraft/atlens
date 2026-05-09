@@ -9,7 +9,6 @@ import {
   formatPrice,
   formatTierRange,
   formatSampledAt,
-  formatSource,
   type PriceSelection,
 } from "@/lib/lens-pricing";
 import type { Lens } from "@/lib/types";
@@ -30,7 +29,7 @@ function PriceInfoPopover({
   const symbol = t("tierSymbol");
   const priceDisplay = formatPrice(entry.price, entry.currency, locale, condition, t);
   const rangeDisplay = formatTierRange(tier, entry.currency, locale);
-  const sourceDisplay = formatSource(entry.source, t);
+  const sourceDisplay = entry.source;
   const sampledDisplay = formatSampledAt(entry.sampledAt, locale);
 
   return (
