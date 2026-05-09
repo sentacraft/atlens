@@ -137,9 +137,9 @@ test.describe("Compare flow", () => {
     await expect(page.getByText(LENS_A_MODEL).first()).toBeVisible();
     await expect(page.getByText(LENS_B_MODEL).first()).toBeVisible();
 
-    // Click the "shift left" arrow on the second (rightmost) column header.
-    // There's exactly one shift-left button enabled (the first column's is disabled).
-    const shiftLeft = page.getByRole("button", { name: /Shift left/i }).first();
+    // Click the "move left" arrow on the second (rightmost) column header.
+    // There's exactly one move-left button enabled (the first column's is disabled).
+    const shiftLeft = page.getByRole("button", { name: /Move left/i }).first();
     await shiftLeft.click();
 
     // After the swap, the URL ids should be reversed.
