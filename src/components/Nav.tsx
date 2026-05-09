@@ -75,7 +75,7 @@ export default function Nav() {
     : `/lenses/${seg}/compare`;
 
   const linkCls = (active: boolean) =>
-    `text-sm transition-colors px-2 ${
+    `text-xs sm:text-sm transition-colors px-1.5 sm:px-2 ${
       active
         ? "text-zinc-900 dark:text-zinc-50 font-medium"
         : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
