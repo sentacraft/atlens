@@ -3,18 +3,15 @@
 // Expanded price display for the lens detail page.
 //
 // Layout:
-//   ┌─────────────────────────────────────────┐  ← island (light bg + border)
-//   │  ¥1,299  [二手]  官方店（京东）· 采样于…   │
-//   │  ⚠ 价格仅供参考 ▾  (collapsible note)    │
-//   └─────────────────────────────────────────┘
+//   $139  [Used]
+//   source · Sampled date · For reference only (i)
 //
-// The tier/range (¥¥¥ 500–1,499) is intentionally omitted — on the detail
-// page the exact price is visible, so the range adds no information.
-//
-// All strings are reused from the existing Pricing i18n namespace.
+// The (i) icon opens a popover with the full disclaimer.
+// The tier/range is intentionally omitted — on the detail page the exact
+// price is visible, so the range adds no information.
 
-import { useState } from "react";
-import { AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
+import { Popover } from "@base-ui/react/popover";
+import { Info } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { priceTier } from "@/lib/lens";
 import {
@@ -31,7 +28,6 @@ interface Props {
 export function PriceSection({ lens }: Props) {
   const t = useTranslations("Pricing");
   const locale = useLocale();
-  const [noteOpen, setNoteOpen] = useState(false);
 
   const selection = pickPriceEntry(lens.pricing, locale);
   if (!selection) return null;
@@ -47,7 +43,7 @@ export function PriceSection({ lens }: Props) {
   const sampledDisplay = formatSampledAt(entry.sampledAt, locale);
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-1">
       {/* Price + used badge */}
       <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
         <span className="text-xl font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
@@ -60,30 +56,30 @@ export function PriceSection({ lens }: Props) {
         )}
       </div>
 
-      {/* Source + sampled date + collapsible disclaimer — merged into one block */}
-      <div>
-        <button
-          onClick={() => setNoteOpen((v) => !v)}
-          className="inline-flex items-center gap-1.5 text-[11px] text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 transition-colors"
-        >
-          <AlertTriangle className="size-3 shrink-0 text-amber-500" />
-          <span>
-            {sourceDisplay}
-            <span className="mx-1 opacity-40">·</span>
-            {t("sampledAt", { date: sampledDisplay })}
-            <span className="mx-1 opacity-40">·</span>
-            {t("disclaimerTrigger")}
-          </span>
-          {noteOpen
-            ? <ChevronUp className="size-3 shrink-0" />
-            : <ChevronDown className="size-3 shrink-0" />
-          }
-        </button>
-        {noteOpen && (
-          <p className="mt-1.5 text-[11px] leading-relaxed text-zinc-400 dark:text-zinc-500">
-            {isUsed ? t("detailUsedNote") : t("detailNewNote")}
-          </p>
-        )}
+      {/* Source + sampled date + disclaimer popover */}
+      <div className="inline-flex items-center gap-1.5 text-[11px] text-zinc-400 dark:text-zinc-500">
+        <span>
+          {sourceDisplay}
+          <span className="mx-1 opacity-40">·</span>
+          {t("sampledAt", { date: sampledDisplay })}
+          <span className="mx-1 opacity-40">·</span>
+          {t("disclaimerTrigger")}
+        </span>
+        <Popover.Root>
+          <Popover.Trigger
+            className="inline-flex shrink-0 items-center justify-center rounded-full text-zinc-400 outline-none transition-colors hover:text-zinc-600 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:text-zinc-500 dark:hover:text-zinc-300"
+            aria-label={t("disclaimerTrigger")}
+          >
+            <Info className="size-3.5" />
+          </Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Positioner side="top" align="center" sideOffset={6}>
+              <Popover.Popup className="max-w-72 origin-(--transform-origin) rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs leading-relaxed text-zinc-700 shadow-lg duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                {isUsed ? t("detailUsedNote") : t("detailNewNote")}
+              </Popover.Popup>
+            </Popover.Positioner>
+          </Popover.Portal>
+        </Popover.Root>
       </div>
     </div>
   );
