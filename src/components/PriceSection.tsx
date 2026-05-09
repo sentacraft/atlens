@@ -21,7 +21,6 @@ import {
   pickPriceEntry,
   formatPrice,
   formatSampledAt,
-  formatSource,
 } from "@/lib/lens-pricing";
 import type { Lens } from "@/lib/types";
 
@@ -44,7 +43,7 @@ export function PriceSection({ lens }: Props) {
   const isUsed = condition === "used";
 
   const priceDisplay = formatPrice(entry.price, entry.currency, locale, condition, t);
-  const sourceDisplay = formatSource(entry.source, t);
+  const sourceDisplay = entry.source;
   const sampledDisplay = formatSampledAt(entry.sampledAt, locale);
 
   return (
