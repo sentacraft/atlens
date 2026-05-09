@@ -92,6 +92,7 @@ flowchart TD
 
     subgraph sp["Stage P · Publish Gate"]
       SP1["<b>Zod schema validation</b><br/>Intra-lens + cross-lens checks"]
+      SP_AUDIT["<b>Audit Agent · Independent Spec Audit</b><br/>Samples web blogs and community lens databases<br/>Cross-checks specs with zero pipeline context"]
       SP2["<b>Normalization + version stamp</b>"]
     end
   end
@@ -113,7 +114,8 @@ flowchart TD
   PRICING_SOURCES -->|"storefront search URLs"| SPrNew
   SPrUsed
   SPrNew & SPrUsed --> SP1
-  SP1 --> SP2
+  SP1 --> SP_AUDIT
+  SP_AUDIT --> SP2
   SP2 -->|"writes src/data/lenses.json"| DB[("x-glass<br/>(this repo)")]
 
   classDef script fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
@@ -123,7 +125,7 @@ flowchart TD
   classDef config fill:#f1f5f9,stroke:#64748b,color:#1e293b
 
   class S0,S2b,S2c script
-  class S1p1,S1p2,S1b,S2a,SPrNew,SPrUsed agent
+  class S1p1,S1p2,S1b,S2a,SPrNew,SPrUsed,SP_AUDIT agent
   class S1r,S1h,SR human
   class SP1,SP2 gate
   class SOURCES,PRICING_SOURCES config
