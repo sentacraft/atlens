@@ -1,6 +1,7 @@
 "use client";
 
 import { Popover } from "@base-ui/react/popover";
+import { TriangleAlert } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { priceTier } from "@/lib/lens";
 import {
@@ -66,13 +67,13 @@ function TierPopover({
               </p>
               <p className="text-[10px] text-zinc-400 dark:text-zinc-500">
                 {entry.source}
-              </p>
-              <p className="text-[10px] text-zinc-400 dark:text-zinc-500">
+                <span className="mx-1 opacity-30">|</span>
                 {t("sampledAt", { date: sampledDisplay })}
               </p>
               {isUsed && (
-                <p className="text-[10px] text-zinc-400 dark:text-zinc-500">
-                  {t("usedReason")}
+                <p className="flex items-start gap-1 text-[10px] text-amber-500 dark:text-amber-400">
+                  <TriangleAlert className="mt-px size-3 shrink-0" />
+                  <span>{t("usedReason")}</span>
                 </p>
               )}
             </div>
