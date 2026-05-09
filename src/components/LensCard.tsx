@@ -168,7 +168,7 @@ export default function LensCard({
         onClick={onToggle}
         disabled={selectionDisabled}
         aria-label={isSelected ? t("removeFromCompare") : t("addToCompare")}
-        className={`hidden max-[499px]:flex absolute top-2.5 right-2.5 z-10 items-center justify-center h-7 w-7 rounded-full transition-colors ${
+        className={`hidden max-[499px]:flex absolute top-2 right-2 z-10 items-center justify-center h-8 w-8 rounded-full transition-colors ${
           isSelected
             ? ACTION_PRIMARY_CLS
             : selectionDisabled
@@ -176,7 +176,7 @@ export default function LensCard({
               : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
         }`}
       >
-        {isSelected ? <Check className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+        {isSelected ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
       </button>
 
       {/* Compare toggle */}
