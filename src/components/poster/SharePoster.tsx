@@ -616,16 +616,18 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   <span className={cn("font-semibold tabular-nums tracking-wide text-zinc-700 leading-none", statSize)}>
                     {labels.tierSymbol.repeat(tier)}
                   </span>
-                  <span className="tabular-nums text-zinc-400" style={{ fontSize: 10 }}>
-                    {rangeFormatted}
-                  </span>
-                  <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                    {labels.priceLabel}
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                    <span className="tabular-nums text-zinc-400" style={{ fontSize: 10 }}>
+                      {rangeFormatted}
+                    </span>
                     {isUsed && (
                       <span className="rounded bg-zinc-200 px-1 py-px text-zinc-500" style={{ fontSize: 8, fontWeight: 500 }}>
                         {labels.usedBadge}
                       </span>
                     )}
+                  </span>
+                  <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                    {labels.priceLabel}
                   </span>
                 </div>
               );
