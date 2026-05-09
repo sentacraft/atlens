@@ -59,15 +59,21 @@ export function normalizeLensSearchText(value: string): string {
  * concept in CJK), while ASCII alphanumeric runs are split on spaces.
  */
 export function tokenize(normalised: string): string[] {
-  if (!normalised) return [];
+  if (!normalised) {
+    return [];
+  }
   const tokens: string[] = [];
   for (const part of normalised.split(" ")) {
-    if (!part) continue;
+    if (!part) {
+      continue;
+    }
     if (/[\u4e00-\u9fff\u3400-\u4dbf\u3040-\u309f\u30a0-\u30ff]/.test(part)) {
       for (const ch of part) {
         tokens.push(ch);
       }
-      if (part.length > 1) tokens.push(part);
+      if (part.length > 1) {
+        tokens.push(part);
+      }
     } else {
       tokens.push(part);
     }
@@ -117,7 +123,9 @@ function formatApertureNum(n: number): string {
 
 function apertureTokens(lens: Lens): string[] {
   const tokens: string[] = [];
-  if (lens.maxAperture === undefined) return tokens;
+  if (lens.maxAperture === undefined) {
+    return tokens;
+  }
   for (const n of apertureNums(lens.maxAperture)) {
     const s = formatApertureNum(n);
     const noDot = s.replace(".", "");
@@ -190,8 +198,10 @@ function isBoundaryPrefix(token: string, query: string): boolean {
   const nextChar = token[query.length];
 
   if (/^\d+$/.test(query)) {
+
     // digit query: boundary when next char is non-digit (e.g. "40" in "40mm")
     return /\D/.test(nextChar);
+
   }
 
   // alpha/mixed query: boundary only when next char is a digit (e.g. "xf" in "xf35").
@@ -200,10 +210,18 @@ function isBoundaryPrefix(token: string, query: string): boolean {
 }
 
 function matchStrength(tokens: string[], query: string): MatchStrength {
-  if (tokens.includes(query)) return "exact";
-  if (tokens.some((t) => isBoundaryPrefix(t, query))) return "boundaryPrefix";
-  if (tokens.some((t) => t.startsWith(query))) return "wordPrefix";
-  if (tokens.some((t) => t.includes(query))) return "includes";
+  if (tokens.includes(query)) {
+    return "exact";
+  }
+  if (tokens.some((t) => isBoundaryPrefix(t, query))) {
+    return "boundaryPrefix";
+  }
+  if (tokens.some((t) => t.startsWith(query))) {
+    return "wordPrefix";
+  }
+  if (tokens.some((t) => t.includes(query))) {
+    return "includes";
+  }
   return "none";
 }
 
@@ -262,7 +280,9 @@ function scoreLens(entry: SearchableLensEntry, queryTokens: string[]): number {
   let total = 0;
   for (const qt of queryTokens) {
     const s = scoreToken(entry.buckets, qt);
-    if (s === 0) return 0;
+    if (s === 0) {
+      return 0;
+    }
     total += s;
   }
   if (entry.lens.brand === FIRST_PARTY_BRAND) {
@@ -283,7 +303,9 @@ export function searchLensIndex(
   const queryTokens = tokenizeQuery(normalizeLensSearchText(query));
 
   if (queryTokens.length === 0) {
+
     return [];
+
   }
 
   const scored = index
@@ -294,7 +316,9 @@ export function searchLensIndex(
     .filter((item) => item.score >= MIN_ABSOLUTE_SCORE);
 
   if (scored.length === 0) {
+
     return [];
+
   }
 
   const bestScore = scored.reduce((max, item) => Math.max(max, item.score), 0);
@@ -303,10 +327,14 @@ export function searchLensIndex(
   return scored
     .filter((item) => item.score >= relativeFloor)
     .sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      }
       const aLen = a.entry.buckets.model.join("").length;
       const bLen = b.entry.buckets.model.join("").length;
-      if (aLen !== bLen) return aLen - bLen;
+      if (aLen !== bLen) {
+        return aLen - bLen;
+      }
       return a.entry.lens.model.localeCompare(b.entry.lens.model);
     })
     .slice(0, limit)

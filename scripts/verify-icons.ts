@@ -45,7 +45,7 @@ function decodePng(path: string): Png {
       colorType = body.readUInt8(9);
     } else if (type === "IDAT") {
       idat.push(body);
-    } else if (type === "IEND") break;
+    } else if (type === "IEND") {break;}
     i += 8 + len + 4;
   }
   if (colorType !== 6 || bitDepth !== 8) {
@@ -120,8 +120,12 @@ interface Expectation {
 }
 
 function expectedCorner(bg: BgContract): Rgba {
-  if (bg === "transparent") return [0, 0, 0, 0];
-  if (bg === "opaque-white") return [255, 255, 255, 255];
+  if (bg === "transparent") {
+    return [0, 0, 0, 0];
+  }
+  if (bg === "opaque-white") {
+    return [255, 255, 255, 255];
+  }
   return bg;
 }
 
@@ -180,7 +184,9 @@ function hasMark(img: Png): boolean {
   let opaque = 0;
   const total = img.width * img.height;
   for (let i = 3; i < img.data.length; i += 4) {
-    if (img.data[i] > 0) opaque++;
+    if (img.data[i] > 0) {
+      opaque++;
+    }
   }
   return opaque / total > 0.01;
 }
@@ -224,7 +230,9 @@ function checkExpectation(exp: Expectation): void {
 }
 
 for (const exp of [...ICON_EXPECTATIONS, ...SPLASH_EXPECTATIONS]) {
+
   checkExpectation(exp);
+
 }
 
 for (const { path, minBytes } of EXISTENCE_ONLY) {
@@ -243,7 +251,9 @@ const totalChecked = ICON_EXPECTATIONS.length + SPLASH_EXPECTATIONS.length + EXI
 
 if (errors.length > 0) {
   console.error(`\n✗ Icon verification failed (${errors.length} issue${errors.length === 1 ? "" : "s"}):\n`);
-  for (const line of errors) console.error(line);
+  for (const line of errors) {
+    console.error(line);
+  }
   console.error("");
   process.exit(1);
 }

@@ -134,7 +134,9 @@ export default function FeedbackDialog({
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (status === "submitting") return;
+    if (status === "submitting") {
+      return;
+    }
     if (!hasContent) {
       setSubmitAttempted(true);
       return;

@@ -32,7 +32,9 @@ export default function ComparePageHeader({ lenses, fallbackHref, minColumns = 0
   // Show the FAB when the header row scrolls behind the nav bar
   useEffect(() => {
     const el = headerRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     const observer = new IntersectionObserver(
       ([entry]) => setShowFab(!entry.isIntersecting),
       { root: null, rootMargin: "0px", threshold: 0 },

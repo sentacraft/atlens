@@ -24,7 +24,9 @@ export async function generateMetadata({
   const { locale, mount } = await params;
   const { ids, preset } = await searchParams;
   const resolvedMount = urlSegmentToMount(mount);
-  if (!resolvedMount) return { title: t("title") };
+  if (!resolvedMount) {
+    return { title: t("title") };
+  }
 
   const lenses = parseLensIds(ids, resolvedMount);
   const alternates = buildAlternates(locale, `lenses/${mount}/compare`);
@@ -60,7 +62,9 @@ export default async function ComparePage({
   const { locale, mount } = await params;
   const { ids, from, lensId, preset } = await searchParams;
   const resolvedMount = urlSegmentToMount(mount);
-  if (!resolvedMount) notFound();
+  if (!resolvedMount) {
+    notFound();
+  }
 
   const lenses = parseLensIds(ids, resolvedMount);
   const seg = mountToUrlSegment(resolvedMount);
