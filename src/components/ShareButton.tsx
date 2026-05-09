@@ -165,7 +165,6 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     na: tImage("na"),
     priceLabel: tImage("priceLabel"),
     tierSymbol: tImage("tierSymbol"),
-    priceCnyAmount: tImage("priceCnyAmount"),
     locale,
   };
 
