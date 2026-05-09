@@ -436,7 +436,7 @@
     "detailNewNote": "This price was sampled from one official storefront at one point in time. E-commerce list prices change frequently and are often affected by promotions or coupons — the figure shown does not represent the lowest available price.",
     "detailUsedNote": "Used prices vary widely with condition, included accessories, and seller. This is the median of a sampled batch of listings at the time of sampling; actual sale prices may differ.",
     "tierNote": "The price tier gives you a quick sense of the lens's price range. Click to see the exact sampled price and source. Prices are not continuously updated and are for reference only.",
-    "usedReason": "This lens is no longer sold new through official channels, so a used market price is shown instead.",
+    "usedReason": "A new price could not be found from official channels; showing a used market price instead.",
     "sampledAt": "Sampled {date}"
   }
 }
