@@ -28,6 +28,24 @@
     "angleOfView": 100,
     "angleOfViewCalc": 99.4,
     "apertureBladeCount": 9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1399,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 319,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Micro Four Thirds",
@@ -80,8 +98,16 @@
         "new": {
           "price": 1299,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 179,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -145,8 +171,16 @@
         "new": {
           "price": 939,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 199,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -204,8 +238,16 @@
         "new": {
           "price": 599,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 125,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -252,6 +294,24 @@
     "angleOfView": 55,
     "angleOfViewCalc": 55.3,
     "apertureBladeCount": 6,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 419,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 103,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "lensMaterial": "Aluminum alloy",
     "filterMm": 39,
     "lensConfiguration": {
@@ -295,8 +355,16 @@
         "new": {
           "price": 699,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 169,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -344,8 +412,16 @@
         "new": {
           "price": 599,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 125,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -397,8 +473,16 @@
         "new": {
           "price": 599,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 125,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -447,6 +531,24 @@
     },
     "angleOfViewCalc": 109.5,
     "apertureBladeCount": 10,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1896,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 489,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -494,6 +596,24 @@
     },
     "angleOfViewCalc": 83,
     "apertureBladeCount": 11,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1596,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 489,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Canon RF",
@@ -539,6 +659,24 @@
       "cm": 25
     },
     "angleOfViewCalc": 59,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1496,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 489,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -585,6 +723,24 @@
       "cm": 51
     },
     "angleOfViewCalc": 44,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1496,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 489,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -631,6 +787,24 @@
       "cm": 60
     },
     "angleOfViewCalc": 31.6,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1496,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 489,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -677,6 +851,24 @@
       "cm": 90
     },
     "angleOfViewCalc": 18.9,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1496,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 489,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -722,8 +914,16 @@
         "new": {
           "price": 670,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 149,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -778,8 +978,16 @@
         "new": {
           "price": 1090,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 199,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -839,8 +1047,16 @@
         "new": {
           "price": 639,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 139,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -897,8 +1113,16 @@
         "new": {
           "price": 499,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 99,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -952,8 +1176,16 @@
         "new": {
           "price": 593,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 149,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -1008,8 +1240,16 @@
         "new": {
           "price": 270,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 59,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -1066,8 +1306,16 @@
         "new": {
           "price": 394,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 59,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -1121,8 +1369,16 @@
         "new": {
           "price": 369,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 119,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -1176,8 +1432,16 @@
         "new": {
           "price": 329,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 69,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -1235,8 +1499,16 @@
         "new": {
           "price": 969,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 226,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -1288,8 +1560,16 @@
         "new": {
           "price": 299,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 66,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -1338,8 +1618,16 @@
         "new": {
           "price": 494,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 76,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -1397,8 +1685,16 @@
         "new": {
           "price": 899,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 159,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -1446,6 +1742,16 @@
     "angleOfView": 63.2,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 10,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 190,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Canon RF",
@@ -1505,7 +1811,7 @@
         "new": {
           "price": 999,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·星曜光学官方旗舰店",
           "sampledAt": "2026-05-08"
         }
       }
@@ -1564,6 +1870,16 @@
     },
     "angleOfViewCalc": 26.5,
     "apertureBladeCount": 10,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 230,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -1619,8 +1935,16 @@
         "new": {
           "price": 899,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·星曜光学官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 190,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -1671,6 +1995,16 @@
     "angleOfView": 190,
     "angleOfViewCalc": 124.1,
     "apertureBladeCount": 5,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 140,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Canon RF",
@@ -1728,8 +2062,16 @@
         "new": {
           "price": 259,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·星曜光学官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 66,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -1789,8 +2131,16 @@
         "new": {
           "price": 529,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·星曜光学官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 120,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -1847,8 +2197,16 @@
         "new": {
           "price": 799,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·星曜光学官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 166,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -1938,8 +2296,16 @@
         "new": {
           "price": 999,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·星曜光学官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 200,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -2031,8 +2397,16 @@
         "new": {
           "price": 379,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·星曜光学官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 70,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -2079,8 +2453,16 @@
         "new": {
           "price": 999,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·星曜光学官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 200,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -2137,8 +2519,16 @@
         "new": {
           "price": 509,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·星曜光学官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 100,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -2186,8 +2576,16 @@
         "new": {
           "price": 299,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·星曜光学官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 70,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -2253,12 +2651,12 @@
     "apertureBladeCount": 9,
     "releaseYear": 2018,
     "pricing": {
-      "cn": {
-        "used": {
-          "price": 8800,
-          "currency": "CNY",
-          "source": "xianyu",
-          "sampledAt": "2026-05-08"
+      "global": {
+        "new": {
+          "price": 4499.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -2331,12 +2729,12 @@
     "apertureBladeCount": 9,
     "releaseYear": 2018,
     "pricing": {
-      "cn": {
-        "used": {
-          "price": 7666,
-          "currency": "CNY",
-          "source": "xianyu",
-          "sampledAt": "2026-05-08"
+      "global": {
+        "new": {
+          "price": 4999.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -2417,8 +2815,16 @@
         "new": {
           "price": 2550,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 399.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -2493,6 +2899,16 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2018,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 349.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-52II",
       "Lens rear cap"
@@ -2559,6 +2975,16 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2013,
+    "pricing": {
+      "global": {
+        "used": {
+          "price": 175,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Fujifilm X"
     ],
@@ -2608,6 +3034,16 @@
     "angleOfViewCalc": 44,
     "apertureBladeCount": 9,
     "releaseYear": 2020,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 239.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-43"
     ],
@@ -2740,6 +3176,16 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2015,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 449.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Lens cap",
       "Lens hood"
@@ -2798,6 +3244,16 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2018,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 1799.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-8-16",
       "Lens rear cap RLCP-001",
@@ -2855,8 +3311,16 @@
         "new": {
           "price": 5490,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 949.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -2923,8 +3387,16 @@
         "used": {
           "price": 1725,
           "currency": "CNY",
-          "source": "xianyu",
+          "source": "闲鱼",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 400,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -2991,8 +3463,16 @@
         "new": {
           "price": 6990,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1049.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -3046,8 +3526,16 @@
         "used": {
           "price": 1098,
           "currency": "CNY",
-          "source": "xianyu",
+          "source": "闲鱼",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 899.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -3110,8 +3598,16 @@
         "new": {
           "price": 4990,
           "currency": "CNY",
-          "source": "tmall",
+          "source": "天猫·富士官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 849.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -3189,8 +3685,16 @@
         "used": {
           "price": 5600,
           "currency": "CNY",
-          "source": "xianyu",
+          "source": "闲鱼",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 949.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -3252,12 +3756,12 @@
     "apertureBladeCount": 11,
     "releaseYear": 2024,
     "pricing": {
-      "cn": {
-        "used": {
-          "price": 8100,
-          "currency": "CNY",
-          "source": "xianyu",
-          "sampledAt": "2026-05-08"
+      "global": {
+        "new": {
+          "price": 1399.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -3333,8 +3837,16 @@
         "used": {
           "price": 2640,
           "currency": "CNY",
-          "source": "xianyu",
+          "source": "闲鱼",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 949.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -3395,8 +3907,16 @@
         "new": {
           "price": 6620,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1049.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -3454,8 +3974,16 @@
         "new": {
           "price": 2680,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 449.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -3537,8 +4065,16 @@
         "used": {
           "price": 1565,
           "currency": "CNY",
-          "source": "xianyu",
+          "source": "闲鱼",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 699.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -3602,8 +4138,16 @@
         "new": {
           "price": 5990,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 999.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -3675,8 +4219,16 @@
         "used": {
           "price": 2700,
           "currency": "CNY",
-          "source": "xianyu",
+          "source": "闲鱼",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 999.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -3731,8 +4283,16 @@
         "new": {
           "price": 6490,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1199.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -3789,8 +4349,16 @@
         "used": {
           "price": 1600,
           "currency": "CNY",
-          "source": "xianyu",
+          "source": "闲鱼",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 699.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -3840,12 +4408,12 @@
     "apertureBladeCount": 7,
     "releaseYear": 2013,
     "pricing": {
-      "cn": {
-        "used": {
-          "price": 1599,
-          "currency": "CNY",
-          "source": "xianyu",
-          "sampledAt": "2026-05-08"
+      "global": {
+        "new": {
+          "price": 899.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -3902,8 +4470,16 @@
         "new": {
           "price": 5840,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1049.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -3958,8 +4534,16 @@
         "used": {
           "price": 1274,
           "currency": "CNY",
-          "source": "xianyu",
+          "source": "闲鱼",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 499.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4017,8 +4601,16 @@
         "new": {
           "price": 2890,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 499.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4079,8 +4671,16 @@
         "used": {
           "price": 1519,
           "currency": "CNY",
-          "source": "xianyu",
+          "source": "闲鱼",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 394,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4135,8 +4735,16 @@
         "new": {
           "price": 2690,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 449.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4193,8 +4801,16 @@
         "new": {
           "price": 4190,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 699.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4249,8 +4865,16 @@
         "new": {
           "price": 5190,
           "currency": "CNY",
-          "source": "tmall",
+          "source": "天猫·富士官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 949.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4304,8 +4928,16 @@
         "new": {
           "price": 3890,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 699.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4367,8 +4999,16 @@
         "new": {
           "price": 3390,
           "currency": "CNY",
-          "source": "tmall",
+          "source": "天猫·富士官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 449.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4438,8 +5078,16 @@
         "new": {
           "price": 9990,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1699.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4502,8 +5150,16 @@
         "new": {
           "price": 10490,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1799.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4558,8 +5214,16 @@
         "new": {
           "price": 3590,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 499.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4637,8 +5301,16 @@
         "new": {
           "price": 4370,
           "currency": "CNY",
-          "source": "tmall",
+          "source": "天猫·富士官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 849.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4696,8 +5368,16 @@
         "used": {
           "price": 2350,
           "currency": "CNY",
-          "source": "xianyu",
+          "source": "闲鱼",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 999.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4755,8 +5435,16 @@
         "used": {
           "price": 2300,
           "currency": "CNY",
-          "source": "xianyu",
+          "source": "闲鱼",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1499.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4815,8 +5503,16 @@
         "new": {
           "price": 6620,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1199.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4879,8 +5575,16 @@
         "new": {
           "price": 4280,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 779.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -4953,8 +5657,16 @@
         "new": {
           "price": 5390,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 849.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5013,8 +5725,16 @@
         "new": {
           "price": 7790,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1399.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5076,8 +5796,16 @@
         "new": {
           "price": 6320,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1149.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5147,8 +5875,16 @@
         "new": {
           "price": 12600,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 2249.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5216,8 +5952,16 @@
         "new": {
           "price": 13500,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 2399.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5281,8 +6025,16 @@
         "new": {
           "price": 33900,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 5999.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5344,8 +6096,16 @@
         "new": {
           "price": 21400,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·富士影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 3599.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5402,8 +6162,16 @@
         "new": {
           "price": 558,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·SGIMAGE影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 138,
+          "currency": "USD",
+          "source": "sg-image.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5453,8 +6221,16 @@
         "new": {
           "price": 309,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·SGIMAGE影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 76,
+          "currency": "USD",
+          "source": "sg-image.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5511,8 +6287,16 @@
         "new": {
           "price": 512,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·SGIMAGE影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 125,
+          "currency": "USD",
+          "source": "sg-image.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5568,8 +6352,16 @@
         "new": {
           "price": 799,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·SGIMAGE影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 199,
+          "currency": "USD",
+          "source": "sg-image.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5620,8 +6412,16 @@
         "new": {
           "price": 568,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·SGIMAGE影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 128,
+          "currency": "USD",
+          "source": "sg-image.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5680,8 +6480,16 @@
         "new": {
           "price": 252,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·SGIMAGE影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 59,
+          "currency": "USD",
+          "source": "sg-image.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5738,8 +6546,16 @@
         "new": {
           "price": 283,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·SGIMAGE影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 78,
+          "currency": "USD",
+          "source": "sg-image.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5796,8 +6612,16 @@
         "new": {
           "price": 853,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·SGIMAGE影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 228,
+          "currency": "USD",
+          "source": "sg-image.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5853,8 +6677,16 @@
         "new": {
           "price": 444,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·SGIMAGE影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 98,
+          "currency": "USD",
+          "source": "sg-image.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5911,8 +6743,16 @@
         "new": {
           "price": 283,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·SGIMAGE影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 68,
+          "currency": "USD",
+          "source": "sg-image.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -5968,8 +6808,16 @@
         "new": {
           "price": 739,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·SGIMAGE影像旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 192,
+          "currency": "USD",
+          "source": "sg-image.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -6047,8 +6895,16 @@
         "new": {
           "price": 4288,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·适马京东自营旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 679,
+          "currency": "USD",
+          "source": "sigmaphoto.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -6114,8 +6970,16 @@
         "new": {
           "price": 3699,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·适马京东自营旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 579,
+          "currency": "USD",
+          "source": "sigmaphoto.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -6182,8 +7046,16 @@
         "new": {
           "price": 3099,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·适马京东自营旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 579,
+          "currency": "USD",
+          "source": "sigmaphoto.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -6273,8 +7145,16 @@
         "new": {
           "price": 4110,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·适马京东自营旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 694,
+          "currency": "USD",
+          "source": "sigmaphoto.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -6343,8 +7223,16 @@
         "new": {
           "price": 2699,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·适马京东自营旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 464,
+          "currency": "USD",
+          "source": "sigmaphoto.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -6413,6 +7301,16 @@
     ],
     "apertureBladeCount": 11,
     "releaseYear": 2025,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 919,
+          "currency": "USD",
+          "source": "sigmaphoto.com",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "L-Mount",
       "Canon RF",
@@ -6491,8 +7389,16 @@
         "new": {
           "price": 3499,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·适马京东自营旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 584,
+          "currency": "USD",
+          "source": "sigmaphoto.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -6556,8 +7462,16 @@
         "new": {
           "price": 2999,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·适马京东自营旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 659,
+          "currency": "USD",
+          "source": "sigmaphoto.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -6621,8 +7535,16 @@
         "new": {
           "price": 1799,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·适马京东自营旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 344,
+          "currency": "USD",
+          "source": "sigmaphoto.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -6687,8 +7609,16 @@
         "new": {
           "price": 2143,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·适马京东自营旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 484,
+          "currency": "USD",
+          "source": "sigmaphoto.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -6769,8 +7699,16 @@
         "new": {
           "price": 5999,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·适马京东自营旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 999,
+          "currency": "USD",
+          "source": "sigmaphoto.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -6849,8 +7787,16 @@
         "new": {
           "price": 3680,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·腾龙官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 599,
+          "currency": "USD",
+          "source": "tamron-americas.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -6927,8 +7873,16 @@
         "new": {
           "price": 3690,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·腾龙官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 699,
+          "currency": "USD",
+          "source": "tamron-americas.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -7010,8 +7964,16 @@
         "new": {
           "price": 3490,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·腾龙官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 599,
+          "currency": "USD",
+          "source": "tamron-americas.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -7095,8 +8057,16 @@
         "new": {
           "price": 9790,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·腾龙官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1199,
+          "currency": "USD",
+          "source": "tamron-americas.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -7148,6 +8118,16 @@
     "angleOfView": 63,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 11,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 380,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7204,6 +8184,16 @@
     "angleOfView": 24,
     "angleOfViewCalc": 16.1,
     "apertureBladeCount": 12,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 339,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7255,6 +8245,16 @@
     "angleOfView": 92,
     "angleOfViewCalc": 90.6,
     "apertureBladeCount": 7,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 129,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X"
@@ -7304,6 +8304,16 @@
     "angleOfView": 81,
     "angleOfViewCalc": 79.5,
     "apertureBladeCount": 6,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 148,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Fujifilm X",
       "Sony E",
@@ -7350,6 +8360,16 @@
     "angleOfView": 62,
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 9,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 127,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7401,6 +8421,16 @@
     "angleOfView": 56,
     "angleOfViewCalc": 55.3,
     "apertureBladeCount": 7,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 160,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7450,6 +8480,16 @@
     "angleOfView": 45,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 9,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 125,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7505,6 +8545,16 @@
     "angleOfView": 28,
     "angleOfViewCalc": 28.4,
     "apertureBladeCount": 9,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 129,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7560,6 +8610,16 @@
     "angleOfView": 32,
     "angleOfViewCalc": 21.4,
     "apertureBladeCount": 9,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 199,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -7619,8 +8679,16 @@
         "new": {
           "price": 649,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·铭匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 139,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -7681,8 +8749,16 @@
         "new": {
           "price": 859,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·铭匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 169,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -7743,8 +8819,16 @@
         "new": {
           "price": 483,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·铭匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 114,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -7802,6 +8886,16 @@
     "angleOfView": 61,
     "angleOfViewCalc": 59,
     "apertureBladeCount": 7,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 64,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Fujifilm X",
@@ -7858,8 +8952,16 @@
         "new": {
           "price": 960,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·铭匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 210,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -7915,8 +9017,16 @@
         "new": {
           "price": 364,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·铭匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 80,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -7981,8 +9091,16 @@
         "new": {
           "price": 547,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·铭匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 114,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8039,8 +9157,16 @@
         "new": {
           "price": 1056,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·铭匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 218,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8095,8 +9221,16 @@
         "new": {
           "price": 547,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·铭匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 109,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8155,8 +9289,16 @@
         "new": {
           "price": 1152,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·铭匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 229,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8217,8 +9359,16 @@
         "new": {
           "price": 940,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·铭匠官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 169,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8281,6 +9431,16 @@
     "angleOfView": 24,
     "angleOfViewCalc": 16.1,
     "apertureBladeCount": 12,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 389,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Canon RF",
@@ -8346,8 +9506,16 @@
         "new": {
           "price": 989,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·唯卓仕官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 199,
+          "currency": "USD",
+          "source": "viltrox.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8401,8 +9569,16 @@
         "new": {
           "price": 2499,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·唯卓仕官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 486,
+          "currency": "USD",
+          "source": "viltrox.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8468,8 +9644,16 @@
         "new": {
           "price": 1169,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·唯卓仕官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 239,
+          "currency": "USD",
+          "source": "viltrox.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8527,8 +9711,16 @@
         "new": {
           "price": 1399,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·唯卓仕官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 239,
+          "currency": "USD",
+          "source": "viltrox.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8593,8 +9785,16 @@
         "new": {
           "price": 889,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·唯卓仕官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 176,
+          "currency": "USD",
+          "source": "viltrox.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8650,8 +9850,16 @@
         "new": {
           "price": 3099,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·唯卓仕官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 578,
+          "currency": "USD",
+          "source": "viltrox.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8705,8 +9913,16 @@
         "new": {
           "price": 499,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·唯卓仕官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 99,
+          "currency": "USD",
+          "source": "viltrox.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8762,8 +9978,16 @@
         "new": {
           "price": 1299,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·唯卓仕官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 239,
+          "currency": "USD",
+          "source": "viltrox.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8822,8 +10046,16 @@
         "new": {
           "price": 889,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·唯卓仕官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 179,
+          "currency": "USD",
+          "source": "viltrox.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8876,8 +10108,16 @@
         "new": {
           "price": 3459,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·唯卓仕官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 580,
+          "currency": "USD",
+          "source": "viltrox.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8932,8 +10172,16 @@
         "new": {
           "price": 1299,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·唯卓仕官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 239,
+          "currency": "USD",
+          "source": "viltrox.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -8993,8 +10241,16 @@
         "new": {
           "price": 889,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·唯卓仕官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 180,
+          "currency": "USD",
+          "source": "viltrox.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -9047,8 +10303,16 @@
         "new": {
           "price": 2999,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·唯卓仕官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 580,
+          "currency": "USD",
+          "source": "viltrox.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },
@@ -9102,8 +10366,16 @@
         "new": {
           "price": 1699,
           "currency": "CNY",
-          "source": "jd",
+          "source": "京东·唯卓仕官方旗舰店",
           "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 329,
+          "currency": "USD",
+          "source": "viltrox.com",
+          "sampledAt": "2026-05-09"
         }
       }
     },

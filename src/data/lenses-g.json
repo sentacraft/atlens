@@ -36,6 +36,24 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 16700,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 2399.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap FLCP-82",
       "Rear lens cap RLCP-002",
@@ -89,6 +107,24 @@
     "angleOfViewCalc": 100,
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 17450,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 2999.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-82",
       "Lens rear cap RLCP-002",
@@ -140,6 +176,24 @@
     "angleOfViewCalc": 84.8,
     "apertureBladeCount": 9,
     "releaseYear": 2020,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 11890,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1949.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "filterMm": 58,
     "lensConfiguration": {
       "groups": 10,
@@ -188,6 +242,24 @@
     "angleOfViewCalc": 84.8,
     "apertureBladeCount": 9,
     "releaseYear": 2023,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 28900,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 4499.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap FLCP-77",
       "Rear lens cap RLCP-002",
@@ -259,6 +331,24 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 15500,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 2099.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-77",
       "Lens rear cap RLCP-002",
@@ -324,6 +414,16 @@
     ],
     "apertureBladeCount": 13,
     "releaseYear": 2025,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 36500,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap",
       "Rear lens cap",
@@ -384,6 +484,24 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2021,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 6490,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1149.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-62 II",
       "Lens rear cap RLCP-002",
@@ -450,6 +568,24 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2020,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 15900,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 2099.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-82",
       "Lens rear cap RLCP-002",
@@ -501,6 +637,24 @@
     "angleOfViewCalc": 62.7,
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 11350,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1949.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-62II",
       "Lens rear cap RLCP-002",
@@ -553,6 +707,16 @@
     "angleOfViewCalc": 57.4,
     "apertureBladeCount": 9,
     "releaseYear": 2020,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 1149.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap FLCP-62II",
       "Rear lens cap RLCP-002",
@@ -604,6 +768,24 @@
     "angleOfViewCalc": 52.9,
     "apertureBladeCount": 11,
     "releaseYear": 2023,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 16500,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 2099.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap FLCP-77",
       "Rear lens cap RLCP-002",
@@ -654,6 +836,24 @@
     "angleOfViewCalc": 47,
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 10350,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1699.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-62II",
       "Lens rear cap RLCP-002",
@@ -704,6 +904,24 @@
     "angleOfViewCalc": 37.8,
     "apertureBladeCount": 9,
     "releaseYear": 2021,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 16900,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 2099.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-77",
       "Lens rear cap RLCP-002",
@@ -766,6 +984,24 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2019,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 14350,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1799.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-67II",
       "Lens rear cap RLCP-002",
@@ -818,6 +1054,24 @@
     "angleOfViewCalc": 28,
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 19000,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 3199.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-77",
       "Lens rear cap RLCP-002",
@@ -872,6 +1126,24 @@
     "angleOfViewCalc": 28,
     "apertureBladeCount": 9,
     "releaseYear": 2023,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 24900,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 3999.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap FLCP-72 II",
       "Rear lens cap RLCP-002",
@@ -926,6 +1198,24 @@
     "angleOfViewCalc": 25.7,
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 18250,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 3099.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-72II",
       "Rear lens cap RLCP-002",
@@ -976,6 +1266,24 @@
     "angleOfViewCalc": 12.5,
     "apertureBladeCount": 9,
     "releaseYear": 2018,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 21350,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 3799.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Lens cap FLCP-82",
       "Lens rear cap RLCP-002",
@@ -1027,6 +1335,24 @@
     "angleOfViewCalc": 6.3,
     "apertureBladeCount": 9,
     "releaseYear": 2024,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 25500,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 3999.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
     "accessories": [
       "Front lens cap FLCP-95",
       "Rear lens cap RLCP-002",
