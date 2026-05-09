@@ -217,28 +217,33 @@ export default async function AboutContent() {
           {t("dataAccuracyIntro")}
         </p>
 
-        {/* Two core principles */}
+        {/* ── Spec Data subsection ── */}
         <div className="flex flex-col gap-3 mt-1">
-          <div>
-            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1">
-              {t("dataPrinciple1Title")}
-            </p>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              {t("dataPrinciple1Body")}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1">
-              {t("dataPrinciple2Title")}
-            </p>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              {t("dataPrinciple2Body")}
-            </p>
+          <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+            {t("dataSpecTitle")}
+          </p>
+          <div className="flex flex-col gap-2.5 pl-3 border-l-2 border-zinc-200 dark:border-zinc-700">
+            <div>
+              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                {t("dataSpecPoint1Title")}
+              </p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+                {t("dataSpecPoint1Body")}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                {t("dataSpecPoint2Title")}
+              </p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+                {t("dataSpecPoint2Body")}
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Pipeline overview */}
-        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3 mt-1">
+        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3">
           <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-3">
             {t("dataPipelineIntro")}
           </p>
@@ -266,14 +271,37 @@ export default async function AboutContent() {
           {t("dataUpdateNote")}{"  "}{t("dataVersionNote")}
         </p>
 
-        {/* Pricing data subsection */}
-        <div className="mt-2">
-          <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1">
+        {/* ── Price Data subsection ── */}
+        <div className="flex flex-col gap-3 mt-1">
+          <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
             {t("dataPricingTitle")}
           </p>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-            {t("dataPricingBody")}
-          </p>
+          <div className="flex flex-col gap-2.5 pl-3 border-l-2 border-zinc-200 dark:border-zinc-700">
+            <div>
+              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                {t("dataPricingPoint1Title")}
+              </p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+                {t("dataPricingPoint1Body")}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                {t("dataPricingPoint2Title")}
+              </p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+                {t("dataPricingPoint2Body")}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                {t("dataPricingPoint3Title")}
+              </p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+                {t("dataPricingPoint3Body")}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* GitHub link — covers both spec and pricing pipelines */}
