@@ -69,6 +69,11 @@ function TierPopover({
                 <span className="mx-1 opacity-40">·</span>
                 {t("sampledAt", { date: sampledDisplay })}
               </p>
+              {isUsed && (
+                <p className="text-[10px] text-zinc-400 dark:text-zinc-500">
+                  {t("usedReason")}
+                </p>
+              )}
             </div>
           </Popover.Popup>
         </Popover.Positioner>
