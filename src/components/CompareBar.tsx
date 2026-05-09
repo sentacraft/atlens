@@ -37,7 +37,9 @@ export default function CompareBar() {
 
   useEffect(() => {
     const el = barRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     const observer = new ResizeObserver(([entry]) => {
       document.documentElement.style.setProperty(
         "--compare-bar-height",

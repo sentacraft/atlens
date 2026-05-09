@@ -101,22 +101,30 @@ export default function Iris({
 
   const blades = useMemo(
     () => solveAllBlades(theta, dc),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- solveAllBlades is a pure
+     
     // function imported from a stable module; adding it to deps would be noise.
     [theta, dc]
   );
   const shape = useMemo(() => bladeShapePath(dc), [dc]);
 
   useEffect(() => () => {
-    if (animRef.current)     cancelAnimationFrame(animRef.current);
-    if (chaseRef.current)    cancelAnimationFrame(chaseRef.current);
-    if (initAnimRef.current) cancelAnimationFrame(initAnimRef.current);
+    if (animRef.current) {
+      cancelAnimationFrame(animRef.current);
+    }
+    if (chaseRef.current) {
+      cancelAnimationFrame(chaseRef.current);
+    }
+    if (initAnimRef.current) {
+      cancelAnimationFrame(initAnimRef.current);
+    }
   }, []);
 
   // When not in hover mode, keep theta in sync with DEFAULT_THETA so the iris
   // reflects any config change (e.g. Design Lab parameter tuning).
   useEffect(() => {
-    if (isHover) return;
+    if (isHover) {
+      return;
+    }
     thetaRef.current = DEFAULT_THETA;
     setTheta(DEFAULT_THETA);
   }, [DEFAULT_THETA, isHover]);
@@ -128,11 +136,19 @@ export default function Iris({
   // this render function — accessible here even though defined below.
 
   function playAnimation(anim: IrisAnimation) {
-    if (anim.type !== "sweep") return;
+    if (anim.type !== "sweep") {
+      return;
+    }
     const { sweepMs, totalMs } = anim;
 
-    if (animRef.current)     { cancelAnimationFrame(animRef.current);     animRef.current = null; }
-    if (initAnimRef.current) { cancelAnimationFrame(initAnimRef.current); initAnimRef.current = null; }
+    if (animRef.current) {
+
+      cancelAnimationFrame(animRef.current);     animRef.current = null;
+
+    }
+    if (initAnimRef.current) {
+      cancelAnimationFrame(initAnimRef.current); initAnimRef.current = null;
+    }
 
     thetaRef.current = thetaOpen;
     targetThetaRef.current = thetaOpen;
@@ -161,21 +177,29 @@ export default function Iris({
 
   // ── Mount animation ───────────────────────────────────────────────────────
   useEffect(() => {
-    if (!onMount) return;
+    if (!onMount) {
+      return;
+    }
     playAnimation(onMount);
     return () => {
-      if (initAnimRef.current) { cancelAnimationFrame(initAnimRef.current); initAnimRef.current = null; }
+      if (initAnimRef.current) {
+        cancelAnimationFrame(initAnimRef.current); initAnimRef.current = null;
+      }
       stopChase();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only init effect;
+   
   // thetaOpen/thetaMax read at mount time, stable for the component's lifetime.
   }, []);
 
   // ── Imperative controls (used by ApertureStrip) ───────────────────────────
 
   function driveToFStop(fStop: number) {
-    if (animRef.current)     { cancelAnimationFrame(animRef.current);     animRef.current = null; }
-    if (initAnimRef.current) { cancelAnimationFrame(initAnimRef.current); initAnimRef.current = null; }
+    if (animRef.current) {
+      cancelAnimationFrame(animRef.current);     animRef.current = null;
+    }
+    if (initAnimRef.current) {
+      cancelAnimationFrame(initAnimRef.current); initAnimRef.current = null;
+    }
     const t = findThetaForFStop(fStop, dc, { min: thetaOpen, max: thetaMax }, rawConfig.openFStop);
     targetThetaRef.current = Math.max(thetaOpen, Math.min(thetaMax, t));
     startChase();
@@ -187,7 +211,11 @@ export default function Iris({
   const stepDeg = 360 / N;
   const maskCount = Math.floor((N - 1) / 2);
 
-  if (blades.length === 0) return null;
+  if (blades.length === 0) {
+
+    return null;
+
+  }
 
   const b0 = blades[0];
   const b0AngleDeg = (b0.bladeAngle * 180) / Math.PI;
@@ -201,7 +229,9 @@ export default function Iris({
   // ── Chase loop ────────────────────────────────────────────────────────────
 
   function startChase() {
-    if (chaseRef.current) return;
+    if (chaseRef.current) {
+      return;
+    }
     lastFrameRef.current = performance.now();
     function chaseTick(now: number) {
       const dt   = Math.min(now - lastFrameRef.current, 64);
@@ -234,7 +264,9 @@ export default function Iris({
   }
 
   function stopChase() {
-    if (chaseRef.current) { cancelAnimationFrame(chaseRef.current); chaseRef.current = null; }
+    if (chaseRef.current) {
+      cancelAnimationFrame(chaseRef.current); chaseRef.current = null;
+    }
   }
 
   // ── Hover interaction ─────────────────────────────────────────────────────
@@ -243,30 +275,42 @@ export default function Iris({
 
   function posToDiameterTheta(clientX: number, rect: DOMRect): number {
     const rawPos = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-    if (inradiusOpen <= 0) return thetaOpen + rawPos * (thetaMax - thetaOpen);
+    if (inradiusOpen <= 0) {
+      return thetaOpen + rawPos * (thetaMax - thetaOpen);
+    }
     const r22     = (rawConfig.openFStop * inradiusOpen) / closedFStop;
     const targetR = inradiusOpen + rawPos * (r22 - inradiusOpen);
     return findThetaForInradius(targetR, dc, { min: thetaOpen, max: thetaMax });
   }
 
   function handleMouseEnter(e: React.MouseEvent<HTMLDivElement>) {
-    if (!isHover) return;
-    if (animRef.current)     { cancelAnimationFrame(animRef.current);     animRef.current = null; }
-    if (initAnimRef.current) { cancelAnimationFrame(initAnimRef.current); initAnimRef.current = null; }
+    if (!isHover) {
+      return;
+    }
+    if (animRef.current) {
+      cancelAnimationFrame(animRef.current);     animRef.current = null;
+    }
+    if (initAnimRef.current) {
+      cancelAnimationFrame(initAnimRef.current); initAnimRef.current = null;
+    }
     const rect = e.currentTarget.getBoundingClientRect();
     targetThetaRef.current = posToDiameterTheta(e.clientX, rect);
     startChase();
   }
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    if (!isHover) return;
+    if (!isHover) {
+      return;
+    }
     const rect = e.currentTarget.getBoundingClientRect();
     targetThetaRef.current = posToDiameterTheta(e.clientX, rect);
     startChase();
   }
 
   function handleMouseLeave() {
-    if (!isHover) return;
+    if (!isHover) {
+      return;
+    }
     stopChase();
     const startTheta = thetaRef.current;
     const startTime  = performance.now();
@@ -276,8 +320,12 @@ export default function Iris({
       const newTheta = startTheta + (DEFAULT_THETA - startTheta) * eased;
       thetaRef.current = newTheta;
       setTheta(newTheta);
-      if (p < 1) animRef.current = requestAnimationFrame(tick);
-      else animRef.current = null;
+      if (p < 1) {
+        animRef.current = requestAnimationFrame(tick);
+      }
+      else {
+        animRef.current = null;
+      }
     }
     animRef.current = requestAnimationFrame(tick);
   }
@@ -285,7 +333,9 @@ export default function Iris({
   // ── Tap interaction ───────────────────────────────────────────────────────
 
   function handleClick() {
-    if (interactive?.type !== "tap") return;
+    if (interactive?.type !== "tap") {
+      return;
+    }
     playAnimation(interactive.animation);
   }
 
@@ -298,7 +348,9 @@ export default function Iris({
   // is rendered. apertureStrip consumers still receive it via props as before.
   const currentFStop = useMemo(() => {
     const r = apertureInradius(theta, dc);
-    if (r <= 0 || inradiusOpen <= 0) return closedFStop;
+    if (r <= 0 || inradiusOpen <= 0) {
+      return closedFStop;
+    }
     return Math.min(closedFStop, rawConfig.openFStop * inradiusOpen / r);
   }, [theta, dc, inradiusOpen, closedFStop, rawConfig.openFStop]);
 

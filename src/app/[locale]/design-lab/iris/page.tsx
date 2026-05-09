@@ -83,7 +83,11 @@ function IrisStage({
     [config.bladeLength, config.bladeWidth, config.bladeCurvature, config.pinDistance]
   );
 
-  if (blades.length === 0) return null;
+  if (blades.length === 0) {
+
+    return null;
+
+  }
 
   const b0 = blades[0];
   const b0AngleDeg = (b0.bladeAngle * 180) / Math.PI;
@@ -355,7 +359,9 @@ function IrisStage({
 const FSTOP_OPTIONS = FSTOP_SEQUENCE.filter((f): f is number => f !== "A");
 
 function formatFStop(f: number): string {
-  if (!isFinite(f) || f > 22) return "f/—";
+  if (!isFinite(f) || f > 22) {
+    return "f/—";
+  }
   return `f/${f.toFixed(1)}`;
 }
 
@@ -396,16 +402,24 @@ export default function ApertureV2Lab() {
     const key = selectedProfile === "production:hero" ? "IRIS_HERO"
       : selectedProfile === "production:nav" ? "IRIS_NAV" : "IRIS_LAB";
     const v = await readFromConfig(key);
-    if (!v) return;
+    if (!v) {
+      return;
+    }
     applyConfig(v);
   }
 
   // Apply a loaded IrisConfig to all workspace state variables.
   function applyConfig(v: IrisConfig) {
     setConfig(buildDerivedConfig(v, R_HOUSING));
-    if (v.bladeColor)  setBladeGray(parseInt(v.bladeColor.slice(1, 3), 16));
-    if (v.strokeColor) setStrokeGray(parseInt(v.strokeColor.slice(1, 3), 16));
-    if (v.strokeWidth !== undefined) setStrokeWidth(v.strokeWidth);
+    if (v.bladeColor) {
+      setBladeGray(parseInt(v.bladeColor.slice(1, 3), 16));
+    }
+    if (v.strokeColor) {
+      setStrokeGray(parseInt(v.strokeColor.slice(1, 3), 16));
+    }
+    if (v.strokeWidth !== undefined) {
+      setStrokeWidth(v.strokeWidth);
+    }
     setOpenFStop(v.openFStop);
     setDefaultFStop(v.defaultFStop);
     const hc = v.interactive?.type === "hover" ? v.interactive : null;
@@ -454,13 +468,15 @@ export default function ApertureV2Lab() {
       : selectedProfile === "production:nav" ? "IRIS_NAV" : "IRIS_LAB";
     const res = await exportToConfig(key, stored);
     setExportStatus(res.ok ? `✓ Written to ${key}` : `✗ ${res.error}`);
-    if (res.ok) setTimeout(() => setExportStatus(null), 3000);
+    if (res.ok) {
+      setTimeout(() => setExportStatus(null), 3000);
+    }
   }
 
   // Seed the workspace from IRIS_LAB on first mount.
   useEffect(() => {
-    readFromConfig("IRIS_LAB").then(v => { if (v) applyConfig(v); });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    readFromConfig("IRIS_LAB").then(v => { if (v) {applyConfig(v);} });
+  }, []);  
 
   // Derive geometry-constrained parameters via the shared helper.
   const derivedConfig = useMemo(
@@ -528,7 +544,7 @@ export default function ApertureV2Lab() {
     onMount,
     closedFStop,
     chaseTauMs,
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }), [config.N, config.pinDistance, config.slotOffset, config.bladeLength, config.bladeWidth,
       openFStop, defaultFStop, closedFStop, chaseTauMs,
       previewSize, bladeGray, strokeGray, strokeWidth, onMount]);
@@ -545,7 +561,9 @@ export default function ApertureV2Lab() {
 
   useEffect(() => {
     if (!isPlaying) {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
       startRef.current = undefined;
       return;
     }
@@ -572,7 +590,9 @@ export default function ApertureV2Lab() {
 
     rafRef.current = requestAnimationFrame(tick);
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
     };
   }, [isPlaying, speed, range]);
 
@@ -656,21 +676,31 @@ export default function ApertureV2Lab() {
 
   // Cleanup all RAFs on unmount.
   useEffect(() => () => {
-    if (followChaseRafRef.current) cancelAnimationFrame(followChaseRafRef.current);
-    if (followLeaveRafRef.current) cancelAnimationFrame(followLeaveRafRef.current);
+    if (followChaseRafRef.current) {
+      cancelAnimationFrame(followChaseRafRef.current);
+    }
+    if (followLeaveRafRef.current) {
+      cancelAnimationFrame(followLeaveRafRef.current);
+    }
   }, []);
 
   useEffect(() => {
     if (!interactive) {
       wasInHotzoneRef.current = false;
-      if (followChaseRafRef.current) { cancelAnimationFrame(followChaseRafRef.current); followChaseRafRef.current = null; }
-      if (followLeaveRafRef.current) { cancelAnimationFrame(followLeaveRafRef.current); followLeaveRafRef.current = null; }
+      if (followChaseRafRef.current) {
+        cancelAnimationFrame(followChaseRafRef.current); followChaseRafRef.current = null;
+      }
+      if (followLeaveRafRef.current) {
+        cancelAnimationFrame(followLeaveRafRef.current); followLeaveRafRef.current = null;
+      }
       return;
     }
 
     // Chase loop: runs while in hotzone, smoothly tracks followTargetRef.
     function startChase() {
-      if (followChaseRafRef.current) return; // already running
+      if (followChaseRafRef.current) {
+        return;
+      } // already running
       followLastFrameRef.current = performance.now();
       function chaseTick(now: number) {
         const dt = Math.min(now - followLastFrameRef.current, 64); // cap at ~4 frames
@@ -686,11 +716,15 @@ export default function ApertureV2Lab() {
     }
 
     function stopChase() {
-      if (followChaseRafRef.current) { cancelAnimationFrame(followChaseRafRef.current); followChaseRafRef.current = null; }
+      if (followChaseRafRef.current) {
+        cancelAnimationFrame(followChaseRafRef.current); followChaseRafRef.current = null;
+      }
     }
 
     function handleMouseMove(e: MouseEvent) {
-      if (!irisContainerRef.current) return;
+      if (!irisContainerRef.current) {
+        return;
+      }
       const rect = irisContainerRef.current.getBoundingClientRect();
 
       // D = actual iris diameter in CSS px.
@@ -715,7 +749,9 @@ export default function ApertureV2Lab() {
           wasInHotzoneRef.current = false;
           stopChase();
           // Cubic ease-out back to autoTheta over easeOutMs
-          if (followLeaveRafRef.current) cancelAnimationFrame(followLeaveRafRef.current);
+          if (followLeaveRafRef.current) {
+            cancelAnimationFrame(followLeaveRafRef.current);
+          }
           const fromTheta = thetaRef.current;
           const toTheta   = autoTheta;
           const startMs   = performance.now();
@@ -725,8 +761,12 @@ export default function ApertureV2Lab() {
             const v     = fromTheta + (toTheta - fromTheta) * eased;
             setTheta(v);
             thetaRef.current = v;
-            if (p < 1) followLeaveRafRef.current = requestAnimationFrame(leaveTick);
-            else followLeaveRafRef.current = null;
+            if (p < 1) {
+              followLeaveRafRef.current = requestAnimationFrame(leaveTick);
+            }
+            else {
+              followLeaveRafRef.current = null;
+            }
           }
           followLeaveRafRef.current = requestAnimationFrame(leaveTick);
         }
@@ -734,7 +774,9 @@ export default function ApertureV2Lab() {
       }
 
       // Cancel any in-progress leave animation and ensure chase is running
-      if (followLeaveRafRef.current) { cancelAnimationFrame(followLeaveRafRef.current); followLeaveRafRef.current = null; }
+      if (followLeaveRafRef.current) {
+        cancelAnimationFrame(followLeaveRafRef.current); followLeaveRafRef.current = null;
+      }
       startChase();
 
       // Map horizontal position within hotzone → aperture diameter (inradius) linearly.
@@ -748,10 +790,12 @@ export default function ApertureV2Lab() {
       const rawTarget = findThetaForInradius(targetR, derivedConfig, range);
 
       if (!wasInHotzoneRef.current) {
+
         // First frame: record entry offset for smooth catchup
         followEntryOffsetRef.current = thetaRef.current - rawTarget;
         followEntryTimeRef.current   = performance.now();
         wasInHotzoneRef.current      = true;
+
       }
 
       // Quadratic ease-out on entry offset: (1-p)^2 over catchupMs
@@ -914,7 +958,9 @@ export default function ApertureV2Lab() {
               <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">Animation</p>
               <button
                 onClick={() => {
-                  if (interactive) return; // disabled in follow-mouse mode
+                  if (interactive) {
+                    return;
+                  } // disabled in follow-mouse mode
                   setIsPlaying((p) => !p);
                 }}
                 className="w-full rounded py-2 text-sm font-medium transition-colors"
@@ -967,7 +1013,9 @@ export default function ApertureV2Lab() {
                   onChange={(e) => {
                     const checked = e.target.checked;
                     setOnMount(checked ? { type: "sweep", sweepMs: 800, totalMs: 1000 } : undefined);
-                    if (checked) setPreviewAnimKey(k => k + 1);
+                    if (checked) {
+                      setPreviewAnimKey(k => k + 1);
+                    }
                   }}
                   style={{ accentColor: "#18181b", width: 14, height: 14 }}
                 />
@@ -1019,7 +1067,9 @@ export default function ApertureV2Lab() {
                     const v = parseFloat(e.target.value);
                     setOpenFStop(v);
                     // Clamp defaultFStop to be ≥ the new openFStop.
-                    if (defaultFStop < v) setDefaultFStop(v);
+                    if (defaultFStop < v) {
+                      setDefaultFStop(v);
+                    }
                   }}
                   style={{
                     width: "100%", padding: "5px 8px", borderRadius: 4,
