@@ -12,44 +12,60 @@ import { xLenses, gfxLenses } from "@/lib/lens";
 import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/AckCard";
 
+type CoverageMeta = { active: boolean; discontinued: boolean; notes: string };
+
+function Check() {
+  return <span className="text-zinc-700 dark:text-zinc-300 text-sm">✓</span>;
+}
+function Dash() {
+  return <span className="text-zinc-300 dark:text-zinc-600 text-sm">—</span>;
+}
+
 function MountCoverageTable({
   title, brands, counts, meta, brandNames, col, rowTotal,
 }: {
   title: string;
   brands: string[];
   counts: Record<string, number>;
-  meta: Record<string, string>;
+  meta: Record<string, CoverageMeta>;
   brandNames: Record<string, string>;
-  col: { brand: string; count: string; notes: string };
+  col: { brand: string; count: string; active: string; discontinued: string; notes: string };
   rowTotal: string;
 }) {
   const total = brands.reduce((s, b) => s + (counts[b] ?? 0), 0);
   return (
     <div className="flex flex-col gap-2">
       <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500">{title}</p>
-      <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden self-start">
+        <table className="text-sm">
           <thead>
             <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
-              <th className="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 w-32">{col.brand}</th>
-              <th className="px-3 py-2 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 w-16">{col.count}</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400">{col.notes}</th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 w-28">{col.brand}</th>
+              <th className="px-3 py-2 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 w-14">{col.count}</th>
+              <th className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 w-14">{col.active}</th>
+              <th className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 w-20">{col.discontinued}</th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 w-40">{col.notes}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
-            {brands.map((b) => (
-              <tr key={b}>
-                <td className="px-3 py-2 font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap">{brandNames[b] ?? b}</td>
-                <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">{counts[b] ?? 0}</td>
-                <td className="px-3 py-2 text-zinc-500 dark:text-zinc-400 text-xs">{meta[b] ?? ""}</td>
-              </tr>
-            ))}
+            {brands.map((b) => {
+              const m: CoverageMeta = (meta as Record<string, CoverageMeta>)[b] ?? { active: false, discontinued: false, notes: "" };
+              return (
+                <tr key={b}>
+                  <td className="px-3 py-2 font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap">{brandNames[b] ?? b}</td>
+                  <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">{counts[b] ?? 0}</td>
+                  <td className="px-3 py-2 text-center">{m.active ? <Check /> : <Dash />}</td>
+                  <td className="px-3 py-2 text-center">{m.discontinued ? <Check /> : <Dash />}</td>
+                  <td className="px-3 py-2 text-zinc-500 dark:text-zinc-400 text-xs">{m.notes}</td>
+                </tr>
+              );
+            })}
           </tbody>
           <tfoot>
             <tr className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
               <td className="px-3 py-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">{rowTotal}</td>
               <td className="px-3 py-2 text-right tabular-nums text-xs font-semibold text-zinc-700 dark:text-zinc-300">{total}</td>
-              <td />
+              <td colSpan={3} />
             </tr>
           </tfoot>
         </table>
@@ -184,17 +200,17 @@ export default async function AboutContent() {
         </p>
         <div className="flex flex-col gap-4 mt-1">
           {([
-            { key: "coverageBrandsX", brands: X_BRANDS, counts: xCounts, meta: coverageMeta.x as Record<string,string> },
-            { key: "coverageBrandsG", brands: G_BRANDS, counts: gCounts, meta: coverageMeta.g as Record<string,string> },
+            { key: "coverageBrandsX", brands: X_BRANDS, counts: xCounts, meta: coverageMeta.x },
+            { key: "coverageBrandsG", brands: G_BRANDS, counts: gCounts, meta: coverageMeta.g },
           ] as const).map(({ key, brands, counts, meta }) => (
             <MountCoverageTable
               key={key}
               title={t(key)}
-              brands={brands}
+              brands={[...brands]}
               counts={counts}
-              meta={meta}
+              meta={meta as Record<string, CoverageMeta>}
               brandNames={Object.fromEntries(brands.map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
-              col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), notes: t("coverageColNotes") }}
+              col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), active: t("coverageColActive"), discontinued: t("coverageColDiscontinued"), notes: t("coverageColNotes") }}
               rowTotal={t("coverageRowTotal")}
             />
           ))}
@@ -227,44 +243,29 @@ export default async function AboutContent() {
           </div>
         </div>
 
-        {/* Pipeline overview — collapsible */}
-        <details className="group rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 mt-1">
-          <summary className="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer list-none select-none">
-            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-              {t("dataPipelineToggle", { count: pipelineStages.length })}
-            </span>
-            <svg
-              viewBox="0 0 16 16"
-              width="12"
-              height="12"
-              fill="currentColor"
-              className="flex-shrink-0 text-zinc-400 dark:text-zinc-500 transition-transform duration-200 group-open:rotate-180"
-              aria-hidden="true"
-            >
-              <path d="M8 10.94 2.53 5.47l.94-.94L8 9.06l4.53-4.53.94.94L8 10.94Z" />
-            </svg>
-          </summary>
-          <div className="px-4 pb-3">
-            <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-3">{t("dataPipelineIntro")}</p>
-            <ol className="flex flex-col gap-2.5">
-              {pipelineStages.map((stage) => (
-                <li key={stage.badge} className="flex items-start gap-3">
-                  <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center font-mono text-[10px] font-semibold text-zinc-600 dark:text-zinc-300">
-                    {stage.badge}
+        {/* Pipeline overview */}
+        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3 mt-1">
+          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-3">
+            {t("dataPipelineIntro")}
+          </p>
+          <ol className="flex flex-col gap-2.5">
+            {pipelineStages.map((stage) => (
+              <li key={stage.badge} className="flex items-start gap-3">
+                <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center font-mono text-[10px] font-semibold text-zinc-600 dark:text-zinc-300">
+                  {stage.badge}
+                </span>
+                <div className="min-w-0">
+                  <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+                    {stage.label}
                   </span>
-                  <div className="min-w-0">
-                    <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
-                      {stage.label}
-                    </span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-500 ml-2">
-                      {stage.desc}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </details>
+                  <span className="text-xs text-zinc-500 dark:text-zinc-500 ml-2">
+                    {stage.desc}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
 
         {/* Update cadence */}
         <p className="text-xs text-zinc-500 dark:text-zinc-500">
