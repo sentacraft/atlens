@@ -53,16 +53,26 @@ export function CompareProvider({ children }: { children: React.ReactNode }) {
     setCompareState((prev) => ({ ...prev, [mount]: [] }));
   }, []);
 
+  // canToggle reads compareState directly; using a state ref keeps the function
+  // reference stable across state changes so that consumers (and any useEffect
+  // that depends on it) don't re-run on every mutation.
+  const canToggle = useCallback(
+    (id: string, mount: Mount) => {
+      const slot = compareState[mount];
+      return slot.includes(id) || slot.length < MAX_COMPARE;
+    },
+    [compareState]
+  );
+
   const value = useMemo(
     () => ({
       compareState,
       toggleCompare,
       replaceCompare,
       clearCompare,
-      canToggle: (id: string, mount: Mount) =>
-        compareState[mount].includes(id) || compareState[mount].length < MAX_COMPARE,
+      canToggle,
     }),
-    [clearCompare, compareState, replaceCompare, toggleCompare]
+    [canToggle, clearCompare, compareState, replaceCompare, toggleCompare]
   );
 
   return <CompareContext value={value}>{children}</CompareContext>;
@@ -79,21 +89,44 @@ export function useCompare() {
 // Mount-scoped hook for components inside /lenses/[mount]/...
 // Automatically reads the current mount from URL params.
 //
-// The returned object is memoized: the inline arrow functions would otherwise
-// be a new reference every render, causing any useEffect that depends on e.g.
-// replaceCompare to re-run on every render of the consumer — which can manifest
-// as "Maximum update depth exceeded" once any consumer triggers a state change.
+// The returned function references are stable across state changes — they
+// only depend on the underlying provider callbacks (which are themselves
+// useCallback-stable) and the current mount. This stability matters because
+// any useEffect with these in its dep array would otherwise re-run after
+// every Context state change, which can clobber state seeded by the effect
+// itself (e.g. seeding compareState from an `initialLensIds` prop).
 export function useMountedCompare() {
   const ctx = useCompare();
   const mount = useEffectiveMount();
+  const { compareState, toggleCompare, replaceCompare, clearCompare, canToggle } = ctx;
+
+  const compareIds = compareState[mount];
+
+  const toggleCompareScoped = useCallback(
+    (id: string) => toggleCompare(id, mount),
+    [toggleCompare, mount]
+  );
+  const replaceCompareScoped = useCallback(
+    (ids: string[]) => replaceCompare(ids, mount),
+    [replaceCompare, mount]
+  );
+  const clearCompareScoped = useCallback(
+    () => clearCompare(mount),
+    [clearCompare, mount]
+  );
+  const canToggleScoped = useCallback(
+    (id: string) => canToggle(id, mount),
+    [canToggle, mount]
+  );
+
   return useMemo(
     () => ({
-      compareIds: ctx.compareState[mount],
-      toggleCompare: (id: string) => ctx.toggleCompare(id, mount),
-      replaceCompare: (ids: string[]) => ctx.replaceCompare(ids, mount),
-      clearCompare: () => ctx.clearCompare(mount),
-      canToggle: (id: string) => ctx.canToggle(id, mount),
+      compareIds,
+      toggleCompare: toggleCompareScoped,
+      replaceCompare: replaceCompareScoped,
+      clearCompare: clearCompareScoped,
+      canToggle: canToggleScoped,
     }),
-    [ctx, mount]
+    [compareIds, toggleCompareScoped, replaceCompareScoped, clearCompareScoped, canToggleScoped]
   );
 }
