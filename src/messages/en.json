@@ -338,7 +338,6 @@
     "faq3A": "A dash means the data hasn't been collected yet, or the manufacturer hasn't publicly published that spec.",
     "disclaimerTitle": "Disclaimer",
     "disclaimerAccuracy": "X-Glass data is sourced from public materials and refined through manual review. We make every effort to keep specs accurate and up to date, but errors and delays are inevitable. Always verify key specifications on the manufacturer's official page before making a purchase decision.",
-    "disclaimerPricing": "Pricing is shown for tier reference only. Sampled prices may not reflect current promotions, coupons, or regional variations. Always verify the actual price on the relevant platform before making a purchase decision.",
     "disclaimerLiability": "X-Glass is not responsible for any decisions made based on information presented here.",
     "disclaimerIndependent": "X-Glass is an independent third-party tool and is not affiliated with, endorsed by, or sponsored by Fujifilm or any lens manufacturer.",
     "disclaimerCopyright": "Product images and brand trademarks are the property of their respective owners. If you are a rights holder and believe your content has been used improperly, please contact xglass@sentacraft.com.",
@@ -433,8 +432,8 @@
     "cnyAmount": "¥{value}",
     "tierSymbol": "$",
     "disclaimerTrigger": "For reference only",
-    "detailNewNote": "This price was sampled from one official storefront at one point in time. E-commerce list prices change frequently and are often affected by promotions or coupons — the figure shown does not represent the lowest available price.",
-    "detailUsedNote": "Used prices vary widely with condition, included accessories, and seller. This is the median of a sampled batch of listings at the time of sampling; actual sale prices may differ.",
+    "detailNewNote": "This price was sampled from one storefront at one point in time and is not continuously updated. Actual prices may differ due to promotions or coupons and may not represent the lowest available price.",
+    "detailUsedNote": "This is the median of several listings sampled from one platform at one point in time. Actual prices vary with condition, accessories, and seller, and may differ significantly.",
     "tierNote": "The price tier gives you a quick sense of the lens's price range. Click to see the exact sampled price and source. Prices are not continuously updated and are for reference only.",
     "usedReason": "A new price could not be found from official channels; showing a used market price instead.",
     "sampledAt": "Sampled {date}"
