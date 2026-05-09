@@ -281,7 +281,10 @@
     "tagMacro": "微距",
     "tagUltraMacro": "超微距",
     "tagFisheye": "鱼眼",
-    "tagProbe": "探针镜头"
+    "tagProbe": "探针镜头",
+    "priceLabel": "价格",
+    "tierSymbol": "¥",
+    "priceCnyAmount": "{value} 元"
   },
   "About": {
     "pageTitle": "关于 X-Glass",

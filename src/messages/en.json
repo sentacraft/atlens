@@ -281,7 +281,10 @@
     "tagMacro": "Macro",
     "tagUltraMacro": "Ultra Macro",
     "tagFisheye": "Fisheye",
-    "tagProbe": "Probe"
+    "tagProbe": "Probe",
+    "priceLabel": "Price",
+    "tierSymbol": "$",
+    "priceCnyAmount": "¥{value}"
   },
   "About": {
     "pageTitle": "About X-Glass",
