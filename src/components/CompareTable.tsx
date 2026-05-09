@@ -176,7 +176,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const priceFieldLabel = tPricing("fieldLabel");
   const priceGroupLabel = tPricing("groupLabel");
   const { compareIds, replaceCompare } = useMountedCompare();
-  const { buildCompareUrl } = useCompareUrl();
+  const { buildLocalizedCompareUrl } = useCompareUrl();
   const mount = useEffectiveMount();
   const initialLensIds = useMemo(
     () => initialLenses.map((lens) => lens.id),
@@ -205,9 +205,11 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
       replaceCompare(nextIds);
       // Update only the address bar — avoids RSC round-trip and the redundant
       // server-side re-parse of ids that the client already computed.
-      window.history.replaceState(null, "", buildCompareUrl(nextIds));
+      // Use the locale-prefixed form because replaceState writes the path
+      // verbatim (next-intl's router would have auto-prefixed it for us).
+      window.history.replaceState(null, "", buildLocalizedCompareUrl(nextIds));
     },
-    [replaceCompare, buildCompareUrl]
+    [replaceCompare, buildLocalizedCompareUrl]
   );
 
   const handleAddLens = useCallback(
