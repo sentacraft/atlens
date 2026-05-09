@@ -317,7 +317,7 @@
     "pipelinePDesc": "Data validity checks, normalization, and final merge into the database",
     "dataUpdateNote": "The database is updated when new lenses launch or when existing data needs correction.",
     "dataVersionNote": "The version number and last-updated timestamp in the footer reflect the latest published data release.",
-    "dataGitHubCta": "View the full pipeline architecture on GitHub",
+    "dataGitHubCta": "View the full pipeline architecture (spec + pricing) on GitHub",
     "dataPricingTitle": "Price data",
     "dataPricingBody": "Pricing is produced by a separate pipeline from specs. New prices are sampled from official brand online stores, and used prices from second-hand marketplaces. Because prices change constantly, are affected by promotions and coupons, and used prices fluctuate widely with condition, the figures shown are point-in-time snapshots — not a promise of the current or lowest price. On the comparison page, lenses are grouped into price tiers to indicate relative positioning rather than exact figures. Tap the tier symbols for the sampled price and its date. Always verify the current price on the platform before buying.",
     "faqTitle": "FAQ",

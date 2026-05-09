@@ -266,14 +266,6 @@ export default async function AboutContent() {
           {t("dataUpdateNote")}{"  "}{t("dataVersionNote")}
         </p>
 
-        {/* GitHub link */}
-        <ExternalLink
-          href="https://github.com/sentacraft/x-glass#data-pipeline"
-          className="inline-flex items-center gap-0.5 self-start text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
-        >
-          {t("dataGitHubCta")}
-        </ExternalLink>
-
         {/* Pricing data subsection */}
         <div className="mt-2">
           <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1">
@@ -283,6 +275,14 @@ export default async function AboutContent() {
             {t("dataPricingBody")}
           </p>
         </div>
+
+        {/* GitHub link — covers both spec and pricing pipelines */}
+        <ExternalLink
+          href="https://github.com/sentacraft/x-glass#data-pipeline"
+          className="inline-flex items-center gap-0.5 self-start text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+        >
+          {t("dataGitHubCta")}
+        </ExternalLink>
       </Section>
 
       {/* FAQ */}
