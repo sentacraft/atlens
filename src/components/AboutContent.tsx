@@ -8,8 +8,55 @@ import { ExternalLink } from "@/components/ui/external-link";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import type { FeedbackType } from "@/components/FeedbackDialog";
-import { xLenses, gfxLenses, getOrderedUniqueBrands } from "@/lib/lens";
+import { xLenses, gfxLenses } from "@/lib/lens";
+import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/AckCard";
+
+function MountCoverageTable({
+  title, brands, counts, meta, brandNames, col, rowTotal,
+}: {
+  title: string;
+  brands: string[];
+  counts: Record<string, number>;
+  meta: Record<string, string>;
+  brandNames: Record<string, string>;
+  col: { brand: string; count: string; notes: string };
+  rowTotal: string;
+}) {
+  const total = brands.reduce((s, b) => s + (counts[b] ?? 0), 0);
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500">{title}</p>
+      <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+              <th className="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 w-32">{col.brand}</th>
+              <th className="px-3 py-2 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 w-16">{col.count}</th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400">{col.notes}</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+            {brands.map((b) => (
+              <tr key={b}>
+                <td className="px-3 py-2 font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap">{brandNames[b] ?? b}</td>
+                <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">{counts[b] ?? 0}</td>
+                <td className="px-3 py-2 text-zinc-500 dark:text-zinc-400 text-xs">{meta[b] ?? ""}</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+              <td className="px-3 py-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">{rowTotal}</td>
+              <td className="px-3 py-2 text-right tabular-nums text-xs font-semibold text-zinc-700 dark:text-zinc-300">{total}</td>
+              <td />
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  );
+}
 
 function Section({
   id,
@@ -37,12 +84,14 @@ export default async function AboutContent() {
     getLocale(),
   ]);
 
-  const xBrandList = getOrderedUniqueBrands(xLenses)
-    .map((b) => tBrand(b as Parameters<typeof tBrand>[0]))
-    .join(" · ");
-  const gBrandList = getOrderedUniqueBrands(gfxLenses)
-    .map((b) => tBrand(b as Parameters<typeof tBrand>[0]))
-    .join(" · ");
+  const xCounts = (xLenses as { brand: string }[]).reduce<Record<string, number>>(
+    (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
+  );
+  const gCounts = (gfxLenses as { brand: string }[]).reduce<Record<string, number>>(
+    (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
+  );
+  const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage"];
+  const G_BRANDS = ["fujifilm"];
 
   const faqItems = [
     { q: t("faq1Q"), a: t("faq1A") },
@@ -133,24 +182,22 @@ export default async function AboutContent() {
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("coverageBody")}
         </p>
-        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3 mt-1 flex flex-col gap-2.5">
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-            {t("coverageBrands")}
-          </p>
-          <div className="flex flex-col gap-2">
-            <div>
-              <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 mb-0.5">
-                {t("coverageBrandsX")}
-              </p>
-              <p className="text-sm text-zinc-700 dark:text-zinc-300">{xBrandList}</p>
-            </div>
-            <div>
-              <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500 mb-0.5">
-                {t("coverageBrandsG")}
-              </p>
-              <p className="text-sm text-zinc-700 dark:text-zinc-300">{gBrandList}</p>
-            </div>
-          </div>
+        <div className="flex flex-col gap-4 mt-1">
+          {([
+            { key: "coverageBrandsX", brands: X_BRANDS, counts: xCounts, meta: coverageMeta.x as Record<string,string> },
+            { key: "coverageBrandsG", brands: G_BRANDS, counts: gCounts, meta: coverageMeta.g as Record<string,string> },
+          ] as const).map(({ key, brands, counts, meta }) => (
+            <MountCoverageTable
+              key={key}
+              title={t(key)}
+              brands={brands}
+              counts={counts}
+              meta={meta}
+              brandNames={Object.fromEntries(brands.map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
+              col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), notes: t("coverageColNotes") }}
+              rowTotal={t("coverageRowTotal")}
+            />
+          ))}
         </div>
       </Section>
 

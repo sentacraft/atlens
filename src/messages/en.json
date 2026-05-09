@@ -34,6 +34,7 @@
     "noResultsHint": "Try a shorter model name, a brand, or a series keyword.",
     "suggestLens": "Still can't find your lens?",
     "suggestLensLink": "Tell us",
+    "coverageLink": "View lens coverage →",
     "results": "Lens search results",
     "clear": "Clear search",
     "view": "Open",
@@ -119,6 +120,7 @@
     "noResults": "No lenses match your filters.",
     "suggestLens": "Can't find the lens you're looking for?",
     "suggestLensLink": "Tell us",
+    "coverageLink": "View lens coverage →",
     "equivSuffix": "eq."
   },
   "LensDetail": {
@@ -287,10 +289,14 @@
     "backgroundBody1": "The Fujifilm lens ecosystem — spanning both the X Mount (APS-C) and G Mount (medium format) systems — has grown from a handful of native options in its early days to today's landscape of dozens of brands and hundreds of lenses. Yet specs are scattered across brand websites and various platforms in inconsistent formats, making meaningful comparison a slow and frustrating exercise. X-Glass was built to pull all of that fragmented information into one place — a normalized, comparable database that lets the data speak for itself.",
     "backgroundBody2": "I'm a web front-end engineer, and X-Glass is a project I develop and maintain entirely on my own. I've always had a strong conviction and passion for building products that don't compromise on engineering quality, user experience, or aesthetic design — and that drive is one of the key forces behind why this project exists.",
     "coverageTitle": "Lens Coverage",
-    "coverageBody": "X-Glass covers both the X Mount and G Mount systems, though coverage depth differs: X Mount includes native Fujifilm lenses (XF, XC, MK) as well as a wide range of third-party brands; G Mount currently indexes native Fujifilm GF lenses only — third-party G Mount coverage is on the roadmap. Due to the enormous scale of the data pipeline, the current index starts from lenses listed on each brand's official website, so some discontinued lenses no longer featured there are temporarily missing. Adapted lenses from other mounts are outside the current scope.",
-    "coverageBrands": "Currently indexed brands",
+    "coverageBody": "Coverage depth and discontinued lens inclusion vary by brand. G Mount currently covers native Fujifilm GF lenses only — third-party support is on the roadmap. Adapted lenses from other mounts are out of scope.",
     "coverageBrandsX": "X Mount",
     "coverageBrandsG": "G Mount",
+    "coverageColBrand": "Brand",
+    "coverageColCount": "Lenses",
+    "coverageColNotes": "Notes",
+    "coverageRowTotal": "Total",
+    "coverageViewLink": "View lens coverage →",
     "dataAccuracyTitle": "Data & Accuracy",
     "dataAccuracyIntro": "For a database built on objective information, accuracy isn't a bonus — it's the foundation. If users can't trust the data, the site has no reason to exist.",
     "dataPrinciple1Title": "All data is sourced from official manufacturer information",
@@ -351,18 +357,6 @@
     "feedbackBody": "Spotted incorrect data or a missing lens? Your report goes straight to the maintainer.",
     "feedbackReport": "Report an issue",
     "feedbackEmailLabel": "xglass@sentacraft.com"
-  },
-  "Coverage": {
-    "pageTitle": "Lens Coverage",
-    "intro": "A snapshot of what's currently indexed in X-Glass. Lens counts are derived from the live database. Notes are maintained manually and reflect coverage completeness beyond what the data alone can express.",
-    "xMountTitle": "X Mount",
-    "gMountTitle": "G Mount",
-    "colBrand": "Brand",
-    "colCount": "Lenses",
-    "colNotes": "Notes",
-    "rowTotal": "Total",
-    "githubCta": "View source on GitHub →",
-    "backToAbout": "← About"
   },
   "Footer": {
     "updatedPrefix": "Updated",
