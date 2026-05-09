@@ -103,7 +103,6 @@ export default async function AboutContent() {
           { id: "privacy", label: t("privacyTitle") },
           { id: "donation", label: t("donationTitle") },
           { id: "ack", label: t("ackTitle") },
-          { id: "install", label: t("installTitle") },
           { id: "feedback", label: t("feedbackTitle") },
         ].map(({ id, label }, i) => (
           <a
@@ -181,34 +180,57 @@ export default async function AboutContent() {
           </div>
         </div>
 
-        {/* Pipeline overview */}
-        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3 mt-1">
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-3">
-            {t("dataPipelineIntro")}
-          </p>
-          <ol className="flex flex-col gap-2.5">
-            {pipelineStages.map((stage) => (
-              <li key={stage.badge} className="flex items-start gap-3">
-                <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center font-mono text-[10px] font-semibold text-zinc-600 dark:text-zinc-300">
-                  {stage.badge}
-                </span>
-                <div className="min-w-0">
-                  <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
-                    {stage.label}
+        {/* Pipeline overview — collapsible */}
+        <details className="group rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 mt-1">
+          <summary className="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer list-none select-none">
+            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+              {t("dataPipelineToggle", { count: pipelineStages.length })}
+            </span>
+            <svg
+              viewBox="0 0 16 16"
+              width="12"
+              height="12"
+              fill="currentColor"
+              className="flex-shrink-0 text-zinc-400 dark:text-zinc-500 transition-transform duration-200 group-open:rotate-180"
+              aria-hidden="true"
+            >
+              <path d="M8 10.94 2.53 5.47l.94-.94L8 9.06l4.53-4.53.94.94L8 10.94Z" />
+            </svg>
+          </summary>
+          <div className="px-4 pb-3">
+            <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-3">{t("dataPipelineIntro")}</p>
+            <ol className="flex flex-col gap-2.5">
+              {pipelineStages.map((stage) => (
+                <li key={stage.badge} className="flex items-start gap-3">
+                  <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center font-mono text-[10px] font-semibold text-zinc-600 dark:text-zinc-300">
+                    {stage.badge}
                   </span>
-                  <span className="text-xs text-zinc-500 dark:text-zinc-500 ml-2">
-                    {stage.desc}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
+                  <div className="min-w-0">
+                    <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+                      {stage.label}
+                    </span>
+                    <span className="text-xs text-zinc-500 dark:text-zinc-500 ml-2">
+                      {stage.desc}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </details>
 
         {/* Update cadence */}
         <p className="text-xs text-zinc-500 dark:text-zinc-500">
           {t("dataUpdateNote")}{"  "}{t("dataVersionNote")}
         </p>
+
+        {/* GitHub link */}
+        <ExternalLink
+          href="https://github.com/sentacraft/x-glass"
+          className="self-start text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+        >
+          {t("dataGitHubCta")}
+        </ExternalLink>
       </Section>
 
       {/* FAQ */}
@@ -332,25 +354,6 @@ export default async function AboutContent() {
           <p className="text-xs text-zinc-400 dark:text-zinc-500 leading-relaxed">
             {t("ackClosing")}
           </p>
-        </div>
-      </Section>
-
-      {/* Install */}
-      <Section id="install" title={t("installTitle")}>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 px-4 py-4">
-          <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/icons/icon-192-white.png" alt="X-Glass" className="w-10 h-10 rounded-[22%] shadow-sm shrink-0" />
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              {t("installBody")}
-            </p>
-          </div>
-          <Link
-            href="/get"
-            className="shrink-0 text-sm font-medium text-zinc-900 dark:text-zinc-50 hover:opacity-70 transition-opacity whitespace-nowrap"
-          >
-            {t("installCta")}
-          </Link>
         </div>
       </Section>
 
