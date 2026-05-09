@@ -273,7 +273,7 @@ export default async function AboutContent() {
         {/* GitHub link */}
         <ExternalLink
           href="https://github.com/sentacraft/x-glass"
-          className="self-start text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+          className="inline-flex items-center gap-0.5 self-start text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
         >
           {t("dataGitHubCta")}
         </ExternalLink>
