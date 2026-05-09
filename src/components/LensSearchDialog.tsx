@@ -11,7 +11,7 @@ import {
 } from "react";
 import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
+import { useRouter, Link } from "@/i18n/navigation";
 import { getLensesByMount } from "@/lib/lens";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -243,6 +243,12 @@ export default function LensSearchDialog({
                     {t("suggestLensLink")}
                   </FeedbackTrigger>
                 </p>
+                <Link
+                  href="/about#coverage"
+                  className="mt-2 inline-block text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                >
+                  {t("coverageLink")}
+                </Link>
               </div>
             ) : (
               <div
