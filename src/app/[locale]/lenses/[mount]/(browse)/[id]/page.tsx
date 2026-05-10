@@ -19,6 +19,7 @@ import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates } from "@/lib/seo";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
+import { lensSubtitleLine } from "@/lib/lens.format";
 import { PriceSection } from "@/components/PriceSection";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
@@ -160,7 +161,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     retracted: t("lengthRetracted"),
     wide: t("lengthWide"),
     tele: t("lengthTele"),
-    macro: t("macroLabel"),
     lc: {
       groups: t("lcGroups"),
       elements: t("lcElements"),
@@ -244,8 +244,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           {/* Title */}
           <div>
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              {tBrand(lens.brand)}
-              {lens.series ? ` · ${lens.series}` : ""}
+              {lensSubtitleLine(tBrand(lens.brand), lens.series)}
             </p>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mt-1 font-heading">
               {lens.model}
@@ -322,20 +321,21 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               </div>
             ))}
           </div>
-    </div>
-    <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-100 px-5 py-4 dark:border-zinc-800/60">
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
-        {t("nudgeText")}
-      </p>
-      <FeedbackTrigger
-        type="data_issue"
-        context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
-        fields={reportableFields}
-        className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
-      >
-        <Flag size={12} />
-        {t("reportIssue")}
-      </FeedbackTrigger>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-100 px-5 py-4 dark:border-zinc-800/60">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          {t("nudgeText")}
+        </p>
+        <FeedbackTrigger
+          type="data_issue"
+          context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
+          fields={reportableFields}
+          className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
+        >
+          <Flag size={12} />
+          {t("reportIssue")}
+        </FeedbackTrigger>
+      </div>
     </div>
     <BackToTopButton />
     </>

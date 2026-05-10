@@ -11,13 +11,14 @@ import {
   angleOfViewDisplay,
   magnificationDisplay,
   dimensionsRichDisplay,
-  minFocusDistanceRichDisplay,
   maxMagnificationRichDisplay,
   specialtyTagsDisplay,
   dimensionsPrimaryDisplay,
   dimensionsVariantsDisplay,
-  minFocusDistancePrimaryDisplay,
-  minFocusDistanceSecondaryDisplay,
+  mfdHeroValue,
+  mfdHeroQualifier,
+  mfdStructuredLines,
+  mfdComparable,
   maxMagnificationPrimaryDisplay,
   maxMagnificationSecondaryDisplay,
   lensConfigurationPrimaryDisplay,
@@ -28,7 +29,6 @@ import {
 const oisLabels = { yes: "Yes", no: "No" };
 const wrLabels = { yes: "Yes", no: "No", partial: "Partial" };
 const wideTeLabels = { wide: "Wide", tele: "Tele" };
-const wideTelemacroLabels = { wide: "Wide", tele: "Tele", macro: "Macro" };
 const variantLabels = { retracted: "Retracted", wide: "Wide", tele: "Tele" };
 
 const configLabels = {
@@ -246,81 +246,108 @@ describe("dimensionsRichDisplay", () => {
 });
 
 // ---------------------------------------------------------------------------
-// minFocusDistancePrimaryDisplay
+// mfdHeroValue
 // ---------------------------------------------------------------------------
-describe("minFocusDistancePrimaryDisplay", () => {
+describe("mfdHeroValue", () => {
   it("returns undefined when mfd is undefined", () => {
-    expect(minFocusDistancePrimaryDisplay(undefined, wideTeLabels)).toBeUndefined();
+    expect(mfdHeroValue(undefined)).toBeUndefined();
   });
 
-  it("shows single cm value for primes", () => {
-    const mfd: MinFocusDistance = { normal: { cm: 28 } };
-    expect(minFocusDistancePrimaryDisplay(mfd, wideTeLabels)).toBe("28cm");
+  it("shows normal.cm for primes without macro", () => {
+    expect(mfdHeroValue({ normal: { cm: 28 } })).toBe("28cm");
   });
 
-  it("shows wide · tele inline for zoom lenses with teleCm", () => {
-    const mfd: MinFocusDistance = { normal: { cm: 25, teleCm: 38 } };
-    expect(minFocusDistancePrimaryDisplay(mfd, wideTeLabels)).toBe("Wide 25cm · Tele 38cm");
+  it("uses macro.cm when macro exists (no teleCm)", () => {
+    expect(mfdHeroValue({ normal: { cm: 28 }, macro: { cm: 12 } })).toBe("12cm");
+  });
+
+  it("uses min of macro wide/tele when macro has teleCm", () => {
+    expect(mfdHeroValue({ normal: { cm: 25, teleCm: 38 }, macro: { cm: 10, teleCm: 15 } })).toBe("10cm");
+  });
+
+  it("uses min of normal wide/tele when no macro", () => {
+    expect(mfdHeroValue({ normal: { cm: 25, teleCm: 38 } })).toBe("25cm");
+  });
+
+  it("picks tele when tele is shorter", () => {
+    expect(mfdHeroValue({ normal: { cm: 50, teleCm: 30 } })).toBe("30cm");
   });
 });
 
 // ---------------------------------------------------------------------------
-// minFocusDistanceSecondaryDisplay
+// mfdHeroQualifier
 // ---------------------------------------------------------------------------
-describe("minFocusDistanceSecondaryDisplay", () => {
-  it("returns undefined when mfd is undefined", () => {
-    expect(minFocusDistanceSecondaryDisplay(undefined, wideTelemacroLabels)).toBeUndefined();
+describe("mfdHeroQualifier", () => {
+  it("returns undefined when no teleCm", () => {
+    expect(mfdHeroQualifier({ normal: { cm: 28 } }, wideTeLabels)).toBeUndefined();
   });
 
-  it("returns undefined when no macro info", () => {
-    const mfd: MinFocusDistance = { normal: { cm: 28 } };
-    expect(minFocusDistanceSecondaryDisplay(mfd, wideTelemacroLabels)).toBeUndefined();
+  it("returns Wide when wide is shorter", () => {
+    expect(mfdHeroQualifier({ normal: { cm: 25, teleCm: 38 } }, wideTeLabels)).toBe("Wide");
   });
 
-  it("shows single macro cm", () => {
-    const mfd: MinFocusDistance = { normal: { cm: 28 }, macro: { cm: 12 } };
-    expect(minFocusDistanceSecondaryDisplay(mfd, wideTelemacroLabels)).toBe("Macro: 12cm");
+  it("returns Tele when tele is shorter", () => {
+    expect(mfdHeroQualifier({ normal: { cm: 50, teleCm: 30 } }, wideTeLabels)).toBe("Tele");
   });
 
-  it("shows macro wide · tele when macro has teleCm", () => {
-    const mfd: MinFocusDistance = {
-      normal: { cm: 30 },
-      macro: { cm: 10, teleCm: 15 },
-    };
-    expect(minFocusDistanceSecondaryDisplay(mfd, wideTelemacroLabels)).toBe(
-      "Macro: Wide 10cm · Tele 15cm"
-    );
+  it("returns undefined when wide equals tele", () => {
+    expect(mfdHeroQualifier({ normal: { cm: 30, teleCm: 30 } }, wideTeLabels)).toBeUndefined();
+  });
+
+  it("uses macro mode when macro exists", () => {
+    expect(mfdHeroQualifier({ normal: { cm: 25, teleCm: 38 }, macro: { cm: 10, teleCm: 15 } }, wideTeLabels)).toBe("Wide");
   });
 });
 
 // ---------------------------------------------------------------------------
-// minFocusDistanceRichDisplay
+// mfdStructuredLines
 // ---------------------------------------------------------------------------
-describe("minFocusDistanceRichDisplay", () => {
+describe("mfdStructuredLines", () => {
   it("returns undefined when mfd is undefined", () => {
-    expect(minFocusDistanceRichDisplay(undefined, wideTelemacroLabels)).toBeUndefined();
+    expect(mfdStructuredLines(undefined, wideTeLabels)).toBeUndefined();
   });
 
-  it("shows primary only when no macro", () => {
-    const mfd: MinFocusDistance = { normal: { cm: 28 } };
-    expect(minFocusDistanceRichDisplay(mfd, wideTelemacroLabels)).toBe("28cm");
+  it("returns undefined for prime without macro", () => {
+    expect(mfdStructuredLines({ normal: { cm: 28 } }, wideTeLabels)).toBeUndefined();
   });
 
-  it("combines primary and macro on separate lines", () => {
-    const mfd: MinFocusDistance = { normal: { cm: 28 }, macro: { cm: 12 } };
-    expect(minFocusDistanceRichDisplay(mfd, wideTelemacroLabels)).toBe(
-      "28cm\nMacro: 12cm"
-    );
+  it("returns normal wide/tele lines when no macro", () => {
+    expect(mfdStructuredLines({ normal: { cm: 25, teleCm: 38 } }, wideTeLabels)).toEqual([
+      { value: "25cm", label: "Wide" },
+      { value: "38cm", label: "Tele" },
+    ]);
   });
 
-  it("shows zoom normal teleCm + macro teleCm", () => {
-    const mfd: MinFocusDistance = {
-      normal: { cm: 25, teleCm: 38 },
-      macro: { cm: 10, teleCm: 15 },
-    };
-    expect(minFocusDistanceRichDisplay(mfd, wideTelemacroLabels)).toBe(
-      "Wide 25cm · Tele 38cm\nMacro: Wide 10cm · Tele 15cm"
-    );
+  it("returns macro wide/tele lines when macro has teleCm", () => {
+    expect(mfdStructuredLines({ normal: { cm: 25, teleCm: 38 }, macro: { cm: 10, teleCm: 15 } }, wideTeLabels)).toEqual([
+      { value: "10cm", label: "Wide" },
+      { value: "15cm", label: "Tele" },
+    ]);
+  });
+
+  it("returns undefined when macro exists without teleCm", () => {
+    expect(mfdStructuredLines({ normal: { cm: 25, teleCm: 38 }, macro: { cm: 12 } }, wideTeLabels)).toBeUndefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// mfdComparable
+// ---------------------------------------------------------------------------
+describe("mfdComparable", () => {
+  it("returns undefined when mfd is undefined", () => {
+    expect(mfdComparable(undefined)).toBeUndefined();
+  });
+
+  it("returns normal.cm for primes", () => {
+    expect(mfdComparable({ normal: { cm: 28 } })).toBe(28);
+  });
+
+  it("returns macro.cm when macro exists", () => {
+    expect(mfdComparable({ normal: { cm: 28 }, macro: { cm: 12 } })).toBe(12);
+  });
+
+  it("returns min of macro wide/tele", () => {
+    expect(mfdComparable({ normal: { cm: 25, teleCm: 38 }, macro: { cm: 10, teleCm: 15 } })).toBe(10);
   });
 });
 

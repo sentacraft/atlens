@@ -111,8 +111,7 @@ export default function LensCard({
           <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between gap-2">
               <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400 truncate max-[499px]:pr-9">
-                {tBrand(lens.brand)}
-                {lens.series ? ` · ${lens.series}` : ""}
+                {fmt.lensSubtitleLine(tBrand(lens.brand), lens.series)}
               </p>
               {lens.releaseYear ? (
                 <p className="hidden sm:block shrink-0 text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">

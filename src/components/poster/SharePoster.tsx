@@ -6,6 +6,7 @@ import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
 import type { Lens } from "@/lib/types";
+import { Weight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { classifyFocusMotor, priceTier } from "@/lib/lens";
 import { pickPriceEntry, formatTierRange } from "@/lib/lens-pricing";
@@ -16,6 +17,9 @@ import {
   primaryApertureDisplay,
   secondaryApertureDisplay,
   specialtyTagsDisplay,
+  mfdHeroValue,
+  mfdHeroQualifier,
+  mfdStructuredLines,
 } from "@/lib/lens.format";
 import type { SpecialtyTag, FieldNoteKey } from "@/lib/types";
 import { PosterSection } from "./PosterSection";
@@ -375,41 +379,42 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
       style={{ width: POSTER_W }}
     >
       {/* ── Header ────────────────────────────────────────────── */}
-      <div style={{ padding: `24px ${POSTER_PX}px 20px`, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-        {/* Left: brand tag → title → slogan */}
-        <div style={{ flex: 1, minWidth: 0, paddingRight: 24 }}>
-          {/* Brand tag: Iris mark + app name inline */}
-          <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 10 }}>
-            <Iris config={IRIS_NAV} size={14} uid="poster" />
-            <span
-              className="text-zinc-400"
-              style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
-            >
-              X-Glass
-            </span>
-          </div>
-          {/* Title lines — one per lens, font scales with count */}
-          <div style={{ marginBottom: slogan ? 10 : 0 }}>
-            {titleLines.map((line, i) => (
-              <div
-                key={i}
-                className="text-zinc-900"
-                style={{ fontSize: titleFontSize, fontWeight: 600, lineHeight: 1.25 }}
-              >
-                {line}
-              </div>
-            ))}
-          </div>
-          {/* Slogan */}
-          {slogan && (
-            <div className="text-zinc-400" style={{ fontSize: 13, lineHeight: 1.4 }}>
-              {slogan}
-            </div>
-          )}
+      <div style={{ padding: `24px ${POSTER_PX}px 20px` }}>
+        {/* Brand tag: always at top, not part of vertical centering */}
+        <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 10 }}>
+          <Iris config={IRIS_NAV} size={14} uid="poster" />
+          <span
+            className="text-zinc-400"
+            style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
+          >
+            X-Glass
+          </span>
         </div>
 
-        {/* Right: QR code + CTA */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flexShrink: 0, gap: 8 }}>
+        {/* Content row: title+slogan ↔ QR, vertically centered */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          {/* Left: title + slogan */}
+          <div style={{ flex: 1, minWidth: 0, paddingRight: 24 }}>
+            <div style={{ marginBottom: slogan ? 8 : 0 }}>
+              {titleLines.map((line, i) => (
+                <div
+                  key={i}
+                  className="text-zinc-900"
+                  style={{ fontSize: titleFontSize, fontWeight: 600, lineHeight: 1.25 }}
+                >
+                  {line}
+                </div>
+              ))}
+            </div>
+            {slogan && (
+              <div className="text-zinc-400" style={{ fontSize: 13, lineHeight: 1.4 }}>
+                {slogan}
+              </div>
+            )}
+          </div>
+
+          {/* Right: QR code + CTA */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flexShrink: 0, gap: 8 }}>
           {/* QR code */}
           <div
             style={{
@@ -447,6 +452,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
             <div className="text-zinc-700" style={{ fontSize: 8, fontWeight: 600, marginTop: 2 }}>
               {labels.siteUrl}
             </div>
+          </div>
           </div>
         </div>
       </div>
@@ -560,45 +566,11 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   {secondaryApertureDisplay(lens)}
                 </span>
               )}
-              <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                Aperture
-              </span>
             </div>
           ))}
         </div>
 
-        {/* Row 3: Weight */}
-        {showWeight && (
-          <div style={gridStyle(n)}>
-            {lenses.map((lens, i) => {
-              const weightScalar = primaryWeight(lens.weightG);
-              return (
-                <div
-                  key={i}
-                  style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}
-                >
-                  {weightScalar !== undefined ? (
-                    <>
-                      <span
-                        className={cn("font-semibold tabular-nums text-zinc-900 leading-none", apertureSize)}
-                        style={{ whiteSpace: "nowrap" }}
-                      >
-                        {weightScalar}g
-                      </span>
-                      <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                        {labels.weightLabel}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-zinc-300" style={{ fontSize: 9 }}>—</span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Row 4: Price tier */}
+        {/* Row 3: Price tier */}
         {showPrice && (
           <div style={{ ...gridStyle(n), marginTop: 16 }}>
             {lenses.map((lens, i) => {
@@ -638,9 +610,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   <span className="tabular-nums text-zinc-400" style={{ fontSize: 10 }}>
                     {rangeFormatted}
                   </span>
-                  <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                    {labels.priceLabel}
-                  </span>
                 </div>
               );
             })}
@@ -649,14 +618,31 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
       </div>
 
       {/* ── Size Section ─────────────────────────────────────── */}
-      {(showDimensions || showFilter) && (
+      {(showWeight || showDimensions || showFilter) && (
         <>
           <div className="h-px bg-zinc-200" />
           <div style={{ padding: `20px ${POSTER_PX}px` }}>
             <PosterSection title={labels.sectionSizeWeight}>
-              {/* Dimensions — primary scalar only; length variants (retracted/
-                  wide/tele) intentionally omitted from the poster and shown on
-                  compare/detail pages instead. */}
+              {showWeight && (
+                <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
+                  {weights.map((w, i) => (
+                    <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                      <Weight size={11} className="text-zinc-400" />
+                      {w !== undefined ? (
+                        <span
+                          className="text-base font-medium tabular-nums text-zinc-900 leading-tight text-center"
+                          style={{ whiteSpace: "nowrap" }}
+                        >
+                          {w}g
+                        </span>
+                      ) : (
+                        <span className="text-base font-medium tabular-nums text-zinc-300 leading-tight">—</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {showDimensions && (
                 <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
                   {lenses.map((lens, i) => {
@@ -726,41 +712,18 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                       );
                     }
 
-                    const hasMacroTeleCm = mfd.macro?.teleCm !== undefined;
-                    const hasNormalTeleCm = mfd.normal.teleCm !== undefined;
-
-                    let heroValue: number;
-                    let heroQualifier: string | undefined;
-                    let captionLines: Array<{ label: string; value: string }> = [];
-
-                    if (hasMacroTeleCm) {
-                      const wv = mfd.macro!.cm;
-                      const tv = mfd.macro!.teleCm!;
-                      heroValue = Math.min(wv, tv);
-                      heroQualifier = wv <= tv ? labels.wide : labels.tele;
-                      captionLines = toVariantLines({ wide: wv, tele: tv }, (v) => `${v}cm`, wideTeleLabels);
-                    } else if (mfd.macro) {
-                      heroValue = mfd.macro.cm;
-                    } else if (hasNormalTeleCm) {
-                      const wv = mfd.normal.cm;
-                      const tv = mfd.normal.teleCm!;
-                      heroValue = Math.min(wv, tv);
-                      heroQualifier = wv <= tv ? labels.wide : labels.tele;
-                      captionLines = toVariantLines({ wide: wv, tele: tv }, (v) => `${v}cm`, wideTeleLabels);
-                    } else {
-                      heroValue = mfd.normal.cm;
-                    }
-
-                    const showCaption = captionLines.length > 1;
+                    const hero = mfdHeroValue(mfd)!;
+                    const qualifier = mfdHeroQualifier(mfd, wideTeleLabels);
+                    const lines = mfdStructuredLines(mfd, wideTeleLabels);
 
                     return (
                       <ParamColumn key={i} label={labels.minFocusLabel} sup={sup}>
                         <HeroSingleValue
-                          value={`${heroValue}cm`}
-                          qualifier={heroQualifier}
+                          value={hero}
+                          qualifier={qualifier}
                           statSize={statSize}
                         />
-                        {showCaption && <VariantCaption lines={captionLines} />}
+                        {lines && lines.length > 1 && <VariantCaption lines={lines} />}
                       </ParamColumn>
                     );
                   })}
