@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { EllipsisVertical, MessageSquarePlus, Info, Download } from "lucide-react";
+import { EllipsisVertical, MessageCircle, Info, Download } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
@@ -162,7 +162,7 @@ export default function Nav() {
             className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors px-1"
             aria-label={t("feedback")}
           >
-            <MessageSquarePlus className="h-[17px] w-[17px]" />
+            <MessageCircle className="h-[17px] w-[17px]" />
           </button>
           <a
             href="https://github.com/sentacraft/x-glass"
@@ -209,7 +209,7 @@ export default function Nav() {
                   onClick={() => { setMobileMenuOpen(false); setFeedbackOpen(true); }}
                   className={mobileLinkCls(false) + " w-full text-left"}
                 >
-                  <MessageSquarePlus className="h-4 w-4 shrink-0" />
+                  <MessageCircle className="h-4 w-4 shrink-0" />
                   {t("feedback")}
                 </button>
                 <Link href="/about" className={mobileLinkCls(pathname === "/about")}>
