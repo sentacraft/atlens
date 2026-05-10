@@ -115,7 +115,7 @@
     "addToCompare": "Add to Compare",
     "removeFromCompare": "Remove",
     "compareFull": "Compare List Full",
-    "compareFullToast": "Compare list is full. Remove a lens to add another.",
+    "compareFullToast": "Compare list full — remove one first",
     "goCompare": "Compare ({count})",
     "clearCompare": "Clear",
     "resultsCount": "{count} lenses",
