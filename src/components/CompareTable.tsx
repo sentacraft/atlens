@@ -300,7 +300,6 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
         retracted: td("lengthRetracted"),
         wide: td("lengthWide"),
         tele: td("lengthTele"),
-        macro: td("macroLabel"),
         lc: {
           groups: td("lcGroups"),
           elements: td("lcElements"),

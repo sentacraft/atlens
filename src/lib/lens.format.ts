@@ -182,39 +182,6 @@ export function dimensionsRichDisplay(
 }
 
 /**
- * Combined min focus distance display. Shows wide/tele variants for zoom lenses,
- * and appends macro mode distance(s) when present.
- */
-export function minFocusDistanceRichDisplay(
-  mfd: MinFocusDistance | undefined,
-  labels: { wide: string; tele: string; macro: string }
-): string | undefined {
-  if (!mfd) {
-    return undefined;
-  }
-
-  const lines: string[] = [];
-
-  // Primary / normal mode
-  if (mfd.normal.teleCm !== undefined) {
-    lines.push(`${labels.wide} ${mfd.normal.cm}cm · ${labels.tele} ${mfd.normal.teleCm}cm`);
-  } else {
-    lines.push(`${mfd.normal.cm}cm`);
-  }
-
-  // Macro mode
-  if (mfd.macro) {
-    if (mfd.macro.teleCm !== undefined) {
-      lines.push(`${labels.macro}: ${labels.wide} ${mfd.macro.cm}cm · ${labels.tele} ${mfd.macro.teleCm}cm`);
-    } else {
-      lines.push(`${labels.macro}: ${mfd.macro.cm}cm`);
-    }
-  }
-
-  return lines.join("\n");
-}
-
-/**
  * Combined max magnification display. Shows wide/tele variants for zoom lenses,
  * otherwise the single value.
  */
@@ -323,44 +290,46 @@ export function dimensionsVariantsDisplay(
   return parts.length > 0 ? parts.join("\n") : undefined;
 }
 
-/**
- * Primary MFD display.
- * - Zoom with wide/tele variants: shows "Wide Xcm · Tele Ycm" (avoids redundant cm line).
- * - Everything else: shows the primary cm value.
- * toComparable always uses mfd.normal.cm regardless of display format.
- */
-export function minFocusDistancePrimaryDisplay(
+function effectiveMfdMode(mfd: MinFocusDistance): MinFocusDistance["normal"] {
+  return mfd.macro ?? mfd.normal;
+}
+
+export function mfdHeroValue(mfd: MinFocusDistance | undefined): string | undefined {
+  if (!mfd) return undefined;
+  const mode = effectiveMfdMode(mfd);
+  if (mode.teleCm !== undefined) {
+    return `${Math.min(mode.cm, mode.teleCm)}cm`;
+  }
+  return `${mode.cm}cm`;
+}
+
+export function mfdHeroQualifier(
   mfd: MinFocusDistance | undefined,
   labels: { wide: string; tele: string }
 ): string | undefined {
-  if (!mfd) {
-    return undefined;
-  }
-  if (mfd.normal.teleCm !== undefined) {
-    return `${labels.wide} ${mfd.normal.cm}cm · ${labels.tele} ${mfd.normal.teleCm}cm`;
-  }
-  return `${mfd.normal.cm}cm`;
+  if (!mfd) return undefined;
+  const mode = effectiveMfdMode(mfd);
+  if (mode.teleCm === undefined || mode.cm === mode.teleCm) return undefined;
+  return mode.cm <= mode.teleCm ? labels.wide : labels.tele;
 }
 
-/**
- * Secondary MFD display: macro mode info only.
- * Variants are already shown in the primary line, so this avoids duplication.
- */
-export function minFocusDistanceSecondaryDisplay(
+export function mfdStructuredLines(
   mfd: MinFocusDistance | undefined,
-  labels: { wide: string; tele: string; macro: string }
-): string | undefined {
-  if (!mfd) {
-    return undefined;
-  }
+  labels: { wide: string; tele: string }
+): Array<{ value: string; label: string }> | undefined {
+  if (!mfd) return undefined;
+  const mode = effectiveMfdMode(mfd);
+  if (mode.teleCm === undefined) return undefined;
+  return [
+    { value: `${mode.cm}cm`, label: labels.wide },
+    { value: `${mode.teleCm}cm`, label: labels.tele },
+  ];
+}
 
-  if (!mfd.macro) {
-    return undefined;
-  }
-  if (mfd.macro.teleCm !== undefined) {
-    return `${labels.macro}: ${labels.wide} ${mfd.macro.cm}cm · ${labels.tele} ${mfd.macro.teleCm}cm`;
-  }
-  return `${labels.macro}: ${mfd.macro.cm}cm`;
+export function mfdComparable(mfd: MinFocusDistance | undefined): number | undefined {
+  if (!mfd) return undefined;
+  const mode = effectiveMfdMode(mfd);
+  return mode.teleCm !== undefined ? Math.min(mode.cm, mode.teleCm) : mode.cm;
 }
 
 /**

@@ -17,6 +17,9 @@ import {
   primaryApertureDisplay,
   secondaryApertureDisplay,
   specialtyTagsDisplay,
+  mfdHeroValue,
+  mfdHeroQualifier,
+  mfdStructuredLines,
 } from "@/lib/lens.format";
 import type { SpecialtyTag, FieldNoteKey } from "@/lib/types";
 import { PosterSection } from "./PosterSection";
@@ -709,41 +712,18 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                       );
                     }
 
-                    const hasMacroTeleCm = mfd.macro?.teleCm !== undefined;
-                    const hasNormalTeleCm = mfd.normal.teleCm !== undefined;
-
-                    let heroValue: number;
-                    let heroQualifier: string | undefined;
-                    let captionLines: Array<{ label: string; value: string }> = [];
-
-                    if (hasMacroTeleCm) {
-                      const wv = mfd.macro!.cm;
-                      const tv = mfd.macro!.teleCm!;
-                      heroValue = Math.min(wv, tv);
-                      heroQualifier = wv <= tv ? labels.wide : labels.tele;
-                      captionLines = toVariantLines({ wide: wv, tele: tv }, (v) => `${v}cm`, wideTeleLabels);
-                    } else if (mfd.macro) {
-                      heroValue = mfd.macro.cm;
-                    } else if (hasNormalTeleCm) {
-                      const wv = mfd.normal.cm;
-                      const tv = mfd.normal.teleCm!;
-                      heroValue = Math.min(wv, tv);
-                      heroQualifier = wv <= tv ? labels.wide : labels.tele;
-                      captionLines = toVariantLines({ wide: wv, tele: tv }, (v) => `${v}cm`, wideTeleLabels);
-                    } else {
-                      heroValue = mfd.normal.cm;
-                    }
-
-                    const showCaption = captionLines.length > 1;
+                    const hero = mfdHeroValue(mfd)!;
+                    const qualifier = mfdHeroQualifier(mfd, wideTeleLabels);
+                    const lines = mfdStructuredLines(mfd, wideTeleLabels);
 
                     return (
                       <ParamColumn key={i} label={labels.minFocusLabel} sup={sup}>
                         <HeroSingleValue
-                          value={`${heroValue}cm`}
-                          qualifier={heroQualifier}
+                          value={hero}
+                          qualifier={qualifier}
                           statSize={statSize}
                         />
-                        {showCaption && <VariantCaption lines={captionLines} />}
+                        {lines && lines.length > 1 && <VariantCaption lines={lines} />}
                       </ParamColumn>
                     );
                   })}
