@@ -724,6 +724,44 @@ export interface Lens {
    */
   officialLinks: LensOfficialLinks;
 
+  /**
+   * Localized translations of user-visible free-text fields.
+   * Keys are language codes; currently only "zh" is produced.
+   * English values live in the top-level fields (fieldNotes, lensMaterial,
+   * accessories) and serve as the fallback when a translation is absent.
+   */
+  translations?: {
+    zh?: {
+      fieldNotes?: Partial<Record<FieldNoteKey, string>>;
+      lensMaterial?: string;
+      accessories?: string[];
+    };
+  };
+
+}
+
+/**
+ * Returns a shallow copy of the lens with translated free-text fields
+ * promoted to top-level when a matching locale exists in `translations`.
+ * Falls back to the original English values for any field without a
+ * translation. Pass-through when locale is "en" or has no translations.
+ */
+export function resolveTranslations(lens: Lens, locale: string): Lens {
+  if (locale !== "zh") {
+    return lens;
+  }
+  const zh = lens.translations?.zh;
+  if (!zh) {
+    return lens;
+  }
+  return {
+    ...lens,
+    ...(zh.fieldNotes && {
+      fieldNotes: { ...lens.fieldNotes, ...zh.fieldNotes },
+    }),
+    ...(zh.lensMaterial !== undefined && { lensMaterial: zh.lensMaterial }),
+    ...(zh.accessories !== undefined && { accessories: zh.accessories }),
+  };
 }
 
 /**
