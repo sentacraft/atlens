@@ -53,7 +53,7 @@ export default function ComparePageHeader({ lenses, minColumns = 0, presetTitle,
         {lenses.length > 0 && (
           <button
             onClick={() => { clearCompare(); router.replace(`/lenses/${mountToUrlSegment(mount)}/compare`); }}
-            className="shrink-0 text-sm font-medium px-3 py-2 rounded-xl text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
+            className="shrink-0 text-sm font-medium px-3 py-2 rounded-xl text-zinc-500 underline underline-offset-2 decoration-zinc-300 hover:text-zinc-800 hover:decoration-zinc-500 dark:decoration-zinc-600 dark:hover:text-zinc-200 dark:hover:decoration-zinc-400 transition-colors"
           >
             {tList("clearCompare")}
           </button>
