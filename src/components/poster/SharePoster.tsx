@@ -82,8 +82,6 @@ export interface PosterLabels {
 
 export interface PosterCustom {
   title?: string;
-  /** Explicit title lines from a curated preset — takes precedence over title. */
-  titleLines?: string[];
   slogan?: string;
 }
 
@@ -239,9 +237,7 @@ interface SharePosterProps {
 
 export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePosterProps) {
   const n = lenses.length;
-  const titleLines: string[] = custom?.titleLines?.length
-    ? custom.titleLines
-    : custom?.title?.trim()
+  const titleLines: string[] = custom?.title?.trim()
     ? [custom.title.trim()]
     : labels.comparison;
   const titleFontSize = titleLines.length <= 1 ? 32 : titleLines.length === 2 ? 22 : 17;

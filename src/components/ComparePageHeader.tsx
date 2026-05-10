@@ -15,11 +15,13 @@ interface Props {
   lenses: Lens[];
   /** Matches CompareTable minColumns — button is hidden while empty slot columns are visible. */
   minColumns?: number;
-  /** Structured title lines from a curated preset, passed directly to the poster. */
-  presetTitleLines?: string[];
+  /** Preset title to pre-fill the poster title field. */
+  presetTitle?: string;
+  /** Preset subtitle to pre-fill the poster slogan field. */
+  presetSubtitle?: string;
 }
 
-export default function ComparePageHeader({ lenses, minColumns = 0, presetTitleLines }: Props) {
+export default function ComparePageHeader({ lenses, minColumns = 0, presetTitle, presetSubtitle }: Props) {
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
   const { clearCompare } = useMountedCompare();
@@ -58,7 +60,7 @@ export default function ComparePageHeader({ lenses, minColumns = 0, presetTitleL
         )}
         {lenses.length >= 1 && (
           <div className="ml-auto">
-            <ShareButton lenses={lenses} presetTitleLines={presetTitleLines} />
+            <ShareButton lenses={lenses} presetTitle={presetTitle} presetSubtitle={presetSubtitle} />
           </div>
         )}
       </div>
@@ -73,7 +75,7 @@ export default function ComparePageHeader({ lenses, minColumns = 0, presetTitleL
         }`}
         aria-hidden={!(showFab && lenses.length >= 1)}
       >
-        <ShareButton lenses={lenses} variant="fab" presetTitleLines={presetTitleLines} />
+        <ShareButton lenses={lenses} variant="fab" presetTitle={presetTitle} presetSubtitle={presetSubtitle} />
       </div>
     </>
   );

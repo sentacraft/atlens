@@ -28,15 +28,17 @@ interface ShareButtonProps {
   variant?: "default" | "fab";
   /** Override the default trigger button class (non-fab variant only). */
   triggerClassName?: string;
-  /** Structured title lines from a curated preset — fed directly to the poster. */
-  presetTitleLines?: string[];
+  /** Pre-fill the poster title from a curated preset. User can still override in Customize. */
+  presetTitle?: string;
+  /** Pre-fill the poster slogan from a curated preset subtitle. User can still override. */
+  presetSubtitle?: string;
 }
 
 function computePosterTitle(lenses: Lens[], tBrand: (key: string) => string): string[] {
   return lenses.map((l) => `${tBrand(l.brand)} ${l.model}`);
 }
 
-export function ShareButton({ lenses, variant = "default", triggerClassName, presetTitleLines }: ShareButtonProps) {
+export function ShareButton({ lenses, variant = "default", triggerClassName, presetTitle, presetSubtitle }: ShareButtonProps) {
   const t = useTranslations("Share");
   const locale = useLocale();
   const tImage = useTranslations("ShareImage");
@@ -48,9 +50,8 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   const [copied, setCopied] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [posterGenerating, setPosterGenerating] = useState(false);
-  const presetTitleJoined = presetTitleLines?.join(": ") ?? "";
-  const [customTitle, setCustomTitle] = useState(presetTitleJoined);
-  const [customSlogan, setCustomSlogan] = useState("");
+  const [customTitle, setCustomTitle] = useState(presetTitle ?? "");
+  const [customSlogan, setCustomSlogan] = useState(presetSubtitle ?? "");
 
   const posterRef = useRef<HTMLDivElement>(null);
   const slugRef = useRef("");
@@ -179,10 +180,8 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
 
   const truncatedUrl = shareUrl.length > 56 ? shareUrl.slice(0, 56) + "…" : shareUrl;
   const lensCaption = lenses.map((l) => `${tBrand(l.brand)} · ${l.model}`).join(" / ");
-  const userEditedTitle = customTitle.trim() !== "" && customTitle.trim() !== presetTitleJoined;
   const posterCustom = {
-    title: userEditedTitle ? customTitle.trim() : undefined,
-    titleLines: !userEditedTitle ? presetTitleLines : undefined,
+    title: customTitle.trim() || undefined,
     slogan: customSlogan.trim() || undefined,
   };
 
