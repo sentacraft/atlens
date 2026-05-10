@@ -339,7 +339,7 @@ export default function FeedbackDialog({
           </form>
         )}
 
-        <p className="mx-5 pt-3 border-t border-zinc-100 dark:border-zinc-800 text-xs text-zinc-400 dark:text-zinc-500">
+        <p className="px-5 pt-2 pb-1 text-xs text-zinc-400 dark:text-zinc-500">
           {t("emailAlt")}{" "}
           <a
             href="mailto:xglass@sentacraft.com"
