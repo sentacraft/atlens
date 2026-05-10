@@ -146,28 +146,6 @@ function EyebrowLabel({ children, sup }: { children: React.ReactNode; sup?: numb
   );
 }
 
-function ModeBadge({ children }: { children: React.ReactNode }) {
-  return (
-    <span
-      className="text-zinc-500"
-      style={{ fontSize: 9, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}
-    >
-      {children}
-    </span>
-  );
-}
-
-function Caption({ children }: { children: React.ReactNode }) {
-  return (
-    <span
-      className="font-medium tabular-nums text-zinc-400 leading-tight text-center"
-      style={{ fontSize: 11 }}
-    >
-      {children}
-    </span>
-  );
-}
-
 function ParamColumn({
   label,
   sup,
@@ -185,36 +163,57 @@ function ParamColumn({
   );
 }
 
-function HeroValueLine({
-  modePrefix,
-  lines,
+function HeroSingleValue({
+  value,
+  qualifier,
   statSize,
 }: {
-  modePrefix?: string;
-  lines: Array<{ label?: string; value: string }>;
+  value: string;
+  qualifier?: string;
   statSize: string;
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "baseline",
-        justifyContent: "center",
-        flexWrap: "wrap",
-        columnGap: 6,
-        rowGap: 2,
-      }}
+    <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 4 }}>
+      <span
+        className={cn("font-semibold tabular-nums text-zinc-900 leading-tight", statSize)}
+        style={{ whiteSpace: "nowrap" }}
+      >
+        {value}
+      </span>
+      {qualifier && (
+        <span
+          className="text-zinc-400"
+          style={{ fontSize: 9, fontWeight: 500, whiteSpace: "nowrap" }}
+        >
+          ({qualifier})
+        </span>
+      )}
+    </div>
+  );
+}
+
+function VariantCaption({
+  lines,
+}: {
+  lines: Array<{ label: string; value: string }>;
+}) {
+  if (lines.length === 0) {
+    return null;
+  }
+  return (
+    <span
+      className="font-medium tabular-nums text-zinc-400 leading-tight text-center"
+      style={{ fontSize: 10, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }}
     >
-      {modePrefix && <ModeBadge>{modePrefix}</ModeBadge>}
-      {lines.map((line, j) => (
-        <span key={j} style={{ display: "inline-flex", alignItems: "baseline", gap: 3 }}>
-          {line.label && <ModeBadge>{line.label}</ModeBadge>}
-          <span className={cn("font-semibold tabular-nums text-zinc-900 leading-tight", statSize)}>
-            {line.value}
-          </span>
+      {lines.map((line, i) => (
+        <span key={i}>
+          {i > 0 && <span style={{ margin: "0 3px" }}>·</span>}
+          <span style={{ fontSize: 9, fontWeight: 600 }}>{line.label}</span>
+          {" "}
+          {line.value}
         </span>
       ))}
-    </div>
+    </span>
   );
 }
 
@@ -516,7 +515,10 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
               key={i}
               style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}
             >
-              <span className={cn("font-semibold tabular-nums text-zinc-900 leading-none", focalSize)}>
+              <span
+                className={cn("font-semibold tabular-nums text-zinc-900 leading-none", focalSize)}
+                style={{ whiteSpace: "nowrap" }}
+              >
                 {lens.focalLengthMin === lens.focalLengthMax
                   ? lens.focalLengthMin
                   : `${lens.focalLengthMin}–${lens.focalLengthMax}`}
@@ -526,54 +528,64 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
           ))}
         </div>
 
-        {/* Row 2: Aperture + Weight side-by-side within each lens column */}
-        <div style={gridStyle(n)}>
-          {lenses.map((lens, i) => {
-            // Weight variance (e.g. [340, 395] across mount variants) is
-            // shown on compare/detail pages; the poster shows a single
-            // representative scalar (lower bound).
-            const weightScalar = primaryWeight(lens.weightG);
-            return (
-              <div
-                key={i}
-                style={{ display: "flex", justifyContent: "center", gap: 20, alignItems: "flex-start" }}
+        {/* Row 2: Aperture */}
+        <div style={{ ...gridStyle(n), marginBottom: 12 }}>
+          {lenses.map((lens, i) => (
+            <div
+              key={i}
+              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}
+            >
+              <span
+                className={cn("font-semibold tabular-nums text-zinc-900 leading-none", apertureSize)}
+                style={{ whiteSpace: "nowrap" }}
               >
-                {/* Aperture */}
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
-                  <span className={cn("font-semibold tabular-nums text-zinc-900 leading-none", apertureSize)}>
-                    {primaryApertureDisplay(lens) ?? ""}
-                  </span>
-                  {secondaryApertureDisplay(lens) && (
-                    <span className="font-medium tabular-nums text-zinc-500 leading-none" style={{ fontSize: 11 }}>
-                      {secondaryApertureDisplay(lens)}
-                    </span>
-                  )}
-                  <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                    Aperture
-                  </span>
-                </div>
-
-                {/* Weight */}
-                {showWeight && (
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
-                    {weightScalar !== undefined ? (
-                      <>
-                        <span className={cn("font-semibold tabular-nums text-zinc-900 leading-none", apertureSize)}>
-                          {weightScalar}g
-                        </span>
-                        <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                          {labels.weightLabel}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-zinc-300" style={{ fontSize: 9 }}>—</span>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                {primaryApertureDisplay(lens) ?? ""}
+              </span>
+              {secondaryApertureDisplay(lens) && (
+                <span
+                  className="font-medium tabular-nums text-zinc-500 leading-none"
+                  style={{ fontSize: 11, whiteSpace: "nowrap" }}
+                >
+                  {secondaryApertureDisplay(lens)}
+                </span>
+              )}
+              <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                Aperture
+              </span>
+            </div>
+          ))}
         </div>
+
+        {/* Row 3: Weight */}
+        {showWeight && (
+          <div style={gridStyle(n)}>
+            {lenses.map((lens, i) => {
+              const weightScalar = primaryWeight(lens.weightG);
+              return (
+                <div
+                  key={i}
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}
+                >
+                  {weightScalar !== undefined ? (
+                    <>
+                      <span
+                        className={cn("font-semibold tabular-nums text-zinc-900 leading-none", apertureSize)}
+                        style={{ whiteSpace: "nowrap" }}
+                      >
+                        {weightScalar}g
+                      </span>
+                      <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                        {labels.weightLabel}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-zinc-300" style={{ fontSize: 9 }}>—</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* ── Size Section ─────────────────────────────────────── */}
@@ -592,7 +604,10 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                     return (
                       <ParamColumn key={i} label={labels.dimensionsLabel}>
                         {primary ? (
-                          <span className="text-base font-medium tabular-nums text-zinc-900 leading-tight text-center">
+                          <span
+                            className="text-base font-medium tabular-nums text-zinc-900 leading-tight text-center"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
                             {primary}
                           </span>
                         ) : (
@@ -613,7 +628,10 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                     return (
                       <ParamColumn key={i} label={labels.filterLabel} sup={sup}>
                         {value ? (
-                          <span className="text-base font-medium tabular-nums text-zinc-900 leading-tight text-center">
+                          <span
+                            className="text-base font-medium tabular-nums text-zinc-900 leading-tight text-center"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
                             {value}
                           </span>
                         ) : (
@@ -635,10 +653,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
           <div className="h-px bg-zinc-200" />
           <div style={{ padding: `20px ${POSTER_PX}px` }}>
             <PosterSection title={labels.sectionFocus}>
-              {/* Min focus distance — hero = shortest capability; macro/normal
-                  labels are applied symmetrically when a dedicated macro mode
-                  exists, so readers never wonder "if the alt is 'normal', what
-                  mode is the hero in?". */}
               {showMinFocus && (
                 <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
                   {lenses.map((lens, i) => {
@@ -652,59 +666,59 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                       );
                     }
 
-                    const hasNormalVariants = hasVariantValue(mfd.variants);
                     const hasMacroVariants = hasVariantValue(mfd.macroVariants);
+                    const hasNormalVariants = hasVariantValue(mfd.variants);
                     const macroScalarShorter =
                       mfd.macroCm !== undefined && mfd.macroCm < mfd.cm;
 
-                    // Hero = shortest capability. Prefer macroVariants, then
-                    // macro scalar (strictly shorter than normal), then normal
-                    // variants, then normal scalar.
-                    let primary: Array<{ label?: string; value: string }>;
-                    let primaryIsMacro = false;
+                    let heroValue: number;
+                    let heroQualifier: string | undefined;
+                    let captionLines: Array<{ label: string; value: string }> = [];
+
                     if (hasMacroVariants) {
-                      primary = toVariantLines(mfd.macroVariants, (v) => `${v}cm`, wideTeleLabels);
-                      primaryIsMacro = true;
+                      const wv = mfd.macroVariants!.wide;
+                      const tv = mfd.macroVariants!.tele;
+                      if (wv !== undefined && tv !== undefined) {
+                        heroValue = Math.min(wv, tv);
+                        heroQualifier = wv <= tv ? labels.wide : labels.tele;
+                      } else {
+                        heroValue = wv ?? tv!;
+                        heroQualifier = wv !== undefined ? labels.wide : labels.tele;
+                      }
+                      captionLines = toVariantLines(mfd.macroVariants, (v) => `${v}cm`, wideTeleLabels);
                     } else if (macroScalarShorter) {
-                      primary = [{ value: `${mfd.macroCm}cm` }];
-                      primaryIsMacro = true;
+                      heroValue = mfd.macroCm!;
                     } else if (hasNormalVariants) {
-                      primary = toVariantLines(mfd.variants, (v) => `${v}cm`, wideTeleLabels);
+                      const wv = mfd.variants!.wide;
+                      const tv = mfd.variants!.tele;
+                      if (wv !== undefined && tv !== undefined) {
+                        heroValue = Math.min(wv, tv);
+                        heroQualifier = wv <= tv ? labels.wide : labels.tele;
+                      } else {
+                        heroValue = wv ?? tv!;
+                        heroQualifier = wv !== undefined ? labels.wide : labels.tele;
+                      }
+                      captionLines = toVariantLines(mfd.variants, (v) => `${v}cm`, wideTeleLabels);
                     } else {
-                      primary = [{ value: `${mfd.cm}cm` }];
+                      heroValue = mfd.cm;
                     }
 
-                    // Caption = normal-mode disclosure. Only when hero is macro.
-                    let caption: string | null = null;
-                    if (primaryIsMacro) {
-                      if (hasNormalVariants) {
-                        const parts = toVariantLines(mfd.variants, (v) => `${v}cm`, wideTeleLabels)
-                          .map((l) => `${l.label} ${l.value}`)
-                          .join(" · ");
-                        caption = `${labels.normalLabel} ${parts}`;
-                      } else {
-                        caption = `${labels.normalLabel} ${mfd.cm}cm`;
-                      }
-                    }
+                    const showCaption = captionLines.length > 1;
 
                     return (
                       <ParamColumn key={i} label={labels.minFocusLabel} sup={sup}>
-                        <HeroValueLine
-                          modePrefix={primaryIsMacro ? labels.macroLabel : undefined}
-                          lines={primary}
+                        <HeroSingleValue
+                          value={`${heroValue}cm`}
+                          qualifier={heroQualifier}
                           statSize={statSize}
                         />
-                        {caption && <Caption>{caption}</Caption>}
+                        {showCaption && <VariantCaption lines={captionLines} />}
                       </ParamColumn>
                     );
                   })}
                 </div>
               )}
 
-              {/* Max magnification — labels every wide/tele breakdown even when
-                  only one end is reachable (e.g. XF 18-135's 0.27x at tele only).
-                  Without the label, a single-end value reads as "across range"
-                  and invites false comparisons against zooms with full breakdowns. */}
               {showMaxMag && (
                 <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
                   {lenses.map((lens, i) => {
@@ -717,14 +731,32 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                         </ParamColumn>
                       );
                     }
-                    const variantLines = toVariantLines(mag.variants, (v) => `${v}x`, wideTeleLabels);
-                    const lines =
-                      variantLines.length > 0
-                        ? variantLines
-                        : [{ label: undefined as string | undefined, value: `${mag.value}x` }];
+
+                    const hasVariants = hasVariantValue(mag.variants);
+                    let heroQualifier: string | undefined;
+                    let captionLines: Array<{ label: string; value: string }> = [];
+
+                    if (hasVariants) {
+                      const wv = mag.variants!.wide;
+                      const tv = mag.variants!.tele;
+                      if (wv !== undefined && tv !== undefined) {
+                        heroQualifier = wv >= tv ? labels.wide : labels.tele;
+                      } else {
+                        heroQualifier = wv !== undefined ? labels.wide : labels.tele;
+                      }
+                      captionLines = toVariantLines(mag.variants, (v) => `${v}x`, wideTeleLabels);
+                    }
+
+                    const showCaption = captionLines.length > 1;
+
                     return (
                       <ParamColumn key={i} label={labels.maxMagLabel} sup={sup}>
-                        <HeroValueLine lines={lines} statSize={statSize} />
+                        <HeroSingleValue
+                          value={`${mag.value}x`}
+                          qualifier={heroQualifier}
+                          statSize={statSize}
+                        />
+                        {showCaption && <VariantCaption lines={captionLines} />}
                       </ParamColumn>
                     );
                   })}
