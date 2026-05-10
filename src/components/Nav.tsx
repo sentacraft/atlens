@@ -14,7 +14,6 @@ import { usePwa } from "@/lib/usePwa";
 import { cn } from "@/lib/utils";
 import MountSwitcher from "@/components/MountSwitcher";
 import FeedbackDialog from "@/components/FeedbackDialog";
-import type { FeedbackType } from "@/components/FeedbackDialog";
 import GitHubMark from "@/components/logos/GitHubMark";
 
 export default function Nav() {
@@ -101,9 +100,6 @@ export default function Nav() {
   const isBrowseActive = pathname.startsWith("/lenses") && !pathname.includes("/compare");
   const isCompareActive = pathname.includes("/compare");
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
-
-  const isLensDetail = /^\/lenses\/[^/]+\/[^/]+$/.test(pathname) && !pathname.includes("/compare");
-  const defaultFeedbackType: FeedbackType = isLensDetail ? "data_issue" : "general";
 
   return (
     <>
@@ -231,7 +227,7 @@ export default function Nav() {
     <FeedbackDialog
       open={feedbackOpen}
       onOpenChange={setFeedbackOpen}
-      type={defaultFeedbackType}
+      type="general"
     />
     </>
   );

@@ -200,7 +200,7 @@ export default function LensListClient({ lenses }: Props) {
               <p className="text-xs text-zinc-400 dark:text-zinc-500">
                 {t("suggestLens")}{" "}
                 <FeedbackTrigger
-                  type="missing_lens"
+                  type="general"
                   className="underline underline-offset-2 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
                 >
                   {t("suggestLensLink")}
