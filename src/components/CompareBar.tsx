@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useEffect, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { getLensesByMount } from "@/lib/lens";
 import { useMountedCompare } from "@/context/CompareProvider";
@@ -20,15 +20,16 @@ export default function CompareBar() {
   const tCompare = useTranslations("Compare");
   const router = useRouter();
   const pathname = usePathname();
+  const locale = useLocale();
   const mount = useEffectiveMount();
   const { compareIds, toggleCompare, clearCompare } = useMountedCompare();
 
   const selectedLenses = useMemo(
     () =>
       compareIds
-        .map((id) => getLensesByMount(mount).find((l) => l.id === id))
+        .map((id) => getLensesByMount(mount, locale).find((l) => l.id === id))
         .filter((lens) => lens !== undefined),
-    [compareIds, mount]
+    [compareIds, mount, locale]
   );
 
   // Track bar height and expose it as a CSS variable so other fixed elements

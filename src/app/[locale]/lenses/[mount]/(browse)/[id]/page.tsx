@@ -30,7 +30,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, mount, id } = await params;
   const t = await getTranslations("LensDetail");
-  const lenses = getLensesByMount(urlSegmentToMount(mount) ?? "X");
+  const lenses = getLensesByMount(urlSegmentToMount(mount) ?? "X", locale);
   const lens = lenses.find((l) => l.id === id);
   if (!lens) {
     return { title: t("notFoundTitle") };
@@ -108,7 +108,7 @@ function renderRowValue(
 
 export default async function LensDetailPage({ params }: { params: Params }) {
   const { id, locale, mount } = await params;
-  const lenses = getLensesByMount(urlSegmentToMount(mount) ?? "X");
+  const lenses = getLensesByMount(urlSegmentToMount(mount) ?? "X", locale);
   const lens = lenses.find((l) => l.id === id);
 
   if (!lens) {
