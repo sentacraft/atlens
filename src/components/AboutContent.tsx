@@ -278,7 +278,7 @@ export default async function AboutContent() {
             {t("dataPricingTitle")}
           </p>
           <div className="flex flex-col gap-2.5 pl-3 border-l-2 border-zinc-200 dark:border-zinc-700">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4].map((i) => (
               <div key={i}>
                 <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                   {t(`dataPricingPoint${i}Title`)}
