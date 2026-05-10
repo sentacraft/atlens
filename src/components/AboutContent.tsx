@@ -223,28 +223,6 @@ export default async function AboutContent() {
           {t("dataAccuracyIntro")}
         </p>
 
-        {/* GitHub CTA card — front-loaded so visitors discover the repo early */}
-        <a
-          href="https://github.com/sentacraft/x-glass#data-pipeline"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/40 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
-        >
-          <GitHubMark size={24} className="mt-0.5 shrink-0 text-zinc-700 dark:text-zinc-300" />
-          <div className="flex flex-col gap-1 min-w-0 flex-1">
-            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
-              {t("dataGitHubCardTitle")}
-            </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
-              {t("dataGitHubCardBody")}
-            </p>
-            <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-zinc-700 group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-zinc-100 transition-colors">
-              {t("dataGitHubCardButton")}
-              <ArrowUpRight className="size-3" />
-            </span>
-          </div>
-        </a>
-
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
           {t("dataAccuracyReport")}{" "}
           <FeedbackTrigger
@@ -322,6 +300,27 @@ export default async function AboutContent() {
           </div>
         </div>
 
+        {/* GitHub CTA card — closing deep-dive link */}
+        <a
+          href="https://github.com/sentacraft/x-glass#data-pipeline"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/40 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
+        >
+          <GitHubMark size={24} className="mt-0.5 shrink-0 text-zinc-700 dark:text-zinc-300" />
+          <div className="flex flex-col gap-1 min-w-0 flex-1">
+            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+              {t("dataGitHubCardTitle")}
+            </p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+              {t("dataGitHubCardBody")}
+            </p>
+            <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-zinc-700 group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-zinc-100 transition-colors">
+              {t("dataGitHubCardButton")}
+              <ArrowUpRight className="size-3" />
+            </span>
+          </div>
+        </a>
       </Section>
 
       {/* Disclaimer */}
