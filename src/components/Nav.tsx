@@ -203,14 +203,6 @@ export default function Nav() {
 
             {mobileMenuOpen && (
               <div className="absolute right-0 top-full mt-1.5 w-36 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => { setMobileMenuOpen(false); setFeedbackOpen(true); }}
-                  className={mobileLinkCls(false) + " w-full text-left"}
-                >
-                  <Send className="h-4 w-4 shrink-0" />
-                  {t("feedback")}
-                </button>
                 <Link href="/about" className={mobileLinkCls(pathname === "/about")}>
                   <Info className="h-4 w-4 shrink-0" />
                   {t("about")}
@@ -221,6 +213,14 @@ export default function Nav() {
                     {t("getApp")}
                   </Link>
                 )}
+                <button
+                  type="button"
+                  onClick={() => { setMobileMenuOpen(false); setFeedbackOpen(true); }}
+                  className={mobileLinkCls(false) + " w-full text-left"}
+                >
+                  <Send className="h-4 w-4 shrink-0" />
+                  {t("feedback")}
+                </button>
               </div>
             )}
           </div>
