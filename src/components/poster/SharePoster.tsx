@@ -376,41 +376,42 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
       style={{ width: POSTER_W }}
     >
       {/* ── Header ────────────────────────────────────────────── */}
-      <div style={{ padding: `24px ${POSTER_PX}px 20px`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        {/* Left: brand tag → title → slogan */}
-        <div style={{ flex: 1, minWidth: 0, paddingRight: 24 }}>
-          {/* Brand tag: Iris mark + app name inline */}
-          <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 10 }}>
-            <Iris config={IRIS_NAV} size={14} uid="poster" />
-            <span
-              className="text-zinc-400"
-              style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
-            >
-              X-Glass
-            </span>
-          </div>
-          {/* Title lines — one per lens, font scales with count */}
-          <div style={{ marginBottom: slogan ? 10 : 0 }}>
-            {titleLines.map((line, i) => (
-              <div
-                key={i}
-                className="text-zinc-900"
-                style={{ fontSize: titleFontSize, fontWeight: 600, lineHeight: 1.25 }}
-              >
-                {line}
-              </div>
-            ))}
-          </div>
-          {/* Slogan */}
-          {slogan && (
-            <div className="text-zinc-400" style={{ fontSize: 13, lineHeight: 1.4 }}>
-              {slogan}
-            </div>
-          )}
+      <div style={{ padding: `24px ${POSTER_PX}px 20px` }}>
+        {/* Brand tag: always at top, not part of vertical centering */}
+        <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 10 }}>
+          <Iris config={IRIS_NAV} size={14} uid="poster" />
+          <span
+            className="text-zinc-400"
+            style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
+          >
+            X-Glass
+          </span>
         </div>
 
-        {/* Right: QR code + CTA */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flexShrink: 0, gap: 8 }}>
+        {/* Content row: title+slogan ↔ QR, vertically centered */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          {/* Left: title + slogan */}
+          <div style={{ flex: 1, minWidth: 0, paddingRight: 24 }}>
+            <div style={{ marginBottom: slogan ? 8 : 0 }}>
+              {titleLines.map((line, i) => (
+                <div
+                  key={i}
+                  className="text-zinc-900"
+                  style={{ fontSize: titleFontSize, fontWeight: 600, lineHeight: 1.25 }}
+                >
+                  {line}
+                </div>
+              ))}
+            </div>
+            {slogan && (
+              <div className="text-zinc-400" style={{ fontSize: 13, lineHeight: 1.4 }}>
+                {slogan}
+              </div>
+            )}
+          </div>
+
+          {/* Right: QR code + CTA */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flexShrink: 0, gap: 8 }}>
           {/* QR code */}
           <div
             style={{
@@ -448,6 +449,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
             <div className="text-zinc-700" style={{ fontSize: 8, fontWeight: 600, marginTop: 2 }}>
               {labels.siteUrl}
             </div>
+          </div>
           </div>
         </div>
       </div>
