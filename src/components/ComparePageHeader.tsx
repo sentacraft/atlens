@@ -10,6 +10,7 @@ import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useRouter } from "@/i18n/navigation";
 import type { Lens } from "@/lib/types";
+import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
 
 interface Props {
   lenses: Lens[];
@@ -53,7 +54,7 @@ export default function ComparePageHeader({ lenses, minColumns = 0, presetTitle,
         {lenses.length > 0 && (
           <button
             onClick={() => { clearCompare(); router.replace(`/lenses/${mountToUrlSegment(mount)}/compare`); }}
-            className="shrink-0 text-sm font-medium px-3 py-2 rounded-xl text-zinc-500 underline underline-offset-2 decoration-zinc-300 hover:text-zinc-800 hover:decoration-zinc-500 dark:decoration-zinc-600 dark:hover:text-zinc-200 dark:hover:decoration-zinc-400 transition-colors"
+            className={`shrink-0 text-sm font-medium px-3 py-2 rounded-xl ${TEXT_LINK_CLS}`}
           >
             {tList("clearCompare")}
           </button>

@@ -46,6 +46,15 @@ export const ICON_NAV_BTN_CLS =
  * poster dialog): compose with `bg-white/90 shadow-sm backdrop-blur-sm
  * dark:bg-zinc-800/90` to give it a persistent frosted-glass base.
  */
+/**
+ * Underlined text link / inline action (clear filters, toggle, text-only CTA).
+ * Pair with per-site font-size, tracking, and whitespace classes.
+ */
+export const TEXT_LINK_CLS =
+  "text-zinc-700 underline decoration-zinc-300 underline-offset-4 transition-colors " +
+  "hover:text-zinc-900 hover:decoration-zinc-500 " +
+  "dark:text-zinc-300 dark:decoration-zinc-600 dark:hover:text-zinc-100 dark:hover:decoration-zinc-400";
+
 export const ICON_CLOSE_BTN_CLS =
   "inline-flex shrink-0 items-center justify-center rounded-full transition-colors " +
   "text-zinc-500 hover:bg-red-50 hover:text-red-500 active:bg-red-50 active:text-red-500 " +
