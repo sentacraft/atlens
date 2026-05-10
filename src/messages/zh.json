@@ -348,7 +348,7 @@
     "dataGitHubCardTitle": "完整 Pipeline 架构图",
     "dataGitHubCardBody": "包含数据流向、分支处理、人工与 AI 节点的完整 Mermaid 图表。",
     "dataGitHubCardButton": "在 GitHub 上查看",
-    "dataAccuracyReport": "参数以厂商官方页面为准。发现差异？",
+    "dataAccuracyReport": "数据均以官方来源为准。发现有误？",
     "dataAccuracyReportCta": "告诉我们",
     "disclaimerTitle": "免责声明",
     "disclaimerAccuracy": "X-Glass 的数据来自公开资料，并经过人工校准。我们已尽力保证规格的时效性与准确性，但数据难免存在错误或滞后。涉及购买决策时，请务必在厂商官方页面核实关键参数。",
