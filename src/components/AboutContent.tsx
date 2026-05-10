@@ -1,22 +1,23 @@
 import { getTranslations, getLocale } from "next-intl/server";
-import { Send, Mail, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 import AnthropicLogo from "@/components/logos/AnthropicLogo";
 import GeminiLogo from "@/components/logos/GeminiLogo";
 import GitHubMark from "@/components/logos/GitHubMark";
-import { ExternalLink } from "@/components/ui/external-link";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import type { FeedbackType } from "@/components/FeedbackDialog";
 import { getLensesByMount } from "@/lib/lens";
 import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/AckCard";
 
-type CoverageMeta = { active: boolean; discontinued: boolean; notes: string };
+type CoverageMeta = { active: boolean | "planned"; discontinued: boolean | "planned"; notes: string };
 
 function Check() {
   return <span className="text-zinc-700 dark:text-zinc-300 text-sm">✓</span>;
+}
+function Pending() {
+  return <span className="text-zinc-400 dark:text-zinc-500 text-sm">○</span>;
 }
 function Dash() {
   return <span className="text-zinc-300 dark:text-zinc-600 text-sm">—</span>;
@@ -53,9 +54,9 @@ function MountCoverageTable({
               return (
                 <tr key={b}>
                   <td className="px-3 py-2 font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap">{brandNames[b] ?? b}</td>
-                  <td className="px-3 py-2 text-center">{m.active ? <Check /> : <Dash />}</td>
-                  <td className="px-3 py-2 text-center">{m.discontinued ? <Check /> : <Dash />}</td>
-                  <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">{counts[b] ?? 0}</td>
+                  <td className="px-3 py-2 text-center">{m.active === true ? <Check /> : m.active === "planned" ? <Pending /> : <Dash />}</td>
+                  <td className="px-3 py-2 text-center">{m.discontinued === true ? <Check /> : m.discontinued === "planned" ? <Pending /> : <Dash />}</td>
+                  <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">{m.active === true ? (counts[b] ?? 0) : <Dash />}</td>
                 </tr>
               );
             })}
@@ -105,22 +106,8 @@ export default async function AboutContent() {
   const gCounts = getLensesByMount("G", locale).reduce<Record<string, number>>(
     (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
   );
-  const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage"];
+  const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage","laowa","meike","sirui","voigtlander"];
   const G_BRANDS = ["fujifilm"];
-
-  const faqItems = [
-    { q: t("faq1Q"), a: t("faq1A") },
-    { q: t("faq2Q"), a: t("faq2A") },
-    { q: t("faq3Q"), a: t("faq3A") },
-  ];
-
-  const feedbackLinks: {
-    label: string;
-    type: FeedbackType;
-    icon: React.ReactNode;
-  }[] = [
-    { label: t("feedbackReport"), type: "general", icon: <Send size={13} /> },
-  ];
 
   const pipelineStages = [
     { badge: "0", label: t("pipeline0Label"), desc: t("pipeline0Desc") },
@@ -161,12 +148,10 @@ export default async function AboutContent() {
           { id: "background", label: t("backgroundTitle") },
           { id: "coverage", label: t("coverageTitle") },
           { id: "data-accuracy", label: t("dataAccuracyTitle") },
-          { id: "faq", label: t("faqTitle") },
           { id: "disclaimer", label: t("disclaimerTitle") },
           { id: "privacy", label: t("privacyTitle") },
           { id: "donation", label: t("donationTitle") },
           { id: "ack", label: t("ackTitle") },
-          { id: "feedback", label: t("feedbackTitle") },
         ].map(({ id, label }, i) => (
           <a
             key={id}
@@ -198,24 +183,47 @@ export default async function AboutContent() {
             { key: "coverageBrandsX", brands: X_BRANDS, counts: xCounts, meta: coverageMeta.x },
             { key: "coverageBrandsG", brands: G_BRANDS, counts: gCounts, meta: coverageMeta.g },
           ] as const).map(({ key, brands, counts, meta }) => (
-            <MountCoverageTable
-              key={key}
-              title={t(key)}
-              brands={[...brands]}
-              counts={counts}
-              meta={meta as Record<string, CoverageMeta>}
-              brandNames={Object.fromEntries(brands.map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
-              col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), active: t("coverageColActive"), discontinued: t("coverageColDiscontinued") }}
-              rowTotal={t("coverageRowTotal")}
-            />
+            <div key={key} className="flex flex-col gap-2">
+              <MountCoverageTable
+                title={t(key)}
+                brands={[...brands]}
+                counts={counts}
+                meta={meta as Record<string, CoverageMeta>}
+                brandNames={Object.fromEntries(brands.map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
+                col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), active: t("coverageColActive"), discontinued: t("coverageColDiscontinued") }}
+                rowTotal={t("coverageRowTotal")}
+              />
+              <p className="text-xs text-zinc-400 dark:text-zinc-600">
+                {t("coverageLegend")}
+              </p>
+            </div>
           ))}
         </div>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          {t("coverageSuggest")}{" "}
+          <FeedbackTrigger
+            type="general"
+            className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+          >
+            {t("coverageSuggestCta")}
+          </FeedbackTrigger>
+        </p>
       </Section>
 
       {/* Data & Accuracy */}
       <Section id="data-accuracy" title={t("dataAccuracyTitle")}>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("dataAccuracyIntro")}
+        </p>
+
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          {t("dataAccuracyReport")}{" "}
+          <FeedbackTrigger
+            type="data_issue"
+            className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+          >
+            {t("dataAccuracyReportCta")}
+          </FeedbackTrigger>
         </p>
 
         {/* ── Spec Data subsection ── */}
@@ -259,13 +267,6 @@ export default async function AboutContent() {
               </li>
             ))}
           </ol>
-          {/* Inline GitHub link for users who want to dive deeper mid-flow */}
-          <ExternalLink
-            href="https://github.com/sentacraft/x-glass#data-pipeline"
-            className="inline-flex items-center gap-0.5 self-start text-xs text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
-          >
-            {t("dataPipelineFlowNote")}
-          </ExternalLink>
         </div>
 
         {/* Update cadence */}
@@ -292,7 +293,7 @@ export default async function AboutContent() {
           </div>
         </div>
 
-        {/* GitHub CTA card — covers both spec and pricing pipelines */}
+        {/* GitHub CTA card — closing deep-dive link */}
         <a
           href="https://github.com/sentacraft/x-glass#data-pipeline"
           target="_blank"
@@ -313,32 +314,6 @@ export default async function AboutContent() {
             </span>
           </div>
         </a>
-      </Section>
-
-      {/* FAQ */}
-      <Section id="faq" title={t("faqTitle")}>
-        <div className="flex flex-col divide-y divide-zinc-100 dark:divide-zinc-800">
-          {faqItems.map((item) => (
-            <details key={item.q} className="group py-3 first:pt-0 last:pb-0">
-              <summary className="flex items-center justify-between gap-3 cursor-pointer list-none text-sm font-medium text-zinc-800 dark:text-zinc-200 select-none">
-                {item.q}
-                <svg
-                  viewBox="0 0 16 16"
-                  width="14"
-                  height="14"
-                  fill="currentColor"
-                  className="flex-shrink-0 text-zinc-400 dark:text-zinc-500 transition-transform duration-200 group-open:rotate-180"
-                  aria-hidden="true"
-                >
-                  <path d="M8 10.94 2.53 5.47l.94-.94L8 9.06l4.53-4.53.94.94L8 10.94Z" />
-                </svg>
-              </summary>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                {item.a}
-              </p>
-            </details>
-          ))}
-        </div>
       </Section>
 
       {/* Disclaimer */}
@@ -433,32 +408,6 @@ export default async function AboutContent() {
           <p className="text-xs text-zinc-400 dark:text-zinc-500 leading-relaxed">
             {t("ackClosing")}
           </p>
-        </div>
-      </Section>
-
-      {/* Feedback */}
-      <Section id="feedback" title={t("feedbackTitle")}>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          {t("feedbackBody")}
-        </p>
-        <div className="flex flex-col gap-2 mt-1">
-          {feedbackLinks.map(({ label, type: feedbackType, icon }) => (
-            <FeedbackTrigger
-              key={feedbackType}
-              type={feedbackType}
-              className="inline-flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors self-start"
-            >
-              <span className="text-zinc-400 dark:text-zinc-500">{icon}</span>
-              {label}
-            </FeedbackTrigger>
-          ))}
-          <a
-            href="mailto:xglass@sentacraft.com"
-            className="inline-flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors self-start"
-          >
-            <span className="text-zinc-400 dark:text-zinc-500"><Mail size={13} /></span>
-            {t("feedbackEmailLabel")}
-          </a>
         </div>
       </Section>
     </div>
