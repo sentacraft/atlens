@@ -1,5 +1,5 @@
 import trendingData from "../data/trending.json";
-import { allLenses } from "./lens";
+import { getAllLenses } from "./lens";
 import type { Lens } from "./types";
 
 export interface TrendingPreset {
@@ -15,8 +15,8 @@ export function getPresetBySlug(slug: string): TrendingPreset | undefined {
   return trendingPresets.find((p) => p.slug === slug);
 }
 
-export function getPresetLenses(preset: TrendingPreset): Lens[] {
+export function getPresetLenses(preset: TrendingPreset, locale: string): Lens[] {
   return preset.lensIds
-    .map((id) => allLenses.find((l) => l.id === id))
+    .map((id) => getAllLenses(locale).find((l) => l.id === id))
     .filter((l): l is Lens => l !== undefined);
 }

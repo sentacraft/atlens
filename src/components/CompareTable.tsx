@@ -27,7 +27,7 @@ import LensSearchDialog from "@/components/LensSearchDialog";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { buildSpecGroups, resolveSpecRow } from "@/lib/lens-spec-groups";
 import type { StructuredLine, ResolvedSpecRow } from "@/lib/lens-spec-groups";
-import { resolveTranslations, type Lens } from "@/lib/types";
+import type { Lens } from "@/lib/types";
 import { PriceBand } from "@/components/PriceBand";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
 
@@ -194,7 +194,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   }, [initialLensIds, replaceCompare]);
 
   const orderedLenses = compareIds
-    .map((id) => getLensesByMount(mount).find((lens) => lens.id === id))
+    .map((id) => getLensesByMount(mount, locale).find((lens) => lens.id === id))
     .filter((lens): lens is Lens => lens !== undefined);
 
   // Number of empty slot columns to render (search triggers filling up to minColumns)
@@ -336,11 +336,10 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const resolvedPerLens = useMemo(() => {
     const map = new Map<string, Map<string, ResolvedSpecRow>>();
     for (const lens of orderedLenses) {
-      const displayLens = resolveTranslations(lens, locale);
       const rowMap = new Map<string, ResolvedSpecRow>();
       for (const group of allGroups) {
         for (const row of group.rows) {
-          const resolved = resolveSpecRow(row, displayLens, valueCellLabels);
+          const resolved = resolveSpecRow(row, lens, valueCellLabels);
           if (resolved) {
             rowMap.set(row.label, resolved);
           }
@@ -349,7 +348,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
       map.set(lens.id, rowMap);
     }
     return map;
-  }, [allGroups, orderedLenses, valueCellLabels, locale]);
+  }, [allGroups, orderedLenses, valueCellLabels]);
 
   // Per-view suppression: hide rows where no compared lens has data.
   const visibleGroups = useMemo(
