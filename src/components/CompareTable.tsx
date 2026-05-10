@@ -899,12 +899,12 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                     {url ? (
                       <ExternalLink
                         href={url}
-                        className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
                       >
                         {t("officialSite")}
                       </ExternalLink>
                     ) : (
-                      <span className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-300 dark:border-zinc-800 dark:text-zinc-600 cursor-not-allowed">
+                      <span className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-300 dark:border-zinc-800 dark:text-zinc-600 cursor-not-allowed">
                         {t("officialSite")}
                       </span>
                     )}
