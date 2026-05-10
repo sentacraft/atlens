@@ -6,7 +6,7 @@ import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
 import type { Lens } from "@/lib/types";
-import { Weight } from "lucide-react";
+import { Dumbbell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { classifyFocusMotor, priceTier } from "@/lib/lens";
 import { pickPriceEntry, formatTierRange } from "@/lib/lens-pricing";
@@ -622,7 +622,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                 <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
                   {weights.map((w, i) => (
                     <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                      <Weight size={11} className="text-zinc-400" />
+                      <Dumbbell size={11} className="text-zinc-400" />
                       {w !== undefined ? (
                         <span
                           className="text-base font-medium tabular-nums text-zinc-900 leading-tight text-center"
