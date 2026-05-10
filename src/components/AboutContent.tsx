@@ -119,7 +119,7 @@ export default async function AboutContent() {
     type: FeedbackType;
     icon: React.ReactNode;
   }[] = [
-    { label: t("feedbackReport"), type: "data_issue", icon: <Flag size={13} /> },
+    { label: t("feedbackReport"), type: "general", icon: <Flag size={13} /> },
   ];
 
   const pipelineStages = [
