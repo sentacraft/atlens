@@ -19,7 +19,8 @@
     "lenses": "Browse",
     "compare": "Compare",
     "about": "About",
-    "getApp": "Get App"
+    "getApp": "Get App",
+    "feedback": "Feedback"
   },
   "Search": {
     "open": "Open lens search",
@@ -34,6 +35,7 @@
     "noResultsHint": "Try a shorter model name, a brand, or a series keyword.",
     "suggestLens": "Still can't find your lens?",
     "suggestLensLink": "Tell us",
+    "suggestLensResults": "Not seeing the lens you expected?",
     "coverageLink": "View lens coverage →",
     "results": "Lens search results",
     "clear": "Clear search",
@@ -120,7 +122,7 @@
     "clearCompare": "Clear",
     "resultsCount": "{count} lenses",
     "noResults": "No lenses match your filters.",
-    "suggestLens": "Can't find the lens you're looking for?",
+    "suggestLens": "Missing a lens?",
     "suggestLensLink": "Tell us",
     "coverageLink": "View lens coverage →",
     "equivSuffix": "eq."
@@ -193,6 +195,7 @@
     "compareFull": "Compare List Full",
     "officialSite": "Official site",
     "reportIssue": "Report an issue",
+    "nudgeText": "Spotted an error in the data?",
     "fieldOfficialLink": "Official Link",
     "fieldLensImage": "Lens Image",
     "fieldGroupMedia": "Media & Links",
@@ -374,8 +377,8 @@
     "ackGeminiBrandStrategist": "Brand Strategist",
     "ackClosing": "My deepest gratitude to the AI collaborators whose contributions were decisive in making this project a reality.",
     "feedbackTitle": "Feedback & Contact",
-    "feedbackBody": "Spotted incorrect data or a missing lens? Your report goes straight to the maintainer.",
-    "feedbackReport": "Report an issue",
+    "feedbackBody": "Thoughts, suggestions, bug reports, and feature ideas are all welcome.",
+    "feedbackReport": "Send feedback",
     "feedbackEmailLabel": "xglass@sentacraft.com"
   },
   "Footer": {
@@ -387,13 +390,10 @@
   },
   "Feedback": {
     "titleDataIssue": "Report an issue",
-    "titleMissingLens": "Suggest a missing lens",
     "titleGeneral": "Send feedback",
     "descriptionDataIssue": "Wrong spec, broken image, typo, missing lens — tell us what you found. It goes straight to the maintainer.",
-    "descriptionMissingLens": "Know a lens we're missing? Send it over and we'll add it to the queue.",
     "descriptionGeneral": "Thoughts, bug reports, and feature ideas are all welcome.",
     "affectedLensLabel": "Affected lens",
-    "contextQuery": "Search query: {query}",
     "fieldPickerLabel": "Affected field",
     "fieldPickerPlaceholder": "Choose a field…",
     "currentValueLabel": "Current value:",

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-type FeedbackType = "data_issue" | "missing_lens" | "general";
+type FeedbackType = "data_issue" | "general";
 
 interface FeedbackPayload {
   type: FeedbackType;
@@ -73,13 +73,11 @@ function buildIssue(payload: FeedbackPayload): {
     if (context?.suggestedCorrection) {
       lines.push(`**Suggested correction:** ${context.suggestedCorrection}`);
     }
-  } else if (type === "missing_lens") {
-    lines.push(`**Type:** Missing lens`);
+  } else {
+    lines.push(`**Type:** General feedback`);
     if (context?.searchQuery) {
       lines.push(`**Search query:** \`${context.searchQuery}\``);
     }
-  } else {
-    lines.push(`**Type:** General feedback`);
   }
 
   if (replyEmail) {
@@ -96,12 +94,10 @@ function buildIssue(payload: FeedbackPayload): {
     title = context?.field
       ? `[Data] ${base} — ${context.field}`
       : `[Data] ${base}`;
-  } else if (type === "missing_lens") {
-    title = context?.searchQuery
-      ? `[Missing] ${context.searchQuery}`
-      : `[Missing] Missing lens suggestion`;
   } else {
-    title = `[Feedback] General feedback`;
+    title = context?.searchQuery
+      ? `[Feedback] Missing lens: ${context.searchQuery}`
+      : `[Feedback] General feedback`;
   }
 
   const labels = ["user-feedback", `feedback:${type}`];
@@ -125,7 +121,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
-  const validTypes: FeedbackType[] = ["data_issue", "missing_lens", "general"];
+  const validTypes: FeedbackType[] = ["data_issue", "general"];
   if (!payload?.type || !validTypes.includes(payload.type)) {
     return NextResponse.json({ error: "invalid_type" }, { status: 400 });
   }

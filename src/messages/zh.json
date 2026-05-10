@@ -19,7 +19,8 @@
     "lenses": "镜头库",
     "compare": "对比",
     "about": "关于",
-    "getApp": "获取应用"
+    "getApp": "获取应用",
+    "feedback": "反馈"
   },
   "Search": {
     "open": "打开镜头搜索",
@@ -34,6 +35,7 @@
     "noResultsHint": "试试更短的型号，或者换个品牌名、系列关键词。",
     "suggestLens": "没找到你想要的镜头？",
     "suggestLensLink": "告诉我们",
+    "suggestLensResults": "没有你预期的那支镜头？",
     "coverageLink": "查看收录范围 →",
     "results": "搜索结果",
     "clear": "清空",
@@ -120,7 +122,7 @@
     "clearCompare": "清空",
     "resultsCount": "{count} 支镜头",
     "noResults": "没有符合筛选条件的镜头",
-    "suggestLens": "没找到你要的镜头？",
+    "suggestLens": "镜头库里没有这支？",
     "suggestLensLink": "告诉我们",
     "coverageLink": "查看收录范围 →",
     "equivSuffix": "等效"
@@ -193,6 +195,7 @@
     "compareFull": "对比列表已满",
     "officialSite": "官网页面",
     "reportIssue": "反馈问题",
+    "nudgeText": "发现数据有误？",
     "fieldOfficialLink": "官方链接",
     "fieldLensImage": "镜头图片",
     "fieldGroupMedia": "媒体与链接",
@@ -374,8 +377,8 @@
     "ackGeminiBrandStrategist": "品牌策略师",
     "ackClosing": "向在这个项目开发过程中给予了决定性帮助的 AI 协作者们，致以最诚挚的感激。",
     "feedbackTitle": "反馈与联系",
-    "feedbackBody": "如果你发现数据有误，或者想补充缺失镜头，可以直接在这里告诉我们。",
-    "feedbackReport": "反馈问题",
+    "feedbackBody": "有想法、发现 Bug、想提功能建议，都欢迎直接告诉我们。",
+    "feedbackReport": "提交反馈",
     "feedbackEmailLabel": "xglass@sentacraft.com"
   },
   "Footer": {
@@ -387,13 +390,10 @@
   },
   "Feedback": {
     "titleDataIssue": "反馈问题",
-    "titleMissingLens": "推荐缺失镜头",
     "titleGeneral": "提交反馈",
     "descriptionDataIssue": "参数不对、图片有问题、哪里写错了、发现缺失镜头——都可以反馈给我们。",
-    "descriptionMissingLens": "如果你发现有漏收录的镜头，发给我们，我们会加入处理队列。",
     "descriptionGeneral": "有想法、发现 Bug，或者想提功能建议，都欢迎。",
     "affectedLensLabel": "相关镜头",
-    "contextQuery": "搜索词：{query}",
     "fieldPickerLabel": "问题字段",
     "fieldPickerPlaceholder": "请选择字段…",
     "currentValueLabel": "当前显示：",

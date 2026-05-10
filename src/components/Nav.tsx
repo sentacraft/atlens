@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { EllipsisVertical, Info, Download } from "lucide-react";
+import { EllipsisVertical, Send, Info, Download } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
@@ -13,6 +13,7 @@ import { useNavLock } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
 import { cn } from "@/lib/utils";
 import MountSwitcher from "@/components/MountSwitcher";
+import FeedbackDialog from "@/components/FeedbackDialog";
 import GitHubMark from "@/components/logos/GitHubMark";
 
 export default function Nav() {
@@ -24,6 +25,7 @@ export default function Nav() {
   const isPwa = usePwa();
   const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -100,6 +102,7 @@ export default function Nav() {
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
 
   return (
+    <>
     <header
       ref={headerRef}
       data-hidden={String(!isPwa && (hidden || navLocked))}
@@ -149,6 +152,13 @@ export default function Nav() {
               <span className="text-sm">{t("getApp")}</span>
             </Link>
           )}
+          <button
+            type="button"
+            onClick={() => setFeedbackOpen(true)}
+            className={linkCls(false)}
+          >
+            {t("feedback")}
+          </button>
           <a
             href="https://github.com/sentacraft/x-glass"
             target="_blank"
@@ -199,11 +209,26 @@ export default function Nav() {
                     {t("getApp")}
                   </Link>
                 )}
+                <button
+                  type="button"
+                  onClick={() => { setMobileMenuOpen(false); setFeedbackOpen(true); }}
+                  className={mobileLinkCls(false) + " w-full text-left"}
+                >
+                  <Send className="h-4 w-4 shrink-0" />
+                  {t("feedback")}
+                </button>
               </div>
             )}
           </div>
         </div>
       </nav>
     </header>
+
+    <FeedbackDialog
+      open={feedbackOpen}
+      onOpenChange={setFeedbackOpen}
+      type="general"
+    />
+    </>
   );
 }

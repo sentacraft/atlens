@@ -246,7 +246,7 @@ export default function LensSearchDialog({
                 <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-500">
                   {t("suggestLens")}{" "}
                   <FeedbackTrigger
-                    type="missing_lens"
+                    type="general"
                     context={{ searchQuery: deferredQuery.trim() }}
                     className="underline underline-offset-2 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
                   >
@@ -307,6 +307,16 @@ export default function LensSearchDialog({
                     </button>
                   );
                 })}
+                <p className="pt-1 text-center text-xs text-zinc-400 dark:text-zinc-500">
+                  {t("suggestLensResults")}{" "}
+                  <FeedbackTrigger
+                    type="general"
+                    context={{ searchQuery: deferredQuery.trim() }}
+                    className="underline underline-offset-2 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                  >
+                    {t("suggestLensLink")}
+                  </FeedbackTrigger>
+                </p>
               </div>
             )}
           </div>
