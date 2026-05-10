@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { getTranslations, getLocale } from "next-intl/server";
 import { Send, Mail, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
@@ -108,8 +109,21 @@ export default async function AboutContent() {
   const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage"];
   const G_BRANDS = ["fujifilm"];
 
-  const faqItems = [
-    { q: t("faq1Q"), a: t("faq1A") },
+  const faqItems: { q: string; a: ReactNode }[] = [
+    {
+      q: t("faq1Q"),
+      a: (
+        <>
+          {t("faq1A")}{" "}
+          <FeedbackTrigger
+            type="general"
+            className="underline underline-offset-2 decoration-zinc-400 hover:decoration-zinc-700 dark:decoration-zinc-500 dark:hover:decoration-zinc-300 transition-colors"
+          >
+            {t("faq1ACta")}
+          </FeedbackTrigger>
+        </>
+      ),
+    },
     { q: t("faq2Q"), a: t("faq2A") },
     { q: t("faq3Q"), a: t("faq3A") },
   ];
