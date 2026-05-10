@@ -13,19 +13,19 @@ export default function AddToCompareButton({ lensId }: Props) {
   const { compareIds, toggleCompare, canToggle } = useMountedCompare();
 
   const isSelected = compareIds.includes(lensId);
-  const disabled = !isSelected && !canToggle(lensId);
+  const isFull = !isSelected && !canToggle(lensId);
 
   return (
     <button
       onClick={() => toggleCompare(lensId)}
-      disabled={disabled}
+      disabled={isFull}
       className={`inline-flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg transition-colors ${
         isSelected
           ? "bg-zinc-200 text-zinc-700 hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600"
           : ACTION_PRIMARY_CLS
       }`}
     >
-      {isSelected ? t("removeFromCompare") : t("addToCompare")}
+      {isSelected ? t("removeFromCompare") : isFull ? t("compareFull") : t("addToCompare")}
     </button>
   );
 }
