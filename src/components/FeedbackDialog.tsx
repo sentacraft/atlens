@@ -187,7 +187,20 @@ export default function FeedbackDialog({
       >
         <DialogHeader>
           <DialogTitle>{t(titleKey)}</DialogTitle>
-          {status !== "success" && <DialogDescription>{t(descriptionKey)}</DialogDescription>}
+          {status !== "success" && (
+            <>
+              <DialogDescription>{t(descriptionKey)}</DialogDescription>
+              <p className="text-xs text-zinc-400 dark:text-zinc-500">
+                {t("emailLabel")}{" "}
+                <a
+                  href="mailto:xglass@sentacraft.com"
+                  className="underline underline-offset-2 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                >
+                  xglass@sentacraft.com
+                </a>
+              </p>
+            </>
+          )}
         </DialogHeader>
 
 
@@ -289,7 +302,7 @@ export default function FeedbackDialog({
               htmlFor={textareaId}
               className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
             >
-              {t("descriptionLabel")}
+              {t(showFieldPicker ? "descriptionLabel" : "descriptionLabelMain")}
               {showFieldPicker && (
                 <span className="ml-1 font-normal text-zinc-400 dark:text-zinc-500">
                   ({t("descriptionOptional")})
@@ -338,16 +351,6 @@ export default function FeedbackDialog({
             )}
           </form>
         )}
-
-        <p className="px-5 pt-2 pb-1 text-xs text-zinc-400 dark:text-zinc-500">
-          {t("emailAlt")}{" "}
-          <a
-            href="mailto:xglass@sentacraft.com"
-            className="underline underline-offset-2 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-          >
-            xglass@sentacraft.com
-          </a>
-        </p>
 
         <DialogFooter>
           {status === "success" ? (
