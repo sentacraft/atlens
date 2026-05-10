@@ -396,7 +396,8 @@
     "currentValueLabel": "Current value:",
     "suggestedCorrectionLabel": "Suggested correction",
     "suggestedCorrectionPlaceholder": "For example: 55mm, f/1.8, Yes…",
-    "descriptionLabel": "Description",
+    "descriptionLabel": "Additional notes",
+    "descriptionLabelMain": "Your feedback",
     "descriptionOptional": "optional",
     "contentRequired": "Add either a suggested correction or a description.",
     "descriptionPlaceholder": "Describe the issue with as much detail as you'd like…",
@@ -409,7 +410,7 @@
     "success": "Got it — thank you!",
     "successBody": "Every piece of feedback helps us make the data more accurate and complete.",
     "error": "Something went wrong. Please try again in a bit.",
-    "emailAlt": "Or reach us at"
+    "emailLabel": "X-Glass official email"
   },
   "Install": {
     "pageTitle": "Get the App",

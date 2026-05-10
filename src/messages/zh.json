@@ -397,6 +397,7 @@
     "suggestedCorrectionLabel": "建议改成",
     "suggestedCorrectionPlaceholder": "例如 55mm、f/1.8、有…",
     "descriptionLabel": "补充说明",
+    "descriptionLabelMain": "反馈内容",
     "descriptionOptional": "选填",
     "contentRequired": "请至少填写“建议改成”或“补充说明”中的一项。",
     "descriptionPlaceholder": "你可以在这里提供更多细节，这有助于我们更快更准确地处理你的反馈。",
@@ -409,7 +410,7 @@
     "success": "收到了，谢谢！",
     "successBody": "每一条反馈都在帮助我们让数据更准确、更完整。",
     "error": "提交时出了点问题，请稍后再试。",
-    "emailAlt": "也可以通过邮件联系"
+    "emailLabel": "X-Glass 官方邮箱"
   },
   "Install": {
     "pageTitle": "安装应用",
