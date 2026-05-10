@@ -6,6 +6,7 @@ import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
 import type { Lens } from "@/lib/types";
+import { Weight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { classifyFocusMotor, priceTier } from "@/lib/lens";
 import { pickPriceEntry, formatTierRange } from "@/lib/lens-pricing";
@@ -560,9 +561,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   {secondaryApertureDisplay(lens)}
                 </span>
               )}
-              <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                Aperture
-              </span>
             </div>
           ))}
         </div>
@@ -626,7 +624,8 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
               {showWeight && (
                 <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
                   {weights.map((w, i) => (
-                    <ParamColumn key={i} label={labels.weightLabel}>
+                    <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                      <Weight size={11} className="text-zinc-400" />
                       {w !== undefined ? (
                         <span
                           className="text-base font-medium tabular-nums text-zinc-900 leading-tight text-center"
@@ -637,7 +636,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                       ) : (
                         <span className="text-base font-medium tabular-nums text-zinc-300 leading-tight">—</span>
                       )}
-                    </ParamColumn>
+                    </div>
                   ))}
                 </div>
               )}
