@@ -708,6 +708,14 @@
     "apertureBladeCount": 9,
     "releaseYear": 2020,
     "pricing": {
+      "cn": {
+        "used": {
+          "price": 3899,
+          "currency": "CNY",
+          "source": "闲鱼",
+          "sampledAt": "2026-05-10"
+        }
+      },
       "global": {
         "new": {
           "price": 1149.95,

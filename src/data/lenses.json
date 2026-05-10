@@ -1312,10 +1312,10 @@
       },
       "global": {
         "used": {
-          "price": 59,
+          "price": 53,
           "currency": "USD",
           "source": "eBay",
-          "sampledAt": "2026-05-09"
+          "sampledAt": "2026-05-10"
         }
       }
     },
@@ -1822,6 +1822,14 @@
           "source": "京东·星曜光学官方旗舰店",
           "sampledAt": "2026-05-08"
         }
+      },
+      "global": {
+        "new": {
+          "price": 229.99,
+          "currency": "USD",
+          "source": "Amazon · Brightin Star Official Store",
+          "sampledAt": "2026-05-10"
+        }
       }
     },
     "compatibleMounts": [
@@ -2273,6 +2281,24 @@
     "angleOfView": 57.4,
     "angleOfViewCalc": 59,
     "apertureBladeCount": 10,
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 165,
+          "currency": "CNY",
+          "source": "闲鱼",
+          "sampledAt": "2026-05-10"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 65.99,
+          "currency": "USD",
+          "source": "Amazon · Brightin Star Official Store",
+          "sampledAt": "2026-05-10"
+        }
+      }
+    },
     "compatibleMounts": [
       "Sony E",
       "Canon EF-M",
@@ -2934,6 +2960,14 @@
     "apertureBladeCount": 7,
     "releaseYear": 2018,
     "pricing": {
+      "cn": {
+        "used": {
+          "price": 575,
+          "currency": "CNY",
+          "source": "闲鱼",
+          "sampledAt": "2026-05-10"
+        }
+      },
       "global": {
         "new": {
           "price": 349.95,
@@ -3010,6 +3044,14 @@
     "apertureBladeCount": 7,
     "releaseYear": 2013,
     "pricing": {
+      "cn": {
+        "used": {
+          "price": 515,
+          "currency": "CNY",
+          "source": "闲鱼",
+          "sampledAt": "2026-05-10"
+        }
+      },
       "global": {
         "used": {
           "price": 175,
@@ -3069,6 +3111,14 @@
     "apertureBladeCount": 9,
     "releaseYear": 2020,
     "pricing": {
+      "cn": {
+        "used": {
+          "price": 860,
+          "currency": "CNY",
+          "source": "闲鱼",
+          "sampledAt": "2026-05-10"
+        }
+      },
       "global": {
         "new": {
           "price": 239.95,
@@ -3139,6 +3189,16 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2013,
+    "pricing": {
+      "global": {
+        "used": {
+          "price": 279.99,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-10"
+        }
+      }
+    },
     "compatibleMounts": [
       "Fujifilm X"
     ],
@@ -3211,6 +3271,14 @@
     "apertureBladeCount": 7,
     "releaseYear": 2015,
     "pricing": {
+      "cn": {
+        "used": {
+          "price": 1225,
+          "currency": "CNY",
+          "source": "闲鱼",
+          "sampledAt": "2026-05-10"
+        }
+      },
       "global": {
         "new": {
           "price": 449.95,
@@ -3798,6 +3866,14 @@
     "apertureBladeCount": 11,
     "releaseYear": 2024,
     "pricing": {
+      "cn": {
+        "used": {
+          "price": 8588,
+          "currency": "CNY",
+          "source": "闲鱼",
+          "sampledAt": "2026-05-10"
+        }
+      },
       "global": {
         "new": {
           "price": 1399.95,
@@ -4387,14 +4463,6 @@
     "apertureBladeCount": 7,
     "releaseYear": 2012,
     "pricing": {
-      "cn": {
-        "used": {
-          "price": 1600,
-          "currency": "CNY",
-          "source": "闲鱼",
-          "sampledAt": "2026-05-08"
-        }
-      },
       "global": {
         "new": {
           "price": 699.95,
@@ -9562,6 +9630,14 @@
     "angleOfViewCalc": 16.1,
     "apertureBladeCount": 12,
     "pricing": {
+      "cn": {
+        "used": {
+          "price": 1580,
+          "currency": "CNY",
+          "source": "闲鱼",
+          "sampledAt": "2026-05-10"
+        }
+      },
       "global": {
         "new": {
           "price": 389,
