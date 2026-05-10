@@ -19,7 +19,8 @@
     "lenses": "镜头库",
     "compare": "对比",
     "about": "关于",
-    "getApp": "获取应用"
+    "getApp": "获取应用",
+    "feedback": "提交反馈"
   },
   "Search": {
     "open": "打开镜头搜索",
@@ -34,6 +35,7 @@
     "noResultsHint": "试试更短的型号，或者换个品牌名、系列关键词。",
     "suggestLens": "没找到你想要的镜头？",
     "suggestLensLink": "告诉我们",
+    "suggestLensResults": "没有你预期的那支镜头？",
     "coverageLink": "查看收录范围 →",
     "results": "搜索结果",
     "clear": "清空",
@@ -193,6 +195,7 @@
     "compareFull": "对比列表已满",
     "officialSite": "官网页面",
     "reportIssue": "反馈问题",
+    "nudgeText": "发现数据有误？",
     "fieldOfficialLink": "官方链接",
     "fieldLensImage": "镜头图片",
     "fieldGroupMedia": "媒体与链接",
@@ -389,6 +392,8 @@
     "titleDataIssue": "反馈问题",
     "titleMissingLens": "推荐缺失镜头",
     "titleGeneral": "提交反馈",
+    "tabGeneral": "提交反馈",
+    "tabDataIssue": "反馈数据问题",
     "descriptionDataIssue": "参数不对、图片有问题、哪里写错了、发现缺失镜头——都可以反馈给我们。",
     "descriptionMissingLens": "如果你发现有漏收录的镜头，发给我们，我们会加入处理队列。",
     "descriptionGeneral": "有想法、发现 Bug，或者想提功能建议，都欢迎。",
