@@ -57,10 +57,14 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
 
   // Only handle same-origin GET requests.
-  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+  if (request.method !== 'GET' || url.origin !== self.location.origin) {
+    return;
+  }
 
   // Skip API routes entirely — always go to the network.
-  if (url.pathname.startsWith('/api/')) return;
+  if (url.pathname.startsWith('/api/')) {
+    return;
+  }
 
   // _next/static — content-hashed files, safe to cache forever.
   if (url.pathname.startsWith('/_next/static/')) {
@@ -136,18 +140,24 @@ async function networkFirstWithOfflineFallback(request) {
   const cache = await caches.open(CACHE.shell);
   try {
     const response = await fetch(request);
-    if (response.ok) cache.put(request, response.clone());
+    if (response.ok) {
+      cache.put(request, response.clone());
+    }
     return response;
   } catch {
     const cached = await cache.match(request);
-    if (cached) return cached;
+    if (cached) {
+      return cached;
+    }
     // When the PWA is launched via the home screen icon (start_url = '/'), the
     // locale middleware can't run offline so there's no cached entry for '/'.
     // Fall back to the precached English home page so the app is usable.
     const url = new URL(request.url);
     if (url.pathname === '/') {
       const home = await cache.match('/en/');
-      if (home) return home;
+      if (home) {
+        return home;
+      }
     }
     return (await cache.match('/offline')) ?? new Response('Offline', { status: 503 });
   }
@@ -159,6 +169,8 @@ async function networkFirstWithOfflineFallback(request) {
  */
 async function fetchAndStore(request, cache) {
   const response = await fetch(request);
-  if (response.ok) cache.put(request, response.clone());
+  if (response.ok) {
+    cache.put(request, response.clone());
+  }
   return response;
 }

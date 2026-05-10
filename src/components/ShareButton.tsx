@@ -111,7 +111,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
 
   // Keep shareUrl in sync when panel opens
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      return;
+    }
     setShareUrl(window.location.href);
     slugRef.current = lenses
       .map((l) => l.model.replace(/\s+/g, "-").toLowerCase())
@@ -191,7 +193,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   }, [lenses]);
 
   const handleDownload = useCallback(async () => {
-    if (!posterRef.current) return;
+    if (!posterRef.current) {
+      return;
+    }
     setPosterGenerating(true);
     try {
       const url = await rasterizePoster(posterRef.current);
@@ -207,7 +211,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   }, []);
 
   const handleShareImage = useCallback(async () => {
-    if (!posterRef.current) return;
+    if (!posterRef.current) {
+      return;
+    }
     setPosterGenerating(true);
     let url: string | undefined;
     try {
@@ -222,7 +228,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       });
     } catch (err) {
       // User cancelled — no fallback needed
-      if (err instanceof Error && err.name === "AbortError") return;
+      if (err instanceof Error && err.name === "AbortError") {
+        return;
+      }
       // Share API unsupported or failed — fall back to download
       if (url) {
         const link = document.createElement("a");
@@ -237,7 +245,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
 
   const handleOpenLightbox = useCallback(async () => {
     setLightboxOpen(true);
-    if (!posterRef.current) return;
+    if (!posterRef.current) {
+      return;
+    }
     setLightboxImageLoading(true);
     try {
       const url = await rasterizePoster(posterRef.current);
@@ -390,7 +400,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
               backdropClassName="bg-zinc-950/75 transition-[background-color] duration-150"
               showCloseButton={false}
               onClick={(e) => {
-                if (e.target === e.currentTarget) setLightboxOpen(false);
+                if (e.target === e.currentTarget) {
+                  setLightboxOpen(false);
+                }
               }}
             >
               {/* Wrapper: anchor for the mobile close button only; NOT the resize-observed element */}
@@ -415,7 +427,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
                   <div
                     ref={lightboxScrollRef}
                     className="max-h-[calc(100svh-3rem-10px)] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:max-h-[calc(100svh-3rem)]"
-                    onScroll={() => { if (!hasScrolled) setHasScrolled(true); }}
+                    onScroll={() => { if (!hasScrolled) {setHasScrolled(true);} }}
                   >
                     {lightboxImageLoading ? (
                       <div className="flex h-48 items-center justify-center">
@@ -428,7 +440,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
                         className="w-full"
                         onLoad={() => {
                           const el = lightboxScrollRef.current;
-                          if (el) setIsScrollable(el.scrollHeight > el.clientHeight + 1);
+                          if (el) {
+                            setIsScrollable(el.scrollHeight > el.clientHeight + 1);
+                          }
                         }}
                       />
                     ) : null}

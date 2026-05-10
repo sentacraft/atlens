@@ -30,8 +30,10 @@ export default function DataInfo() {
 
   const dateLabel = (() => {
     if (clickState === "version")
-      return `${meta.version} Build ${meta.buildNumber}`;
-    if (clickState === "easter") return h("dataSnapshot");
+      {return `${meta.version} Build ${meta.buildNumber}`;}
+    if (clickState === "easter") {
+      return h("dataSnapshot");
+    }
     return `${t("updatedPrefix")} ${formatDate(meta.lastUpdated)}`;
   })();
 

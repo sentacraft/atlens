@@ -51,6 +51,7 @@ next-env.d.ts
 # coding agents
 .agents/
 .claude/
+!.claude/launch.json
 CLAUDE.md
 agents.md
 .playwright-mcp/

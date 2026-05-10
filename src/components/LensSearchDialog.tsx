@@ -85,7 +85,9 @@ export default function LensSearchDialog({
   // Scroll active result into view when navigating with keyboard
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container) return;
+    if (!container) {
+      return;
+    }
     const activeItem = container.querySelector('[aria-selected="true"]');
     if (activeItem) {
       (activeItem as HTMLElement).scrollIntoView({ block: "nearest" });
@@ -101,8 +103,10 @@ export default function LensSearchDialog({
     setOpen(false);
 
     if (onSelectLens) {
+
       onSelectLens(lens);
       return;
+
     }
 
     router.push(`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`);
@@ -111,22 +115,28 @@ export default function LensSearchDialog({
   function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      if (results.length === 0) return;
+      if (results.length === 0) {
+        return;
+      }
       setActiveIndex((current) => (current + 1) % results.length);
       return;
     }
 
     if (event.key === "ArrowUp") {
       event.preventDefault();
-      if (results.length === 0) return;
+      if (results.length === 0) {
+        return;
+      }
       setActiveIndex((current) => (current - 1 + results.length) % results.length);
       return;
     }
 
     if (event.key === "Enter" && results[activeIndex]) {
+
       event.preventDefault();
       handleSelect(results[activeIndex]);
       return;
+
     }
   }
 

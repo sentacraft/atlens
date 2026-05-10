@@ -24,9 +24,13 @@ function resolvePackageFile(pkg: string, relPath: string): string {
   let dir = process.cwd();
   while (true) {
     const candidate = join(dir, "node_modules", pkg, relPath);
-    if (existsSync(candidate)) return candidate;
+    if (existsSync(candidate)) {
+      return candidate;
+    }
     const parent = dirname(dir);
-    if (parent === dir) throw new Error(`Cannot find ${pkg}/${relPath} in any node_modules`);
+    if (parent === dir) {
+      throw new Error(`Cannot find ${pkg}/${relPath} in any node_modules`);
+    }
     dir = parent;
   }
 }
@@ -86,7 +90,9 @@ function irisToSvg(size: number, padding: number, background?: string): string {
     createElement(Iris, { config: IRIS_NAV, uid: "gen", size })
   );
   const match = html.match(/<svg[\s\S]*<\/svg>/);
-  if (!match) throw new Error("gen-icons: no <svg> found in rendered Iris output");
+  if (!match) {
+    throw new Error("gen-icons: no <svg> found in rendered Iris output");
+  }
   let result = match[0]
     .replace("<svg ", `<svg xmlns="http://www.w3.org/2000/svg" `)
     .replace(tightViewBox, paddedViewBox(padding));
@@ -125,7 +131,9 @@ function irisEmbedSvg(
     createElement(Iris, { config, uid, size })
   );
   const match = html.match(/<svg[\s\S]*<\/svg>/);
-  if (!match) throw new Error("gen-icons: no <svg> found in Iris render");
+  if (!match) {
+    throw new Error("gen-icons: no <svg> found in Iris render");
+  }
   return match[0]
     .replace("<svg ", `<svg xmlns="http://www.w3.org/2000/svg" x="${x}" y="${y}" `)
     .replace(tightViewBox, paddedViewBox(padding));

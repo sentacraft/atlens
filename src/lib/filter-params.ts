@@ -24,15 +24,33 @@ const SORT_KEYS: SortKey[] = ["focalLength", "maxAperture", "weightG"];
 // feat=features, fc=focalCategories, sort=sortKey, dir=sortDir
 export function serializeFilters(filters: FilterState): URLSearchParams {
   const p = new URLSearchParams();
-  if (filters.brands.length > 0) p.set("b", filters.brands.join(","));
-  if (filters.typeFilter) p.set("t", filters.typeFilter);
-  if (filters.focusFilter) p.set("f", filters.focusFilter);
-  if (filters.specialtyTag) p.set("st", filters.specialtyTag);
-  if (filters.focusMotorClass) p.set("m", filters.focusMotorClass);
-  if (filters.features.length > 0) p.set("feat", filters.features.join(","));
-  if (filters.focalCategories.length > 0) p.set("fc", filters.focalCategories.join(","));
-  if (filters.sort !== defaultFilters.sort) p.set("sort", filters.sort);
-  if (filters.sortDir !== defaultFilters.sortDir) p.set("dir", filters.sortDir);
+  if (filters.brands.length > 0) {
+    p.set("b", filters.brands.join(","));
+  }
+  if (filters.typeFilter) {
+    p.set("t", filters.typeFilter);
+  }
+  if (filters.focusFilter) {
+    p.set("f", filters.focusFilter);
+  }
+  if (filters.specialtyTag) {
+    p.set("st", filters.specialtyTag);
+  }
+  if (filters.focusMotorClass) {
+    p.set("m", filters.focusMotorClass);
+  }
+  if (filters.features.length > 0) {
+    p.set("feat", filters.features.join(","));
+  }
+  if (filters.focalCategories.length > 0) {
+    p.set("fc", filters.focalCategories.join(","));
+  }
+  if (filters.sort !== defaultFilters.sort) {
+    p.set("sort", filters.sort);
+  }
+  if (filters.sortDir !== defaultFilters.sortDir) {
+    p.set("dir", filters.sortDir);
+  }
   return p;
 }
 

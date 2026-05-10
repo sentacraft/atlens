@@ -23,7 +23,9 @@ function detectSync(): Platform | null {
   const standalone =
     window.matchMedia("(display-mode: standalone)").matches ||
     (navigator as { standalone?: boolean }).standalone === true;
-  if (standalone) return "installed";
+  if (standalone) {
+    return "installed";
+  }
 
   const ua = navigator.userAgent;
   if (/iPad|iPhone|iPod/.test(ua)) {
@@ -72,14 +74,20 @@ export default function InstallPage() {
   }, []);
 
   async function handleInstall() {
-    if (!promptEvent) return;
+    if (!promptEvent) {
+      return;
+    }
     await promptEvent.prompt();
     const { outcome } = await promptEvent.userChoice;
-    if (outcome === "accepted") setPlatform("installed");
+    if (outcome === "accepted") {
+      setPlatform("installed");
+    }
   }
 
   // Render nothing during the brief detection window to avoid layout flash.
-  if (platform === "loading") return null;
+  if (platform === "loading") {
+    return null;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-full px-6 py-16 text-center">

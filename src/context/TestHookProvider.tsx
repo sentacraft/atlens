@@ -39,7 +39,9 @@ export function TestHookProvider({ children }: { children: ReactNode }) {
 
   // Strip testhook params from URL after cold-start init
   useEffect(() => {
-    if (!state.testHook) return;
+    if (!state.testHook) {
+      return;
+    }
     const clean = new URLSearchParams(searchParams.toString());
     clean.delete(TESTHOOK_QUERY_KEYS.testHook);
     for (const option of TESTHOOK_OPTION_DEFINITIONS) {

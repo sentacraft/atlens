@@ -3,8 +3,12 @@ import type { Mount } from "@/lib/types";
 export type MountSegment = "x" | "gfx";
 
 export function urlSegmentToMount(seg: string | undefined): Mount | null {
-  if (seg === "x") return "X";
-  if (seg === "gfx") return "G";
+  if (seg === "x") {
+    return "X";
+  }
+  if (seg === "gfx") {
+    return "G";
+  }
   return null;
 }
 

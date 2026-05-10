@@ -235,7 +235,9 @@ export function resolveSpecRow(
   lens: Lens,
   labels: SpecValueTextLabels
 ): ResolvedSpecRow | null {
-  if (!row.hasData(lens)) return null;
+  if (!row.hasData(lens)) {
+    return null;
+  }
 
   const note =
     (row.fieldNoteKey ? lens.fieldNotes?.[row.fieldNoteKey] : undefined) ??
@@ -530,12 +532,14 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
             }),
           getStructuredLines: (l) => {
             const mfd = l.minFocusDistance;
-            if (!mfd?.variants) return undefined;
+            if (!mfd?.variants) {
+              return undefined;
+            }
             const lines: StructuredLine[] = [];
             if (mfd.variants.wide !== undefined)
-              lines.push({ value: `${mfd.variants.wide}cm`, label: wide });
+              {lines.push({ value: `${mfd.variants.wide}cm`, label: wide });}
             if (mfd.variants.tele !== undefined)
-              lines.push({ value: `${mfd.variants.tele}cm`, label: tele });
+              {lines.push({ value: `${mfd.variants.tele}cm`, label: tele });}
             return lines.length > 0 ? lines : undefined;
           },
           getSubValue: (l) =>
@@ -561,12 +565,14 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
             }),
           getStructuredLines: (l) => {
             const mag = l.maxMagnification;
-            if (!mag?.variants) return undefined;
+            if (!mag?.variants) {
+              return undefined;
+            }
             const lines: StructuredLine[] = [];
             if (mag.variants.wide !== undefined)
-              lines.push({ value: `${mag.variants.wide}x`, label: wide });
+              {lines.push({ value: `${mag.variants.wide}x`, label: wide });}
             if (mag.variants.tele !== undefined)
-              lines.push({ value: `${mag.variants.tele}x`, label: tele });
+              {lines.push({ value: `${mag.variants.tele}x`, label: tele });}
             return lines.length > 0 ? lines : undefined;
           },
           toComparable: (l) => l.maxMagnification?.value,

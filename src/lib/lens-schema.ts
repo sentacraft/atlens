@@ -374,7 +374,9 @@ function specSimilarity(
   for (const k of keys) {
     const av = ra[k];
     const bv = rb[k];
-    if (av === undefined || bv === undefined) continue;
+    if (av === undefined || bv === undefined) {
+      continue;
+    }
     compared++;
     if (JSON.stringify(normalizeForComparison(av)) === JSON.stringify(normalizeForComparison(bv))) {
       equalFields.push(k);
@@ -467,9 +469,13 @@ export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) =
         const { lens: a, index: ai } = group[i];
         const { lens: b, index: bj } = group[j];
         const { score, equalFields, diffFields } = specSimilarity(a, b);
-        if (score < SPEC_SIMILARITY_THRESHOLD) continue;
+        if (score < SPEC_SIMILARITY_THRESHOLD) {
+          continue;
+        }
         const pairKey = makeAllowlistKey(a.id, b.id);
-        if (KNOWN_DISTINCT_PAIRS.has(pairKey)) continue;
+        if (KNOWN_DISTINCT_PAIRS.has(pairKey)) {
+          continue;
+        }
         ctx.addIssue({
           code: "custom",
           message: [

@@ -57,17 +57,23 @@ function indexToFStop(idx: number, defaultFStop: number): number {
 
 // Continuous mark index for a given f-stop value (inverse of indexToFStop).
 function fStopToIndex(fStop: number): number {
-  if (fStop <= (MARKS[1] as number)) return 1;
+  if (fStop <= (MARKS[1] as number)) {
+    return 1;
+  }
   for (let i = 1; i < MARKS.length - 1; i++) {
     const lo = MARKS[i] as number;
     const hi = MARKS[i + 1] as number;
-    if (fStop <= hi) return i + (fStop - lo) / (hi - lo);
+    if (fStop <= hi) {
+      return i + (fStop - lo) / (hi - lo);
+    }
   }
   return MARKS.length - 1;
 }
 
 function formatMark(mark: Mark): string {
-  if (mark === "A") return "A";
+  if (mark === "A") {
+    return "A";
+  }
   return (mark === 1.4 || mark === 2.8 || mark === 5.6)
     ? (mark as number).toFixed(1)
     : String(mark);
@@ -125,7 +131,9 @@ export default function ApertureStrip({
 
   // Sync offset from external fStop — only while animating and before user touch.
   useEffect(() => {
-    if (!animating || fStop === undefined || userHasInteractedRef.current || dragRef.current || snappingRef.current) return;
+    if (!animating || fStop === undefined || userHasInteractedRef.current || dragRef.current || snappingRef.current) {
+      return;
+    }
     const idx    = fStopToIndex(fStop);
     const target = Math.max(minOffset, Math.min(maxOffset, (defaultIdx - idx) * SPACING));
     setOffset(target);
@@ -159,7 +167,9 @@ export default function ApertureStrip({
   }
 
   function onPointerMove(e: React.PointerEvent<HTMLDivElement>) {
-    if (!dragRef.current) return;
+    if (!dragRef.current) {
+      return;
+    }
     // If the button was released outside the browser window, pointerup never
     // fired — detect this here and end the drag cleanly.
     if (e.buttons === 0) {
@@ -185,14 +195,18 @@ export default function ApertureStrip({
   }
 
   function onPointerUp(e: React.PointerEvent<HTMLDivElement>) {
-    if (!dragRef.current) return;
+    if (!dragRef.current) {
+      return;
+    }
     const raw = dragRef.current.startOffset + (e.clientX - dragRef.current.startX);
     dragRef.current = null;
     snapToNearest(Math.max(minOffset, Math.min(maxOffset, raw)));
   }
 
   function onPointerCancel() {
-    if (!dragRef.current) return;
+    if (!dragRef.current) {
+      return;
+    }
     dragRef.current = null;
     snapToNearest(lastValidOffsetRef.current);
   }

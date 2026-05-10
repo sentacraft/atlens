@@ -19,13 +19,19 @@ const CONFIG_PATH = path.join(process.cwd(), "src/config/iris-config.ts");
 function findPresetBody(content: string, presetName: string): { bodyStart: number; bodyEnd: number } | null {
   const startPattern = new RegExp(`export const ${presetName}[^{]*\\{`);
   const startMatch = startPattern.exec(content);
-  if (!startMatch) return null;
+  if (!startMatch) {
+    return null;
+  }
 
   const bodyStart = startMatch.index + startMatch[0].length;
   let depth = 1, bodyEnd = bodyStart;
   while (bodyEnd < content.length && depth > 0) {
-    if (content[bodyEnd] === "{") depth++;
-    if (content[bodyEnd] === "}") depth--;
+    if (content[bodyEnd] === "{") {
+      depth++;
+    }
+    if (content[bodyEnd] === "}") {
+      depth--;
+    }
     bodyEnd++;
   }
   return { bodyStart, bodyEnd: bodyEnd - 1 };
@@ -38,13 +44,19 @@ function findPresetBody(content: string, presetName: string): { bodyStart: numbe
 function extractObjectBlock(body: string, key: string): string | null {
   const startPattern = new RegExp(`\\b${key}:\\s*\\{`);
   const startMatch = startPattern.exec(body);
-  if (!startMatch) return null;
+  if (!startMatch) {
+    return null;
+  }
 
   const blockStart = startMatch.index + startMatch[0].length;
   let depth = 1, pos = blockStart;
   while (pos < body.length && depth > 0) {
-    if (body[pos] === "{") depth++;
-    if (body[pos] === "}") depth--;
+    if (body[pos] === "{") {
+      depth++;
+    }
+    if (body[pos] === "}") {
+      depth--;
+    }
     pos++;
   }
   return body.slice(blockStart, pos - 1);
@@ -66,22 +78,38 @@ function serializeBody(v: IrisConfig): string {
   add("size",         String(v.size));
 
   // Appearance
-  if (v.strokeWidth !== undefined) add("strokeWidth", v.strokeWidth.toFixed(2));
-  if (v.bladeColor  !== undefined) add("bladeColor",  `"${v.bladeColor}"`);
-  if (v.strokeColor !== undefined) add("strokeColor", `"${v.strokeColor}"`);
+  if (v.strokeWidth !== undefined) {
+    add("strokeWidth", v.strokeWidth.toFixed(2));
+  }
+  if (v.bladeColor  !== undefined) {
+    add("bladeColor",  `"${v.bladeColor}"`);
+  }
+  if (v.strokeColor !== undefined) {
+    add("strokeColor", `"${v.strokeColor}"`);
+  }
 
   // Aperture limit
-  if (v.closedFStop !== undefined) add("closedFStop", String(v.closedFStop));
+  if (v.closedFStop !== undefined) {
+    add("closedFStop", String(v.closedFStop));
+  }
 
   // Interactive mode — serialized as a nested object
   if (v.interactive !== undefined) {
     if (v.interactive.type === "hover") {
       const h = v.interactive;
       const inner: string[] = [`    type: "hover",`];
-      if (h.hotzoneScaleH !== undefined) inner.push(`    hotzoneScaleH: ${h.hotzoneScaleH.toFixed(2)},`);
-      if (h.hotzoneScaleV !== undefined) inner.push(`    hotzoneScaleV: ${h.hotzoneScaleV.toFixed(2)},`);
-      if (h.easeOutMs     !== undefined) inner.push(`    easeOutMs: ${h.easeOutMs},`);
-      if (h.catchupMs     !== undefined) inner.push(`    catchupMs: ${h.catchupMs},`);
+      if (h.hotzoneScaleH !== undefined) {
+        inner.push(`    hotzoneScaleH: ${h.hotzoneScaleH.toFixed(2)},`);
+      }
+      if (h.hotzoneScaleV !== undefined) {
+        inner.push(`    hotzoneScaleV: ${h.hotzoneScaleV.toFixed(2)},`);
+      }
+      if (h.easeOutMs     !== undefined) {
+        inner.push(`    easeOutMs: ${h.easeOutMs},`);
+      }
+      if (h.catchupMs     !== undefined) {
+        inner.push(`    catchupMs: ${h.catchupMs},`);
+      }
       lines.push(`  interactive: {\n${inner.join("\n")}\n  },`);
     } else if (v.interactive.type === "tap") {
       const t = v.interactive;
@@ -95,14 +123,20 @@ function serializeBody(v: IrisConfig): string {
       }
     }
   }
-  if (v.apertureStrip !== undefined) add("apertureStrip", String(v.apertureStrip));
+  if (v.apertureStrip !== undefined) {
+    add("apertureStrip", String(v.apertureStrip));
+  }
 
   // Mount animation
   if (v.onMount !== undefined && v.onMount.type === "sweep") {
     add("onMount", `{ type: "sweep", sweepMs: ${v.onMount.sweepMs}, totalMs: ${v.onMount.totalMs} }`);
   }
 
-  if (v.chaseTauMs !== undefined) add("chaseTauMs", String(v.chaseTauMs));
+  if (v.chaseTauMs !== undefined) {
+
+    add("chaseTauMs", String(v.chaseTauMs));
+
+  }
 
   return "\n" + lines.join("\n") + "\n";
 }
@@ -118,7 +152,9 @@ export async function readFromConfig(
   try {
     const content = await readFile(CONFIG_PATH, "utf-8");
     const range = findPresetBody(content, presetName);
-    if (!range) return null;
+    if (!range) {
+      return null;
+    }
 
     const body = content.slice(range.bodyStart, range.bodyEnd);
 
@@ -132,15 +168,21 @@ export async function readFromConfig(
     }
     function extractAnimation(key: string, src = body): IrisAnimation | undefined {
       const m = new RegExp(`\\b${key}:\\s*\\{[^}]*type:\\s*"sweep"[^}]*sweepMs:\\s*(\\d+)[^}]*totalMs:\\s*(\\d+)`).exec(src);
-      if (m) return { type: "sweep", sweepMs: parseInt(m[1]), totalMs: parseInt(m[2]) };
+      if (m) {
+        return { type: "sweep", sweepMs: parseInt(m[1]), totalMs: parseInt(m[2]) };
+      }
       return undefined;
     }
     function extractInteractive(): IrisInteractiveMode | undefined {
       const block = extractObjectBlock(body, "interactive");
-      if (!block) return undefined;
+      if (!block) {
+        return undefined;
+      }
 
       const typeMatch = /\btype:\s*"(hover|tap)"/.exec(block);
-      if (!typeMatch) return undefined;
+      if (!typeMatch) {
+        return undefined;
+      }
 
       if (typeMatch[1] === "hover") {
         return {
@@ -153,7 +195,9 @@ export async function readFromConfig(
       }
       if (typeMatch[1] === "tap") {
         const anim = extractAnimation("animation", block);
-        if (!anim) return undefined;
+        if (!anim) {
+          return undefined;
+        }
         return { type: "tap", animation: anim };
       }
       return undefined;
@@ -209,7 +253,9 @@ export async function exportToConfig(
   try {
     const originalContent = await readFile(CONFIG_PATH, "utf-8");
     const range = findPresetBody(originalContent, presetName);
-    if (!range) return { ok: false, error: `${presetName} not found in iris-config.ts` };
+    if (!range) {
+      return { ok: false, error: `${presetName} not found in iris-config.ts` };
+    }
 
     const newContent =
       originalContent.slice(0, range.bodyStart) +

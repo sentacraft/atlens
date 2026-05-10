@@ -80,7 +80,9 @@ export default function LensListClient({ lenses }: Props) {
   function updateFilters(updater: FilterState | ((prev: FilterState) => FilterState)) {
     setFilters((prev) => {
       const next = typeof updater === "function" ? updater(prev) : updater;
-      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
       debounceRef.current = setTimeout(() => {
         const qs = serializeFilters(next).toString();
         router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });

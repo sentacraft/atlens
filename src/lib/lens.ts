@@ -112,17 +112,21 @@ export type FocusMotorClass = "linear" | "stepping" | "other";
  * AF lenses with an undocumented motor type return "other".
  */
 export function classifyFocusMotor(lens: Lens): FocusMotorClass | undefined {
-  if (!lens.af) return undefined;
+  if (!lens.af) {
+    return undefined;
+  }
   const m = lens.focusMotor;
-  if (!m) return "other"; // AF but motor type not documented → treated as Other
+  if (!m) {
+    return "other";
+  } // AF but motor type not documented → treated as Other
 
   const s = m.toLowerCase();
   // Linear family: LM, HLA, VXD, VCM, Triple/Quad Linear, Dual HyperVCM
   if (/\b(lm|hla|vxd|vcm)\b/.test(s) || s.includes("linear") || s.includes("hypervcm"))
-    return "linear";
+    {return "linear";}
   // Stepping family: STM, RXD, "Stepping Motor", "STM+Lead screw"
   if (/\b(stm|rxd)\b/.test(s) || s.includes("stepping"))
-    return "stepping";
+    {return "stepping";}
   return "other";
 }
 
@@ -160,15 +164,25 @@ export function filterLenses(lenses: Lens[], filters: FilterState): Lens[] {
       return false;
     }
 
-    if (filters.focusFilter === "auto" && !lens.af) return false;
-    if (filters.focusFilter === "manual" && lens.af) return false;
+    if (filters.focusFilter === "auto" && !lens.af) {
 
-    if (filters.specialtyTag && !lens.specialtyTags?.includes(filters.specialtyTag)) {
+      return false;
+
+    }
+    if (filters.focusFilter === "manual" && lens.af) {
       return false;
     }
 
-    if (filters.focusMotorClass && classifyFocusMotor(lens) !== filters.focusMotorClass) {
+    if (filters.specialtyTag && !lens.specialtyTags?.includes(filters.specialtyTag)) {
+
       return false;
+
+    }
+
+    if (filters.focusMotorClass && classifyFocusMotor(lens) !== filters.focusMotorClass) {
+
+      return false;
+
     }
 
     for (const field of FILTER_FEATURE_KEYS) {
@@ -238,7 +252,9 @@ function getSortableMaxAperture(lens: Lens): number {
   // T-stop is numerically slightly larger than f-stop but ordering is preserved
   // for sort purposes within the cine cohort.
   const value = lens.maxAperture ?? lens.maxTStop;
-  if (value === undefined) return Number.POSITIVE_INFINITY;
+  if (value === undefined) {
+    return Number.POSITIVE_INFINITY;
+  }
   return Array.isArray(value) ? value[0] : value;
 }
 
@@ -267,7 +283,9 @@ export function sortLenses(
 export function priceTier(price: number, currency: "CNY" | "USD"): 1 | 2 | 3 | 4 | 5 | undefined {
   const thresholds = currency === "CNY" ? CNY_THRESHOLDS : USD_THRESHOLDS;
   for (let i = thresholds.length - 1; i >= 0; i--) {
-    if (price >= thresholds[i]) return (i + 1) as 1 | 2 | 3 | 4 | 5;
+    if (price >= thresholds[i]) {
+      return (i + 1) as 1 | 2 | 3 | 4 | 5;
+    }
   }
   return undefined;
 }
