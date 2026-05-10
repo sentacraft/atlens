@@ -389,7 +389,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
             </span>
           </div>
           {/* Title lines — one per lens, font scales with count */}
-          <div style={{ marginBottom: slogan ? 8 : 0 }}>
+          <div style={{ marginBottom: slogan ? 10 : 0 }}>
             {titleLines.map((line, i) => (
               <div
                 key={i}
