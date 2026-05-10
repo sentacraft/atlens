@@ -5,7 +5,6 @@ import { Z } from "@/config/ui";
 import { useTranslations } from "next-intl";
 import { ShareButton } from "@/components/share/ShareButton";
 import CompareAddLensButton from "@/components/CompareAddLensButton";
-import BackButton from "@/components/BackButton";
 import { useMountedCompare } from "@/context/CompareProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
@@ -14,14 +13,13 @@ import type { Lens } from "@/lib/types";
 
 interface Props {
   lenses: Lens[];
-  fallbackHref: string;
   /** Matches CompareTable minColumns — button is hidden while empty slot columns are visible. */
   minColumns?: number;
   /** Preset title to use as the default share poster title. */
   presetTitle?: string;
 }
 
-export default function ComparePageHeader({ lenses, fallbackHref, minColumns = 0, presetTitle }: Props) {
+export default function ComparePageHeader({ lenses, minColumns = 0, presetTitle }: Props) {
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
   const { clearCompare } = useMountedCompare();
@@ -46,7 +44,6 @@ export default function ComparePageHeader({ lenses, fallbackHref, minColumns = 0
   return (
     <>
       <div ref={headerRef} className="flex items-center gap-3">
-        <BackButton fallbackHref={fallbackHref} />
         <h1 className="hidden sm:block text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           {t("title")}
         </h1>

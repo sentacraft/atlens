@@ -11,7 +11,6 @@ import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens-spec-groups";
 import { ExternalLink } from "@/components/ui/external-link";
 import { Link } from "@/i18n/navigation";
 import AddToCompareButton from "@/components/AddToCompareButton";
-import BackButton from "@/components/BackButton";
 import BackToTopButton from "@/components/BackToTopButton";
 import { ShareButton } from "@/components/share/ShareButton";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
@@ -221,9 +220,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   return (
     <>
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col gap-8">
-      {/* Back button */}
-      <BackButton fallbackHref={`/lenses/${mount}`} />
-
       {/* Header: image + key info side by side */}
       <div className="flex flex-col sm:flex-row gap-8">
         {/* Image */}
@@ -260,7 +256,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           <PriceSection lens={lens} />
 
           {/* Actions */}
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3 mt-3">
             <AddToCompareButton lensId={lens.id} />
             {url ? (
               <ExternalLink href={url} className={ACTION_OUTLINE_CLS}>
