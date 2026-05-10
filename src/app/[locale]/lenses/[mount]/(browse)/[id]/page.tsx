@@ -19,6 +19,7 @@ import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates } from "@/lib/seo";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
+import { lensSubtitleLine } from "@/lib/lens.format";
 import { PriceSection } from "@/components/PriceSection";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
@@ -244,8 +245,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           {/* Title */}
           <div>
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              {tBrand(lens.brand)}
-              {lens.series ? ` · ${lens.series}` : ""}
+              {lensSubtitleLine(tBrand(lens.brand), lens.series)}
             </p>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mt-1 font-heading">
               {lens.model}

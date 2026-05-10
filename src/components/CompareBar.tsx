@@ -13,6 +13,7 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/lib/ui-tokens";
 import { Z } from "@/config/ui";
+import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 
 export default function CompareBar() {
   const t = useTranslations("LensList");
@@ -89,7 +90,7 @@ export default function CompareBar() {
               <AnimatePresence mode="popLayout">
                 {selectedLenses.map((lens) => {
                   const brandName = tBrand(lens.brand);
-                  const displayName = `${brandName} ${lens.model}`;
+                  const displayName = lensDisplayName(brandName, lens.series, lens.model);
 
                   return (
                     <motion.div
@@ -103,7 +104,7 @@ export default function CompareBar() {
                     >
                       <span className="flex max-w-[132px] min-w-0 flex-col leading-tight sm:max-w-[168px]">
                         <span className="truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500 dark:text-zinc-400">
-                          {brandName}
+                          {lensSubtitleLine(brandName, lens.series)}
                         </span>
                         <span className="truncate text-xs font-medium text-zinc-900 dark:text-zinc-100">
                           {lens.model}

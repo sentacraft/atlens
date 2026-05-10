@@ -254,6 +254,31 @@ export function specialtyTagsDisplay(
   return tags.map((tag) => labels[tag]).join(", ");
 }
 
+// --- Lens name formatters ---
+
+/**
+ * Single-line full display name: "Brand [Series] Model".
+ * Use in chips, aria-labels, captions, and any single-line context.
+ */
+export function lensDisplayName(
+  brandName: string,
+  series: string | undefined,
+  model: string
+): string {
+  return series ? `${brandName} ${series} ${model}` : `${brandName} ${model}`;
+}
+
+/**
+ * First line of the two-line name layout: "Brand [· Series]".
+ * Use as the subtitle/eyebrow above the model name.
+ */
+export function lensSubtitleLine(
+  brandName: string,
+  series: string | undefined
+): string {
+  return series ? `${brandName} · ${series}` : brandName;
+}
+
 // --- Split primary / secondary formatters ---
 
 /** Primary dimensions line: ⌀D × Lmm */

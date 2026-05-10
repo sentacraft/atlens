@@ -30,6 +30,7 @@ import type { StructuredLine, ResolvedSpecRow } from "@/lib/lens-spec-groups";
 import type { Lens } from "@/lib/types";
 import { PriceBand } from "@/components/PriceBand";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
+import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 
 // --- LensHeaderContent: shared inner card content ---
 
@@ -57,8 +58,7 @@ function LensHeaderContent({
       </div>
 
       <p className="text-center text-xs font-normal text-zinc-500 dark:text-zinc-400">
-        {tBrand(lens.brand)}
-        {lens.series ? ` · ${lens.series}` : ""}
+        {lensSubtitleLine(tBrand(lens.brand), lens.series)}
       </p>
       <p className="line-clamp-3 text-center font-semibold leading-snug text-zinc-900 dark:text-zinc-50">
         {lens.model}
@@ -496,7 +496,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                 className="px-2 py-1.5 text-center"
               >
                 <p className="truncate text-[10px] text-zinc-400 dark:text-zinc-500">
-                  {tBrand(lens.brand)}
+                  {lensSubtitleLine(tBrand(lens.brand), lens.series)}
                 </p>
                 <p className="truncate text-xs font-semibold text-zinc-900 dark:text-zinc-50">
                   {lens.model}
@@ -542,7 +542,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
               <LensHeader
                 key={lens.id}
                 lens={lens}
-                removeLabel={t("removeLens", { model: lens.model })}
+                removeLabel={t("removeLens", { model: lensDisplayName(tBrand(lens.brand), lens.series, lens.model) })}
                 shiftLeftLabel={t("shiftLeft")}
                 shiftRightLabel={t("shiftRight")}
                 canShiftLeft={index > 0}

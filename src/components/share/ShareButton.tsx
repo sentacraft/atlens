@@ -16,6 +16,7 @@ import { useShareCapabilities } from "@/hooks/useShareCapabilities";
 import { useLightbox } from "@/hooks/useLightbox";
 import { LightboxDialog } from "./LightboxDialog";
 import { CustomizePopover } from "./CustomizePopover";
+import { lensDisplayName } from "@/lib/lens.format";
 
 // Scale the 750px poster down to fit the panel content area
 const POSTER_W = 750;
@@ -35,7 +36,7 @@ interface ShareButtonProps {
 }
 
 function computePosterTitle(lenses: Lens[], tBrand: (key: string) => string): string[] {
-  return lenses.map((l) => `${tBrand(l.brand)} ${l.model}`);
+  return lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model));
 }
 
 export function ShareButton({ lenses, variant = "default", triggerClassName, presetTitle, presetSubtitle }: ShareButtonProps) {
@@ -179,7 +180,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   }, [lenses]);
 
   const truncatedUrl = shareUrl.length > 56 ? shareUrl.slice(0, 56) + "…" : shareUrl;
-  const lensCaption = lenses.map((l) => `${tBrand(l.brand)} · ${l.model}`).join(" / ");
+  const lensCaption = lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model)).join(" / ");
   const posterCustom = {
     title: customTitle.trim() || undefined,
     slogan: customSlogan.trim() || undefined,
