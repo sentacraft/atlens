@@ -6,6 +6,7 @@ import { usePathname, Link } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { useTranslations } from "next-intl";
 import type { Lens } from "@/lib/types";
+import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
 import {
   filterLenses,
   sortLenses,
@@ -110,7 +111,7 @@ export default function LensListClient({ lenses }: Props) {
                 {hasActiveFilters ? (
                   <button
                     type="button"
-                    className="whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-700 underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-zinc-900 hover:decoration-zinc-500 dark:text-zinc-300 dark:decoration-zinc-600 dark:hover:text-zinc-100 dark:hover:decoration-zinc-400"
+                    className={`whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.08em] ${TEXT_LINK_CLS}`}
                     onClick={clearAllFilters}
                   >
                     {t("clearFilters")}
