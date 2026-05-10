@@ -49,6 +49,7 @@ function buildIssue(payload: FeedbackPayload): {
   title: string;
   body: string;
   labels: string[];
+  assignees?: string[];
 } {
   const { type, description, replyEmail, context } = payload;
   const lines: string[] = [];
@@ -101,8 +102,17 @@ function buildIssue(payload: FeedbackPayload): {
   }
 
   const labels = ["user-feedback", `feedback:${type}`];
+  const assignees = (process.env.GITHUB_FEEDBACK_ASSIGNEES ?? "")
+    .split(",")
+    .map((assignee) => assignee.trim())
+    .filter(Boolean);
 
-  return { title, body: lines.join("\n"), labels };
+  return {
+    title,
+    body: lines.join("\n"),
+    labels,
+    ...(assignees.length > 0 ? { assignees } : {}),
+  };
 }
 
 export async function POST(req: Request) {

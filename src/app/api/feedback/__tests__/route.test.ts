@@ -175,6 +175,34 @@ describe("POST /api/feedback — replyEmail", () => {
   });
 });
 
+describe("POST /api/feedback — assignees", () => {
+  beforeAll(() => {
+    mockFetch.mockResolvedValue(
+      new Response(JSON.stringify({ number: 1 }), { status: 201 })
+    );
+  });
+
+  it("includes configured feedback assignees in the GitHub issue payload", async () => {
+    process.env.GITHUB_FEEDBACK_ASSIGNEES = "ericzeyuzhang, sentacraft";
+
+    await POST(makeRequest({ type: "general", description: "Great app!" }));
+
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body as string) as { assignees: string[] };
+    expect(body.assignees).toEqual(["ericzeyuzhang", "sentacraft"]);
+
+    delete process.env.GITHUB_FEEDBACK_ASSIGNEES;
+  });
+
+  it("omits assignees when no feedback assignee is configured", async () => {
+    delete process.env.GITHUB_FEEDBACK_ASSIGNEES;
+
+    await POST(makeRequest({ type: "general", description: "Great app!" }));
+
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body as string) as { assignees?: string[] };
+    expect(body.assignees).toBeUndefined();
+  });
+});
+
 describe("POST /api/feedback — type validation", () => {
   it("rejects an invalid type", async () => {
     const res = await POST(makeRequest({ type: "unknown", description: "Test" }));
