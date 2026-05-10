@@ -74,6 +74,19 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf20-35mmf4-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf20-35mmf4-r-wr/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "lensConfiguration": "包含 1 片同时属于非球面和 ED 类型的镜片；已同时计入非球面和 ED 镜片总数。"
+        },
+        "accessories": [
+          "前镜头盖 FLCP-82",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "镜头袋"
+        ]
+      }
     }
   },
   {
@@ -144,6 +157,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf23mmf4-r-lm-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf23mmf4-r-lm-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-82",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "镜头袋"
+        ]
+      }
     }
   },
   {
@@ -284,6 +307,22 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf30mmf56-ts/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf30mmf56-ts/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "可通过随附转接环使用 105mm 滤镜。"
+        },
+        "accessories": [
+          "前镜头盖 FLCP-77",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "转接环",
+          "转接环盖 FLCP-105",
+          "脚架底座",
+          "镜头袋"
+        ]
+      }
     }
   },
   {
@@ -368,6 +407,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf32-64mmf4-r-lm-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf32-64mmf4-r-lm-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-77",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "镜头包"
+        ]
+      }
     }
   },
   {
@@ -443,6 +492,17 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf32-90mmt3-5-pz-ois-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf32-90mmt35-pz-ois-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "脚架底座",
+          "变焦拨杆",
+          "镜头包"
+        ]
+      }
     }
   },
   {
@@ -520,6 +580,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf35-70mmf45-56-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf35-70mmf45-56-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-62 II",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "镜头袋"
+        ]
+      }
     }
   },
   {
@@ -605,6 +675,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf45-100mmf4-r-lm-ois-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf45-100mmf4-r-lm-ois-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-82",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "镜头袋"
+        ]
+      }
     }
   },
   {
@@ -673,6 +753,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf45mmf28-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf45mmf28-r-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-62II",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "镜头袋"
+        ]
+      }
     }
   },
   {
@@ -743,6 +833,17 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf50mmf35-r-lm-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf50mmf35-r-lm-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-62II",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "遮光罩盖 FLCP-43",
+          "包裹布"
+        ]
+      }
     }
   },
   {
@@ -812,6 +913,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf55mmf17-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf55mmf17-r-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-77",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "镜头袋"
+        ]
+      }
     }
   },
   {
@@ -879,6 +990,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf63mmf28-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf63mmf28-r-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-62II",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "镜头包"
+        ]
+      }
     }
   },
   {
@@ -948,6 +1069,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf80mmf17-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf80mmf17-r-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-77",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "镜头袋"
+        ]
+      }
     }
   },
   {
@@ -1029,6 +1160,17 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf100-200mmf56-r-lm-ois-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf100-200mmf56-r-lm-ois-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-67II",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "脚架底座",
+          "镜头袋"
+        ]
+      }
     }
   },
   {
@@ -1097,6 +1239,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf110mmf2-r-lm-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf110mmf2-r-lm-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-77",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "镜头袋"
+        ]
+      }
     }
   },
   {
@@ -1169,6 +1321,15 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf110mmf56-ts-macro/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf110mmf56-ts-macro/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-72 II",
+          "后镜头盖 RLCP-002",
+          "镜头袋"
+        ]
+      }
     }
   },
   {
@@ -1241,6 +1402,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf120mmf4-r-lm-ois-wr-macro/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf120mmf4-r-lm-ois-wr-macro/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-72II",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "镜头袋"
+        ]
+      }
     }
   },
   {
@@ -1310,6 +1481,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf250mmf4-r-lm-ois-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf250mmf4-r-lm-ois-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-82",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "镜头袋"
+        ]
+      }
     }
   },
   {
@@ -1380,6 +1561,17 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf500mmf56-r-lm-ois-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/gf500mmf56-r-lm-ois-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-95",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "脚架底座",
+          "镜头袋"
+        ]
+      }
     }
   }
 ]

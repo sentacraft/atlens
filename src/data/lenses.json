@@ -65,6 +65,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=99&id=442",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=99&id=442"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -138,6 +143,19 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?id=386&nid=3&typeid=102",
       "global": "https://en.7artisans.com/prod_view.aspx?id=386&nid=3&typeid=102"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "lensConfiguration": "全 HOYA 玻璃；包含 3 片超低色散（ED）镜片。"
+        },
+        "lensMaterial": "金属",
+        "accessories": [
+          "绒布袋",
+          "对焦扳手",
+          "清洁套装"
+        ]
+      }
     }
   },
   {
@@ -205,6 +223,14 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=126&id=505",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=118&id=502"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "仅卡口环具备防滴防尘密封；并非完整密封。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -266,6 +292,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=126&id=517",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=118&id=515"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -323,6 +354,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=126&id=482",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=118&id=465"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "铝合金"
+      }
     }
   },
   {
@@ -379,6 +415,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=126&id=485",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=118&id=469"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属+工程塑料"
+      }
     }
   },
   {
@@ -440,6 +481,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=126&id=518",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=118&id=516"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -501,6 +547,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=126&id=519",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=118&id=517"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -566,6 +617,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=464",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=455"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -630,6 +686,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=465",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=456"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -694,6 +755,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=466",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=457"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -758,6 +824,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=467",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=458"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -822,6 +893,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=468",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=459"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -881,6 +957,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=469",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=460"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -945,6 +1026,14 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=438",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=438"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "225° 圆周鱼眼设计；无前置滤镜螺纹。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -1010,6 +1099,14 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=511",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=508"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "220° 圆周鱼眼设计；无前置滤镜螺纹。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -1080,6 +1177,14 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=398",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=398"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "灯泡状鱼眼前组镜片，内置花瓣形遮光罩；无滤镜螺纹。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -1142,6 +1247,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=497",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=478"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -1207,6 +1317,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=400",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=443"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -1273,6 +1388,15 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=401",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=401"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "固定光圈饼干头设计；无滤镜螺纹。",
+          "apertureBladeCount": "固定光圈；无光圈机构。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -1335,6 +1459,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=402",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=402"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -1399,6 +1528,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=403",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=403"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -1463,6 +1597,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=404",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=404"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -1527,6 +1666,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=496",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=496"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -1589,6 +1733,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=405",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=405"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -1714,6 +1863,11 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=408",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=408"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -1926,6 +2080,15 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/products/mf-60mm-f2-8-%E2%85%B1-%E5%85%A8%E7%94%BB%E5%B9%85"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属",
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖"
+        ]
+      }
     }
   },
   {
@@ -2058,6 +2221,13 @@
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/collections/%E8%B6%85%E5%B9%BF%E8%A7%92%E9%95%9C%E5%A4%B4/products/mf-7-5mm-f2-8-%E2%85%B2-%E5%8D%8A%E7%94%BB%E5%B9%85",
       "global": "https://brightinstar.com/products/7-5mm-f2-8-aps-c-fisheye-manual-focus-lens-with-nd-filter-for-fuji-x-mount"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "后置 27mm 滤镜插槽（专有规格）；无前置滤镜螺纹。"
+        }
+      }
     }
   },
   {
@@ -2127,6 +2297,14 @@
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/products/mf-10mm-f5-6-%E5%8D%8A%E7%94%BB%E5%B9%85",
       "global": "https://brightinstar.com/products/10mm-f5-6-aps-c-fisheye-lens-wide-angle-lens-pancake-lens-manual-fixed-focus-lens-suitable-for-fuji-x-mount"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "灯泡状鱼眼前组镜片；无滤镜螺纹。",
+          "apertureBladeCount": "固定光圈；无光圈机构。"
+        }
+      }
     }
   },
   {
@@ -2195,6 +2373,14 @@
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/products/10mm-f5-6-pro",
       "global": "https://brightinstar.com/products/10mm-f5-6-pro-aps-c-fisheye-lens-wide-angle-lens-for-fujifilm-xf-mount"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "重量因卡口而异：XF/E 100g、M4/3 94g、RF-S 104g、Z 116g。给出的数值为 XF 卡口。",
+          "filterMm": "灯泡状鱼眼前组镜片；无滤镜螺纹。"
+        }
+      }
     }
   },
   {
@@ -2424,6 +2610,11 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/collections/%E4%BA%BA%E6%96%87%E9%95%9C%E5%A4%B4/products/3512"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -2480,6 +2671,11 @@
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/collections/%E4%BA%BA%E6%96%87%E9%95%9C%E5%A4%B4/products/mf-35mm-f1-7-%E5%8D%8A%E7%94%BB%E5%B9%85",
       "global": "https://brightinstar.com/products/35mm-f1-7-aps-c-wide-angle-manual-focus-prime-lens-for-fuji-x-mount"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -2743,6 +2939,22 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/mkx18-55mmt29/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/mkx18-55mmt29/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "minAperture": "光圈在 F22 之后可完全闭合，用于机内淡出效果。"
+        },
+        "accessories": [
+          "脚架底座",
+          "脚架底座",
+          "变焦拨杆",
+          "前镜头盖 FLCP-82",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "包裹布"
+        ]
+      }
     }
   },
   {
@@ -2821,6 +3033,22 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/mkx50-135mmt29/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/mkx50-135mmt29/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "minAperture": "光圈在 F22 之后可完全闭合，用于机内淡出效果。"
+        },
+        "accessories": [
+          "脚架底座",
+          "脚架底座",
+          "变焦拨杆",
+          "前镜头盖 FLCP-82",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "包裹布"
+        ]
+      }
     }
   },
   {
@@ -2904,6 +3132,14 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc13-33mmf35-63-ois/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xc13-33mmf35-63-ois/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-49",
+          "后镜头盖"
+        ]
+      }
     }
   },
   {
@@ -2993,6 +3229,14 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc15-45mmf35-56-ois-pz/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xc15-45mmf35-56-ois-pz/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-52II",
+          "后镜头盖"
+        ]
+      }
     }
   },
   {
@@ -3142,6 +3386,13 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc35mmf2/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xc35mmf2/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-43"
+        ]
+      }
     }
   },
   {
@@ -3304,6 +3555,14 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc50-230mmf45-67-ois-ii/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xc50-230mmf45-67-ois-ii/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖",
+          "遮光罩"
+        ]
+      }
     }
   },
   {
@@ -3384,6 +3643,18 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf8-16mmf28-r-lm-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf8-16mmf28-r-lm-wr/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "灯泡状前组镜片；无前置滤镜螺纹。"
+        },
+        "accessories": [
+          "前镜头盖 FLCP-8-16",
+          "后镜头盖 RLCP-001",
+          "包裹布"
+        ]
+      }
     }
   },
   {
@@ -3452,6 +3723,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf8mmf35-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf8mmf35-r-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-62 II",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "镜头包裹布"
+        ]
+      }
     }
   },
   {
@@ -3739,6 +4020,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/global/products/lenses/xf16-50mmf28-48-r-lm-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf16-50mmf28-48-r-lm-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-58 II",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "镜头包裹布"
+        ]
+      }
     }
   },
   {
@@ -3902,6 +4193,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf16-55mmf28-r-lm-wr-ii/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf16-55mmf28-r-lm-wr-ii/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-72 II",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "镜头包裹布"
+        ]
+      }
     }
   },
   {
@@ -3986,6 +4287,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf16-80mmf4-r-ois-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf16-80mmf4-r-ois-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-72II",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "包裹布"
+        ]
+      }
     }
   },
   {
@@ -4053,6 +4364,13 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf16mmf14-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf16mmf14-r-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "遮光罩 LH-XF16"
+        ]
+      }
     }
   },
   {
@@ -4123,6 +4441,17 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf16mmf28-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf16mmf28-r-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-49",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "包裹布",
+          "PRF-49"
+        ]
+      }
     }
   },
   {
@@ -4429,6 +4758,13 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf18mmf14-r-lm-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf18mmf14-r-lm-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "遮光罩 LH-XF18"
+        ]
+      }
     }
   },
   {
@@ -4674,6 +5010,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf23mmf2-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf23mmf2-r-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-43",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "包裹布"
+        ]
+      }
     }
   },
   {
@@ -4742,6 +5088,17 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf23mmf28-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf23mmf28-r-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-39 II",
+          "后镜头盖 RLCP-001",
+          "遮光罩 LH-X27",
+          "遮光罩盖 LHCP-27",
+          "镜头保护布"
+        ]
+      }
     }
   },
   {
@@ -5070,6 +5427,19 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf35mmf14-r/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf35mmf14-r/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "minFocusDistance": "来源还列出一种独立的近摄模式，可达到 2.0m。"
+        },
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "遮光罩",
+          "遮光罩盖"
+        ]
+      }
     }
   },
   {
@@ -5139,6 +5509,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf35mmf2-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf35mmf2-r-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-43",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "包裹布"
+        ]
+      }
     }
   },
   {
@@ -5223,6 +5603,21 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf50-140mmf28-r-lm-ois-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf50-140mmf28-r-lm-ois-wr/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "minFocusDistance": "来源还列出一种独立的近摄模式，范围可延伸至 3m。"
+        },
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "遮光罩",
+          "脚架底座",
+          "肩带",
+          "包裹布"
+        ]
+      }
     }
   },
   {
@@ -5355,6 +5750,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf50mmf2-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf50mmf2-r-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-46",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "包裹布"
+        ]
+      }
     }
   },
   {
@@ -5439,6 +5844,13 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf55-200mmf35-48-r-lm-ois/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf55-200mmf35-48-r-lm-ois/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "minFocusDistance": "来源还列出一个独立的近摄范围，可延伸至 3m。"
+        }
+      }
     }
   },
   {
@@ -5576,6 +5988,14 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf56mmf12-r-apd/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf56mmf12-r-apd/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "lensConfiguration": "包含 APD 切趾滤镜，用于增强焦外虚化。",
+          "maxAperture": "f/1.2 是几何光圈；APD 切趾滤镜会使实际透光量降低约 1 档（有效 T 值约为 T1.7）。景深仍等同于 f/1.2。"
+        }
+      }
     }
   },
   {
@@ -5644,6 +6064,16 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf56mmf12-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf56mmf12-r-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-67 II",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "镜头包裹布"
+        ]
+      }
     }
   },
   {
@@ -5712,6 +6142,13 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf60mmf24-r-macro/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf60mmf24-r-macro/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "minFocusDistance": "来源还列出一种独立的近摄模式，可达到 2.0m。"
+        }
+      }
     }
   },
   {
@@ -5868,6 +6305,17 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf80mmf28-r-lm-ois-wr-macro/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf80mmf28-r-lm-ois-wr-macro/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-62II",
+          "后镜头盖 RLCP-002",
+          "遮光罩",
+          "镜头袋",
+          "包裹布"
+        ]
+      }
     }
   },
   {
@@ -6095,6 +6543,18 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf150-600mmf56-8-r-lm-ois-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf150-600mmf56-8-r-lm-ois-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-82",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "镜头袋",
+          "脚架底座",
+          "肩带"
+        ]
+      }
     }
   },
   {
@@ -6167,6 +6627,17 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf200mmf2-r-lm-ois-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf200mmf2-r-lm-ois-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-105",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "肩带",
+          "镜头包"
+        ]
+      }
     }
   },
   {
@@ -6239,6 +6710,18 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf500mmf56-r-lm-ois-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf500mmf56-r-lm-ois-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-95",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "脚架底座",
+          "镜头袋",
+          "肩带"
+        ]
+      }
     }
   },
   {
@@ -6298,6 +6781,14 @@
     "officialLinks": {
       "cn": "https://www.sg-image.cn/pd.jsp?id=5",
       "global": "https://www.sg-image.com/products/mf-12mm-f2-8-aps-c-ultra-wide-lens-copy"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "一体式遮光罩设计；无前置滤镜螺纹。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -6365,6 +6856,16 @@
     },
     "officialLinks": {
       "global": "https://www.sg-image.com/products/mf-24mm-f6-3-full-frame-ultra-slim-pancake-lens"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "安装可选遮光罩作为转接环时，可使用 49mm 滤镜",
+          "lensConfiguration": "包含高折射率玻璃镜片；厂家未注明数量。",
+          "apertureBladeCount": "固定光圈；无光圈机构。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -6430,6 +6931,11 @@
     "fieldNotes": {},
     "officialLinks": {
       "global": "https://www.sg-image.com/products/aps-c-25mm-f1-8-%E8%87%AA%E5%8A%A8%E5%AF%B9%E7%84%A6%E9%95%9C%E5%A4%B4"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -6486,6 +6992,11 @@
     "officialLinks": {
       "cn": "https://www.sg-image.cn/pd.jsp?id=22",
       "global": "https://www.sg-image.com/products/af-55mm-f1-8"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -6557,6 +7068,14 @@
     "officialLinks": {
       "cn": "https://www.sg-image.cn/pd.jsp?id=6",
       "global": "https://www.sg-image.com/products/mf-7-5mm-f2-8-aps-c-fisheye-lens"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "168° 鱼眼镜头；无前置滤镜螺纹。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -6623,6 +7142,15 @@
     "officialLinks": {
       "cn": "https://www.sg-image.cn/pd.jsp?id=21",
       "global": "https://www.sg-image.com/products/mf-18mm-f6-3-aps-c-ultra-slim-pancake-lens"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "安装可选遮光罩作为转接环时，可使用 49mm 滤镜",
+          "apertureBladeCount": "固定光圈；无光圈机构。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -6689,6 +7217,11 @@
     "officialLinks": {
       "cn": "https://www.sg-image.cn/pd.jsp?id=4",
       "global": "https://www.sg-image.com/products/mf-18mm-f6-3-aps-c-ultra-slim-pancake-lens-copy"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -6754,6 +7287,11 @@
     "officialLinks": {
       "cn": "https://www.sg-image.cn/pd.jsp?id=20",
       "global": "https://www.sg-image.com/products/mf-35mm-f0-95-ultra-bright-aps-c-lens"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -6820,6 +7358,11 @@
     "officialLinks": {
       "cn": "https://www.sg-image.cn/pd.jsp?id=3",
       "global": "https://www.sg-image.com/products/mf-35mm-f1-2-aps-c-lens"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -6885,6 +7428,11 @@
     "officialLinks": {
       "cn": "https://www.sg-image.cn/pd.jsp?id=2",
       "global": "https://www.sg-image.com/products/mf-25mm-f2-8-aps-c-lens-copy"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -6953,6 +7501,14 @@
     "officialLinks": {
       "cn": "https://www.sg-image.cn/pd.jsp?id=23",
       "global": "https://www.sg-image.com/products/50mm-f1-8-mf-full-frame-lens-with-shaped-aperture"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "apertureBladeCount": "特殊形状光圈片；不是多叶片光圈。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -7042,6 +7598,15 @@
     "officialLinks": {
       "cn": "http://www.sigma-photo.com.cn/product/detail?id=343",
       "global": "https://www.sigma-global.com/en/lenses/c023_10_18_28/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "套入式花瓣形遮光罩 LH706-02",
+          "前镜头盖 LCF-67mm III",
+          "后镜头盖 LCR II"
+        ]
+      }
     }
   },
   {
@@ -7118,6 +7683,19 @@
     "officialLinks": {
       "cn": "http://www.sigma-photo.com.cn/product/detail?id=649",
       "global": "https://www.sigma-global.com/en/lenses/c025_12_14/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "仅防尘防溅；并非完整密封。"
+        },
+        "accessories": [
+          "镜头袋",
+          "遮光罩 LH652-01",
+          "前镜头盖 LCF-62 IV",
+          "后镜头盖 LCR III"
+        ]
+      }
     }
   },
   {
@@ -7195,6 +7773,19 @@
     "officialLinks": {
       "cn": "http://www.sigma-photo.com.cn/product/detail?id=665",
       "global": "https://www.sigma-global.com/en/lenses/c026_15_14/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "仅防尘防溅；并非完整密封。"
+        },
+        "accessories": [
+          "镜头袋",
+          "遮光罩 LH612-01",
+          "前镜头盖 LCF-58 IV",
+          "后镜头盖 LCR III"
+        ]
+      }
     }
   },
   {
@@ -7295,6 +7886,19 @@
     "officialLinks": {
       "cn": "http://www.sigma-photo.com.cn/product/detail?id=334",
       "global": "https://www.sigma-global.com/en/lenses/c025_16_300_35_67/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "仅防尘防溅；并非完整密封。"
+        },
+        "accessories": [
+          "镜头袋",
+          "遮光罩 LH706-03",
+          "前镜头盖 LCF-67 IV",
+          "后镜头盖 LCR III"
+        ]
+      }
     }
   },
   {
@@ -7372,6 +7976,18 @@
     "officialLinks": {
       "cn": "http://www.sigma-photo.com.cn/product/detail?id=322",
       "global": "https://www.sigma-global.com/en/lenses/c017_16_14/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "仅防尘防溅；并非完整密封。"
+        },
+        "accessories": [
+          "遮光罩 LH716-01",
+          "前镜头盖 LCF-67mm III",
+          "后镜头盖 LCR II"
+        ]
+      }
     }
   },
   {
@@ -7455,6 +8071,19 @@
     "officialLinks": {
       "cn": "http://www.sigma-photo.com.cn/product/detail?id=642",
       "global": "https://www.sigma-global.com/en/lenses/a025_17_40_18/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "仅防尘防溅；并非完整密封。"
+        },
+        "accessories": [
+          "镜头袋",
+          "遮光罩 LH728-02",
+          "前镜头盖 LCF-67 IV",
+          "后镜头盖 LCR III"
+        ]
+      }
     }
   },
   {
@@ -7543,6 +8172,15 @@
     "officialLinks": {
       "cn": "http://www.sigma-photo.com.cn/product/detail?id=345",
       "global": "https://www.sigma-global.com/en/lenses/c021_18_50_28/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "遮光罩 LH582-02",
+          "前镜头盖 LCF-55mm III",
+          "后镜头盖 LCR II"
+        ]
+      }
     }
   },
   {
@@ -7616,6 +8254,15 @@
     "officialLinks": {
       "cn": "http://www.sigma-photo.com.cn/product/detail?id=324",
       "global": "https://www.sigma-global.com/en/lenses/c023_23_14/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "花瓣形遮光罩 LH554-01",
+          "前镜头盖 LCF-52 III",
+          "后镜头盖 LCR II"
+        ]
+      }
     }
   },
   {
@@ -7690,6 +8337,15 @@
     "officialLinks": {
       "cn": "http://www.sigma-photo.com.cn/product/detail?id=327",
       "global": "https://www.sigma-global.com/en/lenses/c016_30_14/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "遮光罩 LH586-01",
+          "前镜头盖 LCF-52mm III",
+          "后镜头盖 LCR II"
+        ]
+      }
     }
   },
   {
@@ -7764,6 +8420,15 @@
     "officialLinks": {
       "cn": "http://www.sigma-photo.com.cn/product/detail?id=329",
       "global": "https://www.sigma-global.com/en/lenses/c018_56_14/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "遮光罩 LH582-01",
+          "前镜头盖 LCF-55mm III",
+          "后镜头盖 LCR II"
+        ]
+      }
     }
   },
   {
@@ -7853,6 +8518,19 @@
     "officialLinks": {
       "cn": "http://www.sigma-photo.com.cn/product/detail?id=339",
       "global": "https://www.sigma-global.com/en/lenses/c020_100_400_5_63/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "仅卡口处有橡胶密封；并非完整防滴防尘。"
+        },
+        "accessories": [
+          "遮光罩 LH770-05",
+          "保护盖 PT-31",
+          "前镜头盖 LCF-67mm III",
+          "后镜头盖 LCR II"
+        ]
+      }
     }
   },
   {
@@ -7939,6 +8617,18 @@
     "officialLinks": {
       "cn": "https://www.tamron.com.cn/cameralens/products/b060/index.shtml",
       "global": "https://www.tamron.com/global/consumer/lenses/b060/spec.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "防潮结构：镜筒各处的防渗密封有助于在户外拍摄时保护设备。"
+        },
+        "accessories": [
+          "花瓣形遮光罩",
+          "前镜头盖",
+          "后镜头盖"
+        ]
+      }
     }
   },
   {
@@ -8024,6 +8714,18 @@
     "officialLinks": {
       "cn": "https://www.tamron.com.cn/cameralens/products/b070/index.shtml",
       "global": "https://www.tamron.com/global/consumer/lenses/b070/spec.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "防潮结构：镜筒各处的防渗密封有助于在户外拍摄时保护设备。"
+        },
+        "accessories": [
+          "花瓣形遮光罩",
+          "前镜头盖",
+          "后镜头盖"
+        ]
+      }
     }
   },
   {
@@ -8117,6 +8819,18 @@
     "officialLinks": {
       "cn": "https://www.tamron.com.cn/cameralens/products/b061/index.shtml",
       "global": "https://www.tamron.com/global/consumer/lenses/b061/spec.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "防潮结构：镜筒各处的防渗密封有助于在户外拍摄时保护设备。"
+        },
+        "accessories": [
+          "花瓣形遮光罩",
+          "前镜头盖",
+          "后镜头盖"
+        ]
+      }
     }
   },
   {
@@ -8205,6 +8919,19 @@
     "officialLinks": {
       "cn": "https://www.tamron.com.cn/cameralens/products/a057/index.shtml",
       "global": "https://www.tamron.com/global/consumer/lenses/a057x/spec.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "防潮结构：镜筒各处的防渗密封有助于在户外拍摄时保护设备。"
+        },
+        "accessories": [
+          "圆形遮光罩",
+          "前镜头盖",
+          "后镜头盖",
+          "三脚架接环"
+        ]
+      }
     }
   },
   {
@@ -8272,6 +8999,11 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?Cine-Lens/35T21-6.html",
       "global": "https://www.ttartisan.com/?cine-lens/81.html"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -8351,6 +9083,14 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-9/TS-100-Macro-18.html",
       "global": "https://www.ttartisan.com/?full-frame-lenses/TS-100-Macro.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "重量因卡口版本而异（E / X / Z / RF / L / GFX / EF / F）。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -8415,6 +9155,14 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?AFlens/AF14-10.html",
       "global": "https://www.ttartisan.com/?af-lens/AF14.html"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属",
+        "accessories": [
+          "遮光罩"
+        ]
+      }
     }
   },
   {
@@ -8482,6 +9230,14 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?AFlens/351.html",
       "global": "https://www.ttartisan.com/?af-lens/350.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "重量因卡口版本而异（X / E / Z）。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -8548,6 +9304,16 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?AFlens/AF23-19.html",
       "global": "https://www.ttartisan.com/?af-lens/AF23.html"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属",
+        "accessories": [
+          "遮光罩",
+          "前镜头盖",
+          "后镜头盖"
+        ]
+      }
     }
   },
   {
@@ -8614,6 +9380,14 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?AFlens/264.html",
       "global": "https://www.ttartisan.com/?af-lens/38.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "重量因卡口版本而异。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -8688,6 +9462,19 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?AFlens/AF-35-II-14.html",
       "global": "https://www.ttartisan.com/?af-lens/AF-35-II.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "重量因卡口版本和颜色而异。"
+        },
+        "lensMaterial": "金属",
+        "accessories": [
+          "遮光罩",
+          "前镜头盖",
+          "后镜头盖"
+        ]
+      }
     }
   },
   {
@@ -8761,6 +9548,19 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?AFlens/AF-56-18.html",
       "global": "https://www.ttartisan.com/?af-lens/AF-56.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "重量因卡口版本而异。"
+        },
+        "lensMaterial": "金属",
+        "accessories": [
+          "遮光罩",
+          "前镜头盖",
+          "后镜头盖"
+        ]
+      }
     }
   },
   {
@@ -8830,6 +9630,14 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?AFlens/FF-AF75-17.html",
       "global": "https://www.ttartisan.com/?af-lens/FF-AF75.html"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属",
+        "accessories": [
+          "遮光罩"
+        ]
+      }
     }
   },
   {
@@ -8903,6 +9711,15 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/aps-cFisheye75.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/72.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "重量因卡口版本而异。",
+          "filterMm": "灯泡状鱼眼前组镜片；无滤镜螺纹。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -8973,6 +9790,15 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/10-F2.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/79.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "重量因卡口版本而异。",
+          "filterMm": "需要外置 72mm 滤镜支架；无前置螺纹。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -9045,6 +9871,14 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/APS-C23.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/76.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "重量因卡口版本而异。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -9114,6 +9948,14 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/254.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/78.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "重量因卡口版本而异。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -9182,6 +10024,14 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/257.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/70.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "重量因卡口版本而异。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -9247,6 +10097,11 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/aps-c35.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/71.html"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -9322,6 +10177,14 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/MACRO40.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/75.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "重量因卡口版本而异。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -9386,6 +10249,11 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/245.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/77.html"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -9451,6 +10319,11 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/aps-c50.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/73.html"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -9518,6 +10391,11 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-9/255.html",
       "global": "https://www.ttartisan.com/?full-frame-lenses/60.html"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -9589,6 +10467,14 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/TC35.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/Tilt-C-35.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "重量因卡口版本而异。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -9675,6 +10561,17 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?review-article/333.html",
       "global": "https://www.ttartisan.com/?review-article/333.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "重量因卡口和配置版本而异（Tilt-Shift + Macro 与仅 Macro 卡口）。"
+        },
+        "lensMaterial": "金属",
+        "accessories": [
+          "冷靴安装支架"
+        ]
+      }
     }
   },
   {
@@ -9813,6 +10710,19 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/1119691.html",
       "global": "https://viltrox.com/products/13mm-f14-af-lens-for-fujifilm-x-mount-camera-models"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "防尘设计；光圈环和接合部配备防尘密封。"
+        },
+        "accessories": [
+          "遮光罩",
+          "前镜头盖",
+          "后镜头盖",
+          "镜头袋"
+        ]
+      }
     }
   },
   {
@@ -9953,6 +10863,16 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/519228.html",
       "global": "https://viltrox.com/products/viltrox-23mm-f14-xf-mount"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "遮光罩",
+          "前镜头盖",
+          "后镜头盖",
+          "镜头袋"
+        ]
+      }
     }
   },
   {
@@ -10085,6 +11005,13 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/2244196.html",
       "global": "https://viltrox.com/products/viltrox-af-27mm-f-1-2-pro-xf-mount"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "高效防尘防溅结构；内置高级防尘圈。"
+        }
+      }
     }
   },
   {
@@ -10147,6 +11074,15 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/6118530.html",
       "global": "https://viltrox.com/products/af-28mm-f4-5-x"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "该镜头采用专有滑盖设计，无前置滤镜螺纹。",
+          "apertureBladeCount": "固定光圈；无光圈机构。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   },
   {
@@ -10346,6 +11282,14 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/5934940.html",
       "global": "https://viltrox.com/products/af-56mm-f1-2-x"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "坚固的全金属防滴防尘镜身。",
+          "lensConfiguration": "包含 1 片 UA（超非球面）镜片。"
+        }
+      }
     }
   },
   {
@@ -10543,6 +11487,18 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/1832587.html",
       "global": "https://viltrox.com/products/75mm-f12-xf-lens"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "专业级防水防尘结构设计。"
+        },
+        "accessories": [
+          "遮光罩",
+          "前镜头盖",
+          "后镜头盖"
+        ]
+      }
     }
   },
   {
@@ -10599,6 +11555,14 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/537784.html",
       "global": "https://viltrox.com/products/viltrox-85mm-f1-8-lens-of-lighter-weight-for-fuji-x-mount"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "lensConfiguration": "包含 4 片 HD（High Definition）镜片。"
+        },
+        "lensMaterial": "金属"
+      }
     }
   }
 ]
