@@ -61,6 +61,7 @@ export default function FeedbackDialog({
   fields,
 }: FeedbackDialogProps) {
   const t = useTranslations("Feedback");
+  const [activeType, setActiveType] = useState<FeedbackType>(type);
   const [description, setDescription] = useState("");
   const [selectedFieldLabel, setSelectedFieldLabel] = useState("");
   const [suggestedCorrection, setSuggestedCorrection] = useState("");
@@ -73,7 +74,9 @@ export default function FeedbackDialog({
   const correctionId = useId();
   const emailId = useId();
 
-  const showFieldPicker = type === "data_issue" && fields && fields.length > 0;
+  const showTabs = type !== "missing_lens";
+
+  const showFieldPicker = activeType === "data_issue" && fields && fields.length > 0;
 
   const selectedField = fields?.find((f) => f.label === selectedFieldLabel);
 
@@ -97,6 +100,7 @@ export default function FeedbackDialog({
 
   useEffect(() => {
     if (!open) {
+      setActiveType(type);
       setDescription("");
       setSelectedFieldLabel("");
       setSuggestedCorrection("");
@@ -105,30 +109,40 @@ export default function FeedbackDialog({
       setErrorMessage(null);
       setSubmitAttempted(false);
     }
-  }, [open]);
+  }, [open, type]);
+
+  function handleTabChange(newType: FeedbackType) {
+    setActiveType(newType);
+    setDescription("");
+    setSelectedFieldLabel("");
+    setSuggestedCorrection("");
+    setSubmitAttempted(false);
+    setStatus("idle");
+    setErrorMessage(null);
+  }
 
   const titleKey =
-    type === "data_issue"
+    activeType === "data_issue"
       ? "titleDataIssue"
-      : type === "missing_lens"
+      : activeType === "missing_lens"
         ? "titleMissingLens"
         : "titleGeneral";
   const descriptionKey =
-    type === "data_issue"
+    activeType === "data_issue"
       ? "descriptionDataIssue"
-      : type === "missing_lens"
+      : activeType === "missing_lens"
         ? "descriptionMissingLens"
         : "descriptionGeneral";
 
   // Prominent lens header shown for data_issue when a specific lens is known.
   const lensHeader =
-    type === "data_issue" && context?.lensModel
+    activeType === "data_issue" && context?.lensModel
       ? { brand: context.lensBrand ?? "", model: context.lensModel }
       : null;
 
   // Subtle context note for other cases (e.g. missing_lens with a search query).
   const contextLine =
-    type === "missing_lens" && context?.searchQuery
+    activeType === "missing_lens" && context?.searchQuery
       ? t("contextQuery", { query: context.searchQuery })
       : null;
 
@@ -150,7 +164,7 @@ export default function FeedbackDialog({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          type,
+          type: activeType,
           description: description.trim(),
           ...(replyEmail.trim() ? { replyEmail: replyEmail.trim() } : {}),
           context: {
@@ -190,6 +204,33 @@ export default function FeedbackDialog({
           <DialogTitle>{t(titleKey)}</DialogTitle>
           {status !== "success" && <DialogDescription>{t(descriptionKey)}</DialogDescription>}
         </DialogHeader>
+
+        {showTabs && status !== "success" && (
+          <div className="flex gap-1 px-5 pb-1">
+            <button
+              type="button"
+              onClick={() => handleTabChange("general")}
+              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                activeType === "general"
+                  ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50"
+                  : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+              }`}
+            >
+              {t("tabGeneral")}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleTabChange("data_issue")}
+              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                activeType === "data_issue"
+                  ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50"
+                  : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+              }`}
+            >
+              {t("tabDataIssue")}
+            </button>
+          </div>
+        )}
 
         {status === "success" ? (
           <div className="flex items-center px-5 py-10 text-sm text-zinc-700 dark:text-zinc-300">

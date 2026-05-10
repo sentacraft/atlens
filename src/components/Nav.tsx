@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { EllipsisVertical, Info, Download } from "lucide-react";
+import { EllipsisVertical, MessageSquarePlus, Info, Download } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
@@ -13,6 +13,8 @@ import { useNavLock } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
 import { cn } from "@/lib/utils";
 import MountSwitcher from "@/components/MountSwitcher";
+import FeedbackDialog from "@/components/FeedbackDialog";
+import type { FeedbackType } from "@/components/FeedbackDialog";
 import GitHubMark from "@/components/logos/GitHubMark";
 
 export default function Nav() {
@@ -24,6 +26,7 @@ export default function Nav() {
   const isPwa = usePwa();
   const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -99,7 +102,11 @@ export default function Nav() {
   const isCompareActive = pathname.includes("/compare");
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
 
+  const isLensDetail = /^\/lenses\/[^/]+\/[^/]+$/.test(pathname) && !pathname.includes("/compare");
+  const defaultFeedbackType: FeedbackType = isLensDetail ? "data_issue" : "general";
+
   return (
+    <>
     <header
       ref={headerRef}
       data-hidden={String(!isPwa && (hidden || navLocked))}
@@ -149,6 +156,14 @@ export default function Nav() {
               <span className="text-sm">{t("getApp")}</span>
             </Link>
           )}
+          <button
+            type="button"
+            onClick={() => setFeedbackOpen(true)}
+            className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors px-1"
+            aria-label={t("feedback")}
+          >
+            <MessageSquarePlus className="h-[17px] w-[17px]" />
+          </button>
           <a
             href="https://github.com/sentacraft/x-glass"
             target="_blank"
@@ -189,6 +204,14 @@ export default function Nav() {
 
             {mobileMenuOpen && (
               <div className="absolute right-0 top-full mt-1.5 w-36 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => { setMobileMenuOpen(false); setFeedbackOpen(true); }}
+                  className={mobileLinkCls(false) + " w-full text-left"}
+                >
+                  <MessageSquarePlus className="h-4 w-4 shrink-0" />
+                  {t("feedback")}
+                </button>
                 <Link href="/about" className={mobileLinkCls(pathname === "/about")}>
                   <Info className="h-4 w-4 shrink-0" />
                   {t("about")}
@@ -205,5 +228,12 @@ export default function Nav() {
         </div>
       </nav>
     </header>
+
+    <FeedbackDialog
+      open={feedbackOpen}
+      onOpenChange={setFeedbackOpen}
+      type={defaultFeedbackType}
+    />
+    </>
   );
 }

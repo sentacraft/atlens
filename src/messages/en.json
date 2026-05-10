@@ -19,7 +19,8 @@
     "lenses": "Browse",
     "compare": "Compare",
     "about": "About",
-    "getApp": "Get App"
+    "getApp": "Get App",
+    "feedback": "Send Feedback"
   },
   "Search": {
     "open": "Open lens search",
@@ -34,6 +35,7 @@
     "noResultsHint": "Try a shorter model name, a brand, or a series keyword.",
     "suggestLens": "Still can't find your lens?",
     "suggestLensLink": "Tell us",
+    "suggestLensResults": "Not seeing the lens you expected?",
     "coverageLink": "View lens coverage →",
     "results": "Lens search results",
     "clear": "Clear search",
@@ -193,6 +195,7 @@
     "compareFull": "Compare List Full",
     "officialSite": "Official site",
     "reportIssue": "Report an issue",
+    "nudgeText": "Spotted an error in the data?",
     "fieldOfficialLink": "Official Link",
     "fieldLensImage": "Lens Image",
     "fieldGroupMedia": "Media & Links",
@@ -389,6 +392,8 @@
     "titleDataIssue": "Report an issue",
     "titleMissingLens": "Suggest a missing lens",
     "titleGeneral": "Send feedback",
+    "tabGeneral": "Send feedback",
+    "tabDataIssue": "Report an issue",
     "descriptionDataIssue": "Wrong spec, broken image, typo, missing lens — tell us what you found. It goes straight to the maintainer.",
     "descriptionMissingLens": "Know a lens we're missing? Send it over and we'll add it to the queue.",
     "descriptionGeneral": "Thoughts, bug reports, and feature ideas are all welcome.",
