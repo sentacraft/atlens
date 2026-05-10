@@ -179,32 +179,25 @@ export default async function AboutContent() {
       {/* Coverage */}
       <Section id="coverage" title={t("coverageTitle")}>
         <div className="flex flex-col gap-4">
-          <MountCoverageTable
-            title={t("coverageBrandsX")}
-            brands={[...X_BRANDS]}
-            counts={xCounts}
-            meta={coverageMeta.x as Record<string, CoverageMeta>}
-            brandNames={Object.fromEntries(X_BRANDS.map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
-            col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), active: t("coverageColActive"), discontinued: t("coverageColDiscontinued") }}
-            rowTotal={t("coverageRowTotal")}
-          />
-          <div className="flex flex-col gap-2">
-            <MountCoverageTable
-              title={t("coverageBrandsG")}
-              brands={[...G_BRANDS]}
-              counts={gCounts}
-              meta={coverageMeta.g as Record<string, CoverageMeta>}
-              brandNames={Object.fromEntries(G_BRANDS.map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
-              col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), active: t("coverageColActive"), discontinued: t("coverageColDiscontinued") }}
-              rowTotal={t("coverageRowTotal")}
-            />
-            <p className="text-xs text-zinc-500 dark:text-zinc-500">
-              {t("coverageGNote")}
-            </p>
-          </div>
-          <p className="text-xs text-zinc-400 dark:text-zinc-600">
-            {t("coverageLegend")}
-          </p>
+          {([
+            { key: "coverageBrandsX", brands: X_BRANDS, counts: xCounts, meta: coverageMeta.x },
+            { key: "coverageBrandsG", brands: G_BRANDS, counts: gCounts, meta: coverageMeta.g },
+          ] as const).map(({ key, brands, counts, meta }) => (
+            <div key={key} className="flex flex-col gap-2">
+              <MountCoverageTable
+                title={t(key)}
+                brands={[...brands]}
+                counts={counts}
+                meta={meta as Record<string, CoverageMeta>}
+                brandNames={Object.fromEntries(brands.map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
+                col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), active: t("coverageColActive"), discontinued: t("coverageColDiscontinued") }}
+                rowTotal={t("coverageRowTotal")}
+              />
+              <p className="text-xs text-zinc-400 dark:text-zinc-600">
+                {t("coverageLegend")}
+              </p>
+            </div>
+          ))}
         </div>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
           {t("coverageSuggest")}{" "}
