@@ -3,8 +3,8 @@
     {
       "slug": "standard-zoom-showdown",
       "title": {
-        "zh": "APS-C 标准变焦",
-        "en": "APS-C Standard Zooms"
+        "zh": "标准变焦对决",
+        "en": "Standard Zoom Showdown"
       },
       "subtitle": {
         "zh": "轻便、光圈、防抖——四支标准变焦的取舍",
@@ -53,8 +53,8 @@
     {
       "slug": "portrait-56mm",
       "title": {
-        "zh": "56mm 人像定焦",
-        "en": "56mm Portrait Primes"
+        "zh": "等效 85mm 定焦",
+        "en": "85mm-equiv Primes"
       },
       "subtitle": {
         "zh": "f/1.2 极致虚化 vs 副厂轻便性价比",
@@ -85,12 +85,12 @@
     {
       "slug": "tele-zoom-entry",
       "title": {
-        "zh": "长焦变焦入门",
-        "en": "Entry Tele Zooms"
+        "zh": "长焦三兄弟",
+        "en": "Tele Trio"
       },
       "subtitle": {
-        "zh": "打鸟、演唱会、日常远摄——三支长焦变焦的价位与画质",
-        "en": "Wildlife, concerts, reach — comparing price and performance"
+        "zh": "打鸟、演唱会、日常远摄——价位与画质",
+        "en": "Wildlife, concerts, daily reach — price vs. performance"
       },
       "lensIds": [
         "fujifilm-xc-50-230mmf45-67-ois-ii-x",
