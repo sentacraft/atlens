@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { parseLensIds } from "@/lib/lens";
-import { urlSegmentToMount, mountToUrlSegment } from "@/lib/mount";
+import { urlSegmentToMount } from "@/lib/mount";
 import { getPresetBySlug } from "@/lib/trending";
 import CompareTable from "@/components/CompareTable";
 import ComparePageHeader from "@/components/ComparePageHeader";
 import CuratedComparisons from "@/components/CuratedComparisons";
-import BackButton from "@/components/BackButton";
 import { buildAlternates } from "@/lib/seo";
 import { notFound } from "next/navigation";
 
@@ -60,31 +59,22 @@ export default async function ComparePage({
   searchParams: SearchParams;
 }) {
   const { locale, mount } = await params;
-  const { ids, from, lensId, preset } = await searchParams;
+  const { ids, preset } = await searchParams;
   const resolvedMount = urlSegmentToMount(mount);
   if (!resolvedMount) {
     notFound();
   }
 
   const lenses = parseLensIds(ids, resolvedMount);
-  const seg = mountToUrlSegment(resolvedMount);
 
   const lang = locale === "zh" ? "zh" : "en";
   const presetTitle = preset ? (getPresetBySlug(preset)?.title[lang] ?? undefined) : undefined;
 
-  const fallbackHref =
-    from === "lens" && lensId ? `/lenses/${seg}/${lensId}` :
-    from === "home" ? "/" :
-    `/lenses/${seg}`;
-
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 flex flex-col gap-3 sm:gap-4">
-      <ComparePageHeader lenses={lenses} fallbackHref={fallbackHref} minColumns={2} presetTitle={presetTitle} />
+      <ComparePageHeader lenses={lenses} minColumns={2} presetTitle={presetTitle} />
       <CompareTable key={lenses.length === 0 ? "_empty_" : ids} lenses={lenses} minColumns={2} hideBodyWhenEmpty />
       {resolvedMount === "X" && <CuratedComparisons />}
-      {lenses.length > 0 && (
-        <BackButton fallbackHref={fallbackHref} />
-      )}
     </div>
   );
 }
