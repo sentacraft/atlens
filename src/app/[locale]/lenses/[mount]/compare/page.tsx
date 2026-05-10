@@ -34,9 +34,8 @@ export async function generateMetadata({
     const found = getPresetBySlug(preset);
     if (found) {
       const lang = locale === "zh" ? "zh" : "en";
-      const title = found.titleSecondary
-        ? `${found.titlePrimary[lang]}: ${found.titleSecondary[lang]}`
-        : found.titlePrimary[lang];
+      const t = found.title[lang];
+      const title = t.secondary ? `${t.primary}: ${t.secondary}` : t.primary;
       return { title, openGraph: { title: `${title} | X-Glass` }, alternates };
     }
   }
@@ -73,8 +72,8 @@ export default async function ComparePage({
   const foundPreset = preset ? getPresetBySlug(preset) : undefined;
   const presetTitleLines: string[] | undefined = foundPreset
     ? [
-        foundPreset.titlePrimary[lang],
-        ...(foundPreset.titleSecondary ? [foundPreset.titleSecondary[lang]] : []),
+        foundPreset.title[lang].primary,
+        ...(foundPreset.title[lang].secondary ? [foundPreset.title[lang].secondary as string] : []),
       ]
     : undefined;
 
