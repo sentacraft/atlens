@@ -280,7 +280,7 @@ export interface LensPriceEntry {
 }
 
 /** Translated user-facing fields for a single locale. */
-export interface LensLocaleTranslations {
+interface LensLocaleTranslations {
   fieldNotes?: Partial<Record<FieldNoteKey, string>>;
   lensMaterial?: string;
   accessories?: string[];
