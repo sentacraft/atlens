@@ -125,7 +125,7 @@ export default async function LocaleLayout({
         position="bottom-center"
         offset="calc(var(--compare-bar-height, 0px) + 16px)"
         mobileOffset="calc(var(--compare-bar-height, 0px) + 16px)"
-        toastOptions={{ style: { whiteSpace: "nowrap" } }}
+        toastOptions={{ className: "whitespace-nowrap" }}
       />
     </NextIntlClientProvider>
   );
