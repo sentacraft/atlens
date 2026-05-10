@@ -304,7 +304,7 @@ export const lensSchema = lensObjectSchema.superRefine((value, ctx) => {
 function makeAllowlistKey(a: string, b: string): string {
   return a < b ? `${a}|${b}` : `${b}|${a}`;
 }
-const KNOWN_DISTINCT_PAIRS = new Set([
+export const KNOWN_DISTINCT_PAIRS = new Set([
   // Tilt-shift mechanism adds tilt/shift axes; lensConfiguration and
   // specialtyTags differ even though optical formula is the same.
   makeAllowlistKey(
