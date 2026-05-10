@@ -5,19 +5,18 @@ import FeedbackTrigger from "@/components/FeedbackTrigger";
 import AnthropicLogo from "@/components/logos/AnthropicLogo";
 import GeminiLogo from "@/components/logos/GeminiLogo";
 import GitHubMark from "@/components/logos/GitHubMark";
-import { ExternalLink } from "@/components/ui/external-link";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { getLensesByMount } from "@/lib/lens";
 import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/AckCard";
 
-type CoverageMeta = { active: boolean; discontinued: boolean | "planned"; notes: string };
+type CoverageMeta = { active: boolean | "planned"; discontinued: boolean | "planned"; notes: string };
 
 function Check() {
   return <span className="text-zinc-700 dark:text-zinc-300 text-sm">✓</span>;
 }
-function Planned() {
+function Pending() {
   return <span className="text-zinc-400 dark:text-zinc-500 text-sm">○</span>;
 }
 function Dash() {
@@ -55,9 +54,9 @@ function MountCoverageTable({
               return (
                 <tr key={b}>
                   <td className="px-3 py-2 font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap">{brandNames[b] ?? b}</td>
-                  <td className="px-3 py-2 text-center">{m.active ? <Check /> : <Dash />}</td>
-                  <td className="px-3 py-2 text-center">{m.discontinued === true ? <Check /> : m.discontinued === "planned" ? <Planned /> : <Dash />}</td>
-                  <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">{counts[b] ?? 0}</td>
+                  <td className="px-3 py-2 text-center">{m.active === true ? <Check /> : m.active === "planned" ? <Pending /> : <Dash />}</td>
+                  <td className="px-3 py-2 text-center">{m.discontinued === true ? <Check /> : m.discontinued === "planned" ? <Pending /> : <Dash />}</td>
+                  <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">{m.active === true ? (counts[b] ?? 0) : <Dash />}</td>
                 </tr>
               );
             })}
@@ -107,7 +106,7 @@ export default async function AboutContent() {
   const gCounts = getLensesByMount("G", locale).reduce<Record<string, number>>(
     (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
   );
-  const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage"];
+  const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage","laowa","meike","sirui","voigtlander"];
   const G_BRANDS = ["fujifilm"];
 
   const pipelineStages = [
@@ -180,25 +179,32 @@ export default async function AboutContent() {
       {/* Coverage */}
       <Section id="coverage" title={t("coverageTitle")}>
         <div className="flex flex-col gap-4">
-          {([
-            { key: "coverageBrandsX", brands: X_BRANDS, counts: xCounts, meta: coverageMeta.x, roadmapKey: "coverageXRoadmap" },
-            { key: "coverageBrandsG", brands: G_BRANDS, counts: gCounts, meta: coverageMeta.g, roadmapKey: "coverageGRoadmap" },
-          ] as const).map(({ key, brands, counts, meta, roadmapKey }) => (
-            <div key={key} className="flex flex-col gap-2">
-              <MountCoverageTable
-                title={t(key)}
-                brands={[...brands]}
-                counts={counts}
-                meta={meta as Record<string, CoverageMeta>}
-                brandNames={Object.fromEntries(brands.map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
-                col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), active: t("coverageColActive"), discontinued: t("coverageColDiscontinued") }}
-                rowTotal={t("coverageRowTotal")}
-              />
-              <p className="text-xs text-zinc-500 dark:text-zinc-500">
-                {t(roadmapKey)}
-              </p>
-            </div>
-          ))}
+          <MountCoverageTable
+            title={t("coverageBrandsX")}
+            brands={[...X_BRANDS]}
+            counts={xCounts}
+            meta={coverageMeta.x as Record<string, CoverageMeta>}
+            brandNames={Object.fromEntries(X_BRANDS.map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
+            col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), active: t("coverageColActive"), discontinued: t("coverageColDiscontinued") }}
+            rowTotal={t("coverageRowTotal")}
+          />
+          <div className="flex flex-col gap-2">
+            <MountCoverageTable
+              title={t("coverageBrandsG")}
+              brands={[...G_BRANDS]}
+              counts={gCounts}
+              meta={coverageMeta.g as Record<string, CoverageMeta>}
+              brandNames={Object.fromEntries(G_BRANDS.map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
+              col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), active: t("coverageColActive"), discontinued: t("coverageColDiscontinued") }}
+              rowTotal={t("coverageRowTotal")}
+            />
+            <p className="text-xs text-zinc-500 dark:text-zinc-500">
+              {t("coverageGNote")}
+            </p>
+          </div>
+          <p className="text-xs text-zinc-400 dark:text-zinc-600">
+            {t("coverageLegend")}
+          </p>
         </div>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
           {t("coverageSuggest")}{" "}
@@ -216,6 +222,29 @@ export default async function AboutContent() {
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("dataAccuracyIntro")}
         </p>
+
+        {/* GitHub CTA card — front-loaded so visitors discover the repo early */}
+        <a
+          href="https://github.com/sentacraft/x-glass#data-pipeline"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/40 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
+        >
+          <GitHubMark size={24} className="mt-0.5 shrink-0 text-zinc-700 dark:text-zinc-300" />
+          <div className="flex flex-col gap-1 min-w-0 flex-1">
+            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+              {t("dataGitHubCardTitle")}
+            </p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+              {t("dataGitHubCardBody")}
+            </p>
+            <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-zinc-700 group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-zinc-100 transition-colors">
+              {t("dataGitHubCardButton")}
+              <ArrowUpRight className="size-3" />
+            </span>
+          </div>
+        </a>
+
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
           {t("dataAccuracyReport")}{" "}
           <FeedbackTrigger
@@ -267,13 +296,6 @@ export default async function AboutContent() {
               </li>
             ))}
           </ol>
-          {/* Inline GitHub link for users who want to dive deeper mid-flow */}
-          <ExternalLink
-            href="https://github.com/sentacraft/x-glass#data-pipeline"
-            className="inline-flex items-center gap-0.5 self-start text-xs text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
-          >
-            {t("dataPipelineFlowNote")}
-          </ExternalLink>
         </div>
 
         {/* Update cadence */}
@@ -300,27 +322,6 @@ export default async function AboutContent() {
           </div>
         </div>
 
-        {/* GitHub CTA card — covers both spec and pricing pipelines */}
-        <a
-          href="https://github.com/sentacraft/x-glass#data-pipeline"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/40 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
-        >
-          <GitHubMark size={24} className="mt-0.5 shrink-0 text-zinc-700 dark:text-zinc-300" />
-          <div className="flex flex-col gap-1 min-w-0 flex-1">
-            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
-              {t("dataGitHubCardTitle")}
-            </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
-              {t("dataGitHubCardBody")}
-            </p>
-            <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-zinc-700 group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-zinc-100 transition-colors">
-              {t("dataGitHubCardButton")}
-              <ArrowUpRight className="size-3" />
-            </span>
-          </div>
-        </a>
       </Section>
 
       {/* Disclaimer */}
