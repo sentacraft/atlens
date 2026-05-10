@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Next.js Dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
+      "name": "Playwright UI",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "test:e2e:ui"],
+      "port": 9323
+    }
+  ]
+}
