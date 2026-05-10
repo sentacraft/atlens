@@ -542,7 +542,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
               <LensHeader
                 key={lens.id}
                 lens={lens}
-                removeLabel={t("removeLens", { model: lensDisplayName(tBrand(lens.brand), lens.series, lens.model) })}
+                removeLabel={t("removeLens", { model: lensDisplayName(tBrand(lens.brand), lens.series, lens.model, lens.brand) })}
                 shiftLeftLabel={t("shiftLeft")}
                 shiftRightLabel={t("shiftRight")}
                 canShiftLeft={index > 0}

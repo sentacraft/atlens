@@ -90,7 +90,7 @@ export default function CompareBar() {
               <AnimatePresence mode="popLayout">
                 {selectedLenses.map((lens) => {
                   const brandName = tBrand(lens.brand);
-                  const displayName = lensDisplayName(brandName, lens.series, lens.model);
+                  const displayName = lensDisplayName(brandName, lens.series, lens.model, lens.brand);
 
                   return (
                     <motion.div

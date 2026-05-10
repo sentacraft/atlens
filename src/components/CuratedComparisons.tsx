@@ -50,7 +50,7 @@ export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSele
               key={lens.id}
               className="inline-block rounded-md bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
             >
-              {lensDisplayName(tBrand(lens.brand), lens.series, lens.model)}
+              {lensDisplayName(tBrand(lens.brand), lens.series, lens.model, lens.brand)}
             </span>
           );
         })}
