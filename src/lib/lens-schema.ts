@@ -296,19 +296,15 @@ export const lensSchema = lensObjectSchema.superRefine((value, ctx) => {
   applyLensBusinessRules(value, ctx);
 });
 
-export const lensPatchSchema = lensObjectSchema.partial().superRefine((value, ctx) => {
-  applyLensBusinessRules(value, ctx);
-});
-
 // Pairs of lens IDs confirmed to be distinct despite scoring above the spec
 // similarity threshold. Also used by the pipeline image dedupe gate.
 // Format: "idA|idB" with IDs sorted alphabetically. Add a comment explaining
 // what actually distinguishes the pair — the gate error output shows you the
 // equalFields / diffFields diff to inform that decision.
-export function makeAllowlistKey(a: string, b: string): string {
+function makeAllowlistKey(a: string, b: string): string {
   return a < b ? `${a}|${b}` : `${b}|${a}`;
 }
-export const KNOWN_DISTINCT_PAIRS = new Set([
+const KNOWN_DISTINCT_PAIRS = new Set([
   // Tilt-shift mechanism adds tilt/shift axes; lensConfiguration and
   // specialtyTags differ even though optical formula is the same.
   makeAllowlistKey(
