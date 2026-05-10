@@ -161,7 +161,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     retracted: t("lengthRetracted"),
     wide: t("lengthWide"),
     tele: t("lengthTele"),
-    macro: t("macroLabel"),
     lc: {
       groups: t("lcGroups"),
       elements: t("lcElements"),
