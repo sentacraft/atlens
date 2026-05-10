@@ -95,6 +95,13 @@ const COL_GAP = 16;
 
 // ── Helpers ────────────────────────────────────────────────────────
 
+/** Estimates rendered line count for the poster slogan (available width ~570px at 13px). */
+function estimateSloganLines(text: string): number {
+  const cnChars = (text.match(/[一-鿿]/g) ?? []).length;
+  const estimatedWidth = cnChars * 14 + (text.length - cnChars) * 7;
+  return Math.max(1, Math.ceil(estimatedWidth / 570));
+}
+
 function gridStyle(n: number): React.CSSProperties {
   return {
     display: "grid",
@@ -389,7 +396,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
             </span>
           </div>
           {/* Title lines — one per lens, font scales with count */}
-          <div style={{ marginBottom: slogan ? 8 : 0 }}>
+          <div style={{ marginBottom: slogan ? (estimateSloganLines(slogan) >= 2 ? 6 : 14) : 0 }}>
             {titleLines.map((line, i) => (
               <div
                 key={i}
