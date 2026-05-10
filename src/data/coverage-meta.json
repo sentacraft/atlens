@@ -7,7 +7,11 @@
     "7artisans":   { "active": true,  "discontinued": false, "notes": "" },
     "ttartisan":   { "active": true,  "discontinued": false, "notes": "" },
     "brightinstar":{ "active": true,  "discontinued": false, "notes": "" },
-    "sgimage":     { "active": true,  "discontinued": false, "notes": "" }
+    "sgimage":     { "active": true,  "discontinued": false, "notes": "" },
+    "laowa":       { "active": "planned", "discontinued": false, "notes": "" },
+    "meike":       { "active": "planned", "discontinued": false, "notes": "" },
+    "sirui":       { "active": "planned", "discontinued": false, "notes": "" },
+    "voigtlander": { "active": "planned", "discontinued": false, "notes": "" }
   },
   "g": {
     "fujifilm":    { "active": true,  "discontinued": false, "notes": "" }
