@@ -118,9 +118,8 @@ describe("resolveSpecRow — plainText", () => {
   it("serializes structured numeric rows and macro details", () => {
     const lens = makeLens({
       minFocusDistance: {
-        cm: 15,
-        variants: { wide: 15, tele: 30 },
-        macroCm: 12,
+        normal: { cm: 15, teleCm: 30 },
+        macro: { cm: 12 },
       },
     });
     const row = getRow("Min Focus Distance");

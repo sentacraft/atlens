@@ -726,41 +726,29 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                       );
                     }
 
-                    const hasMacroVariants = hasVariantValue(mfd.macroVariants);
-                    const hasNormalVariants = hasVariantValue(mfd.variants);
-                    const macroScalarShorter =
-                      mfd.macroCm !== undefined && mfd.macroCm < mfd.cm;
+                    const hasMacroTeleCm = mfd.macro?.teleCm !== undefined;
+                    const hasNormalTeleCm = mfd.normal.teleCm !== undefined;
 
                     let heroValue: number;
                     let heroQualifier: string | undefined;
                     let captionLines: Array<{ label: string; value: string }> = [];
 
-                    if (hasMacroVariants) {
-                      const wv = mfd.macroVariants!.wide;
-                      const tv = mfd.macroVariants!.tele;
-                      if (wv !== undefined && tv !== undefined) {
-                        heroValue = Math.min(wv, tv);
-                        heroQualifier = wv <= tv ? labels.wide : labels.tele;
-                      } else {
-                        heroValue = wv ?? tv!;
-                        heroQualifier = wv !== undefined ? labels.wide : labels.tele;
-                      }
-                      captionLines = toVariantLines(mfd.macroVariants, (v) => `${v}cm`, wideTeleLabels);
-                    } else if (macroScalarShorter) {
-                      heroValue = mfd.macroCm!;
-                    } else if (hasNormalVariants) {
-                      const wv = mfd.variants!.wide;
-                      const tv = mfd.variants!.tele;
-                      if (wv !== undefined && tv !== undefined) {
-                        heroValue = Math.min(wv, tv);
-                        heroQualifier = wv <= tv ? labels.wide : labels.tele;
-                      } else {
-                        heroValue = wv ?? tv!;
-                        heroQualifier = wv !== undefined ? labels.wide : labels.tele;
-                      }
-                      captionLines = toVariantLines(mfd.variants, (v) => `${v}cm`, wideTeleLabels);
+                    if (hasMacroTeleCm) {
+                      const wv = mfd.macro!.cm;
+                      const tv = mfd.macro!.teleCm!;
+                      heroValue = Math.min(wv, tv);
+                      heroQualifier = wv <= tv ? labels.wide : labels.tele;
+                      captionLines = toVariantLines({ wide: wv, tele: tv }, (v) => `${v}cm`, wideTeleLabels);
+                    } else if (mfd.macro) {
+                      heroValue = mfd.macro.cm;
+                    } else if (hasNormalTeleCm) {
+                      const wv = mfd.normal.cm;
+                      const tv = mfd.normal.teleCm!;
+                      heroValue = Math.min(wv, tv);
+                      heroQualifier = wv <= tv ? labels.wide : labels.tele;
+                      captionLines = toVariantLines({ wide: wv, tele: tv }, (v) => `${v}cm`, wideTeleLabels);
                     } else {
-                      heroValue = mfd.cm;
+                      heroValue = mfd.normal.cm;
                     }
 
                     const showCaption = captionLines.length > 1;

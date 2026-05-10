@@ -532,15 +532,13 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
             }),
           getStructuredLines: (l) => {
             const mfd = l.minFocusDistance;
-            if (!mfd?.variants) {
+            if (!mfd?.normal.teleCm) {
               return undefined;
             }
-            const lines: StructuredLine[] = [];
-            if (mfd.variants.wide !== undefined)
-              {lines.push({ value: `${mfd.variants.wide}cm`, label: wide });}
-            if (mfd.variants.tele !== undefined)
-              {lines.push({ value: `${mfd.variants.tele}cm`, label: tele });}
-            return lines.length > 0 ? lines : undefined;
+            return [
+              { value: `${mfd.normal.cm}cm`, label: wide },
+              { value: `${mfd.normal.teleCm}cm`, label: tele },
+            ];
           },
           getSubValue: (l) =>
             fmt.minFocusDistanceSecondaryDisplay(l.minFocusDistance, {
@@ -548,10 +546,10 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
               tele,
               macro,
             }),
-          toComparable: (l) => l.minFocusDistance?.cm,
+          toComparable: (l) => l.minFocusDistance?.normal.cm,
           bestDir: "min",
           getHighlightFragment: (l) =>
-            l.minFocusDistance ? `${l.minFocusDistance.cm}cm` : undefined,
+            l.minFocusDistance ? `${l.minFocusDistance.normal.cm}cm` : undefined,
         },
         {
           kind: "numeric",

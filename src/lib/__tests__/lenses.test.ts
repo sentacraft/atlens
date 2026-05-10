@@ -38,7 +38,7 @@ function makeLens(
     diameterMm: 65,
     length: { mm: 45 },
     filterMm: 52,
-    minFocusDistance: { cm: 28 },
+    minFocusDistance: { normal: { cm: 28 } },
     releaseYear: 2012,
     officialLinks: { global: "https://example.com/lens" },
     ...overrides,
