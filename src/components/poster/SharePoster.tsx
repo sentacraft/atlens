@@ -95,6 +95,13 @@ const COL_GAP = 16;
 
 // ── Helpers ────────────────────────────────────────────────────────
 
+/** Splits "A: B" or "A：B" into two lines for poster layout. */
+function splitPosterTitle(title: string): string[] {
+  const idx = title.search(/[：:]/);
+  if (idx === -1) return [title];
+  return [title.slice(0, idx).trim(), title.slice(idx + 1).trim()].filter(Boolean);
+}
+
 function gridStyle(n: number): React.CSSProperties {
   return {
     display: "grid",
@@ -238,7 +245,7 @@ interface SharePosterProps {
 export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePosterProps) {
   const n = lenses.length;
   const titleLines: string[] = custom?.title?.trim()
-    ? [custom.title.trim()]
+    ? splitPosterTitle(custom.title.trim())
     : labels.comparison;
   const titleFontSize = titleLines.length <= 1 ? 32 : titleLines.length === 2 ? 22 : 17;
   const slogan = custom?.slogan?.trim();
