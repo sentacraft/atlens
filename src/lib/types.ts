@@ -279,6 +279,13 @@ export interface LensPriceEntry {
   sampledAt: string;
 }
 
+/** Translated user-facing fields for a single locale. */
+interface LensLocaleTranslations {
+  fieldNotes?: Partial<Record<FieldNoteKey, string>>;
+  lensMaterial?: string;
+  accessories?: string[];
+}
+
 /**
  * Canonical lens record used by the X-Glass app.
  */
@@ -730,13 +737,7 @@ export interface Lens {
    * English values live in the top-level fields (fieldNotes, lensMaterial,
    * accessories) and serve as the fallback when a translation is absent.
    */
-  translations?: {
-    zh?: {
-      fieldNotes?: Partial<Record<FieldNoteKey, string>>;
-      lensMaterial?: string;
-      accessories?: string[];
-    };
-  };
+  translations?: { zh?: LensLocaleTranslations };
 
 }
 
