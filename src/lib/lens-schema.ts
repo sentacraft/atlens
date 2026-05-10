@@ -172,12 +172,21 @@ const fieldNotesSchema = z.strictObject({
   apertureBladeCount: nonEmptyStringSchema.optional(),
 });
 
+const translationsSchema = z.strictObject({
+  zh: z.strictObject({
+    fieldNotes: fieldNotesSchema.optional(),
+    lensMaterial: nonEmptyStringSchema.optional(),
+    accessories: z.array(nonEmptyStringSchema).optional(),
+  }).optional(),
+}).optional();
+
 const lensObjectSchema = z.strictObject({
   ...lensBaseShape,
   filterMm: z.union([positiveNumberSchema, specNaSchema]).optional(),
   lensConfiguration: lensConfigurationSchema.optional(),
   fieldNotes: fieldNotesSchema.optional(),
   officialLinks: officialLinksSchema,
+  translations: translationsSchema,
 });
 
 function getApertureEndpoints(aperture: ApertureValue): {
@@ -326,7 +335,7 @@ const KNOWN_DISTINCT_PAIRS = new Set([
 // Identifiers, human-readable labels, links, and freeform notes are excluded;
 // all measurable optical/physical fields are included automatically.
 const SIMILARITY_EXCLUDE = new Set([
-  "id", "brand", "model", "series", "officialLinks", "fieldNotes",
+  "id", "brand", "model", "series", "officialLinks", "fieldNotes", "translations",
 ]);
 
 // Threshold above which two same-brand lenses are flagged as suspiciously similar.

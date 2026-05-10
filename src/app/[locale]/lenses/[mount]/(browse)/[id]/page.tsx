@@ -7,6 +7,7 @@ import { getLensesByMount, getLensUrl } from "@/lib/lens";
 import { urlSegmentToMount } from "@/lib/mount";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { buildSpecGroups, resolveSpecGroups } from "@/lib/lens-spec-groups";
+import { resolveTranslations } from "@/lib/types";
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens-spec-groups";
 import { ExternalLink } from "@/components/ui/external-link";
 import { Link } from "@/i18n/navigation";
@@ -115,6 +116,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     notFound();
   }
 
+  const displayLens = resolveTranslations(lens, locale);
   const t = await getTranslations("LensDetail");
   const tBrand = await getTranslations("Brands");
   const tPricing = await getTranslations("Pricing");
@@ -200,7 +202,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
   // Resolve all row values once. This is the single source of truth for both
   // the rendered spec table and the Report Dialog's field list.
-  const resolvedGroups = resolveSpecGroups(specGroups, lens, valueCellLabels);
+  const resolvedGroups = resolveSpecGroups(specGroups, displayLens, valueCellLabels);
 
   // Field options for the Report Dialog — taken directly from resolved values,
   // identical to what is rendered in the spec table below.
