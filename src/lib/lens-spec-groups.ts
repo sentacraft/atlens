@@ -391,7 +391,6 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
               : Array.isArray(l.maxAperture)
                 ? l.maxAperture[0]
                 : l.maxAperture,
-          bestDir: "min",
         },
         {
           kind: "text",
