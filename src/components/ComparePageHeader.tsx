@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Z } from "@/config/ui";
 import { useTranslations } from "next-intl";
-import { ShareButton } from "@/components/ShareButton";
+import { ShareButton } from "@/components/share/ShareButton";
 import CompareAddLensButton from "@/components/CompareAddLensButton";
 import BackButton from "@/components/BackButton";
 import { useMountedCompare } from "@/context/CompareProvider";
