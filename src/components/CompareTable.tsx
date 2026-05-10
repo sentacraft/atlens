@@ -14,7 +14,7 @@ import { ExternalLink } from "@/components/ui/external-link";
 import { useTranslations, useLocale } from "next-intl";
 import { ChevronLeft, ChevronRight, Flag, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ICON_CLOSE_BTN_CLS } from "@/lib/ui-tokens";
+import { ICON_CLOSE_BTN_CLS, TEXT_LINK_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
@@ -30,6 +30,7 @@ import type { StructuredLine, ResolvedSpecRow } from "@/lib/lens-spec-groups";
 import type { Lens } from "@/lib/types";
 import { PriceBand } from "@/components/PriceBand";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
+import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 
 // --- LensHeaderContent: shared inner card content ---
 
@@ -57,8 +58,7 @@ function LensHeaderContent({
       </div>
 
       <p className="text-center text-xs font-normal text-zinc-500 dark:text-zinc-400">
-        {tBrand(lens.brand)}
-        {lens.series ? ` · ${lens.series}` : ""}
+        {lensSubtitleLine(tBrand(lens.brand), lens.series)}
       </p>
       <p className="line-clamp-3 text-center font-semibold leading-snug text-zinc-900 dark:text-zinc-50">
         {lens.model}
@@ -300,7 +300,6 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
         retracted: td("lengthRetracted"),
         wide: td("lengthWide"),
         tele: td("lengthTele"),
-        macro: td("macroLabel"),
         lc: {
           groups: td("lcGroups"),
           elements: td("lcElements"),
@@ -496,7 +495,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                 className="px-2 py-1.5 text-center"
               >
                 <p className="truncate text-[10px] text-zinc-400 dark:text-zinc-500">
-                  {tBrand(lens.brand)}
+                  {lensSubtitleLine(tBrand(lens.brand), lens.series)}
                 </p>
                 <p className="truncate text-xs font-semibold text-zinc-900 dark:text-zinc-50">
                   {lens.model}
@@ -542,7 +541,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
               <LensHeader
                 key={lens.id}
                 lens={lens}
-                removeLabel={t("removeLens", { model: lens.model })}
+                removeLabel={t("removeLens", { model: lensDisplayName(tBrand(lens.brand), lens.series, lens.model, lens.brand) })}
                 shiftLeftLabel={t("shiftLeft")}
                 shiftRightLabel={t("shiftRight")}
                 canShiftLeft={index > 0}
@@ -889,22 +888,22 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
         {orderedLenses.length > 0 && <tfoot>
           {/* Footer row: official site + report links per lens */}
           <tr className="border-t border-zinc-200 bg-zinc-100/80 dark:border-zinc-800 dark:bg-zinc-800/60">
-            <td className="sticky left-0 z-10 bg-zinc-100 px-3 py-2 dark:bg-zinc-800" />
+            <td className="sticky left-0 z-10 bg-zinc-100 px-3 py-4 dark:bg-zinc-800" />
             {orderedLenses.map((lens) => {
               const url = getLensUrl(lens, locale);
               const fields = lensFields.get(lens.id);
               return (
-                <td key={lens.id} className="px-3 py-2">
-                  <div className="flex flex-wrap items-center justify-center gap-2">
+                <td key={lens.id} className="px-3 py-4">
+                  <div className="flex flex-col items-center gap-2">
                     {url ? (
                       <ExternalLink
                         href={url}
-                        className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 px-2 py-1 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
                       >
                         {t("officialSite")}
                       </ExternalLink>
                     ) : (
-                      <span className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-md border border-zinc-100 px-2 py-1 text-xs font-medium text-zinc-300 dark:border-zinc-800 dark:text-zinc-600">
+                      <span className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-300 dark:border-zinc-800 dark:text-zinc-600 cursor-not-allowed">
                         {t("officialSite")}
                       </span>
                     )}
@@ -912,7 +911,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                       type="data_issue"
                       context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
                       fields={fields}
-                      className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 px-2 py-1 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
+                      className={`inline-flex items-center gap-1.5 text-xs font-medium ${TEXT_LINK_CLS}`}
                     >
                       <Flag className="h-3 w-3" />
                       {t("reportIssue")}

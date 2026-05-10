@@ -18,6 +18,7 @@ import { useEffectiveMount } from "@/hooks/useMountParam";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { lensSubtitleLine } from "@/lib/lens.format";
 import {
   Dialog,
   DialogContent,
@@ -294,8 +295,7 @@ export default function LensSearchDialog({
                     >
                       <div className="min-w-0">
                         <p className="truncate text-xs uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
-                          {tBrand(lens.brand)}
-                          {lens.series ? ` · ${lens.series}` : ""}
+                          {lensSubtitleLine(tBrand(lens.brand), lens.series)}
                           {lens.generation ? ` · ${t("generation", { value: lens.generation })}` : ""}
                         </p>
                         <p className="mt-0.5 truncate text-sm font-medium text-zinc-900 dark:text-zinc-50">

@@ -206,7 +206,6 @@ export interface SpecGroupLabels {
   retracted: string;
   wide: string;
   tele: string;
-  macro: string;
 
   // Lens configuration sub-labels
   lc: LensConfigurationLabels;
@@ -349,7 +348,6 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
     retracted,
     wide,
     tele,
-    macro,
     angleOfViewEstNote,
     lc,
     tags,
@@ -393,7 +391,6 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
               : Array.isArray(l.maxAperture)
                 ? l.maxAperture[0]
                 : l.maxAperture,
-          bestDir: "min",
         },
         {
           kind: "text",
@@ -525,31 +522,12 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
           label: labels.minFocusDist,
           fieldNoteKey: "minFocusDistance" as FieldNoteKey,
           hasData: (l) => l.minFocusDistance !== undefined,
-          getDisplayValue: (l) =>
-            fmt.minFocusDistancePrimaryDisplay(l.minFocusDistance, {
-              wide,
-              tele,
-            }),
-          getStructuredLines: (l) => {
-            const mfd = l.minFocusDistance;
-            if (!mfd?.normal.teleCm) {
-              return undefined;
-            }
-            return [
-              { value: `${mfd.normal.cm}cm`, label: wide },
-              { value: `${mfd.normal.teleCm}cm`, label: tele },
-            ];
-          },
-          getSubValue: (l) =>
-            fmt.minFocusDistanceSecondaryDisplay(l.minFocusDistance, {
-              wide,
-              tele,
-              macro,
-            }),
-          toComparable: (l) => l.minFocusDistance?.normal.cm,
+          getDisplayValue: (l) => fmt.mfdHeroValue(l.minFocusDistance),
+          getStructuredLines: (l) =>
+            fmt.mfdStructuredLines(l.minFocusDistance, { wide, tele }),
+          toComparable: (l) => fmt.mfdComparable(l.minFocusDistance),
           bestDir: "min",
-          getHighlightFragment: (l) =>
-            l.minFocusDistance ? `${l.minFocusDistance.normal.cm}cm` : undefined,
+          getHighlightFragment: (l) => fmt.mfdHeroValue(l.minFocusDistance),
         },
         {
           kind: "numeric",

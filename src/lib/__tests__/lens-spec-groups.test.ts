@@ -42,7 +42,6 @@ const labels = {
   retracted: "Retracted",
   wide: "Wide",
   tele: "Tele",
-  macro: "Macro",
   lc: {
     groups: "groups",
     elements: "elements",
@@ -115,7 +114,7 @@ describe("resolveSpecRow — plainText", () => {
     expect(resolveSpecRow(row, lens, valueLabels)?.plainText).toBe("Yes\n5 stops");
   });
 
-  it("serializes structured numeric rows and macro details", () => {
+  it("serializes MFD with macro-first logic", () => {
     const lens = makeLens({
       minFocusDistance: {
         normal: { cm: 15, teleCm: 30 },
@@ -124,9 +123,7 @@ describe("resolveSpecRow — plainText", () => {
     });
     const row = getRow("Min Focus Distance");
 
-    expect(resolveSpecRow(row, lens, valueLabels)?.plainText).toBe(
-      "15cm (Wide)\n30cm (Tele)\nMacro: 12cm"
-    );
+    expect(resolveSpecRow(row, lens, valueLabels)?.plainText).toBe("12cm");
   });
 
   it("preserves primary and secondary text rows", () => {

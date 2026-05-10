@@ -7,6 +7,7 @@ import { FEATURE_ICONS } from "@/lib/feature-icons";
 import { FILTER_FEATURE_KEYS, FOCAL_CATEGORIES, LENS_TYPES } from "@/lib/lens";
 import type { FilterState, FocusFilter, FocusMotorClass, LensType, SpecialtyTag } from "@/lib/lens";
 import { cn } from "@/lib/utils";
+import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
 import FeatureToggleGroup from "./lens-filters/FeatureToggleGroup";
 import FilterRow from "./lens-filters/FilterRow";
 import MultiSelectChipGroup from "./lens-filters/MultiSelectChipGroup";
@@ -145,7 +146,7 @@ export default function LensFilters({
       aria-expanded={secondaryOpen}
     >
       <SlidersHorizontal className="size-3.5" />
-      <span className="underline decoration-zinc-300 underline-offset-4 hover:decoration-zinc-500 dark:decoration-zinc-600 dark:hover:decoration-zinc-400">
+      <span className={TEXT_LINK_CLS}>
         {secondaryOpen ? t("fewerFilters") : t("moreFilters")}
       </span>
       <ChevronDown
