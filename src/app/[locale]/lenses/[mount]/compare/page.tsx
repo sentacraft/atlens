@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { parseLensIds } from "@/lib/lens";
 import { urlSegmentToMount } from "@/lib/mount";
-import { getPresetBySlug } from "@/lib/trending";
+import { getPresetBySlug } from "@/lib/curated-presets";
 import CompareTable from "@/components/CompareTable";
 import ComparePageHeader from "@/components/ComparePageHeader";
 import CuratedComparisons from "@/components/CuratedComparisons";

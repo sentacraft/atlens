@@ -6,11 +6,11 @@ import { useRouter } from "@/i18n/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCompareUrl } from "@/hooks/useCompareUrl";
 import { useMountedCompare } from "@/context/CompareProvider";
-import { trendingPresets, type TrendingPreset } from "@/lib/trending";
+import { curatedPresets, type CuratedPreset } from "@/lib/curated-presets";
 import { getAllLenses } from "@/lib/lens";
 import { cn } from "@/lib/utils";
 
-export function PresetCard({ preset, onSelect }: { preset: TrendingPreset; onSelect?: () => void }) {
+export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSelect?: () => void }) {
   const router = useRouter();
   const locale = useLocale();
   const lang = locale === "zh" ? "zh" : "en";
@@ -99,7 +99,7 @@ export default function CuratedComparisons() {
     if (!el) {
       return;
     }
-    const approxCardWidth = el.scrollWidth / trendingPresets.length;
+    const approxCardWidth = el.scrollWidth / curatedPresets.length;
     el.scrollBy({ left: dir * approxCardWidth, behavior: "smooth" });
   }
 
@@ -135,7 +135,7 @@ export default function CuratedComparisons() {
           className="overflow-x-auto snap-x snap-mandatory scroll-pl-4 [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]"
         >
           <div className="flex items-stretch gap-2 px-4 pb-0.5">
-            {trendingPresets.map((preset) => (
+            {curatedPresets.map((preset) => (
               <div key={preset.slug} className="shrink-0 snap-start w-[calc((100vw-2.5rem)/1.5)]">
                 <PresetCard preset={preset} />
               </div>
@@ -159,7 +159,7 @@ export default function CuratedComparisons() {
 
       {/* Desktop: grid */}
       <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-        {trendingPresets.map((preset) => (
+        {curatedPresets.map((preset) => (
           <PresetCard key={preset.slug} preset={preset} />
         ))}
       </div>

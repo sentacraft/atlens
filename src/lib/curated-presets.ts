@@ -1,8 +1,8 @@
-import trendingData from "../data/trending.json";
+import curatedData from "../data/curated-presets.json";
 import { getAllLenses } from "./lens";
 import type { Lens } from "./types";
 
-export interface TrendingPreset {
+export interface CuratedPreset {
   slug: string;
   titlePrimary: { zh: string; en: string };
   titleSecondary?: { zh: string; en: string };
@@ -10,13 +10,13 @@ export interface TrendingPreset {
   lensIds: string[];
 }
 
-export const trendingPresets: TrendingPreset[] = trendingData.presets;
+export const curatedPresets: CuratedPreset[] = curatedData.presets;
 
-export function getPresetBySlug(slug: string): TrendingPreset | undefined {
-  return trendingPresets.find((p) => p.slug === slug);
+export function getPresetBySlug(slug: string): CuratedPreset | undefined {
+  return curatedPresets.find((p) => p.slug === slug);
 }
 
-export function getPresetLenses(preset: TrendingPreset, locale: string): Lens[] {
+export function getPresetLenses(preset: CuratedPreset, locale: string): Lens[] {
   return preset.lensIds
     .map((id) => getAllLenses(locale).find((l) => l.id === id))
     .filter((l): l is Lens => l !== undefined);
