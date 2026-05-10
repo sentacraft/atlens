@@ -108,6 +108,10 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     tagFisheye: tImage("tagFisheye"),
     tagProbe: tImage("tagProbe"),
     na: tImage("na"),
+    priceLabel: tImage("priceLabel"),
+    tierSymbol: tImage("tierSymbol"),
+    usedBadge: tImage("usedBadge"),
+    locale,
   };
 
   const handleCopy = useCallback(async () => {

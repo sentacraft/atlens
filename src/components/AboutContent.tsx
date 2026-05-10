@@ -1,9 +1,10 @@
 import { getTranslations, getLocale } from "next-intl/server";
-import { Flag, Mail } from "lucide-react";
+import { Flag, Mail, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 import AnthropicLogo from "@/components/logos/AnthropicLogo";
 import GeminiLogo from "@/components/logos/GeminiLogo";
+import GitHubMark from "@/components/logos/GitHubMark";
 import { ExternalLink } from "@/components/ui/external-link";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -111,7 +112,6 @@ export default async function AboutContent() {
     { q: t("faq1Q"), a: t("faq1A") },
     { q: t("faq2Q"), a: t("faq2A") },
     { q: t("faq3Q"), a: t("faq3A") },
-    { q: t("faq4Q"), a: t("faq4A") },
   ];
 
   const feedbackLinks: {
@@ -218,29 +218,28 @@ export default async function AboutContent() {
           {t("dataAccuracyIntro")}
         </p>
 
-        {/* Two core principles */}
+        {/* ── Spec Data subsection ── */}
         <div className="flex flex-col gap-3 mt-1">
-          <div>
-            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1">
-              {t("dataPrinciple1Title")}
-            </p>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              {t("dataPrinciple1Body")}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1">
-              {t("dataPrinciple2Title")}
-            </p>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              {t("dataPrinciple2Body")}
-            </p>
+          <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+            {t("dataSpecTitle")}
+          </p>
+          <div className="flex flex-col gap-2.5 pl-3 border-l-2 border-zinc-200 dark:border-zinc-700">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i}>
+                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                  {t(`dataSpecPoint${i}Title`)}
+                </p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+                  {t(`dataSpecPoint${i}Body`)}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Pipeline overview */}
-        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3 mt-1">
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-3">
+        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3 flex flex-col gap-3">
+          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
             {t("dataPipelineIntro")}
           </p>
           <ol className="flex flex-col gap-2.5">
@@ -260,6 +259,13 @@ export default async function AboutContent() {
               </li>
             ))}
           </ol>
+          {/* Inline GitHub link for users who want to dive deeper mid-flow */}
+          <ExternalLink
+            href="https://github.com/sentacraft/x-glass#data-pipeline"
+            className="inline-flex items-center gap-0.5 self-start text-xs text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
+          >
+            {t("dataPipelineFlowNote")}
+          </ExternalLink>
         </div>
 
         {/* Update cadence */}
@@ -267,13 +273,46 @@ export default async function AboutContent() {
           {t("dataUpdateNote")}{"  "}{t("dataVersionNote")}
         </p>
 
-        {/* GitHub link */}
-        <ExternalLink
+        {/* ── Price Data subsection ── */}
+        <div className="flex flex-col gap-3 mt-1">
+          <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+            {t("dataPricingTitle")}
+          </p>
+          <div className="flex flex-col gap-2.5 pl-3 border-l-2 border-zinc-200 dark:border-zinc-700">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i}>
+                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                  {t(`dataPricingPoint${i}Title`)}
+                </p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+                  {t(`dataPricingPoint${i}Body`)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* GitHub CTA card — covers both spec and pricing pipelines */}
+        <a
           href="https://github.com/sentacraft/x-glass#data-pipeline"
-          className="inline-flex items-center gap-0.5 self-start text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/40 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
         >
-          {t("dataGitHubCta")}
-        </ExternalLink>
+          <GitHubMark size={24} className="mt-0.5 shrink-0 text-zinc-700 dark:text-zinc-300" />
+          <div className="flex flex-col gap-1 min-w-0 flex-1">
+            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+              {t("dataGitHubCardTitle")}
+            </p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+              {t("dataGitHubCardBody")}
+            </p>
+            <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-zinc-700 group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-zinc-100 transition-colors">
+              {t("dataGitHubCardButton")}
+              <ArrowUpRight className="size-3" />
+            </span>
+          </div>
+        </a>
       </Section>
 
       {/* FAQ */}
@@ -307,9 +346,6 @@ export default async function AboutContent() {
         <div className="rounded-lg bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/70 dark:border-amber-800/40 px-4 py-3 flex flex-col gap-2">
           <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
             {t("disclaimerAccuracy")}
-          </p>
-          <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1">
-            {t("disclaimerPricing")}
           </p>
           <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1">
             {t("disclaimerLiability")}
