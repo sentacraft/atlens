@@ -13,7 +13,7 @@ export default function DataInfo() {
   const t = useTranslations("Footer");
   const locale = useLocale();
   const mount = useEffectiveMount();
-  const mountLenses = getLensesByMount(mount);
+  const mountLenses = getLensesByMount(mount, locale);
   const lensCount = mountLenses.length;
   const brandCount = new Set(mountLenses.map((l) => l.brand)).size;
   const [clickState, setClickState] = useState<ClickState>("date");

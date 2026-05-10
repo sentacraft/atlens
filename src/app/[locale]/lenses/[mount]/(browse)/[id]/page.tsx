@@ -7,7 +7,6 @@ import { getLensesByMount, getLensUrl } from "@/lib/lens";
 import { urlSegmentToMount } from "@/lib/mount";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { buildSpecGroups, resolveSpecGroups } from "@/lib/lens-spec-groups";
-import { resolveTranslations } from "@/lib/types";
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens-spec-groups";
 import { ExternalLink } from "@/components/ui/external-link";
 import { Link } from "@/i18n/navigation";
@@ -31,7 +30,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, mount, id } = await params;
   const t = await getTranslations("LensDetail");
-  const lenses = getLensesByMount(urlSegmentToMount(mount) ?? "X");
+  const lenses = getLensesByMount(urlSegmentToMount(mount) ?? "X", locale);
   const lens = lenses.find((l) => l.id === id);
   if (!lens) {
     return { title: t("notFoundTitle") };
@@ -109,14 +108,13 @@ function renderRowValue(
 
 export default async function LensDetailPage({ params }: { params: Params }) {
   const { id, locale, mount } = await params;
-  const lenses = getLensesByMount(urlSegmentToMount(mount) ?? "X");
+  const lenses = getLensesByMount(urlSegmentToMount(mount) ?? "X", locale);
   const lens = lenses.find((l) => l.id === id);
 
   if (!lens) {
     notFound();
   }
 
-  const displayLens = resolveTranslations(lens, locale);
   const t = await getTranslations("LensDetail");
   const tBrand = await getTranslations("Brands");
   const tPricing = await getTranslations("Pricing");
@@ -202,7 +200,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
   // Resolve all row values once. This is the single source of truth for both
   // the rendered spec table and the Report Dialog's field list.
-  const resolvedGroups = resolveSpecGroups(specGroups, displayLens, valueCellLabels);
+  const resolvedGroups = resolveSpecGroups(specGroups, lens, valueCellLabels);
 
   // Field options for the Report Dialog — taken directly from resolved values,
   // identical to what is rendered in the spec table below.

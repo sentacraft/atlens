@@ -5,7 +5,7 @@ import { QRCodeSVG } from "qrcode.react";
 import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
-import { resolveTranslations, type Lens } from "@/lib/types";
+import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { classifyFocusMotor, priceTier } from "@/lib/lens";
 import { pickPriceEntry, formatTierRange } from "@/lib/lens-pricing";
@@ -235,8 +235,7 @@ interface SharePosterProps {
   ref?: Ref<HTMLDivElement>;
 }
 
-export function SharePoster({ lenses: rawLenses, labels, custom, shareUrl, ref }: SharePosterProps) {
-  const lenses = rawLenses.map((l) => resolveTranslations(l, labels.locale));
+export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePosterProps) {
   const n = lenses.length;
   const titleLines: string[] = custom?.title?.trim()
     ? [custom.title.trim()]
