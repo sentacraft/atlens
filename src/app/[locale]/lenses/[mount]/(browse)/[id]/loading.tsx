@@ -1,9 +1,6 @@
 export default function LensDetailLoading() {
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-8">
-      {/* Back button placeholder */}
-      <div className="h-8 w-20 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
-
       <div className="flex flex-col sm:flex-row gap-8">
         {/* Image */}
         <div className="w-full max-w-56 mx-auto sm:mx-0 shrink-0 sm:w-56">
