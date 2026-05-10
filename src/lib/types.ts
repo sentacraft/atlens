@@ -72,55 +72,32 @@ export interface LensLength {
 }
 
 /**
- * Wide/Tele breakdown of minimum focus distance for zoom lenses.
+ * Minimum focus distance for a single focus mode (normal or macro).
+ * `cm` is the primary value: the only value for primes, the wide-end value for
+ * zooms where the manufacturer provides per-focal-length data, or a uniform
+ * value for zooms where the manufacturer gives a single number.
+ * `teleCm` is only set for zoom lenses where the tele end differs from `cm`.
  */
-export interface FocusDistanceVariants {
-  /**
-   * Minimum focus distance at the wide end in centimeters.
-   * @example 15
-   */
-  wide?: number;
-
-  /**
-   * Minimum focus distance at the tele end in centimeters.
-   * @example 24
-   */
-  tele?: number;
+export interface FocusDistanceMode {
+  /** @example 15 */
+  cm: number;
+  /** Tele-end MFD in cm. Only set for zooms with different wide/tele values. @example 24 */
+  teleCm?: number;
 }
 
 /**
- * Minimum focus distance, with optional macro-mode and per-focal-length breakdown.
+ * Minimum focus distance. Always includes a normal mode value; optionally
+ * includes a macro mode value when the lens has a distinct macro focus range
+ * that allows closer focusing than normal mode.
  */
 export interface MinFocusDistance {
+  /** Normal mode minimum focus distance. */
+  normal: FocusDistanceMode;
   /**
-   * Shortest minimum focus distance in centimeters (best value across all focal lengths).
-   * Used for sorting and filtering.
-   * @example 15
+   * Macro mode minimum focus distance. Only set when the lens has a dedicated
+   * macro mode that enables closer focusing than normal mode.
    */
-  cm: number;
-
-  /**
-   * Minimum focus distance in a dedicated macro mode, in centimeters.
-   * Use for prime lenses, or zoom lenses where the macro mode applies uniformly
-   * across focal lengths. Only populate when the source explicitly distinguishes
-   * a separate macro range.
-   * @example 30
-   */
-  macroCm?: number;
-
-  /**
-   * Wide/Tele breakdown of minimum focus distance in normal mode for zoom lenses.
-   * @example { wide: 15, tele: 24 }
-   */
-  variants?: FocusDistanceVariants;
-
-  /**
-   * Wide/Tele breakdown of minimum focus distance in macro mode for zoom lenses.
-   * Only populate when the source distinguishes per-focal-length macro ranges
-   * (e.g. macro mode exists only at the wide end).
-   * @example { wide: 20 }
-   */
-  macroVariants?: FocusDistanceVariants;
+  macro?: FocusDistanceMode;
 }
 
 /**

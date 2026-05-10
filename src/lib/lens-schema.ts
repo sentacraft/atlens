@@ -35,9 +35,9 @@ const pricingMarketSchema = z.strictObject({
   used: lensPriceEntrySchema.optional(),
 });
 
-export const focusDistanceVariantsSchema = z.strictObject({
-  wide: positiveNumberSchema.optional(),
-  tele: positiveNumberSchema.optional(),
+export const focusDistanceModeSchema = z.strictObject({
+  cm: positiveNumberSchema,
+  teleCm: positiveNumberSchema.optional(),
 });
 
 export const magnificationVariantsSchema = z.strictObject({
@@ -84,10 +84,8 @@ const lensBaseShape = {
     }).optional(),
   }).optional(),
   minFocusDistance: z.strictObject({
-    cm: positiveNumberSchema,
-    macroCm: positiveNumberSchema.optional(),
-    variants: focusDistanceVariantsSchema.optional(),
-    macroVariants: focusDistanceVariantsSchema.optional(),
+    normal: focusDistanceModeSchema,
+    macro: focusDistanceModeSchema.optional(),
   }).optional(),
   maxMagnification: z.strictObject({
     value: positiveNumberSchema,
