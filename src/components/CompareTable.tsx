@@ -895,16 +895,16 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
               const fields = lensFields.get(lens.id);
               return (
                 <td key={lens.id} className="px-3 py-2">
-                  <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+                  <div className="flex flex-wrap items-center justify-center gap-2">
                     {url ? (
                       <ExternalLink
                         href={url}
-                        className="inline-flex items-center gap-1 text-xs text-blue-500 transition-colors hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+                        className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 px-2 py-1 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
                       >
                         {t("officialSite")}
                       </ExternalLink>
                     ) : (
-                      <span className="inline-flex cursor-not-allowed items-center gap-1 text-xs text-zinc-300 dark:text-zinc-600">
+                      <span className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-md border border-zinc-100 px-2 py-1 text-xs font-medium text-zinc-300 dark:border-zinc-800 dark:text-zinc-600">
                         {t("officialSite")}
                       </span>
                     )}
