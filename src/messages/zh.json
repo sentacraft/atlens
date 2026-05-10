@@ -122,7 +122,7 @@
     "clearCompare": "清空",
     "resultsCount": "{count} 支镜头",
     "noResults": "没有符合筛选条件的镜头",
-    "suggestLens": "没找到你要的镜头？",
+    "suggestLens": "镜头库里没有这支？",
     "suggestLensLink": "告诉我们",
     "coverageLink": "查看收录范围 →",
     "equivSuffix": "等效"

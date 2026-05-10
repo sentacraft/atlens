@@ -122,7 +122,7 @@
     "clearCompare": "Clear",
     "resultsCount": "{count} lenses",
     "noResults": "No lenses match your filters.",
-    "suggestLens": "Can't find the lens you're looking for?",
+    "suggestLens": "Missing a lens?",
     "suggestLensLink": "Tell us",
     "coverageLink": "View lens coverage →",
     "equivSuffix": "eq."

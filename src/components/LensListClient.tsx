@@ -205,13 +205,14 @@ export default function LensListClient({ lenses }: Props) {
                 >
                   {t("suggestLensLink")}
                 </FeedbackTrigger>
+                <span className="mx-2 opacity-40">·</span>
+                <Link
+                  href="/about#coverage"
+                  className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                >
+                  {t("coverageLink")}
+                </Link>
               </p>
-              <Link
-                href="/about#coverage"
-                className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-              >
-                {t("coverageLink")}
-              </Link>
             </motion.div>
           ) : (
             <motion.div
