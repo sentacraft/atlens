@@ -652,7 +652,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
         <>
           <div className="h-px bg-zinc-200" />
           <div style={{ padding: `20px ${POSTER_PX}px` }}>
-            <PosterSection title={labels.sectionFocus}>
+            <PosterSection title={labels.sectionFocus} className="gap-6">
               {showMinFocus && (
                 <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
                   {lenses.map((lens, i) => {
