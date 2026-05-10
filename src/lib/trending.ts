@@ -4,7 +4,8 @@ import type { Lens } from "./types";
 
 export interface TrendingPreset {
   slug: string;
-  title: { zh: string; en: string };
+  titlePrimary: { zh: string; en: string };
+  titleSecondary?: { zh: string; en: string };
   subtitle: { zh: string; en: string };
   lensIds: string[];
 }

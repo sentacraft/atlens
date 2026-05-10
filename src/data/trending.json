@@ -2,9 +2,13 @@
   "presets": [
     {
       "slug": "standard-zoom-showdown",
-      "title": {
-        "zh": "APS-C 标准变焦：原厂 vs 副厂",
-        "en": "APS-C Standard Zooms: Fuji vs Third-party"
+      "titlePrimary": {
+        "zh": "APS-C 标准变焦",
+        "en": "APS-C Standard Zooms"
+      },
+      "titleSecondary": {
+        "zh": "原厂 vs 副厂",
+        "en": "Fuji vs Third-party"
       },
       "subtitle": {
         "zh": "轻便、光圈、防抖——四支标准变焦的取舍",
@@ -19,9 +23,13 @@
     },
     {
       "slug": "35mm-equiv-primes",
-      "title": {
-        "zh": "等效 35mm 定焦：23mm 焦段横评",
-        "en": "35mm-equiv Primes: 23mm Roundup"
+      "titlePrimary": {
+        "zh": "等效 35mm 定焦",
+        "en": "35mm-equiv Primes"
+      },
+      "titleSecondary": {
+        "zh": "23mm 焦段横评",
+        "en": "23mm Roundup"
       },
       "subtitle": {
         "zh": "原厂大光圈、轻便版、适马与唯卓仕副厂——如何取舍？",
@@ -36,9 +44,13 @@
     },
     {
       "slug": "50mm-equiv-fuji-primes",
-      "title": {
-        "zh": "等效 50mm 定焦：富士 35mm / 33mm 焦段对比",
-        "en": "50mm-equiv Fuji Primes: 35/33mm Compared"
+      "titlePrimary": {
+        "zh": "等效 50mm 定焦",
+        "en": "50mm-equiv Fuji Primes"
+      },
+      "titleSecondary": {
+        "zh": "富士 35mm / 33mm 焦段对比",
+        "en": "35/33mm Compared"
       },
       "subtitle": {
         "zh": "老 35/1.4 的氛围感、新 33/1.4 的光学素质、35/2 的便携三防",
@@ -52,9 +64,13 @@
     },
     {
       "slug": "portrait-56mm",
-      "title": {
-        "zh": "56mm 人像定焦：原厂 vs 副厂",
-        "en": "56mm Portrait Primes: Fuji vs Third-party"
+      "titlePrimary": {
+        "zh": "56mm 人像定焦",
+        "en": "56mm Portrait Primes"
+      },
+      "titleSecondary": {
+        "zh": "原厂 vs 副厂",
+        "en": "Fuji vs Third-party"
       },
       "subtitle": {
         "zh": "f/1.2 极致虚化 vs 副厂轻便性价比",
@@ -68,8 +84,8 @@
     },
     {
       "slug": "all-in-one-superzooms",
-      "title": {
-        "zh": "一镜走天下：超长焦变焦对比",
+      "titlePrimary": {
+        "zh": "一镜走天下",
         "en": "All-in-one Superzooms"
       },
       "subtitle": {
@@ -84,9 +100,13 @@
     },
     {
       "slug": "tele-zoom-entry",
-      "title": {
-        "zh": "长焦变焦入门：XC 50-230 vs XF 55-200 vs XF 70-300",
-        "en": "Entry Tele Zooms: XC 50-230 vs XF 55-200 vs XF 70-300"
+      "titlePrimary": {
+        "zh": "长焦变焦入门",
+        "en": "Entry Tele Zooms"
+      },
+      "titleSecondary": {
+        "zh": "XC 50-230 vs XF 55-200 vs XF 70-300",
+        "en": "XC 50-230 vs XF 55-200 vs XF 70-300"
       },
       "subtitle": {
         "zh": "打鸟、演唱会、日常远摄——三支长焦变焦的价位与画质",

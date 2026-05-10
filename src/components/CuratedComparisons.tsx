@@ -32,7 +32,7 @@ export function PresetCard({ preset, onSelect }: { preset: TrendingPreset; onSel
       className="group text-left w-full h-full flex flex-col rounded-xl border border-zinc-200 bg-white px-4 py-3.5 transition-all hover:-translate-y-0.5 hover:border-zinc-400 hover:bg-zinc-50 hover:shadow-sm dark:border-zinc-700 dark:bg-zinc-950 dark:hover:border-zinc-500 dark:hover:bg-zinc-900"
     >
       <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
-        {preset.title[lang]}
+        {preset.titlePrimary[lang]}{preset.titleSecondary ? `: ${preset.titleSecondary[lang]}` : ""}
       </p>
       <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 leading-snug">
         {preset.subtitle[lang]}

@@ -82,6 +82,8 @@ export interface PosterLabels {
 
 export interface PosterCustom {
   title?: string;
+  /** Explicit title lines from a curated preset — takes precedence over title. */
+  titleLines?: string[];
   slogan?: string;
 }
 
@@ -94,13 +96,6 @@ const POSTER_PX = 40; // horizontal padding
 const COL_GAP = 16;
 
 // ── Helpers ────────────────────────────────────────────────────────
-
-/** Splits "A: B" or "A：B" into two lines for poster layout. */
-function splitPosterTitle(title: string): string[] {
-  const idx = title.search(/[：:]/);
-  if (idx === -1) return [title];
-  return [title.slice(0, idx).trim(), title.slice(idx + 1).trim()].filter(Boolean);
-}
 
 function gridStyle(n: number): React.CSSProperties {
   return {
@@ -244,8 +239,10 @@ interface SharePosterProps {
 
 export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePosterProps) {
   const n = lenses.length;
-  const titleLines: string[] = custom?.title?.trim()
-    ? splitPosterTitle(custom.title.trim())
+  const titleLines: string[] = custom?.titleLines?.length
+    ? custom.titleLines
+    : custom?.title?.trim()
+    ? [custom.title.trim()]
     : labels.comparison;
   const titleFontSize = titleLines.length <= 1 ? 32 : titleLines.length === 2 ? 22 : 17;
   const slogan = custom?.slogan?.trim();

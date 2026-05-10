@@ -34,7 +34,9 @@ export async function generateMetadata({
     const found = getPresetBySlug(preset);
     if (found) {
       const lang = locale === "zh" ? "zh" : "en";
-      const title = found.title[lang];
+      const title = found.titleSecondary
+        ? `${found.titlePrimary[lang]}: ${found.titleSecondary[lang]}`
+        : found.titlePrimary[lang];
       return { title, openGraph: { title: `${title} | X-Glass` }, alternates };
     }
   }
@@ -68,11 +70,17 @@ export default async function ComparePage({
   const lenses = parseLensIds(ids, resolvedMount, locale);
 
   const lang = locale === "zh" ? "zh" : "en";
-  const presetTitle = preset ? (getPresetBySlug(preset)?.title[lang] ?? undefined) : undefined;
+  const foundPreset = preset ? getPresetBySlug(preset) : undefined;
+  const presetTitleLines: string[] | undefined = foundPreset
+    ? [
+        foundPreset.titlePrimary[lang],
+        ...(foundPreset.titleSecondary ? [foundPreset.titleSecondary[lang]] : []),
+      ]
+    : undefined;
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 flex flex-col gap-3 sm:gap-4">
-      <ComparePageHeader lenses={lenses} minColumns={2} presetTitle={presetTitle} />
+      <ComparePageHeader lenses={lenses} minColumns={2} presetTitleLines={presetTitleLines} />
       <CompareTable key={lenses.length === 0 ? "_empty_" : ids} lenses={lenses} minColumns={2} hideBodyWhenEmpty />
       {resolvedMount === "X" && <CuratedComparisons />}
     </div>
