@@ -377,8 +377,8 @@
     "ackGeminiBrandStrategist": "品牌策略师",
     "ackClosing": "向在这个项目开发过程中给予了决定性帮助的 AI 协作者们，致以最诚挚的感激。",
     "feedbackTitle": "反馈与联系",
-    "feedbackBody": "如果你发现数据有误，或者想补充缺失镜头，可以直接在这里告诉我们。",
-    "feedbackReport": "反馈问题",
+    "feedbackBody": "有想法、发现 Bug、想提功能建议，都欢迎直接告诉我们。",
+    "feedbackReport": "提交反馈",
     "feedbackEmailLabel": "xglass@sentacraft.com"
   },
   "Footer": {
