@@ -1,5 +1,5 @@
 import { getTranslations, getLocale } from "next-intl/server";
-import { Flag, Mail, ArrowUpRight } from "lucide-react";
+import { Send, Mail, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 import AnthropicLogo from "@/components/logos/AnthropicLogo";
@@ -119,7 +119,7 @@ export default async function AboutContent() {
     type: FeedbackType;
     icon: React.ReactNode;
   }[] = [
-    { label: t("feedbackReport"), type: "data_issue", icon: <Flag size={13} /> },
+    { label: t("feedbackReport"), type: "general", icon: <Send size={13} /> },
   ];
 
   const pipelineStages = [

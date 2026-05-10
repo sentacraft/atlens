@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export type FeedbackType = "data_issue" | "missing_lens" | "general";
+export type FeedbackType = "data_issue" | "general";
 
 export interface FeedbackField {
   /** The label exactly as shown on the page, used both as display text and issue payload. */
@@ -107,29 +107,12 @@ export default function FeedbackDialog({
     }
   }, [open]);
 
-  const titleKey =
-    type === "data_issue"
-      ? "titleDataIssue"
-      : type === "missing_lens"
-        ? "titleMissingLens"
-        : "titleGeneral";
-  const descriptionKey =
-    type === "data_issue"
-      ? "descriptionDataIssue"
-      : type === "missing_lens"
-        ? "descriptionMissingLens"
-        : "descriptionGeneral";
+  const titleKey = type === "data_issue" ? "titleDataIssue" : "titleGeneral";
+  const descriptionKey = type === "data_issue" ? "descriptionDataIssue" : "descriptionGeneral";
 
-  // Prominent lens header shown for data_issue when a specific lens is known.
   const lensHeader =
     type === "data_issue" && context?.lensModel
       ? { brand: context.lensBrand ?? "", model: context.lensModel }
-      : null;
-
-  // Subtle context note for other cases (e.g. missing_lens with a search query).
-  const contextLine =
-    type === "missing_lens" && context?.searchQuery
-      ? t("contextQuery", { query: context.searchQuery })
       : null;
 
   async function handleSubmit(event: React.FormEvent) {
@@ -191,6 +174,7 @@ export default function FeedbackDialog({
           {status !== "success" && <DialogDescription>{t(descriptionKey)}</DialogDescription>}
         </DialogHeader>
 
+
         {status === "success" ? (
           <div className="flex items-center px-5 py-10 text-sm text-zinc-700 dark:text-zinc-300">
             {t("success")}
@@ -212,12 +196,6 @@ export default function FeedbackDialog({
                     {lensHeader.model}
                   </span>
                 </div>
-              </div>
-            )}
-
-            {contextLine && (
-              <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-3 py-2 text-xs text-zinc-600 dark:text-zinc-400">
-                {contextLine}
               </div>
             )}
 
