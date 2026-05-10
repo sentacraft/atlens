@@ -605,9 +605,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   <span className="tabular-nums text-zinc-400" style={{ fontSize: 10 }}>
                     {rangeFormatted}
                   </span>
-                  <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                    {labels.priceLabel}
-                  </span>
                 </div>
               );
             })}
