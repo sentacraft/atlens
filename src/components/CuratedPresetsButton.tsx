@@ -6,7 +6,7 @@ import { Drawer } from "@base-ui/react/drawer";
 import { LayoutGrid } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Z } from "@/config/ui";
-import { trendingPresets } from "@/lib/trending";
+import { curatedPresets } from "@/lib/curated-presets";
 import { PresetCard } from "@/components/CuratedComparisons";
 import { ICON_NAV_BTN_CLS } from "@/lib/ui-tokens";
 
@@ -36,7 +36,7 @@ export default function CuratedPresetsButton() {
       <p className="px-1 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
         {t("curatedTitle")}
       </p>
-      {trendingPresets.map((preset) => (
+      {curatedPresets.map((preset) => (
         <PresetCard
           key={preset.slug}
           preset={preset}

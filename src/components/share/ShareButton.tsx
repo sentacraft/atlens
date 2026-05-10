@@ -30,13 +30,15 @@ interface ShareButtonProps {
   triggerClassName?: string;
   /** Pre-fill the poster title from a curated preset. User can still override in Customize. */
   presetTitle?: string;
+  /** Pre-fill the poster slogan from a curated preset subtitle. User can still override. */
+  presetSubtitle?: string;
 }
 
 function computePosterTitle(lenses: Lens[], tBrand: (key: string) => string): string[] {
   return lenses.map((l) => `${tBrand(l.brand)} ${l.model}`);
 }
 
-export function ShareButton({ lenses, variant = "default", triggerClassName, presetTitle }: ShareButtonProps) {
+export function ShareButton({ lenses, variant = "default", triggerClassName, presetTitle, presetSubtitle }: ShareButtonProps) {
   const t = useTranslations("Share");
   const locale = useLocale();
   const tImage = useTranslations("ShareImage");
@@ -49,7 +51,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   const [shareUrl, setShareUrl] = useState("");
   const [posterGenerating, setPosterGenerating] = useState(false);
   const [customTitle, setCustomTitle] = useState(presetTitle ?? "");
-  const [customSlogan, setCustomSlogan] = useState("");
+  const [customSlogan, setCustomSlogan] = useState(presetSubtitle ?? "");
 
   const posterRef = useRef<HTMLDivElement>(null);
   const slugRef = useRef("");
