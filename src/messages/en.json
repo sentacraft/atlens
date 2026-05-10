@@ -348,7 +348,7 @@
     "dataGitHubCardTitle": "Full pipeline architecture",
     "dataGitHubCardBody": "Detailed Mermaid diagram of data flow, branching, and human/AI nodes.",
     "dataGitHubCardButton": "View on GitHub",
-    "dataAccuracyReport": "Specs always defer to the manufacturer's official page. Spot a discrepancy?",
+    "dataAccuracyReport": "All data defers to its official source. Spot something off?",
     "dataAccuracyReportCta": "Report it",
     "disclaimerTitle": "Disclaimer",
     "disclaimerAccuracy": "X-Glass data is sourced from public materials and refined through manual review. We make every effort to keep specs accurate and up to date, but errors and delays are inevitable. Always verify key specifications on the manufacturer's official page before making a purchase decision.",

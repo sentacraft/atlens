@@ -216,6 +216,15 @@ export default async function AboutContent() {
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("dataAccuracyIntro")}
         </p>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          {t("dataAccuracyReport")}{" "}
+          <FeedbackTrigger
+            type="data_issue"
+            className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+          >
+            {t("dataAccuracyReportCta")}
+          </FeedbackTrigger>
+        </p>
 
         {/* ── Spec Data subsection ── */}
         <div className="flex flex-col gap-3 mt-1">
@@ -312,16 +321,6 @@ export default async function AboutContent() {
             </span>
           </div>
         </a>
-
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          {t("dataAccuracyReport")}{" "}
-          <FeedbackTrigger
-            type="data_issue"
-            className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-          >
-            {t("dataAccuracyReportCta")}
-          </FeedbackTrigger>
-        </p>
       </Section>
 
       {/* Disclaimer */}
