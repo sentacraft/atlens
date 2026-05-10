@@ -72,31 +72,32 @@ export interface LensLength {
 }
 
 /**
- * Minimum focus distance for a single focus mode (normal or macro).
- * `cm` is the primary value: the only value for primes, the wide-end value for
- * zooms where the manufacturer provides per-focal-length data, or a uniform
- * value for zooms where the manufacturer gives a single number.
- * `teleCm` is only set for zoom lenses where the tele end differs from `cm`.
+ * MFD for one focus mode. Fill as follows:
+ * 1. `cm` — always required. Use the value the manufacturer states for this mode.
+ *    - Single value (prime, or zoom with one uniform distance): fill `cm` only.
+ *    - Two values per focal length (zoom): fill `cm` = wide-end, `teleCm` = tele-end.
+ * 2. `teleCm` — only when the source explicitly gives a different tele-end distance.
+ *    Omit when the manufacturer gives only one number, regardless of lens type.
  */
 export interface FocusDistanceMode {
-  /** @example 15 */
+  /** Wide-end or single MFD value in cm. @example 15 */
   cm: number;
-  /** Tele-end MFD in cm. Only set for zooms with different wide/tele values. @example 24 */
+  /** Tele-end MFD in cm. Only when source gives a separate tele-end value. @example 24 */
   teleCm?: number;
 }
 
 /**
- * Minimum focus distance. Always includes a normal mode value; optionally
- * includes a macro mode value when the lens has a distinct macro focus range
- * that allows closer focusing than normal mode.
+ * Minimum focus distance. Fill as follows:
+ * 1. Always fill `normal` with the normal-mode MFD (follow FocusDistanceMode rules).
+ * 2. Fill `macro` only when ALL of the following are true:
+ *    - The source explicitly labels a separate macro / close-focus mode.
+ *    - That mode's starting distance is strictly shorter than normal mode.
+ *    If the macro and normal starting distances are equal, the macro mode does
+ *    not enable closer focus — omit `macro`.
+ * 3. Within `macro`, follow the same FocusDistanceMode rules as `normal`.
  */
 export interface MinFocusDistance {
-  /** Normal mode minimum focus distance. */
   normal: FocusDistanceMode;
-  /**
-   * Macro mode minimum focus distance. Only set when the lens has a dedicated
-   * macro mode that enables closer focusing than normal mode.
-   */
   macro?: FocusDistanceMode;
 }
 
