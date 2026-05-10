@@ -405,7 +405,8 @@
     "cancel": "Cancel",
     "close": "Close",
     "success": "Thanks, your feedback is in. We'll take a look soon.",
-    "error": "Something went wrong. Please try again in a bit."
+    "error": "Something went wrong. Please try again in a bit.",
+    "emailAlt": "Or reach us at"
   },
   "Install": {
     "pageTitle": "Get the App",

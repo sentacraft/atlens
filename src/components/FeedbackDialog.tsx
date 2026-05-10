@@ -317,6 +317,16 @@ export default function FeedbackDialog({
           </form>
         )}
 
+        <p className="px-5 text-xs text-zinc-400 dark:text-zinc-500">
+          {t("emailAlt")}{" "}
+          <a
+            href="mailto:xglass@sentacraft.com"
+            className="underline underline-offset-2 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+          >
+            xglass@sentacraft.com
+          </a>
+        </p>
+
         <DialogFooter>
           {status === "success" ? (
             <Button
