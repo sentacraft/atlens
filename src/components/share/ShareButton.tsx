@@ -35,7 +35,17 @@ interface ShareButtonProps {
   presetSubtitle?: string;
 }
 
-function computePosterTitle(lenses: Lens[], tBrand: (key: string) => string): string[] {
+function computePosterTitle(
+  lenses: Lens[],
+  tBrand: (key: string) => string,
+  comparisonLabel: string,
+  locale: string,
+): string[] {
+  if (lenses.length >= 3) {
+    const uniqueBrands = [...new Set(lenses.map((l) => tBrand(l.brand)))];
+    const colon = locale === "zh" ? "：" : ": ";
+    return [`${comparisonLabel}${colon}${uniqueBrands.join(" · ")}`];
+  }
   return lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand));
 }
 
@@ -69,7 +79,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       .slice(0, 60);
   }, [open, lenses]);
 
-  const computedPosterTitle = computePosterTitle(lenses, tBrand);
+  const computedPosterTitle = computePosterTitle(lenses, tBrand, tImage("comparison"), locale);
 
   const posterLabels: PosterLabels = {
     appName: "X-Glass",
