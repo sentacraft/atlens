@@ -121,7 +121,11 @@ export default async function LocaleLayout({
         </ScrollContainerProvider>
       </CompareProvider>
       </MountPreferenceProvider>
-      <Toaster position="bottom-center" />
+      <Toaster
+        position="bottom-center"
+        offset="calc(var(--compare-bar-height, 0px) + 16px)"
+        mobileOffset="calc(var(--compare-bar-height, 0px) + 16px)"
+      />
     </NextIntlClientProvider>
   );
 }
