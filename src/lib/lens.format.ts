@@ -259,15 +259,16 @@ export function specialtyTagsDisplay(
 /**
  * Single-line full display name: "Brand [Series] Model".
  * Use in chips, aria-labels, captions, and any single-line context.
- * Series is omitted when the model already begins with it (e.g. Fujifilm
- * series="XF", model="XF 18-55mm…" → "富士 XF 18-55mm…", not "富士 XF XF 18-55mm…").
+ * For Fujifilm the series (XF/XC/MKX) is already embedded in the model
+ * name, so it is omitted to avoid duplication.
  */
 export function lensDisplayName(
   brandName: string,
   series: string | undefined,
-  model: string
+  model: string,
+  brandKey?: string
 ): string {
-  if (!series || model.startsWith(series)) return `${brandName} ${model}`;
+  if (!series || brandKey === "fujifilm") return `${brandName} ${model}`;
   return `${brandName} ${series} ${model}`;
 }
 
