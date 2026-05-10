@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Aperture, Plus, Check } from "lucide-react";
+import { toast } from "sonner";
 import { Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
@@ -165,14 +166,13 @@ export default function LensCard({
 
       {/* Mobile-only icon compare toggle — absolute in top-right corner */}
       <button
-        onClick={onToggle}
-        disabled={selectionDisabled}
-        aria-label={isSelected ? t("removeFromCompare") : t("addToCompare")}
+        onClick={selectionDisabled ? () => toast(t("compareFullToast")) : onToggle}
+        aria-label={isSelected ? t("removeFromCompare") : selectionDisabled ? t("compareFull") : t("addToCompare")}
         className={`hidden max-[499px]:flex absolute top-2 right-2 z-10 items-center justify-center h-8 w-8 rounded-full transition-colors ${
           isSelected
             ? ACTION_PRIMARY_CLS
             : selectionDisabled
-              ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed"
+              ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600"
               : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
         }`}
       >
@@ -188,15 +188,15 @@ export default function LensCard({
           size="sm"
           onClick={onToggle}
           disabled={selectionDisabled}
-          className={`w-full h-10 sm:h-9 text-xs font-medium ${
+          className={`w-full h-10 sm:h-9 font-medium ${
             isSelected
-              ? ACTION_PRIMARY_CLS
+              ? `text-xs ${ACTION_PRIMARY_CLS}`
               : selectionDisabled
-                ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed"
-                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                ? "text-[11px] bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed"
+                : "text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
           }`}
         >
-          {isSelected ? t("removeFromCompare") : t("addToCompare")}
+          {isSelected ? t("removeFromCompare") : selectionDisabled ? t("compareFull") : t("addToCompare")}
         </Button>
       </div>
     </div>

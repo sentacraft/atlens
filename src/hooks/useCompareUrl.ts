@@ -31,13 +31,21 @@ export function useCompareUrl() {
 
   function buildQuery(ids: string[], extra?: { preset?: string }): string {
     const parts: string[] = [];
-    if (ids.length > 0) parts.push(`ids=${ids.join(",")}`);
-    if (extra?.preset) parts.push(`preset=${encodeURIComponent(extra.preset)}`);
+    if (ids.length > 0) {
+      parts.push(`ids=${ids.join(",")}`);
+    }
+    if (extra?.preset) {
+      parts.push(`preset=${encodeURIComponent(extra.preset)}`);
+    }
 
     const from = searchParams.get("from");
     const lensId = searchParams.get("lensId");
-    if (from) parts.push(`from=${encodeURIComponent(from)}`);
-    if (lensId) parts.push(`lensId=${encodeURIComponent(lensId)}`);
+    if (from) {
+      parts.push(`from=${encodeURIComponent(from)}`);
+    }
+    if (lensId) {
+      parts.push(`lensId=${encodeURIComponent(lensId)}`);
+    }
 
     return parts.join("&");
   }

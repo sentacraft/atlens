@@ -35,7 +35,9 @@ async function computedPx(page: Page, selector: string, property: string): Promi
   return page.evaluate(
     ([sel, prop]) => {
       const el = document.querySelector(sel as string);
-      if (!el) throw new Error(`Element not found: ${sel}`);
+      if (!el) {
+        throw new Error(`Element not found: ${sel}`);
+      }
       return parseFloat(getComputedStyle(el).getPropertyValue(prop as string));
     },
     [selector, property]
@@ -119,7 +121,9 @@ test.describe("Layout body bottom inset", () => {
     const paddingBottom = await page.evaluate(() => {
       // The layout wrapper sits directly under <body> — find by nav-height pt class
       const el = document.querySelector(".pt-\\[var\\(--nav-height\\)\\]");
-      if (!el) throw new Error("Layout wrapper not found");
+      if (!el) {
+        throw new Error("Layout wrapper not found");
+      }
       return parseFloat(getComputedStyle(el).paddingBottom);
     });
     expect(paddingBottom).toBe(HOME_BAR);

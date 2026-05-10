@@ -214,7 +214,9 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
 
   const handleAddLens = useCallback(
     (lens: Lens) => {
-      if (compareIds.includes(lens.id) || compareIds.length >= MAX_COMPARE) {return;}
+      if (compareIds.includes(lens.id) || compareIds.length >= MAX_COMPARE) {
+        return;
+      }
       updateCompare([...compareIds, lens.id]);
     },
     [compareIds, updateCompare]
@@ -248,7 +250,9 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   function handleShiftLens(lensId: string, direction: -1 | 1) {
     const index = compareIds.indexOf(lensId);
     const newIndex = index + direction;
-    if (newIndex < 0 || newIndex >= compareIds.length) {return;}
+    if (newIndex < 0 || newIndex >= compareIds.length) {
+      return;
+    }
     const next = [...compareIds];
     [next[index], next[newIndex]] = [next[newIndex], next[index]];
     updateCompare(next);
@@ -336,7 +340,9 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
       for (const group of allGroups) {
         for (const row of group.rows) {
           const resolved = resolveSpecRow(row, lens, valueCellLabels);
-          if (resolved) {rowMap.set(row.label, resolved);}
+          if (resolved) {
+            rowMap.set(row.label, resolved);
+          }
         }
       }
       map.set(lens.id, rowMap);
@@ -365,16 +371,22 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
     const mediaGroupLabel = td("fieldGroupMedia");
     for (const lens of orderedLenses) {
       const rowMap = resolvedPerLens.get(lens.id);
-      if (!rowMap) {continue;}
+      if (!rowMap) {
+        continue;
+      }
       const fields: FeedbackField[] = [];
       for (const group of allGroups) {
         for (const row of group.rows) {
           const resolved = rowMap.get(row.label);
-          if (resolved) {fields.push({ label: resolved.label, currentValue: resolved.plainText, group: group.label });}
+          if (resolved) {
+            fields.push({ label: resolved.label, currentValue: resolved.plainText, group: group.label });
+          }
         }
       }
       const url = getLensUrl(lens, locale);
-      if (url) {fields.push({ label: td("fieldOfficialLink"), currentValue: url, group: mediaGroupLabel });}
+      if (url) {
+        fields.push({ label: td("fieldOfficialLink"), currentValue: url, group: mediaGroupLabel });
+      }
       fields.push({ label: td("fieldLensImage"), currentValue: getLensImageUrl(lens.id), group: mediaGroupLabel, hideCurrentValue: true });
       const priceSelection = pickPriceEntry(lens.pricing, locale);
       if (priceSelection) {
@@ -398,7 +410,9 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
 
   useEffect(() => {
     const thead = theadRef.current;
-    if (!thead) {return;}
+    if (!thead) {
+      return;
+    }
     const observer = new IntersectionObserver(
       ([entry]) => setShowPhantom(!entry.isIntersecting),
       { root: null, rootMargin: "0px", threshold: 0 },
@@ -412,13 +426,17 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const phantomVisible = showPhantom && orderedLenses.length > 0;
 
   useEffect(() => {
-    if (!isPwa) {lockNav(phantomVisible);}
+    if (!isPwa) {
+      lockNav(phantomVisible);
+    }
   }, [phantomVisible, lockNav, isPwa]);
 
   useEffect(() => {
     const container = containerRef.current;
     const thead = theadRef.current;
-    if (!container || !thead) {return;}
+    if (!container || !thead) {
+      return;
+    }
 
     const update = () => {
       const row = thead.querySelector("tr");
@@ -436,7 +454,9 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   useEffect(() => {
     const container = containerRef.current;
     const thead = theadRef.current;
-    if (!container || !thead) {return;}
+    if (!container || !thead) {
+      return;
+    }
     const onScroll = () => {
       if (phantomInnerRef.current) {
         phantomInnerRef.current.style.transform = `translateX(-${container.scrollLeft}px)`;

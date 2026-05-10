@@ -41,7 +41,9 @@ export function PresetCard({ preset, onSelect }: { preset: TrendingPreset; onSel
       {/* Lens model badge strip */}
       <div className="mt-2.5 flex flex-wrap gap-1">
         {lenses.map((lens) => {
-          if (!lens) return null;
+          if (!lens) {
+            return null;
+          }
           return (
             <span
               key={lens.id}
@@ -70,14 +72,18 @@ export default function CuratedComparisons() {
 
   function updateScrollState() {
     const el = scrollRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     setCanScrollLeft(el.scrollLeft > 4);
     setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
   }
 
   useEffect(() => {
     const el = scrollRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     updateScrollState();
     el.addEventListener("scroll", updateScrollState, { passive: true });
     const ro = new ResizeObserver(updateScrollState);
@@ -90,12 +96,18 @@ export default function CuratedComparisons() {
 
   function scrollToDir(dir: -1 | 1) {
     const el = scrollRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     const approxCardWidth = el.scrollWidth / trendingPresets.length;
     el.scrollBy({ left: dir * approxCardWidth, behavior: "smooth" });
   }
 
-  if (compareIds.length > 0) return null;
+  if (compareIds.length > 0) {
+
+    return null;
+
+  }
 
   return (
     <div className="mb-2">

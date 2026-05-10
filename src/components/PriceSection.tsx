@@ -30,11 +30,15 @@ export function PriceSection({ lens }: Props) {
   const locale = useLocale();
 
   const selection = pickPriceEntry(lens.pricing, locale);
-  if (!selection) return null;
+  if (!selection) {
+    return null;
+  }
 
   const { entry, condition } = selection;
   const tier = priceTier(entry.price, entry.currency);
-  if (tier === undefined) return null;
+  if (tier === undefined) {
+    return null;
+  }
 
   const isUsed = condition === "used";
 

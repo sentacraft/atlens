@@ -49,13 +49,19 @@ export async function readFromBrand(
 
     const startPattern = new RegExp(`export const ${presetName}[^=]*=\\s*\\{`);
     const startMatch = startPattern.exec(content);
-    if (!startMatch) return null;
+    if (!startMatch) {
+      return null;
+    }
 
     const bodyStart = startMatch.index + startMatch[0].length;
     let depth = 1, bodyEnd = bodyStart;
     while (bodyEnd < content.length && depth > 0) {
-      if (content[bodyEnd] === "{") depth++;
-      if (content[bodyEnd] === "}") depth--;
+      if (content[bodyEnd] === "{") {
+        depth++;
+      }
+      if (content[bodyEnd] === "}") {
+        depth--;
+      }
       bodyEnd++;
     }
     const body = content.slice(bodyStart, bodyEnd - 1);
@@ -95,7 +101,9 @@ export async function exportToBrand(
     // Locate the object body for the target preset
     const startPattern = new RegExp(`export const ${presetName}[^=]*=\\s*\\{`);
     const startMatch = startPattern.exec(content);
-    if (!startMatch) return { ok: false, error: `${presetName} not found in brand.ts` };
+    if (!startMatch) {
+      return { ok: false, error: `${presetName} not found in brand.ts` };
+    }
 
     const bodyStart = startMatch.index + startMatch[0].length;
 
@@ -103,8 +111,12 @@ export async function exportToBrand(
     let depth = 1;
     let bodyEnd = bodyStart;
     while (bodyEnd < content.length && depth > 0) {
-      if (content[bodyEnd] === "{") depth++;
-      if (content[bodyEnd] === "}") depth--;
+      if (content[bodyEnd] === "{") {
+        depth++;
+      }
+      if (content[bodyEnd] === "}") {
+        depth--;
+      }
       bodyEnd++;
     }
 

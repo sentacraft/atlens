@@ -28,7 +28,9 @@ export default function Nav() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isPwa) return;
+    if (isPwa) {
+      return;
+    }
     const onScroll = () => {
       const y = window.scrollY;
       const threshold = headerRef.current?.offsetHeight ?? 56;
@@ -52,12 +54,16 @@ export default function Nav() {
   }, [pathname, setHidden, lockNav]);
 
   useEffect(() => {
-    if (!navLocked) setHidden(false);
+    if (!navLocked) {
+      setHidden(false);
+    }
   }, [navLocked]);
 
   // Close mobile menu on outside click
   useEffect(() => {
-    if (!mobileMenuOpen) return;
+    if (!mobileMenuOpen) {
+      return;
+    }
     function onPointerDown(e: PointerEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMobileMenuOpen(false);
