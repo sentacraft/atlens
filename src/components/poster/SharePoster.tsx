@@ -7,7 +7,8 @@ import { IRIS_NAV } from "@/config/iris-config";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { classifyFocusMotor } from "@/lib/lens";
+import { classifyFocusMotor, priceTier } from "@/lib/lens";
+import { pickPriceEntry, formatTierRange } from "@/lib/lens-pricing";
 import { getLensImageUrl } from "@/lib/lens-image";
 import {
   filterSizeDisplay,
@@ -69,8 +70,14 @@ export interface PosterLabels {
   tagUltraMacro: string;
   tagFisheye: string;
   tagProbe: string;
+  // Pricing
+  priceLabel: string;
+  tierSymbol: string;
+  usedBadge: string;
   // Fallback
   na: string;
+  // Locale hint for formatting
+  locale: string;
 }
 
 export interface PosterCustom {
@@ -283,6 +290,10 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   // ── Focus section visibility ───────────────────────────────────
   const showMinFocus = lenses.some((l) => l.minFocusDistance !== undefined);
   const showMaxMag = lenses.some((l) => l.maxMagnification !== undefined);
+
+  // ── Pricing visibility ─────────────────────────────────────────
+  const priceSelections = lenses.map((l) => pickPriceEntry(l.pricing, labels.locale));
+  const showPrice = priceSelections.some((s) => s !== null);
 
   // ── Size & Weight visibility ───────────────────────────────────
   const weights = lenses.map((l) => primaryWeight(l.weightG));
@@ -581,6 +592,55 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   ) : (
                     <span className="text-zinc-300" style={{ fontSize: 9 }}>—</span>
                   )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Row 4: Price tier */}
+        {showPrice && (
+          <div style={{ ...gridStyle(n), marginTop: 16 }}>
+            {lenses.map((lens, i) => {
+              const sel = priceSelections[i];
+              if (!sel) {
+                return (
+                  <div key={i} style={{ display: "flex", justifyContent: "center" }}>
+                    <span className="text-zinc-300" style={{ fontSize: 9 }}>—</span>
+                  </div>
+                );
+              }
+              const tier = priceTier(sel.entry.price, sel.entry.currency);
+              if (tier === undefined) {
+                return (
+                  <div key={i} style={{ display: "flex", justifyContent: "center" }}>
+                    <span className="text-zinc-300" style={{ fontSize: 9 }}>—</span>
+                  </div>
+                );
+              }
+              const rangeDisplay = formatTierRange(tier, sel.entry.currency, labels.locale);
+              const rangeFormatted = sel.entry.currency === "CNY"
+                ? `¥${rangeDisplay}`
+                : `$${rangeDisplay}`;
+              const isUsed = sel.condition === "used";
+              return (
+                <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                    <span className={cn("font-semibold tabular-nums tracking-wide text-zinc-700 leading-none", statSize)}>
+                      {labels.tierSymbol.repeat(tier)}
+                    </span>
+                    {isUsed && (
+                      <span className="rounded bg-zinc-200 px-1 py-px text-zinc-500" style={{ fontSize: 8, fontWeight: 500 }}>
+                        {labels.usedBadge}
+                      </span>
+                    )}
+                  </span>
+                  <span className="tabular-nums text-zinc-400" style={{ fontSize: 10 }}>
+                    {rangeFormatted}
+                  </span>
+                  <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                    {labels.priceLabel}
+                  </span>
                 </div>
               );
             })}
