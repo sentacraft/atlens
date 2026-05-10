@@ -196,36 +196,19 @@ export function minFocusDistanceRichDisplay(
   const lines: string[] = [];
 
   // Primary / normal mode
-  if (mfd.variants?.wide !== undefined || mfd.variants?.tele !== undefined) {
-    const parts = [
-      mfd.variants.wide !== undefined
-        ? `${labels.wide} ${mfd.variants.wide}cm`
-        : null,
-      mfd.variants.tele !== undefined
-        ? `${labels.tele} ${mfd.variants.tele}cm`
-        : null,
-    ].filter((v): v is string => v !== null);
-    lines.push(parts.join(" · "));
+  if (mfd.normal.teleCm !== undefined) {
+    lines.push(`${labels.wide} ${mfd.normal.cm}cm · ${labels.tele} ${mfd.normal.teleCm}cm`);
   } else {
-    lines.push(`${mfd.cm}cm`);
+    lines.push(`${mfd.normal.cm}cm`);
   }
 
   // Macro mode
-  if (
-    mfd.macroVariants?.wide !== undefined ||
-    mfd.macroVariants?.tele !== undefined
-  ) {
-    const parts = [
-      mfd.macroVariants.wide !== undefined
-        ? `${labels.wide} ${mfd.macroVariants.wide}cm`
-        : null,
-      mfd.macroVariants.tele !== undefined
-        ? `${labels.tele} ${mfd.macroVariants.tele}cm`
-        : null,
-    ].filter((v): v is string => v !== null);
-    lines.push(`${labels.macro}: ${parts.join(" · ")}`);
-  } else if (mfd.macroCm !== undefined) {
-    lines.push(`${labels.macro}: ${mfd.macroCm}cm`);
+  if (mfd.macro) {
+    if (mfd.macro.teleCm !== undefined) {
+      lines.push(`${labels.macro}: ${labels.wide} ${mfd.macro.cm}cm · ${labels.tele} ${mfd.macro.teleCm}cm`);
+    } else {
+      lines.push(`${labels.macro}: ${mfd.macro.cm}cm`);
+    }
   }
 
   return lines.join("\n");
@@ -315,7 +298,7 @@ export function dimensionsVariantsDisplay(
  * Primary MFD display.
  * - Zoom with wide/tele variants: shows "Wide Xcm · Tele Ycm" (avoids redundant cm line).
  * - Everything else: shows the primary cm value.
- * toComparable always uses mfd.cm regardless of display format.
+ * toComparable always uses mfd.normal.cm regardless of display format.
  */
 export function minFocusDistancePrimaryDisplay(
   mfd: MinFocusDistance | undefined,
@@ -324,18 +307,10 @@ export function minFocusDistancePrimaryDisplay(
   if (!mfd) {
     return undefined;
   }
-  if (mfd.variants?.wide !== undefined || mfd.variants?.tele !== undefined) {
-    const parts = [
-      mfd.variants.wide !== undefined
-        ? `${labels.wide} ${mfd.variants.wide}cm`
-        : null,
-      mfd.variants.tele !== undefined
-        ? `${labels.tele} ${mfd.variants.tele}cm`
-        : null,
-    ].filter((v): v is string => v !== null);
-    return parts.join(" · ");
+  if (mfd.normal.teleCm !== undefined) {
+    return `${labels.wide} ${mfd.normal.cm}cm · ${labels.tele} ${mfd.normal.teleCm}cm`;
   }
-  return `${mfd.cm}cm`;
+  return `${mfd.normal.cm}cm`;
 }
 
 /**
@@ -350,24 +325,13 @@ export function minFocusDistanceSecondaryDisplay(
     return undefined;
   }
 
-  if (
-    mfd.macroVariants?.wide !== undefined ||
-    mfd.macroVariants?.tele !== undefined
-  ) {
-    const parts = [
-      mfd.macroVariants.wide !== undefined
-        ? `${labels.wide} ${mfd.macroVariants.wide}cm`
-        : null,
-      mfd.macroVariants.tele !== undefined
-        ? `${labels.tele} ${mfd.macroVariants.tele}cm`
-        : null,
-    ].filter((v): v is string => v !== null);
-    return `${labels.macro}: ${parts.join(" · ")}`;
+  if (!mfd.macro) {
+    return undefined;
   }
-  if (mfd.macroCm !== undefined) {
-    return `${labels.macro}: ${mfd.macroCm}cm`;
+  if (mfd.macro.teleCm !== undefined) {
+    return `${labels.macro}: ${labels.wide} ${mfd.macro.cm}cm · ${labels.tele} ${mfd.macro.teleCm}cm`;
   }
-  return undefined;
+  return `${labels.macro}: ${mfd.macro.cm}cm`;
 }
 
 /**

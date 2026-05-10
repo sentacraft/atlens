@@ -254,18 +254,13 @@ describe("minFocusDistancePrimaryDisplay", () => {
   });
 
   it("shows single cm value for primes", () => {
-    const mfd: MinFocusDistance = { cm: 28 };
+    const mfd: MinFocusDistance = { normal: { cm: 28 } };
     expect(minFocusDistancePrimaryDisplay(mfd, wideTeLabels)).toBe("28cm");
   });
 
-  it("shows wide · tele inline for zoom lenses with variants", () => {
-    const mfd: MinFocusDistance = { cm: 30, variants: { wide: 25, tele: 38 } };
+  it("shows wide · tele inline for zoom lenses with teleCm", () => {
+    const mfd: MinFocusDistance = { normal: { cm: 25, teleCm: 38 } };
     expect(minFocusDistancePrimaryDisplay(mfd, wideTeLabels)).toBe("Wide 25cm · Tele 38cm");
-  });
-
-  it("shows only wide when tele variant is absent", () => {
-    const mfd: MinFocusDistance = { cm: 25, variants: { wide: 25 } };
-    expect(minFocusDistancePrimaryDisplay(mfd, wideTeLabels)).toBe("Wide 25cm");
   });
 });
 
@@ -278,19 +273,19 @@ describe("minFocusDistanceSecondaryDisplay", () => {
   });
 
   it("returns undefined when no macro info", () => {
-    const mfd: MinFocusDistance = { cm: 28 };
+    const mfd: MinFocusDistance = { normal: { cm: 28 } };
     expect(minFocusDistanceSecondaryDisplay(mfd, wideTelemacroLabels)).toBeUndefined();
   });
 
   it("shows single macro cm", () => {
-    const mfd: MinFocusDistance = { cm: 28, macroCm: 12 };
+    const mfd: MinFocusDistance = { normal: { cm: 28 }, macro: { cm: 12 } };
     expect(minFocusDistanceSecondaryDisplay(mfd, wideTelemacroLabels)).toBe("Macro: 12cm");
   });
 
-  it("shows macro wide · tele when macroVariants present", () => {
+  it("shows macro wide · tele when macro has teleCm", () => {
     const mfd: MinFocusDistance = {
-      cm: 30,
-      macroVariants: { wide: 10, tele: 15 },
+      normal: { cm: 30 },
+      macro: { cm: 10, teleCm: 15 },
     };
     expect(minFocusDistanceSecondaryDisplay(mfd, wideTelemacroLabels)).toBe(
       "Macro: Wide 10cm · Tele 15cm"
@@ -307,22 +302,21 @@ describe("minFocusDistanceRichDisplay", () => {
   });
 
   it("shows primary only when no macro", () => {
-    const mfd: MinFocusDistance = { cm: 28 };
+    const mfd: MinFocusDistance = { normal: { cm: 28 } };
     expect(minFocusDistanceRichDisplay(mfd, wideTelemacroLabels)).toBe("28cm");
   });
 
   it("combines primary and macro on separate lines", () => {
-    const mfd: MinFocusDistance = { cm: 28, macroCm: 12 };
+    const mfd: MinFocusDistance = { normal: { cm: 28 }, macro: { cm: 12 } };
     expect(minFocusDistanceRichDisplay(mfd, wideTelemacroLabels)).toBe(
       "28cm\nMacro: 12cm"
     );
   });
 
-  it("shows zoom variants + macro variants", () => {
+  it("shows zoom normal teleCm + macro teleCm", () => {
     const mfd: MinFocusDistance = {
-      cm: 30,
-      variants: { wide: 25, tele: 38 },
-      macroVariants: { wide: 10, tele: 15 },
+      normal: { cm: 25, teleCm: 38 },
+      macro: { cm: 10, teleCm: 15 },
     };
     expect(minFocusDistanceRichDisplay(mfd, wideTelemacroLabels)).toBe(
       "Wide 25cm · Tele 38cm\nMacro: Wide 10cm · Tele 15cm"
