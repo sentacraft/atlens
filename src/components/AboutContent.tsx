@@ -12,10 +12,13 @@ import { getLensesByMount } from "@/lib/lens";
 import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/AckCard";
 
-type CoverageMeta = { active: boolean; discontinued: boolean; notes: string };
+type CoverageMeta = { active: boolean; discontinued: boolean | "planned"; notes: string };
 
 function Check() {
   return <span className="text-zinc-700 dark:text-zinc-300 text-sm">✓</span>;
+}
+function Planned() {
+  return <span className="text-zinc-400 dark:text-zinc-500 text-sm">○</span>;
 }
 function Dash() {
   return <span className="text-zinc-300 dark:text-zinc-600 text-sm">—</span>;
@@ -53,7 +56,7 @@ function MountCoverageTable({
                 <tr key={b}>
                   <td className="px-3 py-2 font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap">{brandNames[b] ?? b}</td>
                   <td className="px-3 py-2 text-center">{m.active ? <Check /> : <Dash />}</td>
-                  <td className="px-3 py-2 text-center">{m.discontinued ? <Check /> : <Dash />}</td>
+                  <td className="px-3 py-2 text-center">{m.discontinued === true ? <Check /> : m.discontinued === "planned" ? <Planned /> : <Dash />}</td>
                   <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">{counts[b] ?? 0}</td>
                 </tr>
               );
