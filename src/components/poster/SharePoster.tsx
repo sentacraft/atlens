@@ -567,38 +567,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
           ))}
         </div>
 
-        {/* Row 3: Weight */}
-        {showWeight && (
-          <div style={gridStyle(n)}>
-            {lenses.map((lens, i) => {
-              const weightScalar = primaryWeight(lens.weightG);
-              return (
-                <div
-                  key={i}
-                  style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}
-                >
-                  {weightScalar !== undefined ? (
-                    <>
-                      <span
-                        className={cn("font-semibold tabular-nums text-zinc-900 leading-none", apertureSize)}
-                        style={{ whiteSpace: "nowrap" }}
-                      >
-                        {weightScalar}g
-                      </span>
-                      <span className="text-zinc-400" style={{ fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                        {labels.weightLabel}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-zinc-300" style={{ fontSize: 9 }}>—</span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Row 4: Price tier */}
+        {/* Row 3: Price tier */}
         {showPrice && (
           <div style={{ ...gridStyle(n), marginTop: 16 }}>
             {lenses.map((lens, i) => {
@@ -649,14 +618,30 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
       </div>
 
       {/* ── Size Section ─────────────────────────────────────── */}
-      {(showDimensions || showFilter) && (
+      {(showWeight || showDimensions || showFilter) && (
         <>
           <div className="h-px bg-zinc-200" />
           <div style={{ padding: `20px ${POSTER_PX}px` }}>
             <PosterSection title={labels.sectionSizeWeight}>
-              {/* Dimensions — primary scalar only; length variants (retracted/
-                  wide/tele) intentionally omitted from the poster and shown on
-                  compare/detail pages instead. */}
+              {showWeight && (
+                <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
+                  {weights.map((w, i) => (
+                    <ParamColumn key={i} label={labels.weightLabel}>
+                      {w !== undefined ? (
+                        <span
+                          className="text-base font-medium tabular-nums text-zinc-900 leading-tight text-center"
+                          style={{ whiteSpace: "nowrap" }}
+                        >
+                          {w}g
+                        </span>
+                      ) : (
+                        <span className="text-base font-medium tabular-nums text-zinc-300 leading-tight">—</span>
+                      )}
+                    </ParamColumn>
+                  ))}
+                </div>
+              )}
+
               {showDimensions && (
                 <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
                   {lenses.map((lens, i) => {
