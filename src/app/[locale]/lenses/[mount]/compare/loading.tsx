@@ -19,8 +19,6 @@ export default function CompareLoading() {
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 flex flex-col gap-3 sm:gap-4">
       {/* Header */}
       <div className="flex items-center gap-3">
-        {/* Back button */}
-        <div className="h-9 w-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
         {/* Title */}
         <div className="hidden sm:block h-8 w-28 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
         {/* Share button — right-aligned */}
