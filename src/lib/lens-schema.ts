@@ -172,13 +172,11 @@ const fieldNotesSchema = z.strictObject({
   apertureBladeCount: nonEmptyStringSchema.optional(),
 });
 
-const translationsSchema = z.strictObject({
-  zh: z.strictObject({
-    fieldNotes: fieldNotesSchema.optional(),
-    lensMaterial: nonEmptyStringSchema.optional(),
-    accessories: z.array(nonEmptyStringSchema).optional(),
-  }).optional(),
-}).optional();
+const localeTranslationsSchema = z.strictObject({
+  fieldNotes: fieldNotesSchema.optional(),
+  lensMaterial: nonEmptyStringSchema.optional(),
+  accessories: z.array(nonEmptyStringSchema).optional(),
+});
 
 const lensObjectSchema = z.strictObject({
   ...lensBaseShape,
@@ -186,7 +184,7 @@ const lensObjectSchema = z.strictObject({
   lensConfiguration: lensConfigurationSchema.optional(),
   fieldNotes: fieldNotesSchema.optional(),
   officialLinks: officialLinksSchema,
-  translations: translationsSchema,
+  translations: z.strictObject({ zh: localeTranslationsSchema.optional() }).optional(),
 });
 
 function getApertureEndpoints(aperture: ApertureValue): {
