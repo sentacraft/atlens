@@ -13,7 +13,7 @@ import { Link } from "@/i18n/navigation";
 import AddToCompareButton from "@/components/AddToCompareButton";
 import BackButton from "@/components/BackButton";
 import BackToTopButton from "@/components/BackToTopButton";
-import { ShareButton } from "@/components/ShareButton";
+import { ShareButton } from "@/components/share/ShareButton";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 import { ACTION_OUTLINE_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
