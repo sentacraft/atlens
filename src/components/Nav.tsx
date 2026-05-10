@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, Info, Download } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
@@ -81,14 +81,14 @@ export default function Nav() {
     : `/lenses/${seg}/compare`;
 
   const linkCls = (active: boolean) =>
-    `text-xs sm:text-sm transition-colors px-1.5 sm:px-2 ${
+    `text-sm transition-colors px-1 sm:px-2 ${
       active
         ? "text-zinc-900 dark:text-zinc-50 font-medium"
         : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
     }`;
 
   const mobileLinkCls = (active: boolean) =>
-    `block px-4 py-2.5 text-sm transition-colors ${
+    `flex items-center gap-2.5 px-4 py-2.5 text-sm transition-colors ${
       active
         ? "text-zinc-900 dark:text-zinc-50 font-medium"
         : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-900"
@@ -191,12 +191,14 @@ export default function Nav() {
             </button>
 
             {mobileMenuOpen && (
-              <div className="absolute right-0 top-full mt-1.5 w-48 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden">
+              <div className="absolute right-0 top-full mt-1.5 w-36 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden">
                 <Link href="/about" className={mobileLinkCls(pathname === "/about")}>
+                  <Info className="h-4 w-4 shrink-0" />
                   {t("about")}
                 </Link>
                 {!isPwa && (
                   <Link href="/get" className={mobileLinkCls(pathname === "/get")}>
+                    <Download className="h-4 w-4 shrink-0" />
                     {t("getApp")}
                   </Link>
                 )}
