@@ -9,7 +9,7 @@ import { ExternalLink } from "@/components/ui/external-link";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import type { FeedbackType } from "@/components/FeedbackDialog";
-import { xLenses, gfxLenses } from "@/lib/lens";
+import { getLensesByMount } from "@/lib/lens";
 import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/AckCard";
 
@@ -99,10 +99,10 @@ export default async function AboutContent() {
     getLocale(),
   ]);
 
-  const xCounts = (xLenses as { brand: string }[]).reduce<Record<string, number>>(
+  const xCounts = getLensesByMount("X", locale).reduce<Record<string, number>>(
     (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
   );
-  const gCounts = (gfxLenses as { brand: string }[]).reduce<Record<string, number>>(
+  const gCounts = getLensesByMount("G", locale).reduce<Record<string, number>>(
     (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
   );
   const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage"];

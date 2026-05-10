@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCompareUrl } from "@/hooks/useCompareUrl";
 import { useMountedCompare } from "@/context/CompareProvider";
 import { trendingPresets, type TrendingPreset } from "@/lib/trending";
-import { allLenses } from "@/lib/lens";
+import { getAllLenses } from "@/lib/lens";
 import { cn } from "@/lib/utils";
 
 export function PresetCard({ preset, onSelect }: { preset: TrendingPreset; onSelect?: () => void }) {
@@ -18,7 +18,7 @@ export function PresetCard({ preset, onSelect }: { preset: TrendingPreset; onSel
   const tBrand = useTranslations("Brands");
 
   const lenses = preset.lensIds
-    .map((id) => allLenses.find((l) => l.id === id))
+    .map((id) => getAllLenses(locale).find((l) => l.id === id))
     .filter(Boolean);
 
   function handleClick() {

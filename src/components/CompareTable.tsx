@@ -194,7 +194,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   }, [initialLensIds, replaceCompare]);
 
   const orderedLenses = compareIds
-    .map((id) => getLensesByMount(mount).find((lens) => lens.id === id))
+    .map((id) => getLensesByMount(mount, locale).find((lens) => lens.id === id))
     .filter((lens): lens is Lens => lens !== undefined);
 
   // Number of empty slot columns to render (search triggers filling up to minColumns)

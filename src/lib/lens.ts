@@ -2,15 +2,13 @@ import lensesData from "../data/lenses.json";
 import gfxLensesData from "../data/lenses-g.json";
 import metaData from "../data/meta.json";
 import { lensCatalogSchema } from "./lens-schema";
-import type { Lens, LensCatalog, Mount, SpecialtyTag } from "./types";
+import { resolveTranslations, type Lens, type LensCatalog, type Mount, type SpecialtyTag } from "./types";
 import { CNY_THRESHOLDS, USD_THRESHOLDS } from "./lens-pricing";
 export type { SpecialtyTag };
 
-export const xLenses: Lens[] = lensCatalogSchema.parse(lensesData) as LensCatalog;
-export const gfxLenses: Lens[] = lensCatalogSchema.parse(gfxLensesData) as LensCatalog;
-// allLenses combines both mounts — use only for aggregate contexts (About, sitemap, search index).
-// Within a mount-specific route, use getLensesByMount() or xLenses / gfxLenses directly.
-export const allLenses: Lens[] = [...xLenses, ...gfxLenses];
+const xLenses: Lens[] = lensCatalogSchema.parse(lensesData) as LensCatalog;
+const gfxLenses: Lens[] = lensCatalogSchema.parse(gfxLensesData) as LensCatalog;
+
 export const meta = metaData;
 export const brandCount = new Set(xLenses.map((l) => l.brand)).size;
 export const MAX_COMPARE = 4;
@@ -20,8 +18,24 @@ export const CROP_FACTOR: Record<Mount, number> = {
   G: 0.79, // GFX 44×33 mm diagonal ≈54.78 mm vs FF ≈43.3 mm
 };
 
-export function getLensesByMount(mount: Mount): Lens[] {
-  return mount === "G" ? gfxLenses : xLenses;
+const resolvedCache = new Map<string, Lens[]>();
+
+function getResolved(base: Lens[], locale: string): Lens[] {
+  const key = `${base === xLenses ? "X" : "G"}:${locale}`;
+  let result = resolvedCache.get(key);
+  if (!result) {
+    result = base.map((l) => resolveTranslations(l, locale));
+    resolvedCache.set(key, result);
+  }
+  return result;
+}
+
+export function getLensesByMount(mount: Mount, locale: string): Lens[] {
+  return getResolved(mount === "G" ? gfxLenses : xLenses, locale);
+}
+
+export function getAllLenses(locale: string): Lens[] {
+  return [...getLensesByMount("X", locale), ...getLensesByMount("G", locale)];
 }
 
 export type LensType = "prime" | "zoom";
@@ -235,8 +249,8 @@ export function getLensUrl(lens: Lens, locale?: string): string | undefined {
   return lens.officialLinks?.global;
 }
 
-export function parseLensIds(ids: string | undefined, mount: Mount): Lens[] {
-  const pool = getLensesByMount(mount);
+export function parseLensIds(ids: string | undefined, mount: Mount, locale: string): Lens[] {
+  const pool = getLensesByMount(mount, locale);
   return (ids ?? "")
     .split(",")
     .filter(Boolean)

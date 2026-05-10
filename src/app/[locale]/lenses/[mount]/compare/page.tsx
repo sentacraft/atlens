@@ -27,7 +27,7 @@ export async function generateMetadata({
     return { title: t("title") };
   }
 
-  const lenses = parseLensIds(ids, resolvedMount);
+  const lenses = parseLensIds(ids, resolvedMount, locale);
   const alternates = buildAlternates(locale, `lenses/${mount}/compare`);
 
   if (preset) {
@@ -65,7 +65,7 @@ export default async function ComparePage({
     notFound();
   }
 
-  const lenses = parseLensIds(ids, resolvedMount);
+  const lenses = parseLensIds(ids, resolvedMount, locale);
 
   const lang = locale === "zh" ? "zh" : "en";
   const presetTitle = preset ? (getPresetBySlug(preset)?.title[lang] ?? undefined) : undefined;
