@@ -96,7 +96,7 @@ export default function FeedbackDialog({
     : [];
 
   useEffect(() => {
-    if (!open) {
+    if (open) {
       setDescription("");
       setSelectedFieldLabel("");
       setSuggestedCorrection("");
@@ -192,7 +192,7 @@ export default function FeedbackDialog({
         </DialogHeader>
 
         {status === "success" ? (
-          <div className="flex items-center px-5 py-10 text-sm text-zinc-700 dark:text-zinc-300">
+          <div className="px-5 py-6 text-sm text-zinc-700 dark:text-zinc-300">
             {t("success")}
           </div>
         ) : (
