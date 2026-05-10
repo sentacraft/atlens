@@ -376,7 +376,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
       style={{ width: POSTER_W }}
     >
       {/* ── Header ────────────────────────────────────────────── */}
-      <div style={{ padding: `24px ${POSTER_PX}px 20px`, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+      <div style={{ padding: `24px ${POSTER_PX}px 20px`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         {/* Left: brand tag → title → slogan */}
         <div style={{ flex: 1, minWidth: 0, paddingRight: 24 }}>
           {/* Brand tag: Iris mark + app name inline */}
