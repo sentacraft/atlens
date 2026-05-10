@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { parseLensIds } from "@/lib/lens";
 import { urlSegmentToMount } from "@/lib/mount";
-import { getPresetBySlug } from "@/lib/trending";
+import { getPresetBySlug } from "@/lib/curated-presets";
 import CompareTable from "@/components/CompareTable";
 import ComparePageHeader from "@/components/ComparePageHeader";
 import CuratedComparisons from "@/components/CuratedComparisons";
@@ -68,11 +68,13 @@ export default async function ComparePage({
   const lenses = parseLensIds(ids, resolvedMount, locale);
 
   const lang = locale === "zh" ? "zh" : "en";
-  const presetTitle = preset ? (getPresetBySlug(preset)?.title[lang] ?? undefined) : undefined;
+  const foundPreset = preset ? getPresetBySlug(preset) : undefined;
+  const presetTitle = foundPreset?.title[lang];
+  const presetSubtitle = foundPreset?.subtitle[lang];
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 flex flex-col gap-3 sm:gap-4">
-      <ComparePageHeader lenses={lenses} minColumns={2} presetTitle={presetTitle} />
+      <ComparePageHeader lenses={lenses} minColumns={2} presetTitle={presetTitle} presetSubtitle={presetSubtitle} />
       <CompareTable key={lenses.length === 0 ? "_empty_" : ids} lenses={lenses} minColumns={2} hideBodyWhenEmpty />
       {resolvedMount === "X" && <CuratedComparisons />}
     </div>
