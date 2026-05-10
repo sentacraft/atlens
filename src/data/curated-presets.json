@@ -2,13 +2,9 @@
   "presets": [
     {
       "slug": "standard-zoom-showdown",
-      "titlePrimary": {
-        "zh": "APS-C 标准变焦",
-        "en": "APS-C Standard Zooms"
-      },
-      "titleSecondary": {
-        "zh": "原厂 vs 副厂",
-        "en": "Fuji vs Third-party"
+      "title": {
+        "zh": { "primary": "APS-C 标准变焦", "secondary": "原厂 vs 副厂" },
+        "en": { "primary": "APS-C Standard Zooms", "secondary": "Fuji vs Third-party" }
       },
       "subtitle": {
         "zh": "轻便、光圈、防抖——四支标准变焦的取舍",
@@ -23,9 +19,9 @@
     },
     {
       "slug": "35mm-equiv-primes",
-      "titlePrimary": {
-        "zh": "等效 35mm 定焦",
-        "en": "35mm-equiv Primes"
+      "title": {
+        "zh": { "primary": "等效 35mm 定焦" },
+        "en": { "primary": "35mm-equiv Primes" }
       },
       "subtitle": {
         "zh": "原厂大光圈、轻便版、适马与唯卓仕副厂——如何取舍？",
@@ -40,13 +36,9 @@
     },
     {
       "slug": "50mm-equiv-fuji-primes",
-      "titlePrimary": {
-        "zh": "等效 50mm 定焦",
-        "en": "50mm-equiv Fuji Primes"
-      },
-      "titleSecondary": {
-        "zh": "富士 35mm / 33mm 焦段对比",
-        "en": "35/33mm Compared"
+      "title": {
+        "zh": { "primary": "等效 50mm 定焦", "secondary": "富士 35mm / 33mm 焦段对比" },
+        "en": { "primary": "50mm-equiv Fuji Primes", "secondary": "35/33mm Compared" }
       },
       "subtitle": {
         "zh": "老 35/1.4 的氛围感、新 33/1.4 的光学素质、35/2 的便携三防",
@@ -60,13 +52,9 @@
     },
     {
       "slug": "portrait-56mm",
-      "titlePrimary": {
-        "zh": "56mm 人像定焦",
-        "en": "56mm Portrait Primes"
-      },
-      "titleSecondary": {
-        "zh": "原厂 vs 副厂",
-        "en": "Fuji vs Third-party"
+      "title": {
+        "zh": { "primary": "56mm 人像定焦", "secondary": "原厂 vs 副厂" },
+        "en": { "primary": "56mm Portrait Primes", "secondary": "Fuji vs Third-party" }
       },
       "subtitle": {
         "zh": "f/1.2 极致虚化 vs 副厂轻便性价比",
@@ -80,9 +68,9 @@
     },
     {
       "slug": "all-in-one-superzooms",
-      "titlePrimary": {
-        "zh": "一镜走天下",
-        "en": "All-in-one Superzooms"
+      "title": {
+        "zh": { "primary": "一镜走天下" },
+        "en": { "primary": "All-in-one Superzooms" }
       },
       "subtitle": {
         "zh": "旅游首选：适马、腾龙、富士原厂的焦段与画质取舍",
@@ -96,13 +84,9 @@
     },
     {
       "slug": "tele-zoom-entry",
-      "titlePrimary": {
-        "zh": "长焦变焦入门",
-        "en": "Entry Tele Zooms"
-      },
-      "titleSecondary": {
-        "zh": "富士长焦三兄弟",
-        "en": "Fuji's Tele Trio"
+      "title": {
+        "zh": { "primary": "长焦变焦入门", "secondary": "富士长焦三兄弟" },
+        "en": { "primary": "Entry Tele Zooms", "secondary": "Fuji's Tele Trio" }
       },
       "subtitle": {
         "zh": "打鸟、演唱会、日常远摄——三支长焦变焦的价位与画质",

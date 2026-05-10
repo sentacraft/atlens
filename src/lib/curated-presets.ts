@@ -2,10 +2,14 @@ import curatedData from "../data/curated-presets.json";
 import { getAllLenses } from "./lens";
 import type { Lens } from "./types";
 
+interface LocalizedTitle {
+  primary: string;
+  secondary?: string;
+}
+
 export interface CuratedPreset {
   slug: string;
-  titlePrimary: { zh: string; en: string };
-  titleSecondary?: { zh: string; en: string };
+  title: { zh: LocalizedTitle; en: LocalizedTitle };
   subtitle: { zh: string; en: string };
   lensIds: string[];
 }
