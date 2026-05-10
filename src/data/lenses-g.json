@@ -21,7 +21,9 @@
       "mm": 112.5
     },
     "minFocusDistance": {
-      "cm": 35
+      "normal": {
+        "cm": 35
+      }
     },
     "maxMagnification": {
       "value": 0.14
@@ -111,7 +113,9 @@
       "mm": 103
     },
     "minFocusDistance": {
-      "cm": 38
+      "normal": {
+        "cm": 38
+      }
     },
     "maxMagnification": {
       "value": 0.09
@@ -190,7 +194,9 @@
       "mm": 99.4
     },
     "minFocusDistance": {
-      "cm": 32
+      "normal": {
+        "cm": 32
+      }
     },
     "maxMagnification": {
       "value": 0.15
@@ -256,7 +262,9 @@
       "mm": 138.5
     },
     "minFocusDistance": {
-      "cm": 30
+      "normal": {
+        "cm": 30
+      }
     },
     "maxMagnification": {
       "value": 0.21
@@ -351,10 +359,9 @@
       }
     },
     "minFocusDistance": {
-      "cm": 50,
-      "variants": {
-        "wide": 50,
-        "tele": 60
+      "normal": {
+        "cm": 50,
+        "teleCm": 60
       }
     },
     "maxMagnification": {
@@ -448,7 +455,9 @@
       "mm": 222.5
     },
     "minFocusDistance": {
-      "cm": 80
+      "normal": {
+        "cm": 80
+      }
     },
     "maxMagnification": {
       "value": 0.06
@@ -529,7 +538,9 @@
       "mm": 73.9
     },
     "minFocusDistance": {
-      "cm": 35
+      "normal": {
+        "cm": 35
+      }
     },
     "maxMagnification": {
       "value": 0.28
@@ -619,10 +630,9 @@
       }
     },
     "minFocusDistance": {
-      "cm": 65,
-      "variants": {
-        "wide": 65,
-        "tele": 82
+      "normal": {
+        "cm": 65,
+        "teleCm": 82
       }
     },
     "maxMagnification": {
@@ -708,7 +718,9 @@
       "mm": 88
     },
     "minFocusDistance": {
-      "cm": 45
+      "normal": {
+        "cm": 45
+      }
     },
     "maxMagnification": {
       "value": 0.14
@@ -788,7 +800,9 @@
       "mm": 48
     },
     "minFocusDistance": {
-      "cm": 55
+      "normal": {
+        "cm": 55
+      }
     },
     "maxMagnification": {
       "value": 0.1
@@ -868,7 +882,9 @@
       "mm": 99.3
     },
     "minFocusDistance": {
-      "cm": 50
+      "normal": {
+        "cm": 50
+      }
     },
     "maxMagnification": {
       "value": 0.17
@@ -946,7 +962,9 @@
       "mm": 71
     },
     "minFocusDistance": {
-      "cm": 50
+      "normal": {
+        "cm": 50
+      }
     },
     "maxMagnification": {
       "value": 0.17
@@ -1024,7 +1042,9 @@
       "mm": 99.2
     },
     "minFocusDistance": {
-      "cm": 70
+      "normal": {
+        "cm": 70
+      }
     },
     "maxMagnification": {
       "value": 0.15
@@ -1104,10 +1124,9 @@
       "mm": 183
     },
     "minFocusDistance": {
-      "cm": 60,
-      "variants": {
-        "wide": 60,
-        "tele": 160
+      "normal": {
+        "cm": 60,
+        "teleCm": 160
       }
     },
     "maxMagnification": {
@@ -1195,7 +1214,9 @@
       "mm": 125.5
     },
     "minFocusDistance": {
-      "cm": 90
+      "normal": {
+        "cm": 90
+      }
     },
     "maxMagnification": {
       "value": 0.16
@@ -1277,7 +1298,9 @@
       "mm": 149
     },
     "minFocusDistance": {
-      "cm": 43
+      "normal": {
+        "cm": 43
+      }
     },
     "maxMagnification": {
       "value": 0.5
@@ -1358,7 +1381,9 @@
       "mm": 152.5
     },
     "minFocusDistance": {
-      "cm": 45
+      "normal": {
+        "cm": 45
+      }
     },
     "maxMagnification": {
       "value": 0.5
@@ -1436,7 +1461,9 @@
       "mm": 203.5
     },
     "minFocusDistance": {
-      "cm": 140
+      "normal": {
+        "cm": 140
+      }
     },
     "maxMagnification": {
       "value": 0.22
@@ -1515,7 +1542,9 @@
       "mm": 246.5
     },
     "minFocusDistance": {
-      "cm": 275
+      "normal": {
+        "cm": 275
+      }
     },
     "maxMagnification": {
       "value": 0.2
