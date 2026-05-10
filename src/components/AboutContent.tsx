@@ -1,5 +1,5 @@
 import { getTranslations, getLocale } from "next-intl/server";
-import { Flag, Mail } from "lucide-react";
+import { Flag, Mail, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 import AnthropicLogo from "@/components/logos/AnthropicLogo";
@@ -292,8 +292,10 @@ export default async function AboutContent() {
         </div>
 
         {/* GitHub CTA card — covers both spec and pricing pipelines */}
-        <ExternalLink
+        <a
           href="https://github.com/sentacraft/x-glass#data-pipeline"
+          target="_blank"
+          rel="noopener noreferrer"
           className="group flex items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/40 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
         >
           <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true" className="mt-0.5 shrink-0 text-zinc-700 dark:text-zinc-300">
@@ -306,11 +308,12 @@ export default async function AboutContent() {
             <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
               {t("dataGitHubCardBody")}
             </p>
-            <span className="mt-1 text-xs font-medium text-zinc-700 group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-zinc-100 transition-colors">
+            <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-zinc-700 group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-zinc-100 transition-colors">
               {t("dataGitHubCardButton")}
+              <ArrowUpRight className="size-3" />
             </span>
           </div>
-        </ExternalLink>
+        </a>
       </Section>
 
       {/* FAQ */}
