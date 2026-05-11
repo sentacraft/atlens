@@ -8,22 +8,17 @@ import { useTranslations } from "next-intl";
 import { Z } from "@/config/ui";
 import { curatedPresets } from "@/lib/curated-presets";
 import { PresetCard } from "@/components/CuratedComparisons";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { ICON_NAV_BTN_CLS } from "@/lib/ui-tokens";
 
 export default function CuratedPresetsButton() {
   const t = useTranslations("Compare");
   const [open, setOpen] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const isDesktop = useBreakpoint("sm");
 
   useEffect(() => {
     setMounted(true);
-    const bp = getComputedStyle(document.documentElement).getPropertyValue("--breakpoint-sm").trim();
-    const mq = window.matchMedia(`(min-width: ${bp})`);
-    setIsDesktop(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
   }, []);
 
   const trigger = (

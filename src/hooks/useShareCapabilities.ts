@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
 
 export interface ShareCapabilities {
   mounted: boolean;
@@ -11,9 +12,9 @@ export interface ShareCapabilities {
 
 export function useShareCapabilities(): ShareCapabilities {
   const [mounted, setMounted] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(true);
   const [canNativeShare, setCanNativeShare] = useState(false);
   const [canShareFile, setCanShareFile] = useState(false);
+  const isDesktop = useBreakpoint("sm");
 
   useEffect(() => {
     setMounted(true);
@@ -27,13 +28,6 @@ export function useShareCapabilities(): ShareCapabilities {
         })
       );
     }
-
-    const bp = getComputedStyle(document.documentElement).getPropertyValue("--breakpoint-sm").trim();
-    const mq = window.matchMedia(`(min-width: ${bp})`);
-    setIsDesktop(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
   }, []);
 
   return { mounted, isDesktop, canNativeShare, canShareFile };
