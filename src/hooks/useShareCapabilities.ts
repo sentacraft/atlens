@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { SCREEN } from "@/config/ui";
 
 export interface ShareCapabilities {
   mounted: boolean;
@@ -28,7 +29,7 @@ export function useShareCapabilities(): ShareCapabilities {
       );
     }
 
-    const mq = window.matchMedia("(min-width: 640px)");
+    const mq = window.matchMedia(`(min-width: ${SCREEN.sm}px)`);
     setIsDesktop(mq.matches);
     const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
     mq.addEventListener("change", handler);
