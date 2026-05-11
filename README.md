@@ -56,7 +56,7 @@ It also supports installation as a **Progressive Web App (PWA)**: add it to your
 
 For a lens comparison tool, data accuracy isn't a nice-to-have — it's the product. To keep specs accurate and up to date while minimizing AI hallucination during collection and parsing, X-Glass is backed by a purpose-built, multi-stage data pipeline:
 
-Lens data and images are maintained in a private pipeline repo and written into `src/data/lenses.json` (X mount) and `src/data/lenses-g.json` (G mount).
+Lens data and images are maintained in a private pipeline repo and written into `src/data/lenses.json` (X mount) and `src/data/lenses-gfx.json` (G mount).
 
 ```mermaid
 flowchart TD
@@ -117,7 +117,8 @@ flowchart TD
   SPrNew & SPrUsed --> SP1
   SP1 --> SP_AUDIT
   SP_AUDIT --> SP2
-  SP2 -->|"writes src/data/lenses.json + lenses-g.json"| DB[("x-glass<br/>(this repo)")]
+  SP2 -->|"writes"| DBX[("lenses.json<br/>X Mount lens database")]
+  SP2 -->|"writes"| DBG[("lenses-gfx.json<br/>G Mount lens database")]
 
   classDef script fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
   classDef agent fill:#fef9c3,stroke:#ca8a04,color:#713f12
@@ -166,7 +167,7 @@ X-Glass covers both the Fujifilm X mount (APS-C) and the Fujifilm G mount (GFX m
 **What's in the box, and what isn't.**
 - ✅ **Source code** is MIT-licensed. Fork, modify, deploy, ship commercially — all fine. Just keep the `LICENSE` file and copyright notice intact.
 - ✅ **Schema and field design** (`src/lib/types.ts`, Zod schemas, UI taxonomy) are part of the MIT code and free to reuse.
-- ❌ **Lens data** (`src/data/lenses.json` and `src/data/lenses-g.json`) is under a separate proprietary license and isn't transferable — please don't copy it or use it as seed data, even for a different mount. See [`LICENSE-DATA`](LICENSE-DATA).
+- ❌ **Lens data** (`src/data/lenses.json` and `src/data/lenses-gfx.json`) is under a separate proprietary license and isn't transferable — please don't copy it or use it as seed data, even for a different mount. See [`LICENSE-DATA`](LICENSE-DATA).
 - ❌ **The data pipeline** (`x-glass-pipeline`) is a separate private repository and isn't part of this fork. You'll need to build your own collection and review workflow.
 
 **Why the pipeline isn't open source (yet).** I get asked this a lot, so to be upfront about it:
@@ -198,7 +199,7 @@ Built on the shoulders of great open source work: [Base UI](https://base-ui.com)
 
 **Source code** — [MIT](LICENSE) © 2026 SentaCraft
 
-**Lens data** (`src/data/lenses.json`, `src/data/lenses-g.json`) — [Proprietary](LICENSE-DATA) © 2026 SentaCraft
+**Lens data** (`src/data/lenses.json`, `src/data/lenses-gfx.json`) — [Proprietary](LICENSE-DATA) © 2026 SentaCraft
 Available for personal reference only. Redistribution, commercial use, and bulk scraping are not permitted.
 
 **Product images and brand trademarks** are the property of their respective owners.
