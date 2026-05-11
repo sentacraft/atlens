@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const runtime = "edge";
+
 type FeedbackType = "data_issue" | "general";
 
 interface FeedbackPayload {
