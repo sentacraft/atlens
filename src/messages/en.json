@@ -193,7 +193,7 @@
     "addToCompare": "Add to Compare",
     "removeFromCompare": "Remove",
     "compareFull": "Compare List Full",
-    "officialSite": "Official site",
+    "officialSite": "Product page",
     "reportIssue": "Report an issue",
     "nudgeText": "Spotted an error in the data?",
     "fieldOfficialLink": "Official Link",
@@ -217,7 +217,7 @@
   },
   "Compare": {
     "title": "Compare",
-    "officialSite": "Official site",
+    "officialSite": "Product page",
     "addLens": "Add lens",
     "selectFirst": "Add lens",
     "addMore": "Add lens",

@@ -193,7 +193,7 @@
     "addToCompare": "加入对比",
     "removeFromCompare": "移除",
     "compareFull": "对比列表已满",
-    "officialSite": "官网页面",
+    "officialSite": "官方产品页",
     "reportIssue": "反馈问题",
     "nudgeText": "发现数据有误？",
     "fieldOfficialLink": "官方链接",
@@ -217,7 +217,7 @@
   },
   "Compare": {
     "title": "镜头对比",
-    "officialSite": "官网",
+    "officialSite": "官方产品页",
     "addLens": "添加镜头",
     "selectFirst": "先添加镜头",
     "addMore": "再添加一支",
