@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import RegisterSW from "@/components/RegisterSW";
+import AssetTelemetry from "@/components/AssetTelemetry";
 import { routing } from "@/i18n/routing";
 import Nav from "@/components/Nav";
 import ConsoleEgg from "@/components/ConsoleEgg";
@@ -163,6 +164,7 @@ export default async function LocaleLayout({
           <AppToaster />
         </NextIntlClientProvider>
         <RegisterSW />
+        <AssetTelemetry />
       </body>
     </html>
   );
