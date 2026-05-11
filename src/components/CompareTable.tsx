@@ -904,7 +904,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
               const fields = lensFields.get(lens.id);
               return (
                 <td key={lens.id} className="px-3 py-4">
-                  <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3">
                     {url ? (
                       <a
                         href={url}
