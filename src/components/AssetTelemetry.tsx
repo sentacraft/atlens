@@ -1,16 +1,19 @@
 "use client";
 
 import { useEffect } from "react";
-import { onLCP, onINP, onCLS, onFCP, onTTFB, type Metric } from "web-vitals";
 
-// Client-side telemetry: reports asset load failures and Web Vitals to
-// /api/telemetry. The Worker logs each event with CF-IPCountry and CF-Ray
-// (which embeds the serving PoP), giving us geo-attributed visibility into
-// problems that bypass the Worker — most notably static assets served via
-// the ASSETS binding, which produce no Worker logs of their own.
+// Client-side telemetry: reports two classes of problem that the Cloudflare
+// Workers ASSETS pipeline and Cloudflare Web Analytics do not surface:
+//   1. asset-error  — `<img>/<script>/<link>` load failures (404, network reset)
+//   2. slow-asset   — successful but >3s loads (the dominant trans-Pacific mode)
 //
-// Dedupe and sample to keep log volume sane; we expect O(10) events per
-// session at most. Worker observability is enabled in wrangler.toml.
+// Page-level Core Web Vitals (LCP/INP/CLS) are intentionally NOT reported
+// here — Cloudflare Web Analytics' auto-injected beacon already collects them
+// with country breakdowns, on all plans. Adding `web-vitals` would duplicate
+// that with worse aggregation.
+//
+// Events are sent to /api/telemetry; the Worker tags each with CF-IPCountry
+// and CF-Ray (PoP) before logging. Dedupe to keep volume sane.
 
 const ENDPOINT = "/api/telemetry";
 const DEDUPE_WINDOW_MS = 30_000;
@@ -62,25 +65,10 @@ export default function AssetTelemetry() {
     // Capture phase = true: <img>/<script>/<link> error events don't bubble.
     window.addEventListener("error", onAssetError, true);
 
-    const report = (m: Metric) => {
-      // Skip "good" measurements to keep volume down; only report degraded
-      // experience. Tune later if we want full RUM histograms.
-      if (m.rating === "good") {
-        return;
-      }
-      send({ evt: "vitals", name: m.name, value: Math.round(m.value), rating: m.rating });
-    };
-    onLCP(report);
-    onINP(report);
-    onCLS(report);
-    onFCP(report);
-    onTTFB(report);
-
-    // Slow-but-successful resources are invisible to the 'error' listener and
-    // to Web Vitals (which only reflect a few page-level metrics). Resource
-    // Timing surfaces per-resource durations, so we can flag stragglers that
-    // load but take painfully long — the dominant failure mode for users on
-    // congested trans-Pacific links.
+    // Slow-but-successful resources are invisible to the 'error' listener.
+    // Resource Timing surfaces per-resource durations, so we can flag
+    // stragglers that load but take painfully long — the dominant failure
+    // mode for users on congested trans-Pacific links.
     let resourceObs: PerformanceObserver | null = null;
     if (typeof PerformanceObserver === "function") {
       try {

@@ -20,15 +20,6 @@ type AssetErrorPayload = {
   page: string;
 };
 
-type VitalsPayload = {
-  evt: "vitals";
-  name: string;
-  value: number;
-  rating: string;
-  ts: number;
-  page: string;
-};
-
 type SlowAssetPayload = {
   evt: "slow-asset";
   kind: string;
@@ -41,7 +32,7 @@ type SlowAssetPayload = {
   page: string;
 };
 
-type Payload = AssetErrorPayload | VitalsPayload | SlowAssetPayload;
+type Payload = AssetErrorPayload | SlowAssetPayload;
 
 function isAssetError(p: unknown): p is AssetErrorPayload {
   if (!p || typeof p !== "object") {
@@ -49,14 +40,6 @@ function isAssetError(p: unknown): p is AssetErrorPayload {
   }
   const o = p as Record<string, unknown>;
   return o.evt === "asset-error" && typeof o.tag === "string" && typeof o.url === "string";
-}
-
-function isVitals(p: unknown): p is VitalsPayload {
-  if (!p || typeof p !== "object") {
-    return false;
-  }
-  const o = p as Record<string, unknown>;
-  return o.evt === "vitals" && typeof o.name === "string" && typeof o.value === "number";
 }
 
 function isSlowAsset(p: unknown): p is SlowAssetPayload {
@@ -85,8 +68,6 @@ export async function POST(req: Request): Promise<NextResponse> {
   }
   let payload: Payload;
   if (isAssetError(parsed)) {
-    payload = parsed;
-  } else if (isVitals(parsed)) {
     payload = parsed;
   } else if (isSlowAsset(parsed)) {
     payload = parsed;
