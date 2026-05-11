@@ -189,6 +189,9 @@ export async function POST(req: Request) {
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",
       "Content-Type": "application/json",
+      // Required by the GitHub REST API. Workers' fetch sends no default
+      // UA, so omitting it returns 403 before reaching the endpoint.
+      "User-Agent": "x-glass-feedback",
     },
     body: JSON.stringify(issue),
   });
