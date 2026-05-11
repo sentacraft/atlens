@@ -653,7 +653,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                 </td>
               </tr>
               <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
-                <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 break-words align-top">
+                <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 break-words align-middle">
                   {/* Two-line label: row name on top, single action-oriented
                       warn below. Compact enough to avoid orphan characters
                       even in the narrow (6rem) sticky label column. */}
