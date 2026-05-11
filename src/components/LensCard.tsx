@@ -79,6 +79,7 @@ export default function LensCard({
       {/* Clickable detail area */}
       <Link
         href={`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`}
+        prefetch={false}
         className="flex-1 flex flex-col hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors max-[499px]:flex-row"
       >
         <div
@@ -98,7 +99,7 @@ export default function LensCard({
                 style={lensImageStyle}
                 className="object-contain"
                 priority={priority}
-                loading={priority ? undefined : "eager"}
+                loading={priority ? undefined : "lazy"}
               />
             </div>
           </div>

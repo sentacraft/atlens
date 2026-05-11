@@ -1,5 +1,9 @@
 "use server";
 
+// CLOUDFLARE WORKERS: this file uses `fs/promises`, which does not exist in
+// the Workers runtime (nodejs_compat does not cover it). Only runs in local
+// dev because ../layout.tsx 404s in production. See ../README.md before editing.
+
 import { writeFile, readFile } from "fs/promises";
 import path from "path";
 
