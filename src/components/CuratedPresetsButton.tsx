@@ -5,7 +5,7 @@ import { Popover } from "@base-ui/react/popover";
 import { Drawer } from "@base-ui/react/drawer";
 import { LayoutGrid } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Z } from "@/config/ui";
+import { Z, SCREEN } from "@/config/ui";
 import { curatedPresets } from "@/lib/curated-presets";
 import { PresetCard } from "@/components/CuratedComparisons";
 import { ICON_NAV_BTN_CLS } from "@/lib/ui-tokens";
@@ -18,7 +18,7 @@ export default function CuratedPresetsButton() {
 
   useEffect(() => {
     setMounted(true);
-    const mq = window.matchMedia("(min-width: 640px)");
+    const mq = window.matchMedia(`(min-width: ${SCREEN.sm}px)`);
     setIsDesktop(mq.matches);
     const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
     mq.addEventListener("change", handler);

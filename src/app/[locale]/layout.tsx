@@ -16,7 +16,7 @@ import { TestHookProvider } from "@/context/TestHookProvider";
 import { TESTHOOK_ALLOWED } from "@/lib/testhook";
 import { SITE } from "@/config/site";
 import { SPLASH_DEVICES, splashUrl, splashMedia } from "@/config/splash";
-import { Toaster } from "sonner";
+import AppToaster from "@/components/AppToaster";
 import { fontClassName } from "../fonts";
 import "../globals.css";
 
@@ -162,12 +162,7 @@ export default async function LocaleLayout({
             </ScrollContainerProvider>
           </CompareProvider>
           </MountPreferenceProvider>
-          <Toaster
-            position="bottom-center"
-            offset="calc(var(--compare-bar-height, 0px) + 16px)"
-            mobileOffset="calc(var(--compare-bar-height, 0px) + 16px)"
-            toastOptions={{ className: "whitespace-nowrap" }}
-          />
+          <AppToaster />
         </NextIntlClientProvider>
         <RegisterSW />
         <Analytics />
