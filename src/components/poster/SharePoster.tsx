@@ -251,7 +251,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
     ? [custom.title.trim()]
     : labels.comparison;
   const slogan = custom?.slogan?.trim();
-  const titleFontSize = titleLines.length <= 1 ? (slogan ? 28 : 32) : titleLines.length === 2 ? 22 : 17;
+  const titleFontSize = titleLines.length <= 1 ? (slogan ? 28 : 32) : 17;
 
   // Hero font sizes — scale down as more lenses are added
   const focalSize = n <= 2 ? "text-5xl" : n === 3 ? "text-4xl" : "text-3xl";
@@ -294,8 +294,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
 
   const showFocusMotorRow = focusMotorValues.some(Boolean);
   const showSpecialtyRow = specialtyValues.some(Boolean);
-  // Details section now only contains specialty tags (focus motor moved to Focus section)
-  const showDetailsSection = showSpecialtyRow;
 
   // ── Focus section visibility ───────────────────────────────────
   const showMinFocus = lenses.some((l) => l.minFocusDistance !== undefined);
@@ -844,35 +842,24 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                 </div>
               ))}
             </div>
+            {showSpecialtyRow && (
+              <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
+                {specialtyValues.map((val, i) => (
+                  <ParamColumn key={i} label={labels.sectionDetails}>
+                    {val ? (
+                      <span className="text-sm font-medium text-zinc-900 leading-tight text-center">
+                        {val}
+                      </span>
+                    ) : (
+                      <span className="text-sm font-medium text-zinc-300 leading-tight">—</span>
+                    )}
+                  </ParamColumn>
+                ))}
+              </div>
+            )}
           </PosterSection>
         </div>
       </>
-
-      {/* ── Details Section (specialty tags only, rarely shown) ── */}
-      {showDetailsSection && (
-        <>
-          <div className="h-px bg-zinc-200" />
-          <div style={{ padding: `20px ${POSTER_PX}px` }}>
-            <PosterSection title={labels.sectionDetails}>
-              {showSpecialtyRow && (
-                <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
-                  {specialtyValues.map((val, i) => (
-                    <ParamColumn key={i} label="Type">
-                      {val ? (
-                        <span className="text-sm font-medium text-zinc-900 leading-tight text-center">
-                          {val}
-                        </span>
-                      ) : (
-                        <span className="text-sm font-medium text-zinc-300 leading-tight">—</span>
-                      )}
-                    </ParamColumn>
-                  ))}
-                </div>
-              )}
-            </PosterSection>
-          </div>
-        </>
-      )}
 
       {/* ── Footnotes ─────────────────────────────────────────── */}
       {footnotes.length > 0 && (

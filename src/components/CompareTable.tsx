@@ -905,7 +905,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
               const fields = lensFields.get(lens.id);
               return (
                 <td key={lens.id} className="px-3 py-4">
-                  <div className="flex flex-col items-center gap-2">
+                  <div className="flex items-center justify-center gap-2">
                     {url ? (
                       <ExternalLink
                         href={url}
@@ -918,6 +918,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                         {t("officialSite")}
                       </span>
                     )}
+                    <span className="text-zinc-300 dark:text-zinc-700 select-none">·</span>
                     <FeedbackTrigger
                       type="data_issue"
                       context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
