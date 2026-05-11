@@ -214,7 +214,7 @@ export default function LensListClient({ lenses }: Props) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
-              className="grid grid-cols-1 gap-4 min-[500px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              className="grid grid-cols-1 gap-4 min-[500px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
             >
               {displayed.map((lens, i) => (
                 <LensCard

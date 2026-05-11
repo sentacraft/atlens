@@ -169,6 +169,16 @@ details[open] > div {
 .wco-drag   { -webkit-app-region: drag;    app-region: drag;    }
 .wco-no-drag { -webkit-app-region: no-drag; app-region: no-drag; }
 
+/* On mobile, move the sonner toaster from top to bottom and respect the
+   compare bar height. The position prop stays "top-center" so we only need
+   to override the y-axis placement here. */
+@media (max-width: calc(theme(--breakpoint-sm) - 1px)) {
+  [data-sonner-toaster][data-y-position='top'] {
+    top: auto !important;
+    bottom: calc(var(--compare-bar-height, 0px) + 16px) !important;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
