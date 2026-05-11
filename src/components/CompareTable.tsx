@@ -574,20 +574,20 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                 const url = getLensUrl(lens, locale);
                 const fields = lensFields.get(lens.id);
                 return (
-                  <td key={lens.id} className="px-3 py-4">
-                    <div className="flex flex-col items-center justify-center gap-1">
+                  <td key={lens.id} className="px-3 py-2">
+                    <div className="flex flex-col items-center justify-center gap-0.5">
                       {url ? (
                         <a
                           href={url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-2 ${TEXT_LINK_CLS}`}
+                          className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 ${TEXT_LINK_CLS}`}
                         >
                           <ArrowUpRight className="h-3 w-3 shrink-0" />
                           {t("officialSite")}
                         </a>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-2 text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
+                        <span className="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
                           <ArrowUpRight className="h-3 w-3 shrink-0" />
                           {t("officialSite")}
                         </span>
@@ -596,7 +596,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                         type="data_issue"
                         context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
                         fields={fields}
-                        className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-2 ${TEXT_LINK_CLS}`}
+                        className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 ${TEXT_LINK_CLS}`}
                       >
                         <Flag className="h-3 w-3 shrink-0" />
                         {t("reportIssue")}
@@ -955,13 +955,13 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-2 ${TEXT_LINK_CLS}`}
+                        className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 ${TEXT_LINK_CLS}`}
                       >
                         <ArrowUpRight className="h-3 w-3 shrink-0" />
                         {t("officialSite")}
                       </a>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-2 text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
                         <ArrowUpRight className="h-3 w-3 shrink-0" />
                         {t("officialSite")}
                       </span>
@@ -970,7 +970,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                       type="data_issue"
                       context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
                       fields={fields}
-                      className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-2 ${TEXT_LINK_CLS}`}
+                      className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 ${TEXT_LINK_CLS}`}
                     >
                       <Flag className="h-3 w-3 shrink-0" />
                       {t("reportIssue")}
