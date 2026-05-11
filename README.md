@@ -117,8 +117,12 @@ flowchart TD
   SPrNew & SPrUsed --> SP1
   SP1 --> SP_AUDIT
   SP_AUDIT --> SP2
-  SP2 -->|"writes"| DBX[("lenses.json<br/>X Mount lens database")]
-  SP2 -->|"writes"| DBG[("lenses-gfx.json<br/>G Mount lens database")]
+  subgraph xglass["x-glass (this repo)"]
+    DBX[("lenses.json<br/>X Mount lens database")]
+    DBG[("lenses-gfx.json<br/>G Mount lens database")]
+  end
+  SP2 -->|"writes"| DBX
+  SP2 -->|"writes"| DBG
 
   classDef script fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
   classDef agent fill:#fef9c3,stroke:#ca8a04,color:#713f12
