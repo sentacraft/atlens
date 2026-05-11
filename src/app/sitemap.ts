@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { SITE } from "@/config/site";
 import { routing } from "@/i18n/routing";
 import xLensesData from "@/data/lenses.json";
-import gfxLensesData from "@/data/lenses-g.json";
+import gfxLensesData from "@/data/lenses-gfx.json";
 
 const LOCALES = routing.locales;
 
