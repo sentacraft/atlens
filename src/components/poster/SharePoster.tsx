@@ -294,8 +294,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
 
   const showFocusMotorRow = focusMotorValues.some(Boolean);
   const showSpecialtyRow = specialtyValues.some(Boolean);
-  // Details section now only contains specialty tags (focus motor moved to Focus section)
-  const showDetailsSection = showSpecialtyRow;
 
   // ── Focus section visibility ───────────────────────────────────
   const showMinFocus = lenses.some((l) => l.minFocusDistance !== undefined);
@@ -820,8 +818,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
           <PosterSection title={labels.sectionFeatures}>
             <div style={gridStyle(n)}>
               {lenses.map((lens, i) => (
-                // Outer div centers the block within the grid cell (matching PosterStatBlock alignment).
-                // Inner div stays left-aligned so icon + text baseline stays consistent.
                 <div key={i} style={{ display: "flex", justifyContent: "center" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
                   <PosterFeatureItem
@@ -840,6 +836,23 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   />
                   <PosterFeatureItem present={lens.af} label={labels.featureAF} icon={FEATURE_ICONS.af} />
                   <PosterFeatureItem present={lens.apertureRing} label={labels.featureApertureRing} icon={FEATURE_ICONS.apertureRing} />
+                  {showSpecialtyRow && (
+                    <>
+                      <div className="h-px bg-zinc-100" style={{ marginTop: 3, marginBottom: 3 }} />
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                        <span className="text-zinc-400" style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                          {labels.sectionDetails}
+                        </span>
+                        {specialtyValues[i] ? (
+                          <span className="text-xs font-medium text-zinc-900 leading-tight text-center">
+                            {specialtyValues[i]}
+                          </span>
+                        ) : (
+                          <span className="text-xs font-medium text-zinc-300 leading-tight">—</span>
+                        )}
+                      </div>
+                    </>
+                  )}
                   </div>
                 </div>
               ))}
@@ -847,32 +860,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
           </PosterSection>
         </div>
       </>
-
-      {/* ── Details Section (specialty tags only, rarely shown) ── */}
-      {showDetailsSection && (
-        <>
-          <div className="h-px bg-zinc-200" />
-          <div style={{ padding: `20px ${POSTER_PX}px` }}>
-            <PosterSection title={labels.sectionDetails}>
-              {showSpecialtyRow && (
-                <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
-                  {specialtyValues.map((val, i) => (
-                    <ParamColumn key={i} label="Type">
-                      {val ? (
-                        <span className="text-sm font-medium text-zinc-900 leading-tight text-center">
-                          {val}
-                        </span>
-                      ) : (
-                        <span className="text-sm font-medium text-zinc-300 leading-tight">—</span>
-                      )}
-                    </ParamColumn>
-                  ))}
-                </div>
-              )}
-            </PosterSection>
-          </div>
-        </>
-      )}
 
       {/* ── Footnotes ─────────────────────────────────────────── */}
       {footnotes.length > 0 && (

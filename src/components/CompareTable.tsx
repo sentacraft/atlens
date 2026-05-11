@@ -10,9 +10,8 @@ import React, {
 import { useNavLock } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
 import Image from "next/image";
-import { ExternalLink } from "@/components/ui/external-link";
 import { useTranslations, useLocale } from "next-intl";
-import { ChevronLeft, ChevronRight, Flag, TriangleAlert, X } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, Flag, TriangleAlert, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ICON_CLOSE_BTN_CLS, TEXT_LINK_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
@@ -905,16 +904,20 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
               const fields = lensFields.get(lens.id);
               return (
                 <td key={lens.id} className="px-3 py-4">
-                  <div className="flex flex-col items-center gap-2">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
                     {url ? (
-                      <ExternalLink
+                      <a
                         href={url}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`inline-flex items-center gap-1 text-xs font-medium ${TEXT_LINK_CLS}`}
                       >
+                        <ArrowUpRight className="h-3 w-3" />
                         {t("officialSite")}
-                      </ExternalLink>
+                      </a>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-300 dark:border-zinc-800 dark:text-zinc-600 cursor-not-allowed">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
+                        <ArrowUpRight className="h-3 w-3" />
                         {t("officialSite")}
                       </span>
                     )}
@@ -922,7 +925,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                       type="data_issue"
                       context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
                       fields={fields}
-                      className={`inline-flex items-center gap-1.5 text-xs font-medium ${TEXT_LINK_CLS}`}
+                      className={`inline-flex items-center gap-1 text-xs font-medium ${TEXT_LINK_CLS}`}
                     >
                       <Flag className="h-3 w-3" />
                       {t("reportIssue")}
