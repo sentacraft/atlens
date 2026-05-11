@@ -31,7 +31,10 @@ If you find X-Glass useful, a ⭐ on this repo goes a long way — and if you'd 
 - **Pipeline-backed accuracy** — every spec originates from official manufacturer sources and goes through a staged pipeline with human review at every step
 - **Shareable comparison posters**
 - **Progressive Web App (PWA)** — X-Glass is a web app at its core, but installs and runs like a native app. Add it to your home screen (iOS / Android) or dock (macOS) for instant, full-screen access — no App Store required
-- **English + Chinese** (中文)
+- **Deep localization, not just translation** — English and Chinese (中文) editions are wired to the market each audience actually shops in:
+  - **New-price sources** — global storefronts in English; China-domestic channels in Chinese
+  - **Used-market sampling** — eBay for English; 闲鱼 for Chinese
+  - **Manufacturer "official site" links** — global product pages in English; Chinese-region pages in Chinese
 
 ## Install
 
