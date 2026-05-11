@@ -3,7 +3,6 @@ import gfxLensesData from "../data/lenses-g.json";
 import metaData from "../data/meta.json";
 import { lensCatalogSchema } from "./lens-schema";
 import { resolveTranslations, type Lens, type LensCatalog, type Mount, type SpecialtyTag } from "./types";
-import { CNY_THRESHOLDS, USD_THRESHOLDS } from "./lens-pricing";
 export type { SpecialtyTag };
 
 const xLenses: Lens[] = lensCatalogSchema.parse(lensesData) as LensCatalog;
@@ -292,16 +291,6 @@ export function sortLenses(
     const delta = (a[field] as number) - (b[field] as number);
     return dir === "asc" ? delta : -delta;
   });
-}
-
-export function priceTier(price: number, currency: "CNY" | "USD"): 1 | 2 | 3 | 4 | 5 | undefined {
-  const thresholds = currency === "CNY" ? CNY_THRESHOLDS : USD_THRESHOLDS;
-  for (let i = thresholds.length - 1; i >= 0; i--) {
-    if (price >= thresholds[i]) {
-      return (i + 1) as 1 | 2 | 3 | 4 | 5;
-    }
-  }
-  return undefined;
 }
 
 export function defaultMarketForLocale(locale: string): "cn" | "global" {

@@ -14,8 +14,11 @@ type PricingData = { cn?: PricingBucket; global?: PricingBucket };
 
 // Translator is loosely typed so callers can pass next-intl's `t` function from
 // either useTranslations (client) or getTranslations (server) without coupling
-// this module to next-intl.
-type Translator = (key: string, values?: Record<string, string | number>) => string;
+// this module to next-intl. `raw(key)` returns the unprocessed message string
+// — used to fetch ICU templates we want to substitute manually.
+type Translator = ((key: string, values?: Record<string, string | number>) => string) & {
+  raw: (key: string) => string;
+};
 
 // Maps app locale → BCP-47 tag for Intl APIs. Project locales are always
 // {zh, en}; fall back to en-US for any unexpected value.
@@ -44,52 +47,28 @@ export function pickPriceEntry(
   return null;
 }
 
-export const CNY_THRESHOLDS: readonly number[] = [0, 500, 1500, 5000, 15000];
-export const USD_THRESHOLDS: readonly number[] = [0, 150, 400, 800, 1500];
-
-export function tierRange(
-  tier: 1 | 2 | 3 | 4 | 5,
-  currency: "CNY" | "USD"
-): { min: number; max: number | null } {
-  const thresholds = currency === "CNY" ? CNY_THRESHOLDS : USD_THRESHOLDS;
-  const min = thresholds[tier - 1];
-  const max = tier < 5 ? thresholds[tier] - 1 : null;
-  return { min, max };
-}
-
-// Numeric-only range, no currency symbol — the caller pairs it with $$$ / ¥¥¥.
-// Examples: "1,500–4,999", "15,000+"
-export function formatTierRange(
-  tier: 1 | 2 | 3 | 4 | 5,
-  currency: "CNY" | "USD",
-  locale: string
-): string {
-  const { min, max } = tierRange(tier, currency);
-  if (max === null) {
-    return `${formatNumber(min, locale)}+`;
-  }
-  return `${formatNumber(min, locale)}–${formatNumber(max, locale)}`;
-}
-
 export function formatPrice(
   price: number,
   currency: "CNY" | "USD",
   locale: string,
-  condition: Condition,
-  t: Translator
+  // Unused; retained for callsite API stability. Both new and used prices
+  // render as bare numbers (no ~ prefix). The visual "Used" indication is
+  // handled by a separate badge component, not by mutating the number.
+  _condition: Condition,
+  // CNY display template, e.g. "{value} 元" (zh) or "¥{value}" (en). Pass the
+  // resolved i18n value (`t.raw("cnyAmount")` or `labels.cnyAmount` for the
+  // props-driven SharePoster). The {value} placeholder is replaced with the
+  // locale-formatted number.
+  cnyTemplate: string
 ): string {
-  let formatted: string;
   if (currency === "CNY") {
-    // CNY display template lives in i18n: "{value} 元" in zh, "¥{value}" in en.
-    formatted = t("cnyAmount", { value: formatNumber(price, locale) });
-  } else {
-    formatted = new Intl.NumberFormat(intlLocaleFor(locale), {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0,
-    }).format(price);
+    return cnyTemplate.replace("{value}", formatNumber(price, locale));
   }
-  return condition === "used" ? `~${formatted}` : formatted;
+  return new Intl.NumberFormat(intlLocaleFor(locale), {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(price);
 }
 
 export function formatSampledAt(date: string, locale: string): string {
@@ -108,7 +87,7 @@ export function formatPriceForReport(
   t: Translator
 ): string {
   const { entry, condition } = selection;
-  const price = formatPrice(entry.price, entry.currency, locale, condition, t);
+  const price = formatPrice(entry.price, entry.currency, locale, condition, t.raw("cnyAmount"));
   const conditionLabel = t(condition === "new" ? "conditionNew" : "conditionUsed");
   return `${price} · ${entry.source} · ${entry.sampledAt} · ${conditionLabel}`;
 }

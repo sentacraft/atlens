@@ -54,6 +54,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   const locale = useLocale();
   const tImage = useTranslations("ShareImage");
   const tBrand = useTranslations("Brands");
+  const tPricing = useTranslations("Pricing");
 
   const { mounted, isDesktop, canNativeShare, canShareFile } = useShareCapabilities();
 
@@ -122,8 +123,10 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     tagProbe: tImage("tagProbe"),
     na: tImage("na"),
     priceLabel: tImage("priceLabel"),
-    tierSymbol: tImage("tierSymbol"),
     usedBadge: tImage("usedBadge"),
+    cnyAmount: tPricing.raw("cnyAmount"),
+    sampledAt: tPricing.raw("sampledAt"),
+    disclaimerWarn: tPricing("disclaimerWarn"),
     locale,
   };
 

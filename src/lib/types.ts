@@ -639,7 +639,6 @@ export interface Lens {
    * and the UI renders them as separate data points.
    *
    * Markets are independent; omit a market when no price data is available.
-   * For UI bucketing into tiers 1–5, see `priceTier()` in lens.ts.
    */
   pricing?: {
     cn?: {
