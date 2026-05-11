@@ -1,53 +1,19 @@
-import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
-import localFont from "next/font/local";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import RegisterSW from "@/components/RegisterSW";
-import { getLocale } from "next-intl/server";
-
-const sourceSerif4 = localFont({
-  src: [
-    {
-      path: "../../node_modules/@fontsource-variable/source-serif-4/files/source-serif-4-latin-wght-normal.woff2",
-      style: "normal",
-    },
-    {
-      path: "../../node_modules/@fontsource-variable/source-serif-4/files/source-serif-4-latin-wght-italic.woff2",
-      style: "italic",
-    },
-  ],
-  variable: "--font-source-serif-4",
-});
-
-export const metadata: Metadata = {
-  metadataBase: process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? new URL(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`)
-    : process.env.VERCEL_URL
-    ? new URL(`https://${process.env.VERCEL_URL}`)
-    : new URL("http://localhost:3000"),
-  verification: {
-    google: "ou7kky4gmKroC87dxmfS3xjA7gqjXkNcZaKbtIRCflQ",
-  },
-};
-
-export default async function RootLayout({
+// Root layout is intentionally a pass-through. The actual <html>/<body>
+// rendering happens in the segment layouts below:
+//   - app/[locale]/layout.tsx  for all localized routes
+//   - app/offline/layout.tsx   for the PWA offline fallback
+//
+// Why: reading request context here (cookies, headers, getLocale()) forces
+// every descendant route into dynamic rendering, defeating
+// generateStaticParams. By keeping this layout pass-through and resolving the
+// locale from `params` inside [locale]/layout.tsx, the entire localized tree
+// can be statically pre-rendered.
+//
+// Reference: https://nextjs.org/docs/app/building-your-application/routing/internationalization#static-rendering
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // getLocale() reads the locale set by next-intl middleware. Falls back to
-  // "en" for routes outside the locale tree (e.g. /offline).
-  const locale = await getLocale().catch(() => "en");
-  return (
-    <html lang={locale} className={`${GeistSans.variable} ${GeistMono.variable} ${sourceSerif4.variable} font-sans antialiased`}>
-      <body>
-        {children}
-        <RegisterSW />
-        <Analytics />
-        <SpeedInsights />
-      </body>
-    </html>
-  );
+  return children;
 }

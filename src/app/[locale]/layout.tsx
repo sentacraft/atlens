@@ -1,6 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import RegisterSW from "@/components/RegisterSW";
 import { routing } from "@/i18n/routing";
 import Nav from "@/components/Nav";
 import ConsoleEgg from "@/components/ConsoleEgg";
@@ -13,6 +17,7 @@ import { TESTHOOK_ALLOWED } from "@/lib/testhook";
 import { SITE } from "@/config/site";
 import { SPLASH_DEVICES, splashUrl, splashMedia } from "@/config/splash";
 import { Toaster } from "sonner";
+import { fontClassName } from "../fonts";
 import "../globals.css";
 
 export const viewport: Viewport = {
@@ -25,6 +30,19 @@ export const viewport: Viewport = {
   ],
 };
 
+// metadataBase + site-wide verification live here instead of the root layout
+// so the localized tree owns the canonical metadata. The non-localized
+// /offline route declares its own minimal metadata.
+function resolveMetadataBase(): URL {
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return new URL(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`);
+  }
+  if (process.env.VERCEL_URL) {
+    return new URL(`https://${process.env.VERCEL_URL}`);
+  }
+  return new URL("http://localhost:3000");
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -34,11 +52,15 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Metadata" });
 
   return {
+    metadataBase: resolveMetadataBase(),
     title: {
       default: t("seoTitle"),
       template: "%s | X-Glass",
     },
     description: t("seoDescription"),
+    verification: {
+      google: "ou7kky4gmKroC87dxmfS3xjA7gqjXkNcZaKbtIRCflQ",
+    },
     // Explicit icon declarations — setting `icons` in metadata disables Next.js
     // file-convention auto-discovery, so both `icon` and `apple` must be listed.
     // Safari requires an explicit favicon.ico link tag; it won't auto-discover it.
@@ -96,37 +118,51 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  if (!routing.locales.includes(locale as (typeof routing.locales)[number])) {
+    notFound();
+  }
+  // setRequestLocale enables static rendering for any page under [locale] that
+  // also calls it. Without this call, accessing translations via getMessages /
+  // useTranslations would force dynamic rendering.
+  setRequestLocale(locale);
   const messages = await getMessages();
 
   return (
-    <NextIntlClientProvider messages={messages}>
-      <MountPreferenceProvider>
-      <CompareProvider>
-        <ScrollContainerProvider>
-          <ConsoleEgg />
-          <Nav />
-          {/* Offset fixed nav and iOS home indicator. Body also carries
-              bg-background, so the safe-area strip and any short-page gap
-              render as a single seamless canvas color. */}
-          <div className="pt-[var(--nav-height)] pb-[var(--safe-inset-bottom)] min-h-svh">
-            {TESTHOOK_ALLOWED ? (
-              <TestHookProvider>
-                {children}
-                <TestHookPanel />
-              </TestHookProvider>
-            ) : (
-              children
-            )}
-          </div>
-        </ScrollContainerProvider>
-      </CompareProvider>
-      </MountPreferenceProvider>
-      <Toaster
-        position="bottom-center"
-        offset="calc(var(--compare-bar-height, 0px) + 16px)"
-        mobileOffset="calc(var(--compare-bar-height, 0px) + 16px)"
-        toastOptions={{ className: "whitespace-nowrap" }}
-      />
-    </NextIntlClientProvider>
+    <html lang={locale} className={fontClassName}>
+      <body>
+        <NextIntlClientProvider messages={messages}>
+          <MountPreferenceProvider>
+          <CompareProvider>
+            <ScrollContainerProvider>
+              <ConsoleEgg />
+              <Nav />
+              {/* Offset fixed nav and iOS home indicator. Body also carries
+                  bg-background, so the safe-area strip and any short-page gap
+                  render as a single seamless canvas color. */}
+              <div className="pt-[var(--nav-height)] pb-[var(--safe-inset-bottom)] min-h-svh">
+                {TESTHOOK_ALLOWED ? (
+                  <TestHookProvider>
+                    {children}
+                    <TestHookPanel />
+                  </TestHookProvider>
+                ) : (
+                  children
+                )}
+              </div>
+            </ScrollContainerProvider>
+          </CompareProvider>
+          </MountPreferenceProvider>
+          <Toaster
+            position="bottom-center"
+            offset="calc(var(--compare-bar-height, 0px) + 16px)"
+            mobileOffset="calc(var(--compare-bar-height, 0px) + 16px)"
+            toastOptions={{ className: "whitespace-nowrap" }}
+          />
+        </NextIntlClientProvider>
+        <RegisterSW />
+        <Analytics />
+        <SpeedInsights />
+      </body>
+    </html>
   );
 }

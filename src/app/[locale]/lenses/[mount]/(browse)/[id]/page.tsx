@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Flag } from "lucide-react";
+import { routing } from "@/i18n/routing";
 import { getLensesByMount, getLensUrl } from "@/lib/lens";
 import { urlSegmentToMount } from "@/lib/mount";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
@@ -23,6 +24,20 @@ import { lensSubtitleLine } from "@/lib/lens.format";
 import { PriceSection } from "@/components/PriceSection";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
+
+// Pre-render every (locale × mount × lens id) combination at build time so the
+// detail page is served as a static HTML asset with zero per-request CPU cost.
+// Lens IDs are language-agnostic — fetching the catalog in the default locale
+// to enumerate IDs is sufficient.
+export function generateStaticParams() {
+  const xLensIds = getLensesByMount("X", routing.defaultLocale).map((l) => l.id);
+  const gLensIds = getLensesByMount("G", routing.defaultLocale).map((l) => l.id);
+
+  return routing.locales.flatMap((locale) => [
+    ...xLensIds.map((id) => ({ locale, mount: "x", id })),
+    ...gLensIds.map((id) => ({ locale, mount: "gfx", id })),
+  ]);
+}
 
 export async function generateMetadata({
   params,
@@ -109,6 +124,7 @@ function renderRowValue(
 
 export default async function LensDetailPage({ params }: { params: Params }) {
   const { id, locale, mount } = await params;
+  setRequestLocale(locale);
   const lenses = getLensesByMount(urlSegmentToMount(mount) ?? "X", locale);
   const lens = lenses.find((l) => l.id === id);
 
