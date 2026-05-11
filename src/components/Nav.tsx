@@ -178,15 +178,6 @@ export default function Nav() {
           <Link href={compareHref} className={linkCls(isCompareActive)}>
             {t("compare")}
           </Link>
-          <a
-            href="https://github.com/sentacraft/x-glass"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors px-1.5"
-            aria-label="GitHub"
-          >
-            <GitHubMark />
-          </a>
           <div ref={menuRef} className="relative">
             <button
               onClick={() => setMobileMenuOpen((v) => !v)}
@@ -217,6 +208,16 @@ export default function Nav() {
                   <Send className="h-4 w-4 shrink-0" />
                   {t("feedback")}
                 </button>
+                <a
+                  href="https://github.com/sentacraft/x-glass"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={mobileLinkCls(false)}
+                  aria-label="GitHub"
+                >
+                  <GitHubMark size={16} className="shrink-0" />
+                  GitHub
+                </a>
               </div>
             )}
           </div>
