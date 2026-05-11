@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { Toaster } from "sonner";
+import { SCREEN } from "@/config/ui";
 
 export default function AppToaster() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 639px)");
+    const mq = window.matchMedia(`(max-width: ${SCREEN.sm - 1}px)`);
     setIsMobile(mq.matches);
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
     mq.addEventListener("change", handler);
