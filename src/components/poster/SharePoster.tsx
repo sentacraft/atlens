@@ -251,7 +251,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
     ? [custom.title.trim()]
     : labels.comparison;
   const slogan = custom?.slogan?.trim();
-  const titleFontSize = titleLines.length <= 1 ? (slogan ? 28 : 32) : 17;
+  const titleFontSize = titleLines.length <= 1 ? (slogan ? 28 : 32) : titleLines.length === 2 ? 22 : 17;
 
   // Hero font sizes — scale down as more lenses are added
   const focalSize = n <= 2 ? "text-5xl" : n === 3 ? "text-4xl" : "text-3xl";
