@@ -153,6 +153,79 @@ function EmptyLensHeader({
   );
 }
 
+// --- LinksRow: official site + report links, rendered at both top and bottom ---
+
+function LinksRow({
+  orderedLenses,
+  emptySlotCount,
+  lensFields,
+  locale,
+  url: getUrl,
+  officialSiteLabel,
+  reportIssueLabel,
+  tBrand: getBrand,
+  border,
+}: {
+  orderedLenses: Lens[];
+  emptySlotCount: number;
+  lensFields: Map<string, import("@/components/FeedbackDialog").FeedbackField[]>;
+  locale: string;
+  url: (lens: Lens) => string | null | undefined;
+  officialSiteLabel: string;
+  reportIssueLabel: string;
+  tBrand: (brand: string) => string;
+  border: "top" | "bottom";
+}) {
+  const borderCls =
+    border === "top"
+      ? "border-t border-zinc-200 dark:border-zinc-800"
+      : "border-b border-zinc-200 dark:border-zinc-800";
+
+  return (
+    <tr className={`${borderCls} bg-zinc-100/80 dark:bg-zinc-800/60`}>
+      <td className="sticky left-0 z-10 bg-zinc-100 px-3 py-2 dark:bg-zinc-800" />
+      {orderedLenses.map((lens) => {
+        const url = getUrl(lens);
+        const fields = lensFields.get(lens.id);
+        return (
+          <td key={lens.id} className="px-3 py-2">
+            <div className="flex flex-col items-center justify-center gap-0.5">
+              {url ? (
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 ${TEXT_LINK_CLS}`}
+                >
+                  <ArrowUpRight className="h-3 w-3 shrink-0" />
+                  {officialSiteLabel}
+                </a>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
+                  <ArrowUpRight className="h-3 w-3 shrink-0" />
+                  {officialSiteLabel}
+                </span>
+              )}
+              <FeedbackTrigger
+                type="data_issue"
+                context={{ lensId: lens.id, lensModel: lens.model, lensBrand: getBrand(lens.brand) }}
+                fields={fields}
+                className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 ${TEXT_LINK_CLS}`}
+              >
+                <Flag className="h-3 w-3 shrink-0" />
+                {reportIssueLabel}
+              </FeedbackTrigger>
+            </div>
+          </td>
+        );
+      })}
+      {Array.from({ length: emptySlotCount }).map((_, i) => (
+        <td key={`empty-links-${border}-${i}`} className="border-l border-zinc-200 dark:border-zinc-800" />
+      ))}
+    </tr>
+  );
+}
+
 // --- CompareTable ---
 
 interface Props {
@@ -566,6 +639,21 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
         </thead>
 
         <tbody>
+          {/* Top links row — mirrors the footer so users don't need to scroll down */}
+          {orderedLenses.length > 0 && (
+            <LinksRow
+              orderedLenses={orderedLenses}
+              emptySlotCount={emptySlotCount}
+              lensFields={lensFields}
+              locale={locale}
+              url={(lens) => getLensUrl(lens, locale)}
+              officialSiteLabel={t("officialSite")}
+              reportIssueLabel={t("reportIssue")}
+              tBrand={tBrand}
+              border="bottom"
+            />
+          )}
+
           {/* Cold-start skeleton: show all spec dimensions with placeholder cells */}
           {orderedLenses.length === 0 && !hideBodyWhenEmpty && allGroups.map((group) => (
             <React.Fragment key={group.label}>
@@ -608,7 +696,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                 </td>
               </tr>
               <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
-                <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 break-words align-top">
+                <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 break-words align-middle">
                   {/* Two-line label: row name on top, single action-oriented
                       warn below. Compact enough to avoid orphan characters
                       even in the narrow (6rem) sticky label column. */}
@@ -896,48 +984,17 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
         </tbody>
 
         {orderedLenses.length > 0 && <tfoot>
-          {/* Footer row: official site + report links per lens */}
-          <tr className="border-t border-zinc-200 bg-zinc-100/80 dark:border-zinc-800 dark:bg-zinc-800/60">
-            <td className="sticky left-0 z-10 bg-zinc-100 px-3 py-4 dark:bg-zinc-800" />
-            {orderedLenses.map((lens) => {
-              const url = getLensUrl(lens, locale);
-              const fields = lensFields.get(lens.id);
-              return (
-                <td key={lens.id} className="px-3 py-4">
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
-                    {url ? (
-                      <a
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`inline-flex items-center gap-1 text-xs font-medium ${TEXT_LINK_CLS}`}
-                      >
-                        <ArrowUpRight className="h-3 w-3" />
-                        {t("officialSite")}
-                      </a>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-xs font-medium text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
-                        <ArrowUpRight className="h-3 w-3" />
-                        {t("officialSite")}
-                      </span>
-                    )}
-                    <FeedbackTrigger
-                      type="data_issue"
-                      context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
-                      fields={fields}
-                      className={`inline-flex items-center gap-1 text-xs font-medium ${TEXT_LINK_CLS}`}
-                    >
-                      <Flag className="h-3 w-3" />
-                      {t("reportIssue")}
-                    </FeedbackTrigger>
-                  </div>
-                </td>
-              );
-            })}
-            {Array.from({ length: emptySlotCount }).map((_, i) => (
-              <td key={`empty-foot-${i}`} className="border-l border-zinc-200 dark:border-zinc-800" />
-            ))}
-          </tr>
+          <LinksRow
+            orderedLenses={orderedLenses}
+            emptySlotCount={emptySlotCount}
+            lensFields={lensFields}
+            locale={locale}
+            url={(lens) => getLensUrl(lens, locale)}
+            officialSiteLabel={t("officialSite")}
+            reportIssueLabel={t("reportIssue")}
+            tBrand={tBrand}
+            border="top"
+          />
         </tfoot>}
       </table>
     </div>
