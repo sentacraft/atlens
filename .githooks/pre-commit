@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+
+changed_files="$(git diff --cached --name-only)"
+
+case "$changed_files" in
+  *"scripts/gen-icons.tsx"*|\
+  *"src/components/Iris.tsx"*|\
+  *"src/config/iris-config.ts"*|\
+  *"src/config/splash.ts"*|\
+  *"src/lib/iris-kinematics.ts"*|\
+  *"package-lock.json"*|\
+  *"package.json"*)
+    echo "Icon inputs changed. Regenerating generated icon assets..."
+    npm run assets:icons
+    git add src/app/icon.png public/favicon.ico public/opengraph-image.png public/icons public/splash
+    ;;
+esac

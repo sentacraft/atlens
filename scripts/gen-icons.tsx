@@ -1,8 +1,7 @@
 #!/usr/bin/env tsx
 // Generates static icon PNGs and the OG image from the live <Iris> component.
 // Uses react-dom/server to render the SVG, then resvg-js to convert to PNG.
-// Run automatically before every build via the "build" npm script,
-// or manually: npm run gen:icons
+// Run manually via npm run assets:icons when icon inputs change.
 
 import { renderToStaticMarkup } from "react-dom/server";
 import { createElement } from "react";
@@ -249,6 +248,9 @@ const outputs: Array<{
   { path: `${iconsDir}/icon-1024-white.png`,  size: 1024, padding: PADDING.standard, background: "white" },
 ];
 
+const faviconPath = resolve("public/favicon.ico");
+const splashDir = resolve("public/splash");
+
 for (const { path, size, padding, background } of outputs) {
   writeFileSync(path, svgToPng(irisToSvg(size, padding, background), size));
   const label = path.replace(resolve(".") + "/", "");
@@ -264,7 +266,7 @@ const faviconImages = faviconSizes.map((size) => ({
   size,
   png: svgToPng(irisToSvg(size, PADDING.favicon), size),
 }));
-writeFileSync(resolve("public/favicon.ico"), buildIco(faviconImages));
+writeFileSync(faviconPath, buildIco(faviconImages));
 console.log(`✓ public/favicon.ico (${faviconSizes.join("+")}px)`);
 
 // ── OG image (social sharing card) ───────────────────────────────────────────
@@ -303,7 +305,6 @@ function generateSplashSvg(canvasW: number, canvasH: number, scheme: SplashSchem
   ].join("\n");
 }
 
-const splashDir = resolve("public/splash");
 mkdirSync(splashDir, { recursive: true });
 
 for (const device of SPLASH_DEVICES) {
