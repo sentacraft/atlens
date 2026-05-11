@@ -41,7 +41,7 @@ function computePosterTitle(
   comparisonLabel: string,
   locale: string,
 ): string[] {
-  if (lenses.length >= 3) {
+  if (lenses.length >= 2) {
     const uniqueBrands = [...new Set(lenses.map((l) => tBrand(l.brand)))];
     const colon = locale === "zh" ? "：" : ": ";
     return [`${comparisonLabel}${colon}${uniqueBrands.join(" · ")}`];
