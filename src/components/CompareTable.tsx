@@ -10,9 +10,8 @@ import React, {
 import { useNavLock } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
 import Image from "next/image";
-import { ExternalLink } from "@/components/ui/external-link";
 import { useTranslations, useLocale } from "next-intl";
-import { ChevronLeft, ChevronRight, Flag, TriangleAlert, X } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, Flag, TriangleAlert, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ICON_CLOSE_BTN_CLS, TEXT_LINK_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
@@ -907,14 +906,18 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                 <td key={lens.id} className="px-3 py-4">
                   <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
                     {url ? (
-                      <ExternalLink
+                      <a
                         href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className={`inline-flex items-center gap-1 text-xs font-medium ${TEXT_LINK_CLS}`}
                       >
+                        <ArrowUpRight className="h-3 w-3" />
                         {t("officialSite")}
-                      </ExternalLink>
+                      </a>
                     ) : (
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
+                        <ArrowUpRight className="h-3 w-3" />
                         {t("officialSite")}
                       </span>
                     )}
