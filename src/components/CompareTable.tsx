@@ -905,25 +905,24 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
               const fields = lensFields.get(lens.id);
               return (
                 <td key={lens.id} className="px-3 py-4">
-                  <div className="flex items-center justify-center gap-2">
+                  <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
                     {url ? (
                       <ExternalLink
                         href={url}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
+                        className={`inline-flex items-center gap-1 text-xs font-medium ${TEXT_LINK_CLS}`}
                       >
                         {t("officialSite")}
                       </ExternalLink>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-300 dark:border-zinc-800 dark:text-zinc-600 cursor-not-allowed">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
                         {t("officialSite")}
                       </span>
                     )}
-                    <span className="text-zinc-300 dark:text-zinc-700 select-none">·</span>
                     <FeedbackTrigger
                       type="data_issue"
                       context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
                       fields={fields}
-                      className={`inline-flex items-center gap-1.5 text-xs font-medium ${TEXT_LINK_CLS}`}
+                      className={`inline-flex items-center gap-1 text-xs font-medium ${TEXT_LINK_CLS}`}
                     >
                       <Flag className="h-3 w-3" />
                       {t("reportIssue")}
