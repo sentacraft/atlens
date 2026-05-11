@@ -1,4 +1,4 @@
-// UI constants — z-index layers and layout breakpoints.
+// UI constants — z-index layers.
 // Animation params that belong to a specific component live in that
 // component's config (e.g. Iris animation params are in IrisConfig in brand.ts).
 
@@ -44,19 +44,6 @@ export const Z = {
   fixed:   "z-40",
   overlay: "z-50",
   dialog:  "z-[60]",
-} as const;
-
-// ── Breakpoints ───────────────────────────────────────────────────────────────
-//
-// Mirror of Tailwind's default screen breakpoints, used for JS matchMedia calls.
-// If you change Tailwind's screens config, update these values to match.
-
-export const SCREEN = {
-  sm:  640,
-  md:  768,
-  lg:  1024,
-  xl:  1280,
-  "2xl": 1536,
 } as const;
 
 // ── Layout ────────────────────────────────────────────────────────────────────
