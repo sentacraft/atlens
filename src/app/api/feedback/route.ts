@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 
-export const runtime = "edge";
-
 type FeedbackType = "data_issue" | "general";
 
 interface FeedbackPayload {
@@ -115,6 +113,22 @@ function buildIssue(payload: FeedbackPayload): {
     labels,
     ...(assignees.length > 0 ? { assignees } : {}),
   };
+}
+
+// Health probe. Reports whether required env vars are wired up in the
+// current runtime, without leaking values — names are already in source.
+export function GET() {
+  const hasToken = Boolean(process.env.GITHUB_TOKEN);
+  const hasRepo = Boolean(process.env.GITHUB_FEEDBACK_REPO);
+  const missingEnv = [
+    ...(hasToken ? [] : ["GITHUB_TOKEN"]),
+    ...(hasRepo ? [] : ["GITHUB_FEEDBACK_REPO"]),
+  ];
+  return NextResponse.json({
+    ok: true,
+    ready: missingEnv.length === 0,
+    missingEnv,
+  });
 }
 
 export async function POST(req: Request) {
