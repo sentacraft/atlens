@@ -688,13 +688,6 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
               horizontal overflow container. */}
           {orderedLenses.length > 0 && orderedLenses.some((l) => pickPriceEntry(l.pricing, locale) !== null) && (
             <React.Fragment>
-              <tr className="border-b border-zinc-100 bg-zinc-100/80 dark:border-zinc-800/60 dark:bg-zinc-800/60">
-                <td colSpan={totalColSpan} className="h-8 text-center">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-                    {tPricing("groupLabel")}
-                  </span>
-                </td>
-              </tr>
               <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
                 <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 break-words align-middle">
                   {/* Two-line label: row name on top, single action-oriented

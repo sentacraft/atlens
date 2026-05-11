@@ -444,7 +444,7 @@
     "disclaimerWarn": "仅供参考",
     "disclaimerLead": "市场行情，仅供参考。",
     "disclaimerBody": "渠道、优惠活动、成色与市场行情都可能让实际价格显著偏离此参考值，请务必核实最新价格。",
-    "rowLabel": "市场参考",
+    "rowLabel": "市场价参考",
     "rowWarn": "请务必核实最新价格",
     "usedReason": "官方渠道未采集到该镜头的新品价格，此处展示二手市场参考价。",
     "sampledAt": "采样于 {date}"

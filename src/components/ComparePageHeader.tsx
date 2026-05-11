@@ -50,7 +50,7 @@ export default function ComparePageHeader({ lenses, minColumns = 0, presetTitle,
         <h1 className="hidden sm:block text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           {t("title")}
         </h1>
-        {lenses.length >= minColumns && <CompareAddLensButton lenses={lenses} />}
+        {lenses.length >= minColumns && <CompareAddLensButton />}
         {lenses.length > 0 && (
           <button
             onClick={() => { clearCompare(); router.replace(`/lenses/${mountToUrlSegment(mount)}/compare`); }}

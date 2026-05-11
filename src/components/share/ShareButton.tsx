@@ -141,15 +141,16 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   }, []);
 
   const handleNativeShare = useCallback(async () => {
+    const shareTitle = customTitle.trim() || computedPosterTitle.join(" · ");
     try {
       await navigator.share({
-        title: lenses.map((l) => l.model).join(" vs "),
+        title: shareTitle,
         url: window.location.href,
       });
     } catch {
       // user cancelled or not supported
     }
-  }, [lenses]);
+  }, [customTitle, computedPosterTitle]);
 
   const handleDownload = useCallback(async () => {
     if (!posterRef.current) return;
@@ -169,6 +170,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
 
   const handleShareImage = useCallback(async () => {
     if (!posterRef.current) return;
+    const shareTitle = customTitle.trim() || computedPosterTitle.join(" · ");
     setPosterGenerating(true);
     let url: string | undefined;
     try {
@@ -177,7 +179,8 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       const file = new File([blob], `x-glass_${slugRef.current}.png`, { type: "image/png" });
       await navigator.share({
         files: [file],
-        title: lenses.map((l) => l.model).join(" vs "),
+        title: shareTitle,
+        text: shareTitle,
       });
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;
