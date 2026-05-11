@@ -4,6 +4,11 @@
 // exportToConfig does a full replacement of the preset body — no regex patching.
 // The only constraint: numeric fields must be plain decimal literals so that
 // readFromConfig can parse them back with a simple regex.
+//
+// CLOUDFLARE WORKERS: this file uses `fs/promises` and `child_process`, neither
+// of which exist in the Workers runtime (nodejs_compat does not cover them).
+// Only runs in local dev because ../layout.tsx 404s in production. See
+// ../README.md before editing.
 
 import { writeFile, readFile } from "fs/promises";
 import { exec } from "child_process";
