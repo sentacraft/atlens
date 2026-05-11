@@ -358,7 +358,7 @@
     "disclaimerCopyright": "Product images and brand trademarks are the property of their respective owners. If you are a rights holder and believe your content has been used improperly, please contact xglass@sentacraft.com.",
     "privacyTitle": "Privacy",
     "privacyBody": "X-Glass does not require registration, does not collect personal information, and does not use cookies.",
-    "privacyAnalytics": "This site uses Vercel Analytics to collect aggregated, anonymous data such as page views, referrers, and device types — solely to help improve the product. No personally identifiable information is collected.",
+    "privacyAnalytics": "This site uses Vercel Analytics and Cloudflare Web Analytics to collect aggregated, anonymous data such as page views, referrers, and device types — solely to help improve the product. No personally identifiable information is collected.",
     "donationTitle": "Support the Project",
     "donationBody": "X-Glass is open source on GitHub. Every spec in this database went through tedious data extraction and manual cross-checking. If it helped you find the right lens — or saved you some time — consider supporting the project.",
     "donationComingSoon": "Sponsorship options are being set up — check back soon.",
