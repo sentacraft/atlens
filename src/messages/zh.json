@@ -358,7 +358,7 @@
     "disclaimerCopyright": "本站展示的产品图片及品牌商标，版权归各自所有者所有。如您是权利人并认为存在侵权问题，请联系 xglass@sentacraft.com。",
     "privacyTitle": "隐私",
     "privacyBody": "X-Glass 不要求注册，不收集任何个人信息，也不使用 Cookie。",
-    "privacyAnalytics": "本站接入了 Vercel Analytics，用于统计页面访问量、来源及设备类型等聚合匿名数据，以便持续改善产品体验。这些数据不包含任何可识别个人身份的信息。",
+    "privacyAnalytics": "本站接入了 Vercel Analytics 和 Cloudflare Web Analytics，用于统计页面访问量、来源及设备类型等聚合匿名数据，以便持续改善产品体验。这些数据不包含任何可识别个人身份的信息。",
     "donationTitle": "捐赠与支持",
     "donationBody": "X-Glass 代码已在 GitHub 开源。这里的每一组镜头参数，都经历了繁琐的数据抓取与人工交叉校准。如果你觉得这个数据库帮你选到了心仪的镜头，或者为你节省了时间，欢迎赞赏支持。",
     "donationComingSoon": "",
