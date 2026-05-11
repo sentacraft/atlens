@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { parseLensIds } from "@/lib/lens";
 import { urlSegmentToMount } from "@/lib/mount";
 import { getPresetBySlug } from "@/lib/curated-presets";
@@ -8,6 +8,14 @@ import ComparePageHeader from "@/components/ComparePageHeader";
 import CuratedComparisons from "@/components/CuratedComparisons";
 import { buildAlternates } from "@/lib/seo";
 import { notFound } from "next/navigation";
+
+// Compare page depends on ?ids=A,B,C searchParams for server-rendered metadata
+// (title and OG tag include the lens names), so it cannot be fully SSG. The
+// trade-off: keep it as SSR but mark it cacheable with a long s-maxage so the
+// edge CDN (Vercel Edge Cache / Cloudflare) caches each unique URL after first
+// render. Result: per-URL CPU cost happens once per (ids, preset) combination,
+// then subsequent visitors hit cache.
+export const revalidate = 31536000; // 1 year
 
 type Params = Promise<{ locale: string; mount: string }>;
 type SearchParams = Promise<{ ids?: string; from?: "lens" | "home"; lensId?: string; preset?: string }>;
@@ -59,6 +67,7 @@ export default async function ComparePage({
   searchParams: SearchParams;
 }) {
   const { locale, mount } = await params;
+  setRequestLocale(locale);
   const { ids, preset } = await searchParams;
   const resolvedMount = urlSegmentToMount(mount);
   if (!resolvedMount) {

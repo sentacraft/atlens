@@ -1,22 +1,33 @@
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
 import { buildAlternates } from "@/lib/seo";
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-  const { locale } = await params;
-  return { alternates: buildAlternates(locale, "") };
-}
 import DataInfo from "@/components/DataFooter";
 import HomeCta from "@/components/HomeCta";
 import HeroBrand from "@/components/MountTag";
 import HeroIris from "@/components/HeroIris";
 import Tagline from "@/components/Tagline";
 
-export default function Home() {
+type Params = Promise<{ locale: string }>;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return { alternates: buildAlternates(locale, "") };
+}
+
+export default async function HomePage({ params }: { params: Params }) {
+  const { locale } = await params;
+  // Enables static rendering for this page. Must be called before any
+  // useTranslations/getTranslations descendant access.
+  setRequestLocale(locale);
+  return <HomeContent />;
+}
+
+function HomeContent() {
   const t = useTranslations("Common");
 
   return (

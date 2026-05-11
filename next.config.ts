@@ -20,6 +20,24 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: process.cwd(),
   },
+  // Path-level redirects handled by the routing layer (before any React
+  // rendering). Replaces the prior page components at /[locale]/lenses and
+  // /[locale]/lenses/compare that only existed to call `redirect()`. Query
+  // strings (e.g. ?ids=A,B,C) are forwarded automatically by Next.js.
+  async redirects() {
+    return [
+      {
+        source: "/:locale(en|zh)/lenses",
+        destination: "/:locale/lenses/x",
+        permanent: false,
+      },
+      {
+        source: "/:locale(en|zh)/lenses/compare",
+        destination: "/:locale/lenses/x/compare",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

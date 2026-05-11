@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getLensesByMount } from "@/lib/lens";
 import { urlSegmentToMount } from "@/lib/mount";
 import LensListClient from "@/components/LensListClient";
@@ -25,6 +25,7 @@ export async function generateMetadata({
 
 export default async function LensesPage({ params }: { params: Params }) {
   const { locale, mount } = await params;
+  setRequestLocale(locale);
   const resolvedMount = urlSegmentToMount(mount);
   if (!resolvedMount) {
     notFound();
