@@ -28,7 +28,7 @@ import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { buildSpecGroups, resolveSpecRow } from "@/lib/lens-spec-groups";
 import type { StructuredLine, ResolvedSpecRow } from "@/lib/lens-spec-groups";
 import type { Lens } from "@/lib/types";
-import { PriceBand } from "@/components/PriceBand";
+import { PriceCell } from "@/components/PriceCell";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 
@@ -635,7 +635,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                   return (
                     <td key={lens.id} className="px-3 py-3">
                       <div className="flex justify-center">
-                        <PriceBand lens={lens} compact />
+                        <PriceCell lens={lens} compact />
                       </div>
                     </td>
                   );

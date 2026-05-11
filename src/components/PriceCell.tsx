@@ -23,7 +23,7 @@ interface Props {
   compact?: boolean;
 }
 
-export function PriceBand({ lens, compact = false }: Props) {
+export function PriceCell({ lens, compact = false }: Props) {
   const t = useTranslations("Pricing");
   const locale = useLocale();
   const selection = pickPriceEntry(lens.pricing, locale);
