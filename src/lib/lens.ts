@@ -1,5 +1,5 @@
 import lensesData from "../data/lenses.json";
-import gfxLensesData from "../data/lenses-g.json";
+import gfxLensesData from "../data/lenses-gfx.json";
 import metaData from "../data/meta.json";
 import { lensCatalogSchema } from "./lens-schema";
 import { resolveTranslations, type Lens, type LensCatalog, type Mount, type SpecialtyTag } from "./types";

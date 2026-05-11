@@ -14,7 +14,7 @@
 
 import { routing } from "../i18n/routing.ts";
 import xLensesData from "../data/lenses.json" with { type: "json" };
-import gLensesData from "../data/lenses-g.json" with { type: "json" };
+import gLensesData from "../data/lenses-gfx.json" with { type: "json" };
 
 /**
  * Subpaths under /[locale] expected to be prerendered for every locale.

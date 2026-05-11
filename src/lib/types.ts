@@ -285,7 +285,7 @@ export interface Lens {
 
   /**
    * Camera mount this lens record covers. Determines which dataset the lens
-   * belongs to (lenses.json for X, lenses-g.json for G) and which front-end
+   * belongs to (lenses.json for X, lenses-gfx.json for G) and which front-end
    * routes serve it.
    */
   mount: Mount;
