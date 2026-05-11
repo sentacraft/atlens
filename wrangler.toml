@@ -7,6 +7,14 @@ compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 directory = ".open-next/assets"
 binding = "ASSETS"
 
+# Workers Builds rewrites Text bindings from this section on every deploy,
+# overwriting anything added via the Dashboard. Non-secret config must
+# live here. Secrets (e.g. GITHUB_TOKEN) stay in the Dashboard.
+[vars]
+SITE_URL = "https://xglass.sentacraft.com"
+GITHUB_FEEDBACK_REPO = "sentacraft/x-glass-pipeline"
+GITHUB_FEEDBACK_ASSIGNEES = "sentacraft"
+
 [observability]
 enabled = false
 head_sampling_rate = 1
