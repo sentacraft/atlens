@@ -238,15 +238,17 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col gap-8">
       {/* Header: image + key info side by side */}
       <div className="flex flex-col sm:flex-row gap-8">
-        {/* Image */}
-        <div className="w-full max-w-56 mx-auto sm:mx-0 shrink-0 sm:w-56">
+        {/* Image — 288px so the 1:1 card height matches (or slightly exceeds)
+            the info column, letting mt-auto on the buttons row push them
+            cleanly to the image's bottom edge. */}
+        <div className="w-full max-w-72 mx-auto sm:mx-0 shrink-0 sm:w-72">
           <div className="flex aspect-square items-center justify-center overflow-hidden rounded-2xl border border-zinc-100 bg-zinc-50/70 p-5 dark:border-zinc-800 dark:bg-zinc-900/50">
             <div className="relative aspect-square w-full overflow-hidden">
               <Image
                 src={getLensImageUrl(lens.id)}
                 alt={lens.model}
                 fill
-                sizes="224px"
+                sizes="288px"
                 style={lensImageStyle}
                 className="object-contain"
                 priority
@@ -270,8 +272,9 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           {/* Price */}
           <PriceSection lens={lens} />
 
-          {/* Actions */}
-          <div className="flex flex-wrap gap-3 mt-3">
+          {/* Actions — mt-auto pushes them to the bottom of the stretched
+              info column so the row aligns with the image card's bottom. */}
+          <div className="flex flex-wrap gap-3 mt-auto">
             <AddToCompareButton lensId={lens.id} />
             {url ? (
               <ExternalLink href={url} className={ACTION_OUTLINE_CLS}>

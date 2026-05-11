@@ -292,8 +292,7 @@
     "tagUltraMacro": "Ultra Macro",
     "tagFisheye": "Fisheye",
     "tagProbe": "Probe",
-    "priceLabel": "Price Range",
-    "tierSymbol": "$",
+    "priceLabel": "Price",
     "usedBadge": "Used"
   },
   "About": {
@@ -344,7 +343,7 @@
     "dataPricingPoint2Title": "Sourced from brand-official storefronts",
     "dataPricingPoint2Body": "Prices come from brand-operated e-commerce. When a brand has no unified global storefront, the US storefront is used as a reference.",
     "dataPricingPoint3Title": "Used market as fallback",
-    "dataPricingPoint3Body": "When no official listing is available, used market listings are sampled, and a median of multiple listings is computed to reduce outlier impact.",
+    "dataPricingPoint3Body": "When no official listing is available, used market listings are sampled, and a median of multiple listings is computed to reduce outlier impact — though used prices still vary substantially with condition and timing, so treat them as a rough reference.",
     "dataPricingPoint4Title": "Point-in-time snapshots, not real-time",
     "dataPricingPoint4Body": "Prices reflect the state at sampling time and are not continuously updated.",
     "dataGitHubCardTitle": "Full pipeline architecture",
@@ -442,12 +441,12 @@
     "conditionNew": "New",
     "conditionUsed": "Used",
     "cnyAmount": "¥{value}",
-    "tierSymbol": "$",
-    "disclaimerTrigger": "For reference only",
-    "detailNewNote": "This price was sampled from one storefront at one point in time and is not continuously updated. Actual prices may differ due to promotions, coupons, or regional pricing, and may not represent the lowest available price.",
-    "detailUsedNote": "This is the median of several listings sampled from one platform at one point in time. Actual prices vary with condition, accessories, and seller, and may differ significantly.",
-    "tierNote": "The price tier gives you a quick sense of the lens's price range. Click to see the exact sampled price and source. Prices are not continuously updated and are for reference only.",
-    "usedReason": "A new price could not be found from official channels; showing a used market price instead.",
+    "disclaimerWarn": "Indicative price",
+    "disclaimerLead": "Market reference, indicative only.",
+    "disclaimerBody": "Actual prices may differ significantly from this reference due to retailer, promotions, condition, and market dynamics — please verify the latest price.",
+    "rowLabel": "Reference",
+    "rowWarn": "please do verify the latest price",
+    "usedReason": "No new-price listing was found in official channels; showing a used-market reference instead.",
     "sampledAt": "Sampled {date}"
   }
 }

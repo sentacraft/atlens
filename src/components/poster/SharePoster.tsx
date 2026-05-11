@@ -8,8 +8,9 @@ import { FEATURE_ICONS } from "@/lib/feature-icons";
 import type { Lens } from "@/lib/types";
 import { Weight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { classifyFocusMotor, priceTier } from "@/lib/lens";
-import { pickPriceEntry, formatTierRange } from "@/lib/lens-pricing";
+import { TriangleAlert } from "lucide-react";
+import { classifyFocusMotor } from "@/lib/lens";
+import { pickPriceEntry, formatPrice, formatSampledAt } from "@/lib/lens-pricing";
 import { getLensImageUrl } from "@/lib/lens-image";
 import {
   filterSizeDisplay,
@@ -76,8 +77,13 @@ export interface PosterLabels {
   tagProbe: string;
   // Pricing
   priceLabel: string;
-  tierSymbol: string;
   usedBadge: string;
+  /** CNY display template, e.g. "{value} 元" or "¥{value}". {value} is replaced with the formatted number. */
+  cnyAmount: string;
+  /** Sampled-date template, e.g. "采样于 {date}" / "Sampled {date}". */
+  sampledAt: string;
+  /** Short warn label rendered under each price, e.g. "仅供参考" / "Indicative price". */
+  disclaimerWarn: string;
   // Fallback
   na: string;
   // Locale hint for formatting
@@ -570,9 +576,13 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
           ))}
         </div>
 
-        {/* Row 3: Price tier */}
+        {/* Row 3: Price column — value (+Used badge) / source · date / ⚠ warn.
+            The warn line sits BELOW the value (not above) so it doesn't
+            occupy the field-name slot used by other hero stats (focal,
+            aperture). Each column carries its own warn line — repetition is
+            intentional: every price independently needs the caveat. */}
         {showPrice && (
-          <div style={{ ...gridStyle(n), marginTop: 16 }}>
+          <div style={{ ...gridStyle(n), marginTop: 32 }}>
             {lenses.map((lens, i) => {
               const sel = priceSelections[i];
               if (!sel) {
@@ -582,24 +592,21 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   </div>
                 );
               }
-              const tier = priceTier(sel.entry.price, sel.entry.currency);
-              if (tier === undefined) {
-                return (
-                  <div key={i} style={{ display: "flex", justifyContent: "center" }}>
-                    <span className="text-zinc-300" style={{ fontSize: 9 }}>—</span>
-                  </div>
-                );
-              }
-              const rangeDisplay = formatTierRange(tier, sel.entry.currency, labels.locale);
-              const rangeFormatted = sel.entry.currency === "CNY"
-                ? `¥${rangeDisplay}`
-                : `$${rangeDisplay}`;
               const isUsed = sel.condition === "used";
+              const priceDisplay = formatPrice(
+                sel.entry.price,
+                sel.entry.currency,
+                labels.locale,
+                sel.condition,
+                labels.cnyAmount,
+              );
+              const sampledDisplay = formatSampledAt(sel.entry.sampledAt, labels.locale);
               return (
-                <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+                <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                  {/* Value + Used badge */}
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                    <span className={cn("font-semibold tabular-nums tracking-wide text-zinc-700 leading-none", statSize)}>
-                      {labels.tierSymbol.repeat(tier)}
+                    <span className={cn("font-semibold tabular-nums text-zinc-700 leading-none", statSize)}>
+                      {priceDisplay}
                     </span>
                     {isUsed && (
                       <span className="rounded bg-zinc-200 px-1 py-px text-zinc-500" style={{ fontSize: 8, fontWeight: 500 }}>
@@ -607,8 +614,18 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                       </span>
                     )}
                   </span>
-                  <span className="tabular-nums text-zinc-400" style={{ fontSize: 10 }}>
-                    {rangeFormatted}
+                  {/* Caption row 1: source */}
+                  <span className="tabular-nums text-zinc-400 leading-tight text-center" style={{ fontSize: 9, maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {sel.entry.source}
+                  </span>
+                  {/* Caption row 2: sampled date */}
+                  <span className="tabular-nums text-zinc-400 leading-tight" style={{ fontSize: 9 }}>
+                    {labels.sampledAt.replace("{date}", sampledDisplay)}
+                  </span>
+                  {/* Caption row 3: ⚠ warn (amber, slightly bolder) */}
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d97706", fontSize: 9, fontWeight: 600 }}>
+                    <TriangleAlert size={9} />
+                    {labels.disclaimerWarn}
                   </span>
                 </div>
               );

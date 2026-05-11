@@ -59,3 +59,20 @@ export const ICON_CLOSE_BTN_CLS =
   "inline-flex shrink-0 items-center justify-center rounded-full transition-colors " +
   "text-zinc-500 hover:bg-red-50 hover:text-red-500 active:bg-red-50 active:text-red-500 " +
   "dark:text-zinc-400 dark:hover:bg-red-950/30 dark:hover:text-red-400 dark:active:bg-red-950/30 dark:active:text-red-400";
+
+/**
+ * Price disclaimer tokens — used by PriceDisclaimer (detail page, compare
+ * table popover) and the SharePoster price caption.
+ *
+ * Visual hierarchy:
+ *   warn → amber, bold (warning prefix, e.g. "仅供参考" / "Indicative price")
+ *   body → zinc, normal weight (the actual disclaimer sentence)
+ *
+ * The leading TriangleAlert icon shares the warn color.
+ */
+export const PRICE_DISCLAIMER_WARN_CLS =
+  "font-semibold text-amber-600 dark:text-amber-400";
+export const PRICE_DISCLAIMER_BODY_CLS =
+  "text-zinc-500 dark:text-zinc-400";
+export const PRICE_DISCLAIMER_ICON_CLS =
+  "shrink-0 text-amber-600 dark:text-amber-400";
