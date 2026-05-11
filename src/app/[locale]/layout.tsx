@@ -34,11 +34,21 @@ export const viewport: Viewport = {
 // so the localized tree owns the canonical metadata. The non-localized
 // /offline route declares its own minimal metadata.
 function resolveMetadataBase(): URL {
+  // SITE_URL is the explicit canonical override — set in the deploy
+  // platform's env settings to pin the production URL regardless of host.
+  if (process.env.SITE_URL) {
+    return new URL(process.env.SITE_URL);
+  }
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
     return new URL(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`);
   }
   if (process.env.VERCEL_URL) {
     return new URL(`https://${process.env.VERCEL_URL}`);
+  }
+  // CF_PAGES_URL is injected by Cloudflare Workers Builds at build time
+  // (legacy naming from Pages; applies to Workers Builds too).
+  if (process.env.CF_PAGES_URL) {
+    return new URL(process.env.CF_PAGES_URL);
   }
   return new URL("http://localhost:3000");
 }

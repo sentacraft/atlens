@@ -12,6 +12,7 @@
     "validate:lenses": "node --experimental-strip-types scripts/validate-lenses.mts",
     "check:static-routes": "node --experimental-strip-types scripts/check-static-routes.mts",
     "build": "npm run validate:lenses && next build && npm run check:static-routes",
+    "build:cf": "npm run assets:icons && npm run build && npx opennextjs-cloudflare build",
     "start": "next start",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
@@ -32,7 +33,7 @@
     "lucide-react": "^1.7.0",
     "modern-screenshot": "^4.6.8",
     "motion": "^12.38.0",
-    "next": "^16.2.3",
+    "next": "^16.2.6",
     "next-intl": "^4.8.3",
     "qrcode.react": "^4.2.0",
     "react": "19.2.4",
@@ -44,6 +45,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.19.8",
     "@playwright/test": "^1.59.1",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/postcss": "^4",
@@ -55,6 +57,7 @@
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5",
-    "vitest": "^4.1.1"
+    "vitest": "^4.1.1",
+    "wrangler": "^4.90.0"
   }
 }

@@ -20,6 +20,18 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: process.cwd(),
   },
+  // Disable Next.js's /_next/image optimization endpoint.
+  //
+  // On Cloudflare Workers via OpenNext, that endpoint requires an `IMAGES`
+  // binding (Cloudflare Images, paid). Without it, every <Image> request
+  // round-trips through the Worker for a no-op passthrough — eating CPU and
+  // slowing down list pages with many thumbnails. Since our lens images are
+  // already pre-optimized webp at fixed sizes, Next.js's on-the-fly resize/
+  // format-conversion adds no value. Unoptimized mode emits plain <img>
+  // tags, served straight from the ASSETS binding by Cloudflare's CDN.
+  images: {
+    unoptimized: true,
+  },
   // Path-level redirects handled by the routing layer (before any React
   // rendering). Replaces the prior page components at /[locale]/lenses and
   // /[locale]/lenses/compare that only existed to call `redirect()`. Query
