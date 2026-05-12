@@ -1,8 +1,9 @@
 import { domToPng } from "modern-screenshot";
 
 interface RasterizeOptions {
-  /** Cap the output width in pixels. Use 1280 when targeting WeChat to
-   * avoid its 1280-axis downscale (which then JPEG-compresses on top). */
+  /** Cap the output width in pixels. 1280 is the long-axis threshold used
+   * by the most aggressive mainstream IM compressors; capping there avoids
+   * the resize stage and only takes a single quality-compression hit. */
   maxWidth?: number;
 }
 
