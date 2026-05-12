@@ -1,6 +1,6 @@
 MIT License
 
-Applies to: source code only. Excludes src/data/lenses.json — see LICENSE-DATA.
+Applies to: source code only. Excludes src/data/lenses.json and src/data/lenses-gfx.json — see LICENSE-DATA.
 
 Copyright (c) 2026 SentaCraft
 
