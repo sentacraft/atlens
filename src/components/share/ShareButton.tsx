@@ -141,16 +141,20 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   }, []);
 
   const handleNativeShare = useCallback(async () => {
-    const shareTitle = customTitle.trim() || computedPosterTitle.join(" · ");
+    const posterTitle = customTitle.trim() || computedPosterTitle.join(" · ");
+    const isSingle = lenses.length === 1;
+    const title = isSingle
+      ? t("nativeTitleSingle", { title: posterTitle })
+      : t("nativeTitle", { title: posterTitle });
     try {
       await navigator.share({
-        title: shareTitle,
+        title,
         url: window.location.href,
       });
     } catch {
       // user cancelled or not supported
     }
-  }, [customTitle, computedPosterTitle]);
+  }, [customTitle, computedPosterTitle, lenses.length, t]);
 
   const handleDownload = useCallback(async () => {
     if (!posterRef.current) return;
@@ -170,29 +174,42 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
 
   const handleShareImage = useCallback(async () => {
     if (!posterRef.current) return;
-    const shareTitle = customTitle.trim() || computedPosterTitle.join(" · ");
+    const posterTitle = customTitle.trim() || computedPosterTitle.join(" · ");
+    const isSingle = lenses.length === 1;
+    const title = isSingle
+      ? t("nativeTitleSingle", { title: posterTitle })
+      : t("nativeTitle", { title: posterTitle });
+    const textBody = isSingle
+      ? t("nativeTextSingle", { title: posterTitle })
+      : t("nativeText", { title: posterTitle, count: lenses.length });
+    const slogan = customSlogan.trim();
+    const pageUrl = window.location.href;
+    const textParts = [textBody, slogan, `👉 ${pageUrl}`].filter(Boolean);
+    const text = textParts.join("\n");
+
     setPosterGenerating(true);
-    let url: string | undefined;
+    let blobUrl: string | undefined;
     try {
-      url = await rasterizePoster(posterRef.current);
-      const blob = await (await fetch(url)).blob();
-      const file = new File([blob], `${shareTitle}.png`, { type: "image/png" });
+      blobUrl = await rasterizePoster(posterRef.current);
+      const blob = await (await fetch(blobUrl)).blob();
+      const file = new File([blob], `${posterTitle}.png`, { type: "image/png" });
       await navigator.share({
         files: [file],
-        text: shareTitle,
+        title,
+        text,
       });
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;
-      if (url) {
+      if (blobUrl) {
         const link = document.createElement("a");
         link.download = `x-glass_${slugRef.current}.png`;
-        link.href = url;
+        link.href = blobUrl;
         link.click();
       }
     } finally {
       setPosterGenerating(false);
     }
-  }, [customTitle, computedPosterTitle]);
+  }, [customTitle, customSlogan, computedPosterTitle, lenses.length, t]);
 
   const truncatedUrl = shareUrl.length > 56 ? shareUrl.slice(0, 56) + "…" : shareUrl;
   const lensCaption = lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand)).join(" / ");

@@ -250,7 +250,11 @@
     "customize": "自定义",
     "customizeTitle": "标题",
     "customizeSlogan": "补充文案",
-    "customizeSloganPlaceholder": "写一句你想加的话…"
+    "customizeSloganPlaceholder": "写一句你想加的话…",
+    "nativeTitle": "{title} — X-Glass 镜头对比",
+    "nativeTitleSingle": "{title} — X-Glass",
+    "nativeText": "{title}，{count} 支镜头规格一图看清",
+    "nativeTextSingle": "{title} 完整规格"
   },
   "ShareImage": {
     "comparison": "镜头对比",
