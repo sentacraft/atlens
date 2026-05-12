@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import Iris from "@/components/Iris";
 import type { IrisConfig } from "@/config/iris-config";
@@ -53,7 +54,7 @@ interface FeedbackDialogProps {
   fields?: FeedbackField[];
 }
 
-type Status = "idle" | "submitting" | "success" | "error";
+type Status = "idle" | "submitting" | "success";
 
 const IRIS_FEEDBACK: IrisConfig = {
   N: 7,
@@ -82,7 +83,6 @@ export default function FeedbackDialog({
   const [suggestedCorrection, setSuggestedCorrection] = useState("");
   const [replyEmail, setReplyEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const dialogLayerRef = useRef<HTMLDivElement | null>(null);
   const textareaId = useId();
@@ -118,7 +118,6 @@ export default function FeedbackDialog({
       setSuggestedCorrection("");
       setReplyEmail("");
       setStatus("idle");
-      setErrorMessage(null);
       setSubmitAttempted(false);
     }
   }, [open]);
@@ -142,7 +141,6 @@ export default function FeedbackDialog({
     }
 
     setStatus("submitting");
-    setErrorMessage(null);
 
     try {
       const res = await fetch("/api/feedback", {
@@ -170,8 +168,9 @@ export default function FeedbackDialog({
 
       setStatus("success");
     } catch (err) {
-      setStatus("error");
-      setErrorMessage(err instanceof Error ? err.message : "unknown");
+      setStatus("idle");
+      const detail = err instanceof Error ? err.message : "unknown";
+      toast.error(`${t("error")} (${detail})`);
     }
   }
 
@@ -343,12 +342,7 @@ export default function FeedbackDialog({
                 {t("contentRequired")}
               </p>
             )}
-            {status === "error" && (
-              <p className="text-xs text-red-600 dark:text-red-400">
-                {t("error")}
-                {errorMessage ? ` (${errorMessage})` : ""}
-              </p>
-            )}
+            {/* Submission errors are shown via toast, not inline */}
           </form>
         )}
 

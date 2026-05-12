@@ -84,7 +84,7 @@ export default function Nav() {
     : `/lenses/${seg}/compare`;
 
   const linkCls = (active: boolean) =>
-    `text-sm transition-colors px-1 sm:px-2 ${
+    `text-sm transition-colors px-2 ${
       active
         ? "text-zinc-900 dark:text-zinc-50 font-medium"
         : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
@@ -171,7 +171,7 @@ export default function Nav() {
         </div>
 
         {/* Mobile: primary links inline + secondary in overflow menu */}
-        <div className="flex items-center sm:hidden gap-0.5">
+        <div className="flex items-center sm:hidden gap-1">
           <Link href={browseHref} className={linkCls(isBrowseActive)}>
             {t("lenses")}
           </Link>

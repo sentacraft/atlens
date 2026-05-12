@@ -5,7 +5,7 @@
 // Layout (visually bound as a single "price info" card):
 //   ¥1,299  [Used ⓘ]   ← Used badge is clickable; explains why used was picked
 //   source · Sampled date
-//   ⚠ 仅供参考 · …
+//   ⚠ Disclaimer · …
 //
 // All three rows share a soft background so the disclaimer is
 // unambiguously about THIS price, not the spec table that follows below.
@@ -68,7 +68,7 @@ export function PriceSection({ lens }: Props) {
       </div>
 
       {/* Row 3: Inline disclaimer */}
-      <PriceDisclaimer className="mt-0.5" />
+      <PriceDisclaimer className="mt-1 pt-2 border-t border-zinc-100 dark:border-zinc-800" />
     </div>
   );
 }

@@ -78,11 +78,11 @@ export interface PosterLabels {
   // Pricing
   priceLabel: string;
   usedBadge: string;
-  /** CNY display template, e.g. "{value} 元" or "¥{value}". {value} is replaced with the formatted number. */
+  /** CNY display template, e.g. "{value} Yuan" or "¥{value}". {value} is replaced with the formatted number. */
   cnyAmount: string;
-  /** Sampled-date template, e.g. "采样于 {date}" / "Sampled {date}". */
+  /** Sampled-date template, e.g. "Sampled {date}". */
   sampledAt: string;
-  /** Short warn label rendered under each price, e.g. "仅供参考" / "Indicative price". */
+  /** Short warn label rendered under each price, e.g. "Indicative price". */
   disclaimerWarn: string;
   // Fallback
   na: string;

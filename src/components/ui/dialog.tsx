@@ -48,18 +48,20 @@ function DialogPortal({
   );
 }
 
-// base-ui's Dialog.Backdrop renders no DOM node when inside Dialog.Portal,
-// so we use a plain div instead.
-function DialogBackdrop({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+// Clicking the backdrop dismisses the dialog. We render it as a
+// DialogPrimitive.Close so the close flows through Base UI's internal
+// onOpenChange — no need to thread the callback through props.
+function DialogBackdrop({ className }: { className?: string }) {
   return (
-    <div
+    <DialogPrimitive.Close
+      render={<div />}
       data-slot="dialog-backdrop"
-      aria-hidden="true"
       className={cn(
-        "absolute inset-0 bg-zinc-950/55 backdrop-blur-sm",
+        "absolute inset-0 bg-zinc-950/55 backdrop-blur-sm cursor-default outline-none",
         className
       )}
-      {...props}
+      aria-label="Close"
+      tabIndex={-1}
     />
   );
 }

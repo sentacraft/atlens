@@ -2,10 +2,9 @@
 
 // Inline price disclaimer block.
 //
-// Reads as one continuous paragraph: a sentence-style lead (e.g. "市场
-// 行情，仅供参考。") in amber, followed by the body in the zinc caption
-// color — no middle-dot separator, just whitespace, so the two pieces
-// flow as a single statement.
+// Reads as one continuous paragraph: a sentence-style lead in amber,
+// followed by the body in the zinc caption color — no separator, just
+// whitespace, so the two pieces flow as a single statement.
 
 import { TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -25,22 +24,25 @@ interface Props {
 export function PriceDisclaimer({ compact = false, className }: Props) {
   const t = useTranslations("Pricing");
   return (
-    <div
+    <p
       className={cn(
-        "flex items-start gap-1.5 leading-relaxed",
-        compact ? "text-[11px]" : "text-xs",
+        "leading-relaxed",
+        compact ? "text-[10px]" : "text-[11px]",
+        PRICE_DISCLAIMER_BODY_CLS,
         className,
       )}
     >
       <TriangleAlert
-        className={cn(PRICE_DISCLAIMER_ICON_CLS, compact ? "size-3 mt-px" : "size-3.5 mt-px")}
+        className={cn(
+          PRICE_DISCLAIMER_ICON_CLS,
+          "inline-block align-text-bottom mr-1",
+          compact ? "size-3" : "size-3.5",
+        )}
         aria-hidden="true"
       />
-      <span className={PRICE_DISCLAIMER_BODY_CLS}>
-        <span className={PRICE_DISCLAIMER_WARN_CLS}>{t("disclaimerLead")}</span>
-        {" "}
-        {t("disclaimerBody")}
-      </span>
-    </div>
+      <span className={PRICE_DISCLAIMER_WARN_CLS}>{t("disclaimerLead")}</span>
+      {" "}
+      {t("disclaimerBody")}
+    </p>
   );
 }

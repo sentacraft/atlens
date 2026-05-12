@@ -10,25 +10,28 @@ export interface ShareCapabilities {
   canShareFile: boolean;
 }
 
+function detectCapabilities() {
+  const canNativeShare = "share" in navigator;
+  let canShareFile = false;
+  if ("canShare" in navigator) {
+    const testFile = new File(["x"], "test.png", { type: "image/png" });
+    canShareFile = (navigator as Navigator & { canShare: (d: object) => boolean }).canShare({
+      files: [testFile],
+    });
+  }
+  return { canNativeShare, canShareFile };
+}
+
 export function useShareCapabilities(): ShareCapabilities {
-  const [mounted, setMounted] = useState(false);
-  const [canNativeShare, setCanNativeShare] = useState(false);
-  const [canShareFile, setCanShareFile] = useState(false);
+  const [caps, setCaps] = useState<{ canNativeShare: boolean; canShareFile: boolean } | null>(null);
   const isDesktop = useBreakpoint("sm");
 
-  useEffect(() => {
-    setMounted(true);
-    setCanNativeShare("share" in navigator);
+  useEffect(() => { setCaps(detectCapabilities()); }, []);
 
-    if ("canShare" in navigator) {
-      const testFile = new File(["x"], "test.png", { type: "image/png" });
-      setCanShareFile(
-        (navigator as Navigator & { canShare: (d: object) => boolean }).canShare({
-          files: [testFile],
-        })
-      );
-    }
-  }, []);
-
-  return { mounted, isDesktop, canNativeShare, canShareFile };
+  return {
+    mounted: caps !== null,
+    isDesktop,
+    canNativeShare: caps?.canNativeShare ?? false,
+    canShareFile: caps?.canShareFile ?? false,
+  };
 }

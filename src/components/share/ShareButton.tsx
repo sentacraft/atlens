@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
+import { toast } from "sonner";
 import { Popover } from "@base-ui/react/popover";
 import { Drawer } from "@base-ui/react/drawer";
 import { Tabs } from "@base-ui/react/tabs";
@@ -38,13 +39,11 @@ interface ShareButtonProps {
 function computePosterTitle(
   lenses: Lens[],
   tBrand: (key: string) => string,
-  comparisonLabel: string,
-  locale: string,
+  tImage: (key: string, values?: Record<string, string>) => string,
 ): string[] {
   if (lenses.length >= 2) {
     const uniqueBrands = [...new Set(lenses.map((l) => tBrand(l.brand)))];
-    const colon = locale === "zh" ? "：" : ": ";
-    return [`${comparisonLabel}${colon}${uniqueBrands.join(" · ")}`];
+    return [tImage("comparisonTitle", { brands: uniqueBrands.join(" · ") })];
   }
   return lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand));
 }
@@ -60,10 +59,11 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
 
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [posterGenerating, setPosterGenerating] = useState(false);
-  const [customTitle, setCustomTitle] = useState(presetTitle ?? "");
-  const [customSlogan, setCustomSlogan] = useState(presetSubtitle ?? "");
+  const [titleOverride, setTitleOverride] = useState<string | null>(null);
+  const [sloganOverride, setSloganOverride] = useState<string | null>(null);
 
   const posterRef = useRef<HTMLDivElement>(null);
   const slugRef = useRef("");
@@ -80,7 +80,10 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       .slice(0, 60);
   }, [open, lenses]);
 
-  const computedPosterTitle = computePosterTitle(lenses, tBrand, tImage("comparison"), locale);
+  const computedPosterTitle = computePosterTitle(lenses, tBrand, tImage);
+
+  const effectiveTitle = titleOverride ?? presetTitle ?? "";
+  const effectiveSlogan = sloganOverride ?? presetSubtitle ?? "";
 
   const posterLabels: PosterLabels = {
     appName: "X-Glass",
@@ -133,23 +136,33 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
+      setCopyFailed(false);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // clipboard API unavailable
+      setCopied(false);
+      setCopyFailed(true);
+      setTimeout(() => setCopyFailed(false), 2000);
     }
   }, []);
 
   const handleNativeShare = useCallback(async () => {
+    const isSingle = lenses.length === 1;
+    const cta = isSingle
+      ? t("shareCtaSingle")
+      : t("shareCtaMulti", { count: lenses.length });
+    const pageUrl = window.location.href;
     try {
       await navigator.share({
-        title: lenses.map((l) => l.model).join(" vs "),
-        url: window.location.href,
+        // TODO: debug title/url field behavior across platforms before re-enabling
+        // title: effectiveTitle.trim() || computedPosterTitle.join(" · "),
+        text: `${cta}\n👉 ${pageUrl}`,
       });
-    } catch {
-      // user cancelled or not supported
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return;
+      toast.error(t("shareFailed"));
     }
-  }, [lenses]);
+  }, [lenses, t]);
 
   const handleDownload = useCallback(async () => {
     if (!posterRef.current) return;
@@ -169,34 +182,48 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
 
   const handleShareImage = useCallback(async () => {
     if (!posterRef.current) return;
+    const posterTitle = effectiveTitle.trim() || computedPosterTitle.join(" · ");
+    const isSingle = lenses.length === 1;
+    const cta = isSingle
+      ? t("shareCtaSingle")
+      : t("shareCtaMulti", { count: lenses.length });
+    const slogan = effectiveSlogan.trim();
+    const pageUrl = window.location.href;
+    const textParts = [cta, slogan, `👉 ${pageUrl}`].filter(Boolean);
+    const text = textParts.join("\n");
+
     setPosterGenerating(true);
-    let url: string | undefined;
+    let blobUrl: string | undefined;
     try {
-      url = await rasterizePoster(posterRef.current);
-      const blob = await (await fetch(url)).blob();
-      const file = new File([blob], `x-glass_${slugRef.current}.png`, { type: "image/png" });
+      blobUrl = await rasterizePoster(posterRef.current);
+      const blob = await (await fetch(blobUrl)).blob();
+      const file = new File([blob], `${posterTitle}.png`, { type: "image/png" });
       await navigator.share({
         files: [file],
-        title: lenses.map((l) => l.model).join(" vs "),
+        // TODO: debug title/url fields across platforms before re-enabling
+        text,
       });
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;
-      if (url) {
+      if (blobUrl) {
+        // Share API failed but poster was generated — fall back to download
         const link = document.createElement("a");
         link.download = `x-glass_${slugRef.current}.png`;
-        link.href = url;
+        link.href = blobUrl;
         link.click();
+      } else {
+        toast.error(t("shareFailed"));
       }
     } finally {
       setPosterGenerating(false);
     }
-  }, [lenses]);
+  }, [effectiveTitle, effectiveSlogan, computedPosterTitle, lenses, t]);
 
   const truncatedUrl = shareUrl.length > 56 ? shareUrl.slice(0, 56) + "…" : shareUrl;
   const lensCaption = lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand)).join(" / ");
   const posterCustom = {
-    title: customTitle.trim() || undefined,
-    slogan: customSlogan.trim() || undefined,
+    title: effectiveTitle.trim() || undefined,
+    slogan: effectiveSlogan.trim() || undefined,
   };
 
   const tabClass =
@@ -229,11 +256,15 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
                 "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors",
                 copied
                   ? "bg-green-600 text-white hover:bg-green-700"
-                  : "bg-zinc-900 text-zinc-50 hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+                  : copyFailed
+                    ? "bg-red-600 text-white hover:bg-red-700"
+                    : "bg-zinc-900 text-zinc-50 hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
               )}
             >
               {copied ? (
                 <><Check className="size-4" />{t("copied")}</>
+              ) : copyFailed ? (
+                <><Copy className="size-4" />{t("copyFailed")}</>
               ) : (
                 <><Copy className="size-4" />{t("copyLink")}</>
               )}
@@ -289,10 +320,10 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
           {/* Action row */}
           <div className="flex gap-2">
             <CustomizePopover
-              title={customTitle}
-              slogan={customSlogan}
-              onTitleChange={setCustomTitle}
-              onSloganChange={setCustomSlogan}
+              title={effectiveTitle}
+              slogan={effectiveSlogan}
+              onTitleChange={(v) => setTitleOverride(v || null)}
+              onSloganChange={(v) => setSloganOverride(v || null)}
               titlePlaceholder={computedPosterTitle.join(" · ")}
             />
 
@@ -341,7 +372,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     "flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-zinc-900 text-white shadow-lg outline-none transition-colors hover:bg-zinc-700 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200";
 
   const triggerContent = isFab ? <Share2 className="size-5" /> : (
-    <><Share2 className="size-4" /><span>{t("button")}</span></>
+    <><Share2 className="size-4" /><span className="max-xs:hidden">{t("button")}</span></>
   );
 
   const shareControl = !mounted ? (
@@ -375,14 +406,16 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
           `fixed inset-0 ${Z.overlay} transition-colors duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0`,
           lightbox.open ? "bg-transparent" : "bg-black/40"
         )} />
-        <Drawer.Popup className={`fixed inset-x-0 bottom-0 ${Z.overlay} max-h-[85svh] flex flex-col rounded-t-2xl bg-white pb-[var(--safe-inset-bottom)] ring-1 ring-zinc-200 duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:bg-zinc-900 dark:ring-zinc-800`}>
-          <div className="flex shrink-0 touch-none justify-center pb-1 pt-3">
-            <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
-          </div>
-          <div className="overflow-y-auto pb-8">
-            {panelContent}
-          </div>
-        </Drawer.Popup>
+        <Drawer.Viewport>
+          <Drawer.Popup className={`fixed inset-x-0 bottom-0 ${Z.overlay} max-h-[85svh] flex flex-col rounded-t-2xl bg-white pb-[var(--safe-inset-bottom)] ring-1 ring-zinc-200 duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:bg-zinc-900 dark:ring-zinc-800`}>
+            <div className="flex shrink-0 touch-none justify-center pb-1 pt-3">
+              <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+            </div>
+            <div className="overflow-y-auto pb-8">
+              {panelContent}
+            </div>
+          </Drawer.Popup>
+        </Drawer.Viewport>
       </Drawer.Portal>
     </Drawer.Root>
   );
