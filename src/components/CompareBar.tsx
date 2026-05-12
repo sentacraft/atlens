@@ -44,10 +44,10 @@ export default function CompareBar() {
       observerRef.current = new ResizeObserver(([entry]) => {
         document.documentElement.style.setProperty(
           "--compare-bar-height",
-          `${entry.contentRect.height}px`
+          `${entry.target.getBoundingClientRect().height}px`
         );
       });
-      observerRef.current.observe(el);
+      observerRef.current.observe(el, { box: "border-box" });
     } else {
       document.documentElement.style.setProperty("--compare-bar-height", "0px");
     }
