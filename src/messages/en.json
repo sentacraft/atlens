@@ -450,7 +450,7 @@
     "cnyAmount": "¥{value}",
     "disclaimerWarn": "Indicative price",
     "disclaimerLead": "Market price for reference only.",
-    "disclaimerBody": "Actual prices may vary significantly due to retailer, promotions, condition, and market dynamics — please verify the exact price before purchasing.",
+    "disclaimerBody": "Actual prices may vary significantly due to retailer, promotions, condition, and market dynamics — please do verify the exact price before purchasing.",
     "rowLabel": "Market Ref.",
     "rowWarn": "please do verify the latest price",
     "usedReason": "No new-price listing was found in official channels; showing a used-market reference instead.",
