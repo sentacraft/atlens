@@ -189,8 +189,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       ? t("shareCtaSingle")
       : t("shareCtaMulti", { count: lenses.length });
     const slogan = effectiveSlogan.trim();
-    const pageUrl = window.location.href;
-    const textParts = [cta, slogan, `👉 ${pageUrl}`].filter(Boolean);
+    const textParts = [cta, slogan].filter(Boolean);
     const text = textParts.join("\n");
 
     setPosterGenerating(true);
