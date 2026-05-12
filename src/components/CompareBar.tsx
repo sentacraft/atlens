@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, useCallback } from "react";
+import { useMemo, useRef, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { getLensesByMount } from "@/lib/lens";
@@ -61,31 +61,6 @@ export default function CompareBar() {
     return match?.[1] ?? null;
   }, [pathname, mount]);
 
-  // Scroll-edge detection for the chip strip fade mask
-  const [maskEdges, setMaskEdges] = useState<"none" | "right" | "left" | "both">("none");
-
-  const updateMask = useCallback((el: HTMLElement) => {
-    const { scrollLeft, scrollWidth, clientWidth } = el;
-    const atLeft = scrollLeft <= 1;
-    const atRight = scrollLeft + clientWidth >= scrollWidth - 1;
-    if (atLeft && atRight) { setMaskEdges("none"); }
-    else if (atLeft) { setMaskEdges("right"); }
-    else if (atRight) { setMaskEdges("left"); }
-    else { setMaskEdges("both"); }
-  }, []);
-
-  const chipStripRef = useCallback((el: HTMLDivElement | null) => {
-    if (el) { updateMask(el); }
-  }, [updateMask]);
-
-  const FADE = "2rem";
-  const maskMap = {
-    none:  "none",
-    right: `linear-gradient(to right, black calc(100% - ${FADE}), transparent)`,
-    left:  `linear-gradient(to left, black calc(100% - ${FADE}), transparent)`,
-    both:  `linear-gradient(to right, transparent, black ${FADE}, black calc(100% - ${FADE}), transparent)`,
-  } as const;
-
   function handleCompare() {
     const ids = selectedLenses.map((l) => l.id).join(",");
     const seg = mountToUrlSegment(mount);
@@ -107,12 +82,7 @@ export default function CompareBar() {
           className={`fixed bottom-0 left-0 right-0 ${Z.fixed} border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-black/95 backdrop-blur-sm pb-[var(--safe-inset-bottom)]`}
         >
           <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-6">
-            <div
-              ref={chipStripRef}
-              onScroll={(e) => updateMask(e.currentTarget)}
-              style={{ maskImage: maskMap[maskEdges], WebkitMaskImage: maskMap[maskEdges] }}
-              className="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1 sm:pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:![mask-image:none]"
-            >
+            <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1 sm:pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)] sm:[mask-image:none] before:shrink-0 before:w-6 after:shrink-0 after:w-6">
               <AnimatePresence mode="popLayout">
                 {selectedLenses.map((lens) => {
                   const brandName = tBrand(lens.brand);
