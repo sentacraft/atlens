@@ -166,7 +166,7 @@ export default function LensCard({
 
       {/* Mobile-only icon compare toggle — absolute in top-right corner */}
       <button
-        onClick={selectionDisabled ? () => toast(t("compareFullToast")) : () => { onToggle(); toast(isSelected ? t("removedFromCompare") : t("addedToCompare")); }}
+        onClick={selectionDisabled ? () => toast(t("compareFullToast")) : onToggle}
         aria-label={isSelected ? t("removeFromCompare") : selectionDisabled ? t("compareFull") : t("addToCompare")}
         className={`hidden max-xs:flex absolute top-2 right-2 z-10 items-center justify-center h-8 w-8 rounded-full transition-colors ${
           isSelected
@@ -186,7 +186,7 @@ export default function LensCard({
       >
         <Button
           size="sm"
-          onClick={() => { onToggle(); toast(isSelected ? t("removedFromCompare") : t("addedToCompare")); }}
+          onClick={onToggle}
           disabled={selectionDisabled}
           className={`w-full h-10 sm:h-9 font-medium ${
             isSelected
