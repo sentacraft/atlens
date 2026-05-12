@@ -176,10 +176,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     try {
       url = await rasterizePoster(posterRef.current);
       const blob = await (await fetch(url)).blob();
-      const file = new File([blob], `x-glass_${slugRef.current}.png`, { type: "image/png" });
+      const file = new File([blob], `${shareTitle}.png`, { type: "image/png" });
       await navigator.share({
         files: [file],
-        title: shareTitle,
         text: shareTitle,
       });
     } catch (err) {
@@ -193,7 +192,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     } finally {
       setPosterGenerating(false);
     }
-  }, [lenses]);
+  }, [customTitle, computedPosterTitle]);
 
   const truncatedUrl = shareUrl.length > 56 ? shareUrl.slice(0, 56) + "…" : shareUrl;
   const lensCaption = lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand)).join(" / ");
