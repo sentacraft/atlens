@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Z } from "@/config/ui";
+import { useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { ShareButton } from "@/components/share/ShareButton";
+import ShareFAB from "@/components/ShareFAB";
 import CompareAddLensButton from "@/components/CompareAddLensButton";
 import { useMountedCompare } from "@/context/CompareProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -59,25 +59,9 @@ export default function ComparePageHeader({ minColumns = 0, presetTitle, presetS
   const effectivePresetTitle = presetStillMatches ? presetTitle : undefined;
   const effectivePresetSubtitle = presetStillMatches ? presetSubtitle : undefined;
 
-  const headerRef = useRef<HTMLDivElement>(null);
-  const [showFab, setShowFab] = useState(false);
-  // Show the FAB when the header row scrolls behind the nav bar
-  useEffect(() => {
-    const el = headerRef.current;
-    if (!el) {
-      return;
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => setShowFab(!entry.isIntersecting),
-      { root: null, rootMargin: "0px", threshold: 0 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <>
-      <div ref={headerRef} className="flex items-center gap-3">
+      <div className="flex items-center gap-3">
         <h1 className="hidden sm:block text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           {t("title")}
         </h1>
@@ -97,18 +81,11 @@ export default function ComparePageHeader({ minColumns = 0, presetTitle, presetS
         )}
       </div>
 
-      {/* Floating share FAB — slides up when the header share button is out of view */}
-      <div
-        data-testid="compare-share-fab"
-        className={`fixed bottom-6 right-4 ${Z.fixed} transition-all duration-200 sm:right-6 ${
-          showFab && activeLenses.length >= 1
-            ? "opacity-100 translate-y-0 pointer-events-auto"
-            : "opacity-0 translate-y-3 pointer-events-none"
-        }`}
-        aria-hidden={!(showFab && activeLenses.length >= 1)}
-      >
-        <ShareButton lenses={activeLenses} variant="fab" presetTitle={effectivePresetTitle} presetSubtitle={effectivePresetSubtitle} />
-      </div>
+      <ShareFAB
+        lenses={activeLenses}
+        presetTitle={effectivePresetTitle}
+        presetSubtitle={effectivePresetSubtitle}
+      />
     </>
   );
 }
