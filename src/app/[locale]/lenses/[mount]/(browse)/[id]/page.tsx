@@ -13,6 +13,7 @@ import { ExternalLink } from "@/components/ui/external-link";
 import { Link } from "@/i18n/navigation";
 import AddToCompareButton from "@/components/AddToCompareButton";
 import BackToTopButton from "@/components/BackToTopButton";
+import ShareFAB from "@/components/ShareFAB";
 import { ShareButton } from "@/components/share/ShareButton";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 import { ACTION_OUTLINE_CLS } from "@/lib/ui-tokens";
@@ -358,6 +359,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
       </div>
     </div>
     <BackToTopButton />
+    <ShareFAB lenses={[lens]} />
     </>
   );
 }

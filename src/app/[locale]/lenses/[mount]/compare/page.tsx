@@ -6,6 +6,7 @@ import { getPresetBySlug } from "@/lib/curated-presets";
 import CompareTable from "@/components/CompareTable";
 import ComparePageHeader from "@/components/ComparePageHeader";
 import CuratedComparisons from "@/components/CuratedComparisons";
+import BackToTopButton from "@/components/BackToTopButton";
 import { buildAlternates } from "@/lib/seo";
 import { notFound } from "next/navigation";
 
@@ -86,6 +87,7 @@ export default async function ComparePage({
       <ComparePageHeader minColumns={2} presetTitle={presetTitle} presetSubtitle={presetSubtitle} presetLensIds={foundPreset?.lensIds} />
       <CompareTable key={lenses.length === 0 ? "_empty_" : ids} lenses={lenses} minColumns={2} hideBodyWhenEmpty />
       {resolvedMount === "X" && <CuratedComparisons />}
+      <BackToTopButton />
     </div>
   );
 }
