@@ -25,22 +25,25 @@ interface Props {
 export function PriceDisclaimer({ compact = false, className }: Props) {
   const t = useTranslations("Pricing");
   return (
-    <div
+    <p
       className={cn(
-        "flex items-start gap-1.5 leading-relaxed",
-        compact ? "text-[11px]" : "text-xs",
+        "leading-relaxed",
+        compact ? "text-[10px]" : "text-[11px]",
+        PRICE_DISCLAIMER_BODY_CLS,
         className,
       )}
     >
       <TriangleAlert
-        className={cn(PRICE_DISCLAIMER_ICON_CLS, compact ? "size-3 mt-px" : "size-3.5 mt-px")}
+        className={cn(
+          PRICE_DISCLAIMER_ICON_CLS,
+          "inline-block align-text-bottom mr-1",
+          compact ? "size-3" : "size-3.5",
+        )}
         aria-hidden="true"
       />
-      <span className={PRICE_DISCLAIMER_BODY_CLS}>
-        <span className={PRICE_DISCLAIMER_WARN_CLS}>{t("disclaimerLead")}</span>
-        {" "}
-        {t("disclaimerBody")}
-      </span>
-    </div>
+      <span className={PRICE_DISCLAIMER_WARN_CLS}>{t("disclaimerLead")}</span>
+      {" "}
+      {t("disclaimerBody")}
+    </p>
   );
 }

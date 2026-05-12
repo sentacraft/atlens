@@ -68,7 +68,7 @@ export function PriceSection({ lens }: Props) {
       </div>
 
       {/* Row 3: Inline disclaimer */}
-      <PriceDisclaimer className="mt-0.5" />
+      <PriceDisclaimer className="mt-1 pt-2 border-t border-zinc-100 dark:border-zinc-800" />
     </div>
   );
 }
