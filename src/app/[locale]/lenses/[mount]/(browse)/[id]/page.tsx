@@ -300,7 +300,8 @@ export default async function LensDetailPage({ params }: { params: Params }) {
       </div>
 
       {/* Grouped spec table — full-width section below the header */}
-      <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+      <div>
+        <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
             {resolvedGroups.map((group, groupIdx) => (
               <div
                 key={group.label}
@@ -340,7 +341,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               </div>
             ))}
           </div>
-          <div className="flex items-center gap-3 px-4 pt-1.5">
+          <div className="flex items-center gap-3 px-4 pt-2">
             <p className="text-xs text-zinc-400 dark:text-zinc-500">
               {t("nudgeText")}
             </p>
@@ -354,6 +355,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               {t("reportIssue")}
             </FeedbackTrigger>
           </div>
+      </div>
     </div>
     <BackToTopButton />
     </>
