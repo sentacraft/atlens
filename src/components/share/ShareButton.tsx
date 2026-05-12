@@ -196,7 +196,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     setPosterGenerating(true);
     let blobUrl: string | undefined;
     try {
-      blobUrl = await rasterizePoster(posterRef.current);
+      // Cap share output at 1280px to dodge WeChat's first-pass downscale
+      // (any axis > 1280 gets rescaled before its JPEG quality compression).
+      blobUrl = await rasterizePoster(posterRef.current, { maxWidth: 1280 });
       const blob = await (await fetch(blobUrl)).blob();
       const file = new File([blob], `${posterTitle}.png`, { type: "image/png" });
       await navigator.share({
