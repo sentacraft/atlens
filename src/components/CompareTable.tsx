@@ -102,66 +102,73 @@ function LensHeader({
 
   return (
     <th className="group relative z-20 h-px align-top border-l border-zinc-200 bg-zinc-50 px-3 py-1 text-left transition-colors sm:py-1.5 sm:group-hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:sm:group-hover:bg-zinc-800">
-      <div className="flex items-start justify-between gap-1 transition-opacity sm:absolute sm:inset-x-3 sm:top-1.5 sm:z-10 sm:opacity-0 sm:group-hover:opacity-100">
-        <button
-          type="button"
-          onClick={onRemove}
-          aria-label={removeLabel}
-          className={cn(ICON_CLOSE_BTN_CLS, "h-8 w-8")}
-        >
-          <X className="h-3.5 w-3.5" />
-        </button>
-        <div className="ml-auto flex items-center gap-3 sm:gap-2">
+      {/* Outer wrapper stretches to full cell height (h-full + h-px on th).
+          On mobile the action buttons are in normal flow; on sm+ they are
+          absolutely positioned so they overlap the card content on hover. */}
+      <div className="flex h-full flex-col">
+        <div className="flex items-start justify-between gap-1 transition-opacity sm:absolute sm:inset-x-3 sm:top-1.5 sm:z-10 sm:opacity-0 sm:group-hover:opacity-100">
           <button
             type="button"
-            onClick={onShiftLeft}
-            disabled={!canShiftLeft}
-            aria-label={shiftLeftLabel}
-            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-600 transition-colors active:bg-zinc-200 active:text-zinc-800 hover:bg-zinc-200 hover:text-zinc-700 disabled:cursor-default disabled:opacity-30 disabled:active:bg-transparent disabled:hover:bg-transparent sm:text-zinc-500 dark:text-zinc-300 dark:active:bg-zinc-700 dark:active:text-zinc-100 dark:hover:bg-zinc-700 dark:hover:text-zinc-200 dark:sm:text-zinc-400"
+            onClick={onRemove}
+            aria-label={removeLabel}
+            className={cn(ICON_CLOSE_BTN_CLS, "h-8 w-8")}
           >
-            <ChevronLeft className="h-3.5 w-3.5" />
+            <X className="h-3.5 w-3.5" />
           </button>
-          <button
-            type="button"
-            onClick={onShiftRight}
-            disabled={!canShiftRight}
-            aria-label={shiftRightLabel}
-            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-600 transition-colors active:bg-zinc-200 active:text-zinc-800 hover:bg-zinc-200 hover:text-zinc-700 disabled:cursor-default disabled:opacity-30 disabled:active:bg-transparent disabled:hover:bg-transparent sm:text-zinc-500 dark:text-zinc-300 dark:active:bg-zinc-700 dark:active:text-zinc-100 dark:hover:bg-zinc-700 dark:hover:text-zinc-200 dark:sm:text-zinc-400"
-          >
-            <ChevronRight className="h-3.5 w-3.5" />
-          </button>
+          <div className="ml-auto flex items-center gap-3 sm:gap-2">
+            <button
+              type="button"
+              onClick={onShiftLeft}
+              disabled={!canShiftLeft}
+              aria-label={shiftLeftLabel}
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-600 transition-colors active:bg-zinc-200 active:text-zinc-800 hover:bg-zinc-200 hover:text-zinc-700 disabled:cursor-default disabled:opacity-30 disabled:active:bg-transparent disabled:hover:bg-transparent sm:text-zinc-500 dark:text-zinc-300 dark:active:bg-zinc-700 dark:active:text-zinc-100 dark:hover:bg-zinc-700 dark:hover:text-zinc-200 dark:sm:text-zinc-400"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={onShiftRight}
+              disabled={!canShiftRight}
+              aria-label={shiftRightLabel}
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-600 transition-colors active:bg-zinc-200 active:text-zinc-800 hover:bg-zinc-200 hover:text-zinc-700 disabled:cursor-default disabled:opacity-30 disabled:active:bg-transparent disabled:hover:bg-transparent sm:text-zinc-500 dark:text-zinc-300 dark:active:bg-zinc-700 dark:active:text-zinc-100 dark:hover:bg-zinc-700 dark:hover:text-zinc-200 dark:sm:text-zinc-400"
+            >
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="mt-1 flex h-full flex-col items-center text-center sm:mt-0">
-        <LensHeaderContent lens={lens} />
-        {/* Official site + report links — mt-auto pushes to bottom so
-            links across columns align even when model names differ in height */}
-        <div className="mt-auto flex flex-col items-center gap-0 pt-1.5">
-          {url ? (
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
+        {/* flex-1 fills remaining space after action buttons so mt-auto
+            on links works without overflowing the cell */}
+        <div className="mt-1 flex flex-1 flex-col items-center text-center sm:mt-0">
+          <LensHeaderContent lens={lens} />
+          {/* Official site + report links — mt-auto pushes to bottom so
+              links across columns align even when model names differ in height */}
+          <div className="mt-auto flex flex-col items-center gap-0 pt-1.5">
+            {url ? (
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-0.5 ${TEXT_LINK_CLS}`}
+              >
+                <ArrowUpRight className="h-3 w-3 shrink-0" />
+                {officialSiteLabel}
+              </a>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-0.5 text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
+                <ArrowUpRight className="h-3 w-3 shrink-0" />
+                {officialSiteLabel}
+              </span>
+            )}
+            <FeedbackTrigger
+              type="data_issue"
+              context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
+              fields={feedbackFields}
               className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-0.5 ${TEXT_LINK_CLS}`}
             >
-              <ArrowUpRight className="h-3 w-3 shrink-0" />
-              {officialSiteLabel}
-            </a>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-0.5 text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
-              <ArrowUpRight className="h-3 w-3 shrink-0" />
-              {officialSiteLabel}
-            </span>
-          )}
-          <FeedbackTrigger
-            type="data_issue"
-            context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
-            fields={feedbackFields}
-            className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-0.5 ${TEXT_LINK_CLS}`}
-          >
-            <Flag className="h-3 w-3 shrink-0" />
-            {reportIssueLabel}
-          </FeedbackTrigger>
+              <Flag className="h-3 w-3 shrink-0" />
+              {reportIssueLabel}
+            </FeedbackTrigger>
+          </div>
         </div>
       </div>
     </th>
