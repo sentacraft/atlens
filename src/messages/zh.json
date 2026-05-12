@@ -118,6 +118,9 @@
     "removeFromCompare": "移除",
     "compareFull": "对比列表已满",
     "compareFullToast": "对比已满，先移除一款",
+    "addedToCompare": "已加入对比",
+    "removedFromCompare": "已移除对比",
+    "clearedCompare": "已清空对比列表",
     "goCompare": "查看对比（{count}）",
     "clearCompare": "清空",
     "resultsCount": "{count} 支镜头",
@@ -252,7 +255,9 @@
     "customizeSlogan": "补充文案",
     "customizeSloganPlaceholder": "写一句你想加的话…",
     "shareText": "{title} | X-Glass 镜头对比",
-    "shareTextSingle": "{title} | X-Glass"
+    "shareTextSingle": "{title} | X-Glass",
+    "copyFailed": "复制失败",
+    "shareFailed": "分享失败，请重试"
   },
   "ShareImage": {
     "comparison": "镜头对比",

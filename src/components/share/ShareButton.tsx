@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
+import { toast } from "sonner";
 import { Popover } from "@base-ui/react/popover";
 import { Drawer } from "@base-ui/react/drawer";
 import { Tabs } from "@base-ui/react/tabs";
@@ -73,6 +74,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
 
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [posterGenerating, setPosterGenerating] = useState(false);
   const [customTitle, setCustomTitle] = useState(presetTitle ?? "");
@@ -146,10 +148,13 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
+      setCopyFailed(false);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // clipboard API unavailable
+      setCopied(false);
+      setCopyFailed(true);
+      setTimeout(() => setCopyFailed(false), 2000);
     }
   }, []);
 
@@ -165,8 +170,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
         title: rawTitle,
         text: `${tagline}\n👉 ${pageUrl}`,
       });
-    } catch {
-      // user cancelled or not supported
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return;
+      toast.error(t("shareFailed"));
     }
   }, [customTitle, lenses, tBrand, t]);
 
@@ -213,10 +219,13 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;
       if (blobUrl) {
+        // Share API failed but poster was generated — fall back to download
         const link = document.createElement("a");
         link.download = `x-glass_${slugRef.current}.png`;
         link.href = blobUrl;
         link.click();
+      } else {
+        toast.error(t("shareFailed"));
       }
     } finally {
       setPosterGenerating(false);
@@ -260,11 +269,15 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
                 "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors",
                 copied
                   ? "bg-green-600 text-white hover:bg-green-700"
-                  : "bg-zinc-900 text-zinc-50 hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+                  : copyFailed
+                    ? "bg-red-600 text-white hover:bg-red-700"
+                    : "bg-zinc-900 text-zinc-50 hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
               )}
             >
               {copied ? (
                 <><Check className="size-4" />{t("copied")}</>
+              ) : copyFailed ? (
+                <><Copy className="size-4" />{t("copyFailed")}</>
               ) : (
                 <><Copy className="size-4" />{t("copyLink")}</>
               )}

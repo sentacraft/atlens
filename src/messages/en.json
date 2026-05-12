@@ -118,6 +118,9 @@
     "removeFromCompare": "Remove",
     "compareFull": "Compare List Full",
     "compareFullToast": "Compare list full — remove one first",
+    "addedToCompare": "Added to compare",
+    "removedFromCompare": "Removed from compare",
+    "clearedCompare": "Compare list cleared",
     "goCompare": "Compare ({count})",
     "clearCompare": "Clear",
     "resultsCount": "{count} lenses",
@@ -252,7 +255,9 @@
     "customizeSlogan": "Slogan",
     "customizeSloganPlaceholder": "Add a personal note…",
     "shareText": "{title} | X-Glass Lens Comparison",
-    "shareTextSingle": "{title} | X-Glass"
+    "shareTextSingle": "{title} | X-Glass",
+    "copyFailed": "Copy failed",
+    "shareFailed": "Share failed, please try again"
   },
   "ShareImage": {
     "comparison": "Lens Comparison",

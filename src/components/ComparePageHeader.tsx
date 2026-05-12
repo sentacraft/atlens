@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 import { Z } from "@/config/ui";
 import { useTranslations, useLocale } from "next-intl";
 import { ShareButton } from "@/components/share/ShareButton";
@@ -84,7 +85,7 @@ export default function ComparePageHeader({ minColumns = 0, presetTitle, presetS
         {activeLenses.length >= minColumns && <CompareAddLensButton />}
         {activeLenses.length > 0 && (
           <button
-            onClick={() => { clearCompare(); router.replace(`/lenses/${mountToUrlSegment(mount)}/compare`); }}
+            onClick={() => { clearCompare(); toast(tList("clearedCompare")); router.replace(`/lenses/${mountToUrlSegment(mount)}/compare`); }}
             className={`shrink-0 text-sm font-medium px-3 py-2 rounded-xl ${TEXT_LINK_CLS}`}
           >
             {tList("clearCompare")}
