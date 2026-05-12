@@ -261,6 +261,7 @@
   },
   "ShareImage": {
     "comparison": "镜头对比",
+    "comparisonTitle": "镜头对比：{brands}",
     "singleLens": "镜头档案",
     "na": "N/A",
     "cta": "扫码对比更多富士卡口镜头",

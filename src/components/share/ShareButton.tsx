@@ -39,16 +39,11 @@ interface ShareButtonProps {
 function computePosterTitle(
   lenses: Lens[],
   tBrand: (key: string) => string,
-  comparisonLabel: string,
-  locale: string,
+  tImage: (key: string, values?: Record<string, string>) => string,
 ): string[] {
   if (lenses.length >= 2) {
     const uniqueBrands = [...new Set(lenses.map((l) => tBrand(l.brand)))];
-    // Poster title includes the "镜头对比：" prefix for visual context on the image.
-    // Share text templates append their own tagline, so posterTitle for sharing
-    // should use the raw brand string via computedPosterTitle.join(" · ").
-    const colon = locale === "zh" ? "：" : ": ";
-    return [`${comparisonLabel}${colon}${uniqueBrands.join(" · ")}`];
+    return [tImage("comparisonTitle", { brands: uniqueBrands.join(" · ") })];
   }
   return lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand));
 }
@@ -85,7 +80,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       .slice(0, 60);
   }, [open, lenses]);
 
-  const computedPosterTitle = computePosterTitle(lenses, tBrand, tImage("comparison"), locale);
+  const computedPosterTitle = computePosterTitle(lenses, tBrand, tImage);
 
   const effectiveTitle = titleOverride ?? presetTitle ?? "";
   const effectiveSlogan = sloganOverride ?? presetSubtitle ?? "";

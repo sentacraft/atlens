@@ -261,6 +261,7 @@
   },
   "ShareImage": {
     "comparison": "Lens Comparison",
+    "comparisonTitle": "Lens Comparison: {brands}",
     "singleLens": "Lens Profile",
     "na": "N/A",
     "cta": "Scan to compare more lenses for Fujifilm",

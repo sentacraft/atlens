@@ -5,7 +5,7 @@
 // Layout (visually bound as a single "price info" card):
 //   ¥1,299  [Used ⓘ]   ← Used badge is clickable; explains why used was picked
 //   source · Sampled date
-//   ⚠ 仅供参考 · …
+//   ⚠ Disclaimer · …
 //
 // All three rows share a soft background so the disclaimer is
 // unambiguously about THIS price, not the spec table that follows below.

@@ -2,10 +2,9 @@
 
 // Inline price disclaimer block.
 //
-// Reads as one continuous paragraph: a sentence-style lead (e.g. "市场
-// 行情，仅供参考。") in amber, followed by the body in the zinc caption
-// color — no middle-dot separator, just whitespace, so the two pieces
-// flow as a single statement.
+// Reads as one continuous paragraph: a sentence-style lead in amber,
+// followed by the body in the zinc caption color — no separator, just
+// whitespace, so the two pieces flow as a single statement.
 
 import { TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
