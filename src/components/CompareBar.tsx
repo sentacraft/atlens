@@ -7,7 +7,6 @@ import { getLensesByMount } from "@/lib/lens";
 import { useMountedCompare } from "@/context/CompareProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
-import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 import { spring } from "@/lib/animation";
 import { X } from "lucide-react";
@@ -107,7 +106,7 @@ export default function CompareBar() {
                         </span>
                       </span>
                       <button
-                        onClick={() => { toggleCompare(lens.id); toast(t("removedFromCompare")); }}
+                        onClick={() => toggleCompare(lens.id)}
                         className={cn(ICON_CLOSE_BTN_CLS, "h-5 w-5 -mr-0.5 mt-0.5")}
                         aria-label={tCompare("removeLens", { model: displayName })}
                       >
@@ -120,7 +119,7 @@ export default function CompareBar() {
             </div>
             <div className="flex items-center justify-end gap-3 sm:shrink-0">
               <button
-                onClick={() => { clearCompare(); toast(t("clearedCompare")); }}
+                onClick={clearCompare}
                 className="shrink-0 text-sm font-medium px-3 py-2 rounded-xl text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
               >
                 {t("clearCompare")}
