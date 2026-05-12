@@ -1,8 +1,8 @@
 function SkeletonCard() {
   return (
-    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex flex-col overflow-hidden max-[499px]:flex-row">
+    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex flex-col overflow-hidden max-xs:flex-row">
       {/* Image area */}
-      <div className="relative aspect-[3/2] sm:aspect-[5/4] bg-zinc-100 dark:bg-zinc-800 animate-pulse max-[499px]:aspect-auto max-[499px]:w-[132px] max-[499px]:shrink-0 border-b border-zinc-100 dark:border-zinc-800 max-[499px]:border-b-0 max-[499px]:border-r" />
+      <div className="relative aspect-[3/2] sm:aspect-[5/4] bg-zinc-100 dark:bg-zinc-800 animate-pulse max-xs:aspect-auto max-xs:w-[132px] max-xs:shrink-0 border-b border-zinc-100 dark:border-zinc-800 max-xs:border-b-0 max-xs:border-r" />
 
       {/* Body */}
       <div className="flex flex-1 flex-col gap-2 p-3 sm:gap-2.5 sm:p-4">
@@ -28,7 +28,7 @@ function SkeletonCard() {
       </div>
 
       {/* Footer button */}
-      <div className="px-3 pb-3 sm:px-4 sm:pb-4 max-[499px]:hidden">
+      <div className="px-3 pb-3 sm:px-4 sm:pb-4 max-xs:hidden">
         <div className="h-9 w-full rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
       </div>
     </div>
@@ -52,7 +52,7 @@ export default function LensesLoading() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 gap-4 min-[500px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {Array.from({ length: 12 }).map((_, i) => (
           <SkeletonCard key={i} />
         ))}

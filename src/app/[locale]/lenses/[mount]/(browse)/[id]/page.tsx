@@ -293,7 +293,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               className={ACTION_OUTLINE_CLS}
             >
               <Flag size={14} />
-              <span className="max-[499px]:hidden">{t("reportIssue")}</span>
+              <span className="max-xs:hidden">{t("reportIssue")}</span>
             </FeedbackTrigger>
           </div>
         </div>

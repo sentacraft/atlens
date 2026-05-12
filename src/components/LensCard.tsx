@@ -70,7 +70,7 @@ export default function LensCard({
   return (
     <div
       {...hookAttr("card")}
-      className={`rounded-2xl border bg-white dark:bg-zinc-900 flex flex-col overflow-hidden transition-[border-color,box-shadow] max-[499px]:relative ${
+      className={`rounded-2xl border bg-white dark:bg-zinc-900 flex flex-col overflow-hidden transition-[border-color,box-shadow] max-xs:relative ${
         isSelected
           ? CARD_SELECTED_BORDER_CLS
           : "border-zinc-200 dark:border-zinc-800"
@@ -79,15 +79,15 @@ export default function LensCard({
       {/* Clickable detail area */}
       <Link
         href={`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`}
-        className="flex-1 flex flex-col hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors max-[499px]:flex-row"
+        className="flex-1 flex flex-col hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors max-xs:flex-row"
       >
         <div
           {...hookAttr("cardMedia")}
-          className="relative aspect-[3/2] overflow-hidden border-b border-zinc-100/80 bg-zinc-50/40 sm:aspect-[5/4] dark:border-zinc-800 dark:bg-zinc-900/40 max-[499px]:aspect-auto max-[499px]:w-[132px] max-[499px]:shrink-0 max-[499px]:self-stretch max-[499px]:border-b-0 max-[499px]:border-r"
+          className="relative aspect-[3/2] overflow-hidden border-b border-zinc-100/80 bg-zinc-50/40 sm:aspect-[5/4] dark:border-zinc-800 dark:bg-zinc-900/40 max-xs:aspect-auto max-xs:w-[132px] max-xs:shrink-0 max-xs:self-stretch max-xs:border-b-0 max-xs:border-r"
         >
           <div
             {...hookAttr("cardMediaInner")}
-            className="absolute inset-0 p-3 sm:p-7 max-[499px]:p-2"
+            className="absolute inset-0 p-3 sm:p-7 max-xs:p-2"
           >
             <div className="relative h-full w-full overflow-hidden rounded-xl">
               <Image
@@ -106,11 +106,11 @@ export default function LensCard({
 
         <div
           {...hookAttr("cardBody")}
-          className="flex flex-1 flex-col gap-2 p-3 sm:gap-2.5 sm:p-4 max-[499px]:min-w-0"
+          className="flex flex-1 flex-col gap-2 p-3 sm:gap-2.5 sm:p-4 max-xs:min-w-0"
         >
           <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400 truncate max-[499px]:pr-9">
+              <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400 truncate max-xs:pr-9">
                 {fmt.lensSubtitleLine(tBrand(lens.brand), lens.series)}
               </p>
               {lens.releaseYear ? (
@@ -167,7 +167,7 @@ export default function LensCard({
       <button
         onClick={selectionDisabled ? () => toast(t("compareFullToast")) : () => { onToggle(); toast(isSelected ? t("removedFromCompare") : t("addedToCompare")); }}
         aria-label={isSelected ? t("removeFromCompare") : selectionDisabled ? t("compareFull") : t("addToCompare")}
-        className={`hidden max-[499px]:flex absolute top-2 right-2 z-10 items-center justify-center h-8 w-8 rounded-full transition-colors ${
+        className={`hidden max-xs:flex absolute top-2 right-2 z-10 items-center justify-center h-8 w-8 rounded-full transition-colors ${
           isSelected
             ? ACTION_PRIMARY_CLS
             : selectionDisabled
@@ -181,7 +181,7 @@ export default function LensCard({
       {/* Compare toggle */}
       <div
         {...hookAttr("cardFooter")}
-        className="mt-auto px-3 pb-3 sm:px-4 sm:pb-4 max-[499px]:hidden"
+        className="mt-auto px-3 pb-3 sm:px-4 sm:pb-4 max-xs:hidden"
       >
         <Button
           size="sm"
