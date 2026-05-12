@@ -3,7 +3,6 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
-@custom-variant max-xs (@media (width < 500px));
 
 @theme inline {
   --breakpoint-xs: 500px;
