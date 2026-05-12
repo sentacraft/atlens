@@ -259,23 +259,19 @@ test.describe("CompareBar --compare-bar-height CSS variable", () => {
 });
 
 test.describe("CompareBar does not obscure BackToTopButton or page content", () => {
-  test("BackToTopButton bottom edge stays above CompareBar when both visible", async ({ page }) => {
+  test("BackToTopButton uses fixed position above CompareBar", async ({ page }) => {
     await page.goto("/en/lenses");
     await page.waitForLoadState("networkidle");
     await waitForScrollable(page, 200);
 
-    // Trigger compare bar
     await page.getByRole("button", { name: /add to compare/i }).first().click();
     await page.locator('[data-testid="compare-bar"]').waitFor({ state: "visible" });
 
-    // Scroll enough to reveal the BackToTopButton (threshold: 400px)
     await scrollBy(page, 500);
     const btn = page.getByRole("button", { name: /back to top/i });
     await expect(btn).toBeVisible({ timeout: 3000 });
 
     const [btnBottom, barTop] = await page.evaluate(() => {
-      const button = document.querySelector('[aria-label]') as Element;
-      // Find the back-to-top button via aria-label text (locale-agnostic: any button near bottom-right)
       const allBtns = Array.from(document.querySelectorAll("button[aria-label]"));
       const backTop = allBtns.find((b) =>
         (b.getAttribute("aria-label") ?? "").toLowerCase().includes("top")
@@ -290,7 +286,7 @@ test.describe("CompareBar does not obscure BackToTopButton or page content", () 
       ];
     });
 
-    expect(btnBottom).toBeLessThanOrEqual(barTop + 1); // +1 for sub-pixel tolerance
+    expect(btnBottom).toBeLessThanOrEqual(barTop + 1);
   });
 
   test("lens list content padding-bottom exceeds compare bar height", async ({ page }) => {

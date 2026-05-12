@@ -104,6 +104,26 @@ test.describe("CompareBar bottom inset", () => {
     const paddingBottom = await computedPx(page, '[data-testid="compare-bar"]', "padding-bottom");
     expect(paddingBottom).toBe(HOME_BAR);
   });
+
+  test("--compare-bar-height includes safe-area padding (border-box)", async ({ page }) => {
+    const addBtn = page.getByRole("button", { name: /add to compare/i }).first();
+    await addBtn.waitFor({ state: "visible" });
+    await addBtn.click();
+
+    const bar = page.locator('[data-testid="compare-bar"]');
+    await bar.waitFor({ state: "visible" });
+
+    const [cssVar, domHeight] = await page.evaluate(() => {
+      const el = document.querySelector('[data-testid="compare-bar"]') as HTMLElement;
+      const varVal = parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue("--compare-bar-height")
+      );
+      return [varVal, el.getBoundingClientRect().height];
+    });
+
+    expect(Math.abs(cssVar - domHeight)).toBeLessThanOrEqual(1);
+    expect(cssVar).toBeGreaterThanOrEqual(HOME_BAR);
+  });
 });
 
 // ─── Layout wrapper (page body bottom inset) ────────────────────────────────
