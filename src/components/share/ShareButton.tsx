@@ -149,7 +149,6 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   }, []);
 
   const handleNativeShare = useCallback(async () => {
-    const posterTitle = customTitle.trim() || computedPosterTitle.join(" · ");
     const isSingle = lenses.length === 1;
     const cta = isSingle
       ? t("shareCtaSingle")
@@ -157,14 +156,15 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     const pageUrl = window.location.href;
     try {
       await navigator.share({
-        title: posterTitle,
+        // TODO: debug title/url field behavior across platforms before re-enabling
+        // title: customTitle.trim() || computedPosterTitle.join(" · "),
         text: `${cta}\n👉 ${pageUrl}`,
       });
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;
       toast.error(t("shareFailed"));
     }
-  }, [customTitle, computedPosterTitle, lenses, t]);
+  }, [lenses, t]);
 
   const handleDownload = useCallback(async () => {
     if (!posterRef.current) return;
@@ -202,7 +202,8 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       const file = new File([blob], `${posterTitle}.png`, { type: "image/png" });
       await navigator.share({
         files: [file],
-        title: posterTitle,
+        // TODO: debug title/url field behavior across platforms before re-enabling
+        // title: posterTitle,
         text,
       });
     } catch (err) {
