@@ -67,11 +67,8 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   const [copyFailed, setCopyFailed] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [posterGenerating, setPosterGenerating] = useState(false);
-  const [customTitle, setCustomTitle] = useState(presetTitle ?? "");
-  const [customSlogan, setCustomSlogan] = useState(presetSubtitle ?? "");
-
-  useEffect(() => { setCustomTitle(presetTitle ?? ""); }, [presetTitle]);
-  useEffect(() => { setCustomSlogan(presetSubtitle ?? ""); }, [presetSubtitle]);
+  const [titleOverride, setTitleOverride] = useState<string | null>(null);
+  const [sloganOverride, setSloganOverride] = useState<string | null>(null);
 
   const posterRef = useRef<HTMLDivElement>(null);
   const slugRef = useRef("");
@@ -89,6 +86,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   }, [open, lenses]);
 
   const computedPosterTitle = computePosterTitle(lenses, tBrand, tImage("comparison"), locale);
+
+  const effectiveTitle = titleOverride ?? presetTitle ?? "";
+  const effectiveSlogan = sloganOverride ?? presetSubtitle ?? "";
 
   const posterLabels: PosterLabels = {
     appName: "X-Glass",
@@ -160,7 +160,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     try {
       await navigator.share({
         // TODO: debug title/url field behavior across platforms before re-enabling
-        // title: customTitle.trim() || computedPosterTitle.join(" · "),
+        // title: effectiveTitle.trim() || computedPosterTitle.join(" · "),
         text: `${cta}\n👉 ${pageUrl}`,
       });
     } catch (err) {
@@ -187,12 +187,12 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
 
   const handleShareImage = useCallback(async () => {
     if (!posterRef.current) return;
-    const posterTitle = customTitle.trim() || computedPosterTitle.join(" · ");
+    const posterTitle = effectiveTitle.trim() || computedPosterTitle.join(" · ");
     const isSingle = lenses.length === 1;
     const cta = isSingle
       ? t("shareCtaSingle")
       : t("shareCtaMulti", { count: lenses.length });
-    const slogan = customSlogan.trim();
+    const slogan = effectiveSlogan.trim();
     const pageUrl = window.location.href;
     const textParts = [cta, slogan, `👉 ${pageUrl}`].filter(Boolean);
     const text = textParts.join("\n");
@@ -222,13 +222,13 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     } finally {
       setPosterGenerating(false);
     }
-  }, [customTitle, customSlogan, computedPosterTitle, lenses, t]);
+  }, [effectiveTitle, effectiveSlogan, computedPosterTitle, lenses, t]);
 
   const truncatedUrl = shareUrl.length > 56 ? shareUrl.slice(0, 56) + "…" : shareUrl;
   const lensCaption = lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand)).join(" / ");
   const posterCustom = {
-    title: customTitle.trim() || undefined,
-    slogan: customSlogan.trim() || undefined,
+    title: effectiveTitle.trim() || undefined,
+    slogan: effectiveSlogan.trim() || undefined,
   };
 
   const tabClass =
@@ -325,10 +325,10 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
           {/* Action row */}
           <div className="flex gap-2">
             <CustomizePopover
-              title={customTitle}
-              slogan={customSlogan}
-              onTitleChange={setCustomTitle}
-              onSloganChange={setCustomSlogan}
+              title={effectiveTitle}
+              slogan={effectiveSlogan}
+              onTitleChange={(v) => setTitleOverride(v || null)}
+              onSloganChange={(v) => setSloganOverride(v || null)}
               titlePlaceholder={computedPosterTitle.join(" · ")}
             />
 
