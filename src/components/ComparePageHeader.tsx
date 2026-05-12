@@ -20,9 +20,11 @@ interface Props {
   presetTitle?: string;
   /** Preset subtitle to pre-fill the poster slogan field. */
   presetSubtitle?: string;
+  /** Original lens IDs of the preset — used to detect when the user has modified the comparison. */
+  presetLensIds?: string[];
 }
 
-export default function ComparePageHeader({ minColumns = 0, presetTitle, presetSubtitle }: Props) {
+export default function ComparePageHeader({ minColumns = 0, presetTitle, presetSubtitle, presetLensIds }: Props) {
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
   const { compareIds, clearCompare } = useMountedCompare();
@@ -40,6 +42,22 @@ export default function ComparePageHeader({ minColumns = 0, presetTitle, presetS
         .filter((l): l is Lens => l !== undefined),
     [compareIds, mount, locale],
   );
+
+  // Only forward preset title/subtitle when the current comparison still
+  // matches the original preset (same set of lens IDs, order-insensitive).
+  const presetStillMatches = useMemo(() => {
+    if (!presetLensIds || presetLensIds.length === 0) {
+      return false;
+    }
+    if (compareIds.length !== presetLensIds.length) {
+      return false;
+    }
+    const currentSet = new Set(compareIds);
+    return presetLensIds.every((id) => currentSet.has(id));
+  }, [compareIds, presetLensIds]);
+
+  const effectivePresetTitle = presetStillMatches ? presetTitle : undefined;
+  const effectivePresetSubtitle = presetStillMatches ? presetSubtitle : undefined;
 
   const headerRef = useRef<HTMLDivElement>(null);
   const [showFab, setShowFab] = useState(false);
@@ -74,7 +92,7 @@ export default function ComparePageHeader({ minColumns = 0, presetTitle, presetS
         )}
         {activeLenses.length >= 1 && (
           <div className="ml-auto">
-            <ShareButton lenses={activeLenses} presetTitle={presetTitle} presetSubtitle={presetSubtitle} />
+            <ShareButton lenses={activeLenses} presetTitle={effectivePresetTitle} presetSubtitle={effectivePresetSubtitle} />
           </div>
         )}
       </div>
@@ -89,7 +107,7 @@ export default function ComparePageHeader({ minColumns = 0, presetTitle, presetS
         }`}
         aria-hidden={!(showFab && activeLenses.length >= 1)}
       >
-        <ShareButton lenses={activeLenses} variant="fab" presetTitle={presetTitle} presetSubtitle={presetSubtitle} />
+        <ShareButton lenses={activeLenses} variant="fab" presetTitle={effectivePresetTitle} presetSubtitle={effectivePresetSubtitle} />
       </div>
     </>
   );
