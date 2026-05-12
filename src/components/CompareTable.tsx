@@ -71,6 +71,10 @@ function LensHeaderContent({
 
 function LensHeader({
   lens,
+  url,
+  officialSiteLabel,
+  reportIssueLabel,
+  feedbackFields,
   removeLabel,
   shiftLeftLabel,
   shiftRightLabel,
@@ -81,6 +85,10 @@ function LensHeader({
   onShiftRight,
 }: {
   lens: Lens;
+  url: string | null | undefined;
+  officialSiteLabel: string;
+  reportIssueLabel: string;
+  feedbackFields: FeedbackField[] | undefined;
   removeLabel: string;
   shiftLeftLabel: string;
   shiftRightLabel: string;
@@ -90,6 +98,8 @@ function LensHeader({
   onShiftLeft: () => void;
   onShiftRight: () => void;
 }) {
+  const tBrand = useTranslations("Brands");
+
   return (
     <th className="group relative z-20 align-top border-l border-zinc-200 bg-zinc-50 px-3 py-1 text-left transition-colors sm:py-1.5 sm:group-hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:sm:group-hover:bg-zinc-800">
       <div className="flex items-start justify-between gap-1 transition-opacity sm:absolute sm:inset-x-3 sm:top-1.5 sm:z-10 sm:opacity-0 sm:group-hover:opacity-100">
@@ -124,6 +134,34 @@ function LensHeader({
       </div>
       <div className="mt-1 flex flex-col items-center text-center sm:mt-0">
         <LensHeaderContent lens={lens} />
+        {/* Official site + report links */}
+        <div className="mt-1.5 flex flex-col items-center gap-0">
+          {url ? (
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-0.5 ${TEXT_LINK_CLS}`}
+            >
+              <ArrowUpRight className="h-3 w-3 shrink-0" />
+              {officialSiteLabel}
+            </a>
+          ) : (
+            <span className="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-0.5 text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
+              <ArrowUpRight className="h-3 w-3 shrink-0" />
+              {officialSiteLabel}
+            </span>
+          )}
+          <FeedbackTrigger
+            type="data_issue"
+            context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
+            fields={feedbackFields}
+            className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-0.5 ${TEXT_LINK_CLS}`}
+          >
+            <Flag className="h-3 w-3 shrink-0" />
+            {reportIssueLabel}
+          </FeedbackTrigger>
+        </div>
       </div>
     </th>
   );
@@ -620,6 +658,10 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
               <LensHeader
                 key={lens.id}
                 lens={lens}
+                url={getLensUrl(lens, locale)}
+                officialSiteLabel={t("officialSite")}
+                reportIssueLabel={t("reportIssue")}
+                feedbackFields={lensFields.get(lens.id)}
                 removeLabel={t("removeLens", { model: lensDisplayName(tBrand(lens.brand), lens.series, lens.model, lens.brand) })}
                 shiftLeftLabel={t("shiftLeft")}
                 shiftRightLabel={t("shiftRight")}
@@ -646,21 +688,6 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
         </thead>
 
         <tbody>
-          {/* Top links row — mirrors the footer so users don't need to scroll down */}
-          {orderedLenses.length > 0 && (
-            <LinksRow
-              orderedLenses={orderedLenses}
-              emptySlotCount={emptySlotCount}
-              lensFields={lensFields}
-              locale={locale}
-              url={(lens) => getLensUrl(lens, locale)}
-              officialSiteLabel={t("officialSite")}
-              reportIssueLabel={t("reportIssue")}
-              tBrand={tBrand}
-              border="bottom"
-            />
-          )}
-
           {/* Cold-start skeleton: show all spec dimensions with placeholder cells */}
           {orderedLenses.length === 0 && !hideBodyWhenEmpty && allGroups.map((group) => (
             <React.Fragment key={group.label}>
