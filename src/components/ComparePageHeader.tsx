@@ -14,7 +14,6 @@ import type { Lens } from "@/lib/types";
 import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
 
 interface Props {
-  lenses: Lens[];
   /** Matches CompareTable minColumns — button is hidden while empty slot columns are visible. */
   minColumns?: number;
   /** Preset title to pre-fill the poster title field. */
@@ -23,7 +22,7 @@ interface Props {
   presetSubtitle?: string;
 }
 
-export default function ComparePageHeader({ lenses, minColumns = 0, presetTitle, presetSubtitle }: Props) {
+export default function ComparePageHeader({ minColumns = 0, presetTitle, presetSubtitle }: Props) {
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
   const { compareIds, clearCompare } = useMountedCompare();
@@ -31,22 +30,17 @@ export default function ComparePageHeader({ lenses, minColumns = 0, presetTitle,
   const locale = useLocale();
   const router = useRouter();
 
-  // Before hydration (server render + first client paint) compareIds is []
-  // because CompareTable hasn't seeded context yet. Use the server prop to
-  // avoid a flash of missing buttons. After hydration, context is the sole
-  // source of truth — effects from ComparePageHeader and CompareTable are
-  // batched by React 18 so both hydrated and compareIds update in one pass.
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => setHydrated(true), []);
+  // Resolve full Lens objects from context IDs.
+  // CompareTable seeds context via useLayoutEffect (before paint), so
+  // compareIds is already populated by the time the user sees anything.
+  const activeLenses = useMemo(
+    () =>
+      compareIds
+        .map((id) => getLensesByMount(mount, locale).find((l) => l.id === id))
+        .filter((l): l is Lens => l !== undefined),
+    [compareIds, mount, locale],
+  );
 
-  const activeLenses = useMemo(() => {
-    if (!hydrated) {
-      return lenses;
-    }
-    return compareIds
-      .map((id) => getLensesByMount(mount, locale).find((l) => l.id === id))
-      .filter((l): l is Lens => l !== undefined);
-  }, [hydrated, compareIds, lenses, mount, locale]);
   const headerRef = useRef<HTMLDivElement>(null);
   const [showFab, setShowFab] = useState(false);
   // Show the FAB when the header row scrolls behind the nav bar

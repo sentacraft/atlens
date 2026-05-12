@@ -3,6 +3,7 @@
 import React, {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -257,11 +258,17 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
 
   // Context is the single client-side source of truth. The URL is a write-only
   // projection updated via history.replaceState (no RSC round-trip).
-  // This effect seeds Context from the URL on initial render and on subsequent
-  // navigations (e.g., a curated preset link click that re-renders the server
-  // component with new searchParams). It is a no-op for in-page mutations
-  // because those don't change initialLenses.
-  useEffect(() => {
+  //
+  // useLayoutEffect so the seed lands BEFORE the browser paints. This means
+  // every context consumer (ComparePageHeader, CompareAddLensButton, …) sees
+  // the correct compareIds on the first visible frame — no fallback props or
+  // "hydrated" flags required.
+  //
+  // The seed is a no-op for in-page mutations because those don't change
+  // initialLenses. It also fires on subsequent navigations (e.g., a curated
+  // preset link click that re-renders the server component with new
+  // searchParams).
+  useLayoutEffect(() => {
     replaceCompare(initialLensIds);
   }, [initialLensIds, replaceCompare]);
 

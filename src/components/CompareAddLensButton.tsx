@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import LensSearchDialog from "@/components/LensSearchDialog";
 import { MAX_COMPARE } from "@/lib/lens";
 import { useMountedCompare } from "@/context/CompareProvider";
+import type { Lens } from "@/lib/types";
 
 interface Props {
   triggerClassName?: string;

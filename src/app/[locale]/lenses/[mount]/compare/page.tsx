@@ -83,7 +83,7 @@ export default async function ComparePage({
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 flex flex-col gap-3 sm:gap-4">
-      <ComparePageHeader lenses={lenses} minColumns={2} presetTitle={presetTitle} presetSubtitle={presetSubtitle} />
+      <ComparePageHeader minColumns={2} presetTitle={presetTitle} presetSubtitle={presetSubtitle} />
       <CompareTable key={lenses.length === 0 ? "_empty_" : ids} lenses={lenses} minColumns={2} hideBodyWhenEmpty />
       {resolvedMount === "X" && <CuratedComparisons />}
     </div>
