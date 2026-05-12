@@ -7,20 +7,21 @@ import { useCompareUrl } from "@/hooks/useCompareUrl";
 import { toast } from "sonner";
 import LensSearchDialog from "@/components/LensSearchDialog";
 import { MAX_COMPARE } from "@/lib/lens";
+import { useMountedCompare } from "@/context/CompareProvider";
 import type { Lens } from "@/lib/types";
 
 interface Props {
-  lenses: Lens[];
   triggerClassName?: string;
 }
 
-export default function CompareAddLensButton({ lenses, triggerClassName }: Props) {
+export default function CompareAddLensButton({ triggerClassName }: Props) {
   const t = useTranslations("Compare");
   const router = useRouter();
   const { buildCompareUrl } = useCompareUrl();
+  const { compareIds } = useMountedCompare();
 
-  const canAddMore = lenses.length < MAX_COMPARE;
-  const currentIds = lenses.map((l) => l.id);
+  const canAddMore = compareIds.length < MAX_COMPARE;
+  const currentIds = compareIds;
 
   const handleSelectLens = useCallback(
     (lens: Lens) => {

@@ -12,14 +12,10 @@ export default function Tagline() {
     setTagline(taglines[Math.floor(Math.random() * taglines.length)]);
   }, [t]);
 
-  if (!tagline) {
-
-    return null;
-
-  }
+  if (!tagline) return null;
 
   return (
-    <span className="text-[11px] text-zinc-400 dark:text-zinc-600 tracking-wide select-none">
+    <span className="text-[11px] text-zinc-400 dark:text-zinc-600 tracking-wide select-none animate-in fade-in duration-400">
       {tagline}
     </span>
   );

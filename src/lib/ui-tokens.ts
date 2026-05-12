@@ -71,8 +71,8 @@ export const ICON_CLOSE_BTN_CLS =
  * The leading TriangleAlert icon shares the warn color.
  */
 export const PRICE_DISCLAIMER_WARN_CLS =
-  "font-semibold text-amber-600 dark:text-amber-400";
+  "font-semibold text-zinc-500 dark:text-zinc-400";
 export const PRICE_DISCLAIMER_BODY_CLS =
   "text-zinc-500 dark:text-zinc-400";
 export const PRICE_DISCLAIMER_ICON_CLS =
-  "shrink-0 text-amber-600 dark:text-amber-400";
+  "shrink-0 text-zinc-400 dark:text-zinc-500";

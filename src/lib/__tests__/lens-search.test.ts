@@ -266,7 +266,7 @@ describe("searchLenses — focal & aperture tokens", () => {
 // Brand alias matching
 //
 // Aliases come exclusively from the i18n catalog's `Brands.<key>` display
-// names. Prefix abbreviations ("Fuji" → Fujifilm, "唯卓" → 唯卓仕) still
+// names. Prefix abbreviations ("Fuji" → Fujifilm) still
 // work via the search engine's wordPrefix matching. Non-prefix variants
 // ("Fujinon", "フジ") are not covered and would require an explicit alias
 // table to recover.

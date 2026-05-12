@@ -293,14 +293,15 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               className={ACTION_OUTLINE_CLS}
             >
               <Flag size={14} />
-              {t("reportIssue")}
+              <span className="max-xs:hidden">{t("reportIssue")}</span>
             </FeedbackTrigger>
           </div>
         </div>
       </div>
 
       {/* Grouped spec table — full-width section below the header */}
-      <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+      <div>
+        <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
             {resolvedGroups.map((group, groupIdx) => (
               <div
                 key={group.label}
@@ -340,20 +341,20 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               </div>
             ))}
           </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-100 px-5 py-4 dark:border-zinc-800/60">
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          {t("nudgeText")}
-        </p>
-        <FeedbackTrigger
-          type="data_issue"
-          context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
-          fields={reportableFields}
-          className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
-        >
-          <Flag size={12} />
-          {t("reportIssue")}
-        </FeedbackTrigger>
+          <div className="flex items-center gap-3 px-2 pt-4">
+            <p className="text-xs text-zinc-400 dark:text-zinc-500">
+              {t("nudgeText")}
+            </p>
+            <FeedbackTrigger
+              type="data_issue"
+              context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
+              fields={reportableFields}
+              className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
+            >
+              <Flag size={12} />
+              {t("reportIssue")}
+            </FeedbackTrigger>
+          </div>
       </div>
     </div>
     <BackToTopButton />

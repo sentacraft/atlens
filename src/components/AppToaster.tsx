@@ -1,13 +1,16 @@
 "use client";
 
 import { Toaster } from "sonner";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
 
 export default function AppToaster() {
+  const isDesktop = useBreakpoint("sm");
+
   return (
     <Toaster
-      position="top-center"
+      position={isDesktop ? "top-center" : "bottom-center"}
       offset={16}
-      toastOptions={{ className: "whitespace-nowrap" }}
+      toastOptions={{ className: "!rounded-full !px-5" }}
     />
   );
 }

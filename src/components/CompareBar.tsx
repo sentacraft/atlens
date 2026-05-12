@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo, useEffect, useRef } from "react";
+import { useMemo, useRef, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { getLensesByMount } from "@/lib/lens";
 import { useMountedCompare } from "@/context/CompareProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
+import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 import { spring } from "@/lib/animation";
 import { X } from "lucide-react";
@@ -33,30 +34,25 @@ export default function CompareBar() {
     [compareIds, mount, locale]
   );
 
-  // Track bar height and expose it as a CSS variable so other fixed elements
-  // (BackToTopButton, page bottom padding) can stay above the bar dynamically.
-  const barRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<ResizeObserver | null>(null);
 
-  useEffect(() => {
-    const el = barRef.current;
-    if (!el) {
-      return;
+  const barRef = useCallback((el: HTMLDivElement | null) => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
     }
-    const observer = new ResizeObserver(([entry]) => {
-      document.documentElement.style.setProperty(
-        "--compare-bar-height",
-        `${entry.contentRect.height}px`
-      );
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (selectedLenses.length === 0) {
+    if (el) {
+      observerRef.current = new ResizeObserver(([entry]) => {
+        document.documentElement.style.setProperty(
+          "--compare-bar-height",
+          `${entry.contentRect.height}px`
+        );
+      });
+      observerRef.current.observe(el);
+    } else {
       document.documentElement.style.setProperty("--compare-bar-height", "0px");
     }
-  }, [selectedLenses.length]);
+  }, []);
 
   // Extract lens ID if currently on a lens detail page (/lenses/[mount]/[id])
   const currentLensId = useMemo(() => {
@@ -85,8 +81,8 @@ export default function CompareBar() {
           data-testid="compare-bar"
           className={`fixed bottom-0 left-0 right-0 ${Z.fixed} border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-black/95 backdrop-blur-sm pb-[var(--safe-inset-bottom)]`}
         >
-          <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-6">
-            <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1 sm:pb-0">
+          <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-6">
+            <div className="flex min-w-0 flex-1 -mx-5 px-5 sm:mx-0 sm:px-0 gap-2 overflow-x-auto pb-1 sm:pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,transparent,black_2rem,black_calc(100%-2rem),transparent)] sm:[mask-image:none]">
               <AnimatePresence mode="popLayout">
                 {selectedLenses.map((lens) => {
                   const brandName = tBrand(lens.brand);
@@ -111,7 +107,7 @@ export default function CompareBar() {
                         </span>
                       </span>
                       <button
-                        onClick={() => toggleCompare(lens.id)}
+                        onClick={() => { toggleCompare(lens.id); toast(t("removedFromCompare")); }}
                         className={cn(ICON_CLOSE_BTN_CLS, "h-5 w-5 -mr-0.5 mt-0.5")}
                         aria-label={tCompare("removeLens", { model: displayName })}
                       >
@@ -124,7 +120,7 @@ export default function CompareBar() {
             </div>
             <div className="flex items-center justify-end gap-3 sm:shrink-0">
               <button
-                onClick={clearCompare}
+                onClick={() => { clearCompare(); toast(t("clearedCompare")); }}
                 className="shrink-0 text-sm font-medium px-3 py-2 rounded-xl text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
               >
                 {t("clearCompare")}

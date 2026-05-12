@@ -55,7 +55,7 @@ export function formatPrice(
   // render as bare numbers (no ~ prefix). The visual "Used" indication is
   // handled by a separate badge component, not by mutating the number.
   _condition: Condition,
-  // CNY display template, e.g. "{value} 元" (zh) or "¥{value}" (en). Pass the
+  // CNY display template, e.g. "{value} Yuan" (zh) or "¥{value}" (en). Pass the
   // resolved i18n value (`t.raw("cnyAmount")` or `labels.cnyAmount` for the
   // props-driven SharePoster). The {value} placeholder is replaced with the
   // locale-formatted number.
