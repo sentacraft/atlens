@@ -176,7 +176,7 @@ details[open] > div {
 @media (max-width: calc(theme(--breakpoint-sm) - 1px)) {
   [data-sonner-toaster][data-y-position='top'] {
     top: auto !important;
-    bottom: calc(var(--compare-bar-height, 0px) + 16px) !important;
+    bottom: calc(var(--compare-bar-height, 0px) + 24px) !important;
   }
 }
 

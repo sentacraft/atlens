@@ -82,7 +82,7 @@ export default function CompareBar() {
           className={`fixed bottom-0 left-0 right-0 ${Z.fixed} border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-black/95 backdrop-blur-sm pb-[var(--safe-inset-bottom)]`}
         >
           <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-6">
-            <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1 sm:pb-0">
+            <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1 sm:pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <AnimatePresence mode="popLayout">
                 {selectedLenses.map((lens) => {
                   const brandName = tBrand(lens.brand);
