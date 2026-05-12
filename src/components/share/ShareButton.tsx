@@ -70,6 +70,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   const [customTitle, setCustomTitle] = useState(presetTitle ?? "");
   const [customSlogan, setCustomSlogan] = useState(presetSubtitle ?? "");
 
+  useEffect(() => { setCustomTitle(presetTitle ?? ""); }, [presetTitle]);
+  useEffect(() => { setCustomSlogan(presetSubtitle ?? ""); }, [presetSubtitle]);
+
   const posterRef = useRef<HTMLDivElement>(null);
   const slugRef = useRef("");
 
