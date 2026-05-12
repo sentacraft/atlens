@@ -340,7 +340,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               </div>
             ))}
           </div>
-          <div className="flex items-center gap-3 pt-2">
+          <div className="flex items-center gap-3 px-4 pt-1.5">
             <p className="text-xs text-zinc-400 dark:text-zinc-500">
               {t("nudgeText")}
             </p>
