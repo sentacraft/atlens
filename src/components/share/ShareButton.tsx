@@ -36,16 +36,6 @@ interface ShareButtonProps {
   presetSubtitle?: string;
 }
 
-// Brand-only title for share text (no "镜头对比：" prefix).
-// e.g. "富士 · 适马 · 唯卓仕" for multi-lens, full display name for single lens.
-function shareBrandTitle(lenses: Lens[], tBrand: (key: string) => string): string {
-  if (lenses.length >= 2) {
-    const uniqueBrands = [...new Set(lenses.map((l) => tBrand(l.brand)))];
-    return uniqueBrands.join(" · ");
-  }
-  return lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand)).join(" · ");
-}
-
 function computePosterTitle(
   lenses: Lens[],
   tBrand: (key: string) => string,
@@ -159,22 +149,23 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   }, []);
 
   const handleNativeShare = useCallback(async () => {
-    const rawTitle = customTitle.trim() || shareBrandTitle(lenses, tBrand);
+    const posterTitle = customTitle.trim() || computedPosterTitle.join(" · ");
     const isSingle = lenses.length === 1;
-    const tagline = isSingle
-      ? t("shareTextSingle", { title: rawTitle })
-      : t("shareText", { title: rawTitle });
+    const cta = isSingle
+      ? t("shareCtaSingle")
+      : t("shareCtaMulti", { count: lenses.length });
     const pageUrl = window.location.href;
     try {
       await navigator.share({
-        title: rawTitle,
-        text: `${tagline}\n👉 ${pageUrl}`,
+        title: posterTitle,
+        text: `${cta}\n👉 ${pageUrl}`,
+        url: pageUrl,
       });
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;
       toast.error(t("shareFailed"));
     }
-  }, [customTitle, lenses, tBrand, t]);
+  }, [customTitle, computedPosterTitle, lenses, t]);
 
   const handleDownload = useCallback(async () => {
     if (!posterRef.current) return;
@@ -194,15 +185,14 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
 
   const handleShareImage = useCallback(async () => {
     if (!posterRef.current) return;
-    const rawTitle = customTitle.trim() || shareBrandTitle(lenses, tBrand);
     const posterTitle = customTitle.trim() || computedPosterTitle.join(" · ");
     const isSingle = lenses.length === 1;
-    const tagline = isSingle
-      ? t("shareTextSingle", { title: rawTitle })
-      : t("shareText", { title: rawTitle });
+    const cta = isSingle
+      ? t("shareCtaSingle")
+      : t("shareCtaMulti", { count: lenses.length });
     const slogan = customSlogan.trim();
     const pageUrl = window.location.href;
-    const textParts = [tagline, slogan, `👉 ${pageUrl}`].filter(Boolean);
+    const textParts = [cta, slogan, `👉 ${pageUrl}`].filter(Boolean);
     const text = textParts.join("\n");
 
     setPosterGenerating(true);
@@ -213,8 +203,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       const file = new File([blob], `${posterTitle}.png`, { type: "image/png" });
       await navigator.share({
         files: [file],
-        title: rawTitle,
+        title: posterTitle,
         text,
+        url: pageUrl,
       });
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;
@@ -230,7 +221,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     } finally {
       setPosterGenerating(false);
     }
-  }, [customTitle, customSlogan, computedPosterTitle, lenses, tBrand, t]);
+  }, [customTitle, customSlogan, computedPosterTitle, lenses, t]);
 
   const truncatedUrl = shareUrl.length > 56 ? shareUrl.slice(0, 56) + "…" : shareUrl;
   const lensCaption = lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand)).join(" / ");

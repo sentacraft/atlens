@@ -254,8 +254,8 @@
     "customizeTitle": "Title",
     "customizeSlogan": "Slogan",
     "customizeSloganPlaceholder": "Add a personal note…",
-    "shareText": "{title} | X-Glass Lens Comparison",
-    "shareTextSingle": "{title} | X-Glass",
+    "shareCtaMulti": "I compared {count} lenses on X-Glass — check it out 👀",
+    "shareCtaSingle": "I found a lens on X-Glass — check it out 👀",
     "copyFailed": "Copy failed",
     "shareFailed": "Share failed, please try again"
   },

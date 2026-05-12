@@ -254,8 +254,8 @@
     "customizeTitle": "标题",
     "customizeSlogan": "补充文案",
     "customizeSloganPlaceholder": "写一句你想加的话…",
-    "shareText": "{title} | X-Glass 镜头对比",
-    "shareTextSingle": "{title} | X-Glass",
+    "shareCtaMulti": "我在 X-Glass 上对比了 {count} 支镜头，快来看看 👀",
+    "shareCtaSingle": "我在 X-Glass 上发现了一支镜头，快来看看 👀",
     "copyFailed": "复制失败",
     "shareFailed": "分享失败，请重试"
   },
