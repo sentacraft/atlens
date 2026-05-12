@@ -31,6 +31,8 @@ import { PosterFeatureItem } from "./PosterFeatureItem";
 export interface PosterLabels {
   appName: string;
   siteUrl: string;
+  /** Brand tagline shown directly under the wordmark. */
+  brandTagline: string;
   /** Short CTA / tagline shown in the header top-right. */
   cta: string;
   /** One line per lens — shown as stacked title lines when no custom title is set. */
@@ -383,81 +385,85 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
       style={{ width: POSTER_W }}
     >
       {/* ── Header ────────────────────────────────────────────── */}
-      <div style={{ padding: `24px ${POSTER_PX}px 20px` }}>
-        {/* Brand tag: always at top, not part of vertical centering */}
-        <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 10 }}>
-          <Iris config={IRIS_NAV} size={14} uid="poster" />
-          <span
-            className="text-zinc-400"
-            style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
-          >
-            X-Glass
-          </span>
+      <div style={{ padding: `28px ${POSTER_PX}px 24px` }}>
+        {/* Top row: brand+tagline (left) ↔ QR+CTA (right), aligned to top */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 24 }}>
+          {/* Left: brand stack */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingTop: 2 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Iris config={IRIS_NAV} size={20} uid="poster" />
+              <span
+                className="text-zinc-700"
+                style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
+              >
+                X-Glass
+              </span>
+            </div>
+            <div
+              className="text-zinc-400"
+              style={{ fontSize: 12, fontWeight: 500, lineHeight: 1.4 }}
+            >
+              {labels.brandTagline}
+            </div>
+          </div>
+
+          {/* Right: QR + CTA */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flexShrink: 0, gap: 8 }}>
+            <div
+              style={{
+                width: 96,
+                height: 96,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {shareUrl ? (
+                <QRCodeSVG
+                  value={shareUrl}
+                  size={96}
+                  level="H"
+                  style={{ display: "block" }}
+                  imageSettings={{
+                    src: "/icons/icon-192-white.png",
+                    width: 18,
+                    height: 18,
+                    excavate: true,
+                  }}
+                />
+              ) : (
+                <span className="text-zinc-300" style={{ fontSize: 8, letterSpacing: 1 }}>QR</span>
+              )}
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div className="text-zinc-700" style={{ fontSize: 9, fontWeight: 600, lineHeight: 1.5 }}>
+                {labels.cta}
+              </div>
+              <div className="text-zinc-700" style={{ fontSize: 8, fontWeight: 600, marginTop: 2 }}>
+                {labels.siteUrl}
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Content row: title+slogan ↔ QR, vertically centered */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          {/* Left: title + slogan */}
-          <div style={{ flex: 1, minWidth: 0, paddingRight: 24 }}>
-            <div style={{ marginBottom: slogan ? 8 : 0 }}>
-              {titleLines.map((line, i) => (
-                <div
-                  key={i}
-                  className="text-zinc-900"
-                  style={{ fontSize: titleFontSize, fontWeight: 600, lineHeight: 1.25 }}
-                >
-                  {line}
-                </div>
-              ))}
-            </div>
-            {slogan && (
-              <div className="text-zinc-400" style={{ fontSize: 13, lineHeight: 1.4 }}>
-                {slogan}
+        {/* Title + per-share slogan block */}
+        <div style={{ marginTop: 20 }}>
+          <div style={{ marginBottom: slogan ? 8 : 0 }}>
+            {titleLines.map((line, i) => (
+              <div
+                key={i}
+                className="text-zinc-900"
+                style={{ fontSize: titleFontSize, fontWeight: 600, lineHeight: 1.25 }}
+              >
+                {line}
               </div>
-            )}
+            ))}
           </div>
-
-          {/* Right: QR code + CTA */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flexShrink: 0, gap: 8 }}>
-          {/* QR code */}
-          <div
-            style={{
-              width: 76,
-              height: 76,
-              borderRadius: 6,
-              padding: 4,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {shareUrl ? (
-              <QRCodeSVG
-                value={shareUrl}
-                size={64}
-                level="H"
-                style={{ display: "block" }}
-                imageSettings={{
-                  src: "/icons/icon-192-white.png",
-                  width: 12,
-                  height: 12,
-                  excavate: true,
-                }}
-              />
-            ) : (
-              <span className="text-zinc-300" style={{ fontSize: 8, letterSpacing: 1 }}>QR</span>
-            )}
-          </div>
-          {/* CTA + site URL */}
-          <div style={{ textAlign: "right" }}>
-            <div className="text-zinc-700" style={{ fontSize: 9, fontWeight: 600, lineHeight: 1.5 }}>
-              {labels.cta}
+          {slogan && (
+            <div className="text-zinc-400" style={{ fontSize: 13, lineHeight: 1.4 }}>
+              {slogan}
             </div>
-            <div className="text-zinc-700" style={{ fontSize: 8, fontWeight: 600, marginTop: 2 }}>
-              {labels.siteUrl}
-            </div>
-          </div>
-          </div>
+          )}
         </div>
       </div>
 

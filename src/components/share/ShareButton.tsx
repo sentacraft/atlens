@@ -88,6 +88,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   const posterLabels: PosterLabels = {
     appName: "X-Glass",
     siteUrl: `xglass.sentacraft.com/${locale}`,
+    brandTagline: tImage("brandTagline"),
     cta: lenses.length === 1 ? tImage("ctaSingle") : tImage("cta"),
     comparison: computedPosterTitle,
     sectionFocalCoverage: tImage("sectionFocalCoverage"),
