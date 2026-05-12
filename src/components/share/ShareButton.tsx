@@ -202,8 +202,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       const file = new File([blob], `${posterTitle}.png`, { type: "image/png" });
       await navigator.share({
         files: [file],
-        // TODO: debug title/url field behavior across platforms before re-enabling
-        // title: posterTitle,
+        // TODO: debug title/url fields across platforms before re-enabling
         text,
       });
     } catch (err) {
