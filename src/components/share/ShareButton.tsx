@@ -88,6 +88,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   const posterLabels: PosterLabels = {
     appName: "X-Glass",
     siteUrl: `xglass.sentacraft.com/${locale}`,
+    brandTagline: tImage("brandTagline"),
     cta: lenses.length === 1 ? tImage("ctaSingle") : tImage("cta"),
     comparison: computedPosterTitle,
     sectionFocalCoverage: tImage("sectionFocalCoverage"),
@@ -188,14 +189,16 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       ? t("shareCtaSingle")
       : t("shareCtaMulti", { count: lenses.length });
     const slogan = effectiveSlogan.trim();
-    const pageUrl = window.location.href;
-    const textParts = [cta, slogan, `👉 ${pageUrl}`].filter(Boolean);
+    const textParts = [cta, slogan].filter(Boolean);
     const text = textParts.join("\n");
 
     setPosterGenerating(true);
     let blobUrl: string | undefined;
     try {
-      blobUrl = await rasterizePoster(posterRef.current);
+      // Cap share output at 1280px — the long-axis threshold used by the
+      // most aggressive mainstream IM compressors. Staying at/below this
+      // avoids the resize stage and only takes a single quality pass.
+      blobUrl = await rasterizePoster(posterRef.current, { maxWidth: 1280 });
       const blob = await (await fetch(blobUrl)).blob();
       const file = new File([blob], `${posterTitle}.png`, { type: "image/png" });
       await navigator.share({
