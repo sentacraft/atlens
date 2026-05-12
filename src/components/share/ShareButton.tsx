@@ -35,6 +35,16 @@ interface ShareButtonProps {
   presetSubtitle?: string;
 }
 
+// Brand-only title for share text (no "镜头对比：" prefix).
+// e.g. "富士 · 适马 · 唯卓仕" for multi-lens, full display name for single lens.
+function shareBrandTitle(lenses: Lens[], tBrand: (key: string) => string): string {
+  if (lenses.length >= 2) {
+    const uniqueBrands = [...new Set(lenses.map((l) => tBrand(l.brand)))];
+    return uniqueBrands.join(" · ");
+  }
+  return lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand)).join(" · ");
+}
+
 function computePosterTitle(
   lenses: Lens[],
   tBrand: (key: string) => string,
@@ -43,6 +53,9 @@ function computePosterTitle(
 ): string[] {
   if (lenses.length >= 2) {
     const uniqueBrands = [...new Set(lenses.map((l) => tBrand(l.brand)))];
+    // Poster title includes the "镜头对比：" prefix for visual context on the image.
+    // Share text templates append their own tagline, so posterTitle for sharing
+    // should use the raw brand string via computedPosterTitle.join(" · ").
     const colon = locale === "zh" ? "：" : ": ";
     return [`${comparisonLabel}${colon}${uniqueBrands.join(" · ")}`];
   }
@@ -141,20 +154,21 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   }, []);
 
   const handleNativeShare = useCallback(async () => {
-    const posterTitle = customTitle.trim() || computedPosterTitle.join(" · ");
+    const rawTitle = customTitle.trim() || shareBrandTitle(lenses, tBrand);
     const isSingle = lenses.length === 1;
-    const title = isSingle
-      ? t("nativeTitleSingle", { title: posterTitle })
-      : t("nativeTitle", { title: posterTitle });
+    const tagline = isSingle
+      ? t("shareTextSingle", { title: rawTitle })
+      : t("shareText", { title: rawTitle });
+    const pageUrl = window.location.href;
     try {
       await navigator.share({
-        title,
-        url: window.location.href,
+        title: rawTitle,
+        text: `${tagline}\n👉 ${pageUrl}`,
       });
     } catch {
       // user cancelled or not supported
     }
-  }, [customTitle, computedPosterTitle, lenses.length, t]);
+  }, [customTitle, lenses, tBrand, t]);
 
   const handleDownload = useCallback(async () => {
     if (!posterRef.current) return;
@@ -174,17 +188,15 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
 
   const handleShareImage = useCallback(async () => {
     if (!posterRef.current) return;
+    const rawTitle = customTitle.trim() || shareBrandTitle(lenses, tBrand);
     const posterTitle = customTitle.trim() || computedPosterTitle.join(" · ");
     const isSingle = lenses.length === 1;
-    const title = isSingle
-      ? t("nativeTitleSingle", { title: posterTitle })
-      : t("nativeTitle", { title: posterTitle });
-    const textBody = isSingle
-      ? t("nativeTextSingle", { title: posterTitle })
-      : t("nativeText", { title: posterTitle, count: lenses.length });
+    const tagline = isSingle
+      ? t("shareTextSingle", { title: rawTitle })
+      : t("shareText", { title: rawTitle });
     const slogan = customSlogan.trim();
     const pageUrl = window.location.href;
-    const textParts = [textBody, slogan, `👉 ${pageUrl}`].filter(Boolean);
+    const textParts = [tagline, slogan, `👉 ${pageUrl}`].filter(Boolean);
     const text = textParts.join("\n");
 
     setPosterGenerating(true);
@@ -195,7 +207,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       const file = new File([blob], `${posterTitle}.png`, { type: "image/png" });
       await navigator.share({
         files: [file],
-        title,
+        title: rawTitle,
         text,
       });
     } catch (err) {
@@ -209,7 +221,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     } finally {
       setPosterGenerating(false);
     }
-  }, [customTitle, customSlogan, computedPosterTitle, lenses.length, t]);
+  }, [customTitle, customSlogan, computedPosterTitle, lenses, tBrand, t]);
 
   const truncatedUrl = shareUrl.length > 56 ? shareUrl.slice(0, 56) + "…" : shareUrl;
   const lensCaption = lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand)).join(" / ");

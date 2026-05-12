@@ -251,10 +251,8 @@
     "customizeTitle": "Title",
     "customizeSlogan": "Slogan",
     "customizeSloganPlaceholder": "Add a personal note…",
-    "nativeTitle": "{title} — X-Glass Lens Comparison",
-    "nativeTitleSingle": "{title} — X-Glass",
-    "nativeText": "{title} — {count, plural, one {# lens} other {# lenses}} compared at a glance",
-    "nativeTextSingle": "{title} — full specs"
+    "shareText": "{title} | X-Glass Lens Comparison",
+    "shareTextSingle": "{title} | X-Glass"
   },
   "ShareImage": {
     "comparison": "Lens Comparison",
