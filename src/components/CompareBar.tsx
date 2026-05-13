@@ -134,7 +134,17 @@ export default function CompareBar() {
                 })}
               </AnimatePresence>
             </div>
+            {/* Cluster ordering: destructive (清空) → additive (+) → primary CTA (查看对比).
+                Left-to-right rising visual weight, and keeps the two button-shaped
+                elements adjacent on the right so the text affordance doesn't sit
+                marooned between two button silhouettes. */}
             <div className="flex items-center justify-end gap-3 sm:shrink-0">
+              <button
+                onClick={clearCompare}
+                className="shrink-0 inline-flex h-9 items-center text-sm font-medium px-3 rounded-xl text-zinc-500 hover:bg-zinc-100/70 hover:text-zinc-800 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200 transition-colors"
+              >
+                {t("clearCompare")}
+              </button>
               <LensSearchDialog
                 onSelectLens={handleAddLens}
                 getResultState={getAddResultState}
@@ -143,12 +153,6 @@ export default function CompareBar() {
                 triggerLabel={tCompare("addLens")}
                 triggerClassName="h-9 w-9 shrink-0 rounded-xl"
               />
-              <button
-                onClick={clearCompare}
-                className="shrink-0 inline-flex h-9 items-center text-sm font-medium px-3 rounded-xl text-zinc-500 hover:bg-zinc-100/70 hover:text-zinc-800 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200 transition-colors"
-              >
-                {t("clearCompare")}
-              </button>
               <button
                 onClick={handleCompare}
                 className={`shrink-0 inline-flex h-9 items-center text-sm font-medium px-4 rounded-xl ${ACTION_PRIMARY_CLS}`}
