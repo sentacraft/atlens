@@ -221,6 +221,8 @@
   },
   "Compare": {
     "title": "Compare",
+    "clearedToast": "Comparison cleared",
+    "undo": "Undo",
     "officialSite": "Product page",
     "addLens": "Add lens",
     "selectFirst": "Add lens",
