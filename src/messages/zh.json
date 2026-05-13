@@ -44,8 +44,8 @@
   },
   "MountSwitcher": {
     "label": "切换卡口系统",
-    "x": "X Mount",
-    "gfx": "G Mount"
+    "x": "X 卡口",
+    "gfx": "G 卡口"
   },
   "Home": {
     "cta": "浏览镜头",
