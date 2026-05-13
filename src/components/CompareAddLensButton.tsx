@@ -2,8 +2,6 @@
 
 import { useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
-import { useCompareUrl } from "@/hooks/useCompareUrl";
 import { toast } from "sonner";
 import LensSearchDialog from "@/components/LensSearchDialog";
 import { MAX_COMPARE } from "@/lib/lens";
@@ -16,36 +14,32 @@ interface Props {
 
 export default function CompareAddLensButton({ triggerClassName }: Props) {
   const t = useTranslations("Compare");
-  const router = useRouter();
-  const { buildCompareUrl } = useCompareUrl();
-  const { compareIds } = useMountedCompare();
+  const { compareIds, replaceCompare } = useMountedCompare();
 
   const canAddMore = compareIds.length < MAX_COMPARE;
-  const currentIds = compareIds;
 
   const handleSelectLens = useCallback(
     (lens: Lens) => {
-      if (currentIds.includes(lens.id) || currentIds.length >= MAX_COMPARE) {
+      if (compareIds.includes(lens.id) || compareIds.length >= MAX_COMPARE) {
         return;
       }
-      const nextIds = [...currentIds, lens.id];
-      router.replace(buildCompareUrl(nextIds));
+      replaceCompare([...compareIds, lens.id]);
     },
-    [currentIds, router, buildCompareUrl]
+    [compareIds, replaceCompare]
   );
 
   const getResultState = useCallback(
     (candidate: Lens) => ({
-      actionLabel: currentIds.includes(candidate.id)
+      actionLabel: compareIds.includes(candidate.id)
         ? t("alreadyAdded")
-        : currentIds.length >= MAX_COMPARE
+        : compareIds.length >= MAX_COMPARE
           ? t("compareFull")
           : t("addToCompareAction"),
       disabled:
-        currentIds.includes(candidate.id) ||
-        currentIds.length >= MAX_COMPARE,
+        compareIds.includes(candidate.id) ||
+        compareIds.length >= MAX_COMPARE,
     }),
-    [currentIds, t]
+    [compareIds, t]
   );
 
   const btnClass =

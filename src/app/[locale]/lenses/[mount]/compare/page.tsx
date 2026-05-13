@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { parseLensIds } from "@/lib/lens";
 import { urlSegmentToMount } from "@/lib/mount";
-import { getPresetBySlug } from "@/lib/curated-presets";
+import { findPresetByIds } from "@/lib/curated-presets";
 import CompareTable from "@/components/CompareTable";
 import ComparePageHeader from "@/components/ComparePageHeader";
 import CuratedComparisons from "@/components/CuratedComparisons";
@@ -19,7 +19,7 @@ import { notFound } from "next/navigation";
 export const revalidate = 31536000; // 1 year
 
 type Params = Promise<{ locale: string; mount: string }>;
-type SearchParams = Promise<{ ids?: string; from?: "lens" | "home"; lensId?: string; preset?: string }>;
+type SearchParams = Promise<{ ids?: string }>;
 
 export async function generateMetadata({
   params,
@@ -30,7 +30,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const t = await getTranslations("Compare");
   const { locale, mount } = await params;
-  const { ids, preset } = await searchParams;
+  const { ids } = await searchParams;
   const resolvedMount = urlSegmentToMount(mount);
   if (!resolvedMount) {
     return { title: t("title") };
@@ -39,13 +39,14 @@ export async function generateMetadata({
   const lenses = parseLensIds(ids, resolvedMount, locale);
   const alternates = buildAlternates(locale, `lenses/${mount}/compare`);
 
-  if (preset) {
-    const found = getPresetBySlug(preset);
-    if (found) {
-      const lang = locale === "zh" ? "zh" : "en";
-      const title = found.title[lang];
-      return { title, openGraph: { title: `${title} | X-Glass` }, alternates };
-    }
+  // Reverse-derive the curated preset, if any, from the URL's ids.
+  // Lets shared `?ids=...` links render with the curated framing in SEO /
+  // OG metadata without keeping a separate `?preset=` URL param.
+  const matchedPreset = findPresetByIds(lenses.map((l) => l.id));
+  if (matchedPreset) {
+    const lang = locale === "zh" ? "zh" : "en";
+    const title = matchedPreset.title[lang];
+    return { title, openGraph: { title: `${title} | X-Glass` }, alternates };
   }
 
   if (lenses.length < 2) {
@@ -69,7 +70,7 @@ export default async function ComparePage({
 }) {
   const { locale, mount } = await params;
   setRequestLocale(locale);
-  const { ids, preset } = await searchParams;
+  const { ids } = await searchParams;
   const resolvedMount = urlSegmentToMount(mount);
   if (!resolvedMount) {
     notFound();
@@ -77,14 +78,9 @@ export default async function ComparePage({
 
   const lenses = parseLensIds(ids, resolvedMount, locale);
 
-  const lang = locale === "zh" ? "zh" : "en";
-  const foundPreset = preset ? getPresetBySlug(preset) : undefined;
-  const presetTitle = foundPreset?.title[lang];
-  const presetSubtitle = foundPreset?.subtitle[lang];
-
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 flex flex-col gap-3 sm:gap-4">
-      <ComparePageHeader minColumns={2} presetTitle={presetTitle} presetSubtitle={presetSubtitle} presetLensIds={foundPreset?.lensIds} />
+      <ComparePageHeader minColumns={2} />
       <CompareTable key={lenses.length === 0 ? "_empty_" : ids} lenses={lenses} minColumns={2} hideBodyWhenEmpty />
       {resolvedMount === "X" && <CuratedComparisons />}
       <BackToTopButton />

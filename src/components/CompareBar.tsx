@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { useRouter, usePathname } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { getLensesByMount } from "@/lib/lens";
 import { useMountedCompare } from "@/context/CompareProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -20,7 +20,6 @@ export default function CompareBar() {
   const tBrand = useTranslations("Brands");
   const tCompare = useTranslations("Compare");
   const router = useRouter();
-  const pathname = usePathname();
   const locale = useLocale();
   const mount = useEffectiveMount();
   const { compareIds, toggleCompare, clearCompare } = useMountedCompare();
@@ -53,18 +52,10 @@ export default function CompareBar() {
     }
   }, []);
 
-  // Extract lens ID if currently on a lens detail page (/lenses/[mount]/[id])
-  const currentLensId = useMemo(() => {
-    const seg = mountToUrlSegment(mount);
-    const match = pathname.match(new RegExp(`\\/lenses\\/${seg}\\/(?!compare\\b)([^/]+)$`));
-    return match?.[1] ?? null;
-  }, [pathname, mount]);
-
   function handleCompare() {
     const ids = selectedLenses.map((l) => l.id).join(",");
     const seg = mountToUrlSegment(mount);
-    const fromParam = currentLensId ? `&from=lens&lensId=${currentLensId}` : "";
-    router.push(`/lenses/${seg}/compare?ids=${ids}${fromParam}`);
+    router.push(`/lenses/${seg}/compare?ids=${ids}`);
   }
 
   return (

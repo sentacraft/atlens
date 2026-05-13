@@ -20,7 +20,7 @@ import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 import type { FeedbackField } from "@/components/FeedbackDialog";
 import { useMountedCompare } from "@/context/CompareProvider";
-import { useCompareUrl } from "@/hooks/useCompareUrl";
+import { useCompareUrlSync } from "@/hooks/useCompareUrlSync";
 import { getLensesByMount, getLensUrl, MAX_COMPARE } from "@/lib/lens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import LensSearchDialog from "@/components/LensSearchDialog";
@@ -295,7 +295,10 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const priceFieldLabel = tPricing("fieldLabel");
   const priceGroupLabel = tPricing("groupLabel");
   const { compareIds, replaceCompare } = useMountedCompare();
-  const { buildLocalizedCompareUrl } = useCompareUrl();
+  // Compare page is the only surface that projects compare state onto the
+  // URL. This hook owns that projection so individual write callsites no
+  // longer need to know about address-bar bookkeeping.
+  useCompareUrlSync();
   const mount = useEffectiveMount();
   const initialLensIds = useMemo(
     () => initialLenses.map((lens) => lens.id),
@@ -325,26 +328,14 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   // Number of empty slot columns to render (search triggers filling up to minColumns)
   const emptySlotCount = Math.max(0, minColumns - orderedLenses.length);
 
-  const updateCompare = useCallback(
-    (nextIds: string[]) => {
-      replaceCompare(nextIds);
-      // Update only the address bar — avoids RSC round-trip and the redundant
-      // server-side re-parse of ids that the client already computed.
-      // Use the locale-prefixed form because replaceState writes the path
-      // verbatim (next-intl's router would have auto-prefixed it for us).
-      window.history.replaceState(null, "", buildLocalizedCompareUrl(nextIds));
-    },
-    [replaceCompare, buildLocalizedCompareUrl]
-  );
-
   const handleAddLens = useCallback(
     (lens: Lens) => {
       if (compareIds.includes(lens.id) || compareIds.length >= MAX_COMPARE) {
         return;
       }
-      updateCompare([...compareIds, lens.id]);
+      replaceCompare([...compareIds, lens.id]);
     },
-    [compareIds, updateCompare]
+    [compareIds, replaceCompare]
   );
 
   const getAddResultState = useCallback(
@@ -369,7 +360,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   };
 
   function handleRemoveLens(lensId: string) {
-    updateCompare(compareIds.filter((id) => id !== lensId));
+    replaceCompare(compareIds.filter((id) => id !== lensId));
   }
 
   function handleShiftLens(lensId: string, direction: -1 | 1) {
@@ -380,7 +371,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
     }
     const next = [...compareIds];
     [next[index], next[newIndex]] = [next[newIndex], next[index]];
-    updateCompare(next);
+    replaceCompare(next);
   }
 
   const allGroups = useMemo(

@@ -7,30 +7,23 @@ import ShareFAB from "@/components/ShareFAB";
 import CompareAddLensButton from "@/components/CompareAddLensButton";
 import { useMountedCompare } from "@/context/CompareProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
-import { mountToUrlSegment } from "@/lib/mount";
 import { getLensesByMount } from "@/lib/lens";
-import { useRouter } from "@/i18n/navigation";
+import { findPresetByIds } from "@/lib/curated-presets";
 import type { Lens } from "@/lib/types";
 import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
 
 interface Props {
   /** Matches CompareTable minColumns — button is hidden while empty slot columns are visible. */
   minColumns?: number;
-  /** Preset title to pre-fill the poster title field. */
-  presetTitle?: string;
-  /** Preset subtitle to pre-fill the poster slogan field. */
-  presetSubtitle?: string;
-  /** Original lens IDs of the preset — used to detect when the user has modified the comparison. */
-  presetLensIds?: string[];
 }
 
-export default function ComparePageHeader({ minColumns = 0, presetTitle, presetSubtitle, presetLensIds }: Props) {
+export default function ComparePageHeader({ minColumns = 0 }: Props) {
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
   const { compareIds, clearCompare } = useMountedCompare();
   const mount = useEffectiveMount();
   const locale = useLocale();
-  const router = useRouter();
+  const lang = locale === "zh" ? "zh" : "en";
 
   // Resolve full Lens objects from context IDs.
   // CompareTable seeds context via useLayoutEffect (before paint), so
@@ -43,21 +36,14 @@ export default function ComparePageHeader({ minColumns = 0, presetTitle, presetS
     [compareIds, mount, locale],
   );
 
-  // Only forward preset title/subtitle when the current comparison still
-  // matches the original preset (same set of lens IDs, order-insensitive).
-  const presetStillMatches = useMemo(() => {
-    if (!presetLensIds || presetLensIds.length === 0) {
-      return false;
-    }
-    if (compareIds.length !== presetLensIds.length) {
-      return false;
-    }
-    const currentSet = new Set(compareIds);
-    return presetLensIds.every((id) => currentSet.has(id));
-  }, [compareIds, presetLensIds]);
-
-  const effectivePresetTitle = presetStillMatches ? presetTitle : undefined;
-  const effectivePresetSubtitle = presetStillMatches ? presetSubtitle : undefined;
+  // Reverse-derive the matching curated preset (if any) from the current
+  // compare state. `?ids=` is the URL's single source of truth, so a preset
+  // is "active" iff its lensIds exactly equal the live compareIds —
+  // regardless of how the user got here (curated link, deep link, or
+  // assembling by hand on the compare page itself).
+  const matchedPreset = useMemo(() => findPresetByIds(compareIds), [compareIds]);
+  const presetTitle = matchedPreset?.title[lang];
+  const presetSubtitle = matchedPreset?.subtitle[lang];
 
   return (
     <>
@@ -68,7 +54,7 @@ export default function ComparePageHeader({ minColumns = 0, presetTitle, presetS
         {activeLenses.length >= minColumns && <CompareAddLensButton />}
         {activeLenses.length > 0 && (
           <button
-            onClick={() => { clearCompare(); router.replace(`/lenses/${mountToUrlSegment(mount)}/compare`); }}
+            onClick={clearCompare}
             className={`shrink-0 text-sm font-medium px-3 py-2 rounded-xl ${TEXT_LINK_CLS}`}
           >
             {tList("clearCompare")}
@@ -76,15 +62,15 @@ export default function ComparePageHeader({ minColumns = 0, presetTitle, presetS
         )}
         {activeLenses.length >= 1 && (
           <div className="ml-auto">
-            <ShareButton lenses={activeLenses} presetTitle={effectivePresetTitle} presetSubtitle={effectivePresetSubtitle} />
+            <ShareButton lenses={activeLenses} presetTitle={presetTitle} presetSubtitle={presetSubtitle} />
           </div>
         )}
       </div>
 
       <ShareFAB
         lenses={activeLenses}
-        presetTitle={effectivePresetTitle}
-        presetSubtitle={effectivePresetSubtitle}
+        presetTitle={presetTitle}
+        presetSubtitle={presetSubtitle}
       />
     </>
   );
