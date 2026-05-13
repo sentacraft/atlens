@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Flag, ArrowUpRight } from "lucide-react";
+import { Flag } from "lucide-react";
 import { routing } from "@/i18n/routing";
 import { getLensesByMount, getLensUrl } from "@/lib/lens";
 import { urlSegmentToMount } from "@/lib/mount";
@@ -258,8 +258,12 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           </div>
         </div>
 
-        {/* Info: title → price → actions */}
-        <div className="flex-1 flex flex-col gap-5">
+        {/* Info: title → price → actions.
+            @container so the actions row below can use container queries
+            to hide secondary button text when the info column gets narrow
+            (small desktop / portrait tablet), avoiding the 4-button row
+            wrapping into 2 rows. */}
+        <div className="@container flex-1 flex flex-col gap-5">
           {/* Title */}
           <div>
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
@@ -279,12 +283,11 @@ export default async function LensDetailPage({ params }: { params: Params }) {
             <AddToCompareButton lensId={lens.id} />
             {url ? (
               <ExternalLink href={url} className={ACTION_OUTLINE_CLS}>
-                <span className="max-xs:hidden">{t("officialSite")}</span>
+                {t("officialSite")}
               </ExternalLink>
             ) : (
               <span className={ACTION_OUTLINE_CLS + " cursor-not-allowed opacity-40"}>
-                <span className="max-xs:hidden">{t("officialSite")}</span>
-                <ArrowUpRight size={12} />
+                {t("officialSite")}
               </span>
             )}
             <ShareButton lenses={[lens]} triggerClassName={ACTION_OUTLINE_CLS} />
@@ -295,7 +298,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               className={ACTION_OUTLINE_CLS}
             >
               <Flag size={14} />
-              <span className="max-xs:hidden">{t("reportIssue")}</span>
+              <span className="max-xs:hidden @max-md:hidden">{t("reportIssue")}</span>
             </FeedbackTrigger>
           </div>
         </div>

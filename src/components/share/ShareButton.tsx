@@ -375,7 +375,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     "flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-zinc-900 text-white shadow-lg outline-none transition-colors hover:bg-zinc-700 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200";
 
   const triggerContent = isFab ? <Share2 className="size-5" /> : (
-    <><Share2 className="size-4" /><span className="max-xs:hidden">{t("button")}</span></>
+    <><Share2 className="size-4" /><span className="max-xs:hidden @max-md:hidden">{t("button")}</span></>
   );
 
   const shareControl = !mounted ? (
