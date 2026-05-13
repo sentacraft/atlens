@@ -170,15 +170,6 @@ details[open] > div {
 .wco-drag   { -webkit-app-region: drag;    app-region: drag;    }
 .wco-no-drag { -webkit-app-region: no-drag; app-region: no-drag; }
 
-/* On mobile, Sonner uses position="bottom-center" so toasts stack upward.
-   Sonner hardcodes `bottom` via inline style, so we must use !important to
-   shift the toaster above the compare bar when it is visible. */
-@media (max-width: calc(theme(--breakpoint-sm) - 1px)) {
-  [data-sonner-toaster][data-y-position='bottom'] {
-    bottom: calc(var(--compare-bar-height, 0px) + 16px) !important;
-  }
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;

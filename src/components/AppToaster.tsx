@@ -6,23 +6,24 @@ import { useBreakpoint } from "@/hooks/useBreakpoint";
 export default function AppToaster() {
   const isDesktop = useBreakpoint("sm");
 
+  // Sonner v2 has independent `offset` and `mobileOffset` props. It
+  // detects mobile via internal media query and *swaps* to `mobileOffset`
+  // when so. Setting only `offset` reads as "use mine first, then
+  // fallback to default mobileOffset of 16px on mobile" — visually that
+  // looks like the toast settling down toward the bottom edge.
+  // Set both explicitly so sonner has nothing to swap to.
+  const desktopOffset = "calc(var(--nav-height) + 1rem)";
+  // Mobile bottom-center: pinned high enough to clear the compare bar's
+  // resting position (~108px content + safe-inset) plus a small buffer.
+  // Fixed value (no `--compare-bar-height` dependency) keeps the toast
+  // still while the bar exits below it independently.
+  const mobileOffset = "calc(8rem + var(--safe-inset-bottom))";
+
   return (
     <Toaster
       position={isDesktop ? "top-center" : "bottom-center"}
-      offset={
-        isDesktop
-          // Desktop toasts sit at top-center; clear the fixed nav so the
-          // pill doesn't bridge the nav-content boundary.
-          ? "calc(var(--nav-height) + 1rem)"
-          // Mobile toasts sit at bottom-center, fixed high enough to
-          // clear the compare bar (~108px tall + safe-inset). Don't
-          // track `--compare-bar-height` — when the bar collapses, a
-          // tracking toast would slide downward through where the bar
-          // just was, reading as a janky "follow the bar" animation.
-          // A fixed offset keeps the toast still while the bar exits
-          // independently below it.
-          : "calc(8rem + var(--safe-inset-bottom))"
-      }
+      offset={isDesktop ? desktopOffset : mobileOffset}
+      mobileOffset={mobileOffset}
       toastOptions={{
         className: "!rounded-full !px-5",
         classNames: {
