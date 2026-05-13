@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCompareUrl } from "@/hooks/useCompareUrl";
+import { useHorizontalScrollAffordance } from "@/hooks/useHorizontalScrollAffordance";
 import { useMountedCompare } from "@/context/CompareProvider";
 import { curatedPresets, type CuratedPreset } from "@/lib/curated-presets";
 import { getAllLenses } from "@/lib/lens";
@@ -68,32 +69,7 @@ export default function CuratedComparisons() {
   const { compareIds } = useMountedCompare();
   const t = useTranslations("Compare");
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
-  function updateScrollState() {
-    const el = scrollRef.current;
-    if (!el) {
-      return;
-    }
-    setCanScrollLeft(el.scrollLeft > 4);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
-  }
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) {
-      return;
-    }
-    updateScrollState();
-    el.addEventListener("scroll", updateScrollState, { passive: true });
-    const ro = new ResizeObserver(updateScrollState);
-    ro.observe(el);
-    return () => {
-      el.removeEventListener("scroll", updateScrollState);
-      ro.disconnect();
-    };
-  }, []);
+  const { canScrollLeft, canScrollRight } = useHorizontalScrollAffordance(scrollRef);
 
   function scrollToDir(dir: -1 | 1) {
     const el = scrollRef.current;
