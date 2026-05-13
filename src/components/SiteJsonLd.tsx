@@ -22,6 +22,9 @@ export default function SiteJsonLd({ locale }: { locale: string }) {
       name: SITE.name,
       alternateName: BRAND_ALTERNATE_NAMES,
       url: SITE.url,
+      sameAs: [
+        "https://github.com/sentacraft/x-glass",
+      ],
       logo: {
         "@type": "ImageObject",
         url: `${SITE.url}/logo.png`,
