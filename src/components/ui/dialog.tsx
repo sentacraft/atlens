@@ -55,6 +55,7 @@ function DialogBackdrop({ className }: { className?: string }) {
   return (
     <DialogPrimitive.Close
       render={<div />}
+      nativeButton={false}
       data-slot="dialog-backdrop"
       className={cn(
         "absolute inset-0 bg-zinc-950/55 backdrop-blur-sm cursor-default outline-none",
