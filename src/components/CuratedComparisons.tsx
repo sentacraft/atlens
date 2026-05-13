@@ -23,7 +23,7 @@ export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSele
     .filter(Boolean);
 
   function handleClick() {
-    router.replace(buildCompareUrl(preset.lensIds, { preset: preset.slug }));
+    router.replace(buildCompareUrl(preset.lensIds));
     onSelect?.();
   }
 
