@@ -3,11 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { EllipsisVertical, Send, Info, Download } from "lucide-react";
-import { toast } from "sonner";
 import { Link, usePathname } from "@/i18n/navigation";
 import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import { useCompare } from "@/context/CompareProvider";
+import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useNavLock } from "@/context/ScrollContainerContext";
@@ -19,9 +19,9 @@ import GitHubMark from "@/components/logos/GitHubMark";
 
 export default function Nav() {
   const t = useTranslations("Nav");
-  const tCompare = useTranslations("Compare");
   const pathname = usePathname();
-  const { compareState, clearCompare, replaceCompare } = useCompare();
+  const { compareState } = useCompare();
+  const clearCompareWithUndo = useClearCompareWithUndo();
   const effectiveMount = useEffectiveMount();
   const { navLocked, lockNav } = useNavLock();
   const isPwa = usePwa();
@@ -106,22 +106,16 @@ export default function Nav() {
   // When the user is *already on* the compare page and clicks the nav's
   // "对比" link, the intuitive read is "reset this comparison and start
   // fresh" — but plain navigation would just be a no-op. Intercept the
-  // click, clear the comparison, and offer an undo toast so an accidental
-  // press doesn't silently destroy 4 lenses of curation.
+  // click and delegate to the shared clear-with-undo hook so the
+  // destructive action stays reversible (and is consistent with the
+  // other "清空" entry points on the bar and compare-page header).
   function handleCompareLinkClick(e: React.MouseEvent) {
     if (!isCompareActive || compareIds.length === 0) {
       return;
     }
     e.preventDefault();
     setMobileMenuOpen(false);
-    const prevIds = [...compareIds];
-    clearCompare(effectiveMount);
-    toast(tCompare("clearedToast"), {
-      action: {
-        label: tCompare("undo"),
-        onClick: () => replaceCompare(prevIds, effectiveMount),
-      },
-    });
+    clearCompareWithUndo();
   }
 
   return (

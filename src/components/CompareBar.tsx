@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { getLensesByMount } from "@/lib/lens";
 import { useMountedCompare } from "@/context/CompareProvider";
+import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { buildHorizontalScrollMask, useHorizontalScrollAffordance } from "@/hooks/useHorizontalScrollAffordance";
 import { mountToUrlSegment } from "@/lib/mount";
@@ -27,7 +28,8 @@ export default function CompareBar() {
   const router = useRouter();
   const locale = useLocale();
   const mount = useEffectiveMount();
-  const { compareIds, toggleCompare, replaceCompare, clearCompare } = useMountedCompare();
+  const { compareIds, toggleCompare, replaceCompare } = useMountedCompare();
+  const clearCompareWithUndo = useClearCompareWithUndo();
 
   const handleAddLens = useCallback(
     (lens: Lens) => {
@@ -172,7 +174,7 @@ export default function CompareBar() {
                 marooned between two button silhouettes. */}
             <div className="flex items-center justify-end gap-3 sm:shrink-0">
               <button
-                onClick={clearCompare}
+                onClick={clearCompareWithUndo}
                 className="shrink-0 inline-flex h-9 items-center text-sm font-medium px-3 rounded-xl text-zinc-500 hover:bg-zinc-100/70 hover:text-zinc-800 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200 transition-colors"
               >
                 {t("clearCompare")}
