@@ -17,6 +17,7 @@ export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSele
   const lang = locale === "zh" ? "zh" : "en";
   const { buildCompareUrl } = useCompareUrl();
   const tBrand = useTranslations("Brands");
+  const tCompare = useTranslations("Compare");
 
   const lenses = preset.lensIds
     .map((id) => getAllLenses(locale).find((l) => l.id === id))
@@ -30,7 +31,7 @@ export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSele
   return (
     <button
       onClick={handleClick}
-      className="group text-left w-full h-full flex flex-col rounded-xl border border-zinc-200 bg-white px-4 py-3.5 transition-all hover:-translate-y-0.5 hover:border-zinc-400 hover:bg-zinc-50 hover:shadow-sm dark:border-zinc-700 dark:bg-zinc-950 dark:hover:border-zinc-500 dark:hover:bg-zinc-900"
+      className="group text-left w-full flex flex-col rounded-xl border border-zinc-200 bg-white px-4 py-3.5 transition-all hover:-translate-y-0.5 hover:border-zinc-400 hover:bg-zinc-50 hover:shadow-sm dark:border-zinc-700 dark:bg-zinc-950 dark:hover:border-zinc-500 dark:hover:bg-zinc-900"
     >
       <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
         {preset.title[lang]}
@@ -56,9 +57,12 @@ export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSele
         })}
       </div>
 
-      {/* CTA — fades in on hover */}
-      <p className="mt-auto pt-3 text-xs font-medium text-zinc-400 opacity-0 transition-opacity group-hover:opacity-100 dark:text-zinc-500">
-        Compare Now →
+      {/* CTA — fades in on hover. The grid above uses `items-start` so
+          cards size to content (no stretch); the hover-reveal of this CTA
+          adds a row of text in flow rather than appearing inside an
+          empty padding-bottom block. */}
+      <p className="pt-3 text-xs font-medium text-zinc-400 opacity-0 transition-opacity group-hover:opacity-100 dark:text-zinc-500">
+        {tCompare("presetCardCta")} →
       </p>
     </button>
   );
@@ -100,7 +104,7 @@ export default function CuratedComparisons() {
           className="overflow-x-auto snap-x snap-mandatory scroll-pl-4 [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]"
           style={scrollerMask ? { maskImage: scrollerMask, WebkitMaskImage: scrollerMask } : undefined}
         >
-          <div className="flex items-stretch gap-2 px-4 pb-0.5">
+          <div className="flex items-start gap-2 px-4 pb-0.5">
             {curatedPresets.map((preset) => (
               <div key={preset.slug} className="shrink-0 snap-start w-[calc((100vw-2.5rem)/1.5)]">
                 <PresetCard preset={preset} />
@@ -124,8 +128,12 @@ export default function CuratedComparisons() {
         />
       </div>
 
-      {/* Desktop: grid */}
-      <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+      {/* Desktop: grid. `items-start` lets each card size to its own
+          content height rather than stretching to the row's tallest —
+          short cards no longer leave an empty padding block above the
+          hover-reveal CTA. Cards in the same row may end at slightly
+          different y, mirroring how Apple Music's content cards lay out. */}
+      <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-2 items-start">
         {curatedPresets.map((preset) => (
           <PresetCard key={preset.slug} preset={preset} />
         ))}
