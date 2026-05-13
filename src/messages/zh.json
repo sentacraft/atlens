@@ -56,6 +56,7 @@
   },
   "LensList": {
     "title": "镜头库",
+    "backLink": "返回镜头库",
     "brand": "品牌",
     "lensType": "类型",
     "allTypes": "全部",
