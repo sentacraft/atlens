@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Flag } from "lucide-react";
+import { Flag, ArrowUpRight } from "lucide-react";
 import { routing } from "@/i18n/routing";
 import { getLensesByMount, getLensUrl } from "@/lib/lens";
 import { urlSegmentToMount } from "@/lib/mount";
@@ -239,17 +239,17 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col gap-8">
       {/* Header: image + key info side by side */}
       <div className="flex flex-col sm:flex-row gap-8">
-        {/* Image — 288px so the 1:1 card height matches (or slightly exceeds)
-            the info column, letting mt-auto on the buttons row push them
-            cleanly to the image's bottom edge. */}
-        <div className="w-full max-w-72 mx-auto sm:mx-0 shrink-0 sm:w-72">
+        {/* Image — 256px so the 1:1 card height still exceeds the info
+            column, letting mt-auto on the buttons row push them cleanly to
+            the image's bottom edge. */}
+        <div className="w-full max-w-64 mx-auto sm:mx-0 shrink-0 sm:w-64">
           <div className="flex aspect-square items-center justify-center overflow-hidden rounded-2xl border border-zinc-100 bg-zinc-50/70 p-5 dark:border-zinc-800 dark:bg-zinc-900/50">
             <div className="relative aspect-square w-full overflow-hidden">
               <Image
                 src={getLensImageUrl(lens.id)}
                 alt={lens.model}
                 fill
-                sizes="288px"
+                sizes="256px"
                 style={lensImageStyle}
                 className="object-contain"
                 priority
@@ -279,11 +279,12 @@ export default async function LensDetailPage({ params }: { params: Params }) {
             <AddToCompareButton lensId={lens.id} />
             {url ? (
               <ExternalLink href={url} className={ACTION_OUTLINE_CLS}>
-                {t("officialSite")}
+                <span className="max-xs:hidden">{t("officialSite")}</span>
               </ExternalLink>
             ) : (
               <span className={ACTION_OUTLINE_CLS + " cursor-not-allowed opacity-40"}>
-                {t("officialSite")}
+                <span className="max-xs:hidden">{t("officialSite")}</span>
+                <ArrowUpRight size={12} />
               </span>
             )}
             <ShareButton lenses={[lens]} triggerClassName={ACTION_OUTLINE_CLS} />
