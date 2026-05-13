@@ -36,7 +36,9 @@ export function ScrollChevron({
       onClick={onClick}
       aria-label={ariaLabel}
       className={cn(
-        "absolute top-1/2 -translate-y-1/2 z-10 h-7 w-7 inline-flex items-center justify-center rounded-full",
+        "absolute top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center rounded-full",
+        // Touch-friendly on mobile (≥40px tap target, per iOS HIG), compact on desktop.
+        "h-10 w-10 sm:h-7 sm:w-7",
         "border border-zinc-200/80 bg-white/95 shadow-sm backdrop-blur-sm",
         "text-zinc-500 hover:text-zinc-900 hover:bg-white transition-opacity",
         "dark:border-zinc-700/80 dark:bg-zinc-900/95 dark:text-zinc-400 dark:hover:text-zinc-50",
@@ -45,7 +47,7 @@ export function ScrollChevron({
         className
       )}
     >
-      <Icon className="h-3.5 w-3.5" />
+      <Icon className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
     </button>
   );
 }
