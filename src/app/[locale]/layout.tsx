@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import RegisterSW from "@/components/RegisterSW";
 import AssetTelemetry from "@/components/AssetTelemetry";
+import SiteJsonLd from "@/components/SiteJsonLd";
 import { routing } from "@/i18n/routing";
 import Nav from "@/components/Nav";
 import ConsoleEgg from "@/components/ConsoleEgg";
@@ -141,6 +142,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={fontClassName}>
       <body>
+        <SiteJsonLd locale={locale} />
         <NextIntlClientProvider messages={messages}>
           <MountPreferenceProvider>
           <CompareProvider>
