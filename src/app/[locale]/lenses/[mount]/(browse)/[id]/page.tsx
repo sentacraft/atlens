@@ -239,17 +239,17 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col gap-8">
       {/* Header: image + key info side by side */}
       <div className="flex flex-col sm:flex-row gap-8">
-        {/* Image — 288px so the 1:1 card height matches (or slightly exceeds)
-            the info column, letting mt-auto on the buttons row push them
-            cleanly to the image's bottom edge. */}
-        <div className="w-full max-w-72 mx-auto sm:mx-0 shrink-0 sm:w-72">
+        {/* Image — 256px so the 1:1 card height still exceeds the info
+            column, letting mt-auto on the buttons row push them cleanly to
+            the image's bottom edge. */}
+        <div className="w-full max-w-64 mx-auto sm:mx-0 shrink-0 sm:w-64">
           <div className="flex aspect-square items-center justify-center overflow-hidden rounded-2xl border border-zinc-100 bg-zinc-50/70 p-5 dark:border-zinc-800 dark:bg-zinc-900/50">
             <div className="relative aspect-square w-full overflow-hidden">
               <Image
                 src={getLensImageUrl(lens.id)}
                 alt={lens.model}
                 fill
-                sizes="288px"
+                sizes="256px"
                 style={lensImageStyle}
                 className="object-contain"
                 priority
@@ -258,8 +258,12 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           </div>
         </div>
 
-        {/* Info: title → price → actions */}
-        <div className="flex-1 flex flex-col gap-5">
+        {/* Info: title → price → actions.
+            @container so the actions row below can use container queries
+            to hide secondary button text when the info column gets narrow
+            (small desktop / portrait tablet), avoiding the 4-button row
+            wrapping into 2 rows. */}
+        <div className="@container flex-1 flex flex-col gap-5">
           {/* Title */}
           <div>
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
@@ -275,7 +279,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
           {/* Actions — mt-auto pushes them to the bottom of the stretched
               info column so the row aligns with the image card's bottom. */}
-          <div className="flex flex-wrap gap-3 mt-auto">
+          <div className="flex flex-wrap gap-2 sm:gap-3 mt-auto">
             <AddToCompareButton lensId={lens.id} />
             {url ? (
               <ExternalLink href={url} className={ACTION_OUTLINE_CLS}>
@@ -294,7 +298,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               className={ACTION_OUTLINE_CLS}
             >
               <Flag size={14} />
-              <span className="max-xs:hidden">{t("reportIssue")}</span>
+              <span className="max-xs:hidden @max-md:hidden">{t("reportIssue")}</span>
             </FeedbackTrigger>
           </div>
         </div>
