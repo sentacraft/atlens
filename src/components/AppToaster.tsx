@@ -29,19 +29,6 @@ export default function AppToaster() {
       // buffer. Fixed value (no `--compare-bar-height` dependency) so
       // the toast stays still while the bar exits below it.
       mobileOffset={{ bottom: "calc(8rem + var(--safe-inset-bottom))" }}
-      toastOptions={{
-        className: "!rounded-full !px-5",
-        classNames: {
-          // Sonner's default action button is ~24px tall — well below
-          // iOS HIG's touch target. Force a wider, taller pill so the
-          // undo affordance stays usable with a thumb on mobile.
-          // Match the toast pill's full rounding so the button reads as a
-          // smaller capsule nested inside the larger one, not a square
-          // block dropped onto a pill.
-          actionButton:
-            "!rounded-full !h-9 !px-4 !text-sm sm:!h-7 sm:!px-3 sm:!text-xs",
-        },
-      }}
     />
   );
 }
