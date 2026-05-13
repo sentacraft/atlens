@@ -16,6 +16,7 @@ import BackToTopButton from "@/components/BackToTopButton";
 import ShareFAB from "@/components/ShareFAB";
 import { ShareButton } from "@/components/share/ShareButton";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
+import Breadcrumb from "@/components/Breadcrumb";
 import { ACTION_OUTLINE_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
@@ -237,6 +238,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   return (
     <>
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col gap-8">
+      <Breadcrumb />
       {/* Header: image + key info side by side */}
       <div className="flex flex-col sm:flex-row gap-8">
         {/* Image — 256px so the 1:1 card height still exceeds the info

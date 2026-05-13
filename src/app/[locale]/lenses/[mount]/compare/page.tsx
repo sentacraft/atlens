@@ -7,6 +7,7 @@ import CompareTable from "@/components/CompareTable";
 import ComparePageHeader from "@/components/ComparePageHeader";
 import CuratedComparisons from "@/components/CuratedComparisons";
 import BackToTopButton from "@/components/BackToTopButton";
+import Breadcrumb from "@/components/Breadcrumb";
 import { buildAlternates } from "@/lib/seo";
 import { notFound } from "next/navigation";
 
@@ -80,6 +81,7 @@ export default async function ComparePage({
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 flex flex-col gap-3 sm:gap-4">
+      <Breadcrumb />
       <ComparePageHeader minColumns={2} />
       <CompareTable key={lenses.length === 0 ? "_empty_" : ids} lenses={lenses} minColumns={2} hideBodyWhenEmpty />
       {resolvedMount === "X" && <CuratedComparisons />}

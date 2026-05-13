@@ -38,15 +38,6 @@ export const ICON_NAV_BTN_CLS =
   "dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100 dark:active:bg-zinc-800 dark:active:text-zinc-100";
 
 /**
- * Circular dismiss / close icon button.
- * Normal state is transparent; hover/active shows a red fill + icon.
- * Add a size class (e.g. `h-8 w-8`) per usage site.
- *
- * Overlay variant (for buttons that float over colored surfaces, e.g. share
- * poster dialog): compose with `bg-white/90 shadow-sm backdrop-blur-sm
- * dark:bg-zinc-800/90` to give it a persistent frosted-glass base.
- */
-/**
  * Underlined text link / inline action (clear filters, toggle, text-only CTA).
  * Pair with per-site font-size, tracking, and whitespace classes.
  */
@@ -55,10 +46,32 @@ export const TEXT_LINK_CLS =
   "hover:text-zinc-900 hover:decoration-zinc-500 " +
   "dark:text-zinc-300 dark:decoration-zinc-600 dark:hover:text-zinc-100 dark:hover:decoration-zinc-400";
 
+/**
+ * Circular dismiss / close icon button.
+ * Normal state is transparent; hover/active shows a red fill + icon.
+ * Add a size class (e.g. `h-8 w-8`) per usage site.
+ *
+ * For overlay-style placement (floating over images, scrollers, or other
+ * busy content) compose with FROSTED_OVERLAY_CHROME_CLS for the visible
+ * boundary / frosted-glass background.
+ */
 export const ICON_CLOSE_BTN_CLS =
   "inline-flex shrink-0 items-center justify-center rounded-full transition-colors " +
   "text-zinc-500 hover:bg-red-50 hover:text-red-500 active:bg-red-50 active:text-red-500 " +
   "dark:text-zinc-400 dark:hover:bg-red-950/30 dark:hover:text-red-400 dark:active:bg-red-950/30 dark:active:text-red-400";
+
+/**
+ * Frosted-glass chrome for icon buttons that float over arbitrary
+ * surfaces (modal close X, carousel scroll chevrons, etc). Provides the
+ * visible boundary + translucent background + soft shadow so the button
+ * reads as a tappable surface even on busy underlying content.
+ *
+ * Compose alongside a base button class (e.g. ICON_CLOSE_BTN_CLS or the
+ * scroll-chevron's own base) plus a size class.
+ */
+export const FROSTED_OVERLAY_CHROME_CLS =
+  "border border-zinc-200/80 bg-white/95 shadow-sm backdrop-blur-sm " +
+  "dark:border-zinc-700/80 dark:bg-zinc-900/95";
 
 /**
  * Price disclaimer tokens — used by PriceDisclaimer (detail page, compare

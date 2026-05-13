@@ -65,6 +65,7 @@ export default function LensListClient({ lenses }: Props) {
   const hasActiveFilters =
     filters.brands.length > 0 ||
     filters.typeFilter !== null ||
+    filters.focusFilter !== null ||
     filters.specialtyTag !== null ||
     filters.focusMotorClass !== null ||
     filters.focalCategories.length > 0 ||

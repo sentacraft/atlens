@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCompareUrl } from "@/hooks/useCompareUrl";
+import { buildHorizontalScrollMask, useHorizontalScrollAffordance } from "@/hooks/useHorizontalScrollAffordance";
 import { useMountedCompare } from "@/context/CompareProvider";
 import { curatedPresets, type CuratedPreset } from "@/lib/curated-presets";
 import { getAllLenses } from "@/lib/lens";
-import { cn } from "@/lib/utils";
 import { lensDisplayName } from "@/lib/lens.format";
+import { ScrollChevron } from "@/components/ui/scroll-chevron";
 
 export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSelect?: () => void }) {
   const router = useRouter();
@@ -17,6 +17,7 @@ export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSele
   const lang = locale === "zh" ? "zh" : "en";
   const { buildCompareUrl } = useCompareUrl();
   const tBrand = useTranslations("Brands");
+  const tCompare = useTranslations("Compare");
 
   const lenses = preset.lensIds
     .map((id) => getAllLenses(locale).find((l) => l.id === id))
@@ -30,7 +31,7 @@ export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSele
   return (
     <button
       onClick={handleClick}
-      className="group text-left w-full h-full flex flex-col rounded-xl border border-zinc-200 bg-white px-4 py-3.5 transition-all hover:-translate-y-0.5 hover:border-zinc-400 hover:bg-zinc-50 hover:shadow-sm dark:border-zinc-700 dark:bg-zinc-950 dark:hover:border-zinc-500 dark:hover:bg-zinc-900"
+      className="group text-left w-full flex flex-col rounded-xl border border-zinc-200 bg-white px-4 py-3.5 transition-all hover:-translate-y-0.5 hover:border-zinc-400 hover:bg-zinc-50 hover:shadow-sm dark:border-zinc-700 dark:bg-zinc-950 dark:hover:border-zinc-500 dark:hover:bg-zinc-900"
     >
       <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
         {preset.title[lang]}
@@ -56,9 +57,12 @@ export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSele
         })}
       </div>
 
-      {/* CTA — fades in on hover */}
-      <p className="mt-auto pt-3 text-xs font-medium text-zinc-400 opacity-0 transition-opacity group-hover:opacity-100 dark:text-zinc-500">
-        Compare Now →
+      {/* CTA — fades in on hover. The grid above uses `items-start` so
+          cards size to content (no stretch); the hover-reveal of this CTA
+          adds a row of text in flow rather than appearing inside an
+          empty padding-bottom block. */}
+      <p className="pt-3 text-xs font-medium text-zinc-400 opacity-0 transition-opacity group-hover:opacity-100 dark:text-zinc-500">
+        {tCompare("presetCardCta")} →
       </p>
     </button>
   );
@@ -68,32 +72,8 @@ export default function CuratedComparisons() {
   const { compareIds } = useMountedCompare();
   const t = useTranslations("Compare");
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
-  function updateScrollState() {
-    const el = scrollRef.current;
-    if (!el) {
-      return;
-    }
-    setCanScrollLeft(el.scrollLeft > 4);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
-  }
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) {
-      return;
-    }
-    updateScrollState();
-    el.addEventListener("scroll", updateScrollState, { passive: true });
-    const ro = new ResizeObserver(updateScrollState);
-    ro.observe(el);
-    return () => {
-      el.removeEventListener("scroll", updateScrollState);
-      ro.disconnect();
-    };
-  }, []);
+  const { canScrollLeft, canScrollRight } = useHorizontalScrollAffordance(scrollRef);
+  const scrollerMask = buildHorizontalScrollMask(canScrollLeft, canScrollRight);
 
   function scrollToDir(dir: -1 | 1) {
     const el = scrollRef.current;
@@ -118,24 +98,13 @@ export default function CuratedComparisons() {
 
       {/* Mobile: horizontal snap carousel */}
       <div className="sm:hidden relative -mx-4">
-        {/* Left chevron */}
-        <button
-          onClick={() => scrollToDir(-1)}
-          aria-label="Scroll left"
-          className={cn(
-            "absolute left-0 top-0 bottom-0 z-10 flex items-center pl-1 pr-6 bg-gradient-to-r from-white/90 to-transparent transition-opacity dark:from-zinc-950/90",
-            canScrollLeft ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          )}
-        >
-          <ChevronLeft className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
-        </button>
-
-        {/* Scroll container — scrollbar hidden */}
+        {/* Scroll container — scrollbar hidden, edges feather via mask */}
         <div
           ref={scrollRef}
           className="overflow-x-auto snap-x snap-mandatory scroll-pl-4 [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]"
+          style={scrollerMask ? { maskImage: scrollerMask, WebkitMaskImage: scrollerMask } : undefined}
         >
-          <div className="flex items-stretch gap-2 px-4 pb-0.5">
+          <div className="flex items-start gap-2 px-4 pb-0.5">
             {curatedPresets.map((preset) => (
               <div key={preset.slug} className="shrink-0 snap-start w-[calc((100vw-2.5rem)/1.5)]">
                 <PresetCard preset={preset} />
@@ -145,21 +114,26 @@ export default function CuratedComparisons() {
           </div>
         </div>
 
-        {/* Right chevron */}
-        <button
+        <ScrollChevron
+          direction="left"
+          visible={canScrollLeft}
+          onClick={() => scrollToDir(-1)}
+          ariaLabel={t("scrollChipsLeft")}
+        />
+        <ScrollChevron
+          direction="right"
+          visible={canScrollRight}
           onClick={() => scrollToDir(1)}
-          aria-label="Scroll right"
-          className={cn(
-            "absolute right-0 top-0 bottom-0 z-10 flex items-center pl-6 pr-1 bg-gradient-to-l from-white/90 to-transparent transition-opacity dark:from-zinc-950/90",
-            canScrollRight ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          )}
-        >
-          <ChevronRight className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
-        </button>
+          ariaLabel={t("scrollChipsRight")}
+        />
       </div>
 
-      {/* Desktop: grid */}
-      <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+      {/* Desktop: grid. `items-start` lets each card size to its own
+          content height rather than stretching to the row's tallest —
+          short cards no longer leave an empty padding block above the
+          hover-reveal CTA. Cards in the same row may end at slightly
+          different y, mirroring how Apple Music's content cards lay out. */}
+      <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-2 items-start">
         {curatedPresets.map((preset) => (
           <PresetCard key={preset.slug} preset={preset} />
         ))}

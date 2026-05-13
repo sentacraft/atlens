@@ -7,6 +7,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import { useCompare } from "@/context/CompareProvider";
+import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useNavLock } from "@/context/ScrollContainerContext";
@@ -20,6 +21,7 @@ export default function Nav() {
   const t = useTranslations("Nav");
   const pathname = usePathname();
   const { compareState } = useCompare();
+  const clearCompareWithUndo = useClearCompareWithUndo();
   const effectiveMount = useEffectiveMount();
   const { navLocked, lockNav } = useNavLock();
   const isPwa = usePwa();
@@ -101,6 +103,21 @@ export default function Nav() {
   const isCompareActive = pathname.includes("/compare");
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
 
+  // When the user is *already on* the compare page and clicks the nav's
+  // "对比" link, the intuitive read is "reset this comparison and start
+  // fresh" — but plain navigation would just be a no-op. Intercept the
+  // click and delegate to the shared clear-with-undo hook so the
+  // destructive action stays reversible (and is consistent with the
+  // other "清空" entry points on the bar and compare-page header).
+  function handleCompareLinkClick(e: React.MouseEvent) {
+    if (!isCompareActive || compareIds.length === 0) {
+      return;
+    }
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    clearCompareWithUndo();
+  }
+
   return (
     <>
     <header
@@ -138,7 +155,7 @@ export default function Nav() {
           <Link href={browseHref} className={linkCls(isBrowseActive)}>
             {t("lenses")}
           </Link>
-          <Link href={compareHref} className={linkCls(isCompareActive)}>
+          <Link href={compareHref} onClick={handleCompareLinkClick} className={linkCls(isCompareActive)}>
             {t("compare")}
           </Link>
           <Link href="/about" className={linkCls(pathname === "/about")}>
@@ -175,7 +192,7 @@ export default function Nav() {
           <Link href={browseHref} className={linkCls(isBrowseActive)}>
             {t("lenses")}
           </Link>
-          <Link href={compareHref} className={linkCls(isCompareActive)}>
+          <Link href={compareHref} onClick={handleCompareLinkClick} className={linkCls(isCompareActive)}>
             {t("compare")}
           </Link>
           <div ref={menuRef} className="relative">

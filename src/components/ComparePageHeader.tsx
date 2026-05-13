@@ -6,6 +6,7 @@ import { ShareButton } from "@/components/share/ShareButton";
 import ShareFAB from "@/components/ShareFAB";
 import CompareAddLensButton from "@/components/CompareAddLensButton";
 import { useMountedCompare } from "@/context/CompareProvider";
+import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { getLensesByMount } from "@/lib/lens";
 import { findPresetByIds } from "@/lib/curated-presets";
@@ -20,7 +21,8 @@ interface Props {
 export default function ComparePageHeader({ minColumns = 0 }: Props) {
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
-  const { compareIds, clearCompare } = useMountedCompare();
+  const { compareIds } = useMountedCompare();
+  const clearCompareWithUndo = useClearCompareWithUndo();
   const mount = useEffectiveMount();
   const locale = useLocale();
   const lang = locale === "zh" ? "zh" : "en";
@@ -45,16 +47,24 @@ export default function ComparePageHeader({ minColumns = 0 }: Props) {
   const presetTitle = matchedPreset?.title[lang];
   const presetSubtitle = matchedPreset?.subtitle[lang];
 
+  // On mobile cold-start the entire row is invisible (h1 is `sm:block`,
+  // no buttons render until there's at least one lens), but the wrapper
+  // still occupies a flex slot in the parent column — its zero height
+  // plus the parent's `gap-3` doubles to ~24px of empty space between
+  // the breadcrumb and the table. Collapse the wrapper to `display:none`
+  // when there's nothing in it on mobile.
+  const isEmpty = activeLenses.length === 0;
+
   return (
     <>
-      <div className="flex items-center gap-3">
+      <div className={`flex items-center gap-3 ${isEmpty ? "hidden sm:flex" : ""}`}>
         <h1 className="hidden sm:block text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           {t("title")}
         </h1>
         {activeLenses.length >= minColumns && <CompareAddLensButton />}
         {activeLenses.length > 0 && (
           <button
-            onClick={clearCompare}
+            onClick={clearCompareWithUndo}
             className={`shrink-0 text-sm font-medium px-3 py-2 rounded-xl ${TEXT_LINK_CLS}`}
           >
             {tList("clearCompare")}
