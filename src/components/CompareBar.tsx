@@ -140,7 +140,18 @@ export default function CompareBar() {
                       </span>
                       <button
                         onClick={() => toggleCompare(lens.id)}
-                        className={cn(ICON_CLOSE_BTN_CLS, "h-5 w-5 -mr-0.5 mt-0.5")}
+                        // Visual size stays compact so the chip itself reads as
+                        // the lens identity, but the touch target expands via
+                        // a transparent `::before` overlay to ~36px — well
+                        // above iOS HIG's 44pt for distinct buttons isn't
+                        // possible inside a 34px-tall chip, but 36 effective
+                        // is materially better than the 20px hit area the
+                        // visual size would otherwise imply.
+                        className={cn(
+                          ICON_CLOSE_BTN_CLS,
+                          "relative h-5 w-5 -mr-0.5 mt-0.5",
+                          "before:absolute before:-inset-2 before:content-['']",
+                        )}
                         aria-label={tCompare("removeLens", { model: displayName })}
                       >
                         <X className="h-3 w-3" />
