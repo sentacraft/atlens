@@ -10,7 +10,7 @@ import { useHorizontalScrollAffordance } from "@/hooks/useHorizontalScrollAfford
 import { mountToUrlSegment } from "@/lib/mount";
 import { motion, AnimatePresence } from "motion/react";
 import { spring } from "@/lib/animation";
-import { Plus, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
 import LensSearchDialog from "@/components/LensSearchDialog";
 import { MAX_COMPARE } from "@/lib/lens";
 import type { Lens } from "@/lib/types";
@@ -117,6 +117,7 @@ export default function CompareBar() {
           className={`fixed bottom-0 left-0 right-0 ${Z.fixed} border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-black/95 backdrop-blur-sm pb-[var(--safe-inset-bottom)]`}
         >
           <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-6">
+            <div className="relative flex min-w-0 flex-1">
             <div
               ref={chipsRef}
               className="flex min-w-0 flex-1 -mx-5 px-5 sm:mx-0 sm:px-0 gap-2 overflow-x-auto pb-1 sm:pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -156,6 +157,40 @@ export default function CompareBar() {
                   );
                 })}
               </AnimatePresence>
+            </div>
+            {/* Desktop-only scroll affordance — touch users already have
+                natural swipe, but mouse/trackpad users can't easily scroll
+                a horizontal row, so the fade alone teases content they
+                can't actually reach. Buttons appear only on the side
+                where there's more to scroll to. */}
+            <button
+              type="button"
+              onClick={() => chipsRef.current?.scrollBy({ left: -160, behavior: "smooth" })}
+              aria-label={tCompare("scrollChipsLeft")}
+              className={cn(
+                "hidden sm:inline-flex absolute left-1 top-1/2 -translate-y-1/2 z-10",
+                "h-7 w-7 items-center justify-center rounded-full border border-zinc-200/80 bg-white/95 shadow-sm backdrop-blur-sm",
+                "text-zinc-500 hover:text-zinc-900 hover:bg-white transition-opacity",
+                "dark:border-zinc-700/80 dark:bg-zinc-900/95 dark:text-zinc-400 dark:hover:text-zinc-50",
+                canScrollLeft ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+              )}
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => chipsRef.current?.scrollBy({ left: 160, behavior: "smooth" })}
+              aria-label={tCompare("scrollChipsRight")}
+              className={cn(
+                "hidden sm:inline-flex absolute right-1 top-1/2 -translate-y-1/2 z-10",
+                "h-7 w-7 items-center justify-center rounded-full border border-zinc-200/80 bg-white/95 shadow-sm backdrop-blur-sm",
+                "text-zinc-500 hover:text-zinc-900 hover:bg-white transition-opacity",
+                "dark:border-zinc-700/80 dark:bg-zinc-900/95 dark:text-zinc-400 dark:hover:text-zinc-50",
+                canScrollRight ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+              )}
+            >
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
             </div>
             {/* Cluster ordering: destructive (清空) → additive (+) → primary CTA (查看对比).
                 Left-to-right rising visual weight, and keeps the two button-shaped

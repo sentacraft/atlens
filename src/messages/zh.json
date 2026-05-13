@@ -223,6 +223,8 @@
     "title": "镜头对比",
     "clearedToast": "已清空对比",
     "undo": "撤销",
+    "scrollChipsLeft": "向左滚动",
+    "scrollChipsRight": "向右滚动",
     "officialSite": "官方产品页",
     "addLens": "添加镜头",
     "selectFirst": "先添加镜头",
