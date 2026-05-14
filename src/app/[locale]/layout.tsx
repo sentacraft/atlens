@@ -10,6 +10,7 @@ import SiteJsonLd from "@/components/SiteJsonLd";
 import { routing } from "@/i18n/routing";
 import Nav from "@/components/Nav";
 import ConsoleEgg from "@/components/ConsoleEgg";
+import Redaction from "@/components/Redaction";
 import TestHookPanel from "@/components/TestHookPanel";
 import { CompareProvider } from "@/context/CompareProvider";
 import { MountPreferenceProvider } from "@/context/MountPreferenceProvider";
@@ -148,6 +149,7 @@ export default async function LocaleLayout({
           <CompareProvider>
             <ScrollContainerProvider>
               <ConsoleEgg />
+              <Redaction />
               <Nav />
               {/* Offset fixed nav and iOS home indicator. Body also carries
                   bg-background, so the safe-area strip and any short-page gap
