@@ -407,7 +407,7 @@
     "titleGeneral": "Send feedback",
     "descriptionDataIssue": "Wrong spec, broken image, typo, missing lens — tell us what you found. It goes straight to the maintainer.",
     "descriptionGeneral": "Thoughts, bug reports, and feature ideas are all welcome.",
-    "affectedLensLabel": "Affected lens",
+    "affectedLensLabel": "Reporting on",
     "fieldPickerLabel": "Affected field",
     "fieldPickerPlaceholder": "Choose a field…",
     "currentValueLabel": "Current value:",
