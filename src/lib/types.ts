@@ -461,33 +461,42 @@ export interface Lens {
   powerZoom?: boolean;
 
   /**
-   * Brand's official AF motor or actuator name, normalized to a short canonical
-   * label during pipeline parsing. Store the brand-specific marketing name so
-   * the display layer can show it verbatim while also mapping to broader
-   * categories (e.g. linear motor, stepping motor) when needed.
+   * Brand's verbatim AF motor or actuator label, copied from the source
+   * spec sheet or product page without normalization. The display layer
+   * renders this string as the brand subvalue and feeds it through
+   * {@link classifyFocusMotor} for the canonical class label (linear /
+   * stepping / dc / other).
    *
-   * Common canonical values by brand:
-   * - Fujifilm: "LM" (linear motor), "STM" (stepping motor),
-   *   "High-Precision Motor"
-   * - Sigma: "HLA" (High-response Linear Actuator)
-   * - Tamron: "RXD" (stepping drive), "VXD" (linear drive)
-   * - Viltrox: "STM", "VCM" (voice coil motor)
-   * - TTArtisan: "STM"
-   * - 7Artisans: "STM"
+   * **Fill only when an official source explicitly names the motor.** If
+   * the brand publishes nothing about the focus drive, omit this field;
+   * the agent should not infer a value from reviews or general knowledge.
+   * Older Fujifilm XF / XC product pages routinely document no motor type,
+   * so absence is the expected state on that generation rather than a
+   * coverage gap.
    *
-   * For lenses whose source only mentions a generic drive mechanism without a
-   * brand-specific name, use the most descriptive term available:
-   * "Lead Screw", "DC Motor", "Focus Motor", etc.
+   * Common values seen in source material:
+   * - Fujifilm: "LM" (model-name suffix on linear-motor lenses),
+   *   "Stepping Motor" (older marketing wording, sometimes shortened to
+   *   "STM"), "DC Motor", "DC Coreless Motor", "High-Precision Motor"
+   *   (older XF / XC marketing label — surfaces as DC class with a
+   *   fieldNote disambiguating it), "Triple Linear Motor" / "Quad Linear
+   *   Motor" (LM lenses with multiple actuators).
+   * - Sigma: "HLA" (linear), "Stepping Motor".
+   * - Tamron: "RXD" (stepping), "VXD" (linear).
+   * - Viltrox: "STM", "VCM", "Dual HyperVCM".
+   * - Third-party APS-C brands: "STM", sometimes "STM+Lead screw" where
+   *   the source spec sheet pairs the motor with its transmission
+   *   mechanism.
    *
-   * Manual-focus-only lenses must use the value `"N/A"` (not applicable).
-   * This is set automatically by the compute stage and should not be filled
-   * by the agent or overridden in review.
+   * Manual-focus-only lenses use the sentinel `SPEC_NA` (`"N/A"`),
+   * written automatically by the compute stage when `af === false`.
+   * Do not use `"N/A"` to mean "data missing" — leave the field
+   * undefined instead.
    *
    * @example "LM"
    * @example "HLA"
-   * @example "STM"
    * @example "VXD"
-   * @example "Lead Screw"
+   * @example "DC Motor"
    * @example "N/A"
    */
   focusMotor?: string;
