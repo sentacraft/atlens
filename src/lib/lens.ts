@@ -117,12 +117,23 @@ export function getFocalCategoriesOf(lens: {
   }).map((cat) => cat.key);
 }
 
-export type FocusMotorClass = "linear" | "stepping" | "other";
+export type FocusMotorClass = "linear" | "stepping" | "dc" | "other";
 
 /**
  * Classify a brand-specific focus motor string into a canonical class.
- * Returns undefined only for MF-only lenses (af === false).
- * AF lenses with an undocumented motor type return "other".
+ *
+ * Returns:
+ * - undefined for MF-only lenses (af === false), or AF lenses with no
+ *   documented motor type (focusMotor field absent). The two cases are
+ *   distinguishable upstream by checking lens.af; this function collapses
+ *   both into "no class to filter on".
+ * - "linear" | "stepping" | "dc" | "other" for AF lenses with a documented
+ *   motor type.
+ *
+ * Scope assumption: the four classes cover every motor seen on X-mount and
+ * G-mount today. Ultrasonic motors (USM / SWM / SSM / HSM / SDM) are a
+ * fifth global category but absent from this project's data; if a future
+ * lens lands with one, add an "ultrasonic" class here and in MOTOR_CLASSES.
  */
 export function classifyFocusMotor(lens: Lens): FocusMotorClass | undefined {
   if (!lens.af) {
@@ -130,16 +141,23 @@ export function classifyFocusMotor(lens: Lens): FocusMotorClass | undefined {
   }
   const m = lens.focusMotor;
   if (!m) {
-    return "other";
-  } // AF but motor type not documented → treated as Other
+    return undefined;
+  }
 
   const s = m.toLowerCase();
-  // Linear family: LM, HLA, VXD, VCM, Triple/Quad Linear, Dual HyperVCM
-  if (/\b(lm|hla|vxd|vcm)\b/.test(s) || s.includes("linear") || s.includes("hypervcm"))
-    {return "linear";}
-  // Stepping family: STM, RXD, "Stepping Motor", "STM+Lead screw"
-  if (/\b(stm|rxd)\b/.test(s) || s.includes("stepping"))
-    {return "stepping";}
+  // Linear family: LM, HLA, VXD, VCM, Triple/Quad Linear Motor, Dual HyperVCM
+  if (/\b(lm|hla|vxd|vcm)\b/.test(s) || s.includes("linear") || s.includes("hypervcm")) {
+    return "linear";
+  }
+  // Stepping family: STM, RXD, "Stepping Motor", "Stepper Motor", "STM+Lead screw"
+  if (/\b(stm|rxd)\b/.test(s) || s.includes("stepping") || s.includes("stepper")) {
+    return "stepping";
+  }
+  // DC family: "DC Motor" (any casing), "DC Coreless Motor", and Fujifilm's
+  // legacy "High-Precision Motor" marketing label (high-precision DC motor).
+  if (/\bdc\b/.test(s) || s.includes("high-precision motor") || s.includes("high precision motor")) {
+    return "dc";
+  }
   return "other";
 }
 

@@ -203,6 +203,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     motorClass: {
       linear: t("motorLinear"),
       stepping: t("motorStepping"),
+      dc: t("motorDc"),
       other: t("motorOther"),
     },
   });

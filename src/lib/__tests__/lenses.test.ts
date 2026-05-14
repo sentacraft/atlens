@@ -8,6 +8,7 @@ import {
   getLensUrl,
   getFocalCategoriesOf,
   defaultFilters,
+  classifyFocusMotor,
 } from "../lens";
 import {
   focalEquiv,
@@ -702,5 +703,60 @@ describe("getLensUrl", () => {
     });
     expect(getLensUrl(lens, "zh")).toBeUndefined();
     expect(getLensUrl(lens, "en")).toBeUndefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// classifyFocusMotor
+// ---------------------------------------------------------------------------
+describe("classifyFocusMotor", () => {
+  const af = (focusMotor: string | undefined) =>
+    makeLens({ focalLengthMin: 35, focalLengthMax: 35, af: true, focusMotor });
+  const mf = (focusMotor: string | undefined) =>
+    makeLens({ focalLengthMin: 35, focalLengthMax: 35, af: false, focusMotor });
+
+  it("returns undefined for MF lenses regardless of focusMotor value", () => {
+    expect(classifyFocusMotor(mf("N/A"))).toBeUndefined();
+    expect(classifyFocusMotor(mf(undefined))).toBeUndefined();
+  });
+
+  it("returns undefined for AF lenses with no focusMotor field (missing data, not 'other')", () => {
+    expect(classifyFocusMotor(af(undefined))).toBeUndefined();
+  });
+
+  it.each([
+    ["LM", "linear"],
+    ["HLA", "linear"],
+    ["VXD", "linear"],
+    ["VCM", "linear"],
+    ["Triple Linear Motor", "linear"],
+    ["Quad Linear Motor", "linear"],
+    ["Dual HyperVCM", "linear"],
+  ])("classifies %s as linear", (motor, expected) => {
+    expect(classifyFocusMotor(af(motor))).toBe(expected);
+  });
+
+  it.each([
+    ["STM", "stepping"],
+    ["RXD", "stepping"],
+    ["Stepping Motor", "stepping"],
+    ["Stepper Motor", "stepping"],
+    ["STM+Lead screw", "stepping"],
+  ])("classifies %s as stepping", (motor, expected) => {
+    expect(classifyFocusMotor(af(motor))).toBe(expected);
+  });
+
+  it.each([
+    ["DC Motor", "dc"],
+    ["DC motor", "dc"],
+    ["DC Coreless Motor", "dc"],
+    ["High-Precision Motor", "dc"],
+    ["High Precision Motor", "dc"],
+  ])("classifies %s as dc", (motor, expected) => {
+    expect(classifyFocusMotor(af(motor))).toBe(expected);
+  });
+
+  it("falls through to other for an AF lens with a known but unrecognised motor type", () => {
+    expect(classifyFocusMotor(af("Ultrasonic Motor"))).toBe("other");
   });
 });

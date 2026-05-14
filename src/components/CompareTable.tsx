@@ -440,6 +440,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
         motorClass: {
           linear: td("motorLinear"),
           stepping: td("motorStepping"),
+          dc: td("motorDc"),
           other: td("motorOther"),
         },
       }),

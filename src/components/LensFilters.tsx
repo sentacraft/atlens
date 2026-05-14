@@ -85,6 +85,7 @@ export default function LensFilters({
     { value: null, label: t("allTypes") },
     { value: "linear" as FocusMotorClass, label: t("motorLinear") },
     { value: "stepping" as FocusMotorClass, label: t("motorStepping") },
+    { value: "dc" as FocusMotorClass, label: t("motorDc") },
     { value: "other" as FocusMotorClass, label: t("motorOther") },
   ] as { value: FocusMotorClass | null; label: string }[];
 
