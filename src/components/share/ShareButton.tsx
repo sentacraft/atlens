@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { Popover } from "@base-ui/react/popover";
 import { Drawer } from "@base-ui/react/drawer";
@@ -424,23 +423,5 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     </Drawer.Root>
   );
 
-  // On mobile the Drawer covers anything inside a parent stacking context.
-  // Render the "Copied!" toast via portal so it always appears above the Drawer.
-  const copiedToast =
-    mounted && copied && !isDesktop
-      ? createPortal(
-          <div className="pointer-events-none fixed top-4 left-1/2 z-[70] flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-lg animate-in fade-in slide-in-from-top-2 duration-150">
-            <Check className="size-4" />
-            {t("copied")}
-          </div>,
-          document.body
-        )
-      : null;
-
-  return (
-    <>
-      {shareControl}
-      {copiedToast}
-    </>
-  );
+  return shareControl;
 }
