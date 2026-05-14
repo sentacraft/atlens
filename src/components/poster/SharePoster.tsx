@@ -9,7 +9,7 @@ import type { Lens } from "@/lib/types";
 import { Weight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TriangleAlert } from "lucide-react";
-import { classifyFocusMotor } from "@/lib/lens";
+import { classifyFocusMotor, type FocusMotorClass } from "@/lib/lens";
 import { pickPriceEntry, formatPrice, formatSampledAt } from "@/lib/lens-pricing";
 import { getLensImageUrl } from "@/lib/lens-image";
 import {
@@ -64,6 +64,7 @@ export interface PosterLabels {
   // Focus motor canonical classes
   motorLinear: string;
   motorStepping: string;
+  motorDc: string;
   motorOther: string;
   // Sub-labels used by format functions
   wide: string;
@@ -279,16 +280,15 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   // showInternalFocusing hidden — data quality issues, to be re-added later
 
   // ── Conditional Details visibility ────────────────────────────
+  const focusMotorClassLabel: Record<FocusMotorClass, string> = {
+    linear: labels.motorLinear,
+    stepping: labels.motorStepping,
+    dc: labels.motorDc,
+    other: labels.motorOther,
+  };
   const focusMotorValues = lenses.map((l) => {
     const cls = classifyFocusMotor(l);
-    if (!cls) {
-      return undefined;
-    }
-    return cls === "linear"
-      ? labels.motorLinear
-      : cls === "stepping"
-      ? labels.motorStepping
-      : labels.motorOther;
+    return cls ? focusMotorClassLabel[cls] : undefined;
   });
   const specialtyValues = lenses.map((l) =>
     specialtyTagsDisplay(l.specialtyTags, specialtyTagLabels)
