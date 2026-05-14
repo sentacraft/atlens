@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
@@ -10,6 +11,7 @@ import SiteJsonLd from "@/components/SiteJsonLd";
 import { routing } from "@/i18n/routing";
 import Nav from "@/components/Nav";
 import ConsoleEgg from "@/components/ConsoleEgg";
+import Redaction from "@/components/Redaction";
 import TestHookPanel from "@/components/TestHookPanel";
 import { CompareProvider } from "@/context/CompareProvider";
 import { MountPreferenceProvider } from "@/context/MountPreferenceProvider";
@@ -148,6 +150,11 @@ export default async function LocaleLayout({
           <CompareProvider>
             <ScrollContainerProvider>
               <ConsoleEgg />
+              {/* Suspense gate — Redaction uses useSearchParams, which would
+                  otherwise force a CSR bailout on every prerendered page. */}
+              <Suspense fallback={null}>
+                <Redaction />
+              </Suspense>
               <Nav />
               {/* Offset fixed nav and iOS home indicator. Body also carries
                   bg-background, so the safe-area strip and any short-page gap

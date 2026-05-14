@@ -69,7 +69,10 @@ export function PriceCell({ lens, compact = false }: Props) {
       </div>
 
       {/* Row 2: source — persistent caption */}
-      <span className="text-[10px] leading-tight text-zinc-400 dark:text-zinc-500 break-words">
+      <span
+        data-redact-hook="priceSource"
+        className="text-[10px] leading-tight text-zinc-400 dark:text-zinc-500 break-words"
+      >
         {entry.source}
       </span>
 

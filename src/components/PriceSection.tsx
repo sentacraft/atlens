@@ -59,7 +59,7 @@ export function PriceSection({ lens }: Props) {
       {/* Row 2: Source + sampled date — calendar icon makes the date read
           as data, not prose. */}
       <div className="inline-flex items-center gap-2 text-[11px] text-zinc-400 dark:text-zinc-500">
-        <span>{sourceDisplay}</span>
+        <span data-redact-hook="priceSource">{sourceDisplay}</span>
         <span className="opacity-30">|</span>
         <span className="inline-flex items-center gap-1 tabular-nums">
           <Calendar className="size-3" aria-hidden="true" />
