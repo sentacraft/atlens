@@ -407,7 +407,7 @@
     "titleGeneral": "提交反馈",
     "descriptionDataIssue": "参数不对、图片有问题、哪里写错了、发现缺失镜头——都可以反馈给我们。",
     "descriptionGeneral": "有想法、发现 Bug，或者想提功能建议，都欢迎。",
-    "affectedLensLabel": "相关镜头",
+    "affectedLensLabel": "反馈对象",
     "fieldPickerLabel": "问题字段",
     "fieldPickerPlaceholder": "请选择字段…",
     "currentValueLabel": "当前显示：",
