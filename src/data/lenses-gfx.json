@@ -251,11 +251,12 @@
       "tilt",
       "shift"
     ],
-    "af": true,
+    "af": false,
     "ois": false,
     "wr": false,
     "apertureRing": false,
     "powerZoom": false,
+    "focusMotor": "N/A",
     "weightG": 1340,
     "diameterMm": 87.1,
     "length": {
@@ -1283,11 +1284,12 @@
       "shift",
       "macro"
     ],
-    "af": true,
+    "af": false,
     "ois": false,
     "wr": false,
     "apertureRing": false,
     "powerZoom": false,
+    "focusMotor": "N/A",
     "weightG": 1255,
     "diameterMm": 95,
     "length": {
