@@ -114,6 +114,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     featureInternalFocusing: tImage("featureInternalFocusing"),
     motorLinear: tImage("motorLinear"),
     motorStepping: tImage("motorStepping"),
+    motorDc: tImage("motorDc"),
     motorOther: tImage("motorOther"),
     wide: tImage("wide"),
     tele: tImage("tele"),

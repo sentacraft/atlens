@@ -14,7 +14,7 @@ import {
 } from "./lens";
 
 const FOCAL_KEYS = FOCAL_CATEGORIES.map((c) => c.key) as FocalCategory[];
-const MOTOR_CLASSES: FocusMotorClass[] = ["linear", "stepping", "other"];
+const MOTOR_CLASSES: FocusMotorClass[] = ["linear", "stepping", "dc", "other"];
 const LENS_TYPES: LensType[] = ["prime", "zoom"];
 const FOCUS_FILTERS: FocusFilter[] = ["auto", "manual"];
 const SORT_KEYS: SortKey[] = ["focalLength", "maxAperture", "weightG"];

@@ -66,6 +66,7 @@ const labels = {
   motorClass: {
     linear: "Linear",
     stepping: "Stepping",
+    dc: "DC",
     other: "Other",
   },
 } as const;
