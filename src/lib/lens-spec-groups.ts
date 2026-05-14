@@ -514,7 +514,7 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
             const cls = classifyFocusMotor(l);
             return cls ? motorClass[cls] : l.focusMotor;
           },
-          getSubValue: (l) => l.focusMotor,
+          getSubValue: (l) => (classifyFocusMotor(l) ? l.focusMotor : undefined),
         },
         // internalFocusing row hidden — data quality issues, to be re-added later
         {
