@@ -430,6 +430,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
           {/* Right column: QR + CTA */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flexShrink: 0, gap: 8 }}>
             <div
+              data-redact-hook="posterQr"
               style={{
                 width: 96,
                 height: 96,
@@ -619,7 +620,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                     )}
                   </span>
                   {/* Caption row 1: source */}
-                  <span className="tabular-nums text-zinc-400 leading-tight text-center" style={{ fontSize: 9, maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span data-redact-hook="priceSource" className="tabular-nums text-zinc-400 leading-tight text-center" style={{ fontSize: 9, maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {sel.entry.source}
                   </span>
                   {/* Caption row 2: sampled date */}
