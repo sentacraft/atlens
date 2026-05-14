@@ -3338,7 +3338,6 @@
     "wr": false,
     "apertureRing": false,
     "powerZoom": false,
-    "focusMotor": "STM",
     "weightG": 195,
     "diameterMm": 62.6,
     "length": {
@@ -3498,7 +3497,6 @@
     "wr": false,
     "apertureRing": false,
     "powerZoom": false,
-    "focusMotor": "STM",
     "weightG": 375,
     "diameterMm": 69.5,
     "length": {
@@ -3635,13 +3633,18 @@
       "ed": 1,
       "sourceText": "13 elements in 10 groups (includes 1 aspherical and 1 extra low dispersion elements)"
     },
-    "fieldNotes": {},
+    "fieldNotes": {
+      "focusMotor": "Fujifilm marketing label for a high-precision DC motor used in earlier XF / XC lenses."
+    },
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc50-230mmf45-67-ois-ii/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xc50-230mmf45-67-ois-ii/"
     },
     "translations": {
       "zh": {
+        "fieldNotes": {
+          "focusMotor": "Fujifilm 早期 XF / XC 镜头所用高精度直流马达的营销名称。"
+        },
         "accessories": [
           "前镜头盖",
           "遮光罩"
@@ -3838,7 +3841,6 @@
     "wr": false,
     "apertureRing": true,
     "powerZoom": false,
-    "focusMotor": "DC motor",
     "weightG": 410,
     "diameterMm": 78,
     "length": {
@@ -3969,10 +3971,19 @@
       "ed": 4,
       "sourceText": "14 elements in 10 groups (includes 4 aspherical, 4 ED elements)"
     },
-    "fieldNotes": {},
+    "fieldNotes": {
+      "focusMotor": "Fujifilm marketing label for a high-precision DC motor used in earlier XF / XC lenses."
+    },
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf10-24mmf4-r-ois-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf10-24mmf4-r-ois-wr/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "focusMotor": "Fujifilm 早期 XF / XC 镜头所用高精度直流马达的营销名称。"
+        }
+      }
     }
   },
   {
@@ -4956,7 +4967,6 @@
     "wr": false,
     "apertureRing": true,
     "powerZoom": false,
-    "focusMotor": "DC motor",
     "weightG": 300,
     "diameterMm": 72,
     "length": {
@@ -5246,7 +5256,6 @@
     "wr": false,
     "apertureRing": false,
     "powerZoom": false,
-    "focusMotor": "DC motor",
     "weightG": 78,
     "diameterMm": 61.2,
     "length": {
@@ -5565,18 +5574,13 @@
       "aspherical": 1,
       "sourceText": "8 elements in 6 groups (includes 1 aspherical element)"
     },
-    "fieldNotes": {
-      "minFocusDistance": "The source also lists a separate close-focus mode that reaches 2.0m."
-    },
+    "fieldNotes": {},
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf35mmf14-r/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf35mmf14-r/"
     },
     "translations": {
       "zh": {
-        "fieldNotes": {
-          "minFocusDistance": "来源还列出一种独立的近摄模式，可达到 2.0m。"
-        },
         "accessories": [
           "前镜头盖",
           "后镜头盖",
@@ -5744,18 +5748,13 @@
       "superEd": 1,
       "sourceText": "23 elements in 16 groups (includes 5 extra low dispersion elements and 1 super extra low dispersion element)"
     },
-    "fieldNotes": {
-      "minFocusDistance": "The source also lists a separate close-focus mode that extends to 3m."
-    },
+    "fieldNotes": {},
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf50-140mmf28-r-lm-ois-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf50-140mmf28-r-lm-ois-wr/"
     },
     "translations": {
       "zh": {
-        "fieldNotes": {
-          "minFocusDistance": "来源还列出一种独立的近摄模式，范围可延伸至 3m。"
-        },
         "accessories": [
           "前镜头盖",
           "后镜头盖",
@@ -5990,19 +5989,10 @@
       "superEd": 1,
       "sourceText": "14 elements in 10 groups (includes 1 aspherical, 1 ED and 1 super ED elements)"
     },
-    "fieldNotes": {
-      "minFocusDistance": "The source also lists a separate close-focus range that extends to 3m."
-    },
+    "fieldNotes": {},
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf55-200mmf35-48-r-lm-ois/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf55-200mmf35-48-r-lm-ois/"
-    },
-    "translations": {
-      "zh": {
-        "fieldNotes": {
-          "minFocusDistance": "来源还列出一个独立的近摄范围，可延伸至 3m。"
-        }
-      }
     }
   },
   {
@@ -6020,7 +6010,6 @@
     "wr": false,
     "apertureRing": true,
     "powerZoom": false,
-    "focusMotor": "DC motor",
     "weightG": 405,
     "diameterMm": 73.2,
     "length": {
@@ -6088,7 +6077,6 @@
     "wr": false,
     "apertureRing": true,
     "powerZoom": false,
-    "focusMotor": "DC motor",
     "weightG": 405,
     "diameterMm": 73.2,
     "length": {
@@ -6296,19 +6284,10 @@
       "ed": 1,
       "sourceText": "10 elements in 8 groups (includes 1 aspherical and 1 extra low dispersion element)"
     },
-    "fieldNotes": {
-      "minFocusDistance": "The source also lists a separate close-focus mode that reaches 2.0m."
-    },
+    "fieldNotes": {},
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf60mmf24-r-macro/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf60mmf24-r-macro/"
-    },
-    "translations": {
-      "zh": {
-        "fieldNotes": {
-          "minFocusDistance": "来源还列出一种独立的近摄模式，可达到 2.0m。"
-        }
-      }
     }
   },
   {
@@ -9283,18 +9262,13 @@
       "elements": 14,
       "sourceText": "10组14片"
     },
-    "fieldNotes": {
-      "weightG": "Weight varies by mount variant (E / X / Z / RF / L / GFX / EF / F)."
-    },
+    "fieldNotes": {},
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-9/TS-100-Macro-18.html",
       "global": "https://www.ttartisan.com/?full-frame-lenses/TS-100-Macro.html"
     },
     "translations": {
       "zh": {
-        "fieldNotes": {
-          "weightG": "重量因卡口版本而异（E / X / Z / RF / L / GFX / EF / F）。"
-        },
         "lensMaterial": "金属"
       }
     }
@@ -9434,18 +9408,13 @@
       "elements": 14,
       "sourceText": "10组14片"
     },
-    "fieldNotes": {
-      "weightG": "Weight varies by mount variant (X / E / Z)."
-    },
+    "fieldNotes": {},
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?AFlens/351.html",
       "global": "https://www.ttartisan.com/?af-lens/350.html"
     },
     "translations": {
       "zh": {
-        "fieldNotes": {
-          "weightG": "重量因卡口版本而异（X / E / Z）。"
-        },
         "lensMaterial": "金属"
       }
     }
@@ -9588,18 +9557,13 @@
       "groups": 5,
       "elements": 6
     },
-    "fieldNotes": {
-      "weightG": "Weight varies by mount variant."
-    },
+    "fieldNotes": {},
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?AFlens/264.html",
       "global": "https://www.ttartisan.com/?af-lens/38.html"
     },
     "translations": {
       "zh": {
-        "fieldNotes": {
-          "weightG": "重量因卡口版本而异。"
-        },
         "lensMaterial": "金属"
       }
     }
@@ -9672,18 +9636,13 @@
       "ed": 2,
       "highRefractive": 2
     },
-    "fieldNotes": {
-      "weightG": "Weight varies by mount variant and color."
-    },
+    "fieldNotes": {},
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?AFlens/AF-35-II-14.html",
       "global": "https://www.ttartisan.com/?af-lens/AF-35-II.html"
     },
     "translations": {
       "zh": {
-        "fieldNotes": {
-          "weightG": "重量因卡口版本和颜色而异。"
-        },
         "lensMaterial": "金属",
         "accessories": [
           "遮光罩",
@@ -9760,18 +9719,13 @@
       "ed": 1,
       "highRefractive": 2
     },
-    "fieldNotes": {
-      "weightG": "Weight varies by mount variant."
-    },
+    "fieldNotes": {},
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?AFlens/AF-56-18.html",
       "global": "https://www.ttartisan.com/?af-lens/AF-56.html"
     },
     "translations": {
       "zh": {
-        "fieldNotes": {
-          "weightG": "重量因卡口版本而异。"
-        },
         "lensMaterial": "金属",
         "accessories": [
           "遮光罩",
@@ -9927,7 +9881,6 @@
       "elements": 11
     },
     "fieldNotes": {
-      "weightG": "Weight varies by mount variant.",
       "filterMm": "Bulbous fisheye front element; no filter thread."
     },
     "officialLinks": {
@@ -9937,7 +9890,6 @@
     "translations": {
       "zh": {
         "fieldNotes": {
-          "weightG": "重量因卡口版本而异。",
           "filterMm": "灯泡状鱼眼前组镜片；无滤镜螺纹。"
         },
         "lensMaterial": "金属"
@@ -10008,7 +9960,6 @@
       "aspherical": 2
     },
     "fieldNotes": {
-      "weightG": "Weight varies by mount variant.",
       "filterMm": "Requires external 72mm filter holder; no front thread."
     },
     "officialLinks": {
@@ -10018,7 +9969,6 @@
     "translations": {
       "zh": {
         "fieldNotes": {
-          "weightG": "重量因卡口版本而异。",
           "filterMm": "需要外置 72mm 滤镜支架；无前置螺纹。"
         },
         "lensMaterial": "金属"
@@ -10091,18 +10041,13 @@
       "ed": 1,
       "highRefractive": 3
     },
-    "fieldNotes": {
-      "weightG": "Weight varies by mount variant."
-    },
+    "fieldNotes": {},
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/APS-C23.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/76.html"
     },
     "translations": {
       "zh": {
-        "fieldNotes": {
-          "weightG": "重量因卡口版本而异。"
-        },
         "lensMaterial": "金属"
       }
     }
@@ -10170,18 +10115,13 @@
       "groups": 5,
       "elements": 7
     },
-    "fieldNotes": {
-      "weightG": "Weight varies by mount variant."
-    },
+    "fieldNotes": {},
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/254.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/78.html"
     },
     "translations": {
       "zh": {
-        "fieldNotes": {
-          "weightG": "重量因卡口版本而异。"
-        },
         "lensMaterial": "金属"
       }
     }
@@ -10248,18 +10188,13 @@
       "groups": 5,
       "elements": 7
     },
-    "fieldNotes": {
-      "weightG": "Weight varies by mount variant."
-    },
+    "fieldNotes": {},
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/257.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/70.html"
     },
     "translations": {
       "zh": {
-        "fieldNotes": {
-          "weightG": "重量因卡口版本而异。"
-        },
         "lensMaterial": "金属"
       }
     }
@@ -10405,18 +10340,13 @@
       "elements": 8,
       "ed": 2
     },
-    "fieldNotes": {
-      "weightG": "Weight varies by mount variant."
-    },
+    "fieldNotes": {},
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/MACRO40.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/75.html"
     },
     "translations": {
       "zh": {
-        "fieldNotes": {
-          "weightG": "重量因卡口版本而异。"
-        },
         "lensMaterial": "金属"
       }
     }
@@ -10703,18 +10633,13 @@
       "groups": 6,
       "elements": 7
     },
-    "fieldNotes": {
-      "weightG": "Weight varies by mount variant."
-    },
+    "fieldNotes": {},
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/TC35.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/Tilt-C-35.html"
     },
     "translations": {
       "zh": {
-        "fieldNotes": {
-          "weightG": "重量因卡口版本而异。"
-        },
         "lensMaterial": "金属"
       }
     }
