@@ -1,21 +1,12 @@
 "use client";
 
-// Mounts the demo-mode redaction CSS layer. See lib/redaction.ts for the
-// target registry. Activation contract:
-//   - `?redact=posterQr,priceSource` on any URL turns those targets on; the
-//     param is stripped from the address bar after parsing so screen
-//     recordings don't expose it.
-//   - `?redactBlur=<px>` overrides the blur radius (default 5px).
-//   - The active set is mirrored to localStorage so it persists across tab
-//     close / browser restart until explicitly cleared.
-//   - `?redact=` (empty value) clears the active set; `?redactBlur=`
-//     resets the blur radius back to the default.
-//
-// Caller (layout.tsx) must wrap this in <Suspense fallback={null}> because
-// useSearchParams forces CSR bailout on prerendered pages otherwise.
-//
-// The component holds no React state — the only consumer of the active set
-// is a single <style> element in document.head, which we update imperatively.
+// Mounts the demo-mode redaction CSS layer. Activation:
+//   ?redact=posterQr,priceSource   — toggle the active set (empty clears)
+//   ?redactBlur=8                  — blur radius in px (default 5, empty resets)
+// Both params are stripped from the URL after parsing and mirrored to
+// localStorage so the effect persists across browser restarts until cleared.
+// Caller must wrap this in <Suspense fallback={null}> because useSearchParams
+// would otherwise force a CSR bailout on prerendered pages.
 
 import { useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -26,59 +17,10 @@ import {
   REDACTION_QUERY_KEY,
   REDACTION_STORAGE_KEY,
   buildRedactionCss,
-  parseRedactionBlur,
-  parseRedactionParam,
-  serializeRedactionKeys,
+  parseKeys,
 } from "@/lib/redaction";
 
-const STYLE_ELEMENT_ID = "redaction-css";
-
-function applyCss(activeKeys: readonly string[], blurPx: number): void {
-  let el = document.getElementById(STYLE_ELEMENT_ID) as HTMLStyleElement | null;
-  if (!el) {
-    el = document.createElement("style");
-    el.id = STYLE_ELEMENT_ID;
-    document.head.appendChild(el);
-  }
-  el.textContent = buildRedactionCss(activeKeys, blurPx);
-}
-
-function readStoredKeys(): readonly string[] {
-  try {
-    const stored = localStorage.getItem(REDACTION_STORAGE_KEY);
-    if (stored === null) {
-      return [];
-    }
-    return stored ? stored.split(",").filter(Boolean) : [];
-  } catch {
-    return [];
-  }
-}
-
-function readStoredBlur(): number {
-  try {
-    const raw = localStorage.getItem(REDACTION_BLUR_STORAGE_KEY);
-    return parseRedactionBlur(raw) ?? DEFAULT_REDACTION_BLUR_PX;
-  } catch {
-    return DEFAULT_REDACTION_BLUR_PX;
-  }
-}
-
-function writeStoredKeys(keys: readonly string[]): void {
-  try {
-    localStorage.setItem(REDACTION_STORAGE_KEY, serializeRedactionKeys(keys));
-  } catch {
-    // localStorage unavailable — applied for this page load only.
-  }
-}
-
-function writeStoredBlur(px: number): void {
-  try {
-    localStorage.setItem(REDACTION_BLUR_STORAGE_KEY, String(px));
-  } catch {
-    // localStorage unavailable — applied for this page load only.
-  }
-}
+const STYLE_ID = "redaction-css";
 
 export default function Redaction() {
   const pathname = usePathname();
@@ -89,33 +31,33 @@ export default function Redaction() {
     const rawKeys = searchParams.get(REDACTION_QUERY_KEY);
     const rawBlur = searchParams.get(REDACTION_BLUR_QUERY_KEY);
 
-    let keys: readonly string[];
+    let keys: string[];
     if (rawKeys !== null) {
-      keys = parseRedactionParam(rawKeys) ?? [];
-      writeStoredKeys(keys);
+      keys = parseKeys(rawKeys);
+      try { localStorage.setItem(REDACTION_STORAGE_KEY, keys.join(",")); } catch {}
     } else {
-      keys = readStoredKeys();
+      try { keys = parseKeys(localStorage.getItem(REDACTION_STORAGE_KEY)); } catch { keys = []; }
     }
 
-    let blurPx: number;
+    let blur: number;
     if (rawBlur !== null) {
-      // Empty value = reset to default. Out-of-range = ignored (keep prior).
-      const parsed = rawBlur === "" ? DEFAULT_REDACTION_BLUR_PX : parseRedactionBlur(rawBlur);
-      blurPx = parsed ?? readStoredBlur();
-      if (parsed !== null) {
-        writeStoredBlur(blurPx);
-      }
+      blur = Number(rawBlur) || DEFAULT_REDACTION_BLUR_PX;
+      try { localStorage.setItem(REDACTION_BLUR_STORAGE_KEY, String(blur)); } catch {}
     } else {
-      blurPx = readStoredBlur();
+      try { blur = Number(localStorage.getItem(REDACTION_BLUR_STORAGE_KEY)) || DEFAULT_REDACTION_BLUR_PX; } catch { blur = DEFAULT_REDACTION_BLUR_PX; }
     }
 
-    applyCss(keys, blurPx);
+    let el = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
+    if (!el) {
+      el = document.createElement("style");
+      el.id = STYLE_ID;
+      document.head.appendChild(el);
+    }
+    el.textContent = buildRedactionCss(keys, blur);
 
     if (rawKeys === null && rawBlur === null) {
       return;
     }
-
-    // Strip both params so screen recordings of the address bar stay clean.
     const next = new URLSearchParams(searchParams.toString());
     next.delete(REDACTION_QUERY_KEY);
     next.delete(REDACTION_BLUR_QUERY_KEY);
