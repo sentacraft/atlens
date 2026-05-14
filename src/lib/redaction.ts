@@ -14,6 +14,9 @@ import type { ReadonlyURLSearchParams } from "next/navigation";
 
 export const REDACTION_QUERY_KEY = "redact";
 export const REDACTION_BLUR_QUERY_KEY = "redactBlur";
+// localStorage so the setting persists across tab close / browser restart —
+// the demo state survives any number of sessions until explicitly cleared
+// with `?redact=`.
 export const REDACTION_STORAGE_KEY = "x-glass:redact";
 export const REDACTION_BLUR_STORAGE_KEY = "x-glass:redact:blur";
 export const REDACTION_ATTR = "data-redact-hook";

@@ -5,12 +5,14 @@
 //   - `?redact=posterQr,priceSource` on any URL turns those targets on; the
 //     param is stripped from the address bar after parsing so screen
 //     recordings don't expose it.
-//   - `?redactBlur=<px>` overrides the blur radius (default 5px). Persists
-//     for the tab session like the target set.
-//   - The active set is mirrored to sessionStorage so it survives in-app
-//     navigations and hard refreshes within the same tab.
+//   - `?redactBlur=<px>` overrides the blur radius (default 5px).
+//   - The active set is mirrored to localStorage so it persists across tab
+//     close / browser restart until explicitly cleared.
 //   - `?redact=` (empty value) clears the active set; `?redactBlur=`
 //     resets the blur radius back to the default.
+//
+// Caller (layout.tsx) must wrap this in <Suspense fallback={null}> because
+// useSearchParams forces CSR bailout on prerendered pages otherwise.
 //
 // The component holds no React state — the only consumer of the active set
 // is a single <style> element in document.head, which we update imperatively.
@@ -43,7 +45,7 @@ function applyCss(activeKeys: readonly string[], blurPx: number): void {
 
 function readStoredKeys(): readonly string[] {
   try {
-    const stored = sessionStorage.getItem(REDACTION_STORAGE_KEY);
+    const stored = localStorage.getItem(REDACTION_STORAGE_KEY);
     if (stored === null) {
       return [];
     }
@@ -55,7 +57,7 @@ function readStoredKeys(): readonly string[] {
 
 function readStoredBlur(): number {
   try {
-    const raw = sessionStorage.getItem(REDACTION_BLUR_STORAGE_KEY);
+    const raw = localStorage.getItem(REDACTION_BLUR_STORAGE_KEY);
     return parseRedactionBlur(raw) ?? DEFAULT_REDACTION_BLUR_PX;
   } catch {
     return DEFAULT_REDACTION_BLUR_PX;
@@ -64,17 +66,17 @@ function readStoredBlur(): number {
 
 function writeStoredKeys(keys: readonly string[]): void {
   try {
-    sessionStorage.setItem(REDACTION_STORAGE_KEY, serializeRedactionKeys(keys));
+    localStorage.setItem(REDACTION_STORAGE_KEY, serializeRedactionKeys(keys));
   } catch {
-    // sessionStorage unavailable — applied for this page load only.
+    // localStorage unavailable — applied for this page load only.
   }
 }
 
 function writeStoredBlur(px: number): void {
   try {
-    sessionStorage.setItem(REDACTION_BLUR_STORAGE_KEY, String(px));
+    localStorage.setItem(REDACTION_BLUR_STORAGE_KEY, String(px));
   } catch {
-    // sessionStorage unavailable — applied for this page load only.
+    // localStorage unavailable — applied for this page load only.
   }
 }
 
