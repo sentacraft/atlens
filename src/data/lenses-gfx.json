@@ -434,10 +434,6 @@
     "model": "GF 32-90mmT3.5 PZ OIS WR",
     "focalLengthMin": 32,
     "focalLengthMax": 90,
-    "maxAperture": [
-      32,
-      90
-    ],
     "maxTStop": 3.5,
     "minTStop": 32,
     "specialtyTags": [
