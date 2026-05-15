@@ -31,9 +31,8 @@ function HomeContent() {
   const t = useTranslations("Common");
 
   return (
-    <div className="flex flex-col h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] overflow-clip">
-      {/* Hero */}
-      <section className="flex flex-col items-center justify-center text-center px-4 py-16 flex-1">
+    <div className="relative h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] overflow-clip grid place-items-center">
+      <section className="flex flex-col items-center text-center px-4">
         <HeroIris />
         <h1 className="mt-8 text-5xl sm:text-6xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50 font-heading">
           <HeroBrand />
@@ -49,8 +48,7 @@ function HomeContent() {
         </div>
       </section>
 
-      {/* Tagline — barely visible footer credit */}
-      <div className="pb-6 flex justify-center">
+      <div className="absolute inset-x-0 bottom-6 flex justify-center">
         <Tagline />
       </div>
     </div>
