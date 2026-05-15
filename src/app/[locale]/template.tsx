@@ -1,3 +1,16 @@
+"use client";
+
+import { useState, useEffect } from "react";
+
 export default function Template({ children }: { children: React.ReactNode }) {
-  return <div className="animate-in fade-in duration-400">{children}</div>;
+  const [shown, setShown] = useState(false);
+  useEffect(() => { setShown(true); }, []);
+  return (
+    <div
+      className="transition-opacity duration-200"
+      style={{ opacity: shown ? 1 : 0 }}
+    >
+      {children}
+    </div>
+  );
 }
