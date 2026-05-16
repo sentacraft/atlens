@@ -6,11 +6,49 @@
 // The route itself is open — auth lives one layer above at the platform.
 
 import { queryAE } from "@/lib/analytics-query";
+import {
+  formatFilterSnapshot,
+  formatHref,
+  formatLensSlug,
+  formatLensSlugList,
+  formatShareMethod,
+} from "@/lib/analytics-format";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 const WINDOW = "INTERVAL '30' DAY";
+
+const Q_OVERVIEW = `
+  SELECT
+    SUM(_sample_interval) AS events,
+    uniq(blob1) AS sessions,
+    uniqIf(blob4, index1 = 'search') AS unique_queries,
+    uniqIf(blob4, index1 = 'lens_view') AS unique_lenses_viewed
+  FROM xglass_events
+  WHERE timestamp > NOW() - ${WINDOW}
+`;
+
+const Q_LOCALE_SPLIT = `
+  SELECT
+    blob2 AS locale,
+    SUM(_sample_interval) AS events,
+    uniq(blob1) AS sessions
+  FROM xglass_events
+  WHERE timestamp > NOW() - ${WINDOW} AND blob2 != ''
+  GROUP BY locale
+  ORDER BY events DESC
+`;
+
+const Q_REFERRER = `
+  SELECT blob5 AS referrer, SUM(_sample_interval) AS n
+  FROM xglass_events
+  WHERE index1 = 'lens_view' AND blob5 != ''
+    AND timestamp > NOW() - ${WINDOW}
+  GROUP BY referrer
+  ORDER BY n DESC
+  LIMIT 15
+`;
 
 const Q_SEARCH_ZERO = `
   SELECT blob4 AS query, SUM(_sample_interval) AS n
@@ -162,10 +200,14 @@ function num(v: unknown): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+function fmtNum(n: number): string {
+  return n.toLocaleString("en-US");
+}
+
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-      <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+      <h2 className="font-heading text-base font-semibold text-zinc-800 dark:text-zinc-100">
         {title}
       </h2>
       <div className="mt-3">{children}</div>
@@ -173,24 +215,31 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
   );
 }
 
-function Table({
-  rows,
-  columns,
-}: {
-  rows: Array<Record<string, unknown>>;
-  columns: { key: string; label: string; align?: "left" | "right" }[];
-}) {
+interface Column {
+  key: string;
+  label: string;
+  align?: "left" | "right";
+  // When set, also use the value at this key (the raw / unformatted form)
+  // for the cell's `title` tooltip attribute so truncated content remains
+  // discoverable on hover.
+  titleKey?: string;
+  // Constrain a numeric column so a 1-digit count doesn't take half the
+  // row width; left undefined for primary string columns to let them fill.
+  widthClass?: string;
+}
+
+function Table({ rows, columns }: { rows: Array<Record<string, unknown>>; columns: Column[] }) {
   if (rows.length === 0) {
     return <p className="text-sm text-zinc-400">No data yet.</p>;
   }
   return (
-    <table className="w-full text-sm">
+    <table className="w-full table-fixed text-sm">
       <thead>
         <tr className="text-xs uppercase tracking-wider text-zinc-400">
           {columns.map((c) => (
             <th
               key={c.key}
-              className={`pb-2 font-medium ${c.align === "right" ? "text-right" : "text-left"}`}
+              className={`pb-2 font-medium ${c.align === "right" ? "text-right" : "text-left"} ${c.widthClass ?? ""}`}
             >
               {c.label}
             </th>
@@ -200,14 +249,19 @@ function Table({
       <tbody>
         {rows.map((r, i) => (
           <tr key={i} className="border-t border-zinc-100 dark:border-zinc-800">
-            {columns.map((c) => (
-              <td
-                key={c.key}
-                className={`py-1.5 ${c.align === "right" ? "text-right tabular-nums" : "text-left"} ${c.align !== "right" ? "truncate max-w-[24rem]" : ""}`}
-              >
-                {String(r[c.key] ?? "")}
-              </td>
-            ))}
+            {columns.map((c) => {
+              const raw = r[c.key];
+              const title = c.titleKey ? String(r[c.titleKey] ?? "") : undefined;
+              return (
+                <td
+                  key={c.key}
+                  title={title}
+                  className={`py-1.5 ${c.align === "right" ? "text-right tabular-nums" : "truncate text-left"}`}
+                >
+                  {String(raw ?? "")}
+                </td>
+              );
+            })}
           </tr>
         ))}
       </tbody>
@@ -215,8 +269,29 @@ function Table({
   );
 }
 
+// Single-number stat for the top overview bar.
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-1 rounded-2xl border border-zinc-200 bg-white px-5 py-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+      <span className="text-xs uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+        {label}
+      </span>
+      <span className="font-heading text-3xl font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
+        {value}
+      </span>
+    </div>
+  );
+}
+
+// Narrow width class shared by every "count" / "n" column so the long
+// primary string column gets the remaining space.
+const COUNT_WIDTH = "w-20";
+
 export default async function AnalyticsDashboardPage() {
   const [
+    overview,
+    localeSplit,
+    referrers,
     searchZero,
     searchAll,
     filterUsage,
@@ -231,6 +306,9 @@ export default async function AnalyticsDashboardPage() {
     outbound,
     outboundBySource,
   ] = await Promise.all([
+    queryAE(Q_OVERVIEW),
+    queryAE(Q_LOCALE_SPLIT),
+    queryAE(Q_REFERRER),
     queryAE(Q_SEARCH_ZERO),
     queryAE(Q_SEARCH_ALL),
     queryAE(Q_FILTER_USAGE),
@@ -246,10 +324,10 @@ export default async function AnalyticsDashboardPage() {
     queryAE(Q_OUTBOUND_BY_SOURCE),
   ]);
 
-  if (searchZero.error === "missing_credentials") {
+  if (overview.error === "missing_credentials") {
     return (
       <main className="mx-auto max-w-2xl px-6 py-16">
-        <h1 className="text-2xl font-bold">Analytics not configured</h1>
+        <h1 className="font-heading text-2xl font-bold">Analytics not configured</h1>
         <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
           Set <code className="rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-800">CF_ACCOUNT_ID</code> and{" "}
           <code className="rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-800">CF_ANALYTICS_TOKEN</code>{" "}
@@ -260,6 +338,15 @@ export default async function AnalyticsDashboardPage() {
       </main>
     );
   }
+
+  const overviewRow = overview.data[0] as
+    | {
+        events?: number;
+        sessions?: number;
+        unique_queries?: number;
+        unique_lenses_viewed?: number;
+      }
+    | undefined;
 
   const funnel = compareFunnel.data[0] as
     | {
@@ -280,22 +367,88 @@ export default async function AnalyticsDashboardPage() {
 
   const installCount = num((install.data[0] as { n?: number } | undefined)?.n);
 
+  // Pre-format rows so JSX cells stay simple and `title` tooltips can
+  // reference the original strings.
+  const compareCombosRows = compareCombos.data.map((r) => ({
+    ...r,
+    display: formatLensSlugList(String(r.slugs ?? "")),
+  }));
+  const lensViewsRows = lensViews.data.map((r) => ({
+    ...r,
+    display: formatLensSlug(String(r.lens_slug ?? "")),
+  }));
+  const filterUsageRows = filterUsage.data.map((r) => ({
+    ...r,
+    display: formatFilterSnapshot(String(r.filters ?? "")),
+  }));
+  const shareRows = share.data.map((r) => ({
+    ...r,
+    display: formatShareMethod(String(r.method ?? "")),
+  }));
+  const shareBySourceRows = shareBySource.data.map((r) => ({
+    ...r,
+    method_display: formatShareMethod(String(r.method ?? "")),
+  }));
+  const outboundRows = outbound.data.map((r) => ({
+    ...r,
+    display: formatHref(String(r.href ?? "")),
+  }));
+  const outboundBySourceRows = outboundBySource.data.map((r) => ({
+    ...r,
+    href_display: formatHref(String(r.href ?? "")),
+  }));
+  const referrerRows = referrers.data.map((r) => ({
+    ...r,
+    display: formatHref(String(r.referrer ?? "")),
+  }));
+
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold">Analytics — last 30 days</h1>
-        <p className="mt-1 text-sm text-zinc-500">
-          Counts are sampling-corrected via <code>SUM(_sample_interval)</code>.
+        <h1 className="font-heading text-3xl font-bold text-zinc-900 dark:text-zinc-50">
+          Analytics
+        </h1>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+          Last 30 days · numbers adjusted for sampling
         </p>
       </header>
 
+      {/* Overview stats bar */}
+      <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <Stat label="Events" value={fmtNum(num(overviewRow?.events))} />
+        <Stat label="Sessions" value={fmtNum(num(overviewRow?.sessions))} />
+        <Stat label="Unique queries" value={fmtNum(num(overviewRow?.unique_queries))} />
+        <Stat label="Unique lenses viewed" value={fmtNum(num(overviewRow?.unique_lenses_viewed))} />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card title="Locale · split">
+          <Table
+            rows={localeSplit.data}
+            columns={[
+              { key: "locale", label: "Locale" },
+              { key: "events", label: "Events", align: "right", widthClass: COUNT_WIDTH },
+              { key: "sessions", label: "Sessions", align: "right", widthClass: COUNT_WIDTH },
+            ]}
+          />
+        </Card>
+
+        <Card title="Detail · referrer sources">
+          <Table
+            rows={referrerRows}
+            columns={[
+              { key: "display", label: "Referrer", titleKey: "referrer" },
+              { key: "n", label: "Views", align: "right", widthClass: COUNT_WIDTH },
+            ]}
+          />
+        </Card>
+
         <Card title="Search · zero-result queries">
           <Table
             rows={searchZero.data}
             columns={[
               { key: "query", label: "Query" },
-              { key: "n", label: "Count", align: "right" },
+              { key: "n", label: "Count", align: "right", widthClass: COUNT_WIDTH },
             ]}
           />
         </Card>
@@ -305,38 +458,38 @@ export default async function AnalyticsDashboardPage() {
             rows={searchAll.data}
             columns={[
               { key: "query", label: "Query" },
-              { key: "n", label: "Count", align: "right" },
+              { key: "n", label: "Count", align: "right", widthClass: COUNT_WIDTH },
             ]}
           />
         </Card>
 
         <Card title="Compare · funnel">
-          <table className="w-full text-sm">
+          <table className="w-full table-fixed text-sm">
             <thead>
               <tr className="text-xs uppercase tracking-wider text-zinc-400">
                 <th className="pb-2 text-left font-medium">Step</th>
-                <th className="pb-2 text-right font-medium">Events</th>
-                <th className="pb-2 text-right font-medium">Sessions</th>
-                <th className="pb-2 text-right font-medium">vs. add</th>
+                <th className={`pb-2 text-right font-medium ${COUNT_WIDTH}`}>Events</th>
+                <th className={`pb-2 text-right font-medium ${COUNT_WIDTH}`}>Sessions</th>
+                <th className={`pb-2 text-right font-medium ${COUNT_WIDTH}`}>vs. add</th>
               </tr>
             </thead>
             <tbody>
               <tr className="border-t border-zinc-100 dark:border-zinc-800">
                 <td className="py-1.5">compare_add</td>
-                <td className="py-1.5 text-right tabular-nums">{adds}</td>
-                <td className="py-1.5 text-right tabular-nums">{sidsAdd}</td>
+                <td className="py-1.5 text-right tabular-nums">{fmtNum(adds)}</td>
+                <td className="py-1.5 text-right tabular-nums">{fmtNum(sidsAdd)}</td>
                 <td className="py-1.5 text-right tabular-nums">100%</td>
               </tr>
               <tr className="border-t border-zinc-100 dark:border-zinc-800">
                 <td className="py-1.5">compare_view</td>
-                <td className="py-1.5 text-right tabular-nums">{views}</td>
-                <td className="py-1.5 text-right tabular-nums">{sidsView}</td>
+                <td className="py-1.5 text-right tabular-nums">{fmtNum(views)}</td>
+                <td className="py-1.5 text-right tabular-nums">{fmtNum(sidsView)}</td>
                 <td className="py-1.5 text-right tabular-nums">{pct(sidsView, sidsAdd)}</td>
               </tr>
               <tr className="border-t border-zinc-100 dark:border-zinc-800">
                 <td className="py-1.5">compare_scroll</td>
-                <td className="py-1.5 text-right tabular-nums">{scrolls}</td>
-                <td className="py-1.5 text-right tabular-nums">{sidsScroll}</td>
+                <td className="py-1.5 text-right tabular-nums">{fmtNum(scrolls)}</td>
+                <td className="py-1.5 text-right tabular-nums">{fmtNum(sidsScroll)}</td>
                 <td className="py-1.5 text-right tabular-nums">{pct(sidsScroll, sidsAdd)}</td>
               </tr>
             </tbody>
@@ -345,30 +498,30 @@ export default async function AnalyticsDashboardPage() {
 
         <Card title="Compare · hot lens combinations">
           <Table
-            rows={compareCombos.data}
+            rows={compareCombosRows}
             columns={[
-              { key: "slugs", label: "Slugs" },
-              { key: "n", label: "Views", align: "right" },
+              { key: "display", label: "Lenses", titleKey: "slugs" },
+              { key: "n", label: "Views", align: "right", widthClass: COUNT_WIDTH },
             ]}
           />
         </Card>
 
         <Card title="Filters · most-used snapshots">
           <Table
-            rows={filterUsage.data}
+            rows={filterUsageRows}
             columns={[
-              { key: "filters", label: "Filters JSON" },
-              { key: "n", label: "Applies", align: "right" },
+              { key: "display", label: "Filters", titleKey: "filters" },
+              { key: "n", label: "Applies", align: "right", widthClass: COUNT_WIDTH },
             ]}
           />
         </Card>
 
         <Card title="Detail · most-viewed lenses">
           <Table
-            rows={lensViews.data}
+            rows={lensViewsRows}
             columns={[
-              { key: "lens_slug", label: "Lens" },
-              { key: "n", label: "Views", align: "right" },
+              { key: "display", label: "Lens", titleKey: "lens_slug" },
+              { key: "n", label: "Views", align: "right", widthClass: COUNT_WIDTH },
             ]}
           />
         </Card>
@@ -387,35 +540,37 @@ export default async function AnalyticsDashboardPage() {
             rows={feedback.data}
             columns={[
               { key: "feedback_type", label: "Type" },
-              { key: "opens", label: "Opens", align: "right" },
-              { key: "submits", label: "Submits", align: "right" },
+              { key: "opens", label: "Opens", align: "right", widthClass: COUNT_WIDTH },
+              { key: "submits", label: "Submits", align: "right", widthClass: COUNT_WIDTH },
             ]}
           />
         </Card>
 
         <Card title="Share · method breakdown">
           <Table
-            rows={share.data}
+            rows={shareRows}
             columns={[
-              { key: "method", label: "Method" },
-              { key: "n", label: "Count", align: "right" },
+              { key: "display", label: "Method", titleKey: "method" },
+              { key: "n", label: "Count", align: "right", widthClass: COUNT_WIDTH },
             ]}
           />
         </Card>
 
         <Card title="Share · by source page × method">
           <Table
-            rows={shareBySource.data}
+            rows={shareBySourceRows}
             columns={[
               { key: "source_path", label: "Source path" },
-              { key: "method", label: "Method" },
-              { key: "n", label: "Count", align: "right" },
+              { key: "method_display", label: "Method", titleKey: "method" },
+              { key: "n", label: "Count", align: "right", widthClass: COUNT_WIDTH },
             ]}
           />
         </Card>
 
         <Card title="Install · PWA accepts">
-          <p className="text-3xl font-bold tabular-nums">{installCount}</p>
+          <p className="font-heading text-3xl font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
+            {fmtNum(installCount)}
+          </p>
           <p className="mt-1 text-xs text-zinc-500">Accepted install prompts</p>
         </Card>
 
@@ -425,28 +580,28 @@ export default async function AnalyticsDashboardPage() {
             columns={[
               { key: "from_mount", label: "From" },
               { key: "to_mount", label: "To" },
-              { key: "n", label: "Switches", align: "right" },
+              { key: "n", label: "Switches", align: "right", widthClass: COUNT_WIDTH },
             ]}
           />
         </Card>
 
         <Card title="Outbound · top destinations">
           <Table
-            rows={outbound.data}
+            rows={outboundRows}
             columns={[
-              { key: "href", label: "Href" },
-              { key: "n", label: "Clicks", align: "right" },
+              { key: "display", label: "Destination", titleKey: "href" },
+              { key: "n", label: "Clicks", align: "right", widthClass: COUNT_WIDTH },
             ]}
           />
         </Card>
 
         <Card title="Outbound · by source page × destination">
           <Table
-            rows={outboundBySource.data}
+            rows={outboundBySourceRows}
             columns={[
               { key: "source_path", label: "Source path" },
-              { key: "href", label: "Destination" },
-              { key: "n", label: "Clicks", align: "right" },
+              { key: "href_display", label: "Destination", titleKey: "href" },
+              { key: "n", label: "Clicks", align: "right", widthClass: COUNT_WIDTH },
             ]}
           />
         </Card>
