@@ -104,9 +104,17 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { locale, mount, id } = await params;
-  const resolvedMount = urlSegmentToMount(mount) ?? "X";
   const t = await getTranslations({ locale, namespace: "LensDetail" });
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
+  // The [mount]/layout.tsx ahead of this page already calls notFound() on an
+  // invalid mount segment, so urlSegmentToMount is guaranteed to return a
+  // valid Mount here. Re-check defensively in case the layout contract is
+  // ever weakened — silently treating an unknown mount as "X" would mis-route
+  // lens lookups and is far worse than a 404.
+  const resolvedMount = urlSegmentToMount(mount);
+  if (!resolvedMount) {
+    return { title: t("notFoundTitle") };
+  }
   const lenses = getLensesByMount(resolvedMount, locale);
   const lens = lenses.find((l) => l.id === id);
   if (!lens) {
@@ -257,7 +265,13 @@ function renderRowValue(
 export default async function LensDetailPage({ params }: { params: Params }) {
   const { id, locale, mount } = await params;
   setRequestLocale(locale);
-  const resolvedMount = urlSegmentToMount(mount) ?? "X";
+  // See note on the matching guard in generateMetadata — the parent layout
+  // already validates mount, but we re-check rather than silently fall back
+  // to "X" and mis-route the lens lookup.
+  const resolvedMount = urlSegmentToMount(mount);
+  if (!resolvedMount) {
+    notFound();
+  }
   const lenses = getLensesByMount(resolvedMount, locale);
   const lens = lenses.find((l) => l.id === id);
 
