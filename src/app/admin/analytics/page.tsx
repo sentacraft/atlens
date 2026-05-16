@@ -75,19 +75,6 @@ const Q_LENS_VIEW_TOP = `
   LIMIT 20
 `;
 
-const Q_LENS_DWELL = `
-  SELECT
-    blob4 AS lens_slug,
-    ROUND(SUM(_sample_interval * double1) / SUM(_sample_interval)) AS avg_seconds,
-    SUM(_sample_interval) AS n
-  FROM xglass_events
-  WHERE index1 = 'lens_dwell' AND double1 > 0
-    AND timestamp > NOW() - ${WINDOW}
-  GROUP BY lens_slug
-  ORDER BY n DESC
-  LIMIT 20
-`;
-
 const Q_FEEDBACK = `
   SELECT
     blob4 AS feedback_type,
@@ -236,7 +223,6 @@ export default async function AnalyticsDashboardPage() {
     compareFunnel,
     compareCombos,
     lensViews,
-    lensDwell,
     feedback,
     share,
     shareBySource,
@@ -251,7 +237,6 @@ export default async function AnalyticsDashboardPage() {
     queryAE(Q_COMPARE_FUNNEL),
     queryAE(Q_COMPARE_COMBOS),
     queryAE(Q_LENS_VIEW_TOP),
-    queryAE(Q_LENS_DWELL),
     queryAE(Q_FEEDBACK),
     queryAE(Q_SHARE),
     queryAE(Q_SHARE_BY_SOURCE),
@@ -389,14 +374,12 @@ export default async function AnalyticsDashboardPage() {
         </Card>
 
         <Card title="Detail · avg dwell seconds (top by views)">
-          <Table
-            rows={lensDwell.data}
-            columns={[
-              { key: "lens_slug", label: "Lens" },
-              { key: "avg_seconds", label: "Avg sec", align: "right" },
-              { key: "n", label: "Dwell events", align: "right" },
-            ]}
-          />
+          <p className="text-sm text-zinc-400 dark:text-zinc-500">
+            Not collected. SPA navigation within X-Glass doesn&rsquo;t fire{" "}
+            <code>visibilitychange</code> or <code>pagehide</code>, so the
+            previous dwell timing was unreliable. Pending a redesign that
+            also captures client-side route exits.
+          </p>
         </Card>
 
         <Card title="Feedback · funnel by type">

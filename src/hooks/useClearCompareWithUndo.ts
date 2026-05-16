@@ -8,10 +8,9 @@ import { useMountedCompare } from "@/context/CompareProvider";
 /**
  * Wraps `clearCompare` with an undo affordance: snapshots the current
  * compareIds, clears them, then surfaces a sonner toast whose action
- * restores the snapshot via `replaceCompare`. Used by every surface
- * that exposes a "clear" affordance for the comparison (nav link on
- * compare page, ComparePageHeader's "清空", CompareBar's "清空")
- * so the destructive action has a consistent reversal path.
+ * restores the snapshot via `seedCompare` (not `addToCompare` — those
+ * lenses were already tracked when first added; re-counting them on
+ * undo would double-fire the `compare_add` event).
  *
  * No-ops when `compareIds` is empty so callers don't need to
  * pre-check before invoking.
@@ -24,7 +23,7 @@ import { useMountedCompare } from "@/context/CompareProvider";
  */
 export function useClearCompareWithUndo() {
   const tCompare = useTranslations("Compare");
-  const { compareIds, clearCompare, replaceCompare } = useMountedCompare();
+  const { compareIds, clearCompare, seedCompare } = useMountedCompare();
 
   return useCallback(() => {
     if (compareIds.length === 0) {
@@ -35,8 +34,8 @@ export function useClearCompareWithUndo() {
     toast(tCompare("clearedToast"), {
       action: {
         label: tCompare("undo"),
-        onClick: () => replaceCompare(prevIds),
+        onClick: () => seedCompare(prevIds),
       },
     });
-  }, [compareIds, clearCompare, replaceCompare, tCompare]);
+  }, [compareIds, clearCompare, seedCompare, tCompare]);
 }

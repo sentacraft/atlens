@@ -20,7 +20,6 @@ export const EVENT_NAMES = [
   "compare_scroll",
   "lens_view",
   "lens_scroll",
-  "lens_dwell",
   "feedback_open",
   "feedback_submit",
   "install_action",
@@ -47,7 +46,6 @@ export interface EventProps {
   lens_slugs?: string;
   lens_count?: number;
   depth_pct?: number;
-  seconds?: number;
 
   // CTA / feedback
   feedback_type?: string;
@@ -99,7 +97,6 @@ export function toDataPoint(
   const primaryNumber =
     props.results_count ??
     props.depth_pct ??
-    props.seconds ??
     props.lens_count ??
     0;
 
