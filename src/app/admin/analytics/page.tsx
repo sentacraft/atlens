@@ -137,6 +137,32 @@ const Q_OUTBOUND = `
   LIMIT 20
 `;
 
+const Q_OUTBOUND_BY_SOURCE = `
+  SELECT
+    blob3 AS source_path,
+    blob4 AS href,
+    SUM(_sample_interval) AS n
+  FROM xglass_events
+  WHERE index1 = 'outbound_click'
+    AND timestamp > NOW() - ${WINDOW}
+  GROUP BY source_path, href
+  ORDER BY n DESC
+  LIMIT 30
+`;
+
+const Q_SHARE_BY_SOURCE = `
+  SELECT
+    blob3 AS source_path,
+    blob5 AS method,
+    SUM(_sample_interval) AS n
+  FROM xglass_events
+  WHERE index1 = 'share_action'
+    AND timestamp > NOW() - ${WINDOW}
+  GROUP BY source_path, method
+  ORDER BY n DESC
+  LIMIT 30
+`;
+
 function pct(num: number, denom: number): string {
   if (denom <= 0) {
     return "—";
@@ -213,9 +239,11 @@ export default async function AnalyticsDashboardPage() {
     lensDwell,
     feedback,
     share,
+    shareBySource,
     install,
     mountSwitch,
     outbound,
+    outboundBySource,
   ] = await Promise.all([
     queryAE(Q_SEARCH_ZERO),
     queryAE(Q_SEARCH_ALL),
@@ -226,9 +254,11 @@ export default async function AnalyticsDashboardPage() {
     queryAE(Q_LENS_DWELL),
     queryAE(Q_FEEDBACK),
     queryAE(Q_SHARE),
+    queryAE(Q_SHARE_BY_SOURCE),
     queryAE(Q_INSTALL),
     queryAE(Q_MOUNT_SWITCH),
     queryAE(Q_OUTBOUND),
+    queryAE(Q_OUTBOUND_BY_SOURCE),
   ]);
 
   if (searchZero.error === "missing_credentials") {
@@ -390,6 +420,17 @@ export default async function AnalyticsDashboardPage() {
           />
         </Card>
 
+        <Card title="Share · by source page × method">
+          <Table
+            rows={shareBySource.data}
+            columns={[
+              { key: "source_path", label: "Source path" },
+              { key: "method", label: "Method" },
+              { key: "n", label: "Count", align: "right" },
+            ]}
+          />
+        </Card>
+
         <Card title="Install · PWA accepts">
           <p className="text-3xl font-bold tabular-nums">{installCount}</p>
           <p className="mt-1 text-xs text-zinc-500">Accepted install prompts</p>
@@ -411,6 +452,17 @@ export default async function AnalyticsDashboardPage() {
             rows={outbound.data}
             columns={[
               { key: "href", label: "Href" },
+              { key: "n", label: "Clicks", align: "right" },
+            ]}
+          />
+        </Card>
+
+        <Card title="Outbound · by source page × destination">
+          <Table
+            rows={outboundBySource.data}
+            columns={[
+              { key: "source_path", label: "Source path" },
+              { key: "href", label: "Destination" },
               { key: "n", label: "Clicks", align: "right" },
             ]}
           />
