@@ -31,6 +31,7 @@ import type { Lens } from "@/lib/types";
 import { PriceCell } from "@/components/PriceCell";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
+import { track } from "@/lib/analytics";
 
 // --- LensHeaderContent: shared inner card content ---
 
@@ -333,6 +334,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
       if (compareIds.includes(lens.id) || compareIds.length >= MAX_COMPARE) {
         return;
       }
+      track("compare_add", { lens_slug: lens.id });
       replaceCompare([...compareIds, lens.id]);
     },
     [compareIds, replaceCompare]
