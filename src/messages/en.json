@@ -13,7 +13,7 @@
   },
   "Metadata": {
     "seoTitle": "X-Glass | Fujifilm Lens Database & Comparison",
-    "seoDescription": "The Fujifilm lens database. X-mount and G-mount, first-party and every third-party brand. Normalized specs, cross-brand comparison, open data."
+    "seoDescription": "The Fujifilm lens database. X-mount and G-mount, first-party and every third-party brand. Normalized specs, cross-brand comparison."
   },
   "Nav": {
     "lenses": "Browse",
@@ -332,7 +332,7 @@
   },
   "About": {
     "pageTitle": "About",
-    "metaDescription": "The story behind X-Glass, what's covered, and where it's headed. An open-source Fujifilm lens database built by an independent engineer, focused on normalized data and cross-brand comparison.",
+    "metaDescription": "The story behind X-Glass, what's covered, and where it's headed. An independent engineer's Fujifilm lens database — open-source web code, normalized data, cross-brand comparison.",
     "backgroundTitle": "Background",
     "backgroundBody1": "The Fujifilm lens ecosystem — spanning both the X Mount (APS-C) and G Mount (medium format) systems — has grown from a handful of native options in its early days to today's landscape of dozens of brands and hundreds of lenses. Yet specs are scattered across brand websites and various platforms in inconsistent formats, making meaningful comparison a slow and frustrating exercise. X-Glass was built to pull all of that fragmented information into one place — a normalized, comparable database that lets the data speak for itself.",
     "backgroundBody2": "I'm a web front-end engineer, and X-Glass is a project I develop and maintain entirely on my own. I've always had a strong conviction and passion for building products that don't compromise on engineering quality, user experience, or aesthetic design — and that drive is one of the key forces behind why this project exists.",
