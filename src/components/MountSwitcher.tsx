@@ -8,6 +8,7 @@ import { useMountParam, useEffectiveMount } from "@/hooks/useMountParam";
 import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { mountToUrlSegment } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
+import { track } from "@/lib/analytics";
 
 
 export default function MountSwitcher() {
@@ -42,6 +43,9 @@ export default function MountSwitcher() {
   }, [open]);
 
   const handleSelect = (mount: Mount) => {
+    if (mount !== effectiveMount) {
+      track("mount_switch", { from_mount: effectiveMount, to_mount: mount });
+    }
     setPreference(mount);
     setOpen(false);
     if (urlMount !== null) {

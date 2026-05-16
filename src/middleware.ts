@@ -7,6 +7,6 @@ export const config = {
   // Exclude static files (.*\\..*), Next.js internals, API routes, and
   // App Router metadata convention routes that must stay at the root path.
   matcher: [
-    "/((?!_next|_vercel|api|icon|apple-icon|opengraph-image|.*\\..*).*)",
+    "/((?!_next|_vercel|api|admin|icon|apple-icon|opengraph-image|.*\\..*).*)",
   ],
 };

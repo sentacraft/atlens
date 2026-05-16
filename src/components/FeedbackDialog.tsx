@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { track } from "@/lib/analytics";
 
 export type FeedbackType = "data_issue" | "general";
 
@@ -167,6 +168,7 @@ export default function FeedbackDialog({
       }
 
       setStatus("success");
+      track("feedback_submit", { feedback_type: type });
     } catch (err) {
       setStatus("idle");
       const detail = err instanceof Error ? err.message : "unknown";

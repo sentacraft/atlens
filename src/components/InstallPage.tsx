@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { track } from "@/lib/analytics";
 
 // Augment the standard Event type with the non-standard Chrome prompt API.
 interface BeforeInstallPromptEvent extends Event {
@@ -81,6 +82,7 @@ export default function InstallPage() {
     const { outcome } = await promptEvent.userChoice;
     if (outcome === "accepted") {
       setPlatform("installed");
+      track("install_action");
     }
   }
 
