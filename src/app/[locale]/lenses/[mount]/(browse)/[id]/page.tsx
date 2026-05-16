@@ -26,9 +26,8 @@ import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
 import {
   lensSubtitleLine,
   lensDisplayName,
-  focalRangeDisplay,
-  primaryApertureDisplay,
   weightDisplay,
+  mfdHeroValue,
 } from "@/lib/lens.format";
 import { SPEC_NA } from "@/lib/types";
 import { PriceSection } from "@/components/PriceSection";
@@ -70,22 +69,43 @@ export async function generateMetadata({
   const isPrime = lens.focalLengthMin === lens.focalLengthMax;
   const typeLabel = isPrime ? t("metaPrime") : t("metaZoom");
 
-  const focal = focalRangeDisplay(lens.focalLengthMin, lens.focalLengthMax);
-  const aperture = primaryApertureDisplay(lens) ?? "—";
-  const weight = weightDisplay(lens.weightG, "g") ?? "—";
-
-  let description = t("metaDescPrefix", { name: displayName, mount: mountLabel, type: typeLabel });
-  description += t("metaDescSpecs", { focal, aperture, weight });
+  // Build the description from clauses the model name does NOT already contain.
+  // Focal length and max aperture are intentionally omitted — they're already
+  // in the brand+model display name (e.g. "XF 35mm F1.4 R").
+  const clauses: string[] = [];
+  const weight = weightDisplay(lens.weightG, "g");
+  if (weight) {
+    clauses.push(t("metaWeight", { value: weight }));
+  }
   if (lens.filterMm !== undefined && lens.filterMm !== SPEC_NA) {
-    description += t("metaDescFilter", { size: lens.filterMm });
+    clauses.push(t("metaFilter", { size: lens.filterMm }));
+  }
+  const mfd = mfdHeroValue(lens.minFocusDistance);
+  if (mfd) {
+    clauses.push(t("metaMfd", { value: mfd }));
+  }
+  if (lens.maxMagnification?.value !== undefined) {
+    clauses.push(t("metaMag", { value: lens.maxMagnification.value }));
+  }
+  if (lens.af && lens.focusMotor && lens.focusMotor !== SPEC_NA) {
+    clauses.push(t("metaMotor", { label: lens.focusMotor }));
+  }
+  if (lens.wr === true) {
+    clauses.push(t("metaWr"));
+  } else if (lens.wr === "partial") {
+    clauses.push(t("metaWrPartial"));
   }
   if (lens.ois) {
-    description += t("metaDescOis");
+    clauses.push(t("metaOis"));
   }
   if (!lens.af) {
-    description += t("metaDescMf");
+    clauses.push(t("metaMf"));
   }
-  description += t("metaDescPeriod");
+
+  let description = t("metaDescPrefix", { name: displayName, mount: mountLabel, type: typeLabel });
+  if (clauses.length > 0) {
+    description += t("metaJoinSpace") + clauses.join(t("metaSep")) + t("metaPeriod");
+  }
 
   return {
     title: displayName,
