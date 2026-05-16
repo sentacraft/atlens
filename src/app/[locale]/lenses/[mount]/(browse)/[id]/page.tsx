@@ -21,10 +21,10 @@ import Breadcrumb from "@/components/Breadcrumb";
 import { ACTION_OUTLINE_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
-import { buildAlternates } from "@/lib/seo";
+import { buildAlternates, lensOgImages } from "@/lib/seo";
+import { SITE } from "@/config/site";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
 import {
-  lensSubtitleLine,
   lensDisplayName,
   weightDisplay,
   mfdHeroValue,
@@ -33,6 +33,56 @@ import { SPEC_NA } from "@/lib/types";
 import { PriceSection } from "@/components/PriceSection";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
+
+type Lens = ReturnType<typeof getLensesByMount>[number];
+
+// Shared description builder so generateMetadata and the page body both emit
+// the exact same text (one feeds the SERP, the other feeds the JSON-LD).
+// Clauses are intentionally limited to facts the model name does NOT already
+// carry — see PR #210 for the rationale.
+function buildLensDescription(args: {
+  lens: Lens;
+  displayName: string;
+  mountLabel: string;
+  typeLabel: string;
+  t: (key: string, values?: Record<string, string | number>) => string;
+}): string {
+  const { lens, displayName, mountLabel, typeLabel, t } = args;
+  const clauses: string[] = [];
+  const weight = weightDisplay(lens.weightG, "g");
+  if (weight) {
+    clauses.push(t("metaWeight", { value: weight }));
+  }
+  if (lens.filterMm !== undefined && lens.filterMm !== SPEC_NA) {
+    clauses.push(t("metaFilter", { size: lens.filterMm }));
+  }
+  const mfd = mfdHeroValue(lens.minFocusDistance);
+  if (mfd) {
+    clauses.push(t("metaMfd", { value: mfd }));
+  }
+  if (lens.maxMagnification?.value !== undefined) {
+    clauses.push(t("metaMag", { value: lens.maxMagnification.value }));
+  }
+  if (lens.af && lens.focusMotor && lens.focusMotor !== SPEC_NA) {
+    clauses.push(t("metaMotor", { label: lens.focusMotor }));
+  }
+  if (lens.wr === true) {
+    clauses.push(t("metaWr"));
+  } else if (lens.wr === "partial") {
+    clauses.push(t("metaWrPartial"));
+  }
+  if (lens.ois) {
+    clauses.push(t("metaOis"));
+  }
+  if (!lens.af) {
+    clauses.push(t("metaMf"));
+  }
+  let description = t("metaDescPrefix", { name: displayName, mount: mountLabel, type: typeLabel });
+  if (clauses.length > 0) {
+    description += t("metaJoinSpace") + clauses.join(t("metaSep")) + t("metaPeriod");
+  }
+  return description;
+}
 
 // Pre-render every (locale × mount × lens id) combination at build time so the
 // detail page is served as a static HTML asset with zero per-request CPU cost.
@@ -68,50 +118,75 @@ export async function generateMetadata({
   const mountLabel = resolvedMount === "X" ? "X" : "GFX";
   const isPrime = lens.focalLengthMin === lens.focalLengthMax;
   const typeLabel = isPrime ? t("metaPrime") : t("metaZoom");
-
-  // Build the description from clauses the model name does NOT already contain.
-  // Focal length and max aperture are intentionally omitted — they're already
-  // in the brand+model display name (e.g. "XF 35mm F1.4 R").
-  const clauses: string[] = [];
-  const weight = weightDisplay(lens.weightG, "g");
-  if (weight) {
-    clauses.push(t("metaWeight", { value: weight }));
-  }
-  if (lens.filterMm !== undefined && lens.filterMm !== SPEC_NA) {
-    clauses.push(t("metaFilter", { size: lens.filterMm }));
-  }
-  const mfd = mfdHeroValue(lens.minFocusDistance);
-  if (mfd) {
-    clauses.push(t("metaMfd", { value: mfd }));
-  }
-  if (lens.maxMagnification?.value !== undefined) {
-    clauses.push(t("metaMag", { value: lens.maxMagnification.value }));
-  }
-  if (lens.af && lens.focusMotor && lens.focusMotor !== SPEC_NA) {
-    clauses.push(t("metaMotor", { label: lens.focusMotor }));
-  }
-  if (lens.wr === true) {
-    clauses.push(t("metaWr"));
-  } else if (lens.wr === "partial") {
-    clauses.push(t("metaWrPartial"));
-  }
-  if (lens.ois) {
-    clauses.push(t("metaOis"));
-  }
-  if (!lens.af) {
-    clauses.push(t("metaMf"));
-  }
-
-  let description = t("metaDescPrefix", { name: displayName, mount: mountLabel, type: typeLabel });
-  if (clauses.length > 0) {
-    description += t("metaJoinSpace") + clauses.join(t("metaSep")) + t("metaPeriod");
-  }
+  const description = buildLensDescription({ lens, displayName, mountLabel, typeLabel, t });
 
   return {
     title: displayName,
     description,
-    openGraph: { title: `${displayName} | X-Glass`, description },
+    openGraph: {
+      title: `${displayName} | X-Glass`,
+      description,
+      images: lensOgImages(lens.id),
+    },
     alternates: buildAlternates(locale, `lenses/${mount}/${id}`),
+  };
+}
+
+/**
+ * Build the Product JSON-LD payload for a lens. Emitted alongside the page so
+ * Google can render Product rich snippets (Search Console reports five
+ * impressions already landing on the snippet treatment with the previous
+ * incomplete schema — completing it should grow that share).
+ *
+ * Offers are intentionally omitted: pricing in the catalog is informational,
+ * not authoritative, and an outdated `Offer` block would let Google show
+ * stale prices in the SERP.
+ */
+function lensProductJsonLd(args: {
+  lens: ReturnType<typeof getLensesByMount>[number];
+  displayName: string;
+  description: string;
+  brandName: string;
+  mountLabel: string;
+  canonicalUrl: string;
+}) {
+  const { lens, displayName, description, brandName, mountLabel, canonicalUrl } = args;
+  const props: Array<{ "@type": "PropertyValue"; name: string; value: string | number; unitText?: string }> = [];
+  const focalRange = lens.focalLengthMin === lens.focalLengthMax
+    ? `${lens.focalLengthMin}mm`
+    : `${lens.focalLengthMin}-${lens.focalLengthMax}mm`;
+  props.push({ "@type": "PropertyValue", name: "Focal length", value: focalRange });
+  if (lens.maxAperture !== undefined) {
+    const ap = Array.isArray(lens.maxAperture)
+      ? `f/${lens.maxAperture[0]}-${lens.maxAperture[1]}`
+      : `f/${lens.maxAperture}`;
+    props.push({ "@type": "PropertyValue", name: "Max aperture", value: ap });
+  }
+  props.push({ "@type": "PropertyValue", name: "Mount", value: `Fujifilm ${mountLabel}` });
+  if (lens.weightG !== undefined && !Array.isArray(lens.weightG)) {
+    props.push({ "@type": "PropertyValue", name: "Weight", value: lens.weightG, unitText: "g" });
+  }
+  if (lens.filterMm !== undefined && lens.filterMm !== SPEC_NA) {
+    props.push({ "@type": "PropertyValue", name: "Filter thread", value: lens.filterMm, unitText: "mm" });
+  }
+  if (lens.af && lens.focusMotor && lens.focusMotor !== SPEC_NA) {
+    props.push({ "@type": "PropertyValue", name: "Focus motor", value: lens.focusMotor });
+  }
+  if (lens.ois) {
+    props.push({ "@type": "PropertyValue", name: "Optical stabilization", value: "Yes" });
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: displayName,
+    description,
+    brand: { "@type": "Brand", name: brandName },
+    image: `${SITE.url}/lenses/${lens.id}.webp`,
+    category: "Camera Lens",
+    sku: lens.id,
+    url: canonicalUrl,
+    additionalProperty: props,
   };
 }
 
@@ -182,7 +257,8 @@ function renderRowValue(
 export default async function LensDetailPage({ params }: { params: Params }) {
   const { id, locale, mount } = await params;
   setRequestLocale(locale);
-  const lenses = getLensesByMount(urlSegmentToMount(mount) ?? "X", locale);
+  const resolvedMount = urlSegmentToMount(mount) ?? "X";
+  const lenses = getLensesByMount(resolvedMount, locale);
   const lens = lenses.find((l) => l.id === id);
 
   if (!lens) {
@@ -193,6 +269,23 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const tBrand = await getTranslations("Brands");
   const tPricing = await getTranslations("Pricing");
   const url = getLensUrl(lens, locale);
+
+  // Derived values shared between the visible header and the Product JSON-LD.
+  const brandName = tBrand(lens.brand);
+  const displayName = lensDisplayName(brandName, lens.series, lens.model, lens.brand);
+  const mountLabel = resolvedMount === "X" ? "X" : "GFX";
+  const isPrime = lens.focalLengthMin === lens.focalLengthMax;
+  const typeLabel = isPrime ? t("metaPrime") : t("metaZoom");
+  const description = buildLensDescription({ lens, displayName, mountLabel, typeLabel, t });
+  const canonicalUrl = `${SITE.url}/${locale}/lenses/${mount}/${id}`;
+  const productSchema = lensProductJsonLd({
+    lens,
+    displayName,
+    description,
+    brandName,
+    mountLabel,
+    canonicalUrl,
+  });
 
   const specGroups = buildSpecGroups({
     groupOptics: t("groupOptics"),
@@ -293,6 +386,15 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
   return (
     <>
+    {/* Product structured data — earns this page eligibility for Google's
+        Product rich result treatment. Emitted as a JSON-LD script tag inside
+        the page body (acceptable per schema.org guidance) so it ships in the
+        SSR HTML alongside the rest of the page. */}
+    <script
+      type="application/ld+json"
+      // JSON.stringify is safe — no user-controlled fields are included.
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+    />
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col gap-8">
       <Breadcrumb />
       {/* Header: image + key info side by side */}
@@ -322,13 +424,13 @@ export default async function LensDetailPage({ params }: { params: Params }) {
             (small desktop / portrait tablet), avoiding the 4-button row
             wrapping into 2 rows. */}
         <div className="@container flex-1 flex flex-col gap-5">
-          {/* Title */}
+          {/* Title — h1 carries the full display name (brand + optional
+              series + model) so brand-and-model search queries match the
+              page's primary heading. The previous subtitle line above the h1
+              was just the brand+series prefix and is now redundant. */}
           <div>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              {lensSubtitleLine(tBrand(lens.brand), lens.series)}
-            </p>
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mt-1 font-heading">
-              {lens.model}
+            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 font-heading">
+              {displayName}
             </h1>
           </div>
 

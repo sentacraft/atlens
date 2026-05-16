@@ -9,7 +9,7 @@ import CompareTelemetry from "@/components/telemetry/CompareTelemetry";
 import CuratedComparisons from "@/components/CuratedComparisons";
 import BackToTopButton from "@/components/BackToTopButton";
 import Breadcrumb from "@/components/Breadcrumb";
-import { buildAlternates } from "@/lib/seo";
+import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { lensDisplayName } from "@/lib/lens.format";
 import { notFound } from "next/navigation";
 
@@ -55,7 +55,11 @@ export async function generateMetadata({
     return {
       title,
       description: emptyDescription,
-      openGraph: { title: `${title} | X-Glass`, description: emptyDescription },
+      openGraph: {
+        title: `${title} | X-Glass`,
+        description: emptyDescription,
+        images: defaultOgImages(),
+      },
       alternates,
     };
   }
@@ -64,7 +68,11 @@ export async function generateMetadata({
     return {
       title: emptyTitle,
       description: emptyDescription,
-      openGraph: { title: `${emptyTitle} | X-Glass`, description: emptyDescription },
+      openGraph: {
+        title: `${emptyTitle} | X-Glass`,
+        description: emptyDescription,
+        images: defaultOgImages(),
+      },
       alternates,
     };
   }
@@ -76,7 +84,11 @@ export async function generateMetadata({
   return {
     title,
     description,
-    openGraph: { title: `${title} | X-Glass`, description },
+    openGraph: {
+      title: `${title} | X-Glass`,
+      description,
+      images: defaultOgImages(),
+    },
     alternates,
   };
 }
