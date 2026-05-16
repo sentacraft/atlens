@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown, SlidersHorizontal } from "lucide-react";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
@@ -12,7 +12,7 @@ import FeatureToggleGroup from "./lens-filters/FeatureToggleGroup";
 import FilterRow from "./lens-filters/FilterRow";
 import MultiSelectChipGroup from "./lens-filters/MultiSelectChipGroup";
 import TypeSegmentedControl from "./lens-filters/TypeSegmentedControl";
-import { track } from "@/lib/analytics";
+import { useFiltersTelemetry } from "./LensFilters.telemetry";
 
 interface Props {
   filters: FilterState;
@@ -31,29 +31,7 @@ export default function LensFilters({
   const tBrand = useTranslations("Brands");
   const [secondaryOpen, setSecondaryOpen] = useState(false);
 
-  const firstFilterRenderRef = useRef(true);
-  useEffect(() => {
-    if (firstFilterRenderRef.current) {
-      firstFilterRenderRef.current = false;
-      return;
-    }
-    const isEmpty =
-      filters.brands.length === 0 &&
-      filters.focalCategories.length === 0 &&
-      filters.features.length === 0 &&
-      filters.typeFilter === null &&
-      filters.focusFilter === null &&
-      filters.specialtyTag === null &&
-      filters.focusMotorClass === null;
-    const timer = setTimeout(() => {
-      if (isEmpty) {
-        track("filter_reset");
-      } else {
-        track("filter_apply", { filters_json: JSON.stringify(filters) });
-      }
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [filters]);
+  useFiltersTelemetry(filters);
 
   const featureMeta = {
     ois: { label: t("featureOis"), icon: FEATURE_ICONS.ois },
