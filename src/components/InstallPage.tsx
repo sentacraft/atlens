@@ -103,9 +103,9 @@ export default function InstallPage() {
 
       {platform === "installed" && (
         <div className="max-w-xs">
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
             {t("installedTitle")}
-          </h1>
+          </h2>
           <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">{t("installedBody")}</p>
           <Link
             href="/lenses/x"
@@ -118,9 +118,9 @@ export default function InstallPage() {
 
       {platform === "prompt" && (
         <div className="max-w-xs">
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
             {t("promptTitle")}
-          </h1>
+          </h2>
           <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">{t("promptBody")}</p>
           <button
             onClick={handleInstall}
@@ -133,9 +133,9 @@ export default function InstallPage() {
 
       {platform === "ios" && (
         <div className="max-w-xs w-full">
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
             {t("iosTitle")}
-          </h1>
+          </h2>
           <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">{t("iosSubtitle")}</p>
           <ol className="mt-6 space-y-3 text-left">
             {IOS_STEPS.map((key, i) => (
@@ -155,9 +155,9 @@ export default function InstallPage() {
 
       {platform === "macos-safari" && (
         <div className="max-w-xs w-full">
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
             {t("macosTitle")}
-          </h1>
+          </h2>
           <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">{t("macosSubtitle")}</p>
           <ol className="mt-6 space-y-3 text-left">
             {MACOS_STEPS.map((key, i) => (
@@ -177,9 +177,9 @@ export default function InstallPage() {
 
       {platform === "generic" && (
         <div className="max-w-xs">
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
             {t("genericTitle")}
-          </h1>
+          </h2>
           <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">{t("genericBody")}</p>
         </div>
       )}

@@ -13,7 +13,7 @@
   },
   "Metadata": {
     "seoTitle": "X-Glass | 富士 X / G 卡口镜头图鉴",
-    "seoDescription": "富士党的镜头图鉴。覆盖 X 卡口与 G 卡口、原厂与所有副厂镜头，规格统一标准，跨品牌横向对比。"
+    "seoDescription": "富士党的镜头图鉴。覆盖 X 卡口与 G 卡口、原厂与主流副厂镜头，规格统一标准，跨品牌横向对比。"
   },
   "Nav": {
     "lenses": "镜头库",
@@ -138,11 +138,18 @@
   },
   "LensDetail": {
     "metaDescPrefix": "{name} 富士 {mount} 卡口{type}镜头规格、参数与横向对比。",
-    "metaDescSpecs": "焦段 {focal}，最大光圈 {aperture}，重量 {weight}",
-    "metaDescFilter": "，滤镜口径 ⌀{size}mm",
-    "metaDescOis": "，光学防抖",
-    "metaDescMf": "，手动对焦",
-    "metaDescPeriod": "。",
+    "metaJoinSpace": "",
+    "metaSep": "，",
+    "metaPeriod": "。",
+    "metaWeight": "重量 {value}",
+    "metaFilter": "滤镜口径 ⌀{size}mm",
+    "metaMfd": "最近对焦 {value}",
+    "metaMag": "最大放大倍率 {value}×",
+    "metaMotor": "{label} 对焦",
+    "metaWr": "防滴防尘",
+    "metaWrPartial": "部分防滴防尘",
+    "metaOis": "光学防抖",
+    "metaMf": "手动对焦",
     "metaPrime": "定焦",
     "metaZoom": "变焦",
     "groupOptics": "光学",
@@ -332,7 +339,7 @@
   },
   "About": {
     "pageTitle": "关于",
-    "metaDescription": "X-Glass 项目缘起、收录范围与开发计划。一个独立工程师开发的富士镜头图鉴，Web 代码开源，聚焦规范化数据与跨品牌对比。",
+    "metaDescription": "X-Glass 项目缘起、维护者，以及富士 X / GFX 卡口的镜头收录情况。由独立工程师独立开发与维护，Web 代码开源。",
     "backgroundTitle": "项目缘起",
     "backgroundBody1": "富士的镜头生态——涵盖 X 卡口（APS-C）与 G 卡口（中画幅）两套系统——已经从早年的原厂主导，成长为如今数十个品牌、上百颗镜头并存的繁荣局面。然而，镜头参数散落在各品牌官网与各类平台之间，格式不一，横向对比极其低效。X-Glass 的初衷，正是把这些碎片化的信息汇聚到一处，建立一个规范化、可横向对比的数据库，让选镜头这件事回归客观数据本身。",
     "backgroundBody2": "我是一名 Web 前端工程师，X-Glass 目前完全由我一人开发并维护。对打造一个在工程质量，用户体验和美学设计上都不妥协的产品，我一直有很强的执念与热情——这份热情，同样是这个项目得以实现的重要驱动力之一。",
@@ -449,7 +456,7 @@
   },
   "Install": {
     "pageTitle": "安装应用",
-    "metaDescription": "把 X-Glass 装到手机或桌面，像 App 一样打开，支持离线查阅富士镜头参数与对比。",
+    "metaDescription": "把 X-Glass 装到手机主屏或电脑桌面，像 App 一样打开，离线也能用。",
     "headline": "将 X-Glass 添加到主屏幕",
     "subheadline": "像 App 一样打开，全屏体验，支持离线使用。",
     "installedTitle": "已完成安装",

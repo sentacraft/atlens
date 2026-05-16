@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import AboutContent from "@/components/AboutContent";
 import BackToTopButton from "@/components/BackToTopButton";
-import { buildAlternates } from "@/lib/seo";
+import { buildAlternates, defaultOgImages } from "@/lib/seo";
 
 type Params = Promise<{ locale: string }>;
 
@@ -18,7 +18,11 @@ export async function generateMetadata({
   return {
     title,
     description,
-    openGraph: { title: `${title} | X-Glass`, description },
+    openGraph: {
+      title: `${title} | X-Glass`,
+      description,
+      images: defaultOgImages(),
+    },
     alternates: buildAlternates(locale, "about"),
   };
 }
