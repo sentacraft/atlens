@@ -79,7 +79,7 @@ function sanitizeProps(raw: unknown): EventProps {
       out[key] = v.slice(0, MAX_STRING_LEN);
     }
   }
-  for (const key of ["results_count", "lens_count", "depth_pct", "seconds"] as const) {
+  for (const key of ["results_count", "lens_count", "depth_pct"] as const) {
     const v = o[key];
     if (typeof v === "number" && Number.isFinite(v)) {
       out[key] = v;

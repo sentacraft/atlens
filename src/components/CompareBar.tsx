@@ -20,7 +20,6 @@ import { cn } from "@/lib/utils";
 import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/lib/ui-tokens";
 import { Z } from "@/config/ui";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
-import { track } from "@/lib/analytics";
 
 export default function CompareBar() {
   const t = useTranslations("LensList");
@@ -29,18 +28,14 @@ export default function CompareBar() {
   const router = useRouter();
   const locale = useLocale();
   const mount = useEffectiveMount();
-  const { compareIds, toggleCompare, replaceCompare } = useMountedCompare();
+  const { compareIds, toggleCompare, addToCompare } = useMountedCompare();
   const clearCompareWithUndo = useClearCompareWithUndo();
 
   const handleAddLens = useCallback(
     (lens: Lens) => {
-      if (compareIds.includes(lens.id) || compareIds.length >= MAX_COMPARE) {
-        return;
-      }
-      track("compare_add", { lens_slug: lens.id });
-      replaceCompare([...compareIds, lens.id]);
+      addToCompare(lens.id);
     },
-    [compareIds, replaceCompare]
+    [addToCompare]
   );
 
   const getAddResultState = useCallback(

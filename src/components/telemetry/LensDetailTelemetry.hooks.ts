@@ -7,19 +7,18 @@ const SCROLL_MILESTONES = [50, 90] as const;
 
 // `lens_view`: fires once per slug on mount, with referrer attached so the
 // dashboard can later answer "where do detail-page visits come from?".
-export function useLensViewTelemetry(lensSlug: string, enteredAtRef: React.MutableRefObject<number>) {
+export function useLensViewTelemetry(lensSlug: string) {
   const firedRef = useRef(false);
   useEffect(() => {
     if (firedRef.current) {
       return;
     }
     firedRef.current = true;
-    enteredAtRef.current = Date.now();
     track("lens_view", {
       lens_slug: lensSlug,
       referrer: typeof document !== "undefined" ? document.referrer.slice(0, 256) : undefined,
     });
-  }, [lensSlug, enteredAtRef]);
+  }, [lensSlug]);
 }
 
 // `lens_scroll`: fires at 50% and 90% scroll depth, once each per mount.
@@ -47,32 +46,4 @@ export function useLensScrollTelemetry(lensSlug: string) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [lensSlug]);
-}
-
-// `lens_dwell`: fires on tab-hide or pagehide, once per mount, with seconds
-// spent on the page. `pagehide` is needed because `visibilitychange` doesn't
-// fire reliably on iOS Safari navigation away.
-export function useLensDwellTelemetry(lensSlug: string, enteredAtRef: React.MutableRefObject<number>) {
-  const firedRef = useRef(false);
-  useEffect(() => {
-    function fireDwell() {
-      if (firedRef.current) {
-        return;
-      }
-      firedRef.current = true;
-      const seconds = Math.round((Date.now() - enteredAtRef.current) / 1000);
-      track("lens_dwell", { lens_slug: lensSlug, seconds });
-    }
-    function onVisibilityChange() {
-      if (document.visibilityState === "hidden") {
-        fireDwell();
-      }
-    }
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    window.addEventListener("pagehide", fireDwell);
-    return () => {
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-      window.removeEventListener("pagehide", fireDwell);
-    };
-  }, [lensSlug, enteredAtRef]);
 }

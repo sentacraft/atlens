@@ -31,7 +31,6 @@ import type { Lens } from "@/lib/types";
 import { PriceCell } from "@/components/PriceCell";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
-import { track } from "@/lib/analytics";
 
 // --- LensHeaderContent: shared inner card content ---
 
@@ -295,7 +294,8 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const locale = useLocale();
   const priceFieldLabel = tPricing("fieldLabel");
   const priceGroupLabel = tPricing("groupLabel");
-  const { compareIds, replaceCompare } = useMountedCompare();
+  const { compareIds, addToCompare, removeFromCompare, reorderCompare, seedCompare } =
+    useMountedCompare();
   // Compare page is the only surface that projects compare state onto the
   // URL. This hook owns that projection so individual write callsites no
   // longer need to know about address-bar bookkeeping.
@@ -319,8 +319,8 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   // preset link click that re-renders the server component with new
   // searchParams).
   useLayoutEffect(() => {
-    replaceCompare(initialLensIds);
-  }, [initialLensIds, replaceCompare]);
+    seedCompare(initialLensIds);
+  }, [initialLensIds, seedCompare]);
 
   const orderedLenses = compareIds
     .map((id) => getLensesByMount(mount, locale).find((lens) => lens.id === id))
@@ -331,13 +331,9 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
 
   const handleAddLens = useCallback(
     (lens: Lens) => {
-      if (compareIds.includes(lens.id) || compareIds.length >= MAX_COMPARE) {
-        return;
-      }
-      track("compare_add", { lens_slug: lens.id });
-      replaceCompare([...compareIds, lens.id]);
+      addToCompare(lens.id);
     },
-    [compareIds, replaceCompare]
+    [addToCompare]
   );
 
   const getAddResultState = useCallback(
@@ -362,7 +358,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   };
 
   function handleRemoveLens(lensId: string) {
-    replaceCompare(compareIds.filter((id) => id !== lensId));
+    removeFromCompare(lensId);
   }
 
   function handleShiftLens(lensId: string, direction: -1 | 1) {
@@ -373,7 +369,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
     }
     const next = [...compareIds];
     [next[index], next[newIndex]] = [next[newIndex], next[index]];
-    replaceCompare(next);
+    reorderCompare(next);
   }
 
   const allGroups = useMemo(
