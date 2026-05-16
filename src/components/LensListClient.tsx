@@ -34,6 +34,7 @@ import LensCard from "./LensCard";
 import LensFilters from "./LensFilters";
 import LensSearchDialog from "./LensSearchDialog";
 import FeedbackTrigger from "./FeedbackTrigger";
+import { track } from "@/lib/analytics";
 
 interface Props {
   lenses: Lens[];
@@ -223,7 +224,12 @@ export default function LensListClient({ lenses }: Props) {
                   lens={lens}
                   isSelected={compareIds.includes(lens.id)}
                   selectionDisabled={!canToggle(lens.id)}
-                  onToggle={() => toggleCompare(lens.id)}
+                  onToggle={() => {
+                    if (!compareIds.includes(lens.id)) {
+                      track("compare_add", { lens_slug: lens.id });
+                    }
+                    toggleCompare(lens.id);
+                  }}
                   priority={i < 8}
                 />
               ))}
