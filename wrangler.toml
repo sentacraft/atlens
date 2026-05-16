@@ -15,6 +15,10 @@ SITE_URL = "https://xglass.sentacraft.com"
 GITHUB_FEEDBACK_REPO = "sentacraft/x-glass-pipeline"
 GITHUB_FEEDBACK_ASSIGNEES = "sentacraft"
 
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "xglass_events"
+
 [observability]
 enabled = false
 head_sampling_rate = 1

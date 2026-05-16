@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import RegisterSW from "@/components/RegisterSW";
 import AssetTelemetry from "@/components/AssetTelemetry";
+import OutboundLinkTelemetry from "@/components/telemetry/OutboundLinkTelemetry";
 import SiteJsonLd from "@/components/SiteJsonLd";
 import { routing } from "@/i18n/routing";
 import Nav from "@/components/Nav";
@@ -174,6 +175,7 @@ export default async function LocaleLayout({
         </NextIntlClientProvider>
         <RegisterSW />
         <AssetTelemetry />
+        <OutboundLinkTelemetry />
       </body>
     </html>
   );

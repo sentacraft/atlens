@@ -6,6 +6,7 @@ import FeedbackDialog, {
   type FeedbackField,
   type FeedbackType,
 } from "./FeedbackDialog";
+import { track } from "@/lib/analytics";
 
 interface FeedbackTriggerProps {
   type: FeedbackType;
@@ -34,6 +35,7 @@ export default function FeedbackTrigger({
           if (stopPropagation) {
             e.stopPropagation();
           }
+          track("feedback_open", { feedback_type: type });
           setOpen(true);
         }}
         onPointerDown={(e) => {

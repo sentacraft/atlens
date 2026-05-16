@@ -46,10 +46,12 @@ yarn-error.log*
 
 # cloudflare / opennextjs build artifacts
 /.open-next/
+/.wrangler/
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+worker-configuration.d.ts
 
 # coding agents
 .agents/

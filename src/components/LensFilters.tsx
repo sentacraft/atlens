@@ -12,6 +12,7 @@ import FeatureToggleGroup from "./lens-filters/FeatureToggleGroup";
 import FilterRow from "./lens-filters/FilterRow";
 import MultiSelectChipGroup from "./lens-filters/MultiSelectChipGroup";
 import TypeSegmentedControl from "./lens-filters/TypeSegmentedControl";
+import { useFiltersTelemetry } from "./LensFilters.telemetry";
 
 interface Props {
   filters: FilterState;
@@ -29,6 +30,8 @@ export default function LensFilters({
   const t = useTranslations("LensList");
   const tBrand = useTranslations("Brands");
   const [secondaryOpen, setSecondaryOpen] = useState(false);
+
+  useFiltersTelemetry(filters);
 
   const featureMeta = {
     ois: { label: t("featureOis"), icon: FEATURE_ICONS.ois },

@@ -20,6 +20,7 @@ import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { lensSubtitleLine } from "@/lib/lens.format";
+import { useSearchTelemetry } from "./LensSearchDialog.telemetry";
 import {
   Dialog,
   DialogContent,
@@ -104,6 +105,8 @@ export default function LensSearchDialog({
     () => searchLensIndex(lensSearchIndex, deferredQuery),
     [deferredQuery]
   );
+
+  useSearchTelemetry({ query: deferredQuery, resultsCount: results.length, isOpen: open });
 
   function handleSelect(lens: Lens) {
     setOpen(false);

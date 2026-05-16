@@ -7,6 +7,7 @@ import LensSearchDialog from "@/components/LensSearchDialog";
 import { MAX_COMPARE } from "@/lib/lens";
 import { useMountedCompare } from "@/context/CompareProvider";
 import type { Lens } from "@/lib/types";
+import { track } from "@/lib/analytics";
 
 interface Props {
   triggerClassName?: string;
@@ -23,6 +24,7 @@ export default function CompareAddLensButton({ triggerClassName }: Props) {
       if (compareIds.includes(lens.id) || compareIds.length >= MAX_COMPARE) {
         return;
       }
+      track("compare_add", { lens_slug: lens.id });
       replaceCompare([...compareIds, lens.id]);
     },
     [compareIds, replaceCompare]

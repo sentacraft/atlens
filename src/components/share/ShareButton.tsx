@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { Z } from "@/config/ui";
 import type { Lens } from "@/lib/types";
 import { rasterizePoster } from "@/lib/share-image";
+import { track } from "@/lib/analytics";
 import { SharePoster, type PosterLabels } from "@/components/poster/SharePoster";
 import { useShareCapabilities } from "@/hooks/useShareCapabilities";
 import { useLightbox } from "@/hooks/useLightbox";
@@ -139,6 +140,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       await navigator.clipboard.writeText(window.location.href);
       setCopyFailed(false);
       setCopied(true);
+      track("share_action", { method: "copy_link" });
       setTimeout(() => setCopied(false), 2000);
     } catch {
       setCopied(false);
@@ -159,6 +161,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
         // title: effectiveTitle.trim() || computedPosterTitle.join(" · "),
         text: `${cta}\n👉 ${pageUrl}`,
       });
+      track("share_action", { method: "native" });
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;
       toast.error(t("shareFailed"));
@@ -174,6 +177,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       link.download = `x-glass_${slugRef.current}.png`;
       link.href = url;
       link.click();
+      track("share_action", { method: "poster_download" });
     } catch (e) {
       console.error(e);
     } finally {
@@ -206,6 +210,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
         // TODO: debug title/url fields across platforms before re-enabling
         text,
       });
+      track("share_action", { method: "poster_share" });
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;
       if (blobUrl) {

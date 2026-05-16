@@ -1,7 +1,12 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+
+// Wire wrangler-style bindings into `next dev` so Analytics Engine writes
+// don't silently no-op locally. Reads bindings from wrangler.toml.
+initOpenNextCloudflareForDev();
 
 const nextConfig: NextConfig = {
   // Pin Turbopack's workspace root to the directory `next dev` was launched
