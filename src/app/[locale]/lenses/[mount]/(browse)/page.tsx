@@ -17,8 +17,27 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, mount } = await params;
   const t = await getTranslations({ locale, namespace: "LensList" });
+  const resolvedMount = urlSegmentToMount(mount);
+
+  if (!resolvedMount) {
+    return {
+      title: t("title"),
+      alternates: buildAlternates(locale, `lenses/${mount}`),
+    };
+  }
+
+  const lenses = getLensesByMount(resolvedMount, locale);
+  const brandCount = new Set(lenses.map((l) => l.brand)).size;
+  const title = resolvedMount === "X" ? t("metaTitleX") : t("metaTitleG");
+  const description =
+    resolvedMount === "X"
+      ? t("metaDescX", { count: lenses.length, brandCount })
+      : t("metaDescG", { count: lenses.length });
+
   return {
-    title: t("title"),
+    title,
+    description,
+    openGraph: { title: `${title} | X-Glass`, description },
     alternates: buildAlternates(locale, `lenses/${mount}`),
   };
 }

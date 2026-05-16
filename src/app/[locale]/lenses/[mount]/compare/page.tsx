@@ -10,6 +10,7 @@ import CuratedComparisons from "@/components/CuratedComparisons";
 import BackToTopButton from "@/components/BackToTopButton";
 import Breadcrumb from "@/components/Breadcrumb";
 import { buildAlternates } from "@/lib/seo";
+import { lensDisplayName } from "@/lib/lens.format";
 import { notFound } from "next/navigation";
 
 // Compare page depends on ?ids=A,B,C searchParams for server-rendered metadata
@@ -30,9 +31,10 @@ export async function generateMetadata({
   params: Params;
   searchParams: SearchParams;
 }): Promise<Metadata> {
-  const t = await getTranslations("Compare");
   const { locale, mount } = await params;
   const { ids } = await searchParams;
+  const t = await getTranslations({ locale, namespace: "Compare" });
+  const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const resolvedMount = urlSegmentToMount(mount);
   if (!resolvedMount) {
     return { title: t("title") };
@@ -40,6 +42,8 @@ export async function generateMetadata({
 
   const lenses = parseLensIds(ids, resolvedMount, locale);
   const alternates = buildAlternates(locale, `lenses/${mount}/compare`);
+  const emptyTitle = resolvedMount === "X" ? t("metaTitleX") : t("metaTitleG");
+  const emptyDescription = resolvedMount === "X" ? t("metaDescX") : t("metaDescG");
 
   // Reverse-derive the curated preset, if any, from the URL's ids.
   // Lets shared `?ids=...` links render with the curated framing in SEO /
@@ -48,17 +52,31 @@ export async function generateMetadata({
   if (matchedPreset) {
     const lang = locale === "zh" ? "zh" : "en";
     const title = matchedPreset.title[lang];
-    return { title, openGraph: { title: `${title} | X-Glass` }, alternates };
+    return {
+      title,
+      description: emptyDescription,
+      openGraph: { title: `${title} | X-Glass`, description: emptyDescription },
+      alternates,
+    };
   }
 
   if (lenses.length < 2) {
-    return { title: t("title"), alternates };
+    return {
+      title: emptyTitle,
+      description: emptyDescription,
+      openGraph: { title: `${emptyTitle} | X-Glass`, description: emptyDescription },
+      alternates,
+    };
   }
 
-  const title = lenses.map((l) => l.model).join(" vs ");
+  const title = lenses
+    .map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand))
+    .join(" vs ");
+  const description = t("metaDescCustom", { count: lenses.length });
   return {
     title,
-    openGraph: { title: `${title} | X-Glass` },
+    description,
+    openGraph: { title: `${title} | X-Glass`, description },
     alternates,
   };
 }
