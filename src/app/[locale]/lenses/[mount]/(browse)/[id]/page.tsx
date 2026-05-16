@@ -23,7 +23,14 @@ import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates } from "@/lib/seo";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
-import { lensSubtitleLine } from "@/lib/lens.format";
+import {
+  lensSubtitleLine,
+  lensDisplayName,
+  focalRangeDisplay,
+  primaryApertureDisplay,
+  weightDisplay,
+} from "@/lib/lens.format";
+import { SPEC_NA } from "@/lib/types";
 import { PriceSection } from "@/components/PriceSection";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
@@ -48,15 +55,42 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { locale, mount, id } = await params;
-  const t = await getTranslations("LensDetail");
-  const lenses = getLensesByMount(urlSegmentToMount(mount) ?? "X", locale);
+  const resolvedMount = urlSegmentToMount(mount) ?? "X";
+  const t = await getTranslations({ locale, namespace: "LensDetail" });
+  const tBrand = await getTranslations({ locale, namespace: "Brands" });
+  const lenses = getLensesByMount(resolvedMount, locale);
   const lens = lenses.find((l) => l.id === id);
   if (!lens) {
     return { title: t("notFoundTitle") };
   }
+
+  const brandName = tBrand(lens.brand);
+  const displayName = lensDisplayName(brandName, lens.series, lens.model, lens.brand);
+  const mountLabel = resolvedMount === "X" ? "X" : "GFX";
+  const isPrime = lens.focalLengthMin === lens.focalLengthMax;
+  const typeLabel = isPrime ? t("metaPrime") : t("metaZoom");
+
+  const focal = focalRangeDisplay(lens.focalLengthMin, lens.focalLengthMax);
+  const aperture = primaryApertureDisplay(lens) ?? "—";
+  const weight = weightDisplay(lens.weightG, "g") ?? "—";
+
+  let description = t("metaDescPrefix", { name: displayName, mount: mountLabel, type: typeLabel });
+  description += t("metaDescSpecs", { focal, aperture, weight });
+  if (lens.filterMm !== undefined && lens.filterMm !== SPEC_NA) {
+    description += t("metaDescFilter", { size: lens.filterMm });
+  }
+  if (lens.ois) {
+    description += t("metaDescOis");
+  }
+  if (!lens.af) {
+    description += t("metaDescMf");
+  }
+  description += t("metaDescPeriod");
+
   return {
-    title: lens.model,
-    openGraph: { title: `${lens.model} | X-Glass` },
+    title: displayName,
+    description,
+    openGraph: { title: `${displayName} | X-Glass`, description },
     alternates: buildAlternates(locale, `lenses/${mount}/${id}`),
   };
 }

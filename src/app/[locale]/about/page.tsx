@@ -13,7 +13,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "About" });
-  return { title: t("pageTitle"), alternates: buildAlternates(locale, "about") };
+  const title = t("pageTitle");
+  const description = t("metaDescription");
+  return {
+    title,
+    description,
+    openGraph: { title: `${title} | X-Glass`, description },
+    alternates: buildAlternates(locale, "about"),
+  };
 }
 
 export default async function AboutPage({ params }: { params: Params }) {
