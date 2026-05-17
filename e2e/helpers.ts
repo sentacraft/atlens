@@ -1,10 +1,22 @@
 import type { Page } from "@playwright/test";
 
-const MOBILE_VIEWPORT_BREAKPOINT = 640;
+// Source of truth for breakpoints is the Tailwind theme, which exposes each
+// breakpoint as a CSS custom property (e.g. --breakpoint-sm: 40rem) on :root.
+// See src/hooks/useBreakpoint.ts for the in-component equivalent.
+async function isBelowBreakpoint(page: Page, bp: "sm" | "md" | "lg" | "xl" | "2xl"): Promise<boolean> {
+  return page.evaluate((name) => {
+    const value = getComputedStyle(document.documentElement)
+      .getPropertyValue(`--breakpoint-${name}`)
+      .trim();
+    if (!value) {
+      return false;
+    }
+    return !window.matchMedia(`(min-width: ${value})`).matches;
+  }, bp);
+}
 
 export async function selectBrandFilter(page: Page, brandName: string) {
-  const viewport = page.viewportSize();
-  const isMobile = viewport != null && viewport.width < MOBILE_VIEWPORT_BREAKPOINT;
+  const isMobile = await isBelowBreakpoint(page, "sm");
 
   if (isMobile) {
     await page.getByRole("button", { name: /^Brand/ }).click();
