@@ -244,6 +244,31 @@ describe("searchLenses — focal & aperture tokens", () => {
     expect(results[0]?.id).toBe("sigma-18-50-28");
   });
 
+  it("'1850' (no-hyphen zoom range) matches the 18-50 zoom", () => {
+    const results = searchLenses(lenses, "1850");
+    expect(results[0]?.id).toBe("sigma-18-50-28");
+  });
+
+  it("'100400' (no-hyphen zoom range) matches both 100-400 zooms", () => {
+    const ids = searchLenses(lenses, "100400").map((l) => l.id);
+    expect(ids).toContain("fuji-xf100-400");
+    expect(ids).toContain("sigma-100-400");
+  });
+
+  it("'185' (prefix of no-hyphen zoom range) matches the 18-50 zoom", () => {
+    const ids = searchLenses(lenses, "185").map((l) => l.id);
+    expect(ids).toContain("sigma-18-50-28");
+  });
+
+  it("synthetic focal range does not steal the top slot from prime focal matches", () => {
+    // "50" should still rank the 50mm-side of the prime/zoom universe by
+    // its real model token, not via the new synthetic "1850" includes hit.
+    const results = searchLenses(lenses, "50");
+    // sigma-18-50 has "50mm" word-prefix match (450); should rank above any
+    // includes-only hit on the synthetic token, and not below unrelated lenses.
+    expect(results[0]?.id).toBe("sigma-18-50-28");
+  });
+
   it("'f2.8' matches lenses with maxAperture 2.8", () => {
     const results = searchLenses(lenses, "f2.8");
     const ids = results.map((l) => l.id);
