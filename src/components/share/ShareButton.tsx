@@ -72,7 +72,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
 
   // Keep shareUrl and slug in sync when panel opens
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      return;
+    }
     setShareUrl(window.location.href);
     slugRef.current = lenses
       .map((l) => l.model.replace(/\s+/g, "-").toLowerCase())
@@ -163,13 +165,17 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       });
       track("share_action", { method: "native" });
     } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") return;
+      if (err instanceof Error && err.name === "AbortError") {
+        return;
+      }
       toast.error(t("shareFailed"));
     }
   }, [lenses, t]);
 
   const handleDownload = useCallback(async () => {
-    if (!posterRef.current) return;
+    if (!posterRef.current) {
+      return;
+    }
     setPosterGenerating(true);
     try {
       const url = await rasterizePoster(posterRef.current);
@@ -186,7 +192,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   }, []);
 
   const handleShareImage = useCallback(async () => {
-    if (!posterRef.current) return;
+    if (!posterRef.current) {
+      return;
+    }
     const posterTitle = effectiveTitle.trim() || computedPosterTitle.join(" · ");
     const isSingle = lenses.length === 1;
     const cta = isSingle
@@ -212,7 +220,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       });
       track("share_action", { method: "poster_share" });
     } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") return;
+      if (err instanceof Error && err.name === "AbortError") {
+        return;
+      }
       if (blobUrl) {
         // Share API failed but poster was generated — fall back to download
         const link = document.createElement("a");

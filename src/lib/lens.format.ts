@@ -235,7 +235,9 @@ export function lensDisplayName(
   model: string,
   brandKey?: string
 ): string {
-  if (!series || brandKey === "fujifilm") return `${brandName} ${model}`;
+  if (!series || brandKey === "fujifilm") {
+    return `${brandName} ${model}`;
+  }
   return `${brandName} ${series} ${model}`;
 }
 
@@ -295,7 +297,9 @@ function effectiveMfdMode(mfd: MinFocusDistance): MinFocusDistance["normal"] {
 }
 
 export function mfdHeroValue(mfd: MinFocusDistance | undefined): string | undefined {
-  if (!mfd) return undefined;
+  if (!mfd) {
+    return undefined;
+  }
   const mode = effectiveMfdMode(mfd);
   if (mode.teleCm !== undefined) {
     return `${Math.min(mode.cm, mode.teleCm)}cm`;
@@ -307,9 +311,13 @@ export function mfdHeroQualifier(
   mfd: MinFocusDistance | undefined,
   labels: { wide: string; tele: string }
 ): string | undefined {
-  if (!mfd) return undefined;
+  if (!mfd) {
+    return undefined;
+  }
   const mode = effectiveMfdMode(mfd);
-  if (mode.teleCm === undefined || mode.cm === mode.teleCm) return undefined;
+  if (mode.teleCm === undefined || mode.cm === mode.teleCm) {
+    return undefined;
+  }
   return mode.cm <= mode.teleCm ? labels.wide : labels.tele;
 }
 
@@ -317,9 +325,13 @@ export function mfdStructuredLines(
   mfd: MinFocusDistance | undefined,
   labels: { wide: string; tele: string }
 ): Array<{ value: string; label: string }> | undefined {
-  if (!mfd) return undefined;
+  if (!mfd) {
+    return undefined;
+  }
   const mode = effectiveMfdMode(mfd);
-  if (mode.teleCm === undefined) return undefined;
+  if (mode.teleCm === undefined) {
+    return undefined;
+  }
   return [
     { value: `${mode.cm}cm`, label: labels.wide },
     { value: `${mode.teleCm}cm`, label: labels.tele },
@@ -327,7 +339,9 @@ export function mfdStructuredLines(
 }
 
 export function mfdComparable(mfd: MinFocusDistance | undefined): number | undefined {
-  if (!mfd) return undefined;
+  if (!mfd) {
+    return undefined;
+  }
   const mode = effectiveMfdMode(mfd);
   return mode.teleCm !== undefined ? Math.min(mode.cm, mode.teleCm) : mode.cm;
 }

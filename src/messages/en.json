@@ -13,7 +13,7 @@
   },
   "Metadata": {
     "seoTitle": "X-Glass | Fujifilm Lens Database & Comparison",
-    "seoDescription": "The Fujifilm lens database. X-mount and G-mount, first-party and major third-party brands. Normalized specs, cross-brand comparison."
+    "seoDescription": "The Fujifilm lens database. X-mount covers first-party plus major third-party brands — normalized specs, cross-brand comparison. G-mount (medium format) coverage is also under way."
   },
   "Nav": {
     "lenses": "Browse",
@@ -52,7 +52,7 @@
     "ctaCompare": "Compare",
     "dataSnapshot": "lens.json loaded ✓",
     "dataSnapshotCount": "{count} lenses · {brands} brands · 0 hallucination",
-    "dataTooltip": "Verified from manufacturer data. No AI-generated specs."
+    "dataTooltip": "Specs are normalized from manufacturer sources. No AI-generated content."
   },
   "LensList": {
     "title": "Lenses",
@@ -339,10 +339,10 @@
   },
   "About": {
     "pageTitle": "About",
-    "metaDescription": "The story behind X-Glass, who maintains it, and which Fujifilm X / GFX-mount lenses are covered. Built and maintained solo by an independent engineer, with open-source web code.",
+    "metaDescription": "The story behind X-Glass, who maintains it, and which Fujifilm lenses are covered — X-mount first, with G-mount also being added. Built and maintained solo by an independent engineer, with open-source web code.",
     "backgroundTitle": "Background",
-    "backgroundBody1": "The Fujifilm lens ecosystem — spanning both the X Mount (APS-C) and G Mount (medium format) systems — has grown from a handful of native options in its early days to today's landscape of dozens of brands and hundreds of lenses. Yet specs are scattered across brand websites and various platforms in inconsistent formats, making meaningful comparison a slow and frustrating exercise. X-Glass was built to pull all of that fragmented information into one place — a normalized, comparable database that lets the data speak for itself.",
-    "backgroundBody2": "I'm a web front-end engineer, and X-Glass is a project I develop and maintain entirely on my own. I've always had a strong conviction and passion for building products that don't compromise on engineering quality, user experience, or aesthetic design — and that drive is one of the key forces behind why this project exists.",
+    "backgroundBody1": "Say you want a Fujifilm X-mount lens — a fast 50mm-equivalent prime, or a do-it-all travel zoom. You quickly hit the same question: what lenses actually exist that fit this? Between first-party and a dozen-plus third-party brands, each running its own site, just figuring out who makes what is a chore. X-Glass takes care of that step — every X-mount brand in one normalized database where cross-brand comparison actually works. Which one to buy is still up to you. G-mount (medium format) is also covered, though that side is much earlier — Fujifilm's first-party GF lineup is in.",
+    "backgroundBody2": "I'm a web front-end engineer, and I build and maintain X-Glass on my own. I'm stubborn about tools — I don't want to cut corners on engineering, interaction, or visual craft. That stubbornness is most of why this project exists.",
     "coverageTitle": "Coverage & Roadmap",
     "coverageBody": "Coverage depth and discontinued lens inclusion vary by brand. Adapted lenses from other mounts are out of scope.",
     "coverageBrandsX": "X Mount",
@@ -357,16 +357,16 @@
     "coverageSuggestCta": "Let us know",
     "coverageViewLink": "View lens coverage →",
     "dataAccuracyTitle": "Data & Accuracy",
-    "dataAccuracyIntro": "All data in X-Glass is produced by two independent pipelines. The spec pipeline collects and structures lens specifications from official brand websites. The pricing pipeline independently samples market prices from e-commerce storefronts. The two are fully isolated, each with its own data sources and quality control process.",
+    "dataAccuracyIntro": "All data in X-Glass is produced by two independent pipelines. The spec pipeline collects and structures lens specifications from official brand websites. The pricing pipeline independently samples reference prices from e-commerce storefronts. The two are fully isolated, each with its own data sources and quality control process.",
     "dataSpecTitle": "Spec data",
     "dataSpecPoint1Title": "Data comes from official brand websites only",
-    "dataSpecPoint1Body": "Collection only accesses brand official sites; no third-party material is used.",
+    "dataSpecPoint1Body": "Canonical spec values are collected from brand official sites. Third-party material is not used as a source for published values.",
     "dataSpecPoint2Title": "Deterministic fields are computed in code",
-    "dataSpecPoint2Body": "Focal length, aperture, series name, and other fields strictly derivable from the lens ID are all computed in code. Fields requiring semantic understanding are extracted by the model from the collected official text — every value is traceable back to its source.",
+    "dataSpecPoint2Body": "Focal length, aperture, series name, and other fields strictly derivable from the lens model name are all computed in code. Fields requiring semantic understanding are extracted by an AI agent from the collected official text — every value is traceable back to its source.",
     "dataSpecPoint3Title": "Strict stage isolation",
     "dataSpecPoint3Body": "Pipeline stages execute in a fixed order. Each step uses only the previous step's output; intermediate stages cannot consult external sources or revise prior conclusions.",
     "dataSpecPoint4Title": "Independent cross-check before publish",
-    "dataSpecPoint4Body": "A separate AI without access to the pipeline's context samples and compares against published reviews before publish, to surface errors that may exist at the source itself. These third-party materials are used only for verification, not as data sources.",
+    "dataSpecPoint4Body": "A separate AI without access to the pipeline's context samples and compares against published reviews before publish, to surface possible source or extraction errors. These third-party materials are used only for audit, never as canonical data sources.",
     "dataPipelineIntro": "Spec data is produced through a multi-stage pipeline:",
     "pipeline0Label": "Discovery",
     "pipeline0Desc": "Scripts index lens listings from each brand's official website",
@@ -382,7 +382,7 @@
     "dataVersionNote": "The version number and last-updated timestamp in the footer reflect the latest published data release.",
     "dataPricingTitle": "Price data",
     "dataPricingPoint1Title": "Produced independently from spec data",
-    "dataPricingPoint1Body": "Pricing has its own sampling sources and collection process, kept separate from the spec pipeline.",
+    "dataPricingPoint1Body": "Pricing has its own sampling sources and collection process, kept separate from the spec pipeline. It is meant to give rough purchase context, not a live quote.",
     "dataPricingPoint2Title": "Sourced from brand-official storefronts",
     "dataPricingPoint2Body": "Prices come from brand-operated e-commerce. When a brand has no unified global storefront, the US storefront is used as a reference.",
     "dataPricingPoint3Title": "Used market as fallback",
@@ -392,7 +392,7 @@
     "dataGitHubCardTitle": "Full pipeline architecture",
     "dataGitHubCardBody": "Detailed Mermaid diagram of data flow, branching, and human/AI nodes.",
     "dataGitHubCardButton": "View on GitHub",
-    "dataAccuracyReport": "All data defers to its official source. Spot something off?",
+    "dataAccuracyReport": "Spot something off?",
     "dataAccuracyReportCta": "Report it",
     "disclaimerTitle": "Disclaimer",
     "disclaimerAccuracy": "X-Glass data is sourced from public materials and refined through manual review. We make every effort to keep specs accurate and up to date, but errors and delays are inevitable. Always verify key specifications on the manufacturer's official page before making a purchase decision.",

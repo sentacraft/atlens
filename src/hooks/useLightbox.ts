@@ -27,7 +27,9 @@ export function useLightbox(posterRef: RefObject<HTMLDivElement | null>): Lightb
 
   const handleOpen = useCallback(async () => {
     setOpen(true);
-    if (!posterRef.current) return;
+    if (!posterRef.current) {
+      return;
+    }
     setImageLoading(true);
     try {
       const url = await rasterizePoster(posterRef.current);

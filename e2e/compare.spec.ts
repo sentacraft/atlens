@@ -10,16 +10,8 @@ test.describe("Compare flow", () => {
   test("adding two lenses shows compare bar with correct count", async ({
     page,
   }) => {
-    await page.goto("/en/lenses");
+    await page.goto("/en/lenses/x");
 
-    // Add first lens — "Add to Compare" buttons are inside each card footer
-    const firstAddBtn = page
-      .locator('a[href*="/en/lenses/"]:not([href="/en/lenses"])')
-      .first()
-      .locator("..")  // card root
-      .getByRole("button", { name: /Add to Compare/i });
-
-    // Simpler: find all "Add to Compare" buttons and click the first two
     const addButtons = page.getByRole("button", { name: /Add to Compare/i });
     await addButtons.nth(0).click();
     await addButtons.nth(1).click();
@@ -29,7 +21,7 @@ test.describe("Compare flow", () => {
   });
 
   test("compare bar button navigates to compare page", async ({ page }) => {
-    await page.goto("/en/lenses");
+    await page.goto("/en/lenses/x");
 
     const addButtons = page.getByRole("button", { name: /Add to Compare/i });
     await addButtons.nth(0).click();
@@ -37,12 +29,12 @@ test.describe("Compare flow", () => {
 
     await page.getByRole("button", { name: /Compare \(2\)/i }).click();
 
-    await expect(page).toHaveURL(/\/en\/lenses\/compare/);
+    await expect(page).toHaveURL(/\/en\/lenses\/x\/compare/);
   });
 
   test("compare page via URL shows both lens columns", async ({ page }) => {
     await page.goto(
-      `/en/lenses/compare?ids=${LENS_A},${LENS_B}`
+      `/en/lenses/x/compare?ids=${LENS_A},${LENS_B}`
     );
 
     await expect(page.getByText(LENS_A_MODEL).first()).toBeVisible();
@@ -52,13 +44,13 @@ test.describe("Compare flow", () => {
   test("compare page with fewer than 2 ids still renders without crashing", async ({
     page,
   }) => {
-    await page.goto(`/en/lenses/compare`);
+    await page.goto(`/en/lenses/x/compare`);
     // Should render, not throw 500
     await expect(page.locator("body")).toBeVisible();
   });
 
   test("removing a lens from the compare bar decrements count", async ({ page }) => {
-    await page.goto("/en/lenses");
+    await page.goto("/en/lenses/x");
 
     const addButtons = page.getByRole("button", { name: /Add to Compare/i });
     await addButtons.nth(0).click();
@@ -73,7 +65,7 @@ test.describe("Compare flow", () => {
   });
 
   test("clear compare button dismisses the compare bar", async ({ page }) => {
-    await page.goto("/en/lenses");
+    await page.goto("/en/lenses/x");
 
     const addButtons = page.getByRole("button", { name: /Add to Compare/i });
     await addButtons.nth(0).click();
@@ -89,7 +81,7 @@ test.describe("Compare flow", () => {
   test("adding from detail page then navigating to compare includes that lens", async ({
     page,
   }) => {
-    await page.goto(`/en/lenses/${LENS_A}`);
+    await page.goto(`/en/lenses/x/${LENS_A}`);
 
     await page.getByRole("button", { name: /Add to Compare/i }).click();
 
@@ -97,7 +89,7 @@ test.describe("Compare flow", () => {
     await page.getByRole("button", { name: /Compare \(1\)/i }).waitFor();
 
     // Go to the compare page URL that includes LENS_A
-    await page.goto(`/en/lenses/compare?ids=${LENS_A},${LENS_B}`);
+    await page.goto(`/en/lenses/x/compare?ids=${LENS_A},${LENS_B}`);
 
     await expect(page.getByText(LENS_A_MODEL).first()).toBeVisible();
   });
@@ -118,7 +110,7 @@ test.describe("Compare flow", () => {
     // Hover the second column header to reveal the controls (they're
     // sm:opacity-0 sm:group-hover:opacity-100 by default on desktop).
     const secondColumnRemove = page
-      .getByRole("button", { name: new RegExp(`Remove ${LENS_B_MODEL}`, "i") });
+      .getByRole("button", { name: new RegExp(`Remove .*${LENS_B_MODEL}`, "i") });
     await secondColumnRemove.click();
 
     // After removal, LENS_B should no longer be in the table headers.
@@ -139,7 +131,7 @@ test.describe("Compare flow", () => {
 
     // Click the "move left" arrow on the second (rightmost) column header.
     // There's exactly one move-left button enabled (the first column's is disabled).
-    const shiftLeft = page.getByRole("button", { name: /Move left/i }).first();
+    const shiftLeft = page.locator('button[aria-label="Move left"]:not([disabled])').first();
     await shiftLeft.click();
 
     // After the swap, the URL ids should be reversed.
@@ -149,7 +141,7 @@ test.describe("Compare flow", () => {
   test("compare URL preserves commas literally (no %2C encoding)", async ({
     page,
   }) => {
-    await page.goto(`/en/lenses`);
+    await page.goto(`/en/lenses/x`);
 
     const addButtons = page.getByRole("button", { name: /Add to Compare/i });
     await addButtons.nth(0).click();
