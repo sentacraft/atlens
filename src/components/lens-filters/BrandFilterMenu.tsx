@@ -29,7 +29,7 @@ export default function BrandFilterMenu({
     <Menu.Root>
       <Menu.Trigger
         className={cn(
-          "inline-flex h-8.5 max-w-full items-center gap-1.5 rounded-full border px-3.5 text-[12px] shadow-sm shadow-zinc-950/[0.02] transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-zinc-400",
+          "inline-flex h-8.5 min-w-28 max-w-full items-center justify-between gap-1.5 rounded-full border px-3.5 text-[12px] shadow-sm shadow-zinc-950/[0.02] transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-zinc-400",
           hasSelection
             ? "border-transparent bg-zinc-900 font-medium text-white hover:border-zinc-800 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200"
             : "border-transparent bg-zinc-50 font-medium text-zinc-700 hover:border-zinc-200 hover:bg-zinc-100 hover:text-zinc-900 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:border-zinc-600 dark:hover:bg-zinc-700 dark:hover:text-zinc-100",
@@ -40,7 +40,7 @@ export default function BrandFilterMenu({
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner side="bottom" align="start" sideOffset={6}>
-          <Menu.Popup className="min-w-44 max-w-[min(16rem,calc(100vw-1rem))] origin-(--transform-origin) overflow-hidden rounded-lg border border-zinc-200 bg-white py-1 text-sm shadow-lg duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
+          <Menu.Popup className="min-w-44 max-w-[min(16rem,calc(100vw-1rem))] origin-(--transform-origin) overflow-hidden rounded-lg border border-zinc-200 bg-white text-sm shadow-lg duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
             <Menu.CheckboxItem
               checked={!hasSelection}
               onCheckedChange={() => {
@@ -56,7 +56,7 @@ export default function BrandFilterMenu({
               </span>
               <span className="text-zinc-800 dark:text-zinc-200">{allLabel}</span>
             </Menu.CheckboxItem>
-            <div className="my-1 h-px bg-zinc-100 dark:bg-zinc-800" />
+            <div className="h-px bg-zinc-100 dark:bg-zinc-800" />
             <div className="max-h-72 overflow-y-auto">
               {brands.map((brand) => {
                 const isChecked = selected.includes(brand);

@@ -32,7 +32,7 @@ export default function LensFilters({
   const tBrand = useTranslations("Brands");
   const [secondaryOpen, setSecondaryOpen] = useState(false);
 
-  const BRAND_PREVIEW_LIMIT = 2;
+  const BRAND_PREVIEW_LIMIT = 3;
   const brandJoiner = t("brandSeparator");
   const brandNames = Object.fromEntries(brands.map((b) => [b, tBrand(b)]));
   const selectedBrandNames = filters.brands.map((b) => brandNames[b] ?? b);
