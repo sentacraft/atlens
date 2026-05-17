@@ -1,13 +1,10 @@
 # X-Glass
 
-Browse, filter, and compare every Fujifilm X Mount and G Mount lens side by side — native Fujifilm and all major third-party brands.
+Browse, filter, and compare Fujifilm X Mount and G Mount lenses side by side — native Fujifilm glass plus a growing set of third-party X-mount brands.
 
 **English**：[xglass.sentacraft.com/en](https://xglass.sentacraft.com/en)
 
 **简体中文**：[xglass.sentacraft.com/zh](https://xglass.sentacraft.com/zh)
-
-
-If you find X-Glass useful, a ⭐ on this repo goes a long way — and if you'd like to support the project: [donate](https://xglass.sentacraft.com/en/about#donation) · [打赏](https://xglass.sentacraft.com/zh/about#donation)
 
 **Desktop**
 
@@ -23,7 +20,7 @@ If you find X-Glass useful, a ⭐ on this repo goes a long way — and if you'd 
 
 ## Features
 
-- **Growing lens database** — full coverage of Fujifilm's own X and G mount lineups, plus 7 major third-party X mount brands (Sigma, Tamron, Viltrox, TTArtisan, 7Artisans, Brightin Star, SG Image), with more brands on the roadmap
+- **Growing lens database** — full coverage of Fujifilm's own X and G mount lineups, plus a curated set of third-party X-mount brands (Sigma, Tamron, Viltrox, TTArtisan, 7Artisans, Brightin Star, SG Image), with more brands under evaluation
 - **Clean, focused UI** — distraction-free interface designed around the comparison workflow
 - **Filter and sort** — multi-axis filtering (focal length, aperture, AF, OIS, weather resistance, specialty tags) combined with flexible sorting
 - **Side-by-side comparison** of up to 4 lenses
@@ -54,7 +51,7 @@ It also supports installation as a **Progressive Web App (PWA)**: add it to your
 
 ## Data Pipeline
 
-For a lens comparison tool, data accuracy isn't a nice-to-have — it's the product. To keep specs accurate and up to date while minimizing AI hallucination during collection and parsing, X-Glass is backed by a purpose-built, multi-stage data pipeline:
+For a lens comparison tool, data accuracy isn't a nice-to-have — it's the product. X-Glass normalizes specs from manufacturer sources, treats price data as point-in-time reference snapshots rather than real-time quotes, and is backed by a purpose-built, multi-stage data pipeline:
 
 Lens data and images are maintained in a private pipeline repo and written into `src/data/lenses.json` (X mount) and `src/data/lenses-gfx.json` (G mount).
 
@@ -160,9 +157,11 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Contributing
 
-This project does not accept code contributions at this time.
+For larger code changes, please open an issue first so the scope can be aligned before implementation.
 
 To report a data issue (wrong spec, broken image) or suggest a missing lens, use the feedback links inside the app, or open a [GitHub Issue](https://github.com/sentacraft/x-glass/issues).
+
+If you find X-Glass useful, a ⭐ on this repo goes a long way — and if you'd like to support the project: [donate](https://xglass.sentacraft.com/en/about#donation) · [打赏](https://xglass.sentacraft.com/zh/about#donation)
 
 ## Forking for Other Mounts
 
@@ -176,9 +175,9 @@ X-Glass covers both the Fujifilm X mount (APS-C) and the Fujifilm G mount (GFX m
 
 **Why the pipeline isn't open source (yet).** I get asked this a lot, so to be upfront about it:
 
-1. **It's still rough.** The pipeline is evolving quickly and has plenty of sharp edges. Open-sourcing it in this state would create more confusion than value.
-2. **It's overfit to the brands currently covered.** The extraction logic, prompts, and review steps are tuned to a specific set of manufacturers and page layouts — they aren't generic enough to be useful as a reference implementation for someone else. This is also why the diagram above stays at the workflow level and doesn't go deeper: I'd rather show the shape than publish details that would mislead.
-3. **Legal exposure around scraped content.** The pipeline pulls raw product descriptions and images from many manufacturer sites. Even if the final published data is carefully curated, open-sourcing the intermediate scraping layer would put that raw material in public view, which I'm not comfortable with.
+1. **It is not a reusable general extractor yet.** The prompts, review steps, and edge cases are tuned to the brands currently covered.
+2. **The intermediate inputs are not meant to be redistributed.** The published data is curated, but the collection layer touches manufacturer text and images that should not be republished as raw material.
+3. **The workflow is still evolving.** The diagram above shows the shape of the system without presenting it as a stable reference implementation.
 
 If the pipeline matures and those concerns ease over time, I'm open to revisiting. Until then, building your own collection layer is genuinely the right call — your mount, your source sites, your edge cases.
 

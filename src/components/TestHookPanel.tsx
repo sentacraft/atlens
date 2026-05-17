@@ -14,13 +14,13 @@ import { TESTHOOK_OPTION_DEFINITIONS } from "@/lib/testhook";
 
 export default function TestHookPanel() {
   const context = useContext(TestHookContext);
+  const [copied, setCopied] = useState(false);
 
   if (!context || !context.state.testHook) {
     return null;
   }
 
   const { state, setOption, setTestHook, reset, buildShareableLink } = context;
-  const [copied, setCopied] = useState(false);
 
   return (
     <aside className="fixed bottom-4 right-4 z-50 w-[min(24rem,calc(100vw-2rem))] rounded-2xl border border-zinc-200/80 bg-white/95 p-4 shadow-xl backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90">

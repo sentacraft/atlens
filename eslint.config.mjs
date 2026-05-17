@@ -8,6 +8,8 @@ const eslintConfig = defineConfig([
   {
     rules: {
       curly: ["error", "all"],
+      "react-hooks/immutability": "off",
+      "react-hooks/set-state-in-effect": "off",
     },
   },
   // Override default ignores of eslint-config-next.

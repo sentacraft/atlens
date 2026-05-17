@@ -16,23 +16,29 @@ test.describe("Navigation", () => {
 
   test("navbar About link goes to about page", async ({ page }) => {
     await page.goto("/en");
-    await page.getByRole("link", { name: "About" }).click();
+    const aboutLink = page.getByRole("link", { name: "About" });
+    if (await aboutLink.isVisible()) {
+      await aboutLink.click();
+    } else {
+      await page.getByRole("button", { name: "Menu" }).click();
+      await aboutLink.click();
+    }
     await expect(page).toHaveURL(/\/en\/about/);
-    await expect(page.getByText("About X-Glass")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "About" })).toBeVisible();
   });
 
   test("locale switch to zh changes URL prefix", async ({ page }) => {
-    await page.goto("/en/lenses");
+    await page.goto("/en/lenses/x");
 
-    // Find the language switcher — it should link to /zh/lenses
+    // Find the language switcher — it should link to the matching zh path.
     const zhLink = page.getByRole("link", { name: /中文|zh/i });
     if (await zhLink.isVisible()) {
       await zhLink.click();
-      await expect(page).toHaveURL(/\/zh\/lenses/);
+      await expect(page).toHaveURL(/\/zh\/lenses\/x/);
     } else {
       // Directly navigate to confirm zh locale works
-      await page.goto("/zh/lenses");
-      await expect(page).toHaveURL(/\/zh\/lenses/);
+      await page.goto("/zh/lenses/x");
+      await expect(page).toHaveURL(/\/zh\/lenses\/x/);
       await expect(page.locator("body")).toBeVisible();
     }
   });

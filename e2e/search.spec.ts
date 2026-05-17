@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Lens search dialog", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/en/lenses");
+    await page.goto("/en/lenses/x");
   });
 
   test("opens dialog when search icon is clicked", async ({ page }) => {
