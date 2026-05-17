@@ -87,7 +87,7 @@ test.describe("Compare table phantom header", () => {
   // up once the real <thead> scrolls out of view. It also locks the nav hidden
   // (via lockNav) so two top-chrome elements never compete on mobile.
   test.beforeEach(async ({ page }) => {
-    await page.goto(`/en/lenses/compare?ids=${LENS_A},${LENS_B}`);
+    await page.goto(`/en/lenses/x/compare?ids=${LENS_A},${LENS_B}`);
     await page.locator('[data-testid="compare-phantom-header"]').waitFor({ state: "attached" });
     await waitForScrollable(page, 200);
   });
@@ -135,7 +135,7 @@ test.describe("Compare table phantom header", () => {
 
 test.describe("Compare page share FAB", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(`/en/lenses/compare?ids=${LENS_A},${LENS_B}`);
+    await page.goto(`/en/lenses/x/compare?ids=${LENS_A},${LENS_B}`);
     // Wait for the FAB to be rendered before any interaction
     await page.locator('[data-testid="compare-share-fab"]').waitFor({ state: "attached" });
   });

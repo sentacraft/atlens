@@ -1,40 +1,41 @@
 import { test, expect } from "@playwright/test";
 
+const RESULT_COUNT_RE = /\d+ (lenses|支镜头)/;
+
 test.describe("Lens list page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/en/lenses");
+    await page.goto("/en/lenses/x");
   });
 
   test("loads lens cards", async ({ page }) => {
     // At least one lens card link should be present
-    const cards = page.locator('a[href*="/en/lenses/"]');
+    const cards = page.locator('a[href^="/en/lenses/x/"]:not([href*="/compare"])');
     await expect(cards.first()).toBeVisible();
     const count = await cards.count();
     expect(count).toBeGreaterThan(10);
   });
 
   test("shows result count", async ({ page }) => {
-    // e.g. "121 lenses"
-    await expect(page.getByText(/\d+ lenses/)).toBeVisible();
+    await expect(page.getByText(RESULT_COUNT_RE)).toBeVisible();
   });
 
   test("brand filter narrows results", async ({ page }) => {
     // Get baseline count
-    const countText = await page.getByText(/\d+ lenses/).textContent();
+    const countText = await page.getByText(RESULT_COUNT_RE).textContent();
     const totalCount = parseInt(countText!.match(/\d+/)![0], 10);
 
     // Click the "Sigma" brand chip
     await page.getByRole("button", { name: "Sigma", exact: true }).click();
 
     // Count should be smaller than total
-    const filteredText = await page.getByText(/\d+ lenses/).textContent();
+    const filteredText = await page.getByText(RESULT_COUNT_RE).textContent();
     const filteredCount = parseInt(filteredText!.match(/\d+/)![0], 10);
     expect(filteredCount).toBeLessThan(totalCount);
     expect(filteredCount).toBeGreaterThan(0);
   });
 
   test("clear filters restores full count", async ({ page }) => {
-    const countText = await page.getByText(/\d+ lenses/).textContent();
+    const countText = await page.getByText(RESULT_COUNT_RE).textContent();
     const totalCount = parseInt(countText!.match(/\d+/)![0], 10);
 
     // Apply a filter
@@ -43,7 +44,7 @@ test.describe("Lens list page", () => {
     // Clear it
     await page.getByRole("button", { name: "Clear Filters" }).click();
 
-    const restoredText = await page.getByText(/\d+ lenses/).textContent();
+    const restoredText = await page.getByText(RESULT_COUNT_RE).textContent();
     const restoredCount = parseInt(restoredText!.match(/\d+/)![0], 10);
     expect(restoredCount).toBe(totalCount);
   });
@@ -51,7 +52,7 @@ test.describe("Lens list page", () => {
   test("clicking a lens card navigates to detail page", async ({ page }) => {
     // Click the first lens card link (exclude list page and compare page)
     const firstCard = page
-      .locator('a[href*="/en/lenses/"]:not([href="/en/lenses"]):not([href*="/compare"])')
+      .locator('a[href^="/en/lenses/x/"]:not([href*="/compare"])')
       .first();
     const href = await firstCard.getAttribute("href");
     await firstCard.click();
@@ -91,7 +92,7 @@ test.describe("Lens list page", () => {
     // we assert via the result count being the filtered count (smaller than
     // the unfiltered total observed in the "brand filter narrows results"
     // test above).
-    const filteredText = await page.getByText(/\d+ lenses/).textContent();
+    const filteredText = await page.getByText(RESULT_COUNT_RE).textContent();
     const filteredCount = parseInt(filteredText!.match(/\d+/)![0], 10);
     expect(filteredCount).toBeGreaterThan(0);
     expect(filteredCount).toBeLessThan(50);

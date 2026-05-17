@@ -69,7 +69,7 @@ test.describe("Nav top inset", () => {
 
 test.describe("Compare phantom header top inset", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(`/en/lenses/compare?ids=${LENS_A},${LENS_B}`);
+    await page.goto(`/en/lenses/x/compare?ids=${LENS_A},${LENS_B}`);
     await page.locator('[data-testid="compare-phantom-header"]').waitFor({ state: "attached" });
     await simulateNotch(page);
   });

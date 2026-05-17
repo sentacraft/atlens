@@ -211,6 +211,17 @@ export default function Iris({
   const stepDeg = 360 / N;
   const maskCount = Math.floor((N - 1) / 2);
 
+  // currentFStop is always computed (not gated by apertureStrip) so it can be
+  // exposed as a data attribute for E2E testing regardless of whether the strip
+  // is rendered. apertureStrip consumers still receive it via props as before.
+  const currentFStop = useMemo(() => {
+    const r = apertureInradius(theta, dc);
+    if (r <= 0 || inradiusOpen <= 0) {
+      return closedFStop;
+    }
+    return Math.min(closedFStop, rawConfig.openFStop * inradiusOpen / r);
+  }, [theta, dc, inradiusOpen, closedFStop, rawConfig.openFStop]);
+
   if (blades.length === 0) {
 
     return null;
@@ -342,17 +353,6 @@ export default function Iris({
   // ── Current f-stop (for ApertureStrip sync) ────────────────────────────────
   // Derived from theta so the strip can mirror the iris position during any
   // animation and after release easing. Uses f = f_open × (r_open / r).
-
-  // currentFStop is always computed (not gated by apertureStrip) so it can be
-  // exposed as a data attribute for E2E testing regardless of whether the strip
-  // is rendered. apertureStrip consumers still receive it via props as before.
-  const currentFStop = useMemo(() => {
-    const r = apertureInradius(theta, dc);
-    if (r <= 0 || inradiusOpen <= 0) {
-      return closedFStop;
-    }
-    return Math.min(closedFStop, rawConfig.openFStop * inradiusOpen / r);
-  }, [theta, dc, inradiusOpen, closedFStop, rawConfig.openFStop]);
 
   // ── Render ─────────────────────────────────────────────────────────────────
 

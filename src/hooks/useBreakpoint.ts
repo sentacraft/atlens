@@ -22,7 +22,9 @@ export function useBreakpoint(bp: Breakpoint): boolean {
     const value = getComputedStyle(document.documentElement)
       .getPropertyValue(`--breakpoint-${bp}`)
       .trim();
-    if (!value) return;
+    if (!value) {
+      return;
+    }
     const mq = window.matchMedia(`(min-width: ${value})`);
     setMatches(mq.matches);
     const handler = (e: MediaQueryListEvent) => setMatches(e.matches);

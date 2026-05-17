@@ -17,9 +17,9 @@
     "start": "next start",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "typecheck": "npm run cf:types && tsc --noEmit",
+    "test": "vitest run src",
+    "test:watch": "vitest src",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },

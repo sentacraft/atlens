@@ -475,7 +475,11 @@ export default function ApertureV2Lab() {
 
   // Seed the workspace from IRIS_LAB on first mount.
   useEffect(() => {
-    readFromConfig("IRIS_LAB").then(v => { if (v) {applyConfig(v);} });
+    readFromConfig("IRIS_LAB").then(v => {
+      if (v) {
+        applyConfig(v);
+      }
+    });
   }, []);  
 
   // Derive geometry-constrained parameters via the shared helper.

@@ -27,7 +27,9 @@ export function LightboxDialog({
     <Dialog
       open={open}
       onOpenChange={(nextOpen) => {
-        if (!nextOpen) handleClose();
+        if (!nextOpen) {
+          handleClose();
+        }
       }}
     >
       <DialogContent
@@ -36,7 +38,9 @@ export function LightboxDialog({
         backdropClassName="bg-zinc-950/75 transition-[background-color] duration-150"
         showCloseButton={false}
         onClick={(e) => {
-          if (e.target === e.currentTarget) handleClose();
+          if (e.target === e.currentTarget) {
+            handleClose();
+          }
         }}
       >
         <div className="relative w-[calc(100vw-44px)] max-w-[750px]">
@@ -57,7 +61,11 @@ export function LightboxDialog({
             <div
               ref={scrollRef}
               className="max-h-[calc(100svh-3rem-10px)] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:max-h-[calc(100svh-3rem)]"
-              onScroll={() => { if (!hasScrolled) handleScroll(); }}
+              onScroll={() => {
+                if (!hasScrolled) {
+                  handleScroll();
+                }
+              }}
             >
               {imageLoading ? (
                 <div className="flex h-48 items-center justify-center">

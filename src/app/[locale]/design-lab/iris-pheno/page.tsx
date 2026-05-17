@@ -126,7 +126,11 @@ function ApertureRingControl({ value, onChange }: {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { setOffset(offsetForIndex(indexForValue(value))); }, []);
    
-  useEffect(() => { if (!isDragging.current) {setOffset(offsetForIndex(indexForValue(value)));} }, [value]);
+  useEffect(() => {
+    if (!isDragging.current) {
+      setOffset(offsetForIndex(indexForValue(value)));
+    }
+  }, [value]);
 
   function onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -298,7 +302,11 @@ export default function IrisPhenoLab() {
     }
   }, [lgT]);  
 
-  useEffect(() => () => { if (lgEaseRaf.current) {cancelAnimationFrame(lgEaseRaf.current);} }, []);
+  useEffect(() => () => {
+    if (lgEaseRaf.current) {
+      cancelAnimationFrame(lgEaseRaf.current);
+    }
+  }, []);
 
   function lgMouseEnter(e: React.MouseEvent<HTMLDivElement>) {
     if (lgEaseRaf.current) {
