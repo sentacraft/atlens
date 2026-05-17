@@ -226,6 +226,8 @@ export type SpecialtyTag = (typeof SPECIALTY_TAGS)[number];
 export const FIELD_NOTE_KEYS = [
   "wr",
   "weightG",
+  "lengthMm",
+  "diameterMm",
   "filterMm",
   "minFocusDistance",
   "maxMagnification",
