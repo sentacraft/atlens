@@ -375,7 +375,9 @@ export function computeThetaOpen(
     const m = (a + b) / 2;
     if (apexRadius(m) >= housingRadius) {
       a = m;
-    } else {b = m;}
+    } else {
+      b = m;
+    }
   }
   return a;
 }

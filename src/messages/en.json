@@ -51,8 +51,8 @@
     "cta": "Browse Lenses",
     "ctaCompare": "Compare",
     "dataSnapshot": "lens.json loaded ✓",
-    "dataSnapshotCount": "{count} lenses · {brands} brands · verified specs",
-    "dataTooltip": "Specs are normalized from manufacturer sources and reviewed before publishing."
+    "dataSnapshotCount": "{count} lenses · {brands} brands · 0 hallucination",
+    "dataTooltip": "Specs are normalized from manufacturer sources. No AI-generated content."
   },
   "LensList": {
     "title": "Lenses",
@@ -332,10 +332,10 @@
   },
   "About": {
     "pageTitle": "About",
-    "metaDescription": "The story behind X-Glass, who maintains it, and which Fujifilm X / GFX-mount lenses are covered. Built and maintained solo by an independent engineer, with open-source web code.",
+    "metaDescription": "The story behind X-Glass, what's covered, and where it's headed. An independent engineer's Fujifilm lens database — open-source web code, normalized data, cross-brand comparison.",
     "backgroundTitle": "Background",
-    "backgroundBody1": "The Fujifilm lens ecosystem spans X Mount (APS-C) and G Mount (medium format), with first-party lenses and a growing third-party market. Specs are scattered across brand websites in inconsistent formats, which makes cross-brand comparison slower than it should be. X-Glass brings that information into one normalized database so lenses can be compared on the same terms.",
-    "backgroundBody2": "I'm a web front-end engineer, and I develop and maintain X-Glass as an independent project. I care about fast, quiet tools with accurate data, clear interaction design, and enough polish to make repeated use feel natural.",
+    "backgroundBody1": "Say you want a Fujifilm X-mount lens — a fast 50mm-equivalent prime, or a do-it-all travel zoom. You quickly hit the same question: what lenses actually exist that fit this? Between first-party and a dozen-plus third-party brands, each running its own site, just figuring out who makes what is a chore. X-Glass takes care of that step — X-mount and G-mount, first-party and third-party, all in one normalized database where cross-brand comparison actually works. Which one to buy is still up to you.",
+    "backgroundBody2": "I'm a web front-end engineer, and I build and maintain X-Glass on my own. I'm stubborn about tools — I don't want to cut corners on engineering, interaction, or visual craft. That stubbornness is most of why this project exists.",
     "coverageTitle": "Coverage & Roadmap",
     "coverageBody": "Coverage depth and discontinued lens inclusion vary by brand. Adapted lenses from other mounts are out of scope.",
     "coverageBrandsX": "X Mount",
@@ -350,7 +350,7 @@
     "coverageSuggestCta": "Let us know",
     "coverageViewLink": "View lens coverage →",
     "dataAccuracyTitle": "Data & Accuracy",
-    "dataAccuracyIntro": "X-Glass separates spec data from price reference data. The spec pipeline collects and structures lens specifications from official brand websites. The pricing pipeline samples point-in-time reference prices from storefronts or used-market listings. The two are isolated, each with its own data sources and quality-control process.",
+    "dataAccuracyIntro": "All data in X-Glass is produced by two independent pipelines. The spec pipeline collects and structures lens specifications from official brand websites. The pricing pipeline independently samples reference prices from e-commerce storefronts. The two are fully isolated, each with its own data sources and quality control process.",
     "dataSpecTitle": "Spec data",
     "dataSpecPoint1Title": "Data comes from official brand websites only",
     "dataSpecPoint1Body": "Canonical spec values are collected from brand official sites. Third-party material is not used as a source for published values.",
