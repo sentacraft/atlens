@@ -64,6 +64,7 @@
     "brand": "品牌",
     "brandTriggerLabel": "品牌：{names}",
     "brandTriggerLabelMore": "品牌：{names} +{extra}",
+    "brandSeparator": "、",
     "lensType": "类型",
     "allTypes": "全部",
     "primes": "定焦",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { ChevronDown, SlidersHorizontal } from "lucide-react";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
 import { FILTER_FEATURE_KEYS, FOCAL_CATEGORIES, LENS_TYPES } from "@/lib/lens";
@@ -30,11 +30,10 @@ export default function LensFilters({
 }: Props) {
   const t = useTranslations("LensList");
   const tBrand = useTranslations("Brands");
-  const locale = useLocale();
   const [secondaryOpen, setSecondaryOpen] = useState(false);
 
   const BRAND_PREVIEW_LIMIT = 2;
-  const brandJoiner = locale === "zh" ? "、" : ", ";
+  const brandJoiner = t("brandSeparator");
   const brandNames = Object.fromEntries(brands.map((b) => [b, tBrand(b)]));
   const selectedBrandNames = filters.brands.map((b) => brandNames[b] ?? b);
   const brandTriggerLabel =

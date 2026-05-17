@@ -64,6 +64,7 @@
     "brand": "Brand",
     "brandTriggerLabel": "Brand: {names}",
     "brandTriggerLabelMore": "Brand: {names} +{extra}",
+    "brandSeparator": ", ",
     "lensType": "Type",
     "allTypes": "All",
     "primes": "Primes",
