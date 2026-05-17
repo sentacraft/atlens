@@ -11,16 +11,27 @@ import { getLensesByMount } from "@/lib/lens";
 import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/AckCard";
 
-type CoverageMeta = { active: boolean | "planned"; discontinued: boolean | "planned"; notes: string };
+type CoverageState = boolean | "planned" | "partial";
+type CoverageMeta = { active: CoverageState; discontinued: CoverageState; notes: string };
 
 function Check() {
   return <span className="text-zinc-700 dark:text-zinc-300 text-sm">✓</span>;
+}
+function Partial() {
+  return <span className="text-zinc-600 dark:text-zinc-400 text-sm">◐</span>;
 }
 function Pending() {
   return <span className="text-zinc-400 dark:text-zinc-500 text-sm">○</span>;
 }
 function Dash() {
   return <span className="text-zinc-300 dark:text-zinc-600 text-sm">—</span>;
+}
+
+function StateCell({ state }: { state: CoverageState }) {
+  if (state === true) return <Check />;
+  if (state === "partial") return <Partial />;
+  if (state === "planned") return <Pending />;
+  return <Dash />;
 }
 
 function MountCoverageTable({
@@ -54,9 +65,15 @@ function MountCoverageTable({
               return (
                 <tr key={b}>
                   <td className="px-3 py-2 font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap">{brandNames[b] ?? b}</td>
-                  <td className="px-3 py-2 text-center">{m.active === true ? <Check /> : m.active === "planned" ? <Pending /> : <Dash />}</td>
-                  <td className="px-3 py-2 text-center">{m.discontinued === true ? <Check /> : m.discontinued === "planned" ? <Pending /> : <Dash />}</td>
-                  <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">{m.active === true ? (counts[b] ?? 0) : <Dash />}</td>
+                  <td className="px-3 py-2 text-center"><StateCell state={m.active} /></td>
+                  <td className="px-3 py-2 text-center"><StateCell state={m.discontinued} /></td>
+                  <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">
+                    {m.active === true || m.active === "partial"
+                      ? (counts[b] ?? 0)
+                      : m.active === "planned"
+                        ? <Pending />
+                        : <Dash />}
+                  </td>
                 </tr>
               );
             })}

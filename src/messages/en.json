@@ -352,7 +352,7 @@
     "coverageColActive": "Active",
     "coverageColDiscontinued": "Discontinued",
     "coverageRowTotal": "Total",
-    "coverageLegend": "✓ Covered · ○ Under evaluation · — No plans",
+    "coverageLegend": "✓ Covered · ◐ Partial · ○ Under evaluation · — No plans",
     "coverageSuggest": "Missing a lens you're looking for?",
     "coverageSuggestCta": "Let us know",
     "coverageViewLink": "View lens coverage →",
