@@ -121,6 +121,20 @@ function formatApertureNum(n: number): string {
   return n % 1 === 0 ? String(n) : n.toFixed(1).replace(/\.?0+$/, "");
 }
 
+/**
+ * Synthetic "no-hyphen focal range" token for zoom lenses (e.g. an 18-50mm
+ * lens emits "1850"). Users commonly type zoom ranges without the hyphen,
+ * but the model string normalises "18-50mm" into separate "18" and "50mm"
+ * tokens, so the joined form is otherwise unreachable. Skipped for primes
+ * since the single focal length is already an exact token.
+ */
+function focalRangeTokens(lens: Lens): string[] {
+  if (lens.focalLengthMin === lens.focalLengthMax) {
+    return [];
+  }
+  return [`${lens.focalLengthMin}${lens.focalLengthMax}`];
+}
+
 function apertureTokens(lens: Lens): string[] {
   const tokens: string[] = [];
   if (lens.maxAperture === undefined) {
@@ -168,7 +182,7 @@ function createSearchableLensEntry(lens: Lens): SearchableLensEntry {
     brand: normTokens(lens.brand),
     alias: aliasTokens,
     series: normTokens(lens.series ?? ""),
-    model: normTokens(lens.model),
+    model: [...normTokens(lens.model), ...focalRangeTokens(lens)],
     aperture: apertureTokens(lens).map((t) => normalizeLensSearchText(t)),
   };
 
