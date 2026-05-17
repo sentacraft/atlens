@@ -351,6 +351,7 @@
     "coverageColCount": "镜头总数",
     "coverageColActive": "在产",
     "coverageColDiscontinued": "停产",
+    "coverageColCinema": "电影",
     "coverageRowTotal": "合计",
     "coverageLegend": "✓ 已收录 · ○ 评估中 · — 暂无计划",
     "coverageSuggest": "缺少你要找的镜头？",

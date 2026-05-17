@@ -351,6 +351,7 @@
     "coverageColCount": "Lenses",
     "coverageColActive": "Active",
     "coverageColDiscontinued": "Discontinued",
+    "coverageColCinema": "Cinema",
     "coverageRowTotal": "Total",
     "coverageLegend": "✓ Covered · ○ Under evaluation · — No plans",
     "coverageSuggest": "Missing a lens you're looking for?",
