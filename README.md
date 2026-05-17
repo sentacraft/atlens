@@ -157,7 +157,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Contributing
 
-For larger code changes, please open an issue first so the scope can be aligned before implementation.
+Small fixes are welcome. For larger code changes or new features, please open an issue first so we can align on scope before implementation.
 
 To report a data issue (wrong spec, broken image) or suggest a missing lens, use the feedback links inside the app, or open a [GitHub Issue](https://github.com/sentacraft/x-glass/issues).
 
