@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { selectBrandFilter } from "./helpers";
 
 const RESULT_COUNT_RE = /\d+ (lenses|支镜头)/;
 
@@ -25,7 +26,7 @@ test.describe("Lens list page", () => {
     const totalCount = parseInt(countText!.match(/\d+/)![0], 10);
 
     // Click the "Sigma" brand chip
-    await page.getByRole("button", { name: "Sigma", exact: true }).click();
+    await selectBrandFilter(page, "Sigma");
 
     // Count should be smaller than total
     const filteredText = await page.getByText(RESULT_COUNT_RE).textContent();
@@ -39,7 +40,7 @@ test.describe("Lens list page", () => {
     const totalCount = parseInt(countText!.match(/\d+/)![0], 10);
 
     // Apply a filter
-    await page.getByRole("button", { name: "Sigma", exact: true }).click();
+    await selectBrandFilter(page, "Sigma");
 
     // Clear it
     await page.getByRole("button", { name: "Clear Filters" }).click();
@@ -72,7 +73,7 @@ test.describe("Lens list page", () => {
   }) => {
     await expect(page).toHaveURL(/\/lenses\/x$/);
 
-    await page.getByRole("button", { name: "Sigma", exact: true }).click();
+    await selectBrandFilter(page, "Sigma");
 
     // URL should contain the brand param almost immediately (no debounce).
     await expect(page).toHaveURL(/[?&]b=sigma\b/i, { timeout: 500 });
@@ -83,7 +84,7 @@ test.describe("Lens list page", () => {
   });
 
   test("filter state survives a page refresh", async ({ page }) => {
-    await page.getByRole("button", { name: "Sigma", exact: true }).click();
+    await selectBrandFilter(page, "Sigma");
     await expect(page).toHaveURL(/[?&]b=sigma\b/i);
 
     await page.reload();
