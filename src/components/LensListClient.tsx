@@ -94,9 +94,9 @@ export default function LensListClient({ lenses }: Props) {
       <div className="w-full max-w-7xl mx-auto px-5 sm:px-6 pt-4 sm:pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col gap-6">
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+            <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
               {t("title")}
-            </h1>
+            </h2>
             <LensSearchDialog triggerVariant="icon" />
           </div>
           <LensFilters

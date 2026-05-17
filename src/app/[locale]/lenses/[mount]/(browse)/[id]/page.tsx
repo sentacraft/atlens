@@ -17,20 +17,16 @@ import LensDetailTelemetry from "@/components/telemetry/LensDetailTelemetry";
 import ShareFAB from "@/components/ShareFAB";
 import { ShareButton } from "@/components/share/ShareButton";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
+import JsonLd from "@/components/JsonLd";
 import Breadcrumb from "@/components/Breadcrumb";
 import { ACTION_OUTLINE_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
-import { buildAlternates } from "@/lib/seo";
+import { buildAlternates, lensOgImages } from "@/lib/seo";
+import { SITE } from "@/config/site";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
-import {
-  lensSubtitleLine,
-  lensDisplayName,
-  focalRangeDisplay,
-  primaryApertureDisplay,
-  weightDisplay,
-} from "@/lib/lens.format";
-import { SPEC_NA } from "@/lib/types";
+import { lensDisplayName } from "@/lib/lens.format";
+import { buildLensDescription, buildLensProductSchema } from "@/lib/lens-seo";
 import { PriceSection } from "@/components/PriceSection";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
@@ -55,9 +51,17 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { locale, mount, id } = await params;
-  const resolvedMount = urlSegmentToMount(mount) ?? "X";
   const t = await getTranslations({ locale, namespace: "LensDetail" });
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
+  // The [mount]/layout.tsx ahead of this page already calls notFound() on an
+  // invalid mount segment, so urlSegmentToMount is guaranteed to return a
+  // valid Mount here. Re-check defensively in case the layout contract is
+  // ever weakened — silently treating an unknown mount as "X" would mis-route
+  // lens lookups and is far worse than a 404.
+  const resolvedMount = urlSegmentToMount(mount);
+  if (!resolvedMount) {
+    return { title: t("notFoundTitle") };
+  }
   const lenses = getLensesByMount(resolvedMount, locale);
   const lens = lenses.find((l) => l.id === id);
   if (!lens) {
@@ -66,31 +70,16 @@ export async function generateMetadata({
 
   const brandName = tBrand(lens.brand);
   const displayName = lensDisplayName(brandName, lens.series, lens.model, lens.brand);
-  const mountLabel = resolvedMount === "X" ? "X" : "GFX";
-  const isPrime = lens.focalLengthMin === lens.focalLengthMax;
-  const typeLabel = isPrime ? t("metaPrime") : t("metaZoom");
-
-  const focal = focalRangeDisplay(lens.focalLengthMin, lens.focalLengthMax);
-  const aperture = primaryApertureDisplay(lens) ?? "—";
-  const weight = weightDisplay(lens.weightG, "g") ?? "—";
-
-  let description = t("metaDescPrefix", { name: displayName, mount: mountLabel, type: typeLabel });
-  description += t("metaDescSpecs", { focal, aperture, weight });
-  if (lens.filterMm !== undefined && lens.filterMm !== SPEC_NA) {
-    description += t("metaDescFilter", { size: lens.filterMm });
-  }
-  if (lens.ois) {
-    description += t("metaDescOis");
-  }
-  if (!lens.af) {
-    description += t("metaDescMf");
-  }
-  description += t("metaDescPeriod");
+  const description = buildLensDescription({ lens, mount: resolvedMount, brandName, t });
 
   return {
     title: displayName,
     description,
-    openGraph: { title: `${displayName} | X-Glass`, description },
+    openGraph: {
+      title: `${displayName} | X-Glass`,
+      description,
+      images: lensOgImages(lens.id),
+    },
     alternates: buildAlternates(locale, `lenses/${mount}/${id}`),
   };
 }
@@ -162,7 +151,14 @@ function renderRowValue(
 export default async function LensDetailPage({ params }: { params: Params }) {
   const { id, locale, mount } = await params;
   setRequestLocale(locale);
-  const lenses = getLensesByMount(urlSegmentToMount(mount) ?? "X", locale);
+  // See note on the matching guard in generateMetadata — the parent layout
+  // already validates mount, but we re-check rather than silently fall back
+  // to "X" and mis-route the lens lookup.
+  const resolvedMount = urlSegmentToMount(mount);
+  if (!resolvedMount) {
+    notFound();
+  }
+  const lenses = getLensesByMount(resolvedMount, locale);
   const lens = lenses.find((l) => l.id === id);
 
   if (!lens) {
@@ -173,6 +169,20 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const tBrand = await getTranslations("Brands");
   const tPricing = await getTranslations("Pricing");
   const url = getLensUrl(lens, locale);
+
+  // Derived values shared between the visible header and the Product JSON-LD.
+  const brandName = tBrand(lens.brand);
+  const displayName = lensDisplayName(brandName, lens.series, lens.model, lens.brand);
+  const description = buildLensDescription({ lens, mount: resolvedMount, brandName, t });
+  const canonicalUrl = `${SITE.url}/${locale}/lenses/${mount}/${id}`;
+  const productSchema = buildLensProductSchema({
+    lens,
+    mount: resolvedMount,
+    displayName,
+    description,
+    brandName,
+    canonicalUrl,
+  });
 
   const specGroups = buildSpecGroups({
     groupOptics: t("groupOptics"),
@@ -273,6 +283,10 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
   return (
     <>
+    {/* Product structured data — earns this page eligibility for Google's
+        Product rich result treatment. Emitted via JsonLd which handles the
+        `</script>` defensive escape; see that component for rationale. */}
+    <JsonLd data={productSchema} />
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col gap-8">
       <Breadcrumb />
       {/* Header: image + key info side by side */}
@@ -302,13 +316,13 @@ export default async function LensDetailPage({ params }: { params: Params }) {
             (small desktop / portrait tablet), avoiding the 4-button row
             wrapping into 2 rows. */}
         <div className="@container flex-1 flex flex-col gap-5">
-          {/* Title */}
+          {/* Title — h1 carries the full display name (brand + optional
+              series + model) so brand-and-model search queries match the
+              page's primary heading. The previous subtitle line above the h1
+              was just the brand+series prefix and is now redundant. */}
           <div>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              {lensSubtitleLine(tBrand(lens.brand), lens.series)}
-            </p>
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mt-1 font-heading">
-              {lens.model}
+            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 font-heading">
+              {displayName}
             </h1>
           </div>
 

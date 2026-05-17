@@ -13,7 +13,7 @@
   },
   "Metadata": {
     "seoTitle": "X-Glass | Fujifilm Lens Database & Comparison",
-    "seoDescription": "The Fujifilm lens database. X-mount and G-mount, first-party lenses and a growing set of third-party brands. Normalized specs, cross-brand comparison."
+    "seoDescription": "The Fujifilm lens database. X-mount and G-mount, first-party and major third-party brands. Normalized specs, cross-brand comparison."
   },
   "Nav": {
     "lenses": "Browse",
@@ -137,12 +137,19 @@
     "equivSuffix": "eq."
   },
   "LensDetail": {
-    "metaDescPrefix": "{name} {mount}-mount {type} lens for Fujifilm. Specs, parameters and side-by-side comparison.",
-    "metaDescSpecs": " Focal length {focal}, max aperture {aperture}, weight {weight}",
-    "metaDescFilter": ", filter ⌀{size}mm",
-    "metaDescOis": ", optical stabilization",
-    "metaDescMf": ", manual focus",
-    "metaDescPeriod": ".",
+    "metaDescPrefix": "{name}, {mount}-mount {type} lens for Fujifilm. Specs, parameters, and side-by-side comparison",
+    "metaJoinSpace": ": ",
+    "metaSep": ", ",
+    "metaPeriod": ".",
+    "metaWeight": "weight {value}",
+    "metaFilter": "filter ⌀{size}mm",
+    "metaMfd": "min focus {value}",
+    "metaMag": "{value}× max magnification",
+    "metaMotor": "{label} motor",
+    "metaWr": "weather-sealed",
+    "metaWrPartial": "partial weather sealing",
+    "metaOis": "optical stabilization",
+    "metaMf": "manual focus",
     "metaPrime": "prime",
     "metaZoom": "zoom",
     "groupOptics": "Optics",
@@ -332,7 +339,7 @@
   },
   "About": {
     "pageTitle": "About",
-    "metaDescription": "The story behind X-Glass, what's covered, and where it's headed. An independent engineer's Fujifilm lens database — open-source web code, normalized data, cross-brand comparison.",
+    "metaDescription": "The story behind X-Glass, who maintains it, and which Fujifilm X / GFX-mount lenses are covered. Built and maintained solo by an independent engineer, with open-source web code.",
     "backgroundTitle": "Background",
     "backgroundBody1": "Say you want a Fujifilm X-mount lens — a fast 50mm-equivalent prime, or a do-it-all travel zoom. You quickly hit the same question: what lenses actually exist that fit this? Between first-party and a dozen-plus third-party brands, each running its own site, just figuring out who makes what is a chore. X-Glass takes care of that step — X-mount and G-mount, first-party and third-party, all in one normalized database where cross-brand comparison actually works. Which one to buy is still up to you.",
     "backgroundBody2": "I'm a web front-end engineer, and I build and maintain X-Glass on my own. I'm stubborn about tools — I don't want to cut corners on engineering, interaction, or visual craft. That stubbornness is most of why this project exists.",
@@ -449,7 +456,7 @@
   },
   "Install": {
     "pageTitle": "Get the App",
-    "metaDescription": "Install X-Glass to your phone or desktop. App-like launch, offline access to Fujifilm lens specs and comparisons.",
+    "metaDescription": "Install X-Glass to your phone home screen or desktop. App-like launch, works offline.",
     "headline": "Add X-Glass to your home screen",
     "subheadline": "Faster access, full-screen experience, works offline.",
     "installedTitle": "You're all set",

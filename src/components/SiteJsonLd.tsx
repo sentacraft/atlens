@@ -1,5 +1,6 @@
 import { SITE } from "@/config/site";
 import { routing } from "@/i18n/routing";
+import JsonLd from "@/components/JsonLd";
 
 const ORG_ID = `${SITE.url}/#organization`;
 const SITE_ID = `${SITE.url}/#website`;
@@ -43,12 +44,5 @@ export default function SiteJsonLd({ locale }: { locale: string }) {
     },
   ];
 
-  const json = JSON.stringify({ "@context": "https://schema.org", "@graph": graph });
-
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: json }}
-    />
-  );
+  return <JsonLd data={{ "@context": "https://schema.org", "@graph": graph }} />;
 }
