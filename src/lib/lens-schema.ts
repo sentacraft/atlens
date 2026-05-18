@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { SPEC_NA, SPECIALTY_TAGS } from "./types.ts";
+import { OPTICAL_TRAITS, SPEC_NA, SPECIALTY_TAGS } from "./types.ts";
 import type { ApertureValue, Lens } from "./types.ts";
 
 const positiveNumberSchema = z.number().positive();
@@ -23,6 +23,7 @@ const minApertureSchema = createApertureSchema("minAperture");
 const maxTStopSchema = createApertureSchema("maxTStop");
 const minTStopSchema = createApertureSchema("minTStop");
 const specialtyTagSchema = z.enum(SPECIALTY_TAGS);
+const opticalTraitSchema = z.enum(OPTICAL_TRAITS);
 export const specNaSchema = z.literal(SPEC_NA);
 const lensPriceEntrySchema = z.strictObject({
   price: z.number().positive(),
@@ -58,6 +59,8 @@ const lensBaseShape = {
   minAperture: minApertureSchema.optional(),
   maxTStop: maxTStopSchema.optional(),
   minTStop: minTStopSchema.optional(),
+  isCine: z.boolean().optional(),
+  opticalTraits: z.array(opticalTraitSchema).min(1).optional(),
   specialtyTags: z.array(specialtyTagSchema).min(1).optional(),
   af: z.boolean(),
   ois: z.boolean(),
