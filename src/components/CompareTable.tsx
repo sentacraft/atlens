@@ -62,12 +62,12 @@ function LensHeaderContent({
       <p className="text-center text-xs font-normal text-zinc-500 dark:text-zinc-400">
         {lensSubtitleLine(tBrand(lens.brand), lens.series)}
       </p>
-      <p className="line-clamp-3 min-h-[calc(3*1.375em)] text-center font-semibold leading-snug text-zinc-900 dark:text-zinc-50">
-        {lens.model}
-      </p>
-      <div className="mt-1 flex flex-wrap items-center justify-center gap-1.5 empty:hidden">
+      <div className="flex min-h-[1.5rem] flex-wrap items-center justify-center gap-1.5">
         <SpecialtyBadges {...deriveSpecialty(lens)} />
       </div>
+      <p className="line-clamp-3 text-center font-semibold leading-snug text-zinc-900 dark:text-zinc-50">
+        {lens.model}
+      </p>
     </>
   );
 }
