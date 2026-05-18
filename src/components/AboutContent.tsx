@@ -11,8 +11,13 @@ import { getLensesByMount } from "@/lib/lens";
 import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/AckCard";
 
-type CoverageState = boolean | "planned" | "partial";
-type CoverageMeta = { active: CoverageState; discontinued: CoverageState; notes: string };
+type CoverageState = boolean | "planned" | "partial" | "n/a";
+type CoverageMeta = {
+  active: CoverageState;
+  discontinued: CoverageState;
+  cinema: CoverageState;
+  notes: string;
+};
 
 function Check() {
   return <span className="text-zinc-700 dark:text-zinc-300 text-sm">✓</span>;
@@ -26,11 +31,15 @@ function Pending() {
 function Dash() {
   return <span className="text-zinc-300 dark:text-zinc-600 text-sm">—</span>;
 }
+function NotApplicable() {
+  return <span className="text-zinc-400 dark:text-zinc-500 text-sm tracking-wider uppercase">N/A</span>;
+}
 
 function StateCell({ state }: { state: CoverageState }) {
   if (state === true) return <Check />;
   if (state === "partial") return <Partial />;
   if (state === "planned") return <Pending />;
+  if (state === "n/a") return <NotApplicable />;
   return <Dash />;
 }
 
@@ -42,32 +51,45 @@ function MountCoverageTable({
   counts: Record<string, number>;
   meta: Record<string, CoverageMeta>;
   brandNames: Record<string, string>;
-  col: { brand: string; count: string; active: string; discontinued: string };
+  col: { brand: string; count: string; photoGroup: string; active: string; discontinued: string; cinema: string };
   rowTotal: string;
 }) {
   const total = brands.reduce((s, b) => s + (counts[b] ?? 0), 0);
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">{title}</p>
-      <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden self-start">
+      <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-x-auto self-start max-w-full">
         <table className="text-sm">
           <thead>
+            {/* Row 1 — semantic grouping: "Photo Lenses" spans Active+Discontinued (lifecycle states
+                within the photo category); "Cinema" stands alone (orthogonal category presence). */}
+            <tr className="bg-zinc-50 dark:bg-zinc-900/50">
+              {/* Brand is the row identifier, horizontally centered to match
+                  the centered data columns to its right. */}
+              <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-sm font-semibold text-zinc-500 dark:text-zinc-400 align-middle border-b border-r border-zinc-200 dark:border-zinc-800 w-24 sm:w-28">{col.brand}</th>
+              {/* Three top-level column groups share the same eyebrow style
+                  (uppercase, dim) so they read as parallel categories. */}
+              <th colSpan={2} className="px-2 sm:px-3 pt-2 pb-1 text-center text-sm font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 border-b border-zinc-200 dark:border-zinc-800/70">{col.photoGroup}</th>
+              <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-sm font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 align-middle border-b border-zinc-200 dark:border-zinc-800 w-16 sm:w-20 border-l border-zinc-200 dark:border-zinc-800">{col.cinema}</th>
+              <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-sm font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 whitespace-nowrap align-middle border-b border-zinc-200 dark:border-zinc-800 border-l border-zinc-200 dark:border-zinc-800 w-16 sm:w-20">{col.count}</th>
+            </tr>
             <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
-              <th className="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 w-28">{col.brand}</th>
-              <th className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 w-14">{col.active}</th>
-              <th className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 w-14">{col.discontinued}</th>
-              <th className="px-3 py-2 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 whitespace-nowrap">{col.count}</th>
+              {/* Sub-headers under "Photo Lenses": visually subordinate via
+                  smaller text + dimmer color, vertically centered in the row. */}
+              <th className="px-2 sm:px-3 py-2 text-center text-xs font-medium text-zinc-400 dark:text-zinc-500 align-middle w-20 sm:w-28">{col.active}</th>
+              <th className="px-2 sm:px-3 py-2 text-center text-xs font-medium text-zinc-400 dark:text-zinc-500 align-middle w-20 sm:w-28">{col.discontinued}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
             {brands.map((b) => {
-              const m: CoverageMeta = (meta as Record<string, CoverageMeta>)[b] ?? { active: false, discontinued: false, notes: "" };
+              const m: CoverageMeta = (meta as Record<string, CoverageMeta>)[b] ?? { active: false, discontinued: false, cinema: false, notes: "" };
               return (
                 <tr key={b}>
-                  <td className="px-3 py-2 font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap">{brandNames[b] ?? b}</td>
-                  <td className="px-3 py-2 text-center"><StateCell state={m.active} /></td>
-                  <td className="px-3 py-2 text-center"><StateCell state={m.discontinued} /></td>
-                  <td className="px-3 py-2 text-right tabular-nums text-zinc-700 dark:text-zinc-300">
+                  <td className="px-2 sm:px-3 py-2 text-center font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap border-r border-zinc-200 dark:border-zinc-800">{brandNames[b] ?? b}</td>
+                  <td className="px-2 sm:px-3 py-2 text-center"><StateCell state={m.active} /></td>
+                  <td className="px-2 sm:px-3 py-2 text-center"><StateCell state={m.discontinued} /></td>
+                  <td className="px-2 sm:px-3 py-2 text-center border-l border-zinc-200 dark:border-zinc-800"><StateCell state={m.cinema} /></td>
+                  <td className="px-2 sm:px-3 py-2 text-center tabular-nums text-zinc-700 dark:text-zinc-300 border-l border-zinc-200 dark:border-zinc-800">
                     {m.active === true || m.active === "partial"
                       ? (counts[b] ?? 0)
                       : m.active === "planned"
@@ -80,9 +102,9 @@ function MountCoverageTable({
           </tbody>
           <tfoot>
             <tr className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
-              <td className="px-3 py-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">{rowTotal}</td>
-              <td colSpan={2} />
-              <td className="px-3 py-2 text-right tabular-nums text-xs font-semibold text-zinc-700 dark:text-zinc-300">{total}</td>
+              <td className="px-2 sm:px-3 py-2 text-xs font-medium text-zinc-500 dark:text-zinc-400 border-r border-zinc-200 dark:border-zinc-800">{rowTotal}</td>
+              <td colSpan={3} />
+              <td className="px-2 sm:px-3 py-2 text-center tabular-nums text-xs font-semibold text-zinc-700 dark:text-zinc-300 border-l border-zinc-200 dark:border-zinc-800">{total}</td>
             </tr>
           </tfoot>
         </table>
@@ -124,7 +146,7 @@ export default async function AboutContent() {
     (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
   );
   const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage","laowa","meike","sirui","voigtlander"];
-  const G_BRANDS = ["fujifilm"];
+  const G_BRANDS = ["fujifilm", "laowa"];
 
   const pipelineStages = [
     { badge: "0", label: t("pipeline0Label"), desc: t("pipeline0Desc") },
@@ -207,7 +229,14 @@ export default async function AboutContent() {
                 counts={counts}
                 meta={meta as Record<string, CoverageMeta>}
                 brandNames={Object.fromEntries(brands.map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
-                col={{ brand: t("coverageColBrand"), count: t("coverageColCount"), active: t("coverageColActive"), discontinued: t("coverageColDiscontinued") }}
+                col={{
+                  brand: t("coverageColBrand"),
+                  count: t("coverageColCount"),
+                  photoGroup: t("coverageColPhotoGroup"),
+                  active: t("coverageColActive"),
+                  discontinued: t("coverageColDiscontinued"),
+                  cinema: t("coverageColCinema"),
+                }}
                 rowTotal={t("coverageRowTotal")}
               />
               <p className="text-xs text-zinc-400 dark:text-zinc-600">
