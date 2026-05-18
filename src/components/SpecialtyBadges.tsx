@@ -7,7 +7,7 @@ interface SpecialtyBadgesProps {
 }
 
 const cinePillCls =
-  "inline-flex items-center rounded-md bg-zinc-900 px-2 py-0.5 text-[11px] font-semibold text-white dark:bg-zinc-100 dark:text-zinc-900";
+  "inline-flex items-center rounded-md bg-zinc-100 px-2 py-0.5 text-[11px] font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200";
 
 const traitPillCls =
   "inline-flex items-center rounded-md border border-zinc-300 px-2 py-0.5 text-[11px] font-medium text-zinc-700 dark:border-zinc-600 dark:text-zinc-300";
