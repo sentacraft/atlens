@@ -40,7 +40,7 @@ export default function BrandFilterMenu({
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner side="bottom" align="start" sideOffset={6}>
-          <Menu.Popup className="min-w-44 max-w-[min(16rem,calc(100vw-1rem))] origin-(--transform-origin) overflow-hidden rounded-lg border border-zinc-200 bg-white text-sm shadow-lg duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
+          <Menu.Popup className="min-w-44 max-w-[min(16rem,calc(100vw-1rem))] origin-(--transform-origin) overflow-hidden rounded-lg border border-zinc-200 bg-white text-sm shadow-xl shadow-zinc-950/20 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
             <Menu.CheckboxItem
               checked={!hasSelection}
               onCheckedChange={() => {

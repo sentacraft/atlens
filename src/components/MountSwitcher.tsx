@@ -76,7 +76,7 @@ export default function MountSwitcher() {
       {open && (
         <div
           role="listbox"
-          className="absolute left-0 top-full mt-1.5 z-50 min-w-[8.5rem] rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 overflow-hidden"
+          className="absolute left-0 top-full mt-1.5 z-50 min-w-[8.5rem] rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-xl shadow-zinc-950/20 overflow-hidden"
         >
           {options.map((opt) => (
             <button
