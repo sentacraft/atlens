@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { FilterState } from "@/lib/lens";
+import { defaultFilters, type FilterState } from "@/lib/lens";
 import { track } from "@/lib/analytics";
 
 // Fires `filter_apply` (with a snapshot of active filters) or `filter_reset`
@@ -20,7 +20,8 @@ export function useFiltersTelemetry(filters: FilterState) {
       filters.features.length === 0 &&
       filters.typeFilter === null &&
       filters.focusFilter === null &&
-      filters.specialtyTag === null &&
+      filters.usage === defaultFilters.usage &&
+      filters.opticalTrait === null &&
       filters.focusMotorClass === null;
     const timer = setTimeout(() => {
       if (isEmpty) {

@@ -82,6 +82,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
       .slice(0, 60);
   }, [open, lenses]);
 
+  const tSpecialty = useTranslations("SpecialtyBadge");
   const computedPosterTitle = computePosterTitle(lenses, tBrand, tImage);
 
   const effectiveTitle = titleOverride ?? presetTitle ?? "";
@@ -97,7 +98,6 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     sectionFocus: tImage("sectionFocus"),
     sectionSizeWeight: tImage("sectionSizeWeight"),
     sectionFeatures: tImage("sectionFeatures"),
-    sectionDetails: tImage("sectionDetails"),
     minFocusLabel: tImage("minFocusLabel"),
     maxMagLabel: tImage("maxMagLabel"),
     macroLabel: tImage("macroLabel"),
@@ -120,14 +120,13 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     motorOther: tImage("motorOther"),
     wide: tImage("wide"),
     tele: tImage("tele"),
-    tagCine: tImage("tagCine"),
-    tagAnamorphic: tImage("tagAnamorphic"),
-    tagTilt: tImage("tagTilt"),
-    tagShift: tImage("tagShift"),
-    tagMacro: tImage("tagMacro"),
-    tagUltraMacro: tImage("tagUltraMacro"),
-    tagFisheye: tImage("tagFisheye"),
-    tagProbe: tImage("tagProbe"),
+    tagCine: tSpecialty("cine"),
+    tagAnamorphic: tSpecialty("anamorphic"),
+    tagTilt: tSpecialty("tilt"),
+    tagShift: tSpecialty("shift"),
+    tagMacro: tSpecialty("macro"),
+    tagFisheye: tSpecialty("fisheye"),
+    tagProbe: tSpecialty("probe"),
     na: tImage("na"),
     priceLabel: tImage("priceLabel"),
     usedBadge: tImage("usedBadge"),

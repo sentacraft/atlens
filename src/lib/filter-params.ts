@@ -1,5 +1,5 @@
-import { SPECIALTY_TAGS } from "./types";
-import type { SpecialtyTag } from "./types";
+import { OPTICAL_TRAITS } from "./types";
+import type { OpticalTrait } from "./types";
 import {
   defaultFilters,
   FILTER_FEATURE_KEYS,
@@ -11,6 +11,7 @@ import {
   type FocusMotorClass,
   type LensType,
   type SortKey,
+  type UsageFilter,
 } from "./lens";
 
 const FOCAL_KEYS = FOCAL_CATEGORIES.map((c) => c.key) as FocalCategory[];
@@ -20,8 +21,11 @@ const FOCUS_FILTERS: FocusFilter[] = ["auto", "manual"];
 const SORT_KEYS: SortKey[] = ["focalLength", "maxAperture", "weightG"];
 
 // Compact param keys — only non-default values are serialized.
-// b=brands, t=typeFilter, f=focusFilter, st=specialtyTag, m=focusMotorClass,
+// b=brands, t=typeFilter, f=focusFilter, u=usage, m=focusMotorClass,
 // feat=features, fc=focalCategories, sort=sortKey, dir=sortDir
+//
+// Usage default is "photo" (not null), so it is serialized only when
+// the user picks "all" or "cine".
 export function serializeFilters(filters: FilterState): URLSearchParams {
   const p = new URLSearchParams();
   if (filters.brands.length > 0) {
@@ -33,8 +37,11 @@ export function serializeFilters(filters: FilterState): URLSearchParams {
   if (filters.focusFilter) {
     p.set("f", filters.focusFilter);
   }
-  if (filters.specialtyTag) {
-    p.set("st", filters.specialtyTag);
+  if (filters.usage !== defaultFilters.usage) {
+    p.set("u", filters.usage ?? "all");
+  }
+  if (filters.opticalTrait) {
+    p.set("ot", filters.opticalTrait);
   }
   if (filters.focusMotorClass) {
     p.set("m", filters.focusMotorClass);
@@ -54,12 +61,26 @@ export function serializeFilters(filters: FilterState): URLSearchParams {
   return p;
 }
 
+function parseUsage(raw: string | null): UsageFilter {
+  if (raw === "all") {
+    return null;
+  }
+  if (raw === "cine") {
+    return "cine";
+  }
+  if (raw === "photo") {
+    return "photo";
+  }
+  return defaultFilters.usage;
+}
+
 export function parseFilters(params: URLSearchParams | { get: (key: string) => string | null }): FilterState {
   const raw = {
     b: params.get("b"),
     t: params.get("t"),
     f: params.get("f"),
-    st: params.get("st"),
+    u: params.get("u"),
+    ot: params.get("ot"),
     m: params.get("m"),
     feat: params.get("feat"),
     fc: params.get("fc"),
@@ -71,7 +92,8 @@ export function parseFilters(params: URLSearchParams | { get: (key: string) => s
     brands: raw.b ? raw.b.split(",").filter(Boolean) : [],
     typeFilter: raw.t && LENS_TYPES.includes(raw.t as LensType) ? (raw.t as LensType) : null,
     focusFilter: raw.f && FOCUS_FILTERS.includes(raw.f as FocusFilter) ? (raw.f as FocusFilter) : null,
-    specialtyTag: raw.st && (SPECIALTY_TAGS as readonly string[]).includes(raw.st) ? (raw.st as SpecialtyTag) : null,
+    usage: parseUsage(raw.u),
+    opticalTrait: raw.ot && (OPTICAL_TRAITS as readonly string[]).includes(raw.ot) ? (raw.ot as OpticalTrait) : null,
     focusMotorClass: raw.m && MOTOR_CLASSES.includes(raw.m as FocusMotorClass) ? (raw.m as FocusMotorClass) : null,
     features: raw.feat
       ? (raw.feat.split(",").filter((k) => (FILTER_FEATURE_KEYS as readonly string[]).includes(k)) as FilterFeatureKey[])

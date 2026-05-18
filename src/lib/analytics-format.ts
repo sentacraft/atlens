@@ -3,7 +3,7 @@
 // can actually scan. Keep these functions pure and synchronous so they
 // stay cheap to call inline in JSX cells.
 
-import { getAllLenses } from "@/lib/lens";
+import { getAllLenses, defaultFilters } from "@/lib/lens";
 import { lensDisplayName } from "@/lib/lens.format";
 
 // Lazy-built lookup: slug → "Brand Series Model". Resolved once per
@@ -50,7 +50,7 @@ export function formatLensSlugList(joined: string): string {
 //
 // Example input:
 //   {"brands":["sigma"],"typeFilter":"zoom","focusFilter":"auto",
-//    "specialtyTag":null,"focusMotorClass":null,"features":[],
+//    "usage":"photo","focusMotorClass":null,"features":[],
 //    "focalCategories":["standard"]}
 // Becomes:
 //   "Brand: sigma · Zoom · AF · Focal: standard"
@@ -77,8 +77,8 @@ export function formatFilterSnapshot(json: string): string {
   if (typeof f.focusFilter === "string" && f.focusFilter) {
     parts.push(f.focusFilter === "auto" ? "AF" : "MF");
   }
-  if (typeof f.specialtyTag === "string" && f.specialtyTag) {
-    parts.push(`Specialty: ${f.specialtyTag}`);
+  if (typeof f.usage === "string" && f.usage !== defaultFilters.usage) {
+    parts.push(`Usage: ${f.usage}`);
   }
   if (typeof f.focusMotorClass === "string" && f.focusMotorClass) {
     parts.push(`Motor: ${f.focusMotorClass}`);

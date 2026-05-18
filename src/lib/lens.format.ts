@@ -5,7 +5,6 @@ import type {
   MaxMagnification,
   MinFocusDistance,
   Mount,
-  SpecialtyTag,
 } from "./types";
 import { SPEC_NA } from "./types";
 import { CROP_FACTOR } from "./lens";
@@ -206,19 +205,6 @@ export function maxMagnificationRichDisplay(
   }
 
   return `${maxMag.value}x`;
-}
-
-/**
- * Formats specialty tags as a comma-separated readable string.
- */
-export function specialtyTagsDisplay(
-  tags: SpecialtyTag[] | undefined,
-  labels: Record<SpecialtyTag, string>
-): string | undefined {
-  if (!tags || tags.length === 0) {
-    return undefined;
-  }
-  return tags.map((tag) => labels[tag]).join(", ");
 }
 
 // --- Lens name formatters ---

@@ -110,8 +110,8 @@ export default function LensCard({
           className="flex flex-1 flex-col gap-2 p-3 sm:gap-2.5 sm:p-4 max-xs:min-w-0"
         >
           <div className="flex flex-col gap-1">
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400 truncate max-xs:pr-9">
+            <div className="flex items-center justify-between gap-2 max-xs:pr-9">
+              <p className="min-w-0 truncate text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
                 {fmt.lensSubtitleLine(tBrand(lens.brand), lens.series)}
               </p>
               {lens.releaseYear ? (
@@ -133,7 +133,7 @@ export default function LensCard({
             </h3>
           </div>
 
-          <div className="flex gap-1 flex-wrap min-h-[20px]">
+          <div className="flex gap-1 flex-wrap items-center min-h-[20px]">
             {badges.map((badge) => (
               <Badge
                 key={badge.label}
