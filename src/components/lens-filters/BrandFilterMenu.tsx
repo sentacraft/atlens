@@ -64,7 +64,7 @@ export default function BrandFilterMenu({
                 }
               }}
               closeOnClick={false}
-              className="relative flex cursor-pointer items-center gap-2 px-3 py-2 outline-none data-highlighted:bg-zinc-100 dark:data-highlighted:bg-zinc-800"
+              className="relative flex cursor-pointer items-center gap-2 px-3 py-2 outline-none pointer-fine:data-highlighted:bg-zinc-100 dark:pointer-fine:data-highlighted:bg-zinc-800"
             >
               <CheckboxIndicator checked={!hasSelection} />
               <span className="text-zinc-800 dark:text-zinc-200">{allLabel}</span>
@@ -79,7 +79,7 @@ export default function BrandFilterMenu({
                     checked={isChecked}
                     onCheckedChange={() => onToggle(brand)}
                     closeOnClick={false}
-                    className="relative flex cursor-pointer items-center gap-2 px-3 py-2 outline-none data-highlighted:bg-zinc-100 dark:data-highlighted:bg-zinc-800"
+                    className="relative flex cursor-pointer items-center gap-2 px-3 py-2 outline-none pointer-fine:data-highlighted:bg-zinc-100 dark:pointer-fine:data-highlighted:bg-zinc-800"
                   >
                     <CheckboxIndicator checked={isChecked} />
                     <span className="truncate text-zinc-800 dark:text-zinc-200">{brandLabels[brand] ?? brand}</span>
