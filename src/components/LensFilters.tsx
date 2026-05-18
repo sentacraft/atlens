@@ -213,15 +213,6 @@ export default function LensFilters({
           />
         </FilterRow>
 
-        <FilterRow label={t("usage")}>
-          <TypeSegmentedControl
-            ariaLabel={t("usage")}
-            options={usageOptions}
-            value={filters.usage}
-            onChange={(v) => updateFilters("usage", v)}
-          />
-        </FilterRow>
-
         <FilterRow label={t("focusFilter")}>
           <TypeSegmentedControl
             ariaLabel={t("focusFilter")}
@@ -254,6 +245,15 @@ export default function LensFilters({
 
             <FilterRow label={t("features")}>
               <FeatureToggleGroup options={featureOptions} />
+            </FilterRow>
+
+            <FilterRow label={t("usage")}>
+              <TypeSegmentedControl
+                ariaLabel={t("usage")}
+                options={usageOptions}
+                value={filters.usage}
+                onChange={(v) => updateFilters("usage", v)}
+              />
             </FilterRow>
 
             {availableOpticalTraits.length > 0 && (
