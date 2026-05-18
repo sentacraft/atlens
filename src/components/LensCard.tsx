@@ -13,8 +13,6 @@ import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import * as fmt from "@/lib/lens.format";
 import { Button } from "@/components/ui/button";
-import SpecialtyBadges from "@/components/SpecialtyBadges";
-import { deriveSpecialty } from "@/lib/lens-specialty";
 
 interface Props {
   lens: Lens;
@@ -34,8 +32,6 @@ export default function LensCard({
   const t = useTranslations("LensList");
   const tBrand = useTranslations("Brands");
   const hookAttr = useUiHookAttr();
-  const specialty = deriveSpecialty(lens);
-  const hasBadges = specialty.isCine || specialty.opticalTraits.length > 0;
   const equivDisplay = fmt.focalRangeDisplay(fmt.focalEquiv(lens.focalLengthMin, lens.mount), fmt.focalEquiv(lens.focalLengthMax, lens.mount));
   const mfdDisplay = lens.minFocusDistance ? `${lens.minFocusDistance.normal.cm}cm` : "—";
   const filterDisplay = fmt.filterSizeDisplay(lens.filterMm);
@@ -129,19 +125,12 @@ export default function LensCard({
                 {lens.releaseYear}
               </p>
             ) : null}
-            <div className="flex min-h-[2.75rem] flex-col gap-1">
-              <h3
-                className={`font-semibold text-sm text-zinc-900 dark:text-zinc-50 leading-snug ${hasBadges ? "line-clamp-1" : "line-clamp-2"}`}
-                title={lens.model}
-              >
-                {lens.model}
-              </h3>
-              {hasBadges ? (
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <SpecialtyBadges {...specialty} maxInline={3} />
-                </div>
-              ) : null}
-            </div>
+            <h3
+              className="font-semibold text-sm text-zinc-900 dark:text-zinc-50 leading-snug line-clamp-2 min-h-[2.5rem]"
+              title={lens.model}
+            >
+              {lens.model}
+            </h3>
           </div>
 
           <div className="flex gap-1 flex-wrap items-center min-h-[20px]">
