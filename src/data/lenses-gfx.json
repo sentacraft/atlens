@@ -247,7 +247,7 @@
     "focalLengthMax": 30,
     "maxAperture": 5.6,
     "minAperture": 32,
-    "specialtyTags": [
+    "opticalTraits": [
       "tilt",
       "shift"
     ],
@@ -437,9 +437,7 @@
     "focalLengthMax": 90,
     "maxTStop": 3.5,
     "minTStop": 32,
-    "specialtyTags": [
-      "cine"
-    ],
+    "isCine": true,
     "af": true,
     "ois": true,
     "wr": true,
@@ -1279,7 +1277,7 @@
     "focalLengthMax": 110,
     "maxAperture": 5.6,
     "minAperture": 32,
-    "specialtyTags": [
+    "opticalTraits": [
       "tilt",
       "shift",
       "macro"
@@ -1363,7 +1361,7 @@
     "focalLengthMax": 120,
     "maxAperture": 4,
     "minAperture": 32,
-    "specialtyTags": [
+    "opticalTraits": [
       "macro"
     ],
     "af": true,
@@ -1599,6 +1597,580 @@
           "镜头袋"
         ]
       }
+    }
+  },
+  {
+    "id": "laowa-gf-17mmf40-d-dreamer-g",
+    "brand": "laowa",
+    "mount": "G",
+    "series": "GF",
+    "model": "17mm F4.0 D-Dreamer",
+    "focalLengthMin": 17,
+    "focalLengthMax": 17,
+    "maxAperture": 4,
+    "minAperture": 32,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 829,
+    "diameterMm": 88,
+    "length": {
+      "mm": 124.5
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 20
+      }
+    },
+    "maxMagnification": {
+      "value": 0.28
+    },
+    "angleOfView": 113,
+    "angleOfViewCalc": 116.3,
+    "apertureBladeCount": 5,
+    "releaseYear": 2019,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 7950,
+          "currency": "CNY",
+          "source": "京东·老蛙官方旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 999,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "filterMm": 86,
+    "lensConfiguration": {
+      "groups": 14,
+      "elements": 21
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-2"
+    }
+  },
+  {
+    "id": "laowa-gf-19mmf28-cd-dreamer-g",
+    "brand": "laowa",
+    "mount": "G",
+    "series": "GF",
+    "model": "19mm F2.8 C&D-Dreamer",
+    "focalLengthMin": 19,
+    "focalLengthMax": 19,
+    "maxAperture": 2.8,
+    "minAperture": 22,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 546,
+    "diameterMm": 82.6,
+    "length": {
+      "mm": 80
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 18
+      }
+    },
+    "maxMagnification": {
+      "value": 0.185
+    },
+    "angleOfView": 110,
+    "angleOfViewCalc": 110.5,
+    "apertureBladeCount": 5,
+    "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 6950,
+          "currency": "CNY",
+          "source": "京东·老蛙官方旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 999,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm G",
+      "Hasselblad XCD"
+    ],
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 12
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-59"
+    }
+  },
+  {
+    "id": "laowa-ff-8-15mmf28-fisheye-zoom-g",
+    "brand": "laowa",
+    "mount": "G",
+    "series": "FF",
+    "model": "II 8-15mm F2.8 Fisheye Zoom",
+    "generation": 2,
+    "focalLengthMin": 8,
+    "focalLengthMax": 15,
+    "maxAperture": 2.8,
+    "minAperture": 22,
+    "opticalTraits": [
+      "fisheye"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 650,
+    "diameterMm": 76.4,
+    "length": {
+      "mm": 94.5
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 16
+      }
+    },
+    "maxMagnification": {
+      "value": 0.23
+    },
+    "angleOfView": [
+      180,
+      175
+    ],
+    "angleOfViewCalc": [
+      147.4,
+      122.6
+    ],
+    "apertureBladeCount": 9,
+    "releaseYear": 2025,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 699,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Nikon Z",
+      "Canon RF",
+      "Leica L",
+      "Hasselblad XCD",
+      "Fujifilm G"
+    ],
+    "filterMm": "N/A",
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 13
+    },
+    "fieldNotes": {
+      "lengthMm": "Values are from the Canon RF-mount version; the G-mount variant may differ slightly.",
+      "diameterMm": "Values are from the Canon RF-mount version; the G-mount variant may differ slightly.",
+      "filterMm": "Bulbous fisheye front element; no filter thread."
+    },
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-88"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "lengthMm": "数值取自佳能 RF 卡口版本；G 卡口版本可能略有差异。",
+          "diameterMm": "数值取自佳能 RF 卡口版本；G 卡口版本可能略有差异。",
+          "filterMm": "灯泡状鱼眼前组镜片；无滤镜螺纹。"
+        }
+      }
+    }
+  },
+  {
+    "id": "laowa-ff-s-17mmf4-c-dreamer-g",
+    "brand": "laowa",
+    "mount": "G",
+    "series": "FF",
+    "model": "II S 17mm F4 C-Dreamer",
+    "generation": 2,
+    "focalLengthMin": 17,
+    "focalLengthMax": 17,
+    "maxAperture": 4,
+    "minAperture": 22,
+    "opticalTraits": [
+      "shift"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 770,
+    "diameterMm": 93,
+    "length": {
+      "mm": 111
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 25
+      }
+    },
+    "maxMagnification": {
+      "value": 0.131
+    },
+    "angleOfView": 126.2,
+    "angleOfViewCalc": 116.3,
+    "apertureBladeCount": 14,
+    "releaseYear": 2026,
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 999,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Nikon Z",
+      "Canon RF",
+      "Leica L",
+      "Fujifilm G",
+      "Hasselblad XCD"
+    ],
+    "filterMm": 86,
+    "lensConfiguration": {
+      "groups": 12,
+      "elements": 18
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-92"
+    }
+  },
+  {
+    "id": "laowa-ff-ts-17mmf4-c-dreamer-g",
+    "brand": "laowa",
+    "mount": "G",
+    "series": "FF",
+    "model": "II TS 17mm F4 C-Dreamer",
+    "generation": 2,
+    "focalLengthMin": 17,
+    "focalLengthMax": 17,
+    "maxAperture": 4,
+    "minAperture": 22,
+    "opticalTraits": [
+      "tilt",
+      "shift"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 810,
+    "diameterMm": 93,
+    "length": {
+      "mm": 111
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 25
+      }
+    },
+    "maxMagnification": {
+      "value": 0.131
+    },
+    "angleOfView": 126.2,
+    "angleOfViewCalc": 116.3,
+    "apertureBladeCount": 14,
+    "releaseYear": 2026,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 8469,
+          "currency": "CNY",
+          "source": "天猫·老蛙旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1249,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Nikon Z",
+      "Canon RF",
+      "Leica L",
+      "Fujifilm G",
+      "Hasselblad XCD"
+    ],
+    "filterMm": 86,
+    "lensConfiguration": {
+      "groups": 12,
+      "elements": 18
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-92"
+    }
+  },
+  {
+    "id": "laowa-ff-ts-35mmf28-c-dreamer-macro-05x-g",
+    "brand": "laowa",
+    "mount": "G",
+    "series": "FF",
+    "model": "II TS 35mm F2.8 C-Dreamer Macro 0.5X",
+    "generation": 2,
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 2.8,
+    "minAperture": 22,
+    "opticalTraits": [
+      "tilt",
+      "shift",
+      "macro"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 1350,
+    "diameterMm": 105,
+    "length": {
+      "mm": 149
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 22.8
+      }
+    },
+    "maxMagnification": {
+      "value": 0.5
+    },
+    "angleOfView": 87.5,
+    "angleOfViewCalc": 76.1,
+    "apertureBladeCount": 15,
+    "releaseYear": 2025,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 8469,
+          "currency": "CNY",
+          "source": "天猫·老蛙旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1249,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Nikon Z",
+      "Canon RF",
+      "Leica L",
+      "Fujifilm G",
+      "Hasselblad XCD"
+    ],
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 12,
+      "elements": 14
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-93"
+    }
+  },
+  {
+    "id": "laowa-ff-ts-55mmf28-macro-1x-g",
+    "brand": "laowa",
+    "mount": "G",
+    "series": "FF",
+    "model": "II TS 55mm F2.8 Macro 1X",
+    "generation": 2,
+    "focalLengthMin": 55,
+    "focalLengthMax": 55,
+    "maxAperture": 2.8,
+    "minAperture": 22,
+    "opticalTraits": [
+      "tilt",
+      "shift",
+      "macro"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 1345,
+    "diameterMm": 85,
+    "length": {
+      "mm": 168.5
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 27
+      }
+    },
+    "maxMagnification": {
+      "value": 1
+    },
+    "angleOfView": 62.7,
+    "angleOfViewCalc": 52.9,
+    "apertureBladeCount": 15,
+    "releaseYear": 2024,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 8469,
+          "currency": "CNY",
+          "source": "天猫·老蛙旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1249,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Canon RF",
+      "Nikon Z",
+      "Leica L",
+      "Fujifilm G",
+      "Hasselblad XCD"
+    ],
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 11,
+      "elements": 14
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-82"
+    }
+  },
+  {
+    "id": "laowa-ff-ts-100mmf28-macro-1x-g",
+    "brand": "laowa",
+    "mount": "G",
+    "series": "FF",
+    "model": "II TS 100mm F2.8 Macro 1X",
+    "generation": 2,
+    "focalLengthMin": 100,
+    "focalLengthMax": 100,
+    "maxAperture": 2.8,
+    "minAperture": 22,
+    "opticalTraits": [
+      "tilt",
+      "shift",
+      "macro"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 1215,
+    "diameterMm": 85,
+    "length": {
+      "mm": 162
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 32
+      }
+    },
+    "maxMagnification": {
+      "value": 1
+    },
+    "angleOfView": 37,
+    "angleOfViewCalc": 30.6,
+    "apertureBladeCount": 15,
+    "releaseYear": 2024,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 8469,
+          "currency": "CNY",
+          "source": "天猫·老蛙旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1249,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Canon RF",
+      "Nikon Z",
+      "Leica L",
+      "Fujifilm G",
+      "Hasselblad XCD"
+    ],
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 13
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-83"
     }
   }
 ]
