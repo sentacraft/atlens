@@ -139,6 +139,8 @@ flowchart TD
 - Deterministic fields are computed in code — never inferred by LLM
 - Stage isolation: each step may only build on facts confirmed in the prior step
 
+**A note on accuracy.** X-Glass covers hundreds of lenses across dozens of spec dimensions, and we kindly ask for your patience with the small errors and stale entries that slip through. Bug reports via the in-app feedback or GitHub issues are very welcome — for anything critical to a purchase, please confirm on the manufacturer's official page first.
+
 ## Local Development
 
 ```bash

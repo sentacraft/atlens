@@ -358,6 +358,7 @@
     "coverageViewLink": "查看收录范围 →",
     "dataAccuracyTitle": "数据与准确性",
     "dataAccuracyIntro": "X-Glass 的全部数据来自两条独立的 pipeline。一条负责参数，从品牌官网采集后做结构化处理；一条负责价格，独立从电商渠道采样参考价格。两条完全隔离，各有自己的数据源和质控流程。",
+    "dataAccuracyCaveat": "X-Glass 收录上百支镜头、几十个字段维度，恳请大家包容少量错漏和数据滞后。涉及购买决策时，关键参数请到品牌官网再确认一次。",
     "dataSpecTitle": "参数数据",
     "dataSpecPoint1Title": "数据仅来自品牌官网",
     "dataSpecPoint1Body": "公开发布的参数值都来自品牌官网；这些参数不会取自第三方资料。",

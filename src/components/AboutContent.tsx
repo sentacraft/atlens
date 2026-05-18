@@ -233,6 +233,12 @@ export default async function AboutContent() {
           {t("dataAccuracyIntro")}
         </p>
 
+        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            {t("dataAccuracyCaveat")}
+          </p>
+        </div>
+
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
           {t("dataAccuracyReport")}{" "}
           <FeedbackTrigger
