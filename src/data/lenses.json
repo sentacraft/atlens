@@ -6940,8 +6940,7 @@
     "id": "laowa-cf-4p5-10mmf28-fisheye-zoom-x",
     "brand": "laowa",
     "mount": "X",
-    "series": "CF",
-    "model": "4.5-10mm F2.8 Fisheye Zoom",
+    "model": "CF 4.5-10mm F2.8 Fisheye Zoom",
     "focalLengthMin": 4.5,
     "focalLengthMax": 10,
     "maxAperture": 2.8,
@@ -7024,8 +7023,7 @@
     "id": "laowa-cf-4mmf28-210-circular-fisheye-x",
     "brand": "laowa",
     "mount": "X",
-    "series": "CF",
-    "model": "4mm F2.8 210° Circular Fisheye",
+    "model": "CF 4mm F2.8 210° Circular Fisheye",
     "focalLengthMin": 4,
     "focalLengthMax": 4,
     "maxAperture": 2.8,
@@ -7105,8 +7103,8 @@
     "id": "laowa-cf-8-16mmf35-50-c-dreamer-x",
     "brand": "laowa",
     "mount": "X",
-    "series": "CF",
-    "model": "8-16mm F3.5-5.0 C-Dreamer",
+    "series": "Dreamer",
+    "model": "CF 8-16mm F3.5-5.0 C-",
     "focalLengthMin": 8,
     "focalLengthMax": 16,
     "maxAperture": [
@@ -7182,8 +7180,8 @@
     "id": "laowa-cf-9mmf28-cd-dreamer-x",
     "brand": "laowa",
     "mount": "X",
-    "series": "CF",
-    "model": "9mm F2.8 C&D-Dreamer",
+    "series": "Dreamer",
+    "model": "CF 9mm F2.8 C&D-",
     "focalLengthMin": 9,
     "focalLengthMax": 9,
     "maxAperture": 2.8,
@@ -7261,8 +7259,7 @@
     "id": "laowa-cf-10mmf40-cookie-x",
     "brand": "laowa",
     "mount": "X",
-    "series": "CF",
-    "model": "10mm F4.0 Cookie",
+    "model": "CF 10mm F4.0 Cookie",
     "focalLengthMin": 10,
     "focalLengthMax": 10,
     "maxAperture": 4,
@@ -7341,8 +7338,7 @@
     "id": "laowa-cf-12-24mmf56-zoom-shift-x",
     "brand": "laowa",
     "mount": "X",
-    "series": "CF",
-    "model": "12-24mm F5.6 Zoom Shift",
+    "model": "CF 12-24mm F5.6 Zoom Shift",
     "focalLengthMin": 12,
     "focalLengthMax": 24,
     "maxAperture": 5.6,
@@ -7419,11 +7415,161 @@
     }
   },
   {
+    "id": "laowa-cf-argus-25mm-f095-apo-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "Argus",
+    "model": "CF 25mm F0.95 APO",
+    "focalLengthMin": 25,
+    "focalLengthMax": 25,
+    "maxAperture": 0.95,
+    "minAperture": 11,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 575,
+    "diameterMm": 71.5,
+    "length": {
+      "mm": 81
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 34
+      }
+    },
+    "maxMagnification": {
+      "value": 0.1
+    },
+    "angleOfView": 58.8,
+    "angleOfViewCalc": 59,
+    "apertureBladeCount": 9,
+    "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3350,
+          "currency": "CNY",
+          "source": "天猫·老蛙旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 549,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Nikon Z",
+      "Canon RF",
+      "Fujifilm X",
+      "Canon EF-M"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 14,
+      "aspherical": 1,
+      "ed": 1,
+      "highRefractive": 2,
+      "sourceText": "9 groups 14 elements (incl. 1 aspherical, 1 ED, 2 special high-refractive)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-58"
+    }
+  },
+  {
+    "id": "laowa-cf-argus-33mmf095-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "Argus",
+    "model": "CF 33mm F0.95",
+    "focalLengthMin": 33,
+    "focalLengthMax": 33,
+    "maxAperture": 0.95,
+    "minAperture": 11,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 590,
+    "diameterMm": 71.5,
+    "length": {
+      "mm": 83
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 35
+      }
+    },
+    "maxMagnification": {
+      "value": 0.125
+    },
+    "angleOfView": 46.2,
+    "angleOfViewCalc": 46.4,
+    "apertureBladeCount": 9,
+    "releaseYear": 2021,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2960,
+          "currency": "CNY",
+          "source": "京东·老蛙官方旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 449,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        },
+        "used": {
+          "price": 400,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Nikon Z",
+      "Canon RF",
+      "Canon EF-M"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 14,
+      "aspherical": 1,
+      "ed": 1,
+      "highRefractive": 3,
+      "sourceText": "9 groups 14 elements (incl. 1 aspherical, 1 ED, 3 special high-refractive)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-42"
+    }
+  },
+  {
     "id": "laowa-cf-65mmf28-ca-dreamer-macro-2x-x",
     "brand": "laowa",
     "mount": "X",
-    "series": "CF",
-    "model": "65mm F2.8 CA-Dreamer Macro 2X",
+    "series": "Dreamer",
+    "model": "CF 65mm F2.8 CA- Macro 2X",
     "focalLengthMin": 65,
     "focalLengthMax": 65,
     "maxAperture": 2.8,
@@ -7496,156 +7642,6 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "https://www.laowalens.com/camera-lens-33"
-    }
-  },
-  {
-    "id": "laowa-cf-argus-25mm-f095-apo-x",
-    "brand": "laowa",
-    "mount": "X",
-    "series": "CF",
-    "model": "Argus 25mm F0.95 APO",
-    "focalLengthMin": 25,
-    "focalLengthMax": 25,
-    "maxAperture": 0.95,
-    "minAperture": 11,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 575,
-    "diameterMm": 71.5,
-    "length": {
-      "mm": 81
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 34
-      }
-    },
-    "maxMagnification": {
-      "value": 0.1
-    },
-    "angleOfView": 58.8,
-    "angleOfViewCalc": 59,
-    "apertureBladeCount": 9,
-    "releaseYear": 2022,
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 3350,
-          "currency": "CNY",
-          "source": "天猫·老蛙旗舰店",
-          "sampledAt": "2026-05-18"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 549,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        }
-      }
-    },
-    "compatibleMounts": [
-      "Sony E",
-      "Nikon Z",
-      "Canon RF",
-      "Fujifilm X",
-      "Canon EF-M"
-    ],
-    "filterMm": 62,
-    "lensConfiguration": {
-      "groups": 9,
-      "elements": 14,
-      "aspherical": 1,
-      "ed": 1,
-      "highRefractive": 2,
-      "sourceText": "9 groups 14 elements (incl. 1 aspherical, 1 ED, 2 special high-refractive)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.laowalens.com/camera-lens-58"
-    }
-  },
-  {
-    "id": "laowa-cf-argus-33mmf095-x",
-    "brand": "laowa",
-    "mount": "X",
-    "series": "CF",
-    "model": "Argus 33mm F0.95",
-    "focalLengthMin": 33,
-    "focalLengthMax": 33,
-    "maxAperture": 0.95,
-    "minAperture": 11,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 590,
-    "diameterMm": 71.5,
-    "length": {
-      "mm": 83
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 35
-      }
-    },
-    "maxMagnification": {
-      "value": 0.125
-    },
-    "angleOfView": 46.2,
-    "angleOfViewCalc": 46.4,
-    "apertureBladeCount": 9,
-    "releaseYear": 2021,
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 2960,
-          "currency": "CNY",
-          "source": "京东·老蛙官方旗舰店",
-          "sampledAt": "2026-05-18"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 449,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        },
-        "used": {
-          "price": 400,
-          "currency": "USD",
-          "source": "eBay",
-          "sampledAt": "2026-05-18"
-        }
-      }
-    },
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Nikon Z",
-      "Canon RF",
-      "Canon EF-M"
-    ],
-    "filterMm": 62,
-    "lensConfiguration": {
-      "groups": 9,
-      "elements": 14,
-      "aspherical": 1,
-      "ed": 1,
-      "highRefractive": 3,
-      "sourceText": "9 groups 14 elements (incl. 1 aspherical, 1 ED, 3 special high-refractive)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.laowalens.com/camera-lens-42"
     }
   },
   {
@@ -9790,7 +9786,7 @@
     "id": "tamron-150-500mm-f5-67-di-iii-vc-vxd-x-x",
     "brand": "tamron",
     "mount": "X",
-    "model": "150-500mm F/5-6.7 Di III VC VXD X",
+    "model": "150-500mm F/5-6.7 Di III VC VXD",
     "generation": 3,
     "focalLengthMin": 150,
     "focalLengthMax": 500,
@@ -12532,7 +12528,7 @@
     "brand": "voigtlander",
     "mount": "X",
     "series": "Color Skopar",
-    "model": "18 mm F2.8 aspherical X-Mount",
+    "model": "18mm F2.8 aspherical",
     "focalLengthMin": 18,
     "focalLengthMax": 18,
     "maxAperture": 2.8,
@@ -12611,7 +12607,7 @@
     "brand": "voigtlander",
     "mount": "X",
     "series": "Nokton",
-    "model": "23 mm F1.2 X",
+    "model": "23mm F1.2",
     "focalLengthMin": 23,
     "focalLengthMax": 23,
     "maxAperture": 1.2,
@@ -12684,7 +12680,7 @@
     "brand": "voigtlander",
     "mount": "X",
     "series": "Ultron",
-    "model": "27 mm F2.0 X",
+    "model": "27mm F2.0",
     "focalLengthMin": 27,
     "focalLengthMax": 27,
     "maxAperture": 2,
@@ -12760,7 +12756,7 @@
     "brand": "voigtlander",
     "mount": "X",
     "series": "Nokton",
-    "model": "35 mm F0.9 aspherical X-Mount",
+    "model": "35mm F0.9 aspherical",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
     "maxAperture": 0.9,
@@ -12840,7 +12836,7 @@
     "brand": "voigtlander",
     "mount": "X",
     "series": "Nokton",
-    "model": "35 mm F1.2 X",
+    "model": "35mm F1.2",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
     "maxAperture": 1.2,
@@ -12913,7 +12909,7 @@
     "brand": "voigtlander",
     "mount": "X",
     "series": "Macro APO-Ultron",
-    "model": "35 mm F2.0 X",
+    "model": "35mm F2.0",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
     "maxAperture": 2,
@@ -12998,7 +12994,7 @@
     "brand": "voigtlander",
     "mount": "X",
     "series": "Nokton",
-    "model": "50 mm F1.2 X-Mount",
+    "model": "50mm F1.2",
     "focalLengthMin": 50,
     "focalLengthMax": 50,
     "maxAperture": 1.2,
