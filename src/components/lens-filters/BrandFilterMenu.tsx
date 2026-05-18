@@ -55,7 +55,7 @@ export default function BrandFilterMenu({
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner side="bottom" align="start" sideOffset={6}>
-          <Menu.Popup className="min-w-[18rem] max-w-[min(22rem,calc(100vw-1rem))] origin-(--transform-origin) overflow-hidden rounded-lg border border-zinc-200 bg-white text-sm shadow-xl shadow-zinc-950/20 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
+          <Menu.Popup className="min-w-[18rem] max-w-[min(22rem,calc(100vw-1rem))] origin-(--transform-origin) overflow-hidden rounded-lg border border-zinc-200 bg-white p-1.5 text-sm shadow-xl shadow-zinc-950/20 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
             <Menu.CheckboxItem
               checked={!hasSelection}
               onCheckedChange={() => {
@@ -69,7 +69,7 @@ export default function BrandFilterMenu({
               <CheckboxIndicator checked={!hasSelection} />
               <span className="text-zinc-800 dark:text-zinc-200">{allLabel}</span>
             </Menu.CheckboxItem>
-            <div className="h-px bg-zinc-100 dark:bg-zinc-800" />
+            <div className="-mx-1.5 my-1 h-px bg-zinc-100 dark:bg-zinc-800" />
             <div className="grid grid-cols-2">
               {brands.map((brand) => {
                 const isChecked = selected.includes(brand);
