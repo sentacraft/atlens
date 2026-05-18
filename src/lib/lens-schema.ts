@@ -328,6 +328,13 @@ export const KNOWN_DISTINCT_PAIRS = new Set([
   makeAllowlistKey(
     "fujifilm-xc-50-230mmf45-67-ois-ii-x",
     "fujifilm-xc-50-230mmf45-67-ois-x"),
+  // S 17mm is shift-only; TS 17mm adds an internal tilt mechanism (+40g).
+  // Laowa sells them as separate SKUs sharing the same product page and
+  // outer housing (same length/diameter, same optical formula). The diff
+  // is opticalTraits ["shift"] vs ["tilt","shift"] and weight 770g vs 810g.
+  makeAllowlistKey(
+    "laowa-ff-s-17mmf4-c-dreamer-g",
+    "laowa-ff-ts-17mmf4-c-dreamer-g"),
 ]);
 
 // Fields excluded from the spec similarity comparison.
