@@ -1600,137 +1600,10 @@
     }
   },
   {
-    "id": "laowa-gf-17mmf40-d-dreamer-g",
-    "brand": "laowa",
-    "mount": "G",
-    "series": "GF",
-    "model": "17mm F4.0 D-Dreamer",
-    "focalLengthMin": 17,
-    "focalLengthMax": 17,
-    "maxAperture": 4,
-    "minAperture": 32,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 829,
-    "diameterMm": 88,
-    "length": {
-      "mm": 124.5
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 20
-      }
-    },
-    "maxMagnification": {
-      "value": 0.28
-    },
-    "angleOfView": 113,
-    "angleOfViewCalc": 116.3,
-    "apertureBladeCount": 5,
-    "releaseYear": 2019,
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 7950,
-          "currency": "CNY",
-          "source": "京东·老蛙官方旗舰店",
-          "sampledAt": "2026-05-18"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 999,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        }
-      }
-    },
-    "filterMm": 86,
-    "lensConfiguration": {
-      "groups": 14,
-      "elements": 21
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.laowalens.com/camera-lens-2"
-    }
-  },
-  {
-    "id": "laowa-gf-19mmf28-cd-dreamer-g",
-    "brand": "laowa",
-    "mount": "G",
-    "series": "GF",
-    "model": "19mm F2.8 C&D-Dreamer",
-    "focalLengthMin": 19,
-    "focalLengthMax": 19,
-    "maxAperture": 2.8,
-    "minAperture": 22,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 546,
-    "diameterMm": 82.6,
-    "length": {
-      "mm": 80
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 18
-      }
-    },
-    "maxMagnification": {
-      "value": 0.185
-    },
-    "angleOfView": 110,
-    "angleOfViewCalc": 110.5,
-    "apertureBladeCount": 5,
-    "releaseYear": 2022,
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 6950,
-          "currency": "CNY",
-          "source": "京东·老蛙官方旗舰店",
-          "sampledAt": "2026-05-18"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 999,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        }
-      }
-    },
-    "compatibleMounts": [
-      "Fujifilm G",
-      "Hasselblad XCD"
-    ],
-    "filterMm": 77,
-    "lensConfiguration": {
-      "groups": 10,
-      "elements": 12
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.laowalens.com/camera-lens-59"
-    }
-  },
-  {
     "id": "laowa-ff-8-15mmf28-fisheye-zoom-g",
     "brand": "laowa",
     "mount": "G",
-    "series": "FF",
-    "model": "II 8-15mm F2.8 Fisheye Zoom",
+    "model": "FF II 8-15mm F2.8 Fisheye Zoom",
     "generation": 2,
     "focalLengthMin": 8,
     "focalLengthMax": 15,
@@ -1813,8 +1686,8 @@
     "id": "laowa-ff-s-17mmf4-c-dreamer-g",
     "brand": "laowa",
     "mount": "G",
-    "series": "FF",
-    "model": "II S 17mm F4 C-Dreamer",
+    "series": "Dreamer",
+    "model": "FF II S 17mm F4 C-",
     "generation": 2,
     "focalLengthMin": 17,
     "focalLengthMax": 17,
@@ -1878,8 +1751,8 @@
     "id": "laowa-ff-ts-17mmf4-c-dreamer-g",
     "brand": "laowa",
     "mount": "G",
-    "series": "FF",
-    "model": "II TS 17mm F4 C-Dreamer",
+    "series": "Dreamer",
+    "model": "FF II TS 17mm F4 C-",
     "generation": 2,
     "focalLengthMin": 17,
     "focalLengthMax": 17,
@@ -1952,8 +1825,8 @@
     "id": "laowa-ff-ts-35mmf28-c-dreamer-macro-05x-g",
     "brand": "laowa",
     "mount": "G",
-    "series": "FF",
-    "model": "II TS 35mm F2.8 C-Dreamer Macro 0.5X",
+    "series": "Dreamer",
+    "model": "FF II TS 35mm F2.8 C- Macro 0.5X",
     "generation": 2,
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -2027,8 +1900,7 @@
     "id": "laowa-ff-ts-55mmf28-macro-1x-g",
     "brand": "laowa",
     "mount": "G",
-    "series": "FF",
-    "model": "II TS 55mm F2.8 Macro 1X",
+    "model": "FF II TS 55mm F2.8 Macro 1X",
     "generation": 2,
     "focalLengthMin": 55,
     "focalLengthMax": 55,
@@ -2102,8 +1974,7 @@
     "id": "laowa-ff-ts-100mmf28-macro-1x-g",
     "brand": "laowa",
     "mount": "G",
-    "series": "FF",
-    "model": "II TS 100mm F2.8 Macro 1X",
+    "model": "FF II TS 100mm F2.8 Macro 1X",
     "generation": 2,
     "focalLengthMin": 100,
     "focalLengthMax": 100,
@@ -2171,6 +2042,132 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "https://www.laowalens.com/camera-lens-83"
+    }
+  },
+  {
+    "id": "laowa-gf-17mmf40-d-dreamer-g",
+    "brand": "laowa",
+    "mount": "G",
+    "series": "Dreamer",
+    "model": "GF 17mm F4.0 D-",
+    "focalLengthMin": 17,
+    "focalLengthMax": 17,
+    "maxAperture": 4,
+    "minAperture": 32,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 829,
+    "diameterMm": 88,
+    "length": {
+      "mm": 124.5
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 20
+      }
+    },
+    "maxMagnification": {
+      "value": 0.28
+    },
+    "angleOfView": 113,
+    "angleOfViewCalc": 116.3,
+    "apertureBladeCount": 5,
+    "releaseYear": 2019,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 7950,
+          "currency": "CNY",
+          "source": "京东·老蛙官方旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 999,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "filterMm": 86,
+    "lensConfiguration": {
+      "groups": 14,
+      "elements": 21
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-2"
+    }
+  },
+  {
+    "id": "laowa-gf-19mmf28-cd-dreamer-g",
+    "brand": "laowa",
+    "mount": "G",
+    "series": "Dreamer",
+    "model": "GF 19mm F2.8 C&D-",
+    "focalLengthMin": 19,
+    "focalLengthMax": 19,
+    "maxAperture": 2.8,
+    "minAperture": 22,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 546,
+    "diameterMm": 82.6,
+    "length": {
+      "mm": 80
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 18
+      }
+    },
+    "maxMagnification": {
+      "value": 0.185
+    },
+    "angleOfView": 110,
+    "angleOfViewCalc": 110.5,
+    "apertureBladeCount": 5,
+    "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 6950,
+          "currency": "CNY",
+          "source": "京东·老蛙官方旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 999,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm G",
+      "Hasselblad XCD"
+    ],
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 12
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-59"
     }
   }
 ]
