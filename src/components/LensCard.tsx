@@ -113,7 +113,7 @@ export default function LensCard({
         >
           <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between gap-2 max-xs:pr-9">
-              <div className="flex min-w-0 items-center gap-1.5">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1">
                 <p className="truncate text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
                   {fmt.lensSubtitleLine(tBrand(lens.brand), lens.series)}
                 </p>
