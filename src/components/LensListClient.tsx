@@ -68,7 +68,7 @@ export default function LensListClient({ lenses }: Props) {
     filters.brands.length > 0 ||
     filters.typeFilter !== null ||
     filters.focusFilter !== null ||
-    filters.usage !== "photo" ||
+    filters.usage !== defaultFilters.usage ||
     filters.opticalTrait !== null ||
     filters.focusMotorClass !== null ||
     filters.focalCategories.length > 0 ||
