@@ -4,6 +4,21 @@ import { Menu } from "@base-ui/react/menu";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+function CheckboxIndicator({ checked }: { checked: boolean }) {
+  return (
+    <span
+      className={cn(
+        "flex size-4 shrink-0 items-center justify-center rounded border transition-colors",
+        checked
+          ? "border-zinc-900 bg-zinc-900 dark:border-zinc-100 dark:bg-zinc-100"
+          : "border-zinc-300 dark:border-zinc-600",
+      )}
+    >
+      {checked ? <Check className="size-3 text-white dark:text-zinc-900" /> : null}
+    </span>
+  );
+}
+
 interface BrandFilterMenuProps {
   brands: string[];
   selected: string[];
@@ -40,7 +55,7 @@ export default function BrandFilterMenu({
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner side="bottom" align="start" sideOffset={6}>
-          <Menu.Popup className="min-w-44 max-w-[min(16rem,calc(100vw-1rem))] origin-(--transform-origin) overflow-hidden rounded-lg border border-zinc-200 bg-white text-sm shadow-xl shadow-zinc-950/20 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
+          <Menu.Popup className="min-w-[18rem] max-w-[min(22rem,calc(100vw-1rem))] origin-(--transform-origin) overflow-hidden rounded-lg border border-zinc-200 bg-white text-sm shadow-xl shadow-zinc-950/20 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
             <Menu.CheckboxItem
               checked={!hasSelection}
               onCheckedChange={() => {
@@ -51,13 +66,11 @@ export default function BrandFilterMenu({
               closeOnClick={false}
               className="relative flex cursor-pointer items-center gap-2 px-3 py-2 outline-none data-highlighted:bg-zinc-100 dark:data-highlighted:bg-zinc-800"
             >
-              <span className="flex size-4 shrink-0 items-center justify-center">
-                {!hasSelection ? <Check className="size-3.5 text-zinc-900 dark:text-zinc-100" /> : null}
-              </span>
+              <CheckboxIndicator checked={!hasSelection} />
               <span className="text-zinc-800 dark:text-zinc-200">{allLabel}</span>
             </Menu.CheckboxItem>
             <div className="h-px bg-zinc-100 dark:bg-zinc-800" />
-            <div className="max-h-72 overflow-y-auto">
+            <div className="grid grid-cols-2">
               {brands.map((brand) => {
                 const isChecked = selected.includes(brand);
                 return (
@@ -68,9 +81,7 @@ export default function BrandFilterMenu({
                     closeOnClick={false}
                     className="relative flex cursor-pointer items-center gap-2 px-3 py-2 outline-none data-highlighted:bg-zinc-100 dark:data-highlighted:bg-zinc-800"
                   >
-                    <span className="flex size-4 shrink-0 items-center justify-center">
-                      {isChecked ? <Check className="size-3.5 text-zinc-900 dark:text-zinc-100" /> : null}
-                    </span>
+                    <CheckboxIndicator checked={isChecked} />
                     <span className="truncate text-zinc-800 dark:text-zinc-200">{brandLabels[brand] ?? brand}</span>
                   </Menu.CheckboxItem>
                 );
