@@ -70,7 +70,14 @@ export default function MultiSelectChipGroup({
           >
             <span>{option.label}</span>
             {option.hint ? (
-              <span className="text-[10px] font-normal text-zinc-500 dark:text-zinc-400">
+              <span
+                className={cn(
+                  "text-[10px] font-normal",
+                  option.selected
+                    ? "text-zinc-300 dark:text-zinc-500"
+                    : "text-zinc-400 dark:text-zinc-500",
+                )}
+              >
                 {option.hint}
               </span>
             ) : null}

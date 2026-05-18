@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { selectBrandFilter } from "./helpers";
 
 test.describe("Focal range filter", () => {
   test.beforeEach(async ({ page }) => {
@@ -20,7 +21,7 @@ test.describe("Focal range filter", () => {
   });
 
   test("combining brand and focal filters compounds correctly", async ({ page }) => {
-    await page.getByRole("button", { name: "Sigma", exact: true }).click();
+    await selectBrandFilter(page, "Sigma");
     const sigmaText = await page.getByText(/\d+ lenses/).textContent();
     const sigmaCount = parseInt(sigmaText!.match(/\d+/)![0], 10);
 

@@ -8,6 +8,7 @@ import { FILTER_FEATURE_KEYS, FOCAL_CATEGORIES, LENS_TYPES } from "@/lib/lens";
 import type { FilterState, FocusFilter, FocusMotorClass, LensType, SpecialtyTag } from "@/lib/lens";
 import { cn } from "@/lib/utils";
 import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
+import BrandFilterMenu from "./lens-filters/BrandFilterMenu";
 import FeatureToggleGroup from "./lens-filters/FeatureToggleGroup";
 import FilterRow from "./lens-filters/FilterRow";
 import MultiSelectChipGroup from "./lens-filters/MultiSelectChipGroup";
@@ -30,6 +31,20 @@ export default function LensFilters({
   const t = useTranslations("LensList");
   const tBrand = useTranslations("Brands");
   const [secondaryOpen, setSecondaryOpen] = useState(false);
+
+  const BRAND_PREVIEW_LIMIT = 3;
+  const brandJoiner = t("brandSeparator");
+  const brandNames = Object.fromEntries(brands.map((b) => [b, tBrand(b)]));
+  const selectedBrandNames = filters.brands.map((b) => brandNames[b] ?? b);
+  const brandTriggerLabel =
+    selectedBrandNames.length === 0
+      ? t("brand")
+      : selectedBrandNames.length <= BRAND_PREVIEW_LIMIT
+        ? t("brandTriggerLabel", { names: selectedBrandNames.join(brandJoiner) })
+        : t("brandTriggerLabelMore", {
+            names: selectedBrandNames.slice(0, BRAND_PREVIEW_LIMIT).join(brandJoiner),
+            extra: selectedBrandNames.length - BRAND_PREVIEW_LIMIT,
+          });
 
   useFiltersTelemetry(filters);
 
@@ -142,7 +157,7 @@ export default function LensFilters({
     <button
       type="button"
       className={cn(
-        "inline-flex items-center gap-1.5 self-start text-[11px] font-medium uppercase tracking-[0.08em]",
+        "inline-flex items-center gap-1.5 self-start my-1.5 text-[11px] font-medium uppercase tracking-[0.08em]",
         "text-zinc-700 transition-colors hover:text-zinc-900",
         "dark:text-zinc-300 dark:hover:text-zinc-100",
       )}
@@ -169,14 +184,29 @@ export default function LensFilters({
     <div className="flex min-w-0 flex-1 flex-col">
       {/* Primary filters: always visible on all viewports */}
       <div className="flex flex-col gap-3">
-        <FilterRow label={t("brand")}>
-          <MultiSelectChipGroup
+        <div className="sm:hidden">
+          <BrandFilterMenu
+            brands={brands}
+            selected={filters.brands}
+            brandLabels={brandNames}
             allLabel={allOptionLabel}
-            allSelected={filters.brands.length === 0}
-            onSelectAll={() => updateFilters("brands", [])}
-            options={brandOptions}
+            triggerLabel={brandTriggerLabel}
+            onToggle={(brand) =>
+              updateFilters("brands", toggleMultiFilter(filters.brands, brand, brands))
+            }
+            onClear={() => updateFilters("brands", [])}
           />
-        </FilterRow>
+        </div>
+        <div className="hidden sm:block">
+          <FilterRow label={t("brand")}>
+            <MultiSelectChipGroup
+              allLabel={allOptionLabel}
+              allSelected={filters.brands.length === 0}
+              onSelectAll={() => updateFilters("brands", [])}
+              options={brandOptions}
+            />
+          </FilterRow>
+        </div>
 
         <FilterRow label={t("lensType")}>
           <TypeSegmentedControl
