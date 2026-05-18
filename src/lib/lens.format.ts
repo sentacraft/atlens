@@ -5,7 +5,6 @@ import type {
   MaxMagnification,
   MinFocusDistance,
   Mount,
-  SpecialtyTag,
 } from "./types";
 import { SPEC_NA } from "./types";
 import { CROP_FACTOR } from "./lens";
@@ -206,25 +205,6 @@ export function maxMagnificationRichDisplay(
   }
 
   return `${maxMag.value}x`;
-}
-
-/**
- * Formats specialty tags as a comma-separated readable string.
- */
-export function specialtyTagsDisplay(
-  tags: SpecialtyTag[] | undefined,
-  labels: Record<Exclude<SpecialtyTag, "ultra_macro">, string>
-): string | undefined {
-  if (!tags || tags.length === 0) {
-    return undefined;
-  }
-  // ultra_macro is no longer a distinct user-facing concept — it collapses
-  // into plain macro on display. Skip it; the array typically pairs it with
-  // "macro" already so the label is still rendered once.
-  return tags
-    .filter((tag) => tag !== "ultra_macro")
-    .map((tag) => labels[tag as Exclude<SpecialtyTag, "ultra_macro">])
-    .join(", ");
 }
 
 // --- Lens name formatters ---

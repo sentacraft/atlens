@@ -2,9 +2,8 @@ import lensesData from "../data/lenses.json";
 import gfxLensesData from "../data/lenses-gfx.json";
 import metaData from "../data/meta.json";
 import { lensCatalogSchema } from "./lens-schema";
-import { resolveTranslations, type Lens, type LensCatalog, type Mount, type OpticalTrait, type SpecialtyTag } from "./types";
+import { resolveTranslations, type Lens, type LensCatalog, type Mount, type OpticalTrait } from "./types";
 import { deriveSpecialty } from "./lens-specialty";
-export type { SpecialtyTag };
 
 const xLenses: Lens[] = lensCatalogSchema.parse(lensesData) as LensCatalog;
 const gfxLenses: Lens[] = lensCatalogSchema.parse(gfxLensesData) as LensCatalog;

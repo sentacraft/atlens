@@ -119,7 +119,7 @@ describe("primaryApertureDisplay / secondaryApertureDisplay", () => {
       minAperture: undefined,
       maxTStop: 2.1,
       minTStop: 16,
-      specialtyTags: ["cine"],
+      isCine: true,
     });
     expect(primaryApertureDisplay(lens)).toBe("T2.1");
     expect(secondaryApertureDisplay(lens)).toBeUndefined();
@@ -133,7 +133,7 @@ describe("primaryApertureDisplay / secondaryApertureDisplay", () => {
       minAperture: 16,
       maxTStop: 2.1,
       minTStop: 16,
-      specialtyTags: ["cine"],
+      isCine: true,
     });
     expect(primaryApertureDisplay(lens)).toBe("f/2");
     expect(secondaryApertureDisplay(lens)).toBe("T2.1");
@@ -205,7 +205,7 @@ describe("lensSchema aperture business rules", () => {
         minAperture: undefined,
         maxTStop: 2.1,
         minTStop: 16,
-        specialtyTags: ["cine"],
+        isCine: true,
       })
     );
 
@@ -221,7 +221,7 @@ describe("lensSchema aperture business rules", () => {
         minAperture: 16,
         maxTStop: 2.1,
         minTStop: 16,
-        specialtyTags: ["cine"],
+        isCine: true,
       })
     );
 

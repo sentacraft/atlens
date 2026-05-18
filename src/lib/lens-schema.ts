@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { FIELD_NOTE_KEYS, OPTICAL_TRAITS, SPEC_NA, SPECIALTY_TAGS } from "./types.ts";
+import { FIELD_NOTE_KEYS, OPTICAL_TRAITS, SPEC_NA } from "./types.ts";
 import type { ApertureValue, Lens } from "./types.ts";
 
 const positiveNumberSchema = z.number().positive();
@@ -22,7 +22,6 @@ const maxApertureSchema = createApertureSchema("maxAperture");
 const minApertureSchema = createApertureSchema("minAperture");
 const maxTStopSchema = createApertureSchema("maxTStop");
 const minTStopSchema = createApertureSchema("minTStop");
-const specialtyTagSchema = z.enum(SPECIALTY_TAGS);
 const opticalTraitSchema = z.enum(OPTICAL_TRAITS);
 export const specNaSchema = z.literal(SPEC_NA);
 const lensPriceEntrySchema = z.strictObject({
@@ -61,7 +60,6 @@ const lensBaseShape = {
   minTStop: minTStopSchema.optional(),
   isCine: z.boolean().optional(),
   opticalTraits: z.array(opticalTraitSchema).min(1).optional(),
-  specialtyTags: z.array(specialtyTagSchema).min(1).optional(),
   af: z.boolean(),
   ois: z.boolean(),
   oisStops: positiveNumberSchema.optional(),
@@ -335,7 +333,7 @@ function makeAllowlistKey(a: string, b: string): string {
 }
 export const KNOWN_DISTINCT_PAIRS = new Set([
   // Tilt-shift mechanism adds tilt/shift axes; lensConfiguration and
-  // specialtyTags differ even though optical formula is the same.
+  // opticalTraits differ even though optical formula is the same.
   makeAllowlistKey(
     "ttartisan-100mm-f28-2x-macro-x",
     "ttartisan-tilt-shift-100mm-f28-2x-macro-x"),

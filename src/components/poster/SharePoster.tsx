@@ -17,12 +17,12 @@ import {
   dimensionsPrimaryDisplay,
   primaryApertureDisplay,
   secondaryApertureDisplay,
-  specialtyTagsDisplay,
   mfdHeroValue,
   mfdHeroQualifier,
   mfdStructuredLines,
 } from "@/lib/lens.format";
-import type { SpecialtyTag, FieldNoteKey } from "@/lib/types";
+import { deriveSpecialty } from "@/lib/lens-specialty";
+import type { OpticalTrait, FieldNoteKey } from "@/lib/types";
 import { PosterSection } from "./PosterSection";
 import { PosterFeatureItem } from "./PosterFeatureItem";
 
@@ -263,7 +263,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   // Section label helpers
   const wideTeleLabels = { wide: labels.wide, tele: labels.tele };
 
-  const specialtyTagLabels: Record<Exclude<SpecialtyTag, "ultra_macro">, string> = {
+  const specialtyTagLabels: Record<OpticalTrait | "cine", string> = {
     cine: labels.tagCine,
     anamorphic: labels.tagAnamorphic,
     tilt: labels.tagTilt,
@@ -288,9 +288,17 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
     const cls = classifyFocusMotor(l);
     return cls ? focusMotorClassLabel[cls] : undefined;
   });
-  const specialtyValues = lenses.map((l) =>
-    specialtyTagsDisplay(l.specialtyTags, specialtyTagLabels)
-  );
+  const specialtyValues = lenses.map((l) => {
+    const { isCine, opticalTraits } = deriveSpecialty(l);
+    const parts: string[] = [];
+    if (isCine) {
+      parts.push(specialtyTagLabels.cine);
+    }
+    for (const trait of opticalTraits) {
+      parts.push(specialtyTagLabels[trait]);
+    }
+    return parts.length > 0 ? parts.join(", ") : undefined;
+  });
 
   const showFocusMotorRow = focusMotorValues.some(Boolean);
   const showSpecialtyRow = specialtyValues.some(Boolean);
