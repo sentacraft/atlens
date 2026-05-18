@@ -132,11 +132,21 @@ export default function LensCard({
               title={lens.model}
             >
               {lens.model}
+              {(() => {
+                const s = deriveSpecialty(lens);
+                if (!s.isCine && s.opticalTraits.length === 0) {
+                  return null;
+                }
+                return (
+                  <span className="ml-1.5 inline-flex flex-wrap items-center gap-1 align-middle">
+                    <SpecialtyBadges {...s} />
+                  </span>
+                );
+              })()}
             </h3>
           </div>
 
           <div className="flex gap-1 flex-wrap items-center min-h-[20px]">
-            <SpecialtyBadges {...deriveSpecialty(lens)} />
             {badges.map((badge) => (
               <Badge
                 key={badge.label}
