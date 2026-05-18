@@ -19,6 +19,8 @@ import { ShareButton } from "@/components/share/ShareButton";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 import JsonLd from "@/components/JsonLd";
 import Breadcrumb from "@/components/Breadcrumb";
+import SpecialtyBadges from "@/components/SpecialtyBadges";
+import { deriveSpecialty } from "@/lib/lens-specialty";
 import { ACTION_OUTLINE_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
@@ -214,7 +216,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     wr: t("wr"),
     apertureRing: t("apertureRing"),
     powerZoom: t("powerZoom"),
-    specialtyTags: t("specialtyTags"),
     releaseYear: t("releaseYear"),
     releaseYearLabelNote: t("releaseYearLabelNote"),
     accessories: t("accessories"),
@@ -234,16 +235,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
       fld: t("lcFld"),
       highRefractive: t("lcHighRefractive"),
       incl: t("lcIncl"),
-    },
-    tags: {
-      cine: t("tagCine"),
-      anamorphic: t("tagAnamorphic"),
-      tilt: t("tagTilt"),
-      shift: t("tagShift"),
-      macro: t("tagMacro"),
-      ultra_macro: t("tagUltraMacro"),
-      fisheye: t("tagFisheye"),
-      probe: t("tagProbe"),
     },
     motorClass: {
       linear: t("motorLinear"),
@@ -320,10 +311,11 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               series + model) so brand-and-model search queries match the
               page's primary heading. The previous subtitle line above the h1
               was just the brand+series prefix and is now redundant. */}
-          <div>
+          <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 font-heading">
               {displayName}
             </h1>
+            <SpecialtyBadges {...deriveSpecialty(lens)} />
           </div>
 
           {/* Price */}

@@ -1,4 +1,4 @@
-import { SPEC_NA, type Lens, type FieldNoteKey, type SpecialtyTag } from "./types";
+import { SPEC_NA, type Lens, type FieldNoteKey } from "./types";
 import type { LensConfigurationLabels } from "./lens.format";
 import { classifyFocusMotor, type FocusMotorClass } from "./lens";
 import * as fmt from "./lens.format";
@@ -194,7 +194,6 @@ export interface SpecGroupLabels {
   wr: string;
   apertureRing: string;
   powerZoom: string;
-  specialtyTags: string;
   releaseYear: string;
   releaseYearLabelNote: string;
   accessories: string;
@@ -209,9 +208,6 @@ export interface SpecGroupLabels {
 
   // Lens configuration sub-labels
   lc: LensConfigurationLabels;
-
-  // Specialty tag labels
-  tags: Record<SpecialtyTag, string>;
 
   // Focus motor canonical class labels
   motorClass: Record<FocusMotorClass, string>;
@@ -342,15 +338,11 @@ export function resolveSpecGroups(
  */
 export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
   const {
-    yes,
-    no,
-    partial,
     retracted,
     wide,
     tele,
     angleOfViewEstNote,
     lc,
-    tags,
     motorClass,
   } = labels;
 
@@ -603,13 +595,6 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
           label: labels.powerZoom,
           hasData: (l) => l.powerZoom !== undefined,
           getValue: (l) => l.powerZoom,
-        },
-        {
-          kind: "text",
-          label: labels.specialtyTags,
-          hasData: (l) =>
-            l.specialtyTags !== undefined && l.specialtyTags.length > 0,
-          getDisplayValue: (l) => fmt.specialtyTagsDisplay(l.specialtyTags, tags),
         },
       ] satisfies SpecRow[],
     },

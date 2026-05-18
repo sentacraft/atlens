@@ -20,7 +20,7 @@ export function useFiltersTelemetry(filters: FilterState) {
       filters.features.length === 0 &&
       filters.typeFilter === null &&
       filters.focusFilter === null &&
-      filters.specialtyTag === null &&
+      filters.usage === "photo" &&
       filters.focusMotorClass === null;
     const timer = setTimeout(() => {
       if (isEmpty) {

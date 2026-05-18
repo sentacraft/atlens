@@ -75,7 +75,6 @@ export interface PosterLabels {
   tagTilt: string;
   tagShift: string;
   tagMacro: string;
-  tagUltraMacro: string;
   tagFisheye: string;
   tagProbe: string;
   // Pricing
@@ -264,13 +263,12 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   // Section label helpers
   const wideTeleLabels = { wide: labels.wide, tele: labels.tele };
 
-  const specialtyTagLabels: Record<SpecialtyTag, string> = {
+  const specialtyTagLabels: Record<Exclude<SpecialtyTag, "ultra_macro">, string> = {
     cine: labels.tagCine,
     anamorphic: labels.tagAnamorphic,
     tilt: labels.tagTilt,
     shift: labels.tagShift,
     macro: labels.tagMacro,
-    ultra_macro: labels.tagUltraMacro,
     fisheye: labels.tagFisheye,
     probe: labels.tagProbe,
   };

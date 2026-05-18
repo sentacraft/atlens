@@ -17,6 +17,8 @@ import { cn } from "@/lib/utils";
 import { ICON_CLOSE_BTN_CLS, TEXT_LINK_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
+import SpecialtyBadges from "@/components/SpecialtyBadges";
+import { deriveSpecialty } from "@/lib/lens-specialty";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 import type { FeedbackField } from "@/components/FeedbackDialog";
 import { useMountedCompare } from "@/context/CompareProvider";
@@ -63,6 +65,7 @@ function LensHeaderContent({
       <p className="line-clamp-3 text-center font-semibold leading-snug text-zinc-900 dark:text-zinc-50">
         {lens.model}
       </p>
+      <SpecialtyBadges {...deriveSpecialty(lens)} className="mt-1 justify-center" />
     </>
   );
 }
@@ -404,7 +407,6 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
         wr: td("wr"),
         apertureRing: td("apertureRing"),
         powerZoom: td("powerZoom"),
-        specialtyTags: td("specialtyTags"),
         releaseYear: td("releaseYear"),
         releaseYearLabelNote: td("releaseYearLabelNote"),
         accessories: td("accessories"),
@@ -424,16 +426,6 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
           fld: td("lcFld"),
           highRefractive: td("lcHighRefractive"),
           incl: td("lcIncl"),
-        },
-        tags: {
-          cine: td("tagCine"),
-          anamorphic: td("tagAnamorphic"),
-          tilt: td("tagTilt"),
-          shift: td("tagShift"),
-          macro: td("tagMacro"),
-          ultra_macro: td("tagUltraMacro"),
-          fisheye: td("tagFisheye"),
-          probe: td("tagProbe"),
         },
         motorClass: {
           linear: td("motorLinear"),

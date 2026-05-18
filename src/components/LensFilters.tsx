@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { ChevronDown, SlidersHorizontal } from "lucide-react";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
 import { FILTER_FEATURE_KEYS, FOCAL_CATEGORIES, LENS_TYPES } from "@/lib/lens";
-import type { FilterState, FocusFilter, FocusMotorClass, LensType, SpecialtyTag } from "@/lib/lens";
+import type { FilterState, FocusFilter, FocusMotorClass, LensType, UsageFilter } from "@/lib/lens";
 import { cn } from "@/lib/utils";
 import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
 import BrandFilterMenu from "./lens-filters/BrandFilterMenu";
@@ -18,14 +18,12 @@ import { useFiltersTelemetry } from "./LensFilters.telemetry";
 interface Props {
   filters: FilterState;
   brands: string[];
-  availableSpecialtyTags: SpecialtyTag[];
   onFiltersChange: (filters: FilterState) => void;
 }
 
 export default function LensFilters({
   filters,
   brands,
-  availableSpecialtyTags,
   onFiltersChange,
 }: Props) {
   const t = useTranslations("LensList");
@@ -72,17 +70,6 @@ export default function LensFilters({
     return next.length === 0 || next.length === allValues.length ? [] : next;
   }
 
-  const tagLabels: Record<SpecialtyTag, string> = {
-    cine: t("tagCine"),
-    anamorphic: t("tagAnamorphic"),
-    tilt: t("tagTilt"),
-    shift: t("tagShift"),
-    macro: t("tagMacro"),
-    ultra_macro: t("tagUltraMacro"),
-    fisheye: t("tagFisheye"),
-    probe: t("tagProbe"),
-  };
-
   const typeOptions = [
     { value: null, label: t("allTypes") },
     ...LENS_TYPES.map((type) => ({
@@ -91,13 +78,11 @@ export default function LensFilters({
     })),
   ] as { value: LensType | null; label: string }[];
 
-  const specialtyOptions = [
-    { value: null as SpecialtyTag | null, label: t("allSpecialty") },
-    ...availableSpecialtyTags.map((tag) => ({
-      value: tag as SpecialtyTag | null,
-      label: tagLabels[tag],
-    })),
-  ];
+  const usageOptions = [
+    { value: null, label: t("allTypes") },
+    { value: "photo" as UsageFilter, label: t("usagePhoto") },
+    { value: "cine" as UsageFilter, label: t("usageCine") },
+  ] as { value: UsageFilter; label: string }[];
 
   const focusMotorOptions = [
     { value: null, label: t("allTypes") },
@@ -116,7 +101,6 @@ export default function LensFilters({
   const hasHiddenActiveFilters =
     filters.focalCategories.length > 0 ||
     filters.features.length > 0 ||
-    filters.specialtyTag !== null ||
     filters.focusMotorClass !== null;
 
   const allOptionLabel = t("allTypes");
@@ -217,6 +201,15 @@ export default function LensFilters({
           />
         </FilterRow>
 
+        <FilterRow label={t("usage")}>
+          <TypeSegmentedControl
+            ariaLabel={t("usage")}
+            options={usageOptions}
+            value={filters.usage}
+            onChange={(v) => updateFilters("usage", v)}
+          />
+        </FilterRow>
+
         <FilterRow label={t("focusFilter")}>
           <TypeSegmentedControl
             ariaLabel={t("focusFilter")}
@@ -250,18 +243,6 @@ export default function LensFilters({
             <FilterRow label={t("features")}>
               <FeatureToggleGroup options={featureOptions} />
             </FilterRow>
-
-            {availableSpecialtyTags.length > 0 && (
-              <FilterRow label={t("specialtyFilter")}>
-                <TypeSegmentedControl
-                  ariaLabel={t("specialtyFilter")}
-                  options={specialtyOptions}
-                  value={filters.specialtyTag}
-                  onChange={(v) => updateFilters("specialtyTag", v)}
-                  wrap
-                />
-              </FilterRow>
-            )}
 
             <FilterRow label={t("focusMotorFilter")}>
               <TypeSegmentedControl

@@ -3,6 +3,7 @@ import gfxLensesData from "../data/lenses-gfx.json";
 import metaData from "../data/meta.json";
 import { lensCatalogSchema } from "./lens-schema";
 import { resolveTranslations, type Lens, type LensCatalog, type Mount, type SpecialtyTag } from "./types";
+import { deriveSpecialty } from "./lens-specialty";
 export type { SpecialtyTag };
 
 const xLenses: Lens[] = lensCatalogSchema.parse(lensesData) as LensCatalog;
@@ -161,11 +162,22 @@ export function classifyFocusMotor(lens: Lens): FocusMotorClass | undefined {
   return "other";
 }
 
+/**
+ * Top-level usage category. Photo and cine are two largely-separate product
+ * universes — most photo shoppers don't want cine lenses cluttering their
+ * list, but a cine shopper does want exclusive cine results.
+ *
+ * - `null` — show everything (escape hatch when the user really wants the union)
+ * - `"photo"` — exclude cine lenses (default)
+ * - `"cine"` — only cine lenses
+ */
+export type UsageFilter = "photo" | "cine" | null;
+
 export interface FilterState {
   brands: string[]; // empty = all brands
   typeFilter: LensType | null; // null = all types
   focusFilter: FocusFilter | null; // null = all
-  specialtyTag: SpecialtyTag | null; // null = no filter
+  usage: UsageFilter;
   focusMotorClass: FocusMotorClass | null; // null = no filter
   features: FilterFeatureKey[]; // empty = no requirement
   focalCategories: FocalCategory[]; // empty = all categories
@@ -177,7 +189,7 @@ export const defaultFilters: FilterState = {
   brands: [],
   typeFilter: null,
   focusFilter: null,
-  specialtyTag: null,
+  usage: "photo",
   focusMotorClass: null,
   features: [],
   focalCategories: [],
@@ -204,10 +216,14 @@ export function filterLenses(lenses: Lens[], filters: FilterState): Lens[] {
       return false;
     }
 
-    if (filters.specialtyTag && !lens.specialtyTags?.includes(filters.specialtyTag)) {
-
-      return false;
-
+    if (filters.usage !== null) {
+      const isCine = deriveSpecialty(lens).isCine;
+      if (filters.usage === "photo" && isCine) {
+        return false;
+      }
+      if (filters.usage === "cine" && !isCine) {
+        return false;
+      }
     }
 
     if (filters.focusMotorClass && classifyFocusMotor(lens) !== filters.focusMotorClass) {

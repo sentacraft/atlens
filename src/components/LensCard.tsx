@@ -13,6 +13,8 @@ import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import * as fmt from "@/lib/lens.format";
 import { Button } from "@/components/ui/button";
+import SpecialtyBadges from "@/components/SpecialtyBadges";
+import { deriveSpecialty } from "@/lib/lens-specialty";
 
 interface Props {
   lens: Lens;
@@ -132,6 +134,8 @@ export default function LensCard({
               {lens.model}
             </h3>
           </div>
+
+          <SpecialtyBadges {...deriveSpecialty(lens)} />
 
           <div className="flex gap-1 flex-wrap min-h-[20px]">
             {badges.map((badge) => (

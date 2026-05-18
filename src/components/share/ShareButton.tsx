@@ -125,7 +125,6 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
     tagTilt: tImage("tagTilt"),
     tagShift: tImage("tagShift"),
     tagMacro: tImage("tagMacro"),
-    tagUltraMacro: tImage("tagUltraMacro"),
     tagFisheye: tImage("tagFisheye"),
     tagProbe: tImage("tagProbe"),
     na: tImage("na"),

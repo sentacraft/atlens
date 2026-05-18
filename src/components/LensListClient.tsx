@@ -14,7 +14,6 @@ import {
   getUniqueBrands,
   type FilterState,
   type SortKey,
-  type SpecialtyTag,
 } from "@/lib/lens";
 import { serializeFilters, parseFilters } from "@/lib/filter-params";
 import { useMountedCompare } from "@/context/CompareProvider";
@@ -50,12 +49,6 @@ export default function LensListClient({ lenses }: Props) {
 
   const brands = useMemo(() => getUniqueBrands(lenses), [lenses]);
 
-  const availableSpecialtyTags = useMemo(
-    () =>
-      [...new Set(lenses.flatMap((l) => l.specialtyTags ?? []))] as SpecialtyTag[],
-    [lenses]
-  );
-
   const displayed = useMemo(
     () =>
       sortLenses(filterLenses(lenses, filters), filters.sort, filters.sortDir),
@@ -66,7 +59,7 @@ export default function LensListClient({ lenses }: Props) {
     filters.brands.length > 0 ||
     filters.typeFilter !== null ||
     filters.focusFilter !== null ||
-    filters.specialtyTag !== null ||
+    filters.usage !== "photo" ||
     filters.focusMotorClass !== null ||
     filters.focalCategories.length > 0 ||
     filters.features.length > 0;
@@ -102,7 +95,6 @@ export default function LensListClient({ lenses }: Props) {
           <LensFilters
             filters={filters}
             brands={brands}
-            availableSpecialtyTags={availableSpecialtyTags}
             onFiltersChange={updateFilters}
           />
           <div>
