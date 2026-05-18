@@ -1,19 +1,19 @@
 {
   "x": {
-    "fujifilm":    { "active": true,  "discontinued": true,  "notes": "" },
-    "sigma":       { "active": true,  "discontinued": "planned", "notes": "" },
-    "tamron":      { "active": true,  "discontinued": "planned", "notes": "" },
-    "viltrox":     { "active": true,  "discontinued": false, "notes": "" },
-    "7artisans":   { "active": true,  "discontinued": false, "notes": "" },
-    "ttartisan":   { "active": true,  "discontinued": false, "notes": "" },
-    "brightinstar":{ "active": true,  "discontinued": false, "notes": "" },
-    "sgimage":     { "active": true,  "discontinued": false, "notes": "" },
-    "laowa":       { "active": "planned", "discontinued": false, "notes": "" },
-    "meike":       { "active": "planned", "discontinued": false, "notes": "" },
-    "sirui":       { "active": "planned", "discontinued": false, "notes": "" },
-    "voigtlander": { "active": "planned", "discontinued": false, "notes": "" }
+    "fujifilm":    { "active": true,      "discontinued": true,      "cinema": true,      "notes": "" },
+    "sigma":       { "active": true,      "discontinued": "planned", "cinema": "n/a",     "notes": "" },
+    "tamron":      { "active": true,      "discontinued": "planned", "cinema": "n/a",     "notes": "" },
+    "viltrox":     { "active": true,      "discontinued": false,     "cinema": "n/a",     "notes": "" },
+    "7artisans":   { "active": true,      "discontinued": false,     "cinema": "partial", "notes": "" },
+    "ttartisan":   { "active": true,      "discontinued": false,     "cinema": "partial", "notes": "" },
+    "brightinstar":{ "active": true,      "discontinued": false,     "cinema": "n/a",     "notes": "" },
+    "sgimage":     { "active": true,      "discontinued": false,     "cinema": "n/a",     "notes": "" },
+    "laowa":       { "active": true,      "discontinued": false,     "cinema": false,     "notes": "" },
+    "meike":       { "active": "planned", "discontinued": false,     "cinema": false,     "notes": "" },
+    "sirui":       { "active": "planned", "discontinued": false,     "cinema": false,     "notes": "" },
+    "voigtlander": { "active": true,      "discontinued": false,     "cinema": "n/a",     "notes": "" }
   },
   "g": {
-    "fujifilm":    { "active": true,  "discontinued": false, "notes": "" }
+    "fujifilm":    { "active": true,      "discontinued": false,     "cinema": "n/a",     "notes": "" }
   }
 }
