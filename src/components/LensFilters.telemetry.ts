@@ -21,6 +21,7 @@ export function useFiltersTelemetry(filters: FilterState) {
       filters.typeFilter === null &&
       filters.focusFilter === null &&
       filters.usage === "photo" &&
+      filters.opticalTrait === null &&
       filters.focusMotorClass === null;
     const timer = setTimeout(() => {
       if (isEmpty) {

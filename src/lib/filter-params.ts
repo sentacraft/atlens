@@ -1,3 +1,5 @@
+import { OPTICAL_TRAITS } from "./types";
+import type { OpticalTrait } from "./types";
 import {
   defaultFilters,
   FILTER_FEATURE_KEYS,
@@ -38,6 +40,9 @@ export function serializeFilters(filters: FilterState): URLSearchParams {
   if (filters.usage !== defaultFilters.usage) {
     p.set("u", filters.usage ?? "all");
   }
+  if (filters.opticalTrait) {
+    p.set("ot", filters.opticalTrait);
+  }
   if (filters.focusMotorClass) {
     p.set("m", filters.focusMotorClass);
   }
@@ -75,6 +80,7 @@ export function parseFilters(params: URLSearchParams | { get: (key: string) => s
     t: params.get("t"),
     f: params.get("f"),
     u: params.get("u"),
+    ot: params.get("ot"),
     m: params.get("m"),
     feat: params.get("feat"),
     fc: params.get("fc"),
@@ -87,6 +93,7 @@ export function parseFilters(params: URLSearchParams | { get: (key: string) => s
     typeFilter: raw.t && LENS_TYPES.includes(raw.t as LensType) ? (raw.t as LensType) : null,
     focusFilter: raw.f && FOCUS_FILTERS.includes(raw.f as FocusFilter) ? (raw.f as FocusFilter) : null,
     usage: parseUsage(raw.u),
+    opticalTrait: raw.ot && (OPTICAL_TRAITS as readonly string[]).includes(raw.ot) ? (raw.ot as OpticalTrait) : null,
     focusMotorClass: raw.m && MOTOR_CLASSES.includes(raw.m as FocusMotorClass) ? (raw.m as FocusMotorClass) : null,
     features: raw.feat
       ? (raw.feat.split(",").filter((k) => (FILTER_FEATURE_KEYS as readonly string[]).includes(k)) as FilterFeatureKey[])

@@ -11,10 +11,12 @@ import {
   filterLenses,
   sortLenses,
   defaultFilters,
-  getUniqueBrands,
+  getOrderedUniqueBrands,
   type FilterState,
   type SortKey,
 } from "@/lib/lens";
+import { deriveSpecialty } from "@/lib/lens-specialty";
+import type { OpticalTrait } from "@/lib/types";
 import { serializeFilters, parseFilters } from "@/lib/filter-params";
 import { useMountedCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
@@ -47,7 +49,14 @@ export default function LensListClient({ lenses }: Props) {
   const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
   const { compareIds, toggleCompare, canToggle } = useMountedCompare();
 
-  const brands = useMemo(() => getUniqueBrands(lenses), [lenses]);
+  const brands = useMemo(() => getOrderedUniqueBrands(lenses), [lenses]);
+
+  const availableOpticalTraits = useMemo<OpticalTrait[]>(
+    () => [
+      ...new Set(lenses.flatMap((l) => deriveSpecialty(l).opticalTraits)),
+    ],
+    [lenses],
+  );
 
   const displayed = useMemo(
     () =>
@@ -60,6 +69,7 @@ export default function LensListClient({ lenses }: Props) {
     filters.typeFilter !== null ||
     filters.focusFilter !== null ||
     filters.usage !== "photo" ||
+    filters.opticalTrait !== null ||
     filters.focusMotorClass !== null ||
     filters.focalCategories.length > 0 ||
     filters.features.length > 0;
@@ -95,6 +105,7 @@ export default function LensListClient({ lenses }: Props) {
           <LensFilters
             filters={filters}
             brands={brands}
+            availableOpticalTraits={availableOpticalTraits}
             onFiltersChange={updateFilters}
           />
           <div>

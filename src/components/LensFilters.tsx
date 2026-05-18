@@ -6,6 +6,7 @@ import { ChevronDown, SlidersHorizontal } from "lucide-react";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
 import { FILTER_FEATURE_KEYS, FOCAL_CATEGORIES, LENS_TYPES } from "@/lib/lens";
 import type { FilterState, FocusFilter, FocusMotorClass, LensType, UsageFilter } from "@/lib/lens";
+import type { OpticalTrait } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
 import BrandFilterMenu from "./lens-filters/BrandFilterMenu";
@@ -18,15 +19,18 @@ import { useFiltersTelemetry } from "./LensFilters.telemetry";
 interface Props {
   filters: FilterState;
   brands: string[];
+  availableOpticalTraits: OpticalTrait[];
   onFiltersChange: (filters: FilterState) => void;
 }
 
 export default function LensFilters({
   filters,
   brands,
+  availableOpticalTraits,
   onFiltersChange,
 }: Props) {
   const t = useTranslations("LensList");
+  const tBadge = useTranslations("SpecialtyBadge");
   const tBrand = useTranslations("Brands");
   const [secondaryOpen, setSecondaryOpen] = useState(false);
 
@@ -84,6 +88,14 @@ export default function LensFilters({
     { value: "cine" as UsageFilter, label: t("usageCine") },
   ] as { value: UsageFilter; label: string }[];
 
+  const opticalTraitOptions = [
+    { value: null as OpticalTrait | null, label: t("allTypes") },
+    ...availableOpticalTraits.map((trait) => ({
+      value: trait as OpticalTrait | null,
+      label: tBadge(trait),
+    })),
+  ];
+
   const focusMotorOptions = [
     { value: null, label: t("allTypes") },
     { value: "linear" as FocusMotorClass, label: t("motorLinear") },
@@ -101,6 +113,7 @@ export default function LensFilters({
   const hasHiddenActiveFilters =
     filters.focalCategories.length > 0 ||
     filters.features.length > 0 ||
+    filters.opticalTrait !== null ||
     filters.focusMotorClass !== null;
 
   const allOptionLabel = t("allTypes");
@@ -243,6 +256,18 @@ export default function LensFilters({
             <FilterRow label={t("features")}>
               <FeatureToggleGroup options={featureOptions} />
             </FilterRow>
+
+            {availableOpticalTraits.length > 0 && (
+              <FilterRow label={t("opticalTraitFilter")}>
+                <TypeSegmentedControl
+                  ariaLabel={t("opticalTraitFilter")}
+                  options={opticalTraitOptions}
+                  value={filters.opticalTrait}
+                  onChange={(v) => updateFilters("opticalTrait", v)}
+                  wrap
+                />
+              </FilterRow>
+            )}
 
             <FilterRow label={t("focusMotorFilter")}>
               <TypeSegmentedControl
