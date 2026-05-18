@@ -69,8 +69,8 @@ function MountCoverageTable({
               <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-sm font-semibold text-zinc-500 dark:text-zinc-400 align-middle border-b border-r border-zinc-200 dark:border-zinc-800 w-24 sm:w-28">{col.brand}</th>
               {/* Three top-level column groups share the same eyebrow style
                   (uppercase, dim) so they read as parallel categories. */}
-              <th colSpan={2} className="px-2 sm:px-3 pt-2 pb-1 text-center text-sm font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 border-b border-zinc-200 dark:border-zinc-800/70">{col.photoGroup}</th>
-              <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-sm font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 align-middle border-b border-zinc-200 dark:border-zinc-800 w-16 sm:w-20 border-l border-zinc-200 dark:border-zinc-800">{col.cinema}</th>
+              <th colSpan={2} className="px-2 sm:px-3 pt-2 pb-1 text-center text-sm font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 whitespace-nowrap border-b border-zinc-200 dark:border-zinc-800/70">{col.photoGroup}</th>
+              <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-sm font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 whitespace-nowrap align-middle border-b border-zinc-200 dark:border-zinc-800 w-16 sm:w-20 border-l border-zinc-200 dark:border-zinc-800">{col.cinema}</th>
               <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-sm font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 whitespace-nowrap align-middle border-b border-zinc-200 dark:border-zinc-800 border-l border-zinc-200 dark:border-zinc-800 w-16 sm:w-20">{col.count}</th>
             </tr>
             <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
