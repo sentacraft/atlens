@@ -202,6 +202,11 @@ export type ApertureValue = number | [number, number];
 /**
  * All valid specialty tag values. Defined as a const tuple so that
  * lens-schema.ts can derive its Zod enum without duplicating the list.
+ *
+ * @deprecated Use {@link Lens.isCine} (cine vs photo) and
+ * {@link Lens.opticalTraits} (flat optical / form-factor traits) instead.
+ * Retained during the dual-write migration window; will be removed in a
+ * follow-up release once the pipeline stops emitting this field.
  */
 export const SPECIALTY_TAGS = [
   "cine",
@@ -214,6 +219,35 @@ export const SPECIALTY_TAGS = [
   "probe",
 ] as const;
 export type SpecialtyTag = (typeof SPECIALTY_TAGS)[number];
+
+/**
+ * Flat optical and form-factor traits, replacing the implicit hierarchy
+ * inside the old `specialtyTags` array. Each trait is independent — no
+ * implicit pairing required.
+ *
+ * Trait definitions (apply when the source or model name explicitly indicates):
+ * - "macro"      — marketed as a macro lens, typically ≥0.5x magnification.
+ *                  Ultra-macro (>1.0x) is derived from {@link Lens.maxMagnification}
+ *                  and is no longer a separate trait.
+ * - "anamorphic" — uses anamorphic optics for cinematic squeeze. In practice
+ *                  always paired with `isCine: true` on the lens, but the trait
+ *                  itself is just "the optics are anamorphic".
+ * - "tilt"       — supports tilt movements (tilt-shift or Lensbaby-style).
+ * - "shift"      — supports shift movements.
+ * - "fisheye"    — fisheye projection (≥180° diagonal or circular).
+ * - "probe"      — probe / periscope form factor (e.g. Laowa Probe). Form-factor
+ *                  trait — orthogonal to macro capability; pair with "macro"
+ *                  when the lens also supports macro focusing.
+ */
+export const OPTICAL_TRAITS = [
+  "macro",
+  "anamorphic",
+  "tilt",
+  "shift",
+  "fisheye",
+  "probe",
+] as const;
+export type OpticalTrait = (typeof OPTICAL_TRAITS)[number];
 
 /**
  * All valid keys for {@link Lens.fieldNotes}. Defined as a const tuple so that
@@ -386,26 +420,47 @@ export interface Lens {
   minTStop?: ApertureValue;
 
   /**
-   * Optional special-purpose capability tags used for filtering and UX badges.
-   * Tags are additive — a lens can carry more than one.
+   * Whether the lens is marketed as a cinema / motion lens (T-stop rated,
+   * geared rings, standardized front diameter, etc.).
    *
-   * Tag definitions (apply when the source or model name explicitly indicates):
+   * Omit the field when the lens is a regular photo lens (do not store `false`).
+   *
+   * @example true
+   */
+  isCine?: boolean;
+
+  /**
+   * Optical / form-factor traits. Flat multi-select — every value in this
+   * array is independent, with no implicit pairing or hierarchy. See
+   * {@link OPTICAL_TRAITS} for the full list and per-trait definitions.
+   *
+   * Omit the field entirely when no traits apply (do not store an empty array).
+   *
+   * @example ["macro"]
+   * @example ["fisheye"]
+   * @example ["anamorphic"]
+   * @example ["macro", "probe"]
+   */
+  opticalTraits?: OpticalTrait[];
+
+  /**
+   * @deprecated Migrating to {@link Lens.isCine} + {@link Lens.opticalTraits}.
+   *
+   * Retained during the dual-write migration window: the pipeline currently
+   * emits both this field and the new fields. Will be removed once the
+   * pipeline stops writing it.
+   *
+   * Legacy tag definitions (kept here so the schema stays self-documenting
+   * until removal):
    * - "macro"       — marketed as a macro lens, typically ≥0.5x magnification.
    * - "ultra_macro" — exceeds 1:1 (>1.0x) magnification at closest focus.
-   *                   Always pair with "macro" (i.e. ["macro", "ultra_macro"]).
-   * - "cine"        — marketed as a cinema / video lens (T-stop rated, geared
-   *                   rings, standardized front diameter, etc.).
+   *                   Always paired with "macro".
+   * - "cine"        — marketed as a cinema / video lens.
    * - "anamorphic"  — uses anamorphic optics for cinematic squeeze.
-   * - "tilt"        — supports tilt movements (tilt-shift or Lensbaby-style).
+   * - "tilt"        — supports tilt movements.
    * - "shift"       — supports shift movements.
    * - "fisheye"     — fisheye projection (≥180° diagonal or circular).
    * - "probe"       — probe / periscope macro lens (e.g. Laowa Probe).
-   *
-   * Omit the field entirely when no tags apply (do not store an empty array).
-   *
-   * @example ["macro"]
-   * @example ["macro", "ultra_macro"]
-   * @example ["cine", "anamorphic"]
    */
   specialtyTags?: SpecialtyTag[];
 
