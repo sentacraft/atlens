@@ -450,11 +450,17 @@ export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) =
     if (lens.officialLinks.cn) {
       const previousCnIndex = seenCnLinks.get(lens.officialLinks.cn);
       if (previousCnIndex !== undefined) {
-        ctx.addIssue({
-          code: "custom",
-          message: `Duplicate officialLinks.cn also appears at index ${previousCnIndex}`,
-          path: [index, "officialLinks", "cn"],
-        });
+        // Honor KNOWN_DISTINCT_PAIRS: pairs that legitimately share a product
+        // page (e.g. Laowa S 17 / TS 17 are two SKUs on the same Tmall listing)
+        // would otherwise need URL data stripped just to pass this gate.
+        const pairKey = makeAllowlistKey(lens.id, lenses[previousCnIndex].id);
+        if (!KNOWN_DISTINCT_PAIRS.has(pairKey)) {
+          ctx.addIssue({
+            code: "custom",
+            message: `Duplicate officialLinks.cn also appears at index ${previousCnIndex}`,
+            path: [index, "officialLinks", "cn"],
+          });
+        }
       } else {
         seenCnLinks.set(lens.officialLinks.cn, index);
       }
@@ -463,11 +469,14 @@ export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) =
     if (lens.officialLinks.global) {
       const previousGlobalIndex = seenGlobalLinks.get(lens.officialLinks.global);
       if (previousGlobalIndex !== undefined) {
-        ctx.addIssue({
-          code: "custom",
-          message: `Duplicate officialLinks.global also appears at index ${previousGlobalIndex}`,
-          path: [index, "officialLinks", "global"],
-        });
+        const pairKey = makeAllowlistKey(lens.id, lenses[previousGlobalIndex].id);
+        if (!KNOWN_DISTINCT_PAIRS.has(pairKey)) {
+          ctx.addIssue({
+            code: "custom",
+            message: `Duplicate officialLinks.global also appears at index ${previousGlobalIndex}`,
+            path: [index, "officialLinks", "global"],
+          });
+        }
       } else {
         seenGlobalLinks.set(lens.officialLinks.global, index);
       }
