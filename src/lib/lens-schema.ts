@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { OPTICAL_TRAITS, SPEC_NA, SPECIALTY_TAGS } from "./types.ts";
+import { FIELD_NOTE_KEYS, OPTICAL_TRAITS, SPEC_NA, SPECIALTY_TAGS } from "./types.ts";
 import type { ApertureValue, Lens } from "./types.ts";
 
 const positiveNumberSchema = z.number().positive();
@@ -159,19 +159,40 @@ export const lensConfigurationSchema = z
 // z.record(enum, string) infers Record<K, string> (all keys required), but the
 // intended semantics are Partial<Record<K, string>> (keys are individually optional).
 // Using strictObject + optional per-field produces the correct inferred type.
+// Keys mirror FIELD_NOTE_KEYS in types.ts — keep both in lockstep. The static
+// `_AssertFieldNotesShape` below produces a compile-time error if a key gets
+// added to FIELD_NOTE_KEYS but not to this schema (or vice versa).
 const fieldNotesSchema = z.strictObject({
   wr: nonEmptyStringSchema.optional(),
   weightG: nonEmptyStringSchema.optional(),
+  lengthMm: nonEmptyStringSchema.optional(),
+  diameterMm: nonEmptyStringSchema.optional(),
   filterMm: nonEmptyStringSchema.optional(),
   minFocusDistance: nonEmptyStringSchema.optional(),
   maxMagnification: nonEmptyStringSchema.optional(),
   lensConfiguration: nonEmptyStringSchema.optional(),
   ois: nonEmptyStringSchema.optional(),
   focusMotor: nonEmptyStringSchema.optional(),
+  apertureRing: nonEmptyStringSchema.optional(),
   maxAperture: nonEmptyStringSchema.optional(),
   minAperture: nonEmptyStringSchema.optional(),
   apertureBladeCount: nonEmptyStringSchema.optional(),
 });
+
+// Compile-time check: the zod schema's keys must equal FIELD_NOTE_KEYS exactly.
+// If either set has a key the other lacks, _AssertExtra/_AssertMissing resolves
+// to a tuple type that fails to assign to `true`, triggering a TS error.
+type _AssertTrue<T extends true> = T;
+type _FieldNotesSchemaKeys = keyof z.infer<typeof fieldNotesSchema>;
+type _FieldNoteKeyConst = (typeof FIELD_NOTE_KEYS)[number];
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type _AssertNoExtraInSchema = _AssertTrue<
+  Exclude<_FieldNotesSchemaKeys, _FieldNoteKeyConst> extends never ? true : false
+>;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type _AssertNoMissingInSchema = _AssertTrue<
+  Exclude<_FieldNoteKeyConst, _FieldNotesSchemaKeys> extends never ? true : false
+>;
 
 const localeTranslationsSchema = z.strictObject({
   fieldNotes: fieldNotesSchema.optional(),

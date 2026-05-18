@@ -268,6 +268,7 @@ export const FIELD_NOTE_KEYS = [
   "lensConfiguration",
   "ois",
   "focusMotor",
+  "apertureRing",
   "maxAperture",
   "minAperture",
   "apertureBladeCount",
