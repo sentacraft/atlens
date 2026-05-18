@@ -83,7 +83,6 @@ export default function LensFilters({
   ] as { value: LensType | null; label: string }[];
 
   const usageOptions = [
-    { value: null, label: t("allTypes") },
     { value: "photo" as UsageFilter, label: t("usagePhoto") },
     { value: "cine" as UsageFilter, label: t("usageCine") },
   ] as { value: UsageFilter; label: string }[];
