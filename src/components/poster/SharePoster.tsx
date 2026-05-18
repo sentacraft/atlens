@@ -17,12 +17,12 @@ import {
   dimensionsPrimaryDisplay,
   primaryApertureDisplay,
   secondaryApertureDisplay,
-  specialtyTagsDisplay,
   mfdHeroValue,
   mfdHeroQualifier,
   mfdStructuredLines,
 } from "@/lib/lens.format";
-import type { SpecialtyTag, FieldNoteKey } from "@/lib/types";
+import { deriveSpecialty } from "@/lib/lens-specialty";
+import type { OpticalTrait, FieldNoteKey } from "@/lib/types";
 import { PosterSection } from "./PosterSection";
 import { PosterFeatureItem } from "./PosterFeatureItem";
 
@@ -42,7 +42,6 @@ export interface PosterLabels {
   sectionFocus: string;
   sectionSizeWeight: string;
   sectionFeatures: string;
-  sectionDetails: string;
   // Stat labels (shown below values)
   minFocusLabel: string;
   maxMagLabel: string;
@@ -75,7 +74,6 @@ export interface PosterLabels {
   tagTilt: string;
   tagShift: string;
   tagMacro: string;
-  tagUltraMacro: string;
   tagFisheye: string;
   tagProbe: string;
   // Pricing
@@ -264,13 +262,12 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   // Section label helpers
   const wideTeleLabels = { wide: labels.wide, tele: labels.tele };
 
-  const specialtyTagLabels: Record<SpecialtyTag, string> = {
+  const specialtyTagLabels: Record<OpticalTrait | "cine", string> = {
     cine: labels.tagCine,
     anamorphic: labels.tagAnamorphic,
     tilt: labels.tagTilt,
     shift: labels.tagShift,
     macro: labels.tagMacro,
-    ultra_macro: labels.tagUltraMacro,
     fisheye: labels.tagFisheye,
     probe: labels.tagProbe,
   };
@@ -290,12 +287,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
     const cls = classifyFocusMotor(l);
     return cls ? focusMotorClassLabel[cls] : undefined;
   });
-  const specialtyValues = lenses.map((l) =>
-    specialtyTagsDisplay(l.specialtyTags, specialtyTagLabels)
-  );
-
   const showFocusMotorRow = focusMotorValues.some(Boolean);
-  const showSpecialtyRow = specialtyValues.some(Boolean);
 
   // ── Focus section visibility ───────────────────────────────────
   const showMinFocus = lenses.some((l) => l.minFocusDistance !== undefined);
@@ -525,6 +517,51 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                 >
                   {lens.model}
                 </div>
+                {/* Specialty chips (cine + optical traits), inline next to
+                    the identity block. Outline-only style — Poster aesthetic
+                    is grayscale and dense, so a single low-weight pill style
+                    keeps cine/macro/tilt visually subordinate to the model
+                    name while still acting as a recognizable tag. */}
+                {(() => {
+                  const { isCine, opticalTraits } = deriveSpecialty(lens);
+                  const tags: string[] = [];
+                  if (isCine) tags.push(specialtyTagLabels.cine);
+                  for (const trait of opticalTraits) {
+                    tags.push(specialtyTagLabels[trait]);
+                  }
+                  if (tags.length === 0) return null;
+                  return (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        justifyContent: "center",
+                        gap: 4,
+                        marginTop: 2,
+                      }}
+                    >
+                      {tags.map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className="text-zinc-700"
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            border: "1px solid #d4d4d8",
+                            borderRadius: 6,
+                            padding: "1px 6px",
+                            fontSize: 10,
+                            fontWeight: 500,
+                            whiteSpace: "nowrap",
+                            lineHeight: 1.4,
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             );
           })}
@@ -843,23 +880,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   />
                   <PosterFeatureItem present={lens.af} label={labels.featureAF} icon={FEATURE_ICONS.af} />
                   <PosterFeatureItem present={lens.apertureRing} label={labels.featureApertureRing} icon={FEATURE_ICONS.apertureRing} />
-                  {showSpecialtyRow && (
-                    <>
-                      <div className="h-px bg-zinc-100" style={{ marginTop: 3, marginBottom: 3 }} />
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-                        <span className="text-zinc-400" style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                          {labels.sectionDetails}
-                        </span>
-                        {specialtyValues[i] ? (
-                          <span className="text-xs font-medium text-zinc-900 leading-tight text-center">
-                            {specialtyValues[i]}
-                          </span>
-                        ) : (
-                          <span className="text-xs font-medium text-zinc-300 leading-tight">—</span>
-                        )}
-                      </div>
-                    </>
-                  )}
                   </div>
                 </div>
               ))}

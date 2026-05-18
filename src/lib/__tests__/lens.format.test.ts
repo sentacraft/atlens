@@ -12,7 +12,6 @@ import {
   magnificationDisplay,
   dimensionsRichDisplay,
   maxMagnificationRichDisplay,
-  specialtyTagsDisplay,
   dimensionsPrimaryDisplay,
   dimensionsVariantsDisplay,
   mfdHeroValue,
@@ -405,29 +404,6 @@ describe("maxMagnificationRichDisplay", () => {
   it("shows wide · tele when variants present", () => {
     const mag: MaxMagnification = { value: 0.3, variants: { wide: 0.2, tele: 0.3 } };
     expect(maxMagnificationRichDisplay(mag, wideTeLabels)).toBe("Wide 0.2x · Tele 0.3x");
-  });
-});
-
-// ---------------------------------------------------------------------------
-// specialtyTagsDisplay
-// ---------------------------------------------------------------------------
-describe("specialtyTagsDisplay", () => {
-  const labels = { cine: "Cinema", macro: "Macro" } as Record<string, string>;
-
-  it("returns undefined when tags is undefined", () => {
-    expect(specialtyTagsDisplay(undefined, labels)).toBeUndefined();
-  });
-
-  it("returns undefined when tags is empty", () => {
-    expect(specialtyTagsDisplay([], labels)).toBeUndefined();
-  });
-
-  it("formats a single tag", () => {
-    expect(specialtyTagsDisplay(["cine"], labels)).toBe("Cinema");
-  });
-
-  it("joins multiple tags with a comma", () => {
-    expect(specialtyTagsDisplay(["cine", "macro"], labels)).toBe("Cinema, Macro");
   });
 });
 

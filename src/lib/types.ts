@@ -200,29 +200,7 @@ export interface LensConfiguration {
 export type ApertureValue = number | [number, number];
 
 /**
- * All valid specialty tag values. Defined as a const tuple so that
- * lens-schema.ts can derive its Zod enum without duplicating the list.
- *
- * @deprecated Use {@link Lens.isCine} (cine vs photo) and
- * {@link Lens.opticalTraits} (flat optical / form-factor traits) instead.
- * Retained during the dual-write migration window; will be removed in a
- * follow-up release once the pipeline stops emitting this field.
- */
-export const SPECIALTY_TAGS = [
-  "cine",
-  "anamorphic",
-  "tilt",
-  "shift",
-  "macro",
-  "ultra_macro",
-  "fisheye",
-  "probe",
-] as const;
-export type SpecialtyTag = (typeof SPECIALTY_TAGS)[number];
-
-/**
- * Flat optical and form-factor traits, replacing the implicit hierarchy
- * inside the old `specialtyTags` array. Each trait is independent — no
+ * Flat optical and form-factor traits. Each trait is independent — no
  * implicit pairing required.
  *
  * Trait definitions (apply when the source or model name explicitly indicates):
@@ -443,27 +421,6 @@ export interface Lens {
    * @example ["macro", "probe"]
    */
   opticalTraits?: OpticalTrait[];
-
-  /**
-   * @deprecated Migrating to {@link Lens.isCine} + {@link Lens.opticalTraits}.
-   *
-   * Retained during the dual-write migration window: the pipeline currently
-   * emits both this field and the new fields. Will be removed once the
-   * pipeline stops writing it.
-   *
-   * Legacy tag definitions (kept here so the schema stays self-documenting
-   * until removal):
-   * - "macro"       — marketed as a macro lens, typically ≥0.5x magnification.
-   * - "ultra_macro" — exceeds 1:1 (>1.0x) magnification at closest focus.
-   *                   Always paired with "macro".
-   * - "cine"        — marketed as a cinema / video lens.
-   * - "anamorphic"  — uses anamorphic optics for cinematic squeeze.
-   * - "tilt"        — supports tilt movements.
-   * - "shift"       — supports shift movements.
-   * - "fisheye"     — fisheye projection (≥180° diagonal or circular).
-   * - "probe"       — probe / periscope macro lens (e.g. Laowa Probe).
-   */
-  specialtyTags?: SpecialtyTag[];
 
   /**
    * Whether the lens supports autofocus.
