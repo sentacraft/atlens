@@ -64,8 +64,9 @@ function MountCoverageTable({
             {/* Row 1 — semantic grouping: "Photo Lenses" spans Active+Discontinued (lifecycle states
                 within the photo category); "Cinema" stands alone (orthogonal category presence). */}
             <tr className="bg-zinc-50 dark:bg-zinc-900/50">
-              {/* Brand is the row identifier, kept as left-aligned standard header. */}
-              <th rowSpan={2} className="px-2 sm:px-3 py-2 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 align-middle border-b border-r border-zinc-200 dark:border-zinc-800 w-24 sm:w-28">{col.brand}</th>
+              {/* Brand is the row identifier, horizontally centered to match
+                  the centered data columns to its right. */}
+              <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-xs font-semibold text-zinc-500 dark:text-zinc-400 align-middle border-b border-r border-zinc-200 dark:border-zinc-800 w-24 sm:w-28">{col.brand}</th>
               {/* Three top-level column groups share the same eyebrow style
                   (11px uppercase, dim) so they read as parallel categories. */}
               <th colSpan={2} className="px-2 sm:px-3 pt-2 pb-1 text-center text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 border-b border-zinc-200 dark:border-zinc-800/70">{col.photoGroup}</th>
@@ -84,7 +85,7 @@ function MountCoverageTable({
               const m: CoverageMeta = (meta as Record<string, CoverageMeta>)[b] ?? { active: false, discontinued: false, cinema: false, notes: "" };
               return (
                 <tr key={b}>
-                  <td className="px-2 sm:px-3 py-2 font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap border-r border-zinc-200 dark:border-zinc-800">{brandNames[b] ?? b}</td>
+                  <td className="px-2 sm:px-3 py-2 text-center font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap border-r border-zinc-200 dark:border-zinc-800">{brandNames[b] ?? b}</td>
                   <td className="px-2 sm:px-3 py-2 text-center"><StateCell state={m.active} /></td>
                   <td className="px-2 sm:px-3 py-2 text-center"><StateCell state={m.discontinued} /></td>
                   <td className="px-2 sm:px-3 py-2 text-center border-l border-zinc-200 dark:border-zinc-800"><StateCell state={m.cinema} /></td>
@@ -145,7 +146,7 @@ export default async function AboutContent() {
     (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
   );
   const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage","laowa","meike","sirui","voigtlander"];
-  const G_BRANDS = ["fujifilm"];
+  const G_BRANDS = ["fujifilm", "laowa"];
 
   const pipelineStages = [
     { badge: "0", label: t("pipeline0Label"), desc: t("pipeline0Desc") },

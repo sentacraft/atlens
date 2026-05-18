@@ -14,6 +14,7 @@
     "voigtlander": { "active": true,      "discontinued": false,     "cinema": "n/a",     "notes": "" }
   },
   "g": {
-    "fujifilm":    { "active": true,      "discontinued": false,     "cinema": "n/a",     "notes": "" }
+    "fujifilm":    { "active": true,      "discontinued": false,     "cinema": true,      "notes": "" },
+    "laowa":       { "active": true,      "discontinued": false,     "cinema": "n/a",     "notes": "" }
   }
 }
