@@ -8,9 +8,7 @@
     "focalLengthMax": 12,
     "maxTStop": 2.9,
     "minTStop": 16,
-    "specialtyTags": [
-      "cine"
-    ],
+    "isCine": true,
     "af": false,
     "ois": false,
     "wr": false,
@@ -579,9 +577,7 @@
     "focalLengthMax": 10,
     "maxTStop": 2.1,
     "minTStop": 22,
-    "specialtyTags": [
-      "cine"
-    ],
+    "isCine": true,
     "af": false,
     "ois": false,
     "wr": false,
@@ -651,9 +647,7 @@
     "focalLengthMax": 16,
     "maxTStop": 2.1,
     "minTStop": 22,
-    "specialtyTags": [
-      "cine"
-    ],
+    "isCine": true,
     "af": false,
     "ois": false,
     "wr": false,
@@ -722,9 +716,7 @@
     "focalLengthMax": 25,
     "maxTStop": 2.1,
     "minTStop": 22,
-    "specialtyTags": [
-      "cine"
-    ],
+    "isCine": true,
     "af": false,
     "ois": false,
     "wr": false,
@@ -793,9 +785,7 @@
     "focalLengthMax": 35,
     "maxTStop": 2.1,
     "minTStop": 22,
-    "specialtyTags": [
-      "cine"
-    ],
+    "isCine": true,
     "af": false,
     "ois": false,
     "wr": false,
@@ -864,9 +854,7 @@
     "focalLengthMax": 50,
     "maxTStop": 2.1,
     "minTStop": 22,
-    "specialtyTags": [
-      "cine"
-    ],
+    "isCine": true,
     "af": false,
     "ois": false,
     "wr": false,
@@ -935,9 +923,7 @@
     "focalLengthMax": 85,
     "maxTStop": 2.1,
     "minTStop": 22,
-    "specialtyTags": [
-      "cine"
-    ],
+    "isCine": true,
     "af": false,
     "ois": false,
     "wr": false,
@@ -1001,7 +987,7 @@
     "focalLengthMax": 4,
     "maxAperture": 2.8,
     "minAperture": 16,
-    "specialtyTags": [
+    "opticalTraits": [
       "fisheye"
     ],
     "af": false,
@@ -1073,7 +1059,7 @@
     "focalLengthMax": 6,
     "maxAperture": 2,
     "minAperture": 16,
-    "specialtyTags": [
+    "opticalTraits": [
       "fisheye"
     ],
     "af": false,
@@ -1147,7 +1133,7 @@
     "focalLengthMax": 7.5,
     "maxAperture": 2.8,
     "minAperture": 16,
-    "specialtyTags": [
+    "opticalTraits": [
       "fisheye"
     ],
     "af": false,
@@ -1655,7 +1641,7 @@
     "focalLengthMax": 50,
     "maxAperture": 1.4,
     "minAperture": 16,
-    "specialtyTags": [
+    "opticalTraits": [
       "tilt"
     ],
     "af": false,
@@ -1852,7 +1838,7 @@
     "focalLengthMax": 60,
     "maxAperture": 2.8,
     "minAperture": 16,
-    "specialtyTags": [
+    "opticalTraits": [
       "macro"
     ],
     "af": false,
@@ -1979,10 +1965,19 @@
       "highRefractive": 1,
       "sourceText": "6组7片 双高斯结构"
     },
-    "fieldNotes": {},
+    "fieldNotes": {
+      "apertureRing": "Aperture ring switches between clicked and de-clicked modes."
+    },
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/products/35mm-f1-4-%E5%85%A8%E7%94%BB%E5%B9%85",
       "global": "https://brightinstar.com/products/brightin-star-35mm-f1-4-full-frame-large-aperture-manual-focus-lens-for-fuji-x-mount"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "apertureRing": "光圈环可在有级（咔哒挡位）和无级（顺滑无段）两种模式间切换。"
+        }
+      }
     }
   },
   {
@@ -1994,9 +1989,8 @@
     "focalLengthMax": 60,
     "maxAperture": 2.8,
     "minAperture": 16,
-    "specialtyTags": [
-      "macro",
-      "ultra_macro"
+    "opticalTraits": [
+      "macro"
     ],
     "af": false,
     "ois": false,
@@ -2069,9 +2063,8 @@
     "focalLengthMax": 60,
     "maxAperture": 2.8,
     "minAperture": 22,
-    "specialtyTags": [
-      "macro",
-      "ultra_macro"
+    "opticalTraits": [
+      "macro"
     ],
     "af": false,
     "ois": false,
@@ -2218,7 +2211,7 @@
     "focalLengthMax": 7.5,
     "maxAperture": 2.8,
     "minAperture": 16,
-    "specialtyTags": [
+    "opticalTraits": [
       "fisheye"
     ],
     "af": false,
@@ -2297,7 +2290,7 @@
     "focalLengthMax": 10,
     "maxAperture": 5.6,
     "minAperture": 5.6,
-    "specialtyTags": [
+    "opticalTraits": [
       "fisheye"
     ],
     "af": false,
@@ -2376,7 +2369,7 @@
     "focalLengthMax": 10,
     "maxAperture": 5.6,
     "minAperture": 22,
-    "specialtyTags": [
+    "opticalTraits": [
       "fisheye"
     ],
     "af": false,
@@ -2952,9 +2945,7 @@
     "maxAperture": 2.8,
     "minAperture": 22,
     "maxTStop": 2.9,
-    "specialtyTags": [
-      "cine"
-    ],
+    "isCine": true,
     "af": false,
     "ois": false,
     "wr": false,
@@ -3047,9 +3038,7 @@
     "maxAperture": 2.8,
     "minAperture": 22,
     "maxTStop": 2.9,
-    "specialtyTags": [
-      "cine"
-    ],
+    "isCine": true,
     "af": false,
     "ois": false,
     "wr": false,
@@ -3402,6 +3391,73 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc16-50mmf35-56-ois/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xc16-50mmf35-56-ois/"
+    }
+  },
+  {
+    "id": "fujifilm-xc-16-50mmf35-56-ois-ii-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XC",
+    "model": "XC 16-50mm F3.5-5.6 OIS II",
+    "generation": 2,
+    "focalLengthMin": 16,
+    "focalLengthMax": 50,
+    "maxAperture": [
+      3.5,
+      5.6
+    ],
+    "minAperture": 22,
+    "af": true,
+    "ois": true,
+    "wr": false,
+    "apertureRing": false,
+    "powerZoom": false,
+    "weightG": 195,
+    "diameterMm": 62.6,
+    "length": {
+      "mm": 98.3,
+      "variants": {
+        "wide": 65.2,
+        "tele": 98.3
+      }
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 60
+      },
+      "macro": {
+        "cm": 15,
+        "teleCm": 35
+      }
+    },
+    "maxMagnification": {
+      "value": 0.2
+    },
+    "angleOfView": [
+      83.2,
+      31.7
+    ],
+    "angleOfViewCalc": [
+      83,
+      31.6
+    ],
+    "apertureBladeCount": 7,
+    "releaseYear": 2015,
+    "compatibleMounts": [
+      "Fujifilm X"
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 12,
+      "aspherical": 3,
+      "ed": 1,
+      "sourceText": "12 elements in 10 groups (includes 3 aspherical and 1 extra low dispersion elements)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc16-50mmf35-56-ois-2/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xc16-50mmf35-56-ois-2/"
     }
   },
   {
@@ -4171,7 +4227,10 @@
     },
     "minFocusDistance": {
       "normal": {
-        "cm": 60,
+        "cm": 60
+      },
+      "macro": {
+        "cm": 30,
         "teleCm": 40
       }
     },
@@ -5383,7 +5442,7 @@
     "focalLengthMax": 30,
     "maxAperture": 2.8,
     "minAperture": 22,
-    "specialtyTags": [
+    "opticalTraits": [
       "macro"
     ],
     "af": true,
@@ -6230,7 +6289,7 @@
     "focalLengthMax": 60,
     "maxAperture": 2.4,
     "minAperture": 22,
-    "specialtyTags": [
+    "opticalTraits": [
       "macro"
     ],
     "af": true,
@@ -6382,7 +6441,7 @@
     "focalLengthMax": 80,
     "maxAperture": 2.8,
     "minAperture": 22,
-    "specialtyTags": [
+    "opticalTraits": [
       "macro"
     ],
     "af": true,
@@ -6878,6 +6937,718 @@
     }
   },
   {
+    "id": "laowa-cf-4p5-10mmf28-fisheye-zoom-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "CF",
+    "model": "4.5-10mm F2.8 Fisheye Zoom",
+    "focalLengthMin": 4.5,
+    "focalLengthMax": 10,
+    "maxAperture": 2.8,
+    "minAperture": 22,
+    "opticalTraits": [
+      "fisheye"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 330,
+    "diameterMm": 68.9,
+    "length": {
+      "mm": 59.3
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 10
+      }
+    },
+    "maxMagnification": {
+      "value": 0.27
+    },
+    "angleOfView": [
+      180,
+      175
+    ],
+    "angleOfViewCalc": [
+      144.7,
+      109.5
+    ],
+    "apertureBladeCount": 7,
+    "releaseYear": 2024,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2480,
+          "currency": "CNY",
+          "source": "天猫·老蛙旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Nikon Z",
+      "Canon RF",
+      "Leica L",
+      "Fujifilm X",
+      "Canon EF-M",
+      "Micro Four Thirds"
+    ],
+    "filterMm": "N/A",
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 13
+    },
+    "fieldNotes": {
+      "weightG": "Value is from the Sony E-mount version; the X-mount variant may differ slightly.",
+      "diameterMm": "Value is from the Sony E-mount version; the X-mount variant may differ slightly.",
+      "filterMm": "Bulbous fisheye front element; no filter thread."
+    },
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-97"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "数值取自索尼 E 卡口版本；X 卡口版本可能略有差异。",
+          "diameterMm": "数值取自索尼 E 卡口版本；X 卡口版本可能略有差异。",
+          "filterMm": "灯泡状鱼眼前组镜片；无滤镜螺纹。"
+        }
+      }
+    }
+  },
+  {
+    "id": "laowa-cf-4mmf28-210-circular-fisheye-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "CF",
+    "model": "4mm F2.8 210° Circular Fisheye",
+    "focalLengthMin": 4,
+    "focalLengthMax": 4,
+    "maxAperture": 2.8,
+    "minAperture": 16,
+    "opticalTraits": [
+      "fisheye"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 135,
+    "diameterMm": 45.2,
+    "length": {
+      "mm": 25.5
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 8
+      }
+    },
+    "maxMagnification": {
+      "value": 0.11
+    },
+    "angleOfView": 210,
+    "angleOfViewCalc": 148.4,
+    "apertureBladeCount": 7,
+    "releaseYear": 2019,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1270,
+          "currency": "CNY",
+          "source": "天猫·老蛙旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 199,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Nikon Z",
+      "Canon EF-M",
+      "Canon RF",
+      "Leica L"
+    ],
+    "filterMm": "N/A",
+    "lensConfiguration": {
+      "groups": 6,
+      "elements": 7
+    },
+    "fieldNotes": {
+      "filterMm": "Bulbous circular fisheye front element; no filter thread."
+    },
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-36"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "灯泡状圆周鱼眼前组镜片；无滤镜螺纹。"
+        }
+      }
+    }
+  },
+  {
+    "id": "laowa-cf-8-16mmf35-50-c-dreamer-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "CF",
+    "model": "8-16mm F3.5-5.0 C-Dreamer",
+    "focalLengthMin": 8,
+    "focalLengthMax": 16,
+    "maxAperture": [
+      3.5,
+      5
+    ],
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 463,
+    "diameterMm": 88.4,
+    "length": {
+      "mm": 88.53
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 20
+      }
+    },
+    "maxMagnification": {
+      "value": 0.125
+    },
+    "angleOfView": [
+      120.9,
+      82.8
+    ],
+    "angleOfViewCalc": [
+      121,
+      83
+    ],
+    "apertureBladeCount": 5,
+    "releaseYear": 2023,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3469,
+          "currency": "CNY",
+          "source": "天猫·老蛙旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 549,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Nikon Z",
+      "Canon RF",
+      "Canon EF-M"
+    ],
+    "filterMm": 86,
+    "lensConfiguration": {
+      "groups": 12,
+      "elements": 16
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-76"
+    }
+  },
+  {
+    "id": "laowa-cf-9mmf28-cd-dreamer-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "CF",
+    "model": "9mm F2.8 C&D-Dreamer",
+    "focalLengthMin": 9,
+    "focalLengthMax": 9,
+    "maxAperture": 2.8,
+    "minAperture": 22,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 215,
+    "diameterMm": 53,
+    "length": {
+      "mm": 60
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 12
+      }
+    },
+    "maxMagnification": {
+      "value": 0.13
+    },
+    "angleOfView": 113,
+    "angleOfViewCalc": 115.1,
+    "apertureBladeCount": 7,
+    "releaseYear": 2018,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2960,
+          "currency": "CNY",
+          "source": "天猫·老蛙旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 399,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        },
+        "used": {
+          "price": 274,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Canon EF-M",
+      "Canon RF",
+      "DJI DL",
+      "Nikon Z",
+      "Leica L"
+    ],
+    "filterMm": 49,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 15,
+      "aspherical": 2,
+      "ed": 3,
+      "sourceText": "10 groups 15 elements (incl. 2 aspherical, 3 super low dispersion)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-18"
+    }
+  },
+  {
+    "id": "laowa-cf-10mmf40-cookie-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "CF",
+    "model": "10mm F4.0 Cookie",
+    "focalLengthMin": 10,
+    "focalLengthMax": 10,
+    "maxAperture": 4,
+    "minAperture": 22,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 130,
+    "diameterMm": 59.8,
+    "length": {
+      "mm": 25
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 10
+      }
+    },
+    "maxMagnification": {
+      "value": 0.15
+    },
+    "angleOfView": 109.3,
+    "angleOfViewCalc": 109.5,
+    "apertureBladeCount": 5,
+    "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1870,
+          "currency": "CNY",
+          "source": "京东·老蛙官方旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 299,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        },
+        "used": {
+          "price": 249.95,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm X",
+      "Sony E",
+      "Canon RF",
+      "Nikon Z",
+      "Leica L",
+      "Micro Four Thirds",
+      "Canon EF-M"
+    ],
+    "filterMm": 37,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 12,
+      "aspherical": 2,
+      "ed": 4,
+      "highRefractive": 2,
+      "sourceText": "8 groups 12 elements (incl. 2 high-refractive, 4 anomalous dispersion, 2 aspherical)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-55"
+    }
+  },
+  {
+    "id": "laowa-cf-12-24mmf56-zoom-shift-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "CF",
+    "model": "12-24mm F5.6 Zoom Shift",
+    "focalLengthMin": 12,
+    "focalLengthMax": 24,
+    "maxAperture": 5.6,
+    "minAperture": 22,
+    "opticalTraits": [
+      "shift"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 575,
+    "diameterMm": 80,
+    "length": {
+      "mm": 98.91
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 15
+      }
+    },
+    "maxMagnification": {
+      "value": 0.4
+    },
+    "angleOfView": [
+      102.5,
+      63.9
+    ],
+    "angleOfViewCalc": [
+      99.4,
+      61
+    ],
+    "apertureBladeCount": 9,
+    "releaseYear": 2024,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 4950,
+          "currency": "CNY",
+          "source": "天猫·老蛙旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 699,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Canon RF",
+      "Canon EF-M",
+      "Nikon Z",
+      "Leica L",
+      "Fujifilm X"
+    ],
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 11,
+      "elements": 15,
+      "aspherical": 2,
+      "ed": 3,
+      "sourceText": "11 groups 15 elements (incl. 2 aspherical, 3 ED)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-81"
+    }
+  },
+  {
+    "id": "laowa-cf-65mmf28-ca-dreamer-macro-2x-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "CF",
+    "model": "65mm F2.8 CA-Dreamer Macro 2X",
+    "focalLengthMin": 65,
+    "focalLengthMax": 65,
+    "maxAperture": 2.8,
+    "minAperture": 22,
+    "opticalTraits": [
+      "macro"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 335,
+    "diameterMm": 57,
+    "length": {
+      "mm": 100
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 17
+      }
+    },
+    "maxMagnification": {
+      "value": 2
+    },
+    "angleOfView": 24.4,
+    "angleOfViewCalc": 24.6,
+    "apertureBladeCount": 9,
+    "releaseYear": 2020,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2478,
+          "currency": "CNY",
+          "source": "京东·老蛙官方旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 399,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        },
+        "used": {
+          "price": 354.99,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Canon EF-M",
+      "Canon RF",
+      "Nikon Z",
+      "Leica L"
+    ],
+    "filterMm": 52,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 14,
+      "ed": 3,
+      "sourceText": "10 groups 14 elements (incl. 3 anomalous dispersion)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-33"
+    }
+  },
+  {
+    "id": "laowa-cf-argus-25mm-f095-apo-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "CF",
+    "model": "Argus 25mm F0.95 APO",
+    "focalLengthMin": 25,
+    "focalLengthMax": 25,
+    "maxAperture": 0.95,
+    "minAperture": 11,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 575,
+    "diameterMm": 71.5,
+    "length": {
+      "mm": 81
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 34
+      }
+    },
+    "maxMagnification": {
+      "value": 0.1
+    },
+    "angleOfView": 58.8,
+    "angleOfViewCalc": 59,
+    "apertureBladeCount": 9,
+    "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3350,
+          "currency": "CNY",
+          "source": "天猫·老蛙旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 549,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Nikon Z",
+      "Canon RF",
+      "Fujifilm X",
+      "Canon EF-M"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 14,
+      "aspherical": 1,
+      "ed": 1,
+      "highRefractive": 2,
+      "sourceText": "9 groups 14 elements (incl. 1 aspherical, 1 ED, 2 special high-refractive)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-58"
+    }
+  },
+  {
+    "id": "laowa-cf-argus-33mmf095-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "CF",
+    "model": "Argus 33mm F0.95",
+    "focalLengthMin": 33,
+    "focalLengthMax": 33,
+    "maxAperture": 0.95,
+    "minAperture": 11,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 590,
+    "diameterMm": 71.5,
+    "length": {
+      "mm": 83
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 35
+      }
+    },
+    "maxMagnification": {
+      "value": 0.125
+    },
+    "angleOfView": 46.2,
+    "angleOfViewCalc": 46.4,
+    "apertureBladeCount": 9,
+    "releaseYear": 2021,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2960,
+          "currency": "CNY",
+          "source": "京东·老蛙官方旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 449,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        },
+        "used": {
+          "price": 400,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Nikon Z",
+      "Canon RF",
+      "Canon EF-M"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 14,
+      "aspherical": 1,
+      "ed": 1,
+      "highRefractive": 3,
+      "sourceText": "9 groups 14 elements (incl. 1 aspherical, 1 ED, 3 special high-refractive)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-42"
+    }
+  },
+  {
     "id": "sgimage-mf-12mm-f28-aps-c-ultra-wide-x",
     "brand": "sgimage",
     "mount": "X",
@@ -7169,7 +7940,7 @@
     "focalLengthMax": 7.5,
     "maxAperture": 2.8,
     "minAperture": 16,
-    "specialtyTags": [
+    "opticalTraits": [
       "fisheye"
     ],
     "af": false,
@@ -9124,9 +9895,7 @@
     "focalLengthMax": 35,
     "maxTStop": 2.1,
     "minTStop": 22,
-    "specialtyTags": [
-      "cine"
-    ],
+    "isCine": true,
     "af": false,
     "ois": false,
     "wr": false,
@@ -9198,9 +9967,8 @@
     "focalLengthMax": 100,
     "maxAperture": 2.8,
     "minAperture": 22,
-    "specialtyTags": [
-      "macro",
-      "ultra_macro"
+    "opticalTraits": [
+      "macro"
     ],
     "af": false,
     "ois": false,
@@ -9823,7 +10591,7 @@
     "focalLengthMax": 7.5,
     "maxAperture": 2,
     "minAperture": 11,
-    "specialtyTags": [
+    "opticalTraits": [
       "fisheye"
     ],
     "af": false,
@@ -10280,7 +11048,7 @@
     "focalLengthMax": 40,
     "maxAperture": 2.8,
     "minAperture": 16,
-    "specialtyTags": [
+    "opticalTraits": [
       "macro"
     ],
     "af": false,
@@ -10503,7 +11271,7 @@
     "focalLengthMax": 50,
     "maxAperture": 1.4,
     "minAperture": 16,
-    "specialtyTags": [
+    "opticalTraits": [
       "tilt"
     ],
     "af": false,
@@ -10577,7 +11345,7 @@
     "focalLengthMax": 35,
     "maxAperture": 1.4,
     "minAperture": 16,
-    "specialtyTags": [
+    "opticalTraits": [
       "tilt"
     ],
     "af": false,
@@ -10653,11 +11421,10 @@
     "focalLengthMax": 100,
     "maxAperture": 2.8,
     "minAperture": 22,
-    "specialtyTags": [
+    "opticalTraits": [
       "tilt",
       "shift",
-      "macro",
-      "ultra_macro"
+      "macro"
     ],
     "af": false,
     "ois": false,
@@ -11757,6 +12524,545 @@
           "lensConfiguration": "包含 4 片 HD（High Definition）镜片。"
         },
         "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "voigtlander-18mm-f28-color-skopar-asph-x",
+    "brand": "voigtlander",
+    "mount": "X",
+    "series": "Color Skopar",
+    "model": "18 mm F2.8 aspherical X-Mount",
+    "focalLengthMin": 18,
+    "focalLengthMax": 18,
+    "maxAperture": 2.8,
+    "minAperture": 22,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 115,
+    "diameterMm": 59.3,
+    "length": {
+      "mm": 23.5
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 17
+      }
+    },
+    "angleOfView": 75.4,
+    "angleOfViewCalc": 76.3,
+    "apertureBladeCount": 10,
+    "releaseYear": 2024,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 4550,
+          "currency": "CNY",
+          "source": "京东·福伦达摄影器材店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 561,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "accessories": [
+      "Lens cap",
+      "Rear cap",
+      "Lens hood"
+    ],
+    "filterMm": 43,
+    "lensConfiguration": {
+      "groups": 5,
+      "elements": 7,
+      "aspherical": 1,
+      "sourceText": "7 elements in 5 groups"
+    },
+    "fieldNotes": {
+      "lensConfiguration": "Includes 1 double-sided aspherical element (two aspherical surfaces on a single element)."
+    },
+    "officialLinks": {
+      "global": "https://www.voigtlaender.de/lenses/x-mount/18-mm-128-color-skopar/?lang=en"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "lensConfiguration": "包含 1 片双面非球面镜片（同一片镜片两面均为非球面）。"
+        },
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "遮光罩"
+        ]
+      }
+    }
+  },
+  {
+    "id": "voigtlander-23mm-f12-nokton-aspherical-x",
+    "brand": "voigtlander",
+    "mount": "X",
+    "series": "Nokton",
+    "model": "23 mm F1.2 X",
+    "focalLengthMin": 23,
+    "focalLengthMax": 23,
+    "maxAperture": 1.2,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 214,
+    "diameterMm": 59.3,
+    "length": {
+      "mm": 43.8
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 18
+      }
+    },
+    "angleOfView": 63.2,
+    "angleOfViewCalc": 63.2,
+    "apertureBladeCount": 12,
+    "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 5098,
+          "currency": "CNY",
+          "source": "京东·福伦达摄影器材店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 618.98,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "accessories": [
+      "Lens cap",
+      "Rear cap",
+      "Lens hood"
+    ],
+    "filterMm": 46,
+    "lensConfiguration": {
+      "groups": 6,
+      "elements": 10,
+      "sourceText": "10 lenses in 6 groups"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "global": "https://www.voigtlaender.de/lenses/x-mount/23-mm-11-2-nokton/?lang=en"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "遮光罩"
+        ]
+      }
+    }
+  },
+  {
+    "id": "voigtlander-27mm-f20-ultron-x",
+    "brand": "voigtlander",
+    "mount": "X",
+    "series": "Ultron",
+    "model": "27 mm F2.0 X",
+    "focalLengthMin": 27,
+    "focalLengthMax": 27,
+    "maxAperture": 2,
+    "minAperture": 22,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 120,
+    "diameterMm": 59.3,
+    "length": {
+      "mm": 23.5
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 25
+      }
+    },
+    "maxMagnification": {
+      "value": 0.15
+    },
+    "angleOfView": 53.7,
+    "angleOfViewCalc": 55.3,
+    "apertureBladeCount": 10,
+    "releaseYear": 2023,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 4550,
+          "currency": "CNY",
+          "source": "京东·福伦达摄影器材店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 499.99,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "accessories": [
+      "Lens cap",
+      "Rear cap",
+      "Lens hood"
+    ],
+    "filterMm": 43,
+    "lensConfiguration": {
+      "groups": 4,
+      "elements": 6,
+      "sourceText": "6 elements in 4 groups"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "global": "https://www.voigtlaender.de/lenses/x-mount/27-mm-12-0-nokton/?lang=en"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "遮光罩"
+        ]
+      }
+    }
+  },
+  {
+    "id": "voigtlander-35mm-f09-nokton-aspherical-x",
+    "brand": "voigtlander",
+    "mount": "X",
+    "series": "Nokton",
+    "model": "35 mm F0.9 aspherical X-Mount",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 0.9,
+    "minAperture": 22,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 492,
+    "diameterMm": 72.7,
+    "length": {
+      "mm": 64.9
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 35
+      }
+    },
+    "angleOfView": 43.8,
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 12,
+    "releaseYear": 2023,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 13300,
+          "currency": "CNY",
+          "source": "京东·福伦达摄影器材店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 1358,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "accessories": [
+      "Lens cap",
+      "Rear cap",
+      "Lens hood"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 10,
+      "aspherical": 2,
+      "highRefractive": 1,
+      "sourceText": "10 lenses in 8 groups"
+    },
+    "fieldNotes": {
+      "lensConfiguration": "Includes 1 GA (Ground Aspherical) element made of high-refractive-index glass — this single element is counted both as aspherical and as high-refractive."
+    },
+    "officialLinks": {
+      "global": "https://www.voigtlaender.de/lenses/x-mount/35mm-109-nokton/?lang=en"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "lensConfiguration": "包含 1 片 GA（Ground Aspherical）研磨非球面镜片，材质为高折射率玻璃——这片镜片在非球面与高折射率两类统计中各计入一次。"
+        },
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "遮光罩"
+        ]
+      }
+    }
+  },
+  {
+    "id": "voigtlander-35mm-f12-nokton-x",
+    "brand": "voigtlander",
+    "mount": "X",
+    "series": "Nokton",
+    "model": "35 mm F1.2 X",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 1.2,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 196,
+    "diameterMm": 69.6,
+    "length": {
+      "mm": 39.8
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 30
+      }
+    },
+    "angleOfView": 44,
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 12,
+    "releaseYear": 2021,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 5030,
+          "currency": "CNY",
+          "source": "京东·福伦达摄影器材店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 499.99,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "accessories": [
+      "Lens cap",
+      "Rear cap",
+      "Lens hood"
+    ],
+    "filterMm": 46,
+    "lensConfiguration": {
+      "groups": 6,
+      "elements": 8,
+      "sourceText": "8 lenses in 6 groups"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "global": "https://www.voigtlaender.de/lenses/x-mount/35-mm-11-2-nokton/?lang=en"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "遮光罩"
+        ]
+      }
+    }
+  },
+  {
+    "id": "voigtlander-35mm-f2-macro-apo-ultron-x",
+    "brand": "voigtlander",
+    "mount": "X",
+    "series": "Macro APO-Ultron",
+    "model": "35 mm F2.0 X",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 2,
+    "minAperture": 22,
+    "opticalTraits": [
+      "macro"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 265,
+    "diameterMm": 60.7,
+    "length": {
+      "mm": 54.8
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 16.3
+      }
+    },
+    "maxMagnification": {
+      "value": 0.5
+    },
+    "angleOfView": 42.8,
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 10,
+    "releaseYear": 2022,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 6220,
+          "currency": "CNY",
+          "source": "京东·福伦达摄影器材店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 583,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "accessories": [
+      "Lens cap",
+      "Rear cap",
+      "Lens hood"
+    ],
+    "filterMm": 49,
+    "lensConfiguration": {
+      "groups": 6,
+      "elements": 9,
+      "ed": 3,
+      "sourceText": "9 lenses in 6 groups"
+    },
+    "fieldNotes": {
+      "lensConfiguration": "Includes 3 abnormal-partial-dispersion elements forming the apochromatic (APO) design; Voigtländer does not market these as 'ED'."
+    },
+    "officialLinks": {
+      "global": "https://www.voigtlaender.de/lenses/x-mount/35-mm-12-macro-apo-ultron/?lang=en"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "lensConfiguration": "包含 3 片异常部分色散镜片，构成复消色差（APO）设计；福伦达未将这些镜片标注为 ED。"
+        },
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "遮光罩"
+        ]
+      }
+    }
+  },
+  {
+    "id": "voigtlander-50mm-f12-nokton-x",
+    "brand": "voigtlander",
+    "mount": "X",
+    "series": "Nokton",
+    "model": "50 mm F1.2 X-Mount",
+    "focalLengthMin": 50,
+    "focalLengthMax": 50,
+    "maxAperture": 1.2,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 290,
+    "diameterMm": 63.9,
+    "length": {
+      "mm": 49
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 39
+      }
+    },
+    "angleOfView": 32.5,
+    "angleOfViewCalc": 31.6,
+    "apertureBladeCount": 12,
+    "releaseYear": 2023,
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 6380,
+          "currency": "CNY",
+          "source": "京东·福伦达摄影器材店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 709,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "accessories": [
+      "Lens cap",
+      "Rear cap",
+      "Lens hood"
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 9,
+      "sourceText": "9 lenses in 8 groups"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "global": "https://www.voigtlaender.de/lenses/x-mount/50mm-11-2-nokton/?lang=en"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "遮光罩"
+        ]
       }
     }
   }
