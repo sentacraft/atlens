@@ -112,10 +112,13 @@ export default function LensCard({
           className="flex flex-1 flex-col gap-2 p-3 sm:gap-2.5 sm:p-4 max-xs:min-w-0"
         >
           <div className="flex flex-col gap-1">
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400 truncate max-xs:pr-9">
-                {fmt.lensSubtitleLine(tBrand(lens.brand), lens.series)}
-              </p>
+            <div className="flex items-center justify-between gap-2 max-xs:pr-9">
+              <div className="flex min-w-0 items-center gap-1.5">
+                <p className="truncate text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+                  {fmt.lensSubtitleLine(tBrand(lens.brand), lens.series)}
+                </p>
+                <SpecialtyBadges {...deriveSpecialty(lens)} />
+              </div>
               {lens.releaseYear ? (
                 <p className="hidden sm:block shrink-0 text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
                   {lens.releaseYear}
@@ -132,17 +135,6 @@ export default function LensCard({
               title={lens.model}
             >
               {lens.model}
-              {(() => {
-                const s = deriveSpecialty(lens);
-                if (!s.isCine && s.opticalTraits.length === 0) {
-                  return null;
-                }
-                return (
-                  <span className="ml-1.5 inline-flex flex-wrap items-center gap-1 align-middle">
-                    <SpecialtyBadges {...s} />
-                  </span>
-                );
-              })()}
             </h3>
           </div>
 
