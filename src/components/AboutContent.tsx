@@ -229,18 +229,21 @@ export default async function AboutContent() {
 
       {/* Data & Accuracy */}
       <Section id="data-accuracy" title={t("dataAccuracyTitle")}>
+        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            {t("dataAccuracyCaveat")}
+            <FeedbackTrigger
+              type="data_issue"
+              className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+            >
+              {t("dataAccuracyReportCta")}
+            </FeedbackTrigger>
+            {t("dataAccuracyCaveatSuffix")}
+          </p>
+        </div>
+
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("dataAccuracyIntro")}
-        </p>
-
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          {t("dataAccuracyReport")}{" "}
-          <FeedbackTrigger
-            type="data_issue"
-            className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-          >
-            {t("dataAccuracyReportCta")}
-          </FeedbackTrigger>
         </p>
 
         {/* ── Spec Data subsection ── */}
