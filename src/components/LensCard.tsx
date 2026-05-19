@@ -153,7 +153,7 @@ export default function LensCard({
               </p>
               {isPlaceholder && lens.announcement ? (
                 <Link
-                  href="/lenses/pe-2026"
+                  href="/collections/pe-2026"
                   prefetch={false}
                   className="hidden sm:inline-flex shrink-0 items-center rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200/70 transition-colors hover:bg-amber-100 hover:text-amber-800 dark:bg-amber-950/40 dark:text-amber-200 dark:ring-amber-800/40 dark:hover:bg-amber-900/50"
                 >
@@ -167,7 +167,7 @@ export default function LensCard({
             </div>
             {isPlaceholder && lens.announcement ? (
               <Link
-                href="/lenses/pe-2026"
+                href="/collections/pe-2026"
                 prefetch={false}
                 className="sm:hidden inline-flex self-start items-center rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200/70 transition-colors hover:bg-amber-100 hover:text-amber-800 dark:bg-amber-950/40 dark:text-amber-200 dark:ring-amber-800/40 dark:hover:bg-amber-900/50"
               >

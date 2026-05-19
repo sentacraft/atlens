@@ -101,13 +101,7 @@ export default function Nav() {
 
   const isBrowseActive = pathname.startsWith("/lenses") && !pathname.includes("/compare");
   const isCompareActive = pathname.includes("/compare");
-  // Cross-mount theme pages (e.g. /lenses/pe-2026) have no [mount] segment
-  // and intentionally surface lenses from both mounts — hide MountSwitcher
-  // there so it doesn't imply the user can filter within the theme.
-  const isMountScoped = /^\/lenses\/(x|gfx)(\/|$)/.test(pathname);
-  const isCrossMountTheme = pathname.startsWith("/lenses/") && !isMountScoped;
-  const showMountSwitcher =
-    (pathname === "/" || pathname.startsWith("/lenses")) && !isCrossMountTheme;
+  const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
 
   // When the user is *already on* the compare page and clicks the nav's
   // "对比" link, the intuitive read is "reset this comparison and start

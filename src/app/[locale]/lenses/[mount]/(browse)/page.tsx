@@ -71,7 +71,7 @@ export default async function LensesPage({ params }: { params: Params }) {
         <PromoBanner
           message={tThemes("promoBannerPE2026")}
           ctaLabel={tThemes("promoBannerCta")}
-          ctaHref="/lenses/pe-2026"
+          ctaHref="/collections/pe-2026"
           dismissKey="promo-pe-2026-dismissed"
           dismissLabel={tThemes("promoBannerDismiss")}
         />

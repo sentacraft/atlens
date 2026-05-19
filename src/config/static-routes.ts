@@ -26,6 +26,7 @@ export const STATIC_LOCALIZED_SUBPATHS = [
   "get",
   "lenses/x",
   "lenses/gfx",
+  "collections/pe-2026",
 ] as const;
 
 /**

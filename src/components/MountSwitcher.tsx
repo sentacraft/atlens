@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
-import { useRouter, usePathname } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useMountParam, useEffectiveMount } from "@/hooks/useMountParam";
 import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { mountToUrlSegment } from "@/lib/mount";
@@ -14,7 +14,6 @@ import { track } from "@/lib/analytics";
 export default function MountSwitcher() {
   const t = useTranslations("MountSwitcher");
   const router = useRouter();
-  const pathname = usePathname();
   const urlMount = useMountParam();
   const effectiveMount = useEffectiveMount();
   const { setPreference } = useMountPreference();
@@ -49,11 +48,7 @@ export default function MountSwitcher() {
     }
     setPreference(mount);
     setOpen(false);
-    // Navigate whenever the user is anywhere under /lenses (including
-    // cross-mount theme pages like /lenses/pe-2026 where urlMount is null).
-    // Outside /lenses we only update preference — landing / about etc. should
-    // not jump to a lens grid on mount switch.
-    if (urlMount !== null || pathname.startsWith("/lenses")) {
+    if (urlMount !== null) {
       router.push(`/lenses/${mountToUrlSegment(mount)}`);
     }
   };
