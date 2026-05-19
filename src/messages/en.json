@@ -122,6 +122,8 @@
     "removeFromCompare": "Remove",
     "compareFull": "Compare List Full",
     "compareFullToast": "Compare list full — remove one first",
+    "placeholderCompareLabel": "Specs pending",
+    "placeholderCompareTooltip": "Specs incomplete; not yet comparable",
     "addedToCompare": "Added to compare",
     "removedFromCompare": "Removed from compare",
     "clearedCompare": "Compare list cleared",
@@ -236,7 +238,8 @@
     "laowa": "Laowa",
     "meike": "Meike",
     "sirui": "Sirui",
-    "voigtlander": "Voigtländer"
+    "voigtlander": "Voigtländer",
+    "zyoptics": "ZY Optics"
   },
   "Compare": {
     "title": "Compare",
@@ -469,6 +472,15 @@
     "macosStep3": "Click \"Add\" to confirm",
     "genericTitle": "Add to Home Screen",
     "genericBody": "X-Glass is a web app that also supports installation as a Progressive Web App (PWA) — no App Store needed. Open your browser menu and look for \"Add to Home Screen\" or \"Install app\"."
+  },
+  "Themes": {
+    "breadcrumbRoot": "Lenses",
+    "xMountSection": "X-mount · {count} lenses",
+    "gMountSection": "GFX-mount · {count} lenses",
+    "promoBannerPE2026": "New lenses from China P&E 2026 are catalogued",
+    "promoBannerCta": "View collection",
+    "promoBannerDismiss": "Dismiss",
+    "aboutCoverageLink": "China P&E 2026 lineup →"
   },
   "Pricing": {
     "fieldLabel": "Price",

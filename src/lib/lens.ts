@@ -293,7 +293,9 @@ export function parseLensIds(ids: string | undefined, mount: Mount, locale: stri
     .filter(Boolean)
     .slice(0, MAX_COMPARE)
     .map((id) => pool.find((l) => l.id === id))
-    .filter((l): l is Lens => l !== undefined);
+    // Placeholder lenses can't be compared (specs are incomplete) — defensively
+    // strip them if a copied URL still contains their id.
+    .filter((l): l is Lens => l !== undefined && l.status !== "placeholder");
 }
 
 export type SortKey = "focalLength" | "maxAperture" | "weightG";

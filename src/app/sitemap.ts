@@ -17,6 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/lenses/x/compare",
     "/lenses/gfx",
     "/lenses/gfx/compare",
+    "/lenses/pe-2026",
     "/about",
     "/get",
   ];
@@ -34,23 +35,28 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   ]);
 
-  const xLensEntries: MetadataRoute.Sitemap = (xLensesData as { id: string }[]).flatMap(
-    (lens) =>
+  // Placeholder lenses (status === "placeholder") have no detail page —
+  // their slugs 404 by design — so they must be excluded from the sitemap
+  // to avoid feeding soft-404 URLs to crawlers.
+  const xLensEntries: MetadataRoute.Sitemap = (xLensesData as { id: string; status?: string }[])
+    .filter((lens) => lens.status !== "placeholder")
+    .flatMap((lens) =>
       LOCALES.map((locale) => ({
         url: url(`/${locale}/lenses/x/${lens.id}`),
         changeFrequency: "monthly" as const,
         priority: 0.6,
       }))
-  );
+    );
 
-  const gfxLensEntries: MetadataRoute.Sitemap = (gfxLensesData as { id: string }[]).flatMap(
-    (lens) =>
+  const gfxLensEntries: MetadataRoute.Sitemap = (gfxLensesData as { id: string; status?: string }[])
+    .filter((lens) => lens.status !== "placeholder")
+    .flatMap((lens) =>
       LOCALES.map((locale) => ({
         url: url(`/${locale}/lenses/gfx/${lens.id}`),
         changeFrequency: "monthly" as const,
         priority: 0.6,
       }))
-  );
+    );
 
   return [...staticEntries, ...xLensEntries, ...gfxLensEntries];
 }

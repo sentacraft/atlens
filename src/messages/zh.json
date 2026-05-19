@@ -122,6 +122,8 @@
     "removeFromCompare": "移除",
     "compareFull": "对比列表已满",
     "compareFullToast": "对比已满，先移除一款",
+    "placeholderCompareLabel": "规格收录中",
+    "placeholderCompareTooltip": "规格收录中，暂不可对比",
     "addedToCompare": "已加入对比",
     "removedFromCompare": "已移除对比",
     "clearedCompare": "已清空对比列表",
@@ -226,17 +228,18 @@
   },
   "Brands": {
     "7artisans": "七工匠",
-    "brightinstar": "星曜",
+    "brightinstar": "星曜光学",
     "fujifilm": "富士",
-    "sgimage": "深光",
+    "sgimage": "深光影像",
     "sigma": "适马",
     "tamron": "腾龙",
-    "ttartisan": "铭匠",
+    "ttartisan": "铭匠光学",
     "viltrox": "唯卓仕",
     "laowa": "老蛙",
     "meike": "美科",
     "sirui": "思锐",
-    "voigtlander": "福伦达"
+    "voigtlander": "福伦达",
+    "zyoptics": "中一光学"
   },
   "Compare": {
     "title": "镜头对比",
@@ -469,6 +472,15 @@
     "macosStep3": "点击「添加」确认",
     "genericTitle": "添加到主屏幕",
     "genericBody": "X-Glass 是一款网页应用，同时支持 PWA 安装，体验更接近原生 App。打开浏览器菜单，寻找「添加到主屏幕」或「安装应用」选项。"
+  },
+  "Themes": {
+    "breadcrumbRoot": "镜头库",
+    "xMountSection": "X 卡口 · {count} 只",
+    "gMountSection": "G 卡口 · {count} 只",
+    "promoBannerPE2026": "P&E 2026 新发布镜头已收录",
+    "promoBannerCta": "查看专题",
+    "promoBannerDismiss": "关闭",
+    "aboutCoverageLink": "P&E 2026 新品清单 →"
   },
   "Pricing": {
     "fieldLabel": "价格",

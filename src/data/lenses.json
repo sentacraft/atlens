@@ -1905,6 +1905,26 @@
     }
   },
   {
+    "id": "brightinstar-mf-7p5mm-f28-iv-x",
+    "brand": "brightinstar",
+    "mount": "X",
+    "model": "7.5mm F2.8 IV",
+    "focalLengthMin": 7.5,
+    "focalLengthMax": 7.5,
+    "maxAperture": 2.8,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "releaseYear": 2026,
+    "status": "placeholder",
+    "announcement": {
+      "event": "P&E 2026",
+      "date": "2026-05-15",
+      "source": "https://brightinstar.com/products/brightin-star-7-5mm-f2-8-iv-fisheye-lens"
+    }
+  },
+  {
     "id": "brightinstar-mf-35mm-f14-x",
     "brand": "brightinstar",
     "mount": "X",
@@ -7100,6 +7120,27 @@
     }
   },
   {
+    "id": "laowa-cf-7p5mmf28-cd-dreamer-af-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "CF",
+    "model": "CF 7.5mm F2.8 C&D-Dreamer AF",
+    "focalLengthMin": 7.5,
+    "focalLengthMax": 7.5,
+    "maxAperture": 2.8,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "releaseYear": 2026,
+    "status": "placeholder",
+    "announcement": {
+      "event": "P&E 2026",
+      "date": "2026-05-15",
+      "source": "https://www.fujirumors.com/laowa-af-180mm-f4-5-and-laowa-7-5mm-f2-8-autofocus-lenses-for-fujifilm-x-announced/"
+    }
+  },
+  {
     "id": "laowa-cf-8-16mmf35-50-c-dreamer-x",
     "brand": "laowa",
     "mount": "X",
@@ -7645,6 +7686,26 @@
     }
   },
   {
+    "id": "laowa-ff-af-180mmf45-apo-macro-15x-x",
+    "brand": "laowa",
+    "mount": "X",
+    "model": "FF AF 180mm F4.5 Apo Macro 1.5X",
+    "focalLengthMin": 180,
+    "focalLengthMax": 180,
+    "maxAperture": 4.5,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "releaseYear": 2026,
+    "status": "placeholder",
+    "announcement": {
+      "event": "P&E 2026",
+      "date": "2026-05-15",
+      "source": "https://www.venuslens.net/product/laowa-180mm-f-4-5-1-5x-ultra-macro-apo/"
+    }
+  },
+  {
     "id": "sgimage-mf-12mm-f28-aps-c-ultra-wide-x",
     "brand": "sgimage",
     "mount": "X",
@@ -7865,6 +7926,26 @@
     }
   },
   {
+    "id": "sgimage-af-35mm-f22-ce-x",
+    "brand": "sgimage",
+    "mount": "X",
+    "model": "AF 35mm F2.2 CE",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 2.2,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "releaseYear": 2026,
+    "status": "placeholder",
+    "announcement": {
+      "event": "P&E 2026",
+      "date": "2026-05-16",
+      "source": "https://www.fujirumors.com/sg-image-af-18mm-f2-2-af-35mm-f1-4-af-35mm-f2-2-retro-for-fujifilm-x-and-75mm-f1-2-for-gfx/"
+    }
+  },
+  {
     "id": "sgimage-af-55mm-f18-full-frame-lens-x",
     "brand": "sgimage",
     "mount": "X",
@@ -7925,6 +8006,48 @@
       "zh": {
         "lensMaterial": "金属"
       }
+    }
+  },
+  {
+    "id": "sgimage-af-ezicari-18mm-f22-x",
+    "brand": "sgimage",
+    "mount": "X",
+    "series": "EZICARI",
+    "model": "AF EZICARI 18mm F2.2",
+    "focalLengthMin": 18,
+    "focalLengthMax": 18,
+    "maxAperture": 2.2,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "releaseYear": 2026,
+    "status": "placeholder",
+    "announcement": {
+      "event": "P&E 2026",
+      "date": "2026-05-16",
+      "source": "https://www.fujirumors.com/sg-image-af-18mm-f2-2-af-35mm-f1-4-af-35mm-f2-2-retro-for-fujifilm-x-and-75mm-f1-2-for-gfx/"
+    }
+  },
+  {
+    "id": "sgimage-af-35mm-f14-legacy-x",
+    "brand": "sgimage",
+    "mount": "X",
+    "series": "Legacy",
+    "model": "AF Legacy 35mm F1.4",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 1.4,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "releaseYear": 2026,
+    "status": "placeholder",
+    "announcement": {
+      "event": "P&E 2026",
+      "date": "2026-05-16",
+      "source": "https://www.fujirumors.com/sg-image-af-18mm-f2-2-af-35mm-f1-4-af-35mm-f2-2-retro-for-fujifilm-x-and-75mm-f1-2-for-gfx/"
     }
   },
   {
@@ -11731,6 +11854,27 @@
     }
   },
   {
+    "id": "viltrox-af-18mm-f12-pro-x",
+    "brand": "viltrox",
+    "mount": "X",
+    "series": "Pro",
+    "model": "AF 18mm F1.2 Pro",
+    "focalLengthMin": 18,
+    "focalLengthMax": 18,
+    "maxAperture": 1.2,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "releaseYear": 2026,
+    "status": "placeholder",
+    "announcement": {
+      "event": "P&E 2026",
+      "date": "2026-05-15",
+      "source": "https://www.fujirumors.com/first-images-viltrox-af-18mmf1-2-and-40mmf1-2-pro-lenses/"
+    }
+  },
+  {
     "id": "viltrox-af-23mm-f14-x",
     "brand": "viltrox",
     "mount": "X",
@@ -12171,6 +12315,27 @@
     }
   },
   {
+    "id": "viltrox-af-40mm-f12-pro-x",
+    "brand": "viltrox",
+    "mount": "X",
+    "series": "Pro",
+    "model": "AF 40mm F1.2 Pro",
+    "focalLengthMin": 40,
+    "focalLengthMax": 40,
+    "maxAperture": 1.2,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "releaseYear": 2026,
+    "status": "placeholder",
+    "announcement": {
+      "event": "P&E 2026",
+      "date": "2026-05-15",
+      "source": "https://www.fujirumors.com/first-images-viltrox-af-18mmf1-2-and-40mmf1-2-pro-lenses/"
+    }
+  },
+  {
     "id": "viltrox-af-56mm-f12-pro-x",
     "brand": "viltrox",
     "mount": "X",
@@ -12460,6 +12625,27 @@
     }
   },
   {
+    "id": "viltrox-af-75mm-f18-evo-x",
+    "brand": "viltrox",
+    "mount": "X",
+    "series": "EVO",
+    "model": "AF 75mm F1.8 EVO",
+    "focalLengthMin": 75,
+    "focalLengthMax": 75,
+    "maxAperture": 1.8,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "releaseYear": 2026,
+    "status": "placeholder",
+    "announcement": {
+      "event": "P&E 2026",
+      "date": "2026-05-15",
+      "source": "https://www.fujirumors.com/viltrox-75mm-f-1-8-evo-for-fujifilm-x-additional-images-and-shipping-in-june/"
+    }
+  },
+  {
     "id": "viltrox-af-85mm-f18-ii-x",
     "brand": "viltrox",
     "mount": "X",
@@ -12521,6 +12707,27 @@
         },
         "lensMaterial": "金属"
       }
+    }
+  },
+  {
+    "id": "viltrox-af-90mm-f22-evo-x",
+    "brand": "viltrox",
+    "mount": "X",
+    "series": "EVO",
+    "model": "AF 90mm F2.2 EVO",
+    "focalLengthMin": 90,
+    "focalLengthMax": 90,
+    "maxAperture": 2.2,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "releaseYear": 2026,
+    "status": "placeholder",
+    "announcement": {
+      "event": "P&E 2026",
+      "date": "2026-05-15",
+      "source": "https://www.fujirumors.com/viltrox-90mm-f-2-2-evo-lens-for-aps-c-now-listed/"
     }
   },
   {

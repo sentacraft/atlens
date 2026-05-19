@@ -133,9 +133,10 @@ function Section({
 }
 
 export default async function AboutContent() {
-  const [t, tBrand, locale] = await Promise.all([
+  const [t, tBrand, tThemes, locale] = await Promise.all([
     getTranslations("About"),
     getTranslations("Brands"),
+    getTranslations("Themes"),
     getLocale(),
   ]);
 
@@ -253,6 +254,14 @@ export default async function AboutContent() {
           >
             {t("coverageSuggestCta")}
           </FeedbackTrigger>
+        </p>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <Link
+            href="/lenses/pe-2026"
+            className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+          >
+            {tThemes("aboutCoverageLink")}
+          </Link>
         </p>
       </Section>
 
