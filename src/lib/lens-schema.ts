@@ -116,6 +116,7 @@ const lensBaseShape = {
   accessories: z.array(nonEmptyStringSchema).min(1).optional(),
   lensMaterial: optionalNonEmptyStringSchema,
   status: z.literal("placeholder").optional(),
+  imageSource: z.url().optional(),
 } as const;
 
 export const officialLinksSchema = z

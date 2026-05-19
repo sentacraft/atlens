@@ -477,7 +477,7 @@
     "breadcrumbRoot": "Lenses",
     "xMountSection": "X-mount (APS-C) · {count} lenses",
     "gMountSection": "G-mount (medium format) · {count} lenses",
-    "promoBannerPE2026": "New lenses from China P&E 2026 are catalogued",
+    "promoBannerPE2026": "Preview: new Fujifilm lenses at China P&E 2026",
     "promoBannerCta": "View collection",
     "promoBannerDismiss": "Dismiss",
     "aboutCoverageLink": "China P&E 2026 lineup →",
@@ -485,7 +485,10 @@
     "ctaXTitle": "X-mount (APS-C) catalog",
     "ctaXSubtitle": "{count} lenses · filter & compare",
     "ctaGTitle": "G-mount (medium format) catalog",
-    "ctaGSubtitle": "{count} lenses · filter & compare"
+    "ctaGSubtitle": "{count} lenses · filter & compare",
+    "backToLabel": "Back to:",
+    "backToXMount": "X-mount (APS-C)",
+    "backToGMount": "G-mount (medium format)"
   },
   "Pricing": {
     "fieldLabel": "Price",

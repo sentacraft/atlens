@@ -779,6 +779,16 @@ export interface Lens {
      */
     source: string;
   };
+
+  /**
+   * Origin URL of the lens product image (used for attribution and for the
+   * pipeline image-fetch stage to download the raw image into raw_images/).
+   *
+   * Lives at the top level (not nested under announcement) because it is
+   * orthogonal to placeholder/announced state — a lens that graduates out
+   * of placeholder still keeps its original image source for attribution.
+   */
+  imageSource?: string;
 }
 
 /**

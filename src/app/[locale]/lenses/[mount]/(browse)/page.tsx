@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getLensesByMount } from "@/lib/lens";
 import { urlSegmentToMount } from "@/lib/mount";
@@ -8,6 +9,8 @@ import LensesLoading from "./loading";
 import PromoBanner from "@/components/PromoBanner";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { notFound } from "next/navigation";
+
+const PROMO_PE_2026_COOKIE = "promo-pe-2026-dismissed";
 
 type Params = Promise<{ locale: string; mount: string }>;
 
@@ -59,6 +62,12 @@ export default async function LensesPage({ params }: { params: Params }) {
   const tThemes = await getTranslations({ locale, namespace: "Themes" });
   const h1Title = resolvedMount === "X" ? t("metaTitleX") : t("metaTitleG");
 
+  // Read the dismiss cookie server-side so the banner is included or omitted
+  // in the initial HTML — no client-side useEffect gate, no layout shift on
+  // hydration when the user has already dismissed it.
+  const cookieStore = await cookies();
+  const promoPE2026Dismissed = cookieStore.has(PROMO_PE_2026_COOKIE);
+
   return (
     <>
       {/* Server-rendered h1 so the static HTML carries a heading even when the
@@ -67,15 +76,17 @@ export default async function LensesPage({ params }: { params: Params }) {
           rendered client-side after hydration; this sr-only h1 is the SEO
           anchor. */}
       <h1 className="sr-only">{h1Title}</h1>
-      <div className="mx-auto w-full max-w-7xl px-4 pt-3 sm:px-6">
-        <PromoBanner
-          message={tThemes("promoBannerPE2026")}
-          ctaLabel={tThemes("promoBannerCta")}
-          ctaHref="/lenses/pe-2026"
-          dismissKey="promo-pe-2026-dismissed"
-          dismissLabel={tThemes("promoBannerDismiss")}
-        />
-      </div>
+      {!promoPE2026Dismissed && (
+        <div className="mx-auto w-full max-w-7xl px-4 pt-3 sm:px-6">
+          <PromoBanner
+            message={tThemes("promoBannerPE2026")}
+            ctaLabel={tThemes("promoBannerCta")}
+            ctaHref="/lenses/pe-2026"
+            dismissKey={PROMO_PE_2026_COOKIE}
+            dismissLabel={tThemes("promoBannerDismiss")}
+          />
+        </div>
+      )}
       <Suspense fallback={<LensesLoading />}>
         <LensListClient lenses={lenses} />
       </Suspense>

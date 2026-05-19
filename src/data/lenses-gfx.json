@@ -2188,14 +2188,15 @@
       "event": "P&E 2026",
       "date": "2026-05-15",
       "source": "https://www.fujirumors.com/meike-af-85mm-f1-8-for-fujifilm-gfx-autofocus-lens-hands-on-images/"
-    }
+    },
+    "imageSource": "https://meikeglobal.com/cdn/shop/files/8518-pro-E-1.jpg?v=1731576050&width=1600"
   },
   {
     "id": "zyoptics-mf-30mm-f24-g",
     "brand": "zyoptics",
     "mount": "G",
     "series": "Mitakon",
-    "model": "30mm F2.4",
+    "model": "Mitakon 30mm F2.4",
     "focalLengthMin": 30,
     "focalLengthMax": 30,
     "maxAperture": 2.4,
@@ -2216,7 +2217,7 @@
     "brand": "zyoptics",
     "mount": "G",
     "series": "Mitakon",
-    "model": "45mm F1.4",
+    "model": "Mitakon 45mm F1.4",
     "focalLengthMin": 45,
     "focalLengthMax": 45,
     "maxAperture": 1.4,

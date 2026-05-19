@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ArrowRight, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
@@ -11,20 +11,20 @@ interface PromoBannerProps {
   ctaLabel: string;
   /** Internal route the CTA links to. */
   ctaHref: string;
-  /** localStorage key used to remember dismissal. Should be unique per campaign. */
+  /** Cookie name used to remember dismissal. Should be unique per campaign.
+   * The caller (server component) decides initial visibility by reading this
+   * cookie server-side and conditionally rendering PromoBanner — this avoids
+   * the layout-shift that a useEffect/localStorage gate would cause. */
   dismissKey: string;
   /** Aria label / tooltip for the dismiss button. */
   dismissLabel: string;
 }
 
 /**
- * Generic one-line promo strip with persistent dismiss. Mounted client-side
- * only so a returning visitor who has dismissed it never sees it again; the
- * brief unrendered moment on first paint is acceptable since promo banners
- * are secondary discovery affordances, not critical UI.
- *
- * Callers supply the strings (so i18n stays in the call site) and a unique
- * `dismissKey` per campaign — different banners dismiss independently.
+ * Generic one-line promo strip with persistent dismiss. Visibility on first
+ * paint is gated by the server component above us (which reads the dismiss
+ * cookie) — see callers like the /lenses/[mount] browse page. Once visible,
+ * the dismiss action writes a cookie + collapses the banner immediately.
  */
 export default function PromoBanner({
   message,
@@ -33,39 +33,26 @@ export default function PromoBanner({
   dismissKey,
   dismissLabel,
 }: PromoBannerProps) {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    try {
-      if (!window.localStorage.getItem(dismissKey)) {
-        setVisible(true);
-      }
-    } catch {
-      // localStorage may be unavailable (private browsing, etc.) — fall
-      // through to non-visible so we don't repeatedly nag in that mode.
-    }
-  }, [dismissKey]);
+  const [visible, setVisible] = useState(true);
 
   if (!visible) {
     return null;
   }
 
   const dismiss = () => {
-    try {
-      window.localStorage.setItem(dismissKey, "1");
-    } catch {
-      // ignore
-    }
+    // 1-year max-age; Lax SameSite is fine since the cookie is purely a
+    // client-side UX preference, not an auth/identity signal.
+    document.cookie = `${dismissKey}=1; max-age=31536000; path=/; SameSite=Lax`;
     setVisible(false);
   };
 
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-amber-200/70 bg-amber-50 px-3 py-2 text-[12px] text-amber-900 dark:border-amber-800/40 dark:bg-amber-950/30 dark:text-amber-100">
-      <span className="min-w-0 flex-1 truncate">{message}</span>
+    <div className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50/60 px-3 py-2 text-[12px] text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900/30 dark:text-zinc-400">
+      <span className="min-w-0 truncate">{message}</span>
       <Link
         href={ctaHref}
         prefetch={false}
-        className="inline-flex shrink-0 items-center gap-1 font-medium text-amber-800 underline-offset-2 hover:underline dark:text-amber-100"
+        className="inline-flex shrink-0 items-center gap-1 font-medium text-zinc-700 underline-offset-2 hover:text-zinc-900 hover:underline dark:text-zinc-300 dark:hover:text-zinc-50"
       >
         {ctaLabel}
         <ArrowRight className="size-3" />
@@ -74,7 +61,7 @@ export default function PromoBanner({
         type="button"
         onClick={dismiss}
         aria-label={dismissLabel}
-        className="ml-1 inline-flex size-5 shrink-0 items-center justify-center rounded text-amber-700/70 hover:bg-amber-100 hover:text-amber-900 dark:text-amber-200/70 dark:hover:bg-amber-900/40 dark:hover:text-amber-50"
+        className="ml-auto inline-flex size-5 shrink-0 items-center justify-center rounded text-zinc-400 hover:bg-zinc-200/60 hover:text-zinc-700 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
       >
         <X className="size-3.5" />
       </button>

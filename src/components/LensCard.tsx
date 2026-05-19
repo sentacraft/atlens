@@ -42,6 +42,11 @@ export default function LensCard({
   const tBrand = useTranslations("Brands");
   const hookAttr = useUiHookAttr();
   const isPlaceholder = lens.status === "placeholder";
+  // Placeholder lenses fall back to the Iris logo only when no processed
+  // product image is available. `imageSource` is the persistent attribution
+  // URL; presence of it implies the pipeline has fetched + processed the
+  // raw image into public/lenses/<id>.webp.
+  const showIrisFallback = isPlaceholder && !lens.imageSource;
   const equivDisplay = fmt.focalRangeDisplay(fmt.focalEquiv(lens.focalLengthMin, lens.mount), fmt.focalEquiv(lens.focalLengthMax, lens.mount));
   const mfdDisplay = lens.minFocusDistance ? `${lens.minFocusDistance.normal.cm}cm` : "—";
   const filterDisplay = fmt.filterSizeDisplay(lens.filterMm);
@@ -103,7 +108,7 @@ export default function LensCard({
             className="absolute inset-0 p-3 sm:p-7 max-xs:p-2"
           >
             <div className="relative h-full w-full overflow-hidden rounded-xl">
-              {isPlaceholder ? (
+              {showIrisFallback ? (
                 <div
                   className="absolute inset-0 flex items-center justify-center"
                   aria-label={lens.model}
@@ -191,23 +196,36 @@ export default function LensCard({
             ))}
           </div>
 
-          {/* Mobile: single-row dl */}
-          <dl className="mt-auto flex items-baseline justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400 sm:hidden">
-            <div className="min-w-0 truncate">
-              {equivDisplay} {t("equivSuffix")}
-            </div>
-            <div className="shrink-0">{weightDisplay}</div>
-          </dl>
+          {isPlaceholder ? (
+            // Placeholder lenses only have the equivalent focal length to
+            // surface — hide the MFD / filter / weight cells rather than
+            // filling them with em-dash fallbacks that look like a layout bug.
+            <dl className="mt-auto text-xs text-zinc-600 dark:text-zinc-400">
+              <div className="truncate">
+                {equivDisplay} {t("equivSuffix")}
+              </div>
+            </dl>
+          ) : (
+            <>
+              {/* Mobile: single-row dl */}
+              <dl className="mt-auto flex items-baseline justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400 sm:hidden">
+                <div className="min-w-0 truncate">
+                  {equivDisplay} {t("equivSuffix")}
+                </div>
+                <div className="shrink-0">{weightDisplay}</div>
+              </dl>
 
-          {/* Desktop: 2×2 data grid */}
-          <dl className="mt-auto hidden sm:grid sm:grid-cols-2 sm:gap-x-3 text-xs text-zinc-600 dark:text-zinc-400">
-            <div className="truncate">MFD {mfdDisplay}</div>
-            <div className="text-right">⌀{filterDisplay}</div>
-            <div className="min-w-0 truncate">
-              {equivDisplay} {t("equivSuffix")}
-            </div>
-            <div className="text-right">{weightDisplay}</div>
-          </dl>
+              {/* Desktop: 2×2 data grid */}
+              <dl className="mt-auto hidden sm:grid sm:grid-cols-2 sm:gap-x-3 text-xs text-zinc-600 dark:text-zinc-400">
+                <div className="truncate">MFD {mfdDisplay}</div>
+                <div className="text-right">⌀{filterDisplay}</div>
+                <div className="min-w-0 truncate">
+                  {equivDisplay} {t("equivSuffix")}
+                </div>
+                <div className="text-right">{weightDisplay}</div>
+              </dl>
+            </>
+          )}
         </div>
       </CardSurface>
 

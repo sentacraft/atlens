@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
@@ -53,7 +52,6 @@ export default async function PE2026Page({ params }: { params: Params }) {
     notFound();
   }
 
-  const t = await getTranslations("LensList");
   const tTheme = await getTranslations("Themes");
   const { title, description } = pickTitleAndDescription(locale);
 
@@ -88,13 +86,28 @@ export default async function PE2026Page({ params }: { params: Params }) {
     <>
       <JsonLd data={breadcrumbSchema} />
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 flex flex-col gap-6 sm:gap-8">
-        <Link
-          href="/lenses/x"
-          className="inline-flex w-fit items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+        {/* Breadcrumb hierarchy hint — gives users who land here from search
+            or social a sense of context (this is one page inside X-Glass's
+            lens library), without imposing a "back" semantic that wouldn't
+            make sense for them. The links double as escape hatches. */}
+        <nav
+          aria-label="breadcrumb"
+          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400"
         >
-          <ArrowLeft className="size-3.5" />
-          {t("backLink")}
-        </Link>
+          <Link
+            href="/"
+            className="underline-offset-2 transition-colors hover:text-zinc-900 hover:underline dark:hover:text-zinc-50"
+          >
+            X-Glass
+          </Link>
+          <span aria-hidden>/</span>
+          <Link
+            href="/lenses/x"
+            className="underline-offset-2 transition-colors hover:text-zinc-900 hover:underline dark:hover:text-zinc-50"
+          >
+            {tTheme("breadcrumbRoot")}
+          </Link>
+        </nav>
 
         <header className="flex flex-col gap-3">
           <h1 className="text-2xl sm:text-3xl font-bold font-heading text-zinc-900 dark:text-zinc-50 tracking-tight">
@@ -123,7 +136,7 @@ export default async function PE2026Page({ params }: { params: Params }) {
           </section>
         )}
 
-        <section className="mt-2 flex flex-col gap-3 border-t border-zinc-200 pt-8 dark:border-zinc-800">
+        <section className="mt-6 flex flex-col gap-3">
           <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
             {tTheme("ctaHeading")}
           </h2>

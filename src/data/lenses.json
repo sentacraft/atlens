@@ -1922,7 +1922,8 @@
       "event": "P&E 2026",
       "date": "2026-05-15",
       "source": "https://brightinstar.com/products/brightin-star-7-5mm-f2-8-iv-fisheye-lens"
-    }
+    },
+    "imageSource": "https://brightinstar.com/cdn/shop/files/1_dccf9f99-52e1-43fe-a175-b86f673815e4.jpg?v=1778464472&width=1445"
   },
   {
     "id": "brightinstar-mf-35mm-f14-x",
@@ -7703,7 +7704,8 @@
       "event": "P&E 2026",
       "date": "2026-05-15",
       "source": "https://www.venuslens.net/product/laowa-180mm-f-4-5-1-5x-ultra-macro-apo/"
-    }
+    },
+    "imageSource": "https://www.laowalens.com/Public/Uploads/uploadfile/images/20250901/4jingtoutu.png"
   },
   {
     "id": "sgimage-mf-12mm-f28-aps-c-ultra-wide-x",
@@ -7854,6 +7856,28 @@
     }
   },
   {
+    "id": "sgimage-af-ezicari-18mm-f22-x",
+    "brand": "sgimage",
+    "mount": "X",
+    "series": "EZICARI",
+    "model": "AF 18mm F2.2",
+    "focalLengthMin": 18,
+    "focalLengthMax": 18,
+    "maxAperture": 2.2,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "releaseYear": 2026,
+    "status": "placeholder",
+    "announcement": {
+      "event": "P&E 2026",
+      "date": "2026-05-16",
+      "source": "https://www.fujirumors.com/sg-image-af-18mm-f2-2-af-35mm-f1-4-af-35mm-f2-2-retro-for-fujifilm-x-and-75mm-f1-2-for-gfx/"
+    },
+    "imageSource": "https://www.xiaohongshu.com/user/profile/4410173196"
+  },
+  {
     "id": "sgimage-af-25mm-f18-aps-c-mirrorless-lens-x",
     "brand": "sgimage",
     "mount": "X",
@@ -7926,9 +7950,32 @@
     }
   },
   {
+    "id": "sgimage-af-35mm-f14-legacy-x",
+    "brand": "sgimage",
+    "mount": "X",
+    "series": "LEGACY",
+    "model": "AF 35mm F1.4",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 1.4,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "releaseYear": 2026,
+    "status": "placeholder",
+    "announcement": {
+      "event": "P&E 2026",
+      "date": "2026-05-16",
+      "source": "https://www.fujirumors.com/sg-image-af-18mm-f2-2-af-35mm-f1-4-af-35mm-f2-2-retro-for-fujifilm-x-and-75mm-f1-2-for-gfx/"
+    },
+    "imageSource": "https://www.xiaohongshu.com/user/profile/4410173196"
+  },
+  {
     "id": "sgimage-af-35mm-f22-ce-x",
     "brand": "sgimage",
     "mount": "X",
+    "series": "EZICARI",
     "model": "AF 35mm F2.2 CE",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
@@ -7943,7 +7990,8 @@
       "event": "P&E 2026",
       "date": "2026-05-16",
       "source": "https://www.fujirumors.com/sg-image-af-18mm-f2-2-af-35mm-f1-4-af-35mm-f2-2-retro-for-fujifilm-x-and-75mm-f1-2-for-gfx/"
-    }
+    },
+    "imageSource": "https://www.xiaohongshu.com/user/profile/4410173196"
   },
   {
     "id": "sgimage-af-55mm-f18-full-frame-lens-x",
@@ -8006,48 +8054,6 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
-  },
-  {
-    "id": "sgimage-af-ezicari-18mm-f22-x",
-    "brand": "sgimage",
-    "mount": "X",
-    "series": "EZICARI",
-    "model": "AF EZICARI 18mm F2.2",
-    "focalLengthMin": 18,
-    "focalLengthMax": 18,
-    "maxAperture": 2.2,
-    "af": true,
-    "ois": false,
-    "wr": false,
-    "apertureRing": false,
-    "releaseYear": 2026,
-    "status": "placeholder",
-    "announcement": {
-      "event": "P&E 2026",
-      "date": "2026-05-16",
-      "source": "https://www.fujirumors.com/sg-image-af-18mm-f2-2-af-35mm-f1-4-af-35mm-f2-2-retro-for-fujifilm-x-and-75mm-f1-2-for-gfx/"
-    }
-  },
-  {
-    "id": "sgimage-af-35mm-f14-legacy-x",
-    "brand": "sgimage",
-    "mount": "X",
-    "series": "Legacy",
-    "model": "AF Legacy 35mm F1.4",
-    "focalLengthMin": 35,
-    "focalLengthMax": 35,
-    "maxAperture": 1.4,
-    "af": true,
-    "ois": false,
-    "wr": false,
-    "apertureRing": false,
-    "releaseYear": 2026,
-    "status": "placeholder",
-    "announcement": {
-      "event": "P&E 2026",
-      "date": "2026-05-16",
-      "source": "https://www.fujirumors.com/sg-image-af-18mm-f2-2-af-35mm-f1-4-af-35mm-f2-2-retro-for-fujifilm-x-and-75mm-f1-2-for-gfx/"
     }
   },
   {
