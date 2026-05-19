@@ -124,6 +124,7 @@
     "compareFullToast": "Compare list full — remove one first",
     "placeholderCompareLabel": "Specs pending",
     "placeholderCompareTooltip": "Specs incomplete; not yet comparable",
+    "readAnnouncement": "Read announcement",
     "addedToCompare": "Added to compare",
     "removedFromCompare": "Removed from compare",
     "clearedCompare": "Compare list cleared",
