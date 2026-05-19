@@ -475,16 +475,16 @@
   },
   "Themes": {
     "breadcrumbRoot": "镜头库",
-    "xMountSection": "X 卡口 · {count} 只",
-    "gMountSection": "G 卡口 · {count} 只",
+    "xMountSection": "X 卡口（APS-C）· {count} 只",
+    "gMountSection": "G 卡口（中画幅）· {count} 只",
     "promoBannerPE2026": "P&E 2026 新发布镜头已收录",
     "promoBannerCta": "查看专题",
     "promoBannerDismiss": "关闭",
     "aboutCoverageLink": "P&E 2026 新品清单 →",
     "ctaHeading": "继续探索",
-    "ctaXTitle": "完整 X 卡口目录",
+    "ctaXTitle": "X 卡口（APS-C）镜头库",
     "ctaXSubtitle": "{count} 只 · 筛选 · 对比",
-    "ctaGTitle": "完整 GFX 目录",
+    "ctaGTitle": "G 卡口（中画幅）镜头库",
     "ctaGSubtitle": "{count} 只 · 筛选 · 对比"
   },
   "Pricing": {

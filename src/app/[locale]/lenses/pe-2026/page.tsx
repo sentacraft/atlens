@@ -107,7 +107,7 @@ export default async function PE2026Page({ params }: { params: Params }) {
 
         {xLenses.length > 0 && (
           <section className="flex flex-col gap-3">
-            <h2 className="text-xs uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400 font-medium">
+            <h2 className="text-lg sm:text-xl font-semibold text-zinc-900 dark:text-zinc-50 tracking-tight">
               {tTheme("xMountSection", { count: xLenses.length })}
             </h2>
             <ThemedLensGrid lenses={xLenses} />
@@ -116,7 +116,7 @@ export default async function PE2026Page({ params }: { params: Params }) {
 
         {gLenses.length > 0 && (
           <section className="flex flex-col gap-3">
-            <h2 className="text-xs uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400 font-medium">
+            <h2 className="text-lg sm:text-xl font-semibold text-zinc-900 dark:text-zinc-50 tracking-tight">
               {tTheme("gMountSection", { count: gLenses.length })}
             </h2>
             <ThemedLensGrid lenses={gLenses} />

@@ -475,16 +475,16 @@
   },
   "Themes": {
     "breadcrumbRoot": "Lenses",
-    "xMountSection": "X-mount · {count} lenses",
-    "gMountSection": "GFX-mount · {count} lenses",
+    "xMountSection": "X-mount (APS-C) · {count} lenses",
+    "gMountSection": "G-mount (medium format) · {count} lenses",
     "promoBannerPE2026": "New lenses from China P&E 2026 are catalogued",
     "promoBannerCta": "View collection",
     "promoBannerDismiss": "Dismiss",
     "aboutCoverageLink": "China P&E 2026 lineup →",
     "ctaHeading": "Continue exploring",
-    "ctaXTitle": "Full X-mount catalog",
+    "ctaXTitle": "X-mount (APS-C) catalog",
     "ctaXSubtitle": "{count} lenses · filter & compare",
-    "ctaGTitle": "Full GFX catalog",
+    "ctaGTitle": "G-mount (medium format) catalog",
     "ctaGSubtitle": "{count} lenses · filter & compare"
   },
   "Pricing": {
