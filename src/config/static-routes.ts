@@ -67,8 +67,17 @@ export function expectedStaticRoutes(): string[] {
   }
 
   // Lens IDs are language-agnostic, so we enumerate once per mount.
-  const xLensIds = (xLensesData as Array<{ id: string }>).map((l) => l.id);
-  const gLensIds = (gLensesData as Array<{ id: string }>).map((l) => l.id);
+  // Placeholder lenses are excluded — their detail pages are filtered out
+  // of generateStaticParams (placeholders have no detail route), so they
+  // never land in the prerender manifest and shouldn't be asserted here.
+  const isPublishable = (l: { id: string; status?: string }) =>
+    l.status !== "placeholder";
+  const xLensIds = (xLensesData as Array<{ id: string; status?: string }>)
+    .filter(isPublishable)
+    .map((l) => l.id);
+  const gLensIds = (gLensesData as Array<{ id: string; status?: string }>)
+    .filter(isPublishable)
+    .map((l) => l.id);
   for (const locale of routing.locales) {
     for (const id of xLensIds) {
       routes.push(`/${locale}/lenses/x/${id}`);

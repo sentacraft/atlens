@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
@@ -11,20 +11,19 @@ interface PromoBannerProps {
   ctaLabel: string;
   /** Internal route the CTA links to. */
   ctaHref: string;
-  /** Cookie name used to remember dismissal. Should be unique per campaign.
-   * The caller (server component) decides initial visibility by reading this
-   * cookie server-side and conditionally rendering PromoBanner — this avoids
-   * the layout-shift that a useEffect/localStorage gate would cause. */
+  /** Cookie name used to remember dismissal. Should be unique per campaign. */
   dismissKey: string;
   /** Aria label / tooltip for the dismiss button. */
   dismissLabel: string;
 }
 
 /**
- * Generic one-line promo strip with persistent dismiss. Visibility on first
- * paint is gated by the server component above us (which reads the dismiss
- * cookie) — see callers like the /lenses/[mount] browse page. Once visible,
- * the dismiss action writes a cookie + collapses the banner immediately.
+ * Generic one-line promo strip with persistent dismiss. The cookie is read
+ * client-side after mount — kept off the server boundary so the parent route
+ * stays statically prerendered (server-side cookies() reads would force
+ * /lenses/[mount] into dynamic rendering). The small consequence: a
+ * returning visitor who has dismissed it sees the banner for a frame
+ * before useEffect hides it. Acceptable for a secondary discovery surface.
  */
 export default function PromoBanner({
   message,
@@ -34,6 +33,15 @@ export default function PromoBanner({
   dismissLabel,
 }: PromoBannerProps) {
   const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const dismissed = document.cookie
+      .split("; ")
+      .some((c) => c.startsWith(`${dismissKey}=`));
+    if (dismissed) {
+      setVisible(false);
+    }
+  }, [dismissKey]);
 
   if (!visible) {
     return null;
