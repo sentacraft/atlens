@@ -480,7 +480,12 @@
     "promoBannerPE2026": "P&E 2026 新发布镜头已收录",
     "promoBannerCta": "查看专题",
     "promoBannerDismiss": "关闭",
-    "aboutCoverageLink": "P&E 2026 新品清单 →"
+    "aboutCoverageLink": "P&E 2026 新品清单 →",
+    "ctaHeading": "继续探索",
+    "ctaXTitle": "完整 X 卡口目录",
+    "ctaXSubtitle": "{count} 只 · 筛选 · 对比",
+    "ctaGTitle": "完整 GFX 目录",
+    "ctaGSubtitle": "{count} 只 · 筛选 · 对比"
   },
   "Pricing": {
     "fieldLabel": "价格",

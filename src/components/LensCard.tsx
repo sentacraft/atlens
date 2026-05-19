@@ -22,6 +22,12 @@ interface Props {
   selectionDisabled: boolean;
   onToggle: () => void;
   priority?: boolean;
+  /**
+   * Suppress the compare entry (mobile floating + desktop footer button).
+   * Theme / pSEO landing pages opt out of compare per the pSEO contract —
+   * those surfaces are curated browsing, not interactive exploration.
+   */
+  hideCompare?: boolean;
 }
 
 export default function LensCard({
@@ -30,6 +36,7 @@ export default function LensCard({
   selectionDisabled,
   onToggle,
   priority = false,
+  hideCompare = false,
 }: Props) {
   const t = useTranslations("LensList");
   const tBrand = useTranslations("Brands");
@@ -207,61 +214,65 @@ export default function LensCard({
       {/* Mobile-only icon compare toggle — absolute in top-right corner.
           Placeholder lenses can't be compared (specs incomplete); the icon
           shows a disabled state and a tap surfaces a toast explaining why. */}
-      <button
-        onClick={
-          isPlaceholder
-            ? () => toast(t("placeholderCompareTooltip"))
-            : selectionDisabled
-              ? () => toast(t("compareFullToast"))
-              : onToggle
-        }
-        aria-label={
-          isPlaceholder
-            ? t("placeholderCompareTooltip")
-            : isSelected
-              ? t("removeFromCompare")
+      {!hideCompare && (
+        <button
+          onClick={
+            isPlaceholder
+              ? () => toast(t("placeholderCompareTooltip"))
               : selectionDisabled
-                ? t("compareFull")
-                : t("addToCompare")
-        }
-        className={`hidden max-xs:flex absolute top-2 right-2 z-10 items-center justify-center h-8 w-8 rounded-full transition-colors ${
-          isSelected
-            ? ACTION_PRIMARY_CLS
-            : isPlaceholder || selectionDisabled
-              ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600"
-              : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
-        }`}
-      >
-        {isSelected ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-      </button>
-
-      {/* Compare toggle */}
-      <div
-        {...hookAttr("cardFooter")}
-        className="mt-auto px-3 pb-3 sm:px-4 sm:pb-4 max-xs:hidden"
-      >
-        <Button
-          size="sm"
-          onClick={onToggle}
-          disabled={isPlaceholder || selectionDisabled}
-          title={isPlaceholder ? t("placeholderCompareTooltip") : undefined}
-          className={`w-full h-10 sm:h-9 font-medium ${
+                ? () => toast(t("compareFullToast"))
+                : onToggle
+          }
+          aria-label={
+            isPlaceholder
+              ? t("placeholderCompareTooltip")
+              : isSelected
+                ? t("removeFromCompare")
+                : selectionDisabled
+                  ? t("compareFull")
+                  : t("addToCompare")
+          }
+          className={`hidden max-xs:flex absolute top-2 right-2 z-10 items-center justify-center h-8 w-8 rounded-full transition-colors ${
             isSelected
-              ? `text-xs ${ACTION_PRIMARY_CLS}`
+              ? ACTION_PRIMARY_CLS
               : isPlaceholder || selectionDisabled
-                ? "text-[11px] bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed"
-                : "text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600"
+                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
           }`}
         >
-          {isPlaceholder
-            ? t("placeholderCompareLabel")
-            : isSelected
-              ? t("removeFromCompare")
-              : selectionDisabled
-                ? t("compareFull")
-                : t("addToCompare")}
-        </Button>
-      </div>
+          {isSelected ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+        </button>
+      )}
+
+      {/* Compare toggle */}
+      {!hideCompare && (
+        <div
+          {...hookAttr("cardFooter")}
+          className="mt-auto px-3 pb-3 sm:px-4 sm:pb-4 max-xs:hidden"
+        >
+          <Button
+            size="sm"
+            onClick={onToggle}
+            disabled={isPlaceholder || selectionDisabled}
+            title={isPlaceholder ? t("placeholderCompareTooltip") : undefined}
+            className={`w-full h-10 sm:h-9 font-medium ${
+              isSelected
+                ? `text-xs ${ACTION_PRIMARY_CLS}`
+                : isPlaceholder || selectionDisabled
+                  ? "text-[11px] bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed"
+                  : "text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+            }`}
+          >
+            {isPlaceholder
+              ? t("placeholderCompareLabel")
+              : isSelected
+                ? t("removeFromCompare")
+                : selectionDisabled
+                  ? t("compareFull")
+                  : t("addToCompare")}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

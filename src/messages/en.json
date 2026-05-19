@@ -480,7 +480,12 @@
     "promoBannerPE2026": "New lenses from China P&E 2026 are catalogued",
     "promoBannerCta": "View collection",
     "promoBannerDismiss": "Dismiss",
-    "aboutCoverageLink": "China P&E 2026 lineup →"
+    "aboutCoverageLink": "China P&E 2026 lineup →",
+    "ctaHeading": "Continue exploring",
+    "ctaXTitle": "Full X-mount catalog",
+    "ctaXSubtitle": "{count} lenses · filter & compare",
+    "ctaGTitle": "Full GFX catalog",
+    "ctaGSubtitle": "{count} lenses · filter & compare"
   },
   "Pricing": {
     "fieldLabel": "Price",

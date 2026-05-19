@@ -24,12 +24,12 @@ export interface LensTheme {
 export const THEMES: Record<string, LensTheme> = {
   "pe-2026": {
     slug: "pe-2026",
-    titleZh: "P&E 2026 富士新发布镜头",
-    titleEn: "Fujifilm Lenses at 2026 China P&E",
+    titleZh: "P&E 2026 富士卡口新镜头",
+    titleEn: "New X-mount & GFX Lenses at 2026 China P&E",
     descriptionZh:
-      "2026 年 5 月 15–18 日北京 P&E 展会发布的富士 X 卡口和 G 卡口镜头。多数厂商尚未发布完整规格，本页面会随上游数据陆续补全。",
+      "2026 年 5 月 15–18 日北京 P&E 展会上发布的富士 X 卡口和 G 卡口镜头。多数厂商尚未发布完整规格，本页面会随上游数据陆续补全。",
     descriptionEn:
-      "Fujifilm X-mount and GFX lenses revealed at the 2026 China International Photographic Equipment Expo (China P&E, Beijing, May 15–18). Most specs are still pending the manufacturer's official spec sheets; this page will fill in as data lands.",
+      "X-mount and GFX lenses unveiled by third-party manufacturers at the 2026 China International Photographic Equipment Expo (China P&E, Beijing, May 15–18). Most specs are still pending the manufacturer's official spec sheets; this page will fill in as data lands.",
     filter: (lens) => lens.announcement?.event === "P&E 2026",
   },
 };

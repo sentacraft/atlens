@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { getAllLenses } from "@/lib/lens";
+import { getAllLenses, getLensesByMount } from "@/lib/lens";
 import { THEMES } from "@/lib/themes";
 import { SITE } from "@/config/site";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
@@ -59,6 +60,10 @@ export default async function PE2026Page({ params }: { params: Params }) {
   const all = getAllLenses(locale).filter(theme.filter);
   const xLenses = all.filter((l) => l.mount === "X");
   const gLenses = all.filter((l) => l.mount === "G");
+
+  // CTA counts: live catalog count of non-placeholder lenses per mount.
+  const xCatalogCount = getLensesByMount("X", locale).filter((l) => l.status !== "placeholder").length;
+  const gCatalogCount = getLensesByMount("G", locale).filter((l) => l.status !== "placeholder").length;
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -117,8 +122,49 @@ export default async function PE2026Page({ params }: { params: Params }) {
             <ThemedLensGrid lenses={gLenses} />
           </section>
         )}
+
+        <section className="mt-2 flex flex-col gap-3 border-t border-zinc-200 pt-8 dark:border-zinc-800">
+          <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+            {tTheme("ctaHeading")}
+          </h2>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <CtaCard
+              href="/lenses/x"
+              title={tTheme("ctaXTitle")}
+              subtitle={tTheme("ctaXSubtitle", { count: xCatalogCount })}
+            />
+            <CtaCard
+              href="/lenses/g"
+              title={tTheme("ctaGTitle")}
+              subtitle={tTheme("ctaGSubtitle", { count: gCatalogCount })}
+            />
+          </div>
+        </section>
       </div>
       <BackToTopButton />
     </>
+  );
+}
+
+function CtaCard({
+  href,
+  title,
+  subtitle,
+}: {
+  href: string;
+  title: string;
+  subtitle: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group flex items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-4 transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700 dark:hover:bg-zinc-800/60"
+    >
+      <div className="flex flex-col gap-1">
+        <span className="font-semibold text-zinc-900 dark:text-zinc-50">{title}</span>
+        <span className="text-xs text-zinc-500 dark:text-zinc-400">{subtitle}</span>
+      </div>
+      <ArrowRight className="size-4 shrink-0 text-zinc-400 transition-transform group-hover:translate-x-0.5 dark:text-zinc-500" />
+    </Link>
   );
 }
