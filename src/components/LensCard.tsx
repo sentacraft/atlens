@@ -152,32 +152,24 @@ export default function LensCard({
                 {fmt.lensSubtitleLine(tBrand(lens.brand), lens.series)}
               </p>
               {isPlaceholder && lens.announcement ? (
-                <Link
-                  href="/collections/pe-2026"
-                  prefetch={false}
-                  className="hidden sm:inline-flex shrink-0 items-center rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200/70 transition-colors hover:bg-amber-100 hover:text-amber-800 dark:bg-amber-950/40 dark:text-amber-200 dark:ring-amber-800/40 dark:hover:bg-amber-900/50"
-                >
-                  {lens.announcement.event}
-                </Link>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <Link
+                    href="/collections/pe-2026"
+                    prefetch={false}
+                    className="inline-flex shrink-0 items-center rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200/70 transition-colors hover:bg-amber-100 hover:text-amber-800 dark:bg-amber-950/40 dark:text-amber-200 dark:ring-amber-800/40 dark:hover:bg-amber-900/50"
+                  >
+                    {lens.announcement.event}
+                  </Link>
+                  <span className="hidden shrink-0 text-[10px] text-zinc-500 sm:inline dark:text-zinc-500">
+                    {t("placeholderCardHint")}
+                  </span>
+                </div>
               ) : lens.releaseYear ? (
-                <p className="hidden sm:block shrink-0 text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+                <p className="shrink-0 text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
                   {lens.releaseYear}
                 </p>
               ) : null}
             </div>
-            {isPlaceholder && lens.announcement ? (
-              <Link
-                href="/collections/pe-2026"
-                prefetch={false}
-                className="sm:hidden inline-flex self-start items-center rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200/70 transition-colors hover:bg-amber-100 hover:text-amber-800 dark:bg-amber-950/40 dark:text-amber-200 dark:ring-amber-800/40 dark:hover:bg-amber-900/50"
-              >
-                {lens.announcement.event}
-              </Link>
-            ) : lens.releaseYear ? (
-              <p className="sm:hidden text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
-                {lens.releaseYear}
-              </p>
-            ) : null}
             <h3
               className="font-semibold text-sm text-zinc-900 dark:text-zinc-50 leading-snug line-clamp-2 min-h-[2.5rem]"
               title={lens.model}
@@ -198,36 +190,28 @@ export default function LensCard({
           </div>
 
           {isPlaceholder ? (
-            // Placeholder lenses only have equivalent focal length — fill
-            // the rest of the spec slot with an explanatory hint so users
-            // understand *why* this card looks different (no compare, no
-            // detail page, sparse data) instead of reading it as a broken
-            // version of a normal card. The "P&E 2026" chip alone doesn't
-            // carry that meaning for non-insider readers. Kept to 2 rows
-            // so card height stays close to the normal card; the external
-            // link sits on the focal-length row (arrow only on mobile,
-            // labelled on desktop).
-            <dl className="mt-auto flex flex-col gap-1 text-xs text-zinc-600 dark:text-zinc-400">
-              <div className="flex items-baseline justify-between gap-2">
-                <span className="min-w-0 truncate">
-                  {equivDisplay} {t("equivSuffix")}
-                </span>
-                {lens.announcement?.source && (
-                  <a
-                    href={lens.announcement.source}
-                    target="_blank"
-                    rel="nofollow noopener noreferrer"
-                    aria-label={t("readAnnouncement")}
-                    className="inline-flex shrink-0 items-center gap-0.5 text-zinc-500 underline-offset-2 transition-colors hover:text-zinc-900 hover:underline dark:text-zinc-500 dark:hover:text-zinc-200"
-                  >
-                    <span className="hidden sm:inline">{t("readAnnouncement")}</span>
-                    <ArrowUpRight className="size-3" />
-                  </a>
-                )}
-              </div>
-              <div className="text-zinc-500 dark:text-zinc-500">
-                {t("placeholderCardHint")}
-              </div>
+            // Placeholder lenses surface the equivalent focal length on the
+            // left and the announcement link on the right — same single-row
+            // shape as the normal card's dl, so card heights match across
+            // the grid. The "new / specs to come" explanatory hint lives
+            // up next to the P&E chip (see brand row above) instead of
+            // claiming a second row here.
+            <dl className="mt-auto flex items-baseline justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+              <span className="min-w-0 truncate">
+                {equivDisplay} {t("equivSuffix")}
+              </span>
+              {lens.announcement?.source && (
+                <a
+                  href={lens.announcement.source}
+                  target="_blank"
+                  rel="nofollow noopener noreferrer"
+                  aria-label={t("readAnnouncement")}
+                  className="inline-flex shrink-0 items-center gap-0.5 text-zinc-500 underline-offset-2 transition-colors hover:text-zinc-900 hover:underline dark:text-zinc-500 dark:hover:text-zinc-200"
+                >
+                  <span className="hidden sm:inline">{t("readAnnouncement")}</span>
+                  <ArrowUpRight className="size-3" />
+                </a>
+              )}
             </dl>
           ) : (
             <>
