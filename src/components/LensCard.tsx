@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Plus, Check, ArrowUpRight } from "lucide-react";
 import { toast } from "sonner";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
 import { ACTION_PRIMARY_CLS, CARD_SELECTED_BORDER_CLS } from "@/lib/ui-tokens";
@@ -29,6 +29,14 @@ interface Props {
    * those surfaces are curated browsing, not interactive exploration.
    */
   hideCompare?: boolean;
+  /**
+   * Whether the entire card surface acts as a link for placeholder lenses
+   * (jumping to /collections/pe-2026). Defaults to true on browse grids
+   * so users get a clickable affordance like normal cards. Theme pages
+   * (which *are* /collections/pe-2026) pass false to avoid dead self-nav;
+   * the inline "查看报道" link remains the escape hatch there.
+   */
+  placeholderClickable?: boolean;
 }
 
 export default function LensCard({
@@ -38,6 +46,7 @@ export default function LensCard({
   onToggle,
   priority = false,
   hideCompare = false,
+  placeholderClickable = true,
 }: Props) {
   const t = useTranslations("LensList");
   const tBrand = useTranslations("Brands");
@@ -98,6 +107,7 @@ export default function LensCard({
           action, since first-party URL quality varies across announcements. */}
       <CardSurface
         isPlaceholder={isPlaceholder}
+        placeholderClickable={placeholderClickable}
         href={`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`}
       >
         <div
@@ -148,11 +158,26 @@ export default function LensCard({
         >
           <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between gap-2 max-xs:pr-9">
-              <p className="min-w-0 truncate text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
-                {fmt.lensSubtitleLine(tBrand(lens.brand), lens.series)}
-              </p>
+              {/* Brand · series (· chip on mobile) — mobile groups chip
+                  inline after series for tighter visual signal; desktop
+                  splits chip + hint to the right side so the layout
+                  mirrors normal lenses' "year on right" pattern. */}
+              <div className="flex min-w-0 items-center gap-1.5">
+                <p className="min-w-0 truncate text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+                  {fmt.lensSubtitleLine(tBrand(lens.brand), lens.series)}
+                </p>
+                {isPlaceholder && lens.announcement && (
+                  <Link
+                    href="/collections/pe-2026"
+                    prefetch={false}
+                    className="inline-flex shrink-0 items-center rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200/70 transition-colors hover:bg-amber-100 hover:text-amber-800 sm:hidden dark:bg-amber-950/40 dark:text-amber-200 dark:ring-amber-800/40 dark:hover:bg-amber-900/50"
+                  >
+                    {lens.announcement.event}
+                  </Link>
+                )}
+              </div>
               {isPlaceholder && lens.announcement ? (
-                <div className="flex shrink-0 items-center gap-1.5">
+                <div className="hidden shrink-0 items-center gap-1.5 sm:flex">
                   <Link
                     href="/collections/pe-2026"
                     prefetch={false}
@@ -160,7 +185,7 @@ export default function LensCard({
                   >
                     {lens.announcement.event}
                   </Link>
-                  <span className="hidden shrink-0 text-[10px] text-zinc-500 sm:inline dark:text-zinc-500">
+                  <span className="shrink-0 text-[10px] text-zinc-500 dark:text-zinc-500">
                     {t("placeholderCardHint")}
                   </span>
                 </div>
@@ -208,7 +233,7 @@ export default function LensCard({
                   aria-label={t("readAnnouncement")}
                   className="inline-flex shrink-0 items-center gap-0.5 text-zinc-500 underline-offset-2 transition-colors hover:text-zinc-900 hover:underline dark:text-zinc-500 dark:hover:text-zinc-200"
                 >
-                  <span className="hidden sm:inline">{t("readAnnouncement")}</span>
+                  {t("readAnnouncement")}
                   <ArrowUpRight className="size-3" />
                 </a>
               )}
@@ -326,22 +351,53 @@ function Badge({
 
 /**
  * Card surface for the image + body area. Normal lenses are clickable links
- * to the detail page; placeholder lenses render as a static panel with no
- * navigation (no detail page exists and the announcement URL is intentionally
- * not surfaced as a primary action).
+ * to the detail page; placeholders jump to the /collections/pe-2026 context
+ * page when `placeholderClickable` is on, or render as a static panel when
+ * off (the theme page itself passes false to avoid dead same-page nav).
+ *
+ * Implemented as div+router rather than `<Link>` for placeholders so the
+ * nested links inside (P&E chip, "查看报道" external) stay valid HTML —
+ * nested `<a>` inside `<a>` is unwrapped by browsers and breaks click
+ * handling.
  */
 function CardSurface({
   isPlaceholder,
+  placeholderClickable,
   href,
   children,
 }: {
   isPlaceholder: boolean;
+  placeholderClickable: boolean;
   href: string;
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   if (isPlaceholder) {
+    if (!placeholderClickable) {
+      return (
+        <div className="flex-1 flex flex-col max-xs:flex-row">
+          {children}
+        </div>
+      );
+    }
     return (
-      <div className="flex-1 flex flex-col max-xs:flex-row">
+      <div
+        role="link"
+        tabIndex={0}
+        onClick={(e) => {
+          // Defer to nested anchors (chip, "查看报道") so they fire their
+          // own navigation instead of double-triggering with this handler.
+          if ((e.target as HTMLElement).closest("a")) return;
+          router.push("/collections/pe-2026");
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            router.push("/collections/pe-2026");
+          }
+        }}
+        className="flex-1 flex flex-col cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors max-xs:flex-row"
+      >
         {children}
       </div>
     );

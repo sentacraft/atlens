@@ -31,6 +31,7 @@ export default function ThemedLensGrid({ lenses }: { lenses: Lens[] }) {
           onToggle={() => {}}
           priority={i < 8}
           hideCompare
+          placeholderClickable={false}
         />
       ))}
     </div>
