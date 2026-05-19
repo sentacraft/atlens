@@ -124,7 +124,7 @@ export default async function PE2026Page({ params }: { params: Params }) {
               subtitle={tTheme("ctaXSubtitle", { count: xCatalogCount })}
             />
             <CtaCard
-              href="/lenses/g"
+              href="/lenses/gfx"
               title={tTheme("ctaGTitle")}
               subtitle={tTheme("ctaGSubtitle", { count: gCatalogCount })}
             />
