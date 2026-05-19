@@ -88,8 +88,11 @@ export default async function PE2026Page({ params }: { params: Params }) {
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 flex flex-col gap-6 sm:gap-8">
         {/* Breadcrumb hierarchy hint — gives users who land here from search
             or social a sense of context (this is one page inside X-Glass's
-            lens library), without imposing a "back" semantic that wouldn't
-            make sense for them. The links double as escape hatches. */}
+            lens library) without imposing a "back" semantic. "镜头库" is
+            plain text rather than a link because the catalog splits by
+            mount (X / GFX) — there's no single "all lenses" page to point
+            at, and the bottom CTA cards already provide the per-mount
+            escape hatches. */}
         <nav
           aria-label="breadcrumb"
           className="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400"
@@ -101,12 +104,7 @@ export default async function PE2026Page({ params }: { params: Params }) {
             X-Glass
           </Link>
           <span aria-hidden>/</span>
-          <Link
-            href="/lenses/x"
-            className="underline-offset-2 transition-colors hover:text-zinc-900 hover:underline dark:hover:text-zinc-50"
-          >
-            {tTheme("breadcrumbRoot")}
-          </Link>
+          <span>{tTheme("breadcrumbRoot")}</span>
         </nav>
 
         <header className="flex flex-col gap-3">
