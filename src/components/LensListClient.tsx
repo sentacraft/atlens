@@ -42,6 +42,7 @@ interface Props {
 
 export default function LensListClient({ lenses }: Props) {
   const t = useTranslations("LensList");
+  const tSearch = useTranslations("Search");
   const hookAttr = useUiHookAttr();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -100,7 +101,7 @@ export default function LensListClient({ lenses }: Props) {
             <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
               {t("title")}
             </h2>
-            <LensSearchDialog triggerVariant="icon" />
+            <LensSearchDialog triggerVariant="button" triggerLabel={tSearch("browseTrigger")} />
           </div>
           <LensFilters
             filters={filters}

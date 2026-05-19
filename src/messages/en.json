@@ -28,6 +28,7 @@
     "description": "Search the lens database",
     "addLens": "Add lens",
     "add": "Add",
+    "browseTrigger": "Search",
     "placeholder": "XF35mm, Sigma, f1.4…",
     "emptyTitle": "Search a model or brand",
     "emptyDescription": "Supports model, brand, series, aperture",
