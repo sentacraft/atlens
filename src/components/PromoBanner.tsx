@@ -60,9 +60,10 @@ export default function PromoBanner({
       <Link
         href={ctaHref}
         prefetch={false}
+        aria-label={ctaLabel}
         className="inline-flex shrink-0 items-center gap-1 font-medium text-zinc-700 underline-offset-2 hover:text-zinc-900 hover:underline dark:text-zinc-300 dark:hover:text-zinc-50"
       >
-        {ctaLabel}
+        <span className="hidden sm:inline">{ctaLabel}</span>
         <ArrowRight className="size-3" />
       </Link>
       <button
