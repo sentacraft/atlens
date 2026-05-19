@@ -16,7 +16,7 @@ import {
   type SortKey,
 } from "@/lib/lens";
 import { deriveSpecialty } from "@/lib/lens-specialty";
-import type { OpticalTrait } from "@/lib/types";
+import { OPTICAL_TRAITS, type OpticalTrait } from "@/lib/types";
 import { serializeFilters, parseFilters } from "@/lib/filter-params";
 import { useMountedCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
@@ -53,9 +53,12 @@ export default function LensListClient({ lenses }: Props) {
   const brands = useMemo(() => getOrderedUniqueBrands(lenses), [lenses]);
 
   const availableOpticalTraits = useMemo<OpticalTrait[]>(
-    () => [
-      ...new Set(lenses.flatMap((l) => deriveSpecialty(l).opticalTraits)),
-    ],
+    () => {
+      const present = new Set(
+        lenses.flatMap((l) => deriveSpecialty(l).opticalTraits),
+      );
+      return OPTICAL_TRAITS.filter((trait) => present.has(trait));
+    },
     [lenses],
   );
 
