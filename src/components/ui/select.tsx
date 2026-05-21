@@ -65,7 +65,7 @@ function SelectContent({
   portalContainer,
   children,
   side = "bottom",
-  sideOffset = 4,
+  sideOffset = 8,
   align = "center",
   alignOffset = 0,
   alignItemWithTrigger = false,
