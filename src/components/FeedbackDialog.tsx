@@ -251,7 +251,10 @@ export default function FeedbackDialog({
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={t("fieldPickerPlaceholder")} />
                   </SelectTrigger>
-                  <SelectContent portalContainer={dialogLayerRef}>
+                  <SelectContent
+                    portalContainer={dialogLayerRef}
+                    className="max-w-[min(20rem,calc(100vw-2rem))]"
+                  >
                     {groupedFields.map((group) => (
                       <SelectGroup key={group.label}>
                         {group.label && <SelectLabel>{group.label}</SelectLabel>}
