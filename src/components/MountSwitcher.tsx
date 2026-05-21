@@ -10,7 +10,7 @@ import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { mountToUrlSegment } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
 import { track } from "@/lib/analytics";
-import { Select, SelectItem } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem } from "@/components/ui/select";
 
 export default function MountSwitcher() {
   const t = useTranslations("MountSwitcher");
@@ -62,28 +62,21 @@ export default function MountSwitcher() {
           }
         />
       </SelectPrimitive.Trigger>
-      <SelectPrimitive.Portal>
-        <SelectPrimitive.Positioner
-          align="start"
-          alignItemWithTrigger={false}
-          sideOffset={6}
-          className="isolate z-50"
-        >
-          <SelectPrimitive.Popup className="min-w-[8.5rem] overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl shadow-zinc-950/20 outline-none dark:border-zinc-800 dark:bg-zinc-950">
-            <SelectPrimitive.List>
-              {options.map((opt) => (
-                <SelectItem
-                  key={opt.value}
-                  value={opt.value}
-                  className="gap-2 rounded-none pl-3.5 py-2 sm:py-2 text-sm text-zinc-500 dark:text-zinc-400 data-[selected]:font-medium data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50 data-[selected]:bg-zinc-50 dark:data-[selected]:bg-zinc-900"
-                >
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectPrimitive.List>
-          </SelectPrimitive.Popup>
-        </SelectPrimitive.Positioner>
-      </SelectPrimitive.Portal>
+      <SelectContent
+        align="start"
+        sideOffset={6}
+        className="w-auto min-w-[8.5rem] overflow-hidden"
+      >
+        {options.map((opt) => (
+          <SelectItem
+            key={opt.value}
+            value={opt.value}
+            className="rounded-none py-2 sm:py-2 text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
+          >
+            {opt.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
     </Select>
   );
 }
