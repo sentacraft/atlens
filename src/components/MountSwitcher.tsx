@@ -71,7 +71,7 @@ export default function MountSwitcher() {
           <SelectItem
             key={opt.value}
             value={opt.value}
-            className="rounded-none py-2 sm:py-2 text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
+            className="rounded-none py-2 sm:py-2 text-sm sm:text-base text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
           >
             {opt.label}
           </SelectItem>

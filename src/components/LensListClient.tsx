@@ -151,14 +151,14 @@ export default function LensListClient({ lenses }: Props) {
                   </SelectTrigger>
                   <SelectContent
                     align="end"
-                    alignOffset={-36}
-                    className="min-w-[14rem] overflow-hidden"
+                    alignOffset={-39}
+                    className="min-w-[14rem] overflow-hidden rounded-[18px]"
                   >
                     {sortOptions.map((option) => (
                       <SelectItem
                         key={option.value}
                         value={option.value}
-                        className="rounded-none py-2 sm:py-2 text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
+                        className="rounded-none py-2 sm:py-2 text-[12px] text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
                       >
                         {option.label}
                       </SelectItem>
