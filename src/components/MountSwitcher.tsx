@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
+import { Select as SelectPrimitive } from "@base-ui/react/select";
 import { useRouter } from "@/i18n/navigation";
 import { useMountParam, useEffectiveMount } from "@/hooks/useMountParam";
 import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { mountToUrlSegment } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
 import { track } from "@/lib/analytics";
-
+import { Select, SelectContent, SelectItem } from "@/components/ui/select";
 
 export default function MountSwitcher() {
   const t = useTranslations("MountSwitcher");
@@ -17,8 +18,6 @@ export default function MountSwitcher() {
   const urlMount = useMountParam();
   const effectiveMount = useEffectiveMount();
   const { setPreference } = useMountPreference();
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
 
   // Sync URL mount → preference so navigating to /lenses/gfx
   // keeps the badge on GFX after navigating away.
@@ -28,77 +27,56 @@ export default function MountSwitcher() {
     }
   }, [urlMount, setPreference]);
 
-  // Close on outside click
-  useEffect(() => {
-    if (!open) {
+  const options: { value: Mount; label: string }[] = [
+    { value: "X", label: t("x") },
+    { value: "G", label: t("gfx") },
+  ];
+
+  const handleValueChange = (value: Mount | null) => {
+    if (value === null) {
       return;
     }
-    function onPointerDown(e: PointerEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+    if (value !== effectiveMount) {
+      track("mount_switch", { from_mount: effectiveMount, to_mount: value });
     }
-    document.addEventListener("pointerdown", onPointerDown);
-    return () => document.removeEventListener("pointerdown", onPointerDown);
-  }, [open]);
-
-  const handleSelect = (mount: Mount) => {
-    if (mount !== effectiveMount) {
-      track("mount_switch", { from_mount: effectiveMount, to_mount: mount });
-    }
-    setPreference(mount);
-    setOpen(false);
+    setPreference(value);
     if (urlMount !== null) {
-      router.push(`/lenses/${mountToUrlSegment(mount)}`);
+      router.push(`/lenses/${mountToUrlSegment(value)}`);
     }
   };
 
-  const options: { mount: Mount; label: string }[] = [
-    { mount: "X", label: t("x") },
-    { mount: "G", label: t("gfx") },
-  ];
-
-  const fullLabel = effectiveMount === "X" ? t("x") : t("gfx");
-
   return (
-    <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="group flex items-center gap-0.5 font-heading font-medium text-sm sm:text-base text-zinc-600 dark:text-zinc-400 tracking-tight hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 px-1 py-0.5 -ml-1 sm:px-1.5 sm:-ml-1.5 rounded-md transition-all whitespace-nowrap"
-        aria-haspopup="listbox"
-        aria-expanded={open}
+    <Select
+      items={options}
+      value={effectiveMount}
+      onValueChange={handleValueChange}
+    >
+      <SelectPrimitive.Trigger
         aria-label={t("label")}
+        className="group flex items-center gap-0.5 -ml-1 sm:-ml-1.5 px-1 py-0.5 sm:px-1.5 rounded-md font-heading font-medium text-sm sm:text-base tracking-tight whitespace-nowrap text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-all outline-none"
       >
-        {fullLabel}
-        <ChevronDown className="h-3 w-3 sm:h-3.5 sm:w-3.5 opacity-60 group-hover:opacity-100 transition-opacity" />
-      </button>
-
-      {open && (
-        <div
-          role="listbox"
-          className="absolute left-0 top-full mt-1.5 z-50 min-w-[8.5rem] rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-xl shadow-zinc-950/20 overflow-hidden"
-        >
-          {options.map((opt) => (
-            <button
-              key={opt.mount}
-              type="button"
-              role="option"
-              aria-selected={opt.mount === effectiveMount}
-              onClick={() => handleSelect(opt.mount)}
-              className={`flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors ${
-                opt.mount === effectiveMount
-                  ? "text-zinc-900 dark:text-zinc-50 font-medium bg-zinc-50 dark:bg-zinc-900"
-                  : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-900"
-              }`}
-            >
-              {opt.label}
-              {opt.mount === effectiveMount && (
-                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-zinc-900 dark:bg-zinc-50" />
-              )}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+        <SelectPrimitive.Value />
+        <SelectPrimitive.Icon
+          render={
+            <ChevronDown className="h-3 w-3 sm:h-3.5 sm:w-3.5 opacity-60 group-hover:opacity-100 transition-opacity" />
+          }
+        />
+      </SelectPrimitive.Trigger>
+      <SelectContent
+        align="start"
+        sideOffset={6}
+        className="w-auto min-w-[8.5rem] overflow-hidden"
+      >
+        {options.map((opt) => (
+          <SelectItem
+            key={opt.value}
+            value={opt.value}
+            className="rounded-none py-2 sm:py-2 text-sm sm:text-base text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
+          >
+            {opt.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
