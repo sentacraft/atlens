@@ -127,7 +127,7 @@ export default function LensListClient({ lenses }: Props) {
                 ) : null}
               </div>
 
-              <div className="ml-auto inline-flex items-center gap-0.5 rounded-full border border-zinc-200/70 bg-white/80 p-0.75 shadow-sm shadow-zinc-950/[0.02] dark:border-zinc-800 dark:bg-zinc-900/30">
+              <div className="ml-auto inline-flex items-center gap-0.5 rounded-xl border border-zinc-200/70 bg-white/80 p-0.75 shadow-sm shadow-zinc-950/[0.02] dark:border-zinc-800 dark:bg-zinc-900/30">
                 <label
                   htmlFor="results-sort"
                   className="whitespace-nowrap pl-2.5 text-[10px] font-medium uppercase tracking-[0.08em] text-zinc-500 dark:text-zinc-400"
@@ -148,13 +148,21 @@ export default function LensListClient({ lenses }: Props) {
                     id="results-sort"
                     size="sm"
                     hideChevronOnMobile
-                    className="rounded-full border-transparent bg-transparent px-2.5 text-[12px] shadow-none dark:bg-transparent sm:min-w-[7.75rem]"
+                    className="rounded-lg border-transparent bg-transparent px-2.5 text-[12px] shadow-none dark:bg-transparent sm:min-w-[7.75rem]"
                   >
                     <SelectValue placeholder={t("sortFocalLength")} />
                   </SelectTrigger>
-                  <SelectContent align="end" alignItemWithTrigger={false}>
+                  <SelectContent
+                    align="end"
+                    alignOffset={-39}
+                    className="min-w-[14rem] overflow-hidden rounded-xl"
+                  >
                     {sortOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
+                      <SelectItem
+                        key={option.value}
+                        value={option.value}
+                        className="rounded-none py-2 sm:py-2 text-[12px] text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
+                      >
                         {option.label}
                       </SelectItem>
                     ))}
@@ -163,7 +171,7 @@ export default function LensListClient({ lenses }: Props) {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-7 rounded-full border-zinc-200/80 bg-zinc-50/80 px-2 dark:border-zinc-700 dark:bg-zinc-800/70"
+                  className="h-7 rounded-lg border-zinc-200/80 bg-zinc-50/80 px-2 dark:border-zinc-700 dark:bg-zinc-800/70"
                   onClick={() =>
                     updateFilters((current) => ({
                       ...current,

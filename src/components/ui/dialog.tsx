@@ -129,7 +129,7 @@ function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-1.5 px-5 py-4", className)}
+      className={cn("flex flex-col gap-1.5 pl-5 pr-14 py-4", className)}
       {...props}
     />
   );
