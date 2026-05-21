@@ -151,7 +151,6 @@ export default function LensListClient({ lenses }: Props) {
                   </SelectTrigger>
                   <SelectContent
                     align="end"
-                    alignItemWithTrigger={false}
                     className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl shadow-zinc-950/20 ring-0 dark:border-zinc-800 dark:bg-zinc-950"
                   >
                     {sortOptions.map((option) => (
