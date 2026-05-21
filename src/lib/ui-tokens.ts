@@ -14,7 +14,7 @@ export const ACTION_PRIMARY_CLS =
 
 /** Outline / secondary action button (share, external links, supplementary actions). */
 export const ACTION_OUTLINE_CLS =
-  "inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800";
+  "inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800";
 
 /** Selected card border + ring (e.g. lens card added to compare). */
 export const CARD_SELECTED_BORDER_CLS =

@@ -64,7 +64,6 @@ export default function MountSwitcher() {
       </SelectPrimitive.Trigger>
       <SelectContent
         align="start"
-        sideOffset={6}
         className="w-auto min-w-[8.5rem] overflow-hidden"
       >
         {options.map((opt) => (
