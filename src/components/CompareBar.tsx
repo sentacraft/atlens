@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { getLensesByMount } from "@/lib/lens";
 import { useCompare } from "@/context/CompareProvider";
+import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { buildHorizontalScrollMask, useHorizontalScrollAffordance } from "@/hooks/useHorizontalScrollAffordance";
@@ -14,8 +15,6 @@ import { spring } from "@/lib/animation";
 import { Plus, X } from "lucide-react";
 import LensSearchDialog from "@/components/LensSearchDialog";
 import { ScrollChevron } from "@/components/ui/scroll-chevron";
-import { MAX_COMPARE } from "@/lib/lens";
-import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/lib/ui-tokens";
 import { Z } from "@/config/ui";
@@ -28,23 +27,9 @@ export default function CompareBar() {
   const router = useRouter();
   const locale = useLocale();
   const mount = useEffectiveMount();
-  const { compareIds, add, remove } = useCompare();
+  const { compareIds, remove } = useCompare();
+  const { onSelectLens, getResultState } = useCompareLensSearch();
   const clearCompareWithUndo = useClearCompareWithUndo();
-
-  const handleAddLens = (lens: Lens) => add(lens.id);
-
-  const getAddResultState = useCallback(
-    (candidate: Lens) => ({
-      actionLabel: compareIds.includes(candidate.id)
-        ? tCompare("alreadyAdded")
-        : compareIds.length >= MAX_COMPARE
-          ? tCompare("compareFull")
-          : tCompare("addToCompareAction"),
-      disabled:
-        compareIds.includes(candidate.id) || compareIds.length >= MAX_COMPARE,
-    }),
-    [compareIds, tCompare]
-  );
 
   const selectedLenses = useMemo(
     () =>
@@ -183,8 +168,8 @@ export default function CompareBar() {
                 {t("clearCompare")}
               </button>
               <LensSearchDialog
-                onSelectLens={handleAddLens}
-                getResultState={getAddResultState}
+                onSelectLens={onSelectLens}
+                getResultState={getResultState}
                 triggerVariant="icon"
                 triggerIcon={Plus}
                 triggerLabel={tCompare("addLens")}

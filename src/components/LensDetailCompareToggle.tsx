@@ -9,7 +9,7 @@ interface Props {
   lensId: string;
 }
 
-export default function AddToCompareButton({ lensId }: Props) {
+export default function LensDetailCompareToggle({ lensId }: Props) {
   const t = useTranslations("LensDetail");
   const { compareIds, toggle } = useCompare();
 
