@@ -11,7 +11,7 @@ import { buildSpecGroups, resolveSpecGroups } from "@/lib/lens-spec-groups";
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens-spec-groups";
 import { ExternalLink } from "@/components/ui/external-link";
 import { Link } from "@/i18n/navigation";
-import AddToCompareButton from "@/components/AddToCompareButton";
+import LensDetailCompareToggle from "@/components/LensDetailCompareToggle";
 import BackToTopButton from "@/components/BackToTopButton";
 import LensDetailTelemetry from "@/components/telemetry/LensDetailTelemetry";
 import ShareFAB from "@/components/ShareFAB";
@@ -334,7 +334,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           {/* Actions — mt-auto pushes them to the bottom of the stretched
               info column so the row aligns with the image card's bottom. */}
           <div className="flex flex-wrap gap-2 sm:gap-3 mt-auto">
-            <AddToCompareButton lensId={lens.id} />
+            <LensDetailCompareToggle lensId={lens.id} />
             {url ? (
               <ExternalLink href={url} className={ACTION_OUTLINE_CLS}>
                 {t("officialSite")}
