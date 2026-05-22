@@ -82,13 +82,13 @@ export default function FeedbackDialog({
   const [description, setDescription] = useState("");
   const [selectedFieldLabel, setSelectedFieldLabel] = useState("");
   const [suggestedCorrection, setSuggestedCorrection] = useState("");
-  const [replyEmail, setReplyEmail] = useState("");
+  const [replyContact, setReplyContact] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const dialogLayerRef = useRef<HTMLDivElement | null>(null);
   const textareaId = useId();
   const correctionId = useId();
-  const emailId = useId();
+  const contactId = useId();
 
   const showFieldPicker = type === "data_issue" && fields && fields.length > 0;
 
@@ -117,7 +117,7 @@ export default function FeedbackDialog({
       setDescription("");
       setSelectedFieldLabel("");
       setSuggestedCorrection("");
-      setReplyEmail("");
+      setReplyContact("");
       setStatus("idle");
       setSubmitAttempted(false);
     }
@@ -150,7 +150,7 @@ export default function FeedbackDialog({
         body: JSON.stringify({
           type,
           description: description.trim(),
-          ...(replyEmail.trim() ? { replyEmail: replyEmail.trim() } : {}),
+          ...(replyContact.trim() ? { replyContact: replyContact.trim() } : {}),
           context: {
             ...(context ?? {}),
             ...(selectedFieldLabel ? { field: selectedFieldLabel } : {}),
@@ -321,20 +321,20 @@ export default function FeedbackDialog({
             />
             <div className="flex flex-col gap-1.5">
               <label
-                htmlFor={emailId}
+                htmlFor={contactId}
                 className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
               >
-                {t("replyEmailLabel")}
+                {t("replyContactLabel")}
                 <span className="ml-1 font-normal text-zinc-400 dark:text-zinc-500">
                   ({t("descriptionOptional")})
                 </span>
               </label>
               <input
-                id={emailId}
-                type="email"
-                value={replyEmail}
-                onChange={(e) => setReplyEmail(e.target.value)}
-                placeholder={t("replyEmailPlaceholder")}
+                id={contactId}
+                type="text"
+                value={replyContact}
+                onChange={(e) => setReplyContact(e.target.value)}
+                placeholder={t("replyContactPlaceholder")}
                 className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600"
               />
             </div>
