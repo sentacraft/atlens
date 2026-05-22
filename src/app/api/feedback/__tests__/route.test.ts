@@ -153,22 +153,22 @@ describe("POST /api/feedback — lensBrand", () => {
   });
 });
 
-describe("POST /api/feedback — replyEmail", () => {
+describe("POST /api/feedback — replyContact", () => {
   beforeAll(() => {
     mockFetch.mockResolvedValue(
       new Response(JSON.stringify({ number: 1 }), { status: 201 })
     );
   });
 
-  it("includes replyEmail in the issue body when provided", async () => {
+  it("includes replyContact in the issue body when provided", async () => {
     await POST(
-      makeRequest({ type: "general", description: "Great app!", replyEmail: "user@example.com" })
+      makeRequest({ type: "general", description: "Great app!", replyContact: "user@example.com" })
     );
     const body = JSON.parse(mockFetch.mock.calls[0][1].body as string) as { body: string };
     expect(body.body).toContain("**Reply-to:** user@example.com");
   });
 
-  it("omits Reply-to line when replyEmail is not provided", async () => {
+  it("omits Reply-to line when replyContact is not provided", async () => {
     await POST(makeRequest({ type: "general", description: "Great app!" }));
     const body = JSON.parse(mockFetch.mock.calls[0][1].body as string) as { body: string };
     expect(body.body).not.toContain("Reply-to");
