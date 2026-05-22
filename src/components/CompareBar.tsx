@@ -4,7 +4,7 @@ import { useMemo, useRef, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { getLensesByMount } from "@/lib/lens";
-import { useMountedCompare } from "@/context/CompareProvider";
+import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { buildHorizontalScrollMask, useHorizontalScrollAffordance } from "@/hooks/useHorizontalScrollAffordance";
@@ -28,7 +28,7 @@ export default function CompareBar() {
   const router = useRouter();
   const locale = useLocale();
   const mount = useEffectiveMount();
-  const { compareIds, toggleCompare, addToCompare } = useMountedCompare();
+  const { compareIds, toggleCompare, addToCompare } = useCompare();
   const clearCompareWithUndo = useClearCompareWithUndo();
 
   const handleAddLens = useCallback(

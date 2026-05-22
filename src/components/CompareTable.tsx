@@ -21,7 +21,7 @@ import SpecialtyBadges from "@/components/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens-specialty";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 import type { FeedbackField } from "@/components/FeedbackDialog";
-import { useMountedCompare } from "@/context/CompareProvider";
+import { useCompare } from "@/context/CompareProvider";
 import { useCompareUrlSync } from "@/hooks/useCompareUrlSync";
 import { getLensesByMount, getLensUrl, MAX_COMPARE } from "@/lib/lens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -300,7 +300,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const priceFieldLabel = tPricing("fieldLabel");
   const priceGroupLabel = tPricing("groupLabel");
   const { compareIds, addToCompare, removeFromCompare, reorderCompare, seedCompare } =
-    useMountedCompare();
+    useCompare();
   // Compare page is the only surface that projects compare state onto the
   // URL. This hook owns that projection so individual write callsites no
   // longer need to know about address-bar bookkeeping.

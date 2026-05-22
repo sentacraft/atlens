@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useLocale } from "next-intl";
-import { useMountedCompare } from "@/context/CompareProvider";
+import { useCompare } from "@/context/CompareProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
 
@@ -32,7 +32,7 @@ import { mountToUrlSegment } from "@/lib/mount";
  * via `useLayoutEffect` moments later.
  */
 export function useCompareUrlSync() {
-  const { compareIds } = useMountedCompare();
+  const { compareIds } = useCompare();
   const mount = useEffectiveMount();
   const locale = useLocale();
 

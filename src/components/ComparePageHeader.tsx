@@ -5,7 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { ShareButton } from "@/components/share/ShareButton";
 import ShareFAB from "@/components/ShareFAB";
 import CompareAddLensButton from "@/components/CompareAddLensButton";
-import { useMountedCompare } from "@/context/CompareProvider";
+import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { getLensesByMount } from "@/lib/lens";
@@ -21,7 +21,7 @@ interface Props {
 export default function ComparePageHeader({ minColumns = 0 }: Props) {
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
-  const { compareIds } = useMountedCompare();
+  const { compareIds } = useCompare();
   const clearCompareWithUndo = useClearCompareWithUndo();
   const mount = useEffectiveMount();
   const locale = useLocale();
