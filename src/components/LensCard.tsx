@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Plus, Check, ArrowUpRight } from "lucide-react";
+import { Plus, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
@@ -13,9 +13,6 @@ import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import * as fmt from "@/lib/lens.format";
 import { Button } from "@/components/ui/button";
-import Iris from "@/components/Iris";
-import { IRIS_PLACEHOLDER } from "@/config/iris-config";
-import { LENS_IMAGES } from "@/data/lens-images.generated";
 
 interface Props {
   lens: Lens;
@@ -25,11 +22,9 @@ interface Props {
   priority?: boolean;
   /**
    * Suppress the compare entry (mobile floating + desktop footer button).
-   * Theme / pSEO landing pages opt out of compare per the pSEO contract —
-   * those surfaces are curated browsing, not interactive exploration.
-   * Also affects placeholder chip placement: with no compare button on the
-   * right to balance the layout, the chip itself moves to the right
-   * cluster so every card's chip lines up at the same x position.
+   * Collection / pSEO landing pages opt out of compare per the pSEO
+   * contract — those surfaces are curated browsing, not interactive
+   * exploration.
    */
   hideCompare?: boolean;
 }
@@ -45,12 +40,6 @@ export default function LensCard({
   const t = useTranslations("LensList");
   const tBrand = useTranslations("Brands");
   const hookAttr = useUiHookAttr();
-  const isPlaceholder = lens.status === "placeholder";
-  // Placeholder lenses fall back to the Iris logo only when no processed
-  // product image has been shipped for this id. The build-time manifest
-  // (scripts/build-lens-image-manifest.mts) enumerates every lens whose
-  // webp exists in public/lenses/.
-  const showIrisFallback = isPlaceholder && !LENS_IMAGES.has(lens.id);
   const equivDisplay = fmt.focalRangeDisplay(fmt.focalEquiv(lens.focalLengthMin, lens.mount), fmt.focalEquiv(lens.focalLengthMax, lens.mount));
   const mfdDisplay = lens.minFocusDistance ? `${lens.minFocusDistance.normal.cm}cm` : "—";
   const filterDisplay = fmt.filterSizeDisplay(lens.filterMm);
@@ -95,13 +84,11 @@ export default function LensCard({
           : "border-zinc-200 dark:border-zinc-800"
       }`}
     >
-      {/* Clickable detail area. Placeholder lenses have no detail page and
-          no card-level external link — the announcement source is recorded
-          in the data model but intentionally not surfaced as a primary
-          action, since first-party URL quality varies across announcements. */}
-      <CardSurface
-        isPlaceholder={isPlaceholder}
+      {/* Clickable detail area */}
+      <Link
         href={`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`}
+        prefetch={false}
+        className="flex-1 flex flex-col hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors max-xs:flex-row"
       >
         <div
           {...hookAttr("cardMedia")}
@@ -112,35 +99,16 @@ export default function LensCard({
             className="absolute inset-0 p-3 sm:p-7 max-xs:p-2"
           >
             <div className="relative h-full w-full overflow-hidden rounded-xl">
-              {showIrisFallback ? (
-                <div
-                  className="absolute inset-0 flex items-center justify-center"
-                  aria-label={lens.model}
-                >
-                  {/* Two instances for responsive size — Iris uses an inline
-                      `display: inline-flex` style which beats Tailwind's
-                      `hidden`, so the size split is gated by wrapping divs.
-                      Mobile cell image area is ~116px square; desktop varies
-                      ~220–260px tall — pick sizes that leave breathing room. */}
-                  <div className="block sm:hidden">
-                    <Iris config={IRIS_PLACEHOLDER} size={64} uid={`placeholder-sm-${lens.id}`} />
-                  </div>
-                  <div className="hidden sm:block">
-                    <Iris config={IRIS_PLACEHOLDER} size={96} uid={`placeholder-md-${lens.id}`} />
-                  </div>
-                </div>
-              ) : (
-                <Image
-                  src={getLensImageUrl(lens.id)}
-                  alt={lens.model}
-                  fill
-                  sizes="(max-width: 499px) 112px, (max-width: 640px) 50vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                  style={lensImageStyle}
-                  className="object-contain"
-                  priority={priority}
-                  loading={priority ? undefined : "lazy"}
-                />
-              )}
+              <Image
+                src={getLensImageUrl(lens.id)}
+                alt={lens.model}
+                fill
+                sizes="(max-width: 499px) 112px, (max-width: 640px) 50vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                style={lensImageStyle}
+                className="object-contain"
+                priority={priority}
+                loading={priority ? undefined : "lazy"}
+              />
             </div>
           </div>
         </div>
@@ -151,48 +119,20 @@ export default function LensCard({
         >
           <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between gap-2 max-xs:pr-9">
-              {/* Brand · series — chip nests inline next to series ONLY when
-                  there's a right-side compare button to balance against. On
-                  theme pages (hideCompare) the right side would otherwise
-                  read as empty, so the chip moves to the right cluster
-                  instead — every card's chip then aligns at the same x. */}
-              <div className="flex min-w-0 items-center gap-1.5">
-                <p className="min-w-0 truncate text-[11px] uppercase tracking-[0.14em] leading-[1.2] text-zinc-500 dark:text-zinc-400">
-                  {fmt.lensSubtitleLine(tBrand(lens.brand), lens.series)}
-                </p>
-                {isPlaceholder && lens.announcement && !hideCompare && (
-                  <Link
-                    href="/collections/pe-2026"
-                    prefetch={false}
-                    className="inline-flex shrink-0 items-center rounded-md bg-amber-50 px-1.5 py-px text-[10px] font-medium uppercase leading-[1.2] tracking-[0.12em] text-amber-700 ring-1 ring-amber-200/70 transition-colors hover:bg-amber-100 hover:text-amber-800 sm:hidden dark:bg-amber-950/40 dark:text-amber-200 dark:ring-amber-800/40 dark:hover:bg-amber-900/50"
-                  >
-                    {lens.announcement.event}
-                  </Link>
-                )}
-              </div>
-              {isPlaceholder && lens.announcement ? (
-                <div
-                  className={`shrink-0 items-center gap-1.5 sm:flex ${
-                    hideCompare ? "flex" : "hidden"
-                  }`}
-                >
-                  <Link
-                    href="/collections/pe-2026"
-                    prefetch={false}
-                    className="inline-flex shrink-0 items-center rounded-md bg-amber-50 px-1.5 py-px text-[10px] font-medium uppercase leading-[1.2] tracking-[0.12em] text-amber-700 ring-1 ring-amber-200/70 transition-colors hover:bg-amber-100 hover:text-amber-800 dark:bg-amber-950/40 dark:text-amber-200 dark:ring-amber-800/40 dark:hover:bg-amber-900/50"
-                  >
-                    {lens.announcement.event}
-                  </Link>
-                  <span className="hidden shrink-0 text-[10px] text-zinc-500 sm:inline dark:text-zinc-500">
-                    {t("placeholderCardHint")}
-                  </span>
-                </div>
-              ) : lens.releaseYear ? (
-                <p className="shrink-0 text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+              <p className="min-w-0 truncate text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+                {fmt.lensSubtitleLine(tBrand(lens.brand), lens.series)}
+              </p>
+              {lens.releaseYear ? (
+                <p className="hidden sm:block shrink-0 text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
                   {lens.releaseYear}
                 </p>
               ) : null}
             </div>
+            {lens.releaseYear ? (
+              <p className="sm:hidden text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+                {lens.releaseYear}
+              </p>
+            ) : null}
             <h3
               className="font-semibold text-sm text-zinc-900 dark:text-zinc-50 leading-snug line-clamp-2 min-h-[2.5rem]"
               title={lens.model}
@@ -212,79 +152,35 @@ export default function LensCard({
             ))}
           </div>
 
-          {isPlaceholder ? (
-            // Placeholder lenses surface the equivalent focal length on the
-            // left and the announcement link on the right — same single-row
-            // shape as the normal card's dl, so card heights match across
-            // the grid. The "new / specs to come" explanatory hint lives
-            // up next to the P&E chip (see brand row above) instead of
-            // claiming a second row here.
-            <dl className="mt-auto flex items-baseline justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400">
-              <span className="min-w-0 truncate">
-                {equivDisplay} {t("equivSuffix")}
-              </span>
-              {lens.announcement?.source && (
-                <a
-                  href={lens.announcement.source}
-                  target="_blank"
-                  rel="nofollow noopener noreferrer"
-                  aria-label={t("readAnnouncement")}
-                  className="inline-flex shrink-0 items-center gap-0.5 text-zinc-500 underline-offset-2 transition-colors hover:text-zinc-900 hover:underline dark:text-zinc-500 dark:hover:text-zinc-200"
-                >
-                  {t("readAnnouncement")}
-                  <ArrowUpRight className="size-3" />
-                </a>
-              )}
-            </dl>
-          ) : (
-            <>
-              {/* Mobile: single-row dl */}
-              <dl className="mt-auto flex items-baseline justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400 sm:hidden">
-                <div className="min-w-0 truncate">
-                  {equivDisplay} {t("equivSuffix")}
-                </div>
-                <div className="shrink-0">{weightDisplay}</div>
-              </dl>
+          {/* Mobile: single-row dl */}
+          <dl className="mt-auto flex items-baseline justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400 sm:hidden">
+            <div className="min-w-0 truncate">
+              {equivDisplay} {t("equivSuffix")}
+            </div>
+            <div className="shrink-0">{weightDisplay}</div>
+          </dl>
 
-              {/* Desktop: 2×2 data grid */}
-              <dl className="mt-auto hidden sm:grid sm:grid-cols-2 sm:gap-x-3 text-xs text-zinc-600 dark:text-zinc-400">
-                <div className="truncate">MFD {mfdDisplay}</div>
-                <div className="text-right">⌀{filterDisplay}</div>
-                <div className="min-w-0 truncate">
-                  {equivDisplay} {t("equivSuffix")}
-                </div>
-                <div className="text-right">{weightDisplay}</div>
-              </dl>
-            </>
-          )}
+          {/* Desktop: 2×2 data grid */}
+          <dl className="mt-auto hidden sm:grid sm:grid-cols-2 sm:gap-x-3 text-xs text-zinc-600 dark:text-zinc-400">
+            <div className="truncate">MFD {mfdDisplay}</div>
+            <div className="text-right">⌀{filterDisplay}</div>
+            <div className="min-w-0 truncate">
+              {equivDisplay} {t("equivSuffix")}
+            </div>
+            <div className="text-right">{weightDisplay}</div>
+          </dl>
         </div>
-      </CardSurface>
+      </Link>
 
-      {/* Mobile-only icon compare toggle — absolute in top-right corner.
-          Placeholder lenses can't be compared (specs incomplete); the icon
-          shows a disabled state and a tap surfaces a toast explaining why. */}
+      {/* Mobile-only icon compare toggle — absolute in top-right corner */}
       {!hideCompare && (
         <button
-          onClick={
-            isPlaceholder
-              ? () => toast(t("placeholderCompareTooltip"))
-              : selectionDisabled
-                ? () => toast(t("compareFullToast"))
-                : onToggle
-          }
-          aria-label={
-            isPlaceholder
-              ? t("placeholderCompareTooltip")
-              : isSelected
-                ? t("removeFromCompare")
-                : selectionDisabled
-                  ? t("compareFull")
-                  : t("addToCompare")
-          }
+          onClick={selectionDisabled ? () => toast(t("compareFullToast")) : onToggle}
+          aria-label={isSelected ? t("removeFromCompare") : selectionDisabled ? t("compareFull") : t("addToCompare")}
           className={`hidden max-xs:flex absolute top-2 right-2 z-10 items-center justify-center h-8 w-8 rounded-full transition-colors ${
             isSelected
               ? ACTION_PRIMARY_CLS
-              : isPlaceholder || selectionDisabled
+              : selectionDisabled
                 ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600"
                 : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
           }`}
@@ -302,23 +198,16 @@ export default function LensCard({
           <Button
             size="sm"
             onClick={onToggle}
-            disabled={isPlaceholder || selectionDisabled}
-            title={isPlaceholder ? t("placeholderCompareTooltip") : undefined}
+            disabled={selectionDisabled}
             className={`w-full h-10 sm:h-9 font-medium ${
               isSelected
                 ? `text-xs ${ACTION_PRIMARY_CLS}`
-                : isPlaceholder || selectionDisabled
+                : selectionDisabled
                   ? "text-[11px] bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed"
                   : "text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
             }`}
           >
-            {isPlaceholder
-              ? t("placeholderCompareLabel")
-              : isSelected
-                ? t("removeFromCompare")
-                : selectionDisabled
-                  ? t("compareFull")
-                  : t("addToCompare")}
+            {isSelected ? t("removeFromCompare") : selectionDisabled ? t("compareFull") : t("addToCompare")}
           </Button>
         </div>
       )}
@@ -344,37 +233,5 @@ function Badge({
       {icon}
       {label}
     </span>
-  );
-}
-
-/**
- * Card surface for the image + body area. Normal lenses are clickable links
- * to the detail page; placeholder lenses render as a static panel — the
- * nested P&E chip and "查看报道" external link are the only click targets.
- */
-function CardSurface({
-  isPlaceholder,
-  href,
-  children,
-}: {
-  isPlaceholder: boolean;
-  href: string;
-  children: React.ReactNode;
-}) {
-  if (isPlaceholder) {
-    return (
-      <div className="flex-1 flex flex-col max-xs:flex-row">
-        {children}
-      </div>
-    );
-  }
-  return (
-    <Link
-      href={href}
-      prefetch={false}
-      className="flex-1 flex flex-col hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors max-xs:flex-row"
-    >
-      {children}
-    </Link>
   );
 }

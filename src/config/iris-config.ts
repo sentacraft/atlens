@@ -181,11 +181,11 @@ export const IRIS_NAV: IrisConfig = {
   strokeWidth: 5,
 };
 
-// Faded, static rendering of the brand Iris — used as image placeholder on
-// lens cards whose product image hasn't been collected yet (status: "placeholder").
-// Same mechanical params as IRIS_NAV (N=5) for visual continuity with the
-// rest of the brand surface. Colors are intentionally low-alpha so the iris
-// reads as "image absent" rather than "look at me".
+// Faded, static rendering of the brand Iris — intended as a fallback for
+// lens cards whose product image hasn't been collected yet. Same mechanical
+// params as IRIS_NAV (N=5) for visual continuity with the rest of the brand
+// surface. Colors are intentionally low-alpha so the iris reads as "image
+// absent" rather than "look at me".
 //
 // strokeColor is intentionally omitted so the Iris component falls through to
 // the `stroke-background` Tailwind class — the stroke matches the current

@@ -115,7 +115,6 @@ const lensBaseShape = {
   compatibleMounts: z.array(nonEmptyStringSchema).min(1).optional(),
   accessories: z.array(nonEmptyStringSchema).min(1).optional(),
   lensMaterial: optionalNonEmptyStringSchema,
-  status: z.literal("placeholder").optional(),
 } as const;
 
 export const officialLinksSchema = z
@@ -204,18 +203,8 @@ const lensObjectSchema = z.strictObject({
   filterMm: z.union([positiveNumberSchema, specNaSchema]).optional(),
   lensConfiguration: lensConfigurationSchema.optional(),
   fieldNotes: fieldNotesSchema.optional(),
-  // Conditionally required: must be present unless status === "placeholder"
-  // (announcement.source serves as the public-facing link for placeholders).
-  // Enforcement lives in applyLensBusinessRules below.
-  officialLinks: officialLinksSchema.optional(),
+  officialLinks: officialLinksSchema,
   translations: z.strictObject({ zh: localeTranslationsSchema.optional() }).optional(),
-  // Conditionally required: must be present when status === "placeholder".
-  // Enforcement lives in applyLensBusinessRules below.
-  announcement: z.strictObject({
-    event: nonEmptyStringSchema,
-    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "announcement.date must be ISO YYYY-MM-DD"),
-    source: z.url(),
-  }).optional(),
 });
 
 function getApertureEndpoints(aperture: ApertureValue): {
@@ -286,9 +275,6 @@ function applyLensBusinessRules(
     minAperture?: ApertureValue;
     maxTStop?: ApertureValue;
     minTStop?: ApertureValue;
-    status?: "placeholder";
-    officialLinks?: { cn?: string; global?: string };
-    announcement?: { event: string; date: string; source: string };
   },
   ctx: z.RefinementCtx
 ): void {
@@ -304,46 +290,22 @@ function applyLensBusinessRules(
     });
   }
 
-  const isPlaceholder = value.status === "placeholder";
-
-  // Placeholder lenses carry minimal data — only the lens identity and the
-  // announcement context. Most spec-completeness invariants are relaxed.
-  // Fully-catalogued lenses require an aperture pair and officialLinks;
-  // placeholder lenses require an announcement block instead.
-  if (isPlaceholder) {
-    if (!value.announcement) {
-      ctx.addIssue({
-        code: "custom",
-        message: "announcement is required when status is \"placeholder\"",
-        path: ["announcement"],
-      });
-    }
-  } else {
-    // At least one fully-populated aperture pair must be present. f-stop is the
-    // primary path for stills lenses; T-stop is allowed as the sole path for
-    // cine lenses whose source publishes only T-stop. Schema is intentionally
-    // tag-independent — the cine vs non-cine distinction is enforced by the
-    // pipeline's readiness gate, not here.
-    const hasFStopPair =
-      value.maxAperture !== undefined && value.minAperture !== undefined;
-    const hasTStopPair =
-      value.maxTStop !== undefined && value.minTStop !== undefined;
-    if (!hasFStopPair && !hasTStopPair) {
-      ctx.addIssue({
-        code: "custom",
-        message:
-          "At least one of (maxAperture+minAperture) or (maxTStop+minTStop) must be fully populated",
-        path: ["maxAperture"],
-      });
-    }
-
-    if (!value.officialLinks) {
-      ctx.addIssue({
-        code: "custom",
-        message: "officialLinks is required for non-placeholder lenses",
-        path: ["officialLinks"],
-      });
-    }
+  // At least one fully-populated aperture pair must be present. f-stop is the
+  // primary path for stills lenses; T-stop is allowed as the sole path for
+  // cine lenses whose source publishes only T-stop. Schema is intentionally
+  // tag-independent — the cine vs non-cine distinction is enforced by the
+  // pipeline's readiness gate, not here.
+  const hasFStopPair =
+    value.maxAperture !== undefined && value.minAperture !== undefined;
+  const hasTStopPair =
+    value.maxTStop !== undefined && value.minTStop !== undefined;
+  if (!hasFStopPair && !hasTStopPair) {
+    ctx.addIssue({
+      code: "custom",
+      message:
+        "At least one of (maxAperture+minAperture) or (maxTStop+minTStop) must be fully populated",
+      path: ["maxAperture"],
+    });
   }
 
   validateAperturePair(value.maxAperture, value.minAperture, ctx, {
@@ -483,13 +445,7 @@ export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) =
 
     seenIds.set(lens.id, index);
 
-    // Placeholder lenses are exempted from link-dup and spec-similarity checks:
-    // they share aggregator URLs by design (one Fuji Rumors post can cover
-    // multiple lenses) and have so few populated fields that the similarity
-    // score is uninformative until the lens graduates to a full entry.
-    const isPlaceholder = lens.status === "placeholder";
-
-    if (!isPlaceholder && lens.officialLinks?.cn) {
+    if (lens.officialLinks.cn) {
       const previousCnIndex = seenCnLinks.get(lens.officialLinks.cn);
       if (previousCnIndex !== undefined) {
         // Honor KNOWN_DISTINCT_PAIRS: pairs that legitimately share a product
@@ -508,7 +464,7 @@ export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) =
       }
     }
 
-    if (!isPlaceholder && lens.officialLinks?.global) {
+    if (lens.officialLinks.global) {
       const previousGlobalIndex = seenGlobalLinks.get(lens.officialLinks.global);
       if (previousGlobalIndex !== undefined) {
         const pairKey = makeAllowlistKey(lens.id, lenses[previousGlobalIndex].id);
@@ -540,12 +496,9 @@ export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) =
       seenBrandModels.set(brandModelKey, index);
     }
 
-    // Skip placeholders from spec-similarity comparison (see comment above).
-    if (!isPlaceholder) {
-      const group = byBrand.get(lens.brand) ?? [];
-      group.push({ lens, index });
-      byBrand.set(lens.brand, group);
-    }
+    const group = byBrand.get(lens.brand) ?? [];
+    group.push({ lens, index });
+    byBrand.set(lens.brand, group);
   });
 
   // Pairwise spec similarity check within each brand.

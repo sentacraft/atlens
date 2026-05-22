@@ -5,7 +5,6 @@ import { getLensesByMount } from "@/lib/lens";
 import { urlSegmentToMount } from "@/lib/mount";
 import LensListClient from "@/components/LensListClient";
 import LensesLoading from "./loading";
-import PromoBanner from "@/components/PromoBanner";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { notFound } from "next/navigation";
 
@@ -56,7 +55,6 @@ export default async function LensesPage({ params }: { params: Params }) {
   }
   const lenses = getLensesByMount(resolvedMount, locale);
   const t = await getTranslations({ locale, namespace: "LensList" });
-  const tThemes = await getTranslations({ locale, namespace: "Themes" });
   const h1Title = resolvedMount === "X" ? t("metaTitleX") : t("metaTitleG");
 
   return (
@@ -67,15 +65,6 @@ export default async function LensesPage({ params }: { params: Params }) {
           rendered client-side after hydration; this sr-only h1 is the SEO
           anchor. */}
       <h1 className="sr-only">{h1Title}</h1>
-      <div className="mx-auto w-full max-w-7xl px-4 pt-3 sm:px-6">
-        <PromoBanner
-          message={tThemes("promoBannerPE2026")}
-          ctaLabel={tThemes("promoBannerCta")}
-          ctaHref="/collections/pe-2026"
-          dismissKey="promo-pe-2026-dismissed"
-          dismissLabel={tThemes("promoBannerDismiss")}
-        />
-      </div>
       <Suspense fallback={<LensesLoading />}>
         <LensListClient lenses={lenses} />
       </Suspense>

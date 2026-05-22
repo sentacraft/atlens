@@ -37,17 +37,9 @@ type Params = Promise<{ locale: string; mount: string; id: string }>;
 // detail page is served as a static HTML asset with zero per-request CPU cost.
 // Lens IDs are language-agnostic — fetching the catalog in the default locale
 // to enumerate IDs is sufficient.
-// Placeholder lenses (status === "placeholder") are intentionally excluded
-// from pre-rendering: they have no full spec sheet yet and surface only via
-// the lens list grid. Direct URL access falls through to the notFound() guard
-// in the page render below.
 export function generateStaticParams() {
-  const xLensIds = getLensesByMount("X", routing.defaultLocale)
-    .filter((l) => l.status !== "placeholder")
-    .map((l) => l.id);
-  const gLensIds = getLensesByMount("G", routing.defaultLocale)
-    .filter((l) => l.status !== "placeholder")
-    .map((l) => l.id);
+  const xLensIds = getLensesByMount("X", routing.defaultLocale).map((l) => l.id);
+  const gLensIds = getLensesByMount("G", routing.defaultLocale).map((l) => l.id);
 
   return routing.locales.flatMap((locale) => [
     ...xLensIds.map((id) => ({ locale, mount: "x", id })),
@@ -74,7 +66,7 @@ export async function generateMetadata({
   }
   const lenses = getLensesByMount(resolvedMount, locale);
   const lens = lenses.find((l) => l.id === id);
-  if (!lens || lens.status === "placeholder") {
+  if (!lens) {
     return { title: t("notFoundTitle") };
   }
 
@@ -172,13 +164,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const lens = lenses.find((l) => l.id === id);
 
   if (!lens) {
-    notFound();
-  }
-
-  // Placeholder lenses have no detail page — generateStaticParams excludes
-  // them, but a direct URL access would otherwise hit the dynamic render path.
-  // Treat as 404 to keep the SEO contract clean (no soft-404 pages indexed).
-  if (lens.status === "placeholder") {
     notFound();
   }
 

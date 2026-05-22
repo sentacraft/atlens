@@ -727,12 +727,10 @@ export interface Lens {
 
   /**
    * User-facing official product links by market channel.
-   * At least one (cn or global) must be present for fully-catalogued lenses.
-   * Omitted for placeholder lenses (status === "placeholder"), which surface
-   * their announcement.source URL as the public-facing link instead.
+   * Both at least one (cn or global) must be present.
    * @example { cn: "https://www.fujifilm-x.com/zh-cn/products/lenses/xf35mmf14-r/", global: "https://www.fujifilm-x.com/en-us/products/lenses/xf35mmf14-r/" }
    */
-  officialLinks?: LensOfficialLinks;
+  officialLinks: LensOfficialLinks;
 
   /**
    * Localized translations of user-visible free-text fields.
@@ -742,43 +740,6 @@ export interface Lens {
    */
   translations?: { zh?: LensLocaleTranslations };
 
-  /**
-   * Lifecycle marker for lenses where the catalog entry is intentionally
-   * incomplete. Currently the only value is "placeholder" — a lens that has
-   * been announced (e.g. at a trade show) but whose full spec sheet is not
-   * yet available. Placeholder lenses surface in the catalog with limited
-   * data and a link to the announcement source, but are not enterable into
-   * the comparison flow and have no detail page route.
-   *
-   * Omit for normal fully-catalogued lenses (do not store any default value).
-   */
-  status?: "placeholder";
-
-  /**
-   * Source-of-announcement metadata. Required when {@link status} is
-   * "placeholder"; the LensCard placeholder variant displays {@link event}
-   * as a small chip and uses {@link source} as the card's external link
-   * target. Omit on fully-catalogued lenses.
-   */
-  announcement?: {
-    /**
-     * Event or announcement context label, used as a chip on the lens card.
-     * @example "P&E 2026"
-     */
-    event: string;
-
-    /**
-     * ISO date (YYYY-MM-DD) the lens was announced.
-     * @example "2026-05-15"
-     */
-    date: string;
-
-    /**
-     * First-party manufacturer page or trusted aggregator URL where users can
-     * read the announcement. Card click navigates here in a new tab.
-     */
-    source: string;
-  };
 }
 
 /**
