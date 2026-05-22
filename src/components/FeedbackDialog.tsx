@@ -188,7 +188,7 @@ export default function FeedbackDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         layerRef={dialogLayerRef}
-        className="max-w-md"
+        className="max-w-md top-[12vh] translate-y-0"
       >
         <DialogHeader>
           <DialogTitle>{t(titleKey)}</DialogTitle>
@@ -342,23 +342,16 @@ export default function FeedbackDialog({
                 {t("replyContactToggle")}
               </label>
               {wantsReply && (
-                <div className="flex flex-col gap-1.5">
-                  <label
-                    htmlFor={contactId}
-                    className="text-xs text-zinc-500 dark:text-zinc-400"
-                  >
-                    {t("replyContactLabel")}
-                  </label>
-                  <input
-                    id={contactId}
-                    type="text"
-                    value={replyContact}
-                    onChange={(e) => setReplyContact(e.target.value)}
-                    placeholder={t("replyContactPlaceholder")}
-                    autoFocus
-                    className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600"
-                  />
-                </div>
+                <input
+                  id={contactId}
+                  type="text"
+                  value={replyContact}
+                  onChange={(e) => setReplyContact(e.target.value)}
+                  placeholder={t("replyContactPlaceholder")}
+                  aria-label={t("replyContactLabel")}
+                  autoFocus
+                  className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600"
+                />
               )}
             </div>
 
