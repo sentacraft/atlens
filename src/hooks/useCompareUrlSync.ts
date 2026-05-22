@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useLocale } from "next-intl";
 import { useMountedCompare } from "@/context/CompareProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
-import { mountToUrlSegment } from "@/lib/mount";
+import { buildComparePath } from "@/lib/compare-url";
 
 /**
  * Projects the current compare state onto the address bar for the compare
@@ -37,9 +37,7 @@ export function useCompareUrlSync() {
   const locale = useLocale();
 
   useEffect(() => {
-    const seg = mountToUrlSegment(mount);
-    const qs = compareIds.length > 0 ? `?ids=${compareIds.join(",")}` : "";
-    const url = `/${locale}/lenses/${seg}/compare${qs}`;
+    const url = buildComparePath(mount, compareIds, locale);
 
     // No-op when the URL already matches — avoids re-emitting a router event
     // (and the associated subscriber re-renders) for an already-correct URL.
