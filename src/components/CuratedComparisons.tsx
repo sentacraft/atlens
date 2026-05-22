@@ -6,7 +6,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { buildComparePath } from "@/lib/compare-url";
 import { buildHorizontalScrollMask, useHorizontalScrollAffordance } from "@/hooks/useHorizontalScrollAffordance";
-import { useMountedCompare } from "@/context/CompareProvider";
+import { useCompare } from "@/context/CompareProvider";
 import { curatedPresets, type CuratedPreset } from "@/lib/curated-presets";
 import { getAllLenses } from "@/lib/lens";
 import { lensDisplayName } from "@/lib/lens.format";
@@ -70,7 +70,7 @@ export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSele
 }
 
 export default function CuratedComparisons() {
-  const { compareIds } = useMountedCompare();
+  const { compareIds } = useCompare();
   const t = useTranslations("Compare");
   const scrollRef = useRef<HTMLDivElement>(null);
   const { canScrollLeft, canScrollRight } = useHorizontalScrollAffordance(scrollRef);

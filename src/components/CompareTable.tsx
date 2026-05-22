@@ -21,7 +21,7 @@ import SpecialtyBadges from "@/components/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens-specialty";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 import type { FeedbackField } from "@/components/FeedbackDialog";
-import { useMountedCompare } from "@/context/CompareProvider";
+import { useCompare } from "@/context/CompareProvider";
 import { useCompareUrlSync } from "@/hooks/useCompareUrlSync";
 import { getLensesByMount, getLensUrl, MAX_COMPARE } from "@/lib/lens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -299,8 +299,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const locale = useLocale();
   const priceFieldLabel = tPricing("fieldLabel");
   const priceGroupLabel = tPricing("groupLabel");
-  const { compareIds, addToCompare, removeFromCompare, reorderCompare, seedCompare } =
-    useMountedCompare();
+  const { compareIds, dispatch, add, remove } = useCompare();
   // Compare page is the only surface that projects compare state onto the
   // URL. This hook owns that projection so individual write callsites no
   // longer need to know about address-bar bookkeeping.
@@ -324,8 +323,8 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   // preset link click that re-renders the server component with new
   // searchParams).
   useLayoutEffect(() => {
-    seedCompare(initialLensIds);
-  }, [initialLensIds, seedCompare]);
+    dispatch({ type: "seed", ids: initialLensIds });
+  }, [initialLensIds, dispatch]);
 
   const orderedLenses = compareIds
     .map((id) => getLensesByMount(mount, locale).find((lens) => lens.id === id))
@@ -334,12 +333,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   // Number of empty slot columns to render (search triggers filling up to minColumns)
   const emptySlotCount = Math.max(0, minColumns - orderedLenses.length);
 
-  const handleAddLens = useCallback(
-    (lens: Lens) => {
-      addToCompare(lens.id);
-    },
-    [addToCompare]
-  );
+  const handleAddLens = (lens: Lens) => add(lens.id);
 
   const getAddResultState = useCallback(
     (candidate: Lens) => ({
@@ -363,7 +357,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   };
 
   function handleRemoveLens(lensId: string) {
-    removeFromCompare(lensId);
+    remove(lensId);
   }
 
   function handleShiftLens(lensId: string, direction: -1 | 1) {
@@ -374,7 +368,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
     }
     const next = [...compareIds];
     [next[index], next[newIndex]] = [next[newIndex], next[index]];
-    reorderCompare(next);
+    dispatch({ type: "reorder", ids: next });
   }
 
   const allGroups = useMemo(

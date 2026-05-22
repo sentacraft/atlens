@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import LensSearchDialog from "@/components/LensSearchDialog";
 import { MAX_COMPARE } from "@/lib/lens";
-import { useMountedCompare } from "@/context/CompareProvider";
+import { useCompare } from "@/context/CompareProvider";
 import type { Lens } from "@/lib/types";
 
 interface Props {
@@ -14,16 +14,11 @@ interface Props {
 
 export default function CompareAddLensButton({ triggerClassName }: Props) {
   const t = useTranslations("Compare");
-  const { compareIds, addToCompare } = useMountedCompare();
+  const { compareIds, add } = useCompare();
 
   const canAddMore = compareIds.length < MAX_COMPARE;
 
-  const handleSelectLens = useCallback(
-    (lens: Lens) => {
-      addToCompare(lens.id);
-    },
-    [addToCompare]
-  );
+  const handleSelectLens = (lens: Lens) => add(lens.id);
 
   const getResultState = useCallback(
     (candidate: Lens) => ({
