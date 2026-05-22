@@ -435,6 +435,7 @@
     "descriptionOptional": "选填",
     "contentRequired": "请至少填写“建议改成”或“补充说明”中的一项。",
     "descriptionPlaceholder": "你可以在这里提供更多细节，这有助于我更快更准确地处理你的反馈。",
+    "descriptionPlaceholderMain": "想法、Bug、功能建议，都欢迎写在这里。",
     "replyContactToggle": "希望收到回复或进展更新？",
     "replyContactLabel": "邮箱 / 微信号",
     "replyContactPlaceholder": "邮箱地址或微信号",

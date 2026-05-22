@@ -435,6 +435,7 @@
     "descriptionOptional": "optional",
     "contentRequired": "Add either a suggested correction or a description.",
     "descriptionPlaceholder": "Describe the issue with as much detail as you'd like…",
+    "descriptionPlaceholderMain": "Thoughts, bugs, feature ideas — all welcome here.",
     "replyContactToggle": "Want a reply or progress updates?",
     "replyContactLabel": "Your email",
     "replyContactPlaceholder": "you@example.com",

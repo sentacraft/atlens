@@ -188,13 +188,15 @@ export default function FeedbackDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         layerRef={dialogLayerRef}
-        className="max-w-md top-[12vh] translate-y-0"
+        className="max-w-md"
       >
         <DialogHeader>
           <DialogTitle>{t(titleKey)}</DialogTitle>
           {status !== "success" && (
             <>
-              <DialogDescription>{t(descriptionKey)}</DialogDescription>
+              {type === "data_issue" && (
+                <DialogDescription>{t(descriptionKey)}</DialogDescription>
+              )}
               <p className="text-xs text-zinc-400 dark:text-zinc-500">
                 {t("emailLabel")}{" "}
                 <a
@@ -303,22 +305,22 @@ export default function FeedbackDialog({
               </div>
             )}
 
-            <label
-              htmlFor={textareaId}
-              className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
-            >
-              {t(showFieldPicker ? "descriptionLabel" : "descriptionLabelMain")}
-              {showFieldPicker && (
+            {showFieldPicker && (
+              <label
+                htmlFor={textareaId}
+                className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+              >
+                {t("descriptionLabel")}
                 <span className="ml-1 font-normal text-zinc-400 dark:text-zinc-500">
                   ({t("descriptionOptional")})
                 </span>
-              )}
-            </label>
+              </label>
+            )}
             <textarea
               id={textareaId}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder={t("descriptionPlaceholder")}
+              placeholder={t(showFieldPicker ? "descriptionPlaceholder" : "descriptionPlaceholderMain")}
               rows={4}
               maxLength={2000}
               className="w-full resize-none rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600"
@@ -341,18 +343,16 @@ export default function FeedbackDialog({
                 />
                 {t("replyContactToggle")}
               </label>
-              {wantsReply && (
-                <input
-                  id={contactId}
-                  type="text"
-                  value={replyContact}
-                  onChange={(e) => setReplyContact(e.target.value)}
-                  placeholder={t("replyContactPlaceholder")}
-                  aria-label={t("replyContactLabel")}
-                  autoFocus
-                  className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600"
-                />
-              )}
+              <input
+                id={contactId}
+                type="text"
+                value={replyContact}
+                onChange={(e) => setReplyContact(e.target.value)}
+                placeholder={t("replyContactPlaceholder")}
+                aria-label={t("replyContactLabel")}
+                disabled={!wantsReply}
+                className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-zinc-400 disabled:placeholder:text-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600 dark:disabled:bg-zinc-900 dark:disabled:text-zinc-600 dark:disabled:placeholder:text-zinc-700"
+              />
             </div>
 
             {showFieldPicker && submitAttempted && !hasContent && (
