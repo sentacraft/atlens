@@ -4,7 +4,7 @@ import { useMemo, useRef, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { getLensesByMount } from "@/lib/lens";
-import { useMountedCompare } from "@/context/CompareProvider";
+import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { buildHorizontalScrollMask, useHorizontalScrollAffordance } from "@/hooks/useHorizontalScrollAffordance";
@@ -28,15 +28,10 @@ export default function CompareBar() {
   const router = useRouter();
   const locale = useLocale();
   const mount = useEffectiveMount();
-  const { compareIds, toggleCompare, addToCompare } = useMountedCompare();
+  const { compareIds, add, remove } = useCompare();
   const clearCompareWithUndo = useClearCompareWithUndo();
 
-  const handleAddLens = useCallback(
-    (lens: Lens) => {
-      addToCompare(lens.id);
-    },
-    [addToCompare]
-  );
+  const handleAddLens = (lens: Lens) => add(lens.id);
 
   const getAddResultState = useCallback(
     (candidate: Lens) => ({
@@ -136,7 +131,7 @@ export default function CompareBar() {
                         </span>
                       </span>
                       <button
-                        onClick={() => toggleCompare(lens.id)}
+                        onClick={() => remove(lens.id)}
                         // Visual size stays compact so the chip itself reads as
                         // the lens identity, but the touch target expands via
                         // a transparent `::before` overlay to ~36px — well

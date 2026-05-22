@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useMountedCompare } from "@/context/CompareProvider";
+import { useCompare } from "@/context/CompareProvider";
+import { MAX_COMPARE } from "@/lib/lens";
 import { ACTION_PRIMARY_CLS } from "@/lib/ui-tokens";
 
 interface Props {
@@ -10,14 +11,14 @@ interface Props {
 
 export default function AddToCompareButton({ lensId }: Props) {
   const t = useTranslations("LensDetail");
-  const { compareIds, toggleCompare, canToggle } = useMountedCompare();
+  const { compareIds, toggle } = useCompare();
 
   const isSelected = compareIds.includes(lensId);
-  const isFull = !isSelected && !canToggle(lensId);
+  const isFull = !isSelected && compareIds.length >= MAX_COMPARE;
 
   return (
     <button
-      onClick={() => toggleCompare(lensId)}
+      onClick={() => toggle(lensId)}
       disabled={isFull}
       className={`inline-flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg transition-colors ${
         isSelected

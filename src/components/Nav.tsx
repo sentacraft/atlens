@@ -20,7 +20,7 @@ import GitHubMark from "@/components/logos/GitHubMark";
 export default function Nav() {
   const t = useTranslations("Nav");
   const pathname = usePathname();
-  const { compareState } = useCompare();
+  const { compareIds } = useCompare();
   const clearCompareWithUndo = useClearCompareWithUndo();
   const effectiveMount = useEffectiveMount();
   const { navLocked, lockNav } = useNavLock();
@@ -78,7 +78,6 @@ export default function Nav() {
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [mobileMenuOpen]);
 
-  const compareIds = compareState[effectiveMount];
   const seg = mountToUrlSegment(effectiveMount);
   const browseHref = `/lenses/${seg}`;
   const compareHref = compareIds.length > 0
