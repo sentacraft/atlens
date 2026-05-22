@@ -2,16 +2,21 @@
 
 import { useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
+import { toast } from "sonner";
+import LensSearchDialog from "@/components/LensSearchDialog";
 import { ShareButton } from "@/components/share/ShareButton";
 import ShareFAB from "@/components/ShareFAB";
-import CompareLensPicker from "@/components/CompareLensPicker";
 import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
+import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { getLensesByMount } from "@/lib/lens";
 import { findPresetByIds } from "@/lib/curated-presets";
 import type { Lens } from "@/lib/types";
 import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
+
+const ADD_LENS_BTN_BASE =
+  "h-9 whitespace-nowrap rounded-full border px-3.5 text-sm transition-colors";
 
 interface Props {
   /** Matches CompareTable minColumns — button is hidden while empty slot columns are visible. */
@@ -22,6 +27,7 @@ export default function ComparePageHeader({ minColumns = 0 }: Props) {
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
   const { compareIds } = useCompare();
+  const { onSelectLens, getResultState, canAddMore } = useCompareLensSearch();
   const clearCompareWithUndo = useClearCompareWithUndo();
   const mount = useEffectiveMount();
   const locale = useLocale();
@@ -61,7 +67,26 @@ export default function ComparePageHeader({ minColumns = 0 }: Props) {
         <h1 className="hidden sm:block text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           {t("title")}
         </h1>
-        {activeLenses.length >= minColumns && <CompareLensPicker />}
+        {activeLenses.length >= minColumns &&
+          (canAddMore ? (
+            <LensSearchDialog
+              onSelectLens={onSelectLens}
+              getResultState={getResultState}
+              triggerVariant="button"
+              triggerLabel={t("addLens")}
+              triggerClassName={`${ADD_LENS_BTN_BASE} border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900`}
+            />
+          ) : (
+            // Slot is full: skip the dialog and surface an immediate toast hint
+            // instead. The disabled-looking button keeps the layout slot stable
+            // so the row's other affordances (clear, share) don't reflow.
+            <button
+              onClick={() => toast(t("compareFullHint"))}
+              className={`${ADD_LENS_BTN_BASE} border-zinc-200 bg-white text-zinc-400 cursor-not-allowed dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-600`}
+            >
+              {t("addLens")}
+            </button>
+          ))}
         {activeLenses.length > 0 && (
           <button
             onClick={clearCompareWithUndo}

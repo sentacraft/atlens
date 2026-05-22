@@ -315,7 +315,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   // projection updated via history.replaceState (no RSC round-trip).
   //
   // useLayoutEffect so the seed lands BEFORE the browser paints. This means
-  // every context consumer (ComparePageHeader, CompareLensPicker, …) sees
+  // every context consumer (ComparePageHeader, CompareBar, …) sees
   // the correct compareIds on the first visible frame — no fallback props or
   // "hydrated" flags required.
   //

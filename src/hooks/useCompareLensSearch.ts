@@ -12,7 +12,7 @@ import type { Lens } from "@/lib/types";
  * header button, and the compare-table empty-slot column — each call site
  * only supplies its own trigger styling.
  *
- * `canAddMore` is exposed for the one call site (`CompareLensPicker`)
+ * `canAddMore` is exposed for the one call site (`ComparePageHeader`)
  * that swaps the dialog for an inline toast hint when the slot is full;
  * other call sites can ignore it since the dialog's `getResultState`
  * already disables every row when the slot is full.
