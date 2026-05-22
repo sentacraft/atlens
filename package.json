@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node --experimental-strip-types scripts/build-lens-image-manifest.mts",
     "dev": "next dev",
+    "prebuild": "node --experimental-strip-types scripts/build-lens-image-manifest.mts",
     "nuke": "pkill -f 'next dev' 2>/dev/null; pkill -f 'next-server' 2>/dev/null; rm -rf .next; echo 'Cache cleared. Run npm run dev to restart.'",
     "nukedev": "npm run nuke && next dev",
     "cf:types": "wrangler types --env-interface CloudflareEnv",
