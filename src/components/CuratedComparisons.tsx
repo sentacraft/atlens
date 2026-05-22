@@ -3,7 +3,8 @@
 import { useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useCompareUrl } from "@/hooks/useCompareUrl";
+import { useEffectiveMount } from "@/hooks/useMountParam";
+import { buildComparePath } from "@/lib/compare-url";
 import { buildHorizontalScrollMask, useHorizontalScrollAffordance } from "@/hooks/useHorizontalScrollAffordance";
 import { useMountedCompare } from "@/context/CompareProvider";
 import { curatedPresets, type CuratedPreset } from "@/lib/curated-presets";
@@ -15,7 +16,7 @@ export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSele
   const router = useRouter();
   const locale = useLocale();
   const lang = locale === "zh" ? "zh" : "en";
-  const { buildCompareUrl } = useCompareUrl();
+  const mount = useEffectiveMount();
   const tBrand = useTranslations("Brands");
   const tCompare = useTranslations("Compare");
 
@@ -24,7 +25,7 @@ export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSele
     .filter(Boolean);
 
   function handleClick() {
-    router.replace(buildCompareUrl(preset.lensIds));
+    router.replace(buildComparePath(mount, preset.lensIds));
     onSelect?.();
   }
 
