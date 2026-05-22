@@ -1,38 +1,17 @@
 "use client";
 
-import { useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import LensSearchDialog from "@/components/LensSearchDialog";
-import { MAX_COMPARE } from "@/lib/lens";
-import { useCompare } from "@/context/CompareProvider";
-import type { Lens } from "@/lib/types";
+import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
 
 interface Props {
   triggerClassName?: string;
 }
 
-export default function CompareAddLensButton({ triggerClassName }: Props) {
+export default function CompareLensPicker({ triggerClassName }: Props) {
   const t = useTranslations("Compare");
-  const { compareIds, add } = useCompare();
-
-  const canAddMore = compareIds.length < MAX_COMPARE;
-
-  const handleSelectLens = (lens: Lens) => add(lens.id);
-
-  const getResultState = useCallback(
-    (candidate: Lens) => ({
-      actionLabel: compareIds.includes(candidate.id)
-        ? t("alreadyAdded")
-        : compareIds.length >= MAX_COMPARE
-          ? t("compareFull")
-          : t("addToCompareAction"),
-      disabled:
-        compareIds.includes(candidate.id) ||
-        compareIds.length >= MAX_COMPARE,
-    }),
-    [compareIds, t]
-  );
+  const { onSelectLens, getResultState, canAddMore } = useCompareLensSearch();
 
   const btnClass =
     triggerClassName ??
@@ -51,7 +30,7 @@ export default function CompareAddLensButton({ triggerClassName }: Props) {
 
   return (
     <LensSearchDialog
-      onSelectLens={handleSelectLens}
+      onSelectLens={onSelectLens}
       getResultState={getResultState}
       triggerVariant="button"
       triggerLabel={t("addLens")}

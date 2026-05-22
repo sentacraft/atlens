@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { ShareButton } from "@/components/share/ShareButton";
 import ShareFAB from "@/components/ShareFAB";
-import CompareAddLensButton from "@/components/CompareAddLensButton";
+import CompareLensPicker from "@/components/CompareLensPicker";
 import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -61,7 +61,7 @@ export default function ComparePageHeader({ minColumns = 0 }: Props) {
         <h1 className="hidden sm:block text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           {t("title")}
         </h1>
-        {activeLenses.length >= minColumns && <CompareAddLensButton />}
+        {activeLenses.length >= minColumns && <CompareLensPicker />}
         {activeLenses.length > 0 && (
           <button
             onClick={clearCompareWithUndo}

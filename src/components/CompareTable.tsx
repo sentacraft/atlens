@@ -1,7 +1,6 @@
 "use client";
 
 import React, {
-  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -22,6 +21,7 @@ import { deriveSpecialty } from "@/lib/lens-specialty";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 import type { FeedbackField } from "@/components/FeedbackDialog";
 import { useCompare } from "@/context/CompareProvider";
+import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
 import { useCompareUrlSync } from "@/hooks/useCompareUrlSync";
 import { getLensesByMount, getLensUrl, MAX_COMPARE } from "@/lib/lens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -299,7 +299,8 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const locale = useLocale();
   const priceFieldLabel = tPricing("fieldLabel");
   const priceGroupLabel = tPricing("groupLabel");
-  const { compareIds, dispatch, add, remove } = useCompare();
+  const { compareIds, dispatch, remove } = useCompare();
+  const { onSelectLens, getResultState } = useCompareLensSearch();
   // Compare page is the only surface that projects compare state onto the
   // URL. This hook owns that projection so individual write callsites no
   // longer need to know about address-bar bookkeeping.
@@ -314,7 +315,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   // projection updated via history.replaceState (no RSC round-trip).
   //
   // useLayoutEffect so the seed lands BEFORE the browser paints. This means
-  // every context consumer (ComparePageHeader, CompareAddLensButton, …) sees
+  // every context consumer (ComparePageHeader, CompareLensPicker, …) sees
   // the correct compareIds on the first visible frame — no fallback props or
   // "hydrated" flags required.
   //
@@ -333,21 +334,6 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   // Number of empty slot columns to render (search triggers filling up to minColumns)
   const emptySlotCount = Math.max(0, minColumns - orderedLenses.length);
 
-  const handleAddLens = (lens: Lens) => add(lens.id);
-
-  const getAddResultState = useCallback(
-    (candidate: Lens) => ({
-      actionLabel: compareIds.includes(candidate.id)
-        ? t("alreadyAdded")
-        : compareIds.length >= MAX_COMPARE
-          ? t("compareFull")
-          : t("addToCompareAction"),
-      disabled:
-        compareIds.includes(candidate.id) || compareIds.length >= MAX_COMPARE,
-    }),
-    [compareIds, t]
-  );
-
   const valueCellLabels = {
     yes: td("yes"),
     no: td("no"),
@@ -355,10 +341,6 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
     unknown: td("unknown"),
     missing: td("missing"),
   };
-
-  function handleRemoveLens(lensId: string) {
-    remove(lensId);
-  }
 
   function handleShiftLens(lensId: string, direction: -1 | 1) {
     const index = compareIds.indexOf(lensId);
@@ -653,7 +635,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                 shiftRightLabel={t("shiftRight")}
                 canShiftLeft={index > 0}
                 canShiftRight={index < orderedLenses.length - 1}
-                onRemove={() => handleRemoveLens(lens.id)}
+                onRemove={() => remove(lens.id)}
                 onShiftLeft={() => handleShiftLens(lens.id, -1)}
                 onShiftRight={() => handleShiftLens(lens.id, 1)}
               />
@@ -666,8 +648,8 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                     ? i === 0 ? t("selectFirst") : t("addMore")
                     : t("addLens")
                 }
-                onSelectLens={handleAddLens}
-                getResultState={getAddResultState}
+                onSelectLens={onSelectLens}
+                getResultState={getResultState}
               />
             ))}
           </tr>
