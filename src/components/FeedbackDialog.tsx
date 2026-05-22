@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -83,6 +84,8 @@ export default function FeedbackDialog({
   const [selectedFieldLabel, setSelectedFieldLabel] = useState("");
   const [suggestedCorrection, setSuggestedCorrection] = useState("");
   const [replyContact, setReplyContact] = useState("");
+  const [wantsReply, setWantsReply] = useState(false);
+  const wantsReplyCheckboxId = useId();
   const [status, setStatus] = useState<Status>("idle");
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const dialogLayerRef = useRef<HTMLDivElement | null>(null);
@@ -118,6 +121,7 @@ export default function FeedbackDialog({
       setSelectedFieldLabel("");
       setSuggestedCorrection("");
       setReplyContact("");
+      setWantsReply(false);
       setStatus("idle");
       setSubmitAttempted(false);
     }
@@ -150,7 +154,7 @@ export default function FeedbackDialog({
         body: JSON.stringify({
           type,
           description: description.trim(),
-          ...(replyContact.trim() ? { replyContact: replyContact.trim() } : {}),
+          ...(wantsReply && replyContact.trim() ? { replyContact: replyContact.trim() } : {}),
           context: {
             ...(context ?? {}),
             ...(selectedFieldLabel ? { field: selectedFieldLabel } : {}),
@@ -319,24 +323,43 @@ export default function FeedbackDialog({
               maxLength={2000}
               className="w-full resize-none rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600"
             />
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <label
-                htmlFor={contactId}
-                className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                htmlFor={wantsReplyCheckboxId}
+                className="flex items-center gap-2 text-xs font-medium text-zinc-600 dark:text-zinc-400 cursor-pointer select-none"
               >
-                {t("replyContactLabel")}
-                <span className="ml-1 font-normal text-zinc-400 dark:text-zinc-500">
-                  ({t("descriptionOptional")})
-                </span>
+                <Checkbox
+                  id={wantsReplyCheckboxId}
+                  checked={wantsReply}
+                  onCheckedChange={(checked) => {
+                    const next = checked === true;
+                    setWantsReply(next);
+                    if (!next) {
+                      setReplyContact("");
+                    }
+                  }}
+                />
+                {t("replyContactToggle")}
               </label>
-              <input
-                id={contactId}
-                type="text"
-                value={replyContact}
-                onChange={(e) => setReplyContact(e.target.value)}
-                placeholder={t("replyContactPlaceholder")}
-                className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600"
-              />
+              {wantsReply && (
+                <div className="flex flex-col gap-1.5">
+                  <label
+                    htmlFor={contactId}
+                    className="text-xs text-zinc-500 dark:text-zinc-400"
+                  >
+                    {t("replyContactLabel")}
+                  </label>
+                  <input
+                    id={contactId}
+                    type="text"
+                    value={replyContact}
+                    onChange={(e) => setReplyContact(e.target.value)}
+                    placeholder={t("replyContactPlaceholder")}
+                    autoFocus
+                    className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600"
+                  />
+                </div>
+              )}
             </div>
 
             {showFieldPicker && submitAttempted && !hasContent && (
