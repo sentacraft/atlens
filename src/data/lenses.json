@@ -9490,7 +9490,6 @@
     "brand": "tamron",
     "mount": "X",
     "model": "11-20mm F/2.8 Di III-A RXD",
-    "generation": 3,
     "focalLengthMin": 11,
     "focalLengthMax": 20,
     "maxAperture": 2.8,
@@ -9587,7 +9586,6 @@
     "brand": "tamron",
     "mount": "X",
     "model": "17-70mm F/2.8 Di III-A VC RXD",
-    "generation": 3,
     "focalLengthMin": 17,
     "focalLengthMax": 70,
     "maxAperture": 2.8,
@@ -9683,7 +9681,6 @@
     "brand": "tamron",
     "mount": "X",
     "model": "18-300mm F/3.5-6.3 Di III-A VC VXD",
-    "generation": 3,
     "focalLengthMin": 18,
     "focalLengthMax": 300,
     "maxAperture": [
@@ -9787,7 +9784,6 @@
     "brand": "tamron",
     "mount": "X",
     "model": "150-500mm F/5-6.7 Di III VC VXD",
-    "generation": 3,
     "focalLengthMin": 150,
     "focalLengthMax": 500,
     "maxAperture": [
