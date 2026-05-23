@@ -27,9 +27,9 @@ export function ScrollContainerProvider({
   );
 
   return (
-    <ScrollContainerContext.Provider value={value}>
+    <ScrollContainerContext value={value}>
       {children}
-    </ScrollContainerContext.Provider>
+    </ScrollContainerContext>
   );
 }
 

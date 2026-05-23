@@ -30,7 +30,7 @@ function Dialog({
   const mode = responsive && !isDesktop ? "drawer" : "dialog";
 
   return (
-    <DialogModeContext.Provider value={mode}>
+    <DialogModeContext value={mode}>
       {mode === "drawer" ? (
         <DrawerPrimitive.Root open={open} onOpenChange={onOpenChange} swipeDirection="down">
           {children}
@@ -40,7 +40,7 @@ function Dialog({
           {children}
         </DialogPrimitive.Root>
       )}
-    </DialogModeContext.Provider>
+    </DialogModeContext>
   );
 }
 
