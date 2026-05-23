@@ -31,6 +31,7 @@ export function LightboxDialog({
           handleClose();
         }
       }}
+      responsive={false}
     >
       <DialogContent
         noDefaultPositioning

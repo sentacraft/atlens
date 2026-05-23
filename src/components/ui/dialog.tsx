@@ -2,25 +2,45 @@
 
 import * as React from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
+import { Drawer as DrawerPrimitive } from "@base-ui/react/drawer";
 import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { FROSTED_OVERLAY_CHROME_CLS, ICON_CLOSE_BTN_CLS } from "@/lib/ui-tokens";
 import { Z } from "@/config/ui";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
+
+const DialogModeContext = React.createContext<"dialog" | "drawer">("dialog");
+function useDialogMode() {
+  return React.useContext(DialogModeContext);
+}
 
 function Dialog({
   open,
   onOpenChange,
   children,
+  responsive = true,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
+  responsive?: boolean;
 }) {
+  const isDesktop = useBreakpoint("sm");
+  const mode = responsive && !isDesktop ? "drawer" : "dialog";
+
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
-      {children}
-    </DialogPrimitive.Root>
+    <DialogModeContext.Provider value={mode}>
+      {mode === "drawer" ? (
+        <DrawerPrimitive.Root open={open} onOpenChange={onOpenChange} swipeDirection="down">
+          {children}
+        </DrawerPrimitive.Root>
+      ) : (
+        <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
+          {children}
+        </DialogPrimitive.Root>
+      )}
+    </DialogModeContext.Provider>
   );
 }
 
@@ -89,10 +109,45 @@ const DialogContent = React.forwardRef<
     showCloseButton = true,
     showOverlayCloseButton = false,
     noDefaultPositioning = false,
+    render: _render,
     ...props
   },
   ref
 ) {
+  const mode = useDialogMode();
+
+  if (mode === "drawer") {
+    return (
+      <DrawerPrimitive.Portal>
+        <DrawerPrimitive.Backdrop
+          data-slot="dialog-backdrop"
+          className={cn(
+            `fixed inset-0 ${Z.dialog} bg-zinc-950/55 backdrop-blur-sm transition-colors duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0`,
+            backdropClassName
+          )}
+        />
+        <DrawerPrimitive.Viewport>
+          <DrawerPrimitive.Popup
+            ref={ref}
+            data-slot="dialog-content"
+            className={cn(
+              `fixed inset-x-0 bottom-0 ${Z.dialog} flex max-h-[85svh] flex-col border border-b-0 border-zinc-200 bg-white p-0 pb-[var(--safe-inset-bottom)] shadow-2xl duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:border-zinc-800 dark:bg-zinc-950`,
+              "transition-[transform,opacity] data-[nested-drawer-open]:scale-[0.94] data-[nested-drawer-open]:opacity-40",
+              className,
+              "rounded-t-2xl rounded-b-none"
+            )}
+            {...(props as Omit<typeof props, "style">)}
+          >
+            <div className="flex shrink-0 touch-none justify-center pb-1 pt-3">
+              <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+            </div>
+            {children}
+          </DrawerPrimitive.Popup>
+        </DrawerPrimitive.Viewport>
+      </DrawerPrimitive.Portal>
+    );
+  }
+
   return (
     <DialogPortal>
       <div ref={layerRef} className={cn("fixed inset-0", Z.dialog)}>
