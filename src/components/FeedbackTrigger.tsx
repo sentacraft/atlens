@@ -15,6 +15,7 @@ interface FeedbackTriggerProps {
   className?: string;
   children: ReactNode;
   stopPropagation?: boolean;
+  onBeforeOpen?: () => void;
 }
 
 export default function FeedbackTrigger({
@@ -24,6 +25,7 @@ export default function FeedbackTrigger({
   className,
   children,
   stopPropagation = false,
+  onBeforeOpen,
 }: FeedbackTriggerProps) {
   const [open, setOpen] = useState(false);
 
@@ -35,6 +37,7 @@ export default function FeedbackTrigger({
           if (stopPropagation) {
             e.stopPropagation();
           }
+          onBeforeOpen?.();
           track("feedback_open", { feedback_type: type });
           setOpen(true);
         }}
