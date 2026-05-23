@@ -23,11 +23,13 @@ import { lensSubtitleLine } from "@/lib/lens.format";
 import { useSearchTelemetry } from "./LensSearchDialog.telemetry";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/lib/ui-tokens";
 import FeedbackTrigger from "./FeedbackTrigger";
 
 interface LensSearchResultState {
@@ -186,17 +188,17 @@ export default function LensSearchDialog({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
           className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-2xl shadow-zinc-950/20 dark:border-zinc-800 dark:bg-zinc-950"
-          showCloseButton
+          showCloseButton={false}
         >
-          <DialogHeader className="border-b border-zinc-100 dark:border-zinc-800">
-            <div className="pr-12">
-              <DialogTitle>{t("title")}</DialogTitle>
-              {/* Description is kept for screen readers (radix dialog
-                  recommends an aria-describedby target) but visually
-                  hidden — the placeholder + empty state already cover
-                  what the input expects, and a third copy in the header
-                  was just visual noise. */}
-              <DialogDescription className="sr-only">{t("description")}</DialogDescription>
+          <DialogHeader className="border-b border-zinc-100 pr-5 dark:border-zinc-800">
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle>{t("title")}</DialogTitle>
+                <DialogDescription className="sr-only">{t("description")}</DialogDescription>
+              </div>
+              <DialogClose className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "h-9 w-9")}>
+                <X className="h-4 w-4" />
+              </DialogClose>
             </div>
 
             <div className="mt-3 flex items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 shadow-inner shadow-zinc-200/30 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/20">
