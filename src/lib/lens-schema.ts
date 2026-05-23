@@ -533,7 +533,9 @@ export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) =
 // Compile-time assertion: Lens interface and lensSchema's inferred type must stay
 // bidirectionally compatible. A type error here means the two have drifted —
 // update whichever definition is stale.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time type assertion
 type _AssertExtends<T, U extends T> = true;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time type assertion
 type _LensSchemaCheck = [
   _AssertExtends<Lens, z.infer<typeof lensSchema>>,
   _AssertExtends<z.infer<typeof lensSchema>, Lens>,

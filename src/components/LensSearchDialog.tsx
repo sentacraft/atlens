@@ -67,8 +67,6 @@ export default function LensSearchDialog({
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputId = useId();
-  const titleId = useId();
-  const descriptionId = useId();
   const resultsId = useId();
   const deferredQuery = useDeferredValue(query);
 
@@ -105,7 +103,7 @@ export default function LensSearchDialog({
 
   const results = useMemo(
     () => searchLensIndex(lensSearchIndex, deferredQuery),
-    [deferredQuery]
+    [lensSearchIndex, deferredQuery]
   );
 
   useSearchTelemetry({ query: deferredQuery, resultsCount: results.length, isOpen: open });

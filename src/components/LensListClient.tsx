@@ -21,7 +21,6 @@ import { OPTICAL_TRAITS, type OpticalTrait } from "@/lib/types";
 import { serializeFilters, parseFilters } from "@/lib/filter-params";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
-import { Z } from "@/config/ui";
 import { ArrowDownNarrowWide, ArrowUpNarrowWide } from "lucide-react";
 import BackToTopButton from "@/components/BackToTopButton";
 import { Button } from "@/components/ui/button";

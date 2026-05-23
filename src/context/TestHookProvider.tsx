@@ -49,6 +49,7 @@ export function TestHookProvider({ children }: { children: ReactNode }) {
     }
     const query = clean.toString();
     router.replace(`${pathname}${query ? `?${query}` : ""}`, { scroll: false });
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- cold-start init: strip testhook params once
   }, []);
 
   // Sync state → CSS injection

@@ -188,7 +188,7 @@ export default function Iris({
       stopChase();
     };
    
-  // thetaOpen/thetaMax read at mount time, stable for the component's lifetime.
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only: reads stable refs
   }, []);
 
   // ── Imperative controls (used by ApertureStrip) ───────────────────────────

@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeAll, afterEach } from "vitest";
 
 // Must set env before importing the route module.
+const env = process.env as Record<string, string | undefined>;
 beforeAll(() => {
-  process.env.GITHUB_TOKEN = "test-token";
-  process.env.GITHUB_FEEDBACK_REPO = "test/repo";
+  env.GITHUB_TOKEN = "test-token";
+  env.GITHUB_FEEDBACK_REPO = "test/repo";
 });
 
 // Mock global fetch so the route never hits GitHub.
@@ -183,18 +184,20 @@ describe("POST /api/feedback — assignees", () => {
   });
 
   it("includes configured feedback assignees in the GitHub issue payload", async () => {
-    process.env.GITHUB_FEEDBACK_ASSIGNEES = "ericzeyuzhang, sentacraft";
+    const env = process.env as Record<string, string | undefined>;
+    env.GITHUB_FEEDBACK_ASSIGNEES = "alice, bob";
 
     await POST(makeRequest({ type: "general", description: "Great app!" }));
 
     const body = JSON.parse(mockFetch.mock.calls[0][1].body as string) as { assignees: string[] };
-    expect(body.assignees).toEqual(["ericzeyuzhang", "sentacraft"]);
+    expect(body.assignees).toEqual(["alice", "bob"]);
 
-    delete process.env.GITHUB_FEEDBACK_ASSIGNEES;
+    delete env.GITHUB_FEEDBACK_ASSIGNEES;
   });
 
   it("omits assignees when no feedback assignee is configured", async () => {
-    delete process.env.GITHUB_FEEDBACK_ASSIGNEES;
+    const env = process.env as Record<string, string | undefined>;
+    delete env.GITHUB_FEEDBACK_ASSIGNEES;
 
     await POST(makeRequest({ type: "general", description: "Great app!" }));
 

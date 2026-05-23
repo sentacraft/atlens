@@ -32,12 +32,16 @@ export function compareReducer(
   switch (action.type) {
     case "add": {
       const slot = state[action.mount];
-      if (slot.includes(action.id) || slot.length >= MAX_COMPARE) return state;
+      if (slot.includes(action.id) || slot.length >= MAX_COMPARE) {
+        return state;
+      }
       return { ...state, [action.mount]: [...slot, action.id] };
     }
     case "remove": {
       const slot = state[action.mount];
-      if (!slot.includes(action.id)) return state;
+      if (!slot.includes(action.id)) {
+        return state;
+      }
       return { ...state, [action.mount]: slot.filter((x) => x !== action.id) };
     }
     case "reorder": {

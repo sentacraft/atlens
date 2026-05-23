@@ -10,7 +10,6 @@ import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { buildSpecGroups, resolveSpecGroups } from "@/lib/lens-spec-groups";
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens-spec-groups";
 import { ExternalLink } from "@/components/ui/external-link";
-import { Link } from "@/i18n/navigation";
 import LensDetailCompareToggle from "@/components/LensDetailCompareToggle";
 import BackToTopButton from "@/components/BackToTopButton";
 import LensDetailTelemetry from "@/components/telemetry/LensDetailTelemetry";
