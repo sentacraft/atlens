@@ -30,7 +30,11 @@ export function CompareProvider({ children }: { children: React.ReactNode }) {
   // dispatch from useReducer is reference-stable by contract; only state
   // identity drives value changes here.
   const value = useMemo(() => ({ state, dispatch }), [state]);
-  return <CompareContext value={value}>{children}</CompareContext>;
+  return (
+    <CompareContext value={value}>
+      {children}
+    </CompareContext>
+  );
 }
 
 /**

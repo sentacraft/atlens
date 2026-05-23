@@ -18,9 +18,9 @@ export function MountPreferenceProvider({ children }: { children: React.ReactNod
   );
 
   return (
-    <MountPreferenceContext.Provider value={value}>
+    <MountPreferenceContext value={value}>
       {children}
-    </MountPreferenceContext.Provider>
+    </MountPreferenceContext>
   );
 }
 
