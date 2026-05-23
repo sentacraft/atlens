@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 const WINDOW = "INTERVAL '30' DAY";
-const EXCLUDE_INTERNAL = "AND blob6 != '1'";
+const DASHBOARD_FILTER = `timestamp > NOW() - ${WINDOW} AND blob6 != '1'`;
 
 const Q_OVERVIEW = `
   SELECT
@@ -27,7 +27,7 @@ const Q_OVERVIEW = `
     uniqIf(blob4, index1 = 'search') AS unique_queries,
     uniqIf(blob4, index1 = 'lens_view') AS unique_lenses_viewed
   FROM xglass_events
-  WHERE timestamp > NOW() - ${WINDOW} ${EXCLUDE_INTERNAL}
+  WHERE ${DASHBOARD_FILTER}
 `;
 
 const Q_LOCALE_SPLIT = `
@@ -36,7 +36,7 @@ const Q_LOCALE_SPLIT = `
     SUM(_sample_interval) AS events,
     uniq(blob1) AS sessions
   FROM xglass_events
-  WHERE timestamp > NOW() - ${WINDOW} AND blob2 != '' ${EXCLUDE_INTERNAL}
+  WHERE ${DASHBOARD_FILTER} AND blob2 != ''
   GROUP BY locale
   ORDER BY events DESC
 `;
@@ -45,7 +45,7 @@ const Q_REFERRER = `
   SELECT blob5 AS referrer, SUM(_sample_interval) AS n
   FROM xglass_events
   WHERE index1 = 'lens_view' AND blob5 != ''
-    AND timestamp > NOW() - ${WINDOW} ${EXCLUDE_INTERNAL}
+    AND ${DASHBOARD_FILTER}
   GROUP BY referrer
   ORDER BY n DESC
   LIMIT 15
@@ -55,7 +55,7 @@ const Q_SEARCH_ZERO = `
   SELECT blob4 AS query, SUM(_sample_interval) AS n
   FROM xglass_events
   WHERE index1 = 'search' AND double1 = 0
-    AND timestamp > NOW() - ${WINDOW} ${EXCLUDE_INTERNAL}
+    AND ${DASHBOARD_FILTER}
   GROUP BY query
   ORDER BY n DESC
   LIMIT 20
@@ -65,7 +65,7 @@ const Q_SEARCH_ALL = `
   SELECT blob4 AS query, SUM(_sample_interval) AS n
   FROM xglass_events
   WHERE index1 = 'search'
-    AND timestamp > NOW() - ${WINDOW} ${EXCLUDE_INTERNAL}
+    AND ${DASHBOARD_FILTER}
   GROUP BY query
   ORDER BY n DESC
   LIMIT 20
@@ -75,7 +75,7 @@ const Q_FILTER_USAGE = `
   SELECT blob4 AS filters, SUM(_sample_interval) AS n
   FROM xglass_events
   WHERE index1 = 'filter_apply'
-    AND timestamp > NOW() - ${WINDOW} ${EXCLUDE_INTERNAL}
+    AND ${DASHBOARD_FILTER}
   GROUP BY filters
   ORDER BY n DESC
   LIMIT 10
@@ -91,14 +91,14 @@ const Q_COMPARE_FUNNEL = `
     uniqIf(blob1, index1 = 'compare_scroll') AS sids_scroll
   FROM xglass_events
   WHERE index1 IN ('compare_add', 'compare_view', 'compare_scroll')
-    AND timestamp > NOW() - ${WINDOW} ${EXCLUDE_INTERNAL}
+    AND ${DASHBOARD_FILTER}
 `;
 
 const Q_COMPARE_COMBOS = `
   SELECT blob5 AS slugs, SUM(_sample_interval) AS n
   FROM xglass_events
   WHERE index1 = 'compare_view' AND blob5 != ''
-    AND timestamp > NOW() - ${WINDOW} ${EXCLUDE_INTERNAL}
+    AND ${DASHBOARD_FILTER}
   GROUP BY slugs
   ORDER BY n DESC
   LIMIT 20
@@ -108,7 +108,7 @@ const Q_LENS_VIEW_TOP = `
   SELECT blob4 AS lens_slug, SUM(_sample_interval) AS n
   FROM xglass_events
   WHERE index1 = 'lens_view'
-    AND timestamp > NOW() - ${WINDOW} ${EXCLUDE_INTERNAL}
+    AND ${DASHBOARD_FILTER}
   GROUP BY lens_slug
   ORDER BY n DESC
   LIMIT 20
@@ -121,7 +121,7 @@ const Q_FEEDBACK = `
     sumIf(_sample_interval, index1 = 'feedback_submit') AS submits
   FROM xglass_events
   WHERE index1 IN ('feedback_open', 'feedback_submit')
-    AND timestamp > NOW() - ${WINDOW} ${EXCLUDE_INTERNAL}
+    AND ${DASHBOARD_FILTER}
   GROUP BY feedback_type
 `;
 
@@ -129,7 +129,7 @@ const Q_SHARE = `
   SELECT blob5 AS method, SUM(_sample_interval) AS n
   FROM xglass_events
   WHERE index1 = 'share_action'
-    AND timestamp > NOW() - ${WINDOW} ${EXCLUDE_INTERNAL}
+    AND ${DASHBOARD_FILTER}
   GROUP BY method
   ORDER BY n DESC
 `;
@@ -138,7 +138,7 @@ const Q_INSTALL = `
   SELECT SUM(_sample_interval) AS n
   FROM xglass_events
   WHERE index1 = 'install_action'
-    AND timestamp > NOW() - ${WINDOW} ${EXCLUDE_INTERNAL}
+    AND ${DASHBOARD_FILTER}
 `;
 
 const Q_MOUNT_SWITCH = `
@@ -148,7 +148,7 @@ const Q_MOUNT_SWITCH = `
     SUM(_sample_interval) AS n
   FROM xglass_events
   WHERE index1 = 'mount_switch'
-    AND timestamp > NOW() - ${WINDOW} ${EXCLUDE_INTERNAL}
+    AND ${DASHBOARD_FILTER}
   GROUP BY from_mount, to_mount
   ORDER BY n DESC
 `;
@@ -157,7 +157,7 @@ const Q_OUTBOUND = `
   SELECT blob4 AS href, SUM(_sample_interval) AS n
   FROM xglass_events
   WHERE index1 = 'outbound_click'
-    AND timestamp > NOW() - ${WINDOW} ${EXCLUDE_INTERNAL}
+    AND ${DASHBOARD_FILTER}
   GROUP BY href
   ORDER BY n DESC
   LIMIT 20
@@ -170,7 +170,7 @@ const Q_OUTBOUND_BY_SOURCE = `
     SUM(_sample_interval) AS n
   FROM xglass_events
   WHERE index1 = 'outbound_click'
-    AND timestamp > NOW() - ${WINDOW} ${EXCLUDE_INTERNAL}
+    AND ${DASHBOARD_FILTER}
   GROUP BY source_path, href
   ORDER BY n DESC
   LIMIT 30
@@ -183,7 +183,7 @@ const Q_SHARE_BY_SOURCE = `
     SUM(_sample_interval) AS n
   FROM xglass_events
   WHERE index1 = 'share_action'
-    AND timestamp > NOW() - ${WINDOW} ${EXCLUDE_INTERNAL}
+    AND ${DASHBOARD_FILTER}
   GROUP BY source_path, method
   ORDER BY n DESC
   LIMIT 30
