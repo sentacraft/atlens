@@ -242,16 +242,7 @@ export default function LensSearchDialog({
             ref={scrollContainerRef}
             className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
           >
-            {query.trim().length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-zinc-200 px-5 py-10 text-center dark:border-zinc-800">
-                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
-                  {t("emptyTitle")}
-                </p>
-                <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-                  {t("emptyDescription")}
-                </p>
-              </div>
-            ) : results.length === 0 ? (
+            {query.trim().length === 0 ? null : results.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-zinc-200 px-5 py-10 text-center dark:border-zinc-800">
                 <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
                   {t("noResults")}
