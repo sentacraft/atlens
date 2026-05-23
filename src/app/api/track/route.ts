@@ -67,6 +67,19 @@ function parseSid(cookieHeader: string | null): string | null {
   return null;
 }
 
+function parseInternal(cookieHeader: string | null): boolean {
+  if (!cookieHeader) {
+    return false;
+  }
+  for (const part of cookieHeader.split(";")) {
+    const [k, v] = part.trim().split("=");
+    if (k === "xg_internal" && v === "1") {
+      return true;
+    }
+  }
+  return false;
+}
+
 function sanitizeProps(raw: unknown): EventProps {
   if (!raw || typeof raw !== "object") {
     return {};
@@ -107,13 +120,15 @@ export async function POST(req: Request): Promise<NextResponse> {
   const locale = (parsed.locale ?? "").slice(0, 8);
   const props = sanitizeProps(parsed.props);
 
-  const sid = parseSid(req.headers.get("cookie")) ?? crypto.randomUUID();
+  const cookieHeader = req.headers.get("cookie");
+  const sid = parseSid(cookieHeader) ?? crypto.randomUUID();
+  const internal = parseInternal(cookieHeader);
 
   try {
     const { env } = getCloudflareContext();
     const ae = (env as CloudflareEnv).ANALYTICS;
     if (ae) {
-      ae.writeDataPoint(toDataPoint(event, sid, locale, props));
+      ae.writeDataPoint(toDataPoint(event, sid, locale, props, internal));
     }
   } catch {
     // Binding may be unavailable (e.g. `next dev` without initOpenNext bound).
