@@ -197,7 +197,7 @@ export default function Nav() {
           <div ref={menuRef} className="relative">
             <button
               onClick={() => setMobileMenuOpen((v) => !v)}
-              className="p-2 -mr-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+              className="pl-1 pr-2 py-2 -mr-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
               aria-label="Menu"
               aria-expanded={mobileMenuOpen}
             >
