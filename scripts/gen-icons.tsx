@@ -5,14 +5,46 @@
 
 import { renderToStaticMarkup } from "react-dom/server";
 import { createElement } from "react";
-import { writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { writeFileSync, readFileSync, mkdirSync, existsSync } from "node:fs";
 import { resolve, join, dirname } from "node:path";
+import { createHash } from "node:crypto";
 import { Resvg, type ResvgRenderOptions } from "@resvg/resvg-js";
 
 import Iris from "../src/components/Iris.tsx";
 import { IRIS_NAV, R_HOUSING, type IrisConfig } from "../src/config/iris-config.ts";
 import { SPLASH_DEVICES, SPLASH_BG, splashUrl, type SplashScheme } from "../src/config/splash.ts";
 import { buildDerivedConfig } from "../src/lib/iris-kinematics.ts";
+
+// ── Input-hash cache ─────────────────────────────────────────────────────────
+//
+// Hash every source file that can change icon output. If the combined hash
+// matches the stored value, skip the entire generation pass.
+
+const INPUT_FILES = [
+  resolve("scripts/gen-icons.tsx"),
+  resolve("src/components/Iris.tsx"),
+  resolve("src/config/iris-config.ts"),
+  resolve("src/config/splash.ts"),
+  resolve("src/lib/iris-kinematics.ts"),
+];
+
+const HASH_PATH = resolve(".gen-icons-hash");
+
+function computeInputHash(): string {
+  const h = createHash("sha256");
+  for (const f of INPUT_FILES) {
+    h.update(readFileSync(f));
+  }
+  return h.digest("hex");
+}
+
+const inputHash = computeInputHash();
+const storedHash = existsSync(HASH_PATH) ? readFileSync(HASH_PATH, "utf-8").trim() : "";
+
+if (inputHash === storedHash) {
+  console.log("✓ Icon inputs unchanged — skipping generation.");
+  process.exit(0);
+}
 
 // ── Font resolution ───────────────────────────────────────────────────────────
 //
@@ -316,4 +348,5 @@ for (const device of SPLASH_DEVICES) {
   }
 }
 
+writeFileSync(HASH_PATH, inputHash + "\n");
 console.log("\nDone.");
