@@ -8,7 +8,6 @@ import type { IrisConfig } from "@/config/iris-config";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -95,14 +94,17 @@ export default function FeedbackDialog({
 
   const showFieldPicker = type === "data_issue" && fields && fields.length > 0;
 
-  const selectedField = fields?.find((f) => f.label === selectedFieldLabel);
+  const otherField: FeedbackField = { label: t("fieldOther") };
+  const allFields = showFieldPicker ? [...fields, otherField] : [];
+
+  const selectedField = allFields.find((f) => f.label === selectedFieldLabel);
 
   // Group fields by their `group` property, preserving insertion order.
   const groupedFields = showFieldPicker
     ? (() => {
         const groups: { label: string; fields: FeedbackField[] }[] = [];
         const index = new Map<string, number>();
-        for (const f of fields) {
+        for (const f of allFields) {
           const key = f.group ?? "";
           if (!index.has(key)) {
             index.set(key, groups.length);
@@ -128,7 +130,6 @@ export default function FeedbackDialog({
   }, [open]);
 
   const titleKey = type === "data_issue" ? "titleDataIssue" : "titleGeneral";
-  const descriptionKey = type === "data_issue" ? "descriptionDataIssue" : "descriptionGeneral";
 
   const lensHeader =
     type === "data_issue" && context?.lensModel
@@ -193,20 +194,15 @@ export default function FeedbackDialog({
         <DialogHeader>
           <DialogTitle>{t(titleKey)}</DialogTitle>
           {status !== "success" && (
-            <>
-              {type === "data_issue" && (
-                <DialogDescription>{t(descriptionKey)}</DialogDescription>
-              )}
-              <p className="text-xs text-zinc-400 dark:text-zinc-500">
-                {t("emailLabel")}{" "}
-                <a
-                  href="mailto:xglass@sentacraft.com"
-                  className="underline underline-offset-2 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-                >
-                  xglass@sentacraft.com
-                </a>
-              </p>
-            </>
+            <p className="text-xs text-zinc-400 dark:text-zinc-500">
+              {t("emailLabel")}{" "}
+              <a
+                href="mailto:xglass@sentacraft.com"
+                className="underline underline-offset-2 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+              >
+                xglass@sentacraft.com
+              </a>
+            </p>
           )}
         </DialogHeader>
 
@@ -252,7 +248,7 @@ export default function FeedbackDialog({
                     setSelectedFieldLabel(v ?? "");
                     setSuggestedCorrection("");
                   }}
-                  items={fields.map((f) => ({ value: f.label, label: f.label }))}
+                  items={allFields.map((f) => ({ value: f.label, label: f.label }))}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={t("fieldPickerPlaceholder")} />
@@ -271,7 +267,7 @@ export default function FeedbackDialog({
                   </SelectContent>
                 </Select>
 
-                {selectedField && (
+                {selectedField && selectedField !== otherField && (
                   <div className="flex flex-col gap-2 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-3 py-2.5">
                     {selectedField.currentValue && !selectedField.hideCurrentValue && (
                       <div className="flex items-baseline gap-2">
