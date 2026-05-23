@@ -185,12 +185,12 @@ describe("POST /api/feedback — assignees", () => {
 
   it("includes configured feedback assignees in the GitHub issue payload", async () => {
     const env = process.env as Record<string, string | undefined>;
-    env.GITHUB_FEEDBACK_ASSIGNEES = "ericzeyuzhang, sentacraft";
+    env.GITHUB_FEEDBACK_ASSIGNEES = "alice, bob";
 
     await POST(makeRequest({ type: "general", description: "Great app!" }));
 
     const body = JSON.parse(mockFetch.mock.calls[0][1].body as string) as { assignees: string[] };
-    expect(body.assignees).toEqual(["ericzeyuzhang", "sentacraft"]);
+    expect(body.assignees).toEqual(["alice", "bob"]);
 
     delete env.GITHUB_FEEDBACK_ASSIGNEES;
   });
