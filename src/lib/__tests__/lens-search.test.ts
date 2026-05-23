@@ -37,7 +37,6 @@ const lenses = [
     focalLengthMax: 23,
     maxAperture: 2,
     minAperture: 16,
-    generation: 2,
   },
   {
     id: "fuji-xf40-28",
