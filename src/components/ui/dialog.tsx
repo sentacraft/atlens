@@ -109,7 +109,7 @@ const DialogContent = React.forwardRef<
     showCloseButton = true,
     showOverlayCloseButton = false,
     noDefaultPositioning = false,
-    render: _render,
+    render: _render, // eslint-disable-line @typescript-eslint/no-unused-vars -- strip before DOM spread
     ...props
   },
   ref

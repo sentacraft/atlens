@@ -75,7 +75,7 @@ export function useCompare() {
   // usage (onClick), don't put these in useEffect deps.
   const add = useCallback(
     (id: string) => {
-      if (compareIds.includes(id) || compareIds.length >= MAX_COMPARE) return;
+      if (compareIds.includes(id) || compareIds.length >= MAX_COMPARE) {return;}
       dispatch({ type: "add", id });
       track("compare_add", { lens_slug: id });
     },

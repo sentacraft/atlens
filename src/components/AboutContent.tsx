@@ -5,8 +5,6 @@ import FeedbackTrigger from "@/components/FeedbackTrigger";
 import AnthropicLogo from "@/components/logos/AnthropicLogo";
 import GeminiLogo from "@/components/logos/GeminiLogo";
 import GitHubMark from "@/components/logos/GitHubMark";
-import { Link } from "@/i18n/navigation";
-import { cn } from "@/lib/utils";
 import { getLensesByMount } from "@/lib/lens";
 import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/AckCard";
@@ -36,10 +34,10 @@ function NotApplicable() {
 }
 
 function StateCell({ state }: { state: CoverageState }) {
-  if (state === true) return <Check />;
-  if (state === "partial") return <Partial />;
-  if (state === "planned") return <Pending />;
-  if (state === "n/a") return <NotApplicable />;
+  if (state === true) {return <Check />;}
+  if (state === "partial") {return <Partial />;}
+  if (state === "planned") {return <Pending />;}
+  if (state === "n/a") {return <NotApplicable />;}
   return <Dash />;
 }
 
@@ -446,7 +444,6 @@ export default async function AboutContent() {
                 glowColor={glowColor}
                 body={body}
                 isClaudeCard={i === 0}
-                locale={locale}
               />
             );
           })}

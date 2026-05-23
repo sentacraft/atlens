@@ -7,8 +7,6 @@ import {
   bladeShapePath,
   buildDerivedConfig,
   computeThetaOpen,
-  computeBladeCurvature,
-  tNormToTheta,
   DEFAULT_IRIS_CONFIG,
   apertureInradius,
   findThetaForInradius,
@@ -27,7 +25,6 @@ const VIEWBOX = "-150 -150 300 300";
 // ── F-stop ring constants ─────────────────────────────────────────────────────
 // Ring sits just inside the housing cover plate: inner radius = R_HOUSING − bladeWidth.
 // Ring radius is computed dynamically from bladeWidth in IrisStage.
-const FSTOP_RING_GAP = 4;                                    // inset from inner housing edge (SVG units)
 
 // Sequence: "A" (Auto) replaces f/1 and is drawn in red.
 // Arc spans 125° total across 9 equal steps (10 values → 9 gaps → 125/9 ≈ 13.9° per step).
@@ -640,14 +637,6 @@ export default function ApertureV2Lab() {
     () => findThetaForFStop(defaultFStop, derivedConfig, range, openFStop),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [defaultFStop, openFStop, range.min, range.max, derivedConfig.N, derivedConfig.pivotRadius,
-     derivedConfig.pinDistance, derivedConfig.slotOffset, derivedConfig.bladeLength,
-     derivedConfig.bladeWidth, derivedConfig.bladeCurvature]
-  );
-  // Theta corresponding to the far-closed end of the follow-mouse range (f/22).
-  const thetaF22 = useMemo(
-    () => findThetaForFStop(22, derivedConfig, range, openFStop),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [openFStop, range.min, range.max, derivedConfig.N, derivedConfig.pivotRadius,
      derivedConfig.pinDistance, derivedConfig.slotOffset, derivedConfig.bladeLength,
      derivedConfig.bladeWidth, derivedConfig.bladeCurvature]
   );

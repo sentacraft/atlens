@@ -183,18 +183,20 @@ describe("POST /api/feedback — assignees", () => {
   });
 
   it("includes configured feedback assignees in the GitHub issue payload", async () => {
-    process.env.GITHUB_FEEDBACK_ASSIGNEES = "ericzeyuzhang, sentacraft";
+    const env = process.env as Record<string, string | undefined>;
+    env.GITHUB_FEEDBACK_ASSIGNEES = "ericzeyuzhang, sentacraft";
 
     await POST(makeRequest({ type: "general", description: "Great app!" }));
 
     const body = JSON.parse(mockFetch.mock.calls[0][1].body as string) as { assignees: string[] };
     expect(body.assignees).toEqual(["ericzeyuzhang", "sentacraft"]);
 
-    delete process.env.GITHUB_FEEDBACK_ASSIGNEES;
+    delete env.GITHUB_FEEDBACK_ASSIGNEES;
   });
 
   it("omits assignees when no feedback assignee is configured", async () => {
-    delete process.env.GITHUB_FEEDBACK_ASSIGNEES;
+    const env = process.env as Record<string, string | undefined>;
+    delete env.GITHUB_FEEDBACK_ASSIGNEES;
 
     await POST(makeRequest({ type: "general", description: "Great app!" }));
 

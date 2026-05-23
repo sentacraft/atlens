@@ -525,11 +525,11 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                 {(() => {
                   const { isCine, opticalTraits } = deriveSpecialty(lens);
                   const tags: string[] = [];
-                  if (isCine) tags.push(specialtyTagLabels.cine);
+                  if (isCine) {tags.push(specialtyTagLabels.cine);}
                   for (const trait of opticalTraits) {
                     tags.push(specialtyTagLabels[trait]);
                   }
-                  if (tags.length === 0) return null;
+                  if (tags.length === 0) {return null;}
                   return (
                     <div
                       style={{

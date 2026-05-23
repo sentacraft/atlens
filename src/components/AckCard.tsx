@@ -11,7 +11,6 @@ interface AckCardProps {
   glowColor: string;
   body: string;
   isClaudeCard?: boolean;
-  locale?: string;
 }
 
 export default function AckCard({
@@ -22,7 +21,6 @@ export default function AckCard({
   glowColor,
   body,
   isClaudeCard,
-  locale,
 }: AckCardProps) {
   const [open, setOpen] = useState(false);
   const paragraphs = body.split("\n\n");

@@ -211,7 +211,6 @@ function LinksRow({
   orderedLenses,
   emptySlotCount,
   lensFields,
-  locale,
   url: getUrl,
   officialSiteLabel,
   reportIssueLabel,
@@ -221,7 +220,6 @@ function LinksRow({
   orderedLenses: Lens[];
   emptySlotCount: number;
   lensFields: Map<string, import("@/components/FeedbackDialog").FeedbackField[]>;
-  locale: string;
   url: (lens: Lens) => string | null | undefined;
   officialSiteLabel: string;
   reportIssueLabel: string;
@@ -334,13 +332,13 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   // Number of empty slot columns to render (search triggers filling up to minColumns)
   const emptySlotCount = Math.max(0, minColumns - orderedLenses.length);
 
-  const valueCellLabels = {
+  const valueCellLabels = useMemo(() => ({
     yes: td("yes"),
     no: td("no"),
     partial: td("partial"),
     unknown: td("unknown"),
     missing: td("missing"),
-  };
+  }), [td]);
 
   function handleShiftLens(lensId: string, direction: -1 | 1) {
     const index = compareIds.indexOf(lensId);
@@ -479,7 +477,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
       map.set(lens.id, fields);
     }
     return map;
-  }, [resolvedPerLens, allGroups, orderedLenses, td, tPricing, priceFieldLabel, priceGroupLabel]);
+  }, [resolvedPerLens, allGroups, orderedLenses, td, tPricing, priceFieldLabel, priceGroupLabel, locale]);
 
   const totalColSpan = orderedLenses.length + 1 + emptySlotCount;
   const { lockNav } = useNavLock();
@@ -983,7 +981,6 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
             orderedLenses={orderedLenses}
             emptySlotCount={emptySlotCount}
             lensFields={lensFields}
-            locale={locale}
             url={(lens) => getLensUrl(lens, locale)}
             officialSiteLabel={t("officialSite")}
             reportIssueLabel={t("reportIssue")}
