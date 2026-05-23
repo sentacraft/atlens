@@ -95,7 +95,7 @@ export default function FeedbackDialog({
 
   const showFieldPicker = type === "data_issue" && fields && fields.length > 0;
 
-  const otherField: FeedbackField = { label: t("fieldOther") };
+  const otherField: FeedbackField = { label: t("fieldOther"), group: t("fieldGroupOther") };
   const allFields = showFieldPicker ? [...fields, otherField] : [];
 
   const selectedField = allFields.find((f) => f.label === selectedFieldLabel);

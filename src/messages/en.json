@@ -429,6 +429,7 @@
     "fieldPickerLabel": "Issue type",
     "fieldPickerPlaceholder": "Choose a type…",
     "fieldOther": "Other",
+    "fieldGroupOther": "Other",
     "currentValueLabel": "Current value:",
     "suggestedCorrectionLabel": "Suggested correction:",
     "suggestedCorrectionPlaceholder": "For example: 55mm, f/1.8, Yes…",
