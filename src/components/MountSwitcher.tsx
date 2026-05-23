@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
 import { Select as SelectPrimitive } from "@base-ui/react/select";
@@ -18,14 +17,6 @@ export default function MountSwitcher() {
   const urlMount = useMountParam();
   const effectiveMount = useEffectiveMount();
   const { setPreference } = useMountPreference();
-
-  // Sync URL mount → preference so navigating to /lenses/gfx
-  // keeps the badge on GFX after navigating away.
-  useEffect(() => {
-    if (urlMount) {
-      setPreference(urlMount);
-    }
-  }, [urlMount, setPreference]);
 
   const options: { value: Mount; label: string; caption: string }[] = [
     { value: "X", label: t("x"), caption: t("xCaption") },
