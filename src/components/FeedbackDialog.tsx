@@ -222,7 +222,7 @@ export default function FeedbackDialog({
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3 px-5 pb-2">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3 px-5 pb-4">
             {lensHeader && (
               <div className="flex flex-col gap-0.5 border-b border-zinc-200 dark:border-zinc-800 pb-3">
                 <span className="text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">

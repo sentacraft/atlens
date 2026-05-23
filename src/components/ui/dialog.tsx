@@ -132,6 +132,7 @@ const DialogContent = React.forwardRef<
             data-slot="dialog-content"
             className={cn(
               `fixed inset-x-0 bottom-0 ${Z.dialog} flex max-h-[85svh] flex-col border border-b-0 border-zinc-200 bg-white p-0 pb-[var(--safe-inset-bottom)] shadow-2xl duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:border-zinc-800 dark:bg-zinc-950`,
+              "transition-[transform,opacity] data-[nested-drawer-open]:scale-[0.94] data-[nested-drawer-open]:opacity-40",
               className,
               "rounded-t-2xl rounded-b-none"
             )}

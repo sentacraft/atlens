@@ -256,7 +256,6 @@ export default function LensSearchDialog({
                     type="general"
                     context={{ searchQuery: deferredQuery.trim() }}
                     className="underline underline-offset-2 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-                    onBeforeOpen={() => setOpen(false)}
                   >
                     {t("suggestLensLink")}
                   </FeedbackTrigger>
@@ -320,7 +319,6 @@ export default function LensSearchDialog({
                     type="general"
                     context={{ searchQuery: deferredQuery.trim() }}
                     className="underline underline-offset-2 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-                    onBeforeOpen={() => setOpen(false)}
                   >
                     {t("suggestLensLink")}
                   </FeedbackTrigger>
