@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { LensConfiguration, LensLength, MaxMagnification, MinFocusDistance } from "../types";
+import type { LensConfiguration, LensLength, MaxMagnification } from "../types";
 import { SPEC_NA } from "../types";
 import {
   oisDisplay,

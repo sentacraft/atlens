@@ -37,7 +37,9 @@ export default function SpecialtyBadges({
   const t = useTranslations("SpecialtyBadge");
 
   const items: { key: string; label: string; cls: string }[] = [];
-  if (isCine) items.push({ key: "cine", label: t("cine"), cls: cinePillCls });
+  if (isCine) {
+    items.push({ key: "cine", label: t("cine"), cls: cinePillCls });
+  }
   for (const trait of opticalTraits) {
     items.push({ key: trait, label: t(trait), cls: traitPillCls });
   }

@@ -73,6 +73,7 @@ export function LightboxDialog({
                   <Loader2 className="size-6 animate-spin text-zinc-400" />
                 </div>
               ) : imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- blob URL, not optimizable
                 <img src={imageUrl} alt="" className="w-full" onLoad={handleImageLoad} />
               ) : null}
             </div>
