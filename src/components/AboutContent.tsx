@@ -34,10 +34,18 @@ function NotApplicable() {
 }
 
 function StateCell({ state }: { state: CoverageState }) {
-  if (state === true) {return <Check />;}
-  if (state === "partial") {return <Partial />;}
-  if (state === "planned") {return <Pending />;}
-  if (state === "n/a") {return <NotApplicable />;}
+  if (state === true) {
+    return <Check />;
+  }
+  if (state === "partial") {
+    return <Partial />;
+  }
+  if (state === "planned") {
+    return <Pending />;
+  }
+  if (state === "n/a") {
+    return <NotApplicable />;
+  }
   return <Dash />;
 }
 
