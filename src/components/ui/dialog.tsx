@@ -165,12 +165,23 @@ function DialogDescription({ className, ...props }: DialogPrimitive.Description.
   );
 }
 
+function DialogClose({ className, ...props }: Omit<DialogPrimitive.Close.Props, "children"> & { children?: React.ReactNode }) {
+  return (
+    <DialogPrimitive.Close
+      data-slot="dialog-close"
+      className={className}
+      {...props}
+    />
+  );
+}
+
 export {
   Dialog,
   DialogTrigger,
   DialogPortal,
   DialogBackdrop,
   DialogContent,
+  DialogClose,
   DialogHeader,
   DialogFooter,
   DialogTitle,
