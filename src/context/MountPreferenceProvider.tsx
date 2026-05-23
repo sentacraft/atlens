@@ -1,7 +1,9 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { createContext, useContext, useMemo, useState } from "react";
 import type { Mount } from "@/lib/types";
+import { urlSegmentToMount } from "@/lib/mount";
 
 interface MountPreferenceContextValue {
   preference: Mount;
@@ -12,6 +14,13 @@ const MountPreferenceContext = createContext<MountPreferenceContextValue | null>
 
 export function MountPreferenceProvider({ children }: { children: React.ReactNode }) {
   const [preference, setPreference] = useState<Mount>("X");
+  const params = useParams<{ mount?: string }>();
+  const mount = urlSegmentToMount(params.mount);
+
+  if (mount && mount !== preference) {
+    setPreference(mount);
+  }
+
   const value = useMemo(
     () => ({ preference, setPreference }),
     [preference]
