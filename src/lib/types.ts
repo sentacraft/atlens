@@ -658,6 +658,18 @@ export interface Lens {
   releaseYear?: number;
 
   /**
+   * Locale-keyed search terms optimised for marketplace search engines
+   * (eBay, B&H, MPB, etc.). Pipeline generates these by normalising
+   * brand/model names to match how sellers actually list products.
+   *
+   * Front-end uses the value for the current locale to build affiliate
+   * search URLs. Falls back to `brand + " " + model` when absent.
+   *
+   * @example { en: "7Artisans 50mm f0.95", zh: "七工匠 50mm f0.95" }
+   */
+  searchAliases?: Partial<Record<"en" | "zh", string>>;
+
+  /**
    * Sampled prices per market. Each market holds independent `new` (official
    * store) and `used` (secondary market) price entries — both may be present
    * and the UI renders them as separate data points.
