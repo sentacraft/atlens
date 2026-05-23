@@ -74,7 +74,7 @@ export default function MountSwitcher() {
           >
             <span className="flex flex-col leading-tight">
               <span>{opt.label}</span>
-              <span className="text-xs font-normal text-zinc-400 dark:text-zinc-500 mt-0.5">
+              <span className="text-xs font-normal text-zinc-300 dark:text-zinc-600 mt-0.5">
                 {opt.caption}
               </span>
             </span>
