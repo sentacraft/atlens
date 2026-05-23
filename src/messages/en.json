@@ -46,7 +46,9 @@
   "MountSwitcher": {
     "label": "Switch mount system",
     "x": "X Mount",
-    "gfx": "G Mount"
+    "gfx": "G Mount",
+    "xCaption": "APS-C",
+    "gfxCaption": "Medium format"
   },
   "Home": {
     "cta": "Browse Lenses",

@@ -46,7 +46,9 @@
   "MountSwitcher": {
     "label": "切换卡口系统",
     "x": "X 卡口",
-    "gfx": "G 卡口"
+    "gfx": "G 卡口",
+    "xCaption": "APS-C",
+    "gfxCaption": "中画幅"
   },
   "Home": {
     "cta": "浏览镜头",
