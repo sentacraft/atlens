@@ -70,7 +70,7 @@ export const EVENT_NAME_SET: ReadonlySet<string> = new Set<string>(EVENT_NAMES);
 
 interface AnalyticsEnginePoint {
   indexes: [string];
-  blobs: [string, string, string, string, string];
+  blobs: [string, string, string, string, string, string];
   doubles: [number];
 }
 
@@ -79,6 +79,7 @@ export function toDataPoint(
   sid: string,
   locale: string,
   props: EventProps,
+  internal: boolean,
 ): AnalyticsEnginePoint {
   const primaryString =
     props.query ??
@@ -102,7 +103,7 @@ export function toDataPoint(
 
   return {
     indexes: [event],
-    blobs: [sid, locale, props.path ?? "", primaryString, secondaryString],
+    blobs: [sid, locale, props.path ?? "", primaryString, secondaryString, internal ? "1" : ""],
     doubles: [primaryNumber],
   };
 }
