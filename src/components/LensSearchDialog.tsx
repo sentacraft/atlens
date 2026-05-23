@@ -310,7 +310,6 @@ export default function LensSearchDialog({
                       <div className="min-w-0">
                         <p className="truncate text-xs uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
                           {lensSubtitleLine(tBrand(lens.brand), lens.series)}
-                          {lens.generation ? ` · ${t("generation", { value: lens.generation })}` : ""}
                         </p>
                         <p className="mt-0.5 truncate text-sm font-medium text-zinc-900 dark:text-zinc-50">
                           {lens.model}

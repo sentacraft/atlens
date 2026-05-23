@@ -40,8 +40,7 @@
     "coverageLink": "查看收录范围 →",
     "results": "搜索结果",
     "clear": "清空",
-    "view": "查看",
-    "generation": "第 {value} 代"
+    "view": "查看"
   },
   "MountSwitcher": {
     "label": "切换卡口系统",
