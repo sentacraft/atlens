@@ -8,7 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: SITE.pwaDescription,
     // Explicit app ID — prevents DevTools warning about falling back to start_url.
     id: "/",
-    start_url: "/",
+    start_url: "/?ref=pwa",
     scope: "/",
     display: SITE.display,
     // Prefer WCO on capable desktop browsers so the Nav background extends
