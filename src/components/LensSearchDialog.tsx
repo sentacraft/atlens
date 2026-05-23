@@ -196,7 +196,7 @@ export default function LensSearchDialog({
                 <DialogTitle>{t("title")}</DialogTitle>
                 <DialogDescription className="sr-only">{t("description")}</DialogDescription>
               </div>
-              <DialogClose className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "h-9 w-9")}>
+              <DialogClose className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "hidden h-9 w-9 sm:inline-flex")}>
                 <X className="h-4 w-4" />
               </DialogClose>
             </div>
