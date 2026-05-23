@@ -30,7 +30,10 @@ import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { buildSpecGroups, resolveSpecRow } from "@/lib/lens-spec-groups";
 import type { StructuredLine, ResolvedSpecRow } from "@/lib/lens-spec-groups";
 import type { Lens } from "@/lib/types";
+import { Popover } from "@base-ui/react/popover";
+import { Info } from "lucide-react";
 import { PriceCell } from "@/components/PriceCell";
+import { AffiliateLinksRow } from "@/components/AffiliateLinks";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 
@@ -294,6 +297,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const td = useTranslations("LensDetail");
   const tBrand = useTranslations("Brands");
   const tPricing = useTranslations("Pricing");
+  const tAffiliate = useTranslations("Affiliate");
   const locale = useLocale();
   const priceFieldLabel = tPricing("fieldLabel");
   const priceGroupLabel = tPricing("groupLabel");
@@ -720,6 +724,39 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                   <td key={`empty-price-${i}`} className="border-l border-zinc-100 bg-white dark:border-zinc-800/60 dark:bg-zinc-950" />
                 ))}
               </tr>
+
+              {/* Where to buy row — affiliate links per lens, en locale only */}
+              {locale !== "zh" && (
+                <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
+                  <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 break-words align-middle">
+                    <div className="flex flex-col items-end gap-0.5 text-right">
+                      <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                        {t("whereToBuy")}
+                      </span>
+                      <Popover.Root>
+                        <Popover.Trigger className="inline-flex cursor-pointer items-center gap-0.5 text-[10px] text-zinc-400 outline-none hover:text-zinc-500 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:text-zinc-500 dark:hover:text-zinc-400">
+                          <Info className="size-3 opacity-70" aria-hidden="true" />
+                        </Popover.Trigger>
+                        <Popover.Portal>
+                          <Popover.Positioner side="top" align="start" sideOffset={6}>
+                            <Popover.Popup className="max-w-72 origin-(--transform-origin) rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs leading-relaxed text-zinc-700 shadow-lg duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                              {tAffiliate("disclosureDetail")}
+                            </Popover.Popup>
+                          </Popover.Positioner>
+                        </Popover.Portal>
+                      </Popover.Root>
+                    </div>
+                  </td>
+                  {orderedLenses.map((lens) => (
+                    <td key={lens.id} className="px-3 py-3">
+                      <AffiliateLinksRow lens={lens} customId="compare" />
+                    </td>
+                  ))}
+                  {Array.from({ length: emptySlotCount }).map((_, i) => (
+                    <td key={`empty-affiliate-${i}`} className="border-l border-zinc-100 bg-white dark:border-zinc-800/60 dark:bg-zinc-950" />
+                  ))}
+                </tr>
+              )}
             </React.Fragment>
           )}
 

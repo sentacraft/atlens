@@ -20,7 +20,7 @@ import JsonLd from "@/components/JsonLd";
 import Breadcrumb from "@/components/Breadcrumb";
 import SpecialtyBadges from "@/components/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens-specialty";
-import { ACTION_OUTLINE_CLS } from "@/lib/ui-tokens";
+import { ACTION_OUTLINE_CLS, ICON_NAV_BTN_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates, lensOgImages } from "@/lib/seo";
@@ -29,6 +29,7 @@ import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
 import { lensDisplayName } from "@/lib/lens.format";
 import { buildLensDescription, buildLensProductSchema } from "@/lib/lens-seo";
 import { PriceSection } from "@/components/PriceSection";
+import { AffiliateLinks } from "@/components/AffiliateLinks";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
 
@@ -306,14 +307,28 @@ export default async function LensDetailPage({ params }: { params: Params }) {
             (small desktop / portrait tablet), avoiding the 4-button row
             wrapping into 2 rows. */}
         <div className="@container flex-1 flex flex-col gap-5">
-          {/* Title — h1 carries the full display name (brand + optional
-              series + model) so brand-and-model search queries match the
-              page's primary heading. The previous subtitle line above the h1
-              was just the brand+series prefix and is now redundant. */}
+          {/* Title row — h1 + utility icon buttons (share, feedback) */}
           <div className="flex flex-col gap-2">
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 font-heading">
-              {displayName}
-            </h1>
+            <div className="flex items-start justify-between gap-3">
+              <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 font-heading">
+                {displayName}
+              </h1>
+              <div className="flex shrink-0 items-center gap-0.5 mt-0.5">
+                <ShareButton
+                  lenses={[lens]}
+                  iconOnly
+                  triggerClassName={`${ICON_NAV_BTN_CLS} h-8 w-8`}
+                />
+                <FeedbackTrigger
+                  type="data_issue"
+                  context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
+                  fields={reportableFields}
+                  className={`${ICON_NAV_BTN_CLS} h-8 w-8`}
+                >
+                  <Flag size={16} />
+                </FeedbackTrigger>
+              </div>
+            </div>
             {(() => {
               const s = deriveSpecialty(lens);
               if (!s.isCine && s.opticalTraits.length === 0) {
@@ -332,27 +347,20 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
           {/* Actions — mt-auto pushes them to the bottom of the stretched
               info column so the row aligns with the image card's bottom. */}
-          <div className="flex flex-wrap gap-2 sm:gap-3 mt-auto">
-            <LensDetailCompareToggle lensId={lens.id} />
-            {url ? (
-              <ExternalLink href={url} className={ACTION_OUTLINE_CLS}>
-                {t("officialSite")}
-              </ExternalLink>
-            ) : (
-              <span className={ACTION_OUTLINE_CLS + " cursor-not-allowed opacity-40"}>
-                {t("officialSite")}
-              </span>
-            )}
-            <ShareButton lenses={[lens]} triggerClassName={ACTION_OUTLINE_CLS} />
-            <FeedbackTrigger
-              type="data_issue"
-              context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
-              fields={reportableFields}
-              className={ACTION_OUTLINE_CLS}
-            >
-              <Flag size={14} />
-              <span className="max-xs:hidden @max-md:hidden">{t("reportIssue")}</span>
-            </FeedbackTrigger>
+          <div className="flex flex-col gap-2 mt-auto">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
+              <LensDetailCompareToggle lensId={lens.id} />
+              {url ? (
+                <ExternalLink href={url} className={ACTION_OUTLINE_CLS}>
+                  {t("officialSite")}
+                </ExternalLink>
+              ) : (
+                <span className={ACTION_OUTLINE_CLS + " cursor-not-allowed opacity-40"}>
+                  {t("officialSite")}
+                </span>
+              )}
+              <AffiliateLinks lens={lens} customId="detail" />
+            </div>
           </div>
         </div>
       </div>
