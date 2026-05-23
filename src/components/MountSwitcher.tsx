@@ -27,9 +27,9 @@ export default function MountSwitcher() {
     }
   }, [urlMount, setPreference]);
 
-  const options: { value: Mount; label: string }[] = [
-    { value: "X", label: t("x") },
-    { value: "G", label: t("gfx") },
+  const options: { value: Mount; label: string; caption: string }[] = [
+    { value: "X", label: t("x"), caption: t("xCaption") },
+    { value: "G", label: t("gfx"), caption: t("gfxCaption") },
   ];
 
   const handleValueChange = (value: Mount | null) => {
@@ -72,7 +72,12 @@ export default function MountSwitcher() {
             value={opt.value}
             className="rounded-none py-2 sm:py-2 text-sm sm:text-base text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
           >
-            {opt.label}
+            <span className="flex flex-col leading-tight">
+              <span className="font-medium">{opt.label}</span>
+              <span className="text-xs font-normal !text-zinc-400 dark:!text-zinc-500 mt-0.5">
+                {opt.caption}
+              </span>
+            </span>
           </SelectItem>
         ))}
       </SelectContent>
