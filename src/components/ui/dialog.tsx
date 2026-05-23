@@ -142,6 +142,7 @@ const DialogContent = React.forwardRef<
               <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
             </div>
             {children}
+            {layerRef && <div ref={layerRef} />}
           </DrawerPrimitive.Popup>
         </DrawerPrimitive.Viewport>
       </DrawerPrimitive.Portal>
