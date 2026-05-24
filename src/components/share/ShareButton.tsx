@@ -30,6 +30,8 @@ interface ShareButtonProps {
   variant?: "default" | "fab";
   /** Override the default trigger button class (non-fab variant only). */
   triggerClassName?: string;
+  /** Hide the text label, showing only the icon. */
+  iconOnly?: boolean;
   /** Pre-fill the poster title from a curated preset. User can still override in Customize. */
   presetTitle?: string;
   /** Pre-fill the poster slogan from a curated preset subtitle. User can still override. */
@@ -48,7 +50,7 @@ function computePosterTitle(
   return lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand));
 }
 
-export function ShareButton({ lenses, variant = "default", triggerClassName, presetTitle, presetSubtitle }: ShareButtonProps) {
+export function ShareButton({ lenses, variant = "default", triggerClassName, iconOnly, presetTitle, presetSubtitle }: ShareButtonProps) {
   const t = useTranslations("Share");
   const locale = useLocale();
   const tImage = useTranslations("ShareImage");
@@ -388,7 +390,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   const fabTriggerClass =
     "flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-zinc-900 text-white shadow-lg outline-none transition-colors hover:bg-zinc-700 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200";
 
-  const triggerContent = isFab ? <Share2 className="size-5" /> : (
+  const triggerContent = isFab ? <Share2 className="size-5" /> : iconOnly ? (
+    <Share2 className="size-4" />
+  ) : (
     <><Share2 className="size-4" /><span className="max-xs:hidden @max-md:hidden">{t("button")}</span></>
   );
 

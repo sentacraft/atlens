@@ -14,7 +14,7 @@ export const ACTION_PRIMARY_CLS =
 
 /** Outline / secondary action button (share, external links, supplementary actions). */
 export const ACTION_OUTLINE_CLS =
-  "inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800";
+  "inline-flex h-10 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800";
 
 /** Selected card border + ring (e.g. lens card added to compare). */
 export const CARD_SELECTED_BORDER_CLS =
@@ -89,3 +89,12 @@ export const PRICE_DISCLAIMER_BODY_CLS =
   "text-zinc-500 dark:text-zinc-400";
 export const PRICE_DISCLAIMER_ICON_CLS =
   "shrink-0 text-zinc-400 dark:text-zinc-500";
+
+/**
+ * Page-level utility action (Share, Report) in breadcrumb / chrome row.
+ * Lower weight than ACTION_OUTLINE_CLS — no border, smaller text, ghost hover.
+ */
+export const UTILITY_BTN_CLS =
+  "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs " +
+  "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 " +
+  "dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100 transition-colors";

@@ -18,12 +18,7 @@ import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
 const ADD_LENS_BTN_BASE =
   "h-9 whitespace-nowrap rounded-full border px-3.5 text-sm transition-colors";
 
-interface Props {
-  /** Matches CompareTable minColumns — button is hidden while empty slot columns are visible. */
-  minColumns?: number;
-}
-
-export default function ComparePageHeader({ minColumns = 0 }: Props) {
+export default function ComparePageHeader() {
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
   const { compareIds } = useCompare();
@@ -67,7 +62,7 @@ export default function ComparePageHeader({ minColumns = 0 }: Props) {
         <h1 className="hidden sm:block text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           {t("title")}
         </h1>
-        {activeLenses.length >= minColumns &&
+        {activeLenses.length >= 1 &&
           (canAddMore ? (
             <LensSearchDialog
               onSelectLens={onSelectLens}
