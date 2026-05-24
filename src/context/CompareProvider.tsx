@@ -46,10 +46,9 @@ export function useCompare() {
   useEffect(() => {
     const prev = prevIdsRef.current;
     prevIdsRef.current = compareIds;
-    for (const id of compareIds) {
-      if (!prev.includes(id)) {
-        track("compare_add", { lens_slug: id });
-      }
+    const added = compareIds.filter((id) => !prev.includes(id));
+    if (added.length === 1) {
+      track("compare_add", { lens_slug: added[0] });
     }
   }, [compareIds]);
 
