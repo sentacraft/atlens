@@ -116,6 +116,11 @@ const lensBaseShape = {
     cn: pricingMarketSchema.optional(),
     global: pricingMarketSchema.optional(),
   }).optional(),
+  purchaseChannels: z.array(z.strictObject({
+    channel: z.enum(['official', 'ebay', 'bhphoto']),
+    url: nonEmptyStringSchema.optional(),
+    affiliate: nonEmptyStringSchema.optional(),
+  })).min(1).optional(),
   compatibleMounts: z.array(nonEmptyStringSchema).min(1).optional(),
   accessories: z.array(nonEmptyStringSchema).min(1).optional(),
   lensMaterial: optionalNonEmptyStringSchema,
@@ -364,7 +369,7 @@ export const KNOWN_DISTINCT_PAIRS = new Set([
 // Identifiers, human-readable labels, links, and freeform notes are excluded;
 // all measurable optical/physical fields are included automatically.
 const SIMILARITY_EXCLUDE = new Set([
-  "id", "brand", "model", "series", "officialLinks", "fieldNotes", "translations", "searchAliases",
+  "id", "brand", "model", "series", "officialLinks", "fieldNotes", "translations", "searchAliases", "purchaseChannels",
 ]);
 
 // Threshold above which two same-brand lenses are flagged as suspiciously similar.
