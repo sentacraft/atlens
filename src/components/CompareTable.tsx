@@ -892,12 +892,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
       </table>
     </div>
 
-    {hasAnyPurchaseLinks && (
-      <>
-        <CompareMobileBuyPanel lenses={orderedLenses} />
-        {hasAffiliate && <PurchaseDisclosureCaption className="hidden sm:flex" />}
-      </>
-    )}
+    {hasAffiliate && <PurchaseDisclosureCaption />}
     </>
   );
 }
