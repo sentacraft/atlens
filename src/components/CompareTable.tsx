@@ -729,11 +729,8 @@ export default function CompareTable({ lenses: initialLenses, countryCode, minCo
               {/* Where to buy row — purchase links per lens, en locale only */}
               {locale !== "zh" && (
                 <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
-                  <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 break-words align-middle">
+                  <td className="sticky left-0 z-10 px-3 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900 break-words">
                     <div className="flex items-center justify-end gap-1">
-                      <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                        {tPurchase("whereToBuy")}
-                      </span>
                       {orderedLenses.some((l) => l.purchaseChannels?.some((ch) => ch.channel === "ebay" || ch.affiliate)) && (
                         <Popover.Root>
                           <Popover.Trigger className="inline-flex cursor-pointer items-center text-zinc-400 outline-none hover:text-zinc-500 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:text-zinc-500 dark:hover:text-zinc-400">
@@ -748,6 +745,7 @@ export default function CompareTable({ lenses: initialLenses, countryCode, minCo
                           </Popover.Portal>
                         </Popover.Root>
                       )}
+                      <span>{tPurchase("whereToBuy")}</span>
                     </div>
                   </td>
                   {orderedLenses.map((lens) => (

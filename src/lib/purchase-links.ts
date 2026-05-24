@@ -95,7 +95,7 @@ export function buildPurchaseLinks(
         if (ch.url) {
           links.push({
             channel: "official",
-            label: "Official Store",
+            label: "Official",
             url: buildOfficialUrl(ch),
             isAffiliate: !!ch.affiliate,
           });
