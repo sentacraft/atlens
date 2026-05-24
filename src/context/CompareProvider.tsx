@@ -49,7 +49,7 @@ export function useCompare() {
       setState(prev => ({ ...prev, [mount]: [...prev[mount], id] }));
       track("compare_add", { lens_slug: id });
     },
-    [mount, compareIds],
+    [mount, compareIds, setState],
   );
 
   const remove = useCallback(
@@ -59,7 +59,7 @@ export function useCompare() {
       }
       setState(prev => ({ ...prev, [mount]: prev[mount].filter((v) => v !== id) }));
     },
-    [mount, compareIds],
+    [mount, compareIds, setState],
   );
 
   const reorder = useCallback(
@@ -71,21 +71,23 @@ export function useCompare() {
       ) {
         return;
       }
-      
+
       const ids = [...compareIds];
       [ids[fromIndex], ids[toIndex]] = [ids[toIndex], ids[fromIndex]];
 
       setState(prev => ({ ...prev, [mount]: ids }));
     },
-    [mount, compareIds],
+    [mount, compareIds, setState],
   );
 
   const clear = useCallback(
     () => {
-      if (compareIds.length === 0) return;
+      if (compareIds.length === 0) {
+        return;
+      }
       setState(prev => ({ ...prev, [mount]: [] }));
     },
-    [mount, compareIds]
+    [mount, compareIds, setState]
   );
 
   const toggle = useCallback(
@@ -107,7 +109,7 @@ export function useCompare() {
       }
       setState(prev => ({ ...prev, [mount]: next }));
     },
-    [mount, compareIds]
+    [mount, compareIds, setState]
   );
 
   return { compareIds, add, remove, reorder, clear, toggle, seed };

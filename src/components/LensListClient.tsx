@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { usePathname, Link } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "motion/react";
@@ -50,7 +50,7 @@ export default function LensListClient({ lenses }: Props) {
   const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
   const { compareIds, toggle } = useCompare();
   const toggleRef = useRef(toggle);
-  toggleRef.current = toggle;
+  useEffect(() => { toggleRef.current = toggle; });
   const stableToggle = useCallback((id: string) => toggleRef.current(id), []);
 
   const brands = useMemo(() => getOrderedUniqueBrands(lenses), [lenses]);
