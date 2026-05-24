@@ -120,7 +120,7 @@
     "fewerFilters": "Fewer Filters",
     "clearFilters": "Clear Filters",
     "addToCompare": "Add to Compare",
-    "removeFromCompare": "Remove",
+    "removeFromCompare": "Remove from Compare",
     "compareFull": "Compare List Full",
     "compareFullToast": "Compare list full — remove one first",
     "addedToCompare": "Added to compare",
@@ -215,7 +215,7 @@
     "unknown": "N/A",
     "missing": "-",
     "addToCompare": "Add to Compare",
-    "removeFromCompare": "Remove",
+    "removeFromCompare": "Remove from Compare",
     "compareFull": "Compare List Full",
     "officialSite": "Official Page",
     "reportIssue": "Report an issue",
@@ -498,7 +498,6 @@
   "Purchase": {
     "whereToBuy": "Where to buy",
     "buyAt": "Buy at",
-    "officialStore": "Official Store",
     "disclosureDetail": "Some retailer links are affiliate. X-Glass may earn a small commission at no extra cost to you."
   }
 }

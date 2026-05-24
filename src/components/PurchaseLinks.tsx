@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Popover } from "@base-ui/react/popover";
 import { ArrowUpRight, Info } from "lucide-react";
 import { buildPurchaseLinks } from "@/lib/purchase-links";
 import type { PurchaseLink } from "@/lib/purchase-links";
@@ -17,20 +16,11 @@ interface Props {
   className?: string;
 }
 
-interface LinkListProps {
-  links: PurchaseLink[];
-  lensId: string;
-  customId?: string;
-  compact?: boolean;
-  className?: string;
-}
+const LINK_CLS = "inline-flex whitespace-nowrap items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200";
 
-const LINK_CLS = "inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800";
-const LINK_COMPACT_CLS = "inline-flex whitespace-nowrap items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200";
-
-function PurchaseLinkList({ links, lensId, customId, compact, className }: LinkListProps) {
+function PurchaseLinkList({ links, lensId, customId, className }: { links: PurchaseLink[]; lensId: string; customId?: string; className?: string }) {
   return (
-    <div className={cn(compact ? "flex flex-wrap gap-1.5" : "flex flex-wrap gap-2", className)}>
+    <div className={cn("flex flex-wrap gap-1.5", className)}>
       {links.map((link) => (
         <a
           key={link.channel}
@@ -43,10 +33,10 @@ function PurchaseLinkList({ links, lensId, customId, compact, className }: LinkL
             source: customId ?? "unknown",
             is_affiliate: link.isAffiliate,
           })}
-          className={compact ? LINK_COMPACT_CLS : LINK_CLS}
+          className={LINK_CLS}
         >
           {link.label}
-          <ArrowUpRight className={compact ? "size-3" : "size-3.5"} aria-hidden="true" />
+          <ArrowUpRight className="size-3" aria-hidden="true" />
         </a>
       ))}
     </div>
@@ -67,7 +57,7 @@ export function PurchaseLinksCompact({ lens, customId, className }: Props) {
     return null;
   }
 
-  return <PurchaseLinkList links={links} lensId={lens.id} customId={customId} compact className={className} />;
+  return <PurchaseLinkList links={links} lensId={lens.id} customId={customId} className={className} />;
 }
 
 export function PurchaseDisclosureCaption({ className }: { className?: string }) {
@@ -82,26 +72,5 @@ export function PurchaseDisclosureCaption({ className }: { className?: string })
       <Info className="size-3 shrink-0 mt-0.5 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
       <span>{t("disclosureDetail")}</span>
     </div>
-  );
-}
-
-function PurchaseDisclosure() {
-  const t = useTranslations("Purchase");
-  return (
-    <Popover.Root>
-      <Popover.Trigger
-        className="inline-flex cursor-pointer items-center text-zinc-400 outline-none transition-colors hover:text-zinc-500 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:text-zinc-500 dark:hover:text-zinc-400"
-        aria-label={t("disclosureDetail")}
-      >
-        <Info className="size-3.5" aria-hidden="true" />
-      </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Positioner side="top" align="start" sideOffset={6}>
-          <Popover.Popup className="max-w-72 origin-(--transform-origin) rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs leading-relaxed text-zinc-700 shadow-lg duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-            {t("disclosureDetail")}
-          </Popover.Popup>
-        </Popover.Positioner>
-      </Popover.Portal>
-    </Popover.Root>
   );
 }

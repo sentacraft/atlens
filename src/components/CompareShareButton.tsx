@@ -10,7 +10,7 @@ import { findPresetByIds } from "@/lib/curated-presets";
 import type { Lens } from "@/lib/types";
 import { UTILITY_BTN_CLS } from "@/lib/ui-tokens";
 
-export default function CompareUtilityActions() {
+export default function CompareShareButton() {
   const { compareIds } = useCompare();
   const mount = useEffectiveMount();
   const locale = useLocale();

@@ -120,7 +120,7 @@
     "fewerFilters": "收起更多筛选",
     "clearFilters": "清空筛选",
     "addToCompare": "加入对比",
-    "removeFromCompare": "移除",
+    "removeFromCompare": "移除对比",
     "compareFull": "对比列表已满",
     "compareFullToast": "对比已满，先移除一款",
     "addedToCompare": "已加入对比",
@@ -215,7 +215,7 @@
     "unknown": "N/A",
     "missing": "-",
     "addToCompare": "加入对比",
-    "removeFromCompare": "移除",
+    "removeFromCompare": "移除对比",
     "compareFull": "对比列表已满",
     "officialSite": "官方介绍",
     "reportIssue": "反馈问题",
@@ -498,7 +498,6 @@
   "Purchase": {
     "whereToBuy": "购买渠道",
     "buyAt": "购买",
-    "officialStore": "官方商店",
     "disclosureDetail": "部分零售商链接为联盟链接，通过购买 X-Glass 可能获得少量佣金，不会增加你的购买成本。"
   }
 }
