@@ -1,4 +1,4 @@
-import type { Lens } from "@/lib/types";
+import type { Lens, PurchaseChannel } from "@/lib/types";
 
 const EPN_CAMPAIGN_ID = "5339154376";
 const EPN_TOOL_ID = "10001";
@@ -27,12 +27,11 @@ const EBAY_MARKETS: Record<string, EbayMarket> = {
 
 const EBAY_DEFAULT_MARKET = EBAY_MARKETS.US;
 
-export type AffiliatePlatform = "ebay";
-
-export interface AffiliateLink {
-  platform: AffiliatePlatform;
+export interface PurchaseLink {
+  channel: PurchaseChannel["channel"];
   label: string;
   url: string;
+  isAffiliate: boolean;
 }
 
 function getSearchQuery(lens: Lens, locale: string): string {
@@ -42,7 +41,7 @@ function getSearchQuery(lens: Lens, locale: string): string {
   return alias ?? `${lens.brand} ${lens.model}`;
 }
 
-export function buildEbayUrl(
+function buildEbayUrl(
   lens: Lens,
   locale: string,
   countryCode: string,
@@ -64,32 +63,62 @@ export function buildEbayUrl(
   return `${target}&${params.join("&")}`;
 }
 
-export function buildAffiliateLinks(
+function buildBhPhotoUrl(lens: Lens, locale: string): string {
+  const query = getSearchQuery(lens, locale);
+  return `https://www.bhphotovideo.com/c/search?Ntt=${encodeURIComponent(query)}`;
+}
+
+function buildOfficialUrl(ch: PurchaseChannel): string {
+  const base = ch.url!;
+  if (!ch.affiliate) {
+    return base;
+  }
+  const sep = base.includes("?") ? "&" : "?";
+  return `${base}${sep}${ch.affiliate}`;
+}
+
+export function buildPurchaseLinks(
   lens: Lens,
   locale: string,
   countryCode: string,
   customId?: string,
-): AffiliateLink[] {
-  if (locale === "zh") {
+): PurchaseLink[] {
+  if (locale === "zh" || !lens.purchaseChannels) {
     return [];
   }
-  return [
-    {
-      platform: "ebay",
-      label: "eBay",
-      url: buildEbayUrl(lens, locale, countryCode, customId),
-    },
-  ];
-}
 
-export const COUNTRY_COOKIE = "xg_country";
+  const links: PurchaseLink[] = [];
 
-export function readCountryCookie(): string {
-  if (typeof document === "undefined") {
-    return "US";
+  for (const ch of lens.purchaseChannels) {
+    switch (ch.channel) {
+      case "official":
+        if (ch.url) {
+          links.push({
+            channel: "official",
+            label: "Official Store",
+            url: buildOfficialUrl(ch),
+            isAffiliate: !!ch.affiliate,
+          });
+        }
+        break;
+      case "ebay":
+        links.push({
+          channel: "ebay",
+          label: "eBay",
+          url: buildEbayUrl(lens, locale, countryCode, customId),
+          isAffiliate: true,
+        });
+        break;
+      case "bhphoto":
+        links.push({
+          channel: "bhphoto",
+          label: "B&H",
+          url: buildBhPhotoUrl(lens, locale),
+          isAffiliate: false,
+        });
+        break;
+    }
   }
-  const match = document.cookie.match(
-    new RegExp(`(?:^|; )${COUNTRY_COOKIE}=([^;]*)`),
-  );
-  return match?.[1] ?? "US";
+
+  return links;
 }

@@ -33,7 +33,7 @@ import type { Lens } from "@/lib/types";
 import { Popover } from "@base-ui/react/popover";
 import { Info } from "lucide-react";
 import { PriceCell } from "@/components/PriceCell";
-import { AffiliateLinksRow } from "@/components/AffiliateLinks";
+import { PurchaseLinksCompact } from "@/components/PurchaseLinks";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 
@@ -283,6 +283,7 @@ function LinksRow({
 
 interface Props {
   lenses: Lens[];
+  countryCode: string;
   /** Minimum number of columns to display; empty slot headers fill the gap. */
   minColumns?: number;
   /** When true and the compare list is empty, only the header row is rendered (no skeleton body). */
@@ -292,12 +293,12 @@ interface Props {
 const LABEL_COLUMN_WIDTH = "6rem";
 const LENS_COLUMN_MIN_WIDTH = "9rem";
 
-export default function CompareTable({ lenses: initialLenses, minColumns = 0, hideBodyWhenEmpty = false }: Props) {
+export default function CompareTable({ lenses: initialLenses, countryCode, minColumns = 0, hideBodyWhenEmpty = false }: Props) {
   const t = useTranslations("Compare");
   const td = useTranslations("LensDetail");
   const tBrand = useTranslations("Brands");
   const tPricing = useTranslations("Pricing");
-  const tAffiliate = useTranslations("Affiliate");
+  const tPurchase = useTranslations("Purchase");
   const locale = useLocale();
   const priceFieldLabel = tPricing("fieldLabel");
   const priceGroupLabel = tPricing("groupLabel");
@@ -725,13 +726,13 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                 ))}
               </tr>
 
-              {/* Where to buy row — affiliate links per lens, en locale only */}
+              {/* Where to buy row — purchase links per lens, en locale only */}
               {locale !== "zh" && (
                 <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
                   <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 break-words align-middle">
                     <div className="flex items-center justify-end gap-1">
                       <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                        {t("whereToBuy")}
+                        {tPurchase("whereToBuy")}
                       </span>
                       <Popover.Root>
                         <Popover.Trigger className="inline-flex cursor-pointer items-center text-zinc-400 outline-none hover:text-zinc-500 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:text-zinc-500 dark:hover:text-zinc-400">
@@ -740,7 +741,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                         <Popover.Portal>
                           <Popover.Positioner side="top" align="start" sideOffset={6}>
                             <Popover.Popup className="max-w-72 origin-(--transform-origin) rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs leading-relaxed text-zinc-700 shadow-lg duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-                              {tAffiliate("disclosureDetail")}
+                              {tPurchase("disclosureDetail")}
                             </Popover.Popup>
                           </Popover.Positioner>
                         </Popover.Portal>
@@ -749,11 +750,11 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                   </td>
                   {orderedLenses.map((lens) => (
                     <td key={lens.id} className="px-3 py-3">
-                      <AffiliateLinksRow lens={lens} customId="compare" />
+                      <PurchaseLinksCompact lens={lens} countryCode={countryCode} customId="compare" />
                     </td>
                   ))}
                   {Array.from({ length: emptySlotCount }).map((_, i) => (
-                    <td key={`empty-affiliate-${i}`} className="border-l border-zinc-100 bg-white dark:border-zinc-800/60 dark:bg-zinc-950" />
+                    <td key={`empty-purchase-${i}`} className="border-l border-zinc-100 bg-white dark:border-zinc-800/60 dark:bg-zinc-950" />
                   ))}
                 </tr>
               )}

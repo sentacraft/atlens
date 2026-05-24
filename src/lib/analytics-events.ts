@@ -26,7 +26,7 @@ export const EVENT_NAMES = [
   "share_action",
   "outbound_click",
   "mount_switch",
-  "affiliate_click",
+  "purchase_click",
 ] as const;
 
 export type EventName = (typeof EVENT_NAMES)[number];
@@ -57,10 +57,11 @@ export interface EventProps {
   from_mount?: string;
   to_mount?: string;
 
-  // Affiliate
-  platform?: string;
+  // Purchase
+  channel?: string;
   lens_id?: string;
   source?: string;
+  is_affiliate?: boolean;
 
   // Context
   referrer?: string;

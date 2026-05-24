@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Flag } from "lucide-react";
@@ -29,7 +30,7 @@ import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
 import { lensDisplayName } from "@/lib/lens.format";
 import { buildLensDescription, buildLensProductSchema } from "@/lib/lens-seo";
 import { PriceSection } from "@/components/PriceSection";
-import { AffiliateLinks } from "@/components/AffiliateLinks";
+import { PurchaseLinksSection } from "@/components/PurchaseLinks";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
 
@@ -170,6 +171,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const t = await getTranslations("LensDetail");
   const tBrand = await getTranslations("Brands");
   const tPricing = await getTranslations("Pricing");
+  const countryCode = (await headers()).get("cf-ipcountry") ?? "US";
   const url = getLensUrl(lens, locale);
 
   // Derived values shared between the visible header and the Product JSON-LD.
@@ -347,7 +349,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
           {/* Actions — mt-auto pushes them to the bottom of the stretched
               info column so the row aligns with the image card's bottom. */}
-          <div className="flex flex-col gap-2 mt-auto">
+          <div className="flex flex-col gap-3 mt-auto">
             <div className="flex flex-wrap gap-2 sm:gap-3">
               <LensDetailCompareToggle lensId={lens.id} />
               {url ? (
@@ -359,8 +361,8 @@ export default async function LensDetailPage({ params }: { params: Params }) {
                   {t("officialSite")}
                 </span>
               )}
-              <AffiliateLinks lens={lens} customId="detail" />
             </div>
+            <PurchaseLinksSection lens={lens} countryCode={countryCode} customId="detail" />
           </div>
         </div>
       </div>

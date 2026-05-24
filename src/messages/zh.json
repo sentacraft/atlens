@@ -217,7 +217,7 @@
     "addToCompare": "加入对比",
     "removeFromCompare": "移除",
     "compareFull": "对比列表已满",
-    "officialSite": "参数",
+    "officialSite": "官网参数",
     "reportIssue": "反馈问题",
     "nudgeText": "发现数据有误？",
     "fieldOfficialLink": "官方链接",
@@ -251,8 +251,7 @@
     "scrollChipsLeft": "向左滚动",
     "scrollChipsRight": "向右滚动",
     "presetCardCta": "立即对比",
-    "officialSite": "参数",
-    "whereToBuy": "去哪买",
+    "officialSite": "官网参数",
     "addLens": "添加镜头",
     "selectFirst": "先添加镜头",
     "addMore": "再添加一支",
@@ -491,10 +490,10 @@
     "usedReason": "官方渠道未采集到该镜头的新品价格，此处展示二手市场参考价。",
     "sampledAt": "采样于 {date}"
   },
-  "Affiliate": {
-    "findOn": "在 {platform} 上查找",
+  "Purchase": {
+    "whereToBuy": "购买渠道",
+    "officialStore": "官方商店",
     "disclosure": "可能获得佣金",
-    "disclosureDetail": "通过这些链接购买时，X-Glass 可能会获得少量佣金。这不会影响排名或价格数据。",
-    "whereToBuy": "去哪买"
+    "disclosureDetail": "通过这些链接购买时，X-Glass 可能会获得少量佣金。这不会影响排名或价格数据。"
   }
 }

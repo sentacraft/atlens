@@ -217,7 +217,7 @@
     "addToCompare": "Add to Compare",
     "removeFromCompare": "Remove",
     "compareFull": "Compare List Full",
-    "officialSite": "Specs",
+    "officialSite": "Official Spec",
     "reportIssue": "Report an issue",
     "nudgeText": "Spotted an error in the data?",
     "fieldOfficialLink": "Official Link",
@@ -251,8 +251,7 @@
     "scrollChipsLeft": "Scroll chips left",
     "scrollChipsRight": "Scroll chips right",
     "presetCardCta": "Compare Now",
-    "officialSite": "Specs",
-    "whereToBuy": "Where to buy",
+    "officialSite": "Official Spec",
     "addLens": "Add lens",
     "selectFirst": "Add lens",
     "addMore": "Add lens",
@@ -491,10 +490,10 @@
     "usedReason": "No new-price listing was found in official channels; showing a used-market reference instead.",
     "sampledAt": "Sampled {date}"
   },
-  "Affiliate": {
-    "findOn": "Find on {platform}",
+  "Purchase": {
+    "whereToBuy": "Where to buy",
+    "officialStore": "Official Store",
     "disclosure": "May earn commission",
-    "disclosureDetail": "X-Glass may earn a small commission when you buy through these links. This does not affect rankings or pricing data.",
-    "whereToBuy": "Where to buy"
+    "disclosureDetail": "X-Glass may earn a small commission when you buy through these links. This does not affect rankings or pricing data."
   }
 }
