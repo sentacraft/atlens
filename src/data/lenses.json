@@ -28,6 +28,10 @@
     "angleOfView": 100,
     "angleOfViewCalc": 99.4,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "7Artisans 12mm T2.9 APS-C Cine Fuji X",
+      "zh": "七工匠 12mm T2.9 APS-C Cine 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -100,6 +104,10 @@
     "angleOfView": 58.6,
     "angleOfViewCalc": 59,
     "apertureBladeCount": 13,
+    "searchAliases": {
+      "en": "7Artisans 25mm f0.95 Fuji X",
+      "zh": "七工匠 25mm f0.95 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -188,6 +196,10 @@
     "angleOfView": 105,
     "angleOfViewCalc": 109.5,
     "apertureBladeCount": 7,
+    "searchAliases": {
+      "en": "7Artisans AF 10mm f2.8 Fuji X",
+      "zh": "七工匠 AF 10mm f2.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -265,6 +277,10 @@
     "angleOfView": 58.3,
     "angleOfViewCalc": 59,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "7Artisans AF 25mm f1.8 Fuji X",
+      "zh": "七工匠 AF 25mm f1.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -333,6 +349,10 @@
     "angleOfView": 55,
     "angleOfViewCalc": 55.3,
     "apertureBladeCount": 6,
+    "searchAliases": {
+      "en": "7Artisans AF 27mm f2.8 Fuji X",
+      "zh": "七工匠 AF 27mm f2.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -396,6 +416,10 @@
     "angleOfView": 43.5,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 7,
+    "searchAliases": {
+      "en": "7Artisans AF 35mm f1.4 Fuji X",
+      "zh": "七工匠 AF 35mm f1.4 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -460,6 +484,10 @@
     "angleOfView": 44,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "7Artisans AF 35mm f1.8 Fuji X",
+      "zh": "七工匠 AF 35mm f1.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -528,6 +556,10 @@
     "angleOfView": 31.4,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "7Artisans AF 50mm f1.8 Fuji X",
+      "zh": "七工匠 AF 50mm f1.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -596,6 +628,10 @@
     },
     "angleOfViewCalc": 109.5,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "7Artisans Hope Prime 10mm T2.1 Fuji X",
+      "zh": "七工匠 Hope Prime 10mm T2.1 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -666,6 +702,10 @@
     },
     "angleOfViewCalc": 83,
     "apertureBladeCount": 11,
+    "searchAliases": {
+      "en": "7Artisans Hope Prime 16mm T2.1 Fuji X",
+      "zh": "七工匠 Hope Prime 16mm T2.1 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -734,6 +774,10 @@
       }
     },
     "angleOfViewCalc": 59,
+    "searchAliases": {
+      "en": "7Artisans Hope Prime 25mm T2.1 Fuji X",
+      "zh": "七工匠 Hope Prime 25mm T2.1 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -803,6 +847,10 @@
       }
     },
     "angleOfViewCalc": 44,
+    "searchAliases": {
+      "en": "7Artisans Hope Prime 35mm T2.1 Fuji X",
+      "zh": "七工匠 Hope Prime 35mm T2.1 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -872,6 +920,10 @@
       }
     },
     "angleOfViewCalc": 31.6,
+    "searchAliases": {
+      "en": "7Artisans Hope Prime 50mm T2.1 Fuji X",
+      "zh": "七工匠 Hope Prime 50mm T2.1 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -941,6 +993,10 @@
       }
     },
     "angleOfViewCalc": 18.9,
+    "searchAliases": {
+      "en": "7Artisans Hope Prime 85mm T2.1 Fuji X",
+      "zh": "七工匠 Hope Prime 85mm T2.1 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1004,6 +1060,10 @@
     "angleOfView": 225,
     "angleOfViewCalc": 148.4,
     "apertureBladeCount": 7,
+    "searchAliases": {
+      "en": "7Artisans 4mm f2.8 Fuji X",
+      "zh": "七工匠 4mm f2.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1076,6 +1136,10 @@
     "angleOfView": 220,
     "angleOfViewCalc": 134,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "7Artisans 6mm f2.0 Fuji X",
+      "zh": "七工匠 6mm f2.0 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1155,6 +1219,10 @@
     "angleOfView": 190,
     "angleOfViewCalc": 124.1,
     "apertureBladeCount": 5,
+    "searchAliases": {
+      "en": "7Artisans 7.5mm f2.8 II Fuji X",
+      "zh": "七工匠 7.5mm f2.8 II 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1231,6 +1299,10 @@
     "angleOfView": 108,
     "angleOfViewCalc": 109.5,
     "apertureBladeCount": 5,
+    "searchAliases": {
+      "en": "7Artisans 10mm f3.5 Fuji X",
+      "zh": "七工匠 10mm f3.5 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1301,6 +1373,10 @@
     "angleOfView": 100,
     "angleOfViewCalc": 99.4,
     "apertureBladeCount": 5,
+    "searchAliases": {
+      "en": "7Artisans 12mm f2.8 II Fuji X",
+      "zh": "七工匠 12mm f2.8 II 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1372,6 +1448,10 @@
     "angleOfView": 74,
     "angleOfViewCalc": 76.3,
     "apertureBladeCount": "N/A",
+    "searchAliases": {
+      "en": "7Artisans 18mm f6.3 Fuji X",
+      "zh": "七工匠 18mm f6.3 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1449,6 +1529,10 @@
     "angleOfView": 68,
     "angleOfViewCalc": 59,
     "apertureBladeCount": 12,
+    "searchAliases": {
+      "en": "7Artisans 25mm f1.8 Fuji X",
+      "zh": "七工匠 25mm f1.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1519,6 +1603,10 @@
     "angleOfView": 43.9,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "7Artisans 35mm f1.2 II Fuji X",
+      "zh": "七工匠 35mm f1.2 II 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1589,6 +1677,10 @@
     "angleOfView": 43,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "7Artisans 35mm f1.4 Fuji X",
+      "zh": "七工匠 35mm f1.4 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1663,6 +1755,10 @@
     "angleOfView": 46,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 12,
+    "searchAliases": {
+      "en": "7Artisans 50mm f1.4 Tilt Fuji X",
+      "zh": "七工匠 50mm f1.4 Tilt 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1731,6 +1827,10 @@
     "angleOfView": 32,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 12,
+    "searchAliases": {
+      "en": "7Artisans 50mm f1.8 Fuji X",
+      "zh": "七工匠 50mm f1.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1794,6 +1894,10 @@
     },
     "angleOfViewCalc": 28.9,
     "apertureBladeCount": 14,
+    "searchAliases": {
+      "en": "7Artisans 55mm f1.4 Fuji X",
+      "zh": "七工匠 55mm f1.4 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1863,6 +1967,10 @@
     "angleOfView": 25,
     "angleOfViewCalc": 26.5,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "7Artisans 60mm f2.8 Macro Fuji X",
+      "zh": "七工匠 60mm f2.8 Macro 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1932,6 +2040,10 @@
     "angleOfView": 63.2,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "Brightin Star 35mm f1.4 Fuji X",
+      "zh": "星曜 35mm f1.4 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2014,6 +2126,10 @@
     "angleOfView": 26.5,
     "angleOfViewCalc": 26.5,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Brightin Star 60mm f2.8 Macro 2X Fuji X",
+      "zh": "星曜 60mm f2.8 Macro 2X 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2087,6 +2203,10 @@
     },
     "angleOfViewCalc": 26.5,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "Brightin Star 60mm f2.8 Macro 2X II Fuji X",
+      "zh": "星曜 60mm f2.8 Macro 2X II 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2166,6 +2286,10 @@
     "angleOfView": 32,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Brightin Star AF 50mm f1.4 Fuji X",
+      "zh": "星曜 AF 50mm f1.4 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2233,6 +2357,10 @@
     "angleOfView": 190,
     "angleOfViewCalc": 124.1,
     "apertureBladeCount": 5,
+    "searchAliases": {
+      "en": "Brightin Star 7.5mm f2.8 III Fuji X",
+      "zh": "星曜 7.5mm f2.8 III 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2312,6 +2440,10 @@
     "angleOfView": 172,
     "angleOfViewCalc": 109.5,
     "apertureBladeCount": "N/A",
+    "searchAliases": {
+      "en": "Brightin Star 10mm f5.6 Fuji X",
+      "zh": "星曜 10mm f5.6 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2391,6 +2523,10 @@
     "angleOfView": 175,
     "angleOfViewCalc": 109.5,
     "apertureBladeCount": 5,
+    "searchAliases": {
+      "en": "Brightin Star 10mm f5.6 PRO Fuji X",
+      "zh": "星曜 10mm f5.6 PRO 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2467,6 +2603,10 @@
     "angleOfView": 97,
     "angleOfViewCalc": 99.4,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "Brightin Star 12mm f2.0 III Fuji X",
+      "zh": "星曜 12mm f2.0 III 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2526,6 +2666,10 @@
     "angleOfView": 57.4,
     "angleOfViewCalc": 59,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "Brightin Star 25mm f1.8 Fuji X",
+      "zh": "星曜 25mm f1.8 富士"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -2588,6 +2732,10 @@
     "angleOfView": 44,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 12,
+    "searchAliases": {
+      "en": "Brightin Star 35mm f0.95 Fuji X",
+      "zh": "星曜 35mm f0.95 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2654,6 +2802,10 @@
     "angleOfView": 43,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "Brightin Star 35mm f1.2 Fuji X",
+      "zh": "星曜 35mm f1.2 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2708,6 +2860,10 @@
     "angleOfView": 42,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "Brightin Star 35mm f1.7 Fuji X",
+      "zh": "星曜 35mm f1.7 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2771,6 +2927,10 @@
     "angleOfView": 32,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 13,
+    "searchAliases": {
+      "en": "Brightin Star 50mm f0.95 Fuji X",
+      "zh": "星曜 50mm f0.95 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2839,6 +2999,10 @@
     "angleOfView": 29.5,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Brightin Star 50mm f1.4 III Fuji X",
+      "zh": "星曜 50mm f1.4 III 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2898,6 +3062,10 @@
     "angleOfView": 32,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "Brightin Star 50mm f1.8 Fuji X",
+      "zh": "星曜 50mm f1.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2976,6 +3144,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2018,
+    "searchAliases": {
+      "en": "Fujifilm MKX 18-55mm T2.9",
+      "zh": "富士 MKX 18-55mm T2.9"
+    },
     "pricing": {
       "global": {
         "new": {
@@ -3069,6 +3241,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2018,
+    "searchAliases": {
+      "en": "Fujifilm MKX 50-135mm T2.9",
+      "zh": "富士 MKX 50-135mm T2.9"
+    },
     "pricing": {
       "global": {
         "new": {
@@ -3169,6 +3345,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2025,
+    "searchAliases": {
+      "en": "Fujifilm XC 13-33mm f3.5-6.3 OIS",
+      "zh": "富士 XC 13-33mm f3.5-6.3 OIS"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -3265,6 +3445,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2018,
+    "searchAliases": {
+      "en": "Fujifilm XC 15-45mm f3.5-5.6 OIS PZ",
+      "zh": "富士 XC 15-45mm f3.5-5.6 OIS PZ"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -3358,6 +3542,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2013,
+    "searchAliases": {
+      "en": "Fujifilm XC 16-50mm f3.5-5.6 OIS",
+      "zh": "富士 XC 16-50mm f3.5-5.6 OIS"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -3443,6 +3631,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2015,
+    "searchAliases": {
+      "en": "Fujifilm XC 16-50mm f3.5-5.6 OIS II",
+      "zh": "富士 XC 16-50mm f3.5-5.6 OIS II"
+    },
     "compatibleMounts": [
       "Fujifilm X"
     ],
@@ -3494,6 +3686,10 @@
     "angleOfViewCalc": 44,
     "apertureBladeCount": 9,
     "releaseYear": 2020,
+    "searchAliases": {
+      "en": "Fujifilm XC 35mm f2",
+      "zh": "富士 XC 35mm f2"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -3580,6 +3776,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2013,
+    "searchAliases": {
+      "en": "Fujifilm XC 50-230mm f4.5-6.7 OIS",
+      "zh": "富士 XC 50-230mm f4.5-6.7 OIS"
+    },
     "pricing": {
       "global": {
         "used": {
@@ -3659,6 +3859,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2015,
+    "searchAliases": {
+      "en": "Fujifilm XC 50-230mm f4.5-6.7 OIS II",
+      "zh": "富士 XC 50-230mm f4.5-6.7 OIS II"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -3750,6 +3954,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2018,
+    "searchAliases": {
+      "en": "Fujifilm XF 8-16mm f2.8 WR",
+      "zh": "富士 XF 8-16mm f2.8 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -3834,6 +4042,10 @@
     "angleOfViewCalc": 121,
     "apertureBladeCount": 9,
     "releaseYear": 2023,
+    "searchAliases": {
+      "en": "Fujifilm XF 8mm f3.5 WR",
+      "zh": "富士 XF 8mm f3.5 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -3923,6 +4135,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2014,
+    "searchAliases": {
+      "en": "Fujifilm XF 10-24mm f4 OIS",
+      "zh": "富士 XF 10-24mm f4 OIS"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -4001,6 +4217,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2020,
+    "searchAliases": {
+      "en": "Fujifilm XF 10-24mm f4 OIS WR",
+      "zh": "富士 XF 10-24mm f4 OIS WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -4077,6 +4297,10 @@
     "angleOfViewCalc": 90.6,
     "apertureBladeCount": 7,
     "releaseYear": 2012,
+    "searchAliases": {
+      "en": "Fujifilm XF 14mm f2.8",
+      "zh": "富士 XF 14mm f2.8"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -4151,6 +4375,10 @@
       31.6
     ],
     "releaseYear": 2024,
+    "searchAliases": {
+      "en": "Fujifilm XF 16-50mm f2.8-4.8 WR",
+      "zh": "富士 XF 16-50mm f2.8-4.8 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -4250,6 +4478,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2015,
+    "searchAliases": {
+      "en": "Fujifilm XF 16-55mm f2.8 WR",
+      "zh": "富士 XF 16-55mm f2.8 WR"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -4327,6 +4559,10 @@
     ],
     "apertureBladeCount": 11,
     "releaseYear": 2024,
+    "searchAliases": {
+      "en": "Fujifilm XF 16-55mm f2.8 WR II",
+      "zh": "富士 XF 16-55mm f2.8 WR II"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -4424,6 +4660,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2019,
+    "searchAliases": {
+      "en": "Fujifilm XF 16-80mm f4 OIS WR",
+      "zh": "富士 XF 16-80mm f4 OIS WR"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -4506,6 +4746,10 @@
     "angleOfViewCalc": 83,
     "apertureBladeCount": 9,
     "releaseYear": 2015,
+    "searchAliases": {
+      "en": "Fujifilm XF 16mm f1.4 WR",
+      "zh": "富士 XF 16mm f1.4 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -4582,6 +4826,10 @@
     "angleOfViewCalc": 83,
     "apertureBladeCount": 9,
     "releaseYear": 2019,
+    "searchAliases": {
+      "en": "Fujifilm XF 16mm f2.8 WR",
+      "zh": "富士 XF 16mm f2.8 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -4685,6 +4933,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2012,
+    "searchAliases": {
+      "en": "Fujifilm XF 18-55mm f2.8-4 OIS",
+      "zh": "富士 XF 18-55mm f2.8-4 OIS"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -4760,6 +5012,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Fujifilm XF 18-120mm f4 PZ WR",
+      "zh": "富士 XF 18-120mm f4 PZ WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -4845,6 +5101,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2014,
+    "searchAliases": {
+      "en": "Fujifilm XF 18-135mm f3.5-5.6 OIS WR",
+      "zh": "富士 XF 18-135mm f3.5-5.6 OIS WR"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -4911,6 +5171,10 @@
     "angleOfViewCalc": 76.3,
     "apertureBladeCount": 9,
     "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Fujifilm XF 18mm f1.4 WR",
+      "zh": "富士 XF 18mm f1.4 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -4988,6 +5252,10 @@
     "angleOfViewCalc": 76.3,
     "apertureBladeCount": 7,
     "releaseYear": 2012,
+    "searchAliases": {
+      "en": "Fujifilm XF 18mm f2",
+      "zh": "富士 XF 18mm f2"
+    },
     "pricing": {
       "global": {
         "new": {
@@ -5046,6 +5314,10 @@
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 7,
     "releaseYear": 2013,
+    "searchAliases": {
+      "en": "Fujifilm XF 23mm f1.4",
+      "zh": "富士 XF 23mm f1.4"
+    },
     "pricing": {
       "global": {
         "new": {
@@ -5106,6 +5378,10 @@
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 9,
     "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Fujifilm XF 23mm f1.4 WR",
+      "zh": "富士 XF 23mm f1.4 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -5172,6 +5448,10 @@
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 9,
     "releaseYear": 2016,
+    "searchAliases": {
+      "en": "Fujifilm XF 23mm f2 WR",
+      "zh": "富士 XF 23mm f2 WR"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -5251,6 +5531,10 @@
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 11,
     "releaseYear": 2025,
+    "searchAliases": {
+      "en": "Fujifilm XF 23mm f2.8 WR",
+      "zh": "富士 XF 23mm f2.8 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -5335,6 +5619,10 @@
     "angleOfViewCalc": 55.3,
     "apertureBladeCount": 7,
     "releaseYear": 2013,
+    "searchAliases": {
+      "en": "Fujifilm XF 27mm f2.8",
+      "zh": "富士 XF 27mm f2.8"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -5401,6 +5689,10 @@
     "angleOfViewCalc": 55.3,
     "apertureBladeCount": 7,
     "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Fujifilm XF 27mm f2.8 WR",
+      "zh": "富士 XF 27mm f2.8 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -5469,6 +5761,10 @@
     "angleOfViewCalc": 50.5,
     "apertureBladeCount": 9,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Fujifilm XF 30mm f2.8 WR Macro",
+      "zh": "富士 XF 30mm f2.8 WR Macro"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -5535,6 +5831,10 @@
     "angleOfViewCalc": 46.4,
     "apertureBladeCount": 9,
     "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Fujifilm XF 33mm f1.4 WR",
+      "zh": "富士 XF 33mm f1.4 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -5602,6 +5902,10 @@
     "angleOfViewCalc": 44,
     "apertureBladeCount": 7,
     "releaseYear": 2012,
+    "searchAliases": {
+      "en": "Fujifilm XF 35mm f1.4",
+      "zh": "富士 XF 35mm f1.4"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -5683,6 +5987,10 @@
     "angleOfViewCalc": 44,
     "apertureBladeCount": 9,
     "releaseYear": 2015,
+    "searchAliases": {
+      "en": "Fujifilm XF 35mm f2 WR",
+      "zh": "富士 XF 35mm f2 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -5773,6 +6081,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2014,
+    "searchAliases": {
+      "en": "Fujifilm XF 50-140mm f2.8 OIS WR",
+      "zh": "富士 XF 50-140mm f2.8 OIS WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -5857,6 +6169,10 @@
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 9,
     "releaseYear": 2020,
+    "searchAliases": {
+      "en": "Fujifilm XF 50mm f1.0 WR",
+      "zh": "富士 XF 50mm f1.0 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -5923,6 +6239,10 @@
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "searchAliases": {
+      "en": "Fujifilm XF 50mm f2 WR",
+      "zh": "富士 XF 50mm f2 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -6021,6 +6341,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2013,
+    "searchAliases": {
+      "en": "Fujifilm XF 55-200mm f3.5-4.8 OIS",
+      "zh": "富士 XF 55-200mm f3.5-4.8 OIS"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -6086,6 +6410,10 @@
     "angleOfViewCalc": 28.4,
     "apertureBladeCount": 7,
     "releaseYear": 2014,
+    "searchAliases": {
+      "en": "Fujifilm XF 56mm f1.2",
+      "zh": "富士 XF 56mm f1.2"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -6153,6 +6481,10 @@
     "angleOfViewCalc": 28.4,
     "apertureBladeCount": 7,
     "releaseYear": 2015,
+    "searchAliases": {
+      "en": "Fujifilm XF 56mm f1.2 APD",
+      "zh": "富士 XF 56mm f1.2 APD"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -6231,6 +6563,10 @@
     "angleOfViewCalc": 28.4,
     "apertureBladeCount": 11,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Fujifilm XF 56mm f1.2 WR",
+      "zh": "富士 XF 56mm f1.2 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -6317,6 +6653,10 @@
     "angleOfViewCalc": 26.5,
     "apertureBladeCount": 9,
     "releaseYear": 2012,
+    "searchAliases": {
+      "en": "Fujifilm XF 60mm f2.4 Macro",
+      "zh": "富士 XF 60mm f2.4 Macro"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -6399,6 +6739,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Fujifilm XF 70-300mm f4-5.6 OIS WR",
+      "zh": "富士 XF 70-300mm f4-5.6 OIS WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -6469,6 +6813,10 @@
     "angleOfViewCalc": 20.1,
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "searchAliases": {
+      "en": "Fujifilm XF 80mm f2.8 OIS WR Macro",
+      "zh": "富士 XF 80mm f2.8 OIS WR Macro"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -6553,6 +6901,10 @@
     "angleOfViewCalc": 17.9,
     "apertureBladeCount": 7,
     "releaseYear": 2015,
+    "searchAliases": {
+      "en": "Fujifilm XF 90mm f2 WR",
+      "zh": "富士 XF 90mm f2 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -6634,6 +6986,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2016,
+    "searchAliases": {
+      "en": "Fujifilm XF 100-400mm f4.5-5.6 OIS WR",
+      "zh": "富士 XF 100-400mm f4.5-5.6 OIS WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -6713,6 +7069,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Fujifilm XF 150-600mm f5.6-8 OIS WR",
+      "zh": "富士 XF 150-600mm f5.6-8 OIS WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -6800,6 +7160,10 @@
     "angleOfViewCalc": 8.1,
     "apertureBladeCount": 9,
     "releaseYear": 2018,
+    "searchAliases": {
+      "en": "Fujifilm XF 200mm f2 OIS WR",
+      "zh": "富士 XF 200mm f2 OIS WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -6884,6 +7248,10 @@
     "angleOfViewCalc": 3.2,
     "apertureBladeCount": 9,
     "releaseYear": 2024,
+    "searchAliases": {
+      "en": "Fujifilm XF 500mm f5.6 OIS WR",
+      "zh": "富士 XF 500mm f5.6 OIS WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -6977,6 +7345,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2024,
+    "searchAliases": {
+      "en": "Laowa 4.5-10mm f2.8 Fisheye Zoom Fuji X",
+      "zh": "老蛙 4.5-10mm f2.8 Fisheye Zoom 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -7054,6 +7426,10 @@
     "angleOfViewCalc": 148.4,
     "apertureBladeCount": 7,
     "releaseYear": 2020,
+    "searchAliases": {
+      "en": "Laowa 4mm f2.8 210° Circular Fisheye Fuji X",
+      "zh": "老蛙 4mm f2.8 210° Circular Fisheye 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -7141,6 +7517,10 @@
     ],
     "apertureBladeCount": 5,
     "releaseYear": 2023,
+    "searchAliases": {
+      "en": "Laowa 8-16mm f3.5-5.0 Fuji X",
+      "zh": "老蛙 8-16mm f3.5-5.0 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -7209,6 +7589,10 @@
     "angleOfViewCalc": 115.1,
     "apertureBladeCount": 7,
     "releaseYear": 2018,
+    "searchAliases": {
+      "en": "Laowa 9mm f2.8 Fuji X",
+      "zh": "老蛙 9mm f2.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -7287,6 +7671,10 @@
     "angleOfViewCalc": 109.5,
     "apertureBladeCount": 5,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Laowa 10mm f4.0 Cookie Fuji X",
+      "zh": "老蛙 10mm f4.0 Cookie 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -7375,6 +7763,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2024,
+    "searchAliases": {
+      "en": "Laowa 12-24mm f5.6 Zoom Shift Fuji X",
+      "zh": "老蛙 12-24mm f5.6 Zoom Shift 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -7447,6 +7839,10 @@
     "angleOfViewCalc": 59,
     "apertureBladeCount": 9,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Laowa Argus 25mm f0.95 APO Fuji X",
+      "zh": "老蛙 Argus 25mm f0.95 APO 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -7519,6 +7915,10 @@
     "angleOfViewCalc": 46.4,
     "apertureBladeCount": 9,
     "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Laowa Argus 33mm f0.95 Fuji X",
+      "zh": "老蛙 Argus 33mm f0.95 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -7600,6 +8000,10 @@
     "angleOfViewCalc": 24.6,
     "apertureBladeCount": 9,
     "releaseYear": 2020,
+    "searchAliases": {
+      "en": "Laowa 65mm f2.8 Macro 2X Fuji X",
+      "zh": "老蛙 65mm f2.8 Macro 2X 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -7672,6 +8076,10 @@
     "angleOfView": 98,
     "angleOfViewCalc": 99.4,
     "apertureBladeCount": 7,
+    "searchAliases": {
+      "en": "SG Image 12mm f2.8 Fuji X",
+      "zh": "深光 12mm f2.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -7741,6 +8149,10 @@
     "angleOfView": 76.2,
     "angleOfViewCalc": 61,
     "apertureBladeCount": "N/A",
+    "searchAliases": {
+      "en": "SG Image 24mm f6.3 Fuji X",
+      "zh": "深光 24mm f6.3 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -7819,6 +8231,10 @@
     "angleOfView": 58,
     "angleOfViewCalc": 59,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "SG Image AF 25mm f1.8 Fuji X",
+      "zh": "深光 AF 25mm f1.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -7891,6 +8307,10 @@
     "angleOfView": 42,
     "angleOfViewCalc": 28.9,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "SG Image AF 55mm f1.8 Fuji X",
+      "zh": "深光 AF 55mm f1.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -7958,6 +8378,10 @@
     "angleOfView": 168,
     "angleOfViewCalc": 124.1,
     "apertureBladeCount": 7,
+    "searchAliases": {
+      "en": "SG Image 7.5mm f2.8 Fuji X",
+      "zh": "深光 7.5mm f2.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -8036,6 +8460,10 @@
     "angleOfView": 76,
     "angleOfViewCalc": 76.3,
     "apertureBladeCount": "N/A",
+    "searchAliases": {
+      "en": "SG Image 18mm f6.3 Fuji X",
+      "zh": "深光 18mm f6.3 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -8113,6 +8541,10 @@
     "angleOfView": 58,
     "angleOfViewCalc": 59,
     "apertureBladeCount": 7,
+    "searchAliases": {
+      "en": "SG Image 25mm f1.8 Fuji X",
+      "zh": "深光 25mm f1.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -8186,6 +8618,10 @@
     "angleOfView": 44,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 12,
+    "searchAliases": {
+      "en": "SG Image 35mm f0.95 Fuji X",
+      "zh": "深光 35mm f0.95 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -8258,6 +8694,10 @@
     "angleOfView": 44,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "SG Image 35mm f1.2 Fuji X",
+      "zh": "深光 35mm f1.2 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -8331,6 +8771,10 @@
     "angleOfView": 32,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "SG Image 50mm f1.4 Fuji X",
+      "zh": "深光 50mm f1.4 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -8403,6 +8847,10 @@
     "angleOfView": 44,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": "N/A",
+    "searchAliases": {
+      "en": "SG Image 50mm f1.8 Fuji X",
+      "zh": "深光 50mm f1.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -8497,6 +8945,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2023,
+    "searchAliases": {
+      "en": "Sigma 10-18mm f2.8 Contemporary Fuji X",
+      "zh": "适马 10-18mm f2.8 Contemporary 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -8583,6 +9035,10 @@
     "angleOfViewCalc": 99.4,
     "apertureBladeCount": 9,
     "releaseYear": 2025,
+    "searchAliases": {
+      "en": "Sigma 12mm f1.4 Contemporary Fuji X",
+      "zh": "适马 12mm f1.4 Contemporary 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -8674,6 +9130,10 @@
     "angleOfViewCalc": 86.7,
     "apertureBladeCount": 9,
     "releaseYear": 2026,
+    "searchAliases": {
+      "en": "Sigma 15mm f1.4 Contemporary Fuji X",
+      "zh": "适马 15mm f1.4 Contemporary 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -8785,6 +9245,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2025,
+    "searchAliases": {
+      "en": "Sigma 16-300mm f3.5-6.7 Contemporary Fuji X",
+      "zh": "适马 16-300mm f3.5-6.7 Contemporary 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -8878,6 +9342,10 @@
     "angleOfViewCalc": 83,
     "apertureBladeCount": 9,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Sigma 16mm f1.4 Contemporary Fuji X",
+      "zh": "适马 16mm f1.4 Contemporary 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -8975,6 +9443,10 @@
     ],
     "apertureBladeCount": 11,
     "releaseYear": 2025,
+    "searchAliases": {
+      "en": "Sigma 17-40mm f1.8 Art Fuji X",
+      "zh": "适马 17-40mm f1.8 Art 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -9078,6 +9550,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Sigma 18-50mm f2.8 Contemporary Fuji X",
+      "zh": "适马 18-50mm f2.8 Contemporary 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -9162,6 +9638,10 @@
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 9,
     "releaseYear": 2023,
+    "searchAliases": {
+      "en": "Sigma 23mm f1.4 Contemporary Fuji X",
+      "zh": "适马 23mm f1.4 Contemporary 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -9246,6 +9726,10 @@
     "angleOfViewCalc": 50.5,
     "apertureBladeCount": 9,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Sigma 30mm f1.4 Contemporary Fuji X",
+      "zh": "适马 30mm f1.4 Contemporary 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -9331,6 +9815,10 @@
     "angleOfViewCalc": 28.4,
     "apertureBladeCount": 9,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Sigma 56mm f1.4 Contemporary Fuji X",
+      "zh": "适马 56mm f1.4 Contemporary 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -9429,6 +9917,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2023,
+    "searchAliases": {
+      "en": "Sigma 100-400mm f5-6.3 Contemporary Fuji X",
+      "zh": "适马 100-400mm f5-6.3 Contemporary 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -9528,6 +10020,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2023,
+    "searchAliases": {
+      "en": "Tamron 11-20mm f2.8 Fuji X",
+      "zh": "腾龙 11-20mm f2.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -9624,6 +10120,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Tamron 17-70mm f2.8 Fuji X",
+      "zh": "腾龙 17-70mm f2.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -9725,6 +10225,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Tamron 18-300mm f3.5-6.3 Fuji X",
+      "zh": "腾龙 18-300mm f3.5-6.3 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -9828,6 +10332,10 @@
     ],
     "apertureBladeCount": 7,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Tamron 150-500mm f5-6.7 Fuji X",
+      "zh": "腾龙 150-500mm f5-6.7 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -9907,6 +10415,10 @@
     "angleOfView": 63,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 11,
+    "searchAliases": {
+      "en": "TTArtisan 35mm T2.1 Fuji X",
+      "zh": "铭匠 35mm T2.1 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -9987,6 +10499,10 @@
     "angleOfView": 24,
     "angleOfViewCalc": 16.1,
     "apertureBladeCount": 12,
+    "searchAliases": {
+      "en": "TTArtisan 100mm f2.8 Macro 2X Fuji X",
+      "zh": "铭匠 100mm f2.8 Macro 2X 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -10061,6 +10577,10 @@
     "angleOfView": 92,
     "angleOfViewCalc": 90.6,
     "apertureBladeCount": 7,
+    "searchAliases": {
+      "en": "TTArtisan AF 14mm f3.5 Fuji X",
+      "zh": "铭匠 AF 14mm f3.5 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -10138,6 +10658,10 @@
     "angleOfView": 81,
     "angleOfViewCalc": 79.5,
     "apertureBladeCount": 6,
+    "searchAliases": {
+      "en": "TTArtisan AF 17mm f1.8 Air Fuji X",
+      "zh": "铭匠 AF 17mm f1.8 Air 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -10207,6 +10731,10 @@
     "angleOfView": 62,
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "TTArtisan AF 23mm f1.8 Fuji X",
+      "zh": "铭匠 AF 23mm f1.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -10288,6 +10816,10 @@
     "angleOfView": 56,
     "angleOfViewCalc": 55.3,
     "apertureBladeCount": 7,
+    "searchAliases": {
+      "en": "TTArtisan AF 27mm f2.8 Fuji X",
+      "zh": "铭匠 AF 27mm f2.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -10360,6 +10892,10 @@
     "angleOfView": 45,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "TTArtisan AF 35mm f1.8 II Fuji X",
+      "zh": "铭匠 AF 35mm f1.8 II 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -10443,6 +10979,10 @@
     "angleOfView": 28,
     "angleOfViewCalc": 28.4,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "TTArtisan AF 56mm f1.8 Fuji X",
+      "zh": "铭匠 AF 56mm f1.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -10526,6 +11066,10 @@
     "angleOfView": 32,
     "angleOfViewCalc": 21.4,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "TTArtisan AF 75mm f2 Fuji X",
+      "zh": "铭匠 AF 75mm f2 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -10608,6 +11152,10 @@
     "angleOfView": 180,
     "angleOfViewCalc": 124.1,
     "apertureBladeCount": 7,
+    "searchAliases": {
+      "en": "TTArtisan 7.5mm f2 Fisheye Fuji X",
+      "zh": "铭匠 7.5mm f2 Fisheye 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -10687,6 +11235,10 @@
     "angleOfView": 105,
     "angleOfViewCalc": 109.5,
     "apertureBladeCount": 8,
+    "searchAliases": {
+      "en": "TTArtisan 10mm f2 ASPH. Fuji X",
+      "zh": "铭匠 10mm f2 ASPH. 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -10766,6 +11318,10 @@
     "angleOfView": 62,
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "TTArtisan 23mm f1.4 Fuji X",
+      "zh": "铭匠 23mm f1.4 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -10843,6 +11399,10 @@
     "angleOfView": 61,
     "angleOfViewCalc": 59,
     "apertureBladeCount": 7,
+    "searchAliases": {
+      "en": "TTArtisan 25mm f2 Fuji X",
+      "zh": "铭匠 25mm f2 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -10917,6 +11477,10 @@
     "angleOfView": 45,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "TTArtisan 35mm f0.95 Fuji X",
+      "zh": "铭匠 35mm f0.95 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -10987,6 +11551,10 @@
     "angleOfView": 45,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "TTArtisan 35mm f1.4 Fuji X",
+      "zh": "铭匠 35mm f1.4 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -11068,6 +11636,10 @@
     "angleOfView": 40,
     "angleOfViewCalc": 39,
     "apertureBladeCount": 11,
+    "searchAliases": {
+      "en": "TTArtisan 40mm f2.8 Macro Fuji X",
+      "zh": "铭匠 40mm f2.8 Macro 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -11139,6 +11711,10 @@
     "angleOfView": 32,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "TTArtisan 50mm f0.95 Fuji X",
+      "zh": "铭匠 50mm f0.95 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -11210,6 +11786,10 @@
     "angleOfView": 32,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "TTArtisan 50mm f1.2 Fuji X",
+      "zh": "铭匠 50mm f1.2 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -11285,6 +11865,10 @@
     "angleOfView": 45,
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 13,
+    "searchAliases": {
+      "en": "TTArtisan Tilt 50mm f1.4 Fuji X",
+      "zh": "铭匠 Tilt 50mm f1.4 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -11362,6 +11946,10 @@
     "angleOfView": 45,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "TTArtisan Tilt 35mm f1.4 Fuji X",
+      "zh": "铭匠 Tilt 35mm f1.4 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -11443,6 +12031,10 @@
     "angleOfView": 24,
     "angleOfViewCalc": 16.1,
     "apertureBladeCount": 12,
+    "searchAliases": {
+      "en": "TTArtisan Tilt-Shift 100mm f2.8 Macro 2X Fuji X",
+      "zh": "铭匠 Tilt-Shift 100mm f2.8 Macro 2X 富士"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -11534,6 +12126,10 @@
     "angleOfView": 113.8,
     "angleOfViewCalc": 115.1,
     "apertureBladeCount": 7,
+    "searchAliases": {
+      "en": "Viltrox AF 9mm f2.8 Air Fuji X",
+      "zh": "唯卓仕 AF 9mm f2.8 Air 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -11599,6 +12195,10 @@
     },
     "angleOfViewCalc": 94.9,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Viltrox AF 13mm f1.4 Fuji X",
+      "zh": "唯卓仕 AF 13mm f1.4 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -11689,6 +12289,10 @@
     "angleOfView": 84.9,
     "angleOfViewCalc": 86.7,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Viltrox AF 15mm f1.7 Air Fuji X",
+      "zh": "唯卓仕 AF 15mm f1.7 Air 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -11758,6 +12362,10 @@
     "angleOfView": 63.4,
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Viltrox AF 23mm f1.4 Fuji X",
+      "zh": "唯卓仕 AF 23mm f1.4 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -11844,6 +12452,10 @@
     "angleOfView": 60,
     "angleOfViewCalc": 59,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Viltrox AF 25mm f1.7 Air Fuji X",
+      "zh": "唯卓仕 AF 25mm f1.7 Air 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -11911,6 +12523,10 @@
     "angleOfView": 55.3,
     "angleOfViewCalc": 55.3,
     "apertureBladeCount": 11,
+    "searchAliases": {
+      "en": "Viltrox AF 27mm f1.2 Pro Fuji X",
+      "zh": "唯卓仕 AF 27mm f1.2 Pro 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -11983,6 +12599,10 @@
     "angleOfView": 52.07,
     "angleOfViewCalc": 53.6,
     "apertureBladeCount": "N/A",
+    "searchAliases": {
+      "en": "Viltrox AF 28mm f4.5 Fuji X",
+      "zh": "唯卓仕 AF 28mm f4.5 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -12059,6 +12679,10 @@
     "angleOfView": 45.7,
     "angleOfViewCalc": 46.4,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Viltrox AF 33mm f1.4 Fuji X",
+      "zh": "唯卓仕 AF 33mm f1.4 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -12129,6 +12753,10 @@
     "angleOfView": 45,
     "angleOfViewCalc": 44,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Viltrox AF 35mm f1.7 Air Fuji X",
+      "zh": "唯卓仕 AF 35mm f1.7 Air 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -12193,6 +12821,10 @@
       }
     },
     "angleOfViewCalc": 28.4,
+    "searchAliases": {
+      "en": "Viltrox AF 56mm f1.2 Pro Fuji X",
+      "zh": "唯卓仕 AF 56mm f1.2 Pro 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -12267,6 +12899,10 @@
       }
     },
     "angleOfViewCalc": 28.4,
+    "searchAliases": {
+      "en": "Viltrox AF 56mm f1.4 Fuji X",
+      "zh": "唯卓仕 AF 56mm f1.4 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -12338,6 +12974,10 @@
     "angleOfView": 29.8,
     "angleOfViewCalc": 28.4,
     "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Viltrox AF 56mm f1.7 Air Fuji X",
+      "zh": "唯卓仕 AF 56mm f1.7 Air 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -12402,6 +13042,10 @@
     },
     "angleOfViewCalc": 21.4,
     "apertureBladeCount": 11,
+    "searchAliases": {
+      "en": "Viltrox AF 75mm f1.2 Pro Fuji X",
+      "zh": "唯卓仕 AF 75mm f1.2 Pro 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -12477,6 +13121,10 @@
       "mm": 92
     },
     "angleOfViewCalc": 18.9,
+    "searchAliases": {
+      "en": "Viltrox AF 85mm f1.8 II Fuji X",
+      "zh": "唯卓仕 AF 85mm f1.8 II 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -12549,6 +13197,10 @@
     "angleOfViewCalc": 76.3,
     "apertureBladeCount": 10,
     "releaseYear": 2024,
+    "searchAliases": {
+      "en": "Voigtlander Color Skopar 18mm f2.8 Fuji X",
+      "zh": "福伦达 Color Skopar 18mm f2.8 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -12629,6 +13281,10 @@
     "angleOfViewCalc": 63.2,
     "apertureBladeCount": 12,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Voigtlander Nokton 23mm f1.2 Fuji X",
+      "zh": "福伦达 Nokton 23mm f1.2 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -12706,6 +13362,10 @@
     "angleOfViewCalc": 55.3,
     "apertureBladeCount": 10,
     "releaseYear": 2023,
+    "searchAliases": {
+      "en": "Voigtlander 27mm f2.0 Ultron Fuji X",
+      "zh": "福伦达 27mm f2.0 Ultron 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -12780,6 +13440,10 @@
     "angleOfViewCalc": 44,
     "apertureBladeCount": 12,
     "releaseYear": 2023,
+    "searchAliases": {
+      "en": "Voigtlander Nokton 35mm f0.9 Fuji X",
+      "zh": "福伦达 Nokton 35mm f0.9 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -12861,6 +13525,10 @@
     "angleOfViewCalc": 44,
     "apertureBladeCount": 12,
     "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Voigtlander Nokton 35mm f1.2 Fuji X",
+      "zh": "福伦达 Nokton 35mm f1.2 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -12941,6 +13609,10 @@
     "angleOfViewCalc": 44,
     "apertureBladeCount": 10,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Voigtlander 35mm f2.0 Macro APO-Ultron Fuji X",
+      "zh": "福伦达 35mm f2.0 Macro APO-Ultron 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -13021,6 +13693,10 @@
     "angleOfViewCalc": 31.6,
     "apertureBladeCount": 12,
     "releaseYear": 2023,
+    "searchAliases": {
+      "en": "Voigtlander Nokton 50mm f1.2 Fuji X",
+      "zh": "福伦达 Nokton 50mm f1.2 富士"
+    },
     "pricing": {
       "cn": {
         "new": {
