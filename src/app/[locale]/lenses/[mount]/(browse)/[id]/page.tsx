@@ -22,13 +22,13 @@ import Breadcrumb from "@/components/Breadcrumb";
 import SpecialtyBadges from "@/components/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens-specialty";
 import { RetailersDropdown } from "@/components/RetailersDropdown";
-import { TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/lib/ui-tokens";
+import { UTILITY_BTN_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates, lensOgImages } from "@/lib/seo";
 import { SITE } from "@/config/site";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
-import { lensDisplayName } from "@/lib/lens.format";
+import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 import { buildLensDescription, buildLensProductSchema } from "@/lib/lens-seo";
 import { PriceSection } from "@/components/PriceSection";
 
@@ -317,17 +317,19 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
         <div className="flex-1 flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            {(() => {
-              const s = deriveSpecialty(lens);
-              if (!s.isCine && s.opticalTraits.length === 0) {
-                return null;
-              }
-              return (
-                <div className="flex flex-wrap items-center gap-1.5 self-start">
-                  <SpecialtyBadges {...s} />
-                </div>
-              );
-            })()}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">
+                  {lensSubtitleLine(brandName, lens.series)}
+                </span>
+                <SpecialtyBadges {...deriveSpecialty(lens)} />
+              </div>
+              {url && (
+                <ExternalLink href={url} className="shrink-0 inline-flex items-center gap-0.5 text-xs text-zinc-400 transition-colors hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300">
+                  {t("officialSite")}
+                </ExternalLink>
+              )}
+            </div>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 font-heading leading-[1.1]">
               {displayName}
             </h1>
@@ -335,14 +337,9 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
           <PriceSection lens={lens} />
 
-          <div className="mt-auto flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2">
+          <div className="mt-auto flex flex-wrap items-center gap-2">
             <LensDetailCompareToggle lensId={lens.id} />
             <RetailersDropdown lens={lens} countryCode={countryCode} customId="detail" />
-            {url && (
-              <ExternalLink href={url} className={TEXT_LINK_CLS + " inline-flex items-center gap-1 text-sm px-1 pt-1 sm:pt-0"}>
-                {t("officialSite")}
-              </ExternalLink>
-            )}
           </div>
         </div>
       </div>

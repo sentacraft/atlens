@@ -75,9 +75,6 @@ function buildBhPhotoUrl(lens: Lens, locale: string): string {
   return `https://www.bhphotovideo.com/c/search?Ntt=${encodeURIComponent(query)}`;
 }
 
-export function hasAffiliateUrl(url: string): boolean {
-  return getAffiliateParam(url) !== undefined;
-}
 
 function getAffiliateParam(url: string): string | undefined {
   try {
@@ -97,13 +94,17 @@ function buildOfficialUrl(url: string): { url: string; isAffiliate: boolean } {
   return { url: `${url}${sep}${param}`, isAffiliate: true };
 }
 
+export function isPurchaseLocale(locale: string): boolean {
+  return locale !== "zh";
+}
+
 export function buildPurchaseLinks(
   lens: Lens,
   locale: string,
   countryCode: string,
   customId?: string,
 ): PurchaseLink[] {
-  if (locale === "zh" || !lens.purchaseChannels) {
+  if (!isPurchaseLocale(locale) || !lens.purchaseChannels) {
     return [];
   }
 

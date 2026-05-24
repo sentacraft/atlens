@@ -53,31 +53,6 @@ function PurchaseLinkList({ links, lensId, customId, compact, className }: LinkL
   );
 }
 
-export function PurchaseLinksSection({ lens, countryCode, customId }: Props) {
-  const locale = useLocale();
-  const t = useTranslations("Purchase");
-
-  const links = useMemo(
-    () => buildPurchaseLinks(lens, locale, countryCode, customId),
-    [lens, locale, countryCode, customId],
-  );
-
-  if (links.length === 0) {
-    return null;
-  }
-
-  return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex items-center gap-1.5">
-        <span className="text-xs font-medium text-zinc-400 dark:text-zinc-500">
-          {t("whereToBuy")}
-        </span>
-        {links.some((l) => l.isAffiliate) && <PurchaseDisclosure />}
-      </div>
-      <PurchaseLinkList links={links} lensId={lens.id} customId={customId} />
-    </div>
-  );
-}
 
 export function PurchaseLinksCompact({ lens, countryCode, customId, className }: Props) {
   const locale = useLocale();

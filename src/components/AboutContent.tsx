@@ -8,6 +8,7 @@ import GitHubMark from "@/components/logos/GitHubMark";
 import { getLensesByMount } from "@/lib/lens";
 import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/AckCard";
+import { isPurchaseLocale } from "@/lib/purchase-links";
 
 type CoverageState = boolean | "planned" | "partial" | "n/a";
 type CoverageMeta = {
@@ -195,7 +196,7 @@ export default async function AboutContent() {
           { id: "data-accuracy", label: t("dataAccuracyTitle") },
           { id: "disclaimer", label: t("disclaimerTitle") },
           { id: "privacy", label: t("privacyTitle") },
-          ...(locale !== "zh" ? [{ id: "affiliate", label: t("affiliateTitle") }] : []),
+          ...(isPurchaseLocale(locale) ? [{ id: "affiliate", label: t("affiliateTitle") }] : []),
           { id: "donation", label: t("donationTitle") },
           { id: "ack", label: t("ackTitle") },
         ].map(({ id, label }, i) => (
@@ -401,7 +402,7 @@ export default async function AboutContent() {
       </Section>
 
       {/* Affiliate Disclosure — en only; zh has no purchase links */}
-      {locale !== "zh" && (
+      {isPurchaseLocale(locale) && (
         <Section id="affiliate" title={t("affiliateTitle")}>
           <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
             {t("affiliateBody1")}
