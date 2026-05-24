@@ -279,12 +279,6 @@ interface LensLocaleTranslations {
   accessories?: string[];
 }
 
-export interface PurchaseChannel {
-  channel: 'official' | 'ebay' | 'bhphoto';
-  url?: string;
-  affiliate?: string;
-}
-
 /**
  * Canonical lens record used by the X-Glass app.
  */
@@ -693,7 +687,11 @@ export interface Lens {
     };
   };
 
-  purchaseChannels?: PurchaseChannel[];
+  affiliateChannels?: {
+    official?: string;
+    ebay?: true;
+    bhphoto?: true;
+  };
 
   /**
    * Mount systems this lens is available for, as stated by the manufacturer.

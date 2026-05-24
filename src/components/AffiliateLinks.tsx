@@ -11,10 +11,9 @@ import { track } from "@/lib/analytics";
 interface Props {
   lens: Lens;
   customId?: string;
-  compact?: boolean;
 }
 
-export function AffiliateLinks({ lens, customId, compact = false }: Props) {
+export function AffiliateLinks({ lens, customId }: Props) {
   const locale = useLocale();
   const t = useTranslations("Affiliate");
 
@@ -27,31 +26,27 @@ export function AffiliateLinks({ lens, customId, compact = false }: Props) {
     return null;
   }
 
-  const textSize = compact ? "text-[10px]" : "text-[11px]";
-
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex flex-wrap items-center gap-1.5">
-        {links.map((link) => (
-          <a
-            key={link.platform}
-            href={link.url}
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            onClick={() => track("affiliate_click", {
-              platform: link.platform,
-              lens_id: lens.id,
-              source: customId ?? "unknown",
-            })}
-            className="inline-flex min-h-7 items-center gap-1 rounded-md border border-zinc-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
-          >
-            {t("findOn", { platform: link.label })}
-            <ArrowUpRight className="size-3" aria-hidden="true" />
-          </a>
-        ))}
-      </div>
-      <AffiliateDisclosure textSize={textSize} />
-    </div>
+    <>
+      {links.map((link) => (
+        <a
+          key={link.platform}
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          onClick={() => track("affiliate_click", {
+            platform: link.platform,
+            lens_id: lens.id,
+            source: customId ?? "unknown",
+          })}
+          className="inline-flex min-h-7 items-center gap-1 rounded-md border border-zinc-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+        >
+          {t("findOn", { platform: link.label })}
+          <ArrowUpRight className="size-3" aria-hidden="true" />
+        </a>
+      ))}
+      <AffiliateDisclosure />
+    </>
   );
 }
 
@@ -90,15 +85,15 @@ export function AffiliateLinksRow({ lens, customId }: Omit<Props, "compact">) {
   );
 }
 
-function AffiliateDisclosure({ textSize }: { textSize: string }) {
+function AffiliateDisclosure() {
   const t = useTranslations("Affiliate");
   return (
     <Popover.Root>
       <Popover.Trigger
-        className={`inline-flex w-fit cursor-pointer items-center gap-1 ${textSize} text-zinc-400 outline-none transition-colors hover:text-zinc-500 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:text-zinc-500 dark:hover:text-zinc-400`}
+        className="inline-flex min-h-7 cursor-pointer items-center text-zinc-400 outline-none transition-colors hover:text-zinc-500 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:text-zinc-500 dark:hover:text-zinc-400"
+        aria-label={t("disclosure")}
       >
-        <span>{t("disclosure")}</span>
-        <Info className="size-3 opacity-70" aria-hidden="true" />
+        <Info className="size-3.5" aria-hidden="true" />
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner side="top" align="start" sideOffset={6}>

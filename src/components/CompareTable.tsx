@@ -729,12 +729,12 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
               {locale !== "zh" && (
                 <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
                   <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 break-words align-middle">
-                    <div className="flex flex-col items-end gap-0.5 text-right">
+                    <div className="flex items-center justify-end gap-1">
                       <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
                         {t("whereToBuy")}
                       </span>
                       <Popover.Root>
-                        <Popover.Trigger className="inline-flex cursor-pointer items-center gap-0.5 text-[10px] text-zinc-400 outline-none hover:text-zinc-500 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:text-zinc-500 dark:hover:text-zinc-400">
+                        <Popover.Trigger className="inline-flex cursor-pointer items-center text-zinc-400 outline-none hover:text-zinc-500 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:text-zinc-500 dark:hover:text-zinc-400">
                           <Info className="size-3 opacity-70" aria-hidden="true" />
                         </Popover.Trigger>
                         <Popover.Portal>
