@@ -45,7 +45,7 @@ function computePosterTitle(
     const uniqueBrands = [...new Set(lenses.map((l) => tBrand(l.brand)))];
     return [tImage("comparisonTitle", { brands: uniqueBrands.join(" · ") })];
   }
-  return lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand));
+  return lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model));
 }
 
 export function ShareButton({ lenses, variant = "default", triggerClassName, presetTitle, presetSubtitle }: ShareButtonProps) {
@@ -237,7 +237,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, pre
   }, [effectiveTitle, effectiveSlogan, computedPosterTitle, lenses, t]);
 
   const truncatedUrl = shareUrl.length > 56 ? shareUrl.slice(0, 56) + "…" : shareUrl;
-  const lensCaption = lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand)).join(" / ");
+  const lensCaption = lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model)).join(" / ");
   const posterCustom = {
     title: effectiveTitle.trim() || undefined,
     slogan: effectiveSlogan.trim() || undefined,

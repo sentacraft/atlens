@@ -70,7 +70,7 @@ export async function generateMetadata({
   }
 
   const brandName = tBrand(lens.brand);
-  const displayName = lensDisplayName(brandName, lens.series, lens.model, lens.brand);
+  const displayName = lensDisplayName(brandName, lens.series, lens.model);
   const description = buildLensDescription({ lens, mount: resolvedMount, brandName, t });
 
   return {
@@ -173,7 +173,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
   // Derived values shared between the visible header and the Product JSON-LD.
   const brandName = tBrand(lens.brand);
-  const displayName = lensDisplayName(brandName, lens.series, lens.model, lens.brand);
+  const displayName = lensDisplayName(brandName, lens.series, lens.model);
   const description = buildLensDescription({ lens, mount: resolvedMount, brandName, t });
   const canonicalUrl = `${SITE.url}/${locale}/lenses/${mount}/${id}`;
   const productSchema = buildLensProductSchema({
