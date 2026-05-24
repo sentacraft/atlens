@@ -38,6 +38,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Fujifilm GF 20-35mm f4 WR",
+      "zh": "富士 GF 20-35mm f4 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -124,6 +128,10 @@
     "angleOfViewCalc": 100,
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "searchAliases": {
+      "en": "Fujifilm GF 23mm f4 WR",
+      "zh": "富士 GF 23mm f4 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -205,6 +213,10 @@
     "angleOfViewCalc": 84.8,
     "apertureBladeCount": 9,
     "releaseYear": 2020,
+    "searchAliases": {
+      "en": "Fujifilm GF 30mm f3.5 WR",
+      "zh": "富士 GF 30mm f3.5 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -274,6 +286,10 @@
     "angleOfViewCalc": 84.8,
     "apertureBladeCount": 9,
     "releaseYear": 2023,
+    "searchAliases": {
+      "en": "Fujifilm GF 30mm f5.6 T/S",
+      "zh": "富士 GF 30mm f5.6 T/S"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -378,6 +394,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "searchAliases": {
+      "en": "Fujifilm GF 32-64mm f4 WR",
+      "zh": "富士 GF 32-64mm f4 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -467,6 +487,10 @@
     ],
     "apertureBladeCount": 13,
     "releaseYear": 2025,
+    "searchAliases": {
+      "en": "Fujifilm GF 32-90mm T3.5 PZ OIS WR",
+      "zh": "富士 GF 32-90mm T3.5 PZ OIS WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -550,6 +574,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Fujifilm GF 35-70mm f4.5-5.6 WR",
+      "zh": "富士 GF 35-70mm f4.5-5.6 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -643,6 +671,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2020,
+    "searchAliases": {
+      "en": "Fujifilm GF 45-100mm f4 OIS WR",
+      "zh": "富士 GF 45-100mm f4 OIS WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -724,6 +756,10 @@
     "angleOfViewCalc": 62.7,
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "searchAliases": {
+      "en": "Fujifilm GF 45mm f2.8 WR",
+      "zh": "富士 GF 45mm f2.8 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -806,6 +842,10 @@
     "angleOfViewCalc": 57.4,
     "apertureBladeCount": 9,
     "releaseYear": 2020,
+    "searchAliases": {
+      "en": "Fujifilm GF 50mm f3.5 WR",
+      "zh": "富士 GF 50mm f3.5 WR"
+    },
     "pricing": {
       "cn": {
         "used": {
@@ -888,6 +928,10 @@
     "angleOfViewCalc": 52.9,
     "apertureBladeCount": 11,
     "releaseYear": 2023,
+    "searchAliases": {
+      "en": "Fujifilm GF 55mm f1.7 WR",
+      "zh": "富士 GF 55mm f1.7 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -968,6 +1012,10 @@
     "angleOfViewCalc": 47,
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "searchAliases": {
+      "en": "Fujifilm GF 63mm f2.8 WR",
+      "zh": "富士 GF 63mm f2.8 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1048,6 +1096,10 @@
     "angleOfViewCalc": 37.8,
     "apertureBladeCount": 9,
     "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Fujifilm GF 80mm f1.7 WR",
+      "zh": "富士 GF 80mm f1.7 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1137,6 +1189,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2019,
+    "searchAliases": {
+      "en": "Fujifilm GF 100-200mm f5.6 OIS WR",
+      "zh": "富士 GF 100-200mm f5.6 OIS WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1220,6 +1276,10 @@
     "angleOfViewCalc": 28,
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "searchAliases": {
+      "en": "Fujifilm GF 110mm f2 WR",
+      "zh": "富士 GF 110mm f2 WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1305,6 +1365,10 @@
     "angleOfViewCalc": 28,
     "apertureBladeCount": 9,
     "releaseYear": 2023,
+    "searchAliases": {
+      "en": "Fujifilm GF 110mm f5.6 T/S Macro",
+      "zh": "富士 GF 110mm f5.6 T/S Macro"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1388,6 +1452,10 @@
     "angleOfViewCalc": 25.7,
     "apertureBladeCount": 9,
     "releaseYear": 2017,
+    "searchAliases": {
+      "en": "Fujifilm GF 120mm f4 OIS WR Macro",
+      "zh": "富士 GF 120mm f4 OIS WR Macro"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1468,6 +1536,10 @@
     "angleOfViewCalc": 12.5,
     "apertureBladeCount": 9,
     "releaseYear": 2018,
+    "searchAliases": {
+      "en": "Fujifilm GF 250mm f4 OIS WR",
+      "zh": "富士 GF 250mm f4 OIS WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1549,6 +1621,10 @@
     "angleOfViewCalc": 6.3,
     "apertureBladeCount": 9,
     "releaseYear": 2024,
+    "searchAliases": {
+      "en": "Fujifilm GF 500mm f5.6 OIS WR",
+      "zh": "富士 GF 500mm f5.6 OIS WR"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1641,6 +1717,10 @@
     ],
     "apertureBladeCount": 9,
     "releaseYear": 2025,
+    "searchAliases": {
+      "en": "Laowa 8-15mm f2.8 Fisheye Zoom Fuji GFX",
+      "zh": "老蛙 8-15mm f2.8 Fisheye Zoom GFX"
+    },
     "pricing": {
       "global": {
         "new": {
@@ -1719,6 +1799,10 @@
     "angleOfViewCalc": 116.3,
     "apertureBladeCount": 14,
     "releaseYear": 2026,
+    "searchAliases": {
+      "en": "Laowa 17mm f4 Fuji GFX",
+      "zh": "老蛙 17mm f4 GFX"
+    },
     "pricing": {
       "global": {
         "new": {
@@ -1785,6 +1869,10 @@
     "angleOfViewCalc": 116.3,
     "apertureBladeCount": 14,
     "releaseYear": 2026,
+    "searchAliases": {
+      "en": "Laowa TS 17mm f4 Fuji GFX",
+      "zh": "老蛙 TS 17mm f4 GFX"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1860,6 +1948,10 @@
     "angleOfViewCalc": 76.1,
     "apertureBladeCount": 15,
     "releaseYear": 2025,
+    "searchAliases": {
+      "en": "Laowa TS 35mm f2.8 Macro 0.5X Fuji GFX",
+      "zh": "老蛙 TS 35mm f2.8 Macro 0.5X GFX"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -1934,6 +2026,10 @@
     "angleOfViewCalc": 52.9,
     "apertureBladeCount": 15,
     "releaseYear": 2024,
+    "searchAliases": {
+      "en": "Laowa TS 55mm f2.8 Macro 1X Fuji GFX",
+      "zh": "老蛙 TS 55mm f2.8 Macro 1X GFX"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2008,6 +2104,10 @@
     "angleOfViewCalc": 30.6,
     "apertureBladeCount": 15,
     "releaseYear": 2024,
+    "searchAliases": {
+      "en": "Laowa TS 100mm f2.8 Macro 1X Fuji GFX",
+      "zh": "老蛙 TS 100mm f2.8 Macro 1X GFX"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2077,6 +2177,10 @@
     "angleOfViewCalc": 116.3,
     "apertureBladeCount": 5,
     "releaseYear": 2019,
+    "searchAliases": {
+      "en": "Laowa 17mm f4.0 Fuji GFX",
+      "zh": "老蛙 17mm f4.0 GFX"
+    },
     "pricing": {
       "cn": {
         "new": {
@@ -2138,6 +2242,10 @@
     "angleOfViewCalc": 110.5,
     "apertureBladeCount": 5,
     "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Laowa 19mm f2.8 Fuji GFX",
+      "zh": "老蛙 19mm f2.8 GFX"
+    },
     "pricing": {
       "cn": {
         "new": {
