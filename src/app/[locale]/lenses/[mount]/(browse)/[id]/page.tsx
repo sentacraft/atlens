@@ -22,8 +22,6 @@ import Breadcrumb from "@/components/Breadcrumb";
 import SpecialtyBadges from "@/components/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens-specialty";
 import { RetailersDropdown } from "@/components/RetailersDropdown";
-import { PurchaseDisclosureCaption } from "@/components/PurchaseLinks";
-import { buildPurchaseLinks } from "@/lib/purchase-links";
 import { TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
@@ -175,7 +173,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const tPricing = await getTranslations("Pricing");
   const countryCode = (await headers()).get("cf-ipcountry") ?? "US";
   const url = getLensUrl(lens, locale);
-  const hasAffiliate = buildPurchaseLinks(lens, locale, countryCode).some((l) => l.isAffiliate);
 
   // Derived values shared between the visible header and the Product JSON-LD.
   const brandName = tBrand(lens.brand);
@@ -294,7 +291,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
             fields={reportableFields}
             className={UTILITY_BTN_CLS}
           >
-            <Flag size={12} />
+            <Flag className="size-4" />
             <span className="hidden sm:inline">{t("reportIssue")}</span>
           </FeedbackTrigger>
         </div>
@@ -338,18 +335,13 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
           <PriceSection lens={lens} />
 
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <LensDetailCompareToggle lensId={lens.id} />
-              <RetailersDropdown lens={lens} countryCode={countryCode} customId="detail" />
-              {url && (
-                <ExternalLink href={url} className={TEXT_LINK_CLS + " inline-flex items-center gap-1 text-sm px-1"}>
-                  {t("officialSite")}
-                </ExternalLink>
-              )}
-            </div>
-            {hasAffiliate && (
-              <PurchaseDisclosureCaption />
+          <div className="flex flex-wrap items-center gap-2">
+            <LensDetailCompareToggle lensId={lens.id} />
+            <RetailersDropdown lens={lens} countryCode={countryCode} customId="detail" />
+            {url && (
+              <ExternalLink href={url} className={TEXT_LINK_CLS + " inline-flex items-center gap-1 text-sm px-1"}>
+                {t("officialSite")}
+              </ExternalLink>
             )}
           </div>
         </div>
@@ -407,7 +399,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               fields={reportableFields}
               className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
             >
-              <Flag size={12} />
+              <Flag className="size-4" />
               {t("reportIssue")}
             </FeedbackTrigger>
           </div>

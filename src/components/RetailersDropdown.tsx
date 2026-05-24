@@ -47,7 +47,7 @@ export function RetailersDropdown({ lens, countryCode, customId }: Props) {
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner side="bottom" align="start" sideOffset={6}>
-          <Popover.Popup className="min-w-56 origin-(--transform-origin) rounded-lg border border-zinc-200 bg-white py-1 shadow-lg duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
+          <Popover.Popup className="min-w-56 max-w-72 origin-(--transform-origin) rounded-lg border border-zinc-200 bg-white py-1 shadow-lg duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
             {links.map((link) => (
               <DropdownItem key={link.channel} link={link} lensId={lens.id} customId={customId} />
             ))}

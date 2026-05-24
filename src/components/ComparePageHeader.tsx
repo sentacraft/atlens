@@ -66,7 +66,7 @@ export default function ComparePageHeader({ minColumns = 0 }: Props) {
         <h1 className="hidden sm:block text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           {t("title")}
         </h1>
-        {activeLenses.length >= minColumns &&
+        {activeLenses.length >= 1 &&
           (canAddMore ? (
             <LensSearchDialog
               onSelectLens={onSelectLens}

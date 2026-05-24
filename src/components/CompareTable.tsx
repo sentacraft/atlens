@@ -298,6 +298,7 @@ export default function CompareTable({ lenses: initialLenses, countryCode, minCo
   const td = useTranslations("LensDetail");
   const tBrand = useTranslations("Brands");
   const tPricing = useTranslations("Pricing");
+  const tPurchase = useTranslations("Purchase");
   const locale = useLocale();
   const priceFieldLabel = tPricing("fieldLabel");
   const priceGroupLabel = tPricing("groupLabel");
@@ -710,11 +711,8 @@ export default function CompareTable({ lenses: initialLenses, countryCode, minCo
                     );
                   }
                   return (
-                    <td key={lens.id} className="px-3 py-3 align-top">
-                      <div className="flex flex-col items-center gap-2">
-                        <PriceCell lens={lens} compact />
-                        <PurchaseLinksCompact lens={lens} countryCode={countryCode} customId="compare" />
-                      </div>
+                    <td key={lens.id} className="px-3 py-3">
+                      <PriceCell lens={lens} />
                     </td>
                   );
                 })}
@@ -722,6 +720,35 @@ export default function CompareTable({ lenses: initialLenses, countryCode, minCo
                   <td key={`empty-price-${i}`} className="border-l border-zinc-100 bg-white dark:border-zinc-800/60 dark:bg-zinc-950" />
                 ))}
               </tr>
+
+              {/* Where to Buy row — only rendered on non-zh locales when links exist */}
+              {(() => {
+                const anyLinks = orderedLenses.some(
+                  (l) => buildPurchaseLinks(l, locale, countryCode).length > 0,
+                );
+                if (!anyLinks) {
+                  return null;
+                }
+                return (
+                  <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
+                    <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 align-middle">
+                      <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 text-right block">
+                        {tPurchase("whereToBuy")}
+                      </span>
+                    </td>
+                    {orderedLenses.map((lens) => (
+                      <td key={lens.id} className="px-3 py-3">
+                        <div className="flex justify-center">
+                          <PurchaseLinksCompact lens={lens} countryCode={countryCode} customId="compare" />
+                        </div>
+                      </td>
+                    ))}
+                    {Array.from({ length: emptySlotCount }).map((_, i) => (
+                      <td key={`empty-buy-${i}`} className="border-l border-zinc-100 bg-white dark:border-zinc-800/60 dark:bg-zinc-950" />
+                    ))}
+                  </tr>
+                );
+              })()}
             </React.Fragment>
           )}
 

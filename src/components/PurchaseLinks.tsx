@@ -28,7 +28,7 @@ const LINK_COMPACT_CLS = "inline-flex whitespace-nowrap items-center gap-1 round
 
 function PurchaseLinkList({ links, lensId, customId, compact }: LinkListProps) {
   return (
-    <div className={compact ? "flex flex-wrap justify-center gap-1.5" : "flex flex-wrap gap-2"}>
+    <div className={compact ? "flex flex-wrap gap-1.5" : "flex flex-wrap gap-2"}>
       {links.map((link) => (
         <a
           key={link.channel}
