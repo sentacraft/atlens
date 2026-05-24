@@ -3,13 +3,12 @@
 import { useMemo } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Popover } from "@base-ui/react/popover";
-import { ArrowUpRight, ChevronDown } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Info } from "lucide-react";
 import { buildPurchaseLinks } from "@/lib/purchase-links";
 import type { PurchaseLink } from "@/lib/purchase-links";
 import type { Lens } from "@/lib/types";
 import { ACTION_OUTLINE_CLS } from "@/lib/ui-tokens";
 import { track } from "@/lib/analytics";
-import { PurchaseDisclosureCaption } from "@/components/PurchaseLinks";
 
 interface Props {
   lens: Lens;
@@ -35,24 +34,28 @@ export function RetailersDropdown({ lens, countryCode, customId }: Props) {
     .map((l) => l.label)
     .join(", ");
   const extra = links.length > 2 ? ` +${links.length - 2}` : "";
+  const hasAffiliate = links.some((l) => l.isAffiliate);
 
   return (
     <Popover.Root>
-      <Popover.Trigger className={ACTION_OUTLINE_CLS + " cursor-pointer"}>
-        {t("buyAt")}{" "}
+      <Popover.Trigger className={`${ACTION_OUTLINE_CLS} cursor-pointer`}>
+        {t("buyAt")}
         <span className="text-zinc-400 dark:text-zinc-500">
           {preview}{extra}
         </span>
-        <ChevronDown size={12} />
+        <ChevronDown size={13} className="ml-0.5" />
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner side="bottom" align="start" sideOffset={6}>
-          <Popover.Popup className="min-w-56 max-w-72 origin-(--transform-origin) rounded-lg border border-zinc-200 bg-white py-1 shadow-lg duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
+          <Popover.Popup className="w-[var(--anchor-width)] origin-(--transform-origin) rounded-lg border border-zinc-200 bg-white py-1 shadow-lg duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
             {links.map((link) => (
               <DropdownItem key={link.channel} link={link} lensId={lens.id} customId={customId} />
             ))}
-            {links.some((l) => l.isAffiliate) && (
-              <PurchaseDisclosureCaption className="border-t border-zinc-100 dark:border-zinc-800/60" />
+            {hasAffiliate && (
+              <div className="mt-1 flex items-start gap-2 border-t border-zinc-100 px-3 py-2 text-[11px] leading-relaxed text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                <Info size={11} className="shrink-0 mt-0.5 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
+                <span>{t("disclosureDetail")}</span>
+              </div>
             )}
           </Popover.Popup>
         </Popover.Positioner>
@@ -73,7 +76,7 @@ function DropdownItem({ link, lensId, customId }: { link: PurchaseLink; lensId: 
         source: customId ?? "unknown",
         is_affiliate: link.isAffiliate,
       })}
-      className="flex items-center justify-between px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
+      className="flex items-center justify-between px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
     >
       <span>{link.label}</span>
       <ArrowUpRight size={12} className="text-zinc-400" />

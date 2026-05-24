@@ -395,6 +395,10 @@
     "privacyTitle": "Privacy",
     "privacyBody": "X-Glass does not require registration and does not collect personal information.",
     "privacyAnalytics": "This site uses Cloudflare Analytics to collect aggregated, anonymous data — such as page views and feature usage — solely to help improve the product. No personally identifiable information is collected.",
+    "affiliateTitle": "Affiliate Disclosure",
+    "affiliateBody1": "Building X-Glass involves curating and cross-checking specs from dozens of manufacturer sites, collecting price reference data, and running a multi-stage data pipeline. It is an ongoing effort, not a one-time build.",
+    "affiliateBody2": "Some pages include retailer links, a few of which are affiliate links. If you purchase through them, X-Glass earns a small commission at no extra cost to you — this helps sustain that work and keep the tool free and ad-free.",
+    "affiliateBody3": "Affiliate partnerships never influence rankings or pricing data. The codebase is open source — you're welcome to verify.",
     "donationTitle": "Support the Project",
     "donationBody": "X-Glass is open source on GitHub. Every spec in this database went through tedious data extraction and manual cross-checking. If it helped you find the right lens — or saved you some time — consider supporting the project.",
     "donationComingSoon": "Sponsorship options are being set up — check back soon.",
@@ -495,7 +499,6 @@
     "whereToBuy": "Where to buy",
     "buyAt": "Buy at",
     "officialStore": "Official Store",
-    "disclosure": "May earn commission",
-    "disclosureDetail": "Some retailer links are affiliate links. X-Glass may earn a small commission at no extra cost to you. This does not affect rankings or pricing data."
+    "disclosureDetail": "Some retailer links are affiliate. X-Glass may earn a small commission at no extra cost to you."
   }
 }

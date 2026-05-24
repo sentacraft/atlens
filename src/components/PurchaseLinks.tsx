@@ -115,7 +115,7 @@ function PurchaseDisclosure() {
     <Popover.Root>
       <Popover.Trigger
         className="inline-flex cursor-pointer items-center text-zinc-400 outline-none transition-colors hover:text-zinc-500 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:text-zinc-500 dark:hover:text-zinc-400"
-        aria-label={t("disclosure")}
+        aria-label={t("disclosureDetail")}
       >
         <Info className="size-3.5" aria-hidden="true" />
       </Popover.Trigger>
