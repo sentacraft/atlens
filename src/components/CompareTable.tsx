@@ -297,7 +297,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const locale = useLocale();
   const priceFieldLabel = tPricing("fieldLabel");
   const priceGroupLabel = tPricing("groupLabel");
-  const { compareIds, dispatch, remove } = useCompare();
+  const { compareIds, reorder, remove, seed } = useCompare();
   const { onSelectLens, getResultState } = useCompareLensSearch();
   // Compare page is the only surface that projects compare state onto the
   // URL. This hook owns that projection so individual write callsites no
@@ -322,8 +322,8 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   // preset link click that re-renders the server component with new
   // searchParams).
   useLayoutEffect(() => {
-    dispatch({ type: "seed", ids: initialLensIds });
-  }, [initialLensIds, dispatch]);
+    seed(initialLensIds);
+  }, [initialLensIds, seed]);
 
   const orderedLenses = compareIds
     .map((id) => getLensesByMount(mount, locale).find((lens) => lens.id === id))
@@ -341,14 +341,10 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   }), [td]);
 
   function handleShiftLens(lensId: string, direction: -1 | 1) {
-    const index = compareIds.indexOf(lensId);
-    const newIndex = index + direction;
-    if (newIndex < 0 || newIndex >= compareIds.length) {
-      return;
-    }
-    const next = [...compareIds];
-    [next[index], next[newIndex]] = [next[newIndex], next[index]];
-    dispatch({ type: "reorder", ids: next });
+    const fromIndex = compareIds.indexOf(lensId);
+    const toIndex = fromIndex + direction;
+
+    reorder(fromIndex, toIndex);
   }
 
   const allGroups = useMemo(

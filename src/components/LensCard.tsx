@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Plus, Check } from "lucide-react";
@@ -18,18 +19,12 @@ interface Props {
   lens: Lens;
   isSelected: boolean;
   selectionDisabled: boolean;
-  onToggle: () => void;
+  onToggle: (id: string) => void;
   priority?: boolean;
-  /**
-   * Suppress the compare entry (mobile floating + desktop footer button).
-   * Collection / pSEO landing pages opt out of compare per the pSEO
-   * contract — those surfaces are curated browsing, not interactive
-   * exploration.
-   */
   hideCompare?: boolean;
 }
 
-export default function LensCard({
+export default memo(function LensCard({
   lens,
   isSelected,
   selectionDisabled,
@@ -175,7 +170,7 @@ export default function LensCard({
       {/* Mobile-only icon compare toggle — absolute in top-right corner */}
       {!hideCompare && (
         <button
-          onClick={selectionDisabled ? () => toast(t("compareFullToast")) : onToggle}
+          onClick={selectionDisabled ? () => toast(t("compareFullToast")) : () => onToggle(lens.id)}
           aria-label={isSelected ? t("removeFromCompare") : selectionDisabled ? t("compareFull") : t("addToCompare")}
           className={`hidden max-xs:flex absolute top-2 right-2 z-10 items-center justify-center h-8 w-8 rounded-full transition-colors ${
             isSelected
@@ -197,7 +192,7 @@ export default function LensCard({
         >
           <Button
             size="sm"
-            onClick={onToggle}
+            onClick={() => onToggle(lens.id)}
             disabled={selectionDisabled}
             className={`w-full h-10 sm:h-9 font-medium ${
               isSelected
@@ -213,7 +208,7 @@ export default function LensCard({
       )}
     </div>
   );
-}
+});
 
 function Badge({
   label,

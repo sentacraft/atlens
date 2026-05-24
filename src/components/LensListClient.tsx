@@ -235,7 +235,7 @@ export default function LensListClient({ lenses }: Props) {
                     !compareIds.includes(lens.id) &&
                     compareIds.length >= MAX_COMPARE
                   }
-                  onToggle={() => toggle(lens.id)}
+                  onToggle={toggle}
                   priority={i < 8}
                 />
               ))}
