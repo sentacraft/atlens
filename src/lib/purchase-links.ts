@@ -35,10 +35,10 @@ export interface PurchaseLink {
 }
 
 function getSearchQuery(lens: Lens, locale: string): string {
-  const alias = locale === "zh"
-    ? lens.searchAliases?.zh
-    : lens.searchAliases?.en;
-  return alias ?? `${lens.brand} ${lens.model}`;
+  if (locale === "zh" && lens.searchAliases.zh) {
+    return lens.searchAliases.zh;
+  }
+  return lens.searchAliases.en;
 }
 
 function buildEbayUrl(

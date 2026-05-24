@@ -673,7 +673,7 @@ export interface Lens {
    *
    * @example { en: "7Artisans 50mm f0.95", zh: "七工匠 50mm f0.95" }
    */
-  searchAliases?: Partial<Record<"en" | "zh", string>>;
+  searchAliases: { en: string; zh?: string };
 
   /**
    * Sampled prices per market. Each market holds independent `new` (official

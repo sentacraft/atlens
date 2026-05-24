@@ -109,9 +109,9 @@ const lensBaseShape = {
   apertureBladeCount: z.union([z.number().int().positive(), specNaSchema]).optional(),
   releaseYear: z.number().int().min(1900).max(2100).optional(),
   searchAliases: z.strictObject({
-    en: nonEmptyStringSchema.optional(),
+    en: nonEmptyStringSchema,
     zh: nonEmptyStringSchema.optional(),
-  }).optional(),
+  }),
   pricing: z.strictObject({
     cn: pricingMarketSchema.optional(),
     global: pricingMarketSchema.optional(),
