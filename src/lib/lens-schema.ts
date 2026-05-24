@@ -108,6 +108,10 @@ const lensBaseShape = {
   ]).optional(),
   apertureBladeCount: z.union([z.number().int().positive(), specNaSchema]).optional(),
   releaseYear: z.number().int().min(1900).max(2100).optional(),
+  searchAliases: z.strictObject({
+    en: nonEmptyStringSchema.optional(),
+    zh: nonEmptyStringSchema.optional(),
+  }).optional(),
   pricing: z.strictObject({
     cn: pricingMarketSchema.optional(),
     global: pricingMarketSchema.optional(),
@@ -360,7 +364,7 @@ export const KNOWN_DISTINCT_PAIRS = new Set([
 // Identifiers, human-readable labels, links, and freeform notes are excluded;
 // all measurable optical/physical fields are included automatically.
 const SIMILARITY_EXCLUDE = new Set([
-  "id", "brand", "model", "series", "officialLinks", "fieldNotes", "translations",
+  "id", "brand", "model", "series", "officialLinks", "fieldNotes", "translations", "searchAliases",
 ]);
 
 // Threshold above which two same-brand lenses are flagged as suspiciously similar.
