@@ -412,6 +412,13 @@ export default async function AboutContent() {
             </p>
             <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
               {t("supportIntegrity")}
+              <FeedbackTrigger
+                type="general"
+                className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+              >
+                {t("supportIntegrityCta")}
+              </FeedbackTrigger>
+              {t("supportIntegritySuffix")}
             </p>
           </>
         )}
