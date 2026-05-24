@@ -8,6 +8,7 @@ import GitHubMark from "@/components/logos/GitHubMark";
 import { getLensesByMount } from "@/lib/lens";
 import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/AckCard";
+import { isPurchaseLocale } from "@/lib/purchase-links";
 
 type CoverageState = boolean | "planned" | "partial" | "n/a";
 type CoverageMeta = {
@@ -195,7 +196,7 @@ export default async function AboutContent() {
           { id: "data-accuracy", label: t("dataAccuracyTitle") },
           { id: "disclaimer", label: t("disclaimerTitle") },
           { id: "privacy", label: t("privacyTitle") },
-          { id: "donation", label: t("donationTitle") },
+          { id: "support", label: t("supportTitle") },
           { id: "ack", label: t("ackTitle") },
         ].map(({ id, label }, i) => (
           <a
@@ -399,10 +400,30 @@ export default async function AboutContent() {
         </p>
       </Section>
 
-      {/* Donation */}
-      <Section id="donation" title={t("donationTitle")}>
+      {/* Support the Project — cost, affiliate (en only), donate */}
+      <Section id="support" title={t("supportTitle")}>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-          {t("donationBody")}
+          {t("supportCost")}
+        </p>
+        {isPurchaseLocale(locale) && (
+          <>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              {t("supportAffiliate")}
+            </p>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              {t("supportIntegrity")}
+              <FeedbackTrigger
+                type="general"
+                className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+              >
+                {t("supportIntegrityCta")}
+              </FeedbackTrigger>
+              {t("supportIntegritySuffix")}
+            </p>
+          </>
+        )}
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+          {t(isPurchaseLocale(locale) ? "supportDonateAlt" : "supportDonate")}
         </p>
         {locale === "zh" ? (
           <div className="mt-1">

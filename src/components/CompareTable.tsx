@@ -11,7 +11,7 @@ import { useNavLock } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { ArrowUpRight, ChevronLeft, ChevronRight, Flag, TriangleAlert, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flag, TriangleAlert, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ICON_CLOSE_BTN_CLS, TEXT_LINK_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
@@ -31,6 +31,10 @@ import { buildSpecGroups, resolveSpecRow } from "@/lib/lens-spec-groups";
 import type { StructuredLine, ResolvedSpecRow } from "@/lib/lens-spec-groups";
 import type { Lens } from "@/lib/types";
 import { PriceCell } from "@/components/PriceCell";
+import { PurchaseLinksCompact, PurchaseDisclosureCaption } from "@/components/PurchaseLinks";
+import { CompareMobileBuyPanel } from "@/components/CompareMobileBuyPanel";
+import { buildPurchaseLinks } from "@/lib/purchase-links";
+import { useCountryCode } from "@/hooks/useCountryCode";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 
@@ -59,13 +63,13 @@ function LensHeaderContent({
         </div>
       </div>
 
-      <p className="text-center text-xs font-normal text-zinc-500 dark:text-zinc-400">
-        {lensSubtitleLine(tBrand(lens.brand), lens.series)}
-      </p>
       <div className="my-1.5 flex min-h-[1.5rem] flex-wrap items-center justify-center gap-1.5">
+        <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">
+          {lensSubtitleLine(tBrand(lens.brand), lens.series)}
+        </span>
         <SpecialtyBadges {...deriveSpecialty(lens)} />
       </div>
-      <p className="line-clamp-3 text-center font-semibold leading-snug text-zinc-900 dark:text-zinc-50">
+      <p className="mt-auto line-clamp-3 text-center font-semibold leading-snug text-zinc-900 dark:text-zinc-50">
         {lens.model}
       </p>
     </>
@@ -76,10 +80,6 @@ function LensHeaderContent({
 
 function LensHeader({
   lens,
-  url,
-  officialSiteLabel,
-  reportIssueLabel,
-  feedbackFields,
   removeLabel,
   shiftLeftLabel,
   shiftRightLabel,
@@ -90,10 +90,6 @@ function LensHeader({
   onShiftRight,
 }: {
   lens: Lens;
-  url: string | null | undefined;
-  officialSiteLabel: string;
-  reportIssueLabel: string;
-  feedbackFields: FeedbackField[] | undefined;
   removeLabel: string;
   shiftLeftLabel: string;
   shiftRightLabel: string;
@@ -103,7 +99,6 @@ function LensHeader({
   onShiftLeft: () => void;
   onShiftRight: () => void;
 }) {
-  const tBrand = useTranslations("Brands");
 
   return (
     <th className="group relative z-20 h-px align-top border-l border-zinc-200 bg-zinc-50 px-3 py-1 text-left transition-colors sm:py-1.5 sm:group-hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:sm:group-hover:bg-zinc-800">
@@ -145,35 +140,6 @@ function LensHeader({
             on links works without overflowing the cell */}
         <div className="mt-1 flex flex-1 flex-col items-center text-center sm:mt-0">
           <LensHeaderContent lens={lens} />
-          {/* Official site + report links — mt-auto pushes to bottom so
-              links across columns align even when model names differ in height */}
-          <div className="mt-auto flex flex-col items-center gap-0 pt-1.5">
-            {url ? (
-              <a
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-0.5 ${TEXT_LINK_CLS}`}
-              >
-                <ArrowUpRight className="h-3 w-3 shrink-0" />
-                {officialSiteLabel}
-              </a>
-            ) : (
-              <span className="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-0.5 text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
-                <ArrowUpRight className="h-3 w-3 shrink-0" />
-                {officialSiteLabel}
-              </span>
-            )}
-            <FeedbackTrigger
-              type="data_issue"
-              context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
-              fields={feedbackFields}
-              className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-0.5 ${TEXT_LINK_CLS}`}
-            >
-              <Flag className="h-3 w-3 shrink-0" />
-              {reportIssueLabel}
-            </FeedbackTrigger>
-          </div>
         </div>
       </div>
     </th>
@@ -205,77 +171,6 @@ function EmptyLensHeader({
   );
 }
 
-// --- LinksRow: official site + report links, rendered at both top and bottom ---
-
-function LinksRow({
-  orderedLenses,
-  emptySlotCount,
-  lensFields,
-  url: getUrl,
-  officialSiteLabel,
-  reportIssueLabel,
-  tBrand: getBrand,
-  border,
-}: {
-  orderedLenses: Lens[];
-  emptySlotCount: number;
-  lensFields: Map<string, import("@/components/FeedbackDialog").FeedbackField[]>;
-  url: (lens: Lens) => string | null | undefined;
-  officialSiteLabel: string;
-  reportIssueLabel: string;
-  tBrand: (brand: string) => string;
-  border: "top" | "bottom";
-}) {
-  const borderCls =
-    border === "top"
-      ? "border-t border-zinc-200 dark:border-zinc-800"
-      : "border-b border-zinc-200 dark:border-zinc-800";
-
-  return (
-    <tr className={`${borderCls} bg-zinc-100/80 dark:bg-zinc-800/60`}>
-      <td className="sticky left-0 z-10 bg-zinc-100 px-3 py-2 dark:bg-zinc-800" />
-      {orderedLenses.map((lens) => {
-        const url = getUrl(lens);
-        const fields = lensFields.get(lens.id);
-        return (
-          <td key={lens.id} className="px-3 py-2">
-            <div className="flex flex-col items-center justify-center gap-0.5">
-              {url ? (
-                <a
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 ${TEXT_LINK_CLS}`}
-                >
-                  <ArrowUpRight className="h-3 w-3 shrink-0" />
-                  {officialSiteLabel}
-                </a>
-              ) : (
-                <span className="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
-                  <ArrowUpRight className="h-3 w-3 shrink-0" />
-                  {officialSiteLabel}
-                </span>
-              )}
-              <FeedbackTrigger
-                type="data_issue"
-                context={{ lensId: lens.id, lensModel: lens.model, lensBrand: getBrand(lens.brand) }}
-                fields={fields}
-                className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 ${TEXT_LINK_CLS}`}
-              >
-                <Flag className="h-3 w-3 shrink-0" />
-                {reportIssueLabel}
-              </FeedbackTrigger>
-            </div>
-          </td>
-        );
-      })}
-      {Array.from({ length: emptySlotCount }).map((_, i) => (
-        <td key={`empty-links-${border}-${i}`} className="border-l border-zinc-200 dark:border-zinc-800" />
-      ))}
-    </tr>
-  );
-}
-
 // --- CompareTable ---
 
 interface Props {
@@ -294,7 +189,9 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const td = useTranslations("LensDetail");
   const tBrand = useTranslations("Brands");
   const tPricing = useTranslations("Pricing");
+  const tPurchase = useTranslations("Purchase");
   const locale = useLocale();
+  const countryCode = useCountryCode();
   const priceFieldLabel = tPricing("fieldLabel");
   const priceGroupLabel = tPricing("groupLabel");
   const { compareIds, reorder, remove, seed } = useCompare();
@@ -331,6 +228,13 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
 
   // Number of empty slot columns to render (search triggers filling up to minColumns)
   const emptySlotCount = Math.max(0, minColumns - orderedLenses.length);
+
+  const allPurchaseLinks = useMemo(
+    () => orderedLenses.flatMap((l) => buildPurchaseLinks(l, locale, countryCode)),
+    [orderedLenses, locale, countryCode],
+  );
+  const hasAnyPurchaseLinks = allPurchaseLinks.length > 0;
+  const hasAffiliate = hasAnyPurchaseLinks && allPurchaseLinks.some((l) => l.isAffiliate);
 
   const valueCellLabels = useMemo(() => ({
     yes: td("yes"),
@@ -620,10 +524,6 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
               <LensHeader
                 key={lens.id}
                 lens={lens}
-                url={getLensUrl(lens, locale)}
-                officialSiteLabel={t("officialSite")}
-                reportIssueLabel={t("reportIssue")}
-                feedbackFields={lensFields.get(lens.id)}
                 removeLabel={t("removeLens", { model: lensDisplayName(tBrand(lens.brand), lens.series, lens.model, lens.brand) })}
                 shiftLeftLabel={t("shiftLeft")}
                 shiftRightLabel={t("shiftRight")}
@@ -686,9 +586,6 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
             <React.Fragment>
               <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
                 <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 break-words align-middle">
-                  {/* Two-line label: row name on top, single action-oriented
-                      warn below. Compact enough to avoid orphan characters
-                      even in the narrow (6rem) sticky label column. */}
                   <div className="flex flex-col items-end gap-0.5 text-right">
                     <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
                       {tPricing("rowLabel")}
@@ -710,9 +607,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                   }
                   return (
                     <td key={lens.id} className="px-3 py-3">
-                      <div className="flex justify-center">
-                        <PriceCell lens={lens} compact />
-                      </div>
+                      <PriceCell lens={lens} />
                     </td>
                   );
                 })}
@@ -720,6 +615,28 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                   <td key={`empty-price-${i}`} className="border-l border-zinc-100 bg-white dark:border-zinc-800/60 dark:bg-zinc-950" />
                 ))}
               </tr>
+
+              {/* Where to Buy row — only rendered when purchase links exist */}
+              {hasAnyPurchaseLinks && (
+                <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
+                  <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 align-middle">
+                    <div className="flex items-center justify-end gap-1">
+                      {hasAffiliate && <FieldNotePopover note={tPurchase("disclosureDetail")} />}
+                      <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                        {tPurchase("whereToBuy")}
+                      </span>
+                    </div>
+                  </td>
+                  {orderedLenses.map((lens) => (
+                    <td key={lens.id} className="px-3 py-3">
+                      <PurchaseLinksCompact lens={lens} customId="compare" className="justify-center" />
+                    </td>
+                  ))}
+                  {Array.from({ length: emptySlotCount }).map((_, i) => (
+                    <td key={`empty-buy-${i}`} className="border-l border-zinc-100 bg-white dark:border-zinc-800/60 dark:bg-zinc-950" />
+                  ))}
+                </tr>
+              )}
             </React.Fragment>
           )}
 
@@ -972,20 +889,15 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
           })}
         </tbody>
 
-        {orderedLenses.length > 0 && <tfoot>
-          <LinksRow
-            orderedLenses={orderedLenses}
-            emptySlotCount={emptySlotCount}
-            lensFields={lensFields}
-            url={(lens) => getLensUrl(lens, locale)}
-            officialSiteLabel={t("officialSite")}
-            reportIssueLabel={t("reportIssue")}
-            tBrand={tBrand}
-            border="top"
-          />
-        </tfoot>}
       </table>
     </div>
+
+    {hasAnyPurchaseLinks && (
+      <>
+        <CompareMobileBuyPanel lenses={orderedLenses} />
+        {hasAffiliate && <PurchaseDisclosureCaption className="hidden sm:flex" />}
+      </>
+    )}
     </>
   );
 }

@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 const WINDOW = "INTERVAL '30' DAY";
-const DASHBOARD_FILTER = `timestamp > NOW() - ${WINDOW} AND blob6 != '1'`;
+const DASHBOARD_FILTER = `timestamp > NOW() - ${WINDOW} AND blob7 != '1'`;
 
 const Q_OVERVIEW = `
   SELECT
@@ -189,6 +189,28 @@ const Q_SHARE_BY_SOURCE = `
   LIMIT 30
 `;
 
+const Q_PURCHASE_BY_CHANNEL = `
+  SELECT
+    blob4 AS channel,
+    SUM(_sample_interval) AS clicks,
+    sumIf(_sample_interval, double1 = 1) AS affiliate_clicks
+  FROM xglass_events
+  WHERE index1 = 'purchase_click'
+    AND ${DASHBOARD_FILTER}
+  GROUP BY channel
+  ORDER BY clicks DESC
+`;
+
+const Q_PURCHASE_BY_LENS = `
+  SELECT blob5 AS lens_id, SUM(_sample_interval) AS n
+  FROM xglass_events
+  WHERE index1 = 'purchase_click'
+    AND ${DASHBOARD_FILTER}
+  GROUP BY lens_id
+  ORDER BY n DESC
+  LIMIT 20
+`;
+
 function pct(num: number, denom: number): string {
   if (denom <= 0) {
     return "—";
@@ -306,6 +328,8 @@ export default async function AnalyticsDashboardPage() {
     mountSwitch,
     outbound,
     outboundBySource,
+    purchaseByChannel,
+    purchaseByLens,
   ] = await Promise.all([
     queryAE(Q_OVERVIEW),
     queryAE(Q_LOCALE_SPLIT),
@@ -323,6 +347,8 @@ export default async function AnalyticsDashboardPage() {
     queryAE(Q_MOUNT_SWITCH),
     queryAE(Q_OUTBOUND),
     queryAE(Q_OUTBOUND_BY_SOURCE),
+    queryAE(Q_PURCHASE_BY_CHANNEL),
+    queryAE(Q_PURCHASE_BY_LENS),
   ]);
 
   if (overview.error === "missing_credentials") {
@@ -401,6 +427,10 @@ export default async function AnalyticsDashboardPage() {
   const referrerRows = referrers.data.map((r) => ({
     ...r,
     display: formatHref(String(r.referrer ?? "")),
+  }));
+  const purchaseByLensRows = purchaseByLens.data.map((r) => ({
+    ...r,
+    display: formatLensSlug(String(r.lens_id ?? "")),
   }));
 
   return (
@@ -582,6 +612,27 @@ export default async function AnalyticsDashboardPage() {
               { key: "from_mount", label: "From" },
               { key: "to_mount", label: "To" },
               { key: "n", label: "Switches", align: "right", widthClass: COUNT_WIDTH },
+            ]}
+          />
+        </Card>
+
+        <Card title="Purchase · clicks by channel">
+          <Table
+            rows={purchaseByChannel.data}
+            columns={[
+              { key: "channel", label: "Channel" },
+              { key: "clicks", label: "Clicks", align: "right", widthClass: COUNT_WIDTH },
+              { key: "affiliate_clicks", label: "Affiliate", align: "right", widthClass: COUNT_WIDTH },
+            ]}
+          />
+        </Card>
+
+        <Card title="Purchase · top lenses">
+          <Table
+            rows={purchaseByLensRows}
+            columns={[
+              { key: "display", label: "Lens", titleKey: "lens_id" },
+              { key: "n", label: "Clicks", align: "right", widthClass: COUNT_WIDTH },
             ]}
           />
         </Card>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Check, Plus } from "lucide-react";
 import { useCompare } from "@/context/CompareProvider";
 import { MAX_COMPARE } from "@/lib/lens";
 import { ACTION_PRIMARY_CLS } from "@/lib/ui-tokens";
@@ -20,12 +21,13 @@ export default function LensDetailCompareToggle({ lensId }: Props) {
     <button
       onClick={() => toggle(lensId)}
       disabled={isFull}
-      className={`inline-flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg transition-colors ${
+      className={`inline-flex h-10 items-center gap-1.5 text-sm font-medium px-4 rounded-lg transition-colors ${
         isSelected
           ? "bg-zinc-200 text-zinc-700 hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600"
           : ACTION_PRIMARY_CLS
       }`}
     >
+      {isSelected ? <Check size={14} /> : !isFull && <Plus size={14} />}
       {isSelected ? t("removeFromCompare") : isFull ? t("compareFull") : t("addToCompare")}
     </button>
   );
