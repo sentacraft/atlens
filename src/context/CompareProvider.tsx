@@ -4,32 +4,28 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
-  useReducer,
+  useRef,
+  useState,
 } from "react";
-import {
-  compareReducer,
-  initialCompareState,
-  type CompareAction,
-  type CompareState,
-  type ScopedCompareAction,
-} from "@/lib/compareReducer";
 import { MAX_COMPARE } from "@/lib/lens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { track } from "@/lib/analytics";
 
+type CompareState = { X: string[]; G: string[] };
+const initialCompareState: CompareState = { X: [], G: [] };
+
 interface CompareContextValue {
   state: CompareState;
-  dispatch: (action: CompareAction) => void;
+  setState: React.Dispatch<React.SetStateAction<CompareState>>;
 }
 
 const CompareContext = createContext<CompareContextValue | null>(null);
 
 export function CompareProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(compareReducer, initialCompareState);
-  // dispatch from useReducer is reference-stable by contract; only state
-  // identity drives value changes here.
-  const value = useMemo(() => ({ state, dispatch }), [state]);
+  const [state, setState] = useState(initialCompareState);
+  const value = useMemo(() => ({ state, setState }), [state]);
   return (
     <CompareContext value={value}>
       {children}
@@ -37,69 +33,111 @@ export function CompareProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-/**
- * Mount-scoped compare hook — the only public API.
- *
- * Returns the current mount's id list plus a mount-injecting `dispatch`,
- * and three high-level helpers (`add`, `remove`, `toggle`) that bundle the
- * "read state → dispatch + analytics" pattern so consumers don't repeat it.
- *
- * Helpers live here, not in the Provider, so the per-render closure can
- * read latest state directly — no ref-sync gymnastics, and the Provider
- * stays a pure state machine.
- *
- * Use `dispatch` directly for the lower-frequency actions (`reorder`,
- * `clear`, `seed`) — they have no analytics gate and no state-dependent
- * branching, so a dedicated helper would just be a typed alias.
- */
 export function useCompare() {
   const ctx = useContext(CompareContext);
   if (!ctx) {
     throw new Error("useCompare must be used within CompareProvider");
   }
   const mount = useEffectiveMount();
-  const { state, dispatch: rawDispatch } = ctx;
+  const { state, setState } = ctx;
   const compareIds = state[mount];
 
-  // Stable per mount: useReducer's dispatch is reference-stable, mount only
-  // changes on URL navigation. Safe to put in useEffect deps without
-  // triggering re-runs on state mutations.
-  const dispatch = useCallback(
-    (action: ScopedCompareAction) =>
-      rawDispatch({ ...action, mount } as CompareAction),
-    [rawDispatch, mount],
-  );
+  const prevIdsRef = useRef(compareIds);
+  useEffect(() => {
+    const prev = prevIdsRef.current;
+    prevIdsRef.current = compareIds;
+    const added = compareIds.filter((id) => !prev.includes(id));
+    if (added.length === 1) {
+      track("compare_add", { lens_slug: added[0] });
+    }
+  }, [compareIds]);
 
-  // Helpers carry `compareIds` in their deps so they re-read latest state
-  // each render. Identity changes on every mutation — fine for event-handler
-  // usage (onClick), don't put these in useEffect deps.
   const add = useCallback(
     (id: string) => {
-      if (compareIds.includes(id) || compareIds.length >= MAX_COMPARE) {
-        return;
-      }
-      dispatch({ type: "add", id });
-      track("compare_add", { lens_slug: id });
+      setState(prev => {
+        const slot = prev[mount];
+        if (slot.includes(id) || slot.length >= MAX_COMPARE) {
+          return prev;
+        }
+        return { ...prev, [mount]: [...slot, id] };
+      });
     },
-    [compareIds, dispatch],
+    [mount, setState],
   );
 
   const remove = useCallback(
-    (id: string) => dispatch({ type: "remove", id }),
-    [dispatch],
+    (id: string) => {
+      setState(prev => {
+        const slot = prev[mount];
+        if (!slot.includes(id)) {
+          return prev;
+        }
+        return { ...prev, [mount]: slot.filter((v) => v !== id) };
+      });
+    },
+    [mount, setState],
+  );
+
+  const reorder = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      setState(prev => {
+        const slot = prev[mount];
+        if (
+          fromIndex < 0 || fromIndex >= slot.length ||
+          toIndex < 0 || toIndex >= slot.length ||
+          fromIndex === toIndex
+        ) {
+          return prev;
+        }
+        const ids = [...slot];
+        [ids[fromIndex], ids[toIndex]] = [ids[toIndex], ids[fromIndex]];
+        return { ...prev, [mount]: ids };
+      });
+    },
+    [mount, setState],
+  );
+
+  const clear = useCallback(
+    () => {
+      setState(prev => {
+        if (prev[mount].length === 0) {
+          return prev;
+        }
+        return { ...prev, [mount]: [] };
+      });
+    },
+    [mount, setState],
   );
 
   const toggle = useCallback(
     (id: string) => {
-      if (compareIds.includes(id)) {
-        dispatch({ type: "remove", id });
-      } else if (compareIds.length < MAX_COMPARE) {
-        dispatch({ type: "add", id });
-        track("compare_add", { lens_slug: id });
-      }
+      setState(prev => {
+        const slot = prev[mount];
+        if (slot.includes(id)) {
+          return { ...prev, [mount]: slot.filter((v) => v !== id) };
+        }
+        if (slot.length >= MAX_COMPARE) {
+          return prev;
+        }
+        return { ...prev, [mount]: [...slot, id] };
+      });
     },
-    [compareIds, dispatch],
+    [mount, setState],
   );
 
-  return { compareIds, dispatch, add, remove, toggle };
+  const seed = useCallback(
+    (ids: string[]) => {
+      setState(prev => {
+        const next = Array.from(new Set(ids)).slice(0, MAX_COMPARE);
+        const slot = prev[mount];
+        if (next.length === slot.length && next.every((id, i) => id === slot[i])) {
+          return prev;
+        }
+        return { ...prev, [mount]: next };
+      });
+    },
+    [mount, setState],
+  );
+
+  return { compareIds, add, remove, reorder, clear, toggle, seed };
 }

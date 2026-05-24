@@ -23,19 +23,19 @@ import { useCompare } from "@/context/CompareProvider";
  */
 export function useClearCompareWithUndo() {
   const tCompare = useTranslations("Compare");
-  const { compareIds, dispatch } = useCompare();
+  const { compareIds, clear, seed } = useCompare();
 
   return useCallback(() => {
     if (compareIds.length === 0) {
       return;
     }
     const prevIds = [...compareIds];
-    dispatch({ type: "clear" });
+    clear();
     toast(tCompare("clearedToast"), {
       action: {
         label: tCompare("undo"),
-        onClick: () => dispatch({ type: "seed", ids: prevIds }),
+        onClick: () => seed(prevIds),
       },
     });
-  }, [compareIds, dispatch, tCompare]);
+  }, [compareIds, clear, seed, tCompare]);
 }
