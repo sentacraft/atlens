@@ -33,6 +33,7 @@ import type { Lens } from "@/lib/types";
 import { PriceCell } from "@/components/PriceCell";
 import { PurchaseLinksCompact, PurchaseDisclosureCaption } from "@/components/PurchaseLinks";
 import { CompareMobileBuyPanel } from "@/components/CompareMobileBuyPanel";
+import { buildPurchaseLinks } from "@/lib/purchase-links";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 
@@ -712,9 +713,7 @@ export default function CompareTable({ lenses: initialLenses, countryCode, minCo
                     <td key={lens.id} className="px-3 py-3 align-top">
                       <div className="flex flex-col items-center gap-2">
                         <PriceCell lens={lens} compact />
-                        {locale !== "zh" && (
-                          <PurchaseLinksCompact lens={lens} countryCode={countryCode} customId="compare" />
-                        )}
+                        <PurchaseLinksCompact lens={lens} countryCode={countryCode} customId="compare" />
                       </div>
                     </td>
                   );
@@ -990,12 +989,19 @@ export default function CompareTable({ lenses: initialLenses, countryCode, minCo
       </table>
     </div>
 
-    {locale !== "zh" && orderedLenses.length > 0 && (
-      <>
-        <CompareMobileBuyPanel lenses={orderedLenses} countryCode={countryCode} />
-        <PurchaseDisclosureCaption className="hidden sm:flex" />
-      </>
-    )}
+    {(() => {
+      const allLinks = orderedLenses.flatMap((l) => buildPurchaseLinks(l, locale, countryCode));
+      if (allLinks.length === 0) {
+        return null;
+      }
+      const hasAffiliate = allLinks.some((l) => l.isAffiliate);
+      return (
+        <>
+          <CompareMobileBuyPanel lenses={orderedLenses} countryCode={countryCode} />
+          {hasAffiliate && <PurchaseDisclosureCaption className="hidden sm:flex" />}
+        </>
+      );
+    })()}
     </>
   );
 }

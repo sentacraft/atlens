@@ -23,6 +23,7 @@ import SpecialtyBadges from "@/components/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens-specialty";
 import { RetailersDropdown } from "@/components/RetailersDropdown";
 import { PurchaseDisclosureCaption } from "@/components/PurchaseLinks";
+import { buildPurchaseLinks } from "@/lib/purchase-links";
 import { TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
@@ -174,6 +175,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const tPricing = await getTranslations("Pricing");
   const countryCode = (await headers()).get("cf-ipcountry") ?? "US";
   const url = getLensUrl(lens, locale);
+  const hasAffiliate = buildPurchaseLinks(lens, locale, countryCode).some((l) => l.isAffiliate);
 
   // Derived values shared between the visible header and the Product JSON-LD.
   const brandName = tBrand(lens.brand);
@@ -346,7 +348,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
                 </ExternalLink>
               )}
             </div>
-            {locale !== "zh" && lens.purchaseChannels && lens.purchaseChannels.length > 0 && (
+            {hasAffiliate && (
               <PurchaseDisclosureCaption />
             )}
           </div>
