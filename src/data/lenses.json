@@ -3346,8 +3346,8 @@
     "apertureBladeCount": 9,
     "releaseYear": 2025,
     "searchAliases": {
-      "en": "Fujifilm XC 13-33mm f3.5-6.3 OIS",
-      "zh": "富士 XC 13-33mm f3.5-6.3 OIS"
+      "en": "Fujifilm XC 13-33mm OIS",
+      "zh": "富士 XC 13-33mm OIS"
     },
     "pricing": {
       "cn": {
@@ -3446,8 +3446,8 @@
     "apertureBladeCount": 7,
     "releaseYear": 2018,
     "searchAliases": {
-      "en": "Fujifilm XC 15-45mm f3.5-5.6 OIS PZ",
-      "zh": "富士 XC 15-45mm f3.5-5.6 OIS PZ"
+      "en": "Fujifilm XC 15-45mm OIS PZ",
+      "zh": "富士 XC 15-45mm OIS PZ"
     },
     "pricing": {
       "cn": {
@@ -3543,8 +3543,8 @@
     "apertureBladeCount": 7,
     "releaseYear": 2013,
     "searchAliases": {
-      "en": "Fujifilm XC 16-50mm f3.5-5.6 OIS",
-      "zh": "富士 XC 16-50mm f3.5-5.6 OIS"
+      "en": "Fujifilm XC 16-50mm OIS",
+      "zh": "富士 XC 16-50mm OIS"
     },
     "pricing": {
       "cn": {
@@ -3632,8 +3632,8 @@
     "apertureBladeCount": 7,
     "releaseYear": 2015,
     "searchAliases": {
-      "en": "Fujifilm XC 16-50mm f3.5-5.6 OIS II",
-      "zh": "富士 XC 16-50mm f3.5-5.6 OIS II"
+      "en": "Fujifilm XC 16-50mm OIS II",
+      "zh": "富士 XC 16-50mm OIS II"
     },
     "compatibleMounts": [
       "Fujifilm X"
@@ -3777,8 +3777,8 @@
     "apertureBladeCount": 7,
     "releaseYear": 2013,
     "searchAliases": {
-      "en": "Fujifilm XC 50-230mm f4.5-6.7 OIS",
-      "zh": "富士 XC 50-230mm f4.5-6.7 OIS"
+      "en": "Fujifilm XC 50-230mm OIS",
+      "zh": "富士 XC 50-230mm OIS"
     },
     "pricing": {
       "global": {
@@ -3860,8 +3860,8 @@
     "apertureBladeCount": 7,
     "releaseYear": 2015,
     "searchAliases": {
-      "en": "Fujifilm XC 50-230mm f4.5-6.7 OIS II",
-      "zh": "富士 XC 50-230mm f4.5-6.7 OIS II"
+      "en": "Fujifilm XC 50-230mm OIS II",
+      "zh": "富士 XC 50-230mm OIS II"
     },
     "pricing": {
       "cn": {
@@ -4376,8 +4376,8 @@
     ],
     "releaseYear": 2024,
     "searchAliases": {
-      "en": "Fujifilm XF 16-50mm f2.8-4.8 WR",
-      "zh": "富士 XF 16-50mm f2.8-4.8 WR"
+      "en": "Fujifilm XF 16-50mm WR",
+      "zh": "富士 XF 16-50mm WR"
     },
     "pricing": {
       "cn": {
@@ -4934,8 +4934,8 @@
     "apertureBladeCount": 7,
     "releaseYear": 2012,
     "searchAliases": {
-      "en": "Fujifilm XF 18-55mm f2.8-4 OIS",
-      "zh": "富士 XF 18-55mm f2.8-4 OIS"
+      "en": "Fujifilm XF 18-55mm OIS",
+      "zh": "富士 XF 18-55mm OIS"
     },
     "pricing": {
       "cn": {
@@ -5102,8 +5102,8 @@
     "apertureBladeCount": 7,
     "releaseYear": 2014,
     "searchAliases": {
-      "en": "Fujifilm XF 18-135mm f3.5-5.6 OIS WR",
-      "zh": "富士 XF 18-135mm f3.5-5.6 OIS WR"
+      "en": "Fujifilm XF 18-135mm OIS WR",
+      "zh": "富士 XF 18-135mm OIS WR"
     },
     "pricing": {
       "cn": {
@@ -6342,8 +6342,8 @@
     "apertureBladeCount": 7,
     "releaseYear": 2013,
     "searchAliases": {
-      "en": "Fujifilm XF 55-200mm f3.5-4.8 OIS",
-      "zh": "富士 XF 55-200mm f3.5-4.8 OIS"
+      "en": "Fujifilm XF 55-200mm OIS",
+      "zh": "富士 XF 55-200mm OIS"
     },
     "pricing": {
       "cn": {
@@ -6740,8 +6740,8 @@
     "apertureBladeCount": 9,
     "releaseYear": 2021,
     "searchAliases": {
-      "en": "Fujifilm XF 70-300mm f4-5.6 OIS WR",
-      "zh": "富士 XF 70-300mm f4-5.6 OIS WR"
+      "en": "Fujifilm XF 70-300mm OIS WR",
+      "zh": "富士 XF 70-300mm OIS WR"
     },
     "pricing": {
       "cn": {
@@ -6987,8 +6987,8 @@
     "apertureBladeCount": 9,
     "releaseYear": 2016,
     "searchAliases": {
-      "en": "Fujifilm XF 100-400mm f4.5-5.6 OIS WR",
-      "zh": "富士 XF 100-400mm f4.5-5.6 OIS WR"
+      "en": "Fujifilm XF 100-400mm OIS WR",
+      "zh": "富士 XF 100-400mm OIS WR"
     },
     "pricing": {
       "cn": {
@@ -7070,8 +7070,8 @@
     "apertureBladeCount": 9,
     "releaseYear": 2022,
     "searchAliases": {
-      "en": "Fujifilm XF 150-600mm f5.6-8 OIS WR",
-      "zh": "富士 XF 150-600mm f5.6-8 OIS WR"
+      "en": "Fujifilm XF 150-600mm OIS WR",
+      "zh": "富士 XF 150-600mm OIS WR"
     },
     "pricing": {
       "cn": {
@@ -7518,8 +7518,8 @@
     "apertureBladeCount": 5,
     "releaseYear": 2023,
     "searchAliases": {
-      "en": "Laowa 8-16mm f3.5-5.0 Fuji X",
-      "zh": "老蛙 8-16mm f3.5-5.0 富士"
+      "en": "Laowa 8-16mm Fuji X",
+      "zh": "老蛙 8-16mm 富士"
     },
     "pricing": {
       "cn": {
@@ -9246,8 +9246,8 @@
     "apertureBladeCount": 9,
     "releaseYear": 2025,
     "searchAliases": {
-      "en": "Sigma 16-300mm f3.5-6.7 Contemporary Fuji X",
-      "zh": "适马 16-300mm f3.5-6.7 Contemporary 富士"
+      "en": "Sigma 16-300mm Contemporary Fuji X",
+      "zh": "适马 16-300mm Contemporary 富士"
     },
     "pricing": {
       "cn": {
@@ -9918,8 +9918,8 @@
     "apertureBladeCount": 9,
     "releaseYear": 2023,
     "searchAliases": {
-      "en": "Sigma 100-400mm f5-6.3 Contemporary Fuji X",
-      "zh": "适马 100-400mm f5-6.3 Contemporary 富士"
+      "en": "Sigma 100-400mm Contemporary Fuji X",
+      "zh": "适马 100-400mm Contemporary 富士"
     },
     "pricing": {
       "cn": {
@@ -10226,8 +10226,8 @@
     "apertureBladeCount": 7,
     "releaseYear": 2021,
     "searchAliases": {
-      "en": "Tamron 18-300mm f3.5-6.3 Fuji X",
-      "zh": "腾龙 18-300mm f3.5-6.3 富士"
+      "en": "Tamron 18-300mm Fuji X",
+      "zh": "腾龙 18-300mm 富士"
     },
     "pricing": {
       "cn": {
@@ -10333,8 +10333,8 @@
     "apertureBladeCount": 7,
     "releaseYear": 2022,
     "searchAliases": {
-      "en": "Tamron 150-500mm f5-6.7 Fuji X",
-      "zh": "腾龙 150-500mm f5-6.7 富士"
+      "en": "Tamron 150-500mm Fuji X",
+      "zh": "腾龙 150-500mm 富士"
     },
     "pricing": {
       "cn": {
