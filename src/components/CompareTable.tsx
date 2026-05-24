@@ -11,7 +11,7 @@ import { useNavLock } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { ChevronLeft, ChevronRight, Flag, TriangleAlert, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flag, Info, TriangleAlert, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ICON_CLOSE_BTN_CLS, TEXT_LINK_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
@@ -610,24 +610,26 @@ export default function CompareTable({ lenses: initialLenses, countryCode, minCo
 
               {/* Where to Buy row — only rendered on non-zh locales when links exist */}
               {(() => {
-                const anyLinks = orderedLenses.some(
-                  (l) => buildPurchaseLinks(l, locale, countryCode).length > 0,
+                const allLinks = orderedLenses.flatMap(
+                  (l) => buildPurchaseLinks(l, locale, countryCode),
                 );
-                if (!anyLinks) {
+                if (allLinks.length === 0) {
                   return null;
                 }
+                const hasAffiliate = allLinks.some((l) => l.isAffiliate);
                 return (
                   <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
                     <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 align-middle">
-                      <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 text-right block">
-                        {tPurchase("whereToBuy")}
-                      </span>
+                      <div className="flex items-center justify-end gap-1">
+                        {hasAffiliate && <FieldNotePopover note={tPurchase("disclosureDetail")} />}
+                        <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                          {tPurchase("whereToBuy")}
+                        </span>
+                      </div>
                     </td>
                     {orderedLenses.map((lens) => (
                       <td key={lens.id} className="px-3 py-3">
-                        <div className="flex justify-center">
-                          <PurchaseLinksCompact lens={lens} countryCode={countryCode} customId="compare" />
-                        </div>
+                        <PurchaseLinksCompact lens={lens} countryCode={countryCode} customId="compare" className="justify-center" />
                       </td>
                     ))}
                     {Array.from({ length: emptySlotCount }).map((_, i) => (
@@ -891,19 +893,9 @@ export default function CompareTable({ lenses: initialLenses, countryCode, minCo
       </table>
     </div>
 
-    {(() => {
-      const allLinks = orderedLenses.flatMap((l) => buildPurchaseLinks(l, locale, countryCode));
-      if (allLinks.length === 0) {
-        return null;
-      }
-      const hasAffiliate = allLinks.some((l) => l.isAffiliate);
-      return (
-        <>
-          <CompareMobileBuyPanel lenses={orderedLenses} countryCode={countryCode} />
-          {hasAffiliate && <PurchaseDisclosureCaption className="hidden sm:flex" />}
-        </>
-      );
-    })()}
+    {orderedLenses.length > 0 && (
+      <CompareMobileBuyPanel lenses={orderedLenses} countryCode={countryCode} />
+    )}
     </>
   );
 }

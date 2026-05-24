@@ -14,6 +14,7 @@ interface Props {
   lens: Lens;
   countryCode: string;
   customId?: string;
+  className?: string;
 }
 
 interface LinkListProps {
@@ -21,14 +22,15 @@ interface LinkListProps {
   lensId: string;
   customId?: string;
   compact?: boolean;
+  className?: string;
 }
 
 const LINK_CLS = "inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800";
 const LINK_COMPACT_CLS = "inline-flex whitespace-nowrap items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200";
 
-function PurchaseLinkList({ links, lensId, customId, compact }: LinkListProps) {
+function PurchaseLinkList({ links, lensId, customId, compact, className }: LinkListProps) {
   return (
-    <div className={compact ? "inline-flex flex-wrap gap-1.5" : "flex flex-wrap gap-2"}>
+    <div className={cn(compact ? "flex flex-wrap gap-1.5" : "flex flex-wrap gap-2", className)}>
       {links.map((link) => (
         <a
           key={link.channel}
@@ -77,7 +79,7 @@ export function PurchaseLinksSection({ lens, countryCode, customId }: Props) {
   );
 }
 
-export function PurchaseLinksCompact({ lens, countryCode, customId }: Props) {
+export function PurchaseLinksCompact({ lens, countryCode, customId, className }: Props) {
   const locale = useLocale();
 
   const links = useMemo(
@@ -89,7 +91,7 @@ export function PurchaseLinksCompact({ lens, countryCode, customId }: Props) {
     return null;
   }
 
-  return <PurchaseLinkList links={links} lensId={lens.id} customId={customId} compact />;
+  return <PurchaseLinkList links={links} lensId={lens.id} customId={customId} compact className={className} />;
 }
 
 export function PurchaseDisclosureCaption({ className }: { className?: string }) {
