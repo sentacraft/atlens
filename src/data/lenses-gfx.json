@@ -60,6 +60,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Front lens cap FLCP-82",
       "Rear lens cap RLCP-002",
@@ -150,6 +158,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Lens cap FLCP-82",
       "Lens rear cap RLCP-002",
@@ -235,6 +251,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "filterMm": 58,
     "lensConfiguration": {
       "groups": 10,
@@ -308,6 +332,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Front lens cap FLCP-77",
       "Rear lens cap RLCP-002",
@@ -416,6 +448,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Lens cap FLCP-77",
       "Lens rear cap RLCP-002",
@@ -501,6 +541,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Front lens cap",
       "Rear lens cap",
@@ -596,6 +644,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Lens cap FLCP-62 II",
       "Lens rear cap RLCP-002",
@@ -693,6 +749,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Lens cap FLCP-82",
       "Lens rear cap RLCP-002",
@@ -778,6 +842,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Lens cap FLCP-62II",
       "Lens rear cap RLCP-002",
@@ -864,6 +936,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Front lens cap FLCP-62II",
       "Rear lens cap RLCP-002",
@@ -950,6 +1030,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Front lens cap FLCP-77",
       "Rear lens cap RLCP-002",
@@ -1034,6 +1122,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Lens cap FLCP-62II",
       "Lens rear cap RLCP-002",
@@ -1118,6 +1214,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Lens cap FLCP-77",
       "Lens rear cap RLCP-002",
@@ -1211,6 +1315,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Lens cap FLCP-67II",
       "Lens rear cap RLCP-002",
@@ -1298,6 +1410,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Lens cap FLCP-77",
       "Lens rear cap RLCP-002",
@@ -1387,6 +1507,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Front lens cap FLCP-72 II",
       "Rear lens cap RLCP-002",
@@ -1474,6 +1602,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Lens cap FLCP-72II",
       "Rear lens cap RLCP-002",
@@ -1558,6 +1694,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Lens cap FLCP-82",
       "Lens rear cap RLCP-002",
@@ -1643,6 +1787,14 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
     "accessories": [
       "Front lens cap FLCP-95",
       "Rear lens cap RLCP-002",
@@ -1731,6 +1883,15 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://www.venuslens.net/product/laowa-8-15mm-f-2-8-ff-zoom-fisheye-2/"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -1813,6 +1974,15 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://www.venuslens.net/product/laowa-17mm-f-4-zero-d-tilt-shift-shift/"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -1891,6 +2061,15 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://www.venuslens.net/product/laowa-17mm-f-4-zero-d-tilt-shift-shift/"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -1970,6 +2149,15 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://www.venuslens.net/product/the-laowa-35mm-f-2-8-zero-d-tilt-shift-0-5x-macro/"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -2048,6 +2236,15 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://www.venuslens.net/product/laowa-55mm-f-2-8-tilt-shift-1x-macro/"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
     "compatibleMounts": [
       "Sony E",
       "Canon RF",
@@ -2126,6 +2323,15 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://www.venuslens.net/product/laowa-100mm-f-2-8-tilt-shift-1x-macro/"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
     "compatibleMounts": [
       "Sony E",
       "Canon RF",
@@ -2199,6 +2405,15 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://www.venuslens.net/product/laowa-17mm-f-4-gfx-zero-d/"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
     "filterMm": 86,
     "lensConfiguration": {
       "groups": 14,
@@ -2264,6 +2479,15 @@
         }
       }
     },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://www.venuslens.net/product/laowa-19mm-f-2-8-zero-d/"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
     "compatibleMounts": [
       "Fujifilm G",
       "Hasselblad XCD"
