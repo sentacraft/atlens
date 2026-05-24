@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { parseLensIds } from "@/lib/lens";
 import { urlSegmentToMount } from "@/lib/mount";
@@ -111,7 +110,6 @@ export default async function ComparePage({
   }
 
   const lenses = parseLensIds(ids, resolvedMount, locale);
-  const countryCode = (await headers()).get("cf-ipcountry") ?? "US";
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 flex flex-col gap-3 sm:gap-4">
@@ -120,7 +118,7 @@ export default async function ComparePage({
         <CompareUtilityActions />
       </div>
       <ComparePageHeader minColumns={2} />
-      <CompareTable key={lenses.length === 0 ? "_empty_" : ids} lenses={lenses} countryCode={countryCode} minColumns={2} hideBodyWhenEmpty />
+      <CompareTable key={lenses.length === 0 ? "_empty_" : ids} lenses={lenses} minColumns={2} hideBodyWhenEmpty />
       {resolvedMount === "X" && <CuratedComparisons />}
       <BackToTopButton />
       <CompareTelemetry lensIds={lenses.map((l) => l.id)} />

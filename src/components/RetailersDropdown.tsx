@@ -9,16 +9,17 @@ import type { PurchaseLink } from "@/lib/purchase-links";
 import type { Lens } from "@/lib/types";
 import { ACTION_OUTLINE_CLS } from "@/lib/ui-tokens";
 import { track } from "@/lib/analytics";
+import { useCountryCode } from "@/hooks/useCountryCode";
 
 interface Props {
   lens: Lens;
-  countryCode: string;
   customId?: string;
 }
 
-export function RetailersDropdown({ lens, countryCode, customId }: Props) {
+export function RetailersDropdown({ lens, customId }: Props) {
   const locale = useLocale();
   const t = useTranslations("Purchase");
+  const countryCode = useCountryCode();
 
   const links = useMemo(
     () => buildPurchaseLinks(lens, locale, countryCode, customId),

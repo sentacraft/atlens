@@ -6,17 +6,18 @@ import { PriceCell } from "@/components/PriceCell";
 import { pickPriceEntry } from "@/lib/lens-pricing";
 import { lensSubtitleLine } from "@/lib/lens.format";
 import { buildPurchaseLinks } from "@/lib/purchase-links";
+import { useCountryCode } from "@/hooks/useCountryCode";
 import type { Lens } from "@/lib/types";
 
 interface Props {
   lenses: Lens[];
-  countryCode: string;
 }
 
-export function CompareMobileBuyPanel({ lenses, countryCode }: Props) {
+export function CompareMobileBuyPanel({ lenses }: Props) {
   const t = useTranslations("Purchase");
   const locale = useLocale();
   const tBrand = useTranslations("Brands");
+  const countryCode = useCountryCode();
 
   const lensesWithLinks = lenses.filter(
     (lens) => buildPurchaseLinks(lens, locale, countryCode, "compare-mobile").length > 0,
@@ -53,7 +54,7 @@ export function CompareMobileBuyPanel({ lenses, countryCode }: Props) {
                   </div>
                 )}
               </div>
-              <PurchaseLinksCompact lens={lens} countryCode={countryCode} customId="compare-mobile" />
+              <PurchaseLinksCompact lens={lens} customId="compare-mobile" />
             </li>
           );
         })}

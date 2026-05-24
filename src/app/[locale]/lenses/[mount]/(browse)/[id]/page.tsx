@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Flag } from "lucide-react";
@@ -171,7 +170,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const t = await getTranslations("LensDetail");
   const tBrand = await getTranslations("Brands");
   const tPricing = await getTranslations("Pricing");
-  const countryCode = (await headers()).get("cf-ipcountry") ?? "US";
   const url = getLensUrl(lens, locale);
 
   // Derived values shared between the visible header and the Product JSON-LD.
@@ -339,7 +337,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
           <div className="mt-auto flex flex-wrap items-center gap-2">
             <LensDetailCompareToggle lensId={lens.id} />
-            <RetailersDropdown lens={lens} countryCode={countryCode} customId="detail" />
+            <RetailersDropdown lens={lens} customId="detail" />
           </div>
         </div>
       </div>

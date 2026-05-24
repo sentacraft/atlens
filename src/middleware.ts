@@ -3,6 +3,7 @@ import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 
 const INTERNAL_COOKIE = "xg_internal";
+const COUNTRY_COOKIE = "xg_country";
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
 const i18nMiddleware = createMiddleware(routing);
@@ -23,7 +24,18 @@ export default function middleware(req: NextRequest) {
     return res;
   }
 
-  return i18nMiddleware(req);
+  const res = i18nMiddleware(req);
+  const country = req.headers.get("cf-ipcountry");
+  if (country) {
+    res.cookies.set(COUNTRY_COOKIE, country, {
+      path: "/",
+      httpOnly: false,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: ONE_YEAR,
+    });
+  }
+  return res;
 }
 
 export const config = {

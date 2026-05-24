@@ -34,6 +34,7 @@ import { PriceCell } from "@/components/PriceCell";
 import { PurchaseLinksCompact, PurchaseDisclosureCaption } from "@/components/PurchaseLinks";
 import { CompareMobileBuyPanel } from "@/components/CompareMobileBuyPanel";
 import { buildPurchaseLinks } from "@/lib/purchase-links";
+import { useCountryCode } from "@/hooks/useCountryCode";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 
@@ -174,7 +175,6 @@ function EmptyLensHeader({
 
 interface Props {
   lenses: Lens[];
-  countryCode: string;
   /** Minimum number of columns to display; empty slot headers fill the gap. */
   minColumns?: number;
   /** When true and the compare list is empty, only the header row is rendered (no skeleton body). */
@@ -184,13 +184,14 @@ interface Props {
 const LABEL_COLUMN_WIDTH = "6rem";
 const LENS_COLUMN_MIN_WIDTH = "9rem";
 
-export default function CompareTable({ lenses: initialLenses, countryCode, minColumns = 0, hideBodyWhenEmpty = false }: Props) {
+export default function CompareTable({ lenses: initialLenses, minColumns = 0, hideBodyWhenEmpty = false }: Props) {
   const t = useTranslations("Compare");
   const td = useTranslations("LensDetail");
   const tBrand = useTranslations("Brands");
   const tPricing = useTranslations("Pricing");
   const tPurchase = useTranslations("Purchase");
   const locale = useLocale();
+  const countryCode = useCountryCode();
   const priceFieldLabel = tPricing("fieldLabel");
   const priceGroupLabel = tPricing("groupLabel");
   const { compareIds, reorder, remove, seed } = useCompare();
@@ -628,7 +629,7 @@ export default function CompareTable({ lenses: initialLenses, countryCode, minCo
                   </td>
                   {orderedLenses.map((lens) => (
                     <td key={lens.id} className="px-3 py-3">
-                      <PurchaseLinksCompact lens={lens} countryCode={countryCode} customId="compare" className="justify-center" />
+                      <PurchaseLinksCompact lens={lens} customId="compare" className="justify-center" />
                     </td>
                   ))}
                   {Array.from({ length: emptySlotCount }).map((_, i) => (
@@ -893,7 +894,7 @@ export default function CompareTable({ lenses: initialLenses, countryCode, minCo
 
     {hasAnyPurchaseLinks && (
       <>
-        <CompareMobileBuyPanel lenses={orderedLenses} countryCode={countryCode} />
+        <CompareMobileBuyPanel lenses={orderedLenses} />
         {hasAffiliate && <PurchaseDisclosureCaption className="hidden sm:flex" />}
       </>
     )}

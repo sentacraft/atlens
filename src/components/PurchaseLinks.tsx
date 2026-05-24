@@ -9,10 +9,10 @@ import type { PurchaseLink } from "@/lib/purchase-links";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { track } from "@/lib/analytics";
+import { useCountryCode } from "@/hooks/useCountryCode";
 
 interface Props {
   lens: Lens;
-  countryCode: string;
   customId?: string;
   className?: string;
 }
@@ -54,8 +54,9 @@ function PurchaseLinkList({ links, lensId, customId, compact, className }: LinkL
 }
 
 
-export function PurchaseLinksCompact({ lens, countryCode, customId, className }: Props) {
+export function PurchaseLinksCompact({ lens, customId, className }: Props) {
   const locale = useLocale();
+  const countryCode = useCountryCode();
 
   const links = useMemo(
     () => buildPurchaseLinks(lens, locale, countryCode, customId),
