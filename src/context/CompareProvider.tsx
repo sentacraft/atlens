@@ -4,7 +4,9 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { MAX_COMPARE } from "@/lib/lens";
@@ -40,76 +42,102 @@ export function useCompare() {
   const { state, setState } = ctx;
   const compareIds = state[mount];
 
+  const prevIdsRef = useRef(compareIds);
+  useEffect(() => {
+    const prev = prevIdsRef.current;
+    prevIdsRef.current = compareIds;
+    for (const id of compareIds) {
+      if (!prev.includes(id)) {
+        track("compare_add", { lens_slug: id });
+      }
+    }
+  }, [compareIds]);
+
   const add = useCallback(
     (id: string) => {
-      if (compareIds.includes(id) || compareIds.length >= MAX_COMPARE) {
-        return;
-      }
-      
-      setState(prev => ({ ...prev, [mount]: [...prev[mount], id] }));
-      track("compare_add", { lens_slug: id });
+      setState(prev => {
+        const slot = prev[mount];
+        if (slot.includes(id) || slot.length >= MAX_COMPARE) {
+          return prev;
+        }
+        return { ...prev, [mount]: [...slot, id] };
+      });
     },
-    [mount, compareIds, setState],
+    [mount, setState],
   );
 
   const remove = useCallback(
     (id: string) => {
-      if (!compareIds.includes(id)) {
-        return;
-      }
-      setState(prev => ({ ...prev, [mount]: prev[mount].filter((v) => v !== id) }));
+      setState(prev => {
+        const slot = prev[mount];
+        if (!slot.includes(id)) {
+          return prev;
+        }
+        return { ...prev, [mount]: slot.filter((v) => v !== id) };
+      });
     },
-    [mount, compareIds, setState],
+    [mount, setState],
   );
 
   const reorder = useCallback(
     (fromIndex: number, toIndex: number) => {
-      if (
-        fromIndex < 0 || fromIndex >= compareIds.length ||
-        toIndex < 0 || toIndex >= compareIds.length ||
-        fromIndex === toIndex
-      ) {
-        return;
-      }
-
-      const ids = [...compareIds];
-      [ids[fromIndex], ids[toIndex]] = [ids[toIndex], ids[fromIndex]];
-
-      setState(prev => ({ ...prev, [mount]: ids }));
+      setState(prev => {
+        const slot = prev[mount];
+        if (
+          fromIndex < 0 || fromIndex >= slot.length ||
+          toIndex < 0 || toIndex >= slot.length ||
+          fromIndex === toIndex
+        ) {
+          return prev;
+        }
+        const ids = [...slot];
+        [ids[fromIndex], ids[toIndex]] = [ids[toIndex], ids[fromIndex]];
+        return { ...prev, [mount]: ids };
+      });
     },
-    [mount, compareIds, setState],
+    [mount, setState],
   );
 
   const clear = useCallback(
     () => {
-      if (compareIds.length === 0) {
-        return;
-      }
-      setState(prev => ({ ...prev, [mount]: [] }));
+      setState(prev => {
+        if (prev[mount].length === 0) {
+          return prev;
+        }
+        return { ...prev, [mount]: [] };
+      });
     },
-    [mount, compareIds, setState]
+    [mount, setState],
   );
 
   const toggle = useCallback(
     (id: string) => {
-      if (compareIds.includes(id)) {
-        remove(id); 
-      } else if (compareIds.length < MAX_COMPARE) {
-        add(id);
-      }
+      setState(prev => {
+        const slot = prev[mount];
+        if (slot.includes(id)) {
+          return { ...prev, [mount]: slot.filter((v) => v !== id) };
+        }
+        if (slot.length >= MAX_COMPARE) {
+          return prev;
+        }
+        return { ...prev, [mount]: [...slot, id] };
+      });
     },
-    [compareIds, add, remove],
+    [mount, setState],
   );
 
   const seed = useCallback(
     (ids: string[]) => {
-      const next = Array.from(new Set(ids)).slice(0, MAX_COMPARE);
-      if (next.length === compareIds.length && next.every((id, i) => id === compareIds[i])) {
-        return;
-      }
-      setState(prev => ({ ...prev, [mount]: next }));
+      setState(prev => {
+        const next = Array.from(new Set(ids)).slice(0, MAX_COMPARE);
+        const slot = prev[mount];
+        if (next.length === slot.length && next.every((id, i) => id === slot[i])) {
+          return prev;
+        }
+        return { ...prev, [mount]: next };
+      });
     },
-    [mount, compareIds, setState]
+    [mount, setState],
   );
 
   return { compareIds, add, remove, reorder, clear, toggle, seed };
