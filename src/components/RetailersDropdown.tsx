@@ -53,7 +53,7 @@ export function RetailersDropdown({ lens, customId }: Props) {
               <DropdownItem key={link.channel} link={link} lensId={lens.id} customId={customId} />
             ))}
             {hasAffiliate && (
-              <div className="mt-1 flex items-start gap-2 border-t border-zinc-100 px-3 py-2 text-[11px] leading-relaxed text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+              <div className="mt-1 flex items-start gap-2 border-t border-zinc-100 px-3 py-2 text-[10px] leading-relaxed text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
                 <Info size={11} className="shrink-0 mt-0.5 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
                 <span>{t("disclosureDetail")}</span>
               </div>
@@ -77,7 +77,7 @@ function DropdownItem({ link, lensId, customId }: { link: PurchaseLink; lensId: 
         source: customId ?? "unknown",
         is_affiliate: link.isAffiliate,
       })}
-      className="flex items-center justify-between px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
+      className="flex items-center justify-between px-3 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
     >
       <span>{link.label}</span>
       <ArrowUpRight size={12} className="text-zinc-400" />
