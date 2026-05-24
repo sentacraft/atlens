@@ -335,7 +335,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
           <PriceSection lens={lens} />
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="mt-auto flex flex-wrap items-center gap-2">
             <LensDetailCompareToggle lensId={lens.id} />
             <RetailersDropdown lens={lens} countryCode={countryCode} customId="detail" />
             {url && (

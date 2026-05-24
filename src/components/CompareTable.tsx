@@ -893,9 +893,19 @@ export default function CompareTable({ lenses: initialLenses, countryCode, minCo
       </table>
     </div>
 
-    {orderedLenses.length > 0 && (
-      <CompareMobileBuyPanel lenses={orderedLenses} countryCode={countryCode} />
-    )}
+    {(() => {
+      const allLinks = orderedLenses.flatMap((l) => buildPurchaseLinks(l, locale, countryCode));
+      if (allLinks.length === 0) {
+        return null;
+      }
+      const hasAffiliate = allLinks.some((l) => l.isAffiliate);
+      return (
+        <>
+          <CompareMobileBuyPanel lenses={orderedLenses} countryCode={countryCode} />
+          {hasAffiliate && <PurchaseDisclosureCaption className="hidden sm:flex" />}
+        </>
+      );
+    })()}
     </>
   );
 }
