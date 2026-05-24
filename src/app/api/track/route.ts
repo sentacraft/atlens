@@ -35,6 +35,9 @@ const STRING_FIELDS = [
   "feedback_type",
   "method",
   "referrer",
+  "channel",
+  "lens_id",
+  "source",
 ] as const;
 
 function isValidPayload(p: unknown): p is TrackPayload {
@@ -95,6 +98,12 @@ function sanitizeProps(raw: unknown): EventProps {
   for (const key of ["results_count", "lens_count", "depth_pct"] as const) {
     const v = o[key];
     if (typeof v === "number" && Number.isFinite(v)) {
+      out[key] = v;
+    }
+  }
+  for (const key of ["is_affiliate"] as const) {
+    const v = o[key];
+    if (typeof v === "boolean") {
       out[key] = v;
     }
   }

@@ -4,7 +4,7 @@
 //
 // AE layout (fixed positional, single dataset `xglass_events`):
 //   indexes: [event_name]
-//   blobs:   [sid, locale, path, primary_string, secondary_string]
+//   blobs:   [sid, locale, path, primary_string, secondary_string, tertiary_string, internal]
 //   doubles: [primary_number]
 //
 // Keeping the layout positional (instead of named) is what makes the
@@ -77,7 +77,7 @@ export const EVENT_NAME_SET: ReadonlySet<string> = new Set<string>(EVENT_NAMES);
 
 interface AnalyticsEnginePoint {
   indexes: [string];
-  blobs: [string, string, string, string, string, string];
+  blobs: [string, string, string, string, string, string, string];
   doubles: [number];
 }
 
@@ -95,22 +95,27 @@ export function toDataPoint(
     props.href ??
     props.to_mount ??
     props.feedback_type ??
+    props.channel ??
     "";
   const secondaryString =
     props.lens_slugs ??
     props.method ??
     props.from_mount ??
     props.referrer ??
+    props.lens_id ??
+    "";
+  const tertiaryString =
+    props.source ??
     "";
   const primaryNumber =
     props.results_count ??
     props.depth_pct ??
     props.lens_count ??
-    0;
+    (props.is_affiliate ? 1 : 0);
 
   return {
     indexes: [event],
-    blobs: [sid, locale, props.path ?? "", primaryString, secondaryString, internal ? "1" : ""],
+    blobs: [sid, locale, props.path ?? "", primaryString, secondaryString, tertiaryString, internal ? "1" : ""],
     doubles: [primaryNumber],
   };
 }
