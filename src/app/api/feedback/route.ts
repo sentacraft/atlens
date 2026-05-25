@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createRateLimiter, RATE_LIMITED_RESPONSE } from "@/lib/rate-limit";
 
 type FeedbackType = "data_issue" | "general";
 
@@ -18,32 +19,8 @@ interface FeedbackPayload {
 }
 
 const MAX_DESCRIPTION_LENGTH = 2000;
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 5;
 
-const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const bucket = rateLimitBuckets.get(ip);
-  if (!bucket || bucket.resetAt < now) {
-    rateLimitBuckets.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return true;
-  }
-  if (bucket.count >= RATE_LIMIT_MAX) {
-    return false;
-  }
-  bucket.count += 1;
-  return true;
-}
-
-function getClientIp(req: Request): string {
-  const forwarded = req.headers.get("x-forwarded-for");
-  if (forwarded) {
-    return forwarded.split(",")[0].trim();
-  }
-  return req.headers.get("x-real-ip") ?? "unknown";
-}
+const checkRateLimit = createRateLimiter({ windowMs: 60_000, max: 5 });
 
 function buildIssue(payload: FeedbackPayload): {
   title: string;
@@ -132,12 +109,8 @@ export function GET() {
 }
 
 export async function POST(req: Request) {
-  const ip = getClientIp(req);
-  if (!checkRateLimit(ip)) {
-    return NextResponse.json(
-      { error: "rate_limited" },
-      { status: 429 }
-    );
+  if (!checkRateLimit(req)) {
+    return RATE_LIMITED_RESPONSE;
   }
 
   let payload: FeedbackPayload;
