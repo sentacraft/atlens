@@ -31,7 +31,7 @@ export function buildLensDescription(args: {
   t: T;
 }): string {
   const { lens, mount, brandName, t } = args;
-  const displayName = lensDisplayName(brandName, lens.series, lens.model, lens.brand);
+  const displayName = lensDisplayName(brandName, lens.series, lens.model);
   const mountLabel = mountSeoLabel(mount);
   const typeLabel = isZoom(lens) ? t("metaZoom") : t("metaPrime");
 

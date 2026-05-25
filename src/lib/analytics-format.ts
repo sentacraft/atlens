@@ -18,7 +18,7 @@ function lensNameMap(): Map<string, string> {
   const map = new Map<string, string>();
   for (const lens of getAllLenses("en")) {
     const brandLabel = lens.brand.charAt(0).toUpperCase() + lens.brand.slice(1);
-    map.set(lens.id, lensDisplayName(brandLabel, lens.series, lens.model, lens.brand));
+    map.set(lens.id, lensDisplayName(brandLabel, lens.series, lens.model));
   }
   lensNameCache = map;
   return map;

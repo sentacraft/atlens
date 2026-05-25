@@ -219,9 +219,8 @@ export function lensDisplayName(
   brandName: string,
   series: string | undefined,
   model: string,
-  brandKey?: string
 ): string {
-  if (!series || brandKey === "fujifilm") {
+  if (!series || model.toLowerCase().includes(series.toLowerCase())) {
     return `${brandName} ${model}`;
   }
   return `${brandName} ${series} ${model}`;
