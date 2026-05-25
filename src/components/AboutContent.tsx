@@ -253,13 +253,16 @@ export default async function AboutContent() {
           ))}
         </div>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          {t("coverageSuggest")}{" "}
-          <FeedbackTrigger
-            type="general"
-            className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-          >
-            {t("coverageSuggestCta")}
-          </FeedbackTrigger>
+          {t.rich("coverageSuggest", {
+            feedback: (chunks) => (
+              <FeedbackTrigger
+                type="general"
+                className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+              >
+                {chunks}
+              </FeedbackTrigger>
+            ),
+          })}
         </p>
       </Section>
 
@@ -267,14 +270,16 @@ export default async function AboutContent() {
       <Section id="data-accuracy" title={t("dataAccuracyTitle")}>
         <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3">
           <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-            {t("dataAccuracyCaveat")}
-            <FeedbackTrigger
-              type="data_issue"
-              className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-            >
-              {t("dataAccuracyReportCta")}
-            </FeedbackTrigger>
-            {t("dataAccuracyCaveatSuffix")}
+            {t.rich("dataAccuracyCaveat", {
+              feedback: (chunks) => (
+                <FeedbackTrigger
+                  type="data_issue"
+                  className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                >
+                  {chunks}
+                </FeedbackTrigger>
+              ),
+            })}
           </p>
         </div>
 
