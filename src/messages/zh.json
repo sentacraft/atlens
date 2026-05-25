@@ -224,6 +224,10 @@
     "fieldLensImage": "镜头图片",
     "fieldGroupMedia": "媒体与链接",
     "collectionsTitle": "所属专题",
+    "collectionsSubtitle": "浏览同类镜头",
+    "collectionCategoryFocal": "焦段",
+    "collectionCategoryBrand": "品牌",
+    "collectionCategoryFeature": "特性",
     "notFoundTitle": "未找到这支镜头"
   },
   "Brands": {

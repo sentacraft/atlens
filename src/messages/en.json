@@ -224,6 +224,10 @@
     "fieldLensImage": "Lens Image",
     "fieldGroupMedia": "Media & Links",
     "collectionsTitle": "Featured In",
+    "collectionsSubtitle": "Browse similar lenses",
+    "collectionCategoryFocal": "Focal",
+    "collectionCategoryBrand": "Brand",
+    "collectionCategoryFeature": "Feature",
     "notFoundTitle": "Lens Not Found"
   },
   "Brands": {

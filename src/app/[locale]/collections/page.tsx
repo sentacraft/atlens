@@ -103,7 +103,7 @@ export default async function CollectionsIndexPage({
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
           {t("indexTitle")}
         </h1>
-        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
           {t("indexStats", { count: totalCollections, lensCount: totalLenses })}
         </p>
         <p className="mt-3 text-sm leading-relaxed text-zinc-700 sm:text-base dark:text-zinc-300">

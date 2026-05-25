@@ -45,7 +45,7 @@ export default function RelatedCollectionCard({
         <p className="text-[10px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
           {categoryTag}
         </p>
-        <h3 className="truncate text-xs font-semibold leading-snug text-zinc-900 dark:text-zinc-50">
+        <h3 className="line-clamp-2 text-xs font-semibold leading-snug text-zinc-900 dark:text-zinc-50">
           {title}
         </h3>
         <p className="mt-0.5 text-[10px] text-zinc-500 dark:text-zinc-400">

@@ -22,9 +22,9 @@ import SpecialtyBadges from "@/components/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens-specialty";
 import { RetailersDropdown } from "@/components/RetailersDropdown";
 import { UTILITY_BTN_CLS } from "@/lib/ui-tokens";
-import { COLLECTIONS } from "@/lib/collections";
+import { COLLECTIONS, getCategoryKey } from "@/lib/collections";
+import { getAllLenses } from "@/lib/lens";
 import { Link } from "@/i18n/navigation";
-import { Badge } from "@/components/ui/badge";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates, lensOgImages } from "@/lib/seo";
@@ -263,7 +263,19 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   // Field options for the Report Dialog — taken directly from resolved values,
   // identical to what is rendered in the spec table below.
   const mediaGroupLabel = t("fieldGroupMedia");
-  const memberCollections = Object.values(COLLECTIONS).filter((c) => c.filter(lens, locale));
+  const allXLenses = getAllLenses(locale).filter((l) => l.mount === "X");
+  const memberCollections = Object.values(COLLECTIONS)
+    .filter((c) => c.filter(lens, locale))
+    .map((c) => {
+      const categoryKey = getCategoryKey(c.slug);
+      const categoryLabel = t(
+        categoryKey === "focal" ? "collectionCategoryFocal" :
+        categoryKey === "brand" ? "collectionCategoryBrand" :
+        "collectionCategoryFeature",
+      );
+      const lensCount = allXLenses.filter((l) => c.filter(l, locale)).length;
+      return { ...c, categoryLabel, lensCount };
+    });
 
   const priceSelection = pickPriceEntry(lens.pricing, locale);
   const reportableFields = [
@@ -406,19 +418,33 @@ export default async function LensDetailPage({ params }: { params: Params }) {
       </div>
 
       {memberCollections.length > 0 && (
-        <section>
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-            {t("collectionsTitle")}
-          </h2>
+        <section className="border-t border-zinc-200 pt-6 dark:border-zinc-800">
+          <div className="mb-4 flex items-baseline gap-2">
+            <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              {t("collectionsTitle")}
+            </h2>
+            <span className="text-xs text-zinc-400 dark:text-zinc-500">
+              — {t("collectionsSubtitle")}
+            </span>
+          </div>
           <div className="flex flex-wrap gap-2">
             {memberCollections.map((c) => (
-              <Badge
+              <Link
                 key={c.slug}
-                variant="outline"
-                render={<Link href={`/collections/${c.slug}`} />}
+                href={`/collections/${c.slug}`}
+                className="group inline-flex items-center gap-2 rounded-full border border-zinc-200 px-3 py-1.5 text-sm transition-colors hover:border-zinc-900 hover:bg-zinc-900 hover:text-white dark:border-zinc-700 dark:hover:border-zinc-100 dark:hover:bg-zinc-100 dark:hover:text-zinc-900"
               >
-                {locale === "zh" ? c.title.zh : c.title.en}
-              </Badge>
+                <span className="rounded bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-500 group-hover:bg-zinc-700 group-hover:text-zinc-300 dark:bg-zinc-800 dark:text-zinc-400 dark:group-hover:bg-zinc-300 dark:group-hover:text-zinc-600">
+                  {c.categoryLabel}
+                </span>
+                <span className="font-medium text-zinc-900 group-hover:text-white dark:text-zinc-100 dark:group-hover:text-zinc-900">
+                  {locale === "zh" ? c.title.zh : c.title.en}
+                </span>
+                <span className="text-xs text-zinc-400 group-hover:text-zinc-400 dark:text-zinc-500 dark:group-hover:text-zinc-500">
+                  {c.lensCount}
+                </span>
+                <span className="text-zinc-300 group-hover:text-zinc-500 dark:text-zinc-600 dark:group-hover:text-zinc-400" aria-hidden="true">→</span>
+              </Link>
             ))}
           </div>
         </section>
