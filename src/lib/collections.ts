@@ -11,16 +11,20 @@ export interface LensCollection {
   filter: LensFilter;
 }
 
+function xPhoto(lens: Lens): boolean {
+  return lens.mount === "X" && !lens.isCine;
+}
+
 function xPrime(focalMin: number, focalMax: number): LensFilter {
   return (lens) =>
-    lens.mount === "X" &&
+    xPhoto(lens) &&
     !isZoom(lens) &&
     lens.focalLengthMin >= focalMin &&
     lens.focalLengthMin <= focalMax;
 }
 
 function xBrand(brand: string): LensFilter {
-  return (lens) => lens.mount === "X" && lens.brand === brand;
+  return (lens) => xPhoto(lens) && lens.brand === brand;
 }
 
 const FILTERS: Record<string, LensFilter> = {
@@ -31,34 +35,34 @@ const FILTERS: Record<string, LensFilter> = {
   "85mm": xPrime(83, 90),
 
   "7artisans": xBrand("7artisans"),
-  viltrox: (lens) => lens.mount === "X" && lens.brand === "viltrox" && lens.af === true,
+  viltrox: (lens) => xPhoto(lens) && lens.brand === "viltrox" && lens.af === true,
   ttartisan: xBrand("ttartisan"),
   sigma: xBrand("sigma"),
 
   "weather-sealed": (lens) =>
-    lens.mount === "X" && (lens.wr === true || lens.wr === "partial"),
+    xPhoto(lens) && (lens.wr === true || lens.wr === "partial"),
 
   macro: (lens) =>
-    lens.mount === "X" && !!lens.opticalTraits?.includes("macro"),
+    xPhoto(lens) && !!lens.opticalTraits?.includes("macro"),
 
   "under-200g": (lens) => {
-    if (lens.mount !== "X") {
+    if (!xPhoto(lens)) {
       return false;
     }
     const w = Array.isArray(lens.weightG) ? lens.weightG[1] : lens.weightG;
     return w != null && w < 200;
   },
 
-  "with-ois": (lens) => lens.mount === "X" && lens.ois === true,
+  "with-ois": (lens) => xPhoto(lens) && lens.ois === true,
 
   "fast-aperture": (lens) =>
-    lens.mount === "X" &&
+    xPhoto(lens) &&
     !isZoom(lens) &&
     lens.maxAperture != null &&
     lens.maxAperture <= 1.4,
 
   "compact-primes": (lens) =>
-    lens.mount === "X" &&
+    xPhoto(lens) &&
     !isZoom(lens) &&
     lens.length?.mm != null &&
     lens.length.mm <= 40,
@@ -66,20 +70,29 @@ const FILTERS: Record<string, LensFilter> = {
   "under-200": (lens, locale) => {
     if (locale === "zh") {
       const p = lens.pricing?.cn?.new?.price;
-      return lens.mount === "X" && p != null && p < 1000;
+      return xPhoto(lens) && p != null && p < 1000;
     }
     const p = lens.pricing?.global?.new?.price;
-    return lens.mount === "X" && p != null && p < 200;
+    return xPhoto(lens) && p != null && p < 200;
   },
 
   "under-400": (lens, locale) => {
     if (locale === "zh") {
       const p = lens.pricing?.cn?.new?.price;
-      return lens.mount === "X" && p != null && p < 2000;
+      return xPhoto(lens) && p != null && p < 2000;
     }
     const p = lens.pricing?.global?.new?.price;
-    return lens.mount === "X" && p != null && p < 400;
+    return xPhoto(lens) && p != null && p < 400;
   },
+
+  cine: (lens) => lens.mount === "X" && lens.isCine === true,
+
+  fisheye: (lens) =>
+    xPhoto(lens) && !!lens.opticalTraits?.includes("fisheye"),
+
+  "tilt-shift": (lens) =>
+    xPhoto(lens) &&
+    (!!lens.opticalTraits?.includes("tilt") || !!lens.opticalTraits?.includes("shift")),
 };
 
 const parsed: LensCollection[] = collectionsData.collections.map((entry) => {
@@ -96,7 +109,7 @@ export const COLLECTIONS: Record<string, LensCollection> = Object.fromEntries(
 
 export const FOCAL_SLUGS = ["23mm", "35mm", "50mm", "56mm", "85mm"];
 export const BRAND_SLUGS = ["7artisans", "viltrox", "ttartisan", "sigma"];
-export const FEATURE_SLUGS = ["weather-sealed", "macro", "under-200g", "with-ois", "fast-aperture", "compact-primes", "under-200", "under-400"];
+export const FEATURE_SLUGS = ["weather-sealed", "macro", "under-200g", "with-ois", "fast-aperture", "compact-primes", "under-200", "under-400", "fisheye", "tilt-shift"];
 
 function categoryOf(slug: string): string[] {
   if (FOCAL_SLUGS.includes(slug)) {

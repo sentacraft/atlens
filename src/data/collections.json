@@ -186,6 +186,39 @@
         "en": "The sweet spot of value within the X-mount ecosystem. Remaining under the $400 USD mark unlocks serious equipment: bright autofocus primes, flexible walk-around zooms, and options from both Fujifilm and third-party developers. Where most advanced amateurs and creators find their everyday workhorses.",
         "zh": "X 卡口系统的黄金性价比区间。在两千元预算以内，你已经可以触及大光圈自动对焦定焦、高机动性变焦等进阶镜头。无需负担旗舰级的溢价，大多数高阶玩家与创作者的主力挂机头往往都诞生于此。"
       }
+    },
+    {
+      "slug": "cine",
+      "title": {
+        "en": "Cinema Lenses for Fujifilm X-Mount",
+        "zh": "富士 X 卡口电影镜头"
+      },
+      "description": {
+        "en": "Every X-mount lens built for motion picture work — T-stop rated, geared focus and iris rings, and standardized front diameters for matte boxes and follow-focus rigs. From Fujifilm's own MKX cinema zooms to affordable T2.1 primes from 7Artisans and TTArtisan.",
+        "zh": "专为动态影像打造的 X 卡口镜头。T 值标定、齿轮化的对焦与光圈环、统一前口径，可直接搭配遮光斗和跟焦器。从富士自家的 MKX 电影变焦到七工匠、铭匠的高性价比 T2.1 定焦，一站齐全。"
+      }
+    },
+    {
+      "slug": "fisheye",
+      "title": {
+        "en": "Fisheye Lenses for Fujifilm X-Mount",
+        "zh": "富士 X 卡口鱼眼镜头"
+      },
+      "description": {
+        "en": "Every fisheye lens available for X-mount — circular and diagonal projections from 4mm to 10mm. Extreme perspectives for astrophotography, skateboarding, real-estate interiors, and pure creative distortion. All manual focus, all under $200.",
+        "zh": "X 卡口所有鱼眼镜头，涵盖圆形鱼眼和对角线鱼眼，焦距从 4mm 到 10mm。极端透视适合星空、滑板、室内全景以及纯粹的创意变形。全部手动对焦，全部不到 200 美元。"
+      }
+    },
+    {
+      "slug": "tilt-shift",
+      "title": {
+        "en": "Tilt-Shift Lenses for Fujifilm X-Mount",
+        "zh": "富士 X 卡口移轴镜头"
+      },
+      "description": {
+        "en": "Specialty lenses with tilt, shift, or both movements for the X-mount. Control the plane of focus for miniature effects and selective sharpness, or correct converging verticals in architecture. A niche but irreplaceable toolkit for product, architecture, and fine-art photography.",
+        "zh": "支持倾斜、平移或双向移轴功能的 X 卡口特殊镜头。通过改变焦平面实现微缩模型效果和选择性合焦，或校正建筑拍摄中的透视变形。小众但不可替代，是商业产品、建筑和艺术摄影的利器。"
+      }
     }
   ]
 }
