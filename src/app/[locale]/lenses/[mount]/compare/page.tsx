@@ -78,7 +78,7 @@ export async function generateMetadata({
   }
 
   const title = lenses
-    .map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model, l.brand))
+    .map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model))
     .join(" vs ");
   const description = t("metaDescCustom", { count: lenses.length });
   return {
