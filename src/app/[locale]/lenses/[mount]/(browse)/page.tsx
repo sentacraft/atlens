@@ -53,7 +53,6 @@ export default async function LensesPage({ params }: { params: Params }) {
   if (!resolvedMount) {
     notFound();
   }
-  const lenses = getLensesByMount(resolvedMount, locale);
   const t = await getTranslations({ locale, namespace: "LensList" });
   const h1Title = resolvedMount === "X" ? t("metaTitleX") : t("metaTitleG");
 
@@ -66,7 +65,7 @@ export default async function LensesPage({ params }: { params: Params }) {
           anchor. */}
       <h1 className="sr-only">{h1Title}</h1>
       <Suspense fallback={<LensesLoading />}>
-        <LensListClient lenses={lenses} />
+        <LensListClient />
       </Suspense>
     </>
   );

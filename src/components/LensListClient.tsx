@@ -5,22 +5,19 @@ import { useSearchParams } from "next/navigation";
 import { usePathname, Link } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { useTranslations } from "next-intl";
-import type { Lens } from "@/lib/types";
 import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
 import {
   filterLenses,
   sortLenses,
   defaultFilters,
-  getOrderedUniqueBrands,
   MAX_COMPARE,
   type FilterState,
   type SortKey,
 } from "@/lib/lens";
-import { deriveSpecialty } from "@/lib/lens-specialty";
-import { OPTICAL_TRAITS, type OpticalTrait } from "@/lib/types";
 import { serializeFilters, parseFilters } from "@/lib/filter-params";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
+import { useLensesApi } from "@/hooks/useLensesApi";
 import { ArrowDownNarrowWide, ArrowUpNarrowWide } from "lucide-react";
 import BackToTopButton from "@/components/BackToTopButton";
 import { Button } from "@/components/ui/button";
@@ -34,39 +31,29 @@ import {
 import LensCard from "./LensCard";
 import LensFilters from "./LensFilters";
 import LensSearchDialog from "./LensSearchDialog";
+import LensesLoading from "@/app/[locale]/lenses/[mount]/(browse)/loading";
 import FeedbackTrigger from "./FeedbackTrigger";
 
-interface Props {
-  lenses: Lens[];
-}
-
-export default function LensListClient({ lenses }: Props) {
+export default function LensListClient() {
   const t = useTranslations("LensList");
   const tSearch = useTranslations("Search");
   const hookAttr = useUiHookAttr();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-
   const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
   const { compareIds, toggle } = useCompare();
 
-  const brands = useMemo(() => getOrderedUniqueBrands(lenses), [lenses]);
-
-  const availableOpticalTraits = useMemo<OpticalTrait[]>(
-    () => {
-      const present = new Set(
-        lenses.flatMap((l) => deriveSpecialty(l).opticalTraits),
-      );
-      return OPTICAL_TRAITS.filter((trait) => present.has(trait));
-    },
-    [lenses],
-  );
+  const { lenses, brands, availableOpticalTraits, isLoading } = useLensesApi();
 
   const displayed = useMemo(
     () =>
       sortLenses(filterLenses(lenses, filters), filters.sort, filters.sortDir),
     [lenses, filters]
   );
+
+  if (isLoading && lenses.length === 0) {
+    return <LensesLoading />;
+  }
 
   const hasActiveFilters =
     filters.brands.length > 0 ||
