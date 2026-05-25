@@ -26,7 +26,8 @@ const HIDDEN_ROUTES: { label: string; href: string }[] = [
 export default function TestHookPanel() {
   const context = useContext(TestHookContext);
   const [copied, setCopied] = useState(false);
-  const [linksOpen, setLinksOpen] = useState(false);
+  const [linksOpen, setLinksOpen] = useState(true);
+  const [tweaksOpen, setTweaksOpen] = useState(false);
 
   if (!context || !context.state.testHook) {
     return null;
@@ -50,35 +51,7 @@ export default function TestHookPanel() {
         </Button>
       </div>
 
-      <div className="mt-4 space-y-4">
-        {TESTHOOK_OPTION_DEFINITIONS.map((option) => (
-          <label key={option.key} className="flex flex-col gap-1.5">
-            <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
-              {option.label}
-            </span>
-            <Select
-              value={state.options[option.key] ?? option.defaultValue ?? ""}
-              onValueChange={(value) => setOption(option.key, value ?? "")}
-            >
-              <SelectTrigger className="h-10">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {option.values.map((value) => (
-                  <SelectItem key={value.id} value={value.id}>
-                    {value.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <span className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
-              {option.description}
-            </span>
-          </label>
-        ))}
-      </div>
-
-      <div className="mt-4 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+      <div className="mt-4">
         <button
           type="button"
           className="flex w-full items-center justify-between"
@@ -104,6 +77,50 @@ export default function TestHookPanel() {
               </li>
             ))}
           </ul>
+        )}
+      </div>
+
+      <div className="mt-4 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+        <button
+          type="button"
+          className="flex w-full items-center justify-between"
+          onClick={() => setTweaksOpen(!tweaksOpen)}
+        >
+          <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+            UI tweaks ({TESTHOOK_OPTION_DEFINITIONS.length})
+          </span>
+          <span className="text-xs text-zinc-400 dark:text-zinc-500">
+            {tweaksOpen ? "▲" : "▼"}
+          </span>
+        </button>
+        {tweaksOpen && (
+          <div className="mt-3 space-y-4">
+            {TESTHOOK_OPTION_DEFINITIONS.map((option) => (
+              <label key={option.key} className="flex flex-col gap-1.5">
+                <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+                  {option.label}
+                </span>
+                <Select
+                  value={state.options[option.key] ?? option.defaultValue ?? ""}
+                  onValueChange={(value) => setOption(option.key, value ?? "")}
+                >
+                  <SelectTrigger className="h-10">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {option.values.map((value) => (
+                      <SelectItem key={value.id} value={value.id}>
+                        {value.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <span className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+                  {option.description}
+                </span>
+              </label>
+            ))}
+          </div>
         )}
       </div>
 
