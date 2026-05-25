@@ -5,7 +5,6 @@ import {
   useDeferredValue,
   useEffect,
   useId,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -13,10 +12,9 @@ import type { LucideIcon } from "lucide-react";
 import { Search, X } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, Link } from "@/i18n/navigation";
-import { getLensesByMount } from "@/lib/lens";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useEffectiveMount } from "@/hooks/useMountParam";
-import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
+import { useLensSearchApi } from "@/hooks/useLensSearchApi";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { lensSubtitleLine } from "@/lib/lens.format";
@@ -60,7 +58,6 @@ export default function LensSearchDialog({
   const router = useRouter();
   const locale = useLocale();
   const mount = useEffectiveMount();
-  const lensSearchIndex = useMemo(() => buildLensSearchIndex(getLensesByMount(mount, locale)), [mount, locale]);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -101,9 +98,10 @@ export default function LensSearchDialog({
     }
   }, [activeIndex]);
 
-  const results = useMemo(
-    () => searchLensIndex(lensSearchIndex, deferredQuery),
-    [lensSearchIndex, deferredQuery]
+  const { results, isLoading: isSearching } = useLensSearchApi(
+    mountToUrlSegment(mount),
+    locale,
+    deferredQuery,
   );
 
   useSearchTelemetry({ query: deferredQuery, resultsCount: results.length, isOpen: open });
@@ -240,7 +238,11 @@ export default function LensSearchDialog({
             ref={scrollContainerRef}
             className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
           >
-            {query.trim().length === 0 ? null : results.length === 0 ? (
+            {query.trim().length === 0 ? null : isSearching && results.length === 0 ? (
+              <div className="flex items-center justify-center py-16">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600 dark:border-zinc-700 dark:border-t-zinc-400" />
+              </div>
+            ) : results.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-zinc-200 px-5 py-10 text-center dark:border-zinc-800">
                 <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
                   {t("noResults")}

@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getLensesByMount } from "@/lib/lens";
-import { urlSegmentToMount } from "@/lib/mount";
+import { urlSegmentToMount, type MountSegment } from "@/lib/mount";
 import LensListClient from "@/components/LensListClient";
 import LensesLoading from "./loading";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
@@ -53,7 +53,6 @@ export default async function LensesPage({ params }: { params: Params }) {
   if (!resolvedMount) {
     notFound();
   }
-  const lenses = getLensesByMount(resolvedMount, locale);
   const t = await getTranslations({ locale, namespace: "LensList" });
   const h1Title = resolvedMount === "X" ? t("metaTitleX") : t("metaTitleG");
 
@@ -66,7 +65,7 @@ export default async function LensesPage({ params }: { params: Params }) {
           anchor. */}
       <h1 className="sr-only">{h1Title}</h1>
       <Suspense fallback={<LensesLoading />}>
-        <LensListClient lenses={lenses} />
+        <LensListClient mount={mount as MountSegment} />
       </Suspense>
     </>
   );
