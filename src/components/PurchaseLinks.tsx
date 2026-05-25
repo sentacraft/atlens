@@ -63,14 +63,14 @@ export function PurchaseLinksCompact({ lens, customId, className }: Props) {
 export function PurchaseDisclosureCaption({ className }: { className?: string }) {
   const t = useTranslations("Purchase");
   return (
-    <div
+    <p
       className={cn(
-        "flex items-start gap-2 px-3 py-2 text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400",
+        "px-3 py-2 text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400",
         className,
       )}
     >
-      <Info className="size-3 shrink-0 mt-0.5 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
-      <span>{t("disclosureDetail")}</span>
-    </div>
+      <Info className="inline size-3 -mt-px mr-1 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
+      {t("disclosureDetail")}
+    </p>
   );
 }
