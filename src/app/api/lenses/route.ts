@@ -10,33 +10,9 @@ import { parseFilters } from "@/lib/filter-params";
 import { urlSegmentToMount, type MountSegment } from "@/lib/mount";
 import { OPTICAL_TRAITS, type OpticalTrait } from "@/lib/types";
 import { routing } from "@/i18n/routing";
+import { createRateLimiter, RATE_LIMITED_RESPONSE } from "@/lib/rate-limit";
 
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 120;
-
-const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const bucket = rateLimitBuckets.get(ip);
-  if (!bucket || bucket.resetAt < now) {
-    rateLimitBuckets.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return true;
-  }
-  if (bucket.count >= RATE_LIMIT_MAX) {
-    return false;
-  }
-  bucket.count += 1;
-  return true;
-}
-
-function getClientIp(req: Request): string {
-  const forwarded = req.headers.get("x-forwarded-for");
-  if (forwarded) {
-    return forwarded.split(",")[0].trim();
-  }
-  return req.headers.get("x-real-ip") ?? "unknown";
-}
+const checkRateLimit = createRateLimiter({ windowMs: 60_000, max: 120 });
 
 const VALID_MOUNTS: readonly string[] = ["x", "gfx"];
 
@@ -48,9 +24,8 @@ function computeAvailableOpticalTraits(lenses: { isCine?: boolean; opticalTraits
 }
 
 export function GET(req: Request) {
-  const ip = getClientIp(req);
-  if (!checkRateLimit(ip)) {
-    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  if (!checkRateLimit(req)) {
+    return RATE_LIMITED_RESPONSE;
   }
 
   const { searchParams } = new URL(req.url);
