@@ -83,7 +83,7 @@ export default async function CollectionPage({
           <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
             {stats}
           </p>
-          <p className="mt-3 max-w-3xl text-base leading-relaxed text-zinc-700 dark:text-zinc-300">
+          <p className="mt-3 text-base leading-relaxed text-zinc-700 dark:text-zinc-300">
             {description}
           </p>
         </header>
