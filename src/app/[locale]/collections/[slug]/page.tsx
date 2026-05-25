@@ -34,7 +34,7 @@ export async function generateMetadata({
   const title = localized(collection.title, locale);
   const description = localized(collection.description, locale);
 
-  const lenses = getAllLenses(locale).filter(collection.filter);
+  const lenses = getAllLenses(locale).filter((l) => collection.filter(l, locale));
   const brandCount = new Set(lenses.map((l) => l.brand)).size;
   const prefix = t("metaPrefix", { count: lenses.length, brandCount });
   const metaDesc = `${prefix} ${description}`;
@@ -65,7 +65,7 @@ export default async function CollectionPage({
   }
 
   const t = await getTranslations({ locale, namespace: "Collection" });
-  const lenses = getAllLenses(locale).filter(collection.filter);
+  const lenses = getAllLenses(locale).filter((l) => collection.filter(l, locale));
   const brandCount = new Set(lenses.map((l) => l.brand)).size;
 
   const title = localized(collection.title, locale);

@@ -2,14 +2,16 @@ import collectionsData from "../data/collections.json";
 import { isZoom } from "./lens";
 import type { Lens } from "./types";
 
+type LensFilter = (lens: Lens, locale: string) => boolean;
+
 export interface LensCollection {
   slug: string;
   title: { en: string; zh: string };
   description: { en: string; zh: string };
-  filter: (lens: Lens) => boolean;
+  filter: LensFilter;
 }
 
-function xPrime(focalMin: number, focalMax: number): (lens: Lens) => boolean {
+function xPrime(focalMin: number, focalMax: number): LensFilter {
   return (lens) =>
     lens.mount === "X" &&
     !isZoom(lens) &&
@@ -17,11 +19,11 @@ function xPrime(focalMin: number, focalMax: number): (lens: Lens) => boolean {
     lens.focalLengthMin <= focalMax;
 }
 
-function xBrand(brand: string): (lens: Lens) => boolean {
+function xBrand(brand: string): LensFilter {
   return (lens) => lens.mount === "X" && lens.brand === brand;
 }
 
-const FILTERS: Record<string, (lens: Lens) => boolean> = {
+const FILTERS: Record<string, LensFilter> = {
   "23mm": xPrime(22, 24),
   "35mm": xPrime(33, 36),
   "50mm": xPrime(48, 51),
@@ -55,12 +57,28 @@ const FILTERS: Record<string, (lens: Lens) => boolean> = {
     lens.maxAperture != null &&
     lens.maxAperture <= 1.4,
 
-  "compact-primes": (lens) => {
-    if (lens.mount !== "X" || isZoom(lens)) {
-      return false;
+  "compact-primes": (lens) =>
+    lens.mount === "X" &&
+    !isZoom(lens) &&
+    lens.length?.mm != null &&
+    lens.length.mm <= 40,
+
+  "under-200": (lens, locale) => {
+    if (locale === "zh") {
+      const p = lens.pricing?.cn?.new?.price;
+      return lens.mount === "X" && p != null && p < 1000;
     }
-    const w = Array.isArray(lens.weightG) ? lens.weightG[1] : lens.weightG;
-    return w != null && w < 150;
+    const p = lens.pricing?.global?.new?.price;
+    return lens.mount === "X" && p != null && p < 200;
+  },
+
+  "under-400": (lens, locale) => {
+    if (locale === "zh") {
+      const p = lens.pricing?.cn?.new?.price;
+      return lens.mount === "X" && p != null && p < 2000;
+    }
+    const p = lens.pricing?.global?.new?.price;
+    return lens.mount === "X" && p != null && p < 400;
   },
 };
 
@@ -78,7 +96,7 @@ export const COLLECTIONS: Record<string, LensCollection> = Object.fromEntries(
 
 const FOCAL_SLUGS = ["23mm", "35mm", "50mm", "56mm", "85mm"];
 const BRAND_SLUGS = ["7artisans", "viltrox", "ttartisan", "sigma"];
-const FEATURE_SLUGS = ["weather-sealed", "macro", "under-200g", "with-ois", "fast-aperture", "compact-primes"];
+const FEATURE_SLUGS = ["weather-sealed", "macro", "under-200g", "with-ois", "fast-aperture", "compact-primes", "under-200", "under-400"];
 
 function categoryOf(slug: string): string[] {
   if (FOCAL_SLUGS.includes(slug)) {

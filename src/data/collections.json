@@ -146,12 +146,12 @@
     {
       "slug": "compact-primes",
       "title": {
-        "en": "Compact Primes for Fujifilm X-Mount (Under 150g)",
-        "zh": "富士 X 卡口紧凑型定焦镜头（150g 以下）"
+        "en": "Pancake & Compact Primes for Fujifilm X-Mount",
+        "zh": "富士 X 卡口饼干头与紧凑定焦"
       },
       "description": {
-        "en": "The most pocketable primes for X-mount — every fixed focal length lens under 150 grams. Pancake lenses, tiny wide-angles, and miniature normals that keep your kit light without compromising on image quality. Some weigh less than 60 grams.",
-        "zh": "X 卡口最口袋化的定焦镜头，所有重量在 150 克以下的定焦都在这里。饼干头、迷你广角、微型标头，让你的器材包轻到忘记它的存在。最轻的一支只有 58 克。"
+        "en": "Every X-mount prime 40mm or shorter in barrel length. Pancake lenses, tiny wide-angles, and miniature normals that disappear on your camera. The shortest is just 14mm long — barely thicker than the body cap.",
+        "zh": "X 卡口所有镜身长度不超过 40mm 的定焦镜头。饼干头、迷你广角、微型标头，装上去几乎感觉不到镜头的存在。最短的一支只有 14mm，比机身盖厚不了多少。"
       }
     },
     {
@@ -163,6 +163,28 @@
       "description": {
         "en": "Every X-mount lens with built-in optical image stabilization. Handheld low-light, slower shutter speeds, smoother video — OIS does the work so you don't have to. Useful whether your body has IBIS or not.",
         "zh": "X 卡口所有内置光学防抖的镜头。暗光手持、慢门、视频稳定，防抖替你干活。不管机身有没有五轴防抖，镜头端的 OIS 都有用。"
+      }
+    },
+    {
+      "slug": "under-200",
+      "title": {
+        "en": "Fujifilm X-Mount Lenses Under $200",
+        "zh": "富士 X 卡口千元以下镜头"
+      },
+      "description": {
+        "en": "Every X-mount lens you can buy new for less than $200 USD. Manual primes, compact pancakes, and a few autofocus surprises — proof that getting into the Fujifilm system doesn't have to break the bank. Sorted and compared so you can find the best value for your shooting style.",
+        "zh": "所有新品售价低于 1000 元的 X 卡口镜头。手动定焦、饼干头，甚至有几支自动对焦的惊喜——证明玩富士未必要大出血。逐支对比，帮你找到最适合自己拍摄风格的高性价比选择。"
+      }
+    },
+    {
+      "slug": "under-400",
+      "title": {
+        "en": "Fujifilm X-Mount Lenses Under $400",
+        "zh": "富士 X 卡口两千元以下镜头"
+      },
+      "description": {
+        "en": "The sweet spot of the X-mount ecosystem. Under $400 USD opens up fast autofocus primes, versatile zooms, and weather-sealed options from both Fujifilm and third-party makers. This is where most shooters find their workhorse lenses — serious optical performance without flagship pricing.",
+        "zh": "X 卡口的甜品区间。两千元以内能买到大光圈自动定焦、实用变焦乃至防尘防滴的选择，原厂副厂兼备。大部分人的主力镜头都出自这个价位——认真的光学素质，不必旗舰的价格。"
       }
     }
   ]
