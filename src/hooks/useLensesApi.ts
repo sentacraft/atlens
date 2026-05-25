@@ -1,8 +1,8 @@
 "use client";
 
 import useSWR from "swr";
-import type { Lens, OpticalTrait } from "@/lib/types";
-import type { MountSegment } from "@/lib/mount";
+import type { Lens, Mount, OpticalTrait } from "@/lib/types";
+import { mountToUrlSegment } from "@/lib/mount";
 import { jsonFetcher, buildLensListUrl } from "@/lib/api";
 
 interface LensListResponse {
@@ -16,8 +16,8 @@ const EMPTY_LENSES: Lens[] = [];
 const EMPTY_BRANDS: string[] = [];
 const EMPTY_TRAITS: OpticalTrait[] = [];
 
-export function useLensesApi(mount: MountSegment, locale: string) {
-  const url = buildLensListUrl(mount, locale);
+export function useLensesApi(mount: Mount, locale: string) {
+  const url = buildLensListUrl(mountToUrlSegment(mount), locale);
   const { data, error, isLoading } = useSWR<LensListResponse>(url, jsonFetcher, {
     keepPreviousData: true,
     revalidateOnFocus: false,
