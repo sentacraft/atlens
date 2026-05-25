@@ -111,6 +111,19 @@ function categoryOf(slug: string): string[] {
   return [];
 }
 
+export function getCategoryKey(slug: string): "focal" | "brand" | "feature" | null {
+  if (FOCAL_SLUGS.includes(slug)) {
+    return "focal";
+  }
+  if (BRAND_SLUGS.includes(slug)) {
+    return "brand";
+  }
+  if (FEATURE_SLUGS.includes(slug)) {
+    return "feature";
+  }
+  return null;
+}
+
 export function getRelatedCollections(slug: string): LensCollection[] {
   return categoryOf(slug)
     .filter((s) => s !== slug)

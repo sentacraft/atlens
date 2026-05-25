@@ -507,6 +507,11 @@
     "categoryFocal": "By Focal Length",
     "categoryBrand": "By Brand",
     "categoryFeature": "By Feature",
-    "lensCount": "{count} lenses"
+    "lensCount": "{count} lenses",
+    "browseAllEyebrow": "X mount · Full library",
+    "browseAllTitle": "Browse all X-mount lenses",
+    "categoryFocalTag": "Focal length",
+    "categoryBrandTag": "Brand",
+    "categoryFeatureTag": "Feature"
   }
 }

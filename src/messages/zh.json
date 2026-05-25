@@ -507,6 +507,11 @@
     "categoryFocal": "按焦段",
     "categoryBrand": "按品牌",
     "categoryFeature": "按特性",
-    "lensCount": "{count} 支镜头"
+    "lensCount": "{count} 支镜头",
+    "browseAllEyebrow": "X 卡口 · 完整库",
+    "browseAllTitle": "浏览全部 X 卡口镜头",
+    "categoryFocalTag": "焦段",
+    "categoryBrandTag": "品牌",
+    "categoryFeatureTag": "特性"
   }
 }
