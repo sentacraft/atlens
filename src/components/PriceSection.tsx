@@ -2,13 +2,10 @@
 
 // Expanded price display for the lens detail page.
 //
-// Layout (visually bound as a single "price info" card):
-//   ¥1,299  [Used ⓘ]   ← Used badge is clickable; explains why used was picked
+// Layout:
+//   ~¥1,299  (zh) / $999 approx.  (en)
 //   source · Sampled date
 //   ⚠ Disclaimer · …
-//
-// All three rows share a soft background so the disclaimer is
-// unambiguously about THIS price, not the spec table that follows below.
 
 import { Popover } from "@base-ui/react/popover";
 import { Calendar, Info } from "lucide-react";
@@ -35,29 +32,23 @@ export function PriceSection({ lens }: Props) {
   }
 
   const { entry, condition } = selection;
-  const isUsed = condition === "used";
-
   const priceDisplay = formatPrice(entry.price, entry.currency, locale, condition, t.raw("cnyAmount"));
   const sourceDisplay = entry.source;
   const sampledDisplay = formatSampledAt(entry.sampledAt, locale);
 
   return (
-    // No background card — the price block is bound visually by tight inner
-    // gaps (gap-1) while the outer column's gap-5 separates it from title
-    // above and action buttons below. This trades the card's explicit
-    // "unit" boundary for clean left alignment of every text line with the
-    // title and buttons.
     <div className="flex flex-col gap-1">
-      {/* Row 1: Price + used badge (clickable when used) */}
-      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-        <span className="text-xl font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
-          {priceDisplay}
-        </span>
-        {isUsed && <UsedBadge size="md" reason={t("usedReason")} label={t("conditionUsed")} />}
-      </div>
+      {/* Row 1: Price + approx */}
+      <span className="text-xl font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
+        {t.rich("priceApprox", {
+          price: priceDisplay,
+          approx: (chunks) => (
+            <span className="text-sm font-normal text-zinc-400 dark:text-zinc-500">{chunks}</span>
+          ),
+        })}
+      </span>
 
-      {/* Row 2: Source + sampled date — calendar icon makes the date read
-          as data, not prose. */}
+      {/* Row 2: Source + sampled date */}
       <div className="inline-flex items-center gap-2 text-[11px] text-zinc-400 dark:text-zinc-500">
         <span data-redact-hook="priceSource">{sourceDisplay}</span>
         <span className="opacity-30">|</span>
@@ -73,9 +64,6 @@ export function PriceSection({ lens }: Props) {
   );
 }
 
-// Inline-defined so the click affordance (cursor + hover background + trailing
-// info icon) stays paired with the badge's visual treatment. If a second
-// surface ever needs the same clickable badge, hoist this to its own file.
 function UsedBadge({ size, reason, label }: { size: "sm" | "md"; reason: string; label: string }) {
   const padding = size === "md" ? "px-1.5 py-px" : "px-1 py-px";
   const fontSize = size === "md" ? "text-[11px]" : "text-[10px]";
