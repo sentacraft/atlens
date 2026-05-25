@@ -8627,182 +8627,6 @@
     }
   },
   {
-    "id": "laowa-cf-argus-25mm-f095-apo-x",
-    "brand": "laowa",
-    "mount": "X",
-    "series": "Argus",
-    "model": "CF 25mm F0.95 APO",
-    "focalLengthMin": 25,
-    "focalLengthMax": 25,
-    "maxAperture": 0.95,
-    "minAperture": 11,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 575,
-    "diameterMm": 71.5,
-    "length": {
-      "mm": 81
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 34
-      }
-    },
-    "maxMagnification": {
-      "value": 0.1
-    },
-    "angleOfView": 58.8,
-    "angleOfViewCalc": 59,
-    "apertureBladeCount": 9,
-    "releaseYear": 2022,
-    "searchAliases": {
-      "en": "Laowa Argus 25mm f0.95 APO Fuji X",
-      "zh": "老蛙 Argus 25mm f0.95 APO 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 3350,
-          "currency": "CNY",
-          "source": "天猫·老蛙旗舰店",
-          "sampledAt": "2026-05-18"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 549,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://www.venuslens.net/product/laowa-argus-25mm-f-0-95-apsc-apo/"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Nikon Z",
-      "Canon RF",
-      "Fujifilm X",
-      "Canon EF-M"
-    ],
-    "filterMm": 62,
-    "lensConfiguration": {
-      "groups": 9,
-      "elements": 14,
-      "aspherical": 1,
-      "ed": 1,
-      "highRefractive": 2,
-      "sourceText": "9 groups 14 elements (incl. 1 aspherical, 1 ED, 2 special high-refractive)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.laowalens.com/camera-lens-58"
-    }
-  },
-  {
-    "id": "laowa-cf-argus-33mmf095-x",
-    "brand": "laowa",
-    "mount": "X",
-    "series": "Argus",
-    "model": "CF 33mm F0.95",
-    "focalLengthMin": 33,
-    "focalLengthMax": 33,
-    "maxAperture": 0.95,
-    "minAperture": 11,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 590,
-    "diameterMm": 71.5,
-    "length": {
-      "mm": 83
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 35
-      }
-    },
-    "maxMagnification": {
-      "value": 0.125
-    },
-    "angleOfView": 46.2,
-    "angleOfViewCalc": 46.4,
-    "apertureBladeCount": 9,
-    "releaseYear": 2021,
-    "searchAliases": {
-      "en": "Laowa Argus 33mm f0.95 Fuji X",
-      "zh": "老蛙 Argus 33mm f0.95 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 2960,
-          "currency": "CNY",
-          "source": "京东·老蛙官方旗舰店",
-          "sampledAt": "2026-05-18"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 449,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        },
-        "used": {
-          "price": 400,
-          "currency": "USD",
-          "source": "eBay",
-          "sampledAt": "2026-05-18"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://www.venuslens.net/product/laowa-argus-33mm-f-0-95-cf-apo/"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Nikon Z",
-      "Canon RF",
-      "Canon EF-M"
-    ],
-    "filterMm": 62,
-    "lensConfiguration": {
-      "groups": 9,
-      "elements": 14,
-      "aspherical": 1,
-      "ed": 1,
-      "highRefractive": 3,
-      "sourceText": "9 groups 14 elements (incl. 1 aspherical, 1 ED, 3 special high-refractive)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.laowalens.com/camera-lens-42"
-    }
-  },
-  {
     "id": "laowa-cf-65mmf28-ca-dreamer-macro-2x-x",
     "brand": "laowa",
     "mount": "X",
@@ -8893,6 +8717,182 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "https://www.laowalens.com/camera-lens-33"
+    }
+  },
+  {
+    "id": "laowa-cf-argus-25mm-f095-apo-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "Argus",
+    "model": "CF Argus 25mm F0.95 APO",
+    "focalLengthMin": 25,
+    "focalLengthMax": 25,
+    "maxAperture": 0.95,
+    "minAperture": 11,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 575,
+    "diameterMm": 71.5,
+    "length": {
+      "mm": 81
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 34
+      }
+    },
+    "maxMagnification": {
+      "value": 0.1
+    },
+    "angleOfView": 58.8,
+    "angleOfViewCalc": 59,
+    "apertureBladeCount": 9,
+    "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Laowa Argus 25mm f0.95 APO Fuji X",
+      "zh": "老蛙 Argus 25mm f0.95 APO 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3350,
+          "currency": "CNY",
+          "source": "天猫·老蛙旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 549,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://www.venuslens.net/product/laowa-argus-25mm-f-0-95-apsc-apo/"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Nikon Z",
+      "Canon RF",
+      "Fujifilm X",
+      "Canon EF-M"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 14,
+      "aspherical": 1,
+      "ed": 1,
+      "highRefractive": 2,
+      "sourceText": "9 groups 14 elements (incl. 1 aspherical, 1 ED, 2 special high-refractive)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-58"
+    }
+  },
+  {
+    "id": "laowa-cf-argus-33mmf095-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "Argus",
+    "model": "CF Argus 33mm F0.95",
+    "focalLengthMin": 33,
+    "focalLengthMax": 33,
+    "maxAperture": 0.95,
+    "minAperture": 11,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 590,
+    "diameterMm": 71.5,
+    "length": {
+      "mm": 83
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 35
+      }
+    },
+    "maxMagnification": {
+      "value": 0.125
+    },
+    "angleOfView": 46.2,
+    "angleOfViewCalc": 46.4,
+    "apertureBladeCount": 9,
+    "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Laowa Argus 33mm f0.95 Fuji X",
+      "zh": "老蛙 Argus 33mm f0.95 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2960,
+          "currency": "CNY",
+          "source": "京东·老蛙官方旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 449,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        },
+        "used": {
+          "price": 400,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://www.venuslens.net/product/laowa-argus-33mm-f-0-95-cf-apo/"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Nikon Z",
+      "Canon RF",
+      "Canon EF-M"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 14,
+      "aspherical": 1,
+      "ed": 1,
+      "highRefractive": 3,
+      "sourceText": "9 groups 14 elements (incl. 1 aspherical, 1 ED, 3 special high-refractive)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-42"
     }
   },
   {
@@ -9852,7 +9852,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "10-18mm F2.8 DC DN",
+    "model": "10-18mm F2.8 DC DN | Contemporary",
     "focalLengthMin": 10,
     "focalLengthMax": 18,
     "maxAperture": 2.8,
@@ -9961,7 +9961,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "12mm F1.4 DC",
+    "model": "12mm F1.4 DC | Contemporary",
     "focalLengthMin": 12,
     "focalLengthMax": 12,
     "maxAperture": 1.4,
@@ -10064,7 +10064,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "15mm F1.4 DC",
+    "model": "15mm F1.4 DC | Contemporary",
     "focalLengthMin": 15,
     "focalLengthMax": 15,
     "maxAperture": 1.4,
@@ -10168,7 +10168,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "16-300mm F3.5-6.7 DC OS",
+    "model": "16-300mm F3.5-6.7 DC OS | Contemporary",
     "focalLengthMin": 16,
     "focalLengthMax": 300,
     "maxAperture": [
@@ -10292,7 +10292,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "16mm F1.4 DC DN",
+    "model": "16mm F1.4 DC DN | Contemporary",
     "focalLengthMin": 16,
     "focalLengthMax": 16,
     "maxAperture": 1.4,
@@ -10395,7 +10395,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Art",
-    "model": "17-40mm F1.8 DC",
+    "model": "17-40mm F1.8 DC | Art",
     "focalLengthMin": 17,
     "focalLengthMax": 40,
     "maxAperture": 1.8,
@@ -10505,7 +10505,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "18-50mm F2.8 DC DN",
+    "model": "18-50mm F2.8 DC DN | Contemporary",
     "focalLengthMin": 18,
     "focalLengthMax": 50,
     "maxAperture": 2.8,
@@ -10613,7 +10613,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "23mm F1.4 DC DN",
+    "model": "23mm F1.4 DC DN | Contemporary",
     "focalLengthMin": 23,
     "focalLengthMax": 23,
     "maxAperture": 1.4,
@@ -10709,7 +10709,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "30mm F1.4 DC DN",
+    "model": "30mm F1.4 DC DN | Contemporary",
     "focalLengthMin": 30,
     "focalLengthMax": 30,
     "maxAperture": 1.4,
@@ -10806,7 +10806,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "56mm F1.4 DC DN",
+    "model": "56mm F1.4 DC DN | Contemporary",
     "focalLengthMin": 56,
     "focalLengthMax": 56,
     "maxAperture": 1.4,
@@ -10903,7 +10903,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "100-400mm F5-6.3 DG DN OS",
+    "model": "100-400mm F5-6.3 DG DN OS | Contemporary",
     "focalLengthMin": 100,
     "focalLengthMax": 400,
     "maxAperture": [
@@ -13354,7 +13354,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Air",
-    "model": "AF 9mm F2.8",
+    "model": "AF 9mm F2.8 Air",
     "focalLengthMin": 9,
     "focalLengthMax": 9,
     "maxAperture": 2.8,
@@ -13535,7 +13535,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Air",
-    "model": "AF 15mm F1.7",
+    "model": "AF 15mm F1.7 Air",
     "focalLengthMin": 15,
     "focalLengthMax": 15,
     "maxAperture": 1.7,
@@ -13715,7 +13715,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Air",
-    "model": "AF 25mm F1.7",
+    "model": "AF 25mm F1.7 Air",
     "focalLengthMin": 25,
     "focalLengthMax": 25,
     "maxAperture": 1.7,
@@ -13795,7 +13795,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Pro",
-    "model": "AF 27mm F1.2",
+    "model": "AF 27mm F1.2 Pro",
     "focalLengthMin": 27,
     "focalLengthMax": 27,
     "maxAperture": 1.2,
@@ -14052,7 +14052,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Air",
-    "model": "AF 35mm F1.7",
+    "model": "AF 35mm F1.7 Air",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
     "maxAperture": 1.7,
@@ -14135,7 +14135,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Pro",
-    "model": "AF 56mm F1.2",
+    "model": "AF 56mm F1.2 Pro",
     "focalLengthMin": 56,
     "focalLengthMax": 56,
     "maxAperture": 1.2,
@@ -14300,7 +14300,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Air",
-    "model": "AF 56mm F1.7",
+    "model": "AF 56mm F1.7 Air",
     "focalLengthMin": 56,
     "focalLengthMax": 56,
     "maxAperture": 1.7,
@@ -14381,7 +14381,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Pro",
-    "model": "AF 75mm F1.2",
+    "model": "AF 75mm F1.2 Pro",
     "focalLengthMin": 75,
     "focalLengthMax": 75,
     "maxAperture": 1.2,
@@ -14549,189 +14549,11 @@
     }
   },
   {
-    "id": "voigtlander-18mm-f28-color-skopar-asph-x",
-    "brand": "voigtlander",
-    "mount": "X",
-    "series": "Color Skopar",
-    "model": "18mm F2.8 aspherical",
-    "focalLengthMin": 18,
-    "focalLengthMax": 18,
-    "maxAperture": 2.8,
-    "minAperture": 22,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 115,
-    "diameterMm": 59.3,
-    "length": {
-      "mm": 23.5
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 17
-      }
-    },
-    "angleOfView": 75.4,
-    "angleOfViewCalc": 76.3,
-    "apertureBladeCount": 10,
-    "releaseYear": 2024,
-    "searchAliases": {
-      "en": "Voigtlander Color Skopar 18mm f2.8 Fuji X",
-      "zh": "福伦达 Color Skopar 18mm f2.8 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 4550,
-          "currency": "CNY",
-          "source": "京东·福伦达摄影器材店",
-          "sampledAt": "2026-05-18"
-        }
-      },
-      "global": {
-        "used": {
-          "price": 561,
-          "currency": "USD",
-          "source": "eBay",
-          "sampledAt": "2026-05-18"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "accessories": [
-      "Lens cap",
-      "Rear cap",
-      "Lens hood"
-    ],
-    "filterMm": 43,
-    "lensConfiguration": {
-      "groups": 5,
-      "elements": 7,
-      "aspherical": 1,
-      "sourceText": "7 elements in 5 groups"
-    },
-    "fieldNotes": {
-      "lensConfiguration": "Includes 1 double-sided aspherical element (two aspherical surfaces on a single element)."
-    },
-    "officialLinks": {
-      "cn": "https://www.voigtlaender.de/lenses/x-mount/18-mm-128-color-skopar/?lang=en",
-      "global": "https://www.voigtlaender.de/lenses/x-mount/18-mm-128-color-skopar/?lang=en"
-    },
-    "translations": {
-      "zh": {
-        "fieldNotes": {
-          "lensConfiguration": "包含 1 片双面非球面镜片（同一片镜片两面均为非球面）。"
-        },
-        "accessories": [
-          "前镜头盖",
-          "后镜头盖",
-          "遮光罩"
-        ]
-      }
-    }
-  },
-  {
-    "id": "voigtlander-23mm-f12-nokton-aspherical-x",
-    "brand": "voigtlander",
-    "mount": "X",
-    "series": "Nokton",
-    "model": "23mm F1.2 aspherical",
-    "focalLengthMin": 23,
-    "focalLengthMax": 23,
-    "maxAperture": 1.2,
-    "minAperture": 16,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 214,
-    "diameterMm": 59.3,
-    "length": {
-      "mm": 43.8
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 18
-      }
-    },
-    "angleOfView": 63.2,
-    "angleOfViewCalc": 63.2,
-    "apertureBladeCount": 12,
-    "releaseYear": 2022,
-    "searchAliases": {
-      "en": "Voigtlander Nokton 23mm f1.2 Fuji X",
-      "zh": "福伦达 Nokton 23mm f1.2 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 5098,
-          "currency": "CNY",
-          "source": "京东·福伦达摄影器材店",
-          "sampledAt": "2026-05-18"
-        }
-      },
-      "global": {
-        "used": {
-          "price": 618.98,
-          "currency": "USD",
-          "source": "eBay",
-          "sampledAt": "2026-05-18"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "accessories": [
-      "Lens cap",
-      "Rear cap",
-      "Lens hood"
-    ],
-    "filterMm": 46,
-    "lensConfiguration": {
-      "groups": 6,
-      "elements": 10,
-      "sourceText": "10 lenses in 6 groups"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.voigtlaender.de/lenses/x-mount/23-mm-11-2-nokton/?lang=en",
-      "global": "https://www.voigtlaender.de/lenses/x-mount/23-mm-11-2-nokton/?lang=en"
-    },
-    "translations": {
-      "zh": {
-        "accessories": [
-          "前镜头盖",
-          "后镜头盖",
-          "遮光罩"
-        ]
-      }
-    }
-  },
-  {
     "id": "voigtlander-27mm-f20-ultron-x",
     "brand": "voigtlander",
     "mount": "X",
     "series": "Ultron",
-    "model": "27mm F2.0",
+    "model": "27mm F2.0 Ultron",
     "focalLengthMin": 27,
     "focalLengthMax": 27,
     "maxAperture": 2,
@@ -14816,190 +14638,11 @@
     }
   },
   {
-    "id": "voigtlander-35mm-f09-nokton-aspherical-x",
-    "brand": "voigtlander",
-    "mount": "X",
-    "series": "Nokton",
-    "model": "35mm F0.9 aspherical",
-    "focalLengthMin": 35,
-    "focalLengthMax": 35,
-    "maxAperture": 0.9,
-    "minAperture": 22,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 492,
-    "diameterMm": 72.7,
-    "length": {
-      "mm": 64.9
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 35
-      }
-    },
-    "angleOfView": 43.8,
-    "angleOfViewCalc": 44,
-    "apertureBladeCount": 12,
-    "releaseYear": 2023,
-    "searchAliases": {
-      "en": "Voigtlander Nokton 35mm f0.9 Fuji X",
-      "zh": "福伦达 Nokton 35mm f0.9 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 13300,
-          "currency": "CNY",
-          "source": "京东·福伦达摄影器材店",
-          "sampledAt": "2026-05-18"
-        }
-      },
-      "global": {
-        "used": {
-          "price": 1358,
-          "currency": "USD",
-          "source": "eBay",
-          "sampledAt": "2026-05-18"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "accessories": [
-      "Lens cap",
-      "Rear cap",
-      "Lens hood"
-    ],
-    "filterMm": 62,
-    "lensConfiguration": {
-      "groups": 8,
-      "elements": 10,
-      "aspherical": 2,
-      "highRefractive": 1,
-      "sourceText": "10 lenses in 8 groups"
-    },
-    "fieldNotes": {
-      "lensConfiguration": "Includes 1 GA (Ground Aspherical) element made of high-refractive-index glass — this single element is counted both as aspherical and as high-refractive."
-    },
-    "officialLinks": {
-      "cn": "https://www.voigtlaender.de/lenses/x-mount/35mm-109-nokton/?lang=en",
-      "global": "https://www.voigtlaender.de/lenses/x-mount/35mm-109-nokton/?lang=en"
-    },
-    "translations": {
-      "zh": {
-        "fieldNotes": {
-          "lensConfiguration": "包含 1 片 GA（Ground Aspherical）研磨非球面镜片，材质为高折射率玻璃——这片镜片在非球面与高折射率两类统计中各计入一次。"
-        },
-        "accessories": [
-          "前镜头盖",
-          "后镜头盖",
-          "遮光罩"
-        ]
-      }
-    }
-  },
-  {
-    "id": "voigtlander-35mm-f12-nokton-x",
-    "brand": "voigtlander",
-    "mount": "X",
-    "series": "Nokton",
-    "model": "35mm F1.2",
-    "focalLengthMin": 35,
-    "focalLengthMax": 35,
-    "maxAperture": 1.2,
-    "minAperture": 16,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 196,
-    "diameterMm": 69.6,
-    "length": {
-      "mm": 39.8
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 30
-      }
-    },
-    "angleOfView": 44,
-    "angleOfViewCalc": 44,
-    "apertureBladeCount": 12,
-    "releaseYear": 2021,
-    "searchAliases": {
-      "en": "Voigtlander Nokton 35mm f1.2 Fuji X",
-      "zh": "福伦达 Nokton 35mm f1.2 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 5030,
-          "currency": "CNY",
-          "source": "京东·福伦达摄影器材店",
-          "sampledAt": "2026-05-18"
-        }
-      },
-      "global": {
-        "used": {
-          "price": 499.99,
-          "currency": "USD",
-          "source": "eBay",
-          "sampledAt": "2026-05-18"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "accessories": [
-      "Lens cap",
-      "Rear cap",
-      "Lens hood"
-    ],
-    "filterMm": 46,
-    "lensConfiguration": {
-      "groups": 6,
-      "elements": 8,
-      "sourceText": "8 lenses in 6 groups"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.voigtlaender.de/lenses/x-mount/35-mm-11-2-nokton/?lang=en",
-      "global": "https://www.voigtlaender.de/lenses/x-mount/35-mm-11-2-nokton/?lang=en"
-    },
-    "translations": {
-      "zh": {
-        "accessories": [
-          "前镜头盖",
-          "后镜头盖",
-          "遮光罩"
-        ]
-      }
-    }
-  },
-  {
     "id": "voigtlander-35mm-f2-macro-apo-ultron-x",
     "brand": "voigtlander",
     "mount": "X",
     "series": "Macro APO-Ultron",
-    "model": "35mm F2.0",
+    "model": "35mm F2.0 Macro APO-Ultron",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
     "maxAperture": 2,
@@ -15093,11 +14736,368 @@
     }
   },
   {
+    "id": "voigtlander-18mm-f28-color-skopar-asph-x",
+    "brand": "voigtlander",
+    "mount": "X",
+    "series": "Color Skopar",
+    "model": "COLOR SKOPAR 18mm F2.8 aspherical",
+    "focalLengthMin": 18,
+    "focalLengthMax": 18,
+    "maxAperture": 2.8,
+    "minAperture": 22,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 115,
+    "diameterMm": 59.3,
+    "length": {
+      "mm": 23.5
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 17
+      }
+    },
+    "angleOfView": 75.4,
+    "angleOfViewCalc": 76.3,
+    "apertureBladeCount": 10,
+    "releaseYear": 2024,
+    "searchAliases": {
+      "en": "Voigtlander Color Skopar 18mm f2.8 Fuji X",
+      "zh": "福伦达 Color Skopar 18mm f2.8 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 4550,
+          "currency": "CNY",
+          "source": "京东·福伦达摄影器材店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 561,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "accessories": [
+      "Lens cap",
+      "Rear cap",
+      "Lens hood"
+    ],
+    "filterMm": 43,
+    "lensConfiguration": {
+      "groups": 5,
+      "elements": 7,
+      "aspherical": 1,
+      "sourceText": "7 elements in 5 groups"
+    },
+    "fieldNotes": {
+      "lensConfiguration": "Includes 1 double-sided aspherical element (two aspherical surfaces on a single element)."
+    },
+    "officialLinks": {
+      "cn": "https://www.voigtlaender.de/lenses/x-mount/18-mm-128-color-skopar/?lang=en",
+      "global": "https://www.voigtlaender.de/lenses/x-mount/18-mm-128-color-skopar/?lang=en"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "lensConfiguration": "包含 1 片双面非球面镜片（同一片镜片两面均为非球面）。"
+        },
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "遮光罩"
+        ]
+      }
+    }
+  },
+  {
+    "id": "voigtlander-23mm-f12-nokton-aspherical-x",
+    "brand": "voigtlander",
+    "mount": "X",
+    "series": "Nokton",
+    "model": "Nokton 23mm F1.2 aspherical",
+    "focalLengthMin": 23,
+    "focalLengthMax": 23,
+    "maxAperture": 1.2,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 214,
+    "diameterMm": 59.3,
+    "length": {
+      "mm": 43.8
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 18
+      }
+    },
+    "angleOfView": 63.2,
+    "angleOfViewCalc": 63.2,
+    "apertureBladeCount": 12,
+    "releaseYear": 2022,
+    "searchAliases": {
+      "en": "Voigtlander Nokton 23mm f1.2 Fuji X",
+      "zh": "福伦达 Nokton 23mm f1.2 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 5098,
+          "currency": "CNY",
+          "source": "京东·福伦达摄影器材店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 618.98,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "accessories": [
+      "Lens cap",
+      "Rear cap",
+      "Lens hood"
+    ],
+    "filterMm": 46,
+    "lensConfiguration": {
+      "groups": 6,
+      "elements": 10,
+      "sourceText": "10 lenses in 6 groups"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.voigtlaender.de/lenses/x-mount/23-mm-11-2-nokton/?lang=en",
+      "global": "https://www.voigtlaender.de/lenses/x-mount/23-mm-11-2-nokton/?lang=en"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "遮光罩"
+        ]
+      }
+    }
+  },
+  {
+    "id": "voigtlander-35mm-f09-nokton-aspherical-x",
+    "brand": "voigtlander",
+    "mount": "X",
+    "series": "Nokton",
+    "model": "NOKTON 35mm F0.9 aspherical",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 0.9,
+    "minAperture": 22,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 492,
+    "diameterMm": 72.7,
+    "length": {
+      "mm": 64.9
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 35
+      }
+    },
+    "angleOfView": 43.8,
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 12,
+    "releaseYear": 2023,
+    "searchAliases": {
+      "en": "Voigtlander Nokton 35mm f0.9 Fuji X",
+      "zh": "福伦达 Nokton 35mm f0.9 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 13300,
+          "currency": "CNY",
+          "source": "京东·福伦达摄影器材店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 1358,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "accessories": [
+      "Lens cap",
+      "Rear cap",
+      "Lens hood"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 10,
+      "aspherical": 2,
+      "highRefractive": 1,
+      "sourceText": "10 lenses in 8 groups"
+    },
+    "fieldNotes": {
+      "lensConfiguration": "Includes 1 GA (Ground Aspherical) element made of high-refractive-index glass — this single element is counted both as aspherical and as high-refractive."
+    },
+    "officialLinks": {
+      "cn": "https://www.voigtlaender.de/lenses/x-mount/35mm-109-nokton/?lang=en",
+      "global": "https://www.voigtlaender.de/lenses/x-mount/35mm-109-nokton/?lang=en"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "lensConfiguration": "包含 1 片 GA（Ground Aspherical）研磨非球面镜片，材质为高折射率玻璃——这片镜片在非球面与高折射率两类统计中各计入一次。"
+        },
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "遮光罩"
+        ]
+      }
+    }
+  },
+  {
+    "id": "voigtlander-35mm-f12-nokton-x",
+    "brand": "voigtlander",
+    "mount": "X",
+    "series": "Nokton",
+    "model": "Nokton 35mm F1.2",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 1.2,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 196,
+    "diameterMm": 69.6,
+    "length": {
+      "mm": 39.8
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 30
+      }
+    },
+    "angleOfView": 44,
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 12,
+    "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Voigtlander Nokton 35mm f1.2 Fuji X",
+      "zh": "福伦达 Nokton 35mm f1.2 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 5030,
+          "currency": "CNY",
+          "source": "京东·福伦达摄影器材店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 499.99,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "accessories": [
+      "Lens cap",
+      "Rear cap",
+      "Lens hood"
+    ],
+    "filterMm": 46,
+    "lensConfiguration": {
+      "groups": 6,
+      "elements": 8,
+      "sourceText": "8 lenses in 6 groups"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.voigtlaender.de/lenses/x-mount/35-mm-11-2-nokton/?lang=en",
+      "global": "https://www.voigtlaender.de/lenses/x-mount/35-mm-11-2-nokton/?lang=en"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "遮光罩"
+        ]
+      }
+    }
+  },
+  {
     "id": "voigtlander-50mm-f12-nokton-x",
     "brand": "voigtlander",
     "mount": "X",
     "series": "Nokton",
-    "model": "50mm F1.2",
+    "model": "NOKTON 50mm F1.2",
     "focalLengthMin": 50,
     "focalLengthMax": 50,
     "maxAperture": 1.2,
