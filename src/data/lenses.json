@@ -1,49 +1,46 @@
 [
   {
-    "id": "7artisans-mf-12mm-t29-aps-c-cine-x",
+    "id": "7artisans-4mm-f28-x",
     "brand": "7artisans",
     "mount": "X",
-    "model": "12mm T2.9 APS-C Cine",
-    "focalLengthMin": 12,
-    "focalLengthMax": 12,
-    "maxTStop": 2.9,
-    "minTStop": 16,
-    "isCine": true,
+    "model": "MF 4mm F2.8",
+    "focalLengthMin": 4,
+    "focalLengthMax": 4,
+    "maxAperture": 2.8,
+    "minAperture": 16,
+    "opticalTraits": [
+      "fisheye"
+    ],
     "af": false,
     "ois": false,
     "wr": false,
     "apertureRing": true,
     "powerZoom": false,
     "focusMotor": "N/A",
-    "weightG": 602,
-    "diameterMm": 89,
+    "weightG": 201,
+    "diameterMm": 60,
     "length": {
-      "mm": 70
+      "mm": 54
     },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 14
-      }
-    },
-    "angleOfView": 100,
-    "angleOfViewCalc": 99.4,
-    "apertureBladeCount": 9,
+    "angleOfView": 225,
+    "angleOfViewCalc": 148.4,
+    "apertureBladeCount": 7,
     "searchAliases": {
-      "en": "7Artisans 12mm T2.9 APS-C Cine Fuji X",
-      "zh": "七工匠 12mm T2.9 APS-C Cine 富士"
+      "en": "7Artisans 4mm f2.8 Fuji X",
+      "zh": "七工匠 4mm f2.8 富士"
     },
     "pricing": {
       "cn": {
         "new": {
-          "price": 1399,
+          "price": 670,
           "currency": "CNY",
           "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-09"
+          "sampledAt": "2026-05-08"
         }
       },
       "global": {
         "new": {
-          "price": 319,
+          "price": 149,
           "currency": "USD",
           "source": "7artisans.store",
           "sampledAt": "2026-05-09"
@@ -53,7 +50,184 @@
     "purchaseChannels": [
       {
         "channel": "official",
-        "url": "https://7artisans.store/products/12mm-t2-9-aps-c-mf-cine-lens-for-fujifilm-x-sony-e-m43-canon-rf-nikon-z-sigma-l-panasonic-l-leica-l-cl-tl"
+        "url": "https://7artisans.store/products/4mm-f-2-8-aps-c-lens-for-e-eos-m-fx-m43"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Micro Four Thirds",
+      "Canon EF-M"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": "N/A",
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 10
+    },
+    "fieldNotes": {
+      "filterMm": "225° circular fisheye design; no front filter thread."
+    },
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=438",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=438"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "225° 圆周鱼眼设计；无前置滤镜螺纹。"
+        },
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-6mm-f2-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "MF 6mm F2.0",
+    "focalLengthMin": 6,
+    "focalLengthMax": 6,
+    "maxAperture": 2,
+    "minAperture": 16,
+    "opticalTraits": [
+      "fisheye"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 418,
+    "diameterMm": 69,
+    "length": {
+      "mm": 76
+    },
+    "angleOfView": 220,
+    "angleOfViewCalc": 134,
+    "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "7Artisans 6mm f2.0 Fuji X",
+      "zh": "七工匠 6mm f2.0 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1090,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 199,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/mf-6mm-f-2-0-aps-c-lens-for-sony-e-fuji-x-eos-r-nikon-z-panasonic-olympus-m43"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Canon RF",
+      "Micro Four Thirds",
+      "Nikon Z"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": "N/A",
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 10
+    },
+    "fieldNotes": {
+      "filterMm": "220° circular fisheye design; no front filter thread."
+    },
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=511",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=508"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "220° 圆周鱼眼设计；无前置滤镜螺纹。"
+        },
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-7p5mm-f28-ii-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "MF 7.5mm F2.8 II",
+    "generation": 2,
+    "focalLengthMin": 7.5,
+    "focalLengthMax": 7.5,
+    "maxAperture": 2.8,
+    "minAperture": 16,
+    "opticalTraits": [
+      "fisheye"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 265,
+    "diameterMm": 62.3,
+    "length": {
+      "mm": 50.6
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 15
+      }
+    },
+    "angleOfView": 190,
+    "angleOfViewCalc": 124.1,
+    "apertureBladeCount": 5,
+    "searchAliases": {
+      "en": "7Artisans 7.5mm f2.8 II Fuji X",
+      "zh": "七工匠 7.5mm f2.8 II 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 639,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 139,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/7-5mm-f2-8-mk-ii"
       },
       {
         "channel": "bhphoto"
@@ -62,22 +236,526 @@
     "compatibleMounts": [
       "Sony E",
       "Micro Four Thirds",
-      "Fujifilm X",
-      "Nikon Z",
-      "Leica L",
-      "Canon RF"
+      "Canon EF-M",
+      "Nikon Z"
     ],
     "lensMaterial": "Metal",
-    "filterMm": 82,
+    "filterMm": "N/A",
     "lensConfiguration": {
-      "groups": 10,
-      "elements": 12,
-      "sourceText": "12 elements in 10 groups"
+      "groups": 9,
+      "elements": 11,
+      "ed": 2,
+      "sourceText": "11 elements in 9 groups"
+    },
+    "fieldNotes": {
+      "filterMm": "Bulbous fisheye front element with built-in petal hood; no filter thread."
+    },
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=398",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=398"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "灯泡状鱼眼前组镜片，内置花瓣形遮光罩；无滤镜螺纹。"
+        },
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-10mm-f35-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "MF 10mm F3.5",
+    "focalLengthMin": 10,
+    "focalLengthMax": 10,
+    "maxAperture": 3.5,
+    "minAperture": 22,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 125,
+    "diameterMm": 59,
+    "length": {
+      "mm": 34
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 20
+      }
+    },
+    "angleOfView": 108,
+    "angleOfViewCalc": 109.5,
+    "apertureBladeCount": 5,
+    "searchAliases": {
+      "en": "7Artisans 10mm f3.5 Fuji X",
+      "zh": "七工匠 10mm f3.5 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 499,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 99,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/10mm-f-3-5-aps-c-lens-for-sony-e-fuji-x-nikon-z-panasonic-olympus-m43"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Nikon Z",
+      "Micro Four Thirds"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 37,
+    "lensConfiguration": {
+      "groups": 7,
+      "elements": 9
     },
     "fieldNotes": {},
     "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=99&id=442",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=99&id=442"
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=497",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=478"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-10mm-t21-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "Hope Prime 10mm T2.1",
+    "focalLengthMin": 10,
+    "focalLengthMax": 10,
+    "maxTStop": 2.1,
+    "minTStop": 22,
+    "isCine": true,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 620,
+    "diameterMm": 83,
+    "length": {
+      "mm": 91
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 30
+      }
+    },
+    "angleOfViewCalc": 109.5,
+    "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "7Artisans Hope Prime 10mm T2.1 Fuji X",
+      "zh": "七工匠 Hope Prime 10mm T2.1 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1896,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 489,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/10"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Canon RF",
+      "Micro Four Thirds"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 12,
+      "elements": 15,
+      "sourceText": "15 elements in 12 groups"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=464",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=455"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-12mm-f28-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "MF 12mm F2.8 II",
+    "generation": 2,
+    "focalLengthMin": 12,
+    "focalLengthMax": 12,
+    "maxAperture": 2.8,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 301,
+    "diameterMm": 70,
+    "length": {
+      "mm": 66
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 15
+      }
+    },
+    "angleOfView": 100,
+    "angleOfViewCalc": 99.4,
+    "apertureBladeCount": 5,
+    "searchAliases": {
+      "en": "7Artisans 12mm f2.8 II Fuji X",
+      "zh": "七工匠 12mm f2.8 II 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 593,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 149,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/12mm-f-2-8-aps-c-lens-for-e-eos-m-fx-m43-z"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Nikon Z",
+      "Micro Four Thirds",
+      "Canon EF-M",
+      "Canon RF"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 67,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 12
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=400",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=443"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-16mm-t21-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "Hope Prime 16mm T2.1",
+    "focalLengthMin": 16,
+    "focalLengthMax": 16,
+    "maxTStop": 2.1,
+    "minTStop": 22,
+    "isCine": true,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 706,
+    "diameterMm": 83,
+    "length": {
+      "mm": 88
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 25
+      }
+    },
+    "angleOfViewCalc": 83,
+    "apertureBladeCount": 11,
+    "searchAliases": {
+      "en": "7Artisans Hope Prime 16mm T2.1 Fuji X",
+      "zh": "七工匠 Hope Prime 16mm T2.1 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1596,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 489,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/10"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Canon RF",
+      "Micro Four Thirds"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 11,
+      "elements": 14,
+      "sourceText": "14 elements in 11 groups"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=465",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=456"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-18mm-f63-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "MF 18mm F6.3",
+    "focalLengthMin": 18,
+    "focalLengthMax": 18,
+    "maxAperture": 6.3,
+    "minAperture": 6.3,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 58,
+    "diameterMm": 56,
+    "length": {
+      "mm": 15
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 30
+      }
+    },
+    "angleOfView": 74,
+    "angleOfViewCalc": 76.3,
+    "apertureBladeCount": "N/A",
+    "searchAliases": {
+      "en": "7Artisans 18mm f6.3 Fuji X",
+      "zh": "七工匠 18mm f6.3 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 270,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 59,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/18mm-f-6-3-mark-ii-aps-c-lens-for-sony-e-fujifilm-x-nikon-z"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Canon EF-M",
+      "Micro Four Thirds"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": "N/A",
+    "lensConfiguration": {
+      "groups": 5,
+      "elements": 6,
+      "sourceText": "5组6片"
+    },
+    "fieldNotes": {
+      "filterMm": "Fixed-aperture pancake design; no filter thread.",
+      "apertureBladeCount": "Fixed aperture; no diaphragm."
+    },
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=401",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=401"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "固定光圈饼干头设计；无滤镜螺纹。",
+          "apertureBladeCount": "固定光圈；无光圈机构。"
+        },
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-25mm-f18-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "MF 25mm F1.8",
+    "focalLengthMin": 25,
+    "focalLengthMax": 25,
+    "maxAperture": 1.8,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 143,
+    "diameterMm": 60,
+    "length": {
+      "mm": 37.8
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 18
+      }
+    },
+    "angleOfView": 68,
+    "angleOfViewCalc": 59,
+    "apertureBladeCount": 12,
+    "searchAliases": {
+      "en": "7Artisans 25mm f1.8 Fuji X",
+      "zh": "七工匠 25mm f1.8 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 394,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 53,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-10"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Canon EF-M",
+      "Micro Four Thirds"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 46,
+    "lensConfiguration": {
+      "groups": 5,
+      "elements": 7
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=402",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=402"
     },
     "translations": {
       "zh": {
@@ -183,6 +861,821 @@
           "对焦扳手",
           "清洁套装"
         ]
+      }
+    }
+  },
+  {
+    "id": "7artisans-25mm-t21-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "Hope Prime 25mm T2.1",
+    "focalLengthMin": 25,
+    "focalLengthMax": 25,
+    "maxTStop": 2.1,
+    "minTStop": 22,
+    "isCine": true,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 712,
+    "diameterMm": 83,
+    "length": {
+      "mm": 104
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 25
+      }
+    },
+    "angleOfViewCalc": 59,
+    "searchAliases": {
+      "en": "7Artisans Hope Prime 25mm T2.1 Fuji X",
+      "zh": "七工匠 Hope Prime 25mm T2.1 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1496,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 489,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/10"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Canon RF",
+      "Micro Four Thirds"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 12,
+      "sourceText": "12 elements in 9 groups"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=466",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=457"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-35mm-f12-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "MF 35mm F1.2 II",
+    "generation": 2,
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 1.2,
+    "minAperture": 22,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 218,
+    "diameterMm": 62,
+    "length": {
+      "mm": 44
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 28
+      }
+    },
+    "angleOfView": 43.9,
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "7Artisans 35mm f1.2 II Fuji X",
+      "zh": "七工匠 35mm f1.2 II 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 369,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 119,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/35mm-f1-2"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Nikon Z",
+      "Canon EF-M",
+      "Micro Four Thirds"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 46,
+    "lensConfiguration": {
+      "groups": 5,
+      "elements": 6,
+      "sourceText": "5组6片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=403",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=403"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-35mm-f14-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "MF 35mm F1.4",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 1.4,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 228,
+    "diameterMm": 60,
+    "length": {
+      "mm": 42.2
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 37
+      }
+    },
+    "angleOfView": 43,
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "7Artisans 35mm f1.4 Fuji X",
+      "zh": "七工匠 35mm f1.4 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 329,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 69,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/7artisans-35mm-f1-4-apsc"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Micro Four Thirds",
+      "Canon EF-M",
+      "Canon RF",
+      "Nikon Z"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 49,
+    "lensConfiguration": {
+      "groups": 5,
+      "elements": 8
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=404",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=404"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-35mm-t21-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "Hope Prime 35mm T2.1",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxTStop": 2.1,
+    "minTStop": 22,
+    "isCine": true,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 602,
+    "diameterMm": 83,
+    "length": {
+      "mm": 104
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 51
+      }
+    },
+    "angleOfViewCalc": 44,
+    "searchAliases": {
+      "en": "7Artisans Hope Prime 35mm T2.1 Fuji X",
+      "zh": "七工匠 Hope Prime 35mm T2.1 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1496,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 489,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/10"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Canon RF",
+      "Micro Four Thirds"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 12,
+      "sourceText": "12 elements in 10 groups"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=467",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=458"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-50mm-f14-ts-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "MF 50mm F1.4 Tilt",
+    "focalLengthMin": 50,
+    "focalLengthMax": 50,
+    "maxAperture": 1.4,
+    "minAperture": 16,
+    "opticalTraits": [
+      "tilt"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 364,
+    "diameterMm": 75,
+    "length": {
+      "mm": 73
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 50
+      }
+    },
+    "angleOfView": 46,
+    "angleOfViewCalc": 31.6,
+    "apertureBladeCount": 12,
+    "searchAliases": {
+      "en": "7Artisans 50mm f1.4 Tilt Fuji X",
+      "zh": "七工匠 50mm f1.4 Tilt 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 969,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 226,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/50mm-f1-4-aps-c-tilt-lens-for-e-fx-m43"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Micro Four Thirds"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 46,
+    "lensConfiguration": {
+      "groups": 6,
+      "elements": 7
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=496",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=496"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-50mm-f18-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "MF 50mm F1.8",
+    "focalLengthMin": 50,
+    "focalLengthMax": 50,
+    "maxAperture": 1.8,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 168,
+    "diameterMm": 55,
+    "length": {
+      "mm": 40
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 50
+      }
+    },
+    "angleOfView": 32,
+    "angleOfViewCalc": 31.6,
+    "apertureBladeCount": 12,
+    "searchAliases": {
+      "en": "7Artisans 50mm f1.8 Fuji X",
+      "zh": "七工匠 50mm f1.8 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 299,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 66,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/50mm-f1-8"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Canon EF-M",
+      "Micro Four Thirds"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 52,
+    "lensConfiguration": {
+      "groups": 5,
+      "elements": 6
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=405",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=405"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-50mm-t21-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "Hope Prime 50mm T2.1",
+    "focalLengthMin": 50,
+    "focalLengthMax": 50,
+    "maxTStop": 2.1,
+    "minTStop": 22,
+    "isCine": true,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 705,
+    "diameterMm": 83,
+    "length": {
+      "mm": 104
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 60
+      }
+    },
+    "angleOfViewCalc": 31.6,
+    "searchAliases": {
+      "en": "7Artisans Hope Prime 50mm T2.1 Fuji X",
+      "zh": "七工匠 Hope Prime 50mm T2.1 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1496,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 489,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/10"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Canon RF",
+      "Micro Four Thirds"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 7,
+      "elements": 9,
+      "sourceText": "9 elements in 7 groups"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=468",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=459"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-55mm-f14-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "MF 55mm F1.4",
+    "focalLengthMin": 55,
+    "focalLengthMax": 55,
+    "maxAperture": 1.4,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 272,
+    "diameterMm": 56,
+    "length": {
+      "mm": 53.6
+    },
+    "angleOfViewCalc": 28.9,
+    "apertureBladeCount": 14,
+    "searchAliases": {
+      "en": "7Artisans 55mm f1.4 Fuji X",
+      "zh": "七工匠 55mm f1.4 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 494,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 76,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/55mm-f1-4"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Canon EF-M",
+      "Micro Four Thirds"
+    ],
+    "filterMm": 49,
+    "lensConfiguration": {
+      "groups": 5,
+      "elements": 6
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=406",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=406"
+    }
+  },
+  {
+    "id": "7artisans-60mm-f28-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "MF 60mm F2.8 Macro",
+    "focalLengthMin": 60,
+    "focalLengthMax": 60,
+    "maxAperture": 2.8,
+    "minAperture": 16,
+    "opticalTraits": [
+      "macro"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 339,
+    "diameterMm": 60,
+    "length": {
+      "mm": 81
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 26
+      }
+    },
+    "maxMagnification": {
+      "value": 1
+    },
+    "angleOfView": 25,
+    "angleOfViewCalc": 26.5,
+    "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "7Artisans 60mm f2.8 Macro Fuji X",
+      "zh": "七工匠 60mm f2.8 Macro 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 899,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 159,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/60mm-f2-8"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Micro Four Thirds",
+      "Canon EF-M"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 39,
+    "lensConfiguration": {
+      "groups": 7,
+      "elements": 8
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=408",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=408"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "7artisans-85mm-t21-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "Hope Prime 85mm T2.1",
+    "focalLengthMin": 85,
+    "focalLengthMax": 85,
+    "maxTStop": 2.1,
+    "minTStop": 22,
+    "isCine": true,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 805,
+    "diameterMm": 83,
+    "length": {
+      "mm": 104
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 90
+      }
+    },
+    "angleOfViewCalc": 18.9,
+    "searchAliases": {
+      "en": "7Artisans Hope Prime 85mm T2.1 Fuji X",
+      "zh": "七工匠 Hope Prime 85mm T2.1 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1496,
+          "currency": "CNY",
+          "source": "京东·七工匠官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 489,
+          "currency": "USD",
+          "source": "7artisans.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://7artisans.store/products/10"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Canon RF",
+      "Micro Four Thirds"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 77,
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=469",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=460"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
       }
     }
   },
@@ -673,261 +2166,14 @@
     }
   },
   {
-    "id": "7artisans-10mm-t21-x",
+    "id": "7artisans-mf-12mm-t29-aps-c-cine-x",
     "brand": "7artisans",
     "mount": "X",
-    "model": "Hope Prime 10mm T2.1",
-    "focalLengthMin": 10,
-    "focalLengthMax": 10,
-    "maxTStop": 2.1,
-    "minTStop": 22,
-    "isCine": true,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 620,
-    "diameterMm": 83,
-    "length": {
-      "mm": 91
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 30
-      }
-    },
-    "angleOfViewCalc": 109.5,
-    "apertureBladeCount": 10,
-    "searchAliases": {
-      "en": "7Artisans Hope Prime 10mm T2.1 Fuji X",
-      "zh": "七工匠 Hope Prime 10mm T2.1 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 1896,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-09"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 489,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/10"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Canon RF",
-      "Micro Four Thirds"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 77,
-    "lensConfiguration": {
-      "groups": 12,
-      "elements": 15,
-      "sourceText": "15 elements in 12 groups"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=464",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=455"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-16mm-t21-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "Hope Prime 16mm T2.1",
-    "focalLengthMin": 16,
-    "focalLengthMax": 16,
-    "maxTStop": 2.1,
-    "minTStop": 22,
-    "isCine": true,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 706,
-    "diameterMm": 83,
-    "length": {
-      "mm": 88
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 25
-      }
-    },
-    "angleOfViewCalc": 83,
-    "apertureBladeCount": 11,
-    "searchAliases": {
-      "en": "7Artisans Hope Prime 16mm T2.1 Fuji X",
-      "zh": "七工匠 Hope Prime 16mm T2.1 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 1596,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-09"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 489,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/10"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Canon RF",
-      "Micro Four Thirds"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 77,
-    "lensConfiguration": {
-      "groups": 11,
-      "elements": 14,
-      "sourceText": "14 elements in 11 groups"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=465",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=456"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-25mm-t21-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "Hope Prime 25mm T2.1",
-    "focalLengthMin": 25,
-    "focalLengthMax": 25,
-    "maxTStop": 2.1,
-    "minTStop": 22,
-    "isCine": true,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 712,
-    "diameterMm": 83,
-    "length": {
-      "mm": 104
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 25
-      }
-    },
-    "angleOfViewCalc": 59,
-    "searchAliases": {
-      "en": "7Artisans Hope Prime 25mm T2.1 Fuji X",
-      "zh": "七工匠 Hope Prime 25mm T2.1 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 1496,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-09"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 489,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/10"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Canon RF",
-      "Micro Four Thirds"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 77,
-    "lensConfiguration": {
-      "groups": 9,
-      "elements": 12,
-      "sourceText": "12 elements in 9 groups"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=466",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=457"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-35mm-t21-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "Hope Prime 35mm T2.1",
-    "focalLengthMin": 35,
-    "focalLengthMax": 35,
-    "maxTStop": 2.1,
-    "minTStop": 22,
+    "model": "12mm T2.9 APS-C Cine",
+    "focalLengthMin": 12,
+    "focalLengthMax": 12,
+    "maxTStop": 2.9,
+    "minTStop": 16,
     "isCine": true,
     "af": false,
     "ois": false,
@@ -936,24 +2182,26 @@
     "powerZoom": false,
     "focusMotor": "N/A",
     "weightG": 602,
-    "diameterMm": 83,
+    "diameterMm": 89,
     "length": {
-      "mm": 104
+      "mm": 70
     },
     "minFocusDistance": {
       "normal": {
-        "cm": 51
+        "cm": 14
       }
     },
-    "angleOfViewCalc": 44,
+    "angleOfView": 100,
+    "angleOfViewCalc": 99.4,
+    "apertureBladeCount": 9,
     "searchAliases": {
-      "en": "7Artisans Hope Prime 35mm T2.1 Fuji X",
-      "zh": "七工匠 Hope Prime 35mm T2.1 富士"
+      "en": "7Artisans 12mm T2.9 APS-C Cine Fuji X",
+      "zh": "七工匠 12mm T2.9 APS-C Cine 富士"
     },
     "pricing": {
       "cn": {
         "new": {
-          "price": 1496,
+          "price": 1399,
           "currency": "CNY",
           "source": "京东·七工匠官方旗舰店",
           "sampledAt": "2026-05-09"
@@ -961,7 +2209,7 @@
       },
       "global": {
         "new": {
-          "price": 489,
+          "price": 319,
           "currency": "USD",
           "source": "7artisans.store",
           "sampledAt": "2026-05-09"
@@ -971,7 +2219,7 @@
     "purchaseChannels": [
       {
         "channel": "official",
-        "url": "https://7artisans.store/products/10"
+        "url": "https://7artisans.store/products/12mm-t2-9-aps-c-mf-cine-lens-for-fujifilm-x-sony-e-m43-canon-rf-nikon-z-sigma-l-panasonic-l-leica-l-cl-tl"
       },
       {
         "channel": "bhphoto"
@@ -979,12 +2227,14 @@
     ],
     "compatibleMounts": [
       "Sony E",
+      "Micro Four Thirds",
       "Fujifilm X",
-      "Canon RF",
-      "Micro Four Thirds"
+      "Nikon Z",
+      "Leica L",
+      "Canon RF"
     ],
     "lensMaterial": "Metal",
-    "filterMm": 77,
+    "filterMm": 82,
     "lensConfiguration": {
       "groups": 10,
       "elements": 12,
@@ -992,1535 +2242,12 @@
     },
     "fieldNotes": {},
     "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=467",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=458"
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=99&id=442",
+      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=99&id=442"
     },
     "translations": {
       "zh": {
         "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-50mm-t21-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "Hope Prime 50mm T2.1",
-    "focalLengthMin": 50,
-    "focalLengthMax": 50,
-    "maxTStop": 2.1,
-    "minTStop": 22,
-    "isCine": true,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 705,
-    "diameterMm": 83,
-    "length": {
-      "mm": 104
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 60
-      }
-    },
-    "angleOfViewCalc": 31.6,
-    "searchAliases": {
-      "en": "7Artisans Hope Prime 50mm T2.1 Fuji X",
-      "zh": "七工匠 Hope Prime 50mm T2.1 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 1496,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-09"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 489,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/10"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Canon RF",
-      "Micro Four Thirds"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 77,
-    "lensConfiguration": {
-      "groups": 7,
-      "elements": 9,
-      "sourceText": "9 elements in 7 groups"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=468",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=459"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-85mm-t21-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "Hope Prime 85mm T2.1",
-    "focalLengthMin": 85,
-    "focalLengthMax": 85,
-    "maxTStop": 2.1,
-    "minTStop": 22,
-    "isCine": true,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 805,
-    "diameterMm": 83,
-    "length": {
-      "mm": 104
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 90
-      }
-    },
-    "angleOfViewCalc": 18.9,
-    "searchAliases": {
-      "en": "7Artisans Hope Prime 85mm T2.1 Fuji X",
-      "zh": "七工匠 Hope Prime 85mm T2.1 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 1496,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-09"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 489,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/10"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Canon RF",
-      "Micro Four Thirds"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 77,
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=121&id=469",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=112&id=460"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-4mm-f28-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "MF 4mm F2.8",
-    "focalLengthMin": 4,
-    "focalLengthMax": 4,
-    "maxAperture": 2.8,
-    "minAperture": 16,
-    "opticalTraits": [
-      "fisheye"
-    ],
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 201,
-    "diameterMm": 60,
-    "length": {
-      "mm": 54
-    },
-    "angleOfView": 225,
-    "angleOfViewCalc": 148.4,
-    "apertureBladeCount": 7,
-    "searchAliases": {
-      "en": "7Artisans 4mm f2.8 Fuji X",
-      "zh": "七工匠 4mm f2.8 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 670,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 149,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/4mm-f-2-8-aps-c-lens-for-e-eos-m-fx-m43"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Micro Four Thirds",
-      "Canon EF-M"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": "N/A",
-    "lensConfiguration": {
-      "groups": 8,
-      "elements": 10
-    },
-    "fieldNotes": {
-      "filterMm": "225° circular fisheye design; no front filter thread."
-    },
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=438",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=438"
-    },
-    "translations": {
-      "zh": {
-        "fieldNotes": {
-          "filterMm": "225° 圆周鱼眼设计；无前置滤镜螺纹。"
-        },
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-6mm-f2-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "MF 6mm F2.0",
-    "focalLengthMin": 6,
-    "focalLengthMax": 6,
-    "maxAperture": 2,
-    "minAperture": 16,
-    "opticalTraits": [
-      "fisheye"
-    ],
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 418,
-    "diameterMm": 69,
-    "length": {
-      "mm": 76
-    },
-    "angleOfView": 220,
-    "angleOfViewCalc": 134,
-    "apertureBladeCount": 9,
-    "searchAliases": {
-      "en": "7Artisans 6mm f2.0 Fuji X",
-      "zh": "七工匠 6mm f2.0 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 1090,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 199,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/mf-6mm-f-2-0-aps-c-lens-for-sony-e-fuji-x-eos-r-nikon-z-panasonic-olympus-m43"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Canon RF",
-      "Micro Four Thirds",
-      "Nikon Z"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": "N/A",
-    "lensConfiguration": {
-      "groups": 8,
-      "elements": 10
-    },
-    "fieldNotes": {
-      "filterMm": "220° circular fisheye design; no front filter thread."
-    },
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=511",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=508"
-    },
-    "translations": {
-      "zh": {
-        "fieldNotes": {
-          "filterMm": "220° 圆周鱼眼设计；无前置滤镜螺纹。"
-        },
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-7p5mm-f28-ii-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "MF 7.5mm F2.8 II",
-    "generation": 2,
-    "focalLengthMin": 7.5,
-    "focalLengthMax": 7.5,
-    "maxAperture": 2.8,
-    "minAperture": 16,
-    "opticalTraits": [
-      "fisheye"
-    ],
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 265,
-    "diameterMm": 62.3,
-    "length": {
-      "mm": 50.6
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 15
-      }
-    },
-    "angleOfView": 190,
-    "angleOfViewCalc": 124.1,
-    "apertureBladeCount": 5,
-    "searchAliases": {
-      "en": "7Artisans 7.5mm f2.8 II Fuji X",
-      "zh": "七工匠 7.5mm f2.8 II 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 639,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 139,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/7-5mm-f2-8-mk-ii"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Micro Four Thirds",
-      "Canon EF-M",
-      "Nikon Z"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": "N/A",
-    "lensConfiguration": {
-      "groups": 9,
-      "elements": 11,
-      "ed": 2,
-      "sourceText": "11 elements in 9 groups"
-    },
-    "fieldNotes": {
-      "filterMm": "Bulbous fisheye front element with built-in petal hood; no filter thread."
-    },
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=398",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=398"
-    },
-    "translations": {
-      "zh": {
-        "fieldNotes": {
-          "filterMm": "灯泡状鱼眼前组镜片，内置花瓣形遮光罩；无滤镜螺纹。"
-        },
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-10mm-f35-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "MF 10mm F3.5",
-    "focalLengthMin": 10,
-    "focalLengthMax": 10,
-    "maxAperture": 3.5,
-    "minAperture": 22,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 125,
-    "diameterMm": 59,
-    "length": {
-      "mm": 34
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 20
-      }
-    },
-    "angleOfView": 108,
-    "angleOfViewCalc": 109.5,
-    "apertureBladeCount": 5,
-    "searchAliases": {
-      "en": "7Artisans 10mm f3.5 Fuji X",
-      "zh": "七工匠 10mm f3.5 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 499,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 99,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/10mm-f-3-5-aps-c-lens-for-sony-e-fuji-x-nikon-z-panasonic-olympus-m43"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Nikon Z",
-      "Micro Four Thirds"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 37,
-    "lensConfiguration": {
-      "groups": 7,
-      "elements": 9
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=497",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=478"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-12mm-f28-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "MF 12mm F2.8 II",
-    "generation": 2,
-    "focalLengthMin": 12,
-    "focalLengthMax": 12,
-    "maxAperture": 2.8,
-    "minAperture": 16,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 301,
-    "diameterMm": 70,
-    "length": {
-      "mm": 66
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 15
-      }
-    },
-    "angleOfView": 100,
-    "angleOfViewCalc": 99.4,
-    "apertureBladeCount": 5,
-    "searchAliases": {
-      "en": "7Artisans 12mm f2.8 II Fuji X",
-      "zh": "七工匠 12mm f2.8 II 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 593,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 149,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/12mm-f-2-8-aps-c-lens-for-e-eos-m-fx-m43-z"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Nikon Z",
-      "Micro Four Thirds",
-      "Canon EF-M",
-      "Canon RF"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 67,
-    "lensConfiguration": {
-      "groups": 10,
-      "elements": 12
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=400",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=443"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-18mm-f63-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "MF 18mm F6.3",
-    "focalLengthMin": 18,
-    "focalLengthMax": 18,
-    "maxAperture": 6.3,
-    "minAperture": 6.3,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 58,
-    "diameterMm": 56,
-    "length": {
-      "mm": 15
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 30
-      }
-    },
-    "angleOfView": 74,
-    "angleOfViewCalc": 76.3,
-    "apertureBladeCount": "N/A",
-    "searchAliases": {
-      "en": "7Artisans 18mm f6.3 Fuji X",
-      "zh": "七工匠 18mm f6.3 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 270,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 59,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/18mm-f-6-3-mark-ii-aps-c-lens-for-sony-e-fujifilm-x-nikon-z"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Canon EF-M",
-      "Micro Four Thirds"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": "N/A",
-    "lensConfiguration": {
-      "groups": 5,
-      "elements": 6,
-      "sourceText": "5组6片"
-    },
-    "fieldNotes": {
-      "filterMm": "Fixed-aperture pancake design; no filter thread.",
-      "apertureBladeCount": "Fixed aperture; no diaphragm."
-    },
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=401",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=401"
-    },
-    "translations": {
-      "zh": {
-        "fieldNotes": {
-          "filterMm": "固定光圈饼干头设计；无滤镜螺纹。",
-          "apertureBladeCount": "固定光圈；无光圈机构。"
-        },
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-25mm-f18-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "MF 25mm F1.8",
-    "focalLengthMin": 25,
-    "focalLengthMax": 25,
-    "maxAperture": 1.8,
-    "minAperture": 16,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 143,
-    "diameterMm": 60,
-    "length": {
-      "mm": 37.8
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 18
-      }
-    },
-    "angleOfView": 68,
-    "angleOfViewCalc": 59,
-    "apertureBladeCount": 12,
-    "searchAliases": {
-      "en": "7Artisans 25mm f1.8 Fuji X",
-      "zh": "七工匠 25mm f1.8 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 394,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "used": {
-          "price": 53,
-          "currency": "USD",
-          "source": "eBay",
-          "sampledAt": "2026-05-10"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Canon EF-M",
-      "Micro Four Thirds"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 46,
-    "lensConfiguration": {
-      "groups": 5,
-      "elements": 7
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=402",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=402"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-35mm-f12-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "MF 35mm F1.2 II",
-    "generation": 2,
-    "focalLengthMin": 35,
-    "focalLengthMax": 35,
-    "maxAperture": 1.2,
-    "minAperture": 22,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 218,
-    "diameterMm": 62,
-    "length": {
-      "mm": 44
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 28
-      }
-    },
-    "angleOfView": 43.9,
-    "angleOfViewCalc": 44,
-    "apertureBladeCount": 10,
-    "searchAliases": {
-      "en": "7Artisans 35mm f1.2 II Fuji X",
-      "zh": "七工匠 35mm f1.2 II 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 369,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 119,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/35mm-f1-2"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Nikon Z",
-      "Canon EF-M",
-      "Micro Four Thirds"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 46,
-    "lensConfiguration": {
-      "groups": 5,
-      "elements": 6,
-      "sourceText": "5组6片"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=403",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=403"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-35mm-f14-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "MF 35mm F1.4",
-    "focalLengthMin": 35,
-    "focalLengthMax": 35,
-    "maxAperture": 1.4,
-    "minAperture": 16,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 228,
-    "diameterMm": 60,
-    "length": {
-      "mm": 42.2
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 37
-      }
-    },
-    "angleOfView": 43,
-    "angleOfViewCalc": 44,
-    "apertureBladeCount": 9,
-    "searchAliases": {
-      "en": "7Artisans 35mm f1.4 Fuji X",
-      "zh": "七工匠 35mm f1.4 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 329,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 69,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/7artisans-35mm-f1-4-apsc"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Micro Four Thirds",
-      "Canon EF-M",
-      "Canon RF",
-      "Nikon Z"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 49,
-    "lensConfiguration": {
-      "groups": 5,
-      "elements": 8
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=404",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=404"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-50mm-f14-ts-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "MF 50mm F1.4 Tilt",
-    "focalLengthMin": 50,
-    "focalLengthMax": 50,
-    "maxAperture": 1.4,
-    "minAperture": 16,
-    "opticalTraits": [
-      "tilt"
-    ],
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 364,
-    "diameterMm": 75,
-    "length": {
-      "mm": 73
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 50
-      }
-    },
-    "angleOfView": 46,
-    "angleOfViewCalc": 31.6,
-    "apertureBladeCount": 12,
-    "searchAliases": {
-      "en": "7Artisans 50mm f1.4 Tilt Fuji X",
-      "zh": "七工匠 50mm f1.4 Tilt 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 969,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 226,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/50mm-f1-4-aps-c-tilt-lens-for-e-fx-m43"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Micro Four Thirds"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 46,
-    "lensConfiguration": {
-      "groups": 6,
-      "elements": 7
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=496",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=496"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-50mm-f18-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "MF 50mm F1.8",
-    "focalLengthMin": 50,
-    "focalLengthMax": 50,
-    "maxAperture": 1.8,
-    "minAperture": 16,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 168,
-    "diameterMm": 55,
-    "length": {
-      "mm": 40
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 50
-      }
-    },
-    "angleOfView": 32,
-    "angleOfViewCalc": 31.6,
-    "apertureBladeCount": 12,
-    "searchAliases": {
-      "en": "7Artisans 50mm f1.8 Fuji X",
-      "zh": "七工匠 50mm f1.8 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 299,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 66,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/50mm-f1-8"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Canon EF-M",
-      "Micro Four Thirds"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 52,
-    "lensConfiguration": {
-      "groups": 5,
-      "elements": 6
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=405",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=405"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "7artisans-55mm-f14-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "MF 55mm F1.4",
-    "focalLengthMin": 55,
-    "focalLengthMax": 55,
-    "maxAperture": 1.4,
-    "minAperture": 16,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 272,
-    "diameterMm": 56,
-    "length": {
-      "mm": 53.6
-    },
-    "angleOfViewCalc": 28.9,
-    "apertureBladeCount": 14,
-    "searchAliases": {
-      "en": "7Artisans 55mm f1.4 Fuji X",
-      "zh": "七工匠 55mm f1.4 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 494,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 76,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/55mm-f1-4"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Canon EF-M",
-      "Micro Four Thirds"
-    ],
-    "filterMm": 49,
-    "lensConfiguration": {
-      "groups": 5,
-      "elements": 6
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=406",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=406"
-    }
-  },
-  {
-    "id": "7artisans-60mm-f28-x",
-    "brand": "7artisans",
-    "mount": "X",
-    "model": "MF 60mm F2.8 Macro",
-    "focalLengthMin": 60,
-    "focalLengthMax": 60,
-    "maxAperture": 2.8,
-    "minAperture": 16,
-    "opticalTraits": [
-      "macro"
-    ],
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 339,
-    "diameterMm": 60,
-    "length": {
-      "mm": 81
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 26
-      }
-    },
-    "maxMagnification": {
-      "value": 1
-    },
-    "angleOfView": 25,
-    "angleOfViewCalc": 26.5,
-    "apertureBladeCount": 9,
-    "searchAliases": {
-      "en": "7Artisans 60mm f2.8 Macro Fuji X",
-      "zh": "七工匠 60mm f2.8 Macro 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 899,
-          "currency": "CNY",
-          "source": "京东·七工匠官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 159,
-          "currency": "USD",
-          "source": "7artisans.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://7artisans.store/products/60mm-f2-8"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Micro Four Thirds",
-      "Canon EF-M"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 39,
-    "lensConfiguration": {
-      "groups": 7,
-      "elements": 8
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=408",
-      "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=408"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "brightinstar-mf-35mm-f14-x",
-    "brand": "brightinstar",
-    "mount": "X",
-    "model": "35mm F1.4",
-    "focalLengthMin": 35,
-    "focalLengthMax": 35,
-    "maxAperture": 1.4,
-    "minAperture": 16,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 218,
-    "diameterMm": 55,
-    "length": {
-      "mm": 42
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 30
-      }
-    },
-    "angleOfView": 63.2,
-    "angleOfViewCalc": 44,
-    "apertureBladeCount": 10,
-    "searchAliases": {
-      "en": "Brightin Star 35mm f1.4 Fuji X",
-      "zh": "星曜 35mm f1.4 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 639,
-          "currency": "CNY",
-          "source": "京东·星曜光学官方旗舰店",
-          "sampledAt": "2026-05-09"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 190,
-          "currency": "USD",
-          "source": "brightinstar.com",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://brightinstar.com/products/brightin-star-35mm-f1-4-full-frame-large-aperture-manual-focus-lens-for-fuji-x-mount"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Canon RF",
-      "Nikon Z",
-      "Leica L",
-      "Fujifilm X"
-    ],
-    "filterMm": 49,
-    "lensConfiguration": {
-      "groups": 6,
-      "elements": 7,
-      "ed": 1,
-      "highRefractive": 1,
-      "sourceText": "6组7片 双高斯结构"
-    },
-    "fieldNotes": {
-      "apertureRing": "Aperture ring switches between clicked and de-clicked modes."
-    },
-    "officialLinks": {
-      "cn": "https://brightinstar.com.cn/products/35mm-f1-4-%E5%85%A8%E7%94%BB%E5%B9%85",
-      "global": "https://brightinstar.com/products/brightin-star-35mm-f1-4-full-frame-large-aperture-manual-focus-lens-for-fuji-x-mount"
-    },
-    "translations": {
-      "zh": {
-        "fieldNotes": {
-          "apertureRing": "光圈环可在有级（咔哒挡位）和无级（顺滑无段）两种模式间切换。"
-        }
-      }
-    }
-  },
-  {
-    "id": "brightinstar-mf-60mm-f28-x",
-    "brand": "brightinstar",
-    "mount": "X",
-    "model": "60mm F2.8 Macro 2X",
-    "focalLengthMin": 60,
-    "focalLengthMax": 60,
-    "maxAperture": 2.8,
-    "minAperture": 16,
-    "opticalTraits": [
-      "macro"
-    ],
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 698,
-    "diameterMm": 73,
-    "length": {
-      "mm": 112
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 18.2
-      }
-    },
-    "maxMagnification": {
-      "value": 2
-    },
-    "angleOfView": 26.5,
-    "angleOfViewCalc": 26.5,
-    "apertureBladeCount": 9,
-    "searchAliases": {
-      "en": "Brightin Star 60mm f2.8 Macro 2X Fuji X",
-      "zh": "星曜 60mm f2.8 Macro 2X 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 999,
-          "currency": "CNY",
-          "source": "京东·星曜光学官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 229.99,
-          "currency": "USD",
-          "source": "Amazon · Brightin Star Official Store",
-          "sampledAt": "2026-05-10"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://www.amazon.com/Brightin-XF-Mount-Mirrorless-Fit/dp/B0D3KV8TLL"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Canon EF-M",
-      "Micro Four Thirds",
-      "Canon RF",
-      "Fujifilm X",
-      "Nikon Z"
-    ],
-    "filterMm": 67,
-    "lensConfiguration": {
-      "groups": 7,
-      "elements": 10,
-      "highRefractive": 1,
-      "sourceText": "7组10片"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://brightinstar.com.cn/products/mf-60mm-f2-8-%E5%8D%8A%E7%94%BB%E5%B9%85",
-      "global": "https://brightinstar.com/products/brightin-star-60mm-f2-8-2x-macro-aps-c-manual-focus-prime-lens-for-fuji-x-mount"
-    }
-  },
-  {
-    "id": "brightinstar-mf-60mm-f28-ii-x",
-    "brand": "brightinstar",
-    "mount": "X",
-    "model": "60mm F2.8 Macro 2X II",
-    "generation": 2,
-    "focalLengthMin": 60,
-    "focalLengthMax": 60,
-    "maxAperture": 2.8,
-    "minAperture": 22,
-    "opticalTraits": [
-      "macro"
-    ],
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 660,
-    "diameterMm": 73,
-    "length": {
-      "mm": 118
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 18.2
-      }
-    },
-    "maxMagnification": {
-      "value": 2
-    },
-    "angleOfViewCalc": 26.5,
-    "apertureBladeCount": 10,
-    "searchAliases": {
-      "en": "Brightin Star 60mm f2.8 Macro 2X II Fuji X",
-      "zh": "星曜 60mm f2.8 Macro 2X II 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 939,
-          "currency": "CNY",
-          "source": "京东·星曜光学官方旗舰店",
-          "sampledAt": "2026-05-09"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 230,
-          "currency": "USD",
-          "source": "brightinstar.com",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://brightinstar.com/products/brightin-star-60mm-f2-8-2x-macro-aps-c-manual-focus-prime-lens-for-fuji-x-mount"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Canon RF",
-      "Micro Four Thirds",
-      "Canon EF-M",
-      "Nikon Z"
-    ],
-    "accessories": [
-      "Front lens cap",
-      "Rear lens cap"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 67,
-    "lensConfiguration": {
-      "groups": 7,
-      "elements": 10,
-      "sourceText": "7组10片"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://brightinstar.com.cn/products/mf-60mm-f2-8-%E2%85%B1-%E5%85%A8%E7%94%BB%E5%B9%85"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属",
-        "accessories": [
-          "前镜头盖",
-          "后镜头盖"
-        ]
       }
     }
   },
@@ -2694,6 +2421,97 @@
     }
   },
   {
+    "id": "brightinstar-mf-10mm-f56-pro-x",
+    "brand": "brightinstar",
+    "mount": "X",
+    "model": "MF 10mm F5.6 PRO",
+    "focalLengthMin": 10,
+    "focalLengthMax": 10,
+    "maxAperture": 5.6,
+    "minAperture": 22,
+    "opticalTraits": [
+      "fisheye"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 100,
+    "diameterMm": 53,
+    "length": {
+      "mm": 20
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 20
+      }
+    },
+    "angleOfView": 175,
+    "angleOfViewCalc": 109.5,
+    "apertureBladeCount": 5,
+    "searchAliases": {
+      "en": "Brightin Star 10mm f5.6 PRO Fuji X",
+      "zh": "星曜 10mm f5.6 PRO 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 529,
+          "currency": "CNY",
+          "source": "京东·星曜光学官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 120,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://brightinstar.com/products/10mm-f5-6-pro-aps-c-fisheye-lens-wide-angle-lens-for-fujifilm-xf-mount"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Nikon Z",
+      "Fujifilm X",
+      "Micro Four Thirds",
+      "Canon RF"
+    ],
+    "filterMm": "N/A",
+    "lensConfiguration": {
+      "groups": 5,
+      "elements": 6
+    },
+    "fieldNotes": {
+      "weightG": "Weight varies by mount: XF/E 100g, M4/3 94g, RF-S 104g, Z 116g. Value given is for XF mount.",
+      "filterMm": "Bulbous fisheye front element; no filter thread."
+    },
+    "officialLinks": {
+      "cn": "https://brightinstar.com.cn/products/10mm-f5-6-pro",
+      "global": "https://brightinstar.com/products/10mm-f5-6-pro-aps-c-fisheye-lens-wide-angle-lens-for-fujifilm-xf-mount"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "重量因卡口而异：XF/E 100g、M4/3 94g、RF-S 104g、Z 116g。给出的数值为 XF 卡口。",
+          "filterMm": "灯泡状鱼眼前组镜片；无滤镜螺纹。"
+        }
+      }
+    }
+  },
+  {
     "id": "brightinstar-mf-10mm-f56-x",
     "brand": "brightinstar",
     "mount": "X",
@@ -2781,97 +2599,6 @@
         "fieldNotes": {
           "filterMm": "灯泡状鱼眼前组镜片；无滤镜螺纹。",
           "apertureBladeCount": "固定光圈；无光圈机构。"
-        }
-      }
-    }
-  },
-  {
-    "id": "brightinstar-mf-10mm-f56-pro-x",
-    "brand": "brightinstar",
-    "mount": "X",
-    "model": "MF 10mm F5.6 PRO",
-    "focalLengthMin": 10,
-    "focalLengthMax": 10,
-    "maxAperture": 5.6,
-    "minAperture": 22,
-    "opticalTraits": [
-      "fisheye"
-    ],
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 100,
-    "diameterMm": 53,
-    "length": {
-      "mm": 20
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 20
-      }
-    },
-    "angleOfView": 175,
-    "angleOfViewCalc": 109.5,
-    "apertureBladeCount": 5,
-    "searchAliases": {
-      "en": "Brightin Star 10mm f5.6 PRO Fuji X",
-      "zh": "星曜 10mm f5.6 PRO 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 529,
-          "currency": "CNY",
-          "source": "京东·星曜光学官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 120,
-          "currency": "USD",
-          "source": "brightinstar.com",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://brightinstar.com/products/10mm-f5-6-pro-aps-c-fisheye-lens-wide-angle-lens-for-fujifilm-xf-mount"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Nikon Z",
-      "Fujifilm X",
-      "Micro Four Thirds",
-      "Canon RF"
-    ],
-    "filterMm": "N/A",
-    "lensConfiguration": {
-      "groups": 5,
-      "elements": 6
-    },
-    "fieldNotes": {
-      "weightG": "Weight varies by mount: XF/E 100g, M4/3 94g, RF-S 104g, Z 116g. Value given is for XF mount.",
-      "filterMm": "Bulbous fisheye front element; no filter thread."
-    },
-    "officialLinks": {
-      "cn": "https://brightinstar.com.cn/products/10mm-f5-6-pro",
-      "global": "https://brightinstar.com/products/10mm-f5-6-pro-aps-c-fisheye-lens-wide-angle-lens-for-fujifilm-xf-mount"
-    },
-    "translations": {
-      "zh": {
-        "fieldNotes": {
-          "weightG": "重量因卡口而异：XF/E 100g、M4/3 94g、RF-S 104g、Z 116g。给出的数值为 XF 卡口。",
-          "filterMm": "灯泡状鱼眼前组镜片；无滤镜螺纹。"
         }
       }
     }
@@ -3025,85 +2752,6 @@
     }
   },
   {
-    "id": "brightinstar-mf-35mm-f095-x",
-    "brand": "brightinstar",
-    "mount": "X",
-    "model": "MF 35mm F0.95",
-    "focalLengthMin": 35,
-    "focalLengthMax": 35,
-    "maxAperture": 0.95,
-    "minAperture": 16,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 370,
-    "diameterMm": 62,
-    "length": {
-      "mm": 62
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 37
-      }
-    },
-    "angleOfView": 44,
-    "angleOfViewCalc": 44,
-    "apertureBladeCount": 12,
-    "searchAliases": {
-      "en": "Brightin Star 35mm f0.95 Fuji X",
-      "zh": "星曜 35mm f0.95 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 999,
-          "currency": "CNY",
-          "source": "京东·星曜光学官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 200,
-          "currency": "USD",
-          "source": "brightinstar.com",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://brightinstar.com/products/35mm-f0-95-aps-c-luminous-version-portrait-star-manual-fixed-focus-lens-suitable-for-fuji-x-mount"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Nikon Z",
-      "Canon EF-M",
-      "Canon RF",
-      "Fujifilm X",
-      "Micro Four Thirds"
-    ],
-    "filterMm": 52,
-    "lensConfiguration": {
-      "groups": 8,
-      "elements": 11,
-      "ed": 2
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://brightinstar.com.cn/products/mf-35mm-f0-95-%E5%8D%8A%E7%94%BB%E5%B9%85",
-      "global": "https://brightinstar.com/products/35mm-f0-95-aps-c-night-god-portrait-star-manual-fixed-focus-lens-suitable-for-fuji-x-mount"
-    }
-  },
-  {
     "id": "brightinstar-mf-35mm-f12-x",
     "brand": "brightinstar",
     "mount": "X",
@@ -3163,6 +2811,95 @@
     "translations": {
       "zh": {
         "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "brightinstar-mf-35mm-f14-x",
+    "brand": "brightinstar",
+    "mount": "X",
+    "model": "35mm F1.4",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 1.4,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 218,
+    "diameterMm": 55,
+    "length": {
+      "mm": 42
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 30
+      }
+    },
+    "angleOfView": 63.2,
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "Brightin Star 35mm f1.4 Fuji X",
+      "zh": "星曜 35mm f1.4 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 639,
+          "currency": "CNY",
+          "source": "京东·星曜光学官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 190,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://brightinstar.com/products/brightin-star-35mm-f1-4-full-frame-large-aperture-manual-focus-lens-for-fuji-x-mount"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Canon RF",
+      "Nikon Z",
+      "Leica L",
+      "Fujifilm X"
+    ],
+    "filterMm": 49,
+    "lensConfiguration": {
+      "groups": 6,
+      "elements": 7,
+      "ed": 1,
+      "highRefractive": 1,
+      "sourceText": "6组7片 双高斯结构"
+    },
+    "fieldNotes": {
+      "apertureRing": "Aperture ring switches between clicked and de-clicked modes."
+    },
+    "officialLinks": {
+      "cn": "https://brightinstar.com.cn/products/35mm-f1-4-%E5%85%A8%E7%94%BB%E5%B9%85",
+      "global": "https://brightinstar.com/products/brightin-star-35mm-f1-4-full-frame-large-aperture-manual-focus-lens-for-fuji-x-mount"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "apertureRing": "光圈环可在有级（咔哒挡位）和无级（顺滑无段）两种模式间切换。"
+        }
       }
     }
   },
@@ -3243,12 +2980,12 @@
     }
   },
   {
-    "id": "brightinstar-mf-50mm-f095-x",
+    "id": "brightinstar-mf-35mm-f095-x",
     "brand": "brightinstar",
     "mount": "X",
-    "model": "MF 50mm F0.95",
-    "focalLengthMin": 50,
-    "focalLengthMax": 50,
+    "model": "MF 35mm F0.95",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
     "maxAperture": 0.95,
     "minAperture": 16,
     "af": false,
@@ -3257,22 +2994,22 @@
     "apertureRing": true,
     "powerZoom": false,
     "focusMotor": "N/A",
-    "weightG": 443,
-    "diameterMm": 68,
+    "weightG": 370,
+    "diameterMm": 62,
     "length": {
-      "mm": 67
+      "mm": 62
     },
     "minFocusDistance": {
       "normal": {
-        "cm": 50
+        "cm": 37
       }
     },
-    "angleOfView": 32,
-    "angleOfViewCalc": 31.6,
-    "apertureBladeCount": 13,
+    "angleOfView": 44,
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 12,
     "searchAliases": {
-      "en": "Brightin Star 50mm f0.95 Fuji X",
-      "zh": "星曜 50mm f0.95 富士"
+      "en": "Brightin Star 35mm f0.95 Fuji X",
+      "zh": "星曜 35mm f0.95 富士"
     },
     "pricing": {
       "cn": {
@@ -3295,7 +3032,7 @@
     "purchaseChannels": [
       {
         "channel": "official",
-        "url": "https://brightinstar.com/products/50mm-f0-95-aps-c-night-god-portrait-star-manual-fixed-focus-lens-suitable-for-fuji-x-mount"
+        "url": "https://brightinstar.com/products/35mm-f0-95-aps-c-luminous-version-portrait-star-manual-fixed-focus-lens-suitable-for-fuji-x-mount"
       },
       {
         "channel": "bhphoto"
@@ -3309,17 +3046,16 @@
       "Fujifilm X",
       "Micro Four Thirds"
     ],
-    "filterMm": 62,
+    "filterMm": 52,
     "lensConfiguration": {
-      "groups": 5,
-      "elements": 7,
-      "ed": 2,
-      "highRefractive": 4
+      "groups": 8,
+      "elements": 11,
+      "ed": 2
     },
     "fieldNotes": {},
     "officialLinks": {
-      "cn": "https://brightinstar.com.cn/products/mf-50mm-f0-95-%E2%85%B1-%E5%85%A8%E7%94%BB%E5%B9%85",
-      "global": "https://brightinstar.com/products/50mm-f0-95-aps-c-night-god-portrait-star-manual-fixed-focus-lens-suitable-for-fuji-x-mount"
+      "cn": "https://brightinstar.com.cn/products/mf-35mm-f0-95-%E5%8D%8A%E7%94%BB%E5%B9%85",
+      "global": "https://brightinstar.com/products/35mm-f0-95-aps-c-night-god-portrait-star-manual-fixed-focus-lens-suitable-for-fuji-x-mount"
     }
   },
   {
@@ -3470,6 +3206,270 @@
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/collections/%E6%A0%87%E5%87%86%E9%95%9C%E5%A4%B4/products/mf-50mm-f1-8-%E5%8D%8A%E7%94%BB%E5%B9%85",
       "global": "https://brightinstar.com/products/50mm-f1-8-aps-c-manual-focus-lens-fit-for-fuji-x-mount"
+    }
+  },
+  {
+    "id": "brightinstar-mf-50mm-f095-x",
+    "brand": "brightinstar",
+    "mount": "X",
+    "model": "MF 50mm F0.95",
+    "focalLengthMin": 50,
+    "focalLengthMax": 50,
+    "maxAperture": 0.95,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 443,
+    "diameterMm": 68,
+    "length": {
+      "mm": 67
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 50
+      }
+    },
+    "angleOfView": 32,
+    "angleOfViewCalc": 31.6,
+    "apertureBladeCount": 13,
+    "searchAliases": {
+      "en": "Brightin Star 50mm f0.95 Fuji X",
+      "zh": "星曜 50mm f0.95 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 999,
+          "currency": "CNY",
+          "source": "京东·星曜光学官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 200,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://brightinstar.com/products/50mm-f0-95-aps-c-night-god-portrait-star-manual-fixed-focus-lens-suitable-for-fuji-x-mount"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Nikon Z",
+      "Canon EF-M",
+      "Canon RF",
+      "Fujifilm X",
+      "Micro Four Thirds"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 5,
+      "elements": 7,
+      "ed": 2,
+      "highRefractive": 4
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://brightinstar.com.cn/products/mf-50mm-f0-95-%E2%85%B1-%E5%85%A8%E7%94%BB%E5%B9%85",
+      "global": "https://brightinstar.com/products/50mm-f0-95-aps-c-night-god-portrait-star-manual-fixed-focus-lens-suitable-for-fuji-x-mount"
+    }
+  },
+  {
+    "id": "brightinstar-mf-60mm-f28-ii-x",
+    "brand": "brightinstar",
+    "mount": "X",
+    "model": "60mm F2.8 Macro 2X II",
+    "generation": 2,
+    "focalLengthMin": 60,
+    "focalLengthMax": 60,
+    "maxAperture": 2.8,
+    "minAperture": 22,
+    "opticalTraits": [
+      "macro"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 660,
+    "diameterMm": 73,
+    "length": {
+      "mm": 118
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 18.2
+      }
+    },
+    "maxMagnification": {
+      "value": 2
+    },
+    "angleOfViewCalc": 26.5,
+    "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "Brightin Star 60mm f2.8 Macro 2X II Fuji X",
+      "zh": "星曜 60mm f2.8 Macro 2X II 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 939,
+          "currency": "CNY",
+          "source": "京东·星曜光学官方旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 230,
+          "currency": "USD",
+          "source": "brightinstar.com",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://brightinstar.com/products/brightin-star-60mm-f2-8-2x-macro-aps-c-manual-focus-prime-lens-for-fuji-x-mount"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Canon RF",
+      "Micro Four Thirds",
+      "Canon EF-M",
+      "Nikon Z"
+    ],
+    "accessories": [
+      "Front lens cap",
+      "Rear lens cap"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 67,
+    "lensConfiguration": {
+      "groups": 7,
+      "elements": 10,
+      "sourceText": "7组10片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://brightinstar.com.cn/products/mf-60mm-f2-8-%E2%85%B1-%E5%85%A8%E7%94%BB%E5%B9%85"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属",
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖"
+        ]
+      }
+    }
+  },
+  {
+    "id": "brightinstar-mf-60mm-f28-x",
+    "brand": "brightinstar",
+    "mount": "X",
+    "model": "60mm F2.8 Macro 2X",
+    "focalLengthMin": 60,
+    "focalLengthMax": 60,
+    "maxAperture": 2.8,
+    "minAperture": 16,
+    "opticalTraits": [
+      "macro"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 698,
+    "diameterMm": 73,
+    "length": {
+      "mm": 112
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 18.2
+      }
+    },
+    "maxMagnification": {
+      "value": 2
+    },
+    "angleOfView": 26.5,
+    "angleOfViewCalc": 26.5,
+    "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Brightin Star 60mm f2.8 Macro 2X Fuji X",
+      "zh": "星曜 60mm f2.8 Macro 2X 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 999,
+          "currency": "CNY",
+          "source": "京东·星曜光学官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 229.99,
+          "currency": "USD",
+          "source": "Amazon · Brightin Star Official Store",
+          "sampledAt": "2026-05-10"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://www.amazon.com/Brightin-XF-Mount-Mirrorless-Fit/dp/B0D3KV8TLL"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Canon EF-M",
+      "Micro Four Thirds",
+      "Canon RF",
+      "Fujifilm X",
+      "Nikon Z"
+    ],
+    "filterMm": 67,
+    "lensConfiguration": {
+      "groups": 7,
+      "elements": 10,
+      "highRefractive": 1,
+      "sourceText": "7组10片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://brightinstar.com.cn/products/mf-60mm-f2-8-%E5%8D%8A%E7%94%BB%E5%B9%85",
+      "global": "https://brightinstar.com/products/brightin-star-60mm-f2-8-2x-macro-aps-c-manual-focus-prime-lens-for-fuji-x-mount"
     }
   },
   {
@@ -3896,6 +3896,85 @@
     }
   },
   {
+    "id": "fujifilm-xc-16-50mmf35-56-ois-ii-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XC",
+    "model": "XC 16-50mm F3.5-5.6 OIS II",
+    "generation": 2,
+    "focalLengthMin": 16,
+    "focalLengthMax": 50,
+    "maxAperture": [
+      3.5,
+      5.6
+    ],
+    "minAperture": 22,
+    "af": true,
+    "ois": true,
+    "wr": false,
+    "apertureRing": false,
+    "powerZoom": false,
+    "weightG": 195,
+    "diameterMm": 62.6,
+    "length": {
+      "mm": 98.3,
+      "variants": {
+        "wide": 65.2,
+        "tele": 98.3
+      }
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 60
+      },
+      "macro": {
+        "cm": 15,
+        "teleCm": 35
+      }
+    },
+    "maxMagnification": {
+      "value": 0.2
+    },
+    "angleOfView": [
+      83.2,
+      31.7
+    ],
+    "angleOfViewCalc": [
+      83,
+      31.6
+    ],
+    "apertureBladeCount": 7,
+    "releaseYear": 2015,
+    "searchAliases": {
+      "en": "Fujifilm XC 16-50mm OIS II",
+      "zh": "富士 XC 16-50mm OIS II"
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "compatibleMounts": [
+      "Fujifilm X"
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 12,
+      "aspherical": 3,
+      "ed": 1,
+      "sourceText": "12 elements in 10 groups (includes 3 aspherical and 1 extra low dispersion elements)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc16-50mmf35-56-ois-2/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xc16-50mmf35-56-ois-2/"
+    }
+  },
+  {
     "id": "fujifilm-xc-16-50mmf35-56-ois-x",
     "brand": "fujifilm",
     "mount": "X",
@@ -3992,85 +4071,6 @@
     }
   },
   {
-    "id": "fujifilm-xc-16-50mmf35-56-ois-ii-x",
-    "brand": "fujifilm",
-    "mount": "X",
-    "series": "XC",
-    "model": "XC 16-50mm F3.5-5.6 OIS II",
-    "generation": 2,
-    "focalLengthMin": 16,
-    "focalLengthMax": 50,
-    "maxAperture": [
-      3.5,
-      5.6
-    ],
-    "minAperture": 22,
-    "af": true,
-    "ois": true,
-    "wr": false,
-    "apertureRing": false,
-    "powerZoom": false,
-    "weightG": 195,
-    "diameterMm": 62.6,
-    "length": {
-      "mm": 98.3,
-      "variants": {
-        "wide": 65.2,
-        "tele": 98.3
-      }
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 60
-      },
-      "macro": {
-        "cm": 15,
-        "teleCm": 35
-      }
-    },
-    "maxMagnification": {
-      "value": 0.2
-    },
-    "angleOfView": [
-      83.2,
-      31.7
-    ],
-    "angleOfViewCalc": [
-      83,
-      31.6
-    ],
-    "apertureBladeCount": 7,
-    "releaseYear": 2015,
-    "searchAliases": {
-      "en": "Fujifilm XC 16-50mm OIS II",
-      "zh": "富士 XC 16-50mm OIS II"
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "compatibleMounts": [
-      "Fujifilm X"
-    ],
-    "filterMm": 58,
-    "lensConfiguration": {
-      "groups": 10,
-      "elements": 12,
-      "aspherical": 3,
-      "ed": 1,
-      "sourceText": "12 elements in 10 groups (includes 3 aspherical and 1 extra low dispersion elements)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc16-50mmf35-56-ois-2/",
-      "global": "https://www.fujifilm-x.com/global/products/lenses/xc16-50mmf35-56-ois-2/"
-    }
-  },
-  {
     "id": "fujifilm-xc-35mmf2-x",
     "brand": "fujifilm",
     "mount": "X",
@@ -4155,90 +4155,6 @@
           "前镜头盖 FLCP-43"
         ]
       }
-    }
-  },
-  {
-    "id": "fujifilm-xc-50-230mmf45-67-ois-x",
-    "brand": "fujifilm",
-    "mount": "X",
-    "series": "XC",
-    "model": "XC 50-230mm F4.5-6.7 OIS",
-    "focalLengthMin": 50,
-    "focalLengthMax": 230,
-    "maxAperture": [
-      4.5,
-      6.7
-    ],
-    "minAperture": 22,
-    "af": true,
-    "ois": true,
-    "wr": false,
-    "apertureRing": false,
-    "powerZoom": false,
-    "weightG": 375,
-    "diameterMm": 69.5,
-    "length": {
-      "mm": 177,
-      "variants": {
-        "wide": 111,
-        "tele": 177
-      }
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 110
-      }
-    },
-    "maxMagnification": {
-      "value": 0.2
-    },
-    "angleOfView": [
-      31.7,
-      7.1
-    ],
-    "angleOfViewCalc": [
-      31.6,
-      7
-    ],
-    "apertureBladeCount": 7,
-    "releaseYear": 2013,
-    "searchAliases": {
-      "en": "Fujifilm XC 50-230mm OIS",
-      "zh": "富士 XC 50-230mm OIS"
-    },
-    "pricing": {
-      "global": {
-        "used": {
-          "price": 279.99,
-          "currency": "USD",
-          "source": "eBay",
-          "sampledAt": "2026-05-10"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "compatibleMounts": [
-      "Fujifilm X"
-    ],
-    "filterMm": 58,
-    "lensConfiguration": {
-      "groups": 10,
-      "elements": 13,
-      "aspherical": 1,
-      "ed": 1,
-      "sourceText": "13 elements in 10 groups (includes 1 aspherical element, 1 extra low dispersion element)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc50-230mmf45-67-ois/",
-      "global": "https://www.fujifilm-x.com/global/products/lenses/xc50-230mmf45-67-ois/"
     }
   },
   {
@@ -4352,6 +4268,90 @@
           "遮光罩"
         ]
       }
+    }
+  },
+  {
+    "id": "fujifilm-xc-50-230mmf45-67-ois-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XC",
+    "model": "XC 50-230mm F4.5-6.7 OIS",
+    "focalLengthMin": 50,
+    "focalLengthMax": 230,
+    "maxAperture": [
+      4.5,
+      6.7
+    ],
+    "minAperture": 22,
+    "af": true,
+    "ois": true,
+    "wr": false,
+    "apertureRing": false,
+    "powerZoom": false,
+    "weightG": 375,
+    "diameterMm": 69.5,
+    "length": {
+      "mm": 177,
+      "variants": {
+        "wide": 111,
+        "tele": 177
+      }
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 110
+      }
+    },
+    "maxMagnification": {
+      "value": 0.2
+    },
+    "angleOfView": [
+      31.7,
+      7.1
+    ],
+    "angleOfViewCalc": [
+      31.6,
+      7
+    ],
+    "apertureBladeCount": 7,
+    "releaseYear": 2013,
+    "searchAliases": {
+      "en": "Fujifilm XC 50-230mm OIS",
+      "zh": "富士 XC 50-230mm OIS"
+    },
+    "pricing": {
+      "global": {
+        "used": {
+          "price": 279.99,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-10"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "compatibleMounts": [
+      "Fujifilm X"
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 13,
+      "aspherical": 1,
+      "ed": 1,
+      "sourceText": "13 elements in 10 groups (includes 1 aspherical element, 1 extra low dispersion element)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc50-230mmf45-67-ois/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xc50-230mmf45-67-ois/"
     }
   },
   {
@@ -4553,94 +4553,6 @@
     }
   },
   {
-    "id": "fujifilm-xf-10-24mmf4-r-ois-x",
-    "brand": "fujifilm",
-    "mount": "X",
-    "series": "XF",
-    "model": "XF 10-24mm F4 R OIS",
-    "focalLengthMin": 10,
-    "focalLengthMax": 24,
-    "maxAperture": 4,
-    "minAperture": 22,
-    "af": true,
-    "ois": true,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "weightG": 410,
-    "diameterMm": 78,
-    "length": {
-      "mm": 87
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 50
-      },
-      "macro": {
-        "cm": 24
-      }
-    },
-    "maxMagnification": {
-      "value": 0.16
-    },
-    "angleOfView": [
-      110,
-      61.2
-    ],
-    "angleOfViewCalc": [
-      109.5,
-      61
-    ],
-    "apertureBladeCount": 7,
-    "releaseYear": 2014,
-    "searchAliases": {
-      "en": "Fujifilm XF 10-24mm f4 OIS",
-      "zh": "富士 XF 10-24mm f4 OIS"
-    },
-    "pricing": {
-      "cn": {
-        "used": {
-          "price": 1725,
-          "currency": "CNY",
-          "source": "闲鱼",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "used": {
-          "price": 400,
-          "currency": "USD",
-          "source": "eBay",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "compatibleMounts": [
-      "Fujifilm X"
-    ],
-    "filterMm": 72,
-    "lensConfiguration": {
-      "groups": 10,
-      "elements": 14,
-      "aspherical": 4,
-      "ed": 4,
-      "sourceText": "14 elements in 10 groups (includes 4 aspherical and 4 extra low dispersion elements)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf10-24mmf4-r-ois/",
-      "global": "https://www.fujifilm-x.com/global/products/lenses/xf10-24mmf4-r-ois/"
-    }
-  },
-  {
     "id": "fujifilm-xf-10-24mmf4-r-ois-wr-x",
     "brand": "fujifilm",
     "mount": "X",
@@ -4734,6 +4646,94 @@
           "focusMotor": "Fujifilm 早期 XF / XC 镜头所用高精度直流马达的营销名称。"
         }
       }
+    }
+  },
+  {
+    "id": "fujifilm-xf-10-24mmf4-r-ois-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XF",
+    "model": "XF 10-24mm F4 R OIS",
+    "focalLengthMin": 10,
+    "focalLengthMax": 24,
+    "maxAperture": 4,
+    "minAperture": 22,
+    "af": true,
+    "ois": true,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "weightG": 410,
+    "diameterMm": 78,
+    "length": {
+      "mm": 87
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 50
+      },
+      "macro": {
+        "cm": 24
+      }
+    },
+    "maxMagnification": {
+      "value": 0.16
+    },
+    "angleOfView": [
+      110,
+      61.2
+    ],
+    "angleOfViewCalc": [
+      109.5,
+      61
+    ],
+    "apertureBladeCount": 7,
+    "releaseYear": 2014,
+    "searchAliases": {
+      "en": "Fujifilm XF 10-24mm f4 OIS",
+      "zh": "富士 XF 10-24mm f4 OIS"
+    },
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 1725,
+          "currency": "CNY",
+          "source": "闲鱼",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 400,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "compatibleMounts": [
+      "Fujifilm X"
+    ],
+    "filterMm": 72,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 14,
+      "aspherical": 4,
+      "ed": 4,
+      "sourceText": "14 elements in 10 groups (includes 4 aspherical and 4 extra low dispersion elements)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf10-24mmf4-r-ois/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xf10-24mmf4-r-ois/"
     }
   },
   {
@@ -4918,101 +4918,6 @@
     }
   },
   {
-    "id": "fujifilm-xf-16-55mmf28-r-lm-wr-x",
-    "brand": "fujifilm",
-    "mount": "X",
-    "series": "XF",
-    "model": "XF 16-55mm F2.8 R LM WR",
-    "focalLengthMin": 16,
-    "focalLengthMax": 55,
-    "maxAperture": 2.8,
-    "minAperture": 22,
-    "af": true,
-    "ois": false,
-    "wr": true,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "LM",
-    "internalFocusing": true,
-    "weightG": 655,
-    "diameterMm": 83.3,
-    "length": {
-      "mm": 106,
-      "variants": {
-        "wide": 106,
-        "tele": 129.5
-      }
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 60
-      },
-      "macro": {
-        "cm": 30,
-        "teleCm": 40
-      }
-    },
-    "maxMagnification": {
-      "value": 0.16,
-      "variants": {
-        "tele": 0.16
-      }
-    },
-    "angleOfView": [
-      83.2,
-      29
-    ],
-    "angleOfViewCalc": [
-      83,
-      28.9
-    ],
-    "apertureBladeCount": 9,
-    "releaseYear": 2015,
-    "searchAliases": {
-      "en": "Fujifilm XF 16-55mm f2.8 WR",
-      "zh": "富士 XF 16-55mm f2.8 WR"
-    },
-    "pricing": {
-      "cn": {
-        "used": {
-          "price": 5600,
-          "currency": "CNY",
-          "source": "闲鱼",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 949.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "filterMm": 77,
-    "lensConfiguration": {
-      "groups": 12,
-      "elements": 17,
-      "aspherical": 3,
-      "ed": 3,
-      "sourceText": "17 elements 12 groups (includes 3 aspherical and 3 extra low dispersion elements)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf16-55mmf28-r-lm-wr/",
-      "global": "https://www.fujifilm-x.com/global/products/lenses/xf16-55mmf28-r-lm-wr/"
-    }
-  },
-  {
     "id": "fujifilm-xf-16-55mmf28-r-lm-wr-ii-x",
     "brand": "fujifilm",
     "mount": "X",
@@ -5116,6 +5021,101 @@
           "镜头包裹布"
         ]
       }
+    }
+  },
+  {
+    "id": "fujifilm-xf-16-55mmf28-r-lm-wr-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XF",
+    "model": "XF 16-55mm F2.8 R LM WR",
+    "focalLengthMin": 16,
+    "focalLengthMax": 55,
+    "maxAperture": 2.8,
+    "minAperture": 22,
+    "af": true,
+    "ois": false,
+    "wr": true,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "LM",
+    "internalFocusing": true,
+    "weightG": 655,
+    "diameterMm": 83.3,
+    "length": {
+      "mm": 106,
+      "variants": {
+        "wide": 106,
+        "tele": 129.5
+      }
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 60
+      },
+      "macro": {
+        "cm": 30,
+        "teleCm": 40
+      }
+    },
+    "maxMagnification": {
+      "value": 0.16,
+      "variants": {
+        "tele": 0.16
+      }
+    },
+    "angleOfView": [
+      83.2,
+      29
+    ],
+    "angleOfViewCalc": [
+      83,
+      28.9
+    ],
+    "apertureBladeCount": 9,
+    "releaseYear": 2015,
+    "searchAliases": {
+      "en": "Fujifilm XF 16-55mm f2.8 WR",
+      "zh": "富士 XF 16-55mm f2.8 WR"
+    },
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 5600,
+          "currency": "CNY",
+          "source": "闲鱼",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 949.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 12,
+      "elements": 17,
+      "aspherical": 3,
+      "ed": 3,
+      "sourceText": "17 elements 12 groups (includes 3 aspherical and 3 extra low dispersion elements)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf16-55mmf28-r-lm-wr/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xf16-55mmf28-r-lm-wr/"
     }
   },
   {
@@ -5692,6 +5692,76 @@
     }
   },
   {
+    "id": "fujifilm-xf-18mmf2-r-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XF",
+    "model": "XF 18mm F2 R",
+    "focalLengthMin": 18,
+    "focalLengthMax": 18,
+    "maxAperture": 2,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "weightG": 116,
+    "diameterMm": 64.5,
+    "length": {
+      "mm": 33.7
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 80
+      },
+      "macro": {
+        "cm": 18
+      }
+    },
+    "maxMagnification": {
+      "value": 0.14
+    },
+    "angleOfView": 76.5,
+    "angleOfViewCalc": 76.3,
+    "apertureBladeCount": 7,
+    "releaseYear": 2012,
+    "searchAliases": {
+      "en": "Fujifilm XF 18mm f2",
+      "zh": "富士 XF 18mm f2"
+    },
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 699.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "filterMm": 52,
+    "lensConfiguration": {
+      "groups": 7,
+      "elements": 8,
+      "aspherical": 2,
+      "sourceText": "8 elements in 7 groups (includes 2 aspherical elements)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf18mmf2-r/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xf18mmf2-r/"
+    }
+  },
+  {
     "id": "fujifilm-xf-18mmf14-r-lm-wr-x",
     "brand": "fujifilm",
     "mount": "X",
@@ -5777,227 +5847,6 @@
           "遮光罩 LH-XF18"
         ]
       }
-    }
-  },
-  {
-    "id": "fujifilm-xf-18mmf2-r-x",
-    "brand": "fujifilm",
-    "mount": "X",
-    "series": "XF",
-    "model": "XF 18mm F2 R",
-    "focalLengthMin": 18,
-    "focalLengthMax": 18,
-    "maxAperture": 2,
-    "minAperture": 16,
-    "af": true,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "weightG": 116,
-    "diameterMm": 64.5,
-    "length": {
-      "mm": 33.7
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 80
-      },
-      "macro": {
-        "cm": 18
-      }
-    },
-    "maxMagnification": {
-      "value": 0.14
-    },
-    "angleOfView": 76.5,
-    "angleOfViewCalc": 76.3,
-    "apertureBladeCount": 7,
-    "releaseYear": 2012,
-    "searchAliases": {
-      "en": "Fujifilm XF 18mm f2",
-      "zh": "富士 XF 18mm f2"
-    },
-    "pricing": {
-      "global": {
-        "new": {
-          "price": 699.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "filterMm": 52,
-    "lensConfiguration": {
-      "groups": 7,
-      "elements": 8,
-      "aspherical": 2,
-      "sourceText": "8 elements in 7 groups (includes 2 aspherical elements)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf18mmf2-r/",
-      "global": "https://www.fujifilm-x.com/global/products/lenses/xf18mmf2-r/"
-    }
-  },
-  {
-    "id": "fujifilm-xf-23mmf14-r-x",
-    "brand": "fujifilm",
-    "mount": "X",
-    "series": "XF",
-    "model": "XF 23mm F1.4 R",
-    "focalLengthMin": 23,
-    "focalLengthMax": 23,
-    "maxAperture": 1.4,
-    "minAperture": 16,
-    "af": true,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "weightG": 300,
-    "diameterMm": 72,
-    "length": {
-      "mm": 63
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 60
-      },
-      "macro": {
-        "cm": 28
-      }
-    },
-    "maxMagnification": {
-      "value": 0.1
-    },
-    "angleOfView": 63.4,
-    "angleOfViewCalc": 63.2,
-    "apertureBladeCount": 7,
-    "releaseYear": 2013,
-    "searchAliases": {
-      "en": "Fujifilm XF 23mm f1.4",
-      "zh": "富士 XF 23mm f1.4"
-    },
-    "pricing": {
-      "global": {
-        "new": {
-          "price": 899.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "compatibleMounts": [
-      "Fujifilm X"
-    ],
-    "filterMm": 62,
-    "lensConfiguration": {
-      "groups": 8,
-      "elements": 11,
-      "aspherical": 1,
-      "sourceText": "11 elements in 8 groups (includes 1 aspherical element)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf23mmf14-r/",
-      "global": "https://www.fujifilm-x.com/global/products/lenses/xf23mmf14-r/"
-    }
-  },
-  {
-    "id": "fujifilm-xf-23mmf14-r-lm-wr-x",
-    "brand": "fujifilm",
-    "mount": "X",
-    "series": "XF",
-    "model": "XF 23mm F1.4 R LM WR",
-    "focalLengthMin": 23,
-    "focalLengthMax": 23,
-    "maxAperture": 1.4,
-    "minAperture": 16,
-    "af": true,
-    "ois": false,
-    "wr": true,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "LM",
-    "internalFocusing": true,
-    "weightG": 375,
-    "diameterMm": 67,
-    "length": {
-      "mm": 77.8
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 19
-      }
-    },
-    "maxMagnification": {
-      "value": 0.2
-    },
-    "angleOfView": 63.4,
-    "angleOfViewCalc": 63.2,
-    "apertureBladeCount": 9,
-    "releaseYear": 2021,
-    "searchAliases": {
-      "en": "Fujifilm XF 23mm f1.4 WR",
-      "zh": "富士 XF 23mm f1.4 WR"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 5840,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 1049.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "filterMm": 58,
-    "lensConfiguration": {
-      "groups": 10,
-      "elements": 15,
-      "aspherical": 2,
-      "ed": 3,
-      "sourceText": "15 elements in 10 groups (includes 2 aspherical and 3 ED elements)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf23mmf14-r-lm-wr/",
-      "global": "https://www.fujifilm-x.com/global/products/lenses/xf23mmf14-r-lm-wr/"
     }
   },
   {
@@ -6094,6 +5943,157 @@
     }
   },
   {
+    "id": "fujifilm-xf-23mmf14-r-lm-wr-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XF",
+    "model": "XF 23mm F1.4 R LM WR",
+    "focalLengthMin": 23,
+    "focalLengthMax": 23,
+    "maxAperture": 1.4,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": true,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "LM",
+    "internalFocusing": true,
+    "weightG": 375,
+    "diameterMm": 67,
+    "length": {
+      "mm": 77.8
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 19
+      }
+    },
+    "maxMagnification": {
+      "value": 0.2
+    },
+    "angleOfView": 63.4,
+    "angleOfViewCalc": 63.2,
+    "apertureBladeCount": 9,
+    "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Fujifilm XF 23mm f1.4 WR",
+      "zh": "富士 XF 23mm f1.4 WR"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 5840,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1049.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 15,
+      "aspherical": 2,
+      "ed": 3,
+      "sourceText": "15 elements in 10 groups (includes 2 aspherical and 3 ED elements)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf23mmf14-r-lm-wr/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xf23mmf14-r-lm-wr/"
+    }
+  },
+  {
+    "id": "fujifilm-xf-23mmf14-r-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XF",
+    "model": "XF 23mm F1.4 R",
+    "focalLengthMin": 23,
+    "focalLengthMax": 23,
+    "maxAperture": 1.4,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "weightG": 300,
+    "diameterMm": 72,
+    "length": {
+      "mm": 63
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 60
+      },
+      "macro": {
+        "cm": 28
+      }
+    },
+    "maxMagnification": {
+      "value": 0.1
+    },
+    "angleOfView": 63.4,
+    "angleOfViewCalc": 63.2,
+    "apertureBladeCount": 7,
+    "releaseYear": 2013,
+    "searchAliases": {
+      "en": "Fujifilm XF 23mm f1.4",
+      "zh": "富士 XF 23mm f1.4"
+    },
+    "pricing": {
+      "global": {
+        "new": {
+          "price": 899.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "compatibleMounts": [
+      "Fujifilm X"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 11,
+      "aspherical": 1,
+      "sourceText": "11 elements in 8 groups (includes 1 aspherical element)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf23mmf14-r/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xf23mmf14-r/"
+    }
+  },
+  {
     "id": "fujifilm-xf-23mmf28-r-wr-x",
     "brand": "fujifilm",
     "mount": "X",
@@ -6187,6 +6187,81 @@
     }
   },
   {
+    "id": "fujifilm-xf-27mmf28-r-wr-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XF",
+    "model": "XF 27mm F2.8 R WR",
+    "focalLengthMin": 27,
+    "focalLengthMax": 27,
+    "maxAperture": 2.8,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": true,
+    "apertureRing": true,
+    "powerZoom": false,
+    "weightG": 84,
+    "diameterMm": 62,
+    "length": {
+      "mm": 23
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 34
+      }
+    },
+    "maxMagnification": {
+      "value": 0.1
+    },
+    "angleOfView": 55.5,
+    "angleOfViewCalc": 55.3,
+    "apertureBladeCount": 7,
+    "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Fujifilm XF 27mm f2.8 WR",
+      "zh": "富士 XF 27mm f2.8 WR"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2690,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 449.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "filterMm": 39,
+    "lensConfiguration": {
+      "groups": 5,
+      "elements": 7,
+      "aspherical": 1,
+      "sourceText": "7 elements in 5 groups (includes 1 aspherical element)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf27mmf28-r-wr/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xf27mmf28-r-wr/"
+    }
+  },
+  {
     "id": "fujifilm-xf-27mmf28-x",
     "brand": "fujifilm",
     "mount": "X",
@@ -6265,81 +6340,6 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf27mmf28/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf27mmf28/"
-    }
-  },
-  {
-    "id": "fujifilm-xf-27mmf28-r-wr-x",
-    "brand": "fujifilm",
-    "mount": "X",
-    "series": "XF",
-    "model": "XF 27mm F2.8 R WR",
-    "focalLengthMin": 27,
-    "focalLengthMax": 27,
-    "maxAperture": 2.8,
-    "minAperture": 16,
-    "af": true,
-    "ois": false,
-    "wr": true,
-    "apertureRing": true,
-    "powerZoom": false,
-    "weightG": 84,
-    "diameterMm": 62,
-    "length": {
-      "mm": 23
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 34
-      }
-    },
-    "maxMagnification": {
-      "value": 0.1
-    },
-    "angleOfView": 55.5,
-    "angleOfViewCalc": 55.3,
-    "apertureBladeCount": 7,
-    "releaseYear": 2021,
-    "searchAliases": {
-      "en": "Fujifilm XF 27mm f2.8 WR",
-      "zh": "富士 XF 27mm f2.8 WR"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 2690,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 449.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "filterMm": 39,
-    "lensConfiguration": {
-      "groups": 5,
-      "elements": 7,
-      "aspherical": 1,
-      "sourceText": "7 elements in 5 groups (includes 1 aspherical element)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf27mmf28-r-wr/",
-      "global": "https://www.fujifilm-x.com/global/products/lenses/xf27mmf28-r-wr/"
     }
   },
   {
@@ -6502,6 +6502,99 @@
     }
   },
   {
+    "id": "fujifilm-xf-35mmf2-r-wr-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XF",
+    "model": "XF 35mm F2 R WR",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 2,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": true,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "STM",
+    "internalFocusing": true,
+    "weightG": 170,
+    "diameterMm": 60,
+    "length": {
+      "mm": 45.9
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 35
+      }
+    },
+    "maxMagnification": {
+      "value": 0.135
+    },
+    "angleOfView": 44.2,
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 9,
+    "releaseYear": 2015,
+    "searchAliases": {
+      "en": "Fujifilm XF 35mm f2 WR",
+      "zh": "富士 XF 35mm f2 WR"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 3390,
+          "currency": "CNY",
+          "source": "天猫·富士官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 449.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "accessories": [
+      "Lens cap FLCP-43",
+      "Lens rear cap RLCP-001",
+      "Lens hood",
+      "Wrapping cloth"
+    ],
+    "filterMm": 43,
+    "lensConfiguration": {
+      "groups": 6,
+      "elements": 9,
+      "aspherical": 2,
+      "sourceText": "9 elements in 6 groups (includes two aspherical elements)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf35mmf2-r-wr/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xf35mmf2-r-wr/"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖 FLCP-43",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "包裹布"
+        ]
+      }
+    }
+  },
+  {
     "id": "fujifilm-xf-35mmf14-r-x",
     "brand": "fujifilm",
     "mount": "X",
@@ -6591,99 +6684,6 @@
           "后镜头盖",
           "遮光罩",
           "遮光罩盖"
-        ]
-      }
-    }
-  },
-  {
-    "id": "fujifilm-xf-35mmf2-r-wr-x",
-    "brand": "fujifilm",
-    "mount": "X",
-    "series": "XF",
-    "model": "XF 35mm F2 R WR",
-    "focalLengthMin": 35,
-    "focalLengthMax": 35,
-    "maxAperture": 2,
-    "minAperture": 16,
-    "af": true,
-    "ois": false,
-    "wr": true,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "STM",
-    "internalFocusing": true,
-    "weightG": 170,
-    "diameterMm": 60,
-    "length": {
-      "mm": 45.9
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 35
-      }
-    },
-    "maxMagnification": {
-      "value": 0.135
-    },
-    "angleOfView": 44.2,
-    "angleOfViewCalc": 44,
-    "apertureBladeCount": 9,
-    "releaseYear": 2015,
-    "searchAliases": {
-      "en": "Fujifilm XF 35mm f2 WR",
-      "zh": "富士 XF 35mm f2 WR"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 3390,
-          "currency": "CNY",
-          "source": "天猫·富士官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 449.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "accessories": [
-      "Lens cap FLCP-43",
-      "Lens rear cap RLCP-001",
-      "Lens hood",
-      "Wrapping cloth"
-    ],
-    "filterMm": 43,
-    "lensConfiguration": {
-      "groups": 6,
-      "elements": 9,
-      "aspherical": 2,
-      "sourceText": "9 elements in 6 groups (includes two aspherical elements)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf35mmf2-r-wr/",
-      "global": "https://www.fujifilm-x.com/global/products/lenses/xf35mmf2-r-wr/"
-    },
-    "translations": {
-      "zh": {
-        "accessories": [
-          "前镜头盖 FLCP-43",
-          "后镜头盖 RLCP-001",
-          "遮光罩",
-          "包裹布"
         ]
       }
     }
@@ -6796,82 +6796,6 @@
     }
   },
   {
-    "id": "fujifilm-xf-50mmf10-r-wr-x",
-    "brand": "fujifilm",
-    "mount": "X",
-    "series": "XF",
-    "model": "XF 50mm F1.0 R WR",
-    "focalLengthMin": 50,
-    "focalLengthMax": 50,
-    "maxAperture": 1,
-    "minAperture": 16,
-    "af": true,
-    "ois": false,
-    "wr": true,
-    "apertureRing": true,
-    "powerZoom": false,
-    "weightG": 845,
-    "diameterMm": 87,
-    "length": {
-      "mm": 103.5
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 70
-      }
-    },
-    "maxMagnification": {
-      "value": 0.08
-    },
-    "angleOfView": 31.7,
-    "angleOfViewCalc": 31.6,
-    "apertureBladeCount": 9,
-    "releaseYear": 2020,
-    "searchAliases": {
-      "en": "Fujifilm XF 50mm f1.0 WR",
-      "zh": "富士 XF 50mm f1.0 WR"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 10490,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 1799.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "filterMm": 77,
-    "lensConfiguration": {
-      "groups": 9,
-      "elements": 12,
-      "aspherical": 1,
-      "ed": 2,
-      "sourceText": "12 elements in 9 groups (includes 1 aspherical, 2 ED elements)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf50mmf1-r-wr/",
-      "global": "https://www.fujifilm-x.com/global/products/lenses/xf50mmf1-r-wr/"
-    }
-  },
-  {
     "id": "fujifilm-xf-50mmf2-r-wr-x",
     "brand": "fujifilm",
     "mount": "X",
@@ -6963,6 +6887,82 @@
           "包裹布"
         ]
       }
+    }
+  },
+  {
+    "id": "fujifilm-xf-50mmf10-r-wr-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XF",
+    "model": "XF 50mm F1.0 R WR",
+    "focalLengthMin": 50,
+    "focalLengthMax": 50,
+    "maxAperture": 1,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": true,
+    "apertureRing": true,
+    "powerZoom": false,
+    "weightG": 845,
+    "diameterMm": 87,
+    "length": {
+      "mm": 103.5
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 70
+      }
+    },
+    "maxMagnification": {
+      "value": 0.08
+    },
+    "angleOfView": 31.7,
+    "angleOfViewCalc": 31.6,
+    "apertureBladeCount": 9,
+    "releaseYear": 2020,
+    "searchAliases": {
+      "en": "Fujifilm XF 50mm f1.0 WR",
+      "zh": "富士 XF 50mm f1.0 WR"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 10490,
+          "currency": "CNY",
+          "source": "京东·富士影像旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 1799.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 12,
+      "aspherical": 1,
+      "ed": 2,
+      "sourceText": "12 elements in 9 groups (includes 1 aspherical, 2 ED elements)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf50mmf1-r-wr/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xf50mmf1-r-wr/"
     }
   },
   {
@@ -7058,85 +7058,6 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf55-200mmf35-48-r-lm-ois/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf55-200mmf35-48-r-lm-ois/"
-    }
-  },
-  {
-    "id": "fujifilm-xf-56mmf12-r-x",
-    "brand": "fujifilm",
-    "mount": "X",
-    "series": "XF",
-    "model": "XF 56mm F1.2 R",
-    "focalLengthMin": 56,
-    "focalLengthMax": 56,
-    "maxAperture": 1.2,
-    "minAperture": 16,
-    "af": true,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "weightG": 405,
-    "diameterMm": 73.2,
-    "length": {
-      "mm": 69.7
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 70
-      }
-    },
-    "maxMagnification": {
-      "value": 0.09
-    },
-    "angleOfView": 28.5,
-    "angleOfViewCalc": 28.4,
-    "apertureBladeCount": 7,
-    "releaseYear": 2014,
-    "searchAliases": {
-      "en": "Fujifilm XF 56mm f1.2",
-      "zh": "富士 XF 56mm f1.2"
-    },
-    "pricing": {
-      "cn": {
-        "used": {
-          "price": 2350,
-          "currency": "CNY",
-          "source": "闲鱼",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 999.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "compatibleMounts": [
-      "Fujifilm X"
-    ],
-    "filterMm": 62,
-    "lensConfiguration": {
-      "groups": 8,
-      "elements": 11,
-      "aspherical": 1,
-      "ed": 2,
-      "sourceText": "11 elements in 8 groups (includes 1 aspherical and 2 extra low dispersion elements)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf56mmf12-r/",
-      "global": "https://www.fujifilm-x.com/global/products/lenses/xf56mmf12-r/"
     }
   },
   {
@@ -7319,6 +7240,85 @@
           "镜头包裹布"
         ]
       }
+    }
+  },
+  {
+    "id": "fujifilm-xf-56mmf12-r-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XF",
+    "model": "XF 56mm F1.2 R",
+    "focalLengthMin": 56,
+    "focalLengthMax": 56,
+    "maxAperture": 1.2,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "weightG": 405,
+    "diameterMm": 73.2,
+    "length": {
+      "mm": 69.7
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 70
+      }
+    },
+    "maxMagnification": {
+      "value": 0.09
+    },
+    "angleOfView": 28.5,
+    "angleOfViewCalc": 28.4,
+    "apertureBladeCount": 7,
+    "releaseYear": 2014,
+    "searchAliases": {
+      "en": "Fujifilm XF 56mm f1.2",
+      "zh": "富士 XF 56mm f1.2"
+    },
+    "pricing": {
+      "cn": {
+        "used": {
+          "price": 2350,
+          "currency": "CNY",
+          "source": "闲鱼",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 999.95,
+          "currency": "USD",
+          "source": "FUJIFILM Shop USA",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "compatibleMounts": [
+      "Fujifilm X"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 11,
+      "aspherical": 1,
+      "ed": 2,
+      "sourceText": "11 elements in 8 groups (includes 1 aspherical and 2 extra low dispersion elements)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf56mmf12-r/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xf56mmf12-r/"
     }
   },
   {
@@ -8075,98 +8075,6 @@
     }
   },
   {
-    "id": "laowa-cf-4p5-10mmf28-fisheye-zoom-x",
-    "brand": "laowa",
-    "mount": "X",
-    "model": "CF 4.5-10mm F2.8 Fisheye Zoom",
-    "focalLengthMin": 4.5,
-    "focalLengthMax": 10,
-    "maxAperture": 2.8,
-    "minAperture": 22,
-    "opticalTraits": [
-      "fisheye"
-    ],
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 330,
-    "diameterMm": 68.9,
-    "length": {
-      "mm": 59.3
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 10
-      }
-    },
-    "maxMagnification": {
-      "value": 0.27
-    },
-    "angleOfView": [
-      180,
-      175
-    ],
-    "angleOfViewCalc": [
-      144.7,
-      109.5
-    ],
-    "apertureBladeCount": 7,
-    "releaseYear": 2024,
-    "searchAliases": {
-      "en": "Laowa 4.5-10mm f2.8 Fisheye Zoom Fuji X",
-      "zh": "老蛙 4.5-10mm f2.8 Fisheye Zoom 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 2480,
-          "currency": "CNY",
-          "source": "天猫·老蛙旗舰店",
-          "sampledAt": "2026-05-18"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Nikon Z",
-      "Canon RF",
-      "Leica L",
-      "Fujifilm X",
-      "Canon EF-M",
-      "Micro Four Thirds"
-    ],
-    "filterMm": "N/A",
-    "lensConfiguration": {
-      "groups": 9,
-      "elements": 13
-    },
-    "fieldNotes": {
-      "weightG": "Value is from the Sony E-mount version; the X-mount variant may differ slightly.",
-      "diameterMm": "Value is from the Sony E-mount version; the X-mount variant may differ slightly.",
-      "filterMm": "Bulbous fisheye front element; no filter thread."
-    },
-    "officialLinks": {
-      "cn": "https://www.laowalens.com/camera-lens-97"
-    },
-    "translations": {
-      "zh": {
-        "fieldNotes": {
-          "weightG": "数值取自索尼 E 卡口版本；X 卡口版本可能略有差异。",
-          "diameterMm": "数值取自索尼 E 卡口版本；X 卡口版本可能略有差异。",
-          "filterMm": "灯泡状鱼眼前组镜片；无滤镜螺纹。"
-        }
-      }
-    }
-  },
-  {
     "id": "laowa-cf-4mmf28-210-circular-fisheye-x",
     "brand": "laowa",
     "mount": "X",
@@ -8255,6 +8163,98 @@
       "zh": {
         "fieldNotes": {
           "filterMm": "灯泡状圆周鱼眼前组镜片；无滤镜螺纹。"
+        }
+      }
+    }
+  },
+  {
+    "id": "laowa-cf-4p5-10mmf28-fisheye-zoom-x",
+    "brand": "laowa",
+    "mount": "X",
+    "model": "CF 4.5-10mm F2.8 Fisheye Zoom",
+    "focalLengthMin": 4.5,
+    "focalLengthMax": 10,
+    "maxAperture": 2.8,
+    "minAperture": 22,
+    "opticalTraits": [
+      "fisheye"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 330,
+    "diameterMm": 68.9,
+    "length": {
+      "mm": 59.3
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 10
+      }
+    },
+    "maxMagnification": {
+      "value": 0.27
+    },
+    "angleOfView": [
+      180,
+      175
+    ],
+    "angleOfViewCalc": [
+      144.7,
+      109.5
+    ],
+    "apertureBladeCount": 7,
+    "releaseYear": 2024,
+    "searchAliases": {
+      "en": "Laowa 4.5-10mm f2.8 Fisheye Zoom Fuji X",
+      "zh": "老蛙 4.5-10mm f2.8 Fisheye Zoom 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2480,
+          "currency": "CNY",
+          "source": "天猫·老蛙旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Nikon Z",
+      "Canon RF",
+      "Leica L",
+      "Fujifilm X",
+      "Canon EF-M",
+      "Micro Four Thirds"
+    ],
+    "filterMm": "N/A",
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 13
+    },
+    "fieldNotes": {
+      "weightG": "Value is from the Sony E-mount version; the X-mount variant may differ slightly.",
+      "diameterMm": "Value is from the Sony E-mount version; the X-mount variant may differ slightly.",
+      "filterMm": "Bulbous fisheye front element; no filter thread."
+    },
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-97"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "数值取自索尼 E 卡口版本；X 卡口版本可能略有差异。",
+          "diameterMm": "数值取自索尼 E 卡口版本；X 卡口版本可能略有差异。",
+          "filterMm": "灯泡状鱼眼前组镜片；无滤镜螺纹。"
         }
       }
     }
@@ -8627,182 +8627,6 @@
     }
   },
   {
-    "id": "laowa-cf-argus-25mm-f095-apo-x",
-    "brand": "laowa",
-    "mount": "X",
-    "series": "Argus",
-    "model": "CF 25mm F0.95 APO",
-    "focalLengthMin": 25,
-    "focalLengthMax": 25,
-    "maxAperture": 0.95,
-    "minAperture": 11,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 575,
-    "diameterMm": 71.5,
-    "length": {
-      "mm": 81
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 34
-      }
-    },
-    "maxMagnification": {
-      "value": 0.1
-    },
-    "angleOfView": 58.8,
-    "angleOfViewCalc": 59,
-    "apertureBladeCount": 9,
-    "releaseYear": 2022,
-    "searchAliases": {
-      "en": "Laowa Argus 25mm f0.95 APO Fuji X",
-      "zh": "老蛙 Argus 25mm f0.95 APO 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 3350,
-          "currency": "CNY",
-          "source": "天猫·老蛙旗舰店",
-          "sampledAt": "2026-05-18"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 549,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://www.venuslens.net/product/laowa-argus-25mm-f-0-95-apsc-apo/"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Nikon Z",
-      "Canon RF",
-      "Fujifilm X",
-      "Canon EF-M"
-    ],
-    "filterMm": 62,
-    "lensConfiguration": {
-      "groups": 9,
-      "elements": 14,
-      "aspherical": 1,
-      "ed": 1,
-      "highRefractive": 2,
-      "sourceText": "9 groups 14 elements (incl. 1 aspherical, 1 ED, 2 special high-refractive)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.laowalens.com/camera-lens-58"
-    }
-  },
-  {
-    "id": "laowa-cf-argus-33mmf095-x",
-    "brand": "laowa",
-    "mount": "X",
-    "series": "Argus",
-    "model": "CF 33mm F0.95",
-    "focalLengthMin": 33,
-    "focalLengthMax": 33,
-    "maxAperture": 0.95,
-    "minAperture": 11,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 590,
-    "diameterMm": 71.5,
-    "length": {
-      "mm": 83
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 35
-      }
-    },
-    "maxMagnification": {
-      "value": 0.125
-    },
-    "angleOfView": 46.2,
-    "angleOfViewCalc": 46.4,
-    "apertureBladeCount": 9,
-    "releaseYear": 2021,
-    "searchAliases": {
-      "en": "Laowa Argus 33mm f0.95 Fuji X",
-      "zh": "老蛙 Argus 33mm f0.95 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 2960,
-          "currency": "CNY",
-          "source": "京东·老蛙官方旗舰店",
-          "sampledAt": "2026-05-18"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 449,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        },
-        "used": {
-          "price": 400,
-          "currency": "USD",
-          "source": "eBay",
-          "sampledAt": "2026-05-18"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://www.venuslens.net/product/laowa-argus-33mm-f-0-95-cf-apo/"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Nikon Z",
-      "Canon RF",
-      "Canon EF-M"
-    ],
-    "filterMm": 62,
-    "lensConfiguration": {
-      "groups": 9,
-      "elements": 14,
-      "aspherical": 1,
-      "ed": 1,
-      "highRefractive": 3,
-      "sourceText": "9 groups 14 elements (incl. 1 aspherical, 1 ED, 3 special high-refractive)"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.laowalens.com/camera-lens-42"
-    }
-  },
-  {
     "id": "laowa-cf-65mmf28-ca-dreamer-macro-2x-x",
     "brand": "laowa",
     "mount": "X",
@@ -8896,177 +8720,179 @@
     }
   },
   {
-    "id": "sgimage-mf-12mm-f28-aps-c-ultra-wide-x",
-    "brand": "sgimage",
+    "id": "laowa-cf-argus-25mm-f095-apo-x",
+    "brand": "laowa",
     "mount": "X",
-    "model": "12mm F2.8",
-    "focalLengthMin": 12,
-    "focalLengthMax": 12,
-    "maxAperture": 2.8,
-    "minAperture": 16,
+    "series": "Argus",
+    "model": "CF Argus 25mm F0.95 APO",
+    "focalLengthMin": 25,
+    "focalLengthMax": 25,
+    "maxAperture": 0.95,
+    "minAperture": 11,
     "af": false,
     "ois": false,
     "wr": false,
     "apertureRing": true,
     "powerZoom": false,
     "focusMotor": "N/A",
-    "weightG": 334,
-    "diameterMm": 63,
+    "weightG": 575,
+    "diameterMm": 71.5,
     "length": {
-      "mm": 60
+      "mm": 81
     },
     "minFocusDistance": {
       "normal": {
-        "cm": 20
+        "cm": 34
       }
     },
-    "angleOfView": 98,
-    "angleOfViewCalc": 99.4,
-    "apertureBladeCount": 7,
+    "maxMagnification": {
+      "value": 0.1
+    },
+    "angleOfView": 58.8,
+    "angleOfViewCalc": 59,
+    "apertureBladeCount": 9,
+    "releaseYear": 2022,
     "searchAliases": {
-      "en": "SG Image 12mm f2.8 Fuji X",
-      "zh": "深光 12mm f2.8 富士"
+      "en": "Laowa Argus 25mm f0.95 APO Fuji X",
+      "zh": "老蛙 Argus 25mm f0.95 APO 富士"
     },
     "pricing": {
       "cn": {
         "new": {
-          "price": 558,
+          "price": 3350,
           "currency": "CNY",
-          "source": "京东·SGIMAGE影像旗舰店",
-          "sampledAt": "2026-05-08"
+          "source": "天猫·老蛙旗舰店",
+          "sampledAt": "2026-05-18"
         }
       },
       "global": {
         "new": {
-          "price": 138,
+          "price": 549,
           "currency": "USD",
-          "source": "sg-image.com",
-          "sampledAt": "2026-05-09"
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
         }
       }
     },
     "purchaseChannels": [
       {
-        "channel": "ebay"
-      },
-      {
         "channel": "official",
-        "url": "https://www.sg-image.com/products/mf-12mm-f2-8-aps-c-ultra-wide-lens-copy"
-      }
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": "N/A",
-    "lensConfiguration": {
-      "groups": 8,
-      "elements": 10,
-      "sourceText": "8组10片"
-    },
-    "fieldNotes": {
-      "filterMm": "Integrated lens hood design; no front filter thread."
-    },
-    "officialLinks": {
-      "cn": "https://www.sg-image.cn/pd.jsp?id=5",
-      "global": "https://www.sg-image.com/products/mf-12mm-f2-8-aps-c-ultra-wide-lens-copy"
-    },
-    "translations": {
-      "zh": {
-        "fieldNotes": {
-          "filterMm": "一体式遮光罩设计；无前置滤镜螺纹。"
-        },
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "sgimage-mf-24mm-f63-full-frame-ultra-slim-pancake-x",
-    "brand": "sgimage",
-    "mount": "X",
-    "model": "24mm F6.3",
-    "focalLengthMin": 24,
-    "focalLengthMax": 24,
-    "maxAperture": 6.3,
-    "minAperture": 6.3,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": false,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 74,
-    "diameterMm": 58,
-    "length": {
-      "mm": 16.7
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 25
-      }
-    },
-    "angleOfView": 76.2,
-    "angleOfViewCalc": 61,
-    "apertureBladeCount": "N/A",
-    "searchAliases": {
-      "en": "SG Image 24mm f6.3 Fuji X",
-      "zh": "深光 24mm f6.3 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 309,
-          "currency": "CNY",
-          "source": "京东·SGIMAGE影像旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 76,
-          "currency": "USD",
-          "source": "sg-image.com",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "ebay"
+        "url": "https://www.venuslens.net/product/laowa-argus-25mm-f-0-95-apsc-apo/"
       },
       {
-        "channel": "official",
-        "url": "https://www.sg-image.com/products/mf-24mm-f6-3-full-frame-ultra-slim-pancake-lens"
+        "channel": "bhphoto"
       }
     ],
     "compatibleMounts": [
-      "Leica L",
       "Sony E",
       "Nikon Z",
       "Canon RF",
-      "Fujifilm X"
+      "Fujifilm X",
+      "Canon EF-M"
     ],
-    "lensMaterial": "Metal",
-    "filterMm": 37,
+    "filterMm": 62,
     "lensConfiguration": {
-      "groups": 5,
-      "elements": 6,
-      "sourceText": "5组6片"
+      "groups": 9,
+      "elements": 14,
+      "aspherical": 1,
+      "ed": 1,
+      "highRefractive": 2,
+      "sourceText": "9 groups 14 elements (incl. 1 aspherical, 1 ED, 2 special high-refractive)"
     },
-    "fieldNotes": {
-      "filterMm": "49mm filters can be used when the optional lens hood is attached as an adapter",
-      "lensConfiguration": "Includes high-refractive-index glass elements; count not specified by manufacturer.",
-      "apertureBladeCount": "Fixed aperture; no diaphragm."
-    },
+    "fieldNotes": {},
     "officialLinks": {
-      "global": "https://www.sg-image.com/products/mf-24mm-f6-3-full-frame-ultra-slim-pancake-lens"
+      "cn": "https://www.laowalens.com/camera-lens-58"
+    }
+  },
+  {
+    "id": "laowa-cf-argus-33mmf095-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "Argus",
+    "model": "CF Argus 33mm F0.95",
+    "focalLengthMin": 33,
+    "focalLengthMax": 33,
+    "maxAperture": 0.95,
+    "minAperture": 11,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 590,
+    "diameterMm": 71.5,
+    "length": {
+      "mm": 83
     },
-    "translations": {
-      "zh": {
-        "fieldNotes": {
-          "filterMm": "安装可选遮光罩作为转接环时，可使用 49mm 滤镜",
-          "lensConfiguration": "包含高折射率玻璃镜片；厂家未注明数量。",
-          "apertureBladeCount": "固定光圈；无光圈机构。"
-        },
-        "lensMaterial": "金属"
+    "minFocusDistance": {
+      "normal": {
+        "cm": 35
       }
+    },
+    "maxMagnification": {
+      "value": 0.125
+    },
+    "angleOfView": 46.2,
+    "angleOfViewCalc": 46.4,
+    "apertureBladeCount": 9,
+    "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Laowa Argus 33mm f0.95 Fuji X",
+      "zh": "老蛙 Argus 33mm f0.95 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 2960,
+          "currency": "CNY",
+          "source": "京东·老蛙官方旗舰店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 449,
+          "currency": "USD",
+          "source": "venuslens.net",
+          "sampledAt": "2026-05-18"
+        },
+        "used": {
+          "price": 400,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "official",
+        "url": "https://www.venuslens.net/product/laowa-argus-33mm-f-0-95-cf-apo/"
+      },
+      {
+        "channel": "bhphoto"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Nikon Z",
+      "Canon RF",
+      "Canon EF-M"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 14,
+      "aspherical": 1,
+      "ed": 1,
+      "highRefractive": 3,
+      "sourceText": "9 groups 14 elements (incl. 1 aspherical, 1 ED, 3 special high-refractive)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-42"
     }
   },
   {
@@ -9325,6 +9151,88 @@
     }
   },
   {
+    "id": "sgimage-mf-12mm-f28-aps-c-ultra-wide-x",
+    "brand": "sgimage",
+    "mount": "X",
+    "model": "12mm F2.8",
+    "focalLengthMin": 12,
+    "focalLengthMax": 12,
+    "maxAperture": 2.8,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 334,
+    "diameterMm": 63,
+    "length": {
+      "mm": 60
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 20
+      }
+    },
+    "angleOfView": 98,
+    "angleOfViewCalc": 99.4,
+    "apertureBladeCount": 7,
+    "searchAliases": {
+      "en": "SG Image 12mm f2.8 Fuji X",
+      "zh": "深光 12mm f2.8 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 558,
+          "currency": "CNY",
+          "source": "京东·SGIMAGE影像旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 138,
+          "currency": "USD",
+          "source": "sg-image.com",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "ebay"
+      },
+      {
+        "channel": "official",
+        "url": "https://www.sg-image.com/products/mf-12mm-f2-8-aps-c-ultra-wide-lens-copy"
+      }
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": "N/A",
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 10,
+      "sourceText": "8组10片"
+    },
+    "fieldNotes": {
+      "filterMm": "Integrated lens hood design; no front filter thread."
+    },
+    "officialLinks": {
+      "cn": "https://www.sg-image.cn/pd.jsp?id=5",
+      "global": "https://www.sg-image.com/products/mf-12mm-f2-8-aps-c-ultra-wide-lens-copy"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "一体式遮光罩设计；无前置滤镜螺纹。"
+        },
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
     "id": "sgimage-mf-18mm-f63-aps-c-ultra-slim-pancake-lens-x",
     "brand": "sgimage",
     "mount": "X",
@@ -9408,6 +9316,98 @@
       "zh": {
         "fieldNotes": {
           "filterMm": "安装可选遮光罩作为转接环时，可使用 49mm 滤镜",
+          "apertureBladeCount": "固定光圈；无光圈机构。"
+        },
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "sgimage-mf-24mm-f63-full-frame-ultra-slim-pancake-x",
+    "brand": "sgimage",
+    "mount": "X",
+    "model": "24mm F6.3",
+    "focalLengthMin": 24,
+    "focalLengthMax": 24,
+    "maxAperture": 6.3,
+    "minAperture": 6.3,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 74,
+    "diameterMm": 58,
+    "length": {
+      "mm": 16.7
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 25
+      }
+    },
+    "angleOfView": 76.2,
+    "angleOfViewCalc": 61,
+    "apertureBladeCount": "N/A",
+    "searchAliases": {
+      "en": "SG Image 24mm f6.3 Fuji X",
+      "zh": "深光 24mm f6.3 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 309,
+          "currency": "CNY",
+          "source": "京东·SGIMAGE影像旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 76,
+          "currency": "USD",
+          "source": "sg-image.com",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "ebay"
+      },
+      {
+        "channel": "official",
+        "url": "https://www.sg-image.com/products/mf-24mm-f6-3-full-frame-ultra-slim-pancake-lens"
+      }
+    ],
+    "compatibleMounts": [
+      "Leica L",
+      "Sony E",
+      "Nikon Z",
+      "Canon RF",
+      "Fujifilm X"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 37,
+    "lensConfiguration": {
+      "groups": 5,
+      "elements": 6,
+      "sourceText": "5组6片"
+    },
+    "fieldNotes": {
+      "filterMm": "49mm filters can be used when the optional lens hood is attached as an adapter",
+      "lensConfiguration": "Includes high-refractive-index glass elements; count not specified by manufacturer.",
+      "apertureBladeCount": "Fixed aperture; no diaphragm."
+    },
+    "officialLinks": {
+      "global": "https://www.sg-image.com/products/mf-24mm-f6-3-full-frame-ultra-slim-pancake-lens"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "filterMm": "安装可选遮光罩作为转接环时，可使用 49mm 滤镜",
+          "lensConfiguration": "包含高折射率玻璃镜片；厂家未注明数量。",
           "apertureBladeCount": "固定光圈；无光圈机构。"
         },
         "lensMaterial": "金属"
@@ -9501,91 +9501,6 @@
     }
   },
   {
-    "id": "sgimage-mf-35mm-f095-ultra-bright-aps-c-lens-x",
-    "brand": "sgimage",
-    "mount": "X",
-    "model": "MF 35mm F0.95",
-    "focalLengthMin": 35,
-    "focalLengthMax": 35,
-    "maxAperture": 0.95,
-    "minAperture": 16,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 393,
-    "diameterMm": 55,
-    "length": {
-      "mm": 63
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 35
-      }
-    },
-    "angleOfView": 44,
-    "angleOfViewCalc": 44,
-    "apertureBladeCount": 12,
-    "searchAliases": {
-      "en": "SG Image 35mm f0.95 Fuji X",
-      "zh": "深光 35mm f0.95 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 853,
-          "currency": "CNY",
-          "source": "京东·SGIMAGE影像旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 228,
-          "currency": "USD",
-          "source": "sg-image.com",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "ebay"
-      },
-      {
-        "channel": "official",
-        "url": "https://www.sg-image.com/products/mf-35mm-f0-95-ultra-bright-aps-c-lens"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Micro Four Thirds",
-      "Fujifilm X",
-      "Canon RF",
-      "Canon EF-M",
-      "Leica L",
-      "Nikon Z"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 52,
-    "lensConfiguration": {
-      "groups": 9,
-      "elements": 12
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.sg-image.cn/pd.jsp?id=20",
-      "global": "https://www.sg-image.com/products/mf-35mm-f0-95-ultra-bright-aps-c-lens"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
     "id": "sgimage-mf-35mm-f12-aps-c-lens-x",
     "brand": "sgimage",
     "mount": "X",
@@ -9664,6 +9579,91 @@
     "officialLinks": {
       "cn": "https://www.sg-image.cn/pd.jsp?id=3",
       "global": "https://www.sg-image.com/products/mf-35mm-f1-2-aps-c-lens"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "sgimage-mf-35mm-f095-ultra-bright-aps-c-lens-x",
+    "brand": "sgimage",
+    "mount": "X",
+    "model": "MF 35mm F0.95",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 0.95,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 393,
+    "diameterMm": 55,
+    "length": {
+      "mm": 63
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 35
+      }
+    },
+    "angleOfView": 44,
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 12,
+    "searchAliases": {
+      "en": "SG Image 35mm f0.95 Fuji X",
+      "zh": "深光 35mm f0.95 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 853,
+          "currency": "CNY",
+          "source": "京东·SGIMAGE影像旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 228,
+          "currency": "USD",
+          "source": "sg-image.com",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "ebay"
+      },
+      {
+        "channel": "official",
+        "url": "https://www.sg-image.com/products/mf-35mm-f0-95-ultra-bright-aps-c-lens"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Micro Four Thirds",
+      "Fujifilm X",
+      "Canon RF",
+      "Canon EF-M",
+      "Leica L",
+      "Nikon Z"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 52,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 12
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.sg-image.cn/pd.jsp?id=20",
+      "global": "https://www.sg-image.com/products/mf-35mm-f0-95-ultra-bright-aps-c-lens"
     },
     "translations": {
       "zh": {
@@ -9848,11 +9848,121 @@
     }
   },
   {
+    "id": "sigma-art-17-40mm-f18-dc-x",
+    "brand": "sigma",
+    "mount": "X",
+    "series": "Art",
+    "model": "17-40mm F1.8 DC | Art",
+    "focalLengthMin": 17,
+    "focalLengthMax": 40,
+    "maxAperture": 1.8,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": "partial",
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "HLA",
+    "weightG": 530,
+    "diameterMm": 72.9,
+    "length": {
+      "mm": 118.2
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 28
+      }
+    },
+    "maxMagnification": {
+      "value": 0.21
+    },
+    "angleOfView": [
+      79.7,
+      39.1
+    ],
+    "angleOfViewCalc": [
+      79.5,
+      39
+    ],
+    "apertureBladeCount": 11,
+    "releaseYear": 2025,
+    "searchAliases": {
+      "en": "Sigma 17-40mm f1.8 Art Fuji X",
+      "zh": "适马 17-40mm f1.8 Art 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 5999,
+          "currency": "CNY",
+          "source": "天猫·sigma旗舰店",
+          "sampledAt": "2026-05-09"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 919,
+          "currency": "USD",
+          "source": "sigmaphoto.com",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "compatibleMounts": [
+      "L-Mount",
+      "Canon RF",
+      "Fujifilm X",
+      "Sony E"
+    ],
+    "accessories": [
+      "Pouch",
+      "Lens hood LH728-02",
+      "Front cap LCF-67 IV",
+      "Rear cap LCR III"
+    ],
+    "filterMm": 67,
+    "lensConfiguration": {
+      "groups": 11,
+      "elements": 17,
+      "aspherical": 4,
+      "sld": 4,
+      "sourceText": "17 elements in 11 groups (4 SLD, 4 aspherical elements)"
+    },
+    "fieldNotes": {
+      "wr": "Dust and splash resistant only; not fully sealed."
+    },
+    "officialLinks": {
+      "cn": "http://www.sigma-photo.com.cn/product/detail?id=642",
+      "global": "https://www.sigma-global.com/en/lenses/a025_17_40_18/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "仅防尘防溅；并非完整密封。"
+        },
+        "accessories": [
+          "镜头袋",
+          "遮光罩 LH728-02",
+          "前镜头盖 LCF-67 IV",
+          "后镜头盖 LCR III"
+        ]
+      }
+    }
+  },
+  {
     "id": "sigma-contemporary-10-18mm-f28-dc-dn-x",
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "10-18mm F2.8 DC DN",
+    "model": "10-18mm F2.8 DC DN | Contemporary",
     "focalLengthMin": 10,
     "focalLengthMax": 18,
     "maxAperture": 2.8,
@@ -9961,7 +10071,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "12mm F1.4 DC",
+    "model": "12mm F1.4 DC | Contemporary",
     "focalLengthMin": 12,
     "focalLengthMax": 12,
     "maxAperture": 1.4,
@@ -10064,7 +10174,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "15mm F1.4 DC",
+    "model": "15mm F1.4 DC | Contemporary",
     "focalLengthMin": 15,
     "focalLengthMax": 15,
     "maxAperture": 1.4,
@@ -10168,7 +10278,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "16-300mm F3.5-6.7 DC OS",
+    "model": "16-300mm F3.5-6.7 DC OS | Contemporary",
     "focalLengthMin": 16,
     "focalLengthMax": 300,
     "maxAperture": [
@@ -10292,7 +10402,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "16mm F1.4 DC DN",
+    "model": "16mm F1.4 DC DN | Contemporary",
     "focalLengthMin": 16,
     "focalLengthMax": 16,
     "maxAperture": 1.4,
@@ -10391,121 +10501,11 @@
     }
   },
   {
-    "id": "sigma-art-17-40mm-f18-dc-x",
-    "brand": "sigma",
-    "mount": "X",
-    "series": "Art",
-    "model": "17-40mm F1.8 DC",
-    "focalLengthMin": 17,
-    "focalLengthMax": 40,
-    "maxAperture": 1.8,
-    "minAperture": 16,
-    "af": true,
-    "ois": false,
-    "wr": "partial",
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "HLA",
-    "weightG": 530,
-    "diameterMm": 72.9,
-    "length": {
-      "mm": 118.2
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 28
-      }
-    },
-    "maxMagnification": {
-      "value": 0.21
-    },
-    "angleOfView": [
-      79.7,
-      39.1
-    ],
-    "angleOfViewCalc": [
-      79.5,
-      39
-    ],
-    "apertureBladeCount": 11,
-    "releaseYear": 2025,
-    "searchAliases": {
-      "en": "Sigma 17-40mm f1.8 Art Fuji X",
-      "zh": "适马 17-40mm f1.8 Art 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 5999,
-          "currency": "CNY",
-          "source": "天猫·sigma旗舰店",
-          "sampledAt": "2026-05-09"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 919,
-          "currency": "USD",
-          "source": "sigmaphoto.com",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "compatibleMounts": [
-      "L-Mount",
-      "Canon RF",
-      "Fujifilm X",
-      "Sony E"
-    ],
-    "accessories": [
-      "Pouch",
-      "Lens hood LH728-02",
-      "Front cap LCF-67 IV",
-      "Rear cap LCR III"
-    ],
-    "filterMm": 67,
-    "lensConfiguration": {
-      "groups": 11,
-      "elements": 17,
-      "aspherical": 4,
-      "sld": 4,
-      "sourceText": "17 elements in 11 groups (4 SLD, 4 aspherical elements)"
-    },
-    "fieldNotes": {
-      "wr": "Dust and splash resistant only; not fully sealed."
-    },
-    "officialLinks": {
-      "cn": "http://www.sigma-photo.com.cn/product/detail?id=642",
-      "global": "https://www.sigma-global.com/en/lenses/a025_17_40_18/"
-    },
-    "translations": {
-      "zh": {
-        "fieldNotes": {
-          "wr": "仅防尘防溅；并非完整密封。"
-        },
-        "accessories": [
-          "镜头袋",
-          "遮光罩 LH728-02",
-          "前镜头盖 LCF-67 IV",
-          "后镜头盖 LCR III"
-        ]
-      }
-    }
-  },
-  {
     "id": "sigma-contemporary-18-50mm-f28-dc-dn-x",
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "18-50mm F2.8 DC DN",
+    "model": "18-50mm F2.8 DC DN | Contemporary",
     "focalLengthMin": 18,
     "focalLengthMax": 50,
     "maxAperture": 2.8,
@@ -10613,7 +10613,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "23mm F1.4 DC DN",
+    "model": "23mm F1.4 DC DN | Contemporary",
     "focalLengthMin": 23,
     "focalLengthMax": 23,
     "maxAperture": 1.4,
@@ -10709,7 +10709,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "30mm F1.4 DC DN",
+    "model": "30mm F1.4 DC DN | Contemporary",
     "focalLengthMin": 30,
     "focalLengthMax": 30,
     "maxAperture": 1.4,
@@ -10806,7 +10806,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "56mm F1.4 DC DN",
+    "model": "56mm F1.4 DC DN | Contemporary",
     "focalLengthMin": 56,
     "focalLengthMax": 56,
     "maxAperture": 1.4,
@@ -10903,7 +10903,7 @@
     "brand": "sigma",
     "mount": "X",
     "series": "Contemporary",
-    "model": "100-400mm F5-6.3 DG DN OS",
+    "model": "100-400mm F5-6.3 DG DN OS | Contemporary",
     "focalLengthMin": 100,
     "focalLengthMax": 400,
     "maxAperture": [
@@ -12630,6 +12630,91 @@
     }
   },
   {
+    "id": "ttartisan-aps-c-35mm-f14-x",
+    "brand": "ttartisan",
+    "mount": "X",
+    "model": "APS-C 35mm F1.4",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 1.4,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 180,
+    "diameterMm": 56,
+    "length": {
+      "mm": 44
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 28
+      }
+    },
+    "angleOfView": 45,
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "TTArtisan 35mm f1.4 Fuji X",
+      "zh": "铭匠 35mm f1.4 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 364,
+          "currency": "CNY",
+          "source": "京东·铭匠官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 80,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "official",
+        "url": "https://ttartisan.store/products/aps-c-35mm-f1-4"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Nikon Z",
+      "Canon RF",
+      "Leica L",
+      "Canon EF-M",
+      "Micro Four Thirds"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 39,
+    "lensConfiguration": {
+      "groups": 6,
+      "elements": 7
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://cn.ttartisan.com/?list-10/aps-c35.html",
+      "global": "https://www.ttartisan.com/?aps-c-lenses/71.html"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
     "id": "ttartisan-aps-c-35mm-f095-x",
     "brand": "ttartisan",
     "mount": "X",
@@ -12708,91 +12793,6 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/257.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/70.html"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
-    "id": "ttartisan-aps-c-35mm-f14-x",
-    "brand": "ttartisan",
-    "mount": "X",
-    "model": "APS-C 35mm F1.4",
-    "focalLengthMin": 35,
-    "focalLengthMax": 35,
-    "maxAperture": 1.4,
-    "minAperture": 16,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 180,
-    "diameterMm": 56,
-    "length": {
-      "mm": 44
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 28
-      }
-    },
-    "angleOfView": 45,
-    "angleOfViewCalc": 44,
-    "apertureBladeCount": 10,
-    "searchAliases": {
-      "en": "TTArtisan 35mm f1.4 Fuji X",
-      "zh": "铭匠 35mm f1.4 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 364,
-          "currency": "CNY",
-          "source": "京东·铭匠官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 80,
-          "currency": "USD",
-          "source": "ttartisan.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "official",
-        "url": "https://ttartisan.store/products/aps-c-35mm-f1-4"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Nikon Z",
-      "Canon RF",
-      "Leica L",
-      "Canon EF-M",
-      "Micro Four Thirds"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 39,
-    "lensConfiguration": {
-      "groups": 6,
-      "elements": 7
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://cn.ttartisan.com/?list-10/aps-c35.html",
-      "global": "https://www.ttartisan.com/?aps-c-lenses/71.html"
     },
     "translations": {
       "zh": {
@@ -12894,90 +12894,6 @@
     }
   },
   {
-    "id": "ttartisan-aps-c-50mm-f095-x",
-    "brand": "ttartisan",
-    "mount": "X",
-    "model": "APS-C 50mm F0.95",
-    "focalLengthMin": 50,
-    "focalLengthMax": 50,
-    "maxAperture": 0.95,
-    "minAperture": 16,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 411,
-    "diameterMm": 64,
-    "length": {
-      "mm": 63
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 50
-      }
-    },
-    "angleOfView": 32,
-    "angleOfViewCalc": 31.6,
-    "apertureBladeCount": 10,
-    "searchAliases": {
-      "en": "TTArtisan 50mm f0.95 Fuji X",
-      "zh": "铭匠 50mm f0.95 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 1056,
-          "currency": "CNY",
-          "source": "京东·铭匠官方旗舰店",
-          "sampledAt": "2026-05-08"
-        }
-      },
-      "global": {
-        "new": {
-          "price": 218,
-          "currency": "USD",
-          "source": "ttartisan.store",
-          "sampledAt": "2026-05-09"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "official",
-        "url": "https://ttartisan.store/products/aps-c-50mm-f0-95"
-      }
-    ],
-    "compatibleMounts": [
-      "Sony E",
-      "Fujifilm X",
-      "Nikon Z",
-      "Canon RF",
-      "Leica L",
-      "Micro Four Thirds"
-    ],
-    "lensMaterial": "Metal",
-    "filterMm": 58,
-    "lensConfiguration": {
-      "groups": 6,
-      "elements": 8
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://cn.ttartisan.com/?list-10/245.html",
-      "global": "https://www.ttartisan.com/?aps-c-lenses/77.html"
-    },
-    "translations": {
-      "zh": {
-        "lensMaterial": "金属"
-      }
-    }
-  },
-  {
     "id": "ttartisan-aps-c-50mm-f12-x",
     "brand": "ttartisan",
     "mount": "X",
@@ -13055,6 +12971,90 @@
     "officialLinks": {
       "cn": "https://cn.ttartisan.com/?list-10/aps-c50.html",
       "global": "https://www.ttartisan.com/?aps-c-lenses/73.html"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "ttartisan-aps-c-50mm-f095-x",
+    "brand": "ttartisan",
+    "mount": "X",
+    "model": "APS-C 50mm F0.95",
+    "focalLengthMin": 50,
+    "focalLengthMax": 50,
+    "maxAperture": 0.95,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 411,
+    "diameterMm": 64,
+    "length": {
+      "mm": 63
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 50
+      }
+    },
+    "angleOfView": 32,
+    "angleOfViewCalc": 31.6,
+    "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "TTArtisan 50mm f0.95 Fuji X",
+      "zh": "铭匠 50mm f0.95 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 1056,
+          "currency": "CNY",
+          "source": "京东·铭匠官方旗舰店",
+          "sampledAt": "2026-05-08"
+        }
+      },
+      "global": {
+        "new": {
+          "price": 218,
+          "currency": "USD",
+          "source": "ttartisan.store",
+          "sampledAt": "2026-05-09"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "official",
+        "url": "https://ttartisan.store/products/aps-c-50mm-f0-95"
+      }
+    ],
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X",
+      "Nikon Z",
+      "Canon RF",
+      "Leica L",
+      "Micro Four Thirds"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 6,
+      "elements": 8
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://cn.ttartisan.com/?list-10/245.html",
+      "global": "https://www.ttartisan.com/?aps-c-lenses/77.html"
     },
     "translations": {
       "zh": {
@@ -13354,7 +13354,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Air",
-    "model": "AF 9mm F2.8",
+    "model": "AF 9mm F2.8 Air",
     "focalLengthMin": 9,
     "focalLengthMax": 9,
     "maxAperture": 2.8,
@@ -13535,7 +13535,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Air",
-    "model": "AF 15mm F1.7",
+    "model": "AF 15mm F1.7 Air",
     "focalLengthMin": 15,
     "focalLengthMax": 15,
     "maxAperture": 1.7,
@@ -13715,7 +13715,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Air",
-    "model": "AF 25mm F1.7",
+    "model": "AF 25mm F1.7 Air",
     "focalLengthMin": 25,
     "focalLengthMax": 25,
     "maxAperture": 1.7,
@@ -13795,7 +13795,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Pro",
-    "model": "AF 27mm F1.2",
+    "model": "AF 27mm F1.2 Pro",
     "focalLengthMin": 27,
     "focalLengthMax": 27,
     "maxAperture": 1.2,
@@ -14052,7 +14052,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Air",
-    "model": "AF 35mm F1.7",
+    "model": "AF 35mm F1.7 Air",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
     "maxAperture": 1.7,
@@ -14135,7 +14135,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Pro",
-    "model": "AF 56mm F1.2",
+    "model": "AF 56mm F1.2 Pro",
     "focalLengthMin": 56,
     "focalLengthMax": 56,
     "maxAperture": 1.2,
@@ -14300,7 +14300,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Air",
-    "model": "AF 56mm F1.7",
+    "model": "AF 56mm F1.7 Air",
     "focalLengthMin": 56,
     "focalLengthMax": 56,
     "maxAperture": 1.7,
@@ -14381,7 +14381,7 @@
     "brand": "viltrox",
     "mount": "X",
     "series": "Pro",
-    "model": "AF 75mm F1.2",
+    "model": "AF 75mm F1.2 Pro",
     "focalLengthMin": 75,
     "focalLengthMax": 75,
     "maxAperture": 1.2,
@@ -14553,7 +14553,7 @@
     "brand": "voigtlander",
     "mount": "X",
     "series": "Color Skopar",
-    "model": "18mm F2.8 aspherical",
+    "model": "COLOR SKOPAR 18mm F2.8 aspherical",
     "focalLengthMin": 18,
     "focalLengthMax": 18,
     "maxAperture": 2.8,
@@ -14645,7 +14645,7 @@
     "brand": "voigtlander",
     "mount": "X",
     "series": "Nokton",
-    "model": "23mm F1.2 aspherical",
+    "model": "Nokton 23mm F1.2 aspherical",
     "focalLengthMin": 23,
     "focalLengthMax": 23,
     "maxAperture": 1.2,
@@ -14731,7 +14731,7 @@
     "brand": "voigtlander",
     "mount": "X",
     "series": "Ultron",
-    "model": "27mm F2.0",
+    "model": "27mm F2.0 Ultron",
     "focalLengthMin": 27,
     "focalLengthMax": 27,
     "maxAperture": 2,
@@ -14816,190 +14816,11 @@
     }
   },
   {
-    "id": "voigtlander-35mm-f09-nokton-aspherical-x",
-    "brand": "voigtlander",
-    "mount": "X",
-    "series": "Nokton",
-    "model": "35mm F0.9 aspherical",
-    "focalLengthMin": 35,
-    "focalLengthMax": 35,
-    "maxAperture": 0.9,
-    "minAperture": 22,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 492,
-    "diameterMm": 72.7,
-    "length": {
-      "mm": 64.9
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 35
-      }
-    },
-    "angleOfView": 43.8,
-    "angleOfViewCalc": 44,
-    "apertureBladeCount": 12,
-    "releaseYear": 2023,
-    "searchAliases": {
-      "en": "Voigtlander Nokton 35mm f0.9 Fuji X",
-      "zh": "福伦达 Nokton 35mm f0.9 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 13300,
-          "currency": "CNY",
-          "source": "京东·福伦达摄影器材店",
-          "sampledAt": "2026-05-18"
-        }
-      },
-      "global": {
-        "used": {
-          "price": 1358,
-          "currency": "USD",
-          "source": "eBay",
-          "sampledAt": "2026-05-18"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "accessories": [
-      "Lens cap",
-      "Rear cap",
-      "Lens hood"
-    ],
-    "filterMm": 62,
-    "lensConfiguration": {
-      "groups": 8,
-      "elements": 10,
-      "aspherical": 2,
-      "highRefractive": 1,
-      "sourceText": "10 lenses in 8 groups"
-    },
-    "fieldNotes": {
-      "lensConfiguration": "Includes 1 GA (Ground Aspherical) element made of high-refractive-index glass — this single element is counted both as aspherical and as high-refractive."
-    },
-    "officialLinks": {
-      "cn": "https://www.voigtlaender.de/lenses/x-mount/35mm-109-nokton/?lang=en",
-      "global": "https://www.voigtlaender.de/lenses/x-mount/35mm-109-nokton/?lang=en"
-    },
-    "translations": {
-      "zh": {
-        "fieldNotes": {
-          "lensConfiguration": "包含 1 片 GA（Ground Aspherical）研磨非球面镜片，材质为高折射率玻璃——这片镜片在非球面与高折射率两类统计中各计入一次。"
-        },
-        "accessories": [
-          "前镜头盖",
-          "后镜头盖",
-          "遮光罩"
-        ]
-      }
-    }
-  },
-  {
-    "id": "voigtlander-35mm-f12-nokton-x",
-    "brand": "voigtlander",
-    "mount": "X",
-    "series": "Nokton",
-    "model": "35mm F1.2",
-    "focalLengthMin": 35,
-    "focalLengthMax": 35,
-    "maxAperture": 1.2,
-    "minAperture": 16,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": false,
-    "focusMotor": "N/A",
-    "weightG": 196,
-    "diameterMm": 69.6,
-    "length": {
-      "mm": 39.8
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 30
-      }
-    },
-    "angleOfView": 44,
-    "angleOfViewCalc": 44,
-    "apertureBladeCount": 12,
-    "releaseYear": 2021,
-    "searchAliases": {
-      "en": "Voigtlander Nokton 35mm f1.2 Fuji X",
-      "zh": "福伦达 Nokton 35mm f1.2 富士"
-    },
-    "pricing": {
-      "cn": {
-        "new": {
-          "price": 5030,
-          "currency": "CNY",
-          "source": "京东·福伦达摄影器材店",
-          "sampledAt": "2026-05-18"
-        }
-      },
-      "global": {
-        "used": {
-          "price": 499.99,
-          "currency": "USD",
-          "source": "eBay",
-          "sampledAt": "2026-05-18"
-        }
-      }
-    },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
-    "accessories": [
-      "Lens cap",
-      "Rear cap",
-      "Lens hood"
-    ],
-    "filterMm": 46,
-    "lensConfiguration": {
-      "groups": 6,
-      "elements": 8,
-      "sourceText": "8 lenses in 6 groups"
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://www.voigtlaender.de/lenses/x-mount/35-mm-11-2-nokton/?lang=en",
-      "global": "https://www.voigtlaender.de/lenses/x-mount/35-mm-11-2-nokton/?lang=en"
-    },
-    "translations": {
-      "zh": {
-        "accessories": [
-          "前镜头盖",
-          "后镜头盖",
-          "遮光罩"
-        ]
-      }
-    }
-  },
-  {
     "id": "voigtlander-35mm-f2-macro-apo-ultron-x",
     "brand": "voigtlander",
     "mount": "X",
     "series": "Macro APO-Ultron",
-    "model": "35mm F2.0",
+    "model": "35mm F2.0 Macro APO-Ultron",
     "focalLengthMin": 35,
     "focalLengthMax": 35,
     "maxAperture": 2,
@@ -15093,11 +14914,190 @@
     }
   },
   {
+    "id": "voigtlander-35mm-f09-nokton-aspherical-x",
+    "brand": "voigtlander",
+    "mount": "X",
+    "series": "Nokton",
+    "model": "NOKTON 35mm F0.9 aspherical",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 0.9,
+    "minAperture": 22,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 492,
+    "diameterMm": 72.7,
+    "length": {
+      "mm": 64.9
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 35
+      }
+    },
+    "angleOfView": 43.8,
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 12,
+    "releaseYear": 2023,
+    "searchAliases": {
+      "en": "Voigtlander Nokton 35mm f0.9 Fuji X",
+      "zh": "福伦达 Nokton 35mm f0.9 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 13300,
+          "currency": "CNY",
+          "source": "京东·福伦达摄影器材店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 1358,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "accessories": [
+      "Lens cap",
+      "Rear cap",
+      "Lens hood"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 10,
+      "aspherical": 2,
+      "highRefractive": 1,
+      "sourceText": "10 lenses in 8 groups"
+    },
+    "fieldNotes": {
+      "lensConfiguration": "Includes 1 GA (Ground Aspherical) element made of high-refractive-index glass — this single element is counted both as aspherical and as high-refractive."
+    },
+    "officialLinks": {
+      "cn": "https://www.voigtlaender.de/lenses/x-mount/35mm-109-nokton/?lang=en",
+      "global": "https://www.voigtlaender.de/lenses/x-mount/35mm-109-nokton/?lang=en"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "lensConfiguration": "包含 1 片 GA（Ground Aspherical）研磨非球面镜片，材质为高折射率玻璃——这片镜片在非球面与高折射率两类统计中各计入一次。"
+        },
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "遮光罩"
+        ]
+      }
+    }
+  },
+  {
+    "id": "voigtlander-35mm-f12-nokton-x",
+    "brand": "voigtlander",
+    "mount": "X",
+    "series": "Nokton",
+    "model": "Nokton 35mm F1.2",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 1.2,
+    "minAperture": 16,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": false,
+    "focusMotor": "N/A",
+    "weightG": 196,
+    "diameterMm": 69.6,
+    "length": {
+      "mm": 39.8
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 30
+      }
+    },
+    "angleOfView": 44,
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 12,
+    "releaseYear": 2021,
+    "searchAliases": {
+      "en": "Voigtlander Nokton 35mm f1.2 Fuji X",
+      "zh": "福伦达 Nokton 35mm f1.2 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": {
+          "price": 5030,
+          "currency": "CNY",
+          "source": "京东·福伦达摄影器材店",
+          "sampledAt": "2026-05-18"
+        }
+      },
+      "global": {
+        "used": {
+          "price": 499.99,
+          "currency": "USD",
+          "source": "eBay",
+          "sampledAt": "2026-05-18"
+        }
+      }
+    },
+    "purchaseChannels": [
+      {
+        "channel": "bhphoto"
+      },
+      {
+        "channel": "ebay"
+      }
+    ],
+    "accessories": [
+      "Lens cap",
+      "Rear cap",
+      "Lens hood"
+    ],
+    "filterMm": 46,
+    "lensConfiguration": {
+      "groups": 6,
+      "elements": 8,
+      "sourceText": "8 lenses in 6 groups"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.voigtlaender.de/lenses/x-mount/35-mm-11-2-nokton/?lang=en",
+      "global": "https://www.voigtlaender.de/lenses/x-mount/35-mm-11-2-nokton/?lang=en"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "遮光罩"
+        ]
+      }
+    }
+  },
+  {
     "id": "voigtlander-50mm-f12-nokton-x",
     "brand": "voigtlander",
     "mount": "X",
     "series": "Nokton",
-    "model": "50mm F1.2",
+    "model": "NOKTON 50mm F1.2",
     "focalLengthMin": 50,
     "focalLengthMax": 50,
     "maxAperture": 1.2,
