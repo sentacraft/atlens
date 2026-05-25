@@ -495,5 +495,11 @@
     "whereToBuy": "购买渠道",
     "buyAt": "购买",
     "disclosureDetail": "部分购买链接含电商平台合作。你的购买价格不受任何影响，但 X-Glass 可能从中获得少量佣金。"
+  },
+  "Collection": {
+    "stats": "{count} 支镜头 · {brandCount} 个品牌",
+    "metaPrefix": "{count} 支镜头，{brandCount} 个品牌。",
+    "browseAll": "浏览完整 X 卡口镜头库",
+    "relatedCollections": "相关专题"
   }
 }

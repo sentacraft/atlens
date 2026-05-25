@@ -495,5 +495,11 @@
     "whereToBuy": "Where to buy",
     "buyAt": "Buy at",
     "disclosureDetail": "Some retailer links are affiliate. X-Glass may earn a small commission at no extra cost to you."
+  },
+  "Collection": {
+    "stats": "{count} lenses · {brandCount} brands",
+    "metaPrefix": "{count} lenses from {brandCount} brands.",
+    "browseAll": "Browse the full X-mount library",
+    "relatedCollections": "Related collections"
   }
 }
