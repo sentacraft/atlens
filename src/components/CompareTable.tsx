@@ -11,19 +11,17 @@ import { useNavLock } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { ChevronLeft, ChevronRight, Flag, TriangleAlert, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, TriangleAlert, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ICON_CLOSE_BTN_CLS, TEXT_LINK_CLS } from "@/lib/ui-tokens";
+import { ICON_CLOSE_BTN_CLS } from "@/lib/ui-tokens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import SpecialtyBadges from "@/components/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens-specialty";
-import FeedbackTrigger from "@/components/FeedbackTrigger";
-import type { FeedbackField } from "@/components/FeedbackDialog";
 import { useCompare } from "@/context/CompareProvider";
 import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
 import { useCompareUrlSync } from "@/hooks/useCompareUrlSync";
-import { getLensesByMount, getLensUrl, MAX_COMPARE } from "@/lib/lens";
+import { getLensesByMount, MAX_COMPARE } from "@/lib/lens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import LensSearchDialog from "@/components/LensSearchDialog";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
@@ -32,10 +30,9 @@ import type { StructuredLine, ResolvedSpecRow } from "@/lib/lens-spec-groups";
 import type { Lens } from "@/lib/types";
 import { PriceCell } from "@/components/PriceCell";
 import { PurchaseLinksCompact, PurchaseDisclosureCaption } from "@/components/PurchaseLinks";
-import { CompareMobileBuyPanel } from "@/components/CompareMobileBuyPanel";
 import { buildPurchaseLinks } from "@/lib/purchase-links";
 import { useCountryCode } from "@/hooks/useCountryCode";
-import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
+import { pickPriceEntry } from "@/lib/lens-pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 
 // --- LensHeaderContent: shared inner card content ---
@@ -192,8 +189,6 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   const tPurchase = useTranslations("Purchase");
   const locale = useLocale();
   const countryCode = useCountryCode();
-  const priceFieldLabel = tPricing("fieldLabel");
-  const priceGroupLabel = tPricing("groupLabel");
   const { compareIds, reorder, remove, seed } = useCompare();
   const { onSelectLens, getResultState } = useCompareLensSearch();
   // Compare page is the only surface that projects compare state onto the
@@ -345,39 +340,6 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
         .filter((group) => group.rows.length > 0),
     [allGroups, orderedLenses, resolvedPerLens]
   );
-
-  // Per-lens Report Dialog fields — derived from resolved values, identical to
-  // what is rendered in the table cells.
-  const lensFields = useMemo(() => {
-    const map = new Map<string, FeedbackField[]>();
-    const mediaGroupLabel = td("fieldGroupMedia");
-    for (const lens of orderedLenses) {
-      const rowMap = resolvedPerLens.get(lens.id);
-      if (!rowMap) {
-        continue;
-      }
-      const fields: FeedbackField[] = [];
-      for (const group of allGroups) {
-        for (const row of group.rows) {
-          const resolved = rowMap.get(row.label);
-          if (resolved) {
-            fields.push({ label: resolved.label, currentValue: resolved.plainText, group: group.label });
-          }
-        }
-      }
-      const url = getLensUrl(lens, locale);
-      if (url) {
-        fields.push({ label: td("fieldOfficialLink"), currentValue: url, group: mediaGroupLabel });
-      }
-      fields.push({ label: td("fieldLensImage"), currentValue: getLensImageUrl(lens.id), group: mediaGroupLabel, hideCurrentValue: true });
-      const priceSelection = pickPriceEntry(lens.pricing, locale);
-      if (priceSelection) {
-        fields.push({ label: priceFieldLabel, currentValue: formatPriceForReport(priceSelection, locale, tPricing), group: priceGroupLabel });
-      }
-      map.set(lens.id, fields);
-    }
-    return map;
-  }, [resolvedPerLens, allGroups, orderedLenses, td, tPricing, priceFieldLabel, priceGroupLabel, locale]);
 
   const totalColSpan = orderedLenses.length + 1 + emptySlotCount;
   const { lockNav } = useNavLock();

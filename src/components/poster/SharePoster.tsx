@@ -638,7 +638,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   </div>
                 );
               }
-              const isUsed = sel.condition === "used";
               const priceDisplay = formatPrice(
                 sel.entry.price,
                 sel.entry.currency,
@@ -649,16 +648,8 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
               const sampledDisplay = formatSampledAt(sel.entry.sampledAt, labels.locale);
               return (
                 <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                  {/* Value + Used badge */}
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                    <span className={cn("font-semibold tabular-nums text-zinc-700 leading-none", statSize)}>
-                      {priceDisplay}
-                    </span>
-                    {isUsed && (
-                      <span className="rounded bg-zinc-200 px-1 py-px text-zinc-500" style={{ fontSize: 8, fontWeight: 500 }}>
-                        {labels.usedBadge}
-                      </span>
-                    )}
+                  <span className={cn("font-semibold tabular-nums text-zinc-700 leading-none", statSize)}>
+                    {priceDisplay}
                   </span>
                   {/* Caption row 1: source */}
                   <span data-redact-hook="priceSource" className="tabular-nums text-zinc-400 leading-tight text-center" style={{ fontSize: 9, maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>

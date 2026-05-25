@@ -14,7 +14,7 @@ function getServerSnapshot(): string {
   return DEFAULT_COUNTRY;
 }
 
-function subscribe(_cb: () => void): () => void {
+function subscribe(/* cb */): () => void {
   return () => {};
 }
 
