@@ -28,10 +28,10 @@ const FILTERS: Record<string, (lens: Lens) => boolean> = {
   "56mm": xPrime(55, 58),
   "85mm": xPrime(83, 90),
 
-  "7artisans": xBrand("7Artisans"),
-  viltrox: xBrand("Viltrox"),
-  ttartisan: xBrand("TTArtisan"),
-  sigma: xBrand("Sigma"),
+  "7artisans": xBrand("7artisans"),
+  viltrox: xBrand("viltrox"),
+  ttartisan: xBrand("ttartisan"),
+  sigma: xBrand("sigma"),
 
   "weather-sealed": (lens) =>
     lens.mount === "X" && (lens.wr === true || lens.wr === "partial"),

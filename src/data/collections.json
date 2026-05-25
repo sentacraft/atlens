@@ -3,111 +3,111 @@
     {
       "slug": "23mm",
       "title": {
-        "en": "All 23mm Lenses for Fujifilm X-Mount",
+        "en": "Fujifilm X-Mount 23mm Prime Lenses",
         "zh": "富士 X 卡口 23mm 定焦镜头"
       },
       "description": {
-        "en": "23mm on APS-C gives you the 35mm full-frame equivalent — the classic street and travel focal length. Wide enough to catch the scene, tight enough to tell a story. Here's every 23mm prime available for X-mount, across all brands.",
-        "zh": "23mm 等效全画幅 35mm，街拍和旅行最经典的焦段。能交代环境，也能讲好故事。这里收录了 X 卡口所有 23mm 定焦，原厂副厂一个不落。"
+        "en": "23mm on APS-C delivers the iconic 35mm full-frame equivalent field of view — the golden standard for street and documentary photography. Wide enough to capture environmental context, yet tight enough to isolate your story. Here is the complete index of every 23mm prime available for the X-mount, from first-party glass to third-party alternatives.",
+        "zh": "23mm 在 APS-C 画幅上等效全画幅 35mm，是无可争议的经典人文与纪实焦段。既能容纳足够的现场环境，又能聚焦叙事主体。本页收录了 X 卡口目前所有的 23mm 定焦镜头，涵盖原厂与各家副厂。"
       }
     },
     {
       "slug": "35mm",
       "title": {
-        "en": "All 35mm Lenses for Fujifilm X-Mount",
+        "en": "Fujifilm X-Mount 35mm Prime Lenses",
         "zh": "富士 X 卡口 35mm 定焦镜头"
       },
       "description": {
-        "en": "35mm on X-mount is the 50mm equivalent — the \"standard\" lens that's been the default for decades. There are more 35mm primes than any other focal length, from sub-$100 manual gems to flagship autofocus glass. This page has all of them.",
-        "zh": "35mm 等效 50mm，几十年来最经典的「标头」焦段。X 卡口 35mm 定焦的选择比任何其他焦段都多，从百元级手动头到旗舰自动对焦都有。这页全部列在这里了。"
+        "en": "The Nifty Fifty of the Fujifilm ecosystem. 35mm on X-mount provides a natural, human-eye perspective (50mm equivalent) that has defined photography for generations. As the most populated focal length on the system, the options span from ultra-budget fully manual gems to high-end, clinically sharp autofocus glass.",
+        "zh": "富士系统的「标准镜头」。等效全画幅 50mm 的视角极为克制、自然，接近人眼的单眼透视。作为 X 卡口竞争最激烈的焦段，这里既有百元级的趣味手动头，也有追求极致锐度的现代自动对焦旗舰。"
       }
     },
     {
       "slug": "50mm",
       "title": {
-        "en": "All 50mm Lenses for Fujifilm X-Mount",
+        "en": "Fujifilm X-Mount 50mm Prime Lenses",
         "zh": "富士 X 卡口 50mm 定焦镜头"
       },
       "description": {
-        "en": "50mm on APS-C gives you roughly 75mm equivalent — a focal length that sits between standard and portrait. Good for headshots, still life, and anything where you want a bit of compression without going full telephoto.",
-        "zh": "50mm 在 APS-C 上大约等效 75mm，介于标准和人像之间。拍半身、拍静物都好用，想要一点压缩感又不想上长焦的时候，50mm 刚好。"
+        "en": "Sitting comfortably between a standard lens and a dedicated portrait telephoto, a 50mm lens on APS-C behaves like a 75mm equivalent. An incredibly versatile choice for tighter street frames, clean still life, and environmental portraits where you want moderate background compression without losing working distance.",
+        "zh": "介于标头与长焦人像之间，50mm 在富士上等效约 75mm。这是一个被低估的宝藏焦段，空间压缩感点到为止，非常适合用来拍扫街特写、静物小品或者带环境的空间感人像。"
       }
     },
     {
       "slug": "56mm",
       "title": {
-        "en": "All 56mm Lenses for Fujifilm X-Mount",
+        "en": "Fujifilm X-Mount 56mm Prime Lenses",
         "zh": "富士 X 卡口 56mm 定焦镜头"
       },
       "description": {
-        "en": "56mm is the X-mount portrait lens — 85mm equivalent, the focal length that flatters faces without distorting features. Big bokeh, comfortable working distance. If you shoot people, you've probably looked at this page before.",
-        "zh": "56mm 等效 85mm，富士上拍人像的经典焦段。压缩感舒服、虚化够大、不用怼到脸上去拍。如果你拍人，大概率研究过这个焦段。"
+        "en": "The quintessential portrait focal length for X-mount. Translating to an 85mm full-frame equivalent, these lenses are optically optimized to flatter facial features without distortion. Known for rendering creamy bokeh and maintaining a comfortable working distance from your subject, this is the definitive lineup for portrait photographers.",
+        "zh": "富士系统里的人像王牌焦段。等效全画幅 85mm，能够在不产生透视变形的前提下完美还原面部轮廓，配合恰当的拍摄距离，是人像摄影的经典选择。"
       }
     },
     {
       "slug": "85mm",
       "title": {
-        "en": "All 85mm Lenses for Fujifilm X-Mount",
-        "zh": "富士 X 卡口 85mm 定焦镜头"
+        "en": "Fujifilm X-Mount 85mm Telephoto Lenses",
+        "zh": "富士 X 卡口 85mm 长焦镜头"
       },
       "description": {
-        "en": "85mm on X-mount is roughly 128mm equivalent — a tight portrait and event lens. Backgrounds melt away, subjects pop. Not the most common focal length on APS-C, but the options that exist are interesting.",
-        "zh": "85mm 在 X 卡口上等效大约 128mm，拍人像背景化得很开，主体突出。在 APS-C 上不算主流焦段，但能选的几支都挺有意思。"
+        "en": "Stepping into true telephoto territory, 85mm on APS-C acts as a tight 128mm equivalent. A specialized tool designed to melt away messy backgrounds and make your subject pop. While a niche choice for crop sensors, the available options offer unique rendering profiles and exceptional subject isolation.",
+        "zh": "等效约 128mm，已经踏入了中长焦的领域。它们是纯粹的背景净化工具，能将凌乱的现场瞬间融化，让主体绝对突出。虽然在 APS-C 画幅上相对小众，但现有的几支各有个性，非常值得玩味。"
       }
     },
     {
       "slug": "7artisans",
       "title": {
-        "en": "All 7Artisans Lenses for Fujifilm X-Mount",
-        "zh": "七工匠 X 卡口镜头"
+        "en": "7Artisans Lenses for Fujifilm X-Mount",
+        "zh": "七工匠 X 卡口系列镜头"
       },
       "description": {
-        "en": "7Artisans makes more X-mount lenses than any other third-party brand. Mostly manual focus, mostly under $200, and mostly surprisingly fun to shoot. This is their full lineup for Fujifilm.",
-        "zh": "七工匠是出 X 卡口镜头最多的副厂。大部分手动对焦、大部分不到一千块，拍起来比价格暗示的有意思得多。这是他们在富士上的全部阵容。"
+        "en": "One of the most prolific third-party manufacturers for the X-mount. 7Artisans is best known for its metal-constructed manual lenses under the $200 mark, though their AF lineup is growing fast. They offer a tactile, mechanical shooting experience and vintage rendering characteristics that modern autofocus lenses often lack.",
+        "zh": "国产品牌里出片率和出镜率极高的轻骑兵。七工匠以全金属手动头起家，价格大多在千元以内，近年也在快速扩充自动对焦产品线。它们带给你的是久违的阻尼对焦体验与充满个性的复古氛围感，适合纯粹享受拍照乐趣的玩家。"
       }
     },
     {
       "slug": "viltrox",
       "title": {
-        "en": "All Viltrox Lenses for Fujifilm X-Mount",
+        "en": "Viltrox Lenses for Fujifilm X-Mount",
         "zh": "唯卓仕 X 卡口镜头"
       },
       "description": {
-        "en": "Viltrox is the go-to third-party brand for X-mount autofocus lenses. Fast primes, modern optical designs, and pricing that makes Fujifilm's own lenses look expensive. Here's everything they make for X-mount.",
-        "zh": "X 卡口要买副厂自动对焦镜头，第一个想到的就是唯卓仕。大光圈定焦、光学素质在线、价格让原厂显得贵。这是唯卓仕在 X 卡口的全部产品。"
+        "en": "Viltrox has established itself as the premier third-party choice for native X-mount autofocus glass. Offering ultra-fast apertures, sophisticated modern optical designs, and competitive pricing, they deliver performance that rivals first-party options. Explore their expanding ecosystem here.",
+        "zh": "买富士副厂自动头，唯卓仕是绕不开的选择。凭借扎实的光学素质、激进的大光圈配置以及极高的性价比，它们生生把原厂衬托成了奢侈品。这里是唯卓仕在 X 卡口的全部产品。"
       }
     },
     {
       "slug": "ttartisan",
       "title": {
-        "en": "All TTArtisan Lenses for Fujifilm X-Mount",
-        "zh": "铭匠光学 X 卡口镜头"
+        "en": "TTArtisan Lenses for Fujifilm X-Mount",
+        "zh": "铭匠光学 X 卡口系列镜头"
       },
       "description": {
-        "en": "TTArtisan covers everything from $50 pancake primes to f/0.95 ultra-fast exotics — all manual focus, all compact, all with a rendering style you won't find in modern AF designs. Their full X-mount catalog is here.",
-        "zh": "铭匠从几百块的饼干头到 f/0.95 的超大光圈都做，全是手动对焦，都不大，出片的味道跟现代自动头完全不一样。X 卡口能买到的铭匠都在这了。"
+        "en": "From ultra-compact pancake lenses that turn your camera into a pocketable setup to exotic f/0.95 glass designed for extreme low light, TTArtisan covers the unconventional. Primarily manual focus with a growing AF lineup, these lenses offer distinct retro aesthetics, compact form factors, and unique drawing styles for creative photography.",
+        "zh": "铭匠的思路非常剑走偏锋：既有极致轻薄、让相机秒变口袋机的饼干头，也有追求极端夜景虚化的 f/0.95 狂热怪兽。手动头为主、自动头也在扩充，精致的复古外观以及略带胶片味的出片风格，是追求差异化群体的挚爱。"
       }
     },
     {
       "slug": "sigma",
       "title": {
-        "en": "All Sigma Lenses for Fujifilm X-Mount",
-        "zh": "适马 X 卡口镜头"
+        "en": "Sigma Lenses for Fujifilm X-Mount",
+        "zh": "适马 X 卡口系列镜头"
       },
       "description": {
-        "en": "Sigma brought their best full-frame optical designs to X-mount with native AF — no adapter needed. The lineup is still growing, but what's available already covers the key focal lengths well.",
-        "zh": "适马把自家最好的全画幅光学设计原生适配到了 X 卡口，不用转接。产品线还在扩充，但已有的几支把关键焦段覆盖得不错。"
+        "en": "Sigma brings its renowned full-frame optical heritage to the Fujifilm system with seamless, native autofocus integration. Known for high resolving power and robust build quality, Sigma's expanding X-mount lineup successfully fills critical focal length gaps for demanding shooters.",
+        "zh": "「黑科技」适马将自家饱受赞誉的全画幅光学设计移植到了富士 X 卡口，提供完美的原生自动对焦与机身通讯。锐度扎实、对焦果断，产品线还在持续扩充，已经覆盖了不少关键焦段。"
       }
     },
     {
       "slug": "weather-sealed",
       "title": {
         "en": "Weather-Sealed Lenses for Fujifilm X-Mount",
-        "zh": "富士 X 卡口防滴防尘镜头"
+        "zh": "富士 X 卡口防滴防尘（WR）镜头"
       },
       "description": {
-        "en": "Every X-mount lens with weather sealing — full or partial. If you shoot outdoors in rain, dust, or cold and don't want to worry about your glass, start here.",
-        "zh": "X 卡口所有带防滴防尘的镜头，包括完整密封和部分密封。下雨天、沙尘里、低温下出门拍照不想提心吊胆，从这里挑。"
+        "en": "Every X-mount lens with weather-resistant construction — full or partial sealing. Built to withstand moisture, dust, and freezing temperatures, these lenses ensure peace of mind when pairing with weather-sealed Fujifilm bodies in unpredictable outdoor environments.",
+        "zh": "所有具备防滴防尘特性的 X 卡口镜头，包括完整密封和部分密封。无惧细雨、沙尘与严寒，配合支持防尘防滴的富士机身，让你在恶劣天气里也能安心按下快门。"
       }
     },
     {
@@ -117,19 +117,19 @@
         "zh": "富士 X 卡口微距镜头"
       },
       "description": {
-        "en": "All the macro options for X-mount. Whether you're shooting insects, products, food, or just want a lens that focuses closer than everything else, these are your choices.",
-        "zh": "X 卡口所有微距镜头。不管你拍虫、拍产品、拍美食，还是单纯想要一支对焦距离比别的头都近的镜头，选择都在这里。"
+        "en": "Discover the micro-world with X-mount macro lenses. Engineered with close-focusing capabilities and high reproduction ratios, these options are essential for revealing intricate details in product photography, food presentation, nature, and fine-art textures.",
+        "zh": "带你窥探微观世界。这批镜头拥有极近的对焦距离与高放大倍率，是拍摄昆虫生态、商业静物、美食细节以及微距纹理时不可或缺的工具。"
       }
     },
     {
       "slug": "under-200g",
       "title": {
-        "en": "Lightest Lenses for Fujifilm X-Mount (Under 200g)",
-        "zh": "富士 X 卡口最轻便的镜头"
+        "en": "Ultra-Lightweight Fujifilm X-Mount Lenses (Under 200g)",
+        "zh": "富士 X 卡口轻量化镜头（200g 以下）"
       },
       "description": {
-        "en": "Every X-mount lens under 200 grams. Some of these are lighter than your phone. Great for travel kits, walk-around setups, or just not wanting a gym workout every time you pick up your camera.",
-        "zh": "X 卡口所有不到 200 克的镜头，有些比手机还轻。出门旅行、日常挂机，或者单纯不想每次拿起相机都像在健身，看这里就对了。"
+        "en": "Prioritize mobility with every X-mount lens weighing less than 200 grams. Perfect for minimalist travel kits, daily walk-around photography, or stabilizing setups on compact gimbals, these lenses ensure your camera stays out of the bag and in your hand without the physical fatigue.",
+        "zh": "收录所有重量低于 200 克的 X 卡口镜头，有些甚至比手机还轻。非常适合长途旅行减负、日常挂机或者上轻量级稳定器，让摄影回归纯粹，告别铁手练肌。"
       }
     },
     {
