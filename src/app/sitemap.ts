@@ -18,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/lenses/x/compare",
     "/lenses/gfx",
     "/lenses/gfx/compare",
+    "/collections",
     "/about",
     "/get",
   ];

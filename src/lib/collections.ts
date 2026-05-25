@@ -55,11 +55,13 @@ const FILTERS: Record<string, LensFilter> = {
 
   "with-ois": (lens) => xPhoto(lens) && lens.ois === true,
 
-  "fast-aperture": (lens) =>
-    xPhoto(lens) &&
-    !isZoom(lens) &&
-    lens.maxAperture != null &&
-    lens.maxAperture <= 1.4,
+  "fast-aperture": (lens) => {
+    if (!xPhoto(lens) || isZoom(lens) || lens.maxAperture == null) {
+      return false;
+    }
+    const ap = Array.isArray(lens.maxAperture) ? lens.maxAperture[0] : lens.maxAperture;
+    return ap <= 1.4;
+  },
 
   "compact-primes": (lens) =>
     xPhoto(lens) &&
@@ -109,7 +111,7 @@ export const COLLECTIONS: Record<string, LensCollection> = Object.fromEntries(
 
 export const FOCAL_SLUGS = ["23mm", "35mm", "50mm", "56mm", "85mm"];
 export const BRAND_SLUGS = ["7artisans", "viltrox", "ttartisan", "sigma"];
-export const FEATURE_SLUGS = ["weather-sealed", "macro", "under-200g", "with-ois", "fast-aperture", "compact-primes", "under-200", "under-400", "fisheye", "tilt-shift"];
+export const FEATURE_SLUGS = ["weather-sealed", "macro", "under-200g", "with-ois", "fast-aperture", "compact-primes", "under-200", "under-400", "cine", "fisheye", "tilt-shift"];
 
 function categoryOf(slug: string): string[] {
   if (FOCAL_SLUGS.includes(slug)) {

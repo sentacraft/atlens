@@ -48,7 +48,7 @@ function CollectionCard({
   slug: string;
   locale: string;
   lensCount: number;
-  t: (key: string, values?: Record<string, unknown>) => string;
+  t: (key: string, values?: Record<string, string | number | Date>) => string;
 }) {
   const collection = COLLECTIONS[slug];
   if (!collection) {
@@ -106,7 +106,7 @@ export default async function CollectionsIndexPage({
         <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
           {t("indexStats", { count: totalCollections, lensCount: totalLenses })}
         </p>
-        <p className="mt-3 text-base leading-relaxed text-zinc-700 dark:text-zinc-300">
+        <p className="mt-3 text-sm leading-relaxed text-zinc-700 sm:text-base dark:text-zinc-300">
           {t("indexDescription")}
         </p>
       </header>

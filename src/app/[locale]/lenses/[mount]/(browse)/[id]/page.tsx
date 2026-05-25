@@ -22,6 +22,9 @@ import SpecialtyBadges from "@/components/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens-specialty";
 import { RetailersDropdown } from "@/components/RetailersDropdown";
 import { UTILITY_BTN_CLS } from "@/lib/ui-tokens";
+import { COLLECTIONS } from "@/lib/collections";
+import { Link } from "@/i18n/navigation";
+import { Badge } from "@/components/ui/badge";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates, lensOgImages } from "@/lib/seo";
@@ -260,6 +263,8 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   // Field options for the Report Dialog — taken directly from resolved values,
   // identical to what is rendered in the spec table below.
   const mediaGroupLabel = t("fieldGroupMedia");
+  const memberCollections = Object.values(COLLECTIONS).filter((c) => c.filter(lens, locale));
+
   const priceSelection = pickPriceEntry(lens.pricing, locale);
   const reportableFields = [
     ...resolvedGroups.flatMap((group) =>
@@ -399,6 +404,25 @@ export default async function LensDetailPage({ params }: { params: Params }) {
             </FeedbackTrigger>
           </div>
       </div>
+
+      {memberCollections.length > 0 && (
+        <section>
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+            {t("collectionsTitle")}
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {memberCollections.map((c) => (
+              <Badge
+                key={c.slug}
+                variant="outline"
+                render={<Link href={`/collections/${c.slug}`} />}
+              >
+                {locale === "zh" ? c.title.zh : c.title.en}
+              </Badge>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
     <BackToTopButton />
     <ShareFAB lenses={[lens]} />

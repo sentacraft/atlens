@@ -102,10 +102,10 @@ export default async function CollectionPage({
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             {title}
           </h1>
-          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
             {stats}
           </p>
-          <p className="mt-3 text-base leading-relaxed text-zinc-700 dark:text-zinc-300">
+          <p className="mt-3 text-sm leading-relaxed text-zinc-700 sm:text-base dark:text-zinc-300">
             {description}
           </p>
         </header>
