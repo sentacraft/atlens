@@ -638,7 +638,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   </div>
                 );
               }
-              const isUsed = sel.condition === "used";
               const priceDisplay = formatPrice(
                 sel.entry.price,
                 sel.entry.currency,

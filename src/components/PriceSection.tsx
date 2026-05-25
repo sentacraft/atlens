@@ -64,6 +64,7 @@ export function PriceSection({ lens }: Props) {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function UsedBadge({ size, reason, label }: { size: "sm" | "md"; reason: string; label: string }) {
   const padding = size === "md" ? "px-1.5 py-px" : "px-1 py-px";
   const fontSize = size === "md" ? "text-[11px]" : "text-[10px]";
