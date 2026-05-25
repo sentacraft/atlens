@@ -1,8 +1,10 @@
 "use client";
 
 import useSWR from "swr";
+import { useLocale } from "next-intl";
 import type { Lens } from "@/lib/types";
-import type { MountSegment } from "@/lib/mount";
+import { mountToUrlSegment } from "@/lib/mount";
+import { useEffectiveMount } from "@/hooks/useMountParam";
 import { jsonFetcher, buildSearchUrl } from "@/lib/api";
 
 interface SearchResponse {
@@ -12,14 +14,11 @@ interface SearchResponse {
 
 const EMPTY_RESULTS: Lens[] = [];
 
-export function useLensSearchApi(
-  mount: MountSegment,
-  locale: string,
-  query: string,
-  limit = 8,
-) {
+export function useLensSearchApi(query: string, limit = 8) {
+  const mount = useEffectiveMount();
+  const locale = useLocale();
   const trimmed = query.trim();
-  const url = trimmed ? buildSearchUrl(mount, locale, trimmed, limit) : null;
+  const url = trimmed ? buildSearchUrl(mountToUrlSegment(mount), locale, trimmed, limit) : null;
   const { data, error, isLoading } = useSWR<SearchResponse>(url, jsonFetcher, {
     keepPreviousData: true,
     dedupingInterval: 300,

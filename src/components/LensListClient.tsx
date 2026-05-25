@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { useLocale } from "next-intl";
 import { usePathname, Link } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { useTranslations } from "next-intl";
@@ -19,7 +18,6 @@ import { serializeFilters, parseFilters } from "@/lib/filter-params";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import { useLensesApi } from "@/hooks/useLensesApi";
-import { useEffectiveMount } from "@/hooks/useMountParam";
 import { ArrowDownNarrowWide, ArrowUpNarrowWide } from "lucide-react";
 import BackToTopButton from "@/components/BackToTopButton";
 import { Button } from "@/components/ui/button";
@@ -42,13 +40,10 @@ export default function LensListClient() {
   const hookAttr = useUiHookAttr();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const locale = useLocale();
-  const mount = useEffectiveMount();
-
   const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
   const { compareIds, toggle } = useCompare();
 
-  const { lenses, brands, availableOpticalTraits, isLoading } = useLensesApi(mount, locale);
+  const { lenses, brands, availableOpticalTraits, isLoading } = useLensesApi();
 
   const displayed = useMemo(
     () =>

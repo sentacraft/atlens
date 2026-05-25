@@ -10,7 +10,7 @@ import {
 } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Search, X } from "lucide-react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useRouter, Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -56,7 +56,6 @@ export default function LensSearchDialog({
   const t = useTranslations("Search");
   const tBrand = useTranslations("Brands");
   const router = useRouter();
-  const locale = useLocale();
   const mount = useEffectiveMount();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -98,11 +97,7 @@ export default function LensSearchDialog({
     }
   }, [activeIndex]);
 
-  const { results, isLoading: isSearching } = useLensSearchApi(
-    mountToUrlSegment(mount),
-    locale,
-    deferredQuery,
-  );
+  const { results, isLoading: isSearching } = useLensSearchApi(deferredQuery);
 
   useSearchTelemetry({ query: deferredQuery, resultsCount: results.length, isOpen: open });
 
