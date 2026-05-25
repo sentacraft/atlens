@@ -36,7 +36,7 @@ export default function ShareFAB({ lenses, presetTitle, presetSubtitle }: Props)
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           transition={spring.bounce}
-          style={{ bottom: `calc(6rem + var(--compare-bar-height, 0px))` }}
+          style={{ bottom: `calc(1.5rem + var(--compare-bar-height, 0px))` }}
           className={`fixed right-6 ${Z.fixed}`}
           data-testid="share-fab"
         >

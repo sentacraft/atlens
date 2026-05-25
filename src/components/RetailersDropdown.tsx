@@ -53,10 +53,10 @@ export function RetailersDropdown({ lens, customId }: Props) {
               <DropdownItem key={link.channel} link={link} lensId={lens.id} customId={customId} />
             ))}
             {hasAffiliate && (
-              <div className="mt-1 flex items-start gap-2 border-t border-zinc-100 px-3 py-2 text-[10px] leading-relaxed text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-                <Info size={11} className="shrink-0 mt-0.5 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
-                <span>{t("disclosureDetail")}</span>
-              </div>
+              <p className="mt-1 border-t border-zinc-100 px-3 py-2 text-[10px] leading-relaxed text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                <Info size={11} className="inline -mt-px mr-1 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
+                {t("disclosureDetail")}
+              </p>
             )}
           </Popover.Popup>
         </Popover.Positioner>
