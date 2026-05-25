@@ -12,10 +12,14 @@ import {
 } from "@/components/ui/select";
 import { TestHookContext } from "@/context/TestHookProvider";
 import { TESTHOOK_OPTION_DEFINITIONS } from "@/lib/testhook";
-import { COLLECTIONS } from "@/lib/collections";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const collectionsData = require("@/data/collections.json") as {
+  collections: { slug: string; title: { en: string } }[];
+};
 
 const HIDDEN_ROUTES: { label: string; href: string }[] = [
-  ...Object.values(COLLECTIONS).map((c) => ({
+  { label: "All Collections", href: "/collections" },
+  ...collectionsData.collections.map((c) => ({
     label: c.title.en,
     href: `/collections/${c.slug}`,
   })),

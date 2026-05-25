@@ -94,9 +94,9 @@ export const COLLECTIONS: Record<string, LensCollection> = Object.fromEntries(
   parsed.map((c) => [c.slug, c]),
 );
 
-const FOCAL_SLUGS = ["23mm", "35mm", "50mm", "56mm", "85mm"];
-const BRAND_SLUGS = ["7artisans", "viltrox", "ttartisan", "sigma"];
-const FEATURE_SLUGS = ["weather-sealed", "macro", "under-200g", "with-ois", "fast-aperture", "compact-primes", "under-200", "under-400"];
+export const FOCAL_SLUGS = ["23mm", "35mm", "50mm", "56mm", "85mm"];
+export const BRAND_SLUGS = ["7artisans", "viltrox", "ttartisan", "sigma"];
+export const FEATURE_SLUGS = ["weather-sealed", "macro", "under-200g", "with-ois", "fast-aperture", "compact-primes", "under-200", "under-400"];
 
 function categoryOf(slug: string): string[] {
   if (FOCAL_SLUGS.includes(slug)) {

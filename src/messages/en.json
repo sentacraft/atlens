@@ -500,6 +500,13 @@
     "stats": "{count} lenses · {brandCount} brands",
     "metaPrefix": "{count} lenses from {brandCount} brands.",
     "browseAll": "Browse the full X-mount library",
-    "relatedCollections": "Related collections"
+    "relatedCollections": "Related collections",
+    "indexTitle": "Lens Collections for Fujifilm X-Mount",
+    "indexDescription": "Curated lens collections for the Fujifilm X-mount system — organized by focal length, brand, and feature.",
+    "indexStats": "{count} collections · {lensCount} lenses total",
+    "categoryFocal": "By Focal Length",
+    "categoryBrand": "By Brand",
+    "categoryFeature": "By Feature",
+    "lensCount": "{count} lenses"
   }
 }
