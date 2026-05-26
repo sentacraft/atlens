@@ -413,14 +413,9 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
       {memberCollections.length > 0 && (
         <section className="border-t border-zinc-200 pt-6 dark:border-zinc-800">
-          <div className="mb-4 flex items-baseline gap-2">
-            <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              {t("collectionsTitle")}
-            </h2>
-            <span className="text-xs text-zinc-400 dark:text-zinc-500">
-              — {t("collectionsSubtitle")}
-            </span>
-          </div>
+          <h2 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            {t("collectionsTitle")}
+          </h2>
           <div className="flex flex-wrap gap-2">
             {memberCollections.map((c) => (
               <Link
