@@ -91,7 +91,7 @@ export default async function CollectionPage({
 
   return (
     <>
-      <main className="mx-auto max-w-6xl px-4 py-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))]">
+      <main className="mx-auto max-w-6xl px-4 py-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))]">
         <header className="mb-8">
           <div className="mb-4">
             <CollectionBreadcrumb title={title} />

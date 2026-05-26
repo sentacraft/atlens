@@ -289,7 +289,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
         Product rich result treatment. Emitted via JsonLd which handles the
         `</script>` defensive escape; see that component for rationale. */}
     <JsonLd data={productSchema} />
-    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col gap-8">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] flex flex-col gap-8">
       <div className="flex items-center justify-between">
         <Breadcrumb />
         <div className="flex items-center gap-1">
