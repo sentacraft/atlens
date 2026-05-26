@@ -154,11 +154,11 @@ export default function LensFilters({
     onClick: () => updateFilters("features", toggleValue(filters.features, key)),
   }));
 
-  const filtersButton = (
+  const filtersToggle = (
     <button
       type="button"
       className={cn(
-        "inline-flex items-center gap-1.5 self-start my-1.5 text-[11px] font-medium uppercase tracking-[0.08em]",
+        "inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em]",
         "text-zinc-700 transition-colors hover:text-zinc-900",
         "dark:text-zinc-300 dark:hover:text-zinc-100",
       )}
@@ -187,18 +187,21 @@ export default function LensFilters({
     <div className="flex min-w-0 flex-1 flex-col">
       {/* Primary filters: always visible on all viewports */}
       <div className="flex flex-col gap-2 sm:gap-3">
-        <div className="sm:hidden">
-          <BrandFilterMenu
-            brands={brands}
-            selected={filters.brands}
-            brandLabels={brandNames}
-            allLabel={allOptionLabel}
-            triggerLabel={brandTriggerLabel}
-            onToggle={(brand) =>
-              updateFilters("brands", toggleMultiFilter(filters.brands, brand, brands))
-            }
-            onClear={() => updateFilters("brands", [])}
-          />
+        <div className="flex items-center gap-2 sm:hidden">
+          <div className="min-w-0 flex-1">
+            <BrandFilterMenu
+              brands={brands}
+              selected={filters.brands}
+              brandLabels={brandNames}
+              allLabel={allOptionLabel}
+              triggerLabel={brandTriggerLabel}
+              onToggle={(brand) =>
+                updateFilters("brands", toggleMultiFilter(filters.brands, brand, brands))
+              }
+              onClear={() => updateFilters("brands", [])}
+            />
+          </div>
+          <div className="shrink-0">{filtersToggle}</div>
         </div>
         <div className="hidden sm:block">
           <FilterRow label={t("brand")}>
@@ -231,7 +234,7 @@ export default function LensFilters({
           />
         </FilterRow>
 
-        {filtersButton}
+        <div className="my-1.5 hidden sm:block">{filtersToggle}</div>
       </div>
 
       {/* Secondary filters: collapsed on mobile by default, always open on desktop */}
