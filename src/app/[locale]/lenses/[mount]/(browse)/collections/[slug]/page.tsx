@@ -11,7 +11,7 @@ import { ACTION_ESCAPE_CLS } from "@/lib/ui-tokens";
 import CollectionLensGrid from "@/components/CollectionLensGrid";
 import RelatedCollectionCard from "@/components/RelatedCollectionCard";
 import BackToTopButton from "@/components/BackToTopButton";
-import CollectionBreadcrumb from "@/components/CollectionBreadcrumb";
+import Breadcrumb from "@/components/Breadcrumb";
 
 type Params = Promise<{ locale: string; mount: string; slug: string }>;
 
@@ -71,6 +71,7 @@ export default async function CollectionPage({
 
   const { collection, lenses, lensCount, brandCount } = collectionStats;
   const t = await getTranslations({ locale, namespace: "Collection" });
+  const tNav = await getTranslations({ locale, namespace: "Nav" });
 
   const title = localized(collection.title, locale);
   const description = localized(collection.description, locale);
@@ -83,7 +84,13 @@ export default async function CollectionPage({
       <main className="mx-auto max-w-6xl px-4 py-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))]">
         <header className="mb-8">
           <div className="mb-4">
-            <CollectionBreadcrumb title={title} />
+            <Breadcrumb
+              segments={[
+                { label: tNav("lenses"), href: `/lenses/${mount}` },
+                { label: t("breadcrumbCollections"), href: `/lenses/${mount}/collections` },
+              ]}
+              current={title}
+            />
           </div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             {title}

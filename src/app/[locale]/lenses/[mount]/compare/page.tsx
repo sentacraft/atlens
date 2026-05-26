@@ -10,6 +10,7 @@ import CuratedComparisons from "@/components/CuratedComparisons";
 import BackToTopButton from "@/components/BackToTopButton";
 import Breadcrumb from "@/components/Breadcrumb";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
+import { mountToUrlSegment } from "@/lib/mount";
 import { lensDisplayName } from "@/lib/lens.format";
 import { notFound } from "next/navigation";
 
@@ -108,11 +109,16 @@ export default async function ComparePage({
     notFound();
   }
 
+  const tNav = await getTranslations("Nav");
+  const seg = mountToUrlSegment(resolvedMount);
   const lenses = parseLensIds(ids, resolvedMount, locale);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-4 sm:pt-8 pb-40 flex flex-col gap-3 sm:gap-4">
-      <Breadcrumb />
+      <Breadcrumb
+        segments={[{ label: tNav("lenses"), href: `/lenses/${seg}` }]}
+        current={tNav("compare")}
+      />
       <ComparePageHeader />
       <CompareTable key={lenses.length === 0 ? "_empty_" : ids} lenses={lenses} minColumns={2} hideBodyWhenEmpty />
       {resolvedMount === "X" && <CuratedComparisons />}

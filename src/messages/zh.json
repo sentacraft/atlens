@@ -62,7 +62,6 @@
     "metaTitleG": "GFX 卡口镜头库",
     "metaDescX": "富士 X 卡口镜头数据库，{count} 只镜头覆盖 {brandCount} 个品牌。规格统一标准，跨品牌横向对比。",
     "metaDescG": "富士 GFX 中画幅镜头数据库，{count} 只 GF 镜头规格、参数与横向对比。",
-    "backLink": "返回镜头库",
     "brand": "品牌",
     "brandTriggerLabel": "品牌：{names}",
     "brandTriggerLabelMore": "品牌：{names} +{extra}",

@@ -182,13 +182,13 @@ export const COLLECTIONS: Record<string, LensCollection> = Object.fromEntries(
 );
 
 export const PRIME_SLUGS = ["23mm", "35mm", "50mm", "56mm", "85mm", "wide-angle"];
-export const ZOOM_SLUGS = ["wide-zoom", "standard-zoom", "travel-zoom", "tele-zoom", "super-tele"];
+export const ZOOM_SLUGS = ["wide-zoom", "standard-zoom", "travel-zoom", "tele-zoom"];
 export const BRAND_SLUGS = ["fujifilm", "7artisans", "viltrox", "ttartisan", "sigma", "brightinstar", "voigtlander", "laowa", "tamron", "sgimage"];
 export const SERIES_SLUGS = ["fujifilm-xf", "fujifilm-xc", "sigma-contemporary", "viltrox-air", "viltrox-pro", "voigtlander-nokton"];
 export const PRICE_SLUGS = ["under-200", "under-400"];
 export const PORTABILITY_SLUGS = ["under-200g", "compact-primes"];
 export const APERTURE_SLUGS = ["fast-aperture", "constant-aperture"];
-export const TRAIT_SLUGS = ["weather-sealed", "with-ois"];
+export const TRAIT_SLUGS = ["weather-sealed", "with-ois", "super-tele"];
 export const DEDICATED_SLUGS = ["cine", "fisheye", "tilt-shift", "macro"];
 export const FOCUS_SLUGS = ["autofocus", "manual-focus", "value-af"];
 

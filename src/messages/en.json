@@ -62,7 +62,6 @@
     "metaTitleG": "GFX-mount Lens Library",
     "metaDescX": "Fujifilm X-mount lens database. {count} lenses across {brandCount} brands. Normalized specs, cross-brand comparison.",
     "metaDescG": "Fujifilm GFX medium-format lens database. {count} GF lens specs, parameters and side-by-side comparison.",
-    "backLink": "Back to lenses",
     "brand": "Brand",
     "brandTriggerLabel": "Brand: {names}",
     "brandTriggerLabelMore": "Brand: {names} +{extra}",

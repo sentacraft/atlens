@@ -19,7 +19,7 @@ import { getLensesByMount } from "@/lib/lens";
 import type { Mount } from "@/lib/types";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { ACTION_PRIMARY_CLS } from "@/lib/ui-tokens";
-import CollectionBreadcrumb from "@/components/CollectionBreadcrumb";
+import Breadcrumb from "@/components/Breadcrumb";
 
 type Params = Promise<{ locale: string; mount: string }>;
 
@@ -94,6 +94,7 @@ export default async function CollectionsIndexPage({
   setRequestLocale(locale);
 
   const t = await getTranslations({ locale, namespace: "Collection" });
+  const tNav = await getTranslations({ locale, namespace: "Nav" });
   const mountLenses = getLensesByMount(mount as Mount, locale);
 
   const countFor = (slug: string) => {
@@ -121,7 +122,10 @@ export default async function CollectionsIndexPage({
     <main className="mx-auto max-w-4xl px-4 py-8">
       <header className="mb-10">
         <div className="mb-4">
-          <CollectionBreadcrumb />
+          <Breadcrumb
+              segments={[{ label: tNav("lenses"), href: `/lenses/${mount}` }]}
+              current={t("breadcrumbCollections")}
+            />
         </div>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
           {t("indexTitle")}

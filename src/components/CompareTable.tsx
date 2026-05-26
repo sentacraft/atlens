@@ -23,6 +23,8 @@ import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
 import { useCompareUrlSync } from "@/hooks/useCompareUrlSync";
 import { getLensesByMount, MAX_COMPARE } from "@/lib/lens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
+import { mountToUrlSegment } from "@/lib/mount";
+import { Link } from "@/i18n/navigation";
 import LensSearchDialog from "@/components/LensSearchDialog";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { buildSpecGroups, resolveSpecRow } from "@/lib/lens-spec-groups";
@@ -39,13 +41,18 @@ import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 
 function LensHeaderContent({
   lens,
+  mountSegment,
 }: {
   lens: Lens;
+  mountSegment: string;
 }) {
   const tBrand = useTranslations("Brands");
 
   return (
-    <>
+    <Link
+      href={`/lenses/${mountSegment}/${lens.id}`}
+      className="group/link flex flex-1 flex-col items-center"
+    >
       <div className="mb-1 flex w-full max-w-[80px] items-center justify-center overflow-hidden rounded-xl bg-zinc-50/70 p-1.5 sm:mb-2 sm:max-w-[160px] sm:p-3 dark:bg-zinc-900/50">
         <div className="relative aspect-square w-full overflow-hidden">
           <Image
@@ -66,10 +73,10 @@ function LensHeaderContent({
         </span>
         <SpecialtyBadges {...deriveSpecialty(lens)} />
       </div>
-      <p className="mt-auto line-clamp-3 text-center font-semibold leading-snug text-zinc-900 dark:text-zinc-50">
+      <p className="mt-auto line-clamp-3 text-center font-semibold leading-snug text-zinc-900 transition-colors group-hover/link:text-zinc-600 dark:text-zinc-50 dark:group-hover/link:text-zinc-300">
         {lens.model}
       </p>
-    </>
+    </Link>
   );
 }
 
@@ -77,6 +84,7 @@ function LensHeaderContent({
 
 function LensHeader({
   lens,
+  mountSegment,
   removeLabel,
   shiftLeftLabel,
   shiftRightLabel,
@@ -87,6 +95,7 @@ function LensHeader({
   onShiftRight,
 }: {
   lens: Lens;
+  mountSegment: string;
   removeLabel: string;
   shiftLeftLabel: string;
   shiftRightLabel: string;
@@ -135,9 +144,10 @@ function LensHeader({
         </div>
         {/* flex-1 fills remaining space after action buttons so mt-auto
             on links works without overflowing the cell */}
-        <div className="mt-1 flex flex-1 flex-col items-center text-center sm:mt-0">
-          <LensHeaderContent lens={lens} />
+        <div className="mt-1 flex flex-1 flex-col text-center sm:mt-0">
+          <LensHeaderContent lens={lens} mountSegment={mountSegment} />
         </div>
+
       </div>
     </th>
   );
@@ -196,6 +206,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   // longer need to know about address-bar bookkeeping.
   useCompareUrlSync();
   const mount = useEffectiveMount();
+  const mountSegment = mountToUrlSegment(mount);
   const initialLensIds = useMemo(
     () => initialLenses.map((lens) => lens.id),
     [initialLenses]
@@ -442,9 +453,12 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
                 <p className="truncate text-[10px] text-zinc-400 dark:text-zinc-500">
                   {lensSubtitleLine(tBrand(lens.brand), lens.series)}
                 </p>
-                <p className="truncate text-xs font-semibold text-zinc-900 dark:text-zinc-50">
+                <Link
+                  href={`/lenses/${mountSegment}/${lens.id}`}
+                  className="block truncate text-xs font-semibold text-zinc-900 hover:text-zinc-600 dark:text-zinc-50 dark:hover:text-zinc-300"
+                >
                   {lens.model}
-                </p>
+                </Link>
               </div>
             ))}
           </div>
@@ -486,6 +500,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
               <LensHeader
                 key={lens.id}
                 lens={lens}
+                mountSegment={mountSegment}
                 removeLabel={t("removeLens", { model: lensDisplayName(tBrand(lens.brand), lens.series, lens.model) })}
                 shiftLeftLabel={t("shiftLeft")}
                 shiftRightLabel={t("shiftRight")}
