@@ -111,7 +111,7 @@ export default async function ComparePage({
   const lenses = parseLensIds(ids, resolvedMount, locale);
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-4 sm:pt-8 pb-[10rem] flex flex-col gap-3 sm:gap-4">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-4 sm:pt-8 pb-40 flex flex-col gap-3 sm:gap-4">
       <Breadcrumb />
       <ComparePageHeader />
       <CompareTable key={lenses.length === 0 ? "_empty_" : ids} lenses={lenses} minColumns={2} hideBodyWhenEmpty />
