@@ -99,7 +99,7 @@ export default function LensSearchDialog({
     }
   }, [activeIndex]);
 
-  useDrawerKeyboardAdjust(contentRef, scrollContainerRef);
+  useDrawerKeyboardAdjust(contentRef, scrollContainerRef, { open });
 
   const { results, isLoading: isSearching } = useLensSearchApi(deferredQuery);
 

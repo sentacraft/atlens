@@ -6,11 +6,15 @@ const TOP_PEEK_DEFAULT = 48;
 export function useDrawerKeyboardAdjust(
   popupRef: RefObject<HTMLDivElement | null>,
   scrollRef: RefObject<HTMLDivElement | null>,
-  options: { topPeek?: number } = {},
+  options: { topPeek?: number; open?: boolean } = {},
 ) {
-  const { topPeek = TOP_PEEK_DEFAULT } = options;
+  const { topPeek = TOP_PEEK_DEFAULT, open = false } = options;
 
   useEffect(() => {
+    if (!open) {
+      return;
+    }
+
     const vv = window.visualViewport;
     const popup = popupRef.current;
     const scrollEl = scrollRef.current;
@@ -49,5 +53,5 @@ export function useDrawerKeyboardAdjust(
       popup.style.removeProperty("bottom");
       scrollEl.style.removeProperty("height");
     };
-  }, [popupRef, scrollRef, topPeek]);
+  }, [popupRef, scrollRef, topPeek, open]);
 }
