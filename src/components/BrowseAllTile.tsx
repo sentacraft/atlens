@@ -17,10 +17,10 @@ export default function BrowseAllTile({ lensCount, brandCount }: Props) {
         <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-zinc-400 dark:text-zinc-500">
           {t("browseAllEyebrow")}
         </p>
-        <h3 className="text-sm font-semibold leading-snug md:text-xs">
+        <h3 className="text-sm font-semibold leading-snug">
           {t("browseAllTitle")}
         </h3>
-        <p className="text-xs text-zinc-400 md:text-[10px] dark:text-zinc-500">
+        <p className="text-xs text-zinc-400 dark:text-zinc-500">
           {t("stats", { count: lensCount, brandCount })}
         </p>
       </div>
