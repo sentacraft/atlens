@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import {
   COLLECTIONS,
@@ -16,6 +17,7 @@ import {
 } from "@/lib/collections";
 import { getAllLenses } from "@/lib/lens";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
+import { ACTION_PRIMARY_CLS } from "@/lib/ui-tokens";
 import CollectionBreadcrumb from "@/components/CollectionBreadcrumb";
 
 type Params = Promise<{ locale: string; mount: string }>;
@@ -152,9 +154,10 @@ export default async function CollectionsIndexPage({
       <footer className="flex justify-center">
         <Link
           href="/lenses/x"
-          className="rounded-full bg-zinc-900 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          className={`inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold ${ACTION_PRIMARY_CLS}`}
         >
           {t("browseAllPill", { count: totalLenses })}
+          <ArrowRight size={15} aria-hidden="true" />
         </Link>
       </footer>
     </main>

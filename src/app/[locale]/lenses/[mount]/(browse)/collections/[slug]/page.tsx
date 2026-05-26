@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { COLLECTIONS, getRelatedCollections } from "@/lib/collections";
 import { getAllLenses } from "@/lib/lens";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
+import { ACTION_ESCAPE_CLS } from "@/lib/ui-tokens";
 import CollectionLensGrid from "@/components/CollectionLensGrid";
 import RelatedCollectionCard from "@/components/RelatedCollectionCard";
-import BrowseAllTile from "@/components/BrowseAllTile";
 import BackToTopButton from "@/components/BackToTopButton";
 import CollectionBreadcrumb from "@/components/CollectionBreadcrumb";
 
@@ -77,7 +78,6 @@ export default async function CollectionPage({
   const stats = t("stats", { count: lenses.length, brandCount });
   const allXLenses = getAllLenses(locale).filter((l) => l.mount === "X");
   const related = getRelatedCollections(slug, allXLenses, locale);
-  const allBrandCount = new Set(allXLenses.map((l) => l.brand)).size;
 
   const relatedWithStats = related.map((c) => {
     const ls = allXLenses.filter((l) => c.filter(l, locale));
@@ -131,10 +131,16 @@ export default async function CollectionPage({
                 />
               </li>
             ))}
-            <li>
-              <BrowseAllTile lensCount={allXLenses.length} brandCount={allBrandCount} />
-            </li>
           </ul>
+          <div className="mt-6 flex justify-center border-t border-zinc-100 pt-5 dark:border-zinc-800">
+            <Link
+              href="/lenses/x"
+              className={`rounded-xl ${ACTION_ESCAPE_CLS}`}
+            >
+              <span>{t("browseAllPill", { count: allXLenses.length })}</span>
+              <ArrowRight size={15} className="text-zinc-400 transition-colors group-hover:text-white dark:text-zinc-500 dark:group-hover:text-zinc-900" aria-hidden="true" />
+            </Link>
+          </div>
         </footer>
       </main>
       <BackToTopButton />

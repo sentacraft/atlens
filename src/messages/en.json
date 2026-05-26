@@ -518,7 +518,7 @@
     "lensCount": "{count} lenses",
     "browseAllEyebrow": "X mount",
     "browseAllTitle": "Browse all lenses",
-    "browseAllPill": "Browse all {count} X-mount lenses →",
+    "browseAllPill": "Browse all {count} X-mount lenses",
     "viewAllCollections": "View all collections",
     "breadcrumbCollections": "Collections"
   }

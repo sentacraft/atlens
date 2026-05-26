@@ -16,6 +16,21 @@ export const ACTION_PRIMARY_CLS =
 export const ACTION_OUTLINE_CLS =
   "inline-flex h-10 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800";
 
+/**
+ * Escape-level CTA — outlined by default, inverts to filled on hover.
+ * Used when the action exits the current hierarchy (e.g. "browse all lenses" at the
+ * bottom of a collection page). Visually between outline and primary: lighter at rest,
+ * but demands attention on interaction.
+ *
+ * Pair with a Lucide icon (`group-hover:text-white`) inside for the arrow.
+ * Add `rounded-xl` or `rounded-full` per usage site.
+ */
+export const ACTION_ESCAPE_CLS =
+  "group inline-flex h-12 items-center gap-2.5 border border-zinc-900 bg-white pl-5 pr-4 text-sm font-medium text-zinc-900 " +
+  "transition-colors duration-150 hover:bg-zinc-900 hover:text-white active:bg-zinc-800 " +
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900 " +
+  "dark:border-zinc-100 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:bg-zinc-100 dark:hover:text-zinc-900 dark:active:bg-zinc-200";
+
 /** Selected card border + ring (e.g. lens card added to compare). */
 export const CARD_SELECTED_BORDER_CLS =
   "border-zinc-900 ring-1 ring-zinc-900 shadow-lg shadow-zinc-900/10 dark:border-zinc-100 dark:ring-zinc-100 dark:shadow-zinc-100/10";
