@@ -528,6 +528,7 @@
     "category_focus": "对焦方式",
     "lensCount": "{count} 支镜头",
     "browseAllEyebrow": "X 卡口 · 完整库",
-    "browseAllTitle": "浏览全部 X 卡口镜头"
+    "browseAllTitle": "浏览全部 X 卡口镜头",
+    "breadcrumbCollections": "专题"
   }
 }

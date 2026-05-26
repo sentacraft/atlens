@@ -528,6 +528,7 @@
     "category_focus": "Focus Type",
     "lensCount": "{count} lenses",
     "browseAllEyebrow": "X mount · Full library",
-    "browseAllTitle": "Browse all X-mount lenses"
+    "browseAllTitle": "Browse all X-mount lenses",
+    "breadcrumbCollections": "Collections"
   }
 }

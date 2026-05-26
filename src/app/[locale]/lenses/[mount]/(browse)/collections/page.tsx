@@ -16,6 +16,7 @@ import {
 } from "@/lib/collections";
 import { getAllLenses } from "@/lib/lens";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
+import CollectionBreadcrumb from "@/components/CollectionBreadcrumb";
 
 type Params = Promise<{ locale: string; mount: string }>;
 
@@ -114,6 +115,9 @@ export default async function CollectionsIndexPage({
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">
       <header className="mb-10">
+        <div className="mb-4">
+          <CollectionBreadcrumb />
+        </div>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
           {t("indexTitle")}
         </h1>

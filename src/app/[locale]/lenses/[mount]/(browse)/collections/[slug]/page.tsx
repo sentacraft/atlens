@@ -8,6 +8,7 @@ import CollectionLensGrid from "@/components/CollectionLensGrid";
 import RelatedCollectionCard from "@/components/RelatedCollectionCard";
 import BrowseAllTile from "@/components/BrowseAllTile";
 import BackToTopButton from "@/components/BackToTopButton";
+import CollectionBreadcrumb from "@/components/CollectionBreadcrumb";
 
 type Params = Promise<{ locale: string; mount: string; slug: string }>;
 
@@ -32,6 +33,8 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: "Collection" });
   const title = localized(collection.title, locale);
+  const mountLabel = locale === "zh" ? "富士 X 卡口" : "Fujifilm X-Mount";
+  const seoTitle = `${title} — ${mountLabel}`;
   const description = localized(collection.description, locale);
 
   const lenses = getAllLenses(locale).filter((l) => collection.filter(l, locale));
@@ -40,10 +43,10 @@ export async function generateMetadata({
   const metaDesc = `${prefix} ${description}`;
 
   return {
-    title,
+    title: seoTitle,
     description: metaDesc,
     openGraph: {
-      title: `${title} | X-Glass`,
+      title: `${seoTitle} | X-Glass`,
       description: metaDesc,
       images: defaultOgImages(),
     },
@@ -95,6 +98,9 @@ export default async function CollectionPage({
     <>
       <main className="mx-auto max-w-6xl px-4 py-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))]">
         <header className="mb-8">
+          <div className="mb-4">
+            <CollectionBreadcrumb title={title} />
+          </div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             {title}
           </h1>
