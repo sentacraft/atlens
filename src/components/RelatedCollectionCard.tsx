@@ -36,10 +36,10 @@ export default function RelatedCollectionCard({
         />
       </div>
       <div className="flex min-w-0 flex-1 flex-col justify-center px-3 py-2">
-        <h3 className="text-xs font-semibold leading-snug text-zinc-900 dark:text-zinc-50">
+        <h3 className="text-sm font-semibold leading-snug text-zinc-900 dark:text-zinc-50">
           {title}
         </h3>
-        <p className="mt-0.5 text-[10px] text-zinc-500 dark:text-zinc-400">
+        <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
           {statsLabel}
         </p>
       </div>
