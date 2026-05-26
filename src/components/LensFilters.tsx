@@ -14,6 +14,11 @@ import FeatureToggleGroup from "./lens-filters/FeatureToggleGroup";
 import FilterRow from "./lens-filters/FilterRow";
 import MultiSelectChipGroup from "./lens-filters/MultiSelectChipGroup";
 import TypeSegmentedControl from "./lens-filters/TypeSegmentedControl";
+import {
+  filterPillClass,
+  filterPillActiveClass,
+  filterPillDefaultActiveClass,
+} from "./lens-filters/styles";
 import { useFiltersTelemetry } from "./LensFilters.telemetry";
 
 interface Props {
@@ -34,7 +39,7 @@ export default function LensFilters({
   const tBrand = useTranslations("Brands");
   const [secondaryOpen, setSecondaryOpen] = useState(false);
 
-  const BRAND_PREVIEW_LIMIT = 3;
+  const BRAND_PREVIEW_LIMIT = 5;
   const brandJoiner = t("brandSeparator");
   const brandNames = Object.fromEntries(brands.map((b) => [b, tBrand(b)]));
   const selectedBrandNames = filters.brands.map((b) => brandNames[b] ?? b);
@@ -109,11 +114,11 @@ export default function LensFilters({
     { value: "manual" as FocusFilter, label: t("focusManual") },
   ] as { value: FocusFilter | null; label: string }[];
 
-  const hasHiddenActiveFilters =
-    filters.focalCategories.length > 0 ||
-    filters.features.length > 0 ||
-    filters.opticalTrait !== null ||
-    filters.focusMotorClass !== null;
+  const hiddenActiveFilterCount =
+    (filters.focalCategories.length > 0 ? 1 : 0) +
+    (filters.features.length > 0 ? 1 : 0) +
+    (filters.opticalTrait !== null ? 1 : 0) +
+    (filters.focusMotorClass !== null ? 1 : 0);
 
   const allOptionLabel = t("allTypes");
 
@@ -170,8 +175,10 @@ export default function LensFilters({
           secondaryOpen && "rotate-180",
         )}
       />
-      {hasHiddenActiveFilters && !secondaryOpen && (
-        <span className="h-1.5 w-1.5 rounded-full bg-zinc-900 dark:bg-zinc-100" />
+      {hiddenActiveFilterCount > 0 && !secondaryOpen && (
+        <span className="inline-flex size-4 items-center justify-center rounded-full bg-zinc-900 text-[10px] font-semibold leading-none text-white dark:bg-zinc-100 dark:text-zinc-900">
+          {hiddenActiveFilterCount}
+        </span>
       )}
     </button>
   );
@@ -179,7 +186,7 @@ export default function LensFilters({
   return (
     <div className="flex min-w-0 flex-1 flex-col">
       {/* Primary filters: always visible on all viewports */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2 sm:gap-3">
         <div className="sm:hidden">
           <BrandFilterMenu
             brands={brands}
@@ -204,21 +211,23 @@ export default function LensFilters({
           </FilterRow>
         </div>
 
-        <FilterRow label={t("lensType")}>
+        <FilterRow label={t("lensType")} labelOn="desktop">
           <TypeSegmentedControl
             ariaLabel={t("lensType")}
             options={typeOptions}
             value={filters.typeFilter}
             onChange={(v) => updateFilters("typeFilter", v)}
+            mobileLabelOverrides={{ null: t("anyType") }}
           />
         </FilterRow>
 
-        <FilterRow label={t("focusFilter")}>
+        <FilterRow label={t("focusFilter")} labelOn="desktop">
           <TypeSegmentedControl
             ariaLabel={t("focusFilter")}
             options={focusOptions}
             value={filters.focusFilter}
             onChange={(v) => updateFilters("focusFilter", v)}
+            mobileLabelOverrides={{ null: t("anyFocus") }}
           />
         </FilterRow>
 
@@ -233,7 +242,7 @@ export default function LensFilters({
         )}
       >
         <div className="min-h-0 overflow-hidden">
-          <div className="flex flex-col gap-3 pt-3 pb-1">
+          <div className="flex flex-col gap-3.5 pt-3 pb-1 sm:gap-3">
             <FilterRow label={t("focalRange")}>
               <MultiSelectChipGroup
                 allLabel={allOptionLabel}
@@ -247,36 +256,108 @@ export default function LensFilters({
               <FeatureToggleGroup options={featureOptions} />
             </FilterRow>
 
-            <FilterRow label={t("usage")}>
+            <FilterRow label={t("usage")} labelOn="desktop">
               <TypeSegmentedControl
                 ariaLabel={t("usage")}
                 options={usageOptions}
                 value={filters.usage}
                 onChange={(v) => updateFilters("usage", v)}
+                mobileLabelOverrides={{
+                  photo: t("usagePhotoMobile"),
+                  cine: t("usageCineMobile"),
+                }}
               />
             </FilterRow>
 
             {availableOpticalTraits.length > 0 && (
-              <FilterRow label={t("opticalTraitFilter")}>
+              <>
+                <div className="sm:hidden">
+                  <FilterRow label={t("opticalTraitFilter")}>
+                    <div className="flex flex-wrap gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => updateFilters("opticalTrait", null)}
+                        aria-pressed={filters.opticalTrait === null}
+                        className={cn(
+                          filters.opticalTrait === null ? filterPillDefaultActiveClass : filterPillClass,
+                          "shrink-0 whitespace-nowrap",
+                        )}
+                      >
+                        {allOptionLabel}
+                      </button>
+                      {availableOpticalTraits.map((trait) => (
+                        <button
+                          key={trait}
+                          type="button"
+                          onClick={() => updateFilters("opticalTrait", trait)}
+                          aria-pressed={filters.opticalTrait === trait}
+                          className={cn(
+                            filters.opticalTrait === trait ? filterPillActiveClass : filterPillClass,
+                            "shrink-0 whitespace-nowrap",
+                          )}
+                        >
+                          {tBadge(trait)}
+                        </button>
+                      ))}
+                    </div>
+                  </FilterRow>
+                </div>
+                <div className="hidden sm:block">
+                  <FilterRow label={t("opticalTraitFilter")}>
+                    <TypeSegmentedControl
+                      ariaLabel={t("opticalTraitFilter")}
+                      options={opticalTraitOptions}
+                      value={filters.opticalTrait}
+                      onChange={(v) => updateFilters("opticalTrait", v)}
+                      wrap
+                    />
+                  </FilterRow>
+                </div>
+              </>
+            )}
+
+            <div className="sm:hidden">
+              <FilterRow label={t("focusMotorFilter")}>
+                <div className="flex flex-wrap gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => updateFilters("focusMotorClass", null)}
+                    aria-pressed={filters.focusMotorClass === null}
+                    className={cn(
+                      filters.focusMotorClass === null ? filterPillDefaultActiveClass : filterPillClass,
+                      "shrink-0 whitespace-nowrap",
+                    )}
+                  >
+                    {allOptionLabel}
+                  </button>
+                  {focusMotorOptions.slice(1).map((option) => (
+                    <button
+                      key={String(option.value)}
+                      type="button"
+                      onClick={() => updateFilters("focusMotorClass", option.value)}
+                      aria-pressed={filters.focusMotorClass === option.value}
+                      className={cn(
+                        filters.focusMotorClass === option.value ? filterPillActiveClass : filterPillClass,
+                        "shrink-0 whitespace-nowrap",
+                      )}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </FilterRow>
+            </div>
+            <div className="hidden sm:block">
+              <FilterRow label={t("focusMotorFilter")}>
                 <TypeSegmentedControl
-                  ariaLabel={t("opticalTraitFilter")}
-                  options={opticalTraitOptions}
-                  value={filters.opticalTrait}
-                  onChange={(v) => updateFilters("opticalTrait", v)}
+                  ariaLabel={t("focusMotorFilter")}
+                  options={focusMotorOptions}
+                  value={filters.focusMotorClass}
+                  onChange={(v) => updateFilters("focusMotorClass", v)}
                   wrap
                 />
               </FilterRow>
-            )}
-
-            <FilterRow label={t("focusMotorFilter")}>
-              <TypeSegmentedControl
-                ariaLabel={t("focusMotorFilter")}
-                options={focusMotorOptions}
-                value={filters.focusMotorClass}
-                onChange={(v) => updateFilters("focusMotorClass", v)}
-                wrap
-              />
-            </FilterRow>
+            </div>
           </div>
         </div>
       </div>

@@ -11,6 +11,7 @@ interface TypeSegmentedControlProps<T> {
   value: T;
   onChange: (value: T) => void;
   wrap?: boolean;
+  mobileLabelOverrides?: Record<string, string>;
 }
 
 export default function TypeSegmentedControl<T>({
@@ -19,15 +20,20 @@ export default function TypeSegmentedControl<T>({
   value,
   onChange,
   wrap = false,
+  mobileLabelOverrides,
 }: TypeSegmentedControlProps<T>) {
   return (
     <div
       role="radiogroup"
       aria-label={ariaLabel}
-      className={cn("w-fit rounded-lg bg-zinc-100 dark:bg-zinc-800 p-1", wrap ? "flex flex-wrap" : "inline-flex")}
+      className={cn(
+        "w-full rounded-lg bg-zinc-100 dark:bg-zinc-800 p-1 sm:w-fit",
+        wrap ? "flex flex-wrap" : "flex sm:inline-flex",
+      )}
     >
       {options.map((option) => {
         const selected = value === option.value;
+        const mobileLabel = mobileLabelOverrides?.[String(option.value)];
         return (
           <button
             key={option.label}
@@ -35,14 +41,21 @@ export default function TypeSegmentedControl<T>({
             role="radio"
             aria-checked={selected}
             className={cn(
-              "h-7 rounded-md px-4 text-[12px] font-medium transition-colors",
+              "h-7 rounded-md px-4 text-[12px] font-medium transition-colors flex-1 sm:flex-none",
               selected
                 ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50 dark:shadow-none"
                 : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
             )}
             onClick={() => onChange(option.value)}
           >
-            {option.label}
+            {mobileLabel ? (
+              <>
+                <span className="sm:hidden">{mobileLabel}</span>
+                <span className="hidden sm:inline">{option.label}</span>
+              </>
+            ) : (
+              option.label
+            )}
           </button>
         );
       })}
