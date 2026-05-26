@@ -1,31 +1,52 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { useEffectiveMount } from "@/hooks/useMountParam";
-import { mountToUrlSegment } from "@/lib/mount";
 
-/**
- * "Back to lenses" affordance for third-level pages (lens detail, compare).
- * Surfaces the way home so users who arrived deep in the tree don't have to
- * rely on the browser back button or hunt for the "镜头" link in the nav.
- *
- * Mount-aware: the target is `/lenses/{currentMount}`, so a user browsing
- * G-mount detail pages goes back to the G-mount list, not X.
- */
-export default function Breadcrumb() {
-  const t = useTranslations("LensList");
-  const mount = useEffectiveMount();
-  const seg = mountToUrlSegment(mount);
+export interface BreadcrumbSegment {
+  label: string;
+  href: string;
+}
+
+interface BreadcrumbProps {
+  segments: BreadcrumbSegment[];
+  current: string;
+}
+
+const linkCls =
+  "text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50";
+
+export default function Breadcrumb({ segments, current }: BreadcrumbProps) {
+  const parent = segments[segments.length - 1];
 
   return (
-    <Link
-      href={`/lenses/${seg}`}
-      className="inline-flex w-fit items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
-    >
-      <ArrowLeft className="size-3.5" />
-      {t("backLink")}
-    </Link>
+    <>
+      {/* Mobile: back link to parent */}
+      {parent && (
+        <Link
+          href={parent.href}
+          className={`inline-flex w-fit items-center gap-1.5 text-sm sm:hidden ${linkCls}`}
+        >
+          <ArrowLeft className="size-3.5" />
+          {parent.label}
+        </Link>
+      )}
+
+      {/* Desktop: full hierarchical breadcrumb */}
+      <nav
+        aria-label="breadcrumb"
+        className="hidden items-center gap-1.5 text-xs sm:flex"
+      >
+        {segments.map((seg, i) => (
+          <span key={i} className="contents">
+            <Link href={seg.href} className={linkCls}>
+              {seg.label}
+            </Link>
+            <ChevronRight className="size-3 text-zinc-300 dark:text-zinc-600" />
+          </span>
+        ))}
+        <span className="text-zinc-900 dark:text-zinc-100">{current}</span>
+      </nav>
+    </>
   );
 }

@@ -5,7 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Flag } from "lucide-react";
 import { routing } from "@/i18n/routing";
 import { getLensesByMount, getLensUrl } from "@/lib/lens";
-import { urlSegmentToMount } from "@/lib/mount";
+import { urlSegmentToMount, mountToUrlSegment } from "@/lib/mount";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { buildSpecGroups, resolveSpecGroups } from "@/lib/lens-spec-groups";
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens-spec-groups";
@@ -172,8 +172,10 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const t = await getTranslations("LensDetail");
   const tBrand = await getTranslations("Brands");
   const tPricing = await getTranslations("Pricing");
+  const tNav = await getTranslations("Nav");
   const url = getLensUrl(lens, locale);
 
+  const seg = mountToUrlSegment(resolvedMount);
   // Derived values shared between the visible header and the Product JSON-LD.
   const brandName = tBrand(lens.brand);
   const displayName = lensDisplayName(brandName, lens.series, lens.model);
@@ -284,7 +286,10 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     <JsonLd data={productSchema} />
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] flex flex-col gap-8">
       <div className="flex items-center justify-between">
-        <Breadcrumb />
+        <Breadcrumb
+              segments={[{ label: tNav("lenses"), href: `/lenses/${seg}` }]}
+              current={displayName}
+            />
         <div className="flex items-center gap-1">
           <ShareButton lenses={[lens]} triggerClassName={UTILITY_BTN_CLS} />
           <FeedbackTrigger
