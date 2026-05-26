@@ -29,7 +29,7 @@ export default function TypeSegmentedControl<T>({
       role="radiogroup"
       aria-label={ariaLabel}
       className={cn(
-        "rounded-lg bg-zinc-100 dark:bg-zinc-800 p-1",
+        "rounded-lg bg-zinc-100 dark:bg-zinc-800 p-0.5 sm:p-1",
         compact
           ? "flex min-w-0 flex-1"
           : cn("w-full sm:w-fit", wrap ? "flex flex-wrap" : "flex sm:inline-flex"),

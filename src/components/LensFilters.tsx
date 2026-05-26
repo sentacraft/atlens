@@ -172,7 +172,7 @@ export default function LensFilters({
     <button
       type="button"
       className={cn(
-        "inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em]",
+        "inline-flex min-h-11 items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em] sm:min-h-0",
         "text-zinc-700 transition-colors hover:text-zinc-900",
         "dark:text-zinc-300 dark:hover:text-zinc-100",
       )}
