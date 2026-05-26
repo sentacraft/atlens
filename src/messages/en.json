@@ -223,6 +223,8 @@
     "fieldOfficialLink": "Official Link",
     "fieldLensImage": "Lens Image",
     "fieldGroupMedia": "Media & Links",
+    "collectionsTitle": "Featured In",
+    "viewAllCollections": "View all collections",
     "notFoundTitle": "Lens Not Found"
   },
   "Brands": {
@@ -495,5 +497,29 @@
     "whereToBuy": "Where to buy",
     "buyAt": "Buy at",
     "disclosureDetail": "Some retailer links are affiliate. X-Glass may earn a small commission at no extra cost to you."
+  },
+  "Collection": {
+    "stats": "{count} lenses · {brandCount} brands",
+    "metaPrefix": "{count} lenses from {brandCount} brands.",
+    "relatedCollections": "Related collections",
+    "indexTitle": "Lens Collections for Fujifilm X-Mount",
+    "indexDescription": "Curated lens collections for the Fujifilm X-mount system — organized by focal length, brand, aperture, and more.",
+    "indexStats": "{count} collections · {lensCount} lenses total",
+    "category_prime": "Prime Lenses",
+    "category_zoom": "Zoom Lenses",
+    "category_brand": "By Brand",
+    "category_series": "By Series",
+    "category_price": "By Price",
+    "category_portability": "Portability",
+    "category_aperture": "Aperture",
+    "category_trait": "Features",
+    "category_dedicated": "Dedicated Lenses",
+    "category_focus": "Focus Type",
+    "lensCount": "{count} lenses",
+    "browseAllEyebrow": "X mount",
+    "browseAllTitle": "Browse all lenses",
+    "browseAllPill": "Browse all {count} X-mount lenses",
+    "viewAllCollections": "View all collections",
+    "breadcrumbCollections": "Collections"
   }
 }

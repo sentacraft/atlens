@@ -223,6 +223,8 @@
     "fieldOfficialLink": "官方链接",
     "fieldLensImage": "镜头图片",
     "fieldGroupMedia": "媒体与链接",
+    "collectionsTitle": "所属专题",
+    "viewAllCollections": "查看所有专题",
     "notFoundTitle": "未找到这支镜头"
   },
   "Brands": {
@@ -495,5 +497,29 @@
     "whereToBuy": "购买渠道",
     "buyAt": "购买",
     "disclosureDetail": "部分购买链接含电商平台合作。你的购买价格不受任何影响，但 X-Glass 可能从中获得少量佣金。"
+  },
+  "Collection": {
+    "stats": "{count} 支镜头 · {brandCount} 个品牌",
+    "metaPrefix": "{count} 支镜头，{brandCount} 个品牌。",
+    "relatedCollections": "相关专题",
+    "indexTitle": "富士 X 卡口镜头专题",
+    "indexDescription": "富士 X 卡口镜头专题合集——按焦段、品牌、光圈等维度分类整理。",
+    "indexStats": "{count} 个专题 · 共 {lensCount} 支镜头",
+    "category_prime": "定焦",
+    "category_zoom": "变焦",
+    "category_brand": "品牌",
+    "category_series": "系列",
+    "category_price": "价格",
+    "category_portability": "便携",
+    "category_aperture": "光圈",
+    "category_trait": "特性",
+    "category_dedicated": "专用镜头",
+    "category_focus": "对焦方式",
+    "lensCount": "{count} 支镜头",
+    "browseAllEyebrow": "X 卡口",
+    "browseAllTitle": "浏览全部镜头",
+    "browseAllPill": "浏览全部 {count} 支 X 卡口镜头",
+    "viewAllCollections": "查看所有专题",
+    "breadcrumbCollections": "专题"
   }
 }

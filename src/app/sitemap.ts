@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/config/site";
 import { routing } from "@/i18n/routing";
+import { COLLECTIONS } from "@/lib/collections";
 import xLensesData from "@/data/lenses.json";
 import gfxLensesData from "@/data/lenses-gfx.json";
 
@@ -17,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/lenses/x/compare",
     "/lenses/gfx",
     "/lenses/gfx/compare",
+    "/lenses/x/collections",
     "/about",
     "/get",
   ];
@@ -52,5 +54,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       }))
   );
 
-  return [...staticEntries, ...xLensEntries, ...gfxLensEntries];
+  const collectionEntries: MetadataRoute.Sitemap = Object.keys(COLLECTIONS).flatMap(
+    (slug) =>
+      LOCALES.map((locale) => ({
+        url: url(`/${locale}/lenses/x/collections/${slug}`),
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      }))
+  );
+
+  return [...staticEntries, ...collectionEntries, ...xLensEntries, ...gfxLensEntries];
 }
