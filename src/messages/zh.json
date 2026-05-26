@@ -47,7 +47,8 @@
     "x": "X 卡口",
     "gfx": "G 卡口",
     "xCaption": "APS-C",
-    "gfxCaption": "中画幅"
+    "gfxCaption": "中画幅",
+    "gfxBetaNotice": "G 卡口数据仍在完善中，部分镜头和功能暂未覆盖。"
   },
   "Home": {
     "cta": "浏览镜头",
