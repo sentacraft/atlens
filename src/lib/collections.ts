@@ -78,6 +78,7 @@ const FILTERS: Record<string, LensFilter> = {
   voigtlander: xBrand("voigtlander"),
   laowa: xBrand("laowa"),
   tamron: xBrand("tamron"),
+  sgimage: xBrand("sgimage"),
 
   // --- Series (系列) ---
   "fujifilm-xf": (lens) =>
@@ -182,7 +183,7 @@ export const COLLECTIONS: Record<string, LensCollection> = Object.fromEntries(
 
 export const PRIME_SLUGS = ["23mm", "35mm", "50mm", "56mm", "85mm", "wide-angle"];
 export const ZOOM_SLUGS = ["wide-zoom", "standard-zoom", "travel-zoom", "tele-zoom", "super-tele"];
-export const BRAND_SLUGS = ["fujifilm", "7artisans", "viltrox", "ttartisan", "sigma", "brightinstar", "voigtlander", "laowa", "tamron"];
+export const BRAND_SLUGS = ["fujifilm", "7artisans", "viltrox", "ttartisan", "sigma", "brightinstar", "voigtlander", "laowa", "tamron", "sgimage"];
 export const SERIES_SLUGS = ["fujifilm-xf", "fujifilm-xc", "sigma-contemporary", "viltrox-air", "viltrox-pro", "voigtlander-nokton"];
 export const PRICE_SLUGS = ["under-200", "under-400"];
 export const PORTABILITY_SLUGS = ["under-200g", "compact-primes"];

@@ -59,7 +59,7 @@
       "slug": "7artisans",
       "title": {
         "en": "7Artisans Lenses",
-        "zh": "七工匠系列镜头"
+        "zh": "七工匠镜头"
       },
       "description": {
         "en": "One of the most prolific third-party manufacturers for the X-mount. 7Artisans is best known for its metal-constructed manual lenses under the $200 mark, though their AF lineup is growing fast. They offer a tactile, mechanical shooting experience and vintage rendering characteristics that modern autofocus lenses often lack.",
@@ -81,7 +81,7 @@
       "slug": "ttartisan",
       "title": {
         "en": "TTArtisan Lenses",
-        "zh": "铭匠光学系列镜头"
+        "zh": "铭匠镜头"
       },
       "description": {
         "en": "From ultra-compact pancake lenses that turn your camera into a pocketable setup to exotic f/0.95 glass designed for extreme low light, TTArtisan covers the unconventional. Primarily manual focus with a growing AF lineup, these lenses offer distinct retro aesthetics, compact form factors, and unique drawing styles for creative photography.",
@@ -92,7 +92,7 @@
       "slug": "sigma",
       "title": {
         "en": "Sigma Lenses",
-        "zh": "适马系列镜头"
+        "zh": "适马镜头"
       },
       "description": {
         "en": "Sigma brings its renowned full-frame optical heritage to the Fujifilm system with seamless, native autofocus integration. Known for high resolving power and robust build quality, Sigma's expanding X-mount lineup successfully fills critical focal length gaps for demanding shooters.",
@@ -301,7 +301,7 @@
       "slug": "brightinstar",
       "title": {
         "en": "Brightin Star Lenses",
-        "zh": "星曜系列镜头"
+        "zh": "星曜镜头"
       },
       "description": {
         "en": "A developing index of compact, economic manual lenses from Brightin Star. Emphasizing low-profile footprints and accessible pricing from wide to standard lengths, these options offer a straightforward, tactile path into creative mechanics without a substantial cost barrier.",
@@ -312,7 +312,7 @@
       "slug": "voigtlander",
       "title": {
         "en": "Voigtländer Lenses",
-        "zh": "福伦达系列镜头"
+        "zh": "福伦达镜头"
       },
       "description": {
         "en": "Precision-crafted, German-heritage manual focus instruments. Celebrated for distinctive tactile mechanical feedback, minimal geometric distortion, and a rich micro-contrast profile that balances classic drawing styles with modern sharpness. A definitive selection for intentional, slow-paced creators.",
@@ -323,7 +323,7 @@
       "slug": "laowa",
       "title": {
         "en": "Laowa Lenses",
-        "zh": "老蛙系列镜头"
+        "zh": "老蛙镜头"
       },
       "description": {
         "en": "Venus Optics' Laowa lineage thrives on non-standard engineering, building where others hesitate. Famous for Zero-D rectilinear ultra-wides, structural macro probes, and compact wide zooms, their X-mount options exist specifically to fill the gaps left by mainstream manufacturers.",
@@ -334,11 +334,22 @@
       "slug": "tamron",
       "title": {
         "en": "Tamron Lenses",
-        "zh": "腾龙系列镜头"
+        "zh": "腾龙镜头"
       },
       "description": {
         "en": "Tamron translates its renowned optical versatility to native X-mount architecture. Featuring fast, constant-aperture zoom options and compact form factors, these lenses deliver compelling value while operating with seamless native autofocus protocols.",
         "zh": "日系变焦大厂腾龙将其招牌式的研发实力原生移植到了富士 X 卡口。主打大光圈恒定变焦与紧凑的镜身轻量化结构，在规格上往往比原厂更具针对性。原生电子触点确保了出色的自动对焦与防抖通讯。"
+      }
+    },
+    {
+      "slug": "sgimage",
+      "title": {
+        "en": "SG Image Lenses",
+        "zh": "深光影像镜头"
+      },
+      "description": {
+        "en": "SG Image (深光影像) offers a diverse manual-focus lineup for X-mount, ranging from ultra-slim pancake lenses and a fisheye to fast f/0.95 primes and shaped-aperture creative glass. A growing brand for shooters who want affordable, distinctive optical tools.",
+        "zh": "深光影像（SG Image）在 X 卡口的产品线覆盖面出人意料：从极致轻薄的饼干头、鱼眼，到 f/0.95 大光圈和异形光圈创意镜头，手动对焦为主，价格亲民，适合喜欢尝鲜、追求个性出片的玩家。"
       }
     },
     {
