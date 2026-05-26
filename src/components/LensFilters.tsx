@@ -34,7 +34,7 @@ export default function LensFilters({
   const tBrand = useTranslations("Brands");
   const [secondaryOpen, setSecondaryOpen] = useState(false);
 
-  const BRAND_PREVIEW_LIMIT = 3;
+  const BRAND_PREVIEW_LIMIT = 2;
   const brandJoiner = t("brandSeparator");
   const brandNames = Object.fromEntries(brands.map((b) => [b, tBrand(b)]));
   const selectedBrandNames = filters.brands.map((b) => brandNames[b] ?? b);
@@ -109,11 +109,25 @@ export default function LensFilters({
     { value: "manual" as FocusFilter, label: t("focusManual") },
   ] as { value: FocusFilter | null; label: string }[];
 
-  const hasHiddenActiveFilters =
-    filters.focalCategories.length > 0 ||
-    filters.features.length > 0 ||
-    filters.opticalTrait !== null ||
-    filters.focusMotorClass !== null;
+  const mobileTypeOptions = [
+    { value: null, label: t("anyType") },
+    ...LENS_TYPES.map((type) => ({
+      value: type,
+      label: t(type === "prime" ? "primesMobile" : "zoomsMobile"),
+    })),
+  ] as { value: LensType | null; label: string }[];
+
+  const mobileFocusOptions = [
+    { value: null, label: t("anyFocus") },
+    { value: "auto" as FocusFilter, label: t("focusAutoMobile") },
+    { value: "manual" as FocusFilter, label: t("focusManualMobile") },
+  ] as { value: FocusFilter | null; label: string }[];
+
+  const hiddenActiveFilterCount =
+    (filters.focalCategories.length > 0 ? 1 : 0) +
+    (filters.features.length > 0 ? 1 : 0) +
+    (filters.opticalTrait !== null ? 1 : 0) +
+    (filters.focusMotorClass !== null ? 1 : 0);
 
   const allOptionLabel = t("allTypes");
 
@@ -149,11 +163,11 @@ export default function LensFilters({
     onClick: () => updateFilters("features", toggleValue(filters.features, key)),
   }));
 
-  const filtersButton = (
+  const filtersToggle = (
     <button
       type="button"
       className={cn(
-        "inline-flex items-center gap-1.5 self-start my-1.5 text-[11px] font-medium uppercase tracking-[0.08em]",
+        "inline-flex min-h-11 items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em] sm:min-h-0",
         "text-zinc-700 transition-colors hover:text-zinc-900",
         "dark:text-zinc-300 dark:hover:text-zinc-100",
       )}
@@ -170,8 +184,10 @@ export default function LensFilters({
           secondaryOpen && "rotate-180",
         )}
       />
-      {hasHiddenActiveFilters && !secondaryOpen && (
-        <span className="h-1.5 w-1.5 rounded-full bg-zinc-900 dark:bg-zinc-100" />
+      {hiddenActiveFilterCount > 0 && !secondaryOpen && (
+        <span className="inline-flex size-4 items-center justify-center rounded-full bg-zinc-900 text-[10px] font-semibold leading-none text-white dark:bg-zinc-100 dark:text-zinc-900">
+          {hiddenActiveFilterCount}
+        </span>
       )}
     </button>
   );
@@ -179,8 +195,8 @@ export default function LensFilters({
   return (
     <div className="flex min-w-0 flex-1 flex-col">
       {/* Primary filters: always visible on all viewports */}
-      <div className="flex flex-col gap-3">
-        <div className="sm:hidden">
+      <div className="flex flex-col gap-2 sm:gap-3">
+        <div className="flex items-center justify-between sm:hidden">
           <BrandFilterMenu
             brands={brands}
             selected={filters.brands}
@@ -192,6 +208,7 @@ export default function LensFilters({
             }
             onClear={() => updateFilters("brands", [])}
           />
+          <div className="shrink-0">{filtersToggle}</div>
         </div>
         <div className="hidden sm:block">
           <FilterRow label={t("brand")}>
@@ -204,25 +221,44 @@ export default function LensFilters({
           </FilterRow>
         </div>
 
-        <FilterRow label={t("lensType")}>
+        <div className="flex gap-2 sm:hidden">
           <TypeSegmentedControl
             ariaLabel={t("lensType")}
-            options={typeOptions}
+            options={mobileTypeOptions}
             value={filters.typeFilter}
             onChange={(v) => updateFilters("typeFilter", v)}
+            compact
           />
-        </FilterRow>
-
-        <FilterRow label={t("focusFilter")}>
           <TypeSegmentedControl
             ariaLabel={t("focusFilter")}
-            options={focusOptions}
+            options={mobileFocusOptions}
             value={filters.focusFilter}
             onChange={(v) => updateFilters("focusFilter", v)}
+            compact
           />
-        </FilterRow>
+        </div>
+        <div className="hidden sm:block">
+          <FilterRow label={t("lensType")}>
+            <TypeSegmentedControl
+              ariaLabel={t("lensType")}
+              options={typeOptions}
+              value={filters.typeFilter}
+              onChange={(v) => updateFilters("typeFilter", v)}
+            />
+          </FilterRow>
+        </div>
+        <div className="hidden sm:block">
+          <FilterRow label={t("focusFilter")}>
+            <TypeSegmentedControl
+              ariaLabel={t("focusFilter")}
+              options={focusOptions}
+              value={filters.focusFilter}
+              onChange={(v) => updateFilters("focusFilter", v)}
+            />
+          </FilterRow>
+        </div>
 
-        {filtersButton}
+        <div className="my-1.5 hidden sm:block">{filtersToggle}</div>
       </div>
 
       {/* Secondary filters: collapsed on mobile by default, always open on desktop */}
@@ -233,7 +269,7 @@ export default function LensFilters({
         )}
       >
         <div className="min-h-0 overflow-hidden">
-          <div className="flex flex-col gap-3 pt-3 pb-1">
+          <div className="flex flex-col gap-3.5 pt-3 pb-1 sm:gap-3">
             <FilterRow label={t("focalRange")}>
               <MultiSelectChipGroup
                 allLabel={allOptionLabel}
@@ -247,12 +283,16 @@ export default function LensFilters({
               <FeatureToggleGroup options={featureOptions} />
             </FilterRow>
 
-            <FilterRow label={t("usage")}>
+            <FilterRow label={t("usage")} labelOn="desktop">
               <TypeSegmentedControl
                 ariaLabel={t("usage")}
                 options={usageOptions}
                 value={filters.usage}
                 onChange={(v) => updateFilters("usage", v)}
+                mobileLabelOverrides={{
+                  photo: t("usagePhotoMobile"),
+                  cine: t("usageCineMobile"),
+                }}
               />
             </FilterRow>
 
