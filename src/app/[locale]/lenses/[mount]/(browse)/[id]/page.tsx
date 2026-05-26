@@ -22,8 +22,7 @@ import SpecialtyBadges from "@/components/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens-specialty";
 import { RetailersDropdown } from "@/components/RetailersDropdown";
 import { UTILITY_BTN_CLS } from "@/lib/ui-tokens";
-import { COLLECTIONS } from "@/lib/collections";
-import { getAllLenses } from "@/lib/lens";
+import { getMemberCollections } from "@/lib/collections";
 import { Link } from "@/i18n/navigation";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
@@ -263,13 +262,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   // Field options for the Report Dialog — taken directly from resolved values,
   // identical to what is rendered in the spec table below.
   const mediaGroupLabel = t("fieldGroupMedia");
-  const allXLenses = getAllLenses(locale).filter((l) => l.mount === "X");
-  const memberCollections = Object.values(COLLECTIONS)
-    .filter((c) => c.filter(lens, locale))
-    .map((c) => {
-      const lensCount = allXLenses.filter((l) => c.filter(l, locale)).length;
-      return { ...c, lensCount };
-    });
+  const memberCollections = getMemberCollections(lens, resolvedMount, locale);
 
   const priceSelection = pickPriceEntry(lens.pricing, locale);
   const reportableFields = [
@@ -418,7 +411,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               {t("collectionsTitle")}
             </h2>
             <Link
-              href="/lenses/x/collections"
+              href={`/lenses/${mount}/collections`}
               className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
             >
               {t("viewAllCollections")} →
@@ -428,7 +421,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
             {memberCollections.map((c) => (
               <Link
                 key={c.slug}
-                href={`/lenses/x/collections/${c.slug}`}
+                href={`/lenses/${mount}/collections/${c.slug}`}
                 className="group inline-flex items-center gap-2 rounded-full border border-zinc-200 px-3 py-1.5 text-sm transition-colors hover:border-zinc-900 hover:bg-zinc-900 hover:text-white dark:border-zinc-700 dark:hover:border-zinc-100 dark:hover:bg-zinc-100 dark:hover:text-zinc-900"
               >
                 <span className="font-medium text-zinc-900 group-hover:text-white dark:text-zinc-100 dark:group-hover:text-zinc-900">

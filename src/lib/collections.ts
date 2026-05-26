@@ -1,6 +1,6 @@
 import collectionsData from "../data/collections.json";
-import { isZoom } from "./lens";
-import type { Lens } from "./types";
+import { isZoom, getLensesByMount } from "./lens";
+import type { Mount, Lens } from "./types";
 
 type LensFilter = (lens: Lens, locale: string) => boolean;
 
@@ -225,4 +225,79 @@ export function getRelatedCollections(
     .filter((s) => s.overlap > 0)
     .slice(0, limit)
     .map((s) => s.collection);
+}
+
+export interface CollectionStats {
+  collection: LensCollection;
+  lenses: Lens[];
+  lensCount: number;
+  brandCount: number;
+}
+
+export function getCollectionStats(
+  slug: string,
+  mount: Mount,
+  locale: string,
+): CollectionStats | null {
+  const collection = COLLECTIONS[slug];
+  if (!collection) {
+    return null;
+  }
+  const lenses = getLensesByMount(mount, locale).filter((l) =>
+    collection.filter(l, locale),
+  );
+  return {
+    collection,
+    lenses,
+    lensCount: lenses.length,
+    brandCount: new Set(lenses.map((l) => l.brand)).size,
+  };
+}
+
+export interface RelatedCollectionStats {
+  collection: LensCollection;
+  previewLens: Lens;
+  lensCount: number;
+  brandCount: number;
+}
+
+export function getRelatedCollectionsWithStats(
+  slug: string,
+  mount: Mount,
+  locale: string,
+  limit = 4,
+): RelatedCollectionStats[] {
+  const allLenses = getLensesByMount(mount, locale);
+  const related = getRelatedCollections(slug, allLenses, locale, limit);
+  return related.map((c) => {
+    const ls = allLenses.filter((l) => c.filter(l, locale));
+    return {
+      collection: c,
+      previewLens: ls[0],
+      lensCount: ls.length,
+      brandCount: new Set(ls.map((l) => l.brand)).size,
+    };
+  });
+}
+
+export interface MemberCollectionInfo {
+  slug: string;
+  title: { en: string; zh: string };
+  description: { en: string; zh: string };
+  filter: LensFilter;
+  lensCount: number;
+}
+
+export function getMemberCollections(
+  lens: Lens,
+  mount: Mount,
+  locale: string,
+): MemberCollectionInfo[] {
+  const allLenses = getLensesByMount(mount, locale);
+  return Object.values(COLLECTIONS)
+    .filter((c) => c.filter(lens, locale))
+    .map((c) => ({
+      ...c,
+      lensCount: allLenses.filter((l) => c.filter(l, locale)).length,
+    }));
 }

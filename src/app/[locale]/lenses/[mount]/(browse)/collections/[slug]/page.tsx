@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { COLLECTIONS, getRelatedCollections } from "@/lib/collections";
-import { getAllLenses } from "@/lib/lens";
+import { COLLECTIONS, getCollectionStats, getRelatedCollectionsWithStats } from "@/lib/collections";
+import { getLensesByMount } from "@/lib/lens";
+import type { Mount } from "@/lib/types";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { ACTION_ESCAPE_CLS } from "@/lib/ui-tokens";
 import CollectionLensGrid from "@/components/CollectionLensGrid";
@@ -27,21 +28,19 @@ export async function generateMetadata({
 }: {
   params: Params;
 }): Promise<Metadata> {
-  const { locale, slug } = await params;
-  const collection = COLLECTIONS[slug];
-  if (!collection) {
+  const { locale, mount, slug } = await params;
+  const stats = getCollectionStats(slug, mount as Mount, locale);
+  if (!stats) {
     return {};
   }
 
   const t = await getTranslations({ locale, namespace: "Collection" });
-  const title = localized(collection.title, locale);
+  const title = localized(stats.collection.title, locale);
   const mountLabel = locale === "zh" ? "富士 X 卡口" : "Fujifilm X-Mount";
   const seoTitle = `${title} — ${mountLabel}`;
-  const description = localized(collection.description, locale);
+  const description = localized(stats.collection.description, locale);
 
-  const lenses = getAllLenses(locale).filter((l) => collection.filter(l, locale));
-  const brandCount = new Set(lenses.map((l) => l.brand)).size;
-  const prefix = t("metaPrefix", { count: lenses.length, brandCount });
+  const prefix = t("metaPrefix", { count: stats.lensCount, brandCount: stats.brandCount });
   const metaDesc = `${prefix} ${description}`;
 
   return {
@@ -52,7 +51,7 @@ export async function generateMetadata({
       description: metaDesc,
       images: defaultOgImages(),
     },
-    alternates: buildAlternates(locale, `lenses/x/collections/${slug}`),
+    alternates: buildAlternates(locale, `lenses/${mount}/collections/${slug}`),
   };
 }
 
@@ -61,33 +60,23 @@ export default async function CollectionPage({
 }: {
   params: Params;
 }) {
-  const { locale, slug } = await params;
+  const { locale, mount, slug } = await params;
   setRequestLocale(locale);
 
-  const collection = COLLECTIONS[slug];
-  if (!collection) {
+  const resolvedMount = mount as Mount;
+  const collectionStats = getCollectionStats(slug, resolvedMount, locale);
+  if (!collectionStats) {
     notFound();
   }
 
+  const { collection, lenses, lensCount, brandCount } = collectionStats;
   const t = await getTranslations({ locale, namespace: "Collection" });
-  const lenses = getAllLenses(locale).filter((l) => collection.filter(l, locale));
-  const brandCount = new Set(lenses.map((l) => l.brand)).size;
 
   const title = localized(collection.title, locale);
   const description = localized(collection.description, locale);
-  const stats = t("stats", { count: lenses.length, brandCount });
-  const allXLenses = getAllLenses(locale).filter((l) => l.mount === "X");
-  const related = getRelatedCollections(slug, allXLenses, locale);
-
-  const relatedWithStats = related.map((c) => {
-    const ls = allXLenses.filter((l) => c.filter(l, locale));
-    return {
-      collection: c,
-      previewLens: ls[0],
-      lensCount: ls.length,
-      brandCount: new Set(ls.map((l) => l.brand)).size,
-    };
-  });
+  const statsLabel = t("stats", { count: lensCount, brandCount });
+  const mountLenses = getLensesByMount(resolvedMount, locale);
+  const relatedWithStats = getRelatedCollectionsWithStats(slug, resolvedMount, locale);
 
   return (
     <>
@@ -100,7 +89,7 @@ export default async function CollectionPage({
             {title}
           </h1>
           <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
-            {stats}
+            {statsLabel}
           </p>
           <p className="mt-3 text-sm leading-relaxed text-zinc-700 sm:text-base dark:text-zinc-300">
             {description}
@@ -114,7 +103,7 @@ export default async function CollectionPage({
               {t("relatedCollections")}
             </h2>
             <Link
-              href="/lenses/x/collections"
+              href={`/lenses/${mount}/collections`}
               className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
             >
               {t("viewAllCollections")} →
@@ -134,10 +123,10 @@ export default async function CollectionPage({
           </ul>
           <div className="mt-6 flex justify-center border-t border-zinc-100 pt-5 dark:border-zinc-800">
             <Link
-              href="/lenses/x"
+              href={`/lenses/${mount}`}
               className={`rounded-xl ${ACTION_ESCAPE_CLS}`}
             >
-              <span>{t("browseAllPill", { count: allXLenses.length })}</span>
+              <span>{t("browseAllPill", { count: mountLenses.length })}</span>
               <ArrowRight size={15} className="text-zinc-400 transition-colors group-hover:text-white dark:text-zinc-500 dark:group-hover:text-zinc-900" aria-hidden="true" />
             </Link>
           </div>

@@ -15,7 +15,8 @@ import {
   DEDICATED_SLUGS,
   FOCUS_SLUGS,
 } from "@/lib/collections";
-import { getAllLenses } from "@/lib/lens";
+import { getLensesByMount } from "@/lib/lens";
+import type { Mount } from "@/lib/types";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { ACTION_PRIMARY_CLS } from "@/lib/ui-tokens";
 import CollectionBreadcrumb from "@/components/CollectionBreadcrumb";
@@ -31,7 +32,7 @@ export async function generateMetadata({
 }: {
   params: Params;
 }): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale, mount } = await params;
   const t = await getTranslations({ locale, namespace: "Collection" });
 
   const title = t("indexTitle");
@@ -45,17 +46,19 @@ export async function generateMetadata({
       description,
       images: defaultOgImages(),
     },
-    alternates: buildAlternates(locale, "lenses/x/collections"),
+    alternates: buildAlternates(locale, `lenses/${mount}/collections`),
   };
 }
 
 function CollectionCard({
   slug,
+  mount,
   locale,
   lensCount,
   t,
 }: {
   slug: string;
+  mount: string;
   locale: string;
   lensCount: number;
   t: (key: string, values?: Record<string, string | number | Date>) => string;
@@ -68,7 +71,7 @@ function CollectionCard({
   return (
     <li>
       <Link
-        href={`/lenses/x/collections/${slug}`}
+        href={`/lenses/${mount}/collections/${slug}`}
         className="group block rounded-xl border border-zinc-200 p-4 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900/50"
       >
         <h3 className="text-sm font-semibold text-zinc-900 group-hover:text-zinc-700 dark:text-zinc-100 dark:group-hover:text-zinc-300">
@@ -87,15 +90,15 @@ export default async function CollectionsIndexPage({
 }: {
   params: Params;
 }) {
-  const { locale } = await params;
+  const { locale, mount } = await params;
   setRequestLocale(locale);
 
   const t = await getTranslations({ locale, namespace: "Collection" });
-  const allLenses = getAllLenses(locale);
+  const mountLenses = getLensesByMount(mount as Mount, locale);
 
   const countFor = (slug: string) => {
     const c = COLLECTIONS[slug];
-    return c ? allLenses.filter((l) => c.filter(l, locale)).length : 0;
+    return c ? mountLenses.filter((l) => c.filter(l, locale)).length : 0;
   };
 
   const categories = [
@@ -112,8 +115,7 @@ export default async function CollectionsIndexPage({
   ];
 
   const totalCollections = Object.keys(COLLECTIONS).length;
-  const xLenses = allLenses.filter((l) => l.mount === "X");
-  const totalLenses = xLenses.length;
+  const totalLenses = mountLenses.length;
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">
@@ -142,6 +144,7 @@ export default async function CollectionsIndexPage({
               <CollectionCard
                 key={slug}
                 slug={slug}
+                mount={mount}
                 locale={locale}
                 lensCount={countFor(slug)}
                 t={t}
@@ -153,7 +156,7 @@ export default async function CollectionsIndexPage({
 
       <footer className="flex justify-center">
         <Link
-          href="/lenses/x"
+          href={`/lenses/${mount}`}
           className={`inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold ${ACTION_PRIMARY_CLS}`}
         >
           {t("browseAllPill", { count: totalLenses })}
