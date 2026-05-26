@@ -413,9 +413,17 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
       {memberCollections.length > 0 && (
         <section className="border-t border-zinc-200 pt-6 dark:border-zinc-800">
-          <h2 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-            {t("collectionsTitle")}
-          </h2>
+          <div className="mb-4 flex items-baseline justify-between">
+            <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              {t("collectionsTitle")}
+            </h2>
+            <Link
+              href="/lenses/x/collections"
+              className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+            >
+              {t("viewAllCollections")} →
+            </Link>
+          </div>
           <div className="flex flex-wrap gap-2">
             {memberCollections.map((c) => (
               <Link
@@ -432,14 +440,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
                 <span className="text-zinc-300 group-hover:text-zinc-500 dark:text-zinc-600 dark:group-hover:text-zinc-400" aria-hidden="true">→</span>
               </Link>
             ))}
-          </div>
-          <div className="mt-3 text-right">
-            <Link
-              href="/lenses/x/collections"
-              className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-            >
-              {t("viewAllCollections")} →
-            </Link>
           </div>
         </section>
       )}

@@ -109,9 +109,17 @@ export default async function CollectionPage({
         <CollectionLensGrid lenses={lenses} />
 
         <footer className="mt-12">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-            {t("relatedCollections")}
-          </h2>
+          <div className="mb-4 flex items-baseline justify-between">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+              {t("relatedCollections")}
+            </h2>
+            <Link
+              href="/lenses/x/collections"
+              className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+            >
+              {t("viewAllCollections")} →
+            </Link>
+          </div>
           <ul className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
             {relatedWithStats.map(({ collection: c, previewLens, lensCount: lc, brandCount: bc }) => (
               <li key={c.slug}>
@@ -127,14 +135,6 @@ export default async function CollectionPage({
               <BrowseAllTile lensCount={allXLenses.length} brandCount={allBrandCount} />
             </li>
           </ul>
-          <div className="mt-4 text-right">
-            <Link
-              href="/lenses/x/collections"
-              className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-            >
-              {t("viewAllCollections")} →
-            </Link>
-          </div>
         </footer>
       </main>
       <BackToTopButton />
