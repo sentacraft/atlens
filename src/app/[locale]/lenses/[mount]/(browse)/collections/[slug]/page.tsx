@@ -112,7 +112,7 @@ export default async function CollectionPage({
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
             {t("relatedCollections")}
           </h2>
-          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-5">
+          <ul className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
             {relatedWithStats.map(({ collection: c, previewLens, lensCount: lc, brandCount: bc }) => (
               <li key={c.slug}>
                 <RelatedCollectionCard
@@ -123,7 +123,7 @@ export default async function CollectionPage({
                 />
               </li>
             ))}
-            <li className="sm:col-span-2 md:col-span-1">
+            <li>
               <BrowseAllTile lensCount={allXLenses.length} brandCount={allBrandCount} />
             </li>
           </ul>
