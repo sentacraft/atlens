@@ -47,7 +47,8 @@
     "x": "X Mount",
     "gfx": "G Mount",
     "xCaption": "APS-C",
-    "gfxCaption": "Medium format"
+    "gfxCaption": "Medium format",
+    "gfxBetaNotice": "G Mount coverage is still growing — some lenses and features may be missing."
   },
   "Home": {
     "cta": "Browse Lenses",
