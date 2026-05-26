@@ -9,7 +9,10 @@ import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { mountToUrlSegment } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
 import { track } from "@/lib/analytics";
+import { toast } from "sonner";
 import { Select, SelectContent, SelectItem } from "@/components/ui/select";
+
+const GFX_BETA_NOTICED_KEY = "gfx-beta-noticed";
 
 export default function MountSwitcher() {
   const t = useTranslations("MountSwitcher");
@@ -29,6 +32,14 @@ export default function MountSwitcher() {
     }
     if (value !== effectiveMount) {
       track("mount_switch", { from_mount: effectiveMount, to_mount: value });
+    }
+    if (value === "G") {
+      try {
+        if (!localStorage.getItem(GFX_BETA_NOTICED_KEY)) {
+          toast(t("gfxBetaNotice"), { duration: 6000 });
+          localStorage.setItem(GFX_BETA_NOTICED_KEY, "1");
+        }
+      } catch {}
     }
     setPreference(value);
     if (urlMount !== null) {
