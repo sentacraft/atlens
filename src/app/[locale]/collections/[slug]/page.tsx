@@ -77,12 +77,8 @@ export default async function CollectionPage({
   const allBrandCount = new Set(allXLenses.map((l) => l.brand)).size;
 
   function categoryTagFor(s: string): string {
-    const key = getCategoryKey(s);
-    return t(
-      key === "focal" ? "categoryFocalTag" :
-      key === "brand" ? "categoryBrandTag" :
-      "categoryFeatureTag",
-    );
+    const key = getCategoryKey(s) ?? "trait";
+    return t(`category_${key}` as Parameters<typeof t>[0]);
   }
 
   const relatedWithStats = related.map((c) => {

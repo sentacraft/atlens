@@ -3,9 +3,16 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import {
   COLLECTIONS,
-  FOCAL_SLUGS,
+  PRIME_SLUGS,
+  ZOOM_SLUGS,
   BRAND_SLUGS,
-  FEATURE_SLUGS,
+  SERIES_SLUGS,
+  PRICE_SLUGS,
+  PORTABILITY_SLUGS,
+  APERTURE_SLUGS,
+  TRAIT_SLUGS,
+  DEDICATED_SLUGS,
+  FOCUS_SLUGS,
 } from "@/lib/collections";
 import { getAllLenses } from "@/lib/lens";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
@@ -89,9 +96,16 @@ export default async function CollectionsIndexPage({
   };
 
   const categories = [
-    { label: t("categoryFocal"), slugs: FOCAL_SLUGS },
-    { label: t("categoryBrand"), slugs: BRAND_SLUGS },
-    { label: t("categoryFeature"), slugs: FEATURE_SLUGS },
+    { label: t("category_prime"), slugs: PRIME_SLUGS },
+    { label: t("category_zoom"), slugs: ZOOM_SLUGS },
+    { label: t("category_brand"), slugs: BRAND_SLUGS },
+    { label: t("category_series"), slugs: SERIES_SLUGS },
+    { label: t("category_price"), slugs: PRICE_SLUGS },
+    { label: t("category_portability"), slugs: PORTABILITY_SLUGS },
+    { label: t("category_aperture"), slugs: APERTURE_SLUGS },
+    { label: t("category_trait"), slugs: TRAIT_SLUGS },
+    { label: t("category_dedicated"), slugs: DEDICATED_SLUGS },
+    { label: t("category_focus"), slugs: FOCUS_SLUGS },
   ];
 
   const totalCollections = Object.keys(COLLECTIONS).length;

@@ -219,6 +219,237 @@
         "en": "Specialized optical instruments capable of tilt and shift movements to manipulate perspective and the Scheimpflug principle on APS-C. Alter the focal plane for selective sharpness and miniature effects, or correct converging vertical lines in architecture. A niche but technically irreplaceable toolkit for product, structure, and interior photography.",
         "zh": "支持倾斜与平移结构、能够在 APS-C 画幅上控制焦平面与沙姆定律的特殊镜头。通过改变光学轴线实现选择性合焦（小人国微缩效果），或在现场直接校正建筑与室内的透视畸变。虽然小众，却是商业产品、严谨建筑摄影中不可替代的控光利器。"
       }
+    },
+    {
+      "slug": "wide-angle",
+      "title": {
+        "en": "Wide-Angle Primes for Fujifilm X-Mount",
+        "zh": "富士 X 卡口广角定焦镜头"
+      },
+      "description": {
+        "en": "Every X-mount prime lens at 18mm or wider. From ultra-wide architectural and astro workhorses down to exotic sub-10mm options, this collection maps the full landscape of wide-angle fixed focal lengths available for the system.",
+        "zh": "18mm 及以下的 X 卡口广角定焦镜头全索引。从适合建筑与星空的超广角主力，到 10mm 以下的极端视角小众选择，一览这个系统在广角端的全部可能性。"
+      }
+    },
+    {
+      "slug": "wide-zoom",
+      "title": {
+        "en": "Wide-Angle Zoom Lenses for Fujifilm X-Mount",
+        "zh": "富士 X 卡口广角变焦镜头"
+      },
+      "description": {
+        "en": "Zoom lenses whose wide end reaches 12mm or below on APS-C — deep into ultra-wide territory. The go-to choice for landscape panoramas, dramatic interior architecture, and creative perspective exaggeration where a single prime can't cover the range you need.",
+        "zh": "广角端达到 12mm 及以下的 X 卡口变焦镜头，在 APS-C 画幅上已经深入超广角领域。拍摄壮阔风光、室内建筑纵深或需要夸张透视时，一支广角变焦的灵活性远超定焦。"
+      }
+    },
+    {
+      "slug": "standard-zoom",
+      "title": {
+        "en": "Standard Zoom Lenses for Fujifilm X-Mount",
+        "zh": "富士 X 卡口标准变焦镜头"
+      },
+      "description": {
+        "en": "The versatile middle ground. Standard zooms covering roughly 15–55mm on APS-C handle everything from moderate wide-angle scenes to short telephoto portraits. Often the first lens that ships with a Fujifilm body, and frequently the last one you reach for when you only have room for a single optic.",
+        "zh": "最百搭的万金油焦段。覆盖约 15–55mm 的标准变焦镜头，从小广角到中短焦人像一镜通吃。它们常常是随机身搭售的第一支镜头，也往往是你只带一支镜头出门时的最终选择。"
+      }
+    },
+    {
+      "slug": "travel-zoom",
+      "title": {
+        "en": "Travel Zoom Lenses for Fujifilm X-Mount",
+        "zh": "富士 X 卡口一镜走天下"
+      },
+      "description": {
+        "en": "High-ratio zoom lenses that stretch from wide-angle to telephoto in a single barrel — the ultimate one-lens travel companions. Trading peak optical performance for unmatched versatility, these are ideal when changing lenses isn't practical and covering the full scene matters more than pixel-level perfection.",
+        "zh": "从广角拉到长焦、一支镜头覆盖全场景的大变倍比旅行镜头。牺牲一点极致画质，换来无与伦比的焦段覆盖面。旅行途中不方便换镜头、又不想错过任何画面时，它们是最务实的选择。"
+      }
+    },
+    {
+      "slug": "tele-zoom",
+      "title": {
+        "en": "Telephoto Zoom Lenses for Fujifilm X-Mount",
+        "zh": "富士 X 卡口长焦变焦镜头"
+      },
+      "description": {
+        "en": "Zoom lenses starting at 50mm and above, purpose-built for reach. From portrait-to-telephoto workhorses to supertelephoto wildlife glass, these optics compress perspective, isolate subjects, and bring distant scenes within striking distance.",
+        "zh": "广角端从 50mm 起步的长焦变焦镜头，生来就是为了「够得着」。从人像到打鸟，从体育赛场到舞台摄影，它们压缩空间、剥离背景，把远处的世界拉到眼前。"
+      }
+    },
+    {
+      "slug": "super-tele",
+      "title": {
+        "en": "Super Telephoto Lenses for Fujifilm X-Mount",
+        "zh": "富士 X 卡口超长焦镜头"
+      },
+      "description": {
+        "en": "The longest reach available on the X-mount system. This collection gathers both zoom and prime lenses that deliver 300mm-equivalent or greater fields of view — the specialized tools for wildlife, aviation, motorsport, and any scenario where getting physically closer simply isn't an option.",
+        "zh": "X 卡口系统里焦距最长的一批镜头，涵盖变焦与定焦。等效 300mm 以上的视角，是野生动物、航空摄影、赛车运动等「人无法靠近」场景的专属利器。"
+      }
+    },
+    {
+      "slug": "fujifilm",
+      "title": {
+        "en": "Fujifilm First-Party Lenses for X-Mount",
+        "zh": "富士原厂 X 卡口镜头"
+      },
+      "description": {
+        "en": "The complete first-party lens catalog from Fujifilm for the X-mount system. Spanning the flagship XF line and the value-oriented XC series, these lenses benefit from the tightest integration with Fujifilm bodies — optimized autofocus communication, film simulation compatibility, and official firmware support.",
+        "zh": "富士官方为 X 卡口打造的全部原厂镜头。涵盖旗舰定位的 XF 产品线与主打性价比的 XC 系列，在自动对焦通讯、胶片模拟适配和固件支持上拥有最完整的机身联动。"
+      }
+    },
+    {
+      "slug": "brightinstar",
+      "title": {
+        "en": "Brightin Star Lenses for Fujifilm X-Mount",
+        "zh": "星曜 X 卡口系列镜头"
+      },
+      "description": {
+        "en": "A growing lineup of compact, affordable manual-focus lenses from Brightin Star. Covering ultra-wide to standard focal lengths with a focus on miniaturized form factors and accessible pricing, they offer an entry point into creative manual shooting on the X-mount system.",
+        "zh": "星曜出品的一系列紧凑、平价手动对焦镜头。焦段从超广角到标准焦段，以迷你体积与亲民定价见长，是在 X 卡口体验手动拍摄乐趣的低门槛入口。"
+      }
+    },
+    {
+      "slug": "voigtlander",
+      "title": {
+        "en": "Voigtländer Lenses for Fujifilm X-Mount",
+        "zh": "福伦达 X 卡口系列镜头"
+      },
+      "description": {
+        "en": "German-designed, precision-engineered manual focus optics from Voigtländer. Renowned for exceptional build quality, minimal distortion, and a unique rendering style that balances clinical sharpness with pleasing micro-contrast. A premium choice for photographers who value the deliberate manual focusing experience.",
+        "zh": "来自福伦达的德系设计手动对焦镜头。以精密的做工、极低的光学畸变和兼顾锐度与微反差的独特成像风格著称。对于享受慢节奏、精确手动对焦体验的摄影师来说，是品质感拉满的进阶选择。"
+      }
+    },
+    {
+      "slug": "laowa",
+      "title": {
+        "en": "Laowa Lenses for Fujifilm X-Mount",
+        "zh": "老蛙 X 卡口系列镜头"
+      },
+      "description": {
+        "en": "Venus Optics' Laowa brand specializes in optical designs that go where others don't — ultra-wide zero-distortion rectilinears, probe macro lenses, and compact fisheye zooms. Their X-mount offerings continue this tradition of filling the gaps that mainstream manufacturers overlook.",
+        "zh": "长庚光学旗下的老蛙品牌，专攻主流厂商不愿涉足的光学设计——零畸变超广角、探针微距、紧凑鱼眼变焦。在 X 卡口上延续了这一「填补空白」的传统，为追求差异化的用户提供独一无二的视角。"
+      }
+    },
+    {
+      "slug": "tamron",
+      "title": {
+        "en": "Tamron Lenses for Fujifilm X-Mount",
+        "zh": "腾龙 X 卡口系列镜头"
+      },
+      "description": {
+        "en": "Tamron's X-mount lineup brings their signature strengths to the Fujifilm system: versatile zoom ranges, fast constant apertures, and compact form factors that punch above their weight class. Native autofocus integration ensures seamless operation with Fujifilm bodies.",
+        "zh": "腾龙将自家的看家本领带到了富士 X 卡口：灵活的变焦范围、明亮的恒定大光圈，以及小巧得不像话的体积。原生自动对焦确保与富士机身的无缝协作。"
+      }
+    },
+    {
+      "slug": "fujifilm-xf",
+      "title": {
+        "en": "Fujifilm XF Lens Series",
+        "zh": "富士 XF 系列镜头"
+      },
+      "description": {
+        "en": "Fujifilm's flagship lens line for the X-mount system. XF lenses are engineered for demanding photographers, delivering premium optical performance, robust weather-sealed construction, and advanced autofocus technology across a comprehensive range of focal lengths.",
+        "zh": "富士 X 卡口的旗舰镜头产品线。XF 系列为追求画质的摄影师而生，在光学素质、防滴防尘做工与自动对焦技术上代表了原厂的最高水准，焦段覆盖从超广角到超长焦。"
+      }
+    },
+    {
+      "slug": "fujifilm-xc",
+      "title": {
+        "en": "Fujifilm XC Lens Series",
+        "zh": "富士 XC 系列镜头"
+      },
+      "description": {
+        "en": "Fujifilm's value-oriented lens line for the X-mount. XC lenses prioritize lightweight construction and accessible pricing while retaining native autofocus and electronic integration. Ideal as kit lenses or budget-conscious additions to an existing setup.",
+        "zh": "富士 X 卡口的入门级镜头产品线。XC 系列以轻量化机身和亲民定价为优先，同时保留完整的原生自动对焦与电子通讯能力。作为套机头或预算有限时的扩充选择，性价比出色。"
+      }
+    },
+    {
+      "slug": "sigma-contemporary",
+      "title": {
+        "en": "Sigma Contemporary Lenses for X-Mount",
+        "zh": "适马 Contemporary 系列 X 卡口镜头"
+      },
+      "description": {
+        "en": "Sigma's Contemporary line strikes a balance between optical performance, compact dimensions, and competitive pricing. Purpose-built for the APS-C format, these lenses avoid the size and weight penalties of adapted full-frame designs, delivering a genuinely portable shooting experience.",
+        "zh": "适马 Contemporary 产品线在光学素质、紧凑体积与价格之间取得了精准的平衡。专为 APS-C 画幅设计，避免了全画幅镜头转接带来的体积与重量负担，真正做到了便携与画质兼得。"
+      }
+    },
+    {
+      "slug": "viltrox-air",
+      "title": {
+        "en": "Viltrox Air Series for Fujifilm X-Mount",
+        "zh": "唯卓仕 Air 系列 X 卡口镜头"
+      },
+      "description": {
+        "en": "Viltrox's ultra-compact autofocus line, engineered around extreme miniaturization. Air lenses pair fast apertures with featherweight construction, designed for creators who want native AF performance without the bulk of traditional fast primes.",
+        "zh": "唯卓仕的极致轻量化自动对焦产品线。Air 系列将大光圈塞进了极小的体积，专为追求原生 AF 性能、同时拒绝传统大光圈头沉重身板的创作者而生。"
+      }
+    },
+    {
+      "slug": "viltrox-pro",
+      "title": {
+        "en": "Viltrox Pro Series for Fujifilm X-Mount",
+        "zh": "唯卓仕 Pro 系列 X 卡口镜头"
+      },
+      "description": {
+        "en": "The flagship tier of Viltrox's autofocus lineup. Pro lenses push aperture boundaries with f/1.2 designs, delivering extreme subject isolation and low-light capability that challenges first-party equivalents at a fraction of the cost.",
+        "zh": "唯卓仕自动对焦产品线的旗舰档位。Pro 系列以 f/1.2 的极限大光圈为核心卖点，在主体分离度和暗光性能上直面原厂旗舰，而价格只需后者的零头。"
+      }
+    },
+    {
+      "slug": "voigtlander-nokton",
+      "title": {
+        "en": "Voigtländer Nokton Lenses for Fujifilm X-Mount",
+        "zh": "福伦达 Nokton 系列 X 卡口镜头"
+      },
+      "description": {
+        "en": "Voigtländer's celebrated Nokton line — fast-aperture manual focus primes with a heritage spanning decades. Known for smooth, all-metal focusing mechanisms, aspherical optical designs, and a distinctive rendering that transitions gracefully from sharp in-focus areas to creamy out-of-focus backgrounds.",
+        "zh": "福伦达享誉数十年的 Nokton 大光圈手动定焦系列。以丝滑的全金属对焦手感、非球面光学设计以及从锐利合焦区到柔美焦外的优雅过渡著称，是手动对焦镜头中的标杆级产品线。"
+      }
+    },
+    {
+      "slug": "constant-aperture",
+      "title": {
+        "en": "Constant Aperture Zoom Lenses for X-Mount",
+        "zh": "富士 X 卡口恒定光圈变焦镜头"
+      },
+      "description": {
+        "en": "Zoom lenses that maintain the same maximum aperture across their entire focal range. No exposure shifts when zooming, consistent depth of field control, and typically higher optical quality — the professional's choice when a variable-aperture kit zoom won't cut it.",
+        "zh": "在整个变焦范围内保持最大光圈不变的变焦镜头。变焦时曝光不跳、景深控制一致，光学素质通常也更胜一筹——当套机的浮动光圈变焦无法满足要求时，恒定光圈才是专业之选。"
+      }
+    },
+    {
+      "slug": "autofocus",
+      "title": {
+        "en": "Autofocus Lenses for Fujifilm X-Mount",
+        "zh": "富士 X 卡口自动对焦镜头"
+      },
+      "description": {
+        "en": "Every X-mount lens with native autofocus capability. From first-party Fujifilm glass to third-party alternatives, this collection indexes all lenses that offer motor-driven focusing with full body integration — AF-C tracking, face/eye detection, and electronic aperture control.",
+        "zh": "X 卡口上所有支持原生自动对焦的镜头合集。从富士原厂到各路副厂，本页收录了所有具备马达驱动对焦、支持机身联动的镜头——连续追焦、人脸/人眼识别、电子光圈控制一应俱全。"
+      }
+    },
+    {
+      "slug": "manual-focus",
+      "title": {
+        "en": "Manual Focus Lenses for Fujifilm X-Mount",
+        "zh": "富士 X 卡口手动对焦镜头"
+      },
+      "description": {
+        "en": "The complete roster of manual-focus lenses for the X-mount system. Covering everything from budget-friendly character lenses to premium Voigtländer glass, these optics reward deliberate, hands-on shooting with tactile focusing rings, compact form factors, and rendering personalities that autofocus designs rarely replicate.",
+        "zh": "X 卡口手动对焦镜头全索引。从百元级趣味头到福伦达精工之作，手动头的魅力在于阻尼对焦环带来的掌控感、往往更紧凑的体积，以及自动对焦镜头很难复刻的个性化成像风格。"
+      }
+    },
+    {
+      "slug": "value-af",
+      "title": {
+        "en": "Value AF from Independent Makers",
+        "zh": "国产品牌自动对焦镜头"
+      },
+      "description": {
+        "en": "Native autofocus lenses from independent manufacturers — Viltrox, 7Artisans, TTArtisan, and others — offering competitive optical performance at accessible price points. This growing segment has rapidly expanded the range of affordable AF options available for the X-mount ecosystem.",
+        "zh": "唯卓仕、七工匠、铭匠光学等国产品牌推出的原生自动对焦镜头合集。凭借出色的光学素质与极具竞争力的定价，国产 AF 镜头群正在快速壮大，为 X 卡口用户提供了远超以往的平价自动对焦选择。"
+      }
     }
   ]
 }

@@ -268,11 +268,8 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     .filter((c) => c.filter(lens, locale))
     .map((c) => {
       const categoryKey = getCategoryKey(c.slug);
-      const categoryLabel = t(
-        categoryKey === "focal" ? "collectionCategoryFocal" :
-        categoryKey === "brand" ? "collectionCategoryBrand" :
-        "collectionCategoryFeature",
-      );
+      const catKey = categoryKey ?? "trait";
+      const categoryLabel = t(`collectionCategory_${catKey}` as Parameters<typeof t>[0]);
       const lensCount = allXLenses.filter((l) => c.filter(l, locale)).length;
       return { ...c, categoryLabel, lensCount };
     });
