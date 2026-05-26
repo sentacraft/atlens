@@ -30,7 +30,7 @@
       },
       "description": {
         "en": "Sitting comfortably between a standard lens and a dedicated portrait telephoto, a 50mm lens on APS-C behaves like a 75mm equivalent. An incredibly versatile choice for tighter street frames, clean still life, and environmental portraits where you want moderate background compression without losing working distance.",
-        "zh": "介于标头与长焦人像之间，50mm 在富士上等效约 75mm。这是一个被低估的宝藏焦段，空间压缩感点到为止，非常适合用来拍扫街特写、静物小品或者带环境的空间感人像。"
+        "zh": "介于标头与长焦人像之间，50mm 在 APS-C 画幅上等效约 75mm。这是一个被低估的宝藏焦段，空间压缩感点到为止，非常适合用来拍扫街特写、静物小品或者带环境的空间感人像。"
       }
     },
     {
@@ -74,7 +74,7 @@
       },
       "description": {
         "en": "Viltrox has established itself as the premier third-party choice for native X-mount autofocus glass. Offering ultra-fast apertures, sophisticated modern optical designs, and competitive pricing, they deliver performance that rivals first-party options. Explore their expanding ecosystem here.",
-        "zh": "买富士副厂自动头，唯卓仕是绕不开的选择。凭借扎实的光学素质、激进的大光圈配置以及极高的性价比，它们生生把原厂衬托成了奢侈品。这里是唯卓仕在 X 卡口的全部产品。"
+        "zh": "买富士副厂自动头，唯卓仕是绕不开的选择。凭借扎实的光学素质、激进的大光圈配置以及极高的性价比，它们生生把原厂衬托成了奢侈品。本页收录了唯卓仕目前已发布的 X 卡口镜头。"
       }
     },
     {
@@ -102,12 +102,12 @@
     {
       "slug": "weather-sealed",
       "title": {
-        "en": "Weather-Sealed Lenses",
-        "zh": "防滴防尘（WR）镜头"
+        "en": "Weather-Resistant Lenses",
+        "zh": "防滴防尘镜头"
       },
       "description": {
-        "en": "Every X-mount lens with weather-resistant construction — full or partial sealing. Built to withstand moisture, dust, and freezing temperatures, these lenses ensure peace of mind when pairing with weather-sealed Fujifilm bodies in unpredictable outdoor environments.",
-        "zh": "所有具备防滴防尘特性的 X 卡口镜头，包括完整密封和部分密封。无惧细雨、沙尘与严寒，配合支持防尘防滴的富士机身，让你在恶劣天气里也能安心按下快门。"
+        "en": "Every X-mount lens with weather-resistant construction — full or partial sealing. Built to withstand moisture, dust, and freezing temperatures, these lenses ensure peace of mind when pairing with weather-sealed bodies in unpredictable outdoor environments. Note that sealing standards and terminology vary by manufacturer.",
+        "zh": "收录所有标注了防滴防尘性能的 X 卡口镜头。其中既有关键部位全面密封的型号，也有仅在卡口接合处做了基础防护的部分密封款——两者的防护等级差异较大，选购时建议结合机身的密封规格一并参考。各厂商对密封的叫法和标准不尽相同，实际防护能力以官方公示为准。"
       }
     },
     {
@@ -133,7 +133,7 @@
       }
     },
     {
-      "slug": "fast-aperture",
+      "slug": "fast-aperture-primes",
       "title": {
         "en": "Fast Aperture Primes (f/1.4 and Faster)",
         "zh": "大光圈定焦镜头（f/1.4 以上）"
@@ -144,7 +144,7 @@
       }
     },
     {
-      "slug": "compact-primes",
+      "slug": "pancake",
       "title": {
         "en": "Pancake Lenses",
         "zh": "饼干头"
@@ -157,12 +157,12 @@
     {
       "slug": "with-ois",
       "title": {
-        "en": "OIS Lenses",
+        "en": "Optically Stabilized Lenses",
         "zh": "带光学防抖的镜头"
       },
       "description": {
-        "en": "Every X-mount lens equipped with built-in Optical Image Stabilization (OIS). Essential for crisp handheld shooting in low light, stretching safety shutter speeds, and smoothing out run-and-gun video segments. It is a critical performance boost, whether your Fujifilm body features IBIS or not.",
-        "zh": "全面收录内置光学防抖（OIS）机制的 X 卡口镜头。暗光下手持拍摄、突破安全快门的极限、亦或是让日常视频运镜更稳，镜头防抖都能显著提高出片率。无论你的富士机身是否自带机身防抖，多一层光学保障总能让创作更从容。"
+        "en": "Every X-mount lens equipped with built-in optical image stabilization. Essential for crisp handheld shooting in low light, stretching safety shutter speeds, and smoothing out run-and-gun video segments. A critical performance boost whether your body features in-body stabilization or not.",
+        "zh": "收录所有内置光学防抖机构的 X 卡口镜头。各品牌对镜头防抖的叫法各不相同（富士称 OIS，腾龙称 VC，适马称 OS），但核心原理一致：通过镜组内部的补偿元件抵消手持抖动。暗光手持、慢快门、视频运镜都能显著受益，无论你的机身有没有内置防抖。"
       }
     },
     {
@@ -173,7 +173,7 @@
       },
       "description": {
         "en": "An objective index of highly accessible optics priced under $200 USD. Featuring fully manual character lenses, compact street primes, and a healthy selection of native autofocus options, this catalog proves that expanding your focal range on the Fujifilm system doesn't require prohibitive investment.",
-        "zh": "预算千元以内的入门首选库。包含充满趣味的手动定焦、紧凑的街拍小饼干，以及数量可观的自动对焦镜头。它们用实力证明，在富士生态里探索多元的焦段和影调，并不需要沉重的资金门槛。"
+        "zh": "千元以内的 X 卡口镜头精选。手动趣味定焦、紧凑的街拍饼干头、自动对焦镜头都有不少选择。花不了多少钱，就能在富士系统上把不同焦段和风格都玩一遍。"
       }
     },
     {
@@ -183,8 +183,8 @@
         "zh": "两千元以下镜头"
       },
       "description": {
-        "en": "The sweet spot of value within the X-mount ecosystem. Remaining under the $400 USD mark unlocks serious equipment: bright autofocus primes, flexible walk-around zooms, and options from both Fujifilm and third-party developers. Where most advanced amateurs and creators find their everyday workhorses.",
-        "zh": "X 卡口系统的黄金性价比区间。在两千元预算以内，你已经可以触及大光圈自动对焦定焦、高机动性变焦等进阶镜头。无需负担旗舰级的溢价，大多数高阶玩家与创作者的主力挂机头往往都诞生于此。"
+        "en": "The sweet spot of value within the X-mount ecosystem. Remaining under the $400 USD mark unlocks serious equipment: bright autofocus primes, flexible walk-around zooms, and options from both Fujifilm and third-party developers. Where most enthusiasts and creators find their everyday workhorses.",
+        "zh": "X 卡口性价比的甜区。两千元以内已经能选到大光圈自动对焦定焦、实用的恒定光圈变焦等硬实力镜头。对大多数爱好者和内容创作者来说，日常挂机的主力往往就在这个价位段。"
       }
     },
     {
@@ -221,14 +221,14 @@
       }
     },
     {
-      "slug": "wide-angle",
+      "slug": "wide-angle-primes",
       "title": {
         "en": "Wide-Angle Primes",
         "zh": "广角定焦镜头"
       },
       "description": {
-        "en": "A comprehensive landscape and astrophotography index. Cataloging every X-mount prime at 18mm or wider, this collection maps the wide-angle landscape—from architectural and astro workhorses to specialized sub-10mm optics designed for dramatic perspectives.",
-        "zh": "风光与星空摄影的视野基石。本页索引了 18mm 及以下的 X 卡口广角定焦镜头，涵盖追求边缘锐度的超广角主力，以及 10mm 以下、利用畸变制造视觉冲击的小众定焦。"
+        "en": "A comprehensive wide-angle index. Cataloging every X-mount prime at 18mm or wider, this collection maps the wide-angle landscape—from architectural and astro workhorses to specialized sub-10mm optics designed for dramatic perspectives.",
+        "zh": "18mm 及以下的 X 卡口广角定焦镜头索引。风光、星空、建筑、室内——需要把更多画面塞进取景器时，这里是起点。涵盖追求边缘锐度的超广角主力，以及 10mm 以下制造强烈透视冲击的小众焦段。"
       }
     },
     {
@@ -338,7 +338,7 @@
       },
       "description": {
         "en": "Tamron translates its renowned optical versatility to native X-mount architecture. Featuring fast, constant-aperture zoom options and compact form factors, these lenses deliver compelling value while operating with seamless native autofocus protocols.",
-        "zh": "日系变焦大厂腾龙将其招牌式的研发实力原生移植到了富士 X 卡口。主打大光圈恒定变焦与紧凑的镜身轻量化结构，在规格上往往比原厂更具针对性。原生电子触点确保了出色的自动对焦与防抖通讯。"
+        "zh": "日系变焦大厂腾龙将其招牌式的研发实力原生移植到了富士 X 卡口。主打大光圈恒定变焦与紧凑的镜身轻量化结构，在规格上往往比原厂更具针对性。原生卡口设计，对焦与防抖和机身无缝联动。"
       }
     },
     {
@@ -359,8 +359,8 @@
         "zh": "富士 XF 系列镜头"
       },
       "description": {
-        "en": "Fujifilm’s flagship lens line for the X-mount system. Engineered to satisfy rigorous performance criteria, XF glass delivers premium resolving power, robust build quality, and advanced motor drive technology across a mature range of focal lengths.",
-        "zh": "富士 X 卡口的旗舰镜头产品线。XF 系列专为对画质有严苛要求的摄影师与发烧友打造，在光学解析力与做工品质上代表了原厂的最高水准，多数型号配备高级对焦马达与防滴防尘结构。"
+        "en": "Fujifilm's flagship lens line for the X-mount system. Compared to the XC series, XF lenses typically feature a physical aperture ring, higher-grade focus motors, and weather-resistant construction on most models. Wider focal length coverage and faster aperture options make XF the ceiling of first-party performance.",
+        "zh": "富士 X 卡口的旗舰镜头产品线。相比 XC 系列，XF 镜头通常配备物理光圈环、更高规格的对焦马达，多数型号具备防滴防尘结构。焦段覆盖和光圈选择也更丰富，是原厂体系里画质与操控的上限。"
       }
     },
     {
@@ -370,8 +370,8 @@
         "zh": "富士 XC 系列镜头"
       },
       "description": {
-        "en": "The streamlined, high-value entry gateway into native X-mount optics. XC lenses strip away mechanical mass to prioritize lightweight polycarbonate footprints and high affordability, all while ensuring full electronic AF integration and metadata parity with the body.",
-        "zh": "富士原厂的轻量化高性价比产品线。XC 系列通过精简外部机械结构、采用轻量化高强度复合材料，将价格与负重降低。同时它依然保留了原厂核心的自动对焦算法与电子通讯，方便日常随行扩充。"
+        "en": "Fujifilm's lightweight, value-oriented lens line. XC lenses trade the physical aperture ring and weather sealing for reduced weight and lower price, while retaining full autofocus and electronic communication with the body. An accessible entry point for budget-conscious or weight-sensitive shooters.",
+        "zh": "富士原厂的轻量化入门产品线。XC 系列省去了物理光圈环，采用轻量化复合材料镜身，价格和重量都大幅低于 XF，同时保留了完整的自动对焦与电子通讯能力。适合预算有限或对负重敏感的用户日常挂机。"
       }
     },
     {
@@ -393,7 +393,7 @@
       },
       "description": {
         "en": "Viltrox's ultra-compact autofocus experiment centered on extreme footprint reduction. The Air series successfully blends bright aperture choices with a featherweight layout, curated for agile hybrid creators who demand modern tracking speed without the typical structural burden.",
-        "zh": "唯卓仕（Viltrox）走向轻量化的自动对焦探索线。Air 系列打破了“大光圈必重”的传统印象，将轻巧的结构与大光圈结合，让日常街拍在享受原生高追焦速度的同时，降低手持与负重感。"
+        "zh": "唯卓仕（Viltrox）走向轻量化的自动对焦探索线。Air 系列打破了「大光圈必重」的传统印象，将轻巧的结构与大光圈结合，让日常街拍在享受原生高追焦速度的同时，降低手持与负重感。"
       }
     },
     {
@@ -436,8 +436,8 @@
         "zh": "自动对焦镜头"
       },
       "description": {
-        "en": "Every X-mount optic built with internal motor-driven focusing mechanics. From first-party Fujifilm units to independent autofocus designs, this catalog consolidates all lenses capable of full electronic body integration, AF-C tracking, and digital aperture control.",
-        "zh": "X 卡口原生自动对焦镜头的完全档案库。上至原厂原配，下至各大具备电子通讯研发实力的副厂新锐。本页收录的镜头均支持机身指令交互、连续追焦以及电子光圈控制。"
+        "en": "Every X-mount optic with native autofocus capability, from first-party Fujifilm units to third-party designs. All lenses listed here support full electronic body integration, continuous AF tracking, and digital aperture control.",
+        "zh": "所有支持自动对焦的 X 卡口镜头，涵盖富士原厂和各家副厂。本页收录的每一支都能与机身联动——连续追焦、眼部识别、电子光圈控制，开箱即用。"
       }
     },
     {

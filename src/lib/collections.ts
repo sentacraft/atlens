@@ -40,7 +40,7 @@ const FILTERS: Record<string, LensFilter> = {
   "50mm": xPrime(48, 51),
   "56mm": xPrime(55, 58),
   "85mm": xPrime(83, 90),
-  "wide-angle": (lens) =>
+  "wide-angle-primes": (lens) =>
     xPhoto(lens) && !isZoom(lens) && lens.focalLengthMin <= 18,
 
   // --- Zoom (变焦) ---
@@ -122,14 +122,14 @@ const FILTERS: Record<string, LensFilter> = {
     return w != null && w < 200;
   },
 
-  "compact-primes": (lens) =>
+  "pancake": (lens) =>
     xPhoto(lens) &&
     !isZoom(lens) &&
     lens.length?.mm != null &&
     lens.length.mm <= 40,
 
   // --- Aperture (光圈) ---
-  "fast-aperture": (lens) => {
+  "fast-aperture-primes": (lens) => {
     if (!xPhoto(lens) || isZoom(lens) || lens.maxAperture == null) {
       return false;
     }
@@ -181,13 +181,13 @@ export const COLLECTIONS: Record<string, LensCollection> = Object.fromEntries(
   parsed.map((c) => [c.slug, c]),
 );
 
-export const PRIME_SLUGS = ["23mm", "35mm", "50mm", "56mm", "85mm", "wide-angle"];
+export const PRIME_SLUGS = ["23mm", "35mm", "50mm", "56mm", "85mm", "wide-angle-primes"];
 export const ZOOM_SLUGS = ["wide-zoom", "standard-zoom", "travel-zoom", "tele-zoom"];
 export const BRAND_SLUGS = ["fujifilm", "7artisans", "viltrox", "ttartisan", "sigma", "brightinstar", "voigtlander", "laowa", "tamron", "sgimage"];
 export const SERIES_SLUGS = ["fujifilm-xf", "fujifilm-xc", "sigma-contemporary", "viltrox-air", "viltrox-pro", "voigtlander-nokton"];
 export const PRICE_SLUGS = ["under-200", "under-400"];
-export const PORTABILITY_SLUGS = ["under-200g", "compact-primes"];
-export const APERTURE_SLUGS = ["fast-aperture", "constant-aperture"];
+export const PORTABILITY_SLUGS = ["under-200g", "pancake"];
+export const APERTURE_SLUGS = ["fast-aperture-primes", "constant-aperture"];
 export const TRAIT_SLUGS = ["weather-sealed", "with-ois", "super-tele"];
 export const DEDICATED_SLUGS = ["cine", "fisheye", "tilt-shift", "macro"];
 export const FOCUS_SLUGS = ["autofocus", "manual-focus", "value-af"];

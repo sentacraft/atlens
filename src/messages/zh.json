@@ -517,7 +517,7 @@
     "lensCount": "{count} 支镜头",
     "browseAllEyebrow": "X 卡口",
     "browseAllTitle": "浏览全部镜头",
-    "browseAllPill": "浏览全部 {count} 支 X 卡口镜头",
+    "browseAllPill": "浏览已收录的 {count} 支镜头",
     "viewAllCollections": "查看所有专题",
     "breadcrumbCollections": "专题"
   }
