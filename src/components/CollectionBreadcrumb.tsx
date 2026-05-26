@@ -3,6 +3,8 @@
 import { ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { useEffectiveMount } from "@/hooks/useMountParam";
+import { mountToUrlSegment } from "@/lib/mount";
 
 const sep = <ChevronRight className="size-3 text-zinc-300 dark:text-zinc-600" />;
 const linkCls =
@@ -11,19 +13,21 @@ const linkCls =
 export default function CollectionBreadcrumb({ title }: { title?: string }) {
   const tn = useTranslations("Nav");
   const tc = useTranslations("Collection");
+  const mount = useEffectiveMount();
+  const seg = mountToUrlSegment(mount);
 
   return (
     <nav
       aria-label="breadcrumb"
       className="flex items-center gap-1.5 text-xs"
     >
-      <Link href="/lenses/x" className={linkCls}>
+      <Link href={`/lenses/${seg}`} className={linkCls}>
         {tn("lenses")}
       </Link>
       {sep}
       {title ? (
         <>
-          <Link href="/lenses/x/collections" className={linkCls}>
+          <Link href={`/lenses/${seg}/collections`} className={linkCls}>
             {tc("breadcrumbCollections")}
           </Link>
           {sep}

@@ -135,11 +135,11 @@ export default async function CollectionsIndexPage({
       </header>
 
       {categories.map((cat) => (
-        <section key={cat.label} className="mb-10">
+        <section key={cat.label} className="mb-8">
           <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
             {cat.label}
           </h2>
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid grid-cols-2 gap-3 lg:grid-cols-3">
             {cat.slugs.map((slug) => (
               <CollectionCard
                 key={slug}
