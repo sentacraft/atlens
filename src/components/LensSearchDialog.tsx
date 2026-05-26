@@ -15,6 +15,7 @@ import { useRouter, Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useLensSearchApi } from "@/hooks/useLensSearchApi";
+import { useDrawerKeyboardAdjust } from "@/hooks/useDrawerKeyboardAdjust";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { lensSubtitleLine } from "@/lib/lens.format";
@@ -61,6 +62,7 @@ export default function LensSearchDialog({
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputId = useId();
   const resultsId = useId();
@@ -96,6 +98,8 @@ export default function LensSearchDialog({
       (activeItem as HTMLElement).scrollIntoView({ block: "nearest" });
     }
   }, [activeIndex]);
+
+  useDrawerKeyboardAdjust(contentRef, scrollContainerRef);
 
   const { results, isLoading: isSearching } = useLensSearchApi(deferredQuery);
 
@@ -178,10 +182,11 @@ export default function LensSearchDialog({
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
+          ref={contentRef}
           className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-2xl shadow-zinc-950/20 dark:border-zinc-800 dark:bg-zinc-950"
           showCloseButton={false}
         >
-          <DialogHeader className="border-b border-zinc-100 pr-5 dark:border-zinc-800">
+          <DialogHeader className="shrink-0 border-b border-zinc-100 pr-5 dark:border-zinc-800">
             <div className="flex items-center justify-between">
               <div>
                 <DialogTitle>{t("title")}</DialogTitle>
@@ -231,7 +236,7 @@ export default function LensSearchDialog({
 
           <div
             ref={scrollContainerRef}
-            className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
+            className="h-[300px] overflow-y-auto overscroll-y-contain px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
           >
             {query.trim().length === 0 ? null : isSearching && results.length === 0 ? (
               <div className="flex items-center justify-center py-16">
