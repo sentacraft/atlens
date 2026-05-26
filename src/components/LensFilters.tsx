@@ -114,6 +114,20 @@ export default function LensFilters({
     { value: "manual" as FocusFilter, label: t("focusManual") },
   ] as { value: FocusFilter | null; label: string }[];
 
+  const mobileTypeOptions = [
+    { value: null, label: t("anyType") },
+    ...LENS_TYPES.map((type) => ({
+      value: type,
+      label: t(type === "prime" ? "primesMobile" : "zoomsMobile"),
+    })),
+  ] as { value: LensType | null; label: string }[];
+
+  const mobileFocusOptions = [
+    { value: null, label: t("anyFocus") },
+    { value: "auto" as FocusFilter, label: t("focusAutoMobile") },
+    { value: "manual" as FocusFilter, label: t("focusManualMobile") },
+  ] as { value: FocusFilter | null; label: string }[];
+
   const hiddenActiveFilterCount =
     (filters.focalCategories.length > 0 ? 1 : 0) +
     (filters.features.length > 0 ? 1 : 0) +
@@ -212,25 +226,42 @@ export default function LensFilters({
           </FilterRow>
         </div>
 
-        <FilterRow label={t("lensType")} labelOn="desktop">
+        <div className="flex gap-2 sm:hidden">
           <TypeSegmentedControl
             ariaLabel={t("lensType")}
-            options={typeOptions}
+            options={mobileTypeOptions}
             value={filters.typeFilter}
             onChange={(v) => updateFilters("typeFilter", v)}
-            mobileLabelOverrides={{ null: t("anyType") }}
+            compact
           />
-        </FilterRow>
-
-        <FilterRow label={t("focusFilter")} labelOn="desktop">
           <TypeSegmentedControl
             ariaLabel={t("focusFilter")}
-            options={focusOptions}
+            options={mobileFocusOptions}
             value={filters.focusFilter}
             onChange={(v) => updateFilters("focusFilter", v)}
-            mobileLabelOverrides={{ null: t("anyFocus") }}
+            compact
           />
-        </FilterRow>
+        </div>
+        <div className="hidden sm:block">
+          <FilterRow label={t("lensType")}>
+            <TypeSegmentedControl
+              ariaLabel={t("lensType")}
+              options={typeOptions}
+              value={filters.typeFilter}
+              onChange={(v) => updateFilters("typeFilter", v)}
+            />
+          </FilterRow>
+        </div>
+        <div className="hidden sm:block">
+          <FilterRow label={t("focusFilter")}>
+            <TypeSegmentedControl
+              ariaLabel={t("focusFilter")}
+              options={focusOptions}
+              value={filters.focusFilter}
+              onChange={(v) => updateFilters("focusFilter", v)}
+            />
+          </FilterRow>
+        </div>
 
         <div className="my-1.5 hidden sm:block">{filtersToggle}</div>
       </div>
