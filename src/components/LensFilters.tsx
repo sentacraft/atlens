@@ -13,12 +13,8 @@ import BrandFilterMenu from "./lens-filters/BrandFilterMenu";
 import FeatureToggleGroup from "./lens-filters/FeatureToggleGroup";
 import FilterRow from "./lens-filters/FilterRow";
 import MultiSelectChipGroup from "./lens-filters/MultiSelectChipGroup";
+import SingleSelectChipGroup from "./lens-filters/SingleSelectChipGroup";
 import TypeSegmentedControl from "./lens-filters/TypeSegmentedControl";
-import {
-  filterPillClass,
-  filterPillActiveClass,
-  filterPillDefaultActiveClass,
-} from "./lens-filters/styles";
 import { useFiltersTelemetry } from "./LensFilters.telemetry";
 
 interface Props {
@@ -39,7 +35,7 @@ export default function LensFilters({
   const tBrand = useTranslations("Brands");
   const [secondaryOpen, setSecondaryOpen] = useState(false);
 
-  const BRAND_PREVIEW_LIMIT = 5;
+  const BRAND_PREVIEW_LIMIT = 2;
   const brandJoiner = t("brandSeparator");
   const brandNames = Object.fromEntries(brands.map((b) => [b, tBrand(b)]));
   const selectedBrandNames = filters.brands.map((b) => brandNames[b] ?? b);
@@ -305,33 +301,12 @@ export default function LensFilters({
               <>
                 <div className="sm:hidden">
                   <FilterRow label={t("opticalTraitFilter")}>
-                    <div className="flex flex-wrap gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => updateFilters("opticalTrait", null)}
-                        aria-pressed={filters.opticalTrait === null}
-                        className={cn(
-                          filters.opticalTrait === null ? filterPillDefaultActiveClass : filterPillClass,
-                          "shrink-0 whitespace-nowrap",
-                        )}
-                      >
-                        {allOptionLabel}
-                      </button>
-                      {availableOpticalTraits.map((trait) => (
-                        <button
-                          key={trait}
-                          type="button"
-                          onClick={() => updateFilters("opticalTrait", trait)}
-                          aria-pressed={filters.opticalTrait === trait}
-                          className={cn(
-                            filters.opticalTrait === trait ? filterPillActiveClass : filterPillClass,
-                            "shrink-0 whitespace-nowrap",
-                          )}
-                        >
-                          {tBadge(trait)}
-                        </button>
-                      ))}
-                    </div>
+                    <SingleSelectChipGroup
+                      allLabel={allOptionLabel}
+                      options={opticalTraitOptions.slice(1)}
+                      value={filters.opticalTrait}
+                      onChange={(v) => updateFilters("opticalTrait", v)}
+                    />
                   </FilterRow>
                 </div>
                 <div className="hidden sm:block">
@@ -350,33 +325,12 @@ export default function LensFilters({
 
             <div className="sm:hidden">
               <FilterRow label={t("focusMotorFilter")}>
-                <div className="flex flex-wrap gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => updateFilters("focusMotorClass", null)}
-                    aria-pressed={filters.focusMotorClass === null}
-                    className={cn(
-                      filters.focusMotorClass === null ? filterPillDefaultActiveClass : filterPillClass,
-                      "shrink-0 whitespace-nowrap",
-                    )}
-                  >
-                    {allOptionLabel}
-                  </button>
-                  {focusMotorOptions.slice(1).map((option) => (
-                    <button
-                      key={String(option.value)}
-                      type="button"
-                      onClick={() => updateFilters("focusMotorClass", option.value)}
-                      aria-pressed={filters.focusMotorClass === option.value}
-                      className={cn(
-                        filters.focusMotorClass === option.value ? filterPillActiveClass : filterPillClass,
-                        "shrink-0 whitespace-nowrap",
-                      )}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
+                <SingleSelectChipGroup
+                  allLabel={allOptionLabel}
+                  options={focusMotorOptions.slice(1)}
+                  value={filters.focusMotorClass}
+                  onChange={(v) => updateFilters("focusMotorClass", v)}
+                />
               </FilterRow>
             </div>
             <div className="hidden sm:block">
