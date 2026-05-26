@@ -22,7 +22,7 @@ import SpecialtyBadges from "@/components/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens-specialty";
 import { RetailersDropdown } from "@/components/RetailersDropdown";
 import { UTILITY_BTN_CLS } from "@/lib/ui-tokens";
-import { COLLECTIONS, getCategoryKey } from "@/lib/collections";
+import { COLLECTIONS } from "@/lib/collections";
 import { getAllLenses } from "@/lib/lens";
 import { Link } from "@/i18n/navigation";
 import { BoolCell } from "@/components/ui/bool-cell";
@@ -267,11 +267,8 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const memberCollections = Object.values(COLLECTIONS)
     .filter((c) => c.filter(lens, locale))
     .map((c) => {
-      const categoryKey = getCategoryKey(c.slug);
-      const catKey = categoryKey ?? "trait";
-      const categoryLabel = t(`collectionCategory_${catKey}` as Parameters<typeof t>[0]);
       const lensCount = allXLenses.filter((l) => c.filter(l, locale)).length;
-      return { ...c, categoryLabel, lensCount };
+      return { ...c, lensCount };
     });
 
   const priceSelection = pickPriceEntry(lens.pricing, locale);
@@ -431,9 +428,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
                 href={`/lenses/x/collections/${c.slug}`}
                 className="group inline-flex items-center gap-2 rounded-full border border-zinc-200 px-3 py-1.5 text-sm transition-colors hover:border-zinc-900 hover:bg-zinc-900 hover:text-white dark:border-zinc-700 dark:hover:border-zinc-100 dark:hover:bg-zinc-100 dark:hover:text-zinc-900"
               >
-                <span className="rounded bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-500 group-hover:bg-zinc-700 group-hover:text-zinc-300 dark:bg-zinc-800 dark:text-zinc-400 dark:group-hover:bg-zinc-300 dark:group-hover:text-zinc-600">
-                  {c.categoryLabel}
-                </span>
                 <span className="font-medium text-zinc-900 group-hover:text-white dark:text-zinc-100 dark:group-hover:text-zinc-900">
                   {locale === "zh" ? c.title.zh : c.title.en}
                 </span>

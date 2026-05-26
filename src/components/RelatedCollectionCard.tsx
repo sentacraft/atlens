@@ -6,20 +6,14 @@ import type { LensCollection } from "@/lib/collections";
 
 interface Props {
   collection: LensCollection;
-  categoryTag: string;
   previewLens: Lens;
-  lensCount: number;
-  brandCount: number;
   locale: string;
   statsLabel: string;
 }
 
 export default function RelatedCollectionCard({
   collection,
-  categoryTag,
   previewLens,
-  lensCount,
-  brandCount,
   locale,
   statsLabel,
 }: Props) {
@@ -42,9 +36,6 @@ export default function RelatedCollectionCard({
         />
       </div>
       <div className="flex min-w-0 flex-1 flex-col justify-center px-3 py-2">
-        <p className="text-[10px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
-          {categoryTag}
-        </p>
         <h3 className="text-xs font-semibold leading-snug text-zinc-900 dark:text-zinc-50">
           {title}
         </h3>

@@ -225,16 +225,6 @@
     "fieldGroupMedia": "媒体与链接",
     "collectionsTitle": "所属专题",
     "collectionsSubtitle": "浏览同类镜头",
-    "collectionCategory_prime": "定焦",
-    "collectionCategory_zoom": "变焦",
-    "collectionCategory_brand": "品牌",
-    "collectionCategory_series": "系列",
-    "collectionCategory_price": "价格",
-    "collectionCategory_portability": "便携",
-    "collectionCategory_aperture": "光圈",
-    "collectionCategory_trait": "特性",
-    "collectionCategory_dedicated": "专用镜头",
-    "collectionCategory_focus": "对焦方式",
     "notFoundTitle": "未找到这支镜头"
   },
   "Brands": {

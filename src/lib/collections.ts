@@ -180,11 +180,6 @@ export const COLLECTIONS: Record<string, LensCollection> = Object.fromEntries(
   parsed.map((c) => [c.slug, c]),
 );
 
-export type CategoryKey =
-  | "prime" | "zoom" | "brand" | "series"
-  | "price" | "portability" | "aperture"
-  | "trait" | "dedicated" | "focus";
-
 export const PRIME_SLUGS = ["23mm", "35mm", "50mm", "56mm", "85mm", "wide-angle"];
 export const ZOOM_SLUGS = ["wide-zoom", "standard-zoom", "travel-zoom", "tele-zoom", "super-tele"];
 export const BRAND_SLUGS = ["fujifilm", "7artisans", "viltrox", "ttartisan", "sigma", "brightinstar", "voigtlander", "laowa", "tamron"];
@@ -195,22 +190,6 @@ export const APERTURE_SLUGS = ["fast-aperture", "constant-aperture"];
 export const TRAIT_SLUGS = ["weather-sealed", "with-ois"];
 export const DEDICATED_SLUGS = ["cine", "fisheye", "tilt-shift", "macro"];
 export const FOCUS_SLUGS = ["autofocus", "manual-focus", "value-af"];
-
-const CATEGORY_MAP: Record<string, CategoryKey> = {};
-for (const slug of PRIME_SLUGS) { CATEGORY_MAP[slug] = "prime"; }
-for (const slug of ZOOM_SLUGS) { CATEGORY_MAP[slug] = "zoom"; }
-for (const slug of BRAND_SLUGS) { CATEGORY_MAP[slug] = "brand"; }
-for (const slug of SERIES_SLUGS) { CATEGORY_MAP[slug] = "series"; }
-for (const slug of PRICE_SLUGS) { CATEGORY_MAP[slug] = "price"; }
-for (const slug of PORTABILITY_SLUGS) { CATEGORY_MAP[slug] = "portability"; }
-for (const slug of APERTURE_SLUGS) { CATEGORY_MAP[slug] = "aperture"; }
-for (const slug of TRAIT_SLUGS) { CATEGORY_MAP[slug] = "trait"; }
-for (const slug of DEDICATED_SLUGS) { CATEGORY_MAP[slug] = "dedicated"; }
-for (const slug of FOCUS_SLUGS) { CATEGORY_MAP[slug] = "focus"; }
-
-export function getCategoryKey(slug: string): CategoryKey | null {
-  return CATEGORY_MAP[slug] ?? null;
-}
 
 export function getRelatedCollections(
   slug: string,

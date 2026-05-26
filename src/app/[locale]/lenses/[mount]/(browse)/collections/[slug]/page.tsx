@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { COLLECTIONS, getCategoryKey, getRelatedCollections } from "@/lib/collections";
+import { COLLECTIONS, getRelatedCollections } from "@/lib/collections";
 import { getAllLenses } from "@/lib/lens";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import CollectionLensGrid from "@/components/CollectionLensGrid";
@@ -78,16 +78,10 @@ export default async function CollectionPage({
   const related = getRelatedCollections(slug, allXLenses, locale);
   const allBrandCount = new Set(allXLenses.map((l) => l.brand)).size;
 
-  function categoryTagFor(s: string): string {
-    const key = getCategoryKey(s) ?? "trait";
-    return t(`category_${key}` as Parameters<typeof t>[0]);
-  }
-
   const relatedWithStats = related.map((c) => {
     const ls = allXLenses.filter((l) => c.filter(l, locale));
     return {
       collection: c,
-      categoryTag: categoryTagFor(c.slug),
       previewLens: ls[0],
       lensCount: ls.length,
       brandCount: new Set(ls.map((l) => l.brand)).size,
@@ -118,14 +112,11 @@ export default async function CollectionPage({
             {t("relatedCollections")}
           </h2>
           <ul className="grid grid-cols-2 gap-3 md:grid-cols-5">
-            {relatedWithStats.map(({ collection: c, categoryTag: tag, previewLens, lensCount: lc, brandCount: bc }) => (
+            {relatedWithStats.map(({ collection: c, previewLens, lensCount: lc, brandCount: bc }) => (
               <li key={c.slug}>
                 <RelatedCollectionCard
                   collection={c}
-                  categoryTag={tag}
                   previewLens={previewLens}
-                  lensCount={lc}
-                  brandCount={bc}
                   locale={locale}
                   statsLabel={t("stats", { count: lc, brandCount: bc })}
                 />
