@@ -225,6 +225,7 @@
     "fieldGroupMedia": "媒体与链接",
     "collectionsTitle": "所属专题",
     "collectionsSubtitle": "浏览同类镜头",
+    "viewAllCollections": "查看所有专题",
     "notFoundTitle": "未找到这支镜头"
   },
   "Brands": {
@@ -501,7 +502,6 @@
   "Collection": {
     "stats": "{count} 支镜头 · {brandCount} 个品牌",
     "metaPrefix": "{count} 支镜头，{brandCount} 个品牌。",
-    "browseAll": "浏览完整 X 卡口镜头库",
     "relatedCollections": "相关专题",
     "indexTitle": "富士 X 卡口镜头专题",
     "indexDescription": "富士 X 卡口镜头专题合集——按焦段、品牌、光圈等维度分类整理。",
@@ -517,8 +517,9 @@
     "category_dedicated": "专用镜头",
     "category_focus": "对焦方式",
     "lensCount": "{count} 支镜头",
-    "browseAllEyebrow": "X 卡口 · 完整库",
-    "browseAllTitle": "浏览全部 X 卡口镜头",
+    "browseAllEyebrow": "X 卡口",
+    "browseAllTitle": "浏览全部镜头",
+    "viewAllCollections": "查看所有专题",
     "breadcrumbCollections": "专题"
   }
 }

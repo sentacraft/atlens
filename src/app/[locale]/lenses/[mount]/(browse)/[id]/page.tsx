@@ -438,6 +438,14 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               </Link>
             ))}
           </div>
+          <div className="mt-3 text-right">
+            <Link
+              href="/lenses/x/collections"
+              className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+            >
+              {t("viewAllCollections")} →
+            </Link>
+          </div>
         </section>
       )}
     </div>

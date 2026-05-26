@@ -17,6 +17,7 @@ import {
 import { getAllLenses } from "@/lib/lens";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import CollectionBreadcrumb from "@/components/CollectionBreadcrumb";
+import BrowseAllTile from "@/components/BrowseAllTile";
 
 type Params = Promise<{ locale: string; mount: string }>;
 
@@ -110,7 +111,9 @@ export default async function CollectionsIndexPage({
   ];
 
   const totalCollections = Object.keys(COLLECTIONS).length;
-  const totalLenses = allLenses.filter((l) => l.mount === "X").length;
+  const xLenses = allLenses.filter((l) => l.mount === "X");
+  const totalLenses = xLenses.length;
+  const totalBrandCount = new Set(xLenses.map((l) => l.brand)).size;
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">
@@ -148,13 +151,8 @@ export default async function CollectionsIndexPage({
         </section>
       ))}
 
-      <footer className="border-t border-zinc-200 pt-8 dark:border-zinc-800">
-        <Link
-          href="/lenses/x"
-          className="text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-        >
-          {t("browseAll")} →
-        </Link>
+      <footer className="mt-2">
+        <BrowseAllTile lensCount={totalLenses} brandCount={totalBrandCount} />
       </footer>
     </main>
   );

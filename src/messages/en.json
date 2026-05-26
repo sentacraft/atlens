@@ -225,6 +225,7 @@
     "fieldGroupMedia": "Media & Links",
     "collectionsTitle": "Featured In",
     "collectionsSubtitle": "Browse similar lenses",
+    "viewAllCollections": "View all collections",
     "notFoundTitle": "Lens Not Found"
   },
   "Brands": {
@@ -501,7 +502,6 @@
   "Collection": {
     "stats": "{count} lenses · {brandCount} brands",
     "metaPrefix": "{count} lenses from {brandCount} brands.",
-    "browseAll": "Browse the full X-mount library",
     "relatedCollections": "Related collections",
     "indexTitle": "Lens Collections for Fujifilm X-Mount",
     "indexDescription": "Curated lens collections for the Fujifilm X-mount system — organized by focal length, brand, aperture, and more.",
@@ -517,8 +517,9 @@
     "category_dedicated": "Dedicated Lenses",
     "category_focus": "Focus Type",
     "lensCount": "{count} lenses",
-    "browseAllEyebrow": "X mount · Full library",
-    "browseAllTitle": "Browse all X-mount lenses",
+    "browseAllEyebrow": "X mount",
+    "browseAllTitle": "Browse all lenses",
+    "viewAllCollections": "View all collections",
     "breadcrumbCollections": "Collections"
   }
 }

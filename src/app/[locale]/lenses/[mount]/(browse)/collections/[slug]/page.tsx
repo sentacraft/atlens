@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { COLLECTIONS, getRelatedCollections } from "@/lib/collections";
 import { getAllLenses } from "@/lib/lens";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
@@ -107,7 +108,7 @@ export default async function CollectionPage({
         </header>
         <CollectionLensGrid lenses={lenses} />
 
-        <footer className="mt-12 border-t border-zinc-200 pt-8 dark:border-zinc-800">
+        <footer className="mt-12">
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
             {t("relatedCollections")}
           </h2>
@@ -126,6 +127,14 @@ export default async function CollectionPage({
               <BrowseAllTile lensCount={allXLenses.length} brandCount={allBrandCount} />
             </li>
           </ul>
+          <div className="mt-4 text-right">
+            <Link
+              href="/lenses/x/collections"
+              className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+            >
+              {t("viewAllCollections")} →
+            </Link>
+          </div>
         </footer>
       </main>
       <BackToTopButton />
