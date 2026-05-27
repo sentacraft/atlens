@@ -46,7 +46,7 @@ export default function TypeSegmentedControl<T>({
             aria-checked={selected}
             className={cn(
               "h-8 rounded-md text-[12px] font-medium transition-colors sm:h-7",
-              compact ? "flex-1 px-2.5" : cn("px-4 sm:flex-none", !wrap && "flex-1"),
+              compact ? "flex-1 px-2.5" : "flex-1 px-4 sm:flex-none",
               selected
                 ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50 dark:shadow-none"
                 : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
