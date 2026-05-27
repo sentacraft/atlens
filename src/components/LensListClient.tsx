@@ -139,7 +139,8 @@ export default function LensListClient() {
                 </SelectTrigger>
                 <SelectContent
                   align="end"
-                  className="overflow-hidden rounded-xl"
+                  sideOffset={0}
+                  className="overflow-hidden rounded-lg"
                 >
                   {sortOptions.map((option) => (
                     <SelectItem
