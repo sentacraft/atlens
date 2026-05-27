@@ -85,7 +85,7 @@ export default function LensListClient() {
 
   return (
     <>
-      <div className="w-full max-w-7xl mx-auto px-5 sm:px-6 pt-4 sm:pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col gap-6">
+      <div className="w-full max-w-7xl mx-auto px-5 sm:px-6 pt-4 sm:pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col">
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
@@ -99,77 +99,79 @@ export default function LensListClient() {
             availableOpticalTraits={availableOpticalTraits}
             onFiltersChange={updateFilters}
           />
-          <div>
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
-                <p className="whitespace-nowrap">{t("resultsCount", { count: displayed.length })}</p>
-                {hasActiveFilters ? (
-                  <button
-                    type="button"
-                    className={`whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.08em] ${TEXT_LINK_CLS}`}
-                    onClick={clearAllFilters}
-                  >
-                    {t("clearFilters")}
-                  </button>
-                ) : null}
-              </div>
+        </div>
 
-              <div className="ml-auto inline-flex items-center gap-2">
-                <Select
-                  value={filters.sort}
-                  onValueChange={(value) =>
-                    updateFilters((current) => ({
-                      ...current,
-                      sort: (value ?? "focalLength") as SortKey,
-                    }))
-                  }
-                  items={sortOptions.map((option) => ({ ...option }))}
+        <div className="mt-6 mb-2 sm:mt-5 sm:mb-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
+              <p className="whitespace-nowrap">{t("resultsCount", { count: displayed.length })}</p>
+              {hasActiveFilters ? (
+                <button
+                  type="button"
+                  className={`whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.08em] ${TEXT_LINK_CLS}`}
+                  onClick={clearAllFilters}
                 >
-                  <SelectTrigger
-                    id="results-sort"
-                    hideChevronOnMobile
-                    className="justify-start gap-2 rounded-xl border-zinc-200/70 bg-white/80 px-3 text-[12px] shadow-sm shadow-zinc-950/[0.02] data-[size=default]:h-9 dark:border-zinc-800 dark:bg-zinc-900/30 sm:min-w-[12rem]"
-                  >
-                    <span className="whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.08em] text-zinc-500 dark:text-zinc-400">
-                      {t("sortBy")}
-                    </span>
-                    <SelectValue placeholder={t("sortFocalLength")} />
-                  </SelectTrigger>
-                  <SelectContent
-                    align="end"
-                    className="overflow-hidden rounded-xl"
-                  >
-                    {sortOptions.map((option) => (
-                      <SelectItem
-                        key={option.value}
-                        value={option.value}
-                        className="rounded-none py-2 sm:py-2 text-[12px] text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
-                      >
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  variant="outline"
-                  className="h-9 rounded-xl border-zinc-200/70 bg-white/80 px-2.5 shadow-sm shadow-zinc-950/[0.02] dark:border-zinc-800 dark:bg-zinc-900/30"
-                  onClick={() =>
-                    updateFilters((current) => ({
-                      ...current,
-                      sortDir: current.sortDir === "asc" ? "desc" : "asc",
-                    }))
-                  }
-                  aria-label={
-                    filters.sortDir === "asc" ? t("sortAsc") : t("sortDesc")
-                  }
+                  {t("clearFilters")}
+                </button>
+              ) : null}
+            </div>
+
+            <div className="ml-auto inline-flex items-center gap-2">
+              <Select
+                value={filters.sort}
+                onValueChange={(value) =>
+                  updateFilters((current) => ({
+                    ...current,
+                    sort: (value ?? "focalLength") as SortKey,
+                  }))
+                }
+                items={sortOptions.map((option) => ({ ...option }))}
+              >
+                <SelectTrigger
+                  id="results-sort"
+                  hideChevronOnMobile
+                  className="justify-start gap-2 rounded-xl border-zinc-200/70 bg-white/80 px-3 text-[12px] shadow-sm shadow-zinc-950/[0.02] data-[size=default]:h-9 dark:border-zinc-800 dark:bg-zinc-900/30 sm:min-w-[12rem]"
                 >
-                  {filters.sortDir === "asc" ? (
-                    <ArrowUpNarrowWide />
-                  ) : (
-                    <ArrowDownNarrowWide />
-                  )}
-                </Button>
-              </div>
+                  <span className="whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.08em] text-zinc-500 dark:text-zinc-400">
+                    {t("sortBy")}
+                  </span>
+                  <SelectValue placeholder={t("sortFocalLength")} />
+                </SelectTrigger>
+                <SelectContent
+                  align="end"
+                  sideOffset={0}
+                  className="overflow-hidden rounded-lg"
+                >
+                  {sortOptions.map((option) => (
+                    <SelectItem
+                      key={option.value}
+                      value={option.value}
+                      className="rounded-none py-2 sm:py-2 text-[12px] text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
+                    >
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                variant="outline"
+                className="h-9 rounded-xl border-zinc-200/70 bg-white/80 px-2.5 shadow-sm shadow-zinc-950/[0.02] dark:border-zinc-800 dark:bg-zinc-900/30"
+                onClick={() =>
+                  updateFilters((current) => ({
+                    ...current,
+                    sortDir: current.sortDir === "asc" ? "desc" : "asc",
+                  }))
+                }
+                aria-label={
+                  filters.sortDir === "asc" ? t("sortAsc") : t("sortDesc")
+                }
+              >
+                {filters.sortDir === "asc" ? (
+                  <ArrowUpNarrowWide />
+                ) : (
+                  <ArrowDownNarrowWide />
+                )}
+              </Button>
             </div>
           </div>
         </div>

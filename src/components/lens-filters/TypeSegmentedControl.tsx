@@ -29,7 +29,7 @@ export default function TypeSegmentedControl<T>({
       role="radiogroup"
       aria-label={ariaLabel}
       className={cn(
-        "rounded-lg bg-zinc-100 dark:bg-zinc-800 p-1",
+        "rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1",
         compact
           ? "flex min-w-0 flex-1"
           : cn("w-full sm:w-fit", wrap ? "flex flex-wrap" : "flex sm:inline-flex"),
@@ -45,7 +45,7 @@ export default function TypeSegmentedControl<T>({
             role="radio"
             aria-checked={selected}
             className={cn(
-              "h-8 rounded-md text-[12px] font-medium transition-colors sm:h-7",
+              "h-8 rounded-lg text-[12px] font-medium transition-colors sm:h-7",
               compact ? "flex-1 px-2.5" : "flex-1 px-4 sm:flex-none",
               selected
                 ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50 dark:shadow-none"
