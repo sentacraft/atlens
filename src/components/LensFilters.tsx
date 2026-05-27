@@ -14,6 +14,7 @@ import FeatureToggleGroup from "./lens-filters/FeatureToggleGroup";
 import FilterRow from "./lens-filters/FilterRow";
 import MultiSelectChipGroup from "./lens-filters/MultiSelectChipGroup";
 import TypeSegmentedControl from "./lens-filters/TypeSegmentedControl";
+import { miniLabelClass } from "./lens-filters/styles";
 import { useFiltersTelemetry } from "./LensFilters.telemetry";
 
 interface Props {
@@ -110,7 +111,7 @@ export default function LensFilters({
   ] as { value: FocusFilter | null; label: string }[];
 
   const mobileTypeOptions = [
-    { value: null, label: t("anyType") },
+    { value: null, label: t("allTypes") },
     ...LENS_TYPES.map((type) => ({
       value: type,
       label: t(type === "prime" ? "primesMobile" : "zoomsMobile"),
@@ -118,7 +119,7 @@ export default function LensFilters({
   ] as { value: LensType | null; label: string }[];
 
   const mobileFocusOptions = [
-    { value: null, label: t("anyFocus") },
+    { value: null, label: t("allTypes") },
     { value: "auto" as FocusFilter, label: t("focusAutoMobile") },
     { value: "manual" as FocusFilter, label: t("focusManualMobile") },
   ] as { value: FocusFilter | null; label: string }[];
@@ -222,20 +223,26 @@ export default function LensFilters({
         </div>
 
         <div className="flex gap-2 sm:hidden">
-          <TypeSegmentedControl
-            ariaLabel={t("lensType")}
-            options={mobileTypeOptions}
-            value={filters.typeFilter}
-            onChange={(v) => updateFilters("typeFilter", v)}
-            compact
-          />
-          <TypeSegmentedControl
-            ariaLabel={t("focusFilter")}
-            options={mobileFocusOptions}
-            value={filters.focusFilter}
-            onChange={(v) => updateFilters("focusFilter", v)}
-            compact
-          />
+          <div className="min-w-0 flex-1">
+            <span className={miniLabelClass}>{t("lensType")}</span>
+            <TypeSegmentedControl
+              ariaLabel={t("lensType")}
+              options={mobileTypeOptions}
+              value={filters.typeFilter}
+              onChange={(v) => updateFilters("typeFilter", v)}
+              compact
+            />
+          </div>
+          <div className="min-w-0 flex-1">
+            <span className={miniLabelClass}>{t("focusFilter")}</span>
+            <TypeSegmentedControl
+              ariaLabel={t("focusFilter")}
+              options={mobileFocusOptions}
+              value={filters.focusFilter}
+              onChange={(v) => updateFilters("focusFilter", v)}
+              compact
+            />
+          </div>
         </div>
         <div className="hidden sm:block">
           <FilterRow label={t("lensType")}>
