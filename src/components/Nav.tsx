@@ -179,15 +179,15 @@ export default function Nav() {
           )}
         </div>
 
-        {/* Desktop nav links */}
-        <div className="hidden sm:flex items-center gap-2">
+        {/* Right: shared items + breakpoint-specific overflow */}
+        <div className="flex items-center gap-1 sm:gap-2">
           <Menu.Root>
             <Menu.Trigger className={cn(linkCls(isBrowseActive), "inline-flex items-center gap-0.5")}>
               {t("lenses")}
               <ChevronDown className="size-3 transition-transform duration-150 data-[popup-open]:rotate-180" />
             </Menu.Trigger>
             <Menu.Portal>
-              <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50 hidden sm:block">
+              <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50">
                 {lensesMenuPopup}
               </Menu.Positioner>
             </Menu.Portal>
@@ -195,21 +195,20 @@ export default function Nav() {
           <Link href={compareHref} onClick={handleCompareLinkClick} className={linkCls(isCompareActive)}>
             {t("compare")}
           </Link>
-          <Link href="/about" className={linkCls(pathname === "/about")}>
+
+          {/* Desktop-only links */}
+          <Link href="/about" className={cn(linkCls(pathname === "/about"), "hidden sm:inline")}>
             {t("about")}
           </Link>
           {!isPwa && (
-            <Link
-              href="/get"
-              className={linkCls(pathname === "/get")}
-            >
+            <Link href="/get" className={cn(linkCls(pathname === "/get"), "hidden sm:inline")}>
               <span className="text-sm">{t("getApp")}</span>
             </Link>
           )}
           <button
             type="button"
             onClick={() => setFeedbackOpen(true)}
-            className={linkCls(false)}
+            className={cn(linkCls(false), "hidden sm:inline")}
           >
             {t("feedback")}
           </button>
@@ -217,30 +216,14 @@ export default function Nav() {
             href="https://github.com/sentacraft/x-glass"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors px-1"
+            className="hidden sm:inline text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors px-1"
             aria-label="GitHub"
           >
             <GitHubMark />
           </a>
-        </div>
 
-        {/* Mobile: primary links inline + secondary in overflow menu */}
-        <div className="flex items-center sm:hidden gap-1">
-          <Menu.Root>
-            <Menu.Trigger className={cn(linkCls(isBrowseActive), "inline-flex items-center gap-0.5")}>
-              {t("lenses")}
-              <ChevronDown className="size-3 transition-transform duration-150 data-[popup-open]:rotate-180" />
-            </Menu.Trigger>
-            <Menu.Portal>
-              <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50 sm:hidden">
-                {lensesMenuPopup}
-              </Menu.Positioner>
-            </Menu.Portal>
-          </Menu.Root>
-          <Link href={compareHref} onClick={handleCompareLinkClick} className={linkCls(isCompareActive)}>
-            {t("compare")}
-          </Link>
-          <div ref={menuRef} className="relative">
+          {/* Mobile-only overflow menu */}
+          <div ref={menuRef} className="relative sm:hidden">
             <button
               onClick={() => setMobileMenuOpen((v) => !v)}
               className="pl-1 pr-2 py-2 -mr-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
