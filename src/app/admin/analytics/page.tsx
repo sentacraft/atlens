@@ -211,6 +211,18 @@ const Q_PURCHASE_BY_LENS = `
   LIMIT 20
 `;
 
+// Cold-launch attribution for PWA entry points. `source` distinguishes
+// the home-screen icon (pwa) from each manifest shortcut so we can see
+// which entry point actually gets used after install.
+const Q_PWA_LAUNCH = `
+  SELECT blob6 AS source, SUM(_sample_interval) AS launches
+  FROM xglass_events
+  WHERE index1 = 'pwa_launch'
+    AND ${DASHBOARD_FILTER}
+  GROUP BY source
+  ORDER BY launches DESC
+`;
+
 function pct(num: number, denom: number): string {
   if (denom <= 0) {
     return "—";
@@ -330,6 +342,7 @@ export default async function AnalyticsDashboardPage() {
     outboundBySource,
     purchaseByChannel,
     purchaseByLens,
+    pwaLaunch,
   ] = await Promise.all([
     queryAE(Q_OVERVIEW),
     queryAE(Q_LOCALE_SPLIT),
@@ -349,6 +362,7 @@ export default async function AnalyticsDashboardPage() {
     queryAE(Q_OUTBOUND_BY_SOURCE),
     queryAE(Q_PURCHASE_BY_CHANNEL),
     queryAE(Q_PURCHASE_BY_LENS),
+    queryAE(Q_PWA_LAUNCH),
   ]);
 
   if (overview.error === "missing_credentials") {
@@ -603,6 +617,16 @@ export default async function AnalyticsDashboardPage() {
             {fmtNum(installCount)}
           </p>
           <p className="mt-1 text-xs text-zinc-500">Accepted install prompts</p>
+        </Card>
+
+        <Card title="PWA · launches by entry">
+          <Table
+            rows={pwaLaunch.data}
+            columns={[
+              { key: "source", label: "Entry" },
+              { key: "launches", label: "Launches", align: "right", widthClass: COUNT_WIDTH },
+            ]}
+          />
         </Card>
 
         <Card title="Mount switch · direction">
