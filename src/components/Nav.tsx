@@ -67,10 +67,10 @@ export default function Nav() {
   }, [navLocked]);
 
   const isDesktop = useBreakpoint("sm");
-  const wantsHide = !isPwa && (hidden || navLocked);
+  const collapsed = !isPwa && (hidden || navLocked);
   useEffect(() => {
-    setNavHidden(wantsHide && !isDesktop);
-  }, [wantsHide, isDesktop, setNavHidden]);
+    setNavHidden(collapsed && !isDesktop);
+  }, [collapsed, isDesktop, setNavHidden]);
 
   // Close mobile menu on outside click
   useEffect(() => {
@@ -157,12 +157,12 @@ export default function Nav() {
     <>
     <header
       ref={headerRef}
-      data-hidden={String(wantsHide)}
+      data-hidden={String(collapsed)}
       className={cn(
         "wco-drag",
         "fixed top-0 inset-x-0 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black z-30",
         "transition-transform duration-300 ease-in-out",
-        wantsHide && "-translate-y-full sm:translate-y-0"
+        collapsed && "-translate-y-full sm:translate-y-0"
       )}
       style={{ paddingTop: "calc(var(--safe-inset-top) + var(--titlebar-height))" }}
     >
