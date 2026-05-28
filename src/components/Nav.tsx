@@ -56,12 +56,6 @@ export default function Nav() {
     lockNav(false);
   }, [pathname, lockNav]);
 
-  useEffect(() => {
-    if (!navLocked) {
-      setScrolledDown(false);
-    }
-  }, [navLocked]);
-
   const isDesktop = useBreakpoint("sm");
   const hidden = !isPwa && !isDesktop && (scrolledDown || navLocked);
   useEffect(() => {
