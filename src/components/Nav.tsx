@@ -27,7 +27,7 @@ export default function Nav() {
   const effectiveMount = useEffectiveMount();
   const { navLocked, lockNav, setNavHidden } = useNav();
   const isPwa = usePwa();
-  const [hidden, setHidden] = useState(false);
+  const [scrolledAway, setScrolledAway] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
@@ -40,9 +40,9 @@ export default function Nav() {
       const y = window.scrollY;
       const threshold = headerRef.current?.offsetHeight ?? 56;
       if (y > lastScrollY.current && y > threshold) {
-        setHidden(true);
+        setScrolledAway(true);
       } else if (y < lastScrollY.current) {
-        setHidden(false);
+        setScrolledAway(false);
       }
       lastScrollY.current = y;
     };
@@ -50,24 +50,23 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [isPwa]);
 
-  // Reset scroll state on navigation
   useEffect(() => {
-    setHidden(false);
+    setScrolledAway(false);
     lastScrollY.current = 0;
     lockNav(false);
-  }, [pathname, setHidden, lockNav]);
+  }, [pathname, lockNav]);
 
   useEffect(() => {
     if (!navLocked) {
-      setHidden(false);
+      setScrolledAway(false);
     }
   }, [navLocked]);
 
   const isDesktop = useBreakpoint("sm");
-  const collapsed = !isPwa && (hidden || navLocked);
+  const offscreen = !isPwa && (scrolledAway || navLocked);
   useEffect(() => {
-    setNavHidden(collapsed && !isDesktop);
-  }, [collapsed, isDesktop, setNavHidden]);
+    setNavHidden(offscreen && !isDesktop);
+  }, [offscreen, isDesktop, setNavHidden]);
 
   const seg = mountToUrlSegment(effectiveMount);
   const browseHref = `/lenses/${seg}`;
@@ -139,12 +138,12 @@ export default function Nav() {
     <>
     <header
       ref={headerRef}
-      data-hidden={String(collapsed)}
+      data-hidden={String(offscreen)}
       className={cn(
         "wco-drag",
         "fixed top-0 inset-x-0 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black z-30",
         "transition-transform duration-300 ease-in-out",
-        collapsed && "-translate-y-full sm:translate-y-0"
+        offscreen && "-translate-y-full sm:translate-y-0"
       )}
       style={{ paddingTop: "calc(var(--safe-inset-top) + var(--titlebar-height))" }}
     >
