@@ -9,7 +9,6 @@ import type { FilterState, FocusFilter, FocusMotorClass, LensType, UsageFilter }
 import type { OpticalTrait } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
-import { CountBadge } from "@/components/ui/count-badge";
 import BrandFilterMenu from "./lens-filters/BrandFilterMenu";
 import FeatureToggleGroup from "./lens-filters/FeatureToggleGroup";
 import FilterRow from "./lens-filters/FilterRow";
@@ -194,7 +193,9 @@ export default function LensFilters({
         )}
       />
       {moreFiltersCount > 0 && !secondaryOpen && (
-        <CountBadge variant="neutral">{moreFiltersCount}</CountBadge>
+        <span aria-hidden="true" className="inline-flex size-4 items-center justify-center rounded-full bg-zinc-900 font-mono text-[9px] font-bold leading-none text-white dark:bg-zinc-100 dark:text-zinc-900">
+          {moreFiltersCount}
+        </span>
       )}
     </button>
   );
@@ -213,7 +214,9 @@ export default function LensFilters({
           >
             <RotateCcw size={11} />
             {t("reset")}
-            <CountBadge variant="danger">{activeFilterCount}</CountBadge>
+            <span aria-hidden="true" className="inline-flex min-w-4 items-center justify-center rounded-full bg-rose-800 px-1.5 font-mono text-[9px] font-bold leading-none text-white dark:bg-rose-700">
+              {activeFilterCount}
+            </span>
           </button>
         </>
       )}
