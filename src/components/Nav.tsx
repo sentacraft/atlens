@@ -2,15 +2,17 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { EllipsisVertical, Send, Info, Download } from "lucide-react";
+import { Menu } from "@base-ui/react/menu";
+import { ChevronDown, EllipsisVertical, Send, Info, Download } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { mountToUrlSegment } from "@/lib/mount";
-import { useNavLock } from "@/context/ScrollContainerContext";
+import { useNav } from "@/context/NavContext";
 import { usePwa } from "@/lib/usePwa";
 import { cn } from "@/lib/utils";
 import MountSwitcher from "@/components/MountSwitcher";
@@ -23,14 +25,12 @@ export default function Nav() {
   const { compareIds } = useCompare();
   const clearCompareWithUndo = useClearCompareWithUndo();
   const effectiveMount = useEffectiveMount();
-  const { navLocked, lockNav } = useNavLock();
+  const { navLocked, lockNav, setNavHidden } = useNav();
   const isPwa = usePwa();
-  const [hidden, setHidden] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolledDown, setScrolledDown] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isPwa) {
@@ -40,9 +40,9 @@ export default function Nav() {
       const y = window.scrollY;
       const threshold = headerRef.current?.offsetHeight ?? 56;
       if (y > lastScrollY.current && y > threshold) {
-        setHidden(true);
+        setScrolledDown(true);
       } else if (y < lastScrollY.current) {
-        setHidden(false);
+        setScrolledDown(false);
       }
       lastScrollY.current = y;
     };
@@ -50,36 +50,21 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [isPwa]);
 
-  // Close mobile menu + reset scroll on navigation
   useEffect(() => {
-    setHidden(false);
-    setMobileMenuOpen(false);
+    setScrolledDown(false);
     lastScrollY.current = 0;
     lockNav(false);
-  }, [pathname, setHidden, lockNav]);
+  }, [pathname, lockNav]);
 
+  const isDesktop = useBreakpoint("sm");
+  const hidden = !isPwa && !isDesktop && (scrolledDown || navLocked);
   useEffect(() => {
-    if (!navLocked) {
-      setHidden(false);
-    }
-  }, [navLocked]);
-
-  // Close mobile menu on outside click
-  useEffect(() => {
-    if (!mobileMenuOpen) {
-      return;
-    }
-    function onPointerDown(e: PointerEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMobileMenuOpen(false);
-      }
-    }
-    document.addEventListener("pointerdown", onPointerDown);
-    return () => document.removeEventListener("pointerdown", onPointerDown);
-  }, [mobileMenuOpen]);
+    setNavHidden(hidden);
+  }, [hidden, setNavHidden]);
 
   const seg = mountToUrlSegment(effectiveMount);
   const browseHref = `/lenses/${seg}`;
+  const collectionsHref = `/lenses/${seg}/collections`;
   const compareHref = compareIds.length > 0
     ? `/lenses/${seg}/compare?ids=${compareIds.join(",")}`
     : `/lenses/${seg}/compare`;
@@ -102,6 +87,33 @@ export default function Nav() {
   const isCompareActive = pathname.includes("/compare");
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
 
+  const lensesMenuPopup = (
+    <Menu.Popup className="w-44 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 overflow-hidden origin-(--transform-origin) duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
+      <Menu.LinkItem
+        render={<Link href={browseHref} />}
+        className="block px-4 py-2.5 transition-colors outline-none pointer-fine:data-highlighted:bg-zinc-50 dark:pointer-fine:data-highlighted:bg-zinc-800/50"
+      >
+        <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
+          {t("allLenses")}
+        </span>
+        <span className="block text-xs font-normal text-zinc-400 dark:text-zinc-500 mt-0.5">
+          {t("allLensesHint")}
+        </span>
+      </Menu.LinkItem>
+      <Menu.LinkItem
+        render={<Link href={collectionsHref} />}
+        className="block px-4 py-2.5 transition-colors outline-none pointer-fine:data-highlighted:bg-zinc-50 dark:pointer-fine:data-highlighted:bg-zinc-800/50"
+      >
+        <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
+          {t("collections")}
+        </span>
+        <span className="block text-xs font-normal text-zinc-400 dark:text-zinc-500 mt-0.5">
+          {t("collectionsHint")}
+        </span>
+      </Menu.LinkItem>
+    </Menu.Popup>
+  );
+
   // When the user is *already on* the compare page and clicks the nav's
   // "对比" link, the intuitive read is "reset this comparison and start
   // fresh" — but plain navigation would just be a no-op. Intercept the
@@ -113,7 +125,6 @@ export default function Nav() {
       return;
     }
     e.preventDefault();
-    setMobileMenuOpen(false);
     clearCompareWithUndo();
   }
 
@@ -121,12 +132,12 @@ export default function Nav() {
     <>
     <header
       ref={headerRef}
-      data-hidden={String(!isPwa && (hidden || navLocked))}
+      data-hidden={String(hidden)}
       className={cn(
         "wco-drag",
         "fixed top-0 inset-x-0 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black z-30",
         "transition-transform duration-300 ease-in-out",
-        !isPwa && (hidden || navLocked) && "-translate-y-full sm:translate-y-0"
+        hidden && "-translate-y-full"
       )}
       style={{ paddingTop: "calc(var(--safe-inset-top) + var(--titlebar-height))" }}
     >
@@ -149,29 +160,36 @@ export default function Nav() {
           )}
         </div>
 
-        {/* Desktop nav links */}
-        <div className="hidden sm:flex items-center gap-2">
-          <Link href={browseHref} className={linkCls(isBrowseActive)}>
-            {t("lenses")}
-          </Link>
+        {/* Right: shared items + breakpoint-specific overflow */}
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Menu.Root>
+            <Menu.Trigger className={cn(linkCls(isBrowseActive), "inline-flex items-center gap-0.5")}>
+              {t("lenses")}
+              <ChevronDown className="size-3 transition-transform duration-150 data-[popup-open]:rotate-180" />
+            </Menu.Trigger>
+            <Menu.Portal>
+              <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50">
+                {lensesMenuPopup}
+              </Menu.Positioner>
+            </Menu.Portal>
+          </Menu.Root>
           <Link href={compareHref} onClick={handleCompareLinkClick} className={linkCls(isCompareActive)}>
             {t("compare")}
           </Link>
-          <Link href="/about" className={linkCls(pathname === "/about")}>
+
+          {/* Desktop-only links */}
+          <Link href="/about" className={cn(linkCls(pathname === "/about"), "hidden sm:inline")}>
             {t("about")}
           </Link>
           {!isPwa && (
-            <Link
-              href="/get"
-              className={linkCls(pathname === "/get")}
-            >
+            <Link href="/get" className={cn(linkCls(pathname === "/get"), "hidden sm:inline")}>
               <span className="text-sm">{t("getApp")}</span>
             </Link>
           )}
           <button
             type="button"
             onClick={() => setFeedbackOpen(true)}
-            className={linkCls(false)}
+            className={cn(linkCls(false), "hidden sm:inline")}
           >
             {t("feedback")}
           </button>
@@ -179,64 +197,59 @@ export default function Nav() {
             href="https://github.com/sentacraft/x-glass"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors px-1"
+            className="hidden sm:inline text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors px-1"
             aria-label="GitHub"
           >
             <GitHubMark />
           </a>
-        </div>
 
-        {/* Mobile: primary links inline + secondary in overflow menu */}
-        <div className="flex items-center sm:hidden gap-1">
-          <Link href={browseHref} className={linkCls(isBrowseActive)}>
-            {t("lenses")}
-          </Link>
-          <Link href={compareHref} onClick={handleCompareLinkClick} className={linkCls(isCompareActive)}>
-            {t("compare")}
-          </Link>
-          <div ref={menuRef} className="relative">
-            <button
-              onClick={() => setMobileMenuOpen((v) => !v)}
-              className="pl-1 pr-2 py-2 -mr-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+          {/* Mobile-only overflow menu */}
+          <Menu.Root>
+            <Menu.Trigger
               aria-label="Menu"
-              aria-expanded={mobileMenuOpen}
+              className="pl-1 pr-2 py-2 -mr-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors sm:hidden"
             >
               <EllipsisVertical className="h-5 w-5" />
-            </button>
-
-            {mobileMenuOpen && (
-              <div className="absolute right-0 top-full mt-1.5 w-36 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden">
-                <Link href="/about" className={mobileLinkCls(pathname === "/about")}>
-                  <Info className="h-4 w-4 shrink-0" />
-                  {t("about")}
-                </Link>
-                {!isPwa && (
-                  <Link href="/get" className={mobileLinkCls(pathname === "/get")}>
-                    <Download className="h-4 w-4 shrink-0" />
-                    {t("getApp")}
-                  </Link>
-                )}
-                <button
-                  type="button"
-                  onClick={() => { setMobileMenuOpen(false); setFeedbackOpen(true); }}
-                  className={mobileLinkCls(false) + " w-full text-left"}
-                >
-                  <Send className="h-4 w-4 shrink-0" />
-                  {t("feedback")}
-                </button>
-                <a
-                  href="https://github.com/sentacraft/x-glass"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={mobileLinkCls(false)}
-                  aria-label="GitHub"
-                >
-                  <GitHubMark size={16} className="shrink-0" />
-                  GitHub
-                </a>
-              </div>
-            )}
-          </div>
+            </Menu.Trigger>
+            <Menu.Portal>
+              <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50 sm:hidden">
+                <Menu.Popup className="w-36 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 overflow-hidden origin-(--transform-origin) duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
+                  <Menu.LinkItem
+                    render={<Link href="/about" />}
+                    className={mobileLinkCls(pathname === "/about")}
+                  >
+                    <Info className="h-4 w-4 shrink-0" />
+                    {t("about")}
+                  </Menu.LinkItem>
+                  {!isPwa && (
+                    <Menu.LinkItem
+                      render={<Link href="/get" />}
+                      className={mobileLinkCls(pathname === "/get")}
+                    >
+                      <Download className="h-4 w-4 shrink-0" />
+                      {t("getApp")}
+                    </Menu.LinkItem>
+                  )}
+                  <Menu.Item
+                    onSelect={() => setFeedbackOpen(true)}
+                    className={mobileLinkCls(false)}
+                  >
+                    <Send className="h-4 w-4 shrink-0" />
+                    {t("feedback")}
+                  </Menu.Item>
+                  <Menu.LinkItem
+                    href="https://github.com/sentacraft/x-glass"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={mobileLinkCls(false)}
+                  >
+                    <GitHubMark size={16} className="shrink-0" />
+                    GitHub
+                  </Menu.LinkItem>
+                </Menu.Popup>
+              </Menu.Positioner>
+            </Menu.Portal>
+          </Menu.Root>
         </div>
       </nav>
     </header>

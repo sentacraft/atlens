@@ -48,7 +48,7 @@ export const Z = {
 
 // ── Layout ────────────────────────────────────────────────────────────────────
 //
-// The layout's scroll container (ScrollContainerContext) owns the vertical
+// The layout's scroll container (NavContext) owns the vertical
 // scroll; the nav bar sits above it in a flex column. Individual pages should
 // use h-full / flex-1 rather than calc(100dvh - navHeight).
 

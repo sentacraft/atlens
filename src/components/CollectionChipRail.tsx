@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useNav } from "@/context/NavContext";
 
 interface Section {
   id: string;
@@ -22,21 +23,9 @@ export default function CollectionChipRail({
   allLabel,
 }: CollectionChipRailProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [navHidden, setNavHidden] = useState(false);
+  const { navHidden } = useNav();
   const railRef = useRef<HTMLElement>(null);
   const isClickScrolling = useRef(false);
-
-  useEffect(() => {
-    const nav = document.querySelector("header[data-hidden]");
-    if (!nav) {
-      return;
-    }
-    const sync = () => setNavHidden(nav.getAttribute("data-hidden") === "true");
-    sync();
-    const observer = new MutationObserver(sync);
-    observer.observe(nav, { attributes: true, attributeFilter: ["data-hidden"] });
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
     const ids = sections.map((s) => s.id);

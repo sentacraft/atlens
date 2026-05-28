@@ -17,6 +17,10 @@
   },
   "Nav": {
     "lenses": "Browse",
+    "allLenses": "All Lenses",
+    "allLensesHint": "Filter & sort",
+    "collections": "Collections",
+    "collectionsHint": "Pancakes, travel zooms, constant aperture…",
     "compare": "Compare",
     "about": "About",
     "getApp": "Get App",

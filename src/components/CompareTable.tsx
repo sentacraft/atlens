@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useNavLock } from "@/context/ScrollContainerContext";
+import { useNav } from "@/context/NavContext";
 import { usePwa } from "@/lib/usePwa";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
@@ -355,7 +355,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   );
 
   const totalColSpan = orderedLenses.length + 1 + emptySlotCount;
-  const { lockNav } = useNavLock();
+  const { lockNav } = useNav();
   const isPwa = usePwa();
 
   // --- Phantom sticky header ---

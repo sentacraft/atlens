@@ -15,7 +15,7 @@ import Redaction from "@/components/Redaction";
 import TestHookPanel from "@/components/TestHookPanel";
 import { CompareProvider } from "@/context/CompareProvider";
 import { MountPreferenceProvider } from "@/context/MountPreferenceProvider";
-import { ScrollContainerProvider } from "@/context/ScrollContainerContext";
+import { NavProvider } from "@/context/NavContext";
 import { TestHookProvider } from "@/context/TestHookProvider";
 import { TESTHOOK_ALLOWED } from "@/lib/testhook";
 import { SITE } from "@/config/site";
@@ -148,7 +148,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <MountPreferenceProvider>
           <CompareProvider>
-            <ScrollContainerProvider>
+            <NavProvider>
               <ConsoleEgg />
               {/* Suspense gate — Redaction uses useSearchParams, which would
                   otherwise force a CSR bailout on every prerendered page. */}
@@ -169,7 +169,7 @@ export default async function LocaleLayout({
                   children
                 )}
               </div>
-            </ScrollContainerProvider>
+            </NavProvider>
           </CompareProvider>
           </MountPreferenceProvider>
           <AppToaster />
