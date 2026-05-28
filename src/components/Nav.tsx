@@ -145,7 +145,7 @@ export default function Nav() {
   }
 
   const lensesDropdownPanel = (
-    <div className="absolute left-0 top-full mt-1.5 w-48 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden">
+    <div className="absolute right-0 top-full mt-1.5 w-48 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden">
       <Link
         href={browseHref}
         onClick={() => setLensesMenuOpen(false)}
