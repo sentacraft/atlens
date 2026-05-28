@@ -11,7 +11,7 @@ import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
-import { useNavLock } from "@/context/ScrollContainerContext";
+import { useNavLock, useNavHidden } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
 import { cn } from "@/lib/utils";
 import MountSwitcher from "@/components/MountSwitcher";
@@ -25,6 +25,7 @@ export default function Nav() {
   const clearCompareWithUndo = useClearCompareWithUndo();
   const effectiveMount = useEffectiveMount();
   const { navLocked, lockNav } = useNavLock();
+  const { setNavHidden } = useNavHidden();
   const isPwa = usePwa();
   const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -64,6 +65,15 @@ export default function Nav() {
       setHidden(false);
     }
   }, [navLocked]);
+
+  const wantsHide = !isPwa && (hidden || navLocked);
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 640px)");
+    const sync = () => setNavHidden(wantsHide && !mql.matches);
+    sync();
+    mql.addEventListener("change", sync);
+    return () => mql.removeEventListener("change", sync);
+  }, [wantsHide, setNavHidden]);
 
   // Close mobile menu on outside click
   useEffect(() => {
@@ -151,12 +161,12 @@ export default function Nav() {
     <>
     <header
       ref={headerRef}
-      data-hidden={String(!isPwa && (hidden || navLocked))}
+      data-hidden={String(wantsHide)}
       className={cn(
         "wco-drag",
         "fixed top-0 inset-x-0 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black z-30",
         "transition-transform duration-300 ease-in-out",
-        !isPwa && (hidden || navLocked) && "-translate-y-full sm:translate-y-0"
+        wantsHide && "-translate-y-full sm:translate-y-0"
       )}
       style={{ paddingTop: "calc(var(--safe-inset-top) + var(--titlebar-height))" }}
     >
