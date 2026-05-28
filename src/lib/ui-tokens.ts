@@ -109,6 +109,13 @@ export const PRICE_DISCLAIMER_ICON_CLS =
  * Page-level utility action (Share, Report) in breadcrumb / chrome row.
  * Lower weight than ACTION_OUTLINE_CLS — no border, smaller text, ghost hover.
  */
+/** Dropdown / menu item title — always medium weight. Add size (text-sm / text-base) per site. */
+export const DROPDOWN_TITLE_CLS = "font-medium";
+
+/** Dropdown / menu item caption — secondary hint text below the title. */
+export const DROPDOWN_CAPTION_CLS =
+  "text-xs font-normal text-zinc-400 dark:text-zinc-500 mt-0.5";
+
 export const UTILITY_BTN_CLS =
   "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs " +
   "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 " +

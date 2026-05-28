@@ -13,6 +13,7 @@ import { mountToUrlSegment } from "@/lib/mount";
 import { useNavLock } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
 import { cn } from "@/lib/utils";
+import { DROPDOWN_TITLE_CLS, DROPDOWN_CAPTION_CLS } from "@/lib/ui-tokens";
 import MountSwitcher from "@/components/MountSwitcher";
 import FeedbackDialog from "@/components/FeedbackDialog";
 import GitHubMark from "@/components/logos/GitHubMark";
@@ -151,10 +152,10 @@ export default function Nav() {
         onClick={() => setLensesMenuOpen(false)}
         className="block px-4 py-2.5 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
       >
-        <span className={cn("text-sm font-medium", isBrowseActive && !isCollectionsActive ? "text-zinc-900 dark:text-zinc-50" : "text-zinc-500 dark:text-zinc-400")}>
+        <span className={cn("text-sm", DROPDOWN_TITLE_CLS, isBrowseActive && !isCollectionsActive ? "text-zinc-900 dark:text-zinc-50" : "text-zinc-500 dark:text-zinc-400")}>
           {t("allLenses")}
         </span>
-        <span className="block text-xs font-normal text-zinc-400 dark:text-zinc-500 mt-0.5">
+        <span className={cn("block", DROPDOWN_CAPTION_CLS)}>
           {t("allLensesHint")}
         </span>
       </Link>
@@ -163,10 +164,10 @@ export default function Nav() {
         onClick={() => setLensesMenuOpen(false)}
         className="block px-4 py-2.5 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
       >
-        <span className={cn("text-sm font-medium", isCollectionsActive ? "text-zinc-900 dark:text-zinc-50" : "text-zinc-500 dark:text-zinc-400")}>
+        <span className={cn("text-sm", DROPDOWN_TITLE_CLS, isCollectionsActive ? "text-zinc-900 dark:text-zinc-50" : "text-zinc-500 dark:text-zinc-400")}>
           {t("collections")}
         </span>
-        <span className="block text-xs font-normal text-zinc-400 dark:text-zinc-500 mt-0.5">
+        <span className={cn("block", DROPDOWN_CAPTION_CLS)}>
           {t("collectionsHint")}
         </span>
       </Link>
