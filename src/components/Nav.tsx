@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { Menu } from "@base-ui/react/menu";
 import { ChevronDown, EllipsisVertical, Send, Info, Download } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import Iris from "@/components/Iris";
@@ -13,7 +14,6 @@ import { mountToUrlSegment } from "@/lib/mount";
 import { useNavLock } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
 import { cn } from "@/lib/utils";
-import { DROPDOWN_TITLE_CLS, DROPDOWN_CAPTION_CLS } from "@/lib/ui-tokens";
 import MountSwitcher from "@/components/MountSwitcher";
 import FeedbackDialog from "@/components/FeedbackDialog";
 import GitHubMark from "@/components/logos/GitHubMark";
@@ -28,13 +28,10 @@ export default function Nav() {
   const isPwa = usePwa();
   const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [lensesMenuOpen, setLensesMenuOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const lensesDesktopRef = useRef<HTMLDivElement>(null);
-  const lensesMobileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isPwa) {
@@ -58,7 +55,6 @@ export default function Nav() {
   useEffect(() => {
     setHidden(false);
     setMobileMenuOpen(false);
-    setLensesMenuOpen(false);
     lastScrollY.current = 0;
     lockNav(false);
   }, [pathname, setHidden, lockNav]);
@@ -82,33 +78,6 @@ export default function Nav() {
     document.addEventListener("pointerdown", onPointerDown);
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [mobileMenuOpen]);
-
-  // Close lenses dropdown on outside click or Escape
-  useEffect(() => {
-    if (!lensesMenuOpen) {
-      return;
-    }
-    function onPointerDown(e: PointerEvent) {
-      const target = e.target as Node;
-      if (
-        !lensesDesktopRef.current?.contains(target) &&
-        !lensesMobileRef.current?.contains(target)
-      ) {
-        setLensesMenuOpen(false);
-      }
-    }
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        setLensesMenuOpen(false);
-      }
-    }
-    document.addEventListener("pointerdown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("pointerdown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [lensesMenuOpen]);
 
   const seg = mountToUrlSegment(effectiveMount);
   const browseHref = `/lenses/${seg}`;
@@ -136,42 +105,31 @@ export default function Nav() {
   const isCompareActive = pathname.includes("/compare");
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
 
-  function toggleLensesMenu() {
-    setLensesMenuOpen((v) => {
-      if (!v) {
-        setMobileMenuOpen(false);
-      }
-      return !v;
-    });
-  }
-
-  const lensesDropdownPanel = (
-    <div className="absolute right-0 top-full mt-1.5 w-44 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden">
-      <Link
-        href={browseHref}
-        onClick={() => setLensesMenuOpen(false)}
-        className="block px-4 py-2.5 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+  const lensesMenuPopup = (
+    <Menu.Popup className="w-44 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden origin-(--transform-origin) duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
+      <Menu.LinkItem
+        render={<Link href={browseHref} />}
+        className="block px-4 py-2.5 transition-colors outline-none pointer-fine:data-highlighted:bg-zinc-50 dark:pointer-fine:data-highlighted:bg-zinc-800/50"
       >
-        <span className={cn("text-sm text-zinc-900 dark:text-zinc-50", DROPDOWN_TITLE_CLS)}>
+        <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
           {t("allLenses")}
         </span>
-        <span className={cn("block", DROPDOWN_CAPTION_CLS)}>
+        <span className="block text-xs font-normal text-zinc-400 dark:text-zinc-500 mt-0.5">
           {t("allLensesHint")}
         </span>
-      </Link>
-      <Link
-        href={collectionsHref}
-        onClick={() => setLensesMenuOpen(false)}
-        className="block px-4 py-2.5 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+      </Menu.LinkItem>
+      <Menu.LinkItem
+        render={<Link href={collectionsHref} />}
+        className="block px-4 py-2.5 transition-colors outline-none pointer-fine:data-highlighted:bg-zinc-50 dark:pointer-fine:data-highlighted:bg-zinc-800/50"
       >
-        <span className={cn("text-sm text-zinc-900 dark:text-zinc-50", DROPDOWN_TITLE_CLS)}>
+        <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
           {t("collections")}
         </span>
-        <span className={cn("block", DROPDOWN_CAPTION_CLS)}>
+        <span className="block text-xs font-normal text-zinc-400 dark:text-zinc-500 mt-0.5">
           {t("collectionsHint")}
         </span>
-      </Link>
-    </div>
+      </Menu.LinkItem>
+    </Menu.Popup>
   );
 
   // When the user is *already on* the compare page and clicks the nav's
@@ -223,18 +181,17 @@ export default function Nav() {
 
         {/* Desktop nav links */}
         <div className="hidden sm:flex items-center gap-2">
-          <div ref={lensesDesktopRef} className="relative">
-            <button
-              type="button"
-              onClick={toggleLensesMenu}
-              className={cn(linkCls(isBrowseActive), "inline-flex items-center gap-0.5")}
-              aria-expanded={lensesMenuOpen}
-            >
+          <Menu.Root>
+            <Menu.Trigger className={cn(linkCls(isBrowseActive), "inline-flex items-center gap-0.5")}>
               {t("lenses")}
-              <ChevronDown className={cn("size-3 transition-transform duration-150", lensesMenuOpen && "rotate-180")} />
-            </button>
-            {lensesMenuOpen && lensesDropdownPanel}
-          </div>
+              <ChevronDown className="size-3 transition-transform duration-150 data-[popup-open]:rotate-180" />
+            </Menu.Trigger>
+            <Menu.Portal>
+              <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50 hidden sm:block">
+                {lensesMenuPopup}
+              </Menu.Positioner>
+            </Menu.Portal>
+          </Menu.Root>
           <Link href={compareHref} onClick={handleCompareLinkClick} className={linkCls(isCompareActive)}>
             {t("compare")}
           </Link>
@@ -269,31 +226,23 @@ export default function Nav() {
 
         {/* Mobile: primary links inline + secondary in overflow menu */}
         <div className="flex items-center sm:hidden gap-1">
-          <div ref={lensesMobileRef} className="relative">
-            <button
-              type="button"
-              onClick={toggleLensesMenu}
-              className={cn(linkCls(isBrowseActive), "inline-flex items-center gap-0.5")}
-              aria-expanded={lensesMenuOpen}
-            >
+          <Menu.Root>
+            <Menu.Trigger className={cn(linkCls(isBrowseActive), "inline-flex items-center gap-0.5")}>
               {t("lenses")}
-              <ChevronDown className={cn("size-3 transition-transform duration-150", lensesMenuOpen && "rotate-180")} />
-            </button>
-            {lensesMenuOpen && lensesDropdownPanel}
-          </div>
+              <ChevronDown className="size-3 transition-transform duration-150 data-[popup-open]:rotate-180" />
+            </Menu.Trigger>
+            <Menu.Portal>
+              <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50 sm:hidden">
+                {lensesMenuPopup}
+              </Menu.Positioner>
+            </Menu.Portal>
+          </Menu.Root>
           <Link href={compareHref} onClick={handleCompareLinkClick} className={linkCls(isCompareActive)}>
             {t("compare")}
           </Link>
           <div ref={menuRef} className="relative">
             <button
-              onClick={() => {
-                setMobileMenuOpen((v) => {
-                  if (!v) {
-                    setLensesMenuOpen(false);
-                  }
-                  return !v;
-                });
-              }}
+              onClick={() => setMobileMenuOpen((v) => !v)}
               className="pl-1 pr-2 py-2 -mr-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
               aria-label="Menu"
               aria-expanded={mobileMenuOpen}
