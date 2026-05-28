@@ -9,6 +9,10 @@
       "description": {
         "en": "23mm on APS-C delivers the iconic 35mm full-frame equivalent field of view — the golden standard for street and documentary photography. Wide enough to capture environmental context, yet tight enough to isolate your story. Here is the complete index of every 23mm prime available for the X-mount, from first-party glass to third-party alternatives.",
         "zh": "23mm 在 APS-C 画幅上等效全画幅 35mm，是无可争议的经典人文与纪实焦段。既能容纳足够的现场环境，又能聚焦叙事主体。本页收录了 X 卡口目前所有的 23mm 定焦镜头，涵盖原厂与各家副厂。"
+      },
+      "shortDescription": {
+        "en": "35mm equiv — street and environmental portraits",
+        "zh": "等效 35mm，环境人像与旅拍常用焦段"
       }
     },
     {
@@ -20,6 +24,10 @@
       "description": {
         "en": "The Nifty Fifty of the Fujifilm ecosystem. 35mm on X-mount provides a natural, human-eye perspective (50mm equivalent) that has defined photography for generations. As the most populated focal length on the system, the options span from ultra-budget fully manual gems to high-end, clinically sharp autofocus glass.",
         "zh": "富士系统的「标准镜头」。等效全画幅 50mm 的视角极为克制、自然，接近人眼的单眼透视。作为 X 卡口竞争最激烈的焦段，这里既有百元级的趣味手动头，也有追求极致锐度的现代自动对焦旗舰。"
+      },
+      "shortDescription": {
+        "en": "50mm equiv — the quintessential standard prime",
+        "zh": "等效 50mm，最百搭的标头焦段"
       }
     },
     {
@@ -31,6 +39,10 @@
       "description": {
         "en": "Sitting comfortably between a standard lens and a dedicated portrait telephoto, a 50mm lens on APS-C behaves like a 75mm equivalent. An incredibly versatile choice for tighter street frames, clean still life, and environmental portraits where you want moderate background compression without losing working distance.",
         "zh": "介于标头与长焦人像之间，50mm 在 APS-C 画幅上等效约 75mm。这是一个被低估的宝藏焦段，空间压缩感点到为止，非常适合用来拍扫街特写、静物小品或者带环境的空间感人像。"
+      },
+      "shortDescription": {
+        "en": "75mm equiv — tight frames and portraits",
+        "zh": "等效 75mm，特写与空间感人像"
       }
     },
     {
@@ -42,6 +54,10 @@
       "description": {
         "en": "The quintessential portrait focal length for X-mount. Translating to an 85mm full-frame equivalent, these lenses are optically optimized to flatter facial features without distortion. Known for rendering creamy bokeh and maintaining a comfortable working distance from your subject, this is the definitive lineup for portrait photographers.",
         "zh": "富士系统里的人像王牌焦段。等效全画幅 85mm，能够在不产生透视变形的前提下完美还原面部轮廓，配合恰当的拍摄距离，是人像摄影的经典选择。"
+      },
+      "shortDescription": {
+        "en": "85mm equiv — the portrait focal length",
+        "zh": "等效 85mm，富士人像王牌焦段"
       }
     },
     {
@@ -53,6 +69,10 @@
       "description": {
         "en": "Stepping into true telephoto territory, 85mm on APS-C acts as a tight 128mm equivalent. A specialized tool designed to melt away messy backgrounds and make your subject pop. While a niche choice for crop sensors, the available options offer unique rendering profiles and exceptional subject isolation.",
         "zh": "等效约 128mm，已经踏入了中长焦的领域。它们是纯粹的背景净化工具，能将凌乱的现场瞬间融化，让主体绝对突出。虽然在 APS-C 画幅上相对小众，但现有的几支各有个性，非常值得玩味。"
+      },
+      "shortDescription": {
+        "en": "128mm equiv — telephoto subject isolation",
+        "zh": "等效 128mm，中长焦背景分离"
       }
     },
     {
@@ -64,6 +84,10 @@
       "description": {
         "en": "One of the most prolific third-party manufacturers for the X-mount. 7Artisans is best known for its metal-constructed manual lenses under the $200 mark, though their AF lineup is growing fast. They offer a tactile, mechanical shooting experience and vintage rendering characteristics that modern autofocus lenses often lack.",
         "zh": "国产品牌里出片率和出镜率极高的轻骑兵。七工匠以全金属手动头起家，价格大多在千元以内，近年也在快速扩充自动对焦产品线。它们带给你的是久违的阻尼对焦体验与充满个性的复古氛围感，适合纯粹享受拍照乐趣的玩家。"
+      },
+      "shortDescription": {
+        "en": "Affordable manual + growing AF lineup",
+        "zh": "入门手动为主，自动对焦线快速扩充"
       }
     },
     {
@@ -75,6 +99,10 @@
       "description": {
         "en": "Viltrox has established itself as the premier third-party choice for native X-mount autofocus glass. Offering ultra-fast apertures, sophisticated modern optical designs, and competitive pricing, they deliver performance that rivals first-party options. Explore their expanding ecosystem here.",
         "zh": "买富士副厂自动头，唯卓仕是绕不开的选择。凭借扎实的光学素质、激进的大光圈配置以及极高的性价比，它们生生把原厂衬托成了奢侈品。本页收录了唯卓仕目前已发布的 X 卡口镜头。"
+      },
+      "shortDescription": {
+        "en": "Leading third-party native AF glass",
+        "zh": "国产副厂自动头的标杆"
       }
     },
     {
@@ -86,6 +114,10 @@
       "description": {
         "en": "From ultra-compact pancake lenses that turn your camera into a pocketable setup to exotic f/0.95 glass designed for extreme low light, TTArtisan covers the unconventional. Primarily manual focus with a growing AF lineup, these lenses offer distinct retro aesthetics, compact form factors, and unique drawing styles for creative photography.",
         "zh": "铭匠的思路非常剑走偏锋：既有极致轻薄、让相机秒变口袋机的饼干头，也有追求极端夜景虚化的 f/0.95 狂热怪兽。手动头为主、自动头也在扩充，精致的复古外观以及略带胶片味的出片风格，是追求差异化群体的挚爱。"
+      },
+      "shortDescription": {
+        "en": "Retro manual primes, compact and affordable",
+        "zh": "复古手动头，质感与价格友好"
       }
     },
     {
@@ -97,6 +129,10 @@
       "description": {
         "en": "Sigma brings its renowned full-frame optical heritage to the Fujifilm system with seamless, native autofocus integration. Known for high resolving power and robust build quality, Sigma's expanding X-mount lineup successfully fills critical focal length gaps for demanding shooters.",
         "zh": "「黑科技」适马将自家饱受赞誉的全画幅光学设计移植到了富士 X 卡口，提供完美的原生自动对焦与机身通讯。锐度扎实、对焦果断，产品线还在持续扩充，已经覆盖了不少关键焦段。"
+      },
+      "shortDescription": {
+        "en": "Full-frame optics adapted to APS-C, native AF",
+        "zh": "全画幅光学下放，原生自动对焦"
       }
     },
     {
@@ -108,6 +144,10 @@
       "description": {
         "en": "Every X-mount lens with weather-resistant construction — full or partial sealing. Built to withstand moisture, dust, and freezing temperatures, these lenses ensure peace of mind when pairing with weather-sealed bodies in unpredictable outdoor environments. Note that sealing standards and terminology vary by manufacturer.",
         "zh": "收录所有标注了防滴防尘性能的 X 卡口镜头。其中既有关键部位全面密封的型号，也有仅在卡口接合处做了基础防护的部分密封款——两者的防护等级差异较大，选购时建议结合机身的密封规格一并参考。各厂商对密封的叫法和标准不尽相同，实际防护能力以官方公示为准。"
+      },
+      "shortDescription": {
+        "en": "Built for rain, dust, and cold",
+        "zh": "户外、雨雪环境的安心选择"
       }
     },
     {
@@ -119,6 +159,10 @@
       "description": {
         "en": "Discover the micro-world with X-mount macro lenses. Engineered with close-focusing capabilities and high reproduction ratios, these options are essential for revealing intricate details in product photography, food presentation, nature, and fine-art textures.",
         "zh": "带你窥探微观世界。这批镜头拥有极近的对焦距离与高放大倍率，是拍摄昆虫生态、商业静物、美食细节以及微距纹理时不可或缺的工具。"
+      },
+      "shortDescription": {
+        "en": "Close-up detail for products, food, and nature",
+        "zh": "近摄、产品、美食、生态的利器"
       }
     },
     {
@@ -130,6 +174,10 @@
       "description": {
         "en": "Prioritize mobility with every X-mount lens weighing less than 200 grams. Perfect for minimalist travel kits, daily walk-around photography, or stabilizing setups on compact gimbals, these lenses ensure your camera stays out of the bag and in your hand without the physical fatigue.",
         "zh": "收录所有重量低于 200 克的 X 卡口镜头，有些甚至比手机还轻。非常适合长途旅行减负、日常挂机或者上轻量级稳定器，让摄影回归纯粹，告别铁手练肌。"
+      },
+      "shortDescription": {
+        "en": "Featherweight glass under 200 grams",
+        "zh": "轻量化镜头，机身平衡好"
       }
     },
     {
@@ -141,6 +189,10 @@
       "description": {
         "en": "The low-light benchmarks of the system. This index catalogs every X-mount prime featuring a maximum aperture of f/1.4 or wider—from accessible high-speed options to exotic f/0.95 glass. Engineered for maximum light gathering, clinical subject isolation, and ultra-shallow depth of field across multiple manufacturers.",
         "zh": "X 卡口的暗光标杆。本页网罗了最大光圈在 f/1.4 及以上的定焦镜头，从高性价比的 f/1.4 到追求极致虚化的 f/0.95「夜神」皆在其列。跨越多个品牌，为你带来更大的进光量、更纯净的暗光画质以及极浅景深带来的强烈空气感。"
+      },
+      "shortDescription": {
+        "en": "f/1.4 and faster for bokeh and low light",
+        "zh": "f/1.4 及以上，极致虚化与暗光"
       }
     },
     {
@@ -152,6 +204,10 @@
       "description": {
         "en": "Form factors engineered for stealth and portability. Featuring every X-mount prime measuring 40mm or less in barrel length, this collection highlights ultra-low-profile pancake lenses, miniature wide-angles, and compact normal optics that let your camera blend into the background. The most radical options barely extend past the body cap.",
         "zh": "为极致便携与街拍隐蔽性而生的体积。这里收录了所有镜身长度不超过 40mm 的 X 卡口定焦镜头。精巧的饼干头、迷你广角与微型标头，装在机身上几乎让人察觉不到存在。其中最薄的型号几乎只比机身盖多出一点点。"
+      },
+      "shortDescription": {
+        "en": "Ultra-slim profiles for pocketable setups",
+        "zh": "极致轻薄，挂机无负担"
       }
     },
     {
@@ -163,6 +219,10 @@
       "description": {
         "en": "Every X-mount lens equipped with built-in optical image stabilization. Essential for crisp handheld shooting in low light, stretching safety shutter speeds, and smoothing out run-and-gun video segments. A critical performance boost whether your body features in-body stabilization or not.",
         "zh": "收录所有内置光学防抖机构的 X 卡口镜头。各品牌对镜头防抖的叫法各不相同（富士称 OIS，腾龙称 VC，适马称 OS），但核心原理一致：通过镜组内部的补偿元件抵消手持抖动。暗光手持、慢快门、视频运镜都能显著受益，无论你的机身有没有内置防抖。"
+      },
+      "shortDescription": {
+        "en": "Built-in stabilization for video and low light",
+        "zh": "内置防抖，视频与暗光手持"
       }
     },
     {
@@ -174,6 +234,10 @@
       "description": {
         "en": "An objective index of highly accessible optics priced under $200 USD. Featuring fully manual character lenses, compact street primes, and a healthy selection of native autofocus options, this catalog proves that expanding your focal range on the Fujifilm system doesn't require prohibitive investment.",
         "zh": "千元以内的 X 卡口镜头精选。手动趣味定焦、紧凑的街拍饼干头、自动对焦镜头都有不少选择。花不了多少钱，就能在富士系统上把不同焦段和风格都玩一遍。"
+      },
+      "shortDescription": {
+        "en": "Quality glass without breaking the bank",
+        "zh": "千元以内也有好镜头"
       }
     },
     {
@@ -185,6 +249,10 @@
       "description": {
         "en": "The sweet spot of value within the X-mount ecosystem. Remaining under the $400 USD mark unlocks serious equipment: bright autofocus primes, flexible walk-around zooms, and options from both Fujifilm and third-party developers. Where most enthusiasts and creators find their everyday workhorses.",
         "zh": "X 卡口性价比的甜区。两千元以内已经能选到大光圈自动对焦定焦、实用的恒定光圈变焦等硬实力镜头。对大多数爱好者和内容创作者来说，日常挂机的主力往往就在这个价位段。"
+      },
+      "shortDescription": {
+        "en": "The enthusiast sweet spot for value",
+        "zh": "进阶性价比的甜区"
       }
     },
     {
@@ -196,6 +264,10 @@
       "description": {
         "en": "Dedicated optics engineered for motion picture production. Commonly featuring T-stop light transmission ratings, geared iris/focus rings, and standardized front diameters for seamless integration with follow-focus rigs and matte boxes. From Fujifilm's broadcast-heritage MKX zooms to cinematography primes from third-party builders.",
         "zh": "专为动态影像与电影生产力打造的 X 卡口镜头。通常具备 T 值光圈标定、齿轮化对焦与光圈环，以及统一前口径等电影化设计，可无缝嵌入遮光斗与跟焦套件中。收录从富士原厂的 MKX 变焦旗舰到第三方高性价比电影定焦群。"
+      },
+      "shortDescription": {
+        "en": "Geared rings, T-stops, and matched front diameters",
+        "zh": "齿轮环、T 值、统一前口径"
       }
     },
     {
@@ -207,6 +279,10 @@
       "description": {
         "en": "Unconventional optics delivering ultra-wide, non-linear perspectives, encompassing both circular and diagonal projections. These lenses provide radical barrel distortion and immense depth of field—perfect for subculture skateboarding video, celestial astrophotography, and experimental fine-art frame-ups.",
         "zh": "以极端广角著称的 X 卡口鱼眼镜头合集，涵盖圆形与对角线鱼眼。这些镜头利用极端的桶形畸变与近乎无穷大的景深，为滑板街头运动、星空穹顶以及极具戏剧性张力的创意摄影提供不可替代的视觉冲击。"
+      },
+      "shortDescription": {
+        "en": "Ultra-wide barrel distortion for creative impact",
+        "zh": "极端广角与桶形畸变的创意视角"
       }
     },
     {
@@ -218,6 +294,10 @@
       "description": {
         "en": "Specialized optical instruments capable of tilt and shift movements to manipulate perspective and the Scheimpflug principle on APS-C. Alter the focal plane for selective sharpness and miniature effects, or correct converging vertical lines in architecture. A niche but technically irreplaceable toolkit for product, structure, and interior photography.",
         "zh": "支持倾斜与平移结构、能够在 APS-C 画幅上控制焦平面与沙姆定律的特殊镜头。通过改变光学轴线实现选择性合焦（小人国微缩效果），或在现场直接校正建筑与室内的透视畸变。虽然小众，却是商业产品、严谨建筑摄影中不可替代的控光利器。"
+      },
+      "shortDescription": {
+        "en": "Focal plane control and perspective correction",
+        "zh": "控制焦平面与透视校正"
       }
     },
     {
@@ -229,6 +309,10 @@
       "description": {
         "en": "A comprehensive wide-angle index. Cataloging every X-mount prime at 18mm or wider, this collection maps the wide-angle landscape—from architectural and astro workhorses to specialized sub-10mm optics designed for dramatic perspectives.",
         "zh": "18mm 及以下的 X 卡口广角定焦镜头索引。风光、星空、建筑、室内——需要把更多画面塞进取景器时，这里是起点。涵盖追求边缘锐度的超广角主力，以及 10mm 以下制造强烈透视冲击的小众焦段。"
+      },
+      "shortDescription": {
+        "en": "18mm and wider for architecture and landscapes",
+        "zh": "18mm 及更广，建筑与风光"
       }
     },
     {
@@ -240,6 +324,10 @@
       "description": {
         "en": "Deep ultra-wide capabilities balanced with focal flexibility. These zoom lenses feature a wide end of 12mm or below on APS-C, making them practical tools for grand vistas, tight real-estate interiors, and creative architectural tracking where a fixed prime constrains your framing.",
         "zh": "将超广角的视觉张力与变焦的构图灵活性结合。这批变焦镜头的广角端均达到了 12mm 及以下，在面对壮丽自然风光、狭小室内空间或需要精确控制边缘延伸感的场景时，比定焦更为灵活。"
+      },
+      "shortDescription": {
+        "en": "Ultra-wide zooms for interiors and architecture",
+        "zh": "超广变焦，室内与建筑"
       }
     },
     {
@@ -251,6 +339,10 @@
       "description": {
         "en": "The everyday visual baseline. Covering the essential 15–55mm mid-range on APS-C, these optics transition smoothly from casual travel framing to tight portraits. Frequently a primary companion with a new body, and a common choice when versatility is the priority.",
         "zh": "日常创作的万金油底色。覆盖了 APS-C 画幅黄金中段（约 15–55mm）的标准变焦镜头，从小广角纪实到中焦人像一镜通吃。它们通常是日常挂机、出门不想频繁更换镜头时的首选，也是考验厂商基本功的焦段。"
+      },
+      "shortDescription": {
+        "en": "The everyday workhorse zoom range",
+        "zh": "日常挂机最常用的标准变焦"
       }
     },
     {
@@ -262,6 +354,10 @@
       "description": {
         "en": "High-ratio, multi-role optics engineered to bridge wide-angle and telephoto in a single barrel — the do-it-all travel companions. Trading peak edge-to-edge sharpness for unmatched focal versatility, these are built for trips where missing the moment matters more than pixel-level perfection.",
         "zh": "一支镜头覆盖全场景的高变倍比旅行工具。从广角端的人文纪实一路拉到长焦端的远摄特写，用一定的画质妥协换取高机动性的焦段覆盖。在不便更换镜头的旅途中，它们是专注于画面捕捉的务实之选。"
+      },
+      "shortDescription": {
+        "en": "One lens for the entire trip",
+        "zh": "大变焦比，一支走天下"
       }
     },
     {
@@ -273,6 +369,10 @@
       "description": {
         "en": "Purpose-built for range and compressed aesthetics, starting at 50mm and extending deep. From portrait-ready utility zooms to high-performance wildlife telephotos, these lenses are designed to compress spatial layers, isolate sub-narratives, and render distant action with clarity.",
         "zh": "广角端从 50mm 起步的长焦变焦镜头，自带空间压缩感。从拍摄半身人像的常用变焦到涉足户外生态的远摄利器，它们通过剥离繁杂背景、拉近时空距离，为你捕捉远处不易察觉的画面。"
+      },
+      "shortDescription": {
+        "en": "Reach for sports, wildlife, and compression",
+        "zh": "长焦变焦，运动与生态"
       }
     },
     {
@@ -284,6 +384,10 @@
       "description": {
         "en": "Extended reach in the ecosystem, capturing fields of view at a 300mm full-frame equivalent or beyond. This collection gathers specialized primes and long-range zooms with the focal power needed for wildlife, aviation, motorsport, and distant documentary subjects.",
         "zh": "富士生态里的远摄选集，收录等效全画幅 300mm 以上的变焦与长焦定焦。面对野生动物、航空摄影、赛车运动等身体无法靠近的极端场景，它们提供了必要的焦距覆盖。"
+      },
+      "shortDescription": {
+        "en": "300mm+ equiv for wildlife and aviation",
+        "zh": "等效 300mm 以上的远摄选集"
       }
     },
     {
@@ -295,6 +399,10 @@
       "description": {
         "en": "The complete direct-source catalog from Fujifilm for the X-mount ecosystem. Spanning the premium XF line and the lightweight XC options, these lenses offer optimized hardware synchronization—including native tracking priority, specific film simulation pairing, and direct internal firmware support.",
         "zh": "富士官方原厂镜头选集。全面涵盖代表高解析力的 XF 旗舰谱系与主打轻量化的 XC 系列。原厂血统带来了高度契合的机身联动：优化的自动对焦通讯、无缝的胶片模拟色彩适配以及持续的官方固件支持。"
+      },
+      "shortDescription": {
+        "en": "The complete first-party XF and XC catalog",
+        "zh": "XF / XC 全线，原厂原味"
       }
     },
     {
@@ -306,6 +414,10 @@
       "description": {
         "en": "A developing index of compact, economic manual lenses from Brightin Star. Emphasizing low-profile footprints and accessible pricing from wide to standard lengths, these options offer a straightforward, tactile path into creative mechanics without a substantial cost barrier.",
         "zh": "新锐品牌星曜（Brightin Star）出品的紧凑型手动定焦镜头。主打微型体积与亲民定价，焦段覆盖广角到标准视角。对于想要低成本体验纯手动对焦、把玩机械镜头阻尼感的玩家，这是一个合适的尝鲜入口。"
+      },
+      "shortDescription": {
+        "en": "Compact manual primes at entry-level pricing",
+        "zh": "紧凑型手动头，亲民入门"
       }
     },
     {
@@ -317,6 +429,10 @@
       "description": {
         "en": "Precision-crafted, German-heritage manual focus instruments. Celebrated for distinctive tactile mechanical feedback, minimal geometric distortion, and a rich micro-contrast profile that balances classic drawing styles with modern sharpness. A definitive selection for intentional, slow-paced creators.",
         "zh": "带有德系设计血统、精密工艺打造的高端手动对焦镜头。以出色的全金属机械做工、微乎其微的物理畸变以及兼顾锐度与德味微反差的成像风格闻名。它是为那些追求慢节奏、享受纯粹对焦仪式感的进阶玩家准备的工艺品。"
+      },
+      "shortDescription": {
+        "en": "German-heritage manual focus craftsmanship",
+        "zh": "德系精密手动，做工与微反差"
       }
     },
     {
@@ -328,6 +444,10 @@
       "description": {
         "en": "Venus Optics' Laowa lineage thrives on non-standard engineering, building where others hesitate. Famous for Zero-D rectilinear ultra-wides, structural macro probes, and compact wide zooms, their X-mount options exist specifically to fill the gaps left by mainstream manufacturers.",
         "zh": "长庚光学旗下的老蛙（Laowa）品牌，专攻主流厂商较少涉足的边缘化光学设计。从行业熟知的 Zero-D 零畸变超广角，到独特的探针微距，它们专门负责填补原生市场的空白，为寻找差异化视角的创作者提供支持。"
+      },
+      "shortDescription": {
+        "en": "Zero-D ultra-wides and probe macro specialists",
+        "zh": "零畸变超广角与探针微距"
       }
     },
     {
@@ -339,6 +459,10 @@
       "description": {
         "en": "Tamron translates its renowned optical versatility to native X-mount architecture. Featuring fast, constant-aperture zoom options and compact form factors, these lenses deliver compelling value while operating with seamless native autofocus protocols.",
         "zh": "日系变焦大厂腾龙将其招牌式的研发实力原生移植到了富士 X 卡口。主打大光圈恒定变焦与紧凑的镜身轻量化结构，在规格上往往比原厂更具针对性。原生卡口设计，对焦与防抖和机身无缝联动。"
+      },
+      "shortDescription": {
+        "en": "High-performance native mount zooms",
+        "zh": "日系高素质原生变焦"
       }
     },
     {
@@ -350,6 +474,10 @@
       "description": {
         "en": "SG Image (深光影像) offers a diverse manual-focus lineup for X-mount, ranging from ultra-slim pancake lenses and a fisheye to fast f/0.95 primes and shaped-aperture creative glass. A growing brand for shooters who want affordable, distinctive optical tools.",
         "zh": "深光影像（SG Image）在 X 卡口的产品线覆盖面出人意料：从极致轻薄的饼干头、鱼眼，到 f/0.95 大光圈和异形光圈创意镜头，手动对焦为主，价格亲民，适合喜欢尝鲜、追求个性出片的玩家。"
+      },
+      "shortDescription": {
+        "en": "Pancakes to f/0.95 from a rising brand",
+        "zh": "饼干头到 f/0.95 的全能新锐"
       }
     },
     {
@@ -361,6 +489,10 @@
       "description": {
         "en": "Fujifilm's flagship lens line for the X-mount system. Compared to the XC series, XF lenses typically feature a physical aperture ring, higher-grade focus motors, and weather-resistant construction on most models. Wider focal length coverage and faster aperture options make XF the ceiling of first-party performance.",
         "zh": "富士 X 卡口的旗舰镜头产品线。相比 XC 系列，XF 镜头通常配备物理光圈环、更高规格的对焦马达，多数型号具备防滴防尘结构。焦段覆盖和光圈选择也更丰富，是原厂体系里画质与操控的上限。"
+      },
+      "shortDescription": {
+        "en": "Fujifilm's flagship professional lens line",
+        "zh": "富士旗舰线，专业定位"
       }
     },
     {
@@ -372,6 +504,10 @@
       "description": {
         "en": "Fujifilm's lightweight, value-oriented lens line. XC lenses trade the physical aperture ring and weather sealing for reduced weight and lower price, while retaining full autofocus and electronic communication with the body. An accessible entry point for budget-conscious or weight-sensitive shooters.",
         "zh": "富士原厂的轻量化入门产品线。XC 系列省去了物理光圈环，采用轻量化复合材料镜身，价格和重量都大幅低于 XF，同时保留了完整的自动对焦与电子通讯能力。适合预算有限或对负重敏感的用户日常挂机。"
+      },
+      "shortDescription": {
+        "en": "Lightweight, value-oriented entry glass",
+        "zh": "轻量入门，套机常见"
       }
     },
     {
@@ -383,6 +519,10 @@
       "description": {
         "en": "Sigma's Contemporary ecosystem achieves a meticulous balance between high spatial resolution, compact dimensions, and competitive value. Specifically tailored to the cropped sensor format, they bypass the unnecessary volume of adapted full-frame glass for real-world agility.",
         "zh": "适马（Sigma）主打现代高素质与小体积平衡的产品线。完全基于 APS-C 画幅原生光路进行优化设计，避开了全画幅镜头转接带来的冗余体积，在紧凑的镜身内实现了出色的光学表现。"
+      },
+      "shortDescription": {
+        "en": "APS-C optimized compact performers",
+        "zh": "APS-C 原生优化的精品线"
       }
     },
     {
@@ -394,6 +534,10 @@
       "description": {
         "en": "Viltrox's ultra-compact autofocus experiment centered on extreme footprint reduction. The Air series successfully blends bright aperture choices with a featherweight layout, curated for agile hybrid creators who demand modern tracking speed without the typical structural burden.",
         "zh": "唯卓仕（Viltrox）走向轻量化的自动对焦探索线。Air 系列打破了「大光圈必重」的传统印象，将轻巧的结构与大光圈结合，让日常街拍在享受原生高追焦速度的同时，降低手持与负重感。"
+      },
+      "shortDescription": {
+        "en": "Ultra-compact AF primes with fast apertures",
+        "zh": "轻量化 + 大光圈的自动对焦线"
       }
     },
     {
@@ -405,6 +549,10 @@
       "description": {
         "en": "The flagship performance tier of the Viltrox ecosystem. The Pro line defines itself with uncompromising f/1.2 optical engineering, providing extreme subject isolation, superior low-light rendering, and high resolved power that directly contests premium first-party options at an assertive value.",
         "zh": "唯卓仕自动对焦系统的王牌序列。Pro 系列以 f/1.2 超大光圈立足，提供极致的主体分离度与暗光性能，用极具竞争力的价格直接向原厂顶级定焦发起正面挑战。"
+      },
+      "shortDescription": {
+        "en": "f/1.2 flagships rivaling first-party glass",
+        "zh": "f/1.2 旗舰，正面挑战原厂"
       }
     },
     {
@@ -416,6 +564,10 @@
       "description": {
         "en": "The fast-aperture manual lineage with decades of historical heritage. The Nokton tier is instantly recognizable by its exceptionally smooth, all-metal mechanical helicoids and a vintage-leaning character that dissolves focus zones into rich background depth.",
         "zh": "福伦达享誉半个多世纪的大光圈手动定焦杰作。Nokton 系列具备丝滑的全金属对焦螺旋结构，其画面从焦点到焦外的滚落过渡带有古典主义的视觉氛围感，是手动对焦镜头中的标杆产品。"
+      },
+      "shortDescription": {
+        "en": "Fast-aperture manual classics with vintage character",
+        "zh": "大光圈手动头的经典标杆"
       }
     },
     {
@@ -427,6 +579,10 @@
       "description": {
         "en": "Zoom architectures maintaining a fixed maximum aperture setting throughout the entire focal excursion. Eliminating automatic exposure compensation shifts during zooming, they enable precise depth-of-field governance and reflect the higher optical tolerance demanded by professional workflows.",
         "zh": "在全程变焦轴线上最大光圈恒定不动的进阶变焦型号。变焦时无需担心快门或感光度跳变，视频创作时景深始终连贯。通常也意味着更高的光学规格——当浮动光圈套机头无法满足要求时，恒定光圈是进阶之选。"
+      },
+      "shortDescription": {
+        "en": "Fixed aperture across the zoom range",
+        "zh": "变焦全程光圈恒定，专业进阶"
       }
     },
     {
@@ -438,6 +594,10 @@
       "description": {
         "en": "Every X-mount optic with native autofocus capability, from first-party Fujifilm units to third-party designs. All lenses listed here support full electronic body integration, continuous AF tracking, and digital aperture control.",
         "zh": "所有支持自动对焦的 X 卡口镜头，涵盖富士原厂和各家副厂。本页收录的每一支都能与机身联动——连续追焦、眼部识别、电子光圈控制，开箱即用。"
+      },
+      "shortDescription": {
+        "en": "Native AF with tracking and eye detection",
+        "zh": "原生 AF，追焦与眼控全支持"
       }
     },
     {
@@ -449,6 +609,10 @@
       "description": {
         "en": "The complete manual-focus directory for the X-mount system. From highly economic vintage drawing optics to high-end boutique metal work, these tools honor intentional framing with physical mechanical rings, dense form factors, and unique optical personalities that automated systems rarely clone.",
         "zh": "X 卡口纯手动对焦镜头的全景索引。从注重性价比的复古氛围老味道，到做工严丝合缝的福伦达工艺品。手动镜头的魅力在于指尖拨动对焦环时的绝对掌控感、紧凑的体积，以及现代自动镜头较难复刻的独特味道。"
+      },
+      "shortDescription": {
+        "en": "Mechanical focus for tactile, intentional shooting",
+        "zh": "纯手动，质感与独特味道"
       }
     },
     {
@@ -460,6 +624,10 @@
       "description": {
         "en": "Native autofocus optics engineered by progressive independent makers—including Viltrox, 7Artisans, and TTArtisan. This growing segment has rapidly expanded the X-mount ecosystem by delivering competitive optical performance and fast modern apertures at accessible price points that challenge traditional entry-level expectations.",
         "zh": "唯卓仕、七工匠、铭匠光学等国产品牌推出的原生自动对焦镜头合集。凭借扎实的光学素质与极具竞争力的定价，国产 AF 镜头群正在快速壮大，为 X 卡口用户提供了远超以往的平价自动对焦选择。"
+      },
+      "shortDescription": {
+        "en": "Affordable native AF from domestic makers",
+        "zh": "国产品牌的平价自动对焦主力"
       }
     }
   ]

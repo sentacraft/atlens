@@ -8,6 +8,7 @@ export interface LensCollection {
   slug: string;
   title: { en: string; zh: string };
   description: { en: string; zh: string };
+  shortDescription: { en: string; zh: string };
   filter: LensFilter;
 }
 
@@ -174,7 +175,7 @@ const parsed: LensCollection[] = collectionsData.collections.map((entry) => {
   if (!filter) {
     throw new Error(`No filter defined for collection "${entry.slug}"`);
   }
-  return { slug: entry.slug, title: entry.title, description: entry.description, filter };
+  return { slug: entry.slug, title: entry.title, description: entry.description, shortDescription: entry.shortDescription, filter };
 });
 
 export const COLLECTIONS: Record<string, LensCollection> = Object.fromEntries(
@@ -284,6 +285,7 @@ export interface MemberCollectionInfo {
   slug: string;
   title: { en: string; zh: string };
   description: { en: string; zh: string };
+  shortDescription: { en: string; zh: string };
   filter: LensFilter;
   lensCount: number;
 }
