@@ -51,9 +51,17 @@ export default function ComparePageHeader() {
   const presetTitle = matchedPreset?.title[lang];
   const presetSubtitle = matchedPreset?.subtitle[lang];
 
+  // On mobile cold-start the entire row is invisible (h1 is `sm:block`,
+  // no buttons render until there's at least one lens), but the wrapper
+  // still occupies a flex slot in the parent column — its zero height
+  // plus the parent's `gap-3` doubles to ~24px of empty space between
+  // the breadcrumb and the table. Collapse the wrapper to `display:none`
+  // when there's nothing in it on mobile.
+  const isEmpty = activeLenses.length === 0;
+
   return (
     <>
-      <div className="flex items-center gap-3">
+      <div className={`flex items-center gap-3 ${isEmpty ? "hidden sm:flex" : ""}`}>
         <h1 className="hidden sm:block text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           {t("title")}
         </h1>
