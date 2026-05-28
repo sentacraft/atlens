@@ -106,7 +106,7 @@ export default function Nav() {
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
 
   const lensesMenuPopup = (
-    <Menu.Popup className="w-44 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden origin-(--transform-origin) duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
+    <Menu.Popup className="w-44 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 overflow-hidden origin-(--transform-origin) duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
       <Menu.LinkItem
         render={<Link href={browseHref} />}
         className="block px-4 py-2.5 transition-colors outline-none pointer-fine:data-highlighted:bg-zinc-50 dark:pointer-fine:data-highlighted:bg-zinc-800/50"
