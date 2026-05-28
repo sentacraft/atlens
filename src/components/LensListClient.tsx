@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { usePathname, Link } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { useTranslations } from "next-intl";
-import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
 import {
   filterLenses,
   sortLenses,
@@ -18,9 +17,8 @@ import { serializeFilters, parseFilters } from "@/lib/filter-params";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import { useLensesApi } from "@/hooks/useLensesApi";
-import { ArrowDownNarrowWide, ArrowUpNarrowWide } from "lucide-react";
+import { ArrowDownWideNarrow, ArrowUp, ArrowDown } from "lucide-react";
 import BackToTopButton from "@/components/BackToTopButton";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -65,6 +63,17 @@ export default function LensListClient() {
     filters.focalCategories.length > 0 ||
     filters.features.length > 0;
 
+  const activeFilterCount = [
+    filters.brands.length > 0,
+    filters.typeFilter !== null,
+    filters.focusFilter !== null,
+    filters.usage !== defaultFilters.usage,
+    filters.opticalTrait !== null,
+    filters.focusMotorClass !== null,
+    filters.focalCategories.length > 0,
+    filters.features.length > 0,
+  ].filter(Boolean).length;
+
   const sortOptions = [
     { value: "focalLength", label: t("sortFocalLength") },
     { value: "maxAperture", label: t("sortAperture") },
@@ -98,25 +107,26 @@ export default function LensListClient() {
             brands={brands}
             availableOpticalTraits={availableOpticalTraits}
             onFiltersChange={updateFilters}
+            hasActiveFilters={hasActiveFilters}
+            activeFilterCount={activeFilterCount}
+            onReset={clearAllFilters}
           />
         </div>
 
-        <div className="mt-6 mb-2 sm:mt-5 sm:mb-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
-              <p className="whitespace-nowrap">{t("resultsCount", { count: displayed.length })}</p>
-              {hasActiveFilters ? (
-                <button
-                  type="button"
-                  className={`whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.08em] ${TEXT_LINK_CLS}`}
-                  onClick={clearAllFilters}
-                >
-                  {t("clearFilters")}
-                </button>
-              ) : null}
-            </div>
+        <div className="border-t border-zinc-100 dark:border-zinc-800/50 mt-4 pt-4 mb-2 sm:mb-3">
+          <div className="flex items-center justify-between">
+            <p className="whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+              {t.rich("resultsCount", {
+                count: displayed.length,
+                b: (chunks) => (
+                  <strong className="font-medium text-zinc-700 dark:text-zinc-300">
+                    {chunks}
+                  </strong>
+                ),
+              })}
+            </p>
 
-            <div className="ml-auto inline-flex items-center gap-2">
+            <div className="inline-flex h-9 items-stretch overflow-hidden rounded-xl border border-zinc-200/70 bg-white/80 shadow-sm shadow-zinc-950/[0.02] dark:border-zinc-800 dark:bg-zinc-900/30">
               <Select
                 value={filters.sort}
                 onValueChange={(value) =>
@@ -129,33 +139,32 @@ export default function LensListClient() {
               >
                 <SelectTrigger
                   id="results-sort"
-                  hideChevronOnMobile
-                  className="justify-start gap-2 rounded-xl border-zinc-200/70 bg-white/80 px-3 text-[12px] shadow-sm shadow-zinc-950/[0.02] data-[size=default]:h-9 dark:border-zinc-800 dark:bg-zinc-900/30 sm:min-w-[12rem]"
+                  className="h-full data-[size=default]:h-full gap-2 rounded-none border-0 bg-transparent py-0 px-3 text-[12px] shadow-none hover:bg-zinc-50/50 data-[popup-open]:bg-zinc-100 dark:hover:bg-zinc-800/30 dark:data-[popup-open]:bg-zinc-800/50 sm:text-[13px]"
                 >
-                  <span className="whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.08em] text-zinc-500 dark:text-zinc-400">
-                    {t("sortBy")}
-                  </span>
+                  <ArrowDownWideNarrow className="size-3.5 shrink-0 text-zinc-900 dark:text-zinc-100" />
                   <SelectValue placeholder={t("sortFocalLength")} />
                 </SelectTrigger>
                 <SelectContent
                   align="end"
-                  sideOffset={0}
-                  className="overflow-hidden rounded-lg"
+                  alignOffset={-40}
+                  sideOffset={5}
+                  className="w-[calc(var(--anchor-width)+40px)] min-w-0 overflow-hidden rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.06)]"
                 >
                   {sortOptions.map((option) => (
                     <SelectItem
                       key={option.value}
                       value={option.value}
-                      className="rounded-none py-2 sm:py-2 text-[12px] text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
+                      className="rounded-lg py-2 sm:py-2 text-[12px] text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
                     >
                       {option.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <Button
-                variant="outline"
-                className="h-9 rounded-xl border-zinc-200/70 bg-white/80 px-2.5 shadow-sm shadow-zinc-950/[0.02] dark:border-zinc-800 dark:bg-zinc-900/30"
+              <div className="w-px self-stretch bg-zinc-200 dark:bg-zinc-800" />
+              <button
+                type="button"
+                className="inline-flex items-center px-3 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
                 onClick={() =>
                   updateFilters((current) => ({
                     ...current,
@@ -167,11 +176,11 @@ export default function LensListClient() {
                 }
               >
                 {filters.sortDir === "asc" ? (
-                  <ArrowUpNarrowWide />
+                  <ArrowUp className="size-3.5" />
                 ) : (
-                  <ArrowDownNarrowWide />
+                  <ArrowDown className="size-3.5" />
                 )}
-              </Button>
+              </button>
             </div>
           </div>
         </div>

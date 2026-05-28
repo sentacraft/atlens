@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronDown, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
-import { FILTER_FEATURE_KEYS, FOCAL_CATEGORIES, LENS_TYPES } from "@/lib/lens";
+import { defaultFilters, FILTER_FEATURE_KEYS, FOCAL_CATEGORIES, LENS_TYPES } from "@/lib/lens";
 import type { FilterState, FocusFilter, FocusMotorClass, LensType, UsageFilter } from "@/lib/lens";
 import type { OpticalTrait } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -22,6 +22,9 @@ interface Props {
   brands: string[];
   availableOpticalTraits: OpticalTrait[];
   onFiltersChange: (filters: FilterState) => void;
+  hasActiveFilters: boolean;
+  activeFilterCount: number;
+  onReset: () => void;
 }
 
 export default function LensFilters({
@@ -29,6 +32,9 @@ export default function LensFilters({
   brands,
   availableOpticalTraits,
   onFiltersChange,
+  hasActiveFilters,
+  activeFilterCount,
+  onReset,
 }: Props) {
   const t = useTranslations("LensList");
   const tBadge = useTranslations("SpecialtyBadge");
@@ -124,7 +130,8 @@ export default function LensFilters({
     { value: "manual" as FocusFilter, label: t("focusManualMobile") },
   ] as { value: FocusFilter | null; label: string }[];
 
-  const hiddenActiveFilterCount =
+  const moreFiltersCount =
+    (filters.usage !== defaultFilters.usage ? 1 : 0) +
     (filters.focalCategories.length > 0 ? 1 : 0) +
     (filters.features.length > 0 ? 1 : 0) +
     (filters.opticalTrait !== null ? 1 : 0) +
@@ -185,19 +192,42 @@ export default function LensFilters({
           secondaryOpen && "rotate-180",
         )}
       />
-      {hiddenActiveFilterCount > 0 && !secondaryOpen && (
-        <span className="inline-flex size-4 items-center justify-center rounded-full bg-zinc-900 text-[10px] font-semibold leading-none text-white dark:bg-zinc-100 dark:text-zinc-900">
-          {hiddenActiveFilterCount}
+      {moreFiltersCount > 0 && !secondaryOpen && (
+        <span aria-hidden="true" className="inline-flex size-4 items-center justify-center rounded-full bg-zinc-900 font-mono text-[9px] font-bold leading-none text-white dark:bg-zinc-100 dark:text-zinc-900">
+          {moreFiltersCount}
         </span>
       )}
     </button>
+  );
+
+  const filtersMetaRow = (
+    <div className="inline-flex items-center gap-2 sm:gap-4">
+      {filtersToggle}
+      {hasActiveFilters && (
+        <>
+          <span className="text-[12px] text-zinc-300 dark:text-zinc-600">·</span>
+          <button
+            type="button"
+            onClick={onReset}
+            aria-label={t("reset")}
+            className="inline-flex cursor-pointer items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-rose-800 underline underline-offset-4 decoration-rose-200 hover:text-rose-900 dark:text-rose-400 dark:decoration-rose-800 dark:hover:text-rose-300"
+          >
+            <RotateCcw size={11} />
+            {t("reset")}
+            <span aria-hidden="true" className="inline-flex min-w-4 items-center justify-center rounded-full bg-rose-800 px-1.5 font-mono text-[9px] font-bold leading-none text-white dark:bg-rose-700">
+              {activeFilterCount}
+            </span>
+          </button>
+        </>
+      )}
+    </div>
   );
 
   return (
     <div className="flex min-w-0 flex-1 flex-col">
       {/* Primary filters: always visible on all viewports */}
       <div className="flex flex-col gap-2 sm:gap-3">
-        <div className="flex items-center justify-between sm:hidden">
+        <div className="sm:hidden">
           <BrandFilterMenu
             brands={brands}
             selected={filters.brands}
@@ -209,7 +239,6 @@ export default function LensFilters({
             }
             onClear={() => updateFilters("brands", [])}
           />
-          <div className="shrink-0">{filtersToggle}</div>
         </div>
         <div className="hidden sm:block">
           <FilterRow label={t("brand")}>
@@ -265,7 +294,7 @@ export default function LensFilters({
           </FilterRow>
         </div>
 
-        <div className="my-1.5 hidden sm:block">{filtersToggle}</div>
+        <div className="sm:my-1.5">{filtersMetaRow}</div>
       </div>
 
       {/* Secondary filters: collapsed on mobile by default, always open on desktop */}
