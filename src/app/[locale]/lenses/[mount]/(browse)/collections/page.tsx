@@ -102,9 +102,6 @@ export default async function CollectionsIndexPage({
 
       {/* Page title row */}
       <header className="pb-6">
-        <p className="mb-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500 dark:text-zinc-400">
-          {t("eyebrow")}
-        </p>
         <h1 className="font-heading text-[32px] font-bold leading-[1.15] text-zinc-900 dark:text-zinc-100">
           {t("indexTitle")}
         </h1>
