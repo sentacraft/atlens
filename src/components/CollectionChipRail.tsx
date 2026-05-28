@@ -29,42 +29,82 @@ export default function CollectionChipRail({
     if (!nav) {
       return;
     }
-
     const sync = () => setNavHidden(nav.getAttribute("data-hidden") === "true");
     sync();
-
     const observer = new MutationObserver(sync);
     observer.observe(nav, { attributes: true, attributeFilter: ["data-hidden"] });
     return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
+    const TOP_SENTINEL = "collections-top";
     const ids = sections.map((s) => s.id);
-    const els = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
-    if (els.length === 0) {
+    const sectionEls = ids
+      .map((id) => document.getElementById(id))
+      .filter(Boolean) as HTMLElement[];
+    const topEl = document.getElementById(TOP_SENTINEL);
+    if (sectionEls.length === 0) {
       return;
     }
+
+    const visibleSections = new Set<string>();
+    let topVisible = false;
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (isClickScrolling.current) {
           return;
         }
+
         for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
+          if (entry.target.id === TOP_SENTINEL) {
+            topVisible = entry.isIntersecting;
+          } else if (entry.isIntersecting) {
+            visibleSections.add(entry.target.id);
+          } else {
+            visibleSections.delete(entry.target.id);
+          }
+        }
+
+        if (topVisible) {
+          setActiveId(null);
+          return;
+        }
+
+        for (const id of ids) {
+          if (visibleSections.has(id)) {
+            setActiveId(id);
             return;
           }
         }
       },
-      { rootMargin: "-20% 0px -70% 0px" },
+      { rootMargin: "0px 0px -60% 0px" },
     );
 
-    for (const el of els) {
+    if (topEl) {
+      observer.observe(topEl);
+    }
+    for (const el of sectionEls) {
       observer.observe(el);
     }
     return () => observer.disconnect();
   }, [sections]);
+
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) {
+      return;
+    }
+    const active = rail.querySelector("[data-active=true]") as HTMLElement | null;
+    if (!active) {
+      return;
+    }
+    const railRect = rail.getBoundingClientRect();
+    const chipRect = active.getBoundingClientRect();
+    const offset =
+      chipRect.left - railRect.left - (railRect.width - chipRect.width) / 2;
+    rail.scrollBy({ left: offset, behavior: "smooth" });
+  }, [activeId]);
 
   const scrollTo = useCallback(
     (id: string | null) => {
@@ -103,6 +143,7 @@ export default function CollectionChipRail({
     >
       <button
         type="button"
+        data-active={activeId === null}
         onClick={() => scrollTo(null)}
         className={`${chipBase} ${activeId === null ? chipActive : chipIdle}`}
       >
@@ -114,21 +155,25 @@ export default function CollectionChipRail({
         </span>
       </button>
 
-      {sections.map((s) => (
-        <button
-          key={s.id}
-          type="button"
-          onClick={() => scrollTo(s.id)}
-          className={`${chipBase} ${activeId === s.id ? chipActive : chipIdle}`}
-        >
-          {s.label}
-          <span
-            className={`font-mono text-[10px] ${activeId === s.id ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
+      {sections.map((s) => {
+        const isActive = activeId === s.id;
+        return (
+          <button
+            key={s.id}
+            type="button"
+            data-active={isActive}
+            onClick={() => scrollTo(s.id)}
+            className={`${chipBase} ${isActive ? chipActive : chipIdle}`}
           >
-            {s.count}
-          </span>
-        </button>
-      ))}
+            {s.label}
+            <span
+              className={`font-mono text-[10px] ${isActive ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
+            >
+              {s.count}
+            </span>
+          </button>
+        );
+      })}
     </nav>
   );
 }

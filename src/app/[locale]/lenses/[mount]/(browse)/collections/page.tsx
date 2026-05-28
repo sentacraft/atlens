@@ -101,7 +101,7 @@ export default async function CollectionsIndexPage({
       </div>
 
       {/* Page title row */}
-      <header className="pb-6">
+      <header id="collections-top" className="pb-6">
         <h1 className="font-heading text-[32px] font-bold leading-[1.15] text-zinc-900 dark:text-zinc-100">
           {t("indexTitle")}
         </h1>
