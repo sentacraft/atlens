@@ -27,7 +27,7 @@ export default function Nav() {
   const effectiveMount = useEffectiveMount();
   const { navLocked, lockNav, setNavHidden } = useNav();
   const isPwa = usePwa();
-  const [scrolledAway, setScrolledAway] = useState(false);
+  const [scrolledDown, setScrolledAway] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
@@ -63,7 +63,7 @@ export default function Nav() {
   }, [navLocked]);
 
   const isDesktop = useBreakpoint("sm");
-  const offscreen = !isPwa && (scrolledAway || navLocked);
+  const offscreen = !isPwa && (scrolledDown || navLocked);
   useEffect(() => {
     setNavHidden(offscreen && !isDesktop);
   }, [offscreen, isDesktop, setNavHidden]);
