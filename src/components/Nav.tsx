@@ -10,6 +10,7 @@ import { IRIS_NAV } from "@/config/iris-config";
 import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useNav } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
@@ -65,14 +66,11 @@ export default function Nav() {
     }
   }, [navLocked]);
 
+  const isDesktop = useBreakpoint("sm");
   const wantsHide = !isPwa && (hidden || navLocked);
   useEffect(() => {
-    const mql = window.matchMedia("(min-width: 640px)");
-    const sync = () => setNavHidden(wantsHide && !mql.matches);
-    sync();
-    mql.addEventListener("change", sync);
-    return () => mql.removeEventListener("change", sync);
-  }, [wantsHide, setNavHidden]);
+    setNavHidden(wantsHide && !isDesktop);
+  }, [wantsHide, isDesktop, setNavHidden]);
 
   // Close mobile menu on outside click
   useEffect(() => {
@@ -110,7 +108,6 @@ export default function Nav() {
     }`;
 
   const isBrowseActive = pathname.startsWith("/lenses") && !pathname.includes("/compare");
-  const isCollectionsActive = pathname.includes("/collections");
   const isCompareActive = pathname.includes("/compare");
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
 
