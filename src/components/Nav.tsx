@@ -11,7 +11,7 @@ import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
-import { useNavLock, useNavHidden } from "@/context/ScrollContainerContext";
+import { useNav } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
 import { cn } from "@/lib/utils";
 import MountSwitcher from "@/components/MountSwitcher";
@@ -24,8 +24,7 @@ export default function Nav() {
   const { compareIds } = useCompare();
   const clearCompareWithUndo = useClearCompareWithUndo();
   const effectiveMount = useEffectiveMount();
-  const { navLocked, lockNav } = useNavLock();
-  const { setNavHidden } = useNavHidden();
+  const { navLocked, lockNav, setNavHidden } = useNav();
   const isPwa = usePwa();
   const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavHidden } from "@/context/ScrollContainerContext";
+import { useNav } from "@/context/ScrollContainerContext";
 
 interface Section {
   id: string;
@@ -23,7 +23,7 @@ export default function CollectionChipRail({
   allLabel,
 }: CollectionChipRailProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
-  const { navHidden } = useNavHidden();
+  const { navHidden } = useNav();
   const railRef = useRef<HTMLElement>(null);
   const isClickScrolling = useRef(false);
 
