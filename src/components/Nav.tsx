@@ -151,10 +151,10 @@ export default function Nav() {
         onClick={() => setLensesMenuOpen(false)}
         className="block px-4 py-2.5 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
       >
-        <span className={cn("text-sm", isBrowseActive && !isCollectionsActive ? "text-zinc-900 dark:text-zinc-50 font-medium" : "text-zinc-600 dark:text-zinc-300")}>
+        <span className={cn("text-sm", isBrowseActive && !isCollectionsActive ? "text-zinc-900 dark:text-zinc-50 font-medium" : "text-zinc-500 dark:text-zinc-400")}>
           {t("allLenses")}
         </span>
-        <span className="block text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
+        <span className="block text-xs font-normal text-zinc-400 dark:text-zinc-500 mt-0.5">
           {t("allLensesHint")}
         </span>
       </Link>
@@ -163,10 +163,10 @@ export default function Nav() {
         onClick={() => setLensesMenuOpen(false)}
         className="block px-4 py-2.5 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
       >
-        <span className={cn("text-sm", isCollectionsActive ? "text-zinc-900 dark:text-zinc-50 font-medium" : "text-zinc-600 dark:text-zinc-300")}>
+        <span className={cn("text-sm", isCollectionsActive ? "text-zinc-900 dark:text-zinc-50 font-medium" : "text-zinc-500 dark:text-zinc-400")}>
           {t("collections")}
         </span>
-        <span className="block text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
+        <span className="block text-xs font-normal text-zinc-400 dark:text-zinc-500 mt-0.5">
           {t("collectionsHint")}
         </span>
       </Link>
