@@ -210,11 +210,13 @@ export default function LensFilters({
             type="button"
             onClick={onReset}
             aria-label={t("reset")}
-            className="inline-flex cursor-pointer items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-rose-800 underline underline-offset-4 decoration-rose-200 hover:text-rose-900 dark:text-rose-400 dark:decoration-rose-800 dark:hover:text-rose-300"
+            className="inline-flex cursor-pointer items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-rose-800 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
           >
-            <RotateCcw size={11} />
-            {t("reset")}
-            <span aria-hidden="true" className="inline-flex min-w-4 items-center justify-center rounded-full bg-rose-800 px-1.5 font-mono text-[9px] font-bold leading-none text-white dark:bg-rose-700">
+            <span className="inline-flex items-center gap-1.5 underline underline-offset-4 decoration-rose-200 dark:decoration-rose-800">
+              <RotateCcw size={11} />
+              {t("reset")}
+            </span>
+            <span aria-hidden="true" className="inline-flex size-4 items-center justify-center rounded-full bg-rose-800 font-mono text-[9px] font-bold leading-none text-white dark:bg-rose-700">
               {activeFilterCount}
             </span>
           </button>
