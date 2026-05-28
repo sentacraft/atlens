@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { EllipsisVertical, Send, Info, Download } from "lucide-react";
+import { ChevronDown, EllipsisVertical, Send, Info, Download } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
@@ -27,10 +27,13 @@ export default function Nav() {
   const isPwa = usePwa();
   const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [lensesMenuOpen, setLensesMenuOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const lensesDesktopRef = useRef<HTMLDivElement>(null);
+  const lensesMobileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isPwa) {
@@ -50,10 +53,11 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [isPwa]);
 
-  // Close mobile menu + reset scroll on navigation
+  // Close menus + reset scroll on navigation
   useEffect(() => {
     setHidden(false);
     setMobileMenuOpen(false);
+    setLensesMenuOpen(false);
     lastScrollY.current = 0;
     lockNav(false);
   }, [pathname, setHidden, lockNav]);
@@ -78,8 +82,36 @@ export default function Nav() {
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [mobileMenuOpen]);
 
+  // Close lenses dropdown on outside click or Escape
+  useEffect(() => {
+    if (!lensesMenuOpen) {
+      return;
+    }
+    function onPointerDown(e: PointerEvent) {
+      const target = e.target as Node;
+      if (
+        !lensesDesktopRef.current?.contains(target) &&
+        !lensesMobileRef.current?.contains(target)
+      ) {
+        setLensesMenuOpen(false);
+      }
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setLensesMenuOpen(false);
+      }
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [lensesMenuOpen]);
+
   const seg = mountToUrlSegment(effectiveMount);
   const browseHref = `/lenses/${seg}`;
+  const collectionsHref = `/lenses/${seg}/collections`;
   const compareHref = compareIds.length > 0
     ? `/lenses/${seg}/compare?ids=${compareIds.join(",")}`
     : `/lenses/${seg}/compare`;
@@ -99,8 +131,47 @@ export default function Nav() {
     }`;
 
   const isBrowseActive = pathname.startsWith("/lenses") && !pathname.includes("/compare");
+  const isCollectionsActive = pathname.includes("/collections");
   const isCompareActive = pathname.includes("/compare");
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
+
+  function toggleLensesMenu() {
+    setLensesMenuOpen((v) => {
+      if (!v) {
+        setMobileMenuOpen(false);
+      }
+      return !v;
+    });
+  }
+
+  const lensesDropdownPanel = (
+    <div className="absolute left-0 top-full mt-1.5 w-48 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 py-1 overflow-hidden">
+      <Link
+        href={browseHref}
+        onClick={() => setLensesMenuOpen(false)}
+        className="block px-4 py-2.5 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+      >
+        <span className={cn("text-sm", isBrowseActive && !isCollectionsActive ? "text-zinc-900 dark:text-zinc-50 font-medium" : "text-zinc-600 dark:text-zinc-300")}>
+          {t("allLenses")}
+        </span>
+        <span className="block text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
+          {t("allLensesHint")}
+        </span>
+      </Link>
+      <Link
+        href={collectionsHref}
+        onClick={() => setLensesMenuOpen(false)}
+        className="block px-4 py-2.5 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+      >
+        <span className={cn("text-sm", isCollectionsActive ? "text-zinc-900 dark:text-zinc-50 font-medium" : "text-zinc-600 dark:text-zinc-300")}>
+          {t("collections")}
+        </span>
+        <span className="block text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
+          {t("collectionsHint")}
+        </span>
+      </Link>
+    </div>
+  );
 
   // When the user is *already on* the compare page and clicks the nav's
   // "对比" link, the intuitive read is "reset this comparison and start
@@ -151,9 +222,18 @@ export default function Nav() {
 
         {/* Desktop nav links */}
         <div className="hidden sm:flex items-center gap-2">
-          <Link href={browseHref} className={linkCls(isBrowseActive)}>
-            {t("lenses")}
-          </Link>
+          <div ref={lensesDesktopRef} className="relative">
+            <button
+              type="button"
+              onClick={toggleLensesMenu}
+              className={cn(linkCls(isBrowseActive), "inline-flex items-center gap-0.5")}
+              aria-expanded={lensesMenuOpen}
+            >
+              {t("lenses")}
+              <ChevronDown className={cn("size-3 transition-transform duration-150", lensesMenuOpen && "rotate-180")} />
+            </button>
+            {lensesMenuOpen && lensesDropdownPanel}
+          </div>
           <Link href={compareHref} onClick={handleCompareLinkClick} className={linkCls(isCompareActive)}>
             {t("compare")}
           </Link>
@@ -188,15 +268,31 @@ export default function Nav() {
 
         {/* Mobile: primary links inline + secondary in overflow menu */}
         <div className="flex items-center sm:hidden gap-1">
-          <Link href={browseHref} className={linkCls(isBrowseActive)}>
-            {t("lenses")}
-          </Link>
+          <div ref={lensesMobileRef} className="relative">
+            <button
+              type="button"
+              onClick={toggleLensesMenu}
+              className={cn(linkCls(isBrowseActive), "inline-flex items-center gap-0.5")}
+              aria-expanded={lensesMenuOpen}
+            >
+              {t("lenses")}
+              <ChevronDown className={cn("size-3 transition-transform duration-150", lensesMenuOpen && "rotate-180")} />
+            </button>
+            {lensesMenuOpen && lensesDropdownPanel}
+          </div>
           <Link href={compareHref} onClick={handleCompareLinkClick} className={linkCls(isCompareActive)}>
             {t("compare")}
           </Link>
           <div ref={menuRef} className="relative">
             <button
-              onClick={() => setMobileMenuOpen((v) => !v)}
+              onClick={() => {
+                setMobileMenuOpen((v) => {
+                  if (!v) {
+                    setLensesMenuOpen(false);
+                  }
+                  return !v;
+                });
+              }}
               className="pl-1 pr-2 py-2 -mr-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
               aria-label="Menu"
               aria-expanded={mobileMenuOpen}
