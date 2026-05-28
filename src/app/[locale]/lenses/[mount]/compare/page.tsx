@@ -5,6 +5,7 @@ import { urlSegmentToMount } from "@/lib/mount";
 import { findPresetByIds } from "@/lib/curated-presets";
 import CompareTable from "@/components/CompareTable";
 import ComparePageHeader from "@/components/ComparePageHeader";
+import CompareCollections from "@/components/CompareCollections";
 import CompareTelemetry from "@/components/telemetry/CompareTelemetry";
 import CuratedComparisons from "@/components/CuratedComparisons";
 import BackToTopButton from "@/components/BackToTopButton";
@@ -121,6 +122,7 @@ export default async function ComparePage({
       />
       <ComparePageHeader />
       <CompareTable key={lenses.length === 0 ? "_empty_" : ids} lenses={lenses} minColumns={2} hideBodyWhenEmpty />
+      <CompareCollections />
       {resolvedMount === "X" && <CuratedComparisons />}
       <BackToTopButton />
       <CompareTelemetry lensIds={lenses.map((l) => l.id)} />

@@ -105,13 +105,12 @@ export default function CuratedComparisons() {
           className="overflow-x-auto snap-x snap-mandatory scroll-pl-4 [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]"
           style={scrollerMask ? { maskImage: scrollerMask, WebkitMaskImage: scrollerMask } : undefined}
         >
-          <div className="flex items-start gap-2 px-4 pb-0.5">
+          <div className="inline-flex items-start gap-2 px-4 pb-0.5">
             {curatedPresets.map((preset) => (
               <div key={preset.slug} className="shrink-0 snap-start w-[calc((100vw-2.5rem)/1.5)]">
                 <PresetCard preset={preset} />
               </div>
             ))}
-            <div className="shrink-0 w-2" aria-hidden="true" />
           </div>
         </div>
 

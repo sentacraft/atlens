@@ -301,3 +301,23 @@ export function getMemberCollections(
       lensCount: allLenses.filter((l) => c.filter(l, locale)).length,
     }));
 }
+
+export function getSharedCollections(
+  lenses: Lens[],
+  mount: Mount,
+  locale: string,
+): MemberCollectionInfo[] {
+  if (lenses.length === 0) {
+    return [];
+  }
+  if (lenses.length === 1) {
+    return getMemberCollections(lenses[0], mount, locale);
+  }
+  const allLenses = getLensesByMount(mount, locale);
+  return Object.values(COLLECTIONS)
+    .filter((c) => lenses.every((lens) => c.filter(lens, locale)))
+    .map((c) => ({
+      ...c,
+      lensCount: allLenses.filter((l) => c.filter(l, locale)).length,
+    }));
+}

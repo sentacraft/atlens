@@ -11,9 +11,11 @@ import { useNavLock } from "@/context/ScrollContainerContext";
 import { usePwa } from "@/lib/usePwa";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { ChevronLeft, ChevronRight, TriangleAlert, X } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, Flag, TriangleAlert, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ICON_CLOSE_BTN_CLS } from "@/lib/ui-tokens";
+import { ICON_CLOSE_BTN_CLS, TEXT_LINK_CLS } from "@/lib/ui-tokens";
+import FeedbackTrigger from "@/components/FeedbackTrigger";
+import { getLensUrl } from "@/lib/lens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import SpecialtyBadges from "@/components/SpecialtyBadges";
@@ -865,6 +867,61 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
             );
           })}
         </tbody>
+
+        {orderedLenses.length > 0 && (
+          <tfoot>
+            <tr className="border-t border-zinc-200 bg-zinc-100/80 dark:border-zinc-800 dark:bg-zinc-800/60">
+              <td className="sticky left-0 z-10 bg-zinc-100 px-3 py-2 dark:bg-zinc-800" />
+              {orderedLenses.map((lens) => {
+                const url = getLensUrl(lens, locale);
+                const fields = visibleGroups.flatMap((group) =>
+                  group.rows
+                    .map((row) => {
+                      const resolved = resolvedPerLens.get(lens.id)?.get(row.label);
+                      return resolved
+                        ? { label: row.label, currentValue: resolved.plainText, group: group.label }
+                        : null;
+                    })
+                    .filter((f): f is NonNullable<typeof f> => f !== null)
+                );
+                return (
+                  <td key={lens.id} className="px-3 py-2">
+                    <div className="flex flex-col items-center justify-center gap-0.5">
+                      {url ? (
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 ${TEXT_LINK_CLS}`}
+                        >
+                          <ArrowUpRight className="h-3 w-3 shrink-0" />
+                          {t("officialSite")}
+                        </a>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
+                          <ArrowUpRight className="h-3 w-3 shrink-0" />
+                          {t("officialSite")}
+                        </span>
+                      )}
+                      <FeedbackTrigger
+                        type="data_issue"
+                        context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
+                        fields={fields}
+                        className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 ${TEXT_LINK_CLS}`}
+                      >
+                        <Flag className="h-3 w-3 shrink-0" />
+                        {t("reportIssue")}
+                      </FeedbackTrigger>
+                    </div>
+                  </td>
+                );
+              })}
+              {Array.from({ length: emptySlotCount }).map((_, i) => (
+                <td key={`empty-links-${i}`} className="border-l border-zinc-200 dark:border-zinc-800" />
+              ))}
+            </tr>
+          </tfoot>
+        )}
 
       </table>
     </div>
