@@ -20,6 +20,7 @@ import type { Mount } from "@/lib/types";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { ACTION_PRIMARY_CLS } from "@/lib/ui-tokens";
 import Breadcrumb from "@/components/Breadcrumb";
+import CollectionChipRail from "@/components/CollectionChipRail";
 
 type Params = Promise<{ locale: string; mount: string }>;
 
@@ -50,40 +51,18 @@ export async function generateMetadata({
   };
 }
 
-function CollectionCard({
-  slug,
-  mount,
-  locale,
-  lensCount,
-  t,
-}: {
-  slug: string;
-  mount: string;
-  locale: string;
-  lensCount: number;
-  t: (key: string, values?: Record<string, string | number | Date>) => string;
-}) {
-  const collection = COLLECTIONS[slug];
-  if (!collection) {
-    return null;
-  }
-
-  return (
-    <li>
-      <Link
-        href={`/lenses/${mount}/collections/${slug}`}
-        className="group block rounded-xl border border-zinc-200 p-4 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900/50"
-      >
-        <h3 className="text-sm font-semibold text-zinc-900 group-hover:text-zinc-700 dark:text-zinc-100 dark:group-hover:text-zinc-300">
-          {localized(collection.title, locale)}
-        </h3>
-        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-          {t("lensCount", { count: lensCount })}
-        </p>
-      </Link>
-    </li>
-  );
-}
+const CATEGORIES = [
+  { id: "section-prime", key: "category_prime", slugs: PRIME_SLUGS, marker: ["PRIME"] },
+  { id: "section-zoom", key: "category_zoom", slugs: ZOOM_SLUGS, marker: ["ZOOM"] },
+  { id: "section-brand", key: "category_brand", slugs: BRAND_SLUGS, marker: ["BRAND"] },
+  { id: "section-series", key: "category_series", slugs: SERIES_SLUGS, marker: ["SERIES"] },
+  { id: "section-price", key: "category_price", slugs: PRICE_SLUGS, marker: ["$"] },
+  { id: "section-portability", key: "category_portability", slugs: PORTABILITY_SLUGS, marker: ["G"] },
+  { id: "section-aperture", key: "category_aperture", slugs: APERTURE_SLUGS, marker: ["ƒ"], markerItalic: true },
+  { id: "section-trait", key: "category_trait", slugs: TRAIT_SLUGS, marker: ["WR"] },
+  { id: "section-dedicated", key: "category_dedicated", slugs: DEDICATED_SLUGS, marker: ["✦"] },
+  { id: "section-focus", key: "category_focus", slugs: FOCUS_SLUGS, marker: ["AF", "MF"] },
+] as const;
 
 export default async function CollectionsIndexPage({
   params,
@@ -102,63 +81,109 @@ export default async function CollectionsIndexPage({
     return c ? mountLenses.filter((l) => c.filter(l, locale)).length : 0;
   };
 
-  const categories = [
-    { label: t("category_prime"), slugs: PRIME_SLUGS },
-    { label: t("category_zoom"), slugs: ZOOM_SLUGS },
-    { label: t("category_brand"), slugs: BRAND_SLUGS },
-    { label: t("category_series"), slugs: SERIES_SLUGS },
-    { label: t("category_price"), slugs: PRICE_SLUGS },
-    { label: t("category_portability"), slugs: PORTABILITY_SLUGS },
-    { label: t("category_aperture"), slugs: APERTURE_SLUGS },
-    { label: t("category_trait"), slugs: TRAIT_SLUGS },
-    { label: t("category_dedicated"), slugs: DEDICATED_SLUGS },
-    { label: t("category_focus"), slugs: FOCUS_SLUGS },
-  ];
+  const categories = CATEGORIES.map((cat) => ({
+    ...cat,
+    label: t(cat.key),
+    count: cat.slugs.length,
+  }));
 
   const totalCollections = Object.keys(COLLECTIONS).length;
   const totalLenses = mountLenses.length;
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8">
-      <header className="mb-10">
-        <div className="mb-4">
-          <Breadcrumb
-              segments={[{ label: tNav("lenses"), href: `/lenses/${mount}` }]}
-              current={t("breadcrumbCollections")}
-            />
-        </div>
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+    <main className="mx-auto max-w-[960px] px-6 pt-8 pb-16">
+      {/* Breadcrumb */}
+      <div className="mb-4">
+        <Breadcrumb
+          segments={[{ label: tNav("lenses"), href: `/lenses/${mount}` }]}
+          current={t("breadcrumbCollections")}
+        />
+      </div>
+
+      {/* Page title row */}
+      <header id="collections-top" className="pb-6">
+        <h1 className="font-heading text-[32px] font-bold leading-[1.15] text-zinc-900 dark:text-zinc-100">
           {t("indexTitle")}
         </h1>
-        <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="mt-2.5 max-w-[560px] text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
           {t("indexStats", { count: totalCollections, lensCount: totalLenses })}
-        </p>
-        <p className="mt-3 text-sm leading-relaxed text-zinc-700 sm:text-base dark:text-zinc-300">
+          {" — "}
           {t("indexDescription")}
         </p>
       </header>
 
-      {categories.map((cat) => (
-        <section key={cat.label} className="mb-8">
-          <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
-            {cat.label}
-          </h2>
-          <ul className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-            {cat.slugs.map((slug) => (
-              <CollectionCard
-                key={slug}
-                slug={slug}
-                mount={mount}
-                locale={locale}
-                lensCount={countFor(slug)}
-                t={t}
-              />
-            ))}
-          </ul>
+      {/* Sticky chip rail */}
+      <CollectionChipRail
+        sections={categories.map((cat) => ({
+          id: cat.id,
+          label: cat.label,
+          count: cat.count,
+        }))}
+        totalCount={totalCollections}
+        allLabel={t("chipAll")}
+      />
+
+      {/* Section blocks */}
+      {categories.map((cat, catIdx) => (
+        <section
+          key={cat.id}
+          id={cat.id}
+          className={`scroll-mt-[calc(var(--nav-height)+56px)] pt-7 pb-2 ${catIdx === categories.length - 1 ? "pb-8" : ""}`}
+        >
+          {/* Section head */}
+          <div className="mb-4 flex items-center gap-3">
+            <span aria-hidden="true" className="inline-flex shrink-0 gap-[3px]">
+              {cat.marker.map((label) => (
+                <span
+                  key={label}
+                  className={`inline-flex items-center justify-center rounded-[3px] border border-zinc-900 px-1.5 py-0.5 font-mono text-[10px] font-semibold leading-none tracking-[0.04em] text-zinc-900 dark:border-zinc-400 dark:text-zinc-400 ${"markerItalic" in cat && cat.markerItalic ? "italic" : ""}`}
+                >
+                  {label}
+                </span>
+              ))}
+            </span>
+            <h2 className="font-heading text-[17px] font-bold leading-tight text-zinc-900 dark:text-zinc-100">
+              {cat.label}
+            </h2>
+            <span className="font-mono text-[11px] text-zinc-500 dark:text-zinc-400">
+              {t("sectionCount", { count: cat.count })}
+            </span>
+          </div>
+
+          {/* Collection grid */}
+          <div className="grid grid-cols-1 gap-x-10 sm:grid-cols-2">
+            {cat.slugs.map((slug) => {
+              const collection = COLLECTIONS[slug];
+              if (!collection) {
+                return null;
+              }
+              const lensCount = countFor(slug);
+              return (
+                <Link
+                  key={slug}
+                  href={`/lenses/${mount}/collections/${slug}`}
+                  className="group grid grid-cols-[1fr_auto] items-start gap-4 border-b border-zinc-100 py-2.5 transition-colors dark:border-zinc-800"
+                >
+                  <div>
+                    <p className="text-sm font-medium leading-snug text-zinc-900 group-hover:underline dark:text-zinc-100">
+                      {localized(collection.title, locale)}
+                    </p>
+                    <p className="mt-0.5 text-xs leading-[1.45] text-zinc-500 dark:text-zinc-400">
+                      {localized(collection.shortDescription, locale)}
+                    </p>
+                  </div>
+                  <span className="pt-0.5 font-mono text-[11px] whitespace-nowrap text-zinc-400 dark:text-zinc-500">
+                    {t("lensCountShort", { count: lensCount })}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
         </section>
       ))}
 
-      <footer className="flex justify-center">
+      {/* Footer CTA */}
+      <footer className="mt-8 flex justify-center">
         <Link
           href={`/lenses/${mount}`}
           className={`inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold ${ACTION_PRIMARY_CLS}`}
