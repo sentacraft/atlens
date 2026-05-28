@@ -60,7 +60,7 @@ const CATEGORIES = [
   { id: "section-portability", key: "category_portability", slugs: PORTABILITY_SLUGS, marker: ["G"] },
   { id: "section-aperture", key: "category_aperture", slugs: APERTURE_SLUGS, marker: ["ƒ"], markerItalic: true },
   { id: "section-trait", key: "category_trait", slugs: TRAIT_SLUGS, marker: ["WR"] },
-  { id: "section-dedicated", key: "category_dedicated", slugs: DEDICATED_SLUGS, marker: ["★"] },
+  { id: "section-dedicated", key: "category_dedicated", slugs: DEDICATED_SLUGS, marker: ["✦"] },
   { id: "section-focus", key: "category_focus", slugs: FOCUS_SLUGS, marker: ["AF", "MF"] },
 ] as const;
 
