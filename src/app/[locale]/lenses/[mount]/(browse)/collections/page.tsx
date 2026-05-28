@@ -164,7 +164,7 @@ export default async function CollectionsIndexPage({
                     <p className="text-sm font-medium leading-snug text-zinc-900 group-hover:underline dark:text-zinc-100">
                       {localized(collection.title, locale)}
                     </p>
-                    <p className="mt-0.5 text-xs italic leading-[1.45] text-zinc-500 dark:text-zinc-400">
+                    <p className="mt-0.5 text-xs leading-[1.45] text-zinc-500 dark:text-zinc-400">
                       {localized(collection.shortDescription, locale)}
                     </p>
                   </div>

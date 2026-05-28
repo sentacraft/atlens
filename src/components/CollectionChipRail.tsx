@@ -14,6 +14,8 @@ interface CollectionChipRailProps {
   allLabel: string;
 }
 
+const TOP_SENTINEL = "collections-top";
+
 export default function CollectionChipRail({
   sections,
   totalCount,
@@ -37,57 +39,43 @@ export default function CollectionChipRail({
   }, []);
 
   useEffect(() => {
-    const TOP_SENTINEL = "collections-top";
     const ids = sections.map((s) => s.id);
-    const sectionEls = ids
-      .map((id) => document.getElementById(id))
-      .filter(Boolean) as HTMLElement[];
-    const topEl = document.getElementById(TOP_SENTINEL);
-    if (sectionEls.length === 0) {
-      return;
-    }
 
-    const visibleSections = new Set<string>();
-    let topVisible = false;
+    function pickActive() {
+      if (isClickScrolling.current) {
+        return;
+      }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (isClickScrolling.current) {
-          return;
-        }
-
-        for (const entry of entries) {
-          if (entry.target.id === TOP_SENTINEL) {
-            topVisible = entry.isIntersecting;
-          } else if (entry.isIntersecting) {
-            visibleSections.add(entry.target.id);
-          } else {
-            visibleSections.delete(entry.target.id);
-          }
-        }
-
-        if (topVisible) {
+      const topEl = document.getElementById(TOP_SENTINEL);
+      if (topEl) {
+        const topRect = topEl.getBoundingClientRect();
+        if (topRect.bottom > 0) {
           setActiveId(null);
           return;
         }
+      }
 
-        for (const id of ids) {
-          if (visibleSections.has(id)) {
-            setActiveId(id);
-            return;
-          }
+      const threshold = window.innerHeight * 0.35;
+      let best: string | null = null;
+
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (!el) {
+          continue;
         }
-      },
-      { rootMargin: "0px 0px -60% 0px" },
-    );
+        if (el.getBoundingClientRect().top <= threshold) {
+          best = id;
+        }
+      }
 
-    if (topEl) {
-      observer.observe(topEl);
+      if (best) {
+        setActiveId(best);
+      }
     }
-    for (const el of sectionEls) {
-      observer.observe(el);
-    }
-    return () => observer.disconnect();
+
+    pickActive();
+    window.addEventListener("scroll", pickActive, { passive: true });
+    return () => window.removeEventListener("scroll", pickActive);
   }, [sections]);
 
   useEffect(() => {
