@@ -278,7 +278,9 @@
     "shiftLeft": "Move left",
     "shiftRight": "Move right",
     "curatedTitle": "Curated Comparisons",
-    "curatedHint": "Not sure where to start? Try one of my curated comparisons below."
+    "curatedHint": "Not sure where to start? Try one of my curated comparisons below.",
+    "collectionsTitle": "Featured In",
+    "viewAllCollections": "View all collections"
   },
   "Share": {
     "button": "Share",
