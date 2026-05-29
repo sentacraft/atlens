@@ -61,7 +61,10 @@ export default function LensSortControl({
             <SelectItem
               key={option.value}
               value={option.value}
-              className="rounded-lg py-2 sm:py-2 text-[12px] text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
+              // Full-bleed highlight: square corners let the popup's own
+              // rounded-lg + overflow clip the top/bottom rows, instead of a
+              // rounded bar floating inside the menu with gaps at the edges.
+              className="rounded-none py-2 sm:py-2 text-[12px] text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
             >
               {option.label}
             </SelectItem>
