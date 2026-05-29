@@ -505,7 +505,7 @@
     "rowWarn": "请务必核实最新价格",
     "usedReason": "官方渠道未采集到该镜头的新品价格，此处展示二手市场参考价。",
     "sampledAt": "采样于 {date}",
-    "priceApprox": "<approx>~</approx>{price}",
+    "priceApprox": "<approx>约</approx> {price}",
     "priceUnavailable": "价格暂缺"
   },
   "Purchase": {

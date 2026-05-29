@@ -32,7 +32,7 @@ export default function LensCardPrice({ lens }: { lens: Lens }) {
 
   return (
     <p className="flex items-baseline gap-1.5 text-sm">
-      <span className="font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">
+      <span className="font-semibold whitespace-nowrap tabular-nums text-zinc-700 dark:text-zinc-200">
         {t.rich("priceApprox", {
           price: priceDisplay,
           approx: (chunks) => (
