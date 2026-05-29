@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { buildComparePath } from "@/lib/compare-url";
-import { buildHorizontalScrollMask, useHorizontalScrollAffordance } from "@/hooks/useHorizontalScrollAffordance";
+import { HorizontalScrollRail } from "@/components/ui/horizontal-scroll-rail";
 import { useCompare } from "@/context/CompareProvider";
 import { curatedPresets, type CuratedPreset } from "@/lib/curated-presets";
 import { getAllLenses } from "@/lib/lens";
@@ -73,8 +73,6 @@ export default function CuratedComparisons() {
   const { compareIds } = useCompare();
   const t = useTranslations("Compare");
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { canScrollLeft, canScrollRight } = useHorizontalScrollAffordance(scrollRef);
-  const scrollerMask = buildHorizontalScrollMask(canScrollLeft, canScrollRight);
 
   function scrollToDir(dir: -1 | 1) {
     const el = scrollRef.current;
@@ -98,35 +96,34 @@ export default function CuratedComparisons() {
       </p>
 
       {/* Mobile: horizontal snap carousel */}
-      <div className="sm:hidden relative -mx-4">
-        {/* Scroll container — scrollbar hidden, edges feather via mask */}
-        <div
-          ref={scrollRef}
-          className="overflow-x-auto snap-x snap-mandatory scroll-pl-4 [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]"
-          style={scrollerMask ? { maskImage: scrollerMask, WebkitMaskImage: scrollerMask } : undefined}
-        >
-          <div className="inline-flex items-start gap-2 px-4 pb-0.5">
-            {curatedPresets.map((preset) => (
-              <div key={preset.slug} className="shrink-0 snap-start w-[calc((100vw-2.5rem)/1.5)]">
-                <PresetCard preset={preset} />
-              </div>
-            ))}
+      <HorizontalScrollRail
+        scrollRef={scrollRef}
+        className="snap-x snap-mandatory scroll-pl-4 items-start gap-2 px-4 py-0.5"
+        wrapperClassName="sm:hidden -mx-4"
+        fadeBg="from-white dark:from-zinc-950"
+        renderOverlay={({ canScrollLeft, canScrollRight }) => (
+          <>
+            <ScrollChevron
+              direction="left"
+              visible={canScrollLeft}
+              onClick={() => scrollToDir(-1)}
+              ariaLabel={t("scrollChipsLeft")}
+            />
+            <ScrollChevron
+              direction="right"
+              visible={canScrollRight}
+              onClick={() => scrollToDir(1)}
+              ariaLabel={t("scrollChipsRight")}
+            />
+          </>
+        )}
+      >
+        {curatedPresets.map((preset) => (
+          <div key={preset.slug} className="shrink-0 snap-start w-[calc((100vw-2.5rem)/1.5)]">
+            <PresetCard preset={preset} />
           </div>
-        </div>
-
-        <ScrollChevron
-          direction="left"
-          visible={canScrollLeft}
-          onClick={() => scrollToDir(-1)}
-          ariaLabel={t("scrollChipsLeft")}
-        />
-        <ScrollChevron
-          direction="right"
-          visible={canScrollRight}
-          onClick={() => scrollToDir(1)}
-          ariaLabel={t("scrollChipsRight")}
-        />
-      </div>
+        ))}
+      </HorizontalScrollRail>
 
       {/* Desktop: grid. `items-start` lets each card size to its own
           content height rather than stretching to the row's tallest —

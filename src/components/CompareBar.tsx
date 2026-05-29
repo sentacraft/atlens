@@ -8,7 +8,7 @@ import { useCompare } from "@/context/CompareProvider";
 import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
-import { buildHorizontalScrollMask, useHorizontalScrollAffordance } from "@/hooks/useHorizontalScrollAffordance";
+import { HorizontalScrollRail } from "@/components/ui/horizontal-scroll-rail";
 import { mountToUrlSegment } from "@/lib/mount";
 import { motion, AnimatePresence } from "motion/react";
 import { spring } from "@/lib/animation";
@@ -39,12 +39,7 @@ export default function CompareBar() {
     [compareIds, mount, locale]
   );
 
-  // Horizontal chip scroller. Edges fade only when there's actually more
-  // content to scroll to in that direction — avoids the permanent vignette
-  // a static CSS mask leaves on a fully-visible chip row.
   const chipsRef = useRef<HTMLDivElement>(null);
-  const { canScrollLeft, canScrollRight } = useHorizontalScrollAffordance(chipsRef, [compareIds.length]);
-  const chipsMask = buildHorizontalScrollMask(canScrollLeft, canScrollRight);
 
   const observerRef = useRef<ResizeObserver | null>(null);
 
@@ -86,11 +81,30 @@ export default function CompareBar() {
           className={`fixed bottom-0 left-0 right-0 ${Z.fixed} border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-black/95 backdrop-blur-sm pb-[var(--safe-inset-bottom)]`}
         >
           <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-6">
-            <div className="relative flex min-w-0 flex-1">
-            <div
-              ref={chipsRef}
-              className="flex min-w-0 flex-1 -mx-5 px-5 sm:mx-0 sm:px-0 gap-2 overflow-x-auto pb-1 sm:pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              style={chipsMask ? { maskImage: chipsMask, WebkitMaskImage: chipsMask } : undefined}
+            <HorizontalScrollRail
+              scrollRef={chipsRef}
+              className="min-w-0 flex-1 px-5 sm:px-0 gap-2 pb-1 sm:pb-0"
+              wrapperClassName="flex min-w-0 flex-1 -mx-5 sm:mx-0"
+              fadeBg="from-white dark:from-black"
+              deps={[compareIds.length]}
+              renderOverlay={({ canScrollLeft, canScrollRight }) => (
+                <>
+                  <ScrollChevron
+                    direction="left"
+                    visible={canScrollLeft}
+                    onClick={() => chipsRef.current?.scrollBy({ left: -160, behavior: "smooth" })}
+                    ariaLabel={tCompare("scrollChipsLeft")}
+                    className="hidden sm:inline-flex"
+                  />
+                  <ScrollChevron
+                    direction="right"
+                    visible={canScrollRight}
+                    onClick={() => chipsRef.current?.scrollBy({ left: 160, behavior: "smooth" })}
+                    ariaLabel={tCompare("scrollChipsRight")}
+                    className="hidden sm:inline-flex"
+                  />
+                </>
+              )}
             >
               <AnimatePresence mode="popLayout">
                 {selectedLenses.map((lens) => {
@@ -117,13 +131,6 @@ export default function CompareBar() {
                       </span>
                       <button
                         onClick={() => remove(lens.id)}
-                        // Visual size stays compact so the chip itself reads as
-                        // the lens identity, but the touch target expands via
-                        // a transparent `::before` overlay to ~36px — well
-                        // above iOS HIG's 44pt for distinct buttons isn't
-                        // possible inside a 34px-tall chip, but 36 effective
-                        // is materially better than the 20px hit area the
-                        // visual size would otherwise imply.
                         className={cn(
                           ICON_CLOSE_BTN_CLS,
                           "relative h-5 w-5 -mr-0.5 mt-0.5",
@@ -137,25 +144,7 @@ export default function CompareBar() {
                   );
                 })}
               </AnimatePresence>
-            </div>
-            {/* Desktop-only scroll affordance — touch users already have
-                natural swipe, but mouse/trackpad users can't easily scroll
-                a horizontal row. Hidden on mobile via className override. */}
-            <ScrollChevron
-              direction="left"
-              visible={canScrollLeft}
-              onClick={() => chipsRef.current?.scrollBy({ left: -160, behavior: "smooth" })}
-              ariaLabel={tCompare("scrollChipsLeft")}
-              className="hidden sm:inline-flex"
-            />
-            <ScrollChevron
-              direction="right"
-              visible={canScrollRight}
-              onClick={() => chipsRef.current?.scrollBy({ left: 160, behavior: "smooth" })}
-              ariaLabel={tCompare("scrollChipsRight")}
-              className="hidden sm:inline-flex"
-            />
-            </div>
+            </HorizontalScrollRail>
             {/* Cluster ordering: destructive (清空) → additive (+) → primary CTA (查看对比).
                 Left-to-right rising visual weight, and keeps the two button-shaped
                 elements adjacent on the right so the text affordance doesn't sit
