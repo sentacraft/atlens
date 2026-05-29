@@ -86,6 +86,10 @@ export default function CollectionChipRail({
       rail.scrollTo({ left: 0, behavior: "smooth" });
       return;
     }
+    if (activeId === sections[sections.length - 1]?.id) {
+      rail.scrollTo({ left: rail.scrollWidth, behavior: "smooth" });
+      return;
+    }
     const active = rail.querySelector("[data-active=true]") as HTMLElement | null;
     if (!active) {
       return;
@@ -98,7 +102,7 @@ export default function CollectionChipRail({
     const offset =
       chipRect.left - railRect.left - (railRect.width - chipRect.width) / 2;
     rail.scrollBy({ left: offset, behavior: "smooth" });
-  }, [activeId]);
+  }, [activeId, sections]);
 
   useEffect(() => {
     const rail = railRef.current;
