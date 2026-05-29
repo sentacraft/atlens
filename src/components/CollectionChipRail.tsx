@@ -33,6 +33,7 @@ export default function CollectionChipRail({
   const { canScrollLeft, canScrollRight } = useHorizontalScrollAffordance(railRef);
   const scrollMask = buildHorizontalScrollMask(canScrollLeft, canScrollRight);
 
+  // Scroll-spy: highlight the chip whose section is currently in view.
   useEffect(() => {
     const ids = sections.map((s) => s.id);
 
@@ -81,6 +82,7 @@ export default function CollectionChipRail({
     return () => window.removeEventListener("scroll", pickActive);
   }, [sections]);
 
+  // Keep the active chip visible inside the horizontal rail.
   useEffect(() => {
     const rail = railRef.current;
     if (!rail) {
@@ -96,6 +98,7 @@ export default function CollectionChipRail({
     }
   }, [activeId]);
 
+  // Redirect vertical mouse-wheel to horizontal scroll (trackpad/touch are native).
   useEffect(() => {
     const rail = railRef.current;
     if (!rail) {
