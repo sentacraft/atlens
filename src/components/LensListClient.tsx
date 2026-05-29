@@ -11,24 +11,16 @@ import {
   defaultFilters,
   MAX_COMPARE,
   type FilterState,
-  type SortKey,
 } from "@/lib/lens";
 import { serializeFilters, parseFilters } from "@/lib/filter-params";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import { useLensesApi } from "@/hooks/useLensesApi";
-import { ArrowDownWideNarrow, ArrowUp, ArrowDown } from "lucide-react";
 import BackToTopButton from "@/components/BackToTopButton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import LensCard from "./LensCard";
 import LensFilters from "./LensFilters";
 import LensSectionNav from "./LensSectionNav";
+import LensSortControl from "./LensSortControl";
 import { LENS_INDEX_SHELL_CLS } from "@/lib/ui-tokens";
 import LensSearchDialog from "./LensSearchDialog";
 import LensesLoading from "@/app/[locale]/lenses/[mount]/(browse)/loading";
@@ -75,12 +67,6 @@ export default function LensListClient() {
     filters.focalCategories.length > 0,
     filters.features.length > 0,
   ].filter(Boolean).length;
-
-  const sortOptions = [
-    { value: "focalLength", label: t("sortFocalLength") },
-    { value: "maxAperture", label: t("sortAperture") },
-    { value: "weightG", label: t("sortWeight") },
-  ] as const satisfies readonly { value: SortKey; label: string }[];
 
   function updateFilters(updater: FilterState | ((prev: FilterState) => FilterState)) {
     const next = typeof updater === "function" ? updater(filters) : updater;
@@ -132,62 +118,19 @@ export default function LensListClient() {
               })}
             </p>
 
-            <div className="inline-flex h-9 items-stretch overflow-hidden rounded-xl border border-zinc-200/70 bg-white/80 shadow-sm shadow-zinc-950/[0.02] dark:border-zinc-800 dark:bg-zinc-900/30">
-              <Select
-                value={filters.sort}
-                onValueChange={(value) =>
-                  updateFilters((current) => ({
-                    ...current,
-                    sort: (value ?? "focalLength") as SortKey,
-                  }))
-                }
-                items={sortOptions.map((option) => ({ ...option }))}
-              >
-                <SelectTrigger
-                  id="results-sort"
-                  className="h-full data-[size=default]:h-full gap-2 rounded-none border-0 bg-transparent py-0 px-3 text-[12px] shadow-none hover:bg-zinc-50/50 data-[popup-open]:bg-zinc-100 dark:hover:bg-zinc-800/30 dark:data-[popup-open]:bg-zinc-800/50 sm:text-[13px]"
-                >
-                  <ArrowDownWideNarrow className="size-3.5 shrink-0 text-zinc-900 dark:text-zinc-100" />
-                  <SelectValue placeholder={t("sortFocalLength")} />
-                </SelectTrigger>
-                <SelectContent
-                  align="end"
-                  alignOffset={-40}
-                  sideOffset={5}
-                  className="w-[calc(var(--anchor-width)+40px)] min-w-0 overflow-hidden rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.06)]"
-                >
-                  {sortOptions.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      value={option.value}
-                      className="rounded-lg py-2 sm:py-2 text-[12px] text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
-                    >
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <div className="w-px self-stretch bg-zinc-200 dark:bg-zinc-800" />
-              <button
-                type="button"
-                className="inline-flex items-center px-3 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
-                onClick={() =>
-                  updateFilters((current) => ({
-                    ...current,
-                    sortDir: current.sortDir === "asc" ? "desc" : "asc",
-                  }))
-                }
-                aria-label={
-                  filters.sortDir === "asc" ? t("sortAsc") : t("sortDesc")
-                }
-              >
-                {filters.sortDir === "asc" ? (
-                  <ArrowUp className="size-3.5" />
-                ) : (
-                  <ArrowDown className="size-3.5" />
-                )}
-              </button>
-            </div>
+            <LensSortControl
+              sort={filters.sort}
+              sortDir={filters.sortDir}
+              onSortChange={(sort) =>
+                updateFilters((current) => ({ ...current, sort }))
+              }
+              onToggleDir={() =>
+                updateFilters((current) => ({
+                  ...current,
+                  sortDir: current.sortDir === "asc" ? "desc" : "asc",
+                }))
+              }
+            />
           </div>
         </div>
 
