@@ -13,13 +13,13 @@ import {
   APERTURE_SLUGS,
   TRAIT_SLUGS,
   DEDICATED_SLUGS,
-  FOCUS_SLUGS,
+  VALUE_SLUGS,
 } from "@/lib/collections";
 import { getLensesByMount } from "@/lib/lens";
 import type { Mount } from "@/lib/types";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
-import { ACTION_PRIMARY_CLS } from "@/lib/ui-tokens";
-import Breadcrumb from "@/components/Breadcrumb";
+import { ACTION_PRIMARY_CLS, LENS_INDEX_SHELL_CLS } from "@/lib/ui-tokens";
+import LensSectionNav from "@/components/LensSectionNav";
 import CollectionChipRail from "@/components/CollectionChipRail";
 
 type Params = Promise<{ locale: string; mount: string }>;
@@ -56,12 +56,12 @@ const CATEGORIES = [
   { id: "section-zoom", key: "category_zoom", slugs: ZOOM_SLUGS, marker: ["ZOOM"] },
   { id: "section-brand", key: "category_brand", slugs: BRAND_SLUGS, marker: ["BRAND"] },
   { id: "section-series", key: "category_series", slugs: SERIES_SLUGS, marker: ["SERIES"] },
+  { id: "section-value", key: "category_value", slugs: VALUE_SLUGS, marker: ["VALUE"] },
   { id: "section-price", key: "category_price", slugs: PRICE_SLUGS, marker: ["$"] },
   { id: "section-portability", key: "category_portability", slugs: PORTABILITY_SLUGS, marker: ["G"] },
   { id: "section-aperture", key: "category_aperture", slugs: APERTURE_SLUGS, marker: ["ƒ"], markerItalic: true },
   { id: "section-trait", key: "category_trait", slugs: TRAIT_SLUGS, marker: ["WR"] },
   { id: "section-dedicated", key: "category_dedicated", slugs: DEDICATED_SLUGS, marker: ["✦"] },
-  { id: "section-focus", key: "category_focus", slugs: FOCUS_SLUGS, marker: ["AF", "MF"] },
 ] as const;
 
 export default async function CollectionsIndexPage({
@@ -73,7 +73,6 @@ export default async function CollectionsIndexPage({
   setRequestLocale(locale);
 
   const t = await getTranslations({ locale, namespace: "Collection" });
-  const tNav = await getTranslations({ locale, namespace: "Nav" });
   const mountLenses = getLensesByMount(mount as Mount, locale);
 
   const countFor = (slug: string) => {
@@ -91,25 +90,26 @@ export default async function CollectionsIndexPage({
   const totalLenses = mountLenses.length;
 
   return (
-    <main className="mx-auto max-w-[960px] px-6 pt-8 pb-16">
-      {/* Breadcrumb */}
-      <div className="mb-4">
-        <Breadcrumb
-          segments={[{ label: tNav("lenses"), href: `/lenses/${mount}` }]}
-          current={t("breadcrumbCollections")}
-        />
-      </div>
-
-      {/* Page title row */}
-      <header id="collections-top" className="pb-6">
-        <h1 className="font-heading text-[32px] font-bold leading-[1.15] text-zinc-900 dark:text-zinc-100">
-          {t("indexTitle")}
-        </h1>
-        <p className="mt-2.5 max-w-[560px] text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-          {t("indexStats", { count: totalCollections, lensCount: totalLenses })}
-          {" — "}
-          {t("indexDescription")}
-        </p>
+    <main className={`${LENS_INDEX_SHELL_CLS} pt-4 pb-16 sm:pt-8`}>
+      {/* Switcher + summary — same flex-col gap-2 structure as the all-lenses
+          header so the switcher and title land at the same position on both
+          pages. The descriptive, keyword-rich title stays as an sr-only h1
+          for SEO (mirroring the browse page); the visible header is a
+          one-line summary the tab label can't convey — collection and lens
+          counts — plus a short categorization subtitle. */}
+      <header id="collections-top" className="flex flex-col gap-2 pb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <LensSectionNav />
+        </div>
+        <div>
+          <h1 className="sr-only">{t("indexTitle")}</h1>
+          <p className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+            {t("indexStats", { count: totalCollections, lensCount: totalLenses })}
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+            {t("indexSubtitle")}
+          </p>
+        </div>
       </header>
 
       {/* Sticky chip rail */}
@@ -185,7 +185,7 @@ export default async function CollectionsIndexPage({
       {/* Footer CTA */}
       <footer className="mt-8 flex justify-center">
         <Link
-          href={`/lenses/${mount}`}
+          href={`/lenses/${mount}/browse`}
           className={`inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold ${ACTION_PRIMARY_CLS}`}
         >
           {t("browseAllPill", { count: totalLenses })}

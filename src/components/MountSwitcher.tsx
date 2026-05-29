@@ -43,7 +43,7 @@ export default function MountSwitcher() {
     }
     setPreference(value);
     if (urlMount !== null) {
-      router.push(`/lenses/${mountToUrlSegment(value)}`);
+      router.push(`/lenses/${mountToUrlSegment(value)}/browse`);
     }
   };
 

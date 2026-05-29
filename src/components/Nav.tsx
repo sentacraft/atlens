@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Menu } from "@base-ui/react/menu";
-import { Check, ChevronDown, EllipsisVertical, Send, Info, Download } from "lucide-react";
+import { EllipsisVertical, Send, Info, Download } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
@@ -28,7 +28,6 @@ export default function Nav() {
   const { navLocked, lockNav, setNavHidden } = useNav();
   const isPwa = usePwa();
   const [scrolledDown, setScrolledDown] = useState(false);
-  const [lensesMenuOpen, setLensesMenuOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
@@ -55,7 +54,6 @@ export default function Nav() {
     setScrolledDown(false);
     lastScrollY.current = 0;
     lockNav(false);
-    setLensesMenuOpen(false);
   }, [pathname, lockNav]);
 
   const isDesktop = useBreakpoint("sm");
@@ -65,8 +63,7 @@ export default function Nav() {
   }, [hidden, setNavHidden]);
 
   const seg = mountToUrlSegment(effectiveMount);
-  const browseHref = `/lenses/${seg}`;
-  const collectionsHref = `/lenses/${seg}/collections`;
+  const browseHref = `/lenses/${seg}/browse`;
   const compareHref = compareIds.length > 0
     ? `/lenses/${seg}/compare?ids=${compareIds.join(",")}`
     : `/lenses/${seg}/compare`;
@@ -85,53 +82,9 @@ export default function Nav() {
         : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-900"
     }`;
 
-  const isOnCollections = pathname.includes("/collections");
   const isBrowseActive = pathname.startsWith("/lenses") && !pathname.includes("/compare");
   const isCompareActive = pathname.includes("/compare");
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
-
-  const menuItemCls = (active: boolean) =>
-    cn(
-      "block px-4 py-2.5 transition-colors outline-none pointer-fine:data-highlighted:bg-zinc-50 dark:pointer-fine:data-highlighted:bg-zinc-800/50",
-      active && "bg-zinc-50 dark:bg-zinc-800/30"
-    );
-
-  const lensesMenuPopup = (
-    <Menu.Popup className="w-44 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 overflow-hidden origin-(--transform-origin) duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
-      <Menu.LinkItem
-        render={<Link href={browseHref} />}
-        className={menuItemCls(isBrowseActive && !isOnCollections)}
-      >
-        <span className="flex items-center justify-between gap-2">
-          <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
-            {t("allLenses")}
-          </span>
-          {isBrowseActive && !isOnCollections && (
-            <Check className="size-3.5 text-zinc-400 dark:text-zinc-500 shrink-0" />
-          )}
-        </span>
-        <span className="block text-xs font-normal text-zinc-400 dark:text-zinc-500 mt-0.5">
-          {t("allLensesHint")}
-        </span>
-      </Menu.LinkItem>
-      <Menu.LinkItem
-        render={<Link href={collectionsHref} />}
-        className={menuItemCls(isOnCollections)}
-      >
-        <span className="flex items-center justify-between gap-2">
-          <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
-            {t("collections")}
-          </span>
-          {isOnCollections && (
-            <Check className="size-3.5 text-zinc-400 dark:text-zinc-500 shrink-0" />
-          )}
-        </span>
-        <span className="block text-xs font-normal text-zinc-400 dark:text-zinc-500 mt-0.5">
-          {t("collectionsHint")}
-        </span>
-      </Menu.LinkItem>
-    </Menu.Popup>
-  );
 
   // When the user is *already on* the compare page and clicks the nav's
   // "对比" link, the intuitive read is "reset this comparison and start
@@ -181,17 +134,9 @@ export default function Nav() {
 
         {/* Right: shared items + breakpoint-specific overflow */}
         <div className="flex items-center gap-1 sm:gap-2">
-          <Menu.Root open={lensesMenuOpen} onOpenChange={setLensesMenuOpen}>
-            <Menu.Trigger className={cn(linkCls(isBrowseActive), "inline-flex items-center gap-0.5")}>
-              {t("lenses")}
-              <ChevronDown className="size-3 transition-transform duration-150 data-[popup-open]:rotate-180" />
-            </Menu.Trigger>
-            <Menu.Portal>
-              <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50">
-                {lensesMenuPopup}
-              </Menu.Positioner>
-            </Menu.Portal>
-          </Menu.Root>
+          <Link href={browseHref} className={linkCls(isBrowseActive)}>
+            {t("lenses")}
+          </Link>
           <Link href={compareHref} onClick={handleCompareLinkClick} className={linkCls(isCompareActive)}>
             {t("compare")}
           </Link>

@@ -117,7 +117,7 @@ export default async function ComparePage({
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-4 sm:pt-8 pb-40 flex flex-col gap-3 sm:gap-4">
       <Breadcrumb
-        segments={[{ label: tNav("lenses"), href: `/lenses/${seg}` }]}
+        segments={[{ label: tNav("lenses"), href: `/lenses/${seg}/browse` }]}
         current={tNav("compare")}
       />
       <ComparePageHeader />

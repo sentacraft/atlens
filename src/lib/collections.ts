@@ -32,10 +32,12 @@ function xBrand(brand: string): LensFilter {
   return (lens) => xPhoto(lens) && lens.brand === brand;
 }
 
-const DOMESTIC_BRANDS = ["viltrox", "7artisans", "ttartisan", "brightinstar", "sgimage"];
+// Affordable third-party brands grouped under the Value category. Extend this
+// list as more budget makers (of any origin) get added.
+const VALUE_BRANDS = ["viltrox", "7artisans", "ttartisan", "brightinstar", "sgimage", "laowa"];
 
 const FILTERS: Record<string, LensFilter> = {
-  // --- Prime (定焦) ---
+  // --- Prime ---
   "23mm": xPrime(22, 24),
   "35mm": xPrime(33, 36),
   "50mm": xPrime(48, 51),
@@ -44,7 +46,7 @@ const FILTERS: Record<string, LensFilter> = {
   "wide-angle-primes": (lens) =>
     xPhoto(lens) && !isZoom(lens) && lens.focalLengthMin <= 18,
 
-  // --- Zoom (变焦) ---
+  // --- Zoom ---
   "wide-zoom": (lens) =>
     xPhoto(lens) && isZoom(lens) && lens.focalLengthMin <= 12,
 
@@ -69,7 +71,7 @@ const FILTERS: Record<string, LensFilter> = {
     xPhoto(lens) &&
     (isZoom(lens) ? lens.focalLengthMax >= 300 : lens.focalLengthMin >= 200),
 
-  // --- Brand (品牌) ---
+  // --- Brand ---
   fujifilm: (lens) => xPhoto(lens) && lens.brand === "fujifilm",
   "7artisans": xBrand("7artisans"),
   viltrox: (lens) => xPhoto(lens) && lens.brand === "viltrox" && lens.af === true,
@@ -81,7 +83,7 @@ const FILTERS: Record<string, LensFilter> = {
   tamron: xBrand("tamron"),
   sgimage: xBrand("sgimage"),
 
-  // --- Series (系列) ---
+  // --- Series ---
   "fujifilm-xf": (lens) =>
     xPhoto(lens) && lens.brand === "fujifilm" && lens.series === "XF",
   "fujifilm-xc": (lens) =>
@@ -95,7 +97,7 @@ const FILTERS: Record<string, LensFilter> = {
   "voigtlander-nokton": (lens) =>
     xPhoto(lens) && lens.brand === "voigtlander" && lens.series === "Nokton",
 
-  // --- Price (价格) ---
+  // --- Price ---
   "under-200": (lens, locale) => {
     if (locale === "zh") {
       const p = lens.pricing?.cn?.new?.price;
@@ -114,7 +116,7 @@ const FILTERS: Record<string, LensFilter> = {
     return xPhoto(lens) && p != null && p < 400;
   },
 
-  // --- Portability (便携) ---
+  // --- Portability ---
   "under-200g": (lens) => {
     if (!xPhoto(lens)) {
       return false;
@@ -129,7 +131,7 @@ const FILTERS: Record<string, LensFilter> = {
     lens.length?.mm != null &&
     lens.length.mm <= 40,
 
-  // --- Aperture (光圈) ---
+  // --- Aperture ---
   "fast-aperture-primes": (lens) => {
     if (!xPhoto(lens) || isZoom(lens) || lens.maxAperture == null) {
       return false;
@@ -144,13 +146,13 @@ const FILTERS: Record<string, LensFilter> = {
     lens.maxAperture != null &&
     !Array.isArray(lens.maxAperture),
 
-  // --- Trait (特性) ---
+  // --- Trait ---
   "weather-sealed": (lens) =>
     xPhoto(lens) && (lens.wr === true || lens.wr === "partial"),
 
   "with-ois": (lens) => xPhoto(lens) && lens.ois === true,
 
-  // --- Dedicated (专用镜头) ---
+  // --- Dedicated ---
   cine: (lens) => xMount(lens) && lens.isCine === true,
 
   fisheye: (lens) =>
@@ -163,11 +165,18 @@ const FILTERS: Record<string, LensFilter> = {
   macro: (lens) =>
     xPhoto(lens) && !!lens.opticalTraits?.includes("macro"),
 
-  // --- Focus (对焦方式) ---
-  autofocus: (lens) => xPhoto(lens) && lens.af === true,
-  "manual-focus": (lens) => xPhoto(lens) && lens.af === false,
+  // --- Value (affordable third-party brands) ---
   "value-af": (lens) =>
-    xPhoto(lens) && DOMESTIC_BRANDS.includes(lens.brand) && lens.af === true,
+    xPhoto(lens) && VALUE_BRANDS.includes(lens.brand) && lens.af === true,
+  "value-mf": (lens) =>
+    xPhoto(lens) && VALUE_BRANDS.includes(lens.brand) && lens.af === false,
+  "value-095": (lens) => {
+    if (!xPhoto(lens) || isZoom(lens) || lens.maxAperture == null) {
+      return false;
+    }
+    const ap = Array.isArray(lens.maxAperture) ? lens.maxAperture[0] : lens.maxAperture;
+    return VALUE_BRANDS.includes(lens.brand) && ap <= 0.95;
+  },
 };
 
 const parsed: LensCollection[] = collectionsData.collections.map((entry) => {
@@ -191,7 +200,7 @@ export const PORTABILITY_SLUGS = ["under-200g", "pancake"];
 export const APERTURE_SLUGS = ["fast-aperture-primes", "constant-aperture"];
 export const TRAIT_SLUGS = ["weather-sealed", "with-ois", "super-tele"];
 export const DEDICATED_SLUGS = ["cine", "fisheye", "tilt-shift", "macro"];
-export const FOCUS_SLUGS = ["autofocus", "manual-focus", "value-af"];
+export const VALUE_SLUGS = ["value-af", "value-mf", "value-095"];
 
 export function getRelatedCollections(
   slug: string,

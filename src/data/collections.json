@@ -586,36 +586,6 @@
       }
     },
     {
-      "slug": "autofocus",
-      "title": {
-        "en": "Autofocus Lenses",
-        "zh": "自动对焦镜头"
-      },
-      "description": {
-        "en": "Every X-mount optic with native autofocus capability, from first-party Fujifilm units to third-party designs. All lenses listed here support full electronic body integration, continuous AF tracking, and digital aperture control.",
-        "zh": "所有支持自动对焦的 X 卡口镜头，涵盖富士原厂和各家副厂。本页收录的每一支都能与机身联动——连续追焦、眼部识别、电子光圈控制，开箱即用。"
-      },
-      "shortDescription": {
-        "en": "Native AF with tracking and eye detection",
-        "zh": "原生 AF，追焦与眼控全支持"
-      }
-    },
-    {
-      "slug": "manual-focus",
-      "title": {
-        "en": "Manual Focus Lenses",
-        "zh": "手动对焦镜头"
-      },
-      "description": {
-        "en": "The complete manual-focus directory for the X-mount system. From highly economic vintage drawing optics to high-end boutique metal work, these tools honor intentional framing with physical mechanical rings, dense form factors, and unique optical personalities that automated systems rarely clone.",
-        "zh": "X 卡口纯手动对焦镜头的全景索引。从注重性价比的复古氛围老味道，到做工严丝合缝的福伦达工艺品。手动镜头的魅力在于指尖拨动对焦环时的绝对掌控感、紧凑的体积，以及现代自动镜头较难复刻的独特味道。"
-      },
-      "shortDescription": {
-        "en": "Mechanical focus for tactile, intentional shooting",
-        "zh": "纯手动，质感与独特味道"
-      }
-    },
-    {
       "slug": "value-af",
       "title": {
         "en": "Value AF from Independent Makers",
@@ -628,6 +598,36 @@
       "shortDescription": {
         "en": "Affordable native AF from domestic makers",
         "zh": "国产品牌的平价自动对焦主力"
+      }
+    },
+    {
+      "slug": "value-mf",
+      "title": {
+        "en": "Value Manual-Focus Lenses",
+        "zh": "平价手动对焦镜头"
+      },
+      "description": {
+        "en": "Manual-focus lenses from value brands — a tactile, all-manual shooting experience at accessible prices.",
+        "zh": "高性价比品牌推出的手动对焦镜头合集，以亲民价格提供纯粹的手动对焦体验。"
+      },
+      "shortDescription": {
+        "en": "Affordable manual primes",
+        "zh": "平价品牌的手动定焦"
+      }
+    },
+    {
+      "slug": "value-095",
+      "title": {
+        "en": "Value f/0.95 Fast Primes",
+        "zh": "平价 f/0.95 大光圈镜头"
+      },
+      "description": {
+        "en": "f/0.95 primes from value brands — the shallowest depth of field and the most low-light reach at accessible prices.",
+        "zh": "高性价比品牌的 f/0.95 大光圈定焦合集，以亲民价格提供极浅景深与暗光能力。"
+      },
+      "shortDescription": {
+        "en": "Affordable f/0.95 glass",
+        "zh": "平价 f/0.95 大光圈"
       }
     }
   ]

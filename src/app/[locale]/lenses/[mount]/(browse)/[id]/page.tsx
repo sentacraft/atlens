@@ -288,7 +288,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] flex flex-col gap-8">
       <div className="flex items-center justify-between">
         <Breadcrumb
-              segments={[{ label: tNav("lenses"), href: `/lenses/${seg}` }]}
+              segments={[{ label: tNav("lenses"), href: `/lenses/${seg}/browse` }]}
               current={displayName}
             />
         <div className="flex items-center gap-1">

@@ -45,8 +45,17 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/:locale(en|zh)/lenses",
-        destination: "/:locale/lenses/x",
+        destination: "/:locale/lenses/x/browse",
         permanent: false,
+      },
+      // The all-lenses list lives at /lenses/[mount]/browse so it sits as a
+      // true sibling of /lenses/[mount]/collections. The bare mount path is a
+      // permanent (308) redirect to the list, so any old inbound link or
+      // bookmark to /lenses/x lands on the canonical browse URL.
+      {
+        source: "/:locale(en|zh)/lenses/:mount(x|gfx)",
+        destination: "/:locale/lenses/:mount/browse",
+        permanent: true,
       },
       {
         source: "/:locale(en|zh)/lenses/compare",

@@ -183,5 +183,11 @@ details[open] > div {
   }
   html {
     @apply font-sans;
+    /* Reserve the scrollbar gutter so a view that overflows and one that
+       doesn't keep the same layout viewport width. Without this, switching
+       between two views (e.g. the lens list vs collections) where one has a
+       scrollbar and the other doesn't shifts every centered container — and
+       the fixed nav's right-aligned items — by the scrollbar width. */
+    scrollbar-gutter: stable;
   }
 }

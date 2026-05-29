@@ -13,10 +13,9 @@ function url(path: string): string {
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPaths = [
-    "/lenses",
-    "/lenses/x",
+    "/lenses/x/browse",
     "/lenses/x/compare",
-    "/lenses/gfx",
+    "/lenses/gfx/browse",
     "/lenses/gfx/compare",
     "/lenses/x/collections",
     "/about",

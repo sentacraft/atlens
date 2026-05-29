@@ -8,6 +8,15 @@
  *   Selected state  → zinc-900 border + ring (light) / zinc-100 (dark)
  */
 
+/**
+ * Shared outer container for the lens-library index pages (the all-lenses
+ * list and the collections index). Single source of truth for their width +
+ * horizontal padding so the two never drift — keeping the section switcher
+ * and header pinned to the same left edge when switching between them.
+ * Compose with per-page vertical padding.
+ */
+export const LENS_INDEX_SHELL_CLS = "mx-auto w-full max-w-7xl px-5 sm:px-6";
+
 /** Primary action button (compare, add-to-compare, hero CTA). */
 export const ACTION_PRIMARY_CLS =
   "bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors";

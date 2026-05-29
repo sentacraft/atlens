@@ -28,6 +28,8 @@ import {
 } from "@/components/ui/select";
 import LensCard from "./LensCard";
 import LensFilters from "./LensFilters";
+import LensSectionNav from "./LensSectionNav";
+import { LENS_INDEX_SHELL_CLS } from "@/lib/ui-tokens";
 import LensSearchDialog from "./LensSearchDialog";
 import LensesLoading from "@/app/[locale]/lenses/[mount]/(browse)/loading";
 import FeedbackTrigger from "./FeedbackTrigger";
@@ -94,13 +96,15 @@ export default function LensListClient() {
 
   return (
     <>
-      <div className="w-full max-w-7xl mx-auto px-5 sm:px-6 pt-4 sm:pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col">
+      <div className={`${LENS_INDEX_SHELL_CLS} flex flex-col pt-4 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] sm:pt-8`}>
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-              {t("title")}
-            </h2>
-            <LensSearchDialog triggerVariant="button" triggerLabel={tSearch("browseTrigger")} />
+            <LensSectionNav />
+            <LensSearchDialog
+              triggerVariant="button"
+              triggerLabel={tSearch("browseTrigger")}
+              triggerClassName="sm:h-10"
+            />
           </div>
           <LensFilters
             filters={filters}

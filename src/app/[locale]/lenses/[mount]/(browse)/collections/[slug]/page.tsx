@@ -12,6 +12,7 @@ import CollectionLensGrid from "@/components/CollectionLensGrid";
 import RelatedCollectionCard from "@/components/RelatedCollectionCard";
 import BackToTopButton from "@/components/BackToTopButton";
 import Breadcrumb from "@/components/Breadcrumb";
+import FeedbackTrigger from "@/components/FeedbackTrigger";
 
 type Params = Promise<{ locale: string; mount: string; slug: string }>;
 
@@ -86,7 +87,7 @@ export default async function CollectionPage({
           <div className="mb-4">
             <Breadcrumb
               segments={[
-                { label: tNav("lenses"), href: `/lenses/${mount}` },
+                { label: tNav("lenses"), href: `/lenses/${mount}/browse` },
                 { label: t("breadcrumbCollections"), href: `/lenses/${mount}/collections` },
               ]}
               current={title}
@@ -103,6 +104,19 @@ export default async function CollectionPage({
           </p>
         </header>
         <CollectionLensGrid lenses={lenses} />
+
+        {/* Completeness feedback sits right after the grid, while the user is
+            still in this collection's context — not after the leave-the-page
+            CTA below. */}
+        <p className="mt-8 text-sm text-zinc-500 dark:text-zinc-400">
+          {t("feedbackPrompt")}{" "}
+          <FeedbackTrigger
+            type="general"
+            className="underline underline-offset-2 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+          >
+            {t("feedbackLink")}
+          </FeedbackTrigger>
+        </p>
 
         <footer className="mt-12">
           <div className="mb-4 flex items-baseline justify-between">
@@ -130,7 +144,7 @@ export default async function CollectionPage({
           </ul>
           <div className="mt-6 flex justify-center border-t border-zinc-100 pt-5 dark:border-zinc-800">
             <Link
-              href={`/lenses/${mount}`}
+              href={`/lenses/${mount}/browse`}
               className={`rounded-xl ${ACTION_ESCAPE_CLS}`}
             >
               <span>{t("browseAllPill", { count: mountLenses.length })}</span>

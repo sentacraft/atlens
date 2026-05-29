@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getLensesByMount } from "@/lib/lens";
 import { urlSegmentToMount } from "@/lib/mount";
 import LensListClient from "@/components/LensListClient";
-import LensesLoading from "./loading";
+import LensesLoading from "../loading";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { notFound } from "next/navigation";
 
@@ -22,7 +22,7 @@ export async function generateMetadata({
   if (!resolvedMount) {
     return {
       title: t("title"),
-      alternates: buildAlternates(locale, `lenses/${mount}`),
+      alternates: buildAlternates(locale, `lenses/${mount}/browse`),
     };
   }
 
@@ -42,7 +42,7 @@ export async function generateMetadata({
       description,
       images: defaultOgImages(),
     },
-    alternates: buildAlternates(locale, `lenses/${mount}`),
+    alternates: buildAlternates(locale, `lenses/${mount}/browse`),
   };
 }
 
