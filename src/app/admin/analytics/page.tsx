@@ -20,12 +20,16 @@ export const revalidate = 0;
 const WINDOW = "INTERVAL '30' DAY";
 const DASHBOARD_FILTER = `timestamp > NOW() - ${WINDOW} AND blob7 != '1'`;
 
+// AE SQL supports `count(DISTINCT col)` but not ClickHouse's `uniq` /
+// `uniqIf` aggregates. For per-event-type distinct counts, wrap the
+// column in `IF(cond, col, NULL)` — count DISTINCT skips NULLs, so the
+// resulting cardinality is only over rows matching the condition.
 const Q_OVERVIEW = `
   SELECT
     SUM(_sample_interval) AS events,
-    uniq(blob1) AS sessions,
-    uniqIf(blob4, index1 = 'search') AS unique_queries,
-    uniqIf(blob4, index1 = 'lens_view') AS unique_lenses_viewed
+    count(DISTINCT blob1) AS sessions,
+    count(DISTINCT IF(index1 = 'search', blob4, NULL)) AS unique_queries,
+    count(DISTINCT IF(index1 = 'lens_view', blob4, NULL)) AS unique_lenses_viewed
   FROM xglass_events
   WHERE ${DASHBOARD_FILTER}
 `;
@@ -34,7 +38,7 @@ const Q_LOCALE_SPLIT = `
   SELECT
     blob2 AS locale,
     SUM(_sample_interval) AS events,
-    uniq(blob1) AS sessions
+    count(DISTINCT blob1) AS sessions
   FROM xglass_events
   WHERE ${DASHBOARD_FILTER} AND blob2 != ''
   GROUP BY locale
@@ -86,9 +90,9 @@ const Q_COMPARE_FUNNEL = `
     sumIf(_sample_interval, index1 = 'compare_add') AS adds,
     sumIf(_sample_interval, index1 = 'compare_view') AS views,
     sumIf(_sample_interval, index1 = 'compare_scroll') AS scrolls,
-    uniqIf(blob1, index1 = 'compare_add') AS sids_add,
-    uniqIf(blob1, index1 = 'compare_view') AS sids_view,
-    uniqIf(blob1, index1 = 'compare_scroll') AS sids_scroll
+    count(DISTINCT IF(index1 = 'compare_add', blob1, NULL)) AS sids_add,
+    count(DISTINCT IF(index1 = 'compare_view', blob1, NULL)) AS sids_view,
+    count(DISTINCT IF(index1 = 'compare_scroll', blob1, NULL)) AS sids_scroll
   FROM xglass_events
   WHERE index1 IN ('compare_add', 'compare_view', 'compare_scroll')
     AND ${DASHBOARD_FILTER}
