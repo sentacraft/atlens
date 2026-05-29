@@ -7,6 +7,7 @@ import FeedbackDialog, {
   type FeedbackType,
 } from "./FeedbackDialog";
 import { track } from "@/lib/analytics";
+import { FEEDBACK_LINK_CLS } from "@/lib/ui-tokens";
 
 interface FeedbackTriggerProps {
   type: FeedbackType;
@@ -21,7 +22,10 @@ export default function FeedbackTrigger({
   type,
   context,
   fields,
-  className,
+  // Defaults to the shared inline feedback-link look; callers that need a
+  // different shape (the page-chrome report button, the compare-table cell)
+  // pass their own className to override.
+  className = FEEDBACK_LINK_CLS,
   children,
   stopPropagation = false,
 }: FeedbackTriggerProps) {

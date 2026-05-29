@@ -62,6 +62,18 @@ export const ICON_NAV_BTN_CLS =
   "dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100 dark:active:bg-zinc-800 dark:active:text-zinc-100";
 
 /**
+ * Inline feedback link — the single look for every feedback entry point that
+ * reads as a text link (suggest-a-lens, report-a-data-issue, in-prose links).
+ * Baked into FeedbackTrigger as its default, so call sites pass no className
+ * and the treatment can never drift again. Inherits font size from the
+ * surrounding sentence; fixes a uniform muted rest color + hover so the links
+ * no longer differ by context.
+ */
+export const FEEDBACK_LINK_CLS =
+  "text-zinc-500 underline underline-offset-2 transition-colors " +
+  "hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100";
+
+/**
  * Underlined text link / inline action (clear filters, toggle, text-only CTA).
  * Pair with per-site font-size, tracking, and whitespace classes.
  */

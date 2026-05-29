@@ -255,10 +255,7 @@ export default async function AboutContent() {
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
           {t.rich("coverageSuggest", {
             feedback: (chunks) => (
-              <FeedbackTrigger
-                type="general"
-                className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-              >
+              <FeedbackTrigger type="general">
                 {chunks}
               </FeedbackTrigger>
             ),
@@ -272,10 +269,7 @@ export default async function AboutContent() {
           <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
             {t.rich("dataAccuracyCaveat", {
               feedback: (chunks) => (
-                <FeedbackTrigger
-                  type="data_issue"
-                  className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-                >
+                <FeedbackTrigger type="data_issue">
                   {chunks}
                 </FeedbackTrigger>
               ),
@@ -418,10 +412,7 @@ export default async function AboutContent() {
             <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
               {t.rich("supportIntegrity", {
                 feedback: (chunks) => (
-                  <FeedbackTrigger
-                    type="general"
-                    className="underline underline-offset-2 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-                  >
+                  <FeedbackTrigger type="general">
                     {chunks}
                   </FeedbackTrigger>
                 ),
