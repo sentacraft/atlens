@@ -24,20 +24,22 @@ export default function manifest(): MetadataRoute.Manifest {
     // Shortcuts appear on long-press of the home screen icon (Android) and
     // right-click of the taskbar icon (desktop Chrome/Edge).
     // URLs use un-prefixed paths — the i18n middleware redirects to the
-    // correct locale automatically.
+    // correct locale automatically. Each entry carries a distinct `ref`
+    // query so PwaLaunchTelemetry can attribute cold launches per entry
+    // point (icon vs. each shortcut).
     shortcuts: [
       {
         name: "Browse Lenses",
         short_name: "Browse",
         description: "Browse and filter all X Mount and G Mount lenses",
-        url: "/lenses/x",
+        url: "/lenses/x?ref=pwa-browse",
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],
       },
       {
         name: "Compare Lenses",
         short_name: "Compare",
         description: "Compare lenses side by side",
-        url: "/lenses/x/compare",
+        url: "/lenses/x/compare?ref=pwa-compare",
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],
       },
     ],

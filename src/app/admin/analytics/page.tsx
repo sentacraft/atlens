@@ -211,6 +211,18 @@ const Q_PURCHASE_BY_LENS = `
   LIMIT 20
 `;
 
+// Cold-launch attribution for PWA entry points. `source` distinguishes
+// the home-screen icon (pwa) from each manifest shortcut so we can see
+// which entry point actually gets used after install.
+const Q_PWA_LAUNCH = `
+  SELECT blob6 AS source, SUM(_sample_interval) AS launches
+  FROM xglass_events
+  WHERE index1 = 'pwa_launch'
+    AND ${DASHBOARD_FILTER}
+  GROUP BY source
+  ORDER BY launches DESC
+`;
+
 function pct(num: number, denom: number): string {
   if (denom <= 0) {
     return "—";
@@ -224,6 +236,19 @@ function num(v: unknown): number {
 }
 
 function fmtNum(n: number): string {
+  return n.toLocaleString("en-US");
+}
+
+// Renders "—" for absent values so the dashboard can distinguish "AE
+// returned no row / null aggregate" from "AE returned a genuine 0".
+function fmtMaybe(v: unknown): string {
+  if (v === null || v === undefined) {
+    return "—";
+  }
+  const n = typeof v === "number" ? v : Number(v);
+  if (!Number.isFinite(n)) {
+    return "—";
+  }
   return n.toLocaleString("en-US");
 }
 
@@ -330,6 +355,7 @@ export default async function AnalyticsDashboardPage() {
     outboundBySource,
     purchaseByChannel,
     purchaseByLens,
+    pwaLaunch,
   ] = await Promise.all([
     queryAE(Q_OVERVIEW),
     queryAE(Q_LOCALE_SPLIT),
@@ -349,6 +375,7 @@ export default async function AnalyticsDashboardPage() {
     queryAE(Q_OUTBOUND_BY_SOURCE),
     queryAE(Q_PURCHASE_BY_CHANNEL),
     queryAE(Q_PURCHASE_BY_LENS),
+    queryAE(Q_PWA_LAUNCH),
   ]);
 
   if (overview.error === "missing_credentials") {
@@ -393,6 +420,33 @@ export default async function AnalyticsDashboardPage() {
   const sidsScroll = num(funnel?.sids_scroll);
 
   const installCount = num((install.data[0] as { n?: number } | undefined)?.n);
+
+  // Surface non-credential query failures so a 0/empty card can be told
+  // apart from "AE call actually failed and we silently rendered nothing".
+  const queryErrors = (
+    [
+      ["overview", overview],
+      ["localeSplit", localeSplit],
+      ["referrers", referrers],
+      ["searchZero", searchZero],
+      ["searchAll", searchAll],
+      ["filterUsage", filterUsage],
+      ["compareFunnel", compareFunnel],
+      ["compareCombos", compareCombos],
+      ["lensViews", lensViews],
+      ["feedback", feedback],
+      ["share", share],
+      ["shareBySource", shareBySource],
+      ["install", install],
+      ["mountSwitch", mountSwitch],
+      ["outbound", outbound],
+      ["outboundBySource", outboundBySource],
+      ["purchaseByChannel", purchaseByChannel],
+      ["purchaseByLens", purchaseByLens],
+    ] as const
+  ).flatMap(([name, r]) =>
+    r.error && r.error !== "missing_credentials" ? [{ name, code: r.error }] : [],
+  );
 
   // Pre-format rows so JSX cells stay simple and `title` tooltips can
   // reference the original strings.
@@ -444,12 +498,27 @@ export default async function AnalyticsDashboardPage() {
         </p>
       </header>
 
+      {queryErrors.length > 0 && (
+        <div className="mb-6 rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-900 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
+          <p className="font-medium">
+            {queryErrors.length} {queryErrors.length === 1 ? "query" : "queries"} failed
+          </p>
+          <ul className="mt-2 list-disc pl-5">
+            {queryErrors.map((e) => (
+              <li key={e.name}>
+                <code>{e.name}</code> → {e.code}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* Overview stats bar */}
       <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <Stat label="Events" value={fmtNum(num(overviewRow?.events))} />
-        <Stat label="Sessions" value={fmtNum(num(overviewRow?.sessions))} />
-        <Stat label="Unique queries" value={fmtNum(num(overviewRow?.unique_queries))} />
-        <Stat label="Unique lenses viewed" value={fmtNum(num(overviewRow?.unique_lenses_viewed))} />
+        <Stat label="Events" value={fmtMaybe(overviewRow?.events)} />
+        <Stat label="Sessions" value={fmtMaybe(overviewRow?.sessions)} />
+        <Stat label="Unique queries" value={fmtMaybe(overviewRow?.unique_queries)} />
+        <Stat label="Unique lenses viewed" value={fmtMaybe(overviewRow?.unique_lenses_viewed)} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -603,6 +672,16 @@ export default async function AnalyticsDashboardPage() {
             {fmtNum(installCount)}
           </p>
           <p className="mt-1 text-xs text-zinc-500">Accepted install prompts</p>
+        </Card>
+
+        <Card title="PWA · launches by entry">
+          <Table
+            rows={pwaLaunch.data}
+            columns={[
+              { key: "source", label: "Entry" },
+              { key: "launches", label: "Launches", align: "right", widthClass: COUNT_WIDTH },
+            ]}
+          />
         </Card>
 
         <Card title="Mount switch · direction">

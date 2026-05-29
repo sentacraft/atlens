@@ -27,6 +27,7 @@ export const EVENT_NAMES = [
   "outbound_click",
   "mount_switch",
   "purchase_click",
+  "pwa_launch",
 ] as const;
 
 export type EventName = (typeof EVENT_NAMES)[number];
