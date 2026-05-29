@@ -66,7 +66,7 @@ export function HorizontalScrollRail({
       {canScrollLeft && (
         <div
           className={cn(
-            "absolute left-0 top-0 bottom-0 w-12 pointer-events-none bg-gradient-to-r",
+            "absolute left-0 top-0 bottom-0 w-12 z-10 pointer-events-none bg-gradient-to-r",
             fadeBg,
           )}
         />
@@ -74,7 +74,7 @@ export function HorizontalScrollRail({
       {canScrollRight && (
         <div
           className={cn(
-            "absolute right-0 top-0 bottom-0 w-12 pointer-events-none bg-gradient-to-l",
+            "absolute right-0 top-0 bottom-0 w-12 z-10 pointer-events-none bg-gradient-to-l",
             fadeBg,
           )}
         />
