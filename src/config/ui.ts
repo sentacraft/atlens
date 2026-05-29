@@ -52,6 +52,12 @@ export const Z = {
 // scroll; the nav bar sits above it in a flex column. Individual pages should
 // use h-full / flex-1 rather than calc(100dvh - navHeight).
 
+// ── Floating action buttons ─────────────────────────────────────────────────
+//
+// Vertical scroll past this many pixels before reveal-on-scroll FABs
+// (Back-to-Top, Share) fade in. Shared so the affordances appear in lockstep.
+export const FAB_REVEAL_SCROLL_Y = 400;
+
 // ── Lens list / compare ───────────────────────────────────────────────────────
 
 // TODO: max number of lenses that can be compared simultaneously
