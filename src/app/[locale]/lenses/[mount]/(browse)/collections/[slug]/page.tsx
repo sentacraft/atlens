@@ -110,10 +110,7 @@ export default async function CollectionPage({
             CTA below. */}
         <p className="mt-8 text-sm text-zinc-500 dark:text-zinc-400">
           {t("feedbackPrompt")}{" "}
-          <FeedbackTrigger
-            type="general"
-            className="underline underline-offset-2 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-          >
+          <FeedbackTrigger type="general">
             {t("feedbackLink")}
           </FeedbackTrigger>
         </p>

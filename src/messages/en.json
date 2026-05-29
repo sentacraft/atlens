@@ -231,6 +231,7 @@
     "officialSite": "Official Page",
     "reportIssue": "Report an issue",
     "nudgeText": "Spotted an error in the data?",
+    "feedbackLink": "Tell me",
     "fieldOfficialLink": "Official Link",
     "fieldLensImage": "Lens Image",
     "fieldGroupMedia": "Media & Links",
@@ -360,11 +361,11 @@
     "coverageColCinema": "Cinema",
     "coverageRowTotal": "Total",
     "coverageLegend": "✓ Covered · ◐ Partial · ○ Under evaluation · — No plans · N/A Not applicable",
-    "coverageSuggest": "Missing a lens you're looking for? <feedback>Let me know</feedback>",
+    "coverageSuggest": "Missing a lens you're looking for? <feedback>Tell me</feedback>",
     "coverageViewLink": "View lens coverage →",
     "dataAccuracyTitle": "Data & Accuracy",
     "dataAccuracyIntro": "All data in X-Glass is produced by two independent pipelines. The spec pipeline collects and structures lens specifications from official brand websites. The pricing pipeline independently samples reference prices from e-commerce storefronts. The two are fully isolated, each with its own data sources and quality control process.",
-    "dataAccuracyCaveat": "X-Glass covers hundreds of lenses across dozens of spec dimensions, and I kindly ask for your patience with the small errors and stale entries that slip through — if you spot anything off, please <feedback>let me know</feedback>. For anything critical to a purchase, please confirm on the manufacturer's official page.",
+    "dataAccuracyCaveat": "X-Glass covers hundreds of lenses across dozens of spec dimensions, and I kindly ask for your patience with the small errors and stale entries that slip through — if you spot anything off, please <feedback>tell me</feedback>. For anything critical to a purchase, please confirm on the manufacturer's official page.",
     "dataSpecTitle": "Spec data",
     "dataSpecPoint1Title": "Data comes from official brand websites only",
     "dataSpecPoint1Body": "Canonical spec values are collected from brand official sites. Third-party material is not used as a source for published values.",
@@ -410,7 +411,7 @@
     "supportTitle": "Support the Project",
     "supportCost": "Building X-Glass involves running a multi-stage data pipeline to gather, clean, and normalize specs from dozens of manufacturer sites, as well as collect price reference data. It is an ongoing commitment, not a one-time build.",
     "supportAffiliate": "For your convenience, some pages include purchase links to dealers, some of which are affiliate links. If you make a purchase through them, X-Glass earns a small commission at absolutely no extra cost to you — this simply helps sustain my development and keeps the platform free and ad-free.",
-    "supportIntegrity": "Affiliate partnerships never influence rankings or pricing data. The codebase is open source — you're welcome to verify how it works under the hood. If you ever encounter a broken link, a model mismatch, or any dealer issues, <feedback>please let me know</feedback> so I can fix it promptly.",
+    "supportIntegrity": "Affiliate partnerships never influence rankings or pricing data. The codebase is open source — you're welcome to verify how it works under the hood. If you ever encounter a broken link, a model mismatch, or any dealer issues, please <feedback>tell me</feedback> so I can fix it promptly.",
     "supportDonate": "If X-Glass helped you find the right lens or saved you some research time, consider supporting the project directly.",
     "supportDonateAlt": "You can also support the project directly — every bit helps keep X-Glass going.",
     "donationKofi": "Support on Ko-fi",
@@ -540,6 +541,6 @@
     "viewAllCollections": "View all collections",
     "breadcrumbCollections": "Collections",
     "feedbackPrompt": "Missing a lens or spot an error?",
-    "feedbackLink": "Let us know"
+    "feedbackLink": "Tell me"
   }
 }

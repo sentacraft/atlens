@@ -394,20 +394,16 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               </div>
             ))}
           </div>
-          <div className="flex items-center gap-3 px-2 pt-4">
-            <p className="text-xs text-zinc-400 dark:text-zinc-500">
-              {t("nudgeText")}
-            </p>
+          <p className="px-2 pt-4 text-xs text-zinc-400 dark:text-zinc-500">
+            {t("nudgeText")}{" "}
             <FeedbackTrigger
               type="data_issue"
               context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
               fields={reportableFields}
-              className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
             >
-              <Flag className="size-4" />
-              {t("reportIssue")}
+              {t("feedbackLink")}
             </FeedbackTrigger>
-          </div>
+          </p>
       </div>
 
       <CollectionPills
