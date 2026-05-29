@@ -10,6 +10,7 @@ interface HorizontalScrollRailProps {
   wrapperClassName?: string;
   wrapperStyle?: React.CSSProperties;
   fadeBg: string;
+  spacerClass?: string;
   scrollRef?: RefObject<HTMLDivElement | null>;
   deps?: DependencyList;
   renderOverlay?: (state: {
@@ -24,6 +25,7 @@ export function HorizontalScrollRail({
   wrapperClassName,
   wrapperStyle,
   fadeBg,
+  spacerClass = "w-6",
   scrollRef,
   deps,
   renderOverlay,
@@ -61,12 +63,12 @@ export function HorizontalScrollRail({
         )}
       >
         {children}
-        <div className="shrink-0 w-6" aria-hidden="true" />
+        <div className={cn("shrink-0", spacerClass)} aria-hidden="true" />
       </div>
       {canScrollLeft && (
         <div
           className={cn(
-            "absolute left-0 top-0 bottom-0 w-12 z-10 pointer-events-none bg-gradient-to-r",
+            "absolute left-0 top-0 bottom-0 w-12 pointer-events-none bg-gradient-to-r",
             fadeBg,
           )}
         />
@@ -74,7 +76,7 @@ export function HorizontalScrollRail({
       {canScrollRight && (
         <div
           className={cn(
-            "absolute right-0 top-0 bottom-0 w-12 z-10 pointer-events-none bg-gradient-to-l",
+            "absolute right-0 top-0 bottom-0 w-12 pointer-events-none bg-gradient-to-l",
             fadeBg,
           )}
         />

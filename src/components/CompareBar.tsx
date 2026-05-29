@@ -86,6 +86,7 @@ export default function CompareBar() {
               className="min-w-0 flex-1 pl-5 sm:pl-0 gap-2 pb-1 sm:pb-0"
               wrapperClassName="flex min-w-0 flex-1 -mx-5 sm:mx-0"
               fadeBg="from-white dark:from-black"
+              spacerClass="w-5"
               deps={[compareIds.length]}
               renderOverlay={({ canScrollLeft, canScrollRight }) => (
                 <>
