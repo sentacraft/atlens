@@ -5,7 +5,7 @@ import { ArrowRight, Flag } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { COLLECTIONS, getCollectionStats, getRelatedCollectionsWithStats } from "@/lib/collections";
 import { getLensesByMount } from "@/lib/lens";
-import type { Mount } from "@/lib/types";
+import { urlSegmentToMount, mountSeoLabel } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { ACTION_ESCAPE_CLS, UTILITY_BTN_CLS } from "@/lib/ui-tokens";
 import CollectionLensGrid from "@/components/CollectionLensGrid";
@@ -31,14 +31,18 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { locale, mount, slug } = await params;
-  const stats = getCollectionStats(slug, mount as Mount, locale);
+  const resolvedMount = urlSegmentToMount(mount);
+  if (!resolvedMount) {
+    return {};
+  }
+  const stats = getCollectionStats(slug, resolvedMount, locale);
   if (!stats) {
     return {};
   }
 
   const t = await getTranslations({ locale, namespace: "Collection" });
   const title = localized(stats.collection.title, locale);
-  const mountLabel = locale === "zh" ? "富士 X 卡口" : "Fujifilm X-Mount";
+  const mountLabel = t("mountLabel", { mount: mountSeoLabel(resolvedMount) });
   const seoTitle = `${title} — ${mountLabel}`;
   const description = localized(stats.collection.description, locale);
 
@@ -65,7 +69,10 @@ export default async function CollectionPage({
   const { locale, mount, slug } = await params;
   setRequestLocale(locale);
 
-  const resolvedMount = mount as Mount;
+  const resolvedMount = urlSegmentToMount(mount);
+  if (!resolvedMount) {
+    notFound();
+  }
   const collectionStats = getCollectionStats(slug, resolvedMount, locale);
   if (!collectionStats) {
     notFound();
@@ -76,6 +83,7 @@ export default async function CollectionPage({
   const tNav = await getTranslations({ locale, namespace: "Nav" });
 
   const title = localized(collection.title, locale);
+  const mountLabel = t("mountLabel", { mount: mountSeoLabel(resolvedMount) });
   const description = localized(collection.description, locale);
   const statsLabel = t("stats", { count: lensCount, brandCount });
   const mountLenses = getLensesByMount(resolvedMount, locale);
@@ -97,7 +105,7 @@ export default async function CollectionPage({
               <ShareButton
                 lenses={lenses}
                 linkOnly
-                shareText={t("shareText", { title })}
+                shareText={t("shareText", { title, mount: mountLabel })}
                 triggerClassName={UTILITY_BTN_CLS}
               />
               <FeedbackTrigger type="general" className={UTILITY_BTN_CLS}>
