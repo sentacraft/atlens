@@ -128,11 +128,10 @@ export default function CollectionChipRail({
   return (
     <HorizontalScrollRail
       scrollRef={railRef}
-      className="gap-1.5 pl-6 py-3"
+      className="gap-1.5 px-6 py-3"
       wrapperClassName="sticky z-20 -mx-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm transition-[top] duration-300 ease-in-out"
       wrapperStyle={{ top: navHidden ? 0 : "var(--nav-height)" }}
       fadeBg="from-white dark:from-zinc-950"
-      spacerClass="w-6 -ml-1.5"
     >
       <button
         type="button"

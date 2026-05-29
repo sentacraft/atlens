@@ -98,10 +98,9 @@ export default function CuratedComparisons() {
       {/* Mobile: horizontal snap carousel */}
       <HorizontalScrollRail
         scrollRef={scrollRef}
-        className="snap-x snap-mandatory scroll-pl-4 items-start gap-2 pl-4 py-0.5"
+        className="snap-x snap-mandatory scroll-pl-4 items-start gap-2 px-4 py-0.5"
         wrapperClassName="sm:hidden -mx-4"
         fadeBg="from-white dark:from-zinc-950"
-        spacerClass="w-4 -ml-2"
         renderOverlay={({ canScrollLeft, canScrollRight }) => (
           <>
             <ScrollChevron

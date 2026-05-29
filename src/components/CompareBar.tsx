@@ -83,10 +83,9 @@ export default function CompareBar() {
           <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-6">
             <HorizontalScrollRail
               scrollRef={chipsRef}
-              className="min-w-0 flex-1 pl-5 sm:pl-0 gap-2 pb-1 sm:pb-0"
+              className="min-w-0 flex-1 px-5 sm:px-0 gap-2 pb-1 sm:pb-0"
               wrapperClassName="flex min-w-0 flex-1 -mx-5 sm:mx-0"
               fadeBg="from-white dark:from-black"
-              spacerClass="w-5 -ml-2"
               deps={[compareIds.length]}
               renderOverlay={({ canScrollLeft, canScrollRight }) => (
                 <>
