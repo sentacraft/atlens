@@ -147,15 +147,18 @@ export default function CollectionChipRail({
     "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900";
 
   return (
+    <div
+      className="sticky z-20 -mx-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm transition-[top] duration-300 ease-in-out"
+      style={{ top: navHidden ? 0 : "var(--nav-height)" }}
+    >
     <nav
       ref={railRef}
       aria-label="Jump to section"
       style={{
-        top: navHidden ? 0 : "var(--nav-height)",
         maskImage: scrollMask,
         WebkitMaskImage: scrollMask,
       }}
-      className="sticky z-20 -mx-6 flex gap-1.5 overflow-x-auto border-b border-zinc-200 bg-white/90 px-6 py-3 backdrop-blur-sm transition-[top] duration-300 ease-in-out [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden dark:border-zinc-800 dark:bg-zinc-950/90"
+      className="flex gap-1.5 overflow-x-auto px-6 py-3 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
     >
       <button
         type="button"
@@ -191,5 +194,6 @@ export default function CollectionChipRail({
         );
       })}
     </nav>
+    </div>
   );
 }
