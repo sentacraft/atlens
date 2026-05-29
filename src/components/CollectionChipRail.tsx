@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNav } from "@/context/NavContext";
-import { useHorizontalScrollAffordance } from "@/hooks/useHorizontalScrollAffordance";
+import { HorizontalScrollRail } from "@/components/ui/horizontal-scroll-rail";
 
 interface Section {
   id: string;
@@ -25,9 +25,8 @@ export default function CollectionChipRail({
 }: CollectionChipRailProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const { navHidden } = useNav();
-  const railRef = useRef<HTMLElement>(null);
+  const railRef = useRef<HTMLDivElement>(null);
   const isClickScrolling = useRef(false);
-  const { canScrollLeft, canScrollRight } = useHorizontalScrollAffordance(railRef);
 
   // Scroll-spy: highlight the chip whose section is currently in view.
   useEffect(() => {
@@ -98,26 +97,6 @@ export default function CollectionChipRail({
     }
   }, [activeId, sections]);
 
-  // Redirect vertical mouse-wheel to horizontal scroll (trackpad/touch are native).
-  useEffect(() => {
-    const rail = railRef.current;
-    if (!rail) {
-      return;
-    }
-    function onWheel(e: WheelEvent) {
-      if (!rail || rail.scrollWidth <= rail.clientWidth) {
-        return;
-      }
-      if (Math.abs(e.deltaX) >= Math.abs(e.deltaY)) {
-        return;
-      }
-      e.preventDefault();
-      rail.scrollBy({ left: e.deltaY });
-    }
-    rail.addEventListener("wheel", onWheel, { passive: false });
-    return () => rail.removeEventListener("wheel", onWheel);
-  }, []);
-
   const scrollTo = useCallback(
     (id: string | null) => {
       setActiveId(id);
@@ -147,56 +126,46 @@ export default function CollectionChipRail({
     "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900";
 
   return (
-    <div
-      className="sticky z-20 -mx-6 relative border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm transition-[top] duration-300 ease-in-out"
-      style={{ top: navHidden ? 0 : "var(--nav-height)" }}
+    <HorizontalScrollRail
+      scrollRef={railRef}
+      className="gap-1.5 pl-6 py-3"
+      wrapperClassName="sticky z-20 -mx-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm transition-[top] duration-300 ease-in-out"
+      wrapperStyle={{ top: navHidden ? 0 : "var(--nav-height)" }}
+      fadeBg="from-white dark:from-zinc-950"
     >
-      <nav
-        ref={railRef}
-        aria-label="Jump to section"
-        className="flex gap-1.5 overflow-x-auto pl-6 py-3 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
+      <button
+        type="button"
+        data-active={activeId === null}
+        onClick={() => scrollTo(null)}
+        className={`${chipBase} ${activeId === null ? chipActive : chipIdle}`}
       >
-        <button
-          type="button"
-          data-active={activeId === null}
-          onClick={() => scrollTo(null)}
-          className={`${chipBase} ${activeId === null ? chipActive : chipIdle}`}
+        {allLabel}
+        <span
+          className={`font-mono text-[10px] ${activeId === null ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
         >
-          {allLabel}
-          <span
-            className={`font-mono text-[10px] ${activeId === null ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
-          >
-            {totalCount}
-          </span>
-        </button>
+          {totalCount}
+        </span>
+      </button>
 
-        {sections.map((s) => {
-          const isActive = activeId === s.id;
-          return (
-            <button
-              key={s.id}
-              type="button"
-              data-active={isActive}
-              onClick={() => scrollTo(s.id)}
-              className={`${chipBase} ${isActive ? chipActive : chipIdle}`}
+      {sections.map((s) => {
+        const isActive = activeId === s.id;
+        return (
+          <button
+            key={s.id}
+            type="button"
+            data-active={isActive}
+            onClick={() => scrollTo(s.id)}
+            className={`${chipBase} ${isActive ? chipActive : chipIdle}`}
+          >
+            {s.label}
+            <span
+              className={`font-mono text-[10px] ${isActive ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
             >
-              {s.label}
-              <span
-                className={`font-mono text-[10px] ${isActive ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
-              >
-                {s.count}
-              </span>
-            </button>
-          );
-        })}
-        <div className="shrink-0 w-6" aria-hidden="true" />
-      </nav>
-      {canScrollLeft && (
-        <div className="absolute left-0 top-0 bottom-0 w-12 pointer-events-none bg-gradient-to-r from-white dark:from-zinc-950" />
-      )}
-      {canScrollRight && (
-        <div className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none bg-gradient-to-l from-white dark:from-zinc-950" />
-      )}
-    </div>
+              {s.count}
+            </span>
+          </button>
+        );
+      })}
+    </HorizontalScrollRail>
   );
 }
