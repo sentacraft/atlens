@@ -588,46 +588,46 @@
     {
       "slug": "value-af",
       "title": {
-        "en": "Value AF from Independent Makers",
-        "zh": "国产品牌自动对焦镜头"
+        "en": "Affordable Autofocus Lenses",
+        "zh": "平价自动对焦镜头"
       },
       "description": {
-        "en": "Native autofocus optics engineered by progressive independent makers—including Viltrox, 7Artisans, and TTArtisan. This growing segment has rapidly expanded the X-mount ecosystem by delivering competitive optical performance and fast modern apertures at accessible price points that challenge traditional entry-level expectations.",
-        "zh": "唯卓仕、七工匠、铭匠光学等国产品牌推出的原生自动对焦镜头合集。凭借扎实的光学素质与极具竞争力的定价，国产 AF 镜头群正在快速壮大，为 X 卡口用户提供了远超以往的平价自动对焦选择。"
+        "en": "Native autofocus lenses from value-focused independent makers like Viltrox, 7Artisans and TTArtisan. Backed by solid optics and aggressively competitive pricing, this corner of the market has grown fast, giving X-mount shooters far more affordable AF options than they used to have.",
+        "zh": "唯卓仕、七工匠、铭匠等国产品牌推出的原生自动对焦镜头合集。凭借扎实的光学素质与极具竞争力的定价，这类平价 AF 镜头正在快速壮大，为 X 卡口用户提供了远超以往的自动对焦选择。"
       },
       "shortDescription": {
-        "en": "Affordable native AF from domestic makers",
-        "zh": "国产品牌的平价自动对焦主力"
+        "en": "The most affordable tier of native AF glass",
+        "zh": "副厂自动头里最实惠的一档"
       }
     },
     {
       "slug": "value-mf",
       "title": {
-        "en": "Value Manual-Focus Lenses",
+        "en": "Affordable Manual-Focus Lenses",
         "zh": "平价手动对焦镜头"
       },
       "description": {
-        "en": "Manual-focus lenses from value brands — a tactile, all-manual shooting experience at accessible prices.",
-        "zh": "高性价比品牌推出的手动对焦镜头合集，以亲民价格提供纯粹的手动对焦体验。"
+        "en": "The busiest corner of affordable X-mount glass. Value-focused independent makers like 7Artisans, TTArtisan and Brightin Star put out manual primes in huge numbers and every flavor — all-metal mechanical feel at prices low enough to work through different focal lengths and rendering styles without much outlay.",
+        "zh": "这是 X 卡口里最热闹的一块平价天地。七工匠、铭匠、星曜这些国产品牌的手动定焦数量众多、风格各异，全金属机械手感配上亲民价格——最适合用来低成本地把不同焦段和味道挨个玩一遍。"
       },
       "shortDescription": {
-        "en": "Affordable manual primes",
-        "zh": "平价品牌的手动定焦"
+        "en": "A pure manual experience at a friendly price",
+        "zh": "纯手动体验，价格很友好"
       }
     },
     {
       "slug": "value-095",
       "title": {
-        "en": "Value f/0.95 Fast Primes",
-        "zh": "平价 f/0.95 大光圈镜头"
+        "en": "Affordable f/0.95 Dream Lenses",
+        "zh": "平价 f/0.95「夜神」"
       },
       "description": {
-        "en": "f/0.95 primes from value brands — the shallowest depth of field and the most low-light reach at accessible prices.",
-        "zh": "高性价比品牌的 f/0.95 大光圈定焦合集，以亲民价格提供极浅景深与暗光能力。"
+        "en": "An f/0.95 aperture used to be the preserve of a few expensive \"dream lenses.\" Now value-focused independent makers like 7Artisans, TTArtisan and Brightin Star have brought it down to a friendly price — wafer-thin depth of field and serious low-light gathering, for not much money. It's the lowest-cost way to taste what a truly fast lens can do.",
+        "zh": "f/0.95 这种「夜神」级光圈，以前几乎是少数高价镜头的专利。如今七工匠、铭匠、星曜这些国产品牌把它做进了亲民价位——极浅的景深、暗光下充足的进光量，花不多的钱就能体验到，是大光圈尝鲜门槛最低的一档。"
       },
       "shortDescription": {
-        "en": "Affordable f/0.95 glass",
-        "zh": "平价 f/0.95 大光圈"
+        "en": "The lowest bar to clear f/0.95",
+        "zh": "够到 f/0.95 的最低门槛"
       }
     }
   ]
