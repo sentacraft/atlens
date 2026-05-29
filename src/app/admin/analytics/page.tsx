@@ -20,18 +20,26 @@ export const revalidate = 0;
 const WINDOW = "INTERVAL '30' DAY";
 const DASHBOARD_FILTER = `timestamp > NOW() - ${WINDOW} AND blob7 != '1'`;
 
-// AE SQL supports `count(DISTINCT col)` but not ClickHouse's `uniq` /
-// `uniqIf` aggregates. For per-event-type distinct counts, wrap the
-// column in `IF(cond, col, NULL)` — count DISTINCT skips NULLs, so the
-// resulting cardinality is only over rows matching the condition.
-const Q_OVERVIEW = `
+// AE SQL only accepts a bare column inside `count(DISTINCT …)`, not an
+// expression like `IF(cond, col, NULL)`. To get per-event-type distinct
+// counts, split the work across two queries: one for global totals,
+// one with `GROUP BY index1` so each event class becomes its own row.
+const Q_OVERVIEW_TOTALS = `
   SELECT
     SUM(_sample_interval) AS events,
-    count(DISTINCT blob1) AS sessions,
-    count(DISTINCT IF(index1 = 'search', blob4, NULL)) AS unique_queries,
-    count(DISTINCT IF(index1 = 'lens_view', blob4, NULL)) AS unique_lenses_viewed
+    count(DISTINCT blob1) AS sessions
   FROM xglass_events
   WHERE ${DASHBOARD_FILTER}
+`;
+
+const Q_OVERVIEW_UNIQUES = `
+  SELECT
+    index1 AS event,
+    count(DISTINCT blob4) AS uniques
+  FROM xglass_events
+  WHERE index1 IN ('search', 'lens_view')
+    AND ${DASHBOARD_FILTER}
+  GROUP BY event
 `;
 
 const Q_LOCALE_SPLIT = `
@@ -85,17 +93,18 @@ const Q_FILTER_USAGE = `
   LIMIT 10
 `;
 
+// Same constraint as the overview uniques: instead of conditional
+// distinct counts in a flat row, fan out by index1 and reassemble the
+// funnel rows in JS.
 const Q_COMPARE_FUNNEL = `
   SELECT
-    sumIf(_sample_interval, index1 = 'compare_add') AS adds,
-    sumIf(_sample_interval, index1 = 'compare_view') AS views,
-    sumIf(_sample_interval, index1 = 'compare_scroll') AS scrolls,
-    count(DISTINCT IF(index1 = 'compare_add', blob1, NULL)) AS sids_add,
-    count(DISTINCT IF(index1 = 'compare_view', blob1, NULL)) AS sids_view,
-    count(DISTINCT IF(index1 = 'compare_scroll', blob1, NULL)) AS sids_scroll
+    index1 AS step,
+    SUM(_sample_interval) AS n,
+    count(DISTINCT blob1) AS sids
   FROM xglass_events
   WHERE index1 IN ('compare_add', 'compare_view', 'compare_scroll')
     AND ${DASHBOARD_FILTER}
+  GROUP BY step
 `;
 
 const Q_COMPARE_COMBOS = `
@@ -341,7 +350,8 @@ const COUNT_WIDTH = "w-20";
 
 export default async function AnalyticsDashboardPage() {
   const [
-    overview,
+    overviewTotals,
+    overviewUniques,
     localeSplit,
     referrers,
     searchZero,
@@ -361,7 +371,8 @@ export default async function AnalyticsDashboardPage() {
     purchaseByLens,
     pwaLaunch,
   ] = await Promise.all([
-    queryAE(Q_OVERVIEW),
+    queryAE(Q_OVERVIEW_TOTALS),
+    queryAE(Q_OVERVIEW_UNIQUES),
     queryAE(Q_LOCALE_SPLIT),
     queryAE(Q_REFERRER),
     queryAE(Q_SEARCH_ZERO),
@@ -382,7 +393,7 @@ export default async function AnalyticsDashboardPage() {
     queryAE(Q_PWA_LAUNCH),
   ]);
 
-  if (overview.error === "missing_credentials") {
+  if (overviewTotals.error === "missing_credentials") {
     return (
       <main className="mx-auto max-w-2xl px-6 py-16">
         <h1 className="font-heading text-2xl font-bold">Analytics not configured</h1>
@@ -397,31 +408,31 @@ export default async function AnalyticsDashboardPage() {
     );
   }
 
-  const overviewRow = overview.data[0] as
-    | {
-        events?: number;
-        sessions?: number;
-        unique_queries?: number;
-        unique_lenses_viewed?: number;
-      }
+  const overviewTotalsRow = overviewTotals.data[0] as
+    | { events?: number; sessions?: number }
     | undefined;
 
-  const funnel = compareFunnel.data[0] as
-    | {
-        adds?: number;
-        views?: number;
-        scrolls?: number;
-        sids_add?: number;
-        sids_view?: number;
-        sids_scroll?: number;
-      }
-    | undefined;
-  const adds = num(funnel?.adds);
-  const views = num(funnel?.views);
-  const scrolls = num(funnel?.scrolls);
-  const sidsAdd = num(funnel?.sids_add);
-  const sidsView = num(funnel?.sids_view);
-  const sidsScroll = num(funnel?.sids_scroll);
+  // Q_OVERVIEW_UNIQUES returns one row per event class.
+  const uniquesByEvent = new Map<string, unknown>();
+  for (const r of overviewUniques.data as Array<{ event?: string; uniques?: number }>) {
+    if (r.event) {
+      uniquesByEvent.set(r.event, r.uniques);
+    }
+  }
+
+  // Q_COMPARE_FUNNEL returns one row per step.
+  const funnelByStep = new Map<string, { n: number; sids: number }>();
+  for (const r of compareFunnel.data as Array<{ step?: string; n?: number; sids?: number }>) {
+    if (r.step) {
+      funnelByStep.set(r.step, { n: num(r.n), sids: num(r.sids) });
+    }
+  }
+  const adds = funnelByStep.get("compare_add")?.n ?? 0;
+  const views = funnelByStep.get("compare_view")?.n ?? 0;
+  const scrolls = funnelByStep.get("compare_scroll")?.n ?? 0;
+  const sidsAdd = funnelByStep.get("compare_add")?.sids ?? 0;
+  const sidsView = funnelByStep.get("compare_view")?.sids ?? 0;
+  const sidsScroll = funnelByStep.get("compare_scroll")?.sids ?? 0;
 
   const installCount = num((install.data[0] as { n?: number } | undefined)?.n);
 
@@ -429,7 +440,8 @@ export default async function AnalyticsDashboardPage() {
   // apart from "AE call actually failed and we silently rendered nothing".
   const queryErrors = (
     [
-      ["overview", overview],
+      ["overviewTotals", overviewTotals],
+      ["overviewUniques", overviewUniques],
       ["localeSplit", localeSplit],
       ["referrers", referrers],
       ["searchZero", searchZero],
@@ -447,6 +459,7 @@ export default async function AnalyticsDashboardPage() {
       ["outboundBySource", outboundBySource],
       ["purchaseByChannel", purchaseByChannel],
       ["purchaseByLens", purchaseByLens],
+      ["pwaLaunch", pwaLaunch],
     ] as const
   ).flatMap(([name, r]) =>
     r.error && r.error !== "missing_credentials" ? [{ name, code: r.error }] : [],
@@ -519,10 +532,10 @@ export default async function AnalyticsDashboardPage() {
 
       {/* Overview stats bar */}
       <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <Stat label="Events" value={fmtMaybe(overviewRow?.events)} />
-        <Stat label="Sessions" value={fmtMaybe(overviewRow?.sessions)} />
-        <Stat label="Unique queries" value={fmtMaybe(overviewRow?.unique_queries)} />
-        <Stat label="Unique lenses viewed" value={fmtMaybe(overviewRow?.unique_lenses_viewed)} />
+        <Stat label="Events" value={fmtMaybe(overviewTotalsRow?.events)} />
+        <Stat label="Sessions" value={fmtMaybe(overviewTotalsRow?.sessions)} />
+        <Stat label="Unique queries" value={fmtMaybe(uniquesByEvent.get("search"))} />
+        <Stat label="Unique lenses viewed" value={fmtMaybe(uniquesByEvent.get("lens_view"))} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
