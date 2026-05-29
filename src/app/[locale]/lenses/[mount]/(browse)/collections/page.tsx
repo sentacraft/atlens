@@ -91,13 +91,14 @@ export default async function CollectionsIndexPage({
 
   return (
     <main className={`${LENS_INDEX_SHELL_CLS} pt-4 pb-16 sm:pt-8`}>
-      {/* Switcher + summary — same flex-col gap-2 structure as the all-lenses
-          header so the switcher and title land at the same position on both
-          pages. The descriptive, keyword-rich title stays as an sr-only h1
-          for SEO (mirroring the browse page); the visible header is a
-          one-line summary the tab label can't convey — collection and lens
-          counts — plus a short categorization subtitle. */}
-      <header id="collections-top" className="flex flex-col gap-4 pb-3">
+      {/* Switcher + summary. The switcher is the first child and shares the
+          page's top padding, so it lands at the same position as the browse
+          tabs. The summary sits closer to the chip rail it describes than to
+          the tab divider above. The descriptive, keyword-rich title stays as
+          an sr-only h1 for SEO (mirroring the browse page); the visible header
+          is a one-line summary the tab label can't convey — collection and
+          lens counts — plus a short categorization subtitle. */}
+      <header id="collections-top" className="flex flex-col gap-5 pb-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <LensSectionNav />
         </div>

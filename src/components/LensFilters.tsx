@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
@@ -14,7 +14,7 @@ import FeatureToggleGroup from "./lens-filters/FeatureToggleGroup";
 import FilterRow from "./lens-filters/FilterRow";
 import MultiSelectChipGroup from "./lens-filters/MultiSelectChipGroup";
 import TypeSegmentedControl from "./lens-filters/TypeSegmentedControl";
-import { miniLabelClass } from "./lens-filters/styles";
+import { miniLabelClass, rowLabelClass } from "./lens-filters/styles";
 import { useFiltersTelemetry } from "./LensFilters.telemetry";
 
 interface Props {
@@ -25,6 +25,8 @@ interface Props {
   hasActiveFilters: boolean;
   activeFilterCount: number;
   onReset: () => void;
+  /** Rendered at the right edge of the brand row (e.g. the lens search trigger). */
+  searchSlot?: ReactNode;
 }
 
 export default function LensFilters({
@@ -35,6 +37,7 @@ export default function LensFilters({
   hasActiveFilters,
   activeFilterCount,
   onReset,
+  searchSlot,
 }: Props) {
   const t = useTranslations("LensList");
   const tBadge = useTranslations("SpecialtyBadge");
@@ -229,28 +232,38 @@ export default function LensFilters({
     <div className="flex min-w-0 flex-1 flex-col">
       {/* Primary filters: always visible on all viewports */}
       <div className="flex flex-col gap-2 sm:gap-3">
-        <div className="sm:hidden">
-          <BrandFilterMenu
-            brands={brands}
-            selected={filters.brands}
-            brandLabels={brandNames}
-            allLabel={allOptionLabel}
-            triggerLabel={brandTriggerLabel}
-            onToggle={(brand) =>
-              updateFilters("brands", toggleMultiFilter(filters.brands, brand, brands))
-            }
-            onClear={() => updateFilters("brands", [])}
-          />
-        </div>
-        <div className="hidden sm:block">
-          <FilterRow label={t("brand")}>
-            <MultiSelectChipGroup
-              allLabel={allOptionLabel}
-              allSelected={filters.brands.length === 0}
-              onSelectAll={() => updateFilters("brands", [])}
-              options={brandOptions}
-            />
-          </FilterRow>
+        {/* Brand row carries the search trigger on its right edge so search
+            shares a line with the first filter instead of taking its own. The
+            brand control itself swaps between a dropdown (mobile) and a chip
+            group (desktop); search renders once, outside that swap. */}
+        <div className="flex items-center gap-2 sm:items-start sm:gap-2.5">
+          <div className="min-w-0 flex-1">
+            <div className="sm:hidden">
+              <BrandFilterMenu
+                brands={brands}
+                selected={filters.brands}
+                brandLabels={brandNames}
+                allLabel={allOptionLabel}
+                triggerLabel={brandTriggerLabel}
+                onToggle={(brand) =>
+                  updateFilters("brands", toggleMultiFilter(filters.brands, brand, brands))
+                }
+                onClear={() => updateFilters("brands", [])}
+              />
+            </div>
+            <div className="hidden sm:flex sm:items-start sm:gap-2.5">
+              <span className={rowLabelClass}>{t("brand")}</span>
+              <div className="min-w-0 flex-1">
+                <MultiSelectChipGroup
+                  allLabel={allOptionLabel}
+                  allSelected={filters.brands.length === 0}
+                  onSelectAll={() => updateFilters("brands", [])}
+                  options={brandOptions}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="shrink-0">{searchSlot}</div>
         </div>
 
         <div className="flex gap-2 sm:hidden">
