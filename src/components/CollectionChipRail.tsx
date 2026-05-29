@@ -72,6 +72,10 @@ export default function CollectionChipRail({
     if (!rail) {
       return;
     }
+    if (activeId === null) {
+      rail.scrollTo({ left: 0, behavior: "smooth" });
+      return;
+    }
     const active = rail.querySelector("[data-active=true]") as HTMLElement | null;
     if (!active) {
       return;
