@@ -8,8 +8,10 @@ import { cn } from "@/lib/utils";
 
 /**
  * Switcher between the two views of the lens library: the filterable list
- * ("所有镜头") and the curated collections ("合集"). Mirrors the in-page
- * filter segmented controls so the whole header reads as one control family.
+ * ("所有镜头") and the curated collections ("合集"). Rendered as underline
+ * tabs sitting on a full-width divider — a deliberately different component
+ * type from the filter pills below, so page-level view switching reads as
+ * navigation, not as another refinement control.
  */
 export default function LensSectionNav() {
   const t = useTranslations("Nav");
@@ -25,7 +27,7 @@ export default function LensSectionNav() {
   return (
     <nav
       aria-label={t("lenses")}
-      className="inline-flex rounded-xl bg-zinc-100 p-1 dark:bg-zinc-800"
+      className="flex w-full items-center gap-6 border-b border-zinc-200 dark:border-zinc-800"
     >
       {tabs.map((tab) => {
         const selected = tab.key === active;
@@ -35,13 +37,13 @@ export default function LensSectionNav() {
             href={tab.href}
             aria-current={selected ? "page" : undefined}
             className={cn(
-              // Same segmented-control shape as the filter controls below, but
-              // a notch larger/bolder with stronger active contrast — it's the
-              // primary view switcher, not a secondary filter.
-              "inline-flex h-9 items-center justify-center rounded-lg px-4 text-[13px] font-semibold transition-colors sm:h-8",
+              // -mb-px pulls the 2px active indicator down to overlap the
+              // nav's 1px bottom border, so the underline reads as the tab's
+              // own indicator rather than a doubled rule.
+              "relative -mb-px flex items-center border-b-2 pb-3 pt-0.5 text-[15px] font-semibold transition-colors",
               selected
-                ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50 dark:shadow-none"
-                : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
+                ? "border-zinc-900 text-zinc-900 dark:border-zinc-100 dark:text-zinc-50"
+                : "border-transparent text-zinc-400 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-200",
             )}
           >
             {tab.label}

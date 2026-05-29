@@ -98,14 +98,7 @@ export default function LensListClient() {
     <>
       <div className={`${LENS_INDEX_SHELL_CLS} flex flex-col pt-4 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] sm:pt-8`}>
         <div className="flex flex-col gap-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <LensSectionNav />
-            <LensSearchDialog
-              triggerVariant="button"
-              triggerLabel={tSearch("browseTrigger")}
-              triggerClassName="sm:h-10"
-            />
-          </div>
+          <LensSectionNav />
           <LensFilters
             filters={filters}
             brands={brands}
@@ -114,6 +107,15 @@ export default function LensListClient() {
             hasActiveFilters={hasActiveFilters}
             activeFilterCount={activeFilterCount}
             onReset={clearAllFilters}
+            // Search shares the brand row's right edge — it scopes the lens
+            // list, so it belongs in the refine zone, not the navigation bar.
+            searchSlot={
+              <LensSearchDialog
+                triggerVariant="button"
+                triggerLabel={tSearch("browseTrigger")}
+                triggerClassName="sm:h-10"
+              />
+            }
           />
         </div>
 
