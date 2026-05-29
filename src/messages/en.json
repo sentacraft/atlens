@@ -543,6 +543,6 @@
     "feedbackPrompt": "Missing a lens or spot an error?",
     "feedbackLink": "Tell me",
     "reportIssue": "Report an issue",
-    "shareText": "Check out the \"{title}\" lens collection on X-Glass"
+    "shareText": "Found a nice collection on X-Glass: {title}"
   }
 }

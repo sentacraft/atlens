@@ -543,6 +543,6 @@
     "feedbackPrompt": "这个合集有遗漏或错误？",
     "feedbackLink": "告诉我",
     "reportIssue": "反馈问题",
-    "shareText": "看看 X-Glass 上的「{title}」镜头合集"
+    "shareText": "在 X-Glass 发现一份不错的合集：{title}"
   }
 }
