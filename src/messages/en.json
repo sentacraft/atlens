@@ -505,7 +505,8 @@
     "rowWarn": "please do verify the latest price",
     "usedReason": "No new-price listing was found in official channels; showing a used-market reference instead.",
     "sampledAt": "Sampled {date}",
-    "priceApprox": "{price} <approx>approx.</approx>"
+    "priceApprox": "{price} <approx>approx.</approx>",
+    "priceUnavailable": "Price N/A"
   },
   "Purchase": {
     "whereToBuy": "Where to buy",

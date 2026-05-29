@@ -14,6 +14,7 @@ import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import * as fmt from "@/lib/lens.format";
 import { Button } from "@/components/ui/button";
+import LensCardPrice from "./LensCardPrice";
 
 interface Props {
   lens: Lens;
@@ -136,34 +137,53 @@ export default memo(function LensCard({
             </h3>
           </div>
 
-          <div className="flex gap-1 flex-wrap items-center min-h-[20px]">
-            {badges.map((badge) => (
-              <Badge
-                key={badge.label}
-                label={badge.label}
-                description={badge.description}
-                icon={<badge.icon className="h-3 w-3" />}
-              />
-            ))}
+          {/* Feature badges with the reference price pinned to the row's right
+              edge — price shares this line instead of taking its own. Badges
+              flex-wrap in the flexible left column; price is shrink-0 so it
+              never wraps, and the row grows downward if badges need a 2nd line. */}
+          <div className="flex min-h-[20px] items-start justify-between gap-1">
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
+              {badges.map((badge) => (
+                <Badge
+                  key={badge.label}
+                  label={badge.label}
+                  description={badge.description}
+                  icon={<badge.icon className="h-3 w-3" />}
+                />
+              ))}
+            </div>
+            {/* Price rides the badge row on wider cards; on the narrow
+                horizontal card it drops to its own line below, where the badge
+                row has no room to spare without stacking badges vertically. */}
+            <div className="hidden shrink-0 xs:block">
+              <LensCardPrice lens={lens} />
+            </div>
           </div>
 
-          {/* Mobile: single-row dl */}
-          <dl className="mt-auto flex items-baseline justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400 sm:hidden">
-            <div className="min-w-0 truncate">
-              {equivDisplay} {t("equivSuffix")}
+          {/* Specs (and, on the narrow card, the price) pinned to the bottom. */}
+          <div className="mt-auto flex flex-col gap-2">
+            <div className="xs:hidden">
+              <LensCardPrice lens={lens} />
             </div>
-            <div className="shrink-0">{weightDisplay}</div>
-          </dl>
 
-          {/* Desktop: 2×2 data grid */}
-          <dl className="mt-auto hidden sm:grid sm:grid-cols-2 sm:gap-x-3 text-xs text-zinc-600 dark:text-zinc-400">
-            <div className="truncate">MFD {mfdDisplay}</div>
-            <div className="text-right">⌀{filterDisplay}</div>
-            <div className="min-w-0 truncate">
-              {equivDisplay} {t("equivSuffix")}
-            </div>
-            <div className="text-right">{weightDisplay}</div>
-          </dl>
+            {/* Mobile: single-row dl */}
+            <dl className="flex items-baseline justify-between gap-2 border-t border-zinc-100 pt-2 text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400 sm:hidden">
+              <div className="min-w-0 truncate">
+                {equivDisplay} {t("equivSuffix")}
+              </div>
+              <div className="shrink-0">{weightDisplay}</div>
+            </dl>
+
+            {/* Desktop: 2×2 data grid */}
+            <dl className="hidden border-t border-zinc-100 pt-2.5 text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400 sm:grid sm:grid-cols-2 sm:gap-x-3">
+              <div className="truncate">MFD {mfdDisplay}</div>
+              <div className="text-right">⌀{filterDisplay}</div>
+              <div className="min-w-0 truncate">
+                {equivDisplay} {t("equivSuffix")}
+              </div>
+              <div className="text-right">{weightDisplay}</div>
+            </dl>
+          </div>
         </div>
       </Link>
 
