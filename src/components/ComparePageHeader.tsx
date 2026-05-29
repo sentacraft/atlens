@@ -95,11 +95,10 @@ export default function ComparePageHeader() {
         )}
         <div className="ml-auto flex items-center gap-1">
           {activeLenses.length >= 1 && (
-            <ShareButton lenses={activeLenses} presetTitle={presetTitle} presetSubtitle={presetSubtitle} />
+            <ShareButton lenses={activeLenses} presetTitle={presetTitle} presetSubtitle={presetSubtitle} triggerClassName={UTILITY_BTN_CLS} />
           )}
           <FeedbackTrigger
             type="general"
-            context={{}}
             className={UTILITY_BTN_CLS}
           >
             <Flag className="size-4" />

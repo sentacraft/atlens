@@ -36,6 +36,14 @@ interface ShareButtonProps {
   presetTitle?: string;
   /** Pre-fill the poster slogan from a curated preset subtitle. User can still override. */
   presetSubtitle?: string;
+  /**
+   * Link-only mode: skip the comparison-poster surface entirely and offer just
+   * copy-link + native share. For pages whose subject isn't a ≤MAX_COMPARE lens
+   * set (e.g. a collection of many lenses), where the spec poster doesn't apply.
+   */
+  linkOnly?: boolean;
+  /** Native-share message body in linkOnly mode. Falls back to the lens CTA. */
+  shareText?: string;
 }
 
 function computePosterTitle(
@@ -50,7 +58,7 @@ function computePosterTitle(
   return lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model));
 }
 
-export function ShareButton({ lenses, variant = "default", triggerClassName, iconOnly, presetTitle, presetSubtitle }: ShareButtonProps) {
+export function ShareButton({ lenses, variant = "default", triggerClassName, iconOnly, presetTitle, presetSubtitle, linkOnly, shareText }: ShareButtonProps) {
   const t = useTranslations("Share");
   const locale = useLocale();
   const tImage = useTranslations("ShareImage");
@@ -154,9 +162,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
 
   const handleNativeShare = useCallback(async () => {
     const isSingle = lenses.length === 1;
-    const cta = isSingle
+    const cta = shareText ?? (isSingle
       ? t("shareCtaSingle")
-      : t("shareCtaMulti", { count: lenses.length });
+      : t("shareCtaMulti", { count: lenses.length }));
     const pageUrl = window.location.href;
     try {
       await navigator.share({
@@ -171,7 +179,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
       }
       toast.error(t("shareFailed"));
     }
-  }, [lenses, t]);
+  }, [lenses, shareText, t]);
 
   const handleDownload = useCallback(async () => {
     if (!posterRef.current) {
@@ -248,6 +256,56 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
   const tabClass =
     "flex-1 rounded-md px-3 py-1.5 text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900 data-[active]:bg-white data-[active]:text-zinc-900 data-[active]:shadow-xs dark:text-zinc-400 dark:hover:text-zinc-50 dark:data-[active]:bg-zinc-700 dark:data-[active]:text-zinc-50 outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 cursor-pointer";
 
+  // Copy-link + native-share controls. Shared between the Link tab (poster
+  // mode) and the linkOnly panel so the two never drift.
+  const linkSection = (
+    <div className="flex flex-col gap-3">
+      <div className="select-all break-all rounded-md bg-zinc-100 px-3 py-2.5 font-mono text-xs leading-relaxed text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+        {truncatedUrl}
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={handleCopy}
+          className={cn(
+            "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors",
+            copied
+              ? "bg-green-600 text-white hover:bg-green-700"
+              : copyFailed
+                ? "bg-red-600 text-white hover:bg-red-700"
+                : "bg-zinc-900 text-zinc-50 hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          )}
+        >
+          {copied ? (
+            <><Check className="size-4" />{t("copied")}</>
+          ) : copyFailed ? (
+            <><Copy className="size-4" />{t("copyFailed")}</>
+          ) : (
+            <><Copy className="size-4" />{t("copyLink")}</>
+          )}
+        </button>
+        {canNativeShare && (
+          <button
+            onClick={handleNativeShare}
+            title={t("nativeShare")}
+            className="flex items-center justify-center rounded-lg border border-zinc-200 px-3 py-2.5 text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          >
+            <Share2 className="size-4" />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
+  // Link-only panel: no poster surface, just the copy/share controls.
+  const linkOnlyContent = (
+    <div className="flex flex-col gap-4 p-4">
+      <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+        {t("button")}
+      </h2>
+      {linkSection}
+    </div>
+  );
+
   const panelContent = (
     <div className="flex flex-col gap-4 p-4">
       <div className="flex flex-col gap-0.5">
@@ -264,40 +322,8 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
         </Tabs.List>
 
         {/* ── Link tab ─────────────────────────────────────────── */}
-        <Tabs.Panel value="link" className="flex flex-col gap-3">
-          <div className="select-all break-all rounded-md bg-zinc-100 px-3 py-2.5 font-mono text-xs leading-relaxed text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
-            {truncatedUrl}
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={handleCopy}
-              className={cn(
-                "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors",
-                copied
-                  ? "bg-green-600 text-white hover:bg-green-700"
-                  : copyFailed
-                    ? "bg-red-600 text-white hover:bg-red-700"
-                    : "bg-zinc-900 text-zinc-50 hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
-              )}
-            >
-              {copied ? (
-                <><Check className="size-4" />{t("copied")}</>
-              ) : copyFailed ? (
-                <><Copy className="size-4" />{t("copyFailed")}</>
-              ) : (
-                <><Copy className="size-4" />{t("copyLink")}</>
-              )}
-            </button>
-            {canNativeShare && (
-              <button
-                onClick={handleNativeShare}
-                title={t("nativeShare")}
-                className="flex items-center justify-center rounded-lg border border-zinc-200 px-3 py-2.5 text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-              >
-                <Share2 className="size-4" />
-              </button>
-            )}
-          </div>
+        <Tabs.Panel value="link">
+          {linkSection}
         </Tabs.Panel>
 
         {/* ── Image tab ────────────────────────────────────────── */}
@@ -382,6 +408,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
   );
 
   const isFab = variant === "fab";
+  const activePanel = linkOnly ? linkOnlyContent : panelContent;
 
   const defaultTriggerClass =
     triggerClassName ??
@@ -412,7 +439,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
       <Popover.Portal>
         <Popover.Positioner side={isFab ? "top" : "bottom"} align="end" sideOffset={8}>
           <Popover.Popup className="w-96 max-h-[calc(100svh-80px)] overflow-y-auto origin-(--transform-origin) rounded-xl bg-white shadow-lg ring-1 ring-zinc-200 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:bg-zinc-900 dark:ring-zinc-800">
-            {panelContent}
+            {activePanel}
           </Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>
@@ -433,7 +460,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
               <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
             </div>
             <div className="overflow-y-auto pb-8">
-              {panelContent}
+              {activePanel}
             </div>
           </Drawer.Popup>
         </Drawer.Viewport>
