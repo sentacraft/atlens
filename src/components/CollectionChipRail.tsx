@@ -2,10 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNav } from "@/context/NavContext";
-import {
-  useHorizontalScrollAffordance,
-  buildHorizontalScrollMask,
-} from "@/hooks/useHorizontalScrollAffordance";
+import { useHorizontalScrollAffordance } from "@/hooks/useHorizontalScrollAffordance";
 
 interface Section {
   id: string;
@@ -31,7 +28,6 @@ export default function CollectionChipRail({
   const railRef = useRef<HTMLElement>(null);
   const isClickScrolling = useRef(false);
   const { canScrollLeft, canScrollRight } = useHorizontalScrollAffordance(railRef);
-  const scrollMask = buildHorizontalScrollMask(canScrollLeft, canScrollRight);
 
   // Scroll-spy: highlight the chip whose section is currently in view.
   useEffect(() => {
@@ -92,11 +88,15 @@ export default function CollectionChipRail({
       rail.scrollTo({ left: 0, behavior: "smooth" });
       return;
     }
+    if (activeId === sections[sections.length - 1]?.id) {
+      rail.scrollTo({ left: rail.scrollWidth, behavior: "smooth" });
+      return;
+    }
     const active = rail.querySelector("[data-active=true]") as HTMLElement | null;
     if (active) {
       active.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
     }
-  }, [activeId]);
+  }, [activeId, sections]);
 
   // Redirect vertical mouse-wheel to horizontal scroll (trackpad/touch are native).
   useEffect(() => {
@@ -148,52 +148,55 @@ export default function CollectionChipRail({
 
   return (
     <div
-      className="sticky z-20 -mx-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm transition-[top] duration-300 ease-in-out"
+      className="sticky z-20 -mx-6 relative border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm transition-[top] duration-300 ease-in-out"
       style={{ top: navHidden ? 0 : "var(--nav-height)" }}
     >
-    <nav
-      ref={railRef}
-      aria-label="Jump to section"
-      style={{
-        maskImage: scrollMask,
-        WebkitMaskImage: scrollMask,
-      }}
-      className="flex gap-1.5 overflow-x-auto px-6 py-3 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
-    >
-      <button
-        type="button"
-        data-active={activeId === null}
-        onClick={() => scrollTo(null)}
-        className={`${chipBase} ${activeId === null ? chipActive : chipIdle}`}
+      <nav
+        ref={railRef}
+        aria-label="Jump to section"
+        className="flex gap-1.5 overflow-x-auto pl-6 py-3 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
       >
-        {allLabel}
-        <span
-          className={`font-mono text-[10px] ${activeId === null ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
+        <button
+          type="button"
+          data-active={activeId === null}
+          onClick={() => scrollTo(null)}
+          className={`${chipBase} ${activeId === null ? chipActive : chipIdle}`}
         >
-          {totalCount}
-        </span>
-      </button>
-
-      {sections.map((s) => {
-        const isActive = activeId === s.id;
-        return (
-          <button
-            key={s.id}
-            type="button"
-            data-active={isActive}
-            onClick={() => scrollTo(s.id)}
-            className={`${chipBase} ${isActive ? chipActive : chipIdle}`}
+          {allLabel}
+          <span
+            className={`font-mono text-[10px] ${activeId === null ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
           >
-            {s.label}
-            <span
-              className={`font-mono text-[10px] ${isActive ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
+            {totalCount}
+          </span>
+        </button>
+
+        {sections.map((s) => {
+          const isActive = activeId === s.id;
+          return (
+            <button
+              key={s.id}
+              type="button"
+              data-active={isActive}
+              onClick={() => scrollTo(s.id)}
+              className={`${chipBase} ${isActive ? chipActive : chipIdle}`}
             >
-              {s.count}
-            </span>
-          </button>
-        );
-      })}
-    </nav>
+              {s.label}
+              <span
+                className={`font-mono text-[10px] ${isActive ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
+              >
+                {s.count}
+              </span>
+            </button>
+          );
+        })}
+        <div className="shrink-0 w-6" aria-hidden="true" />
+      </nav>
+      {canScrollLeft && (
+        <div className="absolute left-0 top-0 bottom-0 w-12 pointer-events-none bg-gradient-to-r from-white dark:from-zinc-950" />
+      )}
+      {canScrollRight && (
+        <div className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none bg-gradient-to-l from-white dark:from-zinc-950" />
+      )}
     </div>
   );
 }
