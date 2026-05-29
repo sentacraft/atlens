@@ -543,6 +543,7 @@
     "feedbackPrompt": "Missing a lens or spot an error?",
     "feedbackLink": "Tell me",
     "reportIssue": "Report an issue",
-    "shareText": "Found a nice collection on X-Glass: {title}"
+    "mountLabel": "Fujifilm {mount}-Mount",
+    "shareText": "Found a nice collection on X-Glass: {title} ({mount})"
   }
 }

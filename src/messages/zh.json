@@ -543,6 +543,7 @@
     "feedbackPrompt": "这个合集有遗漏或错误？",
     "feedbackLink": "告诉我",
     "reportIssue": "反馈问题",
-    "shareText": "在 X-Glass 发现一份不错的合集：{title}"
+    "mountLabel": "富士 {mount} 卡口",
+    "shareText": "在 X-Glass 发现一份不错的合集：{title}（{mount}）"
   }
 }
