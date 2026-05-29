@@ -93,7 +93,20 @@ export default function CollectionChipRail({
     }
     const active = rail.querySelector("[data-active=true]") as HTMLElement | null;
     if (active) {
-      active.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
+      // Scroll the rail horizontally by hand instead of Element.scrollIntoView:
+      // scrollIntoView walks up to the document scrolling element to satisfy
+      // its block axis, and that programmatic scroll cancels the page's
+      // in-flight touch momentum — so a fast flick would dead-stop the moment
+      // scroll-spy lit a chip near the rail edge. scrollBy on the rail only
+      // ever touches the rail's own horizontal axis.
+      const railRect = rail.getBoundingClientRect();
+      const chipRect = active.getBoundingClientRect();
+      const pad = 24;
+      if (chipRect.left < railRect.left + pad) {
+        rail.scrollBy({ left: chipRect.left - railRect.left - pad, behavior: "smooth" });
+      } else if (chipRect.right > railRect.right - pad) {
+        rail.scrollBy({ left: chipRect.right - railRect.right + pad, behavior: "smooth" });
+      }
     }
   }, [activeId, sections]);
 
@@ -128,8 +141,8 @@ export default function CollectionChipRail({
   return (
     <HorizontalScrollRail
       scrollRef={railRef}
-      className="gap-1.5 px-6 py-3"
-      wrapperClassName="sticky z-20 -mx-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm transition-[top] duration-300 ease-in-out"
+      className="gap-1.5 px-5 py-3 sm:px-6"
+      wrapperClassName="sticky z-20 -mx-5 sm:-mx-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm transition-[top] duration-300 ease-in-out"
       wrapperStyle={{ top: navHidden ? 0 : "var(--nav-height)" }}
       fadeBg="from-white dark:from-zinc-950"
     >
