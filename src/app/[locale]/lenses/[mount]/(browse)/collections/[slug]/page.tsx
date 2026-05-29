@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Flag } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { COLLECTIONS, getCollectionStats, getRelatedCollectionsWithStats } from "@/lib/collections";
 import { getLensesByMount } from "@/lib/lens";
 import type { Mount } from "@/lib/types";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
-import { ACTION_ESCAPE_CLS } from "@/lib/ui-tokens";
+import { ACTION_ESCAPE_CLS, UTILITY_BTN_CLS } from "@/lib/ui-tokens";
 import CollectionLensGrid from "@/components/CollectionLensGrid";
 import RelatedCollectionCard from "@/components/RelatedCollectionCard";
 import BackToTopButton from "@/components/BackToTopButton";
+import { ShareButton } from "@/components/share/ShareButton";
 import Breadcrumb from "@/components/Breadcrumb";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 
@@ -84,7 +85,7 @@ export default async function CollectionPage({
     <>
       <main className="mx-auto max-w-6xl px-4 py-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))]">
         <header className="mb-8">
-          <div className="mb-4">
+          <div className="mb-4 flex items-center justify-between gap-3">
             <Breadcrumb
               segments={[
                 { label: tNav("lenses"), href: `/lenses/${mount}/browse` },
@@ -92,6 +93,18 @@ export default async function CollectionPage({
               ]}
               current={title}
             />
+            <div className="flex shrink-0 items-center gap-1">
+              <ShareButton
+                lenses={lenses}
+                linkOnly
+                shareText={t("shareText", { title })}
+                triggerClassName={UTILITY_BTN_CLS}
+              />
+              <FeedbackTrigger type="general" className={UTILITY_BTN_CLS}>
+                <Flag className="size-4" />
+                <span className="hidden sm:inline">{t("reportIssue")}</span>
+              </FeedbackTrigger>
+            </div>
           </div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             {title}

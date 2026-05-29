@@ -541,6 +541,8 @@
     "viewAllCollections": "View all collections",
     "breadcrumbCollections": "Collections",
     "feedbackPrompt": "Missing a lens or spot an error?",
-    "feedbackLink": "Tell me"
+    "feedbackLink": "Tell me",
+    "reportIssue": "Report an issue",
+    "shareText": "Check out the \"{title}\" lens collection on X-Glass"
   }
 }

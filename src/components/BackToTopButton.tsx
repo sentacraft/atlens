@@ -4,17 +4,15 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronUp } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Z } from "@/config/ui";
+import { Z, FAB_REVEAL_SCROLL_Y } from "@/config/ui";
 import { spring } from "@/lib/animation";
-
-const SCROLL_THRESHOLD = 400;
 
 export default function BackToTopButton() {
   const tc = useTranslations("Common");
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setShow(window.scrollY > SCROLL_THRESHOLD);
+    const onScroll = () => setShow(window.scrollY > FAB_REVEAL_SCROLL_Y);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);

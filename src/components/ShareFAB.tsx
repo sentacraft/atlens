@@ -2,12 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Z } from "@/config/ui";
+import { Z, FAB_REVEAL_SCROLL_Y } from "@/config/ui";
 import { spring } from "@/lib/animation";
 import { ShareButton } from "@/components/share/ShareButton";
 import type { Lens } from "@/lib/types";
-
-const SCROLL_THRESHOLD = 400;
 
 interface Props {
   lenses: Lens[];
@@ -19,7 +17,7 @@ export default function ShareFAB({ lenses, presetTitle, presetSubtitle }: Props)
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setShow(window.scrollY > SCROLL_THRESHOLD);
+    const onScroll = () => setShow(window.scrollY > FAB_REVEAL_SCROLL_Y);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
