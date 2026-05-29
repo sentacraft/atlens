@@ -23,6 +23,8 @@ export default function CollectionChipRail({
   allLabel,
 }: CollectionChipRailProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
   const { navHidden } = useNav();
   const railRef = useRef<HTMLElement>(null);
   const isClickScrolling = useRef(false);
@@ -42,6 +44,14 @@ export default function CollectionChipRail({
           setActiveId(null);
           return;
         }
+      }
+
+      const atBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 2;
+      if (atBottom && ids.length > 0) {
+        setActiveId(ids[ids.length - 1]);
+        return;
       }
 
       const threshold = window.innerHeight * 0.35;
@@ -90,6 +100,46 @@ export default function CollectionChipRail({
     rail.scrollBy({ left: offset, behavior: "smooth" });
   }, [activeId]);
 
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) {
+      return;
+    }
+
+    function updateOverflow() {
+      if (!rail) {
+        return;
+      }
+      setCanScrollLeft(rail.scrollLeft > 1);
+      setCanScrollRight(
+        rail.scrollLeft + rail.clientWidth < rail.scrollWidth - 1
+      );
+    }
+
+    function onWheel(e: WheelEvent) {
+      if (!rail || rail.scrollWidth <= rail.clientWidth) {
+        return;
+      }
+      if (Math.abs(e.deltaX) >= Math.abs(e.deltaY)) {
+        return;
+      }
+      e.preventDefault();
+      rail.scrollBy({ left: e.deltaY });
+    }
+
+    updateOverflow();
+    rail.addEventListener("scroll", updateOverflow, { passive: true });
+    rail.addEventListener("wheel", onWheel, { passive: false });
+    const ro = new ResizeObserver(updateOverflow);
+    ro.observe(rail);
+
+    return () => {
+      rail.removeEventListener("scroll", updateOverflow);
+      rail.removeEventListener("wheel", onWheel);
+      ro.disconnect();
+    };
+  }, []);
+
   const scrollTo = useCallback(
     (id: string | null) => {
       setActiveId(id);
@@ -119,45 +169,55 @@ export default function CollectionChipRail({
     "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900";
 
   return (
-    <nav
-      ref={railRef}
-      aria-label="Jump to section"
+    <div
+      className="sticky z-20 -mx-6 relative border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm transition-[top] duration-300 ease-in-out"
       style={{ top: navHidden ? 0 : "var(--nav-height)" }}
-      className="sticky z-20 -mx-6 flex gap-1.5 overflow-x-auto border-b border-zinc-200 bg-white/90 px-6 py-3 backdrop-blur-sm transition-[top] duration-300 ease-in-out [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden dark:border-zinc-800 dark:bg-zinc-950/90"
     >
-      <button
-        type="button"
-        data-active={activeId === null}
-        onClick={() => scrollTo(null)}
-        className={`${chipBase} ${activeId === null ? chipActive : chipIdle}`}
+      <nav
+        ref={railRef}
+        aria-label="Jump to section"
+        className="flex gap-1.5 overflow-x-auto px-6 py-3 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
       >
-        {allLabel}
-        <span
-          className={`font-mono text-[10px] ${activeId === null ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
+        <button
+          type="button"
+          data-active={activeId === null}
+          onClick={() => scrollTo(null)}
+          className={`${chipBase} ${activeId === null ? chipActive : chipIdle}`}
         >
-          {totalCount}
-        </span>
-      </button>
-
-      {sections.map((s) => {
-        const isActive = activeId === s.id;
-        return (
-          <button
-            key={s.id}
-            type="button"
-            data-active={isActive}
-            onClick={() => scrollTo(s.id)}
-            className={`${chipBase} ${isActive ? chipActive : chipIdle}`}
+          {allLabel}
+          <span
+            className={`font-mono text-[10px] ${activeId === null ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
           >
-            {s.label}
-            <span
-              className={`font-mono text-[10px] ${isActive ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
+            {totalCount}
+          </span>
+        </button>
+
+        {sections.map((s) => {
+          const isActive = activeId === s.id;
+          return (
+            <button
+              key={s.id}
+              type="button"
+              data-active={isActive}
+              onClick={() => scrollTo(s.id)}
+              className={`${chipBase} ${isActive ? chipActive : chipIdle}`}
             >
-              {s.count}
-            </span>
-          </button>
-        );
-      })}
-    </nav>
+              {s.label}
+              <span
+                className={`font-mono text-[10px] ${isActive ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
+              >
+                {s.count}
+              </span>
+            </button>
+          );
+        })}
+      </nav>
+      {canScrollLeft && (
+        <div className="absolute left-0 top-0 bottom-0 w-12 pointer-events-none bg-gradient-to-r from-white dark:from-zinc-950" />
+      )}
+      {canScrollRight && (
+        <div className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none bg-gradient-to-l from-white dark:from-zinc-950" />
+      )}
+    </div>
   );
 }
