@@ -14,6 +14,7 @@ import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import * as fmt from "@/lib/lens.format";
 import { Button } from "@/components/ui/button";
+import LensCardPrice from "./LensCardPrice";
 
 interface Props {
   lens: Lens;
@@ -147,23 +148,29 @@ export default memo(function LensCard({
             ))}
           </div>
 
-          {/* Mobile: single-row dl */}
-          <dl className="mt-auto flex items-baseline justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400 sm:hidden">
-            <div className="min-w-0 truncate">
-              {equivDisplay} {t("equivSuffix")}
-            </div>
-            <div className="shrink-0">{weightDisplay}</div>
-          </dl>
+          {/* Price + specs, pinned to the bottom of the body. Price is the
+              primary signal on its own line; specs sit below a divider. */}
+          <div className="mt-auto flex flex-col gap-2 sm:gap-2.5">
+            <LensCardPrice lens={lens} />
 
-          {/* Desktop: 2×2 data grid */}
-          <dl className="mt-auto hidden sm:grid sm:grid-cols-2 sm:gap-x-3 text-xs text-zinc-600 dark:text-zinc-400">
-            <div className="truncate">MFD {mfdDisplay}</div>
-            <div className="text-right">⌀{filterDisplay}</div>
-            <div className="min-w-0 truncate">
-              {equivDisplay} {t("equivSuffix")}
-            </div>
-            <div className="text-right">{weightDisplay}</div>
-          </dl>
+            {/* Mobile: single-row dl */}
+            <dl className="flex items-baseline justify-between gap-2 border-t border-zinc-100 pt-2 text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400 sm:hidden">
+              <div className="min-w-0 truncate">
+                {equivDisplay} {t("equivSuffix")}
+              </div>
+              <div className="shrink-0">{weightDisplay}</div>
+            </dl>
+
+            {/* Desktop: 2×2 data grid */}
+            <dl className="hidden border-t border-zinc-100 pt-2.5 text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400 sm:grid sm:grid-cols-2 sm:gap-x-3">
+              <div className="truncate">MFD {mfdDisplay}</div>
+              <div className="text-right">⌀{filterDisplay}</div>
+              <div className="min-w-0 truncate">
+                {equivDisplay} {t("equivSuffix")}
+              </div>
+              <div className="text-right">{weightDisplay}</div>
+            </dl>
+          </div>
         </div>
       </Link>
 
