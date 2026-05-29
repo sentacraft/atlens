@@ -78,6 +78,9 @@ export default function CollectionChipRail({
     }
     const railRect = rail.getBoundingClientRect();
     const chipRect = active.getBoundingClientRect();
+    if (chipRect.left >= railRect.left && chipRect.right <= railRect.right) {
+      return;
+    }
     const offset =
       chipRect.left - railRect.left - (railRect.width - chipRect.width) / 2;
     rail.scrollBy({ left: offset, behavior: "smooth" });
