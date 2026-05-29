@@ -97,7 +97,7 @@ export default async function CollectionsIndexPage({
           for SEO (mirroring the browse page); the visible header is a
           one-line summary the tab label can't convey — collection and lens
           counts — plus a short categorization subtitle. */}
-      <header id="collections-top" className="flex flex-col gap-2 pb-6">
+      <header id="collections-top" className="flex flex-col gap-4 pb-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <LensSectionNav />
         </div>
