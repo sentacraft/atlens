@@ -14,6 +14,7 @@ import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useNav } from "@/context/NavContext";
 import { usePwa } from "@/lib/usePwa";
+import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import MountSwitcher from "@/components/MountSwitcher";
 import FeedbackDialog from "@/components/FeedbackDialog";
@@ -31,6 +32,16 @@ export default function Nav() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
+
+  // Both nav entries (desktop link + mobile menu item) open one Nav-level
+  // dialog rather than going through FeedbackTrigger: the mobile menu unmounts
+  // on select, which would tear down a trigger-owned dialog before it opens.
+  // Route both through this one handler so they still fire the same
+  // feedback_open event FeedbackTrigger does — no tracking gap.
+  function openFeedback() {
+    track("feedback_open", { feedback_type: "general" });
+    setFeedbackOpen(true);
+  }
 
   useEffect(() => {
     if (isPwa) {
@@ -152,7 +163,7 @@ export default function Nav() {
           )}
           <button
             type="button"
-            onClick={() => setFeedbackOpen(true)}
+            onClick={openFeedback}
             className={cn(linkCls(false), "hidden sm:inline")}
           >
             {t("feedback")}
@@ -195,7 +206,7 @@ export default function Nav() {
                     </Menu.LinkItem>
                   )}
                   <Menu.Item
-                    onSelect={() => setFeedbackOpen(true)}
+                    onClick={openFeedback}
                     className={mobileLinkCls(false)}
                   >
                     <Flag className="h-4 w-4 shrink-0" />
