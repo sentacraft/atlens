@@ -115,6 +115,28 @@ const lensBaseShape = {
   pricing: z.strictObject({
     cn: pricingMarketSchema.optional(),
     global: pricingMarketSchema.optional(),
+  }).superRefine((value, ctx) => {
+    // Each market carries its own currency: cn → CNY, global → USD. The
+    // price filters compare raw amounts against currency-specific
+    // thresholds and trust this pairing, so enforce it at the data layer.
+    const requireCurrency = (
+      market: "cn" | "global",
+      slot: "new" | "used",
+      entry: { currency: string } | undefined,
+      currency: "CNY" | "USD",
+    ) => {
+      if (entry && entry.currency !== currency) {
+        ctx.addIssue({
+          code: "custom",
+          message: `pricing.${market}.${slot} must use ${currency}, got ${entry.currency}`,
+          path: [market, slot, "currency"],
+        });
+      }
+    };
+    requireCurrency("cn", "new", value.cn?.new, "CNY");
+    requireCurrency("cn", "used", value.cn?.used, "CNY");
+    requireCurrency("global", "new", value.global?.new, "USD");
+    requireCurrency("global", "used", value.global?.used, "USD");
   }).optional(),
   purchaseChannels: z.array(z.strictObject({
     channel: z.enum(['official', 'ebay', 'bhphoto']),
