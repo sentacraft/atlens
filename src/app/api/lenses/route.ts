@@ -7,14 +7,12 @@ import {
 } from "@/lib/lens";
 import { deriveSpecialty } from "@/lib/lens-specialty";
 import { parseFilters } from "@/lib/filter-params";
-import { urlSegmentToMount, type MountSegment } from "@/lib/mount";
+import { urlSegmentToMount } from "@/lib/mount";
 import { OPTICAL_TRAITS, type OpticalTrait } from "@/lib/types";
 import { routing } from "@/i18n/routing";
 import { createRateLimiter, RATE_LIMITED_RESPONSE } from "@/lib/rate-limit";
 
 const checkRateLimit = createRateLimiter({ windowMs: 60_000, max: 120 });
-
-const VALID_MOUNTS: readonly string[] = ["x", "gfx"];
 
 function computeAvailableOpticalTraits(lenses: { isCine?: boolean; opticalTraits?: OpticalTrait[] }[]): OpticalTrait[] {
   const present = new Set(
@@ -33,7 +31,8 @@ export function GET(req: Request) {
   const mountParam = searchParams.get("mount");
   const locale = searchParams.get("locale");
 
-  if (!mountParam || !VALID_MOUNTS.includes(mountParam)) {
+  const mount = urlSegmentToMount(mountParam);
+  if (!mount) {
     return NextResponse.json(
       { error: "invalid or missing 'mount' param (expected 'x' or 'gfx')" },
       { status: 400 },
@@ -46,7 +45,6 @@ export function GET(req: Request) {
     );
   }
 
-  const mount = urlSegmentToMount(mountParam as MountSegment)!;
   const allLenses = getLensesByMount(mount, locale);
 
   const filters = parseFilters(searchParams);

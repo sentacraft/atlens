@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useEffectiveMount } from "@/hooks/useMountParam";
-import { mountToUrlSegment } from "@/lib/mount";
+import { mountToUrlSegment, mountHasCollections } from "@/lib/mount";
 import { cn } from "@/lib/utils";
 
 /**
@@ -16,13 +16,19 @@ import { cn } from "@/lib/utils";
 export default function LensSectionNav() {
   const t = useTranslations("Nav");
   const pathname = usePathname();
-  const seg = mountToUrlSegment(useEffectiveMount());
+  const mount = useEffectiveMount();
+  const seg = mountToUrlSegment(mount);
   const active = pathname.includes("/collections") ? "collections" : "browse";
 
+  // Collections is an X-only view for now; mounts without it (GFX) show just
+  // the lens list and never surface a tab that would dead-end. mountHasCollections
+  // is the single switch that re-enables this when GFX collections ship.
   const tabs = [
     { key: "browse", label: t("allLenses"), href: `/lenses/${seg}/browse` },
-    { key: "collections", label: t("collections"), href: `/lenses/${seg}/collections` },
-  ] as const;
+    ...(mountHasCollections(mount)
+      ? [{ key: "collections", label: t("collections"), href: `/lenses/${seg}/collections` }]
+      : []),
+  ];
 
   return (
     <nav

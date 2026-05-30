@@ -528,7 +528,7 @@ describe("filterLenses", () => {
 // getFocalCategoriesOf
 // ---------------------------------------------------------------------------
 function newPrime(fl: number) {
-  return { focalLengthMin: fl, focalLengthMax: fl };
+  return { focalLengthMin: fl, focalLengthMax: fl, mount: "X" as const };
 }
 
 describe("getFocalCategoriesOf", () => {
@@ -557,6 +557,7 @@ describe("getFocalCategoriesOf", () => {
     const cats = getFocalCategoriesOf({
       focalLengthMin: 18,
       focalLengthMax: 55,
+      mount: "X",
     });
     expect(cats).toEqual(["wide", "standard", "mediumTele"]);
   });
@@ -566,6 +567,7 @@ describe("getFocalCategoriesOf", () => {
     const cats = getFocalCategoriesOf({
       focalLengthMin: 16,
       focalLengthMax: 300,
+      mount: "X",
     });
     expect(cats).toEqual([
       "wide",
@@ -580,6 +582,7 @@ describe("getFocalCategoriesOf", () => {
     const cats = getFocalCategoriesOf({
       focalLengthMin: 8,
       focalLengthMax: 16,
+      mount: "X",
     });
     expect(cats).toEqual(["ultrawide", "wide"]);
   });
@@ -589,6 +592,7 @@ describe("getFocalCategoriesOf", () => {
     const cats = getFocalCategoriesOf({
       focalLengthMin: 50,
       focalLengthMax: 140,
+      mount: "X",
     });
     expect(cats).toEqual(["mediumTele", "superTele"]);
   });

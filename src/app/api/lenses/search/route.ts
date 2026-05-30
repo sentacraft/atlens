@@ -1,25 +1,24 @@
 import { NextResponse } from "next/server";
 import { getLensesByMount } from "@/lib/lens";
 import { buildLensSearchIndex, searchLensIndex, type LensSearchIndex } from "@/lib/lens-search";
-import { urlSegmentToMount, type MountSegment } from "@/lib/mount";
+import { urlSegmentToMount } from "@/lib/mount";
+import type { Mount } from "@/lib/types";
 import { routing } from "@/i18n/routing";
 import { createRateLimiter, RATE_LIMITED_RESPONSE } from "@/lib/rate-limit";
 
 const checkRateLimit = createRateLimiter({ windowMs: 60_000, max: 120 });
 
-const VALID_MOUNTS: readonly string[] = ["x", "gfx"];
 const MAX_QUERY_LENGTH = 200;
 const DEFAULT_LIMIT = 8;
 const MAX_LIMIT = 30;
 
 const indexCache = new Map<string, LensSearchIndex>();
 
-function getCachedIndex(mount: string, locale: string): LensSearchIndex {
+function getCachedIndex(mount: Mount, locale: string): LensSearchIndex {
   const key = `${mount}:${locale}`;
   let index = indexCache.get(key);
   if (!index) {
-    const resolvedMount = urlSegmentToMount(mount as MountSegment)!;
-    index = buildLensSearchIndex(getLensesByMount(resolvedMount, locale));
+    index = buildLensSearchIndex(getLensesByMount(mount, locale));
     indexCache.set(key, index);
   }
   return index;
@@ -36,7 +35,8 @@ export function GET(req: Request) {
   const locale = searchParams.get("locale");
   const query = searchParams.get("q");
 
-  if (!mountParam || !VALID_MOUNTS.includes(mountParam)) {
+  const mount = urlSegmentToMount(mountParam);
+  if (!mount) {
     return NextResponse.json(
       { error: "invalid or missing 'mount' param (expected 'x' or 'gfx')" },
       { status: 400 },
@@ -66,7 +66,7 @@ export function GET(req: Request) {
     ? Math.max(1, Math.min(MAX_LIMIT, parseInt(limitParam, 10) || DEFAULT_LIMIT))
     : DEFAULT_LIMIT;
 
-  const index = getCachedIndex(mountParam, locale);
+  const index = getCachedIndex(mount, locale);
   const results = searchLensIndex(index, query.trim(), limit);
 
   return NextResponse.json(
