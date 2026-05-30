@@ -1,11 +1,14 @@
 import type { Lens, PurchaseChannelType } from "@/lib/types";
 import { getChannelPriority } from "@/lib/purchase-channel-priority";
 
-const AMAZON_TAG = "xglass0a-20";
 const EPN_CAMPAIGN_ID = "5339154376";
 const EPN_TOOL_ID = "10001";
 
-const DOMAIN_AFFILIATES: Record<string, string> = {
+// Affiliate query param to append to a product URL, keyed by hostname (no www).
+// Independent of channel — any purchase URL whose host is here gets its param.
+// Amazon (?tag) and the GoAffPro DTC stores (?ref) live in one table.
+const AFFILIATE_PARAMS: Record<string, string> = {
+  "amazon.com": "tag=xglass0a-20",
   "7artisans.store": "ref=omwzyqkn",
   "ttartisan.store": "ref=idncwfkb",
   "viltrox.com": "ref=owbtcyuk",
@@ -89,20 +92,20 @@ function appendQuery(url: string, param: string): string {
   return `${url}${sep}${param}`;
 }
 
-// Official DTC store URLs get an affiliate ref appended when the store's domain
-// has one registered; otherwise they pass through (still a valid buy link).
-function buildOfficialUrl(url: string): { url: string; isAffiliate: boolean } {
+// Append the affiliate param for a product URL's host, if registered. Channel-
+// agnostic: official (?ref) and amazon (?tag) both go through here.
+function applyAffiliate(url: string): { url: string; isAffiliate: boolean } {
   let hostname: string;
   try {
     hostname = new URL(url).hostname.replace(/^www\./, "");
   } catch {
     return { url, isAffiliate: false };
   }
-  const ref = DOMAIN_AFFILIATES[hostname];
-  if (!ref) {
+  const param = AFFILIATE_PARAMS[hostname];
+  if (!param) {
     return { url, isAffiliate: false };
   }
-  return { url: appendQuery(url, ref), isAffiliate: true };
+  return { url: appendQuery(url, param), isAffiliate: true };
 }
 
 export function isPurchaseLocale(locale: string): boolean {
@@ -128,8 +131,8 @@ export function buildPurchaseLinks(
   // dedup).
   const urlByChannel = new Map<string, string>();
   for (const entry of newEntries) {
-    if (entry.channel && entry.url && !urlByChannel.has(entry.channel)) {
-      urlByChannel.set(entry.channel, entry.url);
+    if (entry.purchasableChannel && entry.url && !urlByChannel.has(entry.purchasableChannel)) {
+      urlByChannel.set(entry.purchasableChannel, entry.url);
     }
   }
 
@@ -137,27 +140,16 @@ export function buildPurchaseLinks(
 
   for (const channel of getChannelPriority(lens.brand)) {
     switch (channel) {
-      case "official": {
-        const url = urlByChannel.get("official");
-        if (url) {
-          const official = buildOfficialUrl(url);
-          links.push({
-            channel: "official",
-            label: CHANNEL_LABELS.official,
-            url: official.url,
-            isAffiliate: official.isAffiliate,
-          });
-        }
-        break;
-      }
+      case "official":
       case "amazon": {
-        const url = urlByChannel.get("amazon");
+        const url = urlByChannel.get(channel);
         if (url) {
+          const aff = applyAffiliate(url);
           links.push({
-            channel: "amazon",
-            label: CHANNEL_LABELS.amazon,
-            url: appendQuery(url, `tag=${AMAZON_TAG}`),
-            isAffiliate: true,
+            channel,
+            label: CHANNEL_LABELS[channel],
+            url: aff.url,
+            isAffiliate: aff.isAffiliate,
           });
         }
         break;

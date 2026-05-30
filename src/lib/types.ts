@@ -275,9 +275,10 @@ export interface LensPriceEntry {
   currency?: "CNY" | "USD";
   source: string;
   url?: string;
-  /** Data-driven purchase channels (price-source storefronts). ebay/bhphoto
-   *  are search-driven and never appear here. */
-  channel?: "official" | "amazon" | "jd" | "tmall";
+  /** When present, this source is a buyable purchase channel of the given
+   *  kind (its `url` becomes a purchase link). Absent = price-only source
+   *  (e.g. a brand info page). ebay/bhphoto are search-driven and never here. */
+  purchasableChannel?: "official" | "amazon" | "jd" | "tmall";
   /** ISO date YYYY-MM-DD when sampled. */
   sampledAt: string;
 }

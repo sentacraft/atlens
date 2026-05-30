@@ -32,7 +32,7 @@ const lensPriceEntrySchema = z.strictObject({
   currency: z.enum(["CNY", "USD"]).optional(),
   source: z.string().min(1),
   url: z.url().optional(),
-  channel: z.enum(["official", "amazon", "jd", "tmall"]).optional(),
+  purchasableChannel: z.enum(["official", "amazon", "jd", "tmall"]).optional(),
   sampledAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 }).refine((e) => e.price === undefined || e.currency !== undefined, {
   message: "currency is required when price is present",

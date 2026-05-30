@@ -19,6 +19,16 @@ function isPriced(e: LensPriceEntry): e is PricedEntry {
   return e.price !== undefined && e.currency !== undefined;
 }
 
+/**
+ * The displayed price for a market's `new` array: the first priced source.
+ * The array is priority-ordered (publish sorts by storefront order), so this
+ * is the most-preferred source carrying a price. Single source of truth for
+ * "which new price do we show" — shared by pickPriceEntry and collections.
+ */
+export function pickNewEntry(entries: LensPriceEntry[] | undefined): PricedEntry | undefined {
+  return entries?.find(isPriced);
+}
+
 // Translator is loosely typed so callers can pass next-intl's `t` function from
 // either useTranslations (client) or getTranslations (server) without coupling
 // this module to next-intl. `raw(key)` returns the unprocessed message string
@@ -45,8 +55,7 @@ export function pickPriceEntry(
 ): PriceSelection | null {
   const market: Market = locale === "zh" ? "cn" : "global";
   const bucket = pricing?.[market];
-  // new is a priority-ordered array; pick the first source that has a price.
-  const newEntry = bucket?.new?.find(isPriced);
+  const newEntry = pickNewEntry(bucket?.new);
   if (newEntry) {
     return { entry: newEntry, market, condition: "new" };
   }
