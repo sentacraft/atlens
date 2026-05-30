@@ -213,10 +213,12 @@ describe("price collections", () => {
     const enLenses = allLenses.filter((l) => col.filter(l, "en"));
     const zhLenses = allLenses.filter((l) => col.filter(l, "zh"));
     for (const l of enLenses) {
-      expect(l.pricing?.global?.new?.price).toBeLessThan(200);
+      const p = l.pricing?.global?.new?.find((e) => e.price != null)?.price;
+      expect(p).toBeLessThan(200);
     }
     for (const l of zhLenses) {
-      expect(l.pricing?.cn?.new?.price).toBeLessThan(1000);
+      const p = l.pricing?.cn?.new?.find((e) => e.price != null)?.price;
+      expect(p).toBeLessThan(1000);
     }
   });
 });

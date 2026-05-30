@@ -1,5 +1,6 @@
 import collectionsData from "../data/collections.json";
 import { isZoom, getLensesByMount } from "./lens";
+import { pickNewEntry } from "./lens-pricing";
 import type { Mount, Lens } from "./types";
 
 type LensFilter = (lens: Lens, locale: string) => boolean;
@@ -100,19 +101,19 @@ const FILTERS: Record<string, LensFilter> = {
   // --- Price ---
   "under-200": (lens, locale) => {
     if (locale === "zh") {
-      const p = lens.pricing?.cn?.new?.price;
+      const p = pickNewEntry(lens.pricing?.cn?.new)?.price;
       return xPhoto(lens) && p != null && p < 1000;
     }
-    const p = lens.pricing?.global?.new?.price;
+    const p = pickNewEntry(lens.pricing?.global?.new)?.price;
     return xPhoto(lens) && p != null && p < 200;
   },
 
   "under-400": (lens, locale) => {
     if (locale === "zh") {
-      const p = lens.pricing?.cn?.new?.price;
+      const p = pickNewEntry(lens.pricing?.cn?.new)?.price;
       return xPhoto(lens) && p != null && p < 2000;
     }
-    const p = lens.pricing?.global?.new?.price;
+    const p = pickNewEntry(lens.pricing?.global?.new)?.price;
     return xPhoto(lens) && p != null && p < 400;
   },
 
