@@ -115,6 +115,38 @@ const lensBaseShape = {
   pricing: z.strictObject({
     cn: pricingMarketSchema.optional(),
     global: pricingMarketSchema.optional(),
+  }).superRefine((value, ctx) => {
+    // Market → currency pairing (cn → CNY, global → USD) is enforced here at
+    // the validation layer on purpose, rather than baked into the schema/type.
+    // The schema deliberately keeps `currency` as the open CNY | USD union for
+    // both markets so it stays flexible: if a locale ever legitimately carries
+    // a different currency, we relax this single guard and handle conversion at
+    // presentation time — no schema or type migration needed. For now, one
+    // currency per market is sufficient. Upstream, the pipeline scripts and the
+    // data-collection agent already follow this rule; this guard is the runtime
+    // backstop that fails loudly if a row ever slips through, since the price
+    // filters compare raw amounts against currency-specific thresholds and
+    // trust this pairing. A type-level constraint cannot replace it anyway:
+    // the data is JSON validated at runtime and TS types are erased, so
+    // external data needs a runtime check regardless.
+    const requireCurrency = (
+      market: "cn" | "global",
+      slot: "new" | "used",
+      entry: { currency: string } | undefined,
+      currency: "CNY" | "USD",
+    ) => {
+      if (entry && entry.currency !== currency) {
+        ctx.addIssue({
+          code: "custom",
+          message: `pricing.${market}.${slot} must use ${currency}, got ${entry.currency}`,
+          path: [market, slot, "currency"],
+        });
+      }
+    };
+    requireCurrency("cn", "new", value.cn?.new, "CNY");
+    requireCurrency("cn", "used", value.cn?.used, "CNY");
+    requireCurrency("global", "new", value.global?.new, "USD");
+    requireCurrency("global", "used", value.global?.used, "USD");
   }).optional(),
   purchaseChannels: z.array(z.strictObject({
     channel: z.enum(['official', 'ebay', 'bhphoto']),
