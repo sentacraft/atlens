@@ -2,25 +2,36 @@ import type { MetadataRoute } from "next";
 import { SITE } from "@/config/site";
 import { routing } from "@/i18n/routing";
 import { COLLECTIONS } from "@/lib/collections";
+import { MOUNTS, mountToUrlSegment, mountHasCollections } from "@/lib/mount";
+import type { Mount } from "@/lib/types";
 import xLensesData from "@/data/lenses.json";
 import gfxLensesData from "@/data/lenses-gfx.json";
 
 const LOCALES = routing.locales;
+
+// Lens catalogs keyed by mount, so the per-mount loops below stay data-driven
+// rather than hardcoding one branch per mount.
+const LENS_DATA: Record<Mount, { id: string }[]> = {
+  X: xLensesData as { id: string }[],
+  G: gfxLensesData as { id: string }[],
+};
 
 function url(path: string): string {
   return `${SITE.url}${path}`;
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPaths = [
-    "/lenses/x/browse",
-    "/lenses/x/compare",
-    "/lenses/gfx/browse",
-    "/lenses/gfx/compare",
-    "/lenses/x/collections",
-    "/about",
-    "/get",
-  ];
+  // Per-mount index paths: browse + compare always, collections only where the
+  // mount actually has them (gated by the same flag as the routes/tab).
+  const mountPaths = MOUNTS.flatMap((mount) => {
+    const seg = mountToUrlSegment(mount);
+    const paths = [`/lenses/${seg}/browse`, `/lenses/${seg}/compare`];
+    if (mountHasCollections(mount)) {
+      paths.push(`/lenses/${seg}/collections`);
+    }
+    return paths;
+  });
+  const staticPaths = [...mountPaths, "/about", "/get"];
 
   const staticEntries: MetadataRoute.Sitemap = LOCALES.flatMap((locale) => [
     {
@@ -35,32 +46,29 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   ]);
 
-  const xLensEntries: MetadataRoute.Sitemap = (xLensesData as { id: string }[]).flatMap(
-    (lens) =>
+  const lensEntries: MetadataRoute.Sitemap = MOUNTS.flatMap((mount) => {
+    const seg = mountToUrlSegment(mount);
+    return LENS_DATA[mount].flatMap((lens) =>
       LOCALES.map((locale) => ({
-        url: url(`/${locale}/lenses/x/${lens.id}`),
+        url: url(`/${locale}/lenses/${seg}/${lens.id}`),
         changeFrequency: "monthly" as const,
         priority: 0.6,
       }))
+    );
+  });
+
+  const collectionEntries: MetadataRoute.Sitemap = MOUNTS.filter(mountHasCollections).flatMap(
+    (mount) => {
+      const seg = mountToUrlSegment(mount);
+      return Object.keys(COLLECTIONS).flatMap((slug) =>
+        LOCALES.map((locale) => ({
+          url: url(`/${locale}/lenses/${seg}/collections/${slug}`),
+          changeFrequency: "weekly" as const,
+          priority: 0.7,
+        }))
+      );
+    }
   );
 
-  const gfxLensEntries: MetadataRoute.Sitemap = (gfxLensesData as { id: string }[]).flatMap(
-    (lens) =>
-      LOCALES.map((locale) => ({
-        url: url(`/${locale}/lenses/gfx/${lens.id}`),
-        changeFrequency: "monthly" as const,
-        priority: 0.6,
-      }))
-  );
-
-  const collectionEntries: MetadataRoute.Sitemap = Object.keys(COLLECTIONS).flatMap(
-    (slug) =>
-      LOCALES.map((locale) => ({
-        url: url(`/${locale}/lenses/x/collections/${slug}`),
-        changeFrequency: "weekly" as const,
-        priority: 0.7,
-      }))
-  );
-
-  return [...staticEntries, ...collectionEntries, ...xLensEntries, ...gfxLensEntries];
+  return [...staticEntries, ...collectionEntries, ...lensEntries];
 }

@@ -2,7 +2,12 @@ import type { Mount } from "@/lib/types";
 
 export type MountSegment = "x" | "gfx";
 
-export function urlSegmentToMount(seg: string | undefined): Mount | null {
+// Canonical list of all mounts, in display order. The single source to iterate
+// over when a surface needs to enumerate mounts (sitemap, param validation), so
+// adding a mount is a one-line change here rather than a hunt across files.
+export const MOUNTS: readonly Mount[] = ["X", "G"];
+
+export function urlSegmentToMount(seg: string | null | undefined): Mount | null {
   if (seg === "x") {
     return "X";
   }
@@ -14,6 +19,20 @@ export function urlSegmentToMount(seg: string | undefined): Mount | null {
 
 export function mountToUrlSegment(mount: Mount): MountSegment {
   return mount === "X" ? "x" : "gfx";
+}
+
+// Per-mount feature availability. Collections exist only for X today: the
+// collection filters in lib/collections.ts match X-mount lenses. When GFX
+// collections are built (filters made mount-aware), flip `collections` to true
+// here and the section tab, routes, and sitemap all light up together — no
+// scattered mount checks to hunt down.
+const MOUNT_CAPABILITIES: Record<Mount, { collections: boolean }> = {
+  X: { collections: true },
+  G: { collections: false },
+};
+
+export function mountHasCollections(mount: Mount): boolean {
+  return MOUNT_CAPABILITIES[mount].collections;
 }
 
 /**
