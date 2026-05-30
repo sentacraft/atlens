@@ -39,7 +39,7 @@ export function PriceSection({ lens }: Props) {
   return (
     <div className="flex flex-col gap-1">
       {/* Row 1: Price + approx */}
-      <span className="text-xl font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
+      <span className="text-xl font-semibold tabular-nums text-zinc-700 dark:text-zinc-200">
         {t.rich("priceApprox", {
           price: priceDisplay,
           approx: (chunks) => (
