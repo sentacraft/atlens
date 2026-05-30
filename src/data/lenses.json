@@ -48,7 +48,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/4mm-f-2-8-aps-c-lens-for-e-eos-m-fx-m43",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -131,13 +131,13 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/mf-6mm-f-2-0-aps-c-lens-for-sony-e-fuji-x-eos-r-nikon-z-panasonic-olympus-m43",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0G1LSZ9WL",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -227,7 +227,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/7-5mm-f2-8-mk-ii",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -314,13 +314,13 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/10mm-f-3-5-aps-c-lens-for-sony-e-fuji-x-nikon-z-panasonic-olympus-m43",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0FPG43R7L",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -400,7 +400,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/10",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -482,13 +482,13 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/12mm-f-2-8-aps-c-lens-for-e-eos-m-fx-m43-z",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0BGRFCXVF",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -570,7 +570,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/10",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -650,13 +650,13 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/18mm-f-6-3-mark-ii-aps-c-lens-for-sony-e-fujifilm-x-nikon-z",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B08LPP5GWD",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -742,7 +742,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B07D9ZV3Z7",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ],
@@ -828,7 +828,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/25mm-f0-95",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -926,7 +926,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/10",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -1008,7 +1008,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/35mm-f1-2",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -1089,13 +1089,13 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/7artisans-35mm-f1-4-apsc",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B099DN2CKF",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -1176,7 +1176,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/10",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -1260,7 +1260,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/50mm-f1-4-aps-c-tilt-lens-for-e-fx-m43",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -1339,7 +1339,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/50mm-f1-8",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -1418,7 +1418,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/10",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -1493,7 +1493,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/55mm-f1-4",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -1573,13 +1573,13 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/60mm-f2-8",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B09B9JWQ7N",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -1658,7 +1658,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/10",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -1734,13 +1734,13 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/af-10mm-f2-8-aps-c-lens-for-e-fx-z",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0FSKDDLQ6",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -1828,7 +1828,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/af-25-35-50mm-f1-8-aps-c-lens-for-e-fx-z",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -1907,7 +1907,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/af-27mm-f2-8-aps-c-lens-for-fx",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -1981,13 +1981,13 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/af-35mm-f1-4",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0F8V5LSGC",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -2062,13 +2062,13 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/af-25-35-50mm-f1-8-aps-c-lens-for-e-fx-z",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0GGGSTXM3",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -2147,13 +2147,13 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/af-25-35-50mm-f1-8-aps-c-lens-for-e-fx-z",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0GGG86QCP",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -2233,7 +2233,7 @@
             "currency": "USD",
             "source": "7artisans.store",
             "url": "https://7artisans.store/products/12mm-t2-9-aps-c-mf-cine-lens-for-fujifilm-x-sony-e-m43-canon-rf-nikon-z-sigma-l-panasonic-l-leica-l-cl-tl",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -2316,7 +2316,7 @@
             "currency": "USD",
             "source": "brightinstar.com",
             "url": "https://brightinstar.com/products/af50mm-f1-4-aps-c-autofocus-lens-large-aperture-portrait-fixed-focus-lens-suitable-fit-for-fuji-x-mount",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -2394,13 +2394,13 @@
             "currency": "USD",
             "source": "brightinstar.com",
             "url": "https://brightinstar.com/products/7-5mm-f2-8-aps-c-fisheye-manual-focus-lens-with-nd-filter-for-fuji-x-mount",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0C9Z95TK6",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -2490,13 +2490,13 @@
             "currency": "USD",
             "source": "brightinstar.com",
             "url": "https://brightinstar.com/products/10mm-f5-6-pro-aps-c-fisheye-lens-wide-angle-lens-for-fujifilm-xf-mount",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0FJF8VRNJ",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -2585,13 +2585,13 @@
             "currency": "USD",
             "source": "brightinstar.com",
             "url": "https://brightinstar.com/products/10mm-f5-6-aps-c-fisheye-lens-wide-angle-lens-pancake-lens-manual-fixed-focus-lens-suitable-for-fuji-x-mount",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B09PK1HVBP",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -2679,7 +2679,7 @@
             "currency": "USD",
             "source": "brightinstar.com",
             "url": "https://brightinstar.com/products/12mm-f2-0-iii-aps-c-ultra-wide-angle-big-aperture-cameras-lens-for-fuji-x-mount",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -2746,7 +2746,7 @@
             "currency": "USD",
             "source": "Amazon · Brightin Star Official Store",
             "url": "https://www.amazon.com/Brightin-Fujifilm-Aperture-Portrait-X-Pro1-3/dp/B07Z4B95KM",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-10"
           }
         ]
@@ -2880,13 +2880,13 @@
             "currency": "USD",
             "source": "brightinstar.com",
             "url": "https://brightinstar.com/products/brightin-star-35mm-f1-4-full-frame-large-aperture-manual-focus-lens-for-fuji-x-mount",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0GTDX8VC2",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -2973,7 +2973,7 @@
             "currency": "USD",
             "source": "brightinstar.com",
             "url": "https://brightinstar.com/products/35mm-f1-7-aps-c-wide-angle-manual-focus-prime-lens-for-fuji-x-mount",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -3047,7 +3047,7 @@
             "currency": "USD",
             "source": "brightinstar.com",
             "url": "https://brightinstar.com/products/35mm-f0-95-aps-c-luminous-version-portrait-star-manual-fixed-focus-lens-suitable-for-fuji-x-mount",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -3125,7 +3125,7 @@
             "currency": "USD",
             "source": "brightinstar.com",
             "url": "https://brightinstar.com/products/50mm-f1-4-iii-aps-c-manual-focus-portrait-lens-for-fujifilm-x",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -3195,7 +3195,7 @@
             "currency": "USD",
             "source": "brightinstar.com",
             "url": "https://brightinstar.com/products/50mm-f1-8-aps-c-manual-focus-lens-fit-for-fuji-x-mount",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -3270,7 +3270,7 @@
             "currency": "USD",
             "source": "brightinstar.com",
             "url": "https://brightinstar.com/products/50mm-f0-95-aps-c-night-god-portrait-star-manual-fixed-focus-lens-suitable-for-fuji-x-mount",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -3354,7 +3354,7 @@
             "currency": "USD",
             "source": "brightinstar.com",
             "url": "https://brightinstar.com/products/brightin-star-60mm-f2-8-2x-macro-aps-c-manual-focus-prime-lens-for-fuji-x-mount",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -3450,7 +3450,7 @@
             "currency": "USD",
             "source": "Amazon · Brightin Star Official Store",
             "url": "https://www.amazon.com/Brightin-XF-Mount-Mirrorless-Fit/dp/B0D3KV8TLL",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-10"
           }
         ]
@@ -3747,7 +3747,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0FWV2C6TP",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -3856,7 +3856,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B079BRLDF7",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -4033,7 +4033,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0153YQRU4",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ],
@@ -4114,7 +4114,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B08412XPWK",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -4220,7 +4220,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B016YU67L0",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -4319,7 +4319,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B00F9X8PF0",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ],
@@ -4411,7 +4411,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B07FQ83W5W",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -4511,7 +4511,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0C5Q7YSDV",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -4618,7 +4618,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B08L41GDC8",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -4713,7 +4713,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B00FPKDPF2",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ],
@@ -4795,7 +4795,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B009L1HC2I",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -4885,7 +4885,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0D3WSY8W9",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -4991,7 +4991,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0DJQ1X149",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -5104,7 +5104,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B00RSQTDMA",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -5197,7 +5197,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B07TWYSHYB",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -5295,7 +5295,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B00W6VZLFA",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -5387,7 +5387,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B07NQDKBDL",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -5503,7 +5503,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0092MD6S0",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -5594,7 +5594,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0B2HWW749",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -5692,7 +5692,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B00KZHOYSW",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -5764,7 +5764,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B006ZSNRWO",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -5845,7 +5845,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0923F7V45",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -5934,7 +5934,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B01KNXOCO8",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -6031,7 +6031,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B09DTKDNMX",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -6179,7 +6179,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0FD1P65Z3",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -6276,7 +6276,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B08TP4QYT2",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -6433,7 +6433,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0BK2P7PNK",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -6515,7 +6515,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B09DTJQSCH",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -6597,7 +6597,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B016S28I4S",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -6695,7 +6695,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B006UL00R6",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -6801,7 +6801,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B00NGFLO74",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -6903,7 +6903,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B01MS6WINK",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -6999,7 +6999,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B08GX7RYD3",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -7097,7 +7097,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B00CNZTPGA",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -7175,7 +7175,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B00NF6ZGAA",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -7269,7 +7269,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0BCR4STVP",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -7362,7 +7362,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B00HK8Z9AG",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -7451,7 +7451,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B006ZSNU4O",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -7549,7 +7549,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B08TMZ59ZW",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -7635,7 +7635,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0759GMLVP",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -7735,7 +7735,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B00XI4PAZ0",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -7832,7 +7832,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B07Z37HMXQ",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -7927,7 +7927,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0B2J6YKSH",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -8030,7 +8030,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B07FQB2T4F",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -8130,7 +8130,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0DJQ1NB2H",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -8235,7 +8235,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/laowa-4mm-f-2-8-mft/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ]
@@ -8423,7 +8423,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/laowa-8-16mm-f3-5-5-zoom-cf/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ]
@@ -8502,7 +8502,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/9mm/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ],
@@ -8591,7 +8591,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/laowa-10mm-f-4-cookie/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ],
@@ -8690,7 +8690,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/laowa-12-24mm-f-5-6-zoom-shift-cf/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ]
@@ -8776,7 +8776,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/laowa-65mm-f-2-8-2x-ultra-macro-apo/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ],
@@ -8864,7 +8864,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/laowa-argus-25mm-f-0-95-apsc-apo/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ]
@@ -8947,7 +8947,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/laowa-argus-33mm-f-0-95-cf-apo/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ],
@@ -9030,7 +9030,7 @@
             "currency": "USD",
             "source": "sg-image.com",
             "url": "https://www.sg-image.com/products/aps-c-25mm-f1-8-%E8%87%AA%E5%8A%A8%E5%AF%B9%E7%84%A6%E9%95%9C%E5%A4%B4",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -9113,7 +9113,7 @@
             "currency": "USD",
             "source": "sg-image.com",
             "url": "https://www.sg-image.com/products/af-55mm-f1-8",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -9191,7 +9191,7 @@
             "currency": "USD",
             "source": "sg-image.com",
             "url": "https://www.sg-image.com/products/mf-7-5mm-f2-8-aps-c-fisheye-lens",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -9280,7 +9280,7 @@
             "currency": "USD",
             "source": "sg-image.com",
             "url": "https://www.sg-image.com/products/mf-12mm-f2-8-aps-c-ultra-wide-lens-copy",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -9360,7 +9360,7 @@
             "currency": "USD",
             "source": "sg-image.com",
             "url": "https://www.sg-image.com/products/mf-18mm-f6-3-aps-c-ultra-slim-pancake-lens",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -9448,7 +9448,7 @@
             "currency": "USD",
             "source": "sg-image.com",
             "url": "https://www.sg-image.com/products/mf-24mm-f6-3-full-frame-ultra-slim-pancake-lens",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -9538,7 +9538,7 @@
             "currency": "USD",
             "source": "sg-image.com",
             "url": "https://www.sg-image.com/products/mf-18mm-f6-3-aps-c-ultra-slim-pancake-lens-copy",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -9622,7 +9622,7 @@
             "currency": "USD",
             "source": "sg-image.com",
             "url": "https://www.sg-image.com/products/mf-35mm-f1-2-aps-c-lens",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -9706,7 +9706,7 @@
             "currency": "USD",
             "source": "sg-image.com",
             "url": "https://www.sg-image.com/products/mf-35mm-f0-95-ultra-bright-aps-c-lens",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -9789,7 +9789,7 @@
             "currency": "USD",
             "source": "sg-image.com",
             "url": "https://www.sg-image.com/products/mf-25mm-f2-8-aps-c-lens-copy",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -9872,7 +9872,7 @@
             "currency": "USD",
             "source": "sg-image.com",
             "url": "https://www.sg-image.com/products/50mm-f1-8-mf-full-frame-lens-with-shaped-aperture",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -9970,7 +9970,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0FDH4RZN5",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -10089,7 +10089,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0CJVRTY76",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -10191,7 +10191,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0FMLCR1DR",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -10298,7 +10298,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0GQJ9TLX2",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -10425,7 +10425,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0DYNPG9NQ",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -10534,7 +10534,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B09T78KGRP",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -10652,7 +10652,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0BMD377VK",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -10752,7 +10752,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0C1VKPXP6",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -10852,7 +10852,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B09T6N7HRT",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -10953,7 +10953,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B09T78FM8M",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -11067,7 +11067,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0CH1JSJ6V",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -11182,7 +11182,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0C6R7DH31",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -11294,7 +11294,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0B3MNLZH3",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -11411,7 +11411,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B09M5D2NJC",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -11530,7 +11530,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0BJ4939R1",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -11627,7 +11627,7 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/ttartisan-cine-lens",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -11718,7 +11718,7 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/100mm-f2-8macro",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -11803,7 +11803,7 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/ttartisan-af-14mm-f3-5",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -11891,7 +11891,7 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/af-17mm-f1-8-air",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -11971,13 +11971,13 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/ttartisan-af-23mm-f1-8",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0DSBKLVM4",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -12069,13 +12069,13 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/af27",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0BKJN5C79",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -12158,13 +12158,13 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/ttartisan-af-35mm-f1-8",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0F7HCHKLG",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -12258,13 +12258,13 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/56mm",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0CYX5CN5T",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -12358,7 +12358,7 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/ttartisan-af-75mm-f2",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -12451,13 +12451,13 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/aps-c-7-5mm-f2",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0GTYF8QQB",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -12547,13 +12547,13 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/102",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0CPSQS3XN",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -12643,13 +12643,13 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/aps-c-23mm-f1-4-black",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B09ND1RSNN",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -12737,13 +12737,13 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/aps-c-25mm-f2",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0BCHX2G78",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -12825,13 +12825,13 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/aps-c-35mm-f1-4",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B08KGNXN1P",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -12917,7 +12917,7 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/aps-c-35mm-f0-95",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -13007,7 +13007,7 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/aps-c-40mm-f2-8-marco",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -13089,13 +13089,13 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/ttartisan-50mm-f1-2",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B08QYVBLC3",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -13178,7 +13178,7 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/aps-c-50mm-f0-95",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -13263,7 +13263,7 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/tilt50mm",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -13351,7 +13351,7 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/tilt-35mm-f1-4",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -13440,7 +13440,7 @@
             "currency": "USD",
             "source": "ttartisan.store",
             "url": "https://ttartisan.store/products/ts100",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -13542,13 +13542,13 @@
             "currency": "USD",
             "source": "viltrox.com",
             "url": "https://viltrox.com/products/af-9mm-f2-8-xf",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0FXMKDKLT",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -13624,13 +13624,13 @@
             "currency": "USD",
             "source": "viltrox.com",
             "url": "https://viltrox.com/products/13mm-f14-af-lens-for-fujifilm-x-mount-camera-models",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B09TF3BDNN",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -13731,13 +13731,13 @@
             "currency": "USD",
             "source": "viltrox.com",
             "url": "https://viltrox.com/products/af-15mm-f1-7-xf",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0FFMF6MRV",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -13817,7 +13817,7 @@
             "currency": "USD",
             "source": "viltrox.com",
             "url": "https://viltrox.com/products/viltrox-23mm-f14-xf-mount",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -13914,13 +13914,13 @@
             "currency": "USD",
             "source": "viltrox.com",
             "url": "https://viltrox.com/products/af-25mm-f1-7-x",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0DS58QJPD",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -13998,13 +13998,13 @@
             "currency": "USD",
             "source": "viltrox.com",
             "url": "https://viltrox.com/products/viltrox-af-27mm-f-1-2-pro-xf-mount",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0CFLCGSWH",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -14087,13 +14087,13 @@
             "currency": "USD",
             "source": "viltrox.com",
             "url": "https://viltrox.com/products/af-28mm-f4-5-x",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0DSVL8Q9V",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -14180,7 +14180,7 @@
             "currency": "USD",
             "source": "viltrox.com",
             "url": "https://viltrox.com/products/viltrox-af-33mm-f14-xf-aps-c-lens",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -14261,13 +14261,13 @@
             "currency": "USD",
             "source": "viltrox.com",
             "url": "https://viltrox.com/products/viltrox-af-35mm-f1-7-aps-c-lens-for-fujifilm-x-mount",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0DP6YY71M",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -14342,13 +14342,13 @@
             "currency": "USD",
             "source": "viltrox.com",
             "url": "https://viltrox.com/products/af-56mm-f1-2-xf",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0FLY6529Q",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -14433,7 +14433,7 @@
             "currency": "USD",
             "source": "viltrox.com",
             "url": "https://viltrox.com/products/viltrox-af-56mm-f14-x-mount-lens",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           }
         ]
@@ -14515,13 +14515,13 @@
             "currency": "USD",
             "source": "viltrox.com",
             "url": "https://viltrox.com/products/viltrox-af-56mm-f1-7-xf-z",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0CZKWLBV7",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -14596,13 +14596,13 @@
             "currency": "USD",
             "source": "viltrox.com",
             "url": "https://viltrox.com/products/75mm-f12-xf-lens",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0BQXPK27P",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]
@@ -14688,13 +14688,13 @@
             "currency": "USD",
             "source": "viltrox.com",
             "url": "https://viltrox.com/products/viltrox-85mm-f1-8-lens-of-lighter-weight-for-fuji-x-mount",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-09"
           },
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B07Q4VS1XM",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           }
         ]

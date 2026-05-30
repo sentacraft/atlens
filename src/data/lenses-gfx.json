@@ -59,7 +59,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0BCR6YBJR",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -161,7 +161,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B071R2XGWW",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -258,7 +258,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B08BQGD44P",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -343,7 +343,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0CHG2XF1Z",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -463,7 +463,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B01MR6Z8Z2",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -658,7 +658,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B09DTJ9R5T",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -767,7 +767,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B08412X7BV",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -864,7 +864,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0759FTQ4T",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -959,7 +959,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B07TWYNDQ2",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -1057,7 +1057,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0CHG23DJC",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -1153,7 +1153,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B01MS8EWXM",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -1249,7 +1249,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B08TPBNCYM",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -1354,7 +1354,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B07MWBDQN3",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -1453,7 +1453,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B071CKRCN6",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -1554,7 +1554,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0CHG2TGTD",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -1653,7 +1653,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B01MZARLEQ",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -1749,7 +1749,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B07C51T679",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -1846,7 +1846,7 @@
           {
             "source": "Amazon",
             "url": "https://www.amazon.com/dp/B0D3WJ7CKD",
-            "channel": "amazon",
+            "purchasableChannel": "amazon",
             "sampledAt": "2026-05-30"
           },
           {
@@ -1954,7 +1954,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/laowa-8-15mm-f-2-8-ff-zoom-fisheye-2/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ]
@@ -2049,7 +2049,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/laowa-17mm-f-4-zero-d-tilt-shift-shift/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ]
@@ -2134,7 +2134,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/laowa-17mm-f-4-zero-d-tilt-shift-shift/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ]
@@ -2220,7 +2220,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/the-laowa-35mm-f-2-8-zero-d-tilt-shift-0-5x-macro/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ]
@@ -2305,7 +2305,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/laowa-55mm-f-2-8-tilt-shift-1x-macro/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ]
@@ -2390,7 +2390,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/laowa-100mm-f-2-8-tilt-shift-1x-macro/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ]
@@ -2470,7 +2470,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/laowa-17mm-f-4-gfx-zero-d/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ]
@@ -2542,7 +2542,7 @@
             "currency": "USD",
             "source": "venuslens.net",
             "url": "https://www.venuslens.net/product/laowa-19mm-f-2-8-zero-d/",
-            "channel": "official",
+            "purchasableChannel": "official",
             "sampledAt": "2026-05-18"
           }
         ]
