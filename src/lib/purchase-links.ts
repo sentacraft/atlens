@@ -1,5 +1,7 @@
 import type { Lens } from "@/lib/types";
+import { sortPurchaseChannels } from "@/lib/purchase-channel-priority";
 
+const AMAZON_TAG = "xglass0a-20";
 const EPN_CAMPAIGN_ID = "5339154376";
 const EPN_TOOL_ID = "10001";
 
@@ -35,7 +37,7 @@ const EBAY_MARKETS: Record<string, EbayMarket> = {
 const EBAY_DEFAULT_MARKET = EBAY_MARKETS.US;
 
 export interface PurchaseLink {
-  channel: "official" | "ebay" | "bhphoto";
+  channel: "official" | "amazon" | "ebay" | "bhphoto";
   label: string;
   url: string;
   isAffiliate: boolean;
@@ -68,6 +70,10 @@ function buildEbayUrl(
     params.push(`customid=${encodeURIComponent(customId)}`);
   }
   return `${target}&${params.join("&")}`;
+}
+
+function buildAmazonUrl(asin: string): string {
+  return `https://www.amazon.com/dp/${asin}/?tag=${AMAZON_TAG}`;
 }
 
 function buildBhPhotoUrl(lens: Lens, locale: string): string {
@@ -108,9 +114,10 @@ export function buildPurchaseLinks(
     return [];
   }
 
+  const sorted = sortPurchaseChannels(lens.purchaseChannels, lens.brand);
   const links: PurchaseLink[] = [];
 
-  for (const ch of lens.purchaseChannels) {
+  for (const ch of sorted) {
     switch (ch.channel) {
       case "official":
         if (ch.url) {
@@ -120,6 +127,16 @@ export function buildPurchaseLinks(
             label: "Official",
             url: official.url,
             isAffiliate: official.isAffiliate,
+          });
+        }
+        break;
+      case "amazon":
+        if (ch.asin) {
+          links.push({
+            channel: "amazon",
+            label: "Amazon",
+            url: buildAmazonUrl(ch.asin),
+            isAffiliate: true,
           });
         }
         break;

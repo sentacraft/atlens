@@ -149,8 +149,9 @@ const lensBaseShape = {
     requireCurrency("global", "used", value.global?.used, "USD");
   }).optional(),
   purchaseChannels: z.array(z.strictObject({
-    channel: z.enum(['official', 'ebay', 'bhphoto']),
+    channel: z.enum(['official', 'amazon', 'ebay', 'bhphoto']),
     url: nonEmptyStringSchema.optional(),
+    asin: nonEmptyStringSchema.optional(),
   })).min(1).optional(),
   compatibleMounts: z.array(nonEmptyStringSchema).min(1).optional(),
   accessories: z.array(nonEmptyStringSchema).min(1).optional(),

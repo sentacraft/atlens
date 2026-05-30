@@ -280,8 +280,9 @@ interface LensLocaleTranslations {
 }
 
 export interface PurchaseChannel {
-  channel: 'official' | 'ebay' | 'bhphoto';
+  channel: 'official' | 'amazon' | 'ebay' | 'bhphoto';
   url?: string;
+  asin?: string;
 }
 
 /**
