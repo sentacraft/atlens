@@ -30,7 +30,15 @@ function getResolved(base: Lens[], locale: string): Lens[] {
 }
 
 export function getLensesByMount(mount: Mount, locale: string): Lens[] {
-  return getResolved(mount === "G" ? gfxLenses : xLenses, locale);
+  if (mount === "X") {
+    return getResolved(xLenses, locale);
+  }
+  if (mount === "G") {
+    return getResolved(gfxLenses, locale);
+  }
+  // Exhaustive: a non-X/G value can only arrive via an unsafe cast upstream.
+  // Throw loudly here instead of silently serving X lenses.
+  throw new Error(`getLensesByMount: unsupported mount ${JSON.stringify(mount)}`);
 }
 
 export function getAllLenses(locale: string): Lens[] {
@@ -103,9 +111,9 @@ export type FocalCategory = (typeof FOCAL_CATEGORIES)[number]["key"];
 export function getFocalCategoriesOf(lens: {
   focalLengthMin: number;
   focalLengthMax: number;
-  mount?: Mount;
+  mount: Mount;
 }): FocalCategory[] {
-  const cropFactor = CROP_FACTOR[lens.mount ?? "X"];
+  const cropFactor = CROP_FACTOR[lens.mount];
   const lensEquivMin = lens.focalLengthMin * cropFactor;
   const lensEquivMax = lens.focalLengthMax * cropFactor;
 

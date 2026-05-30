@@ -5,7 +5,7 @@ import { ArrowRight, Flag } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { COLLECTIONS, getCollectionStats, getRelatedCollectionsWithStats } from "@/lib/collections";
 import { getLensesByMount } from "@/lib/lens";
-import { urlSegmentToMount, mountSeoLabel } from "@/lib/mount";
+import { urlSegmentToMount, mountSeoLabel, mountHasCollections } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { ACTION_ESCAPE_CLS, UTILITY_BTN_CLS } from "@/lib/ui-tokens";
 import CollectionLensGrid from "@/components/CollectionLensGrid";
@@ -32,7 +32,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, mount, slug } = await params;
   const resolvedMount = urlSegmentToMount(mount);
-  if (!resolvedMount) {
+  if (!resolvedMount || !mountHasCollections(resolvedMount)) {
     return {};
   }
   const stats = getCollectionStats(slug, resolvedMount, locale);
@@ -70,7 +70,7 @@ export default async function CollectionPage({
   setRequestLocale(locale);
 
   const resolvedMount = urlSegmentToMount(mount);
-  if (!resolvedMount) {
+  if (!resolvedMount || !mountHasCollections(resolvedMount)) {
     notFound();
   }
   const collectionStats = getCollectionStats(slug, resolvedMount, locale);

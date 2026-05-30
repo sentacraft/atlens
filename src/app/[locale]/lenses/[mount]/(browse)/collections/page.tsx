@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -16,7 +17,7 @@ import {
   VALUE_SLUGS,
 } from "@/lib/collections";
 import { getLensesByMount } from "@/lib/lens";
-import type { Mount } from "@/lib/types";
+import { urlSegmentToMount, mountHasCollections } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { ACTION_PRIMARY_CLS, LENS_INDEX_SHELL_CLS } from "@/lib/ui-tokens";
 import LensSectionNav from "@/components/LensSectionNav";
@@ -34,6 +35,10 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { locale, mount } = await params;
+  const resolvedMount = urlSegmentToMount(mount);
+  if (!resolvedMount || !mountHasCollections(resolvedMount)) {
+    return {};
+  }
   const t = await getTranslations({ locale, namespace: "Collection" });
 
   const title = t("indexTitle");
@@ -72,8 +77,13 @@ export default async function CollectionsIndexPage({
   const { locale, mount } = await params;
   setRequestLocale(locale);
 
+  const resolvedMount = urlSegmentToMount(mount);
+  if (!resolvedMount || !mountHasCollections(resolvedMount)) {
+    notFound();
+  }
+
   const t = await getTranslations({ locale, namespace: "Collection" });
-  const mountLenses = getLensesByMount(mount as Mount, locale);
+  const mountLenses = getLensesByMount(resolvedMount, locale);
 
   const countFor = (slug: string) => {
     const c = COLLECTIONS[slug];
