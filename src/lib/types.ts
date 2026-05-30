@@ -279,10 +279,11 @@ interface LensLocaleTranslations {
   accessories?: string[];
 }
 
-export interface PurchaseChannel {
-  channel: 'official' | 'amazon' | 'ebay' | 'bhphoto';
-  url?: string;
-  asin?: string;
+export type PurchaseChannelType = 'official' | 'amazon' | 'ebay' | 'bhphoto';
+
+export interface Marketplace {
+  official?: string;
+  amazon?: string;
 }
 
 /**
@@ -693,7 +694,7 @@ export interface Lens {
     };
   };
 
-  purchaseChannels?: PurchaseChannel[];
+  marketplace?: Marketplace;
 
   /**
    * Mount systems this lens is available for, as stated by the manufacturer.

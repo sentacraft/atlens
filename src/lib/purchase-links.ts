@@ -1,5 +1,5 @@
-import type { Lens } from "@/lib/types";
-import { sortPurchaseChannels } from "@/lib/purchase-channel-priority";
+import type { Lens, PurchaseChannelType } from "@/lib/types";
+import { getChannelPriority } from "@/lib/purchase-channel-priority";
 
 const AMAZON_TAG = "xglass0a-20";
 const EPN_CAMPAIGN_ID = "5339154376";
@@ -36,8 +36,15 @@ const EBAY_MARKETS: Record<string, EbayMarket> = {
 
 const EBAY_DEFAULT_MARKET = EBAY_MARKETS.US;
 
+const CHANNEL_LABELS: Record<PurchaseChannelType, string> = {
+  official: "Official",
+  amazon: "Amazon",
+  ebay: "eBay",
+  bhphoto: "B&H",
+};
+
 export interface PurchaseLink {
-  channel: "official" | "amazon" | "ebay" | "bhphoto";
+  channel: PurchaseChannelType;
   label: string;
   url: string;
   isAffiliate: boolean;
@@ -48,6 +55,10 @@ function getSearchQuery(lens: Lens, locale: string): string {
     return lens.searchAliases.zh;
   }
   return lens.searchAliases.en;
+}
+
+function buildAmazonUrl(asin: string): string {
+  return `https://www.amazon.com/dp/${asin}/?tag=${AMAZON_TAG}`;
 }
 
 function buildEbayUrl(
@@ -72,15 +83,10 @@ function buildEbayUrl(
   return `${target}&${params.join("&")}`;
 }
 
-function buildAmazonUrl(asin: string): string {
-  return `https://www.amazon.com/dp/${asin}/?tag=${AMAZON_TAG}`;
-}
-
 function buildBhPhotoUrl(lens: Lens, locale: string): string {
   const query = getSearchQuery(lens, locale);
   return `https://www.bhphotovideo.com/c/search?Ntt=${encodeURIComponent(query)}`;
 }
-
 
 function getAffiliateParam(url: string): string | undefined {
   try {
@@ -110,40 +116,44 @@ export function buildPurchaseLinks(
   countryCode: string,
   customId?: string,
 ): PurchaseLink[] {
-  if (!isPurchaseLocale(locale) || !lens.purchaseChannels) {
+  const priority = getChannelPriority(lens.brand, locale);
+  if (priority.length === 0) {
     return [];
   }
 
-  const sorted = sortPurchaseChannels(lens.purchaseChannels, lens.brand);
   const links: PurchaseLink[] = [];
 
-  for (const ch of sorted) {
-    switch (ch.channel) {
-      case "official":
-        if (ch.url) {
-          const official = buildOfficialUrl(ch.url);
+  for (const channel of priority) {
+    switch (channel) {
+      case "official": {
+        const url = lens.marketplace?.official;
+        if (url) {
+          const official = buildOfficialUrl(url);
           links.push({
             channel: "official",
-            label: "Official",
+            label: CHANNEL_LABELS.official,
             url: official.url,
             isAffiliate: official.isAffiliate,
           });
         }
         break;
-      case "amazon":
-        if (ch.asin) {
+      }
+      case "amazon": {
+        const asin = lens.marketplace?.amazon;
+        if (asin) {
           links.push({
             channel: "amazon",
-            label: "Amazon",
-            url: buildAmazonUrl(ch.asin),
+            label: CHANNEL_LABELS.amazon,
+            url: buildAmazonUrl(asin),
             isAffiliate: true,
           });
         }
         break;
+      }
       case "ebay":
         links.push({
           channel: "ebay",
-          label: "eBay",
+          label: CHANNEL_LABELS.ebay,
           url: buildEbayUrl(lens, locale, countryCode, customId),
           isAffiliate: true,
         });
@@ -151,7 +161,7 @@ export function buildPurchaseLinks(
       case "bhphoto":
         links.push({
           channel: "bhphoto",
-          label: "B&H",
+          label: CHANNEL_LABELS.bhphoto,
           url: buildBhPhotoUrl(lens, locale),
           isAffiliate: false,
         });
