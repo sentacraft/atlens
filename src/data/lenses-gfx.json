@@ -44,30 +44,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 16700,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 16700,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/10060492752899.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 2399.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0BCR6YBJR",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 2399.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf20-35mmf4-r-wr-lens-600023098/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Front lens cap FLCP-82",
       "Rear lens cap RLCP-002",
@@ -142,30 +146,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 17450,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 17450,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/34145961465.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 2999.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B071R2XGWW",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 2999.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf23mmf4-gf23mmf4/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Lens cap FLCP-82",
       "Lens rear cap RLCP-002",
@@ -235,30 +243,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 11890,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 11890,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/10020018785513.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 1949.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B08BQGD44P",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 1949.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf30mmf3-5-r-wr-lens-600021771/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "filterMm": 58,
     "lensConfiguration": {
       "groups": 10,
@@ -316,30 +328,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 28900,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 28900,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/10085916730903.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 4499.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0CHG2XF1Z",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 4499.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf30mmf5-6-t-s-lens-600023617/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Front lens cap FLCP-77",
       "Rear lens cap RLCP-002",
@@ -432,30 +448,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 15500,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 15500,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/34146337216.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 2099.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B01MR6Z8Z2",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 2099.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf32-64mmf4-gf32-64mmf4/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Lens cap FLCP-77",
       "Lens rear cap RLCP-002",
@@ -533,22 +553,17 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 36500,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 36500,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/10106601817304.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Front lens cap",
       "Rear lens cap",
@@ -628,30 +643,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 6490,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 6490,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/10045648996176.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 1149.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B09DTJ9R5T",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 1149.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf35-70mmf4-5-5-6-gf35-70mmf4-5-5-6/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Lens cap FLCP-62 II",
       "Lens rear cap RLCP-002",
@@ -733,30 +752,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 15900,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 15900,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/65684722559.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 2099.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B08412X7BV",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 2099.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf45-100mmf4-gf45-100mmf4/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Lens cap FLCP-82",
       "Lens rear cap RLCP-002",
@@ -826,30 +849,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 11350,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 11350,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/34146648738.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 1949.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0759FTQ4T",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 1949.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf45mmf2-8-gf45mmf2-8/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Lens cap FLCP-62II",
       "Lens rear cap RLCP-002",
@@ -928,22 +955,23 @@
         }
       },
       "global": {
-        "new": {
-          "price": 1149.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B07TWYNDQ2",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 1149.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf50mmf3-5-gf50mmf3-5/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Front lens cap FLCP-62II",
       "Rear lens cap RLCP-002",
@@ -1014,30 +1042,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 16500,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 16500,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/10085923350658.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 2099.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0CHG23DJC",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 2099.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf55mmf1-7-r-wr-lens-600023613/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Front lens cap FLCP-77",
       "Rear lens cap RLCP-002",
@@ -1106,30 +1138,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 10350,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 10350,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/34147237153.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 1699.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B01MS8EWXM",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 1699.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf63mmf2-8-gf63mmf2-8/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Lens cap FLCP-62II",
       "Lens rear cap RLCP-002",
@@ -1198,30 +1234,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 16900,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 16900,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/10026516023777.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 2099.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B08TPBNCYM",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 2099.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf80mmf1-7-gf80mmf1-7/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Lens cap FLCP-77",
       "Lens rear cap RLCP-002",
@@ -1299,30 +1339,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 14350,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 14350,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/41597564004.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 1799.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B07MWBDQN3",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 1799.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf100-200mmf5-6-gf100-200mmf5-6/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Lens cap FLCP-67II",
       "Lens rear cap RLCP-002",
@@ -1394,30 +1438,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 19000,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 19000,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/34147658802.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 3199.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B071CKRCN6",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 3199.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf110mmf2-gf110mmf2/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Lens cap FLCP-77",
       "Lens rear cap RLCP-002",
@@ -1491,30 +1539,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 24900,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 24900,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/10085924078736.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 3999.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0CHG2TGTD",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 3999.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf110mmf5-6ts-gf110mmf5-6ts/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Front lens cap FLCP-72 II",
       "Rear lens cap RLCP-002",
@@ -1586,30 +1638,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 18250,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 18250,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/34147891035.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 3099.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B01MZARLEQ",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 3099.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf120mmf4-gf120mmf4/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Lens cap FLCP-72II",
       "Rear lens cap RLCP-002",
@@ -1678,30 +1734,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 21350,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 21350,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/39645909466.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 3799.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B07C51T679",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 3799.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf250mmf4-gf250mmf4/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Lens cap FLCP-82",
       "Lens rear cap RLCP-002",
@@ -1771,30 +1831,34 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 25500,
-          "currency": "CNY",
-          "source": "京东·富士影像旗舰店",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "price": 25500,
+            "currency": "CNY",
+            "source": "京东·富士影像旗舰店",
+            "url": "https://item.jd.com/10106604346465.html",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 3999.95,
-          "currency": "USD",
-          "source": "FUJIFILM Shop USA",
-          "sampledAt": "2026-05-09"
-        }
+        "new": [
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0D3WJ7CKD",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
+          },
+          {
+            "price": 3999.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/gf500mmf5-6-r-lm-ois-wr-600023753/",
+            "sampledAt": "2026-05-09"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "bhphoto"
-      },
-      {
-        "channel": "ebay"
-      }
-    ],
     "accessories": [
       "Front lens cap FLCP-95",
       "Rear lens cap RLCP-002",
@@ -1874,24 +1938,28 @@
       "zh": "老蛙 8-15mm f2.8 Fisheye Zoom GFX"
     },
     "pricing": {
+      "cn": {
+        "new": [
+          {
+            "source": "天猫·老蛙旗舰店",
+            "url": "https://detail.tmall.com/item.htm?id=935545508705",
+            "sampledAt": "2026-05-18"
+          }
+        ]
+      },
       "global": {
-        "new": {
-          "price": 699,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        }
+        "new": [
+          {
+            "price": 699,
+            "currency": "USD",
+            "source": "venuslens.net",
+            "url": "https://www.venuslens.net/product/laowa-8-15mm-f-2-8-ff-zoom-fisheye-2/",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-05-18"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://www.venuslens.net/product/laowa-8-15mm-f-2-8-ff-zoom-fisheye-2/"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -1965,24 +2033,28 @@
       "zh": "老蛙 17mm f4 GFX"
     },
     "pricing": {
+      "cn": {
+        "new": [
+          {
+            "source": "天猫·老蛙旗舰店",
+            "url": "https://detail.tmall.com/item.htm?id=995024947971",
+            "sampledAt": "2026-05-18"
+          }
+        ]
+      },
       "global": {
-        "new": {
-          "price": 999,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        }
+        "new": [
+          {
+            "price": 999,
+            "currency": "USD",
+            "source": "venuslens.net",
+            "url": "https://www.venuslens.net/product/laowa-17mm-f-4-zero-d-tilt-shift-shift/",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-05-18"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://www.venuslens.net/product/laowa-17mm-f-4-zero-d-tilt-shift-shift/"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -2045,31 +2117,29 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 8469,
-          "currency": "CNY",
-          "source": "天猫·老蛙旗舰店",
-          "sampledAt": "2026-05-18"
-        }
+        "new": [
+          {
+            "price": 8469,
+            "currency": "CNY",
+            "source": "天猫·老蛙旗舰店",
+            "url": "https://detail.tmall.com/item.htm?id=995024947971",
+            "sampledAt": "2026-05-18"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 1249,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        }
+        "new": [
+          {
+            "price": 1249,
+            "currency": "USD",
+            "source": "venuslens.net",
+            "url": "https://www.venuslens.net/product/laowa-17mm-f-4-zero-d-tilt-shift-shift/",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-05-18"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://www.venuslens.net/product/laowa-17mm-f-4-zero-d-tilt-shift-shift/"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -2133,31 +2203,29 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 8469,
-          "currency": "CNY",
-          "source": "天猫·老蛙旗舰店",
-          "sampledAt": "2026-05-18"
-        }
+        "new": [
+          {
+            "price": 8469,
+            "currency": "CNY",
+            "source": "天猫·老蛙旗舰店",
+            "url": "https://detail.tmall.com/item.htm?id=995615398774",
+            "sampledAt": "2026-05-18"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 1249,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        }
+        "new": [
+          {
+            "price": 1249,
+            "currency": "USD",
+            "source": "venuslens.net",
+            "url": "https://www.venuslens.net/product/the-laowa-35mm-f-2-8-zero-d-tilt-shift-0-5x-macro/",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-05-18"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://www.venuslens.net/product/the-laowa-35mm-f-2-8-zero-d-tilt-shift-0-5x-macro/"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
     "compatibleMounts": [
       "Sony E",
       "Nikon Z",
@@ -2220,31 +2288,29 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 8469,
-          "currency": "CNY",
-          "source": "天猫·老蛙旗舰店",
-          "sampledAt": "2026-05-18"
-        }
+        "new": [
+          {
+            "price": 8469,
+            "currency": "CNY",
+            "source": "天猫·老蛙旗舰店",
+            "url": "https://detail.tmall.com/item.htm?id=842461490021",
+            "sampledAt": "2026-05-18"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 1249,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        }
+        "new": [
+          {
+            "price": 1249,
+            "currency": "USD",
+            "source": "venuslens.net",
+            "url": "https://www.venuslens.net/product/laowa-55mm-f-2-8-tilt-shift-1x-macro/",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-05-18"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://www.venuslens.net/product/laowa-55mm-f-2-8-tilt-shift-1x-macro/"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
     "compatibleMounts": [
       "Sony E",
       "Canon RF",
@@ -2307,31 +2373,29 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 8469,
-          "currency": "CNY",
-          "source": "天猫·老蛙旗舰店",
-          "sampledAt": "2026-05-18"
-        }
+        "new": [
+          {
+            "price": 8469,
+            "currency": "CNY",
+            "source": "天猫·老蛙旗舰店",
+            "url": "https://detail.tmall.com/item.htm?id=842461490021",
+            "sampledAt": "2026-05-18"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 1249,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        }
+        "new": [
+          {
+            "price": 1249,
+            "currency": "USD",
+            "source": "venuslens.net",
+            "url": "https://www.venuslens.net/product/laowa-100mm-f-2-8-tilt-shift-1x-macro/",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-05-18"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://www.venuslens.net/product/laowa-100mm-f-2-8-tilt-shift-1x-macro/"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
     "compatibleMounts": [
       "Sony E",
       "Canon RF",
@@ -2389,31 +2453,29 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 7950,
-          "currency": "CNY",
-          "source": "京东·老蛙官方旗舰店",
-          "sampledAt": "2026-05-18"
-        }
+        "new": [
+          {
+            "price": 7950,
+            "currency": "CNY",
+            "source": "京东·老蛙官方旗舰店",
+            "url": "https://item.jd.com/10062842206174.html",
+            "sampledAt": "2026-05-18"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 999,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        }
+        "new": [
+          {
+            "price": 999,
+            "currency": "USD",
+            "source": "venuslens.net",
+            "url": "https://www.venuslens.net/product/laowa-17mm-f-4-gfx-zero-d/",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-05-18"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://www.venuslens.net/product/laowa-17mm-f-4-gfx-zero-d/"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
     "filterMm": 86,
     "lensConfiguration": {
       "groups": 14,
@@ -2463,31 +2525,29 @@
     },
     "pricing": {
       "cn": {
-        "new": {
-          "price": 6950,
-          "currency": "CNY",
-          "source": "京东·老蛙官方旗舰店",
-          "sampledAt": "2026-05-18"
-        }
+        "new": [
+          {
+            "price": 6950,
+            "currency": "CNY",
+            "source": "京东·老蛙官方旗舰店",
+            "url": "https://item.jd.com/10066947084689.html",
+            "sampledAt": "2026-05-18"
+          }
+        ]
       },
       "global": {
-        "new": {
-          "price": 999,
-          "currency": "USD",
-          "source": "venuslens.net",
-          "sampledAt": "2026-05-18"
-        }
+        "new": [
+          {
+            "price": 999,
+            "currency": "USD",
+            "source": "venuslens.net",
+            "url": "https://www.venuslens.net/product/laowa-19mm-f-2-8-zero-d/",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-05-18"
+          }
+        ]
       }
     },
-    "purchaseChannels": [
-      {
-        "channel": "official",
-        "url": "https://www.venuslens.net/product/laowa-19mm-f-2-8-zero-d/"
-      },
-      {
-        "channel": "bhphoto"
-      }
-    ],
     "compatibleMounts": [
       "Fujifilm G",
       "Hasselblad XCD"
