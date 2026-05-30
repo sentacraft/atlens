@@ -4,15 +4,20 @@ import { getChannelPriority } from "@/lib/purchase-channel-priority";
 const EPN_CAMPAIGN_ID = "5339154376";
 const EPN_TOOL_ID = "10001";
 
-// Affiliate query param to append to a product URL, keyed by hostname (no www).
+// Cap how many purchase buttons render per lens. Links are priority-ordered, so
+// this keeps the top-ranked channels and drops the long tail.
+const MAX_PURCHASE_LINKS = 3;
+
+// Affiliate query param to set on a product URL, keyed by hostname (no www).
 // Independent of channel — any purchase URL whose host is here gets its param.
-// Amazon (?tag) and the GoAffPro DTC stores (?ref) live in one table.
-const AFFILIATE_PARAMS: Record<string, string> = {
-  "amazon.com": "tag=xglass0a-20",
-  "7artisans.store": "ref=omwzyqkn",
-  "ttartisan.store": "ref=idncwfkb",
-  "viltrox.com": "ref=owbtcyuk",
-  "brightinstar.com": "ref=mffdqyik",
+// Amazon (tag) and the GoAffPro DTC stores (ref) live in one table; each value
+// is a [key, value] pair fed straight to URLSearchParams.set.
+const AFFILIATE_PARAMS: Record<string, [string, string]> = {
+  "amazon.com": ["tag", "xglass0a-20"],
+  "7artisans.store": ["ref", "omwzyqkn"],
+  "ttartisan.store": ["ref", "idncwfkb"],
+  "viltrox.com": ["ref", "owbtcyuk"],
+  "brightinstar.com": ["ref", "mffdqyik"],
 };
 
 interface EbayMarket {
@@ -87,25 +92,21 @@ function buildBhPhotoUrl(lens: Lens, locale: string): string {
   return `https://www.bhphotovideo.com/c/search?Ntt=${encodeURIComponent(query)}`;
 }
 
-function appendQuery(url: string, param: string): string {
-  const sep = url.includes("?") ? "&" : "?";
-  return `${url}${sep}${param}`;
-}
-
-// Append the affiliate param for a product URL's host, if registered. Channel-
-// agnostic: official (?ref) and amazon (?tag) both go through here.
+// Set the affiliate param for a product URL's host, if registered. Channel-
+// agnostic: official (ref) and amazon (tag) both go through here.
 function applyAffiliate(url: string): { url: string; isAffiliate: boolean } {
-  let hostname: string;
+  let parsed: URL;
   try {
-    hostname = new URL(url).hostname.replace(/^www\./, "");
+    parsed = new URL(url);
   } catch {
     return { url, isAffiliate: false };
   }
-  const param = AFFILIATE_PARAMS[hostname];
+  const param = AFFILIATE_PARAMS[parsed.hostname.replace(/^www\./, "")];
   if (!param) {
     return { url, isAffiliate: false };
   }
-  return { url: appendQuery(url, param), isAffiliate: true };
+  parsed.searchParams.set(param[0], param[1]);
+  return { url: parsed.toString(), isAffiliate: true };
 }
 
 export function isPurchaseLocale(locale: string): boolean {
@@ -173,5 +174,5 @@ export function buildPurchaseLinks(
     }
   }
 
-  return links;
+  return links.slice(0, MAX_PURCHASE_LINKS);
 }
