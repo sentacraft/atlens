@@ -3,14 +3,21 @@ import type { LensPriceEntry } from "@/lib/types";
 type Condition = "new" | "used";
 type Market = "cn" | "global";
 
+/** A price entry guaranteed to carry price + currency (what the UI renders). */
+export type PricedEntry = LensPriceEntry & { price: number; currency: "CNY" | "USD" };
+
 export interface PriceSelection {
-  entry: LensPriceEntry;
+  entry: PricedEntry;
   market: Market;
   condition: Condition;
 }
 
-type PricingBucket = { new?: LensPriceEntry; used?: LensPriceEntry };
+type PricingBucket = { new?: LensPriceEntry[]; used?: LensPriceEntry };
 type PricingData = { cn?: PricingBucket; global?: PricingBucket };
+
+function isPriced(e: LensPriceEntry): e is PricedEntry {
+  return e.price !== undefined && e.currency !== undefined;
+}
 
 // Translator is loosely typed so callers can pass next-intl's `t` function from
 // either useTranslations (client) or getTranslations (server) without coupling
@@ -38,10 +45,12 @@ export function pickPriceEntry(
 ): PriceSelection | null {
   const market: Market = locale === "zh" ? "cn" : "global";
   const bucket = pricing?.[market];
-  if (bucket?.new) {
-    return { entry: bucket.new, market, condition: "new" };
+  // new is a priority-ordered array; pick the first source that has a price.
+  const newEntry = bucket?.new?.find(isPriced);
+  if (newEntry) {
+    return { entry: newEntry, market, condition: "new" };
   }
-  if (bucket?.used) {
+  if (bucket?.used && isPriced(bucket.used)) {
     return { entry: bucket.used, market, condition: "used" };
   }
   return null;

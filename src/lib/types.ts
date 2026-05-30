@@ -263,26 +263,33 @@ export type FieldNoteKey = (typeof FIELD_NOTE_KEYS)[number];
  */
 export type Mount = "X" | "G";
 
-/** A single price observation — shared by new and used entries across all markets. */
+/**
+ * One retail source's price/purchase observation for a lens in one market.
+ * `price`/`currency` are optional: a source may contribute only a purchase
+ * link (e.g. Amazon ASIN with no sampled price). `url` is the product page
+ * (purchase-link base when `channel` is set). `channel`, when present, marks
+ * this source as a buyable purchase channel — derived at publish time.
+ */
 export interface LensPriceEntry {
-  price: number;
-  currency: "CNY" | "USD";
+  price?: number;
+  currency?: "CNY" | "USD";
   source: string;
+  url?: string;
+  /** Data-driven purchase channels (price-source storefronts). ebay/bhphoto
+   *  are search-driven and never appear here. */
+  channel?: "official" | "amazon" | "jd" | "tmall";
   /** ISO date YYYY-MM-DD when sampled. */
   sampledAt: string;
 }
+
+/** Purchase channels the frontend renders a buy button for. */
+export type PurchaseChannelType = "official" | "amazon" | "ebay" | "bhphoto";
 
 /** Translated user-facing fields for a single locale. */
 interface LensLocaleTranslations {
   fieldNotes?: Partial<Record<FieldNoteKey, string>>;
   lensMaterial?: string;
   accessories?: string[];
-}
-
-export interface PurchaseChannel {
-  channel: 'official' | 'amazon' | 'ebay' | 'bhphoto';
-  url?: string;
-  asin?: string;
 }
 
 /**
@@ -684,16 +691,14 @@ export interface Lens {
    */
   pricing?: {
     cn?: {
-      new?: LensPriceEntry;
+      new?: LensPriceEntry[];
       used?: LensPriceEntry;
     };
     global?: {
-      new?: LensPriceEntry;
+      new?: LensPriceEntry[];
       used?: LensPriceEntry;
     };
   };
-
-  purchaseChannels?: PurchaseChannel[];
 
   /**
    * Mount systems this lens is available for, as stated by the manufacturer.

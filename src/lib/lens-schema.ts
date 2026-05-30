@@ -25,13 +25,23 @@ const minTStopSchema = createApertureSchema("minTStop");
 const opticalTraitSchema = z.enum(OPTICAL_TRAITS);
 export const specNaSchema = z.literal(SPEC_NA);
 const lensPriceEntrySchema = z.strictObject({
-  price: z.number().positive(),
-  currency: z.enum(["CNY", "USD"]),
+  // price/currency are optional: a source may contribute only a purchase link
+  // (e.g. Amazon ASIN with no sampled price). When price is present, currency
+  // is required and (in the pricing superRefine) must match the market.
+  price: z.number().positive().optional(),
+  currency: z.enum(["CNY", "USD"]).optional(),
   source: z.string().min(1),
+  url: z.url().optional(),
+  channel: z.enum(["official", "amazon", "jd", "tmall"]).optional(),
   sampledAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+}).refine((e) => e.price === undefined || e.currency !== undefined, {
+  message: "currency is required when price is present",
+  path: ["currency"],
 });
+// new is a multi-source array in priority order (new[0] = most preferred);
+// used stays single-source.
 const pricingMarketSchema = z.strictObject({
-  new: lensPriceEntrySchema.optional(),
+  new: lensPriceEntrySchema.array().optional(),
   used: lensPriceEntrySchema.optional(),
 });
 
@@ -116,43 +126,34 @@ const lensBaseShape = {
     cn: pricingMarketSchema.optional(),
     global: pricingMarketSchema.optional(),
   }).superRefine((value, ctx) => {
-    // Market → currency pairing (cn → CNY, global → USD) is enforced here at
-    // the validation layer on purpose, rather than baked into the schema/type.
-    // The schema deliberately keeps `currency` as the open CNY | USD union for
-    // both markets so it stays flexible: if a locale ever legitimately carries
-    // a different currency, we relax this single guard and handle conversion at
-    // presentation time — no schema or type migration needed. For now, one
-    // currency per market is sufficient. Upstream, the pipeline scripts and the
-    // data-collection agent already follow this rule; this guard is the runtime
-    // backstop that fails loudly if a row ever slips through, since the price
-    // filters compare raw amounts against currency-specific thresholds and
-    // trust this pairing. A type-level constraint cannot replace it anyway:
-    // the data is JSON validated at runtime and TS types are erased, so
-    // external data needs a runtime check regardless.
-    const requireCurrency = (
+    // Per-market currency (cn → CNY, global → USD) is enforced here at the
+    // validation layer rather than in the schema/type, so currency stays a
+    // flexible union and a future locale with a different currency only
+    // relaxes this one guard. `new` is a multi-source array — each entry is
+    // checked; only entries that carry a price are validated (price-less
+    // purchase-link-only sources have no currency).
+    const checkEntry = (
       market: "cn" | "global",
       slot: "new" | "used",
-      entry: { currency: string } | undefined,
+      entry: { price?: number; currency?: string } | undefined,
       currency: "CNY" | "USD",
+      path: (string | number)[],
     ) => {
-      if (entry && entry.currency !== currency) {
+      if (entry?.price !== undefined && entry.currency !== currency) {
         ctx.addIssue({
           code: "custom",
-          message: `pricing.${market}.${slot} must use ${currency}, got ${entry.currency}`,
-          path: [market, slot, "currency"],
+          message: `pricing.${market}.${slot} must use ${currency}, got ${entry.currency ?? "undefined"}`,
+          path,
         });
       }
     };
-    requireCurrency("cn", "new", value.cn?.new, "CNY");
-    requireCurrency("cn", "used", value.cn?.used, "CNY");
-    requireCurrency("global", "new", value.global?.new, "USD");
-    requireCurrency("global", "used", value.global?.used, "USD");
+    for (const [market, currency] of [["cn", "CNY"], ["global", "USD"]] as const) {
+      (value[market]?.new ?? []).forEach((entry, i) =>
+        checkEntry(market, "new", entry, currency, [market, "new", i, "currency"]),
+      );
+      checkEntry(market, "used", value[market]?.used, currency, [market, "used", "currency"]);
+    }
   }).optional(),
-  purchaseChannels: z.array(z.strictObject({
-    channel: z.enum(['official', 'amazon', 'ebay', 'bhphoto']),
-    url: nonEmptyStringSchema.optional(),
-    asin: nonEmptyStringSchema.optional(),
-  })).min(1).optional(),
   compatibleMounts: z.array(nonEmptyStringSchema).min(1).optional(),
   accessories: z.array(nonEmptyStringSchema).min(1).optional(),
   lensMaterial: optionalNonEmptyStringSchema,
@@ -401,7 +402,7 @@ export const KNOWN_DISTINCT_PAIRS = new Set([
 // Identifiers, human-readable labels, links, and freeform notes are excluded;
 // all measurable optical/physical fields are included automatically.
 const SIMILARITY_EXCLUDE = new Set([
-  "id", "brand", "model", "series", "officialLinks", "fieldNotes", "translations", "searchAliases", "purchaseChannels",
+  "id", "brand", "model", "series", "officialLinks", "fieldNotes", "translations", "searchAliases", "pricing",
 ]);
 
 // Threshold above which two same-brand lenses are flagged as suspiciously similar.

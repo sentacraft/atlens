@@ -1,5 +1,5 @@
-import type { Lens } from "@/lib/types";
-import { sortPurchaseChannels } from "@/lib/purchase-channel-priority";
+import type { Lens, PurchaseChannelType } from "@/lib/types";
+import { getChannelPriority } from "@/lib/purchase-channel-priority";
 
 const AMAZON_TAG = "xglass0a-20";
 const EPN_CAMPAIGN_ID = "5339154376";
@@ -36,8 +36,15 @@ const EBAY_MARKETS: Record<string, EbayMarket> = {
 
 const EBAY_DEFAULT_MARKET = EBAY_MARKETS.US;
 
+const CHANNEL_LABELS: Record<PurchaseChannelType, string> = {
+  official: "Official",
+  amazon: "Amazon",
+  ebay: "eBay",
+  bhphoto: "B&H",
+};
+
 export interface PurchaseLink {
-  channel: "official" | "amazon" | "ebay" | "bhphoto";
+  channel: PurchaseChannelType;
   label: string;
   url: string;
   isAffiliate: boolean;
@@ -72,32 +79,30 @@ function buildEbayUrl(
   return `${target}&${params.join("&")}`;
 }
 
-function buildAmazonUrl(asin: string): string {
-  return `https://www.amazon.com/dp/${asin}/?tag=${AMAZON_TAG}`;
-}
-
 function buildBhPhotoUrl(lens: Lens, locale: string): string {
   const query = getSearchQuery(lens, locale);
   return `https://www.bhphotovideo.com/c/search?Ntt=${encodeURIComponent(query)}`;
 }
 
-
-function getAffiliateParam(url: string): string | undefined {
-  try {
-    const hostname = new URL(url).hostname.replace(/^www\./, "");
-    return DOMAIN_AFFILIATES[hostname];
-  } catch {
-    return undefined;
-  }
+function appendQuery(url: string, param: string): string {
+  const sep = url.includes("?") ? "&" : "?";
+  return `${url}${sep}${param}`;
 }
 
+// Official DTC store URLs get an affiliate ref appended when the store's domain
+// has one registered; otherwise they pass through (still a valid buy link).
 function buildOfficialUrl(url: string): { url: string; isAffiliate: boolean } {
-  const param = getAffiliateParam(url);
-  if (!param) {
+  let hostname: string;
+  try {
+    hostname = new URL(url).hostname.replace(/^www\./, "");
+  } catch {
     return { url, isAffiliate: false };
   }
-  const sep = url.includes("?") ? "&" : "?";
-  return { url: `${url}${sep}${param}`, isAffiliate: true };
+  const ref = DOMAIN_AFFILIATES[hostname];
+  if (!ref) {
+    return { url, isAffiliate: false };
+  }
+  return { url: appendQuery(url, ref), isAffiliate: true };
 }
 
 export function isPurchaseLocale(locale: string): boolean {
@@ -110,40 +115,57 @@ export function buildPurchaseLinks(
   countryCode: string,
   customId?: string,
 ): PurchaseLink[] {
-  if (!isPurchaseLocale(locale) || !lens.purchaseChannels) {
+  if (!isPurchaseLocale(locale)) {
     return [];
   }
 
-  const sorted = sortPurchaseChannels(lens.purchaseChannels, lens.brand);
+  const market = locale === "zh" ? "cn" : "global";
+  const newEntries = lens.pricing?.[market]?.new ?? [];
+
+  // Data-driven channels: first pricing entry per channel that carries a url.
+  // The array is priority-ordered (publish sorts by storefront order), so the
+  // first occurrence per channel is the preferred storefront (same-channel
+  // dedup).
+  const urlByChannel = new Map<string, string>();
+  for (const entry of newEntries) {
+    if (entry.channel && entry.url && !urlByChannel.has(entry.channel)) {
+      urlByChannel.set(entry.channel, entry.url);
+    }
+  }
+
   const links: PurchaseLink[] = [];
 
-  for (const ch of sorted) {
-    switch (ch.channel) {
-      case "official":
-        if (ch.url) {
-          const official = buildOfficialUrl(ch.url);
+  for (const channel of getChannelPriority(lens.brand)) {
+    switch (channel) {
+      case "official": {
+        const url = urlByChannel.get("official");
+        if (url) {
+          const official = buildOfficialUrl(url);
           links.push({
             channel: "official",
-            label: "Official",
+            label: CHANNEL_LABELS.official,
             url: official.url,
             isAffiliate: official.isAffiliate,
           });
         }
         break;
-      case "amazon":
-        if (ch.asin) {
+      }
+      case "amazon": {
+        const url = urlByChannel.get("amazon");
+        if (url) {
           links.push({
             channel: "amazon",
-            label: "Amazon",
-            url: buildAmazonUrl(ch.asin),
+            label: CHANNEL_LABELS.amazon,
+            url: appendQuery(url, `tag=${AMAZON_TAG}`),
             isAffiliate: true,
           });
         }
         break;
+      }
       case "ebay":
         links.push({
           channel: "ebay",
-          label: "eBay",
+          label: CHANNEL_LABELS.ebay,
           url: buildEbayUrl(lens, locale, countryCode, customId),
           isAffiliate: true,
         });
@@ -151,7 +173,7 @@ export function buildPurchaseLinks(
       case "bhphoto":
         links.push({
           channel: "bhphoto",
-          label: "B&H",
+          label: CHANNEL_LABELS.bhphoto,
           url: buildBhPhotoUrl(lens, locale),
           isAffiliate: false,
         });

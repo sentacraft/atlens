@@ -100,19 +100,19 @@ const FILTERS: Record<string, LensFilter> = {
   // --- Price ---
   "under-200": (lens, locale) => {
     if (locale === "zh") {
-      const p = lens.pricing?.cn?.new?.price;
+      const p = lens.pricing?.cn?.new?.find((e) => e.price != null)?.price;
       return xPhoto(lens) && p != null && p < 1000;
     }
-    const p = lens.pricing?.global?.new?.price;
+    const p = lens.pricing?.global?.new?.find((e) => e.price != null)?.price;
     return xPhoto(lens) && p != null && p < 200;
   },
 
   "under-400": (lens, locale) => {
     if (locale === "zh") {
-      const p = lens.pricing?.cn?.new?.price;
+      const p = lens.pricing?.cn?.new?.find((e) => e.price != null)?.price;
       return xPhoto(lens) && p != null && p < 2000;
     }
-    const p = lens.pricing?.global?.new?.price;
+    const p = lens.pricing?.global?.new?.find((e) => e.price != null)?.price;
     return xPhoto(lens) && p != null && p < 400;
   },
 
