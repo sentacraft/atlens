@@ -82,11 +82,11 @@
         "zh": "七工匠镜头"
       },
       "description": {
-        "en": "One of the most prolific affordable third-party makers on X-mount. 7Artisans started out with all-metal manual primes at pocket-friendly prices, and lately its autofocus and cine lines have been filling out fast. What you get is that almost-forgotten mechanical focus feel and a slightly vintage rendering — a good match for anyone who shoots for the sheer fun of it.",
-        "zh": "国产副厂里出镜率极高的多产品牌。七工匠以全金属手动定焦起家，价格亲民，近年自动对焦线与电影头也在快速铺开。带来的是久违的机械对焦手感和偏复古的成像氛围，适合享受拍照过程本身的玩家。"
+        "en": "One of the most prolific affordable third-party makers on X-mount. 7Artisans started out with metal manual primes at pocket-friendly prices, and lately its autofocus and cine lines have been filling out fast. What you get is that almost-forgotten mechanical focus feel and a slightly vintage rendering — a good match for anyone who shoots for the sheer fun of it.",
+        "zh": "国产副厂里出镜率极高的多产品牌。七工匠以金属手动定焦起家，价格亲民，近年自动对焦线与电影头也在快速铺开。带来的是久违的机械对焦手感和偏复古的成像氛围，适合享受拍照过程本身的玩家。"
       },
       "shortDescription": {
-        "en": "An easy, cheap way into all-metal manual primes",
+        "en": "An easy, cheap way into metal manual primes",
         "zh": "千元级金属手动头的快乐入口"
       }
     },
@@ -412,8 +412,8 @@
         "zh": "星曜镜头"
       },
       "description": {
-        "en": "Compact manual primes from Brightin Star, a rising third-party maker. The focus is on a small footprint, all-metal build and an accessible price, with focal lengths clustered from wide to standard. For anyone who wants to try pure manual focus and the feel of a mechanical focus ring without spending much, it's an easy place to start.",
-        "zh": "新锐品牌星曜出品的紧凑型手动定焦，主打小体积、全金属做工与亲民定价，焦段集中在广角到标准。对想低成本体验纯手动对焦、把玩机械阻尼感的玩家，是个合适的尝鲜入口。"
+        "en": "Compact manual primes from Brightin Star, a rising third-party maker. The focus is on a small footprint, metal build and an accessible price, with focal lengths clustered from wide to standard. For anyone who wants to try pure manual focus and the feel of a mechanical focus ring without spending much, it's an easy place to start.",
+        "zh": "新锐品牌星曜出品的紧凑型手动定焦，主打小体积、金属做工与亲民定价，焦段集中在广角到标准。对想低成本体验纯手动对焦、把玩机械阻尼感的玩家，是个合适的尝鲜入口。"
       },
       "shortDescription": {
         "en": "Compact manual primes at an easy entry price",
@@ -592,12 +592,12 @@
         "zh": "国产自动对焦定焦"
       },
       "description": {
-        "en": "Native autofocus primes from Chinese makers like Viltrox, 7Artisans and TTArtisan. Once a gap in the X-mount lineup, this cohort has grown fast and now spans everything from entry primes to flagship f/1.2 optics, giving shooters far more native AF choices than the first-party range alone.",
-        "zh": "唯卓仕、七工匠、铭匠等国产品牌推出的原生自动对焦定焦合集。从入门定焦到旗舰 f/1.2，这块此前几乎空白的领域正在快速壮大，为 X 卡口用户提供了远超原厂的自动对焦选择。"
+        "en": "Native autofocus primes from Chinese makers like Viltrox, 7Artisans and TTArtisan. Backed by solid optics and aggressively competitive pricing, this corner of the market has grown fast, giving X-mount shooters far more AF choices than they used to have.",
+        "zh": "唯卓仕、七工匠、铭匠等国产品牌推出的原生自动对焦定焦合集。凭借扎实的光学素质与极具竞争力的定价，这类 AF 镜头正在快速壮大，为 X 卡口用户提供了远超以往的自动对焦选择。"
       },
       "shortDescription": {
-        "en": "Native AF primes from Chinese makers",
-        "zh": "国产品牌的原生自动定焦"
+        "en": "Native AF glass from Chinese makers",
+        "zh": "国产副厂自动头"
       }
     },
     {
@@ -607,12 +607,12 @@
         "zh": "国产大光圈手动定焦"
       },
       "description": {
-        "en": "Manual-focus primes from Chinese makers like 7Artisans, TTArtisan and Brightin Star opening to f/1.2–f/1.4. The bright-aperture look — shallow depth of field, strong subject separation, low-light headroom — in compact, all-metal bodies.",
-        "zh": "七工匠、铭匠、星曜等国产品牌的手动定焦，最大光圈做到 f/1.2–1.4。浅景深、强主体分离、暗光余量——大光圈的味道，装在小巧的全金属镜身里。"
+        "en": "The manual primes from Chinese makers like 7Artisans, TTArtisan and Brightin Star that open to f/1.2–f/1.4 — mostly all-metal builds, with the shallow depth of field and low-light reach to match.",
+        "zh": "七工匠、铭匠、星曜这些国产品牌的手动定焦里，最大光圈做到 f/1.2–1.4 的一批，多为全金属机械手感，浅景深与暗光表现都不缺。"
       },
       "shortDescription": {
         "en": "Fast f/1.2–f/1.4 manual primes",
-        "zh": "f/1.2–1.4 的浅景深手动定焦"
+        "zh": "f/1.2–1.4 的大光圈手动定焦"
       }
     },
     {
@@ -622,12 +622,12 @@
         "zh": "国产超平价手动定焦"
       },
       "description": {
-        "en": "The lowest-cost way into a new focal length. Manual primes from Chinese makers priced low enough to experiment freely — pick up a focal length or rendering style you've been curious about without much outlay.",
-        "zh": "用最低的成本拿下一个新焦段。国产品牌的手动定焦价格亲民到可以随便试——一直好奇的焦段或成像风格，花不多的钱就能收一支来玩。"
+        "en": "Manual primes from Chinese makers like 7Artisans, TTArtisan and Brightin Star, in every flavor — mostly all-metal mechanical builds at prices low enough to work through different focal lengths and rendering styles without much outlay.",
+        "zh": "七工匠、铭匠、星曜这些国产品牌的手动定焦数量众多、风格各异，多为全金属机械手感，价格亲民——最适合用来低成本地把不同焦段和味道挨个玩一遍。"
       },
       "shortDescription": {
-        "en": "Try a focal length for very little",
-        "zh": "几百块试一个焦段"
+        "en": "A pure manual experience at a friendly price",
+        "zh": "纯手动体验，价格很友好"
       }
     },
     {
@@ -637,12 +637,12 @@
         "zh": "国产 f/0.95「夜神」"
       },
       "description": {
-        "en": "An f/0.95 aperture was long the preserve of a handful of exotic \"dream lenses.\" Chinese makers like 7Artisans, TTArtisan and Brightin Star have turned it into a recurring feature of the X-mount lineup — wafer-thin depth of field and serious low-light gathering across a range of focal lengths.",
-        "zh": "f/0.95 这种「夜神」级光圈，过去几乎是少数特种镜头的专利。七工匠、铭匠、星曜等国产品牌把它做成了 X 卡口里反复出现的常规配置——极浅的景深、暗光下充足的进光量，覆盖多个焦段。"
+        "en": "An f/0.95 aperture used to be the preserve of a few expensive \"dream lenses.\" Now Chinese makers like 7Artisans, TTArtisan and Brightin Star have brought it down to a friendly price — wafer-thin depth of field and serious low-light gathering, for not much money. It's one of the most accessible ways to taste what a truly fast lens can do.",
+        "zh": "f/0.95 这种「夜神」级光圈，以前几乎是少数高价镜头的专利。如今七工匠、铭匠、星曜这些国产品牌把它做进了亲民价位——极浅的景深、暗光下充足的进光量，花不多的钱就能体验到，是大光圈尝鲜门槛较低的一档。"
       },
       "shortDescription": {
-        "en": "f/0.95 optics from Chinese makers",
-        "zh": "国产品牌的 f/0.95 夜神"
+        "en": "A low bar to clear f/0.95",
+        "zh": "够到 f/0.95 的较低门槛"
       }
     }
   ]
