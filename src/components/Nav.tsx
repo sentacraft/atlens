@@ -16,6 +16,7 @@ import { useNav } from "@/context/NavContext";
 import { usePwa } from "@/lib/usePwa";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
+import { MENU_POPUP_CLS } from "@/lib/ui-tokens";
 import MountSwitcher from "@/components/MountSwitcher";
 import FeedbackDialog from "@/components/FeedbackDialog";
 import GitHubMark from "@/components/logos/GitHubMark";
@@ -188,7 +189,7 @@ export default function Nav() {
             </Menu.Trigger>
             <Menu.Portal>
               <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50 sm:hidden">
-                <Menu.Popup className="w-36 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg shadow-zinc-950/10 overflow-hidden origin-(--transform-origin) duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
+                <Menu.Popup className={cn(MENU_POPUP_CLS, "w-36")}>
                   <Menu.LinkItem
                     render={<Link href="/about" />}
                     className={mobileLinkCls(pathname === "/about")}

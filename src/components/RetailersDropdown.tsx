@@ -7,9 +7,10 @@ import { ArrowUpRight, ChevronDown, Info } from "lucide-react";
 import { buildPurchaseLinks } from "@/lib/purchase-links";
 import type { PurchaseLink } from "@/lib/purchase-links";
 import type { Lens } from "@/lib/types";
-import { ACTION_OUTLINE_CLS } from "@/lib/ui-tokens";
+import { ACTION_OUTLINE_CLS, MENU_POPUP_CLS } from "@/lib/ui-tokens";
 import { track } from "@/lib/analytics";
 import { useCountryCode } from "@/hooks/useCountryCode";
+import { cn } from "@/lib/utils";
 
 interface Props {
   lens: Lens;
@@ -48,7 +49,7 @@ export function RetailersDropdown({ lens, customId }: Props) {
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner side="bottom" align="start" sideOffset={6}>
-          <Popover.Popup className="w-[var(--anchor-width)] origin-(--transform-origin) overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-lg duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
+          <Popover.Popup className={cn(MENU_POPUP_CLS, "w-[var(--anchor-width)]")}>
             {links.map((link) => (
               <DropdownItem key={link.channel} link={link} lensId={lens.id} customId={customId} />
             ))}
