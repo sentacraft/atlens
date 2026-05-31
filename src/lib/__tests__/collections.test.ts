@@ -77,7 +77,14 @@ describe("wide-angle-primes", () => {
 // (fisheye / macro / tilt-shift) — those live in their dedicated collections.
 describe("specialty optics are excluded from framing collections", () => {
   const SPECIAL = ["fisheye", "macro", "tilt", "shift"];
-  for (const slug of ["pancake", "wide-angle-primes", "wide-zoom"]) {
+  for (const slug of [
+    "pancake",
+    "wide-angle-primes",
+    "wide-zoom",
+    "value-af",
+    "value-mf-fast",
+    "value-mf-budget",
+  ]) {
     it(`${slug} excludes specialty optics`, () => {
       const lenses = matchingLenses(slug);
       expect(lenses.length).toBeGreaterThan(0);
@@ -248,6 +255,58 @@ describe("price collections", () => {
     for (const l of zhLenses) {
       const p = l.pricing?.cn?.new?.find((e) => e.price != null)?.price;
       expect(p).toBeLessThan(1000);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Independent-maker value collections (manual side split by character/value)
+// ---------------------------------------------------------------------------
+const VALUE_BRANDS = ["viltrox", "7artisans", "ttartisan", "brightinstar", "sgimage", "laowa"];
+
+describe("value manual-focus collections", () => {
+  it("value-mf-fast matches manual primes with aperture in (0.95, 1.4]", () => {
+    const lenses = matchingLenses("value-mf-fast");
+    expect(lenses.length).toBeGreaterThan(0);
+    for (const l of lenses) {
+      expect(VALUE_BRANDS).toContain(l.brand);
+      expect(l.af).toBe(false);
+      expect(isZoom(l)).toBe(false);
+      const ap = Array.isArray(l.maxAperture) ? l.maxAperture[0] : l.maxAperture;
+      expect(ap).toBeGreaterThan(0.95);
+      expect(ap).toBeLessThanOrEqual(1.4);
+    }
+  });
+
+  it("value-mf-budget is locale-aware (zh < ¥500, en < $100) and matches in both", () => {
+    const col = COLLECTIONS["value-mf-budget"];
+    if (!col) {
+      throw new Error("value-mf-budget missing");
+    }
+    const enLenses = allLenses.filter((l) => col.filter(l, "en"));
+    const zhLenses = allLenses.filter((l) => col.filter(l, "zh"));
+    expect(enLenses.length).toBeGreaterThan(0);
+    expect(zhLenses.length).toBeGreaterThan(0);
+    for (const l of enLenses) {
+      expect(l.af).toBe(false);
+      const p = l.pricing?.global?.new?.find((e) => e.price != null)?.price;
+      expect(p).toBeLessThan(100);
+    }
+    for (const l of zhLenses) {
+      expect(l.af).toBe(false);
+      const p = l.pricing?.cn?.new?.find((e) => e.price != null)?.price;
+      expect(p).toBeLessThan(500);
+    }
+  });
+
+  it("value-095 stays the f/0.95 tier, distinct from value-mf-fast", () => {
+    const dream = matchingLenses("value-095");
+    const fast = new Set(matchingLenses("value-mf-fast").map((l) => l.id));
+    expect(dream.length).toBeGreaterThan(0);
+    for (const l of dream) {
+      const ap = Array.isArray(l.maxAperture) ? l.maxAperture[0] : l.maxAperture;
+      expect(ap).toBeLessThanOrEqual(0.95);
+      expect(fast.has(l.id)).toBe(false);
     }
   });
 });

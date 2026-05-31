@@ -176,11 +176,36 @@ const FILTERS: Record<string, LensFilter> = {
   macro: (lens) =>
     xPhoto(lens) && !!lens.opticalTraits?.includes("macro"),
 
-  // --- Value (affordable third-party brands) ---
+  // --- Value (independent third-party brands) ---
+  // A broad "all manual glass" bucket isn't a real shopping intent, so the
+  // manual side is split into sharp character/value collections instead.
+  // Specialty optics are excluded here — they live in the Dedicated section.
   "value-af": (lens) =>
-    xPhoto(lens) && VALUE_BRANDS.includes(lens.brand) && lens.af === true,
-  "value-mf": (lens) =>
-    xPhoto(lens) && VALUE_BRANDS.includes(lens.brand) && lens.af === false,
+    xPhoto(lens) && !isSpecialOptic(lens) && VALUE_BRANDS.includes(lens.brand) && lens.af === true,
+  "value-mf-fast": (lens) => {
+    if (!xPhoto(lens) || isZoom(lens) || isSpecialOptic(lens) || lens.maxAperture == null) {
+      return false;
+    }
+    const ap = Array.isArray(lens.maxAperture) ? lens.maxAperture[0] : lens.maxAperture;
+    return VALUE_BRANDS.includes(lens.brand) && lens.af === false && ap > 0.95 && ap <= 1.4;
+  },
+  "value-mf-budget": (lens, locale) => {
+    if (
+      !xPhoto(lens) ||
+      isZoom(lens) ||
+      isSpecialOptic(lens) ||
+      lens.af !== false ||
+      !VALUE_BRANDS.includes(lens.brand)
+    ) {
+      return false;
+    }
+    if (locale === "zh") {
+      const p = pickNewEntry(lens.pricing?.cn?.new)?.price;
+      return p != null && p < 500;
+    }
+    const p = pickNewEntry(lens.pricing?.global?.new)?.price;
+    return p != null && p < 100;
+  },
   "value-095": (lens) => {
     if (!xPhoto(lens) || isZoom(lens) || lens.maxAperture == null) {
       return false;
@@ -211,7 +236,7 @@ export const PORTABILITY_SLUGS = ["under-200g", "pancake"];
 export const APERTURE_SLUGS = ["fast-aperture-primes", "constant-aperture"];
 export const TRAIT_SLUGS = ["weather-sealed", "with-ois", "super-tele"];
 export const DEDICATED_SLUGS = ["cine", "fisheye", "tilt-shift", "macro"];
-export const VALUE_SLUGS = ["value-af", "value-mf", "value-095"];
+export const VALUE_SLUGS = ["value-af", "value-mf-fast", "value-095", "value-mf-budget"];
 
 export function getRelatedCollections(
   slug: string,

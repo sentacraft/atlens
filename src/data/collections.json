@@ -601,18 +601,33 @@
       }
     },
     {
-      "slug": "value-mf",
+      "slug": "value-mf-fast",
       "title": {
-        "en": "Independent Manual-Focus Lenses",
-        "zh": "国产手动对焦镜头"
+        "en": "Independent Fast Manual Primes",
+        "zh": "国产大光圈手动定焦"
       },
       "description": {
-        "en": "The busiest corner of the X-mount third-party scene. Independent makers like 7Artisans, TTArtisan and Brightin Star put out manual primes in every flavor — all-metal mechanical builds running from ultra-budget primes up to specialty optics, ideal for working through different focal lengths and rendering styles.",
-        "zh": "国产副厂在 X 卡口最热闹的一块天地。七工匠、铭匠、星曜等品牌的手动定焦风格各异，从超低价定焦到特种光学都有，全金属机械手感——最适合用来把不同焦段和成像风格挨个玩一遍。"
+        "en": "Manual-focus primes from independent makers like 7Artisans, TTArtisan and Brightin Star opening to f/1.2–f/1.4. The bright-aperture look — shallow depth of field, strong subject separation, low-light headroom — in compact, all-metal bodies.",
+        "zh": "七工匠、铭匠、星曜等国产品牌的手动定焦，最大光圈做到 f/1.2–1.4。浅景深、强主体分离、暗光余量——大光圈的味道，装在小巧的全金属镜身里。"
       },
       "shortDescription": {
-        "en": "All-metal manual primes from independent makers",
-        "zh": "国产品牌的全金属手动定焦"
+        "en": "Fast f/1.2–f/1.4 manual primes",
+        "zh": "f/1.2–1.4 的浅景深手动定焦"
+      }
+    },
+    {
+      "slug": "value-mf-budget",
+      "title": {
+        "en": "Ultra-Budget Manual Primes",
+        "zh": "国产超平价手动定焦"
+      },
+      "description": {
+        "en": "The lowest-cost way into a new focal length. Manual primes from independent makers priced low enough to experiment freely — pick up a focal length or rendering style you've been curious about without much outlay.",
+        "zh": "用最低的成本拿下一个新焦段。国产品牌的手动定焦价格亲民到可以随便试——一直好奇的焦段或成像风格，花不多的钱就能收一支来玩。"
+      },
+      "shortDescription": {
+        "en": "Try a focal length for very little",
+        "zh": "几百块试一个焦段"
       }
     },
     {
