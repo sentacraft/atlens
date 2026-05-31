@@ -1,4 +1,4 @@
-name = "x-glass"
+name = "atlens"
 main = ".open-next/worker.js"
 compatibility_date = "2025-05-01"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
