@@ -1,5 +1,7 @@
 # Atlens
 
+> Formerly X-Glass.
+
 Browse, filter, and compare Fujifilm X-mount lenses — native Fujifilm glass plus a growing set of third-party brands. G-mount (medium format) is also being added.
 
 **English**：[atlens.app/en](https://atlens.app/en)
