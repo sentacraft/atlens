@@ -210,7 +210,7 @@ const FILTERS: Record<string, LensFilter> = {
     const p = pickNewEntry(lens.pricing?.global?.new)?.price;
     return p != null && p < 100;
   },
-  "chinese-095": (lens) => {
+  "chinese-mf-095": (lens) => {
     if (!xPhoto(lens) || isZoom(lens) || lens.maxAperture == null) {
       return false;
     }
@@ -240,7 +240,7 @@ export const PORTABILITY_SLUGS = ["under-200g", "pancake"];
 export const APERTURE_SLUGS = ["fast-aperture-primes", "constant-aperture"];
 export const TRAIT_SLUGS = ["weather-sealed", "with-ois", "super-tele"];
 export const DEDICATED_SLUGS = ["cine", "fisheye", "tilt-shift", "macro"];
-export const CHINESE_SLUGS = ["chinese-af", "chinese-mf-fast", "chinese-095", "chinese-mf-budget"];
+export const CHINESE_SLUGS = ["chinese-af", "chinese-mf-fast", "chinese-mf-095", "chinese-mf-budget"];
 
 export function getRelatedCollections(
   slug: string,

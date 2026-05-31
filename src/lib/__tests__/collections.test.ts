@@ -299,8 +299,8 @@ describe("Chinese manual-focus collections", () => {
     }
   });
 
-  it("chinese-095 stays the f/0.95 tier, distinct from chinese-mf-fast", () => {
-    const dream = matchingLenses("chinese-095");
+  it("chinese-mf-095 stays the f/0.95 tier, distinct from chinese-mf-fast", () => {
+    const dream = matchingLenses("chinese-mf-095");
     const fast = new Set(matchingLenses("chinese-mf-fast").map((l) => l.id));
     expect(dream.length).toBeGreaterThan(0);
     for (const l of dream) {
