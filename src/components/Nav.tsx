@@ -133,7 +133,7 @@ export default function Nav() {
             aria-label="Home"
           >
             <Iris config={IRIS_NAV} uid="nav" size={16} />
-            X-Glass
+            Atlens
           </Link>
           {showMountSwitcher && (
             <>
@@ -169,7 +169,7 @@ export default function Nav() {
             {t("feedback")}
           </button>
           <a
-            href="https://github.com/sentacraft/x-glass"
+            href="https://github.com/sentacraft/atlens"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden sm:inline text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors px-1"
@@ -213,7 +213,7 @@ export default function Nav() {
                     {t("feedback")}
                   </Menu.Item>
                   <Menu.LinkItem
-                    href="https://github.com/sentacraft/x-glass"
+                    href="https://github.com/sentacraft/atlens"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={mobileLinkCls(false)}

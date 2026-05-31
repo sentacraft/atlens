@@ -7,7 +7,7 @@ import "../globals.css";
 // by the service worker as a network-fail fallback and must not depend on
 // locale resolution or next-intl.
 export const metadata: Metadata = {
-  title: "Offline | X-Glass",
+  title: "Offline | Atlens",
 };
 
 export default function OfflineLayout({

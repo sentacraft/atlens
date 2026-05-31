@@ -21,6 +21,7 @@ import { TESTHOOK_ALLOWED } from "@/lib/testhook";
 import { SITE } from "@/config/site";
 import { SPLASH_DEVICES, splashUrl, splashMedia } from "@/config/splash";
 import AppToaster from "@/components/AppToaster";
+import RenameToast from "@/components/RenameToast";
 import { fontClassName } from "../fonts";
 import "../globals.css";
 
@@ -69,7 +70,7 @@ export async function generateMetadata({
     metadataBase: resolveMetadataBase(),
     title: {
       default: t("seoTitle"),
-      template: "%s | X-Glass",
+      template: "%s | Atlens",
     },
     description: t("seoDescription"),
     verification: {
@@ -173,6 +174,7 @@ export default async function LocaleLayout({
           </CompareProvider>
           </MountPreferenceProvider>
           <AppToaster />
+          <RenameToast />
         </NextIntlClientProvider>
         <RegisterSW />
         <AssetTelemetry />

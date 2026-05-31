@@ -7,7 +7,7 @@ export default function ConsoleEgg() {
   useEffect(() => {
     console.log(
       [
-        `X-Glass v${meta.version}`,
+        `Atlens v${meta.version}`,
         `lens.json loaded ✓`,
         `${meta.lensCount} lenses · ${brandCount} brands`,
         `No hallucinations guaranteed.`,

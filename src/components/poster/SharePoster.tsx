@@ -388,7 +388,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   className="text-zinc-700"
                   style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", lineHeight: 1 }}
                 >
-                  X-Glass
+                  Atlens
                 </span>
                 <span
                   className="text-zinc-400"

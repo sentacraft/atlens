@@ -53,7 +53,7 @@ export async function generateMetadata({
     title: seoTitle,
     description: metaDesc,
     openGraph: {
-      title: `${seoTitle} | X-Glass`,
+      title: `${seoTitle} | Atlens`,
       description: metaDesc,
       images: defaultOgImages(),
     },

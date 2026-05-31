@@ -248,7 +248,7 @@ const WEIGHTS: Record<keyof TokenBucket, Record<MatchStrength, number>> = {
 };
 
 /**
- * Soft preference for first-party (Fujifilm) lenses. X-Glass is framed
+ * Soft preference for first-party (Fujifilm) lenses. Atlens is framed
  * around the Fuji X-mount ecosystem, so on near-ties Fuji lenses should
  * appear first. Small enough (~4-25% of a typical total score) to avoid
  * overriding clearly better third-party matches.

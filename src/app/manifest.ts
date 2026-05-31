@@ -49,14 +49,14 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: "1206x2622",
         type: "image/png",
         // No form_factor → treated as mobile/narrow by Chrome.
-        label: "X-Glass home screen",
+        label: "Atlens home screen",
       },
       {
         src: "/screenshots/screenshot-desktop.png",
         sizes: "2400x1854",
         type: "image/png",
         form_factor: "wide",
-        label: "X-Glass lens browser",
+        label: "Atlens lens browser",
       },
     ],
     icons: [

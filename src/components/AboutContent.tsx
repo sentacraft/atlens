@@ -187,6 +187,9 @@ export default async function AboutContent() {
           {t("pageTitle")}
         </h1>
       </div>
+      <p className="-mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+        {t("rebrandNote")}
+      </p>
 
       {/* Table of Contents */}
       <nav className="flex flex-col gap-1">
@@ -350,7 +353,7 @@ export default async function AboutContent() {
 
         {/* GitHub CTA card — closing deep-dive link */}
         <a
-          href="https://github.com/sentacraft/x-glass#data-pipeline"
+          href="https://github.com/sentacraft/atlens#data-pipeline"
           target="_blank"
           rel="noopener noreferrer"
           className="group flex items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/40 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
