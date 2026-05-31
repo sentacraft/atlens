@@ -210,7 +210,7 @@ function generateOgSvg(): string {
   <rect width="${canvasW}" height="${canvasH}" fill="#FAFAF9"/>
   ${irisSvg}
   <line x1="${dividerX}" y1="${dividerY1}" x2="${dividerX}" y2="${dividerY2}" stroke="#E5E5E5" stroke-width="1"/>
-  <text x="${textX}" y="${titleY}" font-family="Geist" font-weight="700" font-size="${titleSize}" fill="#1A1A1A" letter-spacing="${titleLS}">X-Glass</text>
+  <text x="${textX}" y="${titleY}" font-family="Geist" font-weight="700" font-size="${titleSize}" fill="#1A1A1A" letter-spacing="${titleLS}">Atlens</text>
   <text x="${textX}" y="${subtitleY}" font-family="Geist" font-weight="400" font-size="${subtitleSize}" fill="#8A8A8A" letter-spacing="${subtitleLS}">LENS DATA, NORMALIZED.</text>
 </svg>`;
 }

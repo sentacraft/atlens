@@ -6,11 +6,17 @@ const ORG_ID = `${SITE.url}/#organization`;
 const SITE_ID = `${SITE.url}/#website`;
 
 // Brand alternate names — including the China-market 图鉴 variant — so Google
-// learns that short queries like "xglass" or "富士镜头图鉴" resolve to this site.
+// learns that short queries like "atlens" or "富士镜头图鉴" resolve to this site.
+// The legacy "X-Glass" spellings are kept so users searching the former name
+// still land here after the rename.
 const BRAND_ALTERNATE_NAMES = [
+  "atlens",
+  "Atlens",
+  "Atlens 富士镜头图鉴",
   "xglass",
   "x glass",
   "X Glass",
+  "X-Glass",
   "富士镜头图鉴",
   "X-Glass 富士镜头图鉴",
 ];
@@ -24,7 +30,7 @@ export default function SiteJsonLd({ locale }: { locale: string }) {
       alternateName: BRAND_ALTERNATE_NAMES,
       url: SITE.url,
       sameAs: [
-        "https://github.com/sentacraft/x-glass",
+        "https://github.com/sentacraft/atlens",
       ],
       logo: {
         "@type": "ImageObject",

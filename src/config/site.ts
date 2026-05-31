@@ -25,9 +25,9 @@ export interface SiteConfig {
 }
 
 export const SITE: SiteConfig = {
-  url: "https://xglass.sentacraft.com",
-  name: "X-Glass",
-  shortName: "X-Glass",
+  url: "https://atlens.app",
+  name: "Atlens",
+  shortName: "Atlens",
   pwaDescription:
     "Your pocket lens database for Fujifilm cameras — specs normalized, offline-ready, zero noise.",
   themeColor: {

@@ -97,7 +97,7 @@ export default function InstallPage() {
       {/* eslint-disable-next-line @next/next/no-img-element -- PWA icon is a static asset, not an optimized image */}
       <img
         src="/icons/icon-192-white.png"
-        alt="X-Glass"
+        alt="Atlens"
         className="w-20 h-20 rounded-[22%] shadow-lg mb-8"
       />
 

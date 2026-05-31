@@ -1,6 +1,6 @@
 {
   "Common": {
-    "appName": "X-Glass",
+    "appName": "Atlens",
     "appDesc": "Lens data, normalized.",
     "goBack": "Go back",
     "backToTop": "Back to top",
@@ -12,8 +12,11 @@
     "home": "Back to Home"
   },
   "Metadata": {
-    "seoTitle": "X-Glass | Fujifilm Lens Database & Comparison",
+    "seoTitle": "Atlens | Fujifilm Lens Database & Comparison",
     "seoDescription": "The Fujifilm lens database. X-mount covers first-party plus major third-party brands — normalized specs, cross-brand comparison. G-mount (medium format) coverage is also under way."
+  },
+  "Rename": {
+    "toast": "X-Glass is now Atlens — same lens database, just a new name. Welcome back 👋"
   },
   "Nav": {
     "lenses": "Browse",
@@ -301,8 +304,8 @@
     "customizeTitle": "Title",
     "customizeSlogan": "Slogan",
     "customizeSloganPlaceholder": "Add a personal note…",
-    "shareCtaMulti": "I compared {count} lenses on X-Glass — check it out 👀",
-    "shareCtaSingle": "I found a lens on X-Glass — check it out 👀",
+    "shareCtaMulti": "I compared {count} lenses on Atlens — check it out 👀",
+    "shareCtaSingle": "I found a lens on Atlens — check it out 👀",
     "copyFailed": "Copy failed",
     "shareFailed": "Share failed, please try again"
   },
@@ -345,10 +348,11 @@
   },
   "About": {
     "pageTitle": "About",
-    "metaDescription": "The story behind X-Glass, who maintains it, and which Fujifilm lenses are covered — X-mount first, with G-mount also being added. Built and maintained solo by an independent engineer, with open-source web code.",
+    "rebrandNote": "Atlens was previously known as X-Glass — same project, same maintainer, just a new name.",
+    "metaDescription": "The story behind Atlens, who maintains it, and which Fujifilm lenses are covered — X-mount first, with G-mount also being added. Built and maintained solo by an independent engineer, with open-source web code.",
     "backgroundTitle": "Background",
-    "backgroundBody1": "As a Fujifilm shooter myself, picking a lens has always meant running into the same friction — looking for a fast 50mm-equivalent prime, or a do-it-all travel zoom: what lenses are actually out there that fit? The Fujifilm X-mount lens ecosystem has grown from a handful of native options in its early days into today's landscape of dozens of brands and hundreds of lenses. Yet specs are scattered across brand websites and various platforms in inconsistent formats, making meaningful cross-brand comparison a slow, frustrating exercise. X-Glass was built to pull all of that fragmented information into one place — a normalized, comparable database that lets the data speak for itself. Which one to buy is still up to you. X-Glass started as X-mount only; G-mount (medium format) was added later in response to user requests, and remains at an earlier stage of breadth — Fujifilm's first-party GF lineup is fully covered and third-party brands are gradually being added, but cross-brand reach and comparability still trail what X-mount already offers.",
-    "backgroundBody2": "I'm a front-end engineer, and I currently develop and maintain X-Glass entirely on my own. I've always held a deep conviction about building a product that doesn't compromise on engineering quality, user experience, or visual craft — and that conviction is, in no small part, what made this project possible.",
+    "backgroundBody1": "As a Fujifilm shooter myself, picking a lens has always meant running into the same friction — looking for a fast 50mm-equivalent prime, or a do-it-all travel zoom: what lenses are actually out there that fit? The Fujifilm X-mount lens ecosystem has grown from a handful of native options in its early days into today's landscape of dozens of brands and hundreds of lenses. Yet specs are scattered across brand websites and various platforms in inconsistent formats, making meaningful cross-brand comparison a slow, frustrating exercise. Atlens was built to pull all of that fragmented information into one place — a normalized, comparable database that lets the data speak for itself. Which one to buy is still up to you. Atlens started as X-mount only; G-mount (medium format) was added later in response to user requests, and remains at an earlier stage of breadth — Fujifilm's first-party GF lineup is fully covered and third-party brands are gradually being added, but cross-brand reach and comparability still trail what X-mount already offers.",
+    "backgroundBody2": "I'm a front-end engineer, and I currently develop and maintain Atlens entirely on my own. I've always held a deep conviction about building a product that doesn't compromise on engineering quality, user experience, or visual craft — and that conviction is, in no small part, what made this project possible.",
     "coverageTitle": "Coverage & Roadmap",
     "coverageBody": "Coverage depth and discontinued lens inclusion vary by brand. Adapted lenses from other mounts are out of scope.",
     "coverageBrandsX": "X Mount",
@@ -364,8 +368,8 @@
     "coverageSuggest": "Missing a lens you're looking for? <feedback>Tell me</feedback>",
     "coverageViewLink": "View lens coverage →",
     "dataAccuracyTitle": "Data & Accuracy",
-    "dataAccuracyIntro": "All data in X-Glass is produced by two independent pipelines. The spec pipeline collects and structures lens specifications from official brand websites. The pricing pipeline independently samples reference prices from e-commerce storefronts. The two are fully isolated, each with its own data sources and quality control process.",
-    "dataAccuracyCaveat": "X-Glass covers hundreds of lenses across dozens of spec dimensions, and I kindly ask for your patience with the small errors and stale entries that slip through — if you spot anything off, please <feedback>tell me</feedback>. For anything critical to a purchase, please confirm on the manufacturer's official page.",
+    "dataAccuracyIntro": "All data in Atlens is produced by two independent pipelines. The spec pipeline collects and structures lens specifications from official brand websites. The pricing pipeline independently samples reference prices from e-commerce storefronts. The two are fully isolated, each with its own data sources and quality control process.",
+    "dataAccuracyCaveat": "Atlens covers hundreds of lenses across dozens of spec dimensions, and I kindly ask for your patience with the small errors and stale entries that slip through — if you spot anything off, please <feedback>tell me</feedback>. For anything critical to a purchase, please confirm on the manufacturer's official page.",
     "dataSpecTitle": "Spec data",
     "dataSpecPoint1Title": "Data comes from official brand websites only",
     "dataSpecPoint1Body": "Canonical spec values are collected from brand official sites. Third-party material is not used as a source for published values.",
@@ -401,26 +405,26 @@
     "dataGitHubCardBody": "Detailed Mermaid diagram of data flow, branching, and human/AI nodes.",
     "dataGitHubCardButton": "View on GitHub",
     "disclaimerTitle": "Disclaimer",
-    "disclaimerAccuracy": "X-Glass data is sourced from public materials and refined through manual review. I make every effort to keep specs accurate and up to date, but errors and delays are inevitable. Always verify key specifications on the manufacturer's official page before making a purchase decision.",
-    "disclaimerLiability": "X-Glass is not responsible for any decisions made based on information presented here.",
-    "disclaimerIndependent": "X-Glass is an independent third-party tool and is not affiliated with, endorsed by, or sponsored by Fujifilm or any lens manufacturer.",
-    "disclaimerCopyright": "Product images and brand trademarks are the property of their respective owners. If you are a rights holder and believe your content has been used improperly, please contact xglass@sentacraft.com.",
+    "disclaimerAccuracy": "Atlens data is sourced from public materials and refined through manual review. I make every effort to keep specs accurate and up to date, but errors and delays are inevitable. Always verify key specifications on the manufacturer's official page before making a purchase decision.",
+    "disclaimerLiability": "Atlens is not responsible for any decisions made based on information presented here.",
+    "disclaimerIndependent": "Atlens is an independent third-party tool and is not affiliated with, endorsed by, or sponsored by Fujifilm or any lens manufacturer.",
+    "disclaimerCopyright": "Product images and brand trademarks are the property of their respective owners. If you are a rights holder and believe your content has been used improperly, please contact me@atlens.app.",
     "privacyTitle": "Privacy",
-    "privacyBody": "X-Glass does not require registration and does not collect personal information.",
+    "privacyBody": "Atlens does not require registration and does not collect personal information.",
     "privacyAnalytics": "This site uses Cloudflare Analytics to collect aggregated, anonymous data — such as page views and feature usage — solely to help improve the product. No personally identifiable information is collected.",
     "supportTitle": "Support the Project",
-    "supportCost": "Building X-Glass involves running a multi-stage data pipeline to gather, clean, and normalize specs from dozens of manufacturer sites, as well as collect price reference data. It is an ongoing commitment, not a one-time build.",
-    "supportAffiliate": "For your convenience, some pages include purchase links to dealers, some of which are affiliate links. If you make a purchase through them, X-Glass earns a small commission at absolutely no extra cost to you — this simply helps sustain my development and keeps the platform free and ad-free.",
+    "supportCost": "Building Atlens involves running a multi-stage data pipeline to gather, clean, and normalize specs from dozens of manufacturer sites, as well as collect price reference data. It is an ongoing commitment, not a one-time build.",
+    "supportAffiliate": "For your convenience, some pages include purchase links to dealers, some of which are affiliate links. If you make a purchase through them, Atlens earns a small commission at absolutely no extra cost to you — this simply helps sustain my development and keeps the platform free and ad-free.",
     "supportIntegrity": "Affiliate partnerships never influence rankings or pricing data. The codebase is open source — you're welcome to verify how it works under the hood. If you ever encounter a broken link, a model mismatch, or any dealer issues, please <feedback>tell me</feedback> so I can fix it promptly.",
-    "supportDonate": "If X-Glass helped you find the right lens or saved you some research time, consider supporting the project directly.",
-    "supportDonateAlt": "You can also support the project directly — every bit helps keep X-Glass going.",
+    "supportDonate": "If Atlens helped you find the right lens or saved you some research time, consider supporting the project directly.",
+    "supportDonateAlt": "You can also support the project directly — every bit helps keep Atlens going.",
     "donationKofi": "Support on Ko-fi",
     "donationWechatLabel": "WeChat Pay",
     "donationWechatQrAlt": "WeChat appreciation QR code",
     "ackTitle": "Acknowledgments",
     "ackBody": "Over the past year, large language models have shown capabilities that once felt out of reach. I could not have imagined completing a project at this scale on my own — let alone shipping it in under a month. Without large language models and AI coding agents, this project might have stayed an idea forever. I am grateful to live in an era where the technology dividend is real, and where a spark of inspiration can actually become something in the hands of a solo developer.",
     "ackStory1Tag": "Claude Code",
-    "ackStory1Body": "Iris is X-Glass's resident character — the aperture animation on the home page that opens and closes with each tap.\n\nBuilding Iris required Claude to first study the mechanical principles behind petal-shaped aperture blades — working through structural diagrams, motion logic, and kinematics documentation before writing a single line of code. What it produced is a genuine three-body constraint kinematic engine: forward and inverse kinematics solved analytically in real time, aperture openings computed from arc-intersection geometry. I had no background in mechanism kinematics whatsoever. The entire system was built from scratch.\n\nIris is more than an animation. Like Clippy once lived in the corner of Microsoft Office, Iris is X-Glass's resident character — accompanying every visitor with a quiet personality of its own.",
+    "ackStory1Body": "Iris is Atlens's resident character — the aperture animation on the home page that opens and closes with each tap.\n\nBuilding Iris required Claude to first study the mechanical principles behind petal-shaped aperture blades — working through structural diagrams, motion logic, and kinematics documentation before writing a single line of code. What it produced is a genuine three-body constraint kinematic engine: forward and inverse kinematics solved analytically in real time, aperture openings computed from arc-intersection geometry. I had no background in mechanism kinematics whatsoever. The entire system was built from scratch.\n\nIris is more than an animation. Like Clippy once lived in the corner of Microsoft Office, Iris is Atlens's resident character — accompanying every visitor with a quiet personality of its own.",
     "ackStory2Tag": "Google Gemini",
     "ackStory2Body": "Gemini shaped several key design decisions throughout the project. When building the Filter Panel, it established the interaction language for single- and multi-select controls so users could understand a control's behavior at first glance. On the lens list, it refined card layout and spacing across screen sizes, keeping the information hierarchy clear on every device. For the share poster, it pushed the design toward something genuinely clean, restrained, and visually considered.\n\nAs an engineer, I could feel when something in the design was off — but rarely knew why. Gemini gave me the vocabulary to diagnose design problems, and the understanding to know why the fix worked. The site reached a level of craft I couldn't have gotten to on my own.",
     "ackClaudeArchitect": "Architect",
@@ -465,18 +469,18 @@
     "success": "Got it — thank you!",
     "successBody": "Every piece of feedback helps me make the data more accurate and complete.",
     "error": "Something went wrong. Please try again in a bit.",
-    "emailLabel": "X-Glass official email"
+    "emailLabel": "Atlens official email"
   },
   "Install": {
     "pageTitle": "Get the App",
-    "metaDescription": "Install X-Glass to your phone home screen or desktop. App-like launch, works offline.",
-    "headline": "Add X-Glass to your home screen",
+    "metaDescription": "Install Atlens to your phone home screen or desktop. App-like launch, works offline.",
+    "headline": "Add Atlens to your home screen",
     "subheadline": "Faster access, full-screen experience, works offline.",
     "installedTitle": "You're all set",
-    "installedBody": "X-Glass is already installed on this device.",
-    "openApp": "Open X-Glass",
-    "promptTitle": "Install X-Glass",
-    "promptBody": "X-Glass is a web app that also supports installation as a Progressive Web App (PWA) — no App Store needed. Add it to your home screen or app launcher for one-tap access and a more native feel.",
+    "installedBody": "Atlens is already installed on this device.",
+    "openApp": "Open Atlens",
+    "promptTitle": "Install Atlens",
+    "promptBody": "Atlens is a web app that also supports installation as a Progressive Web App (PWA) — no App Store needed. Add it to your home screen or app launcher for one-tap access and a more native feel.",
     "installButton": "Install",
     "iosTitle": "Add to Home Screen",
     "iosSubtitle": "Follow these steps in Safari:",
@@ -489,7 +493,7 @@
     "macosStep2": "Choose \"Add to Dock\"",
     "macosStep3": "Click \"Add\" to confirm",
     "genericTitle": "Add to Home Screen",
-    "genericBody": "X-Glass is a web app that also supports installation as a Progressive Web App (PWA) — no App Store needed. Open your browser menu and look for \"Add to Home Screen\" or \"Install app\"."
+    "genericBody": "Atlens is a web app that also supports installation as a Progressive Web App (PWA) — no App Store needed. Open your browser menu and look for \"Add to Home Screen\" or \"Install app\"."
   },
   "Pricing": {
     "fieldLabel": "Price",
@@ -511,7 +515,7 @@
   "Purchase": {
     "whereToBuy": "Where to buy",
     "buyAt": "Buy at",
-    "disclosureDetail": "Some retailer links are affiliate. X-Glass may earn a small commission at no extra cost to you."
+    "disclosureDetail": "Some retailer links are affiliate. Atlens may earn a small commission at no extra cost to you."
   },
   "Collection": {
     "stats": "{count} lenses · {brandCount} brands",
@@ -545,6 +549,6 @@
     "feedbackLink": "Tell me",
     "reportIssue": "Report an issue",
     "mountLabel": "Fujifilm {mount}-Mount",
-    "shareText": "Found a nice collection on X-Glass: {title} ({mount})"
+    "shareText": "Found a nice collection on Atlens: {title} ({mount})"
   }
 }

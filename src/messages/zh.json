@@ -1,6 +1,6 @@
 {
   "Common": {
-    "appName": "X-Glass",
+    "appName": "Atlens",
     "appDesc": "富士党专属的镜头图鉴",
     "goBack": "返回上一页",
     "backToTop": "回到顶部",
@@ -12,8 +12,11 @@
     "home": "返回首页"
   },
   "Metadata": {
-    "seoTitle": "X-Glass | 富士 X / G 卡口镜头图鉴",
+    "seoTitle": "Atlens | 富士 X / G 卡口镜头图鉴",
     "seoDescription": "富士党的镜头图鉴。X 卡口覆盖原厂与主流副厂，规格统一标准，跨品牌横向对比；G 卡口（中画幅）也已开始收录。"
+  },
+  "Rename": {
+    "toast": "X-Glass 已更名为 Atlens——还是那个镜头图鉴，只是换了个名字。欢迎回来 👋"
   },
   "Nav": {
     "lenses": "镜头库",
@@ -301,8 +304,8 @@
     "customizeTitle": "标题",
     "customizeSlogan": "补充文案",
     "customizeSloganPlaceholder": "写一句你想加的话…",
-    "shareCtaMulti": "我在 X-Glass 上对比了 {count} 支镜头，快来看看 👀",
-    "shareCtaSingle": "我在 X-Glass 上发现了一支镜头，快来看看 👀",
+    "shareCtaMulti": "我在 Atlens 上对比了 {count} 支镜头，快来看看 👀",
+    "shareCtaSingle": "我在 Atlens 上发现了一支镜头，快来看看 👀",
     "copyFailed": "复制失败",
     "shareFailed": "分享失败，请重试"
   },
@@ -345,10 +348,11 @@
   },
   "About": {
     "pageTitle": "关于",
-    "metaDescription": "X-Glass 项目缘起、维护者，以及收录情况——以富士 X 卡口为主，G 卡口也在开始纳入。由独立工程师独立开发与维护，Web 代码开源。",
+    "rebrandNote": "Atlens 原名 X-Glass——同一个项目、同一个维护者，只是换了名字。",
+    "metaDescription": "Atlens 项目缘起、维护者，以及收录情况——以富士 X 卡口为主，G 卡口也在开始纳入。由独立工程师独立开发与维护，Web 代码开源。",
     "backgroundTitle": "项目缘起",
-    "backgroundBody1": "作为一名富士用户，我自己在选镜头时就常常被信息散落的问题困扰——比如想找一支等效 50mm 的大光圈定焦，或者旅游用的一镜走天下，市面上到底有哪些镜头能满足这个需求？富士 X 卡口的镜头生态，已经从早年的原厂主导，成长为如今数十个品牌、上百颗镜头并存的繁荣局面。然而，镜头参数散落在各品牌官网与各类平台之间，格式不一，横向对比极其低效。X-Glass 的初衷，正是把这些碎片化的信息汇聚到一处，建立一个规范化、可横向对比的数据库，让选镜头这件事回归客观数据本身。剩下选哪一支，还是得自己判断。X-Glass 起步时只做 X 卡口，后来在一些用户的呼声下也开始把 G 卡口（中画幅）纳入进来。这部分广度还在追赶——富士原厂的 GF 镜头已全量覆盖，第三方品牌也在陆续接入，但跨品牌覆盖与对比能力仍不如 X 卡口这边成熟。",
-    "backgroundBody2": "我是一名前端工程师，X-Glass 目前完全由我一人开发并维护。对打造一个在工程质量、用户体验和美学设计上都不妥协的产品，我一直有很强的执念与热情——这份热情，同样是这个项目得以实现的重要驱动力之一。",
+    "backgroundBody1": "作为一名富士用户，我自己在选镜头时就常常被信息散落的问题困扰——比如想找一支等效 50mm 的大光圈定焦，或者旅游用的一镜走天下，市面上到底有哪些镜头能满足这个需求？富士 X 卡口的镜头生态，已经从早年的原厂主导，成长为如今数十个品牌、上百颗镜头并存的繁荣局面。然而，镜头参数散落在各品牌官网与各类平台之间，格式不一，横向对比极其低效。Atlens 的初衷，正是把这些碎片化的信息汇聚到一处，建立一个规范化、可横向对比的数据库，让选镜头这件事回归客观数据本身。剩下选哪一支，还是得自己判断。Atlens 起步时只做 X 卡口，后来在一些用户的呼声下也开始把 G 卡口（中画幅）纳入进来。这部分广度还在追赶——富士原厂的 GF 镜头已全量覆盖，第三方品牌也在陆续接入，但跨品牌覆盖与对比能力仍不如 X 卡口这边成熟。",
+    "backgroundBody2": "我是一名前端工程师，Atlens 目前完全由我一人开发并维护。对打造一个在工程质量、用户体验和美学设计上都不妥协的产品，我一直有很强的执念与热情——这份热情，同样是这个项目得以实现的重要驱动力之一。",
     "coverageTitle": "收录范围与计划",
     "coverageBody": "各品牌的收录深度与停产型号覆盖情况不尽相同。其他卡口的转接镜头暂不在收录范围内。",
     "coverageBrandsX": "X 卡口",
@@ -364,8 +368,8 @@
     "coverageSuggest": "缺少你要找的镜头？<feedback>告诉我</feedback>",
     "coverageViewLink": "查看收录范围 →",
     "dataAccuracyTitle": "数据与准确性",
-    "dataAccuracyIntro": "X-Glass 的全部数据来自两条独立的 pipeline。一条负责参数，从品牌官网采集后做结构化处理；一条负责价格，独立从电商渠道采样参考价格。两条完全隔离，各有自己的数据源和质控流程。",
-    "dataAccuracyCaveat": "X-Glass 收录上百支镜头、几十个字段维度，恳请大家包容少量错漏和数据滞后——发现问题欢迎<feedback>告诉我</feedback>。涉及购买决策时，关键参数请到品牌官网再确认一次。",
+    "dataAccuracyIntro": "Atlens 的全部数据来自两条独立的 pipeline。一条负责参数，从品牌官网采集后做结构化处理；一条负责价格，独立从电商渠道采样参考价格。两条完全隔离，各有自己的数据源和质控流程。",
+    "dataAccuracyCaveat": "Atlens 收录上百支镜头、几十个字段维度，恳请大家包容少量错漏和数据滞后——发现问题欢迎<feedback>告诉我</feedback>。涉及购买决策时，关键参数请到品牌官网再确认一次。",
     "dataSpecTitle": "参数数据",
     "dataSpecPoint1Title": "数据仅来自品牌官网",
     "dataSpecPoint1Body": "公开发布的参数值都来自品牌官网；这些参数不会取自第三方资料。",
@@ -401,18 +405,18 @@
     "dataGitHubCardBody": "包含数据流向、分支处理、人工与 AI 节点的完整 Mermaid 图表。",
     "dataGitHubCardButton": "在 GitHub 上查看",
     "disclaimerTitle": "免责声明",
-    "disclaimerAccuracy": "X-Glass 的数据来自公开资料，并经过人工校准。我已尽力保证规格的时效性与准确性，但数据难免存在错误或滞后。涉及购买决策时，请务必在厂商官方页面核实关键参数。",
-    "disclaimerLiability": "X-Glass 不对基于本站信息所做的任何决定承担责任。",
-    "disclaimerIndependent": "X-Glass 是独立的第三方对比工具，与富士及任何镜头厂商无官方关联，未获其背书或赞助。",
-    "disclaimerCopyright": "本站展示的产品图片及品牌商标，版权归各自所有者所有。如您是权利人并认为存在侵权问题，请联系 xglass@sentacraft.com。",
+    "disclaimerAccuracy": "Atlens 的数据来自公开资料，并经过人工校准。我已尽力保证规格的时效性与准确性，但数据难免存在错误或滞后。涉及购买决策时，请务必在厂商官方页面核实关键参数。",
+    "disclaimerLiability": "Atlens 不对基于本站信息所做的任何决定承担责任。",
+    "disclaimerIndependent": "Atlens 是独立的第三方对比工具，与富士及任何镜头厂商无官方关联，未获其背书或赞助。",
+    "disclaimerCopyright": "本站展示的产品图片及品牌商标，版权归各自所有者所有。如您是权利人并认为存在侵权问题，请联系 me@atlens.app。",
     "privacyTitle": "隐私",
-    "privacyBody": "X-Glass 不要求注册，不收集任何个人信息。",
+    "privacyBody": "Atlens 不要求注册，不收集任何个人信息。",
     "privacyAnalytics": "本站使用 Cloudflare Analytics，匿名记录页面访问量、功能使用等聚合数据，用于持续改进产品。这些数据不包含任何可识别个人身份的信息。",
     "supportTitle": "支持项目",
-    "supportCost": "搭建 X-Glass 是一件需要长期维护和持续投入的事，并不是一劳永逸的单次开发。为了保证数据质量，我需要运行一套多阶段的数据流水线，用来收集、清洗并校准来自数十个厂商官网的参数，同时还需要整理相关的价格参考数据。",
-    "supportAffiliate": "为了方便大家查看或购买，部分页面提供了跳转到商家的购买链接，其中有一些属于联盟营销（Affiliate）链接。如果大家通过这些链接下单，X-Glass 会获得一笔微薄的佣金。这不会让大家多花一分钱，但能帮我分担部分维护成本，让工具保持免费且无广告。",
-    "supportIntegrity": "联盟合作绝不会影响排名或价格数据。X-Glass 的代码完全开源，欢迎随时查看代码是如何实现的。如果发现链接失效、型号错配或其他问题，欢迎<feedback>告诉我</feedback>，我会及时修复与处理。",
-    "supportDonate": "如果 X-Glass 帮你选到了心仪的镜头，或者为你节省了时间，欢迎直接赞赏支持。",
+    "supportCost": "搭建 Atlens 是一件需要长期维护和持续投入的事，并不是一劳永逸的单次开发。为了保证数据质量，我需要运行一套多阶段的数据流水线，用来收集、清洗并校准来自数十个厂商官网的参数，同时还需要整理相关的价格参考数据。",
+    "supportAffiliate": "为了方便大家查看或购买，部分页面提供了跳转到商家的购买链接，其中有一些属于联盟营销（Affiliate）链接。如果大家通过这些链接下单，Atlens 会获得一笔微薄的佣金。这不会让大家多花一分钱，但能帮我分担部分维护成本，让工具保持免费且无广告。",
+    "supportIntegrity": "联盟合作绝不会影响排名或价格数据。Atlens 的代码完全开源，欢迎随时查看代码是如何实现的。如果发现链接失效、型号错配或其他问题，欢迎<feedback>告诉我</feedback>，我会及时修复与处理。",
+    "supportDonate": "如果 Atlens 帮你选到了心仪的镜头，或者为你节省了时间，欢迎直接赞赏支持。",
     "supportDonateAlt": "你也可以直接赞赏来支持这个项目，每一份支持都是对我的鼓励。",
     "donationKofi": "Support on Ko-fi",
     "donationWechatLabel": "微信赞赏码",
@@ -420,7 +424,7 @@
     "ackTitle": "致谢",
     "ackBody": "过去的这一年，大语言模型展现出了超凡的能力。过去，我很难想象仅凭一己之力就能完成如此规模的项目，更不敢奢望在不到一个月内将其落地。如果没有大语言模型和 AI Coding Agent，这个项目可能永远只会停留在构想阶段。感谢这个时代的技术红利，让那些曾经只是灵感火花的想法，能够在一个独立开发者手中真正变成现实。",
     "ackStory1Tag": "Claude Code",
-    "ackStory1Body": "Iris 是 X-Glass 的灵魂角色——首页那个随着点击呼吸张合的光圈动画。\n\n为了实现 Iris，Claude 研读了大量有关花瓣状光圈叶片机械结构的资料和教学视频，深入理解其运动逻辑后，才正式开始建模。最终的成果是一套三体约束运动学引擎——实时解析正逆运动学方程，光圈开口由圆弧相交几何精确计算。我对机构运动学没有任何 domain knowledge，整套系统完全由 Claude 从零建模完成。\n\nIris 不仅仅是一段动画。就像早年 Microsoft Office 里那个叫 Clippy 的回形针，它是 X-Glass 的灵魂角色，用一种安静而有个性的方式陪伴着每一位访客。",
+    "ackStory1Body": "Iris 是 Atlens 的灵魂角色——首页那个随着点击呼吸张合的光圈动画。\n\n为了实现 Iris，Claude 研读了大量有关花瓣状光圈叶片机械结构的资料和教学视频，深入理解其运动逻辑后，才正式开始建模。最终的成果是一套三体约束运动学引擎——实时解析正逆运动学方程，光圈开口由圆弧相交几何精确计算。我对机构运动学没有任何 domain knowledge，整套系统完全由 Claude 从零建模完成。\n\nIris 不仅仅是一段动画。就像早年 Microsoft Office 里那个叫 Clippy 的回形针，它是 Atlens 的灵魂角色，用一种安静而有个性的方式陪伴着每一位访客。",
     "ackStory2Tag": "Google Gemini",
     "ackStory2Body": "Gemini 深度参与了这个项目几个关键节点的设计决策。在构建 Filter Panel 时，它帮我厘清了单选与多选的交互语言，让用户在第一眼就能凭直觉判断一个控件的行为。在镜头列表的响应式布局中，它细化了不同屏幕尺寸下卡片的排布方式与视觉间距，让信息层级在任何设备上都保持清晰。在分享海报的设计中，它把那张海报推向了一个干净、克制、有美感的调性。\n\n作为工程师，我经常能感觉到界面「哪里不对」，却说不清为什么。Gemini 给了我诊断设计问题的语言，让我在修好问题的同时，也真正理解了背后的逻辑——知其然，也知其所以然。",
     "ackClaudeArchitect": "架构师",
@@ -465,18 +469,18 @@
     "success": "收到了，谢谢！",
     "successBody": "每一条反馈都在帮助我让数据更准确、更完整。",
     "error": "提交时出了点问题，请稍后再试。",
-    "emailLabel": "X-Glass 官方邮箱"
+    "emailLabel": "Atlens 官方邮箱"
   },
   "Install": {
     "pageTitle": "安装应用",
-    "metaDescription": "把 X-Glass 装到手机主屏或电脑桌面，像 App 一样打开，离线也能用。",
-    "headline": "将 X-Glass 添加到主屏幕",
+    "metaDescription": "把 Atlens 装到手机主屏或电脑桌面，像 App 一样打开，离线也能用。",
+    "headline": "将 Atlens 添加到主屏幕",
     "subheadline": "像 App 一样打开，全屏体验，支持离线使用。",
     "installedTitle": "已完成安装",
-    "installedBody": "X-Glass 已安装在此设备上。",
-    "openApp": "打开 X-Glass",
-    "promptTitle": "安装 X-Glass",
-    "promptBody": "X-Glass 是一款网页应用，同时支持 PWA 安装——无需通过 App Store，直接添加到设备，以后一键打开，体验更接近原生 App。",
+    "installedBody": "Atlens 已安装在此设备上。",
+    "openApp": "打开 Atlens",
+    "promptTitle": "安装 Atlens",
+    "promptBody": "Atlens 是一款网页应用，同时支持 PWA 安装——无需通过 App Store，直接添加到设备，以后一键打开，体验更接近原生 App。",
     "installButton": "安装",
     "iosTitle": "添加到主屏幕",
     "iosSubtitle": "在 Safari 中按以下步骤操作：",
@@ -489,7 +493,7 @@
     "macosStep2": "选择「添加到程序坞」",
     "macosStep3": "点击「添加」确认",
     "genericTitle": "添加到主屏幕",
-    "genericBody": "X-Glass 是一款网页应用，同时支持 PWA 安装，体验更接近原生 App。打开浏览器菜单，寻找「添加到主屏幕」或「安装应用」选项。"
+    "genericBody": "Atlens 是一款网页应用，同时支持 PWA 安装，体验更接近原生 App。打开浏览器菜单，寻找「添加到主屏幕」或「安装应用」选项。"
   },
   "Pricing": {
     "fieldLabel": "价格",
@@ -511,7 +515,7 @@
   "Purchase": {
     "whereToBuy": "购买渠道",
     "buyAt": "购买",
-    "disclosureDetail": "部分购买链接含电商平台合作。你的购买价格不受任何影响，但 X-Glass 可能从中获得少量佣金。"
+    "disclosureDetail": "部分购买链接含电商平台合作。你的购买价格不受任何影响，但 Atlens 可能从中获得少量佣金。"
   },
   "Collection": {
     "stats": "{count} 支镜头 · {brandCount} 个品牌",
@@ -545,6 +549,6 @@
     "feedbackLink": "告诉我",
     "reportIssue": "反馈问题",
     "mountLabel": "富士 {mount} 卡口",
-    "shareText": "在 X-Glass 发现一份不错的合集：{title}（{mount}）"
+    "shareText": "在 Atlens 发现一份不错的合集：{title}（{mount}）"
   }
 }

@@ -81,7 +81,7 @@ export async function generateMetadata({
     title: displayName,
     description,
     openGraph: {
-      title: `${displayName} | X-Glass`,
+      title: `${displayName} | Atlens`,
       description,
       images: lensOgImages(lens.id),
     },

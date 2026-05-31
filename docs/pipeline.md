@@ -1,10 +1,10 @@
 # Data Pipeline — Detailed Reference
 
-Full architecture of the `x-glass-pipeline` (private repo) that produces `src/data/lenses.json`.
+Full architecture of the `atlens-pipeline` (private repo) that produces `src/data/lenses.json`.
 
 ```mermaid
 flowchart TD
-  subgraph pipeline["x-glass-pipeline (private)"]
+  subgraph pipeline["atlens-pipeline (private)"]
     SOURCES[("<b>sources.yaml</b><br/>· Brand aliases<br/>· Listing URLs per brand<br/>· Spec extraction sources per brand")]
 
     S0["<b>Stage 0 · Index</b><br/>Discovers X-mount lenses from brand listing pages<br/>· Normalizes brand names via aliases<br/>· Deduplicates via generated lens ID"]
@@ -24,7 +24,7 @@ flowchart TD
     SR["<b>Stage R · Human Review</b><br/>Maintainer inspects every record<br/>and applies corrections"]
 
     subgraph sp["Stage P · Publish Gate"]
-      SP1["<b>Zod schema validation</b> against x-glass schema<br/>· Intra-lens: field formats, focal range, aperture ordering, lens formula integrity<br/>· Cross-lens: duplicate IDs, URLs, brand-models, and spec tuples (with known-distinct allowlist)"]
+      SP1["<b>Zod schema validation</b> against atlens schema<br/>· Intra-lens: field formats, focal range, aperture ordering, lens formula integrity<br/>· Cross-lens: duplicate IDs, URLs, brand-models, and spec tuples (with known-distinct allowlist)"]
       SP2["<b>Normalization + version stamp</b>"]
     end
   end
@@ -44,7 +44,7 @@ flowchart TD
   S2b & S2c --> SR
   SR --> SP1
   SP1 --> SP2
-  SP2 -->|"writes src/data/lenses.json"| DB[("<b>x-glass</b><br/>(this repo)")]
+  SP2 -->|"writes src/data/lenses.json"| DB[("<b>atlens</b><br/>(this repo)")]
 
   classDef script fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
   classDef agent fill:#fef9c3,stroke:#ca8a04,color:#713f12
@@ -85,6 +85,6 @@ Two phases with a human review checkpoint between raw fetch and final merge:
 
 ### Stage P · Publish Gate
 
-Runs `tsx scripts/validate-lenses.mts` which imports the Zod schema from the main x-glass repo. Validation covers:
+Runs `tsx scripts/validate-lenses.mts` which imports the Zod schema from the main atlens repo. Validation covers:
 - **Intra-lens:** field formats, focal length ordering, aperture ordering (maxAperture ≤ minAperture), lens formula integrity (groups ≤ elements), URL formats, officialLinks presence
 - **Cross-lens:** duplicate IDs, duplicate official URLs, duplicate brand/model/generation combinations, duplicate spec tuples — with a known-distinct allowlist for confirmed edge cases

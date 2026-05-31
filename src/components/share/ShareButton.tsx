@@ -99,8 +99,8 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
   const effectiveSlogan = sloganOverride ?? presetSubtitle ?? "";
 
   const posterLabels: PosterLabels = {
-    appName: "X-Glass",
-    siteUrl: `xglass.sentacraft.com/${locale}`,
+    appName: "Atlens",
+    siteUrl: `atlens.app/${locale}`,
     brandTagline: tImage("brandTagline"),
     cta: lenses.length === 1 ? tImage("ctaSingle") : tImage("cta"),
     comparison: computedPosterTitle,
@@ -189,7 +189,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
     try {
       const url = await rasterizePoster(posterRef.current);
       const link = document.createElement("a");
-      link.download = `x-glass_${slugRef.current}.png`;
+      link.download = `atlens_${slugRef.current}.png`;
       link.href = url;
       link.click();
       track("share_action", { method: "poster_download" });
@@ -235,7 +235,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
       if (blobUrl) {
         // Share API failed but poster was generated — fall back to download
         const link = document.createElement("a");
-        link.download = `x-glass_${slugRef.current}.png`;
+        link.download = `atlens_${slugRef.current}.png`;
         link.href = blobUrl;
         link.click();
       } else {

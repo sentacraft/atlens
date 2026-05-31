@@ -58,7 +58,7 @@ export async function generateMetadata({
       title,
       description: emptyDescription,
       openGraph: {
-        title: `${title} | X-Glass`,
+        title: `${title} | Atlens`,
         description: emptyDescription,
         images: defaultOgImages(),
       },
@@ -71,7 +71,7 @@ export async function generateMetadata({
       title: emptyTitle,
       description: emptyDescription,
       openGraph: {
-        title: `${emptyTitle} | X-Glass`,
+        title: `${emptyTitle} | Atlens`,
         description: emptyDescription,
         images: defaultOgImages(),
       },
@@ -87,7 +87,7 @@ export async function generateMetadata({
     title,
     description,
     openGraph: {
-      title: `${title} | X-Glass`,
+      title: `${title} | Atlens`,
       description,
       images: defaultOgImages(),
     },
