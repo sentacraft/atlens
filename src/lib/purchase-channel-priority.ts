@@ -21,6 +21,19 @@ const BRAND_PRIORITY: Record<string, PurchaseChannelType[]> = {
 
 const DEFAULT_PRIORITY: PurchaseChannelType[] = ["amazon", "official", "ebay", "bhphoto"];
 
-export function getChannelPriority(brand: string): PurchaseChannelType[] {
-  return BRAND_PRIORITY[brand.toLowerCase()] ?? DEFAULT_PRIORITY;
+// Channel order for a brand, adjusted for the visitor's region. The base order
+// is utility-first: a channel sits where it's most useful to the shopper, and
+// affiliate status never promotes or demotes it. The only regional adjustment
+// is B&H Photo — a US retailer whose international shipping is slow/costly, so
+// for non-US visitors it drops to last resort (kept available, but ranked below
+// any locally-usable channel).
+export function getChannelPriority(
+  brand: string,
+  countryCode: string,
+): PurchaseChannelType[] {
+  const base = BRAND_PRIORITY[brand.toLowerCase()] ?? DEFAULT_PRIORITY;
+  if (countryCode !== "US" && base.includes("bhphoto")) {
+    return [...base.filter((channel) => channel !== "bhphoto"), "bhphoto"];
+  }
+  return base;
 }

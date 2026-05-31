@@ -12,8 +12,24 @@ const MAX_PURCHASE_LINKS = 3;
 // Independent of channel — any purchase URL whose host is here gets its param.
 // Amazon (tag) and the GoAffPro DTC stores (ref) live in one table; each value
 // is a [key, value] pair fed straight to URLSearchParams.set.
+// Single Earn Globally store ID. Every enrolled marketplace earns under this
+// one tag, so all Amazon storefronts below share it.
+const AMAZON_TAG = "xglass0a-20";
+
 const AFFILIATE_PARAMS: Record<string, [string, string]> = {
-  "amazon.com": ["tag", "xglass0a-20"],
+  // Amazon storefronts covered by Earn Globally enrolment — all share the one
+  // store ID. Storefronts not listed (amazon.com.au, amazon.co.jp) are not
+  // enrolled: they still localize for the shopper but stay non-affiliate.
+  "amazon.com": ["tag", AMAZON_TAG],
+  "amazon.ca": ["tag", AMAZON_TAG],
+  "amazon.co.uk": ["tag", AMAZON_TAG],
+  "amazon.de": ["tag", AMAZON_TAG],
+  "amazon.fr": ["tag", AMAZON_TAG],
+  "amazon.it": ["tag", AMAZON_TAG],
+  "amazon.es": ["tag", AMAZON_TAG],
+  "amazon.nl": ["tag", AMAZON_TAG],
+  "amazon.pl": ["tag", AMAZON_TAG],
+  "amazon.se": ["tag", AMAZON_TAG],
   "7artisans.store": ["ref", "omwzyqkn"],
   "ttartisan.store": ["ref", "idncwfkb"],
   "viltrox.com": ["ref", "owbtcyuk"],
@@ -43,6 +59,29 @@ const EBAY_MARKETS: Record<string, EbayMarket> = {
 };
 
 const EBAY_DEFAULT_MARKET = EBAY_MARKETS.US;
+
+// Amazon storefront domain by GeoIP country. Locale stays the master switch for
+// market/currency; GeoIP only refines which Amazon marketplace an international
+// (non-zh) visitor lands on. Earn-Globally storefronts carry the affiliate tag
+// via AFFILIATE_PARAMS; utility-only regions (AU/JP) localize the storefront but
+// stay non-affiliate. Unmapped countries fall back to amazon.com.
+const AMAZON_MARKETS: Record<string, string> = {
+  US: "amazon.com",
+  CA: "amazon.ca",
+  GB: "amazon.co.uk",
+  DE: "amazon.de",
+  AT: "amazon.de",
+  FR: "amazon.fr",
+  IT: "amazon.it",
+  ES: "amazon.es",
+  NL: "amazon.nl",
+  PL: "amazon.pl",
+  SE: "amazon.se",
+  AU: "amazon.com.au",
+  JP: "amazon.co.jp",
+};
+
+const AMAZON_DEFAULT_DOMAIN = "amazon.com";
 
 const CHANNEL_LABELS: Record<PurchaseChannelType, string> = {
   official: "Official",
@@ -92,6 +131,29 @@ function buildBhPhotoUrl(lens: Lens, locale: string): string {
   return `https://www.bhphotovideo.com/c/search?Ntt=${encodeURIComponent(query)}`;
 }
 
+// Rewrite an amazon.com product URL to the visitor's regional storefront based
+// on GeoIP, keeping the same path (and thus the same ASIN). Unmapped countries
+// and non-amazon hosts are returned untouched. Same-ASIN assumption: a product
+// absent from the regional store may 404 rather than fall back to search —
+// per-region ASINs are a future pipeline concern.
+function localizeAmazonUrl(url: string, countryCode: string): string {
+  const domain = AMAZON_MARKETS[countryCode] ?? AMAZON_DEFAULT_DOMAIN;
+  if (domain === AMAZON_DEFAULT_DOMAIN) {
+    return url;
+  }
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return url;
+  }
+  if (!/(^|\.)amazon\.[a-z.]+$/.test(parsed.hostname)) {
+    return url;
+  }
+  parsed.hostname = `www.${domain}`;
+  return parsed.toString();
+}
+
 // Set the affiliate param for a product URL's host, if registered. Channel-
 // agnostic: official (ref) and amazon (tag) both go through here.
 function applyAffiliate(url: string): { url: string; isAffiliate: boolean } {
@@ -139,12 +201,14 @@ export function buildPurchaseLinks(
 
   const links: PurchaseLink[] = [];
 
-  for (const channel of getChannelPriority(lens.brand)) {
+  for (const channel of getChannelPriority(lens.brand, countryCode)) {
     switch (channel) {
       case "official":
       case "amazon": {
-        const url = urlByChannel.get(channel);
-        if (url) {
+        const rawUrl = urlByChannel.get(channel);
+        if (rawUrl) {
+          const url =
+            channel === "amazon" ? localizeAmazonUrl(rawUrl, countryCode) : rawUrl;
           const aff = applyAffiliate(url);
           links.push({
             channel,
