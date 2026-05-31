@@ -65,13 +65,17 @@ const EBAY_DEFAULT_MARKET = EBAY_MARKETS.US;
 // (non-zh) visitor lands on. Earn-Globally storefronts carry the affiliate tag
 // via AFFILIATE_PARAMS; utility-only regions (AU/JP) localize the storefront but
 // stay non-affiliate. Unmapped countries fall back to amazon.com.
+// Countries without an enrolled store of their own route to the nearest enrolled
+// neighbour (AT→.de, IE→.co.uk, BE→.nl) to keep both localization and affiliate.
 const AMAZON_MARKETS: Record<string, string> = {
   US: "amazon.com",
   CA: "amazon.ca",
   GB: "amazon.co.uk",
+  IE: "amazon.co.uk",
   DE: "amazon.de",
   AT: "amazon.de",
   FR: "amazon.fr",
+  BE: "amazon.nl",
   IT: "amazon.it",
   ES: "amazon.es",
   NL: "amazon.nl",
@@ -131,27 +135,31 @@ function buildBhPhotoUrl(lens: Lens, locale: string): string {
   return `https://www.bhphotovideo.com/c/search?Ntt=${encodeURIComponent(query)}`;
 }
 
-// Rewrite an amazon.com product URL to the visitor's regional storefront based
-// on GeoIP, keeping the same path (and thus the same ASIN). Unmapped countries
-// and non-amazon hosts are returned untouched. Same-ASIN assumption: a product
-// absent from the regional store may 404 rather than fall back to search —
-// per-region ASINs are a future pipeline concern.
-function localizeAmazonUrl(url: string, countryCode: string): string {
+// Extract the 10-char ASIN from an Amazon product URL (/dp/, /gp/product/,
+// /product/ forms). Returns null for search/storefront URLs that carry none.
+function extractAsin(url: string): string | null {
+  const match = url.match(/\/(?:dp|gp\/product|product)\/([A-Z0-9]{10})(?:[/?]|$)/);
+  return match ? match[1] : null;
+}
+
+// Build the Amazon URL for the visitor's region. On amazon.com (US, and the
+// fallback for unmapped countries) we deep-link to the product by ASIN. On any
+// other storefront the US-sourced ASIN often does not exist in the regional
+// catalog, so we search the storefront by model name instead of risking a 404
+// product page. Affiliate tags are applied later by host (applyAffiliate).
+function buildAmazonUrl(
+  lens: Lens,
+  locale: string,
+  countryCode: string,
+  sourceUrl: string,
+): string {
   const domain = AMAZON_MARKETS[countryCode] ?? AMAZON_DEFAULT_DOMAIN;
   if (domain === AMAZON_DEFAULT_DOMAIN) {
-    return url;
+    const asin = extractAsin(sourceUrl);
+    return asin ? `https://www.${domain}/dp/${asin}` : sourceUrl;
   }
-  let parsed: URL;
-  try {
-    parsed = new URL(url);
-  } catch {
-    return url;
-  }
-  if (!/(^|\.)amazon\.[a-z.]+$/.test(parsed.hostname)) {
-    return url;
-  }
-  parsed.hostname = `www.${domain}`;
-  return parsed.toString();
+  const query = getSearchQuery(lens, locale);
+  return `https://www.${domain}/s?k=${encodeURIComponent(query)}`;
 }
 
 // Set the affiliate param for a product URL's host, if registered. Channel-
@@ -208,7 +216,9 @@ export function buildPurchaseLinks(
         const rawUrl = urlByChannel.get(channel);
         if (rawUrl) {
           const url =
-            channel === "amazon" ? localizeAmazonUrl(rawUrl, countryCode) : rawUrl;
+            channel === "amazon"
+              ? buildAmazonUrl(lens, locale, countryCode, rawUrl)
+              : rawUrl;
           const aff = applyAffiliate(url);
           links.push({
             channel,
