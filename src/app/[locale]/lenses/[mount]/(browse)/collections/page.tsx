@@ -14,7 +14,7 @@ import {
   APERTURE_SLUGS,
   TRAIT_SLUGS,
   DEDICATED_SLUGS,
-  VALUE_SLUGS,
+  CHINESE_SLUGS,
 } from "@/lib/collections";
 import { getLensesByMount } from "@/lib/lens";
 import { urlSegmentToMount, mountHasCollections } from "@/lib/mount";
@@ -61,7 +61,7 @@ const CATEGORIES = [
   { id: "section-zoom", key: "category_zoom", slugs: ZOOM_SLUGS, marker: ["ZOOM"] },
   { id: "section-brand", key: "category_brand", slugs: BRAND_SLUGS, marker: ["BRAND"] },
   { id: "section-series", key: "category_series", slugs: SERIES_SLUGS, marker: ["SERIES"] },
-  { id: "section-value", key: "category_value", slugs: VALUE_SLUGS, marker: ["VALUE"] },
+  { id: "section-chinese", key: "category_chinese", slugs: CHINESE_SLUGS, marker: ["CN"] },
   { id: "section-price", key: "category_price", slugs: PRICE_SLUGS, marker: ["$"] },
   { id: "section-portability", key: "category_portability", slugs: PORTABILITY_SLUGS, marker: ["G"] },
   { id: "section-aperture", key: "category_aperture", slugs: APERTURE_SLUGS, marker: ["ƒ"], markerItalic: true },
