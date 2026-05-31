@@ -11849,7 +11849,7 @@
     "af": true,
     "ois": false,
     "wr": false,
-    "apertureRing": true,
+    "apertureRing": false,
     "powerZoom": false,
     "focusMotor": "STM",
     "weightG": [
@@ -11932,7 +11932,7 @@
     "af": true,
     "ois": false,
     "wr": false,
-    "apertureRing": true,
+    "apertureRing": false,
     "powerZoom": false,
     "focusMotor": "STM+Lead screw",
     "weightG": 210,
@@ -12116,7 +12116,7 @@
     "af": true,
     "ois": false,
     "wr": false,
-    "apertureRing": true,
+    "apertureRing": false,
     "powerZoom": false,
     "focusMotor": "STM+Lead screw",
     "weightG": [
@@ -12216,7 +12216,7 @@
     "af": true,
     "ois": false,
     "wr": false,
-    "apertureRing": true,
+    "apertureRing": false,
     "powerZoom": false,
     "focusMotor": "STM+Lead screw",
     "weightG": [
