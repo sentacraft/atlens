@@ -19,13 +19,22 @@ export function CompareMobileBuyPanel({ lenses }: Props) {
   const tBrand = useTranslations("Brands");
   const countryCode = useCountryCode();
 
-  const lensesWithLinks = lenses.filter(
-    (lens) => buildPurchaseLinks(lens, locale, countryCode, "compare-mobile").length > 0,
-  );
+  const lensLinks = lenses
+    .map((lens) => ({
+      lens,
+      links: buildPurchaseLinks(lens, locale, countryCode, "compare-mobile"),
+    }))
+    .filter((entry) => entry.links.length > 0);
 
-  if (lensesWithLinks.length === 0) {
+  if (lensLinks.length === 0) {
     return null;
   }
+
+  // Show the affiliate disclosure only when at least one rendered link is
+  // actually an affiliate link.
+  const hasAffiliate = lensLinks.some((entry) =>
+    entry.links.some((link) => link.isAffiliate),
+  );
 
   return (
     <div className="mt-3 mb-44 overflow-hidden rounded-xl border border-zinc-200 bg-white sm:hidden dark:border-zinc-800 dark:bg-zinc-950">
@@ -35,7 +44,7 @@ export function CompareMobileBuyPanel({ lenses }: Props) {
         </span>
       </div>
       <ul className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
-        {lensesWithLinks.map((lens) => {
+        {lensLinks.map(({ lens }) => {
           const sel = pickPriceEntry(lens.pricing, locale);
           return (
             <li key={lens.id} className="flex flex-col gap-2 px-3 py-2.5">
@@ -59,7 +68,9 @@ export function CompareMobileBuyPanel({ lenses }: Props) {
           );
         })}
       </ul>
-      <PurchaseDisclosureCaption className="border-t border-zinc-100 dark:border-zinc-800/60" />
+      {hasAffiliate && (
+        <PurchaseDisclosureCaption className="border-t border-zinc-100 dark:border-zinc-800/60" />
+      )}
     </div>
   );
 }
