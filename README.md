@@ -196,7 +196,7 @@ If the pipeline matures and those concerns ease over time, I'm open to revisitin
 
 **Staying in sync is optional.** I'm not committing to ongoing coordination, but if you make improvements that aren't mount-specific — better schema abstractions, shared UI primitives, accessibility fixes, performance wins — PRs back upstream are very welcome. A quick issue first to align on scope helps both of us avoid wasted effort.
 
-Questions about licensing, collaboration, or anything else: [atlens@sentacraft.com](mailto:atlens@sentacraft.com). Good luck — really hope to see your project out in the wild.
+Questions about licensing, collaboration, or anything else: [me@atlens.app](mailto:me@atlens.app). Good luck — really hope to see your project out in the wild.
 
 ## Acknowledgments
 
@@ -213,4 +213,4 @@ Available for personal reference only. Redistribution, commercial use, and bulk 
 
 **Product images and brand trademarks** are the property of their respective owners.
 Atlens is an independent third-party tool, not affiliated with or endorsed by any manufacturer.
-Rights holders may contact [atlens@sentacraft.com](mailto:atlens@sentacraft.com) for takedown requests.
+Rights holders may contact [me@atlens.app](mailto:me@atlens.app) for takedown requests.
