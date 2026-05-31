@@ -20,7 +20,25 @@ interface FeedbackPayload {
 
 const MAX_DESCRIPTION_LENGTH = 2000;
 
+// Max length (in code points) of the description snippet used as an issue title.
+const TITLE_SNIPPET_MAX = 60;
+
 const checkRateLimit = createRateLimiter({ windowMs: 60_000, max: 5 });
+
+// Collapse a (possibly multi-line) description into a single-line title snippet,
+// truncating at a word boundary with an ellipsis when it exceeds the limit.
+// Returns "" for a blank description so the caller can fall back to a label.
+function titleSnippet(description: string): string {
+  const oneLine = description.replace(/\s+/g, " ").trim();
+  const chars = Array.from(oneLine);
+  if (chars.length <= TITLE_SNIPPET_MAX) {
+    return oneLine;
+  }
+  const cut = chars.slice(0, TITLE_SNIPPET_MAX).join("");
+  const lastSpace = cut.lastIndexOf(" ");
+  const trimmed = lastSpace > TITLE_SNIPPET_MAX * 0.6 ? cut.slice(0, lastSpace) : cut;
+  return `${trimmed.trimEnd()}…`;
+}
 
 function buildIssue(payload: FeedbackPayload): {
   title: string;
@@ -72,10 +90,13 @@ function buildIssue(payload: FeedbackPayload): {
     title = context?.field
       ? `[Data] ${base} — ${context.field}`
       : `[Data] ${base}`;
+  } else if (context?.searchQuery) {
+    title = `[Feedback] Missing lens: ${context.searchQuery}`;
   } else {
-    title = context?.searchQuery
-      ? `[Feedback] Missing lens: ${context.searchQuery}`
-      : `[Feedback] General feedback`;
+    // Use a one-line snippet of the description so general-feedback issues are
+    // distinguishable in the list instead of all sharing one title.
+    const snippet = titleSnippet(description);
+    title = snippet ? `[Feedback] ${snippet}` : `[Feedback] General feedback`;
   }
 
   const labels = ["user-feedback", `feedback:${type}`];
