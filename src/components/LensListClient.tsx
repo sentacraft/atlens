@@ -47,11 +47,13 @@ export default function LensListClient() {
     return <LensesLoading />;
   }
 
+  // `usage` (photo/cine) is a view mode, not a filter dimension, so it is left
+  // out of the active-filter count and the reset trigger. Reset still returns
+  // usage to its default via defaultFilters below.
   const hasActiveFilters =
     filters.brands.length > 0 ||
     filters.typeFilter !== null ||
     filters.focusFilter !== null ||
-    filters.usage !== defaultFilters.usage ||
     filters.opticalTrait !== null ||
     filters.focusMotorClass !== null ||
     filters.focalCategories.length > 0 ||
@@ -61,7 +63,6 @@ export default function LensListClient() {
     filters.brands.length > 0,
     filters.typeFilter !== null,
     filters.focusFilter !== null,
-    filters.usage !== defaultFilters.usage,
     filters.opticalTrait !== null,
     filters.focusMotorClass !== null,
     filters.focalCategories.length > 0,

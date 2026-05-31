@@ -48,6 +48,14 @@ export function GET(req: Request) {
   const allLenses = getLensesByMount(mount, locale);
 
   const filters = parseFilters(searchParams);
+  // parseFilters defaults `usage` to "photo" to match the client UI's default
+  // view. This endpoint is a full-pool feed, so an absent usage param means
+  // "no usage filter" here, not "photo" — otherwise cine lenses never reach the
+  // client, which filters locally. An explicit `u` param is still honoured for
+  // a future move to backend-driven filtering.
+  if (searchParams.get("u") === null) {
+    filters.usage = null;
+  }
   const filtered = filterLenses(allLenses, filters);
   const sorted = sortLenses(filtered, filters.sort, filters.sortDir);
 
