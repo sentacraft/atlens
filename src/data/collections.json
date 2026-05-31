@@ -82,11 +82,11 @@
         "zh": "七工匠镜头"
       },
       "description": {
-        "en": "One of the most prolific affordable third-party makers on X-mount. 7Artisans started out with all-metal manual primes at pocket-friendly prices, and lately its autofocus and cine lines have been filling out fast. What you get is that almost-forgotten mechanical focus feel and a slightly vintage rendering — a good match for anyone who shoots for the sheer fun of it.",
-        "zh": "国产副厂里出镜率极高的多产品牌。七工匠以全金属手动定焦起家，价格亲民，近年自动对焦线与电影头也在快速铺开。带来的是久违的机械对焦手感和偏复古的成像氛围，适合享受拍照过程本身的玩家。"
+        "en": "One of the most prolific affordable third-party makers on X-mount. 7Artisans started out with metal manual primes at pocket-friendly prices, and lately its autofocus and cine lines have been filling out fast. What you get is that almost-forgotten mechanical focus feel and a slightly vintage rendering — a good match for anyone who shoots for the sheer fun of it.",
+        "zh": "国产副厂里出镜率极高的多产品牌。七工匠以金属手动定焦起家，价格亲民，近年自动对焦线与电影头也在快速铺开。带来的是久违的机械对焦手感和偏复古的成像氛围，适合享受拍照过程本身的玩家。"
       },
       "shortDescription": {
-        "en": "An easy, cheap way into all-metal manual primes",
+        "en": "An easy, cheap way into metal manual primes",
         "zh": "千元级金属手动头的快乐入口"
       }
     },
@@ -202,8 +202,8 @@
         "zh": "饼干头"
       },
       "description": {
-        "en": "Form factors engineered for stealth and portability. Featuring every X-mount prime measuring 40mm or less in barrel length, this collection highlights ultra-low-profile pancake lenses, miniature wide-angles, and compact normal optics that let your camera blend into the background. The most radical options barely extend past the body cap.",
-        "zh": "为极致便携与街拍隐蔽性而生的体积。这里收录了所有镜身长度不超过 40mm 的 X 卡口定焦镜头。精巧的饼干头、迷你广角与微型标头，装在机身上几乎让人察觉不到存在。其中最薄的型号几乎只比机身盖多出一点点。"
+        "en": "Form factors engineered for stealth and portability. Featuring every X-mount prime measuring 35mm or less in barrel length, this collection highlights ultra-low-profile pancake lenses, miniature wide-angles, and compact normal optics that let your camera blend into the background. The most radical options barely extend past the body cap.",
+        "zh": "为极致便携与街拍隐蔽性而生的体积。这里收录了所有镜身长度不超过 35mm 的 X 卡口定焦镜头。精巧的饼干头、迷你广角与微型标头，装在机身上几乎让人察觉不到存在。其中最薄的型号几乎只比机身盖多出一点点。"
       },
       "shortDescription": {
         "en": "Ultra-slim profiles for pocketable setups",
@@ -412,8 +412,8 @@
         "zh": "星曜镜头"
       },
       "description": {
-        "en": "Compact manual primes from Brightin Star, a rising third-party maker. The focus is on a small footprint, all-metal build and an accessible price, with focal lengths clustered from wide to standard. For anyone who wants to try pure manual focus and the feel of a mechanical focus ring without spending much, it's an easy place to start.",
-        "zh": "新锐品牌星曜出品的紧凑型手动定焦，主打小体积、全金属做工与亲民定价，焦段集中在广角到标准。对想低成本体验纯手动对焦、把玩机械阻尼感的玩家，是个合适的尝鲜入口。"
+        "en": "Compact manual primes from Brightin Star, a rising third-party maker. The focus is on a small footprint, metal build and an accessible price, with focal lengths clustered from wide to standard. For anyone who wants to try pure manual focus and the feel of a mechanical focus ring without spending much, it's an easy place to start.",
+        "zh": "新锐品牌星曜出品的紧凑型手动定焦，主打小体积、金属做工与亲民定价，焦段集中在广角到标准。对想低成本体验纯手动对焦、把玩机械阻尼感的玩家，是个合适的尝鲜入口。"
       },
       "shortDescription": {
         "en": "Compact manual primes at an easy entry price",
@@ -586,29 +586,44 @@
       }
     },
     {
-      "slug": "value-af",
+      "slug": "chinese-af",
       "title": {
-        "en": "Affordable Autofocus Lenses",
-        "zh": "平价自动对焦镜头"
+        "en": "Chinese Autofocus Primes",
+        "zh": "国产自动对焦定焦"
       },
       "description": {
-        "en": "Native autofocus lenses from affordable third-party makers like Viltrox, 7Artisans and TTArtisan. Backed by solid optics and aggressively competitive pricing, this corner of the market has grown fast, giving X-mount shooters far more AF choices than they used to have.",
-        "zh": "唯卓仕、七工匠、铭匠等国产品牌推出的原生自动对焦镜头合集。凭借扎实的光学素质与极具竞争力的定价，这类平价 AF 镜头正在快速壮大，为 X 卡口用户提供了远超以往的自动对焦选择。"
+        "en": "Native autofocus primes from Chinese makers like Viltrox, 7Artisans and TTArtisan. Backed by solid optics and aggressively competitive pricing, this corner of the market has grown fast, giving X-mount shooters far more AF choices than they used to have.",
+        "zh": "唯卓仕、七工匠、铭匠等国产品牌推出的原生自动对焦定焦合集。凭借扎实的光学素质与极具竞争力的定价，这类 AF 镜头正在快速壮大，为 X 卡口用户提供了远超以往的自动对焦选择。"
       },
       "shortDescription": {
-        "en": "The most affordable tier of native AF glass",
-        "zh": "副厂自动头里最实惠的一档"
+        "en": "Native AF glass from Chinese makers",
+        "zh": "国产副厂自动头"
       }
     },
     {
-      "slug": "value-mf",
+      "slug": "chinese-mf-fast",
       "title": {
-        "en": "Affordable Manual-Focus Lenses",
-        "zh": "平价手动对焦镜头"
+        "en": "Chinese Fast Manual Primes",
+        "zh": "国产大光圈手动定焦"
       },
       "description": {
-        "en": "The busiest corner of affordable X-mount glass. Third-party makers like 7Artisans, TTArtisan and Brightin Star put out manual primes in huge numbers and every flavor — all-metal mechanical feel at prices low enough to work through different focal lengths and rendering styles without much outlay.",
-        "zh": "这是 X 卡口里最热闹的一块平价天地。七工匠、铭匠、星曜这些国产品牌的手动定焦数量众多、风格各异，全金属机械手感配上亲民价格——最适合用来低成本地把不同焦段和味道挨个玩一遍。"
+        "en": "The manual primes from Chinese makers like 7Artisans, TTArtisan and Brightin Star that open to f/1.2–f/1.4 — mostly all-metal builds, with the shallow depth of field and low-light reach to match.",
+        "zh": "七工匠、铭匠、星曜这些国产品牌的手动定焦里，最大光圈做到 f/1.2–1.4 的一批，多为全金属机械手感，浅景深与暗光表现都不缺。"
+      },
+      "shortDescription": {
+        "en": "Fast f/1.2–f/1.4 manual primes",
+        "zh": "f/1.2–1.4 的大光圈手动定焦"
+      }
+    },
+    {
+      "slug": "chinese-mf-budget",
+      "title": {
+        "en": "Chinese Budget Manual Primes",
+        "zh": "国产超平价手动定焦"
+      },
+      "description": {
+        "en": "Manual primes from Chinese makers like 7Artisans, TTArtisan and Brightin Star, in every flavor — mostly all-metal mechanical builds at prices low enough to work through different focal lengths and rendering styles without much outlay.",
+        "zh": "七工匠、铭匠、星曜这些国产品牌的手动定焦数量众多、风格各异，多为全金属机械手感，价格亲民——最适合用来低成本地把不同焦段和味道挨个玩一遍。"
       },
       "shortDescription": {
         "en": "A pure manual experience at a friendly price",
@@ -616,18 +631,18 @@
       }
     },
     {
-      "slug": "value-095",
+      "slug": "chinese-mf-095",
       "title": {
-        "en": "Affordable f/0.95 Dream Lenses",
-        "zh": "平价 f/0.95「夜神」"
+        "en": "Chinese f/0.95 Dream Lenses",
+        "zh": "国产 f/0.95「夜神」"
       },
       "description": {
-        "en": "An f/0.95 aperture used to be the preserve of a few expensive \"dream lenses.\" Now affordable third-party makers like 7Artisans, TTArtisan and Brightin Star have brought it down to a friendly price — wafer-thin depth of field and serious low-light gathering, for not much money. It's the lowest-cost way to taste what a truly fast lens can do.",
-        "zh": "f/0.95 这种「夜神」级光圈，以前几乎是少数高价镜头的专利。如今七工匠、铭匠、星曜这些国产品牌把它做进了亲民价位——极浅的景深、暗光下充足的进光量，花不多的钱就能体验到，是大光圈尝鲜门槛最低的一档。"
+        "en": "An f/0.95 aperture used to be the preserve of a few expensive \"dream lenses.\" Now Chinese makers like 7Artisans, TTArtisan and Brightin Star have brought it down to a friendly price — wafer-thin depth of field and serious low-light gathering, for not much money. It's one of the most accessible ways to taste what a truly fast lens can do.",
+        "zh": "f/0.95 这种「夜神」级光圈，以前几乎是少数高价镜头的专利。如今七工匠、铭匠、星曜这些国产品牌把它做进了亲民价位——极浅的景深、暗光下充足的进光量，花不多的钱就能体验到，是大光圈尝鲜门槛较低的一档。"
       },
       "shortDescription": {
-        "en": "The lowest bar to clear f/0.95",
-        "zh": "够到 f/0.95 的最低门槛"
+        "en": "The f/0.95 dream, within reach",
+        "zh": "够得着的「夜神」光圈"
       }
     }
   ]
