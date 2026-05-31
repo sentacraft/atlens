@@ -12,8 +12,24 @@ const MAX_PURCHASE_LINKS = 3;
 // Independent of channel — any purchase URL whose host is here gets its param.
 // Amazon (tag) and the GoAffPro DTC stores (ref) live in one table; each value
 // is a [key, value] pair fed straight to URLSearchParams.set.
+// Amazon Associates tracking ID. Under Earn Globally a single tracking ID earns
+// across every enrolled marketplace, so all Amazon storefronts below share it.
+const AMAZON_TAG = "atlens-20";
+
 const AFFILIATE_PARAMS: Record<string, [string, string]> = {
-  "amazon.com": ["tag", "xglass0a-20"],
+  // Amazon storefronts covered by Earn Globally enrolment — all share the one
+  // store ID. Storefronts not listed (amazon.com.au, amazon.co.jp) are not
+  // enrolled: they still localize for the shopper but stay non-affiliate.
+  "amazon.com": ["tag", AMAZON_TAG],
+  "amazon.ca": ["tag", AMAZON_TAG],
+  "amazon.co.uk": ["tag", AMAZON_TAG],
+  "amazon.de": ["tag", AMAZON_TAG],
+  "amazon.fr": ["tag", AMAZON_TAG],
+  "amazon.it": ["tag", AMAZON_TAG],
+  "amazon.es": ["tag", AMAZON_TAG],
+  "amazon.nl": ["tag", AMAZON_TAG],
+  "amazon.pl": ["tag", AMAZON_TAG],
+  "amazon.se": ["tag", AMAZON_TAG],
   "7artisans.store": ["ref", "omwzyqkn"],
   "ttartisan.store": ["ref", "idncwfkb"],
   "viltrox.com": ["ref", "owbtcyuk"],
@@ -43,6 +59,33 @@ const EBAY_MARKETS: Record<string, EbayMarket> = {
 };
 
 const EBAY_DEFAULT_MARKET = EBAY_MARKETS.US;
+
+// Amazon storefront domain by GeoIP country. Locale stays the master switch for
+// market/currency; GeoIP only refines which Amazon marketplace an international
+// (non-zh) visitor lands on. Earn-Globally storefronts carry the affiliate tag
+// via AFFILIATE_PARAMS; utility-only regions (AU/JP) localize the storefront but
+// stay non-affiliate. Unmapped countries fall back to amazon.com.
+// Countries without an enrolled store of their own route to the nearest enrolled
+// neighbour (AT→.de, IE→.co.uk, BE→.nl) to keep both localization and affiliate.
+const AMAZON_MARKETS: Record<string, string> = {
+  US: "amazon.com",
+  CA: "amazon.ca",
+  GB: "amazon.co.uk",
+  IE: "amazon.co.uk",
+  DE: "amazon.de",
+  AT: "amazon.de",
+  FR: "amazon.fr",
+  BE: "amazon.nl",
+  IT: "amazon.it",
+  ES: "amazon.es",
+  NL: "amazon.nl",
+  PL: "amazon.pl",
+  SE: "amazon.se",
+  AU: "amazon.com.au",
+  JP: "amazon.co.jp",
+};
+
+const AMAZON_DEFAULT_DOMAIN = "amazon.com";
 
 const CHANNEL_LABELS: Record<PurchaseChannelType, string> = {
   official: "Official",
@@ -92,6 +135,33 @@ function buildBhPhotoUrl(lens: Lens, locale: string): string {
   return `https://www.bhphotovideo.com/c/search?Ntt=${encodeURIComponent(query)}`;
 }
 
+// Extract the 10-char ASIN from an Amazon product URL (/dp/, /gp/product/,
+// /product/ forms). Returns null for search/storefront URLs that carry none.
+function extractAsin(url: string): string | null {
+  const match = url.match(/\/(?:dp|gp\/product|product)\/([A-Z0-9]{10})(?:[/?]|$)/);
+  return match ? match[1] : null;
+}
+
+// Build the Amazon URL for the visitor's region. On amazon.com (US, and the
+// fallback for unmapped countries) we deep-link to the product by ASIN. On any
+// other storefront the US-sourced ASIN often does not exist in the regional
+// catalog, so we search the storefront by model name instead of risking a 404
+// product page. Affiliate tags are applied later by host (applyAffiliate).
+function buildAmazonUrl(
+  lens: Lens,
+  locale: string,
+  countryCode: string,
+  sourceUrl: string,
+): string {
+  const domain = AMAZON_MARKETS[countryCode] ?? AMAZON_DEFAULT_DOMAIN;
+  if (domain === AMAZON_DEFAULT_DOMAIN) {
+    const asin = extractAsin(sourceUrl);
+    return asin ? `https://www.${domain}/dp/${asin}` : sourceUrl;
+  }
+  const query = getSearchQuery(lens, locale);
+  return `https://www.${domain}/s?k=${encodeURIComponent(query)}`;
+}
+
 // Set the affiliate param for a product URL's host, if registered. Channel-
 // agnostic: official (ref) and amazon (tag) both go through here.
 function applyAffiliate(url: string): { url: string; isAffiliate: boolean } {
@@ -139,12 +209,16 @@ export function buildPurchaseLinks(
 
   const links: PurchaseLink[] = [];
 
-  for (const channel of getChannelPriority(lens.brand)) {
+  for (const channel of getChannelPriority(lens.brand, countryCode)) {
     switch (channel) {
       case "official":
       case "amazon": {
-        const url = urlByChannel.get(channel);
-        if (url) {
+        const rawUrl = urlByChannel.get(channel);
+        if (rawUrl) {
+          const url =
+            channel === "amazon"
+              ? buildAmazonUrl(lens, locale, countryCode, rawUrl)
+              : rawUrl;
           const aff = applyAffiliate(url);
           links.push({
             channel,
