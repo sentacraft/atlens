@@ -134,3 +134,23 @@ export const UTILITY_BTN_CLS =
   "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs " +
   "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 " +
   "dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100 transition-colors";
+
+/**
+ * Full-bleed dropdown / menu popup (base-ui `Menu.Popup` or `Popover.Popup`)
+ * whose children are edge-to-edge hoverable rows.
+ *
+ * `overflow-hidden` is REQUIRED and is the whole reason this is centralised:
+ * it clips the first/last row's hover background to the rounded corners. Pair
+ * it with rows that carry NO popup-level vertical padding — a `py-*` on the
+ * popup leaves a strip the row hover can never fill. Forgetting either is the
+ * recurring "hover doesn't reach the edge / full height" bug.
+ *
+ * Compose width / anchor sizing per call site via `cn()`. Does not apply to
+ * the inset rounded-pill item menu style (e.g. brand filter, select).
+ */
+export const MENU_POPUP_CLS =
+  "overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-lg " +
+  "origin-(--transform-origin) duration-100 " +
+  "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 " +
+  "data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 " +
+  "dark:border-zinc-700 dark:bg-zinc-900";
