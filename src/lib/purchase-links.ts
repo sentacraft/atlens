@@ -12,9 +12,9 @@ const MAX_PURCHASE_LINKS = 3;
 // Independent of channel — any purchase URL whose host is here gets its param.
 // Amazon (tag) and the GoAffPro DTC stores (ref) live in one table; each value
 // is a [key, value] pair fed straight to URLSearchParams.set.
-// Single Earn Globally store ID. Every enrolled marketplace earns under this
-// one tag, so all Amazon storefronts below share it.
-const AMAZON_TAG = "xglass0a-20";
+// Amazon Associates tracking ID. Under Earn Globally a single tracking ID earns
+// across every enrolled marketplace, so all Amazon storefronts below share it.
+const AMAZON_TAG = "atlens-20";
 
 const AFFILIATE_PARAMS: Record<string, [string, string]> = {
   // Amazon storefronts covered by Earn Globally enrolment — all share the one
