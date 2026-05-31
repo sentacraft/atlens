@@ -42,9 +42,9 @@ function xBrand(brand: string): LensFilter {
   return (lens) => xPhoto(lens) && lens.brand === brand;
 }
 
-// Affordable third-party brands grouped under the Value category. Extend this
-// list as more budget makers (of any origin) get added.
-const VALUE_BRANDS = ["viltrox", "7artisans", "ttartisan", "brightinstar", "sgimage", "laowa"];
+// Chinese lens brands grouped under their own category. Extend this list as
+// more Chinese makers (AstrHori, Meike, …) get added to the dataset.
+const CHINESE_BRANDS = ["viltrox", "7artisans", "ttartisan", "brightinstar", "sgimage", "laowa"];
 
 const FILTERS: Record<string, LensFilter> = {
   // --- Prime ---
@@ -176,30 +176,30 @@ const FILTERS: Record<string, LensFilter> = {
   macro: (lens) =>
     xPhoto(lens) && !!lens.opticalTraits?.includes("macro"),
 
-  // --- Value (independent third-party brands) ---
+  // --- Chinese brands ---
   // A broad "all manual glass" bucket isn't a real shopping intent, so the
   // manual side is split into sharp character/value collections instead.
   // Specialty optics are excluded here — they live in the Dedicated section.
-  "value-af": (lens) =>
+  "chinese-af": (lens) =>
     xPhoto(lens) &&
     !isZoom(lens) &&
     !isSpecialOptic(lens) &&
-    VALUE_BRANDS.includes(lens.brand) &&
+    CHINESE_BRANDS.includes(lens.brand) &&
     lens.af === true,
-  "value-mf-fast": (lens) => {
+  "chinese-mf-fast": (lens) => {
     if (!xPhoto(lens) || isZoom(lens) || isSpecialOptic(lens) || lens.maxAperture == null) {
       return false;
     }
     const ap = Array.isArray(lens.maxAperture) ? lens.maxAperture[0] : lens.maxAperture;
-    return VALUE_BRANDS.includes(lens.brand) && lens.af === false && ap > 0.95 && ap <= 1.4;
+    return CHINESE_BRANDS.includes(lens.brand) && lens.af === false && ap > 0.95 && ap <= 1.4;
   },
-  "value-mf-budget": (lens, locale) => {
+  "chinese-mf-budget": (lens, locale) => {
     if (
       !xPhoto(lens) ||
       isZoom(lens) ||
       isSpecialOptic(lens) ||
       lens.af !== false ||
-      !VALUE_BRANDS.includes(lens.brand)
+      !CHINESE_BRANDS.includes(lens.brand)
     ) {
       return false;
     }
@@ -210,12 +210,12 @@ const FILTERS: Record<string, LensFilter> = {
     const p = pickNewEntry(lens.pricing?.global?.new)?.price;
     return p != null && p < 100;
   },
-  "value-095": (lens) => {
+  "chinese-095": (lens) => {
     if (!xPhoto(lens) || isZoom(lens) || lens.maxAperture == null) {
       return false;
     }
     const ap = Array.isArray(lens.maxAperture) ? lens.maxAperture[0] : lens.maxAperture;
-    return VALUE_BRANDS.includes(lens.brand) && ap <= 0.95;
+    return CHINESE_BRANDS.includes(lens.brand) && ap <= 0.95;
   },
 };
 
@@ -240,7 +240,7 @@ export const PORTABILITY_SLUGS = ["under-200g", "pancake"];
 export const APERTURE_SLUGS = ["fast-aperture-primes", "constant-aperture"];
 export const TRAIT_SLUGS = ["weather-sealed", "with-ois", "super-tele"];
 export const DEDICATED_SLUGS = ["cine", "fisheye", "tilt-shift", "macro"];
-export const VALUE_SLUGS = ["value-af", "value-mf-fast", "value-095", "value-mf-budget"];
+export const CHINESE_SLUGS = ["chinese-af", "chinese-mf-fast", "chinese-095", "chinese-mf-budget"];
 
 export function getRelatedCollections(
   slug: string,

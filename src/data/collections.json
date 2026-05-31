@@ -586,28 +586,28 @@
       }
     },
     {
-      "slug": "value-af",
+      "slug": "chinese-af",
       "title": {
-        "en": "Third-Party Autofocus Primes",
+        "en": "Chinese Autofocus Primes",
         "zh": "国产自动对焦定焦"
       },
       "description": {
-        "en": "Native autofocus primes from third-party makers like Viltrox, 7Artisans and TTArtisan. Once a gap in the X-mount lineup, this cohort has grown fast and now spans everything from entry primes to flagship f/1.2 optics, giving shooters far more native AF choices than the first-party range alone.",
+        "en": "Native autofocus primes from Chinese makers like Viltrox, 7Artisans and TTArtisan. Once a gap in the X-mount lineup, this cohort has grown fast and now spans everything from entry primes to flagship f/1.2 optics, giving shooters far more native AF choices than the first-party range alone.",
         "zh": "唯卓仕、七工匠、铭匠等国产品牌推出的原生自动对焦定焦合集。从入门定焦到旗舰 f/1.2，这块此前几乎空白的领域正在快速壮大，为 X 卡口用户提供了远超原厂的自动对焦选择。"
       },
       "shortDescription": {
-        "en": "Native AF primes from third-party makers",
+        "en": "Native AF primes from Chinese makers",
         "zh": "国产品牌的原生自动定焦"
       }
     },
     {
-      "slug": "value-mf-fast",
+      "slug": "chinese-mf-fast",
       "title": {
-        "en": "Third-Party Fast Manual Primes",
+        "en": "Chinese Fast Manual Primes",
         "zh": "国产大光圈手动定焦"
       },
       "description": {
-        "en": "Manual-focus primes from independent makers like 7Artisans, TTArtisan and Brightin Star opening to f/1.2–f/1.4. The bright-aperture look — shallow depth of field, strong subject separation, low-light headroom — in compact, all-metal bodies.",
+        "en": "Manual-focus primes from Chinese makers like 7Artisans, TTArtisan and Brightin Star opening to f/1.2–f/1.4. The bright-aperture look — shallow depth of field, strong subject separation, low-light headroom — in compact, all-metal bodies.",
         "zh": "七工匠、铭匠、星曜等国产品牌的手动定焦，最大光圈做到 f/1.2–1.4。浅景深、强主体分离、暗光余量——大光圈的味道，装在小巧的全金属镜身里。"
       },
       "shortDescription": {
@@ -616,13 +616,13 @@
       }
     },
     {
-      "slug": "value-mf-budget",
+      "slug": "chinese-mf-budget",
       "title": {
-        "en": "Ultra-Budget Manual Primes",
+        "en": "Chinese Budget Manual Primes",
         "zh": "国产超平价手动定焦"
       },
       "description": {
-        "en": "The lowest-cost way into a new focal length. Manual primes from independent makers priced low enough to experiment freely — pick up a focal length or rendering style you've been curious about without much outlay.",
+        "en": "The lowest-cost way into a new focal length. Manual primes from Chinese makers priced low enough to experiment freely — pick up a focal length or rendering style you've been curious about without much outlay.",
         "zh": "用最低的成本拿下一个新焦段。国产品牌的手动定焦价格亲民到可以随便试——一直好奇的焦段或成像风格，花不多的钱就能收一支来玩。"
       },
       "shortDescription": {
@@ -631,17 +631,17 @@
       }
     },
     {
-      "slug": "value-095",
+      "slug": "chinese-095",
       "title": {
-        "en": "Third-Party f/0.95 Dream Lenses",
+        "en": "Chinese f/0.95 Dream Lenses",
         "zh": "国产 f/0.95「夜神」"
       },
       "description": {
-        "en": "An f/0.95 aperture was long the preserve of a handful of exotic \"dream lenses.\" Independent third-party makers like 7Artisans, TTArtisan and Brightin Star have turned it into a recurring feature of the X-mount lineup — wafer-thin depth of field and serious low-light gathering across a range of focal lengths.",
+        "en": "An f/0.95 aperture was long the preserve of a handful of exotic \"dream lenses.\" Chinese makers like 7Artisans, TTArtisan and Brightin Star have turned it into a recurring feature of the X-mount lineup — wafer-thin depth of field and serious low-light gathering across a range of focal lengths.",
         "zh": "f/0.95 这种「夜神」级光圈，过去几乎是少数特种镜头的专利。七工匠、铭匠、星曜等国产品牌把它做成了 X 卡口里反复出现的常规配置——极浅的景深、暗光下充足的进光量，覆盖多个焦段。"
       },
       "shortDescription": {
-        "en": "f/0.95 optics from independent makers",
+        "en": "f/0.95 optics from Chinese makers",
         "zh": "国产品牌的 f/0.95 夜神"
       }
     }
