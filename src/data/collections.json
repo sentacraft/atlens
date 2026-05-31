@@ -588,22 +588,22 @@
     {
       "slug": "value-af",
       "title": {
-        "en": "Independent Autofocus Lenses",
-        "zh": "国产自动对焦镜头"
+        "en": "Third-Party Autofocus Primes",
+        "zh": "国产自动对焦定焦"
       },
       "description": {
-        "en": "Native autofocus lenses from independent third-party makers like Viltrox, 7Artisans and TTArtisan. Once a gap in the X-mount lineup, this cohort has grown fast and now spans everything from entry primes to flagship f/1.2 optics, giving shooters far more native AF choices than the first-party range alone.",
-        "zh": "唯卓仕、七工匠、铭匠等国产品牌推出的原生自动对焦镜头合集。从入门定焦到旗舰 f/1.2，这块此前几乎空白的领域正在快速壮大，为 X 卡口用户提供了远超原厂的自动对焦选择。"
+        "en": "Native autofocus primes from third-party makers like Viltrox, 7Artisans and TTArtisan. Once a gap in the X-mount lineup, this cohort has grown fast and now spans everything from entry primes to flagship f/1.2 optics, giving shooters far more native AF choices than the first-party range alone.",
+        "zh": "唯卓仕、七工匠、铭匠等国产品牌推出的原生自动对焦定焦合集。从入门定焦到旗舰 f/1.2，这块此前几乎空白的领域正在快速壮大，为 X 卡口用户提供了远超原厂的自动对焦选择。"
       },
       "shortDescription": {
-        "en": "Native AF from independent makers",
-        "zh": "国产品牌的原生自动头"
+        "en": "Native AF primes from third-party makers",
+        "zh": "国产品牌的原生自动定焦"
       }
     },
     {
       "slug": "value-mf-fast",
       "title": {
-        "en": "Independent Fast Manual Primes",
+        "en": "Third-Party Fast Manual Primes",
         "zh": "国产大光圈手动定焦"
       },
       "description": {
@@ -633,7 +633,7 @@
     {
       "slug": "value-095",
       "title": {
-        "en": "Independent f/0.95 Dream Lenses",
+        "en": "Third-Party f/0.95 Dream Lenses",
         "zh": "国产 f/0.95「夜神」"
       },
       "description": {

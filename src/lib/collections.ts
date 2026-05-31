@@ -181,7 +181,11 @@ const FILTERS: Record<string, LensFilter> = {
   // manual side is split into sharp character/value collections instead.
   // Specialty optics are excluded here — they live in the Dedicated section.
   "value-af": (lens) =>
-    xPhoto(lens) && !isSpecialOptic(lens) && VALUE_BRANDS.includes(lens.brand) && lens.af === true,
+    xPhoto(lens) &&
+    !isZoom(lens) &&
+    !isSpecialOptic(lens) &&
+    VALUE_BRANDS.includes(lens.brand) &&
+    lens.af === true,
   "value-mf-fast": (lens) => {
     if (!xPhoto(lens) || isZoom(lens) || isSpecialOptic(lens) || lens.maxAperture == null) {
       return false;
