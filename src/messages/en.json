@@ -348,7 +348,7 @@
   },
   "About": {
     "pageTitle": "About",
-    "rebrandNote": "Atlens was previously known as X-Glass — same project, same maintainer, just a new name.",
+    "rebrandNote": "Atlens was previously known as X-Glass — same project, same author, just a simpler, more readable name.",
     "metaDescription": "The story behind Atlens, who maintains it, and which Fujifilm lenses are covered — X-mount first, with G-mount also being added. Built and maintained solo by an independent engineer, with open-source web code.",
     "backgroundTitle": "Background",
     "backgroundBody1": "As a Fujifilm shooter myself, picking a lens has always meant running into the same friction — looking for a fast 50mm-equivalent prime, or a do-it-all travel zoom: what lenses are actually out there that fit? The Fujifilm X-mount lens ecosystem has grown from a handful of native options in its early days into today's landscape of dozens of brands and hundreds of lenses. Yet specs are scattered across brand websites and various platforms in inconsistent formats, making meaningful cross-brand comparison a slow, frustrating exercise. Atlens was built to pull all of that fragmented information into one place — a normalized, comparable database that lets the data speak for itself. Which one to buy is still up to you. Atlens started as X-mount only; G-mount (medium format) was added later in response to user requests, and remains at an earlier stage of breadth — Fujifilm's first-party GF lineup is fully covered and third-party brands are gradually being added, but cross-brand reach and comparability still trail what X-mount already offers.",
