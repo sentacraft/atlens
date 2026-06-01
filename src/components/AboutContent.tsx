@@ -5,7 +5,7 @@ import FeedbackTrigger from "@/components/FeedbackTrigger";
 import AnthropicLogo from "@/components/logos/AnthropicLogo";
 import GeminiLogo from "@/components/logos/GeminiLogo";
 import GitHubMark from "@/components/logos/GitHubMark";
-import { getLensesByMount } from "@/lib/lens";
+import { getLensesByMount } from "@/lib/lens-data";
 import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/AckCard";
 import { isPurchaseLocale } from "@/lib/purchase-links";

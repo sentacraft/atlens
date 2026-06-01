@@ -1,5 +1,6 @@
 import collectionsData from "../data/collections.json";
-import { isZoom, getLensesByMount } from "./lens";
+import { isZoom } from "./lens";
+import { getLensesByMount } from "./lens-data";
 import { pickNewEntry } from "./lens-pricing";
 import type { Mount, Lens } from "./types";
 

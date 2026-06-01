@@ -1,5 +1,5 @@
 import curatedData from "../data/curated-presets.json";
-import { getAllLenses } from "./lens";
+import { getAllLenses } from "./lens-data";
 import type { Lens } from "./types";
 
 export interface CuratedPreset {

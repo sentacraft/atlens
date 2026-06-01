@@ -11,6 +11,7 @@ import SiteJsonLd from "@/components/SiteJsonLd";
 import { routing } from "@/i18n/routing";
 import Nav from "@/components/Nav";
 import ConsoleEgg from "@/components/ConsoleEgg";
+import { meta, brandCount } from "@/lib/lens-data";
 import Redaction from "@/components/Redaction";
 import TestHookPanel from "@/components/TestHookPanel";
 import { CompareProvider } from "@/context/CompareProvider";
@@ -150,7 +151,7 @@ export default async function LocaleLayout({
           <MountPreferenceProvider>
           <CompareProvider>
             <NavProvider>
-              <ConsoleEgg />
+              <ConsoleEgg version={meta.version} lensCount={meta.lensCount} brandCount={brandCount} />
               {/* Suspense gate — Redaction uses useSearchParams, which would
                   otherwise force a CSR bailout on every prerendered page. */}
               <Suspense fallback={null}>

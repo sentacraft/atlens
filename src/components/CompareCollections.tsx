@@ -4,13 +4,12 @@ import { useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useCompare } from "@/context/CompareProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
-import { getLensesByMount } from "@/lib/lens";
 import { getSharedCollections } from "@/lib/collections";
 import { mountToUrlSegment } from "@/lib/mount";
 import CollectionPills from "@/components/CollectionPills";
 import type { Lens } from "@/lib/types";
 
-export default function CompareCollections() {
+export default function CompareCollections({ allLenses }: { allLenses: Lens[] }) {
   const t = useTranslations("Compare");
   const locale = useLocale();
   const { compareIds } = useCompare();
@@ -20,9 +19,9 @@ export default function CompareCollections() {
   const activeLenses = useMemo(
     () =>
       compareIds
-        .map((id) => getLensesByMount(mount, locale).find((l) => l.id === id))
+        .map((id) => allLenses.find((l) => l.id === id))
         .filter((l): l is Lens => l !== undefined),
-    [compareIds, mount, locale],
+    [compareIds, allLenses],
   );
 
   const sharedCollections = useMemo(

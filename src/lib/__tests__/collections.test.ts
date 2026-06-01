@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { COLLECTIONS, getCollectionStats, getRelatedCollections, getSharedCollections } from "../collections";
-import { getAllLenses, isZoom } from "../lens";
+import { isZoom } from "../lens";
+import { getAllLenses } from "../lens-data";
 import type { Lens } from "../types";
 
 const allLenses = getAllLenses("en");

@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight, Flag } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { COLLECTIONS, getCollectionStats, getRelatedCollectionsWithStats } from "@/lib/collections";
-import { getLensesByMount } from "@/lib/lens";
+import { getLensesByMount } from "@/lib/lens-data";
 import { urlSegmentToMount, mountSeoLabel, mountHasCollections } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { ACTION_ESCAPE_CLS, UTILITY_BTN_CLS } from "@/lib/ui-tokens";
