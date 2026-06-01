@@ -19,8 +19,8 @@ import {
 import { getLensesByMount } from "@/lib/lens-data";
 import { urlSegmentToMount, mountHasCollections } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
-import { ACTION_PRIMARY_CLS, LENS_INDEX_SHELL_CLS } from "@/lib/ui-tokens";
-import LensSectionNav from "@/components/LensSectionNav";
+import { ACTION_PRIMARY_CLS } from "@/lib/ui-tokens";
+import LensIndexShell from "@/components/LensIndexShell";
 import CollectionChipRail from "@/components/CollectionChipRail";
 
 type Params = Promise<{ locale: string; mount: string }>;
@@ -100,27 +100,21 @@ export default async function CollectionsIndexPage({
   const totalLenses = mountLenses.length;
 
   return (
-    <main className={`${LENS_INDEX_SHELL_CLS} pt-4 pb-16 sm:pt-8`}>
-      {/* Switcher + summary. The switcher is the first child and shares the
-          page's top padding, so it lands at the same position as the browse
-          tabs. The summary sits closer to the chip rail it describes than to
-          the tab divider above. The descriptive, keyword-rich title stays as
-          an sr-only h1 for SEO (mirroring the browse page); the visible header
-          is a one-line summary the tab label can't convey — collection and
-          lens counts — plus a short categorization subtitle. */}
-      <header id="collections-top" className="flex flex-col gap-5 pb-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <LensSectionNav />
-        </div>
-        <div>
-          <h1 className="sr-only">{t("indexTitle")}</h1>
-          <p className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
-            {t("indexStats", { count: totalCollections, lensCount: totalLenses })}
-          </p>
-          <p className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-            {t("indexSubtitle")}
-          </p>
-        </div>
+    <LensIndexShell className="pb-16">
+      <main className="pt-5">
+      {/* The section nav and its position are owned by LensIndexShell, so the
+          tab row lands identically to the browse view. The summary keeps the
+          keyword-rich title as an sr-only h1 for SEO (mirroring the browse
+          page); the visible header is a one-line summary the tab label can't
+          convey — collection and lens counts — plus a short subtitle. */}
+      <header id="collections-top" className="pb-3">
+        <h1 className="sr-only">{t("indexTitle")}</h1>
+        <p className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+          {t("indexStats", { count: totalCollections, lensCount: totalLenses })}
+        </p>
+        <p className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+          {t("indexSubtitle")}
+        </p>
       </header>
 
       {/* Sticky chip rail */}
@@ -203,6 +197,7 @@ export default async function CollectionsIndexPage({
           <ArrowRight size={15} aria-hidden="true" />
         </Link>
       </footer>
-    </main>
+      </main>
+    </LensIndexShell>
   );
 }

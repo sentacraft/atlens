@@ -4,8 +4,8 @@ import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
-import { defaultFilters, FILTER_FEATURE_KEYS, FOCAL_CATEGORIES, LENS_TYPES } from "@/lib/lens";
-import type { FilterState, FocusFilter, FocusMotorClass, LensType, UsageFilter } from "@/lib/lens";
+import { FILTER_FEATURE_KEYS, FOCAL_CATEGORIES, LENS_TYPES } from "@/lib/lens";
+import type { FilterState, FocusFilter, FocusMotorClass, LensType } from "@/lib/lens";
 import type { OpticalTrait } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
@@ -92,11 +92,6 @@ export default function LensFilters({
     })),
   ] as { value: LensType | null; label: string }[];
 
-  const usageOptions = [
-    { value: "photo" as UsageFilter, label: t("usagePhoto") },
-    { value: "cine" as UsageFilter, label: t("usageCine") },
-  ] as { value: UsageFilter; label: string }[];
-
   const opticalTraitOptions = [
     { value: null as OpticalTrait | null, label: t("allTypes") },
     ...availableOpticalTraits.map((trait) => ({
@@ -134,7 +129,6 @@ export default function LensFilters({
   ] as { value: FocusFilter | null; label: string }[];
 
   const moreFiltersCount =
-    (filters.usage !== defaultFilters.usage ? 1 : 0) +
     (filters.focalCategories.length > 0 ? 1 : 0) +
     (filters.features.length > 0 ? 1 : 0) +
     (filters.opticalTrait !== null ? 1 : 0) +
@@ -332,19 +326,6 @@ export default function LensFilters({
 
             <FilterRow label={t("features")}>
               <FeatureToggleGroup options={featureOptions} />
-            </FilterRow>
-
-            <FilterRow label={t("usage")} labelOn="desktop">
-              <TypeSegmentedControl
-                ariaLabel={t("usage")}
-                options={usageOptions}
-                value={filters.usage}
-                onChange={(v) => updateFilters("usage", v)}
-                mobileLabelOverrides={{
-                  photo: t("usagePhotoMobile"),
-                  cine: t("usageCineMobile"),
-                }}
-              />
             </FilterRow>
 
             {availableOpticalTraits.length > 0 && (

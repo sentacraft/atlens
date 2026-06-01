@@ -19,9 +19,9 @@ import { useUiHookAttr } from "@/context/TestHookProvider";
 import BackToTopButton from "@/components/BackToTopButton";
 import LensCard from "./LensCard";
 import LensFilters from "./LensFilters";
-import LensSectionNav from "./LensSectionNav";
+import LensIndexShell from "./LensIndexShell";
+import LensUsageSwitch from "./LensUsageSwitch";
 import LensSortControl from "./LensSortControl";
-import { LENS_INDEX_SHELL_CLS } from "@/lib/ui-tokens";
 import LensSearchDialog from "./LensSearchDialog";
 import FeedbackTrigger from "./FeedbackTrigger";
 
@@ -77,14 +77,24 @@ export default function LensListClient({ lenses, brands, availableOpticalTraits 
   }
 
   function clearAllFilters() {
-    updateFilters(defaultFilters);
+    // Reset clears refinements but preserves the photo/cine view mode — usage
+    // is a view partition, not a filter, so leaving the current view intact
+    // mirrors how switching tabs would not reset the user's filters.
+    updateFilters((current) => ({ ...defaultFilters, usage: current.usage }));
   }
 
   return (
     <>
-      <div className={`${LENS_INDEX_SHELL_CLS} flex flex-col pt-4 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] sm:pt-8`}>
-        <div className="flex flex-col gap-4">
-          <LensSectionNav />
+      <LensIndexShell
+        navRightSlot={
+          <LensUsageSwitch
+            value={filters.usage}
+            onChange={(usage) => updateFilters((current) => ({ ...current, usage }))}
+          />
+        }
+        className="pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))]"
+      >
+        <div className="pt-4">
           <LensFilters
             filters={filters}
             brands={brands}
@@ -187,7 +197,7 @@ export default function LensListClient({ lenses, brands, availableOpticalTraits 
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </LensIndexShell>
 
       <BackToTopButton />
     </>
