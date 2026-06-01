@@ -466,8 +466,8 @@
     "submitting": "提交中…",
     "cancel": "取消",
     "close": "关闭",
-    "success": "收到了，谢谢！",
-    "successBody": "每一条反馈都在帮助我把 Atlens 做得更好。",
+    "success": "感谢你的超棒建议！",
+    "successBody": "你的每一条反馈，都在和我一起让 Atlens 变得更好。",
     "error": "提交时出了点问题，请稍后再试。",
     "emailLabel": "Atlens 官方邮箱"
   },
