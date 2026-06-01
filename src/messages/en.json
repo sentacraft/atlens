@@ -45,6 +45,7 @@
     "coverageLink": "View lens coverage →",
     "results": "Lens search results",
     "clear": "Clear search",
+    "close": "Close search",
     "view": "Open"
   },
   "MountSwitcher": {
