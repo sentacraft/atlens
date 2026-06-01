@@ -35,7 +35,8 @@ export async function generateMetadata({
   if (!resolvedMount || !mountHasCollections(resolvedMount)) {
     return {};
   }
-  const stats = getCollectionStats(slug, resolvedMount, locale);
+  const allLenses = getLensesByMount(resolvedMount, locale);
+  const stats = getCollectionStats(slug, allLenses, locale);
   if (!stats) {
     return {};
   }
@@ -73,7 +74,8 @@ export default async function CollectionPage({
   if (!resolvedMount || !mountHasCollections(resolvedMount)) {
     notFound();
   }
-  const collectionStats = getCollectionStats(slug, resolvedMount, locale);
+  const mountLenses = getLensesByMount(resolvedMount, locale);
+  const collectionStats = getCollectionStats(slug, mountLenses, locale);
   if (!collectionStats) {
     notFound();
   }
@@ -86,8 +88,7 @@ export default async function CollectionPage({
   const mountLabel = t("mountLabel", { mount: mountSeoLabel(resolvedMount) });
   const description = localized(collection.description, locale);
   const statsLabel = t("stats", { count: lensCount, brandCount });
-  const mountLenses = getLensesByMount(resolvedMount, locale);
-  const relatedWithStats = getRelatedCollectionsWithStats(slug, resolvedMount, locale);
+  const relatedWithStats = getRelatedCollectionsWithStats(slug, mountLenses, locale);
 
   return (
     <>

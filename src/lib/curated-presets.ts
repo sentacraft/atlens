@@ -1,6 +1,4 @@
 import curatedData from "../data/curated-presets.json";
-import { getAllLenses } from "./lens-data";
-import type { Lens } from "./types";
 
 export interface CuratedPreset {
   slug: string;
@@ -38,8 +36,3 @@ export function findPresetByIds(ids: string[]): CuratedPreset | undefined {
   );
 }
 
-export function getPresetLenses(preset: CuratedPreset, locale: string): Lens[] {
-  return preset.lensIds
-    .map((id) => getAllLenses(locale).find((l) => l.id === id))
-    .filter((l): l is Lens => l !== undefined);
-}

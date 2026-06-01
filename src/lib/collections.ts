@@ -1,6 +1,5 @@
 import collectionsData from "../data/collections.json";
 import { isZoom } from "./lens";
-import { getLensesByMount } from "./lens-data";
 import { pickNewEntry } from "./lens-pricing";
 import type { Mount, Lens } from "./types";
 
@@ -287,14 +286,14 @@ export interface CollectionStats {
 
 export function getCollectionStats(
   slug: string,
-  mount: Mount,
+  allLenses: Lens[],
   locale: string,
 ): CollectionStats | null {
   const collection = COLLECTIONS[slug];
   if (!collection) {
     return null;
   }
-  const lenses = getLensesByMount(mount, locale).filter((l) =>
+  const lenses = allLenses.filter((l) =>
     collection.filter(l, locale),
   );
   return {
@@ -314,11 +313,10 @@ export interface RelatedCollectionStats {
 
 export function getRelatedCollectionsWithStats(
   slug: string,
-  mount: Mount,
+  allLenses: Lens[],
   locale: string,
   limit = 4,
 ): RelatedCollectionStats[] {
-  const allLenses = getLensesByMount(mount, locale);
   const related = getRelatedCollections(slug, allLenses, locale, limit);
   return related.map((c) => {
     const ls = allLenses.filter((l) => c.filter(l, locale));
@@ -342,10 +340,9 @@ export interface MemberCollectionInfo {
 
 export function getMemberCollections(
   lens: Lens,
-  mount: Mount,
+  allLenses: Lens[],
   locale: string,
 ): MemberCollectionInfo[] {
-  const allLenses = getLensesByMount(mount, locale);
   return Object.values(COLLECTIONS)
     .filter((c) => c.filter(lens, locale))
     .map((c) => ({
@@ -356,16 +353,15 @@ export function getMemberCollections(
 
 export function getSharedCollections(
   lenses: Lens[],
-  mount: Mount,
+  allLenses: Lens[],
   locale: string,
 ): MemberCollectionInfo[] {
   if (lenses.length === 0) {
     return [];
   }
   if (lenses.length === 1) {
-    return getMemberCollections(lenses[0], mount, locale);
+    return getMemberCollections(lenses[0], allLenses, locale);
   }
-  const allLenses = getLensesByMount(mount, locale);
   return Object.values(COLLECTIONS)
     .filter((c) => lenses.every((lens) => c.filter(lens, locale)))
     .map((c) => ({
