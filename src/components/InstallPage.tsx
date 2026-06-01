@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Share } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics";
 
@@ -136,17 +137,24 @@ export default function InstallPage() {
           <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
             {t("iosTitle")}
           </h2>
-          <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">{t("iosSubtitle")}</p>
           <ol className="mt-6 space-y-3 text-left">
             {IOS_STEPS.map((key, i) => (
               <li
                 key={key}
                 className="flex items-start gap-4 bg-white dark:bg-zinc-900 rounded-xl px-4 py-3"
               >
-                <span className="shrink-0 w-6 h-6 rounded-full bg-zinc-800 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 text-xs font-bold flex items-center justify-center mt-0.5">
+                <span className="shrink-0 w-6 h-6 rounded-full bg-zinc-800 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 text-xs font-bold flex items-center justify-center">
                   {i + 1}
                 </span>
-                <span className="text-sm text-zinc-700 dark:text-zinc-300">{t(key)}</span>
+                <span className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+                  {t(key)}
+                  {i === 0 && (
+                    <Share
+                      className="inline-block w-4 h-4 ml-1.5 align-middle text-zinc-500 dark:text-zinc-400"
+                      aria-hidden
+                    />
+                  )}
+                </span>
               </li>
             ))}
           </ol>
@@ -158,17 +166,24 @@ export default function InstallPage() {
           <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
             {t("macosTitle")}
           </h2>
-          <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">{t("macosSubtitle")}</p>
           <ol className="mt-6 space-y-3 text-left">
             {MACOS_STEPS.map((key, i) => (
               <li
                 key={key}
                 className="flex items-start gap-4 bg-white dark:bg-zinc-900 rounded-xl px-4 py-3"
               >
-                <span className="shrink-0 w-6 h-6 rounded-full bg-zinc-800 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 text-xs font-bold flex items-center justify-center mt-0.5">
+                <span className="shrink-0 w-6 h-6 rounded-full bg-zinc-800 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 text-xs font-bold flex items-center justify-center">
                   {i + 1}
                 </span>
-                <span className="text-sm text-zinc-700 dark:text-zinc-300">{t(key)}</span>
+                <span className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+                  {t(key)}
+                  {i === 0 && (
+                    <Share
+                      className="inline-block w-4 h-4 ml-1.5 align-middle text-zinc-500 dark:text-zinc-400"
+                      aria-hidden
+                    />
+                  )}
+                </span>
               </li>
             ))}
           </ol>
