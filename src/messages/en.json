@@ -29,7 +29,6 @@
   },
   "Search": {
     "open": "Open lens search",
-    "back": "Back",
     "title": "Search Lenses",
     "description": "Search the lens database",
     "addLens": "Add lens",

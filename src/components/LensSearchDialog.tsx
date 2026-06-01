@@ -122,10 +122,19 @@ export default function LensSearchDialog({
       ) : (
         // Mobile: react-modal-sheet keeps the result list reachable above the
         // iOS keyboard via its avoidKeyboard handling (Visual Viewport API).
+        //
+        // disableScrollLocking: the library's default lock mutates the document
+        // (body marginTop + html overflow/paddingRight) on open/close. That
+        // synchronous whole-page reflow lands on the exact frames the open/close
+        // transform animates, so a strong device still drops frames — and it
+        // visibly nudges the sticky navbar/tabs underneath. A full-height sheet
+        // already covers the page, so we drop the lock; the scroller's own
+        // overscroll-behavior keeps touch scroll from chaining to the body.
         <Sheet
           isOpen={open}
           onClose={() => setOpen(false)}
           detent="full"
+          disableScrollLocking
           tweenConfig={{ ease: "easeOut", duration: 0.28 }}
         >
           <Sheet.Container className="bg-white dark:!bg-zinc-950">
