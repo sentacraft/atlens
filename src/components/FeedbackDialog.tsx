@@ -211,12 +211,14 @@ export default function FeedbackDialog({
         {status === "success" ? (
           <div className="flex flex-col items-center gap-3 px-5 py-6">
             <Iris config={IRIS_FEEDBACK} uid="feedback-iris" />
-            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
-              {t("success")}
-            </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center leading-relaxed">
-              {t("successBody")}
-            </p>
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+                {t("success")}
+              </p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center leading-relaxed">
+                {t("successBody")}
+              </p>
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-3 px-5 pb-4">
