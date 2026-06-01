@@ -158,10 +158,12 @@ function LensHeader({
 // --- EmptyLensHeader: placeholder column header with a search trigger ---
 
 function EmptyLensHeader({
+  lenses,
   addLensLabel,
   onSelectLens,
   getResultState,
 }: {
+  lenses: Lens[];
   addLensLabel: string;
   onSelectLens: (lens: Lens) => void;
   getResultState: (lens: Lens) => { actionLabel: string; disabled: boolean };
@@ -170,6 +172,7 @@ function EmptyLensHeader({
     // h-px is the CSS trick that allows children to use h-full inside a table cell
     <th className="h-px align-top border-l border-zinc-200 bg-zinc-50 p-2 dark:border-zinc-800 dark:bg-zinc-900">
       <LensSearchDialog
+        lenses={lenses}
         onSelectLens={onSelectLens}
         getResultState={getResultState}
         triggerVariant="slot"
@@ -230,8 +233,13 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
     seed(initialLensIds);
   }, [initialLensIds, seed]);
 
+  const allLenses = useMemo(
+    () => getLensesByMount(mount, locale),
+    [mount, locale],
+  );
+
   const orderedLenses = compareIds
-    .map((id) => getLensesByMount(mount, locale).find((lens) => lens.id === id))
+    .map((id) => allLenses.find((lens) => lens.id === id))
     .filter((lens): lens is Lens => lens !== undefined);
 
   // Number of empty slot columns to render (search triggers filling up to minColumns)
@@ -516,6 +524,7 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
             {Array.from({ length: emptySlotCount }).map((_, i) => (
               <EmptyLensHeader
                 key={`empty-header-${i}`}
+                lenses={allLenses}
                 addLensLabel={
                   orderedLenses.length === 0
                     ? i === 0 ? t("selectFirst") : t("addMore")

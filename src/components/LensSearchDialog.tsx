@@ -5,6 +5,7 @@ import {
   useDeferredValue,
   useEffect,
   useId,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -14,7 +15,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useEffectiveMount } from "@/hooks/useMountParam";
-import { useLensSearchApi } from "@/hooks/useLensSearchApi";
+import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { lensSubtitleLine } from "@/lib/lens.format";
@@ -36,6 +37,7 @@ interface LensSearchResultState {
 }
 
 interface LensSearchDialogProps {
+  lenses: Lens[];
   onSelectLens?: (lens: Lens) => void;
   getResultState?: (lens: Lens) => LensSearchResultState | undefined;
   triggerClassName?: string;
@@ -46,6 +48,7 @@ interface LensSearchDialogProps {
 }
 
 export default function LensSearchDialog({
+  lenses,
   onSelectLens,
   getResultState,
   triggerClassName,
@@ -97,7 +100,17 @@ export default function LensSearchDialog({
     }
   }, [activeIndex]);
 
-  const { results, isLoading: isSearching } = useLensSearchApi(deferredQuery);
+  const searchIndex = useMemo(
+    () => buildLensSearchIndex(lenses),
+    [lenses],
+  );
+  const results = useMemo(
+    () => deferredQuery.trim()
+      ? searchLensIndex(searchIndex, deferredQuery.trim(), 8)
+      : [],
+    [searchIndex, deferredQuery],
+  );
+  const isSearching = false;
 
   useSearchTelemetry({ query: deferredQuery, resultsCount: results.length, isOpen: open });
 

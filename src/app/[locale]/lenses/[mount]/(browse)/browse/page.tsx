@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { getLensesByMount } from "@/lib/lens";
+import { getLensesByMount, getOrderedUniqueBrands, getAvailableOpticalTraits } from "@/lib/lens";
 import { urlSegmentToMount } from "@/lib/mount";
 import LensListClient from "@/components/LensListClient";
 import LensesLoading from "../loading";
@@ -56,6 +56,10 @@ export default async function LensesPage({ params }: { params: Params }) {
   const t = await getTranslations({ locale, namespace: "LensList" });
   const h1Title = resolvedMount === "X" ? t("metaTitleX") : t("metaTitleG");
 
+  const allLenses = getLensesByMount(resolvedMount, locale);
+  const brands = getOrderedUniqueBrands(allLenses);
+  const availableOpticalTraits = getAvailableOpticalTraits(allLenses);
+
   return (
     <>
       {/* Server-rendered h1 so the static HTML carries a heading even when the
@@ -65,7 +69,11 @@ export default async function LensesPage({ params }: { params: Params }) {
           anchor. */}
       <h1 className="sr-only">{h1Title}</h1>
       <Suspense fallback={<LensesLoading />}>
-        <LensListClient />
+        <LensListClient
+          lenses={allLenses}
+          brands={brands}
+          availableOpticalTraits={availableOpticalTraits}
+        />
       </Suspense>
     </>
   );

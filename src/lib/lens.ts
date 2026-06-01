@@ -2,7 +2,7 @@ import lensesData from "../data/lenses.json";
 import gfxLensesData from "../data/lenses-gfx.json";
 import metaData from "../data/meta.json";
 import { lensCatalogSchema } from "./lens-schema";
-import { resolveTranslations, type Lens, type LensCatalog, type Mount, type OpticalTrait } from "./types";
+import { resolveTranslations, OPTICAL_TRAITS, type Lens, type LensCatalog, type Mount, type OpticalTrait } from "./types";
 import { deriveSpecialty } from "./lens-specialty";
 
 const xLenses: Lens[] = lensCatalogSchema.parse(lensesData) as LensCatalog;
@@ -276,6 +276,13 @@ export const BRAND_DISPLAY_ORDER: string[] = [
 
 export function getUniqueBrands(lenses: Lens[]): string[] {
   return [...new Set(lenses.map((l) => l.brand))].sort();
+}
+
+export function getAvailableOpticalTraits(lenses: { isCine?: boolean; opticalTraits?: OpticalTrait[] }[]): OpticalTrait[] {
+  const present = new Set(
+    lenses.flatMap((l) => deriveSpecialty(l).opticalTraits),
+  );
+  return OPTICAL_TRAITS.filter((trait) => present.has(trait));
 }
 
 export function getOrderedUniqueBrands(lenses: Lens[]): string[] {
