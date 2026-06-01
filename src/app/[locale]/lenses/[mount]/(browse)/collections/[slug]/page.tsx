@@ -44,7 +44,11 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Collection" });
   const title = localized(stats.collection.title, locale);
   const mountLabel = t("mountLabel", { mount: mountSeoLabel(resolvedMount) });
-  const seoTitle = `${title} — ${mountLabel}`;
+  const baseTitle = `${title} — ${mountLabel}`;
+  // Current-year suffix lives only in the SERP <title> as a freshness/CTR cue;
+  // resolved at build time, so it rolls forward on the next deploy. The on-page
+  // <h1> and collection cards render the bare title, never this string.
+  const seoTitle = t("seoTitleYear", { base: baseTitle, year: String(new Date().getFullYear()) });
   const description = localized(stats.collection.description, locale);
 
   const prefix = t("metaPrefix", { count: stats.lensCount, brandCount: stats.brandCount });
@@ -54,7 +58,8 @@ export async function generateMetadata({
     title: seoTitle,
     description: metaDesc,
     openGraph: {
-      title: `${seoTitle} | Atlens`,
+      // OG title stays year-free — a shared social card has no freshness intent.
+      title: `${baseTitle} | Atlens`,
       description: metaDesc,
       images: defaultOgImages(),
     },

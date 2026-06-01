@@ -545,6 +545,7 @@
     "feedbackLink": "告诉我",
     "reportIssue": "反馈问题",
     "mountLabel": "富士 {mount} 卡口",
+    "seoTitleYear": "{base}（{year} 年）",
     "shareText": "在 Atlens 发现一份不错的合集：{title}（{mount}）"
   }
 }
