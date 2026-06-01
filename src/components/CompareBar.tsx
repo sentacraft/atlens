@@ -31,12 +31,17 @@ export default function CompareBar() {
   const { onSelectLens, getResultState } = useCompareLensSearch();
   const clearCompareWithUndo = useClearCompareWithUndo();
 
+  const allLenses = useMemo(
+    () => getLensesByMount(mount, locale),
+    [mount, locale],
+  );
+
   const selectedLenses = useMemo(
     () =>
       compareIds
-        .map((id) => getLensesByMount(mount, locale).find((l) => l.id === id))
+        .map((id) => allLenses.find((l) => l.id === id))
         .filter((lens) => lens !== undefined),
-    [compareIds, mount, locale]
+    [compareIds, allLenses]
   );
 
   const chipsRef = useRef<HTMLDivElement>(null);
@@ -157,6 +162,7 @@ export default function CompareBar() {
                 {t("clearCompare")}
               </button>
               <LensSearchDialog
+                lenses={allLenses}
                 onSelectLens={onSelectLens}
                 getResultState={getResultState}
                 triggerVariant="icon"

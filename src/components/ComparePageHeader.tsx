@@ -31,15 +31,17 @@ export default function ComparePageHeader() {
   const locale = useLocale();
   const lang = locale === "zh" ? "zh" : "en";
 
-  // Resolve full Lens objects from context IDs.
-  // CompareTable seeds context via useLayoutEffect (before paint), so
-  // compareIds is already populated by the time the user sees anything.
+  const allLenses = useMemo(
+    () => getLensesByMount(mount, locale),
+    [mount, locale],
+  );
+
   const activeLenses = useMemo(
     () =>
       compareIds
-        .map((id) => getLensesByMount(mount, locale).find((l) => l.id === id))
+        .map((id) => allLenses.find((l) => l.id === id))
         .filter((l): l is Lens => l !== undefined),
-    [compareIds, mount, locale],
+    [compareIds, allLenses],
   );
 
   // Reverse-derive the matching curated preset (if any) from the current
@@ -68,6 +70,7 @@ export default function ComparePageHeader() {
         {activeLenses.length >= 1 &&
           (canAddMore ? (
             <LensSearchDialog
+              lenses={allLenses}
               onSelectLens={onSelectLens}
               getResultState={getResultState}
               triggerVariant="button"

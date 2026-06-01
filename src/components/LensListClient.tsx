@@ -12,10 +12,10 @@ import {
   MAX_COMPARE,
   type FilterState,
 } from "@/lib/lens";
+import type { Lens, OpticalTrait } from "@/lib/types";
 import { serializeFilters, parseFilters } from "@/lib/filter-params";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
-import { useLensesApi } from "@/hooks/useLensesApi";
 import BackToTopButton from "@/components/BackToTopButton";
 import LensCard from "./LensCard";
 import LensFilters from "./LensFilters";
@@ -23,10 +23,15 @@ import LensSectionNav from "./LensSectionNav";
 import LensSortControl from "./LensSortControl";
 import { LENS_INDEX_SHELL_CLS } from "@/lib/ui-tokens";
 import LensSearchDialog from "./LensSearchDialog";
-import LensesLoading from "@/app/[locale]/lenses/[mount]/(browse)/loading";
 import FeedbackTrigger from "./FeedbackTrigger";
 
-export default function LensListClient() {
+interface LensListClientProps {
+  lenses: Lens[];
+  brands: string[];
+  availableOpticalTraits: OpticalTrait[];
+}
+
+export default function LensListClient({ lenses, brands, availableOpticalTraits }: LensListClientProps) {
   const t = useTranslations("LensList");
   const tSearch = useTranslations("Search");
   const hookAttr = useUiHookAttr();
@@ -35,17 +40,11 @@ export default function LensListClient() {
   const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
   const { compareIds, toggle } = useCompare();
 
-  const { lenses, brands, availableOpticalTraits, isLoading } = useLensesApi();
-
   const displayed = useMemo(
     () =>
       sortLenses(filterLenses(lenses, filters), filters.sort, filters.sortDir),
     [lenses, filters]
   );
-
-  if (isLoading && lenses.length === 0) {
-    return <LensesLoading />;
-  }
 
   // `usage` (photo/cine) is a view mode, not a filter dimension, so it is left
   // out of the active-filter count and the reset trigger. Reset still returns
@@ -98,6 +97,7 @@ export default function LensListClient() {
             // list, so it belongs in the refine zone, not the navigation bar.
             searchSlot={
               <LensSearchDialog
+                lenses={lenses}
                 triggerVariant="button"
                 triggerLabel={tSearch("browseTrigger")}
                 triggerClassName="sm:h-10"
