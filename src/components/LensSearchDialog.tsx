@@ -4,11 +4,10 @@ import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Drawer } from "@base-ui/react/drawer";
+import { Sheet } from "react-modal-sheet";
 import { useRouter } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
-import { useKeyboardViewport } from "@/hooks/useKeyboardViewport";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import LensSearchPanel, { type LensSearchResultState } from "./LensSearchPanel";
@@ -47,10 +46,6 @@ export default function LensSearchDialog({
   const router = useRouter();
   const isDesktop = useBreakpoint("sm");
   const [open, setOpen] = useState(false);
-
-  // Mobile keyboard-safe carrier: full-height drawer + a single whole-sheet
-  // scroll region padded by the keyboard height. See useKeyboardViewport.
-  useKeyboardViewport(open && !isDesktop);
 
   function handleSelect(lens: Lens) {
     setOpen(false);
@@ -125,55 +120,41 @@ export default function LensSearchDialog({
           </DialogContent>
         </Dialog>
       ) : (
-        // Mobile: full-height base-ui Drawer. Title + input + results live in one
-        // scroll stream padded by --keyboard-height, so the input stays at the
-        // top (never covered) and the list can be scrolled clear of the keyboard.
-        <Drawer.Root open={open} onOpenChange={setOpen} swipeDirection="down">
-          <Drawer.Portal>
-            <Drawer.Backdrop
-              className={cn(
-                "fixed inset-0 bg-zinc-950/40 backdrop-blur-sm duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
-                Z.dialog
+        // Mobile: react-modal-sheet keeps the result list reachable above the
+        // iOS keyboard via its avoidKeyboard handling (Visual Viewport API).
+        <Sheet isOpen={open} onClose={() => setOpen(false)} detent="full">
+          <Sheet.Container className="bg-white dark:!bg-zinc-950">
+            <Sheet.Header />
+            <Sheet.Content>
+              <div className="flex items-center justify-between border-b border-zinc-100 px-5 pb-3 dark:border-zinc-800">
+                <h2 className="text-lg font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+                  {t("title")}
+                </h2>
+                <button
+                  type="button"
+                  aria-label={t("clear")}
+                  onClick={() => setOpen(false)}
+                  className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "h-9 w-9")}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              {open && (
+                <LensSearchPanel
+                  lenses={lenses}
+                  onSelectLens={handleSelect}
+                  getResultState={getResultState}
+                  autoFocus
+                  layout="page"
+                />
               )}
-            />
-            <Drawer.Viewport>
-              <Drawer.Popup
-                className={cn(
-                  "fixed inset-x-0 bottom-0 top-0 flex flex-col bg-white shadow-2xl duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:bg-zinc-950",
-                  Z.dialog
-                )}
-              >
-                <div className="flex shrink-0 touch-none justify-center pb-1 pt-3">
-                  <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
-                </div>
-                <div className="flex-1 overflow-y-auto pb-[var(--keyboard-height,0px)]">
-                  <div className="flex items-center justify-between border-b border-zinc-100 px-5 pb-3 dark:border-zinc-800">
-                    <h2 className="text-lg font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
-                      {t("title")}
-                    </h2>
-                    <button
-                      type="button"
-                      aria-label={t("clear")}
-                      onClick={() => setOpen(false)}
-                      className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "h-9 w-9")}
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                  {open && (
-                    <LensSearchPanel
-                      lenses={lenses}
-                      onSelectLens={handleSelect}
-                      getResultState={getResultState}
-                      autoFocus
-                      layout="page"
-                    />
-                  )}
-                </div>
-              </Drawer.Popup>
-            </Drawer.Viewport>
-          </Drawer.Portal>
-        </Drawer.Root>
+            </Sheet.Content>
+          </Sheet.Container>
+          <Sheet.Backdrop
+            className={Z.dialog}
+            onTap={() => setOpen(false)}
+          />
+        </Sheet>
       )}
     </>
   );
