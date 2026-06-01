@@ -1,10 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { COLLECTIONS, getCollectionStats, getRelatedCollections, getSharedCollections } from "../collections";
-import { getAllLenses, isZoom } from "../lens";
+import { isZoom } from "../lens";
+import { getAllLenses } from "../lens-data";
 import type { Lens } from "../types";
 
 const allLenses = getAllLenses("en");
-const xPhotoLenses = allLenses.filter((l) => l.mount === "X" && !l.isCine);
+const xLenses = allLenses.filter((l) => l.mount === "X");
+const xPhotoLenses = xLenses.filter((l) => !l.isCine);
 
 function matchingLenses(slug: string, locale = "en"): Lens[] {
   const col = COLLECTIONS[slug];
@@ -356,12 +358,12 @@ describe("getRelatedCollections", () => {
 // ---------------------------------------------------------------------------
 describe("getCollectionStats", () => {
   it("returns null for unknown slug", () => {
-    expect(getCollectionStats("nonexistent", "X", "en")).toBeNull();
+    expect(getCollectionStats("nonexistent", xLenses, "en")).toBeNull();
   });
 
   it("returns valid stats for a known collection", () => {
     const slug = Object.keys(COLLECTIONS)[0];
-    const stats = getCollectionStats(slug, "X", "en");
+    const stats = getCollectionStats(slug, xLenses, "en");
     expect(stats).not.toBeNull();
     expect(stats!.lensCount).toBeGreaterThan(0);
     expect(stats!.brandCount).toBeGreaterThan(0);
@@ -374,12 +376,12 @@ describe("getCollectionStats", () => {
 // ---------------------------------------------------------------------------
 describe("getSharedCollections", () => {
   it("returns empty for empty lens list", () => {
-    expect(getSharedCollections([], "X", "en")).toEqual([]);
+    expect(getSharedCollections([], xLenses, "en")).toEqual([]);
   });
 
   it("returns member collections for single lens", () => {
     const lens = xPhotoLenses[0];
-    const result = getSharedCollections([lens], "X", "en");
+    const result = getSharedCollections([lens], xLenses, "en");
     expect(result.length).toBeGreaterThan(0);
     for (const col of result) {
       expect(col.filter(lens, "en")).toBe(true);
@@ -392,7 +394,7 @@ describe("getSharedCollections", () => {
     if (!lens1 || !lens2) {
       return;
     }
-    const shared = getSharedCollections([lens1, lens2], "X", "en");
+    const shared = getSharedCollections([lens1, lens2], xLenses, "en");
     for (const col of shared) {
       expect(col.filter(lens1, "en")).toBe(true);
       expect(col.filter(lens2, "en")).toBe(true);

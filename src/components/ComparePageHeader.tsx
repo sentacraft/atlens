@@ -12,8 +12,6 @@ import { UTILITY_BTN_CLS } from "@/lib/ui-tokens";
 import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
-import { useEffectiveMount } from "@/hooks/useMountParam";
-import { getLensesByMount } from "@/lib/lens";
 import { findPresetByIds } from "@/lib/curated-presets";
 import type { Lens } from "@/lib/types";
 import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
@@ -21,20 +19,14 @@ import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
 const ADD_LENS_BTN_BASE =
   "h-9 whitespace-nowrap rounded-full border px-3.5 text-sm transition-colors";
 
-export default function ComparePageHeader() {
+export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) {
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
   const { compareIds } = useCompare();
   const { onSelectLens, getResultState, canAddMore } = useCompareLensSearch();
   const clearCompareWithUndo = useClearCompareWithUndo();
-  const mount = useEffectiveMount();
   const locale = useLocale();
   const lang = locale === "zh" ? "zh" : "en";
-
-  const allLenses = useMemo(
-    () => getLensesByMount(mount, locale),
-    [mount, locale],
-  );
 
   const activeLenses = useMemo(
     () =>

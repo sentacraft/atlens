@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { parseLensIds } from "@/lib/lens";
+import { parseLensIds, getLensesByMount } from "@/lib/lens-data";
 import { urlSegmentToMount } from "@/lib/mount";
 import { findPresetByIds } from "@/lib/curated-presets";
 import CompareTable from "@/components/CompareTable";
@@ -113,6 +113,7 @@ export default async function ComparePage({
   const tNav = await getTranslations("Nav");
   const seg = mountToUrlSegment(resolvedMount);
   const lenses = parseLensIds(ids, resolvedMount, locale);
+  const allLenses = getLensesByMount(resolvedMount, locale);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-4 sm:pt-8 pb-40 flex flex-col gap-3 sm:gap-4">
@@ -120,10 +121,10 @@ export default async function ComparePage({
         segments={[{ label: tNav("lenses"), href: `/lenses/${seg}/browse` }]}
         current={tNav("compare")}
       />
-      <ComparePageHeader />
-      <CompareTable key={lenses.length === 0 ? "_empty_" : ids} lenses={lenses} minColumns={2} hideBodyWhenEmpty />
-      <CompareCollections />
-      {resolvedMount === "X" && <CuratedComparisons />}
+      <ComparePageHeader allLenses={allLenses} />
+      <CompareTable key={lenses.length === 0 ? "_empty_" : ids} lenses={lenses} allLenses={allLenses} minColumns={2} hideBodyWhenEmpty />
+      <CompareCollections allLenses={allLenses} />
+      {resolvedMount === "X" && <CuratedComparisons allLenses={allLenses} />}
       <BackToTopButton />
       <CompareTelemetry lensIds={lenses.map((l) => l.id)} />
     </div>

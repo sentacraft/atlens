@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { getLensesByMount, getOrderedUniqueBrands, getAvailableOpticalTraits } from "@/lib/lens";
+import { getOrderedUniqueBrands, getAvailableOpticalTraits } from "@/lib/lens";
+import { getLensesByMount } from "@/lib/lens-data";
 import { urlSegmentToMount } from "@/lib/mount";
 import LensListClient from "@/components/LensListClient";
 import LensesLoading from "../loading";

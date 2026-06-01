@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import {
   filterLenses,
   sortLenses,
-  getLensesByMount,
   getOrderedUniqueBrands,
 } from "@/lib/lens";
+import { getLensesByMount } from "@/lib/lens-data";
 import { deriveSpecialty } from "@/lib/lens-specialty";
 import { parseFilters } from "@/lib/filter-params";
 import { urlSegmentToMount } from "@/lib/mount";

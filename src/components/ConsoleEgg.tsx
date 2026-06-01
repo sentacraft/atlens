@@ -1,19 +1,24 @@
 "use client";
 
 import { useEffect } from "react";
-import { meta, brandCount } from "@/lib/lens";
 
-export default function ConsoleEgg() {
+interface ConsoleEggProps {
+  version: string;
+  lensCount: number;
+  brandCount: number;
+}
+
+export default function ConsoleEgg({ version, lensCount, brandCount }: ConsoleEggProps) {
   useEffect(() => {
     console.log(
       [
-        `Atlens v${meta.version}`,
+        `Atlens v${version}`,
         `lens.json loaded ✓`,
-        `${meta.lensCount} lenses · ${brandCount} brands`,
+        `${lensCount} lenses · ${brandCount} brands`,
         `No hallucinations guaranteed.`,
       ].join("\n")
     );
-  }, []);
+  }, [version, lensCount, brandCount]);
 
   return null;
 }

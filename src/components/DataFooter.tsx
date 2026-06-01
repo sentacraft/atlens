@@ -3,19 +3,26 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
-import { meta, getLensesByMount } from "@/lib/lens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 
 type ClickState = "date" | "version" | "easter";
 
-export default function DataInfo() {
+interface MountStats {
+  lensCount: number;
+  brandCount: number;
+}
+
+interface DataInfoProps {
+  mountStats: { X: MountStats; G: MountStats };
+  meta: { lastUpdated: string; version: string; buildNumber: number };
+}
+
+export default function DataInfo({ mountStats, meta }: DataInfoProps) {
   const h = useTranslations("Home");
   const t = useTranslations("Footer");
   const locale = useLocale();
   const mount = useEffectiveMount();
-  const mountLenses = getLensesByMount(mount, locale);
-  const lensCount = mountLenses.length;
-  const brandCount = new Set(mountLenses.map((l) => l.brand)).size;
+  const { lensCount, brandCount } = mountStats[mount];
   const [clickState, setClickState] = useState<ClickState>("date");
 
   const cycle = () =>

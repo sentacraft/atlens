@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
 import { buildAlternates } from "@/lib/seo";
+import { getLensesByMount, meta } from "@/lib/lens-data";
 import DataInfo from "@/components/DataFooter";
 import HomeCta from "@/components/HomeCta";
 import HeroBrand from "@/components/MountTag";
@@ -24,10 +25,18 @@ export default async function HomePage({ params }: { params: Params }) {
   // Enables static rendering for this page. Must be called before any
   // useTranslations/getTranslations descendant access.
   setRequestLocale(locale);
-  return <HomeContent />;
+
+  const xLenses = getLensesByMount("X", locale);
+  const gLenses = getLensesByMount("G", locale);
+  const mountStats = {
+    X: { lensCount: xLenses.length, brandCount: new Set(xLenses.map((l) => l.brand)).size },
+    G: { lensCount: gLenses.length, brandCount: new Set(gLenses.map((l) => l.brand)).size },
+  };
+
+  return <HomeContent mountStats={mountStats} />;
 }
 
-function HomeContent() {
+function HomeContent({ mountStats }: { mountStats: { X: { lensCount: number; brandCount: number }; G: { lensCount: number; brandCount: number } } }) {
   const t = useTranslations("Common");
 
   return (
@@ -44,7 +53,7 @@ function HomeContent() {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <HomeCta />
           </div>
-          <DataInfo />
+          <DataInfo mountStats={mountStats} meta={meta} />
         </div>
       </section>
 

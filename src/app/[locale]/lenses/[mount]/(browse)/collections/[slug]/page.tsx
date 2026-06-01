@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight, Flag } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { COLLECTIONS, getCollectionStats, getRelatedCollectionsWithStats } from "@/lib/collections";
-import { getLensesByMount } from "@/lib/lens";
+import { getLensesByMount } from "@/lib/lens-data";
 import { urlSegmentToMount, mountSeoLabel, mountHasCollections } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { ACTION_ESCAPE_CLS, UTILITY_BTN_CLS } from "@/lib/ui-tokens";
@@ -35,7 +35,8 @@ export async function generateMetadata({
   if (!resolvedMount || !mountHasCollections(resolvedMount)) {
     return {};
   }
-  const stats = getCollectionStats(slug, resolvedMount, locale);
+  const allLenses = getLensesByMount(resolvedMount, locale);
+  const stats = getCollectionStats(slug, allLenses, locale);
   if (!stats) {
     return {};
   }
@@ -73,7 +74,8 @@ export default async function CollectionPage({
   if (!resolvedMount || !mountHasCollections(resolvedMount)) {
     notFound();
   }
-  const collectionStats = getCollectionStats(slug, resolvedMount, locale);
+  const mountLenses = getLensesByMount(resolvedMount, locale);
+  const collectionStats = getCollectionStats(slug, mountLenses, locale);
   if (!collectionStats) {
     notFound();
   }
@@ -86,8 +88,7 @@ export default async function CollectionPage({
   const mountLabel = t("mountLabel", { mount: mountSeoLabel(resolvedMount) });
   const description = localized(collection.description, locale);
   const statsLabel = t("stats", { count: lensCount, brandCount });
-  const mountLenses = getLensesByMount(resolvedMount, locale);
-  const relatedWithStats = getRelatedCollectionsWithStats(slug, resolvedMount, locale);
+  const relatedWithStats = getRelatedCollectionsWithStats(slug, mountLenses, locale);
 
   return (
     <>

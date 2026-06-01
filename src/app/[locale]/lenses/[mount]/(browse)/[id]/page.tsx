@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Flag } from "lucide-react";
 import { routing } from "@/i18n/routing";
-import { getLensesByMount, getLensUrl } from "@/lib/lens";
+import { getLensUrl } from "@/lib/lens";
+import { getLensesByMount } from "@/lib/lens-data";
 import { urlSegmentToMount, mountToUrlSegment } from "@/lib/mount";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { buildSpecGroups, resolveSpecGroups } from "@/lib/lens-spec-groups";
@@ -265,7 +266,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   // Field options for the Report Dialog — taken directly from resolved values,
   // identical to what is rendered in the spec table below.
   const mediaGroupLabel = t("fieldGroupMedia");
-  const memberCollections = getMemberCollections(lens, resolvedMount, locale);
+  const memberCollections = getMemberCollections(lens, lenses, locale);
 
   const priceSelection = pickPriceEntry(lens.pricing, locale);
   const reportableFields = [

@@ -3,7 +3,8 @@
 // can actually scan. Keep these functions pure and synchronous so they
 // stay cheap to call inline in JSX cells.
 
-import { getAllLenses, defaultFilters } from "@/lib/lens";
+import { defaultFilters } from "@/lib/lens";
+import { getAllLenses } from "@/lib/lens-data";
 import { lensDisplayName } from "@/lib/lens.format";
 
 // Lazy-built lookup: slug → "Brand Series Model". Resolved once per

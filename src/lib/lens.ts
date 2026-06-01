@@ -1,49 +1,12 @@
-import lensesData from "../data/lenses.json";
-import gfxLensesData from "../data/lenses-gfx.json";
-import metaData from "../data/meta.json";
-import { lensCatalogSchema } from "./lens-schema";
-import { resolveTranslations, OPTICAL_TRAITS, type Lens, type LensCatalog, type Mount, type OpticalTrait } from "./types";
+import { OPTICAL_TRAITS, type Lens, type Mount, type OpticalTrait } from "./types";
 import { deriveSpecialty } from "./lens-specialty";
 
-const xLenses: Lens[] = lensCatalogSchema.parse(lensesData) as LensCatalog;
-const gfxLenses: Lens[] = lensCatalogSchema.parse(gfxLensesData) as LensCatalog;
-
-export const meta = metaData;
-export const brandCount = new Set(xLenses.map((l) => l.brand)).size;
 export const MAX_COMPARE = 4;
 
 export const CROP_FACTOR: Record<Mount, number> = {
   X: 1.5,
   G: 0.79, // GFX 44×33 mm diagonal ≈54.78 mm vs FF ≈43.3 mm
 };
-
-const resolvedCache = new Map<string, Lens[]>();
-
-function getResolved(base: Lens[], locale: string): Lens[] {
-  const key = `${base === xLenses ? "X" : "G"}:${locale}`;
-  let result = resolvedCache.get(key);
-  if (!result) {
-    result = base.map((l) => resolveTranslations(l, locale));
-    resolvedCache.set(key, result);
-  }
-  return result;
-}
-
-export function getLensesByMount(mount: Mount, locale: string): Lens[] {
-  if (mount === "X") {
-    return getResolved(xLenses, locale);
-  }
-  if (mount === "G") {
-    return getResolved(gfxLenses, locale);
-  }
-  // Exhaustive: a non-X/G value can only arrive via an unsafe cast upstream.
-  // Throw loudly here instead of silently serving X lenses.
-  throw new Error(`getLensesByMount: unsupported mount ${JSON.stringify(mount)}`);
-}
-
-export function getAllLenses(locale: string): Lens[] {
-  return [...getLensesByMount("X", locale), ...getLensesByMount("G", locale)];
-}
 
 export type LensType = "prime" | "zoom";
 export const LENS_TYPES = ["prime", "zoom"] as const satisfies readonly LensType[];
@@ -299,16 +262,6 @@ export function getLensUrl(lens: Lens, locale?: string): string | undefined {
     return lens.officialLinks?.cn;
   }
   return lens.officialLinks?.global;
-}
-
-export function parseLensIds(ids: string | undefined, mount: Mount, locale: string): Lens[] {
-  const pool = getLensesByMount(mount, locale);
-  return (ids ?? "")
-    .split(",")
-    .filter(Boolean)
-    .slice(0, MAX_COMPARE)
-    .map((id) => pool.find((l) => l.id === id))
-    .filter((l): l is Lens => l !== undefined);
 }
 
 export type SortKey = "focalLength" | "maxAperture" | "weightG";

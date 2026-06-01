@@ -23,7 +23,7 @@ import { deriveSpecialty } from "@/lib/lens-specialty";
 import { useCompare } from "@/context/CompareProvider";
 import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
 import { useCompareUrlSync } from "@/hooks/useCompareUrlSync";
-import { getLensesByMount, MAX_COMPARE } from "@/lib/lens";
+import { MAX_COMPARE } from "@/lib/lens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
 import { Link } from "@/i18n/navigation";
@@ -187,6 +187,7 @@ function EmptyLensHeader({
 
 interface Props {
   lenses: Lens[];
+  allLenses: Lens[];
   /** Minimum number of columns to display; empty slot headers fill the gap. */
   minColumns?: number;
   /** When true and the compare list is empty, only the header row is rendered (no skeleton body). */
@@ -196,7 +197,7 @@ interface Props {
 const LABEL_COLUMN_WIDTH = "6rem";
 const LENS_COLUMN_MIN_WIDTH = "9rem";
 
-export default function CompareTable({ lenses: initialLenses, minColumns = 0, hideBodyWhenEmpty = false }: Props) {
+export default function CompareTable({ lenses: initialLenses, allLenses, minColumns = 0, hideBodyWhenEmpty = false }: Props) {
   const t = useTranslations("Compare");
   const td = useTranslations("LensDetail");
   const tBrand = useTranslations("Brands");
@@ -232,11 +233,6 @@ export default function CompareTable({ lenses: initialLenses, minColumns = 0, hi
   useLayoutEffect(() => {
     seed(initialLensIds);
   }, [initialLensIds, seed]);
-
-  const allLenses = useMemo(
-    () => getLensesByMount(mount, locale),
-    [mount, locale],
-  );
 
   const orderedLenses = compareIds
     .map((id) => allLenses.find((lens) => lens.id === id))
