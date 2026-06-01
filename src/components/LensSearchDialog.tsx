@@ -122,11 +122,18 @@ export default function LensSearchDialog({
       ) : (
         // Mobile: react-modal-sheet keeps the result list reachable above the
         // iOS keyboard via its avoidKeyboard handling (Visual Viewport API).
-        <Sheet isOpen={open} onClose={() => setOpen(false)} detent="full">
+        <Sheet
+          isOpen={open}
+          onClose={() => setOpen(false)}
+          detent="full"
+          tweenConfig={{ ease: "easeOut", duration: 0.28 }}
+        >
           <Sheet.Container className="bg-white dark:!bg-zinc-950">
-            <Sheet.Header />
-            <Sheet.Content>
-              <div className="flex items-center justify-between border-b border-zinc-100 px-5 pb-3 dark:border-zinc-800">
+            {/* Title bar lives in the fixed, non-draggable header — this drops the
+                default drag handle, which felt redundant on a full-height sheet
+                that already closes via the explicit button. */}
+            <Sheet.Header disableDrag>
+              <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-3 dark:border-zinc-800">
                 <h2 className="text-lg font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
                   {t("title")}
                 </h2>
@@ -139,6 +146,8 @@ export default function LensSearchDialog({
                   <X className="h-4 w-4" />
                 </button>
               </div>
+            </Sheet.Header>
+            <Sheet.Content>
               {open && (
                 <LensSearchPanel
                   lenses={lenses}

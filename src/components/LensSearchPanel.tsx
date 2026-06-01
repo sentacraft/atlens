@@ -129,7 +129,17 @@ export default function LensSearchPanel({
 
   return (
     <>
-      <div className={cn("px-5", layout === "page" ? "pb-3 pt-4" : "pb-4")}>
+      <div
+        className={cn(
+          "px-5",
+          layout === "page"
+            // Pin the input to the top of the scroll stream so only the results
+            // scroll under it, while keeping the single whole-sheet scroll that
+            // avoidKeyboard pads (no independent scroll region / magic spacer).
+            ? "sticky top-0 z-10 bg-white pb-3 pt-4 dark:bg-zinc-950"
+            : "pb-4"
+        )}
+      >
         <div className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 shadow-inner shadow-zinc-200/30 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/20">
           <label htmlFor={inputId} className="sr-only">
             {t("placeholder")}
