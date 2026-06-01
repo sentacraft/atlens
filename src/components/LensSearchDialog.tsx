@@ -122,10 +122,7 @@ export default function LensSearchDialog({
       ) : (
         // Mobile: react-modal-sheet keeps the result list reachable above the
         // iOS keyboard via its avoidKeyboard handling (Visual Viewport API).
-        // Experiment: detent="content" (half sheet) + an independently
-        // scrollable result region — the hardest case, leaning purely on
-        // avoidKeyboard rather than full-height + whole-sheet scroll.
-        <Sheet isOpen={open} onClose={() => setOpen(false)} detent="content">
+        <Sheet isOpen={open} onClose={() => setOpen(false)} detent="full">
           <Sheet.Container className="bg-white dark:!bg-zinc-950">
             <Sheet.Header />
             <Sheet.Content>
@@ -148,7 +145,7 @@ export default function LensSearchDialog({
                   onSelectLens={handleSelect}
                   getResultState={getResultState}
                   autoFocus
-                  layout="container"
+                  layout="page"
                 />
               )}
             </Sheet.Content>
