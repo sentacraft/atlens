@@ -3,7 +3,6 @@
 import { useMemo, useRef, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { getLensesByMount } from "@/lib/lens";
 import { useCompare } from "@/context/CompareProvider";
 import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
@@ -19,8 +18,9 @@ import { cn } from "@/lib/utils";
 import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/lib/ui-tokens";
 import { Z } from "@/config/ui";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
+import type { Lens } from "@/lib/types";
 
-export default function CompareBar() {
+export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
   const t = useTranslations("LensList");
   const tBrand = useTranslations("Brands");
   const tCompare = useTranslations("Compare");
@@ -30,11 +30,6 @@ export default function CompareBar() {
   const { compareIds, remove } = useCompare();
   const { onSelectLens, getResultState } = useCompareLensSearch();
   const clearCompareWithUndo = useClearCompareWithUndo();
-
-  const allLenses = useMemo(
-    () => getLensesByMount(mount, locale),
-    [mount, locale],
-  );
 
   const selectedLenses = useMemo(
     () =>

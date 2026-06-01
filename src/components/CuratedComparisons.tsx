@@ -8,11 +8,11 @@ import { buildComparePath } from "@/lib/compare-url";
 import { HorizontalScrollRail } from "@/components/ui/horizontal-scroll-rail";
 import { useCompare } from "@/context/CompareProvider";
 import { curatedPresets, type CuratedPreset } from "@/lib/curated-presets";
-import { getAllLenses } from "@/lib/lens";
 import { lensDisplayName } from "@/lib/lens.format";
+import type { Lens } from "@/lib/types";
 import { ScrollChevron } from "@/components/ui/scroll-chevron";
 
-export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSelect?: () => void }) {
+export function PresetCard({ preset, allLenses, onSelect }: { preset: CuratedPreset; allLenses: Lens[]; onSelect?: () => void }) {
   const router = useRouter();
   const locale = useLocale();
   const lang = locale === "zh" ? "zh" : "en";
@@ -21,7 +21,7 @@ export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSele
   const tCompare = useTranslations("Compare");
 
   const lenses = preset.lensIds
-    .map((id) => getAllLenses(locale).find((l) => l.id === id))
+    .map((id) => allLenses.find((l) => l.id === id))
     .filter(Boolean);
 
   function handleClick() {
@@ -69,7 +69,7 @@ export function PresetCard({ preset, onSelect }: { preset: CuratedPreset; onSele
   );
 }
 
-export default function CuratedComparisons() {
+export default function CuratedComparisons({ allLenses }: { allLenses: Lens[] }) {
   const { compareIds } = useCompare();
   const t = useTranslations("Compare");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -120,7 +120,7 @@ export default function CuratedComparisons() {
       >
         {curatedPresets.map((preset) => (
           <div key={preset.slug} className="shrink-0 snap-start w-[calc((100vw-2.5rem)/1.5)]">
-            <PresetCard preset={preset} />
+            <PresetCard preset={preset} allLenses={allLenses} />
           </div>
         ))}
       </HorizontalScrollRail>
@@ -132,7 +132,7 @@ export default function CuratedComparisons() {
           different y, mirroring how Apple Music's content cards lay out. */}
       <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-2 items-start">
         {curatedPresets.map((preset) => (
-          <PresetCard key={preset.slug} preset={preset} />
+          <PresetCard key={preset.slug} preset={preset} allLenses={allLenses} />
         ))}
       </div>
     </div>
