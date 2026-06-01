@@ -29,6 +29,7 @@
   },
   "Search": {
     "open": "打开镜头搜索",
+    "back": "返回",
     "title": "搜索镜头",
     "description": "搜索镜头数据库",
     "addLens": "添加镜头",
