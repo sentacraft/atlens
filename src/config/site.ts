@@ -29,7 +29,7 @@ export const SITE: SiteConfig = {
   name: "Atlens",
   shortName: "Atlens",
   pwaDescription:
-    "Your pocket lens database for Fujifilm cameras — specs normalized, offline-ready, zero noise.",
+    "Your pocket lens database for Fujifilm cameras — specs normalized, zero noise.",
   themeColor: {
     light: "#ffffff",
     dark: "#0a0a0a",
