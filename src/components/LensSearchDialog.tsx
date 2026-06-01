@@ -15,6 +15,7 @@ import { useRouter, Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useLensSearchApi } from "@/hooks/useLensSearchApi";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { lensSubtitleLine } from "@/lib/lens.format";
@@ -60,8 +61,10 @@ export default function LensSearchDialog({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
+  const isDesktop = useBreakpoint("sm");
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
   const inputId = useId();
   const resultsId = useId();
   const deferredQuery = useDeferredValue(query);
@@ -84,6 +87,34 @@ export default function LensSearchDialog({
       setActiveIndex(0);
     }
   }, [open]);
+
+  // On mobile the panel is a top-anchored full-screen surface whose height is
+  // pinned to the *visual* viewport (the area above the on-screen keyboard).
+  // iOS leaves position:fixed/bottom-anchored elements behind the keyboard, so
+  // we drive the panel's height/offset from visualViewport instead — the input
+  // stays at the top (never covered) and the results region shrinks to the
+  // visible area (last row always reachable). Desktop keeps the centered dialog.
+  useEffect(() => {
+    if (!open || isDesktop) {
+      return;
+    }
+    const vv = window.visualViewport;
+    const el = popupRef.current;
+    if (!vv || !el) {
+      return;
+    }
+    const sync = () => {
+      el.style.setProperty("--search-vvh", `${vv.height}px`);
+      el.style.setProperty("--search-vvtop", `${vv.offsetTop}px`);
+    };
+    sync();
+    vv.addEventListener("resize", sync);
+    vv.addEventListener("scroll", sync);
+    return () => {
+      vv.removeEventListener("resize", sync);
+      vv.removeEventListener("scroll", sync);
+    };
+  }, [open, isDesktop]);
 
   // Scroll active result into view when navigating with keyboard
   useEffect(() => {
@@ -176,18 +207,27 @@ export default function LensSearchDialog({
         )}
       </button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={setOpen} responsive={false}>
         <DialogContent
-          className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-2xl shadow-zinc-950/20 dark:border-zinc-800 dark:bg-zinc-950"
+          ref={popupRef}
+          noDefaultPositioning={!isDesktop}
+          className={cn(
+            "overflow-hidden bg-white shadow-2xl dark:bg-zinc-950",
+            isDesktop
+              ? "w-full max-w-2xl rounded-[28px] border border-zinc-200 shadow-zinc-950/20 dark:border-zinc-800"
+              // Top-anchored full-screen panel, height bound to the visual
+              // viewport via the effect above (fallback 100dvh before it runs).
+              : "fixed inset-x-0 top-0 flex h-[var(--search-vvh,100dvh)] translate-y-[var(--search-vvtop,0px)] flex-col rounded-none border-0"
+          )}
           showCloseButton={false}
         >
-          <DialogHeader className="border-b border-zinc-100 pr-5 dark:border-zinc-800">
+          <DialogHeader className="shrink-0 border-b border-zinc-100 pr-5 dark:border-zinc-800">
             <div className="flex items-center justify-between">
               <div>
                 <DialogTitle>{t("title")}</DialogTitle>
                 <DialogDescription className="sr-only">{t("description")}</DialogDescription>
               </div>
-              <DialogClose className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "hidden h-9 w-9 sm:inline-flex")}>
+              <DialogClose className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "inline-flex h-9 w-9")}>
                 <X className="h-4 w-4" />
               </DialogClose>
             </div>
@@ -231,7 +271,12 @@ export default function LensSearchDialog({
 
           <div
             ref={scrollContainerRef}
-            className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
+            className={cn(
+              isDesktop
+                ? "h-[300px] py-3"
+                : "min-h-0 flex-1 pt-3 pb-[calc(0.75rem+var(--safe-inset-bottom))]",
+              "overflow-y-auto px-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
+            )}
           >
             {query.trim().length === 0 ? null : isSearching && results.length === 0 ? (
               <div className="flex items-center justify-center py-16">
