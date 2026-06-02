@@ -8,11 +8,13 @@ import { useTranslations } from "next-intl";
 import {
   filterLenses,
   sortLenses,
+  selectByUsage,
+  getAvailableFilterOptions,
   defaultFilters,
   MAX_COMPARE,
   type FilterState,
 } from "@/lib/lens";
-import type { Lens, OpticalTrait } from "@/lib/types";
+import type { Lens } from "@/lib/types";
 import { serializeFilters, parseFilters } from "@/lib/filter-params";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
@@ -27,11 +29,9 @@ import FeedbackTrigger from "./FeedbackTrigger";
 
 interface LensListClientProps {
   lenses: Lens[];
-  brands: string[];
-  availableOpticalTraits: OpticalTrait[];
 }
 
-export default function LensListClient({ lenses, brands, availableOpticalTraits }: LensListClientProps) {
+export default function LensListClient({ lenses }: LensListClientProps) {
   const t = useTranslations("LensList");
   const tSearch = useTranslations("Search");
   const hookAttr = useUiHookAttr();
@@ -39,6 +39,16 @@ export default function LensListClient({ lenses, brands, availableOpticalTraits 
   const pathname = usePathname();
   const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
   const { compareIds, toggle } = useCompare();
+
+  // Every filter control narrows to the current photo/cine view, so a Cine
+  // view never offers a brand, feature, or focus-motor option that has no cine
+  // lenses behind it. Derived from the already-in-memory lenses, so this costs
+  // a memo, not a fetch.
+  const scopedLenses = useMemo(
+    () => selectByUsage(lenses, filters.usage),
+    [lenses, filters.usage],
+  );
+  const available = useMemo(() => getAvailableFilterOptions(scopedLenses), [scopedLenses]);
 
   const displayed = useMemo(
     () =>
@@ -89,7 +99,18 @@ export default function LensListClient({ lenses, brands, availableOpticalTraits 
         navRightSlot={
           <LensUsageSwitch
             value={filters.usage}
-            onChange={(usage) => updateFilters((current) => ({ ...current, usage }))}
+            onChange={(usage) =>
+              // Switching the photo/cine view enters a different scope, so it
+              // resets refinements to a clean slate — only the chosen sort
+              // order carries over. This also sidesteps stale brand selections
+              // that no longer exist in the new view.
+              updateFilters((current) => ({
+                ...defaultFilters,
+                usage,
+                sort: current.sort,
+                sortDir: current.sortDir,
+              }))
+            }
           />
         }
         className="pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))]"
@@ -97,8 +118,7 @@ export default function LensListClient({ lenses, brands, availableOpticalTraits 
         <div className="pt-4">
           <LensFilters
             filters={filters}
-            brands={brands}
-            availableOpticalTraits={availableOpticalTraits}
+            available={available}
             onFiltersChange={updateFilters}
             hasActiveFilters={hasActiveFilters}
             activeFilterCount={activeFilterCount}
@@ -117,17 +137,28 @@ export default function LensListClient({ lenses, brands, availableOpticalTraits 
         </div>
 
         <div className="border-t border-zinc-100 dark:border-zinc-800/50 mt-4 pt-4 mb-2 sm:mb-3">
-          <div className="flex items-center justify-between">
-            <p className="whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
-              {t.rich("resultsCount", {
-                count: displayed.length,
-                b: (chunks) => (
-                  <strong className="font-medium text-zinc-700 dark:text-zinc-300">
-                    {chunks}
-                  </strong>
-                ),
-              })}
-            </p>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2.5">
+              <p className="whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                {t.rich("resultsCount", {
+                  count: displayed.length,
+                  b: (chunks) => (
+                    <strong className="font-medium text-zinc-700 dark:text-zinc-300">
+                      {chunks}
+                    </strong>
+                  ),
+                })}
+              </p>
+              {/* Coverage is otherwise buried in About; surfacing it next to the
+                  count puts it where users form the "is this complete?" judgment,
+                  not only on the dead-end empty state. */}
+              <Link
+                href="/about#coverage"
+                className="whitespace-nowrap text-xs text-zinc-400 underline-offset-2 transition-colors hover:text-zinc-600 hover:underline dark:text-zinc-500 dark:hover:text-zinc-300"
+              >
+                {t("coverageLink")}
+              </Link>
+            </div>
 
             <LensSortControl
               sort={filters.sort}

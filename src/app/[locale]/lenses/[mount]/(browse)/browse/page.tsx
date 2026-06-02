@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { getOrderedUniqueBrands, getAvailableOpticalTraits } from "@/lib/lens";
 import { getLensesByMount } from "@/lib/lens-data";
 import { urlSegmentToMount } from "@/lib/mount";
 import LensListClient from "@/components/LensListClient";
@@ -58,8 +57,6 @@ export default async function LensesPage({ params }: { params: Params }) {
   const h1Title = resolvedMount === "X" ? t("metaTitleX") : t("metaTitleG");
 
   const allLenses = getLensesByMount(resolvedMount, locale);
-  const brands = getOrderedUniqueBrands(allLenses);
-  const availableOpticalTraits = getAvailableOpticalTraits(allLenses);
 
   return (
     <>
@@ -70,11 +67,7 @@ export default async function LensesPage({ params }: { params: Params }) {
           anchor. */}
       <h1 className="sr-only">{h1Title}</h1>
       <Suspense fallback={<LensesLoading />}>
-        <LensListClient
-          lenses={allLenses}
-          brands={brands}
-          availableOpticalTraits={availableOpticalTraits}
-        />
+        <LensListClient lenses={allLenses} />
       </Suspense>
     </>
   );

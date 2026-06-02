@@ -4,8 +4,8 @@ import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
-import { FILTER_FEATURE_KEYS, FOCAL_CATEGORIES, LENS_TYPES } from "@/lib/lens";
-import type { FilterState, FocusFilter, FocusMotorClass, LensType } from "@/lib/lens";
+import { FOCAL_CATEGORIES } from "@/lib/lens";
+import type { AvailableFilterOptions, FilterState, FocusFilter, FocusMotorClass, LensType } from "@/lib/lens";
 import type { OpticalTrait } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
@@ -19,8 +19,8 @@ import { useFiltersTelemetry } from "./LensFilters.telemetry";
 
 interface Props {
   filters: FilterState;
-  brands: string[];
-  availableOpticalTraits: OpticalTrait[];
+  /** Option values present in the current scope; every control narrows to these. */
+  available: AvailableFilterOptions;
   onFiltersChange: (filters: FilterState) => void;
   hasActiveFilters: boolean;
   activeFilterCount: number;
@@ -31,8 +31,7 @@ interface Props {
 
 export default function LensFilters({
   filters,
-  brands,
-  availableOpticalTraits,
+  available,
   onFiltersChange,
   hasActiveFilters,
   activeFilterCount,
@@ -46,7 +45,7 @@ export default function LensFilters({
 
   const BRAND_PREVIEW_LIMIT = 2;
   const brandJoiner = t("brandSeparator");
-  const brandNames = Object.fromEntries(brands.map((b) => [b, tBrand(b)]));
+  const brandNames = Object.fromEntries(available.brands.map((b) => [b, tBrand(b)]));
   const selectedBrandNames = filters.brands.map((b) => brandNames[b] ?? b);
   const brandTriggerLabel =
     selectedBrandNames.length === 0
@@ -84,9 +83,27 @@ export default function LensFilters({
     return next.length === 0 || next.length === allValues.length ? [] : next;
   }
 
+  // Label maps keyed by value, so option lists can be built by narrowing the
+  // scope-available values to those actually present (rather than hardcoding
+  // the full set and leaving dead choices behind).
+  const motorLabels: Record<FocusMotorClass, string> = {
+    linear: t("motorLinear"),
+    stepping: t("motorStepping"),
+    dc: t("motorDc"),
+    other: t("motorOther"),
+  };
+  const focusLabels: Record<FocusFilter, string> = {
+    auto: t("focusAuto"),
+    manual: t("focusManual"),
+  };
+  const mobileFocusLabels: Record<FocusFilter, string> = {
+    auto: t("focusAutoMobile"),
+    manual: t("focusManualMobile"),
+  };
+
   const typeOptions = [
     { value: null, label: t("allTypes") },
-    ...LENS_TYPES.map((type) => ({
+    ...available.types.map((type) => ({
       value: type,
       label: t(type === "prime" ? "primes" : "zooms"),
     })),
@@ -94,7 +111,7 @@ export default function LensFilters({
 
   const opticalTraitOptions = [
     { value: null as OpticalTrait | null, label: t("allTypes") },
-    ...availableOpticalTraits.map((trait) => ({
+    ...available.opticalTraits.map((trait) => ({
       value: trait as OpticalTrait | null,
       label: tBadge(trait),
     })),
@@ -102,21 +119,17 @@ export default function LensFilters({
 
   const focusMotorOptions = [
     { value: null, label: t("allTypes") },
-    { value: "linear" as FocusMotorClass, label: t("motorLinear") },
-    { value: "stepping" as FocusMotorClass, label: t("motorStepping") },
-    { value: "dc" as FocusMotorClass, label: t("motorDc") },
-    { value: "other" as FocusMotorClass, label: t("motorOther") },
+    ...available.focusMotorClasses.map((motor) => ({ value: motor, label: motorLabels[motor] })),
   ] as { value: FocusMotorClass | null; label: string }[];
 
   const focusOptions = [
     { value: null, label: t("allTypes") },
-    { value: "auto" as FocusFilter, label: t("focusAuto") },
-    { value: "manual" as FocusFilter, label: t("focusManual") },
+    ...available.focusModes.map((mode) => ({ value: mode, label: focusLabels[mode] })),
   ] as { value: FocusFilter | null; label: string }[];
 
   const mobileTypeOptions = [
     { value: null, label: t("allTypes") },
-    ...LENS_TYPES.map((type) => ({
+    ...available.types.map((type) => ({
       value: type,
       label: t(type === "prime" ? "primesMobile" : "zoomsMobile"),
     })),
@@ -124,8 +137,7 @@ export default function LensFilters({
 
   const mobileFocusOptions = [
     { value: null, label: t("allTypes") },
-    { value: "auto" as FocusFilter, label: t("focusAutoMobile") },
-    { value: "manual" as FocusFilter, label: t("focusManualMobile") },
+    ...available.focusModes.map((mode) => ({ value: mode, label: mobileFocusLabels[mode] })),
   ] as { value: FocusFilter | null; label: string }[];
 
   const moreFiltersCount =
@@ -136,15 +148,17 @@ export default function LensFilters({
 
   const allOptionLabel = t("allTypes");
 
-  const brandOptions = brands.map((brand) => ({
+  const brandOptions = available.brands.map((brand) => ({
     key: brand,
     label: tBrand(brand),
     selected: filters.brands.includes(brand),
     onClick: () =>
-      updateFilters("brands", toggleMultiFilter(filters.brands, brand, brands)),
+      updateFilters("brands", toggleMultiFilter(filters.brands, brand, available.brands)),
   }));
 
-  const focalOptions = FOCAL_CATEGORIES.map((category) => ({
+  const focalOptions = FOCAL_CATEGORIES.filter((category) =>
+    available.focalCategories.includes(category.key),
+  ).map((category) => ({
     key: category.key,
     label: t(`category-${category.key}`),
     hint: t(`category-${category.key}Hint`),
@@ -155,12 +169,12 @@ export default function LensFilters({
         toggleMultiFilter(
           filters.focalCategories,
           category.key,
-          FOCAL_CATEGORIES.map((item) => item.key),
+          available.focalCategories,
         ),
       ),
   }));
 
-  const featureOptions = FILTER_FEATURE_KEYS.map((key) => ({
+  const featureOptions = available.features.map((key) => ({
     key,
     label: featureMeta[key].label,
     icon: featureMeta[key].icon,
@@ -234,13 +248,13 @@ export default function LensFilters({
           <div className="min-w-0 flex-1">
             <div className="sm:hidden">
               <BrandFilterMenu
-                brands={brands}
+                brands={available.brands}
                 selected={filters.brands}
                 brandLabels={brandNames}
                 allLabel={allOptionLabel}
                 triggerLabel={brandTriggerLabel}
                 onToggle={(brand) =>
-                  updateFilters("brands", toggleMultiFilter(filters.brands, brand, brands))
+                  updateFilters("brands", toggleMultiFilter(filters.brands, brand, available.brands))
                 }
                 onClear={() => updateFilters("brands", [])}
               />
@@ -315,20 +329,24 @@ export default function LensFilters({
       >
         <div className="min-h-0 overflow-hidden">
           <div className="flex flex-col gap-3.5 pt-3 pb-1 sm:gap-3">
-            <FilterRow label={t("focalRange")}>
-              <MultiSelectChipGroup
-                allLabel={allOptionLabel}
-                allSelected={filters.focalCategories.length === 0}
-                onSelectAll={() => updateFilters("focalCategories", [])}
-                options={focalOptions}
-              />
-            </FilterRow>
+            {available.focalCategories.length > 0 && (
+              <FilterRow label={t("focalRange")}>
+                <MultiSelectChipGroup
+                  allLabel={allOptionLabel}
+                  allSelected={filters.focalCategories.length === 0}
+                  onSelectAll={() => updateFilters("focalCategories", [])}
+                  options={focalOptions}
+                />
+              </FilterRow>
+            )}
 
-            <FilterRow label={t("features")}>
-              <FeatureToggleGroup options={featureOptions} />
-            </FilterRow>
+            {available.features.length > 0 && (
+              <FilterRow label={t("features")}>
+                <FeatureToggleGroup options={featureOptions} />
+              </FilterRow>
+            )}
 
-            {availableOpticalTraits.length > 0 && (
+            {available.opticalTraits.length > 0 && (
               <FilterRow label={t("opticalTraitFilter")}>
                 <TypeSegmentedControl
                   ariaLabel={t("opticalTraitFilter")}
@@ -344,20 +362,22 @@ export default function LensFilters({
               </FilterRow>
             )}
 
-            <FilterRow label={t("focusMotorFilter")}>
-              <TypeSegmentedControl
-                ariaLabel={t("focusMotorFilter")}
-                options={focusMotorOptions}
-                value={filters.focusMotorClass}
-                onChange={(v) => updateFilters("focusMotorClass", v)}
-                wrap
-                mobileLabelOverrides={{
-                  linear: t("motorLinearMobile"),
-                  stepping: t("motorSteppingMobile"),
-                  dc: t("motorDcMobile"),
-                }}
-              />
-            </FilterRow>
+            {available.focusMotorClasses.length > 0 && (
+              <FilterRow label={t("focusMotorFilter")}>
+                <TypeSegmentedControl
+                  ariaLabel={t("focusMotorFilter")}
+                  options={focusMotorOptions}
+                  value={filters.focusMotorClass}
+                  onChange={(v) => updateFilters("focusMotorClass", v)}
+                  wrap
+                  mobileLabelOverrides={{
+                    linear: t("motorLinearMobile"),
+                    stepping: t("motorSteppingMobile"),
+                    dc: t("motorDcMobile"),
+                  }}
+                />
+              </FilterRow>
+            )}
           </div>
         </div>
       </div>

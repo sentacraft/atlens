@@ -248,11 +248,77 @@ export function getAvailableOpticalTraits(lenses: { isCine?: boolean; opticalTra
   return OPTICAL_TRAITS.filter((trait) => present.has(trait));
 }
 
+// Partition lenses by the photo/cine view. This is the scope axis the brand
+// and optical-trait controls narrow to, so switching the usage view surfaces
+// only the brands/traits that actually exist in that universe. `null` = no
+// partition (the union escape hatch).
+export function selectByUsage(lenses: Lens[], usage: UsageFilter): Lens[] {
+  if (usage === null) {
+    return lenses;
+  }
+  return lenses.filter((lens) => {
+    const { isCine } = deriveSpecialty(lens);
+    return usage === "cine" ? isCine : !isCine;
+  });
+}
+
 export function getOrderedUniqueBrands(lenses: Lens[]): string[] {
   const present = new Set(lenses.map((l) => l.brand));
   const ordered = BRAND_DISPLAY_ORDER.filter((b) => present.has(b));
   const rest = [...present].filter((b) => !BRAND_DISPLAY_ORDER.includes(b)).sort();
   return [...ordered, ...rest];
+}
+
+export interface AvailableFilterOptions {
+  brands: string[];
+  opticalTraits: OpticalTrait[];
+  features: FilterFeatureKey[];
+  focusMotorClasses: FocusMotorClass[];
+  focalCategories: FocalCategory[];
+  types: LensType[];
+  focusModes: FocusFilter[];
+}
+
+const FOCUS_MOTOR_ORDER: FocusMotorClass[] = ["linear", "stepping", "dc", "other"];
+
+// Which control values actually occur in a given lens set, in display order.
+// Every browse filter narrows to these so a scope (e.g. the cine view) never
+// shows a control whose every value yields zero results — cine lenses carry no
+// AF motor and none of the photo feature flags, so those whole rows drop out
+// rather than sitting there dead.
+export function getAvailableFilterOptions(lenses: Lens[]): AvailableFilterOptions {
+  const features = new Set<FilterFeatureKey>();
+  const motors = new Set<FocusMotorClass>();
+  const focals = new Set<FocalCategory>();
+  const types = new Set<LensType>();
+  const focusModes = new Set<FocusFilter>();
+
+  for (const lens of lenses) {
+    for (const field of FILTER_FEATURE_KEYS) {
+      if (lens[field]) {
+        features.add(field);
+      }
+    }
+    const motor = classifyFocusMotor(lens);
+    if (motor) {
+      motors.add(motor);
+    }
+    for (const cat of getFocalCategoriesOf(lens)) {
+      focals.add(cat);
+    }
+    types.add(isZoom(lens) ? "zoom" : "prime");
+    focusModes.add(lens.af ? "auto" : "manual");
+  }
+
+  return {
+    brands: getOrderedUniqueBrands(lenses),
+    opticalTraits: getAvailableOpticalTraits(lenses),
+    features: FILTER_FEATURE_KEYS.filter((f) => features.has(f)),
+    focusMotorClasses: FOCUS_MOTOR_ORDER.filter((m) => motors.has(m)),
+    focalCategories: FOCAL_CATEGORIES.map((c) => c.key).filter((k) => focals.has(k)),
+    types: LENS_TYPES.filter((t) => types.has(t)),
+    focusModes: (["auto", "manual"] as const).filter((m) => focusModes.has(m)),
+  };
 }
 
 // Returns the locale-appropriate official link with no fallback:
