@@ -118,51 +118,12 @@ export default function LensSearchDialog({
     };
   }, [open]);
 
-  useEffect(() => {
-    if (!open || typeof window === "undefined") {
-      return;
-    }
-
-    const scrollY = window.scrollY;
-    const { body, documentElement } = document;
-    const previousBodyStyle = {
-      left: body.style.left,
-      overflow: body.style.overflow,
-      overscrollBehavior: body.style.overscrollBehavior,
-      position: body.style.position,
-      right: body.style.right,
-      top: body.style.top,
-      width: body.style.width,
-    };
-    const previousHtmlStyle = {
-      overflow: documentElement.style.overflow,
-      overscrollBehavior: documentElement.style.overscrollBehavior,
-    };
-
-    documentElement.style.overflow = "hidden";
-    documentElement.style.overscrollBehavior = "none";
-    body.style.position = "fixed";
-    body.style.top = `-${scrollY}px`;
-    body.style.left = "0";
-    body.style.right = "0";
-    body.style.width = "100%";
-    body.style.overflow = "hidden";
-    body.style.overscrollBehavior = "none";
-
-    return () => {
-      documentElement.style.overflow = previousHtmlStyle.overflow;
-      documentElement.style.overscrollBehavior = previousHtmlStyle.overscrollBehavior;
-      body.style.position = previousBodyStyle.position;
-      body.style.top = previousBodyStyle.top;
-      body.style.left = previousBodyStyle.left;
-      body.style.right = previousBodyStyle.right;
-      body.style.width = previousBodyStyle.width;
-      body.style.overflow = previousBodyStyle.overflow;
-      body.style.overscrollBehavior = previousBodyStyle.overscrollBehavior;
-      window.scrollTo(0, scrollY);
-    };
-  }, [open]);
-
+  // Background scroll is locked by Base UI's own scroll lock (overflow:hidden on
+  // iOS). We deliberately do NOT add a position:fixed body lock on top of it:
+  // Base UI avoids that on iOS on purpose because it breaks focus scroll-into-
+  // view (glitchy/bouncing) and drags fixed popups around with the keyboard.
+  // Background touch panning that overflow:hidden can't stop is handled by the
+  // capture-phase guard below instead.
   useEffect(() => {
     if (!open) {
       return;
