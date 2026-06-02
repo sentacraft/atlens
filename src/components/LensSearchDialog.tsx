@@ -33,8 +33,7 @@ import FeedbackTrigger from "./FeedbackTrigger";
 
 type SearchViewportStyle = CSSProperties & {
   "--search-visual-width"?: string;
-  "--search-layout-height"?: string;
-  "--search-keyboard-inset"?: string;
+  "--search-visual-height"?: string;
 };
 
 interface LensSearchResultState {
@@ -96,16 +95,16 @@ export default function LensSearchDialog({
         return;
       }
 
-      // The dialog is pinned to the layout viewport's top-left (top-0 left-0),
-      // so it never tracks visualViewport.offsetTop/offsetLeft. That offset is
-      // only ever non-zero from iOS's focus scroll-into-view, and feeding it
-      // into the dialog's position is what made it drift on focus. We only need
-      // the viewport width, the full layout height, and the keyboard inset
-      // (used as bottom padding so the last results clear the keyboard).
+      // Size the dialog to the *visual* viewport, not the layout viewport. On
+      // iOS window.innerHeight stays full-screen when the keyboard opens, so a
+      // layout-height dialog overflows behind the keyboard and iOS lets the
+      // user pan that hidden strip — dragging the whole fixed dialog up/down.
+      // Matching visualViewport.height means nothing sits behind the keyboard,
+      // so there is nothing to pan; the results scroller ends exactly at the
+      // keyboard's top edge. Pinned to top-0 left-0, so offsetTop is unused.
       setViewportStyle({
         "--search-visual-width": `${viewport.width}px`,
-        "--search-layout-height": `${window.innerHeight}px`,
-        "--search-keyboard-inset": `${Math.max(0, window.innerHeight - viewport.height)}px`,
+        "--search-visual-height": `${viewport.height}px`,
       });
     }
 
@@ -354,7 +353,7 @@ export default function LensSearchDialog({
           noDefaultPositioning
           style={viewportStyle}
           backdropClassName="bg-white dark:bg-zinc-950 sm:bg-zinc-950/55 sm:dark:bg-zinc-950/55"
-          className="fixed left-0 top-0 flex h-[var(--search-layout-height,100dvh)] w-[var(--search-visual-width,100vw)] max-w-none flex-col overflow-hidden rounded-none border-0 bg-white shadow-none sm:left-1/2 sm:top-1/2 sm:h-auto sm:max-h-[85svh] sm:w-full sm:max-w-2xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[28px] sm:border sm:border-zinc-200 sm:shadow-2xl sm:shadow-zinc-950/20 dark:bg-zinc-950 sm:dark:border-zinc-800"
+          className="fixed left-0 top-0 flex h-[var(--search-visual-height,100dvh)] w-[var(--search-visual-width,100vw)] max-w-none flex-col overflow-hidden rounded-none border-0 bg-white shadow-none sm:left-1/2 sm:top-1/2 sm:h-auto sm:max-h-[85svh] sm:w-full sm:max-w-2xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[28px] sm:border sm:border-zinc-200 sm:shadow-2xl sm:shadow-zinc-950/20 dark:bg-zinc-950 sm:dark:border-zinc-800"
           showCloseButton={false}
         >
           <DialogHeader className="shrink-0 border-b border-zinc-100 pr-5 pt-[calc(var(--safe-inset-top)_+_1rem)] sm:pt-4 dark:border-zinc-800">
@@ -407,7 +406,7 @@ export default function LensSearchDialog({
 
           <div
             ref={scrollContainerRef}
-            className="min-h-0 flex-1 touch-pan-y overscroll-contain overflow-y-auto px-3 py-3 pb-[calc(var(--safe-inset-bottom)_+_var(--search-keyboard-inset,0px)_+_1.5rem)] sm:h-[300px] sm:flex-none sm:pb-3 [scrollbar-width:thin] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
+            className="min-h-0 flex-1 touch-pan-y overscroll-contain overflow-y-auto px-3 py-3 pb-[calc(var(--safe-inset-bottom)_+_1.5rem)] sm:h-[300px] sm:flex-none sm:pb-3 [scrollbar-width:thin] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
           >
             {query.trim().length === 0 ? null : results.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-zinc-200 px-5 py-10 text-center dark:border-zinc-800">
