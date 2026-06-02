@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Menu } from "@base-ui/react/menu";
 import { EllipsisVertical, Flag, Info, Download } from "lucide-react";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import Iris from "@/components/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import { useCompare } from "@/context/CompareProvider";
@@ -34,14 +34,20 @@ export default function Nav() {
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
 
-  // Both nav entries (desktop link + mobile menu item) open one Nav-level
-  // dialog rather than going through FeedbackTrigger: the mobile menu unmounts
-  // on select, which would tear down a trigger-owned dialog before it opens.
-  // Route both through this one handler so they still fire the same
-  // feedback_open event FeedbackTrigger does — no tracking gap.
+  // Both nav entries (desktop link + mobile menu item) route through this one
+  // handler rather than FeedbackTrigger: the mobile menu unmounts on select,
+  // which would tear down a trigger-owned dialog before it opens. It still
+  // fires the same feedback_open event FeedbackTrigger does — no tracking gap.
+  // On mobile, navigate to the document-flow /feedback page (the dialog's
+  // submit button would otherwise hide behind the keyboard); desktop opens the
+  // centered dialog.
   function openFeedback() {
     track("feedback_open", { feedback_type: "general" });
-    setFeedbackOpen(true);
+    if (isDesktop) {
+      setFeedbackOpen(true);
+    } else {
+      router.push("/feedback?type=general");
+    }
   }
 
   useEffect(() => {
@@ -69,6 +75,7 @@ export default function Nav() {
   }, [pathname, lockNav]);
 
   const isDesktop = useBreakpoint("sm");
+  const router = useRouter();
   const hidden = !isPwa && !isDesktop && (scrolledDown || navLocked);
   useEffect(() => {
     setNavHidden(hidden);
