@@ -25,6 +25,7 @@ Browse, filter, and compare Fujifilm X-mount lenses — native Fujifilm glass pl
 - **Growing lens database** — focused on X-mount: full coverage of Fujifilm's first-party lineup plus a curated set of third-party brands (Sigma, Tamron, Viltrox, TTArtisan, 7Artisans, Brightin Star, SG Image), with more brands under evaluation. G-mount (medium format) coverage is also under way for Fujifilm's first-party GF lineup.
 - **Clean, focused UI** — distraction-free interface designed around the comparison workflow
 - **Filter and sort** — multi-axis filtering (focal length, aperture, AF, OIS, weather resistance, specialty tags) combined with flexible sorting
+- **Curated collections** — hand-picked themed groupings (compact primes, budget autofocus, and more) for when you don't know exactly what to search for, each on its own browsable page
 - **Side-by-side comparison** of up to 4 lenses
 - **Normalized data** — specs from different manufacturers use inconsistent formats and terminology; Atlens maps everything to a consistent schema so comparisons are fair and objective
 - **Pipeline-backed accuracy** — every spec originates from official manufacturer sources and goes through a staged pipeline with human review at every step
