@@ -142,10 +142,11 @@ function buildBhPhotoUrl(lens: Lens, locale: string): string {
 // Mainland search-jump links. We can't run an affiliate program here (JD/Taobao
 // promotion filing requires an ICP-registered site), so these are plain search
 // URLs built from the lens's zh alias — a non-affiliate price-check convenience.
-// On phones we target the mobile H5 domains (so.m.jd.com / s.m.taobao.com) so the
-// platforms' own "open in app" handoff kicks in; on desktop we keep the regular
-// search site, which is laid out for a wide viewport. (WeChat's in-app browser
-// still blocks the app handoff — a platform limitation we can't work around.)
+// On phones we target the mobile H5 domains (so.m.jd.com / main.m.taobao.com) so
+// the platforms' own "open in app" handoff kicks in; on desktop we keep the
+// regular search site, which is laid out for a wide viewport. (WeChat's in-app
+// browser still blocks the app handoff — a platform limitation we can't work
+// around.)
 function buildJdUrl(lens: Lens, isMobileDevice: boolean): string {
   const query = encodeURIComponent(getSearchQuery(lens, "zh"));
   return isMobileDevice
@@ -156,7 +157,7 @@ function buildJdUrl(lens: Lens, isMobileDevice: boolean): string {
 function buildTaobaoUrl(lens: Lens, isMobileDevice: boolean): string {
   const query = encodeURIComponent(getSearchQuery(lens, "zh"));
   return isMobileDevice
-    ? `https://s.m.taobao.com/h5?q=${query}`
+    ? `https://main.m.taobao.com/search/index.html?pageType=3&q=${query}`
     : `https://s.taobao.com/search?q=${query}`;
 }
 
