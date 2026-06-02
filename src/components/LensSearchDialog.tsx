@@ -17,6 +17,7 @@ import { useRouter, Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
 import { useKeyboardInset } from "@/hooks/useKeyboardInset";
+import { useScrollLeakGuard } from "@/hooks/useScrollLeakGuard";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { lensSubtitleLine } from "@/lib/lens.format";
@@ -75,6 +76,11 @@ export default function LensSearchDialog({
   // results' `overscroll-contain`, so neither needs an effect here.
   const keyboardInset = useKeyboardInset();
   const contentStyle = { "--kb": `${keyboardInset}px` } as CSSProperties;
+
+  // A full-screen modal can't rely on CSS alone to stop touch scroll from
+  // leaking to the body — non-scrollable regions (header, empty state) chain
+  // through. The guard swallows any touchmove the results scroller can't take.
+  useScrollLeakGuard(open, scrollContainerRef);
 
   // Reset state on close
   useEffect(() => {
@@ -193,10 +199,7 @@ export default function LensSearchDialog({
           className="fixed inset-0 flex max-w-none flex-col overflow-hidden rounded-none border-0 bg-white shadow-none dark:bg-zinc-950 sm:inset-auto sm:left-1/2 sm:top-1/2 sm:h-auto sm:max-h-[85svh] sm:w-full sm:max-w-2xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[28px] sm:border sm:border-zinc-200 sm:shadow-2xl sm:shadow-zinc-950/20 sm:dark:border-zinc-800"
           showCloseButton={false}
         >
-          {/* touch-none on the non-scrolling header so a drag started over the
-              title or input can't chain into a background body scroll; the
-              results region opts back in with touch-pan-y below. */}
-          <DialogHeader className="shrink-0 touch-none border-b border-zinc-100 pr-5 pt-[calc(var(--safe-inset-top)_+_1rem)] sm:pt-4 dark:border-zinc-800">
+          <DialogHeader className="shrink-0 border-b border-zinc-100 pr-5 pt-[calc(var(--safe-inset-top)_+_1rem)] sm:pt-4 dark:border-zinc-800">
             <div className="flex items-center justify-between">
               <div>
                 <DialogTitle>{t("title")}</DialogTitle>
