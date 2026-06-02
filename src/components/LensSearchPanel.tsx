@@ -198,7 +198,7 @@ export default function LensSearchPanel({
           "px-3 pb-3",
           layout === "container"
             ? "h-[300px] overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
-            : ""
+            : "pt-2"
         )}
       >
         {query.trim().length === 0 ? null : results.length === 0 ? (

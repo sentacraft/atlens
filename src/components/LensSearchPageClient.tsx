@@ -34,7 +34,9 @@ export default function LensSearchPageClient({ lenses }: { lenses: Lens[] }) {
   }
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-2xl flex-col bg-white dark:bg-zinc-950">
+    // Plain block (not flex): a position:sticky child of a flex container fails
+    // to stick on iOS Safari, even though it works in Blink.
+    <div className="mx-auto min-h-[100dvh] w-full max-w-2xl bg-white dark:bg-zinc-950">
       <LensSearchPanel
         lenses={lenses}
         onSelectLens={handleSelect}
