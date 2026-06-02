@@ -17,6 +17,7 @@ import { useRouter, Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
 import { useKeyboardInset } from "@/hooks/useKeyboardInset";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { lensSubtitleLine } from "@/lib/lens.format";
@@ -69,12 +70,14 @@ export default function LensSearchDialog({
   const resultsId = useId();
   const deferredQuery = useDeferredValue(query);
 
-  // The only JS the keyboard genuinely needs: a live keyboard inset to pad the
-  // results above the on-screen keyboard. Scroll-locking is Base UI's job (the
-  // modal dialog locks the body) and scroll-chaining is handled in CSS by the
-  // results' `overscroll-contain`, so neither needs an effect here.
+  // Two bits of imperative work iOS forces on a full-screen keyboard dialog:
+  //  - the live keyboard inset, to pad the results above the keyboard
+  //    (visualViewport is the only source — there's no CSS unit for it).
+  //  - a body scroll lock, because Base UI's overflow-based lock doesn't hold
+  //    against iOS touch panning / focus scroll-into-view (see useBodyScrollLock).
   const keyboardInset = useKeyboardInset();
   const contentStyle = { "--kb": `${keyboardInset}px` } as CSSProperties;
+  useBodyScrollLock(open);
 
   // Reset state on close
   useEffect(() => {
