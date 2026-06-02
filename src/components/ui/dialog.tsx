@@ -29,19 +29,6 @@ function Dialog({
   const isDesktop = useBreakpoint("sm");
   const mode = responsive && !isDesktop ? "drawer" : "dialog";
 
-  // On mobile a focused input inside the drawer often keeps focus when its keyboard
-  // is only hidden (not blurred). If Base UI blurs it as part of its close sequence,
-  // iOS re-runs the keyboard machinery mid-animation and the drawer flashes back in
-  // just before it finishes closing. Blurring the moment we begin closing dismisses
-  // the keyboard before the exit animation runs, so the close stays smooth.
-  const wasOpen = React.useRef(open);
-  React.useEffect(() => {
-    if (mode === "drawer" && wasOpen.current && !open) {
-      (document.activeElement as HTMLElement | null)?.blur();
-    }
-    wasOpen.current = open;
-  }, [open, mode]);
-
   return (
     <DialogModeContext value={mode}>
       {mode === "drawer" ? (
