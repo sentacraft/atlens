@@ -31,18 +31,18 @@ export function RetailersDropdown({ lens, customId }: Props) {
     return null;
   }
 
-  const preview = links
-    .slice(0, 2)
-    .map((l) => l.label)
-    .join(", ");
-  const extra = links.length > 2 ? ` +${links.length - 2}` : "";
+  // Single-channel preview keeps the trigger compact: "Check price" is the
+  // primary label, the retailer name is just a secondary hint of what's behind
+  // it. Remaining channels collapse into a "+N" count and show on open.
+  const preview = links[0].label;
+  const extra = links.length > 1 ? ` +${links.length - 1}` : "";
   const hasAffiliate = links.some((l) => l.isAffiliate);
 
   return (
     <Popover.Root>
       <Popover.Trigger className={`${ACTION_OUTLINE_CLS} cursor-pointer`}>
         {t("buyAt")}
-        <span className="text-zinc-400 dark:text-zinc-500">
+        <span className="text-xs text-zinc-400 dark:text-zinc-500">
           {preview}{extra}
         </span>
         <ChevronDown size={13} className="ml-0.5" />
