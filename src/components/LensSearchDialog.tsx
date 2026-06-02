@@ -18,6 +18,7 @@ import { mountToUrlSegment } from "@/lib/mount";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
 import { useKeyboardInset } from "@/hooks/useKeyboardInset";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { useScrollContainment } from "@/hooks/useScrollContainment";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { lensSubtitleLine } from "@/lib/lens.format";
@@ -78,6 +79,9 @@ export default function LensSearchDialog({
   const keyboardInset = useKeyboardInset();
   const contentStyle = { "--kb": `${keyboardInset}px` } as CSSProperties;
   useBodyScrollLock(open);
+  // The lock's counterpart: with the body pinned, iOS needs this to hand touch
+  // gestures back to the results scroller (and keep them off the body).
+  useScrollContainment(open, scrollContainerRef);
 
   // Reset state on close
   useEffect(() => {
