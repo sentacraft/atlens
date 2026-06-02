@@ -513,7 +513,7 @@
     "whereToBuy": "查询价格",
     "buyAt": "查询价格",
     "disclosureDetail": "部分购买链接含电商平台合作。你的购买价格不受任何影响，但 Atlens 可能从中获得少量佣金。",
-    "disclosureNoAffiliate": "放这些链接只是方便你查最新价格，Atlens 与平台、商家均无合作。"
+    "disclosureNoAffiliate": "放这些链接只是方便你查最新价格，Atlens 与平台、商家及厂商均无任何合作。"
   },
   "Collection": {
     "stats": "{count} 支镜头 · {brandCount} 个品牌",
