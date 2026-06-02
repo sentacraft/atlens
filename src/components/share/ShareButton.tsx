@@ -364,13 +364,16 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
 
           {/* Action row */}
           <div className="flex gap-2">
-            <CustomizePopover
-              title={effectiveTitle}
-              slogan={effectiveSlogan}
-              onTitleChange={(v) => setTitleOverride(v || null)}
-              onSloganChange={(v) => setSloganOverride(v || null)}
-              titlePlaceholder={computedPosterTitle.join(" · ")}
-            />
+            {/* Poster customize is desktop-only; mobile shares the preset poster. */}
+            {isDesktop && (
+              <CustomizePopover
+                title={effectiveTitle}
+                slogan={effectiveSlogan}
+                onTitleChange={(v) => setTitleOverride(v || null)}
+                onSloganChange={(v) => setSloganOverride(v || null)}
+                titlePlaceholder={computedPosterTitle.join(" · ")}
+              />
+            )}
 
             {canShareFile ? (
               <>
