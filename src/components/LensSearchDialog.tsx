@@ -32,10 +32,7 @@ import { ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/lib/ui-tokens"
 import FeedbackTrigger from "./FeedbackTrigger";
 
 type SearchViewportStyle = CSSProperties & {
-  "--search-visual-top"?: string;
-  "--search-visual-left"?: string;
   "--search-visual-width"?: string;
-  "--search-visual-height"?: string;
   "--search-layout-height"?: string;
   "--search-keyboard-inset"?: string;
 };
@@ -99,26 +96,21 @@ export default function LensSearchDialog({
         return;
       }
 
+      // The dialog is pinned to the layout viewport's top-left (top-0 left-0),
+      // so it never tracks visualViewport.offsetTop/offsetLeft. That offset is
+      // only ever non-zero from iOS's focus scroll-into-view, and feeding it
+      // into the dialog's position is what made it drift on focus. We only need
+      // the viewport width, the full layout height, and the keyboard inset
+      // (used as bottom padding so the last results clear the keyboard).
       setViewportStyle({
-        "--search-visual-top": `${viewport.offsetTop}px`,
-        "--search-visual-left": `${viewport.offsetLeft}px`,
         "--search-visual-width": `${viewport.width}px`,
-        "--search-visual-height": `${viewport.height}px`,
-        "--search-layout-height": `${Math.max(window.innerHeight - viewport.offsetTop, viewport.height)}px`,
-        "--search-keyboard-inset": `${Math.max(
-          0,
-          window.innerHeight - viewport.height - viewport.offsetTop,
-        )}px`,
+        "--search-layout-height": `${window.innerHeight}px`,
+        "--search-keyboard-inset": `${Math.max(0, window.innerHeight - viewport.height)}px`,
       });
     }
 
     updateViewportStyle();
     viewport?.addEventListener("resize", updateViewportStyle);
-    // Intentionally not listening to visualViewport "scroll": on focus iOS
-    // briefly scrolls the visual viewport to reveal the input (offsetTop jumps
-    // a few px and back), which would bounce the dialog's top up and down.
-    // "resize" already captures the keyboard opening/closing, which is all the
-    // positioning needs.
     window.addEventListener("orientationchange", updateViewportStyle);
 
     return () => {
@@ -362,7 +354,7 @@ export default function LensSearchDialog({
           noDefaultPositioning
           style={viewportStyle}
           backdropClassName="bg-white dark:bg-zinc-950 sm:bg-zinc-950/55 sm:dark:bg-zinc-950/55"
-          className="fixed left-[var(--search-visual-left,0px)] top-[var(--search-visual-top,0px)] flex h-[var(--search-layout-height,100dvh)] w-[var(--search-visual-width,100vw)] max-w-none flex-col overflow-hidden rounded-none border-0 bg-white shadow-none sm:left-1/2 sm:top-1/2 sm:h-auto sm:max-h-[85svh] sm:w-full sm:max-w-2xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[28px] sm:border sm:border-zinc-200 sm:shadow-2xl sm:shadow-zinc-950/20 dark:bg-zinc-950 sm:dark:border-zinc-800"
+          className="fixed left-0 top-0 flex h-[var(--search-layout-height,100dvh)] w-[var(--search-visual-width,100vw)] max-w-none flex-col overflow-hidden rounded-none border-0 bg-white shadow-none sm:left-1/2 sm:top-1/2 sm:h-auto sm:max-h-[85svh] sm:w-full sm:max-w-2xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[28px] sm:border sm:border-zinc-200 sm:shadow-2xl sm:shadow-zinc-950/20 dark:bg-zinc-950 sm:dark:border-zinc-800"
           showCloseButton={false}
         >
           <DialogHeader className="shrink-0 border-b border-zinc-100 pr-5 pt-[calc(var(--safe-inset-top)_+_1rem)] sm:pt-4 dark:border-zinc-800">
