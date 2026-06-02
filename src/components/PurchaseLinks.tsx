@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowUpRight, Info } from "lucide-react";
-import { buildPurchaseLinks } from "@/lib/purchase-links";
+import { buildPurchaseLinks, purchaseDisclosureKey } from "@/lib/purchase-links";
 import type { PurchaseLink } from "@/lib/purchase-links";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -62,6 +62,7 @@ export function PurchaseLinksCompact({ lens, customId, className }: Props) {
 
 export function PurchaseDisclosureCaption({ className }: { className?: string }) {
   const t = useTranslations("Purchase");
+  const locale = useLocale();
   return (
     <p
       className={cn(
@@ -70,7 +71,7 @@ export function PurchaseDisclosureCaption({ className }: { className?: string })
       )}
     >
       <Info className="inline size-3 -mt-px mr-1 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
-      {t("disclosureDetail")}
+      {t(purchaseDisclosureKey(locale))}
     </p>
   );
 }

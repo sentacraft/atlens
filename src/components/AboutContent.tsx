@@ -407,7 +407,7 @@ export default async function AboutContent() {
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("supportCost")}
         </p>
-        {isPurchaseLocale(locale) && (
+        {isPurchaseLocale(locale) ? (
           <>
             <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
               {t("supportAffiliate")}
@@ -422,6 +422,10 @@ export default async function AboutContent() {
               })}
             </p>
           </>
+        ) : (
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            {t("supportNoAffiliate")}
+          </p>
         )}
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t(isPurchaseLocale(locale) ? "supportDonateAlt" : "supportDonate")}

@@ -284,7 +284,7 @@ export interface LensPriceEntry {
 }
 
 /** Purchase channels the frontend renders a buy button for. */
-export type PurchaseChannelType = "official" | "amazon" | "ebay" | "bhphoto";
+export type PurchaseChannelType = "official" | "amazon" | "ebay" | "bhphoto" | "jd" | "taobao";
 
 /** Translated user-facing fields for a single locale. */
 interface LensLocaleTranslations {
