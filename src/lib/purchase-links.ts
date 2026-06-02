@@ -92,6 +92,10 @@ const CHANNEL_LABELS: Record<PurchaseChannelType, string> = {
   amazon: "Amazon",
   ebay: "eBay",
   bhphoto: "B&H",
+  // zh-only channels — labels stay hardcoded Chinese since they only render
+  // under the zh locale.
+  jd: "京东",
+  taobao: "淘宝",
 };
 
 export interface PurchaseLink {
@@ -133,6 +137,26 @@ function buildEbayUrl(
 function buildBhPhotoUrl(lens: Lens, locale: string): string {
   const query = getSearchQuery(lens, locale);
   return `https://www.bhphotovideo.com/c/search?Ntt=${encodeURIComponent(query)}`;
+}
+
+// Mainland search-jump links. We can't run an affiliate program here (JD/Taobao
+// promotion filing requires an ICP-registered site), so these are plain search
+// URLs built from the lens's zh alias — a non-affiliate price-check convenience.
+function buildJdUrl(lens: Lens): string {
+  const query = getSearchQuery(lens, "zh");
+  return `https://search.jd.com/Search?keyword=${encodeURIComponent(query)}&enc=utf-8`;
+}
+
+function buildTaobaoUrl(lens: Lens): string {
+  const query = getSearchQuery(lens, "zh");
+  return `https://s.taobao.com/search?q=${encodeURIComponent(query)}`;
+}
+
+function buildCnSearchLinks(lens: Lens): PurchaseLink[] {
+  return [
+    { channel: "jd", label: CHANNEL_LABELS.jd, url: buildJdUrl(lens), isAffiliate: false },
+    { channel: "taobao", label: CHANNEL_LABELS.taobao, url: buildTaobaoUrl(lens), isAffiliate: false },
+  ];
 }
 
 // Extract the 10-char ASIN from an Amazon product URL (/dp/, /gp/product/,
@@ -179,8 +203,30 @@ function applyAffiliate(url: string): { url: string; isAffiliate: boolean } {
   return { url: parsed.toString(), isAffiliate: true };
 }
 
+// Whether the locale runs an affiliate program. zh renders JD/Taobao buttons
+// but earns nothing from them, so it is NOT a purchase (affiliate) locale — the
+// About page uses this to gate the affiliate disclosure copy.
 export function isPurchaseLocale(locale: string): boolean {
   return locale !== "zh";
+}
+
+// The disclosure caption flips by locale: zh links are non-affiliate JD/Taobao
+// search jumps, so we state plainly there's no commercial tie; other locales
+// disclose the affiliate relationship instead.
+export function purchaseDisclosureKey(
+  locale: string,
+): "disclosureDetail" | "disclosureNoAffiliate" {
+  return locale === "zh" ? "disclosureNoAffiliate" : "disclosureDetail";
+}
+
+// Whether to render the disclosure caption: zh shows it whenever any link is
+// present; other locales only when an affiliate link actually rendered.
+export function shouldShowDisclosure(
+  hasLinks: boolean,
+  hasAffiliate: boolean,
+  locale: string,
+): boolean {
+  return hasLinks && (locale === "zh" || hasAffiliate);
 }
 
 export function buildPurchaseLinks(
@@ -189,12 +235,11 @@ export function buildPurchaseLinks(
   countryCode: string,
   customId?: string,
 ): PurchaseLink[] {
-  if (!isPurchaseLocale(locale)) {
-    return [];
+  if (locale === "zh") {
+    return buildCnSearchLinks(lens);
   }
 
-  const market = locale === "zh" ? "cn" : "global";
-  const newEntries = lens.pricing?.[market]?.new ?? [];
+  const newEntries = lens.pricing?.global?.new ?? [];
 
   // Data-driven channels: first pricing entry per channel that carries a url.
   // The array is priority-ordered (publish sorts by storefront order), so the

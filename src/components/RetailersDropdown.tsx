@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Popover } from "@base-ui/react/popover";
 import { ArrowUpRight, ChevronDown, Info } from "lucide-react";
-import { buildPurchaseLinks } from "@/lib/purchase-links";
+import { buildPurchaseLinks, purchaseDisclosureKey, shouldShowDisclosure } from "@/lib/purchase-links";
 import type { PurchaseLink } from "@/lib/purchase-links";
 import type { Lens } from "@/lib/types";
 import { ACTION_OUTLINE_CLS, MENU_POPUP_CLS } from "@/lib/ui-tokens";
@@ -37,6 +37,7 @@ export function RetailersDropdown({ lens, customId }: Props) {
   const preview = links[0].label;
   const extra = links.length > 1 ? ` +${links.length - 1}` : "";
   const hasAffiliate = links.some((l) => l.isAffiliate);
+  const showDisclosure = shouldShowDisclosure(links.length > 0, hasAffiliate, locale);
 
   return (
     <Popover.Root>
@@ -57,10 +58,10 @@ export function RetailersDropdown({ lens, customId }: Props) {
             {links.map((link) => (
               <DropdownItem key={link.channel} link={link} lensId={lens.id} customId={customId} />
             ))}
-            {hasAffiliate && (
+            {showDisclosure && (
               <p className="mt-1 border-t border-zinc-100 px-3 py-2 text-[10px] leading-relaxed text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
                 <Info size={11} className="inline -mt-px mr-1 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
-                {t("disclosureDetail")}
+                {t(purchaseDisclosureKey(locale))}
               </p>
             )}
           </Popover.Popup>

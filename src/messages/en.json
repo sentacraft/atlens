@@ -414,6 +414,7 @@
     "privacyAnalytics": "This site uses Cloudflare Analytics to collect aggregated, anonymous data — such as page views and feature usage — solely to help improve the product. No personally identifiable information is collected.",
     "supportTitle": "Support the Project",
     "supportCost": "Building Atlens involves running a multi-stage data pipeline to gather, clean, and normalize specs from dozens of manufacturer sites, as well as collect price reference data. It is an ongoing commitment, not a one-time build.",
+    "supportNoAffiliate": "The Chinese edition carries no affiliate or commercial ties — every link out to an e-commerce platform is purely there to help you check current prices, with no advertising of any kind.",
     "supportAffiliate": "For your convenience, some pages include purchase links to dealers, some of which are affiliate links. If you make a purchase through them, Atlens earns a small commission at absolutely no extra cost to you — this simply helps sustain my development and keeps the platform free and ad-free.",
     "supportIntegrity": "Affiliate partnerships never influence rankings or pricing data. The codebase is open source — you're welcome to verify how it works under the hood. If you ever encounter a broken link, a model mismatch, or any dealer issues, please <feedback>tell me</feedback> so I can fix it promptly.",
     "supportDonate": "If Atlens helped you find the right lens or saved you some research time, consider supporting the project directly.",
@@ -511,7 +512,8 @@
   "Purchase": {
     "whereToBuy": "Check price",
     "buyAt": "Check price",
-    "disclosureDetail": "Some retailer links are affiliate. Atlens may earn a small commission at no extra cost to you."
+    "disclosureDetail": "Some retailer links are affiliate. Atlens may earn a small commission at no extra cost to you.",
+    "disclosureNoAffiliate": "Atlens has no partnership whatsoever with the platforms, sellers, or manufacturers, and earns nothing from them."
   },
   "Collection": {
     "stats": "{count} lenses · {brandCount} brands",

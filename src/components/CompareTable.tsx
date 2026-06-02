@@ -34,7 +34,7 @@ import type { StructuredLine, ResolvedSpecRow } from "@/lib/lens-spec-groups";
 import type { Lens } from "@/lib/types";
 import { PriceCell } from "@/components/PriceCell";
 import { PurchaseLinksCompact, PurchaseDisclosureCaption } from "@/components/PurchaseLinks";
-import { buildPurchaseLinks } from "@/lib/purchase-links";
+import { buildPurchaseLinks, purchaseDisclosureKey, shouldShowDisclosure } from "@/lib/purchase-links";
 import { useCountryCode } from "@/hooks/useCountryCode";
 import { pickPriceEntry } from "@/lib/lens-pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
@@ -247,6 +247,7 @@ export default function CompareTable({ lenses: initialLenses, allLenses, minColu
   );
   const hasAnyPurchaseLinks = allPurchaseLinks.length > 0;
   const hasAffiliate = hasAnyPurchaseLinks && allPurchaseLinks.some((l) => l.isAffiliate);
+  const showDisclosure = shouldShowDisclosure(hasAnyPurchaseLinks, hasAffiliate, locale);
 
   const valueCellLabels = useMemo(() => ({
     yes: td("yes"),
@@ -611,7 +612,7 @@ export default function CompareTable({ lenses: initialLenses, allLenses, minColu
                 <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
                   <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 align-middle">
                     <div className="flex items-center justify-end gap-1">
-                      {hasAffiliate && <FieldNotePopover note={tPurchase("disclosureDetail")} />}
+                      {showDisclosure && <FieldNotePopover note={tPurchase(purchaseDisclosureKey(locale))} />}
                       <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
                         {tPurchase("whereToBuy")}
                       </span>
@@ -937,7 +938,7 @@ export default function CompareTable({ lenses: initialLenses, allLenses, minColu
       </table>
     </div>
 
-    {hasAffiliate && <PurchaseDisclosureCaption />}
+    {showDisclosure && <PurchaseDisclosureCaption />}
     </>
   );
 }

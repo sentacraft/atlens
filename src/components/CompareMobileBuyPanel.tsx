@@ -5,7 +5,7 @@ import { PurchaseLinksCompact, PurchaseDisclosureCaption } from "@/components/Pu
 import { PriceCell } from "@/components/PriceCell";
 import { pickPriceEntry } from "@/lib/lens-pricing";
 import { lensSubtitleLine } from "@/lib/lens.format";
-import { buildPurchaseLinks } from "@/lib/purchase-links";
+import { buildPurchaseLinks, shouldShowDisclosure } from "@/lib/purchase-links";
 import { useCountryCode } from "@/hooks/useCountryCode";
 import type { Lens } from "@/lib/types";
 
@@ -30,11 +30,10 @@ export function CompareMobileBuyPanel({ lenses }: Props) {
     return null;
   }
 
-  // Show the affiliate disclosure only when at least one rendered link is
-  // actually an affiliate link.
   const hasAffiliate = lensLinks.some((entry) =>
     entry.links.some((link) => link.isAffiliate),
   );
+  const showDisclosure = shouldShowDisclosure(lensLinks.length > 0, hasAffiliate, locale);
 
   return (
     <div className="mt-3 mb-44 overflow-hidden rounded-xl border border-zinc-200 bg-white sm:hidden dark:border-zinc-800 dark:bg-zinc-950">
@@ -68,7 +67,7 @@ export function CompareMobileBuyPanel({ lenses }: Props) {
           );
         })}
       </ul>
-      {hasAffiliate && (
+      {showDisclosure && (
         <PurchaseDisclosureCaption className="border-t border-zinc-100 dark:border-zinc-800/60" />
       )}
     </div>
