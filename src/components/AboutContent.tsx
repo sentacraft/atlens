@@ -223,6 +223,9 @@ export default async function AboutContent() {
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("backgroundBody2")}
         </p>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+          {t("backgroundBody3")}
+        </p>
       </Section>
 
       {/* Coverage */}

@@ -36,7 +36,7 @@ Browse, filter, and compare Fujifilm X-mount lenses — native Fujifilm glass pl
 
 Atlens is a web app — open it in any browser and start using it right away.
 
-It also supports installation as a **Progressive Web App (PWA)**: add it to your home screen (iOS / Android) or dock (macOS) for full-screen access, offline support, and a more native feel — no App Store required.
+It also supports installation as a **Progressive Web App (PWA)**: add it to your home screen (iOS / Android) or dock (macOS) for full-screen access and a more native feel — no App Store required.
 
 **[Get the app →](https://atlens.app/en/get)**
 
@@ -202,7 +202,7 @@ Questions about licensing, collaboration, or anything else: [me@atlens.app](mail
 
 ## Acknowledgments
 
-Built with significant help from [Claude Code](https://claude.ai/code) (architecture and engineering) and [Google Gemini](https://gemini.google.com) (UX design).
+Developed solo, with heavy use of AI tooling: [Claude Code](https://claude.ai/code) as an engineering/coding partner; [Google Gemini](https://gemini.google.com) and [Claude Design](https://claude.ai/design) as design advisors.
 
 Built on the shoulders of great open source work: [Base UI](https://base-ui.com), [Motion](https://motion.dev), [Lucide](https://lucide.dev), [next-intl](https://next-intl.dev), [Zod](https://zod.dev), [Tailwind CSS](https://tailwindcss.com), [modern-screenshot](https://github.com/qq15725/modern-screenshot), [qrcode.react](https://github.com/zpao/qrcode.react), [Geist](https://vercel.com/font).
 
