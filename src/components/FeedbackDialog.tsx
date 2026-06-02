@@ -186,17 +186,6 @@ export default function FeedbackDialog({
     description.trim().length > 0 || suggestedCorrection.trim().length > 0;
   const canSubmit = status !== "submitting";
 
-  // Closing via an in-drawer button (Cancel/Close) leaves focus on that button inside
-  // the popup. On the controlled-close path Base UI then returns focus mid-animation,
-  // which flashes the drawer back in just before it finishes closing on iOS (backdrop
-  // close doesn't — nothing focusable inside the popup holds focus). Blur synchronously
-  // before closing, ahead of Base UI's layout-effect focus handling, so focus is already
-  // out by the time the close is processed. An effect runs too late to beat it.
-  function handleClose() {
-    (document.activeElement as HTMLElement | null)?.blur();
-    onOpenChange(false);
-  }
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {/* max-h-none drops the shared drawer's 85svh cap: as the field picker expands,
@@ -388,7 +377,7 @@ export default function FeedbackDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={handleClose}
+              onClick={() => onOpenChange(false)}
             >
               {t("close")}
             </Button>
@@ -397,7 +386,7 @@ export default function FeedbackDialog({
               <Button
                 type="button"
                 variant="ghost"
-                onClick={handleClose}
+                onClick={() => onOpenChange(false)}
               >
                 {t("cancel")}
               </Button>
