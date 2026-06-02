@@ -188,9 +188,13 @@ export default function FeedbackDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
+      {/* max-h-none drops the shared drawer's 85svh cap: as the field picker expands,
+          the drawer grows upward from its pinned bottom edge so the Cancel/Submit row
+          stays put, instead of the cap clipping the footer off the bottom. No inner
+          scroll region — the action row is always the bottom of the sheet. */}
       <DialogContent
         layerRef={dialogLayerRef}
-        className="max-w-md"
+        className="max-w-md max-h-none"
       >
         <DialogHeader>
           <DialogTitle>{t(titleKey)}</DialogTitle>
