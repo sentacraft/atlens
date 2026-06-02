@@ -3,6 +3,7 @@
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { useNav } from "@/context/NavContext";
 import FeedbackForm from "./FeedbackForm";
 import type { FeedbackContext, FeedbackField, FeedbackType } from "@/lib/feedback";
 
@@ -17,11 +18,15 @@ export default function FeedbackPageClient({
 }) {
   const t = useTranslations("Feedback");
   const router = useRouter();
+  const { navHidden } = useNav();
   const titleKey = type === "data_issue" ? "titleDataIssue" : "titleGeneral";
 
   return (
     <div className="mx-auto flex min-h-[100dvh] w-full max-w-2xl flex-col bg-white dark:bg-zinc-950">
-      <header className="sticky top-0 z-10 flex items-center gap-2 border-b border-zinc-100 bg-white/95 px-3 py-3 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95">
+      <header
+        className="sticky z-20 flex items-center gap-2 border-b border-zinc-100 bg-white/95 px-3 py-3 backdrop-blur transition-[top] duration-300 ease-in-out dark:border-zinc-800 dark:bg-zinc-950/95"
+        style={{ top: navHidden ? 0 : "var(--nav-height)" }}
+      >
         <button
           type="button"
           onClick={() => router.back()}

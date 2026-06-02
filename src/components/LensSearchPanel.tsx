@@ -2,6 +2,7 @@
 
 import {
   type KeyboardEvent,
+  type ReactNode,
   type Ref,
   useDeferredValue,
   useEffect,
@@ -17,6 +18,7 @@ import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { lensSubtitleLine } from "@/lib/lens.format";
+import { useNav } from "@/context/NavContext";
 import { useSearchTelemetry } from "./LensSearchDialog.telemetry";
 import FeedbackTrigger from "./FeedbackTrigger";
 
@@ -39,6 +41,12 @@ interface LensSearchPanelProps {
    */
   layout: "container" | "page";
   inputRef?: Ref<HTMLInputElement>;
+  /**
+   * Page layout only: rendered above the search input inside the sticky bar, so
+   * the page's back/title header and the input stay pinned together (below the
+   * global nav) while the results scroll under them.
+   */
+  headerSlot?: ReactNode;
 }
 
 export default function LensSearchPanel({
@@ -48,9 +56,11 @@ export default function LensSearchPanel({
   autoFocus = false,
   layout,
   inputRef: externalInputRef,
+  headerSlot,
 }: LensSearchPanelProps) {
   const t = useTranslations("Search");
   const tBrand = useTranslations("Brands");
+  const { navHidden } = useNav();
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const localInputRef = useRef<HTMLInputElement>(null);
@@ -127,45 +137,60 @@ export default function LensSearchPanel({
     }
   }
 
+  const inputBox = (
+    <div className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 shadow-inner shadow-zinc-200/30 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/20">
+      <label htmlFor={inputId} className="sr-only">
+        {t("placeholder")}
+      </label>
+      <Search className="h-4 w-4 shrink-0 text-zinc-400" />
+      <input
+        id={inputId}
+        ref={setInputRef}
+        type="text"
+        value={query}
+        onChange={(event) => {
+          setQuery(event.target.value);
+          setActiveIndex(0);
+        }}
+        onKeyDown={handleInputKeyDown}
+        placeholder={t("placeholder")}
+        aria-controls={resultsId}
+        aria-autocomplete="list"
+        className="w-full border-0 bg-transparent text-base sm:text-sm text-zinc-950 outline-none placeholder:text-zinc-400 dark:text-zinc-50"
+      />
+      {query && (
+        <button
+          type="button"
+          aria-label={t("clear")}
+          onClick={() => {
+            setQuery("");
+            setActiveIndex(0);
+            localInputRef.current?.focus();
+          }}
+          className="shrink-0 text-zinc-400 transition-colors hover:text-zinc-600 dark:hover:text-zinc-300"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <>
-      <div className={cn("px-5", layout === "page" ? "pb-3 pt-4" : "pb-4")}>
-        <div className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 shadow-inner shadow-zinc-200/30 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/20">
-          <label htmlFor={inputId} className="sr-only">
-            {t("placeholder")}
-          </label>
-          <Search className="h-4 w-4 shrink-0 text-zinc-400" />
-          <input
-            id={inputId}
-            ref={setInputRef}
-            type="text"
-            value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setActiveIndex(0);
-            }}
-            onKeyDown={handleInputKeyDown}
-            placeholder={t("placeholder")}
-            aria-controls={resultsId}
-            aria-autocomplete="list"
-            className="w-full border-0 bg-transparent text-base sm:text-sm text-zinc-950 outline-none placeholder:text-zinc-400 dark:text-zinc-50"
-          />
-          {query && (
-            <button
-              type="button"
-              aria-label={t("clear")}
-              onClick={() => {
-                setQuery("");
-                setActiveIndex(0);
-                localInputRef.current?.focus();
-              }}
-              className="shrink-0 text-zinc-400 transition-colors hover:text-zinc-600 dark:hover:text-zinc-300"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
+      {layout === "page" ? (
+        // Header + input pinned together as one sticky bar below the global nav
+        // (drops to top:0 when the nav auto-hides on scroll). Results scroll
+        // under it in normal document flow.
+        <div
+          className="sticky z-20 border-b border-zinc-100 bg-white transition-[top] duration-300 ease-in-out dark:border-zinc-800 dark:bg-zinc-950"
+          style={{ top: navHidden ? 0 : "var(--nav-height)" }}
+        >
+          {headerSlot}
+          <div className="px-5 pb-3 pt-1">{inputBox}</div>
         </div>
-      </div>
+      ) : (
+        <div className="px-5 pb-4">{inputBox}</div>
+      )}
 
       <div
         ref={scrollContainerRef}

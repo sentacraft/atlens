@@ -35,26 +35,27 @@ export default function LensSearchPageClient({ lenses }: { lenses: Lens[] }) {
 
   return (
     <div className="mx-auto flex min-h-[100dvh] w-full max-w-2xl flex-col bg-white dark:bg-zinc-950">
-      <header className="sticky top-0 z-10 flex items-center gap-2 border-b border-zinc-100 bg-white/95 px-3 py-3 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95">
-        <button
-          type="button"
-          onClick={handleBack}
-          aria-label={t("back")}
-          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <h1 className="text-lg font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
-          {t("title")}
-        </h1>
-      </header>
-
       <LensSearchPanel
         lenses={lenses}
         onSelectLens={handleSelect}
         getResultState={isCompareIntent ? compare.getResultState : undefined}
         autoFocus
         layout="page"
+        headerSlot={
+          <div className="flex items-center gap-2 px-3 pt-3">
+            <button
+              type="button"
+              onClick={handleBack}
+              aria-label={t("back")}
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            <h1 className="text-lg font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+              {t("title")}
+            </h1>
+          </div>
+        }
       />
     </div>
   );
