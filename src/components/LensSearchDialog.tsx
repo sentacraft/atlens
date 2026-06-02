@@ -240,14 +240,6 @@ export default function LensSearchDialog({
 
           <div
             ref={scrollContainerRef}
-            // In drawer mode the whole popup is a swipe-dismiss surface, so tapping a
-            // result engages Base UI's swipe tracking — it sets `transition: none` on
-            // the popup, which then lingers into the close that the same tap triggers
-            // (handleSelect → setOpen(false)) and makes the drawer flash back mid-exit
-            // on iOS. data-base-ui-swipe-ignore opts this region out of swipe tracking.
-            // (Visible in compare-add mode, where selecting closes the drawer in place;
-            // the navigate path hides it behind the route change.)
-            data-base-ui-swipe-ignore=""
             // scrollPaddingBottom keeps arrow-key scrollIntoView landing above the keyboard
             style={{ scrollPaddingBottom: keyboardInset || undefined }}
             className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
