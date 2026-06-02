@@ -545,6 +545,7 @@
     "feedbackLink": "Tell me",
     "reportIssue": "Report an issue",
     "mountLabel": "Fujifilm {mount}-Mount",
+    "seoTitleYear": "{base} ({year})",
     "shareText": "Found a nice collection on Atlens: {title} ({mount})"
   }
 }

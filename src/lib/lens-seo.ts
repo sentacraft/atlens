@@ -139,3 +139,35 @@ export function buildLensProductSchema(args: {
     additionalProperty: props,
   };
 }
+
+/**
+ * Build the schema.org ItemList JSON-LD for a collection page.
+ *
+ * A collection is a curated list of lenses, so the summary-page ItemList form
+ * is used: each ListItem points (by url) at the lens's own canonical detail
+ * page rather than embedding a full Product, keeping this payload light and the
+ * authoritative Product schema in one place (the detail page). Carries no date
+ * — freshness is deliberately not asserted here.
+ */
+export function buildCollectionItemListSchema(args: {
+  name: string;
+  description: string;
+  url: string;
+  items: { name: string; url: string }[];
+}) {
+  const { name, description, url, items } = args;
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name,
+    description,
+    url,
+    numberOfItems: items.length,
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: item.url,
+      name: item.name,
+    })),
+  };
+}
