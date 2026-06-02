@@ -114,12 +114,15 @@ export default function LensSearchDialog({
 
     updateViewportStyle();
     viewport?.addEventListener("resize", updateViewportStyle);
-    viewport?.addEventListener("scroll", updateViewportStyle);
+    // Intentionally not listening to visualViewport "scroll": on focus iOS
+    // briefly scrolls the visual viewport to reveal the input (offsetTop jumps
+    // a few px and back), which would bounce the dialog's top up and down.
+    // "resize" already captures the keyboard opening/closing, which is all the
+    // positioning needs.
     window.addEventListener("orientationchange", updateViewportStyle);
 
     return () => {
       viewport?.removeEventListener("resize", updateViewportStyle);
-      viewport?.removeEventListener("scroll", updateViewportStyle);
       window.removeEventListener("orientationchange", updateViewportStyle);
     };
   }, [open]);
