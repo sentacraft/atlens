@@ -190,9 +190,9 @@ export default function FeedbackDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         layerRef={dialogLayerRef}
-        className="max-w-md"
+        className="max-h-[min(85svh,calc(100svh-2rem))] max-w-md overflow-hidden"
       >
-        <DialogHeader>
+        <DialogHeader className="shrink-0">
           <DialogTitle>{t(titleKey)}</DialogTitle>
           {status !== "success" && (
             <p className="text-xs text-zinc-400 dark:text-zinc-500">
@@ -221,7 +221,10 @@ export default function FeedbackDialog({
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3 px-5 pb-4">
+          <form
+            onSubmit={handleSubmit}
+            className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-5 pb-4 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
+          >
             {lensHeader && (
               <div className="flex flex-col gap-0.5 border-b border-zinc-200 dark:border-zinc-800 pb-3">
                 <span className="text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
@@ -368,7 +371,7 @@ export default function FeedbackDialog({
           </form>
         )}
 
-        <DialogFooter>
+        <DialogFooter className="shrink-0">
           {status === "success" ? (
             <Button
               type="button"

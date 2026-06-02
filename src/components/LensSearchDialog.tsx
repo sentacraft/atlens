@@ -14,7 +14,7 @@ import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
-import { useEffectiveMount } from "@/hooks/useMountParam";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -59,7 +59,7 @@ export default function LensSearchDialog({
   const t = useTranslations("Search");
   const tBrand = useTranslations("Brands");
   const router = useRouter();
-  const mount = useEffectiveMount();
+  const isDesktop = useBreakpoint("sm");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -69,16 +69,17 @@ export default function LensSearchDialog({
   const resultsId = useId();
   const deferredQuery = useDeferredValue(query);
 
-  // Auto-focus the input when the dialog opens
+  // Auto-focus only on desktop. Mobile browsers, especially iOS, require an
+  // explicit user tap before showing the software keyboard.
   useEffect(() => {
-    if (open) {
+    if (open && isDesktop) {
       const timer = setTimeout(() => {
         inputRef.current?.focus();
         inputRef.current?.select();
       }, 0);
       return () => clearTimeout(timer);
     }
-  }, [open]);
+  }, [isDesktop, open]);
 
   // Reset state on close
   useEffect(() => {
@@ -244,7 +245,7 @@ export default function LensSearchDialog({
 
           <div
             ref={scrollContainerRef}
-            className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
+            className="h-[300px] overflow-y-auto px-3 py-3 pb-[32svh] scroll-pb-[32svh] sm:pb-3 sm:scroll-pb-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
           >
             {query.trim().length === 0 ? null : isSearching && results.length === 0 ? (
               <div className="flex items-center justify-center py-16">
