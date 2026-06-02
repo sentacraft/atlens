@@ -16,6 +16,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
+import { useKeyboardInset } from "@/hooks/useKeyboardInset";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { lensSubtitleLine } from "@/lib/lens.format";
@@ -30,15 +31,6 @@ import {
 } from "@/components/ui/dialog";
 import { ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/lib/ui-tokens";
 import FeedbackTrigger from "./FeedbackTrigger";
-
-type SearchViewportStyle = CSSProperties & {
-  "--search-visual-top"?: string;
-  "--search-visual-left"?: string;
-  "--search-visual-width"?: string;
-  "--search-visual-height"?: string;
-  "--search-layout-height"?: string;
-  "--search-keyboard-inset"?: string;
-};
 
 interface LensSearchResultState {
   actionLabel?: string;
@@ -73,172 +65,16 @@ export default function LensSearchDialog({
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const dialogLayerRef = useRef<HTMLDivElement>(null);
-  const dialogContentRef = useRef<HTMLDivElement>(null);
-  const touchYRef = useRef<number | null>(null);
   const inputId = useId();
   const resultsId = useId();
   const deferredQuery = useDeferredValue(query);
-  const [viewportStyle, setViewportStyle] = useState<SearchViewportStyle>({});
 
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    if (!open) {
-      setViewportStyle({});
-      return;
-    }
-
-    const viewport = window.visualViewport;
-
-    function updateViewportStyle() {
-      if (!viewport) {
-        setViewportStyle({});
-        return;
-      }
-
-      setViewportStyle({
-        "--search-visual-top": `${viewport.offsetTop}px`,
-        "--search-visual-left": `${viewport.offsetLeft}px`,
-        "--search-visual-width": `${viewport.width}px`,
-        "--search-visual-height": `${viewport.height}px`,
-        "--search-layout-height": `${Math.max(window.innerHeight - viewport.offsetTop, viewport.height)}px`,
-        "--search-keyboard-inset": `${Math.max(
-          0,
-          window.innerHeight - viewport.height - viewport.offsetTop,
-        )}px`,
-      });
-    }
-
-    updateViewportStyle();
-    viewport?.addEventListener("resize", updateViewportStyle);
-    viewport?.addEventListener("scroll", updateViewportStyle);
-    window.addEventListener("orientationchange", updateViewportStyle);
-
-    return () => {
-      viewport?.removeEventListener("resize", updateViewportStyle);
-      viewport?.removeEventListener("scroll", updateViewportStyle);
-      window.removeEventListener("orientationchange", updateViewportStyle);
-    };
-  }, [open]);
-
-  useEffect(() => {
-    if (!open || typeof window === "undefined") {
-      return;
-    }
-
-    const scrollY = window.scrollY;
-    const { body, documentElement } = document;
-    const previousBodyStyle = {
-      left: body.style.left,
-      overflow: body.style.overflow,
-      overscrollBehavior: body.style.overscrollBehavior,
-      position: body.style.position,
-      right: body.style.right,
-      top: body.style.top,
-      width: body.style.width,
-    };
-    const previousHtmlStyle = {
-      overflow: documentElement.style.overflow,
-      overscrollBehavior: documentElement.style.overscrollBehavior,
-    };
-
-    documentElement.style.overflow = "hidden";
-    documentElement.style.overscrollBehavior = "none";
-    body.style.position = "fixed";
-    body.style.top = `-${scrollY}px`;
-    body.style.left = "0";
-    body.style.right = "0";
-    body.style.width = "100%";
-    body.style.overflow = "hidden";
-    body.style.overscrollBehavior = "none";
-
-    return () => {
-      documentElement.style.overflow = previousHtmlStyle.overflow;
-      documentElement.style.overscrollBehavior = previousHtmlStyle.overscrollBehavior;
-      body.style.position = previousBodyStyle.position;
-      body.style.top = previousBodyStyle.top;
-      body.style.left = previousBodyStyle.left;
-      body.style.right = previousBodyStyle.right;
-      body.style.width = previousBodyStyle.width;
-      body.style.overflow = previousBodyStyle.overflow;
-      body.style.overscrollBehavior = previousBodyStyle.overscrollBehavior;
-      window.scrollTo(0, scrollY);
-    };
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    if (!dialogLayerRef.current && !dialogContentRef.current) {
-      return;
-    }
-
-    function getScrollableTarget(target: EventTarget | null) {
-      const scroller = scrollContainerRef.current;
-      if (!scroller || !(target instanceof Node) || !scroller.contains(target)) {
-        return null;
-      }
-      return scroller;
-    }
-
-    function canConsumeScroll(scroller: HTMLElement | null, deltaY: number) {
-      if (!scroller || Math.abs(deltaY) < 1) {
-        return false;
-      }
-
-      const maxScrollTop = scroller.scrollHeight - scroller.clientHeight;
-      if (maxScrollTop <= 1) {
-        return false;
-      }
-
-      if (deltaY < 0) {
-        return scroller.scrollTop > 0;
-      }
-
-      return scroller.scrollTop < maxScrollTop - 1;
-    }
-
-    function preventScrollLeak(event: Event, deltaY: number) {
-      if (!canConsumeScroll(getScrollableTarget(event.target), deltaY)) {
-        event.preventDefault();
-      }
-    }
-
-    function handleWheel(event: WheelEvent) {
-      preventScrollLeak(event, event.deltaY);
-    }
-
-    function handleTouchStart(event: TouchEvent) {
-      touchYRef.current = event.touches[0]?.clientY ?? null;
-    }
-
-    function handleTouchMove(event: TouchEvent) {
-      const currentY = event.touches[0]?.clientY ?? null;
-      if (touchYRef.current === null || currentY === null) {
-        event.preventDefault();
-        return;
-      }
-
-      preventScrollLeak(event, touchYRef.current - currentY);
-      touchYRef.current = currentY;
-    }
-
-    document.addEventListener("wheel", handleWheel, { capture: true, passive: false });
-    document.addEventListener("touchstart", handleTouchStart, { capture: true, passive: true });
-    document.addEventListener("touchmove", handleTouchMove, { capture: true, passive: false });
-
-    return () => {
-      document.removeEventListener("wheel", handleWheel, { capture: true });
-      document.removeEventListener("touchstart", handleTouchStart, { capture: true });
-      document.removeEventListener("touchmove", handleTouchMove, { capture: true });
-      touchYRef.current = null;
-    };
-  }, [open]);
+  // The only JS the keyboard genuinely needs: a live keyboard inset to pad the
+  // results above the on-screen keyboard. Scroll-locking is Base UI's job (the
+  // modal dialog locks the body) and scroll-chaining is handled in CSS by the
+  // results' `overscroll-contain`, so neither needs an effect here.
+  const keyboardInset = useKeyboardInset();
+  const contentStyle = { "--kb": `${keyboardInset}px` } as CSSProperties;
 
   // Auto-focus the input when the dialog opens
   useEffect(() => {
@@ -271,30 +107,23 @@ export default function LensSearchDialog({
     }
   }, [activeIndex]);
 
-  const searchIndex = useMemo(
-    () => buildLensSearchIndex(lenses),
-    [lenses],
-  );
+  const searchIndex = useMemo(() => buildLensSearchIndex(lenses), [lenses]);
   const results = useMemo(
-    () => deferredQuery.trim()
-      ? searchLensIndex(searchIndex, deferredQuery.trim(), 8)
-      : [],
-    [searchIndex, deferredQuery],
+    () =>
+      deferredQuery.trim()
+        ? searchLensIndex(searchIndex, deferredQuery.trim(), 8)
+        : [],
+    [searchIndex, deferredQuery]
   );
-  const isSearching = false;
 
   useSearchTelemetry({ query: deferredQuery, resultsCount: results.length, isOpen: open });
 
   function handleSelect(lens: Lens) {
     setOpen(false);
-
     if (onSelectLens) {
-
       onSelectLens(lens);
       return;
-
     }
-
     router.push(`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`);
   }
 
@@ -318,11 +147,8 @@ export default function LensSearchDialog({
     }
 
     if (event.key === "Enter" && results[activeIndex]) {
-
       event.preventDefault();
       handleSelect(results[activeIndex]);
-      return;
-
     }
   }
 
@@ -360,14 +186,16 @@ export default function LensSearchDialog({
         )}
       </button>
 
+      {/* One Dialog for both breakpoints (responsive={false} keeps Base UI's
+          centered modal instead of swapping to a Drawer). Mobile takes the full
+          screen; `sm:` restores the centered card. Open/close uses Base UI's CSS
+          @keyframes (compositor thread) — buttery, unlike a JS-driven sheet. */}
       <Dialog open={open} onOpenChange={setOpen} responsive={false}>
         <DialogContent
-          ref={dialogContentRef}
-          layerRef={dialogLayerRef}
           noDefaultPositioning
-          style={viewportStyle}
+          style={contentStyle}
           backdropClassName="bg-white dark:bg-zinc-950 sm:bg-zinc-950/55 sm:dark:bg-zinc-950/55"
-          className="fixed left-[var(--search-visual-left,0px)] top-[var(--search-visual-top,0px)] flex h-[var(--search-layout-height,100dvh)] w-[var(--search-visual-width,100vw)] max-w-none flex-col overflow-hidden rounded-none border-0 bg-white shadow-none sm:left-1/2 sm:top-1/2 sm:h-auto sm:max-h-[85svh] sm:w-full sm:max-w-2xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[28px] sm:border sm:border-zinc-200 sm:shadow-2xl sm:shadow-zinc-950/20 dark:bg-zinc-950 sm:dark:border-zinc-800"
+          className="fixed inset-0 flex h-dvh w-screen max-w-none flex-col overflow-hidden rounded-none border-0 bg-white shadow-none dark:bg-zinc-950 sm:inset-auto sm:left-1/2 sm:top-1/2 sm:h-auto sm:max-h-[85svh] sm:w-full sm:max-w-2xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[28px] sm:border sm:border-zinc-200 sm:shadow-2xl sm:shadow-zinc-950/20 sm:dark:border-zinc-800"
           showCloseButton={false}
         >
           <DialogHeader className="shrink-0 border-b border-zinc-100 pr-5 pt-[calc(var(--safe-inset-top)_+_1rem)] sm:pt-4 dark:border-zinc-800">
@@ -420,13 +248,9 @@ export default function LensSearchDialog({
 
           <div
             ref={scrollContainerRef}
-            className="min-h-0 flex-1 touch-pan-y overscroll-contain overflow-y-auto px-3 py-3 pb-[calc(var(--safe-inset-bottom)_+_var(--search-keyboard-inset,0px)_+_1.5rem)] sm:h-[300px] sm:flex-none sm:pb-3 [scrollbar-width:thin] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
+            className="min-h-0 flex-1 touch-pan-y overscroll-contain overflow-y-auto px-3 py-3 pb-[calc(var(--safe-inset-bottom)_+_var(--kb,0px)_+_1.5rem)] sm:h-[300px] sm:flex-none sm:pb-3 [scrollbar-width:thin] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
           >
-            {query.trim().length === 0 ? null : isSearching && results.length === 0 ? (
-              <div className="flex items-center justify-center py-16">
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600 dark:border-zinc-700 dark:border-t-zinc-400" />
-              </div>
-            ) : results.length === 0 ? (
+            {query.trim().length === 0 ? null : results.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-zinc-200 px-5 py-10 text-center dark:border-zinc-800">
                 <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
                   {t("noResults")}
