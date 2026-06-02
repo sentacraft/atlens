@@ -76,17 +76,6 @@ export default function LensSearchDialog({
   const keyboardInset = useKeyboardInset();
   const contentStyle = { "--kb": `${keyboardInset}px` } as CSSProperties;
 
-  // Auto-focus the input when the dialog opens
-  useEffect(() => {
-    if (open) {
-      const timer = setTimeout(() => {
-        inputRef.current?.focus();
-        inputRef.current?.select();
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [open]);
-
   // Reset state on close
   useEffect(() => {
     if (!open) {
@@ -193,12 +182,21 @@ export default function LensSearchDialog({
       <Dialog open={open} onOpenChange={setOpen} responsive={false}>
         <DialogContent
           noDefaultPositioning
+          initialFocus={inputRef}
           style={contentStyle}
           backdropClassName="bg-white dark:bg-zinc-950 sm:bg-zinc-950/55 sm:dark:bg-zinc-950/55"
-          className="fixed inset-0 flex h-dvh w-screen max-w-none flex-col overflow-hidden rounded-none border-0 bg-white shadow-none dark:bg-zinc-950 sm:inset-auto sm:left-1/2 sm:top-1/2 sm:h-auto sm:max-h-[85svh] sm:w-full sm:max-w-2xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[28px] sm:border sm:border-zinc-200 sm:shadow-2xl sm:shadow-zinc-950/20 sm:dark:border-zinc-800"
+          // Mobile pins to `inset-0` (the layout viewport, which iOS keeps full
+          // size while the keyboard is up) rather than `h-dvh` — a dynamic unit
+          // would shrink the panel as the keyboard animates and drag it upward.
+          // The keyboard is cleared by padding the results (--kb), not by
+          // resizing the panel. `sm:` restores the centered card.
+          className="fixed inset-0 flex max-w-none flex-col overflow-hidden rounded-none border-0 bg-white shadow-none dark:bg-zinc-950 sm:inset-auto sm:left-1/2 sm:top-1/2 sm:h-auto sm:max-h-[85svh] sm:w-full sm:max-w-2xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[28px] sm:border sm:border-zinc-200 sm:shadow-2xl sm:shadow-zinc-950/20 sm:dark:border-zinc-800"
           showCloseButton={false}
         >
-          <DialogHeader className="shrink-0 border-b border-zinc-100 pr-5 pt-[calc(var(--safe-inset-top)_+_1rem)] sm:pt-4 dark:border-zinc-800">
+          {/* touch-none on the non-scrolling header so a drag started over the
+              title or input can't chain into a background body scroll; the
+              results region opts back in with touch-pan-y below. */}
+          <DialogHeader className="shrink-0 touch-none border-b border-zinc-100 pr-5 pt-[calc(var(--safe-inset-top)_+_1rem)] sm:pt-4 dark:border-zinc-800">
             <div className="flex items-center justify-between">
               <div>
                 <DialogTitle>{t("title")}</DialogTitle>
