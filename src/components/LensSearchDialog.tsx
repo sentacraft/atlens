@@ -15,6 +15,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useEffectiveMount } from "@/hooks/useMountParam";
+import { useKeyboardInset } from "@/hooks/useKeyboardInset";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -68,17 +69,7 @@ export default function LensSearchDialog({
   const inputId = useId();
   const resultsId = useId();
   const deferredQuery = useDeferredValue(query);
-
-  // Auto-focus the input when the dialog opens
-  useEffect(() => {
-    if (open) {
-      const timer = setTimeout(() => {
-        inputRef.current?.focus();
-        inputRef.current?.select();
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [open]);
+  const keyboardInset = useKeyboardInset();
 
   // Reset state on close
   useEffect(() => {
@@ -190,7 +181,12 @@ export default function LensSearchDialog({
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
+        {/* Base UI focuses the popup (not the input) on touch-open to suppress the
+            keyboard; for a search box we want the keyboard, so we hand it the input
+            ref. Routing focus through the library's own open sequence (instead of a
+            post-open setTimeout) makes it deterministic on the first open too. */}
         <DialogContent
+          initialFocus={inputRef}
           className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-2xl shadow-zinc-950/20 dark:border-zinc-800 dark:bg-zinc-950"
           showCloseButton={false}
         >
@@ -244,6 +240,8 @@ export default function LensSearchDialog({
 
           <div
             ref={scrollContainerRef}
+            // scrollPaddingBottom keeps arrow-key scrollIntoView landing above the keyboard
+            style={{ scrollPaddingBottom: keyboardInset || undefined }}
             className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
           >
             {query.trim().length === 0 ? null : isSearching && results.length === 0 ? (
@@ -329,6 +327,12 @@ export default function LensSearchDialog({
                   </FeedbackTrigger>
                 </p>
               </div>
+            )}
+            {/* Spacer that reserves the keyboard's height inside the scroll area so the
+                last result can be scrolled clear of the on-screen keyboard. Collapses to
+                0 when the keyboard is down. */}
+            {keyboardInset > 0 && (
+              <div aria-hidden style={{ height: keyboardInset }} />
             )}
           </div>
         </DialogContent>

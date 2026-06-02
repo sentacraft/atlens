@@ -364,13 +364,18 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
 
           {/* Action row */}
           <div className="flex gap-2">
-            <CustomizePopover
-              title={effectiveTitle}
-              slogan={effectiveSlogan}
-              onTitleChange={(v) => setTitleOverride(v || null)}
-              onSloganChange={(v) => setSloganOverride(v || null)}
-              titlePlaceholder={computedPosterTitle.join(" · ")}
-            />
+            {/* Customize (title/slogan) is a nested popover — desktop only. On mobile the
+                share surface is a drawer, where a nested popover-in-drawer is awkward, so
+                the entry point is dropped entirely. */}
+            {isDesktop && (
+              <CustomizePopover
+                title={effectiveTitle}
+                slogan={effectiveSlogan}
+                onTitleChange={(v) => setTitleOverride(v || null)}
+                onSloganChange={(v) => setSloganOverride(v || null)}
+                titlePlaceholder={computedPosterTitle.join(" · ")}
+              />
+            )}
 
             {canShareFile ? (
               <>

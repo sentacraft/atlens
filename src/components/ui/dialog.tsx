@@ -141,7 +141,18 @@ const DialogContent = React.forwardRef<
             <div className="flex shrink-0 touch-none justify-center pb-1 pt-3">
               <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
             </div>
-            {children}
+            {/* The drag handle above is the only swipe-to-dismiss surface; everything
+                below is opted out of swipe tracking. Base UI treats the whole popup as a
+                swipe surface, so a *tap* on any in-drawer control (a Cancel button, a
+                search result) starts swipe tracking — it puts `transition: none` + a
+                transform on the popup that lingers into the close the same tap triggers,
+                flashing the drawer back mid-exit on iOS. display:contents keeps the flex
+                layout flat. NB: data-base-ui-swipe-ignore is the ONLY opt-out Base UI
+                honors on touch — `Drawer.Content` (data-drawer-content) is checked on the
+                pointer path only, so it does NOT fix this on real devices. */}
+            <div data-base-ui-swipe-ignore className="contents">
+              {children}
+            </div>
             {layerRef && <div ref={layerRef} />}
           </DrawerPrimitive.Popup>
         </DrawerPrimitive.Viewport>
