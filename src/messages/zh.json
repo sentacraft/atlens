@@ -509,8 +509,8 @@
     "priceUnavailable": "价格暂缺"
   },
   "Purchase": {
-    "whereToBuy": "购买渠道",
-    "buyAt": "购买",
+    "whereToBuy": "查最新价",
+    "buyAt": "查最新价",
     "disclosureDetail": "部分购买链接含电商平台合作。你的购买价格不受任何影响，但 Atlens 可能从中获得少量佣金。"
   },
   "Collection": {

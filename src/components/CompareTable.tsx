@@ -574,10 +574,16 @@ export default function CompareTable({ lenses: initialLenses, allLenses, minColu
                     <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
                       {tPricing("rowLabel")}
                     </span>
-                    <span className="text-[11px] leading-tight text-amber-600 dark:text-amber-400">
-                      <TriangleAlert className="inline-block align-[-0.125em] size-3 mr-0.5" aria-hidden="true" />
-                      {tPricing("rowWarn")}
-                    </span>
+                    {/* The "Check price" CTA carries the verify-the-live-price
+                        nudge whenever retailer links render. Show this caveat
+                        only when none do (e.g. locales with no purchase links),
+                        so a bare reference price is never left uncaveated. */}
+                    {!hasAnyPurchaseLinks && (
+                      <span className="text-[11px] leading-tight text-amber-600 dark:text-amber-400">
+                        <TriangleAlert className="inline-block align-[-0.125em] size-3 mr-0.5" aria-hidden="true" />
+                        {tPricing("rowWarn")}
+                      </span>
+                    )}
                   </div>
                 </td>
                 {orderedLenses.map((lens) => {

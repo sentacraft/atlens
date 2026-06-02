@@ -509,8 +509,8 @@
     "priceUnavailable": "Price N/A"
   },
   "Purchase": {
-    "whereToBuy": "Where to buy",
-    "buyAt": "Buy at",
+    "whereToBuy": "Check price",
+    "buyAt": "Check price",
     "disclosureDetail": "Some retailer links are affiliate. Atlens may earn a small commission at no extra cost to you."
   },
   "Collection": {
