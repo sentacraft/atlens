@@ -429,9 +429,9 @@
     "ackStory2Body": "Gemini shaped several key design decisions throughout the project. When building the Filter Panel, it established the interaction language for single- and multi-select controls so users could understand a control's behavior at first glance. On the lens list, it refined card layout and spacing across screen sizes, keeping the information hierarchy clear on every device. For the share poster, it pushed the design toward something genuinely clean, restrained, and visually considered.\n\nAs an engineer, I could feel when something in the design was off — but rarely knew why. Gemini gave me the vocabulary to diagnose design problems, and the understanding to know why the fix worked. The site reached a level of craft I couldn't have gotten to on my own.",
     "ackClaudeArchitect": "Architect",
     "ackClaudeEngineer": "Engineer",
-    "ackGeminiDesigner": "UX Designer",
-    "ackGeminiBrandStrategist": "Brand Strategist",
-    "ackClosing": "My deepest gratitude to the AI collaborators whose contributions were decisive in making this project a reality."
+    "ackGeminiDesigner": "Design Advisor",
+    "ackGeminiBrandStrategist": "Brand Advisor",
+    "ackClosing": "My deepest gratitude to the AI collaborators whose contributions were decisive in making this project a reality — Claude Code, Google Gemini, and Claude Design."
   },
   "Footer": {
     "updatedPrefix": "Updated",

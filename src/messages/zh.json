@@ -429,9 +429,9 @@
     "ackStory2Body": "Gemini 深度参与了这个项目几个关键节点的设计决策。在构建 Filter Panel 时，它帮我厘清了单选与多选的交互语言，让用户在第一眼就能凭直觉判断一个控件的行为。在镜头列表的响应式布局中，它细化了不同屏幕尺寸下卡片的排布方式与视觉间距，让信息层级在任何设备上都保持清晰。在分享海报的设计中，它把那张海报推向了一个干净、克制、有美感的调性。\n\n作为工程师，我经常能感觉到界面「哪里不对」，却说不清为什么。Gemini 给了我诊断设计问题的语言，让我在修好问题的同时，也真正理解了背后的逻辑——知其然，也知其所以然。",
     "ackClaudeArchitect": "架构师",
     "ackClaudeEngineer": "工程师",
-    "ackGeminiDesigner": "UX 设计师",
-    "ackGeminiBrandStrategist": "品牌策略师",
-    "ackClosing": "向在这个项目开发过程中给予了决定性帮助的 AI 协作者们，致以最诚挚的感激。"
+    "ackGeminiDesigner": "设计顾问",
+    "ackGeminiBrandStrategist": "品牌顾问",
+    "ackClosing": "向在这个项目开发过程中给予了决定性帮助的 AI 协作者——Claude Code、Google Gemini 与 Claude Design，致以最诚挚的感激。"
   },
   "Footer": {
     "updatedPrefix": "更新于",
