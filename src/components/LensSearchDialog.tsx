@@ -15,6 +15,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useEffectiveMount } from "@/hooks/useMountParam";
+import { useKeyboardInset } from "@/hooks/useKeyboardInset";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -68,6 +69,7 @@ export default function LensSearchDialog({
   const inputId = useId();
   const resultsId = useId();
   const deferredQuery = useDeferredValue(query);
+  const keyboardInset = useKeyboardInset();
 
   // Reset state on close
   useEffect(() => {
@@ -238,6 +240,8 @@ export default function LensSearchDialog({
 
           <div
             ref={scrollContainerRef}
+            // scrollPaddingBottom keeps arrow-key scrollIntoView landing above the keyboard
+            style={{ scrollPaddingBottom: keyboardInset || undefined }}
             className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
           >
             {query.trim().length === 0 ? null : isSearching && results.length === 0 ? (
@@ -323,6 +327,12 @@ export default function LensSearchDialog({
                   </FeedbackTrigger>
                 </p>
               </div>
+            )}
+            {/* Spacer that reserves the keyboard's height inside the scroll area so the
+                last result can be scrolled clear of the on-screen keyboard. Collapses to
+                0 when the keyboard is down. */}
+            {keyboardInset > 0 && (
+              <div aria-hidden style={{ height: keyboardInset }} />
             )}
           </div>
         </DialogContent>
