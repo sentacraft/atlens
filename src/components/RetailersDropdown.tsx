@@ -41,9 +41,13 @@ export function RetailersDropdown({ lens, customId }: Props) {
   return (
     <Popover.Root>
       <Popover.Trigger className={`${ACTION_OUTLINE_CLS} cursor-pointer`}>
-        {t("buyAt")}
-        <span className="text-xs text-zinc-400 dark:text-zinc-500">
-          {preview}{extra}
+        {/* Baseline-align the label and the smaller retailer hint so their text
+            sits on one line; the chevron stays center-aligned via the trigger. */}
+        <span className="inline-flex items-baseline gap-1.5">
+          {t("buyAt")}
+          <span className="text-xs text-zinc-400 dark:text-zinc-500">
+            {preview}{extra}
+          </span>
         </span>
         <ChevronDown size={13} className="ml-0.5" />
       </Popover.Trigger>
