@@ -281,20 +281,15 @@ export default function LensSearchDialog({
       : [],
     [searchIndex, deferredQuery],
   );
-  const isSearching = false;
 
   useSearchTelemetry({ query: deferredQuery, resultsCount: results.length, isOpen: open });
 
   function handleSelect(lens: Lens) {
     setOpen(false);
-
     if (onSelectLens) {
-
       onSelectLens(lens);
       return;
-
     }
-
     router.push(`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`);
   }
 
@@ -318,11 +313,8 @@ export default function LensSearchDialog({
     }
 
     if (event.key === "Enter" && results[activeIndex]) {
-
       event.preventDefault();
       handleSelect(results[activeIndex]);
-      return;
-
     }
   }
 
@@ -422,11 +414,7 @@ export default function LensSearchDialog({
             ref={scrollContainerRef}
             className="min-h-0 flex-1 touch-pan-y overscroll-contain overflow-y-auto px-3 py-3 pb-[calc(var(--safe-inset-bottom)_+_var(--search-keyboard-inset,0px)_+_1.5rem)] sm:h-[300px] sm:flex-none sm:pb-3 [scrollbar-width:thin] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
           >
-            {query.trim().length === 0 ? null : isSearching && results.length === 0 ? (
-              <div className="flex items-center justify-center py-16">
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600 dark:border-zinc-700 dark:border-t-zinc-400" />
-              </div>
-            ) : results.length === 0 ? (
+            {query.trim().length === 0 ? null : results.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-zinc-200 px-5 py-10 text-center dark:border-zinc-800">
                 <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
                   {t("noResults")}
