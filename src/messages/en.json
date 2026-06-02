@@ -443,6 +443,7 @@
     "tagline4": "f/2 feels right"
   },
   "Feedback": {
+    "back": "Back",
     "titleDataIssue": "Report an issue",
     "titleGeneral": "Send feedback",
     "descriptionDataIssue": "Wrong spec, broken image, typo, missing lens — tell me what you found.",

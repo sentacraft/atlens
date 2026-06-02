@@ -443,6 +443,7 @@
     "tagline4": "f/2 feels right"
   },
   "Feedback": {
+    "back": "返回",
     "titleDataIssue": "反馈问题",
     "titleGeneral": "提交反馈",
     "descriptionDataIssue": "参数不对、图片有问题、哪里写错了、发现缺失镜头——都可以告诉我。",
