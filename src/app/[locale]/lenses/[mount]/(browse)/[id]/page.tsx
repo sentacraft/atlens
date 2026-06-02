@@ -8,7 +8,7 @@ import { getLensUrl } from "@/lib/lens";
 import { getLensesByMount } from "@/lib/lens-data";
 import { urlSegmentToMount, mountToUrlSegment } from "@/lib/mount";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
-import { buildSpecGroups, resolveSpecGroups } from "@/lib/lens-spec-groups";
+import { resolveLensSpecAndFields } from "@/lib/lens-report-fields";
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens-spec-groups";
 import { ExternalLink } from "@/components/ui/external-link";
 import LensDetailCompareToggle from "@/components/LensDetailCompareToggle";
@@ -30,7 +30,6 @@ import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates, lensOgImages } from "@/lib/seo";
 import { SITE } from "@/config/site";
-import { pickPriceEntry, formatPriceForReport } from "@/lib/lens-pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 import { buildLensDescription, buildLensProductSchema } from "@/lib/lens-seo";
 import { PriceSection } from "@/components/PriceSection";
@@ -192,93 +191,17 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     canonicalUrl,
   });
 
-  const specGroups = buildSpecGroups({
-    groupOptics: t("groupOptics"),
-    groupFocus: t("groupFocus"),
-    groupStabilization: t("groupStabilization"),
-    groupPhysical: t("groupPhysical"),
-    groupFeatures: t("groupFeatures"),
-    groupRelease: t("groupRelease"),
-    focalLength: t("focalLength"),
-    focalLengthEquiv: t("focalLengthEquiv"),
-    maxAperture: t("maxAperture"),
-    minAperture: t("minAperture"),
-    maxTStop: t("maxTStop"),
-    minTStop: t("minTStop"),
-    angleOfView: t("angleOfView"),
-    angleOfViewEstNote: t("angleOfViewEstNote"),
-    apertureBladeCount: t("apertureBladeCount"),
-    lensConfiguration: t("lensConfiguration"),
-    af: t("af"),
-    focusMotor: t("focusMotor"),
-    internalFocusing: t("internalFocusing"),
-    minFocusDist: t("minFocusDist"),
-    maxMagnification: t("maxMagnification"),
-    ois: t("ois"),
-    weight: t("weight"),
-    dimensions: t("dimensions"),
-    filterSize: t("filterSize"),
-    lensMaterial: t("lensMaterial"),
-    wr: t("wr"),
-    apertureRing: t("apertureRing"),
-    powerZoom: t("powerZoom"),
-    releaseYear: t("releaseYear"),
-    releaseYearLabelNote: t("releaseYearLabelNote"),
-    accessories: t("accessories"),
-    yes: t("yes"),
-    no: t("no"),
-    partial: t("partial"),
-    retracted: t("lengthRetracted"),
-    wide: t("lengthWide"),
-    tele: t("lengthTele"),
-    lc: {
-      groups: t("lcGroups"),
-      elements: t("lcElements"),
-      aspherical: t("lcAspherical"),
-      ed: t("lcEd"),
-      superEd: t("lcSuperEd"),
-      sld: t("lcSld"),
-      fld: t("lcFld"),
-      highRefractive: t("lcHighRefractive"),
-      incl: t("lcIncl"),
-    },
-    motorClass: {
-      linear: t("motorLinear"),
-      stepping: t("motorStepping"),
-      dc: t("motorDc"),
-      other: t("motorOther"),
-    },
+  // Single source of truth for both the rendered spec table and the Report
+  // Dialog's field list — also reconstructed server-side on the mobile
+  // feedback page from a lensId, so the two never drift.
+  const { resolvedGroups, valueCellLabels, reportableFields } = resolveLensSpecAndFields({
+    lens,
+    locale,
+    t,
+    tPricing,
   });
 
-  // Per-view suppression: hide rows where this lens has no data.
-  const valueCellLabels = {
-    yes: t("yes"),
-    no: t("no"),
-    partial: t("partial"),
-    unknown: t("unknown"),
-    missing: t("missing"),
-  };
-
-  // Resolve all row values once. This is the single source of truth for both
-  // the rendered spec table and the Report Dialog's field list.
-  const resolvedGroups = resolveSpecGroups(specGroups, lens, valueCellLabels);
-
-  // Field options for the Report Dialog — taken directly from resolved values,
-  // identical to what is rendered in the spec table below.
-  const mediaGroupLabel = t("fieldGroupMedia");
   const memberCollections = getMemberCollections(lens, lenses, locale);
-
-  const priceSelection = pickPriceEntry(lens.pricing, locale);
-  const reportableFields = [
-    ...resolvedGroups.flatMap((group) =>
-      group.rows.map((row) => ({ label: row.label, currentValue: row.plainText, group: group.label }))
-    ),
-    ...(priceSelection
-      ? [{ label: tPricing("fieldLabel"), currentValue: formatPriceForReport(priceSelection, locale, tPricing), group: tPricing("groupLabel") }]
-      : []),
-    ...(url ? [{ label: t("fieldOfficialLink"), currentValue: url, group: mediaGroupLabel }] : []),
-    { label: t("fieldLensImage"), currentValue: getLensImageUrl(lens.id), group: mediaGroupLabel, hideCurrentValue: true },
-  ];
 
   return (
     <>
