@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { FROSTED_OVERLAY_CHROME_CLS, ICON_CLOSE_BTN_CLS } from "@/lib/ui-tokens";
 import { Z } from "@/config/ui";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
+import { useKeyboardInset } from "@/hooks/useKeyboardInset";
 
 const DialogModeContext = React.createContext<"dialog" | "drawer">("dialog");
 function useDialogMode() {
@@ -115,6 +116,15 @@ const DialogContent = React.forwardRef<
   ref
 ) {
   const mode = useDialogMode();
+  // iOS only shrinks the visual viewport for the keyboard; a `fixed; bottom: 0` drawer
+  // stays anchored to the layout viewport, i.e. behind the keyboard, and iOS's native
+  // scroll-into-view of the focused input is unreliable on the first open. Lift the whole
+  // drawer above the keyboard ourselves by its height (visualViewport-derived). Only
+  // `bottom` — not `max-height` — so a no-inner-scroll drawer (feedback) keeps its footer
+  // above the keyboard and clips at the top instead of pushing the footer back behind it.
+  // base-ui owns `transform` (slide/swipe), so driving `bottom` doesn't fight it.
+  const keyboardInset = useKeyboardInset();
+  const drawerLiftStyle = keyboardInset > 0 ? { bottom: keyboardInset } : undefined;
 
   if (mode === "drawer") {
     return (
@@ -136,6 +146,7 @@ const DialogContent = React.forwardRef<
               className,
               "rounded-t-2xl rounded-b-none"
             )}
+            style={drawerLiftStyle}
             {...(props as Omit<typeof props, "style">)}
           >
             <div className="flex shrink-0 touch-none justify-center pb-1 pt-3">
