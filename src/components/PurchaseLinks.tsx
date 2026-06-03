@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowUpRight, Info } from "lucide-react";
 import { buildPurchaseLinks, purchaseDisclosureKey } from "@/lib/purchase-links";
@@ -50,10 +49,7 @@ export function PurchaseLinksCompact({ lens, customId, className }: Props) {
   const countryCode = useCountryCode();
   const isMobileDevice = useIsMobileDevice();
 
-  const links = useMemo(
-    () => buildPurchaseLinks(lens, locale, countryCode, customId, isMobileDevice),
-    [lens, locale, countryCode, customId, isMobileDevice],
-  );
+  const links = buildPurchaseLinks(lens, locale, countryCode, customId, isMobileDevice);
 
   if (links.length === 0) {
     return null;

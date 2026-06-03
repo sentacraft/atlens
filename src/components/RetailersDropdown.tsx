@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Popover } from "@base-ui/react/popover";
 import { ArrowUpRight, ChevronDown, Info } from "lucide-react";
@@ -24,10 +23,7 @@ export function RetailersDropdown({ lens, customId }: Props) {
   const countryCode = useCountryCode();
   const isMobileDevice = useIsMobileDevice();
 
-  const links = useMemo(
-    () => buildPurchaseLinks(lens, locale, countryCode, customId, isMobileDevice),
-    [lens, locale, countryCode, customId, isMobileDevice],
-  );
+  const links = buildPurchaseLinks(lens, locale, countryCode, customId, isMobileDevice);
 
   if (links.length === 0) {
     return null;

@@ -243,9 +243,8 @@ export default function CompareTable({ lenses: initialLenses, allLenses, minColu
   // Number of empty slot columns to render (search triggers filling up to minColumns)
   const emptySlotCount = Math.max(0, minColumns - orderedLenses.length);
 
-  const allPurchaseLinks = useMemo(
-    () => orderedLenses.flatMap((l) => buildPurchaseLinks(l, locale, countryCode, undefined, isMobileDevice)),
-    [orderedLenses, locale, countryCode, isMobileDevice],
+  const allPurchaseLinks = orderedLenses.flatMap((l) =>
+    buildPurchaseLinks(l, locale, countryCode, undefined, isMobileDevice),
   );
   const hasAnyPurchaseLinks = allPurchaseLinks.length > 0;
   const hasAffiliate = hasAnyPurchaseLinks && allPurchaseLinks.some((l) => l.isAffiliate);
