@@ -56,16 +56,21 @@ export async function generateMetadata({
   };
 }
 
+// Ordered by how poorly the browse filters can reconstruct each category:
+// collections covering a dimension the filters lack entirely (price, weight,
+// aperture threshold, sub-brand series, multi-axis Chinese combos) lead, since
+// they are the only path to that set. Categories that a single filter toggle
+// reproduces (brand, weather/OIS traits, optical-trait dedicated optics) trail.
 const CATEGORIES = [
-  { id: "section-prime", key: "category_prime", slugs: PRIME_SLUGS, marker: ["PRIME"] },
-  { id: "section-zoom", key: "category_zoom", slugs: ZOOM_SLUGS, marker: ["ZOOM"] },
-  { id: "section-brand", key: "category_brand", slugs: BRAND_SLUGS, marker: ["BRAND"] },
-  { id: "section-series", key: "category_series", slugs: SERIES_SLUGS, marker: ["SERIES"] },
-  { id: "section-chinese", key: "category_chinese", slugs: CHINESE_SLUGS, marker: ["CN"] },
-  { id: "section-price", key: "category_price", slugs: PRICE_SLUGS, marker: ["$"] },
   { id: "section-portability", key: "category_portability", slugs: PORTABILITY_SLUGS, marker: ["G"] },
   { id: "section-aperture", key: "category_aperture", slugs: APERTURE_SLUGS, marker: ["ƒ"], markerItalic: true },
+  { id: "section-price", key: "category_price", slugs: PRICE_SLUGS, marker: ["$"] },
+  { id: "section-chinese", key: "category_chinese", slugs: CHINESE_SLUGS, marker: ["CN"] },
+  { id: "section-series", key: "category_series", slugs: SERIES_SLUGS, marker: ["SERIES"] },
+  { id: "section-prime", key: "category_prime", slugs: PRIME_SLUGS, marker: ["PRIME"] },
+  { id: "section-zoom", key: "category_zoom", slugs: ZOOM_SLUGS, marker: ["ZOOM"] },
   { id: "section-trait", key: "category_trait", slugs: TRAIT_SLUGS, marker: ["WR"] },
+  { id: "section-brand", key: "category_brand", slugs: BRAND_SLUGS, marker: ["BRAND"] },
   { id: "section-dedicated", key: "category_dedicated", slugs: DEDICATED_SLUGS, marker: ["✦"] },
 ] as const;
 
@@ -109,9 +114,20 @@ export default async function CollectionsIndexPage({
           convey — collection and lens counts — plus a short subtitle. */}
       <header id="collections-top" className="pb-3">
         <h1 className="sr-only">{t("indexTitle")}</h1>
-        <p className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
-          {t("indexStats", { count: totalCollections, lensCount: totalLenses })}
-        </p>
+        <div className="flex min-w-0 flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
+          <p className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+            {t("indexStats", { count: totalCollections, lensCount: totalLenses })}
+          </p>
+          {/* Mirror the browse view: surface coverage next to the count, where
+              users form the "is this complete?" judgment, instead of leaving it
+              buried in About. */}
+          <Link
+            href="/about#coverage"
+            className="whitespace-nowrap text-xs text-zinc-400 underline-offset-2 transition-colors hover:text-zinc-600 hover:underline dark:text-zinc-500 dark:hover:text-zinc-300"
+          >
+            {t("coverageLink")}
+          </Link>
+        </div>
         <p className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
           {t("indexSubtitle")}
         </p>
