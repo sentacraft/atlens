@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useCallback } from "react";
+import { useRef, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useCompare } from "@/context/CompareProvider";
@@ -31,13 +31,9 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
   const { onSelectLens, getResultState } = useCompareLensSearch();
   const clearCompareWithUndo = useClearCompareWithUndo();
 
-  const selectedLenses = useMemo(
-    () =>
-      compareIds
-        .map((id) => allLenses.find((l) => l.id === id))
-        .filter((lens) => lens !== undefined),
-    [compareIds, allLenses]
-  );
+  const selectedLenses = compareIds
+    .map((id) => allLenses.find((l) => l.id === id))
+    .filter((lens) => lens !== undefined);
 
   const chipsRef = useRef<HTMLDivElement>(null);
 
