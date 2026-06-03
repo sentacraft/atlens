@@ -2,6 +2,9 @@ import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 
+// INTERNAL PARAM — xg_internal is the internal-user gate cookie (set here after
+// passing Cloudflare Access on /admin). When changing how it is set/named, keep
+// the Atlens Obsidian doc "Internal params & cookies" (Engineering/) in sync.
 const INTERNAL_COOKIE = "xg_internal";
 const COUNTRY_COOKIE = "xg_country";
 const ONE_YEAR = 60 * 60 * 24 * 365;

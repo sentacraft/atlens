@@ -153,7 +153,7 @@ export default function TestHookPanel() {
             <code>?{REDACTION_QUERY_KEY}=</code> — clear all
           </p>
           <p>
-            <code>priceSource</code> = buy channels + price source · <code>posterQr</code> = poster QR
+            <code>price</code> = price figures · <code>priceSource</code> = buy channels + price source · <code>posterQr</code> = poster QR
           </p>
         </div>
       </div>
