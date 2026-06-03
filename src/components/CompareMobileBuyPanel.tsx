@@ -7,6 +7,7 @@ import { pickPriceEntry } from "@/lib/lens-pricing";
 import { lensSubtitleLine } from "@/lib/lens.format";
 import { buildPurchaseLinks, shouldShowDisclosure } from "@/lib/purchase-links";
 import { useCountryCode } from "@/hooks/useCountryCode";
+import { useIsMobileDevice } from "@/hooks/useIsMobileDevice";
 import type { Lens } from "@/lib/types";
 
 interface Props {
@@ -18,11 +19,12 @@ export function CompareMobileBuyPanel({ lenses }: Props) {
   const locale = useLocale();
   const tBrand = useTranslations("Brands");
   const countryCode = useCountryCode();
+  const isMobileDevice = useIsMobileDevice();
 
   const lensLinks = lenses
     .map((lens) => ({
       lens,
-      links: buildPurchaseLinks(lens, locale, countryCode, "compare-mobile"),
+      links: buildPurchaseLinks(lens, locale, countryCode, "compare-mobile", isMobileDevice),
     }))
     .filter((entry) => entry.links.length > 0);
 
