@@ -240,6 +240,14 @@ export default function LensSearchDialog({
 
           <div
             ref={scrollContainerRef}
+            // data-base-ui-swipe-ignore: tapping a result triggers close (handleSelect →
+            // setOpen(false)); without it the tap starts Base UI swipe tracking and flashes
+            // the drawer mid-close on iOS. Scoped to the results region, not the header, on
+            // purpose — the attribute also turns off Base UI's background-scroll guard, so
+            // swipe-ignoring the non-scrollable header would let the overlay pan / the page
+            // scroll through with the keyboard up. This region is natively scrollable, so
+            // the browser still contains the drag.
+            data-base-ui-swipe-ignore=""
             // scrollPaddingBottom keeps arrow-key scrollIntoView landing above the keyboard
             style={{ scrollPaddingBottom: keyboardInset || undefined }}
             className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
