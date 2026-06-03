@@ -142,20 +142,29 @@ function buildBhPhotoUrl(lens: Lens, locale: string): string {
 // Mainland search-jump links. We can't run an affiliate program here (JD/Taobao
 // promotion filing requires an ICP-registered site), so these are plain search
 // URLs built from the lens's zh alias — a non-affiliate price-check convenience.
-function buildJdUrl(lens: Lens): string {
-  const query = getSearchQuery(lens, "zh");
-  return `https://search.jd.com/Search?keyword=${encodeURIComponent(query)}&enc=utf-8`;
+// On phones we target the mobile H5 domains (so.m.jd.com / main.m.taobao.com) so
+// the platforms' own "open in app" handoff kicks in; on desktop we keep the
+// regular search site, which is laid out for a wide viewport. (WeChat's in-app
+// browser still blocks the app handoff — a platform limitation we can't work
+// around.)
+function buildJdUrl(lens: Lens, isMobileDevice: boolean): string {
+  const query = encodeURIComponent(getSearchQuery(lens, "zh"));
+  return isMobileDevice
+    ? `https://so.m.jd.com/ware/search.action?keyword=${query}`
+    : `https://search.jd.com/Search?keyword=${query}&enc=utf-8`;
 }
 
-function buildTaobaoUrl(lens: Lens): string {
-  const query = getSearchQuery(lens, "zh");
-  return `https://s.taobao.com/search?q=${encodeURIComponent(query)}`;
+function buildTaobaoUrl(lens: Lens, isMobileDevice: boolean): string {
+  const query = encodeURIComponent(getSearchQuery(lens, "zh"));
+  return isMobileDevice
+    ? `https://main.m.taobao.com/search/index.html?q=${query}`
+    : `https://s.taobao.com/search?q=${query}`;
 }
 
-function buildCnSearchLinks(lens: Lens): PurchaseLink[] {
+function buildCnSearchLinks(lens: Lens, isMobileDevice: boolean): PurchaseLink[] {
   return [
-    { channel: "jd", label: CHANNEL_LABELS.jd, url: buildJdUrl(lens), isAffiliate: false },
-    { channel: "taobao", label: CHANNEL_LABELS.taobao, url: buildTaobaoUrl(lens), isAffiliate: false },
+    { channel: "jd", label: CHANNEL_LABELS.jd, url: buildJdUrl(lens, isMobileDevice), isAffiliate: false },
+    { channel: "taobao", label: CHANNEL_LABELS.taobao, url: buildTaobaoUrl(lens, isMobileDevice), isAffiliate: false },
   ];
 }
 
@@ -234,9 +243,10 @@ export function buildPurchaseLinks(
   locale: string,
   countryCode: string,
   customId?: string,
+  isMobileDevice = false,
 ): PurchaseLink[] {
   if (locale === "zh") {
-    return buildCnSearchLinks(lens);
+    return buildCnSearchLinks(lens, isMobileDevice);
   }
 
   const newEntries = lens.pricing?.global?.new ?? [];

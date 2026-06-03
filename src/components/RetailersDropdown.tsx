@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Popover } from "@base-ui/react/popover";
 import { ArrowUpRight, ChevronDown, Info } from "lucide-react";
@@ -10,6 +9,7 @@ import type { Lens } from "@/lib/types";
 import { ACTION_OUTLINE_CLS, MENU_POPUP_CLS } from "@/lib/ui-tokens";
 import { track } from "@/lib/analytics";
 import { useCountryCode } from "@/hooks/useCountryCode";
+import { useIsMobileDevice } from "@/hooks/useIsMobileDevice";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -21,11 +21,9 @@ export function RetailersDropdown({ lens, customId }: Props) {
   const locale = useLocale();
   const t = useTranslations("Purchase");
   const countryCode = useCountryCode();
+  const isMobileDevice = useIsMobileDevice();
 
-  const links = useMemo(
-    () => buildPurchaseLinks(lens, locale, countryCode, customId),
-    [lens, locale, countryCode, customId],
-  );
+  const links = buildPurchaseLinks(lens, locale, countryCode, customId, isMobileDevice);
 
   if (links.length === 0) {
     return null;

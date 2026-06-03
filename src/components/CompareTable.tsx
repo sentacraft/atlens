@@ -36,6 +36,7 @@ import { PriceCell } from "@/components/PriceCell";
 import { PurchaseLinksCompact, PurchaseDisclosureCaption } from "@/components/PurchaseLinks";
 import { buildPurchaseLinks, purchaseDisclosureKey, shouldShowDisclosure } from "@/lib/purchase-links";
 import { useCountryCode } from "@/hooks/useCountryCode";
+import { useIsMobileDevice } from "@/hooks/useIsMobileDevice";
 import { pickPriceEntry } from "@/lib/lens-pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 
@@ -205,6 +206,7 @@ export default function CompareTable({ lenses: initialLenses, allLenses, minColu
   const tPurchase = useTranslations("Purchase");
   const locale = useLocale();
   const countryCode = useCountryCode();
+  const isMobileDevice = useIsMobileDevice();
   const { compareIds, reorder, remove, seed } = useCompare();
   const { onSelectLens, getResultState } = useCompareLensSearch();
   // Compare page is the only surface that projects compare state onto the
@@ -241,9 +243,8 @@ export default function CompareTable({ lenses: initialLenses, allLenses, minColu
   // Number of empty slot columns to render (search triggers filling up to minColumns)
   const emptySlotCount = Math.max(0, minColumns - orderedLenses.length);
 
-  const allPurchaseLinks = useMemo(
-    () => orderedLenses.flatMap((l) => buildPurchaseLinks(l, locale, countryCode)),
-    [orderedLenses, locale, countryCode],
+  const allPurchaseLinks = orderedLenses.flatMap((l) =>
+    buildPurchaseLinks(l, locale, countryCode, undefined, isMobileDevice),
   );
   const hasAnyPurchaseLinks = allPurchaseLinks.length > 0;
   const hasAffiliate = hasAnyPurchaseLinks && allPurchaseLinks.some((l) => l.isAffiliate);
