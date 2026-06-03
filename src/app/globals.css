@@ -170,6 +170,43 @@ details[open] > div {
 .wco-drag   { -webkit-app-region: drag;    app-region: drag;    }
 .wco-no-drag { -webkit-app-region: no-drag; app-region: no-drag; }
 
+/* Top navigation progress bar (see NavProgress.tsx).
+   Mount/unmount and the 200ms show-delay are driven in JS; this is just the
+   visual. Indeterminate by design — the App Router gives no real progress %, so
+   a quiet segment sweeps across to signal "still loading" without faking a
+   percentage. Kept subtle: 2px, muted-foreground (flips per theme), no glow. */
+.nav-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 1600;
+  overflow: hidden;
+  pointer-events: none;
+}
+.nav-progress::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 35%;
+  background: var(--muted-foreground);
+  animation: nav-progress-slide 1.15s ease-in-out infinite;
+}
+.nav-progress[data-phase="complete"] {
+  opacity: 0;
+  transition: opacity 220ms ease-out;
+}
+@keyframes nav-progress-slide {
+  from {
+    left: -35%;
+  }
+  to {
+    left: 100%;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
