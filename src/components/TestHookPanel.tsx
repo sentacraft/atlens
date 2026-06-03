@@ -12,6 +12,12 @@ import {
 } from "@/components/ui/select";
 import { TestHookContext } from "@/context/TestHookProvider";
 import { TESTHOOK_OPTION_DEFINITIONS } from "@/lib/testhook";
+import {
+  REDACTION_KEYS,
+  REDACTION_QUERY_KEY,
+  REDACTION_BLUR_QUERY_KEY,
+  DEFAULT_REDACTION_BLUR_PX,
+} from "@/lib/redaction";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const collectionsData = require("@/data/collections.json") as {
   collections: { slug: string; title: { en: string } }[];
@@ -126,6 +132,30 @@ export default function TestHookPanel() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Demo-mode redaction reference. Activated by URL query (read by the
+          Redaction component), so the recording session can blur sensitive
+          surfaces without touching code. Values come from the redaction
+          constants to stay in sync. */}
+      <div className="mt-4 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+          Redaction (demo blur)
+        </span>
+        <div className="mt-2 space-y-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400 [&_code]:rounded [&_code]:bg-zinc-100 [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[11px] [&_code]:text-zinc-700 dark:[&_code]:bg-zinc-800 dark:[&_code]:text-zinc-300">
+          <p>
+            <code>?{REDACTION_QUERY_KEY}={REDACTION_KEYS.join(",")}</code> — blur surfaces
+          </p>
+          <p>
+            <code>&{REDACTION_BLUR_QUERY_KEY}={DEFAULT_REDACTION_BLUR_PX}</code> — blur px (default {DEFAULT_REDACTION_BLUR_PX})
+          </p>
+          <p>
+            <code>?{REDACTION_QUERY_KEY}=</code> — clear all
+          </p>
+          <p>
+            <code>priceSource</code> = buy channels + price source · <code>posterQr</code> = poster QR
+          </p>
+        </div>
       </div>
 
       <div className="mt-4 flex justify-end gap-2">
