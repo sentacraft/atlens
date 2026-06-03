@@ -53,7 +53,7 @@ export default function manifest(): MetadataRoute.Manifest {
       },
       {
         src: "/screenshots/screenshot-desktop.png",
-        sizes: "2400x1854",
+        sizes: "2466x1544",
         type: "image/png",
         form_factor: "wide",
         label: "Atlens lens browser",
