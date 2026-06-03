@@ -36,6 +36,7 @@ export function PriceCell({ lens, compact = false }: Props) {
   return (
     <div className="flex flex-col items-center gap-1 text-center">
       <span
+        data-redact-hook="price"
         className={cn(
           "font-semibold tabular-nums text-zinc-700 dark:text-zinc-200",
           compact ? "text-sm" : "text-base",

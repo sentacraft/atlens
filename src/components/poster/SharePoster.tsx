@@ -648,7 +648,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
               const sampledDisplay = formatSampledAt(sel.entry.sampledAt, labels.locale);
               return (
                 <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                  <span className={cn("font-semibold tabular-nums text-zinc-700 leading-none", statSize)}>
+                  <span data-redact-hook="price" className={cn("font-semibold tabular-nums text-zinc-700 leading-none", statSize)}>
                     {priceDisplay}
                   </span>
                   {/* Caption row 1: source */}

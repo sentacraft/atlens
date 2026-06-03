@@ -2,6 +2,10 @@ import type { ReadonlyURLSearchParams } from "next/navigation";
 
 // -- Constants ----------------------------------------------------------------
 
+// INTERNAL PARAM — this query key and the option keys in
+// TESTHOOK_OPTION_DEFINITIONS below are internal/debug URL params. When adding,
+// renaming, or removing any, keep the Atlens Obsidian doc "Internal params &
+// cookies" (Engineering/) in sync.
 export const TESTHOOK_QUERY_KEYS = {
   testHook: "testhook",
 } as const;
