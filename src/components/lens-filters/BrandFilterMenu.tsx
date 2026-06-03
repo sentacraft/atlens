@@ -25,6 +25,7 @@ interface BrandFilterMenuProps {
   brandLabels: Record<string, string>;
   allLabel: string;
   triggerLabel: string;
+  extraCount: number;
   onToggle: (brand: string) => void;
   onClear: () => void;
 }
@@ -35,6 +36,7 @@ export default function BrandFilterMenu({
   brandLabels,
   allLabel,
   triggerLabel,
+  extraCount,
   onToggle,
   onClear,
 }: BrandFilterMenuProps) {
@@ -44,14 +46,21 @@ export default function BrandFilterMenu({
     <Menu.Root>
       <Menu.Trigger
         className={cn(
-          "inline-flex h-9 min-w-36 max-w-[60%] items-center justify-between gap-1.5 rounded-full border px-3.5 text-[12px] shadow-sm shadow-zinc-950/[0.02] transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 sm:min-w-28",
+          // max-w-full (not a fraction): the trigger grows to fit the selected
+          // brand names up to the row's width, then the label truncates. A
+          // fractional cap could fall below min-w on a narrow phone, which pins
+          // the trigger to min-w and forces truncation even when there's room.
+          "inline-flex h-9 min-w-36 max-w-full items-center justify-between gap-1.5 rounded-full border px-3.5 text-[12px] shadow-sm shadow-zinc-950/[0.02] transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 sm:min-w-28",
           hasSelection
             ? "border-transparent bg-zinc-900 font-medium text-white hover:border-zinc-800 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200"
             : "border-zinc-200 bg-zinc-50 font-medium text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:border-zinc-600 dark:hover:bg-zinc-700 dark:hover:text-zinc-100",
         )}
       >
-        <span className="truncate">{triggerLabel}</span>
-        <ChevronDown className="size-3.5 shrink-0 transition-transform duration-200 data-[popup-open]:rotate-180" />
+        <span className="min-w-0 truncate text-left">{triggerLabel}</span>
+        <span className="flex shrink-0 items-center gap-1.5">
+          {extraCount > 0 ? <span className="tabular-nums">+{extraCount}</span> : null}
+          <ChevronDown className="size-3.5 transition-transform duration-200 data-[popup-open]:rotate-180" />
+        </span>
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner side="bottom" align="start" sideOffset={6}>
