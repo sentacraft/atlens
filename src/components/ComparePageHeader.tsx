@@ -28,13 +28,9 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
   const locale = useLocale();
   const lang = locale === "zh" ? "zh" : "en";
 
-  const activeLenses = useMemo(
-    () =>
-      compareIds
-        .map((id) => allLenses.find((l) => l.id === id))
-        .filter((l): l is Lens => l !== undefined),
-    [compareIds, allLenses],
-  );
+  const activeLenses = compareIds
+    .map((id) => allLenses.find((l) => l.id === id))
+    .filter((l): l is Lens => l !== undefined);
 
   // Reverse-derive the matching curated preset (if any) from the current
   // compare state. `?ids=` is the URL's single source of truth, so a preset

@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useRef, useCallback } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useRef, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useCompare } from "@/context/CompareProvider";
 import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
@@ -25,19 +25,14 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
   const tBrand = useTranslations("Brands");
   const tCompare = useTranslations("Compare");
   const router = useRouter();
-  const locale = useLocale();
   const mount = useEffectiveMount();
   const { compareIds, remove } = useCompare();
   const { onSelectLens, getResultState } = useCompareLensSearch();
   const clearCompareWithUndo = useClearCompareWithUndo();
 
-  const selectedLenses = useMemo(
-    () =>
-      compareIds
-        .map((id) => allLenses.find((l) => l.id === id))
-        .filter((lens) => lens !== undefined),
-    [compareIds, allLenses]
-  );
+  const selectedLenses = compareIds
+    .map((id) => allLenses.find((l) => l.id === id))
+    .filter((lens) => lens !== undefined);
 
   const chipsRef = useRef<HTMLDivElement>(null);
 
