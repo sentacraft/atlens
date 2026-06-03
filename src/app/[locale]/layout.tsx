@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import NextTopLoader from "nextjs-toploader";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import RegisterSW from "@/components/RegisterSW";
@@ -146,6 +147,16 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={fontClassName}>
       <body>
+        {/* Instant client-side navigation feedback. App Router holds the old
+            page on screen during the route fetch (multi-second on far-edge
+            networks), so this bar is the only thing that reacts on click.
+            color tracks --foreground so it reads in both light and dark. */}
+        <NextTopLoader
+          color="var(--foreground)"
+          height={3}
+          shadow="0 0 8px var(--foreground)"
+          showSpinner={false}
+        />
         <SiteJsonLd locale={locale} />
         <NextIntlClientProvider messages={messages}>
           <MountPreferenceProvider>
