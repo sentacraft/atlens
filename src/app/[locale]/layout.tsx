@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import NavProgress from "@/components/NavProgress";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import RegisterSW from "@/components/RegisterSW";
@@ -146,6 +147,14 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={fontClassName}>
       <body>
+        {/* Top navigation progress. Shows only when a navigation outlasts a
+            200ms debounce, so fast/prefetched navigations never flash a bar;
+            slow ones (the gap where the App Router holds the old page during the
+            route fetch) get a quiet muted-foreground bar. useSearchParams needs
+            a Suspense boundary to avoid forcing a CSR bailout on static pages. */}
+        <Suspense fallback={null}>
+          <NavProgress />
+        </Suspense>
         <SiteJsonLd locale={locale} />
         <NextIntlClientProvider messages={messages}>
           <MountPreferenceProvider>

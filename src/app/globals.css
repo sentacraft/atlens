@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+/* Design tokens (shadcn color system + PWA env vars) live in their own file. */
+@import "./theme.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -51,97 +53,6 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-
-:root {
-  /* ─── Device / PWA environment insets ───────────────────────────────────────
-     Single source of truth for all safe-area and WCO values. Every component
-     that needs notch / Dynamic Island / titlebar offsets must reference these
-     variables instead of calling env() directly. This makes it trivial to
-     override them in tests (e.g. --safe-inset-top: 44px to simulate a notch)
-     and ensures no usage is accidentally missed.
-
-     All values fall back to 0px outside their respective contexts:
-       --safe-inset-top    : iOS notch / Dynamic Island (standalone PWA)
-       --safe-inset-bottom : iOS home indicator bar (standalone PWA)
-       --safe-inset-left   : landscape notch padding
-       --safe-inset-right  : landscape notch padding
-       --titlebar-height   : desktop Window Controls Overlay (WCO) title bar    */
-  --safe-inset-top: env(safe-area-inset-top, 0px);
-  --safe-inset-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-inset-left: env(safe-area-inset-left, 0px);
-  --safe-inset-right: env(safe-area-inset-right, 0px);
-  --titlebar-height: env(titlebar-area-height, 0px);
-
-  --nav-height: calc(3.5rem + var(--safe-inset-top) + var(--titlebar-height));
-  --compare-bar-height: 0px;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
 /* Accordion open animation — FAQ (details > p) and ack stories (details > div) */
 @keyframes accordion-open {
   from { opacity: 0; transform: translateY(-4px); }
@@ -169,6 +80,43 @@ details[open] > div {
    above the nav links acts as a drag handle for moving the window. */
 .wco-drag   { -webkit-app-region: drag;    app-region: drag;    }
 .wco-no-drag { -webkit-app-region: no-drag; app-region: no-drag; }
+
+/* Top navigation progress bar (see NavProgress.tsx).
+   Mount/unmount and the 200ms show-delay are driven in JS; this is just the
+   visual. Indeterminate by design — the App Router gives no real progress %, so
+   a quiet segment sweeps across to signal "still loading" without faking a
+   percentage. Kept subtle: 2px, muted-foreground (flips per theme), no glow. */
+.nav-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 1600;
+  overflow: hidden;
+  pointer-events: none;
+}
+.nav-progress::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 35%;
+  background: var(--muted-foreground);
+  animation: nav-progress-slide 1.15s ease-in-out infinite;
+}
+.nav-progress[data-phase="complete"] {
+  opacity: 0;
+  transition: opacity 220ms ease-out;
+}
+@keyframes nav-progress-slide {
+  from {
+    left: -35%;
+  }
+  to {
+    left: 100%;
+  }
+}
 
 @layer base {
   * {
