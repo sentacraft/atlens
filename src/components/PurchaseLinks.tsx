@@ -35,7 +35,7 @@ function PurchaseLinkList({ links, lensId, customId, className }: { links: Purch
           })}
           className={LINK_CLS}
         >
-          {link.label}
+          <span data-redact-hook="priceSource">{link.label}</span>
           <ArrowUpRight className="size-3" aria-hidden="true" />
         </a>
       ))}
