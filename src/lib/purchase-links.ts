@@ -157,7 +157,7 @@ function buildJdUrl(lens: Lens, isMobileDevice: boolean): string {
 function buildTaobaoUrl(lens: Lens, isMobileDevice: boolean): string {
   const query = encodeURIComponent(getSearchQuery(lens, "zh"));
   return isMobileDevice
-    ? `https://main.m.taobao.com/search/index.html?pageType=3&q=${query}`
+    ? `https://main.m.taobao.com/search/index.html?q=${query}`
     : `https://s.taobao.com/search?q=${query}`;
 }
 
