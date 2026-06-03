@@ -141,18 +141,7 @@ const DialogContent = React.forwardRef<
             <div className="flex shrink-0 touch-none justify-center pb-1 pt-3">
               <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
             </div>
-            {/* The drag handle above is the only swipe-to-dismiss surface; everything
-                below is opted out of swipe tracking. Base UI treats the whole popup as a
-                swipe surface, so a *tap* on any in-drawer control (a Cancel button, a
-                search result) starts swipe tracking — it puts `transition: none` + a
-                transform on the popup that lingers into the close the same tap triggers,
-                flashing the drawer back mid-exit on iOS. display:contents keeps the flex
-                layout flat. NB: data-base-ui-swipe-ignore is the ONLY opt-out Base UI
-                honors on touch — `Drawer.Content` (data-drawer-content) is checked on the
-                pointer path only, so it does NOT fix this on real devices. */}
-            <div data-base-ui-swipe-ignore className="contents">
-              {children}
-            </div>
+            {children}
             {layerRef && <div ref={layerRef} />}
           </DrawerPrimitive.Popup>
         </DrawerPrimitive.Viewport>
@@ -204,8 +193,17 @@ function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
 
 function DialogFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
+    // data-base-ui-swipe-ignore stops a TAP on these buttons from starting Base UI's
+    // swipe tracking, which puts `transition: none` on the popup and flashes the drawer
+    // back mid-close on iOS. Keep it scoped to close-triggering controls — do NOT swipe-
+    // ignore the whole popup/header: the same attribute also disables Base UI's
+    // background-scroll guard for that element (its document touchmove handler early-
+    // returns on `ignoreTouchSwipeRef`), and on the non-scrollable header that lets the
+    // overlay pan + the page scroll through when the keyboard is up. The header must stay
+    // swipe-active so the guard keeps protecting it.
     <div
       data-slot="dialog-footer"
+      data-base-ui-swipe-ignore=""
       className={cn("flex items-center justify-end gap-3 px-5 py-4 border-t border-zinc-200 dark:border-zinc-800", className)}
       {...props}
     />
