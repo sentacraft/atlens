@@ -43,19 +43,20 @@ export default function LensFilters({
   const tBrand = useTranslations("Brands");
   const [secondaryOpen, setSecondaryOpen] = useState(false);
 
+  // The mobile dropdown lists up to BRAND_PREVIEW_LIMIT selected brand names;
+  // any beyond that collapse into a separate "+N" badge (rendered outside the
+  // truncating label in BrandFilterMenu) so the count is never clipped. Once a
+  // brand is chosen the label drops the "Brand:" prefix — the filled pill plus
+  // its position already read as the brand filter, and the names get the room.
   const BRAND_PREVIEW_LIMIT = 2;
   const brandJoiner = t("brandSeparator");
   const brandNames = Object.fromEntries(available.brands.map((b) => [b, tBrand(b)]));
   const selectedBrandNames = filters.brands.map((b) => brandNames[b] ?? b);
+  const brandExtraCount = Math.max(0, selectedBrandNames.length - BRAND_PREVIEW_LIMIT);
   const brandTriggerLabel =
     selectedBrandNames.length === 0
       ? t("brand")
-      : selectedBrandNames.length <= BRAND_PREVIEW_LIMIT
-        ? t("brandTriggerLabel", { names: selectedBrandNames.join(brandJoiner) })
-        : t("brandTriggerLabelMore", {
-            names: selectedBrandNames.slice(0, BRAND_PREVIEW_LIMIT).join(brandJoiner),
-            extra: selectedBrandNames.length - BRAND_PREVIEW_LIMIT,
-          });
+      : selectedBrandNames.slice(0, BRAND_PREVIEW_LIMIT).join(brandJoiner);
 
   useFiltersTelemetry(filters);
 
@@ -253,6 +254,7 @@ export default function LensFilters({
                 brandLabels={brandNames}
                 allLabel={allOptionLabel}
                 triggerLabel={brandTriggerLabel}
+                extraCount={brandExtraCount}
                 onToggle={(brand) =>
                   updateFilters("brands", toggleMultiFilter(filters.brands, brand, available.brands))
                 }
