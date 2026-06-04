@@ -19,8 +19,8 @@
 // Animations: config.onMount plays on mount; interactive.type === "tap" plays
 // on click/touch. Both share the same playAnimation() engine and chase loop.
 //
-// ApertureStrip: when apertureStrip is true in the config, a mobile-only
-// touch strip is rendered below the iris (hidden on md+ screens).
+// ApertureStrip: when apertureStrip is true in the config, an interactive
+// aperture strip is rendered below the iris (shown on all viewports).
 
 import { useState, useRef, useEffect, useMemo } from "react";
 import {
@@ -444,7 +444,7 @@ export default function Iris({
         </svg>
       </div>
 
-      {/* Aperture strip — mobile only, hidden on md+ */}
+      {/* Aperture strip — shown whenever the config opts in (all viewports) */}
       {apertureStrip && (
         <div className="mt-1" style={{ width: size }}>
           <ApertureStrip

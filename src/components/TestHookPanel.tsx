@@ -31,6 +31,7 @@ const HIDDEN_ROUTES: { label: string; href: string }[] = [
   })),
   { label: "Design Lab — Iris", href: "/design-lab/iris" },
   { label: "Design Lab — Iris Pheno", href: "/design-lab/iris-pheno" },
+  { label: "Design Lab — Outro (end card)", href: "/design-lab/outro" },
 ];
 
 export default function TestHookPanel() {
