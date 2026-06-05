@@ -130,7 +130,7 @@ export default function Nav() {
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           <Link
             href="/"
-            className="flex items-center gap-1.5 font-bold font-heading text-zinc-900 dark:text-zinc-50 text-base sm:text-lg tracking-tight hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors whitespace-nowrap"
+            className="flex items-center gap-1.5 font-bold font-heading text-zinc-900 dark:text-zinc-50 text-base sm:text-lg tracking-tight whitespace-nowrap"
             aria-label="Home"
           >
             <Iris config={IRIS_NAV} uid="nav" size={16} />
@@ -173,7 +173,7 @@ export default function Nav() {
             href="https://github.com/sentacraft/atlens"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:inline text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors px-1"
+            className="hidden sm:inline text-zinc-900 dark:text-zinc-50 px-1"
             aria-label="GitHub"
           >
             <GitHubMark />
