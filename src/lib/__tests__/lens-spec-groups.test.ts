@@ -93,6 +93,11 @@ function makeLens(overrides: Partial<Lens> = {}): Lens {
     ois: false,
     wr: false,
     apertureRing: false,
+    powerZoom: false,
+    weightG: 187,
+    diameterMm: 65,
+    length: { mm: 70 },
+    angleOfViewCalc: 30,
     searchAliases: { en: "Test Lens" },
     ...overrides,
   };
