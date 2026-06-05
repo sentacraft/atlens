@@ -3,18 +3,29 @@ import { resolve } from "node:path";
 
 import { formatZodIssues, lensCatalogSchema } from "../src/lib/lens-schema.ts";
 
-const lensesPath = resolve(process.cwd(), "src/data/lenses.json");
-const raw = readFileSync(lensesPath, "utf8");
-const parsed = JSON.parse(raw) as unknown;
+// X-mount and GFX are stored as separate catalogs and consumed separately, so
+// validate each on its own (duplicate detection is meant to run per-catalog).
+const catalogPaths = ["src/data/lenses.json", "src/data/lenses-gfx.json"];
 
-const result = lensCatalogSchema.safeParse(parsed);
+let failed = false;
 
-if (!result.success) {
-  console.error(`Lens catalog validation failed for ${lensesPath}`);
-  for (const issue of formatZodIssues(result.error)) {
-    console.error(`- ${issue}`);
+for (const relPath of catalogPaths) {
+  const path = resolve(process.cwd(), relPath);
+  const parsed = JSON.parse(readFileSync(path, "utf8")) as unknown;
+  const result = lensCatalogSchema.safeParse(parsed);
+
+  if (!result.success) {
+    console.error(`Lens catalog validation failed for ${path}`);
+    for (const issue of formatZodIssues(result.error)) {
+      console.error(`- ${issue}`);
+    }
+    failed = true;
+    continue;
   }
-  process.exit(1);
+
+  console.log(`Lens catalog validation passed for ${path}`);
 }
 
-console.log(`Lens catalog validation passed for ${lensesPath}`);
+if (failed) {
+  process.exit(1);
+}
