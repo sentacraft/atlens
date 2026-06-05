@@ -59,15 +59,6 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   // `usage` (photo/cine) is a view mode, not a filter dimension, so it is left
   // out of the active-filter count and the reset trigger. Reset still returns
   // usage to its default via defaultFilters below.
-  const hasActiveFilters =
-    filters.brands.length > 0 ||
-    filters.typeFilter !== null ||
-    filters.focusFilter !== null ||
-    filters.opticalTrait !== null ||
-    filters.focusMotorClass !== null ||
-    filters.focalCategories.length > 0 ||
-    filters.features.length > 0;
-
   const activeFilterCount = [
     filters.brands.length > 0,
     filters.typeFilter !== null,
@@ -120,7 +111,6 @@ export default function LensListClient({ lenses }: LensListClientProps) {
             filters={filters}
             available={available}
             onFiltersChange={updateFilters}
-            hasActiveFilters={hasActiveFilters}
             activeFilterCount={activeFilterCount}
             onReset={clearAllFilters}
             // Search shares the brand row's right edge — it scopes the lens
