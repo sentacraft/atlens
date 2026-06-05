@@ -77,3 +77,6 @@ skills-lock.json
 /docs/*.jpeg
 /docs/*.webp
 /docs/*.gif
+
+# collection-poster.mjs output — regenerated on demand, never committed
+/poster-out/
