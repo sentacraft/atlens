@@ -92,8 +92,68 @@ export function formatFilterSnapshot(json: string): string {
   if (Array.isArray(focal) && focal.length > 0) {
     parts.push(`Focal: ${focal.join(",")}`);
   }
+  if (typeof f.opticalTrait === "string" && f.opticalTrait) {
+    parts.push(`Trait: ${f.opticalTrait}`);
+  }
 
   return parts.length > 0 ? parts.join(" · ") : "(no filters)";
+}
+
+// One filter dimension and the predicate that decides whether a snapshot has
+// it active (non-default). Order here is the display fallback when counts tie.
+const FILTER_DIMENSIONS: {
+  label: string;
+  isActive: (f: Record<string, unknown>) => boolean;
+}[] = [
+  { label: "Lens type (prime/zoom)", isActive: (f) => typeof f.typeFilter === "string" && !!f.typeFilter },
+  { label: "Focus (AF/MF)", isActive: (f) => typeof f.focusFilter === "string" && !!f.focusFilter },
+  { label: "Brand", isActive: (f) => Array.isArray(f.brands) && f.brands.length > 0 },
+  { label: "Usage (photo/cine)", isActive: (f) => typeof f.usage === "string" && f.usage !== defaultFilters.usage },
+  { label: "Focal range", isActive: (f) => Array.isArray(f.focalCategories) && f.focalCategories.length > 0 },
+  { label: "Focus motor", isActive: (f) => typeof f.focusMotorClass === "string" && !!f.focusMotorClass },
+  { label: "Features", isActive: (f) => Array.isArray(f.features) && f.features.length > 0 },
+  { label: "Optical trait", isActive: (f) => typeof f.opticalTrait === "string" && !!f.opticalTrait },
+];
+
+// A `type` (not `interface`) so the row is assignable to the dashboard
+// Table's `Record<string, unknown>[]` prop — interfaces are treated as
+// open/augmentable and lack the implicit index signature.
+export type FilterDimensionUsage = {
+  dimension: string;
+  n: number;
+};
+
+// The "most-used snapshots" card groups by the whole filter combo, so a
+// filter used across many different combos never accumulates into a visible
+// row. This decomposes each snapshot and tallies how often every individual
+// filter dimension was active — answering "how many applies touched filter X"
+// rather than "what's the most common full combo". `n` is the per-combo
+// apply weight (SUM(_sample_interval)) that the caller already aggregated.
+export function aggregateFilterDimensions(
+  rows: Array<{ filters?: unknown; n?: unknown }>,
+): FilterDimensionUsage[] {
+  const totals = new Map<string, number>(FILTER_DIMENSIONS.map((d) => [d.label, 0]));
+  for (const row of rows) {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(String(row.filters ?? ""));
+    } catch {
+      continue;
+    }
+    if (!parsed || typeof parsed !== "object") {
+      continue;
+    }
+    const f = parsed as Record<string, unknown>;
+    const weight = typeof row.n === "number" ? row.n : Number(row.n) || 0;
+    for (const dim of FILTER_DIMENSIONS) {
+      if (dim.isActive(f)) {
+        totals.set(dim.label, (totals.get(dim.label) ?? 0) + weight);
+      }
+    }
+  }
+  return FILTER_DIMENSIONS
+    .map((d) => ({ dimension: d.label, n: totals.get(d.label) ?? 0 }))
+    .sort((a, b) => b.n - a.n);
 }
 
 // Strip protocol + trailing slash from a URL for compact display.

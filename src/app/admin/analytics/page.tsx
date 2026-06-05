@@ -7,6 +7,7 @@
 
 import { queryAE } from "@/lib/analytics-query";
 import {
+  aggregateFilterDimensions,
   formatFilterSnapshot,
   formatHref,
   formatLensSlug,
@@ -91,6 +92,20 @@ const Q_FILTER_USAGE = `
   GROUP BY filters
   ORDER BY n DESC
   LIMIT 10
+`;
+
+// Same source as Q_FILTER_USAGE but pulls a deep slice of distinct combos so
+// the server can decompose them into per-dimension counts (see
+// aggregateFilterDimensions). The limit is a safety cap; real distinct-combo
+// cardinality is far below it.
+const Q_FILTER_DIMENSIONS = `
+  SELECT blob4 AS filters, SUM(_sample_interval) AS n
+  FROM xglass_events
+  WHERE index1 = 'filter_apply'
+    AND ${DASHBOARD_FILTER}
+  GROUP BY filters
+  ORDER BY n DESC
+  LIMIT 1000
 `;
 
 // Same constraint as the overview uniques: instead of conditional
@@ -357,6 +372,7 @@ export default async function AnalyticsDashboardPage() {
     searchZero,
     searchAll,
     filterUsage,
+    filterDimensions,
     compareFunnel,
     compareCombos,
     lensViews,
@@ -378,6 +394,7 @@ export default async function AnalyticsDashboardPage() {
     queryAE(Q_SEARCH_ZERO),
     queryAE(Q_SEARCH_ALL),
     queryAE(Q_FILTER_USAGE),
+    queryAE(Q_FILTER_DIMENSIONS),
     queryAE(Q_COMPARE_FUNNEL),
     queryAE(Q_COMPARE_COMBOS),
     queryAE(Q_LENS_VIEW_TOP),
@@ -447,6 +464,7 @@ export default async function AnalyticsDashboardPage() {
       ["searchZero", searchZero],
       ["searchAll", searchAll],
       ["filterUsage", filterUsage],
+      ["filterDimensions", filterDimensions],
       ["compareFunnel", compareFunnel],
       ["compareCombos", compareCombos],
       ["lensViews", lensViews],
@@ -479,6 +497,7 @@ export default async function AnalyticsDashboardPage() {
     ...r,
     display: formatFilterSnapshot(String(r.filters ?? "")),
   }));
+  const filterDimensionRows = aggregateFilterDimensions(filterDimensions.data);
   const shareRows = share.data.map((r) => ({
     ...r,
     display: formatShareMethod(String(r.method ?? "")),
@@ -628,6 +647,16 @@ export default async function AnalyticsDashboardPage() {
             rows={filterUsageRows}
             columns={[
               { key: "display", label: "Filters", titleKey: "filters" },
+              { key: "n", label: "Applies", align: "right", widthClass: COUNT_WIDTH },
+            ]}
+          />
+        </Card>
+
+        <Card title="Filters · per-dimension usage">
+          <Table
+            rows={filterDimensionRows}
+            columns={[
+              { key: "dimension", label: "Filter" },
               { key: "n", label: "Applies", align: "right", widthClass: COUNT_WIDTH },
             ]}
           />
