@@ -4,6 +4,7 @@ import {
   isZoom,
   filterLenses,
   sortLenses,
+  leadingValue,
   getUniqueBrands,
   getLensUrl,
   getFocalCategoriesOf,
@@ -653,6 +654,27 @@ describe("sortLenses", () => {
     const original = [...sortPool];
     sortLenses(sortPool, "focalLength", "asc");
     expect(sortPool).toEqual(original);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// leadingValue
+// ---------------------------------------------------------------------------
+describe("leadingValue", () => {
+  it("returns a scalar unchanged", () => {
+    expect(leadingValue(187)).toBe(187);
+  });
+
+  it("returns the low end of a [low, high] tuple", () => {
+    expect(leadingValue([340, 395])).toBe(340);
+  });
+
+  it("passes undefined through for the caller to handle", () => {
+    expect(leadingValue(undefined)).toBeUndefined();
+  });
+
+  it("does not coerce a zero scalar to undefined", () => {
+    expect(leadingValue(0)).toBe(0);
   });
 });
 

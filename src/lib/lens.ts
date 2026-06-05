@@ -332,40 +332,36 @@ export function getLensUrl(lens: Lens, locale?: string): string | undefined {
 
 export type SortKey = "focalLength" | "maxAperture" | "weightG";
 
-function getSortableMaxAperture(lens: Lens): number {
-  // Fall back to T-stop wide end when f-stop is unpublished (cine lenses).
-  // T-stop is numerically slightly larger than f-stop but ordering is preserved
-  // for sort purposes within the cine cohort.
-  const value = lens.maxAperture ?? lens.maxTStop;
-  if (value === undefined) {
-    return Number.POSITIVE_INFINITY;
-  }
-  return Array.isArray(value) ? value[0] : value;
-}
-
 export function sortLenses(
   lenses: Lens[],
   key: SortKey,
   dir: "asc" | "desc"
 ): Lens[] {
-  return [...lenses].sort((a, b) => {
-    if (key === "maxAperture") {
-      const delta = getSortableMaxAperture(a) - getSortableMaxAperture(b);
-      return dir === "asc" ? delta : -delta;
-    }
+  const toComparable: Record<SortKey, (lens: Lens) => number> = {
+    focalLength: (lens) => (dir === "asc" ? lens.focalLengthMin : lens.focalLengthMax),
+    // Cine lenses publish only T-stop (no f-stop); fall back to it so they
+    // still rank against each other in the cine / unfiltered views.
+    maxAperture: (lens) => leadingValue(lens.maxAperture ?? lens.maxTStop) ?? Number.POSITIVE_INFINITY,
+    weightG: (lens) => leadingValue(lens.weightG) ?? Number.POSITIVE_INFINITY,
+  };
 
-    const field: keyof Lens =
-      key === "focalLength"
-        ? dir === "asc"
-          ? "focalLengthMin"
-          : "focalLengthMax"
-        : key;
-    const delta = (a[field] as number) - (b[field] as number);
+  return [...lenses].sort((a, b) => {
+    const delta = toComparable[key](a) - toComparable[key](b);
     return dir === "asc" ? delta : -delta;
   });
 }
 
 export function defaultMarketForLocale(locale: string): "cn" | "global" {
   return locale === "zh" ? "cn" : "global";
+}
+
+/**
+ * Leading end of a scalar-or-range spec: the bare number, or the low end of
+ * a [low, high] tuple. Undefined passes through so each caller decides how to
+ * rank missing data (e.g. sort pushes it to the end with `?? Infinity`, while
+ * the compare table keeps it undefined to skip highlighting).
+ */
+export function leadingValue(value: number | [number, number] | undefined): number | undefined {
+  return Array.isArray(value) ? value[0] : value;
 }
 
