@@ -87,7 +87,7 @@ flowchart TD
 
       subgraph spr["Stage Pr · Price Sample"]
         SPrNew["<b>New Price</b><br/>AI Agent visits official storefronts"]
-        SPrUsed["<b>Used Price</b><br/>AI Agent samples secondary-market listings<br/>Median computed at publish time"]
+        SPrUsed["<b>Used Price · Fallback</b><br/>Sampled only when no new price is found<br/>AI Agent samples secondary-market listings<br/>Median computed at publish time"]
       end
     end
 
@@ -113,7 +113,7 @@ flowchart TD
   S2b & S2c --> SR
   SR --> SP1
   PRICING_SOURCES -->|"storefront search URLs"| SPrNew
-  SPrUsed
+  SPrNew -->|"no new price found"| SPrUsed
   SPrNew & SPrUsed --> SP1
   SP1 --> SP_AUDIT
   SP_AUDIT --> SP2
