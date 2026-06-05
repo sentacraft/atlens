@@ -39,6 +39,8 @@ function makeLens(
     weightG: 187,
     diameterMm: 65,
     length: { mm: 45 },
+    angleOfViewCalc: 44.2,
+    powerZoom: false,
     filterMm: 52,
     minFocusDistance: { normal: { cm: 28 } },
     releaseYear: 2012,

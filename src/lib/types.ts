@@ -484,10 +484,9 @@ export interface Lens {
 
   /**
    * Whether the lens uses a power zoom (motorized zoom) mechanism.
-   * Optional until pipeline backfills this field for all lenses.
    * @example true
    */
-  powerZoom?: boolean;
+  powerZoom: boolean;
 
   /**
    * Brand's verbatim AF motor or actuator label, copied from the source
@@ -559,13 +558,13 @@ export interface Lens {
    * @example 187
    * @example [340, 395]
    */
-  weightG?: number | [number, number];
+  weightG: number | [number, number];
 
   /**
    * Maximum outer diameter in millimeters.
    * @example 65
    */
-  diameterMm?: number;
+  diameterMm: number;
 
   /**
    * Physical length of the lens body, measured from the mount flange to the
@@ -575,7 +574,7 @@ export interface Lens {
    * @example { mm: 50.4 }
    * @example { mm: 57.2, variants: { retracted: 37.5, wide: 55.6, tele: 57.2 } }
    */
-  length?: LensLength;
+  length: LensLength;
 
   /**
    * Filter thread diameter in millimeters.
@@ -642,7 +641,7 @@ export interface Lens {
    * @example 44.2
    * @example [86.9, 35.0]
    */
-  angleOfViewCalc?: number | [number, number];
+  angleOfViewCalc: number | [number, number];
 
   /**
    * Structured optical construction data parsed from the source spec.

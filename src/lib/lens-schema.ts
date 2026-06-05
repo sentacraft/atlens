@@ -75,7 +75,7 @@ const lensBaseShape = {
   oisStops: positiveNumberSchema.optional(),
   wr: z.union([z.boolean(), z.literal("partial")]),
   apertureRing: z.boolean(),
-  powerZoom: z.boolean().optional(),
+  powerZoom: z.boolean(),
   focusMotor: optionalNonEmptyStringSchema,
   internalFocusing: z.boolean().optional(),
   weightG: z.union([
@@ -84,8 +84,8 @@ const lensBaseShape = {
       (arr) => arr[0] < arr[1],
       { message: "weightG range: first value (min) must be less than second (max)" }
     ),
-  ]).optional(),
-  diameterMm: positiveNumberSchema.optional(),
+  ]),
+  diameterMm: positiveNumberSchema,
   length: z.strictObject({
     mm: positiveNumberSchema,
     variants: z.strictObject({
@@ -93,7 +93,7 @@ const lensBaseShape = {
       wide: positiveNumberSchema.optional(),
       tele: positiveNumberSchema.optional(),
     }).optional(),
-  }).optional(),
+  }),
   minFocusDistance: z.strictObject({
     normal: focusDistanceModeSchema,
     macro: focusDistanceModeSchema.optional(),
@@ -115,7 +115,7 @@ const lensBaseShape = {
       (arr) => arr[0] > arr[1],
       { message: "angleOfViewCalc tuple must be [wideEnd, teleEnd] with wide > tele" }
     ),
-  ]).optional(),
+  ]),
   apertureBladeCount: z.union([z.number().int().positive(), specNaSchema]).optional(),
   releaseYear: z.number().int().min(1900).max(2100).optional(),
   searchAliases: z.strictObject({
