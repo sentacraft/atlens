@@ -35,6 +35,7 @@ export default function LensSortControl({
     { value: "focalLength", label: t("sortFocalLength") },
     { value: "maxAperture", label: t("sortAperture") },
     { value: "weightG", label: t("sortWeight") },
+    { value: "length", label: t("sortLength") },
   ] as const satisfies readonly { value: SortKey; label: string }[];
 
   return (

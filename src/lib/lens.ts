@@ -330,7 +330,7 @@ export function getLensUrl(lens: Lens, locale?: string): string | undefined {
   return lens.officialLinks?.global;
 }
 
-export type SortKey = "focalLength" | "maxAperture" | "weightG";
+export type SortKey = "focalLength" | "maxAperture" | "weightG" | "length";
 
 export function sortLenses(
   lenses: Lens[],
@@ -343,6 +343,7 @@ export function sortLenses(
     // still rank against each other in the cine / unfiltered views.
     maxAperture: (lens) => leadingValue(lens.maxAperture ?? lens.maxTStop) ?? Number.POSITIVE_INFINITY,
     weightG: (lens) => leadingValue(lens.weightG) ?? Number.POSITIVE_INFINITY,
+    length: (lens) => lens.length?.mm ?? Number.POSITIVE_INFINITY,
   };
 
   return [...lenses].sort((a, b) => {

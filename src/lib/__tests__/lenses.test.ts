@@ -609,6 +609,7 @@ const sortPool: Lens[] = [
     focalLengthMax: 56,
     maxAperture: 1.4,
     weightG: 300,
+    length: { mm: 50 },
     releaseYear: 2020,
   }),
   makeLens({
@@ -617,6 +618,7 @@ const sortPool: Lens[] = [
     focalLengthMax: 18,
     maxAperture: 2.8,
     weightG: 150,
+    length: { mm: 70 },
     releaseYear: 2015,
   }),
   makeLens({
@@ -625,6 +627,7 @@ const sortPool: Lens[] = [
     focalLengthMax: 35,
     maxAperture: 2.0,
     weightG: 200,
+    length: { mm: 40 },
     releaseYear: 2018,
   }),
 ];
@@ -648,6 +651,16 @@ describe("sortLenses", () => {
   it("sorts by weightG ascending", () => {
     const ids = sortLenses(sortPool, "weightG", "asc").map((l) => l.id);
     expect(ids).toEqual(["b", "c", "a"]);
+  });
+
+  it("sorts by length ascending", () => {
+    const ids = sortLenses(sortPool, "length", "asc").map((l) => l.id);
+    expect(ids).toEqual(["c", "a", "b"]);
+  });
+
+  it("sorts by length descending", () => {
+    const ids = sortLenses(sortPool, "length", "desc").map((l) => l.id);
+    expect(ids).toEqual(["b", "a", "c"]);
   });
 
   it("does not mutate the original array", () => {
