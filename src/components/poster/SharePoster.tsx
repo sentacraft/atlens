@@ -9,7 +9,7 @@ import type { Lens } from "@/lib/types";
 import { Weight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TriangleAlert } from "lucide-react";
-import { classifyFocusMotor, type FocusMotorClass } from "@/lib/lens";
+import { classifyFocusMotor, leadingValue, type FocusMotorClass } from "@/lib/lens";
 import { pickPriceEntry, formatPrice, formatSampledAt } from "@/lib/lens-pricing";
 import { getLensImageUrl } from "@/lib/lens-image";
 import {
@@ -112,14 +112,6 @@ function gridStyle(n: number): React.CSSProperties {
     gridTemplateColumns: `repeat(${n}, 1fr)`,
     gap: COL_GAP,
   };
-}
-
-/** Primary weight value for normalisation (use lower bound for ranges). */
-function primaryWeight(w: Lens["weightG"]): number | undefined {
-  if (w === undefined) {
-    return undefined;
-  }
-  return Array.isArray(w) ? w[0] : w;
 }
 
 function hasVariantValue<T>(variants: { wide?: T; tele?: T } | undefined): boolean {
@@ -298,7 +290,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   const showPrice = priceSelections.some((s) => s !== null);
 
   // ── Size & Weight visibility ───────────────────────────────────
-  const weights = lenses.map((l) => primaryWeight(l.weightG));
+  const weights = lenses.map((l) => leadingValue(l.weightG));
   const showWeight = weights.some((w) => w !== undefined);
   const showDimensions = lenses.some(
     (l) => l.diameterMm !== undefined || l.length !== undefined

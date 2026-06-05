@@ -138,7 +138,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
 
         <div className="border-t border-zinc-100 dark:border-zinc-800/50 mt-4 pt-4 mb-2 sm:mb-3">
           <div className="flex items-center justify-between gap-3">
-            <div className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2.5">
+            <div className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2.5">
               <p className="whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
                 {t.rich("resultsCount", {
                   count: displayed.length,

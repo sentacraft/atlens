@@ -1,6 +1,6 @@
 import { SPEC_NA, type Lens, type FieldNoteKey } from "./types";
 import type { LensConfigurationLabels } from "./lens.format";
-import { classifyFocusMotor, type FocusMotorClass } from "./lens";
+import { classifyFocusMotor, leadingValue, type FocusMotorClass } from "./lens";
 import * as fmt from "./lens.format";
 
 // ---------------------------------------------------------------------------
@@ -377,12 +377,7 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
           hasData: (l) => l.maxAperture !== undefined,
           getDisplayValue: (l) =>
             l.maxAperture !== undefined ? fmt.apertureDisplay(l.maxAperture) : "",
-          toComparable: (l) =>
-            l.maxAperture === undefined
-              ? undefined
-              : Array.isArray(l.maxAperture)
-                ? l.maxAperture[0]
-                : l.maxAperture,
+          toComparable: (l) => leadingValue(l.maxAperture),
         },
         {
           kind: "text",
@@ -455,8 +450,7 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
           fieldNoteKey: "weightG" as FieldNoteKey,
           hasData: (l) => l.weightG !== undefined,
           getDisplayValue: (l) => fmt.weightDisplay(l.weightG, "g"),
-          toComparable: (l) =>
-            Array.isArray(l.weightG) ? l.weightG[0] : l.weightG,
+          toComparable: (l) => leadingValue(l.weightG),
           bestDir: "min",
         },
         {

@@ -18,7 +18,7 @@ const FOCAL_KEYS = FOCAL_CATEGORIES.map((c) => c.key) as FocalCategory[];
 const MOTOR_CLASSES: FocusMotorClass[] = ["linear", "stepping", "dc", "other"];
 const LENS_TYPES: LensType[] = ["prime", "zoom"];
 const FOCUS_FILTERS: FocusFilter[] = ["auto", "manual"];
-const SORT_KEYS: SortKey[] = ["focalLength", "maxAperture", "weightG"];
+const SORT_KEYS: SortKey[] = ["focalLength", "maxAperture", "weightG", "length"];
 
 // Compact param keys — only non-default values are serialized.
 // b=brands, t=typeFilter, f=focusFilter, u=usage, m=focusMotorClass,
