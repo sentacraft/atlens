@@ -25,7 +25,6 @@ import { RetailersDropdown } from "@/components/RetailersDropdown";
 import { UTILITY_BTN_CLS } from "@/lib/ui-tokens";
 import { getMemberCollections } from "@/lib/collections";
 import CollectionPills from "@/components/CollectionPills";
-import { Link } from "@/i18n/navigation";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates, lensOgImages } from "@/lib/seo";

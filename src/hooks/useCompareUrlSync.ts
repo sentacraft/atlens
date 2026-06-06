@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { useLocale } from "next-intl";
 import { useCompare } from "@/context/CompareProvider";
-import { useEffectiveMount } from "@/hooks/useMountParam";
-import { buildComparePath } from "@/lib/compare-url";
+import { projectToUrl } from "@/lib/url-projection";
 
 /**
  * Projects the current compare state onto the address bar for the compare
@@ -26,24 +24,23 @@ import { buildComparePath } from "@/lib/compare-url";
  * Anything else previously squatting on the query string (`preset`, `from`,
  * `lensId`) has been removed — `preset` is reverse-derived from `ids` where
  * needed, `from` / `lensId` were dead code. With nothing else to preserve,
- * the projection becomes a pure function of compare state, and the effect's
- * deps are all stable primitives. No race window between `useSearchParams`
- * updating synchronously after a router navigation and `compareIds` syncing
- * via `useLayoutEffect` moments later.
+ * the projection becomes a pure function of compare state — the effect
+ * depends only on `compareIds`.
  */
 export function useCompareUrlSync() {
   const { compareIds } = useCompare();
-  const mount = useEffectiveMount();
-  const locale = useLocale();
 
   useEffect(() => {
-    const url = buildComparePath(mount, compareIds, locale);
-
-    // No-op when the URL already matches — avoids re-emitting a router event
-    // (and the associated subscriber re-renders) for an already-correct URL.
-    if (window.location.pathname + window.location.search === url) {
-      return;
-    }
-    window.history.replaceState(null, "", url);
-  }, [compareIds, mount, locale]);
+    projectToUrl((url) => {
+      // Own only `ids`; foreign params are left intact. Assign the query as a
+      // string (not url.searchParams.set) so the commas in `ids` stay raw
+      // (`A,B`) rather than percent-encoded.
+      url.searchParams.delete("ids");
+      const rest = url.searchParams.toString();
+      url.search =
+        compareIds.length > 0
+          ? (rest ? `${rest}&` : "") + `ids=${compareIds.join(",")}`
+          : rest;
+    });
+  }, [compareIds]);
 }

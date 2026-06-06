@@ -8,8 +8,8 @@ export const CROP_FACTOR: Record<Mount, number> = {
   G: 0.79, // GFX 44×33 mm diagonal ≈54.78 mm vs FF ≈43.3 mm
 };
 
-export type LensType = "prime" | "zoom";
-export const LENS_TYPES = ["prime", "zoom"] as const satisfies readonly LensType[];
+export const LENS_TYPES = ["prime", "zoom"] as const;
+export type LensType = (typeof LENS_TYPES)[number];
 
 export function isZoom(lens: Lens): boolean {
   return lens.focalLengthMin !== lens.focalLengthMax;
@@ -24,7 +24,8 @@ export const FILTER_FEATURE_KEYS = [
   "powerZoom",
 ] as const satisfies readonly (keyof Lens)[];
 
-export type FocusFilter = "auto" | "manual";
+export const FOCUS_FILTERS = ["auto", "manual"] as const;
+export type FocusFilter = (typeof FOCUS_FILTERS)[number];
 
 export type FilterFeatureKey = (typeof FILTER_FEATURE_KEYS)[number];
 
@@ -88,7 +89,8 @@ export function getFocalCategoriesOf(lens: {
   }).map((cat) => cat.key);
 }
 
-export type FocusMotorClass = "linear" | "stepping" | "dc" | "other";
+export const FOCUS_MOTOR_CLASSES = ["linear", "stepping", "dc", "other"] as const;
+export type FocusMotorClass = (typeof FOCUS_MOTOR_CLASSES)[number];
 
 /**
  * Classify a brand-specific focus motor string into a canonical class.
@@ -104,7 +106,8 @@ export type FocusMotorClass = "linear" | "stepping" | "dc" | "other";
  * Scope assumption: the four classes cover every motor seen on X-mount and
  * G-mount today. Ultrasonic motors (USM / SWM / SSM / HSM / SDM) are a
  * fifth global category but absent from this project's data; if a future
- * lens lands with one, add an "ultrasonic" class here and in MOTOR_CLASSES.
+ * lens lands with one, add an "ultrasonic" class to FOCUS_MOTOR_CLASSES (and
+ * classify it in this function).
  */
 export function classifyFocusMotor(lens: Lens): FocusMotorClass | undefined {
   if (!lens.af) {
@@ -133,15 +136,13 @@ export function classifyFocusMotor(lens: Lens): FocusMotorClass | undefined {
 }
 
 /**
- * Top-level usage category. Photo and cine are two largely-separate product
- * universes — most photo shoppers don't want cine lenses cluttering their
- * list, but a cine shopper does want exclusive cine results.
- *
- * - `null` — show everything (escape hatch when the user really wants the union)
- * - `"photo"` — exclude cine lenses (default)
- * - `"cine"` — only cine lenses
+ * Top-level usage category — a view partition, not an additive refinement.
+ * Photo and cine are two largely-separate product universes: most photo
+ * shoppers don't want cine lenses cluttering their list, and a cine shopper
+ * wants exclusive cine results. Always one of the two; defaults to "photo".
  */
-export type UsageFilter = "photo" | "cine" | null;
+export const USAGE_VALUES = ["photo", "cine"] as const;
+export type UsageFilter = (typeof USAGE_VALUES)[number];
 
 export interface FilterState {
   brands: string[]; // empty = all brands
@@ -188,17 +189,15 @@ export function filterLenses(lenses: Lens[], filters: FilterState): Lens[] {
       return false;
     }
 
-    if (filters.usage !== null || filters.opticalTrait !== null) {
-      const { isCine, opticalTraits } = deriveSpecialty(lens);
-      if (filters.usage === "photo" && isCine) {
-        return false;
-      }
-      if (filters.usage === "cine" && !isCine) {
-        return false;
-      }
-      if (filters.opticalTrait !== null && !opticalTraits.includes(filters.opticalTrait)) {
-        return false;
-      }
+    const { isCine, opticalTraits } = deriveSpecialty(lens);
+    if (filters.usage === "photo" && isCine) {
+      return false;
+    }
+    if (filters.usage === "cine" && !isCine) {
+      return false;
+    }
+    if (filters.opticalTrait !== null && !opticalTraits.includes(filters.opticalTrait)) {
+      return false;
     }
 
     if (filters.focusMotorClass && classifyFocusMotor(lens) !== filters.focusMotorClass) {
@@ -250,12 +249,8 @@ export function getAvailableOpticalTraits(lenses: { isCine?: boolean; opticalTra
 
 // Partition lenses by the photo/cine view. This is the scope axis the brand
 // and optical-trait controls narrow to, so switching the usage view surfaces
-// only the brands/traits that actually exist in that universe. `null` = no
-// partition (the union escape hatch).
+// only the brands/traits that actually exist in that universe.
 export function selectByUsage(lenses: Lens[], usage: UsageFilter): Lens[] {
-  if (usage === null) {
-    return lenses;
-  }
   return lenses.filter((lens) => {
     const { isCine } = deriveSpecialty(lens);
     return usage === "cine" ? isCine : !isCine;
@@ -278,8 +273,6 @@ export interface AvailableFilterOptions {
   types: LensType[];
   focusModes: FocusFilter[];
 }
-
-const FOCUS_MOTOR_ORDER: FocusMotorClass[] = ["linear", "stepping", "dc", "other"];
 
 // Which control values actually occur in a given lens set, in display order.
 // Every browse filter narrows to these so a scope (e.g. the cine view) never
@@ -314,10 +307,10 @@ export function getAvailableFilterOptions(lenses: Lens[]): AvailableFilterOption
     brands: getOrderedUniqueBrands(lenses),
     opticalTraits: getAvailableOpticalTraits(lenses),
     features: FILTER_FEATURE_KEYS.filter((f) => features.has(f)),
-    focusMotorClasses: FOCUS_MOTOR_ORDER.filter((m) => motors.has(m)),
+    focusMotorClasses: FOCUS_MOTOR_CLASSES.filter((m) => motors.has(m)),
     focalCategories: FOCAL_CATEGORIES.map((c) => c.key).filter((k) => focals.has(k)),
     types: LENS_TYPES.filter((t) => types.has(t)),
-    focusModes: (["auto", "manual"] as const).filter((m) => focusModes.has(m)),
+    focusModes: FOCUS_FILTERS.filter((m) => focusModes.has(m)),
   };
 }
 
@@ -330,7 +323,8 @@ export function getLensUrl(lens: Lens, locale?: string): string | undefined {
   return lens.officialLinks?.global;
 }
 
-export type SortKey = "focalLength" | "maxAperture" | "weightG" | "length";
+export const SORT_KEYS = ["focalLength", "maxAperture", "weightG", "length"] as const;
+export type SortKey = (typeof SORT_KEYS)[number];
 
 export function sortLenses(
   lenses: Lens[],

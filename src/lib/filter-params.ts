@@ -1,31 +1,32 @@
 import { OPTICAL_TRAITS } from "./types";
-import type { OpticalTrait } from "./types";
 import {
   defaultFilters,
   FILTER_FEATURE_KEYS,
   FOCAL_CATEGORIES,
+  FOCUS_FILTERS,
+  FOCUS_MOTOR_CLASSES,
+  LENS_TYPES,
+  SORT_KEYS,
+  USAGE_VALUES,
   type FilterState,
-  type FilterFeatureKey,
   type FocalCategory,
-  type FocusFilter,
-  type FocusMotorClass,
-  type LensType,
-  type SortKey,
-  type UsageFilter,
 } from "./lens";
+import { isOneOf } from "./utils";
 
 const FOCAL_KEYS = FOCAL_CATEGORIES.map((c) => c.key) as FocalCategory[];
-const MOTOR_CLASSES: FocusMotorClass[] = ["linear", "stepping", "dc", "other"];
-const LENS_TYPES: LensType[] = ["prime", "zoom"];
-const FOCUS_FILTERS: FocusFilter[] = ["auto", "manual"];
-const SORT_KEYS: SortKey[] = ["focalLength", "maxAperture", "weightG", "length"];
+
+// Every URL query key the filter state owns — the single list a URL-sync writer
+// deletes before re-writing, so it touches only its own params and leaves
+// foreign ones (utm, …) intact. Must stay in step with serializeFilters below
+// (asserted by a test).
+export const FILTER_PARAM_KEYS = ["b", "t", "f", "u", "ot", "m", "feat", "fc", "sort", "dir"] as const;
+type FilterParamKey = (typeof FILTER_PARAM_KEYS)[number];
 
 // Compact param keys — only non-default values are serialized.
 // b=brands, t=typeFilter, f=focusFilter, u=usage, m=focusMotorClass,
 // feat=features, fc=focalCategories, sort=sortKey, dir=sortDir
 //
-// Usage default is "photo" (not null), so it is serialized only when
-// the user picks "all" or "cine".
+// Usage default is "photo", so it is serialized only when the user picks "cine".
 export function serializeFilters(filters: FilterState): URLSearchParams {
   const p = new URLSearchParams();
   if (filters.brands.length > 0) {
@@ -38,7 +39,7 @@ export function serializeFilters(filters: FilterState): URLSearchParams {
     p.set("f", filters.focusFilter);
   }
   if (filters.usage !== defaultFilters.usage) {
-    p.set("u", filters.usage ?? "all");
+    p.set("u", filters.usage);
   }
   if (filters.opticalTrait) {
     p.set("ot", filters.opticalTrait);
@@ -61,47 +62,24 @@ export function serializeFilters(filters: FilterState): URLSearchParams {
   return p;
 }
 
-function parseUsage(raw: string | null): UsageFilter {
-  if (raw === "all") {
-    return null;
-  }
-  if (raw === "cine") {
-    return "cine";
-  }
-  if (raw === "photo") {
-    return "photo";
-  }
-  return defaultFilters.usage;
-}
-
-export function parseFilters(params: URLSearchParams | { get: (key: string) => string | null }): FilterState {
-  const raw = {
-    b: params.get("b"),
-    t: params.get("t"),
-    f: params.get("f"),
-    u: params.get("u"),
-    ot: params.get("ot"),
-    m: params.get("m"),
-    feat: params.get("feat"),
-    fc: params.get("fc"),
-    sort: params.get("sort"),
-    dir: params.get("dir"),
-  };
+export function parseFilters(params: URLSearchParams): FilterState {
+  // Object.fromEntries widens the key type back to string, so re-narrow it so
+  // the per-key access below (raw.b, raw.t, …) still type-checks.
+  const raw = Object.fromEntries(
+    FILTER_PARAM_KEYS.map((k) => [k, params.get(k)]),
+  ) as Record<FilterParamKey, string | null>;
 
   return {
     brands: raw.b ? raw.b.split(",").filter(Boolean) : [],
-    typeFilter: raw.t && LENS_TYPES.includes(raw.t as LensType) ? (raw.t as LensType) : null,
-    focusFilter: raw.f && FOCUS_FILTERS.includes(raw.f as FocusFilter) ? (raw.f as FocusFilter) : null,
-    usage: parseUsage(raw.u),
-    opticalTrait: raw.ot && (OPTICAL_TRAITS as readonly string[]).includes(raw.ot) ? (raw.ot as OpticalTrait) : null,
-    focusMotorClass: raw.m && MOTOR_CLASSES.includes(raw.m as FocusMotorClass) ? (raw.m as FocusMotorClass) : null,
-    features: raw.feat
-      ? (raw.feat.split(",").filter((k) => (FILTER_FEATURE_KEYS as readonly string[]).includes(k)) as FilterFeatureKey[])
-      : [],
-    focalCategories: raw.fc
-      ? (raw.fc.split(",").filter((k) => (FOCAL_KEYS as readonly string[]).includes(k)) as FocalCategory[])
-      : [],
-    sort: raw.sort && SORT_KEYS.includes(raw.sort as SortKey) ? (raw.sort as SortKey) : defaultFilters.sort,
+    typeFilter: raw.t && isOneOf(raw.t, LENS_TYPES) ? raw.t : null,
+    focusFilter: raw.f && isOneOf(raw.f, FOCUS_FILTERS) ? raw.f : null,
+    // Legacy `?u=all` (the removed union view) and unknown tokens fall back to photo.
+    usage: raw.u && isOneOf(raw.u, USAGE_VALUES) ? raw.u : defaultFilters.usage,
+    opticalTrait: raw.ot && isOneOf(raw.ot, OPTICAL_TRAITS) ? raw.ot : null,
+    focusMotorClass: raw.m && isOneOf(raw.m, FOCUS_MOTOR_CLASSES) ? raw.m : null,
+    features: raw.feat ? raw.feat.split(",").filter((k) => isOneOf(k, FILTER_FEATURE_KEYS)) : [],
+    focalCategories: raw.fc ? raw.fc.split(",").filter((k) => isOneOf(k, FOCAL_KEYS)) : [],
+    sort: raw.sort && isOneOf(raw.sort, SORT_KEYS) ? raw.sort : defaultFilters.sort,
     sortDir: raw.dir === "desc" ? "desc" : "asc",
   };
 }

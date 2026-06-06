@@ -14,7 +14,7 @@ import type { UsageFilter } from "@/lib/lens";
  * active one is emphasized by colour rather than a heavy pill.
  */
 const OPTIONS: {
-  value: Exclude<UsageFilter, null>;
+  value: UsageFilter;
   labelKey: string;
   Icon: LucideIcon;
 }[] = [

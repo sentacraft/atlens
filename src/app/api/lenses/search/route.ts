@@ -25,6 +25,13 @@ function getCachedIndex(mount: Mount, locale: string): LensSearchIndex {
 }
 
 export function GET(req: Request) {
+  // Dormant endpoint with no consumers today — search runs client-side in the
+  // browser (see LensSearchDialog). Reserved for a future internal BFF, never
+  // external-facing; 404 in production until then, mirroring /api/lenses.
+  if (process.env.NODE_ENV === "production") {
+    return new NextResponse(null, { status: 404 });
+  }
+
   if (!checkRateLimit(req)) {
     return RATE_LIMITED_RESPONSE;
   }

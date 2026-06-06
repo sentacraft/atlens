@@ -22,7 +22,6 @@ interface Props {
   /** Option values present in the current scope; every control narrows to these. */
   available: AvailableFilterOptions;
   onFiltersChange: (filters: FilterState) => void;
-  hasActiveFilters: boolean;
   activeFilterCount: number;
   onReset: () => void;
   /** Rendered at the right edge of the brand row (e.g. the lens search trigger). */
@@ -33,7 +32,6 @@ export default function LensFilters({
   filters,
   available,
   onFiltersChange,
-  hasActiveFilters,
   activeFilterCount,
   onReset,
   searchSlot,
@@ -215,7 +213,7 @@ export default function LensFilters({
   const filtersMetaRow = (
     <div className="inline-flex items-center gap-2 sm:gap-4">
       {filtersToggle}
-      {hasActiveFilters && (
+      {activeFilterCount > 0 && (
         <>
           <span className="text-[12px] text-zinc-300 dark:text-zinc-600">·</span>
           <button

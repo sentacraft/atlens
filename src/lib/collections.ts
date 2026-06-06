@@ -1,7 +1,7 @@
 import collectionsData from "../data/collections.json";
 import { isZoom } from "./lens";
 import { pickNewEntry } from "./lens-pricing";
-import type { Mount, Lens } from "./types";
+import type { Lens } from "./types";
 
 type LensFilter = (lens: Lens, locale: string) => boolean;
 

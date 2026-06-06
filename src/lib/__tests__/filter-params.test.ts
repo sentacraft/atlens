@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { serializeFilters, parseFilters } from "../filter-params";
+import { serializeFilters, parseFilters, FILTER_PARAM_KEYS } from "../filter-params";
 import { defaultFilters, type FilterState } from "../lens";
 
 describe("serializeFilters", () => {
@@ -25,7 +25,6 @@ describe("serializeFilters", () => {
 
   it("serializes usage only when non-default", () => {
     expect(serializeFilters(defaultFilters).has("u")).toBe(false);
-    expect(serializeFilters({ ...defaultFilters, usage: null }).get("u")).toBe("all");
     expect(serializeFilters({ ...defaultFilters, usage: "cine" }).get("u")).toBe("cine");
   });
 
@@ -89,7 +88,7 @@ describe("parseFilters", () => {
   });
 
   it("parses usage correctly", () => {
-    expect(parseFilters(new URLSearchParams("u=all")).usage).toBeNull();
+    expect(parseFilters(new URLSearchParams("u=all")).usage).toBe("photo");
     expect(parseFilters(new URLSearchParams("u=cine")).usage).toBe("cine");
     expect(parseFilters(new URLSearchParams("u=photo")).usage).toBe("photo");
     expect(parseFilters(new URLSearchParams("u=bogus")).usage).toBe("photo");
@@ -151,9 +150,32 @@ describe("round-trip", () => {
     expect(result).toEqual(state);
   });
 
-  it("serialize → parse preserves usage=null as null", () => {
-    const state: FilterState = { ...defaultFilters, usage: null };
+  it("serialize → parse preserves usage=cine", () => {
+    const state: FilterState = { ...defaultFilters, usage: "cine" };
     const result = parseFilters(serializeFilters(state));
-    expect(result.usage).toBeNull();
+    expect(result.usage).toBe("cine");
+  });
+});
+
+describe("FILTER_PARAM_KEYS", () => {
+  it("covers every key serializeFilters can emit", () => {
+    // A maximal state that activates every dimension, so serializeFilters emits
+    // all of its keys. The URL-sync merge deletes FILTER_PARAM_KEYS before
+    // re-writing; a key it can emit but does not list would never get cleared.
+    const maximal: FilterState = {
+      brands: ["fujifilm"],
+      typeFilter: "prime",
+      focusFilter: "auto",
+      usage: "cine",
+      opticalTrait: "macro",
+      focusMotorClass: "linear",
+      features: ["ois"],
+      focalCategories: ["wide"],
+      sort: "maxAperture",
+      sortDir: "desc",
+    };
+    for (const key of serializeFilters(maximal).keys()) {
+      expect([...FILTER_PARAM_KEYS]).toContain(key);
+    }
   });
 });
