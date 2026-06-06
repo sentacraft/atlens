@@ -7,6 +7,7 @@ import {
   FOCUS_MOTOR_CLASSES,
   LENS_TYPES,
   SORT_KEYS,
+  USAGE_VALUES,
   type FilterState,
   type FocalCategory,
   type UsageFilter,
@@ -19,8 +20,7 @@ const FOCAL_KEYS = FOCAL_CATEGORIES.map((c) => c.key) as FocalCategory[];
 // b=brands, t=typeFilter, f=focusFilter, u=usage, m=focusMotorClass,
 // feat=features, fc=focalCategories, sort=sortKey, dir=sortDir
 //
-// Usage default is "photo" (not null), so it is serialized only when
-// the user picks "all" or "cine".
+// Usage default is "photo", so it is serialized only when the user picks "cine".
 export function serializeFilters(filters: FilterState): URLSearchParams {
   const p = new URLSearchParams();
   if (filters.brands.length > 0) {
@@ -33,7 +33,7 @@ export function serializeFilters(filters: FilterState): URLSearchParams {
     p.set("f", filters.focusFilter);
   }
   if (filters.usage !== defaultFilters.usage) {
-    p.set("u", filters.usage ?? "all");
+    p.set("u", filters.usage);
   }
   if (filters.opticalTrait) {
     p.set("ot", filters.opticalTrait);
@@ -57,16 +57,9 @@ export function serializeFilters(filters: FilterState): URLSearchParams {
 }
 
 function parseUsage(raw: string | null): UsageFilter {
-  if (raw === "all") {
-    return null;
-  }
-  if (raw === "cine") {
-    return "cine";
-  }
-  if (raw === "photo") {
-    return "photo";
-  }
-  return defaultFilters.usage;
+  // Legacy `?u=all` (the removed union view) and any unknown token fall back
+  // to the default photo view.
+  return raw && isOneOf(raw, USAGE_VALUES) ? raw : defaultFilters.usage;
 }
 
 export function parseFilters(params: URLSearchParams): FilterState {

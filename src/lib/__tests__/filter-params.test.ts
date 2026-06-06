@@ -25,7 +25,6 @@ describe("serializeFilters", () => {
 
   it("serializes usage only when non-default", () => {
     expect(serializeFilters(defaultFilters).has("u")).toBe(false);
-    expect(serializeFilters({ ...defaultFilters, usage: null }).get("u")).toBe("all");
     expect(serializeFilters({ ...defaultFilters, usage: "cine" }).get("u")).toBe("cine");
   });
 
@@ -89,7 +88,7 @@ describe("parseFilters", () => {
   });
 
   it("parses usage correctly", () => {
-    expect(parseFilters(new URLSearchParams("u=all")).usage).toBeNull();
+    expect(parseFilters(new URLSearchParams("u=all")).usage).toBe("photo");
     expect(parseFilters(new URLSearchParams("u=cine")).usage).toBe("cine");
     expect(parseFilters(new URLSearchParams("u=photo")).usage).toBe("photo");
     expect(parseFilters(new URLSearchParams("u=bogus")).usage).toBe("photo");
@@ -151,9 +150,9 @@ describe("round-trip", () => {
     expect(result).toEqual(state);
   });
 
-  it("serialize → parse preserves usage=null as null", () => {
-    const state: FilterState = { ...defaultFilters, usage: null };
+  it("serialize → parse preserves usage=cine", () => {
+    const state: FilterState = { ...defaultFilters, usage: "cine" };
     const result = parseFilters(serializeFilters(state));
-    expect(result.usage).toBeNull();
+    expect(result.usage).toBe("cine");
   });
 });

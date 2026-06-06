@@ -136,15 +136,13 @@ export function classifyFocusMotor(lens: Lens): FocusMotorClass | undefined {
 }
 
 /**
- * Top-level usage category. Photo and cine are two largely-separate product
- * universes — most photo shoppers don't want cine lenses cluttering their
- * list, but a cine shopper does want exclusive cine results.
- *
- * - `null` — show everything (escape hatch when the user really wants the union)
- * - `"photo"` — exclude cine lenses (default)
- * - `"cine"` — only cine lenses
+ * Top-level usage category — a view partition, not an additive refinement.
+ * Photo and cine are two largely-separate product universes: most photo
+ * shoppers don't want cine lenses cluttering their list, and a cine shopper
+ * wants exclusive cine results. Always one of the two; defaults to "photo".
  */
-export type UsageFilter = "photo" | "cine" | null;
+export const USAGE_VALUES = ["photo", "cine"] as const;
+export type UsageFilter = (typeof USAGE_VALUES)[number];
 
 export interface FilterState {
   brands: string[]; // empty = all brands
@@ -191,17 +189,15 @@ export function filterLenses(lenses: Lens[], filters: FilterState): Lens[] {
       return false;
     }
 
-    if (filters.usage !== null || filters.opticalTrait !== null) {
-      const { isCine, opticalTraits } = deriveSpecialty(lens);
-      if (filters.usage === "photo" && isCine) {
-        return false;
-      }
-      if (filters.usage === "cine" && !isCine) {
-        return false;
-      }
-      if (filters.opticalTrait !== null && !opticalTraits.includes(filters.opticalTrait)) {
-        return false;
-      }
+    const { isCine, opticalTraits } = deriveSpecialty(lens);
+    if (filters.usage === "photo" && isCine) {
+      return false;
+    }
+    if (filters.usage === "cine" && !isCine) {
+      return false;
+    }
+    if (filters.opticalTrait !== null && !opticalTraits.includes(filters.opticalTrait)) {
+      return false;
     }
 
     if (filters.focusMotorClass && classifyFocusMotor(lens) !== filters.focusMotorClass) {
@@ -253,12 +249,8 @@ export function getAvailableOpticalTraits(lenses: { isCine?: boolean; opticalTra
 
 // Partition lenses by the photo/cine view. This is the scope axis the brand
 // and optical-trait controls narrow to, so switching the usage view surfaces
-// only the brands/traits that actually exist in that universe. `null` = no
-// partition (the union escape hatch).
+// only the brands/traits that actually exist in that universe.
 export function selectByUsage(lenses: Lens[], usage: UsageFilter): Lens[] {
-  if (usage === null) {
-    return lenses;
-  }
   return lenses.filter((lens) => {
     const { isCine } = deriveSpecialty(lens);
     return usage === "cine" ? isCine : !isCine;
