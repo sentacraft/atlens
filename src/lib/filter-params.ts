@@ -10,7 +10,6 @@ import {
   USAGE_VALUES,
   type FilterState,
   type FocalCategory,
-  type UsageFilter,
 } from "./lens";
 import { isOneOf } from "./utils";
 
@@ -63,12 +62,6 @@ export function serializeFilters(filters: FilterState): URLSearchParams {
   return p;
 }
 
-function parseUsage(raw: string | null): UsageFilter {
-  // Legacy `?u=all` (the removed union view) and any unknown token fall back
-  // to the default photo view.
-  return raw && isOneOf(raw, USAGE_VALUES) ? raw : defaultFilters.usage;
-}
-
 export function parseFilters(params: URLSearchParams): FilterState {
   // Object.fromEntries widens the key type back to string, so re-narrow it so
   // the per-key access below (raw.b, raw.t, …) still type-checks.
@@ -80,7 +73,8 @@ export function parseFilters(params: URLSearchParams): FilterState {
     brands: raw.b ? raw.b.split(",").filter(Boolean) : [],
     typeFilter: raw.t && isOneOf(raw.t, LENS_TYPES) ? raw.t : null,
     focusFilter: raw.f && isOneOf(raw.f, FOCUS_FILTERS) ? raw.f : null,
-    usage: parseUsage(raw.u),
+    // Legacy `?u=all` (the removed union view) and unknown tokens fall back to photo.
+    usage: raw.u && isOneOf(raw.u, USAGE_VALUES) ? raw.u : defaultFilters.usage,
     opticalTrait: raw.ot && isOneOf(raw.ot, OPTICAL_TRAITS) ? raw.ot : null,
     focusMotorClass: raw.m && isOneOf(raw.m, FOCUS_MOTOR_CLASSES) ? raw.m : null,
     features: raw.feat ? raw.feat.split(",").filter((k) => isOneOf(k, FILTER_FEATURE_KEYS)) : [],
