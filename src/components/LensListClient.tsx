@@ -78,8 +78,12 @@ export default function LensListClient({ lenses }: LensListClientProps) {
 
   useUrlStateSync((url) => {
     // Own only the filter params; foreign params (utm, …) are left intact.
+    // Assign url.search as a string (URLSearchParams would encode the commas to
+    // %2C) so the comma-joined values stay raw, matching useCompareUrlSync.
     FILTER_PARAM_KEYS.forEach((k) => url.searchParams.delete(k));
-    serializeFilters(filters).forEach((v, k) => url.searchParams.set(k, v));
+    const rest = url.searchParams.toString();
+    const mine = serializeFilters(filters).toString().replace(/%2C/g, ",");
+    url.search = [rest, mine].filter(Boolean).join("&");
   }, [filters]);
 
   return (
