@@ -7,6 +7,7 @@
     "postinstall": "wrangler types --env-interface CloudflareEnv",
     "predev": "node --experimental-strip-types scripts/build-lens-image-manifest.mts",
     "dev": "next dev",
+    "check": "npm run lint && npm run typecheck",
     "prebuild": "wrangler types --env-interface CloudflareEnv && node --experimental-strip-types scripts/build-lens-image-manifest.mts",
     "build": "tsx scripts/gen-icons.tsx && tsx scripts/verify-icons.ts && node --experimental-strip-types scripts/validate-lenses.mts && next build && node --experimental-strip-types scripts/check-static-routes.mts",
     "build:cf": "wrangler types --env-interface CloudflareEnv && npx opennextjs-cloudflare build",

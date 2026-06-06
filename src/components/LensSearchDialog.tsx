@@ -14,7 +14,6 @@ import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
-import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useKeyboardInset } from "@/hooks/useKeyboardInset";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
 import type { Lens } from "@/lib/types";
@@ -60,7 +59,6 @@ export default function LensSearchDialog({
   const t = useTranslations("Search");
   const tBrand = useTranslations("Brands");
   const router = useRouter();
-  const mount = useEffectiveMount();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
