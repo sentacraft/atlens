@@ -8,8 +8,8 @@ export const CROP_FACTOR: Record<Mount, number> = {
   G: 0.79, // GFX 44×33 mm diagonal ≈54.78 mm vs FF ≈43.3 mm
 };
 
-export type LensType = "prime" | "zoom";
-export const LENS_TYPES = ["prime", "zoom"] as const satisfies readonly LensType[];
+export const LENS_TYPES = ["prime", "zoom"] as const;
+export type LensType = (typeof LENS_TYPES)[number];
 
 export function isZoom(lens: Lens): boolean {
   return lens.focalLengthMin !== lens.focalLengthMax;
@@ -24,7 +24,8 @@ export const FILTER_FEATURE_KEYS = [
   "powerZoom",
 ] as const satisfies readonly (keyof Lens)[];
 
-export type FocusFilter = "auto" | "manual";
+export const FOCUS_FILTERS = ["auto", "manual"] as const;
+export type FocusFilter = (typeof FOCUS_FILTERS)[number];
 
 export type FilterFeatureKey = (typeof FILTER_FEATURE_KEYS)[number];
 
@@ -88,7 +89,8 @@ export function getFocalCategoriesOf(lens: {
   }).map((cat) => cat.key);
 }
 
-export type FocusMotorClass = "linear" | "stepping" | "dc" | "other";
+export const FOCUS_MOTOR_CLASSES = ["linear", "stepping", "dc", "other"] as const;
+export type FocusMotorClass = (typeof FOCUS_MOTOR_CLASSES)[number];
 
 /**
  * Classify a brand-specific focus motor string into a canonical class.
@@ -104,7 +106,8 @@ export type FocusMotorClass = "linear" | "stepping" | "dc" | "other";
  * Scope assumption: the four classes cover every motor seen on X-mount and
  * G-mount today. Ultrasonic motors (USM / SWM / SSM / HSM / SDM) are a
  * fifth global category but absent from this project's data; if a future
- * lens lands with one, add an "ultrasonic" class here and in MOTOR_CLASSES.
+ * lens lands with one, add an "ultrasonic" class to FOCUS_MOTOR_CLASSES (and
+ * classify it in this function).
  */
 export function classifyFocusMotor(lens: Lens): FocusMotorClass | undefined {
   if (!lens.af) {
@@ -279,8 +282,6 @@ export interface AvailableFilterOptions {
   focusModes: FocusFilter[];
 }
 
-const FOCUS_MOTOR_ORDER: FocusMotorClass[] = ["linear", "stepping", "dc", "other"];
-
 // Which control values actually occur in a given lens set, in display order.
 // Every browse filter narrows to these so a scope (e.g. the cine view) never
 // shows a control whose every value yields zero results — cine lenses carry no
@@ -314,10 +315,10 @@ export function getAvailableFilterOptions(lenses: Lens[]): AvailableFilterOption
     brands: getOrderedUniqueBrands(lenses),
     opticalTraits: getAvailableOpticalTraits(lenses),
     features: FILTER_FEATURE_KEYS.filter((f) => features.has(f)),
-    focusMotorClasses: FOCUS_MOTOR_ORDER.filter((m) => motors.has(m)),
+    focusMotorClasses: FOCUS_MOTOR_CLASSES.filter((m) => motors.has(m)),
     focalCategories: FOCAL_CATEGORIES.map((c) => c.key).filter((k) => focals.has(k)),
     types: LENS_TYPES.filter((t) => types.has(t)),
-    focusModes: (["auto", "manual"] as const).filter((m) => focusModes.has(m)),
+    focusModes: FOCUS_FILTERS.filter((m) => focusModes.has(m)),
   };
 }
 
@@ -330,7 +331,8 @@ export function getLensUrl(lens: Lens, locale?: string): string | undefined {
   return lens.officialLinks?.global;
 }
 
-export type SortKey = "focalLength" | "maxAperture" | "weightG" | "length";
+export const SORT_KEYS = ["focalLength", "maxAperture", "weightG", "length"] as const;
+export type SortKey = (typeof SORT_KEYS)[number];
 
 export function sortLenses(
   lenses: Lens[],

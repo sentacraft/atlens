@@ -1,24 +1,19 @@
 import { OPTICAL_TRAITS } from "./types";
-import type { OpticalTrait } from "./types";
 import {
   defaultFilters,
   FILTER_FEATURE_KEYS,
   FOCAL_CATEGORIES,
+  FOCUS_FILTERS,
+  FOCUS_MOTOR_CLASSES,
+  LENS_TYPES,
+  SORT_KEYS,
   type FilterState,
-  type FilterFeatureKey,
   type FocalCategory,
-  type FocusFilter,
-  type FocusMotorClass,
-  type LensType,
-  type SortKey,
   type UsageFilter,
 } from "./lens";
+import { isOneOf } from "./utils";
 
 const FOCAL_KEYS = FOCAL_CATEGORIES.map((c) => c.key) as FocalCategory[];
-const MOTOR_CLASSES: FocusMotorClass[] = ["linear", "stepping", "dc", "other"];
-const LENS_TYPES: LensType[] = ["prime", "zoom"];
-const FOCUS_FILTERS: FocusFilter[] = ["auto", "manual"];
-const SORT_KEYS: SortKey[] = ["focalLength", "maxAperture", "weightG", "length"];
 
 // Compact param keys — only non-default values are serialized.
 // b=brands, t=typeFilter, f=focusFilter, u=usage, m=focusMotorClass,
@@ -74,7 +69,7 @@ function parseUsage(raw: string | null): UsageFilter {
   return defaultFilters.usage;
 }
 
-export function parseFilters(params: URLSearchParams | { get: (key: string) => string | null }): FilterState {
+export function parseFilters(params: URLSearchParams): FilterState {
   const raw = {
     b: params.get("b"),
     t: params.get("t"),
@@ -90,18 +85,14 @@ export function parseFilters(params: URLSearchParams | { get: (key: string) => s
 
   return {
     brands: raw.b ? raw.b.split(",").filter(Boolean) : [],
-    typeFilter: raw.t && LENS_TYPES.includes(raw.t as LensType) ? (raw.t as LensType) : null,
-    focusFilter: raw.f && FOCUS_FILTERS.includes(raw.f as FocusFilter) ? (raw.f as FocusFilter) : null,
+    typeFilter: raw.t && isOneOf(raw.t, LENS_TYPES) ? raw.t : null,
+    focusFilter: raw.f && isOneOf(raw.f, FOCUS_FILTERS) ? raw.f : null,
     usage: parseUsage(raw.u),
-    opticalTrait: raw.ot && (OPTICAL_TRAITS as readonly string[]).includes(raw.ot) ? (raw.ot as OpticalTrait) : null,
-    focusMotorClass: raw.m && MOTOR_CLASSES.includes(raw.m as FocusMotorClass) ? (raw.m as FocusMotorClass) : null,
-    features: raw.feat
-      ? (raw.feat.split(",").filter((k) => (FILTER_FEATURE_KEYS as readonly string[]).includes(k)) as FilterFeatureKey[])
-      : [],
-    focalCategories: raw.fc
-      ? (raw.fc.split(",").filter((k) => (FOCAL_KEYS as readonly string[]).includes(k)) as FocalCategory[])
-      : [],
-    sort: raw.sort && SORT_KEYS.includes(raw.sort as SortKey) ? (raw.sort as SortKey) : defaultFilters.sort,
+    opticalTrait: raw.ot && isOneOf(raw.ot, OPTICAL_TRAITS) ? raw.ot : null,
+    focusMotorClass: raw.m && isOneOf(raw.m, FOCUS_MOTOR_CLASSES) ? raw.m : null,
+    features: raw.feat ? raw.feat.split(",").filter((k) => isOneOf(k, FILTER_FEATURE_KEYS)) : [],
+    focalCategories: raw.fc ? raw.fc.split(",").filter((k) => isOneOf(k, FOCAL_KEYS)) : [],
+    sort: raw.sort && isOneOf(raw.sort, SORT_KEYS) ? raw.sort : defaultFilters.sort,
     sortDir: raw.dir === "desc" ? "desc" : "asc",
   };
 }
