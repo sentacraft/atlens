@@ -107,11 +107,12 @@ export default function LensFilters({
     selectedBrandNames.length === 0
       ? t("brand")
       : selectedBrandNames.slice(0, BRAND_PREVIEW_LIMIT).join(brandJoiner);
-  const moreFiltersCount =
-    (filters.focalCategories.length > 0 ? 1 : 0) +
-    (filters.features.length > 0 ? 1 : 0) +
-    (filters.opticalTrait !== null ? 1 : 0) +
-    (filters.focusMotorClass !== null ? 1 : 0);
+  const moreFiltersCount = [
+    filters.focalCategories.length > 0,
+    filters.features.length > 0,
+    filters.opticalTrait !== null,
+    filters.focusMotorClass !== null,
+  ].filter(Boolean).length;
 
   // ── Option view-models ────────────────────────────────────────────────────────
   // Single-select rows: an "all" sentinel followed by the scope-available values.
