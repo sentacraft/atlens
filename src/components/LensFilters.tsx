@@ -5,8 +5,7 @@ import { useTranslations } from "next-intl";
 import { ChevronDown, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
 import { FOCAL_CATEGORIES } from "@/lib/lens";
-import type { AvailableFilterOptions, FilterState, FocusFilter, FocusMotorClass, LensType } from "@/lib/lens";
-import type { OpticalTrait } from "@/lib/types";
+import type { AvailableFilterOptions, FilterState, FocusFilter, FocusMotorClass } from "@/lib/lens";
 import { cn } from "@/lib/utils";
 import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
 import BrandFilterMenu from "./lens-filters/BrandFilterMenu";
@@ -26,6 +25,21 @@ interface Props {
   onReset: () => void;
   /** Rendered at the right edge of the brand row (e.g. the lens search trigger). */
   searchSlot?: ReactNode;
+}
+
+// Build a single-select segmented-control option list: an "all" sentinel
+// (value null) followed by the scope-available values mapped to {value, label}.
+// One helper for every single-select row, so they don't each re-derive the shape
+// or need an `as { value: T | null }[]` cast.
+function segmentedOptions<T extends string>(
+  values: readonly T[],
+  allLabel: string,
+  label: (value: T) => string,
+): { value: T | null; label: string }[] {
+  return [
+    { value: null, label: allLabel },
+    ...values.map((value) => ({ value, label: label(value) })),
+  ];
 }
 
 export default function LensFilters({
@@ -95,57 +109,26 @@ export default function LensFilters({
     auto: t("focusAuto"),
     manual: t("focusManual"),
   };
-  const mobileFocusLabels: Record<FocusFilter, string> = {
-    auto: t("focusAutoMobile"),
-    manual: t("focusManualMobile"),
-  };
+  const allOptionLabel = t("allTypes");
 
-  const typeOptions = [
-    { value: null, label: t("allTypes") },
-    ...available.types.map((type) => ({
-      value: type,
-      label: t(type === "prime" ? "primes" : "zooms"),
-    })),
-  ] as { value: LensType | null; label: string }[];
-
-  const opticalTraitOptions = [
-    { value: null as OpticalTrait | null, label: t("allTypes") },
-    ...available.opticalTraits.map((trait) => ({
-      value: trait as OpticalTrait | null,
-      label: tBadge(trait),
-    })),
-  ];
-
-  const focusMotorOptions = [
-    { value: null, label: t("allTypes") },
-    ...available.focusMotorClasses.map((motor) => ({ value: motor, label: motorLabels[motor] })),
-  ] as { value: FocusMotorClass | null; label: string }[];
-
-  const focusOptions = [
-    { value: null, label: t("allTypes") },
-    ...available.focusModes.map((mode) => ({ value: mode, label: focusLabels[mode] })),
-  ] as { value: FocusFilter | null; label: string }[];
-
-  const mobileTypeOptions = [
-    { value: null, label: t("allTypes") },
-    ...available.types.map((type) => ({
-      value: type,
-      label: t(type === "prime" ? "primesMobile" : "zoomsMobile"),
-    })),
-  ] as { value: LensType | null; label: string }[];
-
-  const mobileFocusOptions = [
-    { value: null, label: t("allTypes") },
-    ...available.focusModes.map((mode) => ({ value: mode, label: mobileFocusLabels[mode] })),
-  ] as { value: FocusFilter | null; label: string }[];
+  const typeOptions = segmentedOptions(available.types, allOptionLabel, (type) =>
+    t(type === "prime" ? "primes" : "zooms"),
+  );
+  const focusOptions = segmentedOptions(available.focusModes, allOptionLabel, (mode) => focusLabels[mode]);
+  const opticalTraitOptions = segmentedOptions(available.opticalTraits, allOptionLabel, (trait) =>
+    tBadge(trait),
+  );
+  const focusMotorOptions = segmentedOptions(
+    available.focusMotorClasses,
+    allOptionLabel,
+    (motor) => motorLabels[motor],
+  );
 
   const moreFiltersCount =
     (filters.focalCategories.length > 0 ? 1 : 0) +
     (filters.features.length > 0 ? 1 : 0) +
     (filters.opticalTrait !== null ? 1 : 0) +
     (filters.focusMotorClass !== null ? 1 : 0);
-
-  const allOptionLabel = t("allTypes");
 
   const brandOptions = available.brands.map((brand) => ({
     key: brand,
@@ -279,9 +262,10 @@ export default function LensFilters({
             <span className={miniLabelClass}>{t("lensType")}</span>
             <TypeSegmentedControl
               ariaLabel={t("lensType")}
-              options={mobileTypeOptions}
+              options={typeOptions}
               value={filters.typeFilter}
               onChange={(v) => updateFilters("typeFilter", v)}
+              mobileLabelOverrides={{ prime: t("primesMobile"), zoom: t("zoomsMobile") }}
               compact
             />
           </div>
@@ -289,9 +273,10 @@ export default function LensFilters({
             <span className={miniLabelClass}>{t("focusFilter")}</span>
             <TypeSegmentedControl
               ariaLabel={t("focusFilter")}
-              options={mobileFocusOptions}
+              options={focusOptions}
               value={filters.focusFilter}
               onChange={(v) => updateFilters("focusFilter", v)}
+              mobileLabelOverrides={{ auto: t("focusAutoMobile"), manual: t("focusManualMobile") }}
               compact
             />
           </div>
