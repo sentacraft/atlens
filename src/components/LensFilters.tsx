@@ -55,38 +55,15 @@ export default function LensFilters({
   const tBrand = useTranslations("Brands");
   const [secondaryOpen, setSecondaryOpen] = useState(false);
 
-  // The mobile dropdown lists up to BRAND_PREVIEW_LIMIT selected brand names;
-  // any beyond that collapse into a separate "+N" badge (rendered outside the
-  // truncating label in BrandFilterMenu) so the count is never clipped. Once a
-  // brand is chosen the label drops the "Brand:" prefix — the filled pill plus
-  // its position already read as the brand filter, and the names get the room.
-  const BRAND_PREVIEW_LIMIT = 2;
-  const brandJoiner = t("brandSeparator");
-  const brandNames = Object.fromEntries(available.brands.map((b) => [b, tBrand(b)]));
-  const selectedBrandNames = filters.brands.map((b) => brandNames[b] ?? b);
-  const brandExtraCount = Math.max(0, selectedBrandNames.length - BRAND_PREVIEW_LIMIT);
-  const brandTriggerLabel =
-    selectedBrandNames.length === 0
-      ? t("brand")
-      : selectedBrandNames.slice(0, BRAND_PREVIEW_LIMIT).join(brandJoiner);
-
   useFiltersTelemetry(filters);
 
-  const featureMeta = {
-    ois: { label: t("featureOis"), icon: FEATURE_ICONS.ois },
-    wr: { label: t("featureWr"), icon: FEATURE_ICONS.wr },
-    apertureRing: { label: t("featureApertureRing"), icon: FEATURE_ICONS.apertureRing },
-    powerZoom: { label: t("featurePowerZoom"), icon: FEATURE_ICONS.powerZoom },
-  } as const;
-
+  // ── Mutators ────────────────────────────────────────────────────────────────
   function updateFilters<K extends keyof FilterState>(key: K, value: FilterState[K]) {
     onFiltersChange({ ...filters, [key]: value });
   }
-
   function toggleValue<T extends string>(values: T[], value: T) {
     return values.includes(value) ? values.filter((v) => v !== value) : [...values, value];
   }
-
   function toggleMultiFilter<T extends string>(
     currentValues: T[],
     value: T,
@@ -96,9 +73,14 @@ export default function LensFilters({
     return next.length === 0 || next.length === allValues.length ? [] : next;
   }
 
-  // Label maps keyed by value, so option lists can be built by narrowing the
-  // scope-available values to those actually present (rather than hardcoding
-  // the full set and leaving dead choices behind).
+  // ── Label maps (keyed by value, so option lists narrow to present values) ─────
+  const allOptionLabel = t("allTypes");
+  const featureMeta = {
+    ois: { label: t("featureOis"), icon: FEATURE_ICONS.ois },
+    wr: { label: t("featureWr"), icon: FEATURE_ICONS.wr },
+    apertureRing: { label: t("featureApertureRing"), icon: FEATURE_ICONS.apertureRing },
+    powerZoom: { label: t("featurePowerZoom"), icon: FEATURE_ICONS.powerZoom },
+  } as const;
   const motorLabels: Record<FocusMotorClass, string> = {
     linear: t("motorLinear"),
     stepping: t("motorStepping"),
@@ -109,8 +91,30 @@ export default function LensFilters({
     auto: t("focusAuto"),
     manual: t("focusManual"),
   };
-  const allOptionLabel = t("allTypes");
 
+  // ── Derived display values ────────────────────────────────────────────────────
+  // The mobile dropdown lists up to BRAND_PREVIEW_LIMIT selected brand names; any
+  // beyond that collapse into a separate "+N" badge (rendered outside the
+  // truncating label in BrandFilterMenu) so the count is never clipped. Once a
+  // brand is chosen the label drops the "Brand:" prefix — the filled pill plus its
+  // position already read as the brand filter, and the names get the room.
+  const BRAND_PREVIEW_LIMIT = 2;
+  const brandJoiner = t("brandSeparator");
+  const brandNames = Object.fromEntries(available.brands.map((b) => [b, tBrand(b)]));
+  const selectedBrandNames = filters.brands.map((b) => brandNames[b] ?? b);
+  const brandExtraCount = Math.max(0, selectedBrandNames.length - BRAND_PREVIEW_LIMIT);
+  const brandTriggerLabel =
+    selectedBrandNames.length === 0
+      ? t("brand")
+      : selectedBrandNames.slice(0, BRAND_PREVIEW_LIMIT).join(brandJoiner);
+  const moreFiltersCount =
+    (filters.focalCategories.length > 0 ? 1 : 0) +
+    (filters.features.length > 0 ? 1 : 0) +
+    (filters.opticalTrait !== null ? 1 : 0) +
+    (filters.focusMotorClass !== null ? 1 : 0);
+
+  // ── Option view-models ────────────────────────────────────────────────────────
+  // Single-select rows: an "all" sentinel followed by the scope-available values.
   const typeOptions = segmentedOptions(available.types, allOptionLabel, (type) =>
     t(type === "prime" ? "primes" : "zooms"),
   );
@@ -123,18 +127,11 @@ export default function LensFilters({
     allOptionLabel,
     (motor) => motorLabels[motor],
   );
-
-  const moreFiltersCount =
-    (filters.focalCategories.length > 0 ? 1 : 0) +
-    (filters.features.length > 0 ? 1 : 0) +
-    (filters.opticalTrait !== null ? 1 : 0) +
-    (filters.focusMotorClass !== null ? 1 : 0);
-
+  // Multi-select rows: pure {key, label, …}; selection + toggle live in the group.
   const brandOptions = available.brands.map((brand) => ({
     key: brand,
     label: tBrand(brand),
   }));
-
   const focalOptions = FOCAL_CATEGORIES.filter((category) =>
     available.focalCategories.includes(category.key),
   ).map((category) => ({
@@ -142,7 +139,6 @@ export default function LensFilters({
     label: t(`category-${category.key}`),
     hint: t(`category-${category.key}Hint`),
   }));
-
   const featureOptions = available.features.map((key) => ({
     key,
     label: featureMeta[key].label,
