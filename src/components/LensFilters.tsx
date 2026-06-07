@@ -240,11 +240,12 @@ export default function LensFilters({
           <div className="shrink-0">{searchSlot}</div>
         </div>
 
-        {/* Type + focus share one row on mobile (compact, side by side) and split
-            into two labeled rows on desktop — both shapes are pure responsive CSS,
-            so each control is declared once. FilterRow supplies the mini-label
-            (mobile) / row-label (desktop) swap; the segmented control's `compact`
-            is itself responsive (compact below sm, normal at sm+). */}
+        {/* Type + focus share one row on mobile (side by side) and split into two
+            labeled rows on desktop — both shapes are pure responsive CSS, so each
+            control is declared once. FilterRow supplies the mini-label (mobile) /
+            row-label (desktop) swap; the segmented control's `variant="paired"`
+            handles the mobile half-width sizing, converging to the normal control
+            at sm+. */}
         <div className="flex gap-2 sm:flex-col sm:gap-3">
           <FilterRow label={t("lensType")} className="min-w-0 flex-1 sm:flex-none">
             <TypeSegmentedControl
@@ -253,7 +254,7 @@ export default function LensFilters({
               value={filters.typeFilter}
               onChange={(v) => updateFilters("typeFilter", v)}
               mobileLabelOverrides={{ prime: t("primesMobile"), zoom: t("zoomsMobile") }}
-              compact
+              variant="paired"
             />
           </FilterRow>
           <FilterRow label={t("focusFilter")} className="min-w-0 flex-1 sm:flex-none">
@@ -263,7 +264,7 @@ export default function LensFilters({
               value={filters.focusFilter}
               onChange={(v) => updateFilters("focusFilter", v)}
               mobileLabelOverrides={{ auto: t("focusAutoMobile"), manual: t("focusManualMobile") }}
-              compact
+              variant="paired"
             />
           </FilterRow>
         </div>
@@ -315,7 +316,7 @@ export default function LensFilters({
                   options={opticalTraitOptions}
                   value={filters.opticalTrait}
                   onChange={(v) => updateFilters("opticalTrait", v)}
-                  wrap
+                  variant="wrap"
                   mobileLabelOverrides={{
                     tilt: "Tilt",
                     shift: "Shift",
@@ -331,7 +332,7 @@ export default function LensFilters({
                   options={focusMotorOptions}
                   value={filters.focusMotorClass}
                   onChange={(v) => updateFilters("focusMotorClass", v)}
-                  wrap
+                  variant="wrap"
                   mobileLabelOverrides={{
                     linear: t("motorLinearMobile"),
                     stepping: t("motorSteppingMobile"),
