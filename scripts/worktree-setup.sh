@@ -18,7 +18,13 @@ cd "$WORKTREE_ROOT"
 mkdir -p .claude
 
 # ── npm install (skip if node_modules is up to date) ─────────────────────────
-if [ ! -d "node_modules" ] || [ "package.json" -nt "node_modules" ]; then
+# Guard on npm's install marker (node_modules/.package-lock.json), not on the
+# directory itself: tools like vitest and turbopack drop caches under
+# node_modules/ (e.g. .vite, .cache), so a bare `-d node_modules` check sees the
+# directory exist and wrongly assumes deps are installed — leaving an empty
+# node_modules that breaks `next dev` (Turbopack can't resolve `next`).
+INSTALL_MARKER="node_modules/.package-lock.json"
+if [ ! -e "$INSTALL_MARKER" ] || [ "package.json" -nt "$INSTALL_MARKER" ]; then
   echo "Running npm install…"
   npm install
 fi
