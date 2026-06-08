@@ -8,7 +8,7 @@ import React, {
   useState,
 } from "react";
 import { useNav } from "@/context/NavContext";
-import { usePwa } from "@/lib/usePwa";
+import { usePwa } from "@/hooks/usePwa";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { ArrowUpRight, ChevronLeft, ChevronRight, Flag, TriangleAlert, X } from "lucide-react";
