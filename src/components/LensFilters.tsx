@@ -30,7 +30,7 @@ interface Props {
 // (value null) followed by the scope-available values mapped to {value, label}.
 // One helper for every single-select row, so they don't each re-derive the shape
 // or need an `as { value: T | null }[]` cast.
-function segmentedOptions<T extends string>(
+function buildSegmentedOptions<T extends string>(
   values: readonly T[],
   allLabel: string,
   label: (value: T) => string,
@@ -63,9 +63,11 @@ export default function LensFilters({
   function updateFilters<K extends keyof FilterState>(key: K, value: FilterState[K]) {
     onFiltersChange({ ...filters, [key]: value });
   }
+
   function toggleValue<T extends string>(values: T[], value: T) {
     return values.includes(value) ? values.filter((v) => v !== value) : [...values, value];
   }
+
   function toggleMultiFilter<T extends string>(
     currentValues: T[],
     value: T,
@@ -74,6 +76,7 @@ export default function LensFilters({
     const next = toggleValue(currentValues, value);
     return next.length === 0 || next.length === allValues.length ? [] : next;
   }
+
   const allOptionLabel = t("allTypes");
 
   // ── Brand ─────────────────────────────────────────────────────────────────────
@@ -136,7 +139,7 @@ export default function LensFilters({
   );
 
   // ── Type ──────────────────────────────────────────────────────────────────────
-  const typeOptions = segmentedOptions(available.types, allOptionLabel, (type) =>
+  const typeOptions = buildSegmentedOptions(available.types, allOptionLabel, (type) =>
     t(type === "prime" ? "primes" : "zooms"),
   );
   const typeRow = (
@@ -157,7 +160,7 @@ export default function LensFilters({
     auto: t("focusAuto"),
     manual: t("focusManual"),
   };
-  const focusOptions = segmentedOptions(available.focusModes, allOptionLabel, (mode) => focusLabels[mode]);
+  const focusOptions = buildSegmentedOptions(available.focusModes, allOptionLabel, (mode) => focusLabels[mode]);
   const focusRow = (
     <FilterRow label={t("focusFilter")} className="min-w-0 flex-1 sm:flex-none">
       <TypeSegmentedControl
@@ -220,7 +223,7 @@ export default function LensFilters({
     ) : null;
 
   // ── Optical trait ─────────────────────────────────────────────────────────────
-  const opticalTraitOptions = segmentedOptions(available.opticalTraits, allOptionLabel, (trait) =>
+  const opticalTraitOptions = buildSegmentedOptions(available.opticalTraits, allOptionLabel, (trait) =>
     tBadge(trait),
   );
   const opticalRow =
@@ -247,7 +250,7 @@ export default function LensFilters({
     dc: t("motorDc"),
     other: t("motorOther"),
   };
-  const focusMotorOptions = segmentedOptions(
+  const focusMotorOptions = buildSegmentedOptions(
     available.focusMotorClasses,
     allOptionLabel,
     (motor) => motorLabels[motor],
