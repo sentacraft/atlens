@@ -4,14 +4,15 @@ import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
-import type { AvailableFilterOptions, FilterState, FocusFilter, FocusMotorClass } from "@/lib/lens";
+import type { AvailableFilterOptions, FilterState, FocusFilter, FocusMotorClass, LensType } from "@/lib/lens";
+import { OPTICAL_TRAITS, type OpticalTrait } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
 import BrandFilterMenu from "./lens-filters/BrandFilterMenu";
 import FeatureToggleGroup from "./lens-filters/FeatureToggleGroup";
 import FilterRow from "./lens-filters/FilterRow";
 import MultiSelectChipGroup from "./lens-filters/MultiSelectChipGroup";
-import TypeSegmentedControl from "./lens-filters/TypeSegmentedControl";
+import TypeSegmentedControl, { type SegmentedLabel, type SegmentedOption } from "./lens-filters/TypeSegmentedControl";
 import { rowLabelClass } from "./lens-filters/styles";
 import { useFiltersTelemetry } from "./LensFilters.telemetry";
 
@@ -24,21 +25,6 @@ interface Props {
   onReset: () => void;
   /** Rendered at the right edge of the brand row (e.g. the lens search trigger). */
   searchSlot?: ReactNode;
-}
-
-// Build a single-select segmented-control option list: an "all" sentinel
-// (value null) followed by the scope-available values mapped to {value, label}.
-// One helper for every single-select row, so they don't each re-derive the shape
-// or need an `as { value: T | null }[]` cast.
-function buildSegmentedOptions<T extends string>(
-  values: readonly T[],
-  allLabel: string,
-  label: (value: T) => string,
-): { value: T | null; label: string }[] {
-  return [
-    { value: null, label: allLabel },
-    ...values.map((value) => ({ value, label: label(value) })),
-  ];
 }
 
 export default function LensFilters({
@@ -78,6 +64,17 @@ export default function LensFilters({
   }
 
   const allOptionLabel = t("allTypes");
+  function buildSegmentedOptions<T extends string>(
+    labels: Record<T, SegmentedLabel>,
+    availableValues: readonly T[],
+  ): SegmentedOption<T | null>[] {
+    return [
+      { value: null, label: { default: allOptionLabel } },
+      ...(Object.keys(labels) as T[])
+        .filter((value) => availableValues.includes(value))
+        .map((value) => ({ value, label: labels[value] })),
+    ];
+  }
 
   // ── Brand ─────────────────────────────────────────────────────────────────────
   // The mobile dropdown lists up to BRAND_PREVIEW_LIMIT selected brand names; any
@@ -138,36 +135,36 @@ export default function LensFilters({
   );
 
   // ── Type ──────────────────────────────────────────────────────────────────────
-  const typeOptions = buildSegmentedOptions(available.types, allOptionLabel, (type) =>
-    t(type === "prime" ? "primes" : "zooms"),
-  );
+  const typeLabels: Record<LensType, SegmentedLabel> = {
+    prime: { default: t("primes"), mobile: t("primesMobile") },
+    zoom: { default: t("zooms"), mobile: t("zoomsMobile") },
+  };
+
   const typeRow = (
     <FilterRow label={t("lensType")} className="min-w-0 flex-1 sm:flex-none">
       <TypeSegmentedControl
         ariaLabel={t("lensType")}
-        options={typeOptions}
+        options={buildSegmentedOptions(typeLabels, available.types)}
         value={filters.typeFilter}
         onChange={(v) => updateFilters("typeFilter", v)}
-        mobileLabelOverrides={{ prime: t("primesMobile"), zoom: t("zoomsMobile") }}
         variant="paired"
       />
     </FilterRow>
   );
 
   // ── Focus ─────────────────────────────────────────────────────────────────────
-  const focusLabels: Record<FocusFilter, string> = {
-    auto: t("focusAuto"),
-    manual: t("focusManual"),
+  const focusLabels: Record<FocusFilter, SegmentedLabel> = {
+    auto: { default: t("focusAuto"), mobile: t("focusAutoMobile") },
+    manual: { default: t("focusManual"), mobile: t("focusManualMobile") },
   };
-  const focusOptions = buildSegmentedOptions(available.focusModes, allOptionLabel, (mode) => focusLabels[mode]);
+
   const focusRow = (
     <FilterRow label={t("focusFilter")} className="min-w-0 flex-1 sm:flex-none">
       <TypeSegmentedControl
         ariaLabel={t("focusFilter")}
-        options={focusOptions}
+        options={buildSegmentedOptions(focusLabels, available.focusModes)}
         value={filters.focusFilter}
         onChange={(v) => updateFilters("focusFilter", v)}
-        mobileLabelOverrides={{ auto: t("focusAutoMobile"), manual: t("focusManualMobile") }}
         variant="paired"
       />
     </FilterRow>
@@ -221,52 +218,44 @@ export default function LensFilters({
     ) : null;
 
   // ── Optical trait ─────────────────────────────────────────────────────────────
-  const opticalTraitOptions = buildSegmentedOptions(available.opticalTraits, allOptionLabel, (trait) =>
-    tBadge(trait),
-  );
+  const opticalMobileLabels: Partial<Record<OpticalTrait, string>> = {
+    tilt: tBadge("tiltMobile"),
+    shift: tBadge("shiftMobile"),
+  };
+  const opticalLabels = Object.fromEntries(
+    OPTICAL_TRAITS.map((trait) => [trait, { default: tBadge(trait), mobile: opticalMobileLabels[trait] }]),
+  ) as Record<OpticalTrait, SegmentedLabel>;
+
   const opticalRow =
     available.opticalTraits.length > 0 ? (
       <FilterRow label={t("opticalTraitFilter")}>
         <TypeSegmentedControl
           ariaLabel={t("opticalTraitFilter")}
-          options={opticalTraitOptions}
+          options={buildSegmentedOptions(opticalLabels, available.opticalTraits)}
           value={filters.opticalTrait}
           onChange={(v) => updateFilters("opticalTrait", v)}
           variant="wrap"
-          mobileLabelOverrides={{
-            tilt: "Tilt",
-            shift: "Shift",
-          }}
         />
       </FilterRow>
     ) : null;
 
   // ── Focus motor ───────────────────────────────────────────────────────────────
-  const motorLabels: Record<FocusMotorClass, string> = {
-    linear: t("motorLinear"),
-    stepping: t("motorStepping"),
-    dc: t("motorDc"),
-    other: t("motorOther"),
+  const motorLabels: Record<FocusMotorClass, SegmentedLabel> = {
+    linear: { default: t("motorLinear"), mobile: t("motorLinearMobile") },
+    stepping: { default: t("motorStepping"), mobile: t("motorSteppingMobile") },
+    dc: { default: t("motorDc"), mobile: t("motorDcMobile") },
+    other: { default: t("motorOther") },
   };
-  const focusMotorOptions = buildSegmentedOptions(
-    available.focusMotorClasses,
-    allOptionLabel,
-    (motor) => motorLabels[motor],
-  );
+
   const motorRow =
     available.focusMotorClasses.length > 0 ? (
       <FilterRow label={t("focusMotorFilter")}>
         <TypeSegmentedControl
           ariaLabel={t("focusMotorFilter")}
-          options={focusMotorOptions}
+          options={buildSegmentedOptions(motorLabels, available.focusMotorClasses)}
           value={filters.focusMotorClass}
           onChange={(v) => updateFilters("focusMotorClass", v)}
           variant="wrap"
-          mobileLabelOverrides={{
-            linear: t("motorLinearMobile"),
-            stepping: t("motorSteppingMobile"),
-            dc: t("motorDcMobile"),
-          }}
         />
       </FilterRow>
     ) : null;

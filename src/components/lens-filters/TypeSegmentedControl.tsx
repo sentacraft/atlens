@@ -1,9 +1,7 @@
 import { cn } from "@/lib/utils";
 
-interface TypeSegmentedOption<T> {
-  value: T;
-  label: string;
-}
+export type SegmentedLabel = { default: string; mobile?: string };
+export type SegmentedOption<T> = { value: T; label: SegmentedLabel };
 
 // Layout variant — all three converge to the same content-width inline control
 // at sm+; they differ only in how the control sits at mobile width:
@@ -14,11 +12,10 @@ type SegmentedVariant = "full" | "paired" | "wrap";
 
 interface TypeSegmentedControlProps<T> {
   ariaLabel: string;
-  options: TypeSegmentedOption<T>[];
+  options: SegmentedOption<T>[];
   value: T;
   onChange: (value: T) => void;
   variant?: SegmentedVariant;
-  mobileLabelOverrides?: Record<string, string>;
 }
 
 export default function TypeSegmentedControl<T>({
@@ -27,7 +24,6 @@ export default function TypeSegmentedControl<T>({
   value,
   onChange,
   variant = "full",
-  mobileLabelOverrides,
 }: TypeSegmentedControlProps<T>) {
   return (
     <div
@@ -42,10 +38,9 @@ export default function TypeSegmentedControl<T>({
     >
       {options.map((option) => {
         const selected = value === option.value;
-        const mobileLabel = mobileLabelOverrides?.[String(option.value)];
         return (
           <button
-            key={option.label}
+            key={option.label.default}
             type="button"
             role="radio"
             aria-checked={selected}
@@ -58,13 +53,13 @@ export default function TypeSegmentedControl<T>({
             )}
             onClick={() => onChange(option.value)}
           >
-            {mobileLabel ? (
+            {option.label.mobile ? (
               <>
-                <span className="sm:hidden">{mobileLabel}</span>
-                <span className="hidden sm:inline">{option.label}</span>
+                <span className="sm:hidden">{option.label.mobile}</span>
+                <span className="hidden sm:inline">{option.label.default}</span>
               </>
             ) : (
-              option.label
+              option.label.default
             )}
           </button>
         );
