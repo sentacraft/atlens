@@ -8,27 +8,32 @@ import {
   filterPillDefaultActiveClass,
 } from "./styles";
 
-interface MultiSelectChipOption {
-  key: string;
+export type MultiSelectChipOption<K extends string> = {
+  key: K;
   label: string;
   hint?: string;
-  selected: boolean;
-  onClick: () => void;
 }
 
-interface MultiSelectChipGroupProps {
+interface MultiSelectChipGroupProps<K extends string> {
   allLabel: string;
-  allSelected: boolean;
   onSelectAll: () => void;
-  options: MultiSelectChipOption[];
+  options: MultiSelectChipOption<K>[];
+  selectedKeys: readonly K[];
+  onToggle: (key: K) => void;
 }
 
-export default function MultiSelectChipGroup({
+// Controlled group: selection state and the toggle handler live here, not on each
+// option. Generic over the key type so callers keep their key union (brand string
+// vs FocalCategory) without a cast.
+export default function MultiSelectChipGroup<K extends string>({
   allLabel,
-  allSelected,
   onSelectAll,
   options,
-}: MultiSelectChipGroupProps) {
+  selectedKeys,
+  onToggle,
+}: MultiSelectChipGroupProps<K>) {
+  const allSelected = selectedKeys.length === 0;
+
   return (
     <div className={filterGroupClass}>
       <button
@@ -43,47 +48,48 @@ export default function MultiSelectChipGroup({
       >
         {allLabel}
       </button>
-      {options.map((option) => (
-        <button
-          key={option.key}
-          type="button"
-          className={cn(
-            option.selected ? filterPillActiveClass : filterPillClass,
-            "relative inline-flex shrink-0 whitespace-nowrap",
-          )}
-          onClick={option.onClick}
-          aria-pressed={option.selected}
-        >
-          <Check
+      {options.map((option) => {
+        const selected = selectedKeys.includes(option.key);
+        return (
+          <button
+            key={option.key}
+            type="button"
             className={cn(
-              "pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 transition-all duration-200",
-              option.selected
-                ? "scale-100 opacity-100"
-                : "scale-75 opacity-0",
+              selected ? filterPillActiveClass : filterPillClass,
+              "relative inline-flex shrink-0 whitespace-nowrap",
             )}
-          />
-          <span
-            className={cn(
-              "inline-flex items-center gap-1.5 transition-transform duration-200",
-              option.selected && "translate-x-2",
-            )}
+            onClick={() => onToggle(option.key)}
+            aria-pressed={selected}
           >
-            <span>{option.label}</span>
-            {option.hint ? (
-              <span
-                className={cn(
-                  "text-[10px] font-normal",
-                  option.selected
-                    ? "text-zinc-300 dark:text-zinc-500"
-                    : "text-zinc-400 dark:text-zinc-500",
-                )}
-              >
-                {option.hint}
-              </span>
-            ) : null}
-          </span>
-        </button>
-      ))}
+            <Check
+              className={cn(
+                "pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 transition-all duration-200",
+                selected ? "scale-100 opacity-100" : "scale-75 opacity-0",
+              )}
+            />
+            <span
+              className={cn(
+                "inline-flex items-center gap-1.5 transition-transform duration-200",
+                selected && "translate-x-2",
+              )}
+            >
+              <span>{option.label}</span>
+              {option.hint ? (
+                <span
+                  className={cn(
+                    "text-[10px] font-normal",
+                    selected
+                      ? "text-zinc-300 dark:text-zinc-500"
+                      : "text-zinc-400 dark:text-zinc-500",
+                  )}
+                >
+                  {option.hint}
+                </span>
+              ) : null}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }

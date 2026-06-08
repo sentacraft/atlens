@@ -2,19 +2,18 @@
 
 import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronDown, RotateCcw, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, type LucideIcon, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
-import { FOCAL_CATEGORIES } from "@/lib/lens";
-import type { AvailableFilterOptions, FilterState, FocusFilter, FocusMotorClass, LensType } from "@/lib/lens";
-import type { OpticalTrait } from "@/lib/types";
+import type { AvailableFilterOptions, FilterState, FocusFilter, FocusMotorClass, LensType, FilterFeatureKey, FocalCategory } from "@/lib/lens";
+import { OPTICAL_TRAITS, type OpticalTrait } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
 import BrandFilterMenu from "./lens-filters/BrandFilterMenu";
-import FeatureToggleGroup from "./lens-filters/FeatureToggleGroup";
+import FeatureToggleGroup, { type FeatureToggleOption } from "./lens-filters/FeatureToggleGroup";
 import FilterRow from "./lens-filters/FilterRow";
-import MultiSelectChipGroup from "./lens-filters/MultiSelectChipGroup";
-import TypeSegmentedControl from "./lens-filters/TypeSegmentedControl";
-import { miniLabelClass, rowLabelClass } from "./lens-filters/styles";
+import MultiSelectChipGroup, { type MultiSelectChipOption } from "./lens-filters/MultiSelectChipGroup";
+import TypeSegmentedControl, { type SegmentedLabel, type SegmentedOption } from "./lens-filters/TypeSegmentedControl";
+import { rowLabelClass } from "./lens-filters/styles";
 import { useFiltersTelemetry } from "./LensFilters.telemetry";
 
 interface Props {
@@ -41,30 +40,12 @@ export default function LensFilters({
   const tBrand = useTranslations("Brands");
   const [secondaryOpen, setSecondaryOpen] = useState(false);
 
-  // The mobile dropdown lists up to BRAND_PREVIEW_LIMIT selected brand names;
-  // any beyond that collapse into a separate "+N" badge (rendered outside the
-  // truncating label in BrandFilterMenu) so the count is never clipped. Once a
-  // brand is chosen the label drops the "Brand:" prefix — the filled pill plus
-  // its position already read as the brand filter, and the names get the room.
-  const BRAND_PREVIEW_LIMIT = 2;
-  const brandJoiner = t("brandSeparator");
-  const brandNames = Object.fromEntries(available.brands.map((b) => [b, tBrand(b)]));
-  const selectedBrandNames = filters.brands.map((b) => brandNames[b] ?? b);
-  const brandExtraCount = Math.max(0, selectedBrandNames.length - BRAND_PREVIEW_LIMIT);
-  const brandTriggerLabel =
-    selectedBrandNames.length === 0
-      ? t("brand")
-      : selectedBrandNames.slice(0, BRAND_PREVIEW_LIMIT).join(brandJoiner);
-
   useFiltersTelemetry(filters);
 
-  const featureMeta = {
-    ois: { label: t("featureOis"), icon: FEATURE_ICONS.ois },
-    wr: { label: t("featureWr"), icon: FEATURE_ICONS.wr },
-    apertureRing: { label: t("featureApertureRing"), icon: FEATURE_ICONS.apertureRing },
-    powerZoom: { label: t("featurePowerZoom"), icon: FEATURE_ICONS.powerZoom },
-  } as const;
-
+  // Each control below is its own block: derived values + option list + JSX
+  // fragment, so everything one control needs reads top-to-bottom in one place.
+  // The return at the end only assembles those fragments into the layout. Shared
+  // helpers and the "all" label live up here since several controls reuse them.
   function updateFilters<K extends keyof FilterState>(key: K, value: FilterState[K]) {
     onFiltersChange({ ...filters, [key]: value });
   }
@@ -82,105 +63,213 @@ export default function LensFilters({
     return next.length === 0 || next.length === allValues.length ? [] : next;
   }
 
-  // Label maps keyed by value, so option lists can be built by narrowing the
-  // scope-available values to those actually present (rather than hardcoding
-  // the full set and leaving dead choices behind).
-  const motorLabels: Record<FocusMotorClass, string> = {
-    linear: t("motorLinear"),
-    stepping: t("motorStepping"),
-    dc: t("motorDc"),
-    other: t("motorOther"),
-  };
-  const focusLabels: Record<FocusFilter, string> = {
-    auto: t("focusAuto"),
-    manual: t("focusManual"),
-  };
-  const mobileFocusLabels: Record<FocusFilter, string> = {
-    auto: t("focusAutoMobile"),
-    manual: t("focusManualMobile"),
-  };
-
-  const typeOptions = [
-    { value: null, label: t("allTypes") },
-    ...available.types.map((type) => ({
-      value: type,
-      label: t(type === "prime" ? "primes" : "zooms"),
-    })),
-  ] as { value: LensType | null; label: string }[];
-
-  const opticalTraitOptions = [
-    { value: null as OpticalTrait | null, label: t("allTypes") },
-    ...available.opticalTraits.map((trait) => ({
-      value: trait as OpticalTrait | null,
-      label: tBadge(trait),
-    })),
-  ];
-
-  const focusMotorOptions = [
-    { value: null, label: t("allTypes") },
-    ...available.focusMotorClasses.map((motor) => ({ value: motor, label: motorLabels[motor] })),
-  ] as { value: FocusMotorClass | null; label: string }[];
-
-  const focusOptions = [
-    { value: null, label: t("allTypes") },
-    ...available.focusModes.map((mode) => ({ value: mode, label: focusLabels[mode] })),
-  ] as { value: FocusFilter | null; label: string }[];
-
-  const mobileTypeOptions = [
-    { value: null, label: t("allTypes") },
-    ...available.types.map((type) => ({
-      value: type,
-      label: t(type === "prime" ? "primesMobile" : "zoomsMobile"),
-    })),
-  ] as { value: LensType | null; label: string }[];
-
-  const mobileFocusOptions = [
-    { value: null, label: t("allTypes") },
-    ...available.focusModes.map((mode) => ({ value: mode, label: mobileFocusLabels[mode] })),
-  ] as { value: FocusFilter | null; label: string }[];
-
-  const moreFiltersCount =
-    (filters.focalCategories.length > 0 ? 1 : 0) +
-    (filters.features.length > 0 ? 1 : 0) +
-    (filters.opticalTrait !== null ? 1 : 0) +
-    (filters.focusMotorClass !== null ? 1 : 0);
-
   const allOptionLabel = t("allTypes");
+  function buildSegmentedOptions<T extends string>(
+    labels: Record<T, SegmentedLabel>,
+    availableValues: readonly T[],
+  ): SegmentedOption<T | null>[] {
+    return [
+      { value: null, label: { default: allOptionLabel } },
+      ...(Object.keys(labels) as T[])
+        .filter((value) => availableValues.includes(value))
+        .map((value) => ({ value, label: labels[value] })),
+    ];
+  }
 
-  const brandOptions = available.brands.map((brand) => ({
+  // ── Brand ─────────────────────────────────────────────────────────────────────
+  // The mobile dropdown lists up to BRAND_PREVIEW_LIMIT selected brand names; any
+  // beyond that collapse into a separate "+N" badge (rendered outside the
+  // truncating label in BrandFilterMenu) so the count is never clipped. Once a
+  // brand is chosen the label drops the "Brand:" prefix — the filled pill plus its
+  // position already read as the brand filter, and the names get the room.
+  const BRAND_PREVIEW_LIMIT = 2;
+  const brandJoiner = t("brandSeparator");
+  const brandNames = Object.fromEntries(available.brands.map((b) => [b, tBrand(b)]));
+  const selectedBrandNames = filters.brands.map((b) => brandNames[b] ?? b);
+  const brandExtraCount = Math.max(0, selectedBrandNames.length - BRAND_PREVIEW_LIMIT);
+  const brandTriggerLabel =
+    selectedBrandNames.length === 0
+      ? t("brand")
+      : selectedBrandNames.slice(0, BRAND_PREVIEW_LIMIT).join(brandJoiner);
+  const brandOptions: MultiSelectChipOption<string>[] = available.brands.map((brand) => ({
     key: brand,
     label: tBrand(brand),
-    selected: filters.brands.includes(brand),
-    onClick: () =>
-      updateFilters("brands", toggleMultiFilter(filters.brands, brand, available.brands)),
+  }));
+  // The brand row carries the search trigger on its right edge so search shares a
+  // line with the first filter. The brand control itself swaps between a dropdown
+  // (mobile) and a chip group (desktop); search renders once, outside that swap.
+  const brandRow = (
+    <div className="flex items-center gap-2 sm:items-start sm:gap-2.5">
+      <div className="min-w-0 flex-1">
+        <div className="sm:hidden">
+          <BrandFilterMenu
+            brands={available.brands}
+            selected={filters.brands}
+            brandLabels={brandNames}
+            allLabel={allOptionLabel}
+            triggerLabel={brandTriggerLabel}
+            extraCount={brandExtraCount}
+            onToggle={(brand) =>
+              updateFilters("brands", toggleMultiFilter(filters.brands, brand, available.brands))
+            }
+            onClear={() => updateFilters("brands", [])}
+          />
+        </div>
+        <div className="hidden sm:flex sm:items-start sm:gap-2.5">
+          <span className={rowLabelClass}>{t("brand")}</span>
+          <div className="min-w-0 flex-1">
+            <MultiSelectChipGroup
+              allLabel={allOptionLabel}
+              onSelectAll={() => updateFilters("brands", [])}
+              options={brandOptions}
+              selectedKeys={filters.brands}
+              onToggle={(brand) =>
+                updateFilters("brands", toggleMultiFilter(filters.brands, brand, available.brands))
+              }
+            />
+          </div>
+        </div>
+      </div>
+      <div className="shrink-0">{searchSlot}</div>
+    </div>
+  );
+
+  // ── Type ──────────────────────────────────────────────────────────────────────
+  const typeLabels: Record<LensType, SegmentedLabel> = {
+    prime: { default: t("primes"), mobile: t("primesMobile") },
+    zoom: { default: t("zooms"), mobile: t("zoomsMobile") },
+  };
+
+  const typeRow = (
+    <FilterRow label={t("lensType")} className="min-w-0 flex-1 sm:flex-none">
+      <TypeSegmentedControl
+        ariaLabel={t("lensType")}
+        options={buildSegmentedOptions(typeLabels, available.types)}
+        value={filters.typeFilter}
+        onChange={(v) => updateFilters("typeFilter", v)}
+        variant="paired"
+      />
+    </FilterRow>
+  );
+
+  // ── Focus ─────────────────────────────────────────────────────────────────────
+  const focusLabels: Record<FocusFilter, SegmentedLabel> = {
+    auto: { default: t("focusAuto"), mobile: t("focusAutoMobile") },
+    manual: { default: t("focusManual"), mobile: t("focusManualMobile") },
+  };
+
+  const focusRow = (
+    <FilterRow label={t("focusFilter")} className="min-w-0 flex-1 sm:flex-none">
+      <TypeSegmentedControl
+        ariaLabel={t("focusFilter")}
+        options={buildSegmentedOptions(focusLabels, available.focusModes)}
+        value={filters.focusFilter}
+        onChange={(v) => updateFilters("focusFilter", v)}
+        variant="paired"
+      />
+    </FilterRow>
+  );
+
+  // ── Focal range ───────────────────────────────────────────────────────────────
+  const focalOptions: MultiSelectChipOption<FocalCategory>[] = available.focalCategories.map((key) => ({
+    key,
+    label: t(`category-${key}`),
+    hint: t(`category-${key}Hint`),
   }));
 
-  const focalOptions = FOCAL_CATEGORIES.filter((category) =>
-    available.focalCategories.includes(category.key),
-  ).map((category) => ({
-    key: category.key,
-    label: t(`category-${category.key}`),
-    hint: t(`category-${category.key}Hint`),
-    selected: filters.focalCategories.includes(category.key),
-    onClick: () =>
-      updateFilters(
-        "focalCategories",
-        toggleMultiFilter(
-          filters.focalCategories,
-          category.key,
-          available.focalCategories,
-        ),
-      ),
-  }));
+  const focalRow =
+    available.focalCategories.length > 0 ? (
+      <FilterRow label={t("focalRange")}>
+        <MultiSelectChipGroup
+          allLabel={allOptionLabel}
+          onSelectAll={() => updateFilters("focalCategories", [])}
+          options={focalOptions}
+          selectedKeys={filters.focalCategories}
+          onToggle={(key) =>
+            updateFilters(
+              "focalCategories",
+              toggleMultiFilter(filters.focalCategories, key, available.focalCategories),
+            )
+          }
+        />
+      </FilterRow>
+    ) : null;
 
-  const featureOptions = available.features.map((key) => ({
+  // ── Features ──────────────────────────────────────────────────────────────────
+  const featureMeta: Record<FilterFeatureKey, {label: string; icon: LucideIcon}> = {
+    ois: { label: t("featureOis"), icon: FEATURE_ICONS.ois },
+    wr: { label: t("featureWr"), icon: FEATURE_ICONS.wr },
+    apertureRing: { label: t("featureApertureRing"), icon: FEATURE_ICONS.apertureRing },
+    powerZoom: { label: t("featurePowerZoom"), icon: FEATURE_ICONS.powerZoom },
+  };
+
+  const featureOptions: FeatureToggleOption<FilterFeatureKey>[] = available.features.map((key) => ({
     key,
     label: featureMeta[key].label,
     icon: featureMeta[key].icon,
-    selected: filters.features.includes(key),
-    onClick: () => updateFilters("features", toggleValue(filters.features, key)),
   }));
 
+  const featuresRow =
+    available.features.length > 0 ? (
+      <FilterRow label={t("features")}>
+        <FeatureToggleGroup
+          options={featureOptions}
+          selectedKeys={filters.features}
+          onToggle={(key) => updateFilters("features", toggleValue(filters.features, key))}
+        />
+      </FilterRow>
+    ) : null;
+
+  // ── Optical trait ─────────────────────────────────────────────────────────────
+  const opticalMobileLabels: Partial<Record<OpticalTrait, string>> = {
+    tilt: tBadge("tiltMobile"),
+    shift: tBadge("shiftMobile"),
+  };
+  const opticalLabels = Object.fromEntries(
+    OPTICAL_TRAITS.map((trait) => [trait, { default: tBadge(trait), mobile: opticalMobileLabels[trait] }]),
+  ) as Record<OpticalTrait, SegmentedLabel>;
+
+  const opticalRow =
+    available.opticalTraits.length > 0 ? (
+      <FilterRow label={t("opticalTraitFilter")}>
+        <TypeSegmentedControl
+          ariaLabel={t("opticalTraitFilter")}
+          options={buildSegmentedOptions(opticalLabels, available.opticalTraits)}
+          value={filters.opticalTrait}
+          onChange={(v) => updateFilters("opticalTrait", v)}
+          variant="wrap"
+        />
+      </FilterRow>
+    ) : null;
+
+  // ── Focus motor ───────────────────────────────────────────────────────────────
+  const motorLabels: Record<FocusMotorClass, SegmentedLabel> = {
+    linear: { default: t("motorLinear"), mobile: t("motorLinearMobile") },
+    stepping: { default: t("motorStepping"), mobile: t("motorSteppingMobile") },
+    dc: { default: t("motorDc"), mobile: t("motorDcMobile") },
+    other: { default: t("motorOther") },
+  };
+
+  const motorRow =
+    available.focusMotorClasses.length > 0 ? (
+      <FilterRow label={t("focusMotorFilter")}>
+        <TypeSegmentedControl
+          ariaLabel={t("focusMotorFilter")}
+          options={buildSegmentedOptions(motorLabels, available.focusMotorClasses)}
+          value={filters.focusMotorClass}
+          onChange={(v) => updateFilters("focusMotorClass", v)}
+          variant="wrap"
+        />
+      </FilterRow>
+    ) : null;
+
+  // ── More-filters toggle + reset ────────────────────────────────────────────────
+  const moreFiltersCount = [
+    filters.focalCategories.length > 0,
+    filters.features.length > 0,
+    filters.opticalTrait !== null,
+    filters.focusMotorClass !== null,
+  ].filter(Boolean).length;
   const filtersToggle = (
     <button
       type="button"
@@ -239,84 +328,13 @@ export default function LensFilters({
     <div className="flex min-w-0 flex-1 flex-col">
       {/* Primary filters: always visible on all viewports */}
       <div className="flex flex-col gap-2 sm:gap-3">
-        {/* Brand row carries the search trigger on its right edge so search
-            shares a line with the first filter instead of taking its own. The
-            brand control itself swaps between a dropdown (mobile) and a chip
-            group (desktop); search renders once, outside that swap. */}
-        <div className="flex items-center gap-2 sm:items-start sm:gap-2.5">
-          <div className="min-w-0 flex-1">
-            <div className="sm:hidden">
-              <BrandFilterMenu
-                brands={available.brands}
-                selected={filters.brands}
-                brandLabels={brandNames}
-                allLabel={allOptionLabel}
-                triggerLabel={brandTriggerLabel}
-                extraCount={brandExtraCount}
-                onToggle={(brand) =>
-                  updateFilters("brands", toggleMultiFilter(filters.brands, brand, available.brands))
-                }
-                onClear={() => updateFilters("brands", [])}
-              />
-            </div>
-            <div className="hidden sm:flex sm:items-start sm:gap-2.5">
-              <span className={rowLabelClass}>{t("brand")}</span>
-              <div className="min-w-0 flex-1">
-                <MultiSelectChipGroup
-                  allLabel={allOptionLabel}
-                  allSelected={filters.brands.length === 0}
-                  onSelectAll={() => updateFilters("brands", [])}
-                  options={brandOptions}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="shrink-0">{searchSlot}</div>
+        {brandRow}
+        {/* Type + focus share one row on mobile (side by side) and split into two
+            labeled rows on desktop — both shapes are pure responsive CSS. */}
+        <div className="flex gap-2 sm:flex-col sm:gap-3">
+          {typeRow}
+          {focusRow}
         </div>
-
-        <div className="flex gap-2 sm:hidden">
-          <div className="min-w-0 flex-1">
-            <span className={miniLabelClass}>{t("lensType")}</span>
-            <TypeSegmentedControl
-              ariaLabel={t("lensType")}
-              options={mobileTypeOptions}
-              value={filters.typeFilter}
-              onChange={(v) => updateFilters("typeFilter", v)}
-              compact
-            />
-          </div>
-          <div className="min-w-0 flex-1">
-            <span className={miniLabelClass}>{t("focusFilter")}</span>
-            <TypeSegmentedControl
-              ariaLabel={t("focusFilter")}
-              options={mobileFocusOptions}
-              value={filters.focusFilter}
-              onChange={(v) => updateFilters("focusFilter", v)}
-              compact
-            />
-          </div>
-        </div>
-        <div className="hidden sm:block">
-          <FilterRow label={t("lensType")}>
-            <TypeSegmentedControl
-              ariaLabel={t("lensType")}
-              options={typeOptions}
-              value={filters.typeFilter}
-              onChange={(v) => updateFilters("typeFilter", v)}
-            />
-          </FilterRow>
-        </div>
-        <div className="hidden sm:block">
-          <FilterRow label={t("focusFilter")}>
-            <TypeSegmentedControl
-              ariaLabel={t("focusFilter")}
-              options={focusOptions}
-              value={filters.focusFilter}
-              onChange={(v) => updateFilters("focusFilter", v)}
-            />
-          </FilterRow>
-        </div>
-
         <div className="sm:my-1.5">{filtersMetaRow}</div>
       </div>
 
@@ -329,55 +347,10 @@ export default function LensFilters({
       >
         <div className="min-h-0 overflow-hidden">
           <div className="flex flex-col gap-3.5 pt-3 pb-1 sm:gap-3">
-            {available.focalCategories.length > 0 && (
-              <FilterRow label={t("focalRange")}>
-                <MultiSelectChipGroup
-                  allLabel={allOptionLabel}
-                  allSelected={filters.focalCategories.length === 0}
-                  onSelectAll={() => updateFilters("focalCategories", [])}
-                  options={focalOptions}
-                />
-              </FilterRow>
-            )}
-
-            {available.features.length > 0 && (
-              <FilterRow label={t("features")}>
-                <FeatureToggleGroup options={featureOptions} />
-              </FilterRow>
-            )}
-
-            {available.opticalTraits.length > 0 && (
-              <FilterRow label={t("opticalTraitFilter")}>
-                <TypeSegmentedControl
-                  ariaLabel={t("opticalTraitFilter")}
-                  options={opticalTraitOptions}
-                  value={filters.opticalTrait}
-                  onChange={(v) => updateFilters("opticalTrait", v)}
-                  wrap
-                  mobileLabelOverrides={{
-                    tilt: "Tilt",
-                    shift: "Shift",
-                  }}
-                />
-              </FilterRow>
-            )}
-
-            {available.focusMotorClasses.length > 0 && (
-              <FilterRow label={t("focusMotorFilter")}>
-                <TypeSegmentedControl
-                  ariaLabel={t("focusMotorFilter")}
-                  options={focusMotorOptions}
-                  value={filters.focusMotorClass}
-                  onChange={(v) => updateFilters("focusMotorClass", v)}
-                  wrap
-                  mobileLabelOverrides={{
-                    linear: t("motorLinearMobile"),
-                    stepping: t("motorSteppingMobile"),
-                    dc: t("motorDcMobile"),
-                  }}
-                />
-              </FilterRow>
-            )}
+            {focalRow}
+            {featuresRow}
+            {opticalRow}
+            {motorRow}
           </div>
         </div>
       </div>

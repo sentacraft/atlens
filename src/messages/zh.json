@@ -155,7 +155,9 @@
     "shift": "移轴 Shift",
     "macro": "微距",
     "fisheye": "鱼眼",
-    "probe": "探针"
+    "probe": "探针",
+    "tiltMobile": "Tilt",
+    "shiftMobile": "Shift"
   },
   "LensDetail": {
     "metaDescPrefix": "{name} 富士 {mount} 卡口{type}镜头规格、参数与横向对比。",
