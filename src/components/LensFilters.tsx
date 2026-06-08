@@ -123,7 +123,6 @@ export default function LensFilters({
           <div className="min-w-0 flex-1">
             <MultiSelectChipGroup
               allLabel={allOptionLabel}
-              allSelected={filters.brands.length === 0}
               onSelectAll={() => updateFilters("brands", [])}
               options={brandOptions}
               selectedKeys={filters.brands}
@@ -185,7 +184,6 @@ export default function LensFilters({
       <FilterRow label={t("focalRange")}>
         <MultiSelectChipGroup
           allLabel={allOptionLabel}
-          allSelected={filters.focalCategories.length === 0}
           onSelectAll={() => updateFilters("focalCategories", [])}
           options={focalOptions}
           selectedKeys={filters.focalCategories}

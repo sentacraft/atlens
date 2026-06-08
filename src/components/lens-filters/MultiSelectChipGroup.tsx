@@ -16,7 +16,6 @@ interface MultiSelectChipOption<K extends string> {
 
 interface MultiSelectChipGroupProps<K extends string> {
   allLabel: string;
-  allSelected: boolean;
   onSelectAll: () => void;
   options: MultiSelectChipOption<K>[];
   selectedKeys: readonly K[];
@@ -28,12 +27,13 @@ interface MultiSelectChipGroupProps<K extends string> {
 // vs FocalCategory) without a cast.
 export default function MultiSelectChipGroup<K extends string>({
   allLabel,
-  allSelected,
   onSelectAll,
   options,
   selectedKeys,
   onToggle,
 }: MultiSelectChipGroupProps<K>) {
+  const allSelected = selectedKeys.length === 0;
+
   return (
     <div className={filterGroupClass}>
       <button
