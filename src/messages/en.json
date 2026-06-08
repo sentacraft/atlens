@@ -155,7 +155,9 @@
     "shift": "Shift",
     "macro": "Macro",
     "fisheye": "Fisheye",
-    "probe": "Probe"
+    "probe": "Probe",
+    "tiltMobile": "Tilt",
+    "shiftMobile": "Shift"
   },
   "LensDetail": {
     "metaDescPrefix": "{name}, {mount}-mount {type} lens for Fujifilm. Specs, parameters, and side-by-side comparison",

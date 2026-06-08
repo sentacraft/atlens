@@ -6,12 +6,13 @@ interface FilterRowProps {
   label: string;
   children: ReactNode;
   labelOn?: "always" | "desktop";
+  className?: string;
 }
 
-export default function FilterRow({ label, children, labelOn = "always" }: FilterRowProps) {
+export default function FilterRow({ label, children, labelOn = "always", className }: FilterRowProps) {
   if (labelOn === "desktop") {
     return (
-      <div className={rowClass}>
+      <div className={cn(rowClass, className)}>
         <span className={cn(rowLabelClass, "hidden sm:flex")}>{label}</span>
         {children}
       </div>
@@ -19,7 +20,7 @@ export default function FilterRow({ label, children, labelOn = "always" }: Filte
   }
 
   return (
-    <div className={rowClass}>
+    <div className={cn(rowClass, className)}>
       <span className={cn(miniLabelClass, "sm:hidden")}>{label}</span>
       <span className={cn(rowLabelClass, "hidden sm:flex")}>{label}</span>
       {children}
