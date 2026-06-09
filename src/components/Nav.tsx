@@ -10,7 +10,7 @@ import { IRIS_NAV } from "@/config/iris-config";
 import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
-import { useBreakpoint } from "@/hooks/useBreakpoint";
+import { useBreakpoint } from "@/hooks/useViewport";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useNav } from "@/context/NavProvider";
 import { usePwa } from "@/hooks/usePwa";

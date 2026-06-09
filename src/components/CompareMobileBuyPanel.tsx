@@ -7,7 +7,7 @@ import { pickPriceEntry } from "@/lib/lens-pricing";
 import { lensSubtitleLine } from "@/lib/lens.format";
 import { buildPurchaseLinks, shouldShowDisclosure } from "@/lib/purchase-links";
 import { useCountryCode } from "@/hooks/useCountryCode";
-import { useIsMobileDevice } from "@/hooks/useIsMobileDevice";
+import { useIsMobileDevice } from "@/hooks/useViewport";
 import type { Lens } from "@/lib/types";
 
 interface Props {

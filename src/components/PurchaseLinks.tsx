@@ -8,7 +8,7 @@ import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { track } from "@/lib/analytics";
 import { useCountryCode } from "@/hooks/useCountryCode";
-import { useIsMobileDevice } from "@/hooks/useIsMobileDevice";
+import { useIsMobileDevice } from "@/hooks/useViewport";
 
 interface Props {
   lens: Lens;

@@ -9,7 +9,7 @@ import type { Lens } from "@/lib/types";
 import { ACTION_OUTLINE_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
 import { track } from "@/lib/analytics";
 import { useCountryCode } from "@/hooks/useCountryCode";
-import { useIsMobileDevice } from "@/hooks/useIsMobileDevice";
+import { useIsMobileDevice } from "@/hooks/useViewport";
 import { cn } from "@/lib/utils";
 
 interface Props {

@@ -36,7 +36,7 @@ import { PriceCell } from "@/components/PriceCell";
 import { PurchaseLinksCompact, PurchaseDisclosureCaption } from "@/components/PurchaseLinks";
 import { buildPurchaseLinks, purchaseDisclosureKey, shouldShowDisclosure } from "@/lib/purchase-links";
 import { useCountryCode } from "@/hooks/useCountryCode";
-import { useIsMobileDevice } from "@/hooks/useIsMobileDevice";
+import { useIsMobileDevice } from "@/hooks/useViewport";
 import { pickPriceEntry } from "@/lib/lens-pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 
