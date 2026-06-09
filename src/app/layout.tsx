@@ -1,7 +1,6 @@
 // Root layout is intentionally a pass-through. The actual <html>/<body>
-// rendering happens in the segment layouts below:
+// rendering happens in the segment layout below:
 //   - app/[locale]/layout.tsx  for all localized routes
-//   - app/offline/layout.tsx   for the PWA offline fallback
 //
 // Why: reading request context here (cookies, headers, getLocale()) forces
 // every descendant route into dynamic rendering, defeating

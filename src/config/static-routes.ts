@@ -30,8 +30,10 @@ export const STATIC_LOCALIZED_SUBPATHS = [
 
 /**
  * Routes outside the [locale] tree expected to be prerendered.
+ * Currently none — the /offline PWA fallback was removed together with the
+ * service worker.
  */
-export const STATIC_NON_LOCALIZED_ROUTES = ["/offline"] as const;
+export const STATIC_NON_LOCALIZED_ROUTES = [] as const;
 
 /**
  * Route patterns left dynamic by design. Listed here (not asserted) so

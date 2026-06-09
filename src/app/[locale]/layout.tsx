@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import NavProgress from "@/components/NavProgress";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
-import RegisterSW from "@/components/RegisterSW";
 import AssetTelemetry from "@/components/AssetTelemetry";
 import OutboundLinkTelemetry from "@/components/telemetry/OutboundLinkTelemetry";
 import PwaLaunchTelemetry from "@/components/telemetry/PwaLaunchTelemetry";
@@ -38,8 +37,7 @@ export const viewport: Viewport = {
 };
 
 // metadataBase + site-wide verification live here instead of the root layout
-// so the localized tree owns the canonical metadata. The non-localized
-// /offline route declares its own minimal metadata.
+// so the localized tree owns the canonical metadata.
 function resolveMetadataBase(): URL {
   // SITE_URL is the explicit canonical override — set in the deploy
   // platform's env settings to pin the production URL regardless of host.
@@ -186,7 +184,6 @@ export default async function LocaleLayout({
           <AppToaster />
           <RenameToast />
         </NextIntlClientProvider>
-        <RegisterSW />
         <AssetTelemetry />
         <OutboundLinkTelemetry />
         <PwaLaunchTelemetry />
