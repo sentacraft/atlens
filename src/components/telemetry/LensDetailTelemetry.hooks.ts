@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { track } from "@/lib/analytics";
+import { track } from "@/lib/analytics/analytics";
 
 const SCROLL_MILESTONES = [50, 90] as const;
 

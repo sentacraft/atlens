@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { defaultFilters, type FilterState } from "@/lib/lens";
-import { track } from "@/lib/analytics";
+import { defaultFilters, type FilterState } from "@/lib/lens/lens";
+import { track } from "@/lib/analytics/analytics";
 
 // Fires `filter_apply` (with a snapshot of active filters) or `filter_reset`
 // 1s after the user stops adjusting filters. Skips the initial mount so we

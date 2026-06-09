@@ -8,7 +8,7 @@ import { useMountParam, useEffectiveMount } from "@/hooks/useMountParam";
 import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { mountToUrlSegment } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
-import { track } from "@/lib/analytics";
+import { track } from "@/lib/analytics/analytics";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem } from "@/components/ui/select";
 

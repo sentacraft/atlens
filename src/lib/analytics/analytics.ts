@@ -1,6 +1,6 @@
 "use client";
 
-import type { EventName, EventProps, TrackPayload } from "./analytics-events";
+import type { EventName, EventProps, TrackPayload } from "@/lib/analytics/events";
 
 const ENDPOINT = "/api/track";
 

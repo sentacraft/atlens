@@ -1,5 +1,5 @@
-import { OPTICAL_TRAITS, type Lens, type Mount, type OpticalTrait } from "./types";
-import { deriveSpecialty } from "./lens-specialty";
+import { OPTICAL_TRAITS, type Lens, type Mount, type OpticalTrait } from "@/lib/types";
+import { deriveSpecialty } from "@/lib/lens/specialty";
 
 export const MAX_COMPARE = 4;
 

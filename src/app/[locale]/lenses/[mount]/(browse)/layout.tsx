@@ -1,5 +1,5 @@
 import CompareBar from "@/components/CompareBar";
-import { getLensesByMount } from "@/lib/lens-data";
+import { getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount } from "@/lib/mount";
 
 export default async function BrowseLayout({

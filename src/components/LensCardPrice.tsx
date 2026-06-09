@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { pickPriceEntry, formatPrice } from "@/lib/lens-pricing";
+import { pickPriceEntry, formatPrice } from "@/lib/lens/pricing";
 import type { Lens } from "@/lib/types";
 
 /**

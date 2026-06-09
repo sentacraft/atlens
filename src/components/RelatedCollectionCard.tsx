@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
-import { getLensImageUrl, lensImageStyle } from "@/lib/lens-image";
+import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import type { Lens } from "@/lib/types";
 import type { LensCollection } from "@/lib/collections";
 

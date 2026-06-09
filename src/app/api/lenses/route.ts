@@ -3,10 +3,10 @@ import {
   filterLenses,
   sortLenses,
   getOrderedUniqueBrands,
-} from "@/lib/lens";
-import { getLensesByMount } from "@/lib/lens-data";
-import { deriveSpecialty } from "@/lib/lens-specialty";
-import { parseFilters } from "@/lib/filter-params";
+} from "@/lib/lens/lens";
+import { getLensesByMount } from "@/lib/lens/data";
+import { deriveSpecialty } from "@/lib/lens/specialty";
+import { parseFilters } from "@/lib/url/filter-params";
 import { urlSegmentToMount } from "@/lib/mount";
 import { OPTICAL_TRAITS, type OpticalTrait } from "@/lib/types";
 import { routing } from "@/i18n/routing";

@@ -1,5 +1,5 @@
 import type { Lens, PurchaseChannelType } from "@/lib/types";
-import { getChannelPriority } from "@/lib/purchase-channel-priority";
+import { getChannelPriority } from "@/lib/purchase/channel-priority";
 
 const EPN_CAMPAIGN_ID = "5339154376";
 const EPN_TOOL_ID = "10001";

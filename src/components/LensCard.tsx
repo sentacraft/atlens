@@ -10,9 +10,9 @@ import { mountToUrlSegment } from "@/lib/mount";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
 import { ACTION_PRIMARY_CLS, CARD_SELECTED_BORDER_CLS } from "@/config/ui-tokens";
 import type { Lens } from "@/lib/types";
-import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
+import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
 import { useUiHookAttr } from "@/context/TestHookProvider";
-import * as fmt from "@/lib/lens.format";
+import * as fmt from "@/lib/lens/format";
 import { Button } from "@/components/ui/button";
 import LensCardPrice from "./LensCardPrice";
 

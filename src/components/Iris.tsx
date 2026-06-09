@@ -32,7 +32,7 @@ import {
   apertureInradius,
   findThetaForInradius,
   findThetaForFStop,
-} from "@/lib/iris-kinematics";
+} from "@/lib/iris/kinematics";
 import { R_HOUSING, type IrisConfig, type IrisAnimation } from "@/config/iris-config";
 import ApertureStrip from "@/components/ApertureStrip";
 

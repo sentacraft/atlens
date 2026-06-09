@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { FIELD_NOTE_KEYS, OPTICAL_TRAITS, SPEC_NA } from "./types.ts";
-import type { ApertureValue, Lens } from "./types.ts";
+import { FIELD_NOTE_KEYS, OPTICAL_TRAITS, SPEC_NA } from "@/lib/types";
+import type { ApertureValue, Lens } from "@/lib/types";
 
 const positiveNumberSchema = z.number().positive();
 const nonEmptyStringSchema = z.string().trim().min(1);

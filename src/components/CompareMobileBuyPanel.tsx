@@ -3,9 +3,9 @@
 import { useTranslations, useLocale } from "next-intl";
 import { PurchaseLinksCompact, PurchaseDisclosureCaption } from "@/components/PurchaseLinks";
 import { PriceCell } from "@/components/PriceCell";
-import { pickPriceEntry } from "@/lib/lens-pricing";
-import { lensSubtitleLine } from "@/lib/lens.format";
-import { buildPurchaseLinks, shouldShowDisclosure } from "@/lib/purchase-links";
+import { pickPriceEntry } from "@/lib/lens/pricing";
+import { lensSubtitleLine } from "@/lib/lens/format";
+import { buildPurchaseLinks, shouldShowDisclosure } from "@/lib/purchase/links";
 import { useCountryCode } from "@/hooks/useCountryCode";
 import { useIsMobileDevice } from "@/hooks/useViewport";
 import type { Lens } from "@/lib/types";

@@ -3,13 +3,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { CompareProvider, useCompare } from "../CompareProvider";
-import { MAX_COMPARE } from "@/lib/lens";
+import { MAX_COMPARE } from "@/lib/lens/lens";
 
 vi.mock("@/hooks/useMountParam", () => ({
   useEffectiveMount: () => "X",
 }));
 
-vi.mock("@/lib/analytics", () => ({
+vi.mock("@/lib/analytics/analytics", () => ({
   track: vi.fn(),
 }));
 

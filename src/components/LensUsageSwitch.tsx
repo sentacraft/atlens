@@ -3,7 +3,7 @@
 import { Camera, Video, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import type { UsageFilter } from "@/lib/lens";
+import type { UsageFilter } from "@/lib/lens/lens";
 
 /**
  * Photo/Cine view-mode switch that rides the section-nav row, not the filter

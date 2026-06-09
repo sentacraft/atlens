@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { track } from "@/lib/analytics";
+import { track } from "@/lib/analytics/analytics";
 
 // Global click delegate: any anchor with target="_blank" and an external
 // href fires an `outbound_click` event. Lives at the layout level so a

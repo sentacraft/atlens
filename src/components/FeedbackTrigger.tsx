@@ -6,7 +6,7 @@ import FeedbackDialog, {
   type FeedbackField,
   type FeedbackType,
 } from "./FeedbackDialog";
-import { track } from "@/lib/analytics";
+import { track } from "@/lib/analytics/analytics";
 import { FEEDBACK_LINK_CLS } from "@/config/ui-tokens";
 
 interface FeedbackTriggerProps {

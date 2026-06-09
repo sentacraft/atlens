@@ -11,7 +11,7 @@ import {
   pickPriceEntry,
   formatPrice,
   formatSampledAt,
-} from "@/lib/lens-pricing";
+} from "@/lib/lens/pricing";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 

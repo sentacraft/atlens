@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { track } from "@/lib/analytics";
+import { track } from "@/lib/analytics/analytics";
 
 export type FeedbackType = "data_issue" | "general";
 

@@ -13,7 +13,7 @@ import { Resvg, type ResvgRenderOptions } from "@resvg/resvg-js";
 import Iris from "../src/components/Iris.tsx";
 import { IRIS_NAV, R_HOUSING, type IrisConfig } from "../src/config/iris-config.ts";
 import { SPLASH_DEVICES, SPLASH_BG, splashUrl, type SplashScheme } from "../src/config/splash.ts";
-import { buildDerivedConfig } from "../src/lib/iris-kinematics.ts";
+import { buildDerivedConfig } from "../src/lib/iris/kinematics.ts";
 
 // ── Input-hash cache ─────────────────────────────────────────────────────────
 //
@@ -25,7 +25,7 @@ const INPUT_FILES = [
   resolve("src/components/Iris.tsx"),
   resolve("src/config/iris-config.ts"),
   resolve("src/config/splash.ts"),
-  resolve("src/lib/iris-kinematics.ts"),
+  resolve("src/lib/iris/kinematics.ts"),
 ];
 
 const HASH_PATH = resolve(".gen-icons-hash");

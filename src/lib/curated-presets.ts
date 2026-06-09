@@ -1,4 +1,4 @@
-import curatedData from "../data/curated-presets.json";
+import curatedData from "@/data/curated-presets.json";
 
 export interface CuratedPreset {
   slug: string;

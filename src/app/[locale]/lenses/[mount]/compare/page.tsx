@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { parseLensIds, getLensesByMount } from "@/lib/lens-data";
+import { parseLensIds, getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount } from "@/lib/mount";
 import { findPresetByIds } from "@/lib/curated-presets";
 import CompareTable from "@/components/CompareTable";
@@ -12,7 +12,7 @@ import BackToTopButton from "@/components/BackToTopButton";
 import Breadcrumb from "@/components/Breadcrumb";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { mountToUrlSegment } from "@/lib/mount";
-import { lensDisplayName } from "@/lib/lens.format";
+import { lensDisplayName } from "@/lib/lens/format";
 import { notFound } from "next/navigation";
 
 // Compare page depends on ?ids=A,B,C searchParams for server-rendered metadata

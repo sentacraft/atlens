@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getLensesByMount } from "@/lib/lens-data";
-import { buildLensSearchIndex, searchLensIndex, type LensSearchIndex } from "@/lib/lens-search";
+import { getLensesByMount } from "@/lib/lens/data";
+import { buildLensSearchIndex, searchLensIndex, type LensSearchIndex } from "@/lib/lens/search";
 import { urlSegmentToMount } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
 import { routing } from "@/i18n/routing";

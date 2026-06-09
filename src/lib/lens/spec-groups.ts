@@ -1,7 +1,7 @@
-import { SPEC_NA, type Lens, type FieldNoteKey } from "./types";
-import type { LensConfigurationLabels } from "./lens.format";
-import { classifyFocusMotor, leadingValue, type FocusMotorClass } from "./lens";
-import * as fmt from "./lens.format";
+import { SPEC_NA, type Lens, type FieldNoteKey } from "@/lib/types";
+import type { LensConfigurationLabels } from "@/lib/lens/format";
+import { classifyFocusMotor, leadingValue, type FocusMotorClass } from "@/lib/lens/lens";
+import * as fmt from "@/lib/lens/format";
 
 // ---------------------------------------------------------------------------
 // Structured line type

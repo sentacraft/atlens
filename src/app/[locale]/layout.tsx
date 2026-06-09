@@ -12,7 +12,7 @@ import SiteJsonLd from "@/components/SiteJsonLd";
 import { routing } from "@/i18n/routing";
 import Nav from "@/components/Nav";
 import ConsoleEgg from "@/components/ConsoleEgg";
-import { meta, brandCount } from "@/lib/lens-data";
+import { meta, brandCount } from "@/lib/lens/data";
 import Redaction from "@/components/Redaction";
 import TestHookPanel from "@/components/TestHookPanel";
 import { CompareProvider } from "@/context/CompareProvider";

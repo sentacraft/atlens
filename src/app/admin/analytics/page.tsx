@@ -5,7 +5,7 @@
 // Access control: Cloudflare Access in production (see PR description).
 // The route itself is open — auth lives one layer above at the platform.
 
-import { queryAE } from "@/lib/analytics-query";
+import { queryAE } from "@/lib/analytics/query";
 import {
   aggregateFilterDimensions,
   formatFilterSnapshot,
@@ -13,7 +13,7 @@ import {
   formatLensSlug,
   formatLensSlugList,
   formatShareMethod,
-} from "@/lib/analytics-format";
+} from "@/lib/analytics/format";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

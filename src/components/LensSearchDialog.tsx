@@ -15,10 +15,10 @@ import { useTranslations } from "next-intl";
 import { useRouter, Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useKeyboardInset } from "@/hooks/useViewport";
-import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens-search";
+import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { lensSubtitleLine } from "@/lib/lens.format";
+import { lensSubtitleLine } from "@/lib/lens/format";
 import { useSearchTelemetry } from "./LensSearchDialog.telemetry";
 import {
   Dialog,

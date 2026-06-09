@@ -1,4 +1,4 @@
-import type { ApertureValue, Lens } from "./types";
+import type { ApertureValue, Lens } from "@/lib/types";
 import enMessages from "@/messages/en.json";
 import zhMessages from "@/messages/zh.json";
 

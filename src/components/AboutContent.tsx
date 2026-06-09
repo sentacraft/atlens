@@ -5,10 +5,10 @@ import FeedbackTrigger from "@/components/FeedbackTrigger";
 import AnthropicMark from "@/components/logos/AnthropicMark";
 import GeminiMark from "@/components/logos/GeminiMark";
 import GitHubMark from "@/components/logos/GitHubMark";
-import { getLensesByMount } from "@/lib/lens-data";
+import { getLensesByMount } from "@/lib/lens/data";
 import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/AckCard";
-import { isPurchaseLocale } from "@/lib/purchase-links";
+import { isPurchaseLocale } from "@/lib/purchase/links";
 
 type CoverageState = boolean | "planned" | "partial" | "n/a";
 type CoverageMeta = {

@@ -3,9 +3,9 @@
 // can actually scan. Keep these functions pure and synchronous so they
 // stay cheap to call inline in JSX cells.
 
-import { defaultFilters } from "@/lib/lens";
-import { getAllLenses } from "@/lib/lens-data";
-import { lensDisplayName } from "@/lib/lens.format";
+import { defaultFilters } from "@/lib/lens/lens";
+import { getAllLenses } from "@/lib/lens/data";
+import { lensDisplayName } from "@/lib/lens/format";
 
 // Lazy-built lookup: slug → "Brand Series Model". Resolved once per
 // server process (the analytics route is force-dynamic but the catalog

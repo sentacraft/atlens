@@ -11,13 +11,13 @@ import { cn } from "@/lib/utils";
 import { Z } from "@/config/ui";
 import type { Lens } from "@/lib/types";
 import { rasterizePoster } from "@/lib/share-image";
-import { track } from "@/lib/analytics";
+import { track } from "@/lib/analytics/analytics";
 import { SharePoster, type PosterLabels } from "@/components/poster/SharePoster";
 import { useShareCapabilities } from "@/hooks/useShareCapabilities";
 import { useLightbox } from "@/hooks/useLightbox";
 import { LightboxDialog } from "./LightboxDialog";
 import { CustomizePopover } from "./CustomizePopover";
-import { lensDisplayName } from "@/lib/lens.format";
+import { lensDisplayName } from "@/lib/lens/format";
 
 // Scale the 750px poster down to fit the panel content area
 const POSTER_W = 750;

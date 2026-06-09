@@ -4,8 +4,8 @@ import {
   getAvailableFilterOptions,
   defaultFilters,
   type FilterState,
-} from "../lens";
-import { getAllLenses } from "../lens-data";
+} from "../lens/lens";
+import { getAllLenses } from "../lens/data";
 
 // Completeness net for filterLenses (kept as a readable if-chain rather than a
 // registry-driven loop). The filter dimensions are enumerated in several places

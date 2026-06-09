@@ -14,7 +14,7 @@ import { useBreakpoint } from "@/hooks/useViewport";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useNav } from "@/context/NavProvider";
 import { usePwa } from "@/hooks/usePwa";
-import { track } from "@/lib/analytics";
+import { track } from "@/lib/analytics/analytics";
 import { cn } from "@/lib/utils";
 import { MENU_POPUP_CLS } from "@/config/ui-tokens";
 import MountSwitcher from "@/components/MountSwitcher";

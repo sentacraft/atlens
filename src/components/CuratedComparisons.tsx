@@ -4,11 +4,11 @@ import { useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useEffectiveMount } from "@/hooks/useMountParam";
-import { buildComparePath } from "@/lib/compare-url";
+import { buildComparePath } from "@/lib/url/compare";
 import { HorizontalScrollRail } from "@/components/ui/horizontal-scroll-rail";
 import { useCompare } from "@/context/CompareProvider";
 import { curatedPresets, type CuratedPreset } from "@/lib/curated-presets";
-import { lensDisplayName } from "@/lib/lens.format";
+import { lensDisplayName } from "@/lib/lens/format";
 import type { Lens } from "@/lib/types";
 import { ScrollChevron } from "@/components/ui/scroll-chevron";
 

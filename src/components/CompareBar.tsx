@@ -17,7 +17,7 @@ import { ScrollChevron } from "@/components/ui/scroll-chevron";
 import { cn } from "@/lib/utils";
 import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { Z } from "@/config/ui";
-import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
+import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
 import type { Lens } from "@/lib/types";
 
 export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {

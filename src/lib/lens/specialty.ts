@@ -1,4 +1,4 @@
-import type { Lens, OpticalTrait } from "./types";
+import type { Lens, OpticalTrait } from "@/lib/types";
 
 /**
  * Reads a lens's specialty signals (cine flag and optical traits) into a

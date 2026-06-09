@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { track } from "@/lib/analytics";
+import { track } from "@/lib/analytics/analytics";
 
 // `compare_view`: fired once per mount when the comparison page has at
 // least one lens loaded. The slug list (comma-joined) drives the

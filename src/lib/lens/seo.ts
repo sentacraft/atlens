@@ -2,12 +2,12 @@ import { SITE } from "@/config/site";
 import { SPEC_NA } from "@/lib/types";
 import type { Lens, Mount } from "@/lib/types";
 import { mountSeoLabel } from "@/lib/mount";
-import { isZoom } from "@/lib/lens";
+import { isZoom } from "@/lib/lens/lens";
 import {
   lensDisplayName,
   weightDisplay,
   mfdHeroValue,
-} from "@/lib/lens.format";
+} from "@/lib/lens/format";
 
 // Translator signature compatible with next-intl's `getTranslations(...)` return
 // type. Helpers here accept the resolved `t` function rather than calling

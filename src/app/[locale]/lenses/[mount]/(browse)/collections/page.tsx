@@ -16,7 +16,7 @@ import {
   DEDICATED_SLUGS,
   CHINESE_SLUGS,
 } from "@/lib/collections";
-import { getLensesByMount } from "@/lib/lens-data";
+import { getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount, mountHasCollections } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";

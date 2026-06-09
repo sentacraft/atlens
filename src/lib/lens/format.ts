@@ -5,9 +5,9 @@ import type {
   MaxMagnification,
   MinFocusDistance,
   Mount,
-} from "./types";
-import { SPEC_NA } from "./types";
-import { CROP_FACTOR } from "./lens";
+} from "@/lib/types";
+import { SPEC_NA } from "@/lib/types";
+import { CROP_FACTOR } from "@/lib/lens/lens";
 
 export function oisDisplay(
   ois: boolean,

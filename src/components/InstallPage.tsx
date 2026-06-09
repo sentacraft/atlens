@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Share } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { track } from "@/lib/analytics";
+import { track } from "@/lib/analytics/analytics";
 
 // Augment the standard Event type with the non-standard Chrome prompt API.
 interface BeforeInstallPromptEvent extends Event {

@@ -9,9 +9,9 @@ import type { Lens } from "@/lib/types";
 import { Weight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TriangleAlert } from "lucide-react";
-import { classifyFocusMotor, leadingValue, type FocusMotorClass } from "@/lib/lens";
-import { pickPriceEntry, formatPrice, formatSampledAt } from "@/lib/lens-pricing";
-import { getLensImageUrl } from "@/lib/lens-image";
+import { classifyFocusMotor, leadingValue, type FocusMotorClass } from "@/lib/lens/lens";
+import { pickPriceEntry, formatPrice, formatSampledAt } from "@/lib/lens/pricing";
+import { getLensImageUrl } from "@/lib/lens/image";
 import {
   filterSizeDisplay,
   dimensionsPrimaryDisplay,
@@ -20,8 +20,8 @@ import {
   mfdHeroValue,
   mfdHeroQualifier,
   mfdStructuredLines,
-} from "@/lib/lens.format";
-import { deriveSpecialty } from "@/lib/lens-specialty";
+} from "@/lib/lens/format";
+import { deriveSpecialty } from "@/lib/lens/specialty";
 import type { OpticalTrait, FieldNoteKey } from "@/lib/types";
 import { PosterSection } from "./PosterSection";
 import { PosterFeatureItem } from "./PosterFeatureItem";

@@ -15,30 +15,30 @@ import { ArrowUpRight, ChevronLeft, ChevronRight, Flag, TriangleAlert, X } from 
 import { cn } from "@/lib/utils";
 import { ICON_CLOSE_BTN_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
-import { getLensUrl } from "@/lib/lens";
+import { getLensUrl } from "@/lib/lens/lens";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import SpecialtyBadges from "@/components/SpecialtyBadges";
-import { deriveSpecialty } from "@/lib/lens-specialty";
+import { deriveSpecialty } from "@/lib/lens/specialty";
 import { useCompare } from "@/context/CompareProvider";
 import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
 import { useCompareUrlSync } from "@/hooks/useCompareUrlSync";
-import { MAX_COMPARE } from "@/lib/lens";
+import { MAX_COMPARE } from "@/lib/lens/lens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
 import { Link } from "@/i18n/navigation";
 import LensSearchDialog from "@/components/LensSearchDialog";
-import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
-import { buildSpecGroups, resolveSpecRow } from "@/lib/lens-spec-groups";
-import type { StructuredLine, ResolvedSpecRow } from "@/lib/lens-spec-groups";
+import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
+import { buildSpecGroups, resolveSpecRow } from "@/lib/lens/spec-groups";
+import type { StructuredLine, ResolvedSpecRow } from "@/lib/lens/spec-groups";
 import type { Lens } from "@/lib/types";
 import { PriceCell } from "@/components/PriceCell";
 import { PurchaseLinksCompact, PurchaseDisclosureCaption } from "@/components/PurchaseLinks";
-import { buildPurchaseLinks, purchaseDisclosureKey, shouldShowDisclosure } from "@/lib/purchase-links";
+import { buildPurchaseLinks, purchaseDisclosureKey, shouldShowDisclosure } from "@/lib/purchase/links";
 import { useCountryCode } from "@/hooks/useCountryCode";
 import { useIsMobileDevice } from "@/hooks/useViewport";
-import { pickPriceEntry } from "@/lib/lens-pricing";
-import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
+import { pickPriceEntry } from "@/lib/lens/pricing";
+import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
 
 // --- LensHeaderContent: shared inner card content ---
 

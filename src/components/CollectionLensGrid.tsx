@@ -5,7 +5,7 @@ import LensCard from "@/components/LensCard";
 import LensSortControl from "@/components/LensSortControl";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
-import { MAX_COMPARE, sortLenses, type SortKey } from "@/lib/lens";
+import { MAX_COMPARE, sortLenses, type SortKey } from "@/lib/lens/lens";
 import type { Lens } from "@/lib/types";
 
 // A collection smaller than this fits within ~one desktop grid row, so sorting

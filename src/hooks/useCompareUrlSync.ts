@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useCompare } from "@/context/CompareProvider";
-import { projectToUrl } from "@/lib/url-projection";
+import { projectToUrl } from "@/lib/url/projection";
 
 /**
  * Projects the current compare state onto the address bar for the compare

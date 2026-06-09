@@ -1,4 +1,4 @@
-import { OPTICAL_TRAITS } from "./types";
+import { OPTICAL_TRAITS } from "@/lib/types";
 import {
   defaultFilters,
   FILTER_FEATURE_KEYS,
@@ -10,8 +10,8 @@ import {
   USAGE_VALUES,
   type FilterState,
   type FocalCategory,
-} from "./lens";
-import { isOneOf } from "./utils";
+} from "@/lib/lens/lens";
+import { isOneOf } from "@/lib/utils";
 
 const FOCAL_KEYS = FOCAL_CATEGORIES.map((c) => c.key) as FocalCategory[];
 

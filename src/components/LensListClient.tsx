@@ -12,10 +12,10 @@ import {
   defaultFilters,
   MAX_COMPARE,
   type FilterState,
-} from "@/lib/lens";
+} from "@/lib/lens/lens";
 import type { Lens } from "@/lib/types";
-import { serializeFilters, parseFilters, FILTER_PARAM_KEYS } from "@/lib/filter-params";
-import { projectToUrl } from "@/lib/url-projection";
+import { serializeFilters, parseFilters, FILTER_PARAM_KEYS } from "@/lib/url/filter-params";
+import { projectToUrl } from "@/lib/url/projection";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import BackToTopButton from "@/components/BackToTopButton";

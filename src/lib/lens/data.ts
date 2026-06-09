@@ -1,9 +1,9 @@
-import lensesData from "../data/lenses.json";
-import gfxLensesData from "../data/lenses-gfx.json";
-import metaData from "../data/meta.json";
-import { lensCatalogSchema } from "./lens-schema";
-import { resolveTranslations, type Lens, type LensCatalog, type Mount } from "./types";
-import { MAX_COMPARE } from "./lens";
+import lensesData from "@/data/lenses.json";
+import gfxLensesData from "@/data/lenses-gfx.json";
+import metaData from "@/data/meta.json";
+import { lensCatalogSchema } from "@/lib/lens/schema";
+import { resolveTranslations, type Lens, type LensCatalog, type Mount } from "@/lib/types";
+import { MAX_COMPARE } from "@/lib/lens/lens";
 
 const xLenses: Lens[] = lensCatalogSchema.parse(lensesData) as LensCatalog;
 const gfxLenses: Lens[] = lensCatalogSchema.parse(gfxLensesData) as LensCatalog;

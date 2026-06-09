@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { ArrowDownWideNarrow, ArrowUp, ArrowDown } from "lucide-react";
-import type { SortKey } from "@/lib/lens";
+import type { SortKey } from "@/lib/lens/lens";
 import {
   Select,
   SelectContent,

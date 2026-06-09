@@ -2,11 +2,11 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowUpRight, Info } from "lucide-react";
-import { buildPurchaseLinks, purchaseDisclosureKey } from "@/lib/purchase-links";
-import type { PurchaseLink } from "@/lib/purchase-links";
+import { buildPurchaseLinks, purchaseDisclosureKey } from "@/lib/purchase/links";
+import type { PurchaseLink } from "@/lib/purchase/links";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { track } from "@/lib/analytics";
+import { track } from "@/lib/analytics/analytics";
 import { useCountryCode } from "@/hooks/useCountryCode";
 import { useIsMobileDevice } from "@/hooks/useViewport";
 

@@ -12,7 +12,7 @@ import {
   findThetaForInradius,
   findThetaForFStop,
   type IrisMechanismConfig,
-} from "@/lib/iris-kinematics";
+} from "@/lib/iris/kinematics";
 import { readFromConfig, exportToConfig } from "./actions";
 import { IRIS_HERO, IRIS_NAV, IRIS_LAB, R_HOUSING } from "@/config/iris-config";
 import type { IrisConfig, IrisAnimation } from "@/config/iris-config";
