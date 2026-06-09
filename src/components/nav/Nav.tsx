@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Menu } from "@base-ui/react/menu";
 import { EllipsisVertical, Flag, Info, Download } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
-import Iris from "@/components/Iris";
+import Iris from "@/components/iris/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
@@ -17,8 +17,8 @@ import { usePwa } from "@/hooks/usePwa";
 import { track } from "@/lib/analytics/analytics";
 import { cn } from "@/lib/utils";
 import { MENU_POPUP_CLS } from "@/config/ui-tokens";
-import MountSwitcher from "@/components/MountSwitcher";
-import FeedbackDialog from "@/components/FeedbackDialog";
+import MountSwitcher from "@/components/mount/MountSwitcher";
+import FeedbackDialog from "@/components/feedback/FeedbackDialog";
 import GitHubMark from "@/components/logos/GitHubMark";
 
 export default function Nav() {

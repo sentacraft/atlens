@@ -14,7 +14,7 @@ import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import * as fmt from "@/lib/lens/format";
 import { Button } from "@/components/ui/button";
-import LensCardPrice from "./LensCardPrice";
+import LensCardPrice from "@/components/price/LensCardPrice";
 
 interface Props {
   lens: Lens;

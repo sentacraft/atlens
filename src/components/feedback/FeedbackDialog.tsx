@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-import Iris from "@/components/Iris";
+import Iris from "@/components/iris/Iris";
 import type { IrisConfig } from "@/config/iris-config";
 import {
   Dialog,

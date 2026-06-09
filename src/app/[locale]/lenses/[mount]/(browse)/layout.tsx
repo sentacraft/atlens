@@ -1,4 +1,4 @@
-import CompareBar from "@/components/CompareBar";
+import CompareBar from "@/components/compare/CompareBar";
 import { getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount } from "@/lib/mount";
 

@@ -16,7 +16,7 @@ import {
   formatSampledAt,
 } from "@/lib/lens/pricing";
 import type { Lens } from "@/lib/types";
-import { PriceDisclaimer } from "@/components/PriceDisclaimer";
+import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
 
 interface Props {
   lens: Lens;

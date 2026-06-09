@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations, useLocale } from "next-intl";
-import { PurchaseLinksCompact, PurchaseDisclosureCaption } from "@/components/PurchaseLinks";
-import { PriceCell } from "@/components/PriceCell";
+import { PurchaseLinksCompact, PurchaseDisclosureCaption } from "@/components/price/PurchaseLinks";
+import { PriceCell } from "@/components/price/PriceCell";
 import { pickPriceEntry } from "@/lib/lens/pricing";
 import { lensSubtitleLine } from "@/lib/lens/format";
 import { buildPurchaseLinks, shouldShowDisclosure } from "@/lib/purchase/links";

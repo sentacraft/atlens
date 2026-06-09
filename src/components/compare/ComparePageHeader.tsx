@@ -3,11 +3,11 @@
 import { useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
-import LensSearchDialog from "@/components/LensSearchDialog";
+import LensSearchDialog from "@/components/lens/LensSearchDialog";
 import { Flag } from "lucide-react";
 import { ShareButton } from "@/components/share/ShareButton";
-import ShareFAB from "@/components/ShareFAB";
-import FeedbackTrigger from "@/components/FeedbackTrigger";
+import ShareFAB from "@/components/share/ShareFAB";
+import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import { UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";

@@ -2,7 +2,7 @@
 
 import type { Ref } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import Iris from "@/components/Iris";
+import Iris from "@/components/iris/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
 import type { Lens } from "@/lib/types";

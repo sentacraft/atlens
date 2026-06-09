@@ -20,8 +20,8 @@ import { getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount, mountHasCollections } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
-import LensIndexShell from "@/components/LensIndexShell";
-import CollectionChipRail from "@/components/CollectionChipRail";
+import LensIndexShell from "@/components/lens/LensIndexShell";
+import CollectionChipRail from "@/components/collection/CollectionChipRail";
 
 type Params = Promise<{ locale: string; mount: string }>;
 

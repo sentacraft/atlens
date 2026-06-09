@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import IrisTooltip from "@/components/IrisTooltip";
+import IrisTooltip from "@/components/iris/IrisTooltip";
 
 interface AckCardProps {
   roles: string[];

@@ -8,13 +8,13 @@ import type { AvailableFilterOptions, FilterState, FocusFilter, FocusMotorClass,
 import { OPTICAL_TRAITS, type OpticalTrait } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { TEXT_LINK_CLS } from "@/config/ui-tokens";
-import BrandFilterMenu from "./lens-filters/BrandFilterMenu";
-import FeatureToggleGroup, { type FeatureToggleOption } from "./lens-filters/FeatureToggleGroup";
-import FilterRow from "./lens-filters/FilterRow";
-import MultiSelectChipGroup, { type MultiSelectChipOption } from "./lens-filters/MultiSelectChipGroup";
-import TypeSegmentedControl, { type SegmentedLabel, type SegmentedOption } from "./lens-filters/TypeSegmentedControl";
-import { rowLabelClass } from "./lens-filters/styles";
-import { useFiltersTelemetry } from "./LensFilters.telemetry";
+import BrandFilterMenu from "@/components/lens-filters/BrandFilterMenu";
+import FeatureToggleGroup, { type FeatureToggleOption } from "@/components/lens-filters/FeatureToggleGroup";
+import FilterRow from "@/components/lens-filters/FilterRow";
+import MultiSelectChipGroup, { type MultiSelectChipOption } from "@/components/lens-filters/MultiSelectChipGroup";
+import TypeSegmentedControl, { type SegmentedLabel, type SegmentedOption } from "@/components/lens-filters/TypeSegmentedControl";
+import { rowLabelClass } from "@/components/lens-filters/styles";
+import { useFiltersTelemetry } from "@/components/lens-filters/LensFilters.telemetry";
 
 interface Props {
   filters: FilterState;

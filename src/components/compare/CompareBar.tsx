@@ -12,7 +12,7 @@ import { mountToUrlSegment } from "@/lib/mount";
 import { motion, AnimatePresence } from "motion/react";
 import { spring } from "@/lib/animation";
 import { Plus, X } from "lucide-react";
-import LensSearchDialog from "@/components/LensSearchDialog";
+import LensSearchDialog from "@/components/lens/LensSearchDialog";
 import { ScrollChevron } from "@/components/ui/scroll-chevron";
 import { cn } from "@/lib/utils";
 import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";

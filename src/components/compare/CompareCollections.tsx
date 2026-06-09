@@ -6,7 +6,7 @@ import { useCompare } from "@/context/CompareProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { getSharedCollections } from "@/lib/collections";
 import { mountToUrlSegment } from "@/lib/mount";
-import CollectionPills from "@/components/CollectionPills";
+import CollectionPills from "@/components/collection/CollectionPills";
 import type { Lens } from "@/lib/types";
 
 export default function CompareCollections({ allLenses }: { allLenses: Lens[] }) {

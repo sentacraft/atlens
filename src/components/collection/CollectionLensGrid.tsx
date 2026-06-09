@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import LensCard from "@/components/LensCard";
-import LensSortControl from "@/components/LensSortControl";
+import LensCard from "@/components/lens/LensCard";
+import LensSortControl from "@/components/lens/LensSortControl";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import { MAX_COMPARE, sortLenses, type SortKey } from "@/lib/lens/lens";

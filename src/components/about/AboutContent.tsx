@@ -1,13 +1,13 @@
 import { getTranslations, getLocale } from "next-intl/server";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
-import FeedbackTrigger from "@/components/FeedbackTrigger";
+import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import AnthropicMark from "@/components/logos/AnthropicMark";
 import GeminiMark from "@/components/logos/GeminiMark";
 import GitHubMark from "@/components/logos/GitHubMark";
 import { getLensesByMount } from "@/lib/lens/data";
 import coverageMeta from "@/data/coverage-meta.json";
-import AckCard from "@/components/AckCard";
+import AckCard from "@/components/about/AckCard";
 import { isPurchaseLocale } from "@/lib/purchase/links";
 
 type CoverageState = boolean | "planned" | "partial" | "n/a";

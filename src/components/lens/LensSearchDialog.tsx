@@ -19,7 +19,7 @@ import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { lensSubtitleLine } from "@/lib/lens/format";
-import { useSearchTelemetry } from "./LensSearchDialog.telemetry";
+import { useSearchTelemetry } from "@/components/lens/LensSearchDialog.telemetry";
 import {
   Dialog,
   DialogClose,
@@ -29,7 +29,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
-import FeedbackTrigger from "./FeedbackTrigger";
+import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 
 interface LensSearchResultState {
   actionLabel?: string;

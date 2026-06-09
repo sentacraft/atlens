@@ -10,7 +10,7 @@ import { resolve, join, dirname } from "node:path";
 import { createHash } from "node:crypto";
 import { Resvg, type ResvgRenderOptions } from "@resvg/resvg-js";
 
-import Iris from "../src/components/Iris.tsx";
+import Iris from "../src/components/iris/Iris.tsx";
 import { IRIS_NAV, R_HOUSING, type IrisConfig } from "../src/config/iris-config.ts";
 import { SPLASH_DEVICES, SPLASH_BG, splashUrl, type SplashScheme } from "../src/config/splash.ts";
 import { buildDerivedConfig } from "../src/lib/iris/kinematics.ts";
@@ -22,7 +22,7 @@ import { buildDerivedConfig } from "../src/lib/iris/kinematics.ts";
 
 const INPUT_FILES = [
   resolve("scripts/gen-icons.tsx"),
-  resolve("src/components/Iris.tsx"),
+  resolve("src/components/iris/Iris.tsx"),
   resolve("src/config/iris-config.ts"),
   resolve("src/config/splash.ts"),
   resolve("src/lib/iris/kinematics.ts"),

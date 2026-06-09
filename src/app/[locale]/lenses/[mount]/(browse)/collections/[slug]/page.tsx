@@ -11,13 +11,13 @@ import { buildCollectionItemListSchema } from "@/lib/lens/seo";
 import { lensDisplayName } from "@/lib/lens/format";
 import { SITE } from "@/config/site";
 import { ACTION_ESCAPE_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
-import JsonLd from "@/components/JsonLd";
-import CollectionLensGrid from "@/components/CollectionLensGrid";
-import RelatedCollectionCard from "@/components/RelatedCollectionCard";
-import BackToTopButton from "@/components/BackToTopButton";
+import JsonLd from "@/components/seo/JsonLd";
+import CollectionLensGrid from "@/components/collection/CollectionLensGrid";
+import RelatedCollectionCard from "@/components/collection/RelatedCollectionCard";
+import BackToTopButton from "@/components/nav/BackToTopButton";
 import { ShareButton } from "@/components/share/ShareButton";
-import Breadcrumb from "@/components/Breadcrumb";
-import FeedbackTrigger from "@/components/FeedbackTrigger";
+import Breadcrumb from "@/components/nav/Breadcrumb";
+import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 
 type Params = Promise<{ locale: string; mount: string; slug: string }>;
 

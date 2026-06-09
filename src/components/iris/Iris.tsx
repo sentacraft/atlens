@@ -34,7 +34,7 @@ import {
   findThetaForFStop,
 } from "@/lib/iris/kinematics";
 import { R_HOUSING, type IrisConfig, type IrisAnimation } from "@/config/iris-config";
-import ApertureStrip from "@/components/ApertureStrip";
+import ApertureStrip from "@/components/iris/ApertureStrip";
 
 // ── Component ─────────────────────────────────────────────────────────────────
 

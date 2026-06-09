@@ -1,6 +1,6 @@
 import { SITE } from "@/config/site";
 import { routing } from "@/i18n/routing";
-import JsonLd from "@/components/JsonLd";
+import JsonLd from "@/components/seo/JsonLd";
 
 const ORG_ID = `${SITE.url}/#organization`;
 const SITE_ID = `${SITE.url}/#website`;

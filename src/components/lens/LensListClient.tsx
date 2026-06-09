@@ -18,14 +18,14 @@ import { serializeFilters, parseFilters, FILTER_PARAM_KEYS } from "@/lib/url/fil
 import { projectToUrl } from "@/lib/url/projection";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
-import BackToTopButton from "@/components/BackToTopButton";
-import LensCard from "./LensCard";
-import LensFilters from "./LensFilters";
-import LensIndexShell from "./LensIndexShell";
-import LensUsageSwitch from "./LensUsageSwitch";
-import LensSortControl from "./LensSortControl";
-import LensSearchDialog from "./LensSearchDialog";
-import FeedbackTrigger from "./FeedbackTrigger";
+import BackToTopButton from "@/components/nav/BackToTopButton";
+import LensCard from "@/components/lens/LensCard";
+import LensFilters from "@/components/lens-filters/LensFilters";
+import LensIndexShell from "@/components/lens/LensIndexShell";
+import LensUsageSwitch from "@/components/lens/LensUsageSwitch";
+import LensSortControl from "@/components/lens/LensSortControl";
+import LensSearchDialog from "@/components/lens/LensSearchDialog";
+import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 
 interface LensListClientProps {
   lenses: Lens[];
