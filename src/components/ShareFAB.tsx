@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { Z, FAB_REVEAL_SCROLL_Y } from "@/config/ui";
-import { spring } from "@/lib/animation";
 import { ShareButton } from "@/components/share/ShareButton";
 import type { Lens } from "@/lib/types";
 
@@ -26,26 +24,22 @@ export default function ShareFAB({ lenses, presetTitle, presetSubtitle }: Props)
     return null;
   }
 
+  // Always mounted, visibility toggled via a data attribute so CSS can
+  // transition both directions (see BackToTopButton for the same pattern).
   return (
-    <AnimatePresence>
-      {show && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={spring.bounce}
-          style={{ bottom: `calc(1.5rem + var(--compare-bar-height, 0px))` }}
-          className={`fixed right-6 ${Z.fixed}`}
-          data-testid="share-fab"
-        >
-          <ShareButton
-            lenses={lenses}
-            variant="fab"
-            presetTitle={presetTitle}
-            presetSubtitle={presetSubtitle}
-          />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div
+      data-visible={show}
+      aria-hidden={!show}
+      style={{ bottom: `calc(1.5rem + var(--compare-bar-height, 0px))` }}
+      className={`fixed right-6 ${Z.fixed} opacity-0 scale-[0.8] pointer-events-none transition-[opacity,transform] duration-200 ease-out motion-reduce:transition-none data-[visible=true]:opacity-100 data-[visible=true]:scale-100 data-[visible=true]:pointer-events-auto`}
+      data-testid="share-fab"
+    >
+      <ShareButton
+        lenses={lenses}
+        variant="fab"
+        presetTitle={presetTitle}
+        presetSubtitle={presetSubtitle}
+      />
+    </div>
   );
 }
