@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -38,6 +38,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
   const { compareIds, toggle } = useCompare();
+  const gridRef = useRef<HTMLDivElement>(null);
 
   // Every filter control narrows to the current photo/cine view, so a Cine
   // view never offers a brand, feature, or focus-motor option that has no cine
@@ -86,6 +87,26 @@ export default function LensListClient({ lenses }: LensListClientProps) {
       url.search = [rest, mine].filter(Boolean).join("&");
     });
   }, [filters]);
+
+  // Replay a short fade on the (stable) grid whenever the result set changes,
+  // without remounting it — so memo(LensCard) keeps bailing out unaffected
+  // cards. The Web Animations API restarts the fade cleanly on each call; a CSS
+  // class can't re-trigger on a persistent element without a reflow/RAF dance.
+  // `displayed` is memoized on [lenses, filters], so this fires on filter/sort
+  // changes but not on compare toggles.
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) {
+      return;
+    }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+    grid.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: 180,
+      easing: "ease-out",
+    });
+  }, [displayed]);
 
   return (
     <>
@@ -189,15 +210,16 @@ export default function LensListClient({ lenses }: LensListClientProps) {
             </p>
           </div>
         ) : (
-          // Stable container — no content-fingerprint key. Filtering/sorting now
+          // Stable container — no content-fingerprint key. Filtering/sorting
           // reconciles cards in place instead of remounting the whole grid, so
-          // memo(LensCard) bails out unaffected cards on every filter change too
-          // (previously the keyed remount defeated memo on that path). The
-          // mount-only fade plays on first load and empty->results, not on
-          // filter-to-filter swaps, since the div stays mounted.
+          // memo(LensCard) bails out unaffected cards on every filter change
+          // (previously the keyed remount defeated memo on that path). The fade
+          // is replayed imperatively via the Web Animations API in the effect
+          // above — no remount, so memo stays intact.
           <div
+            ref={gridRef}
             {...hookAttr("grid")}
-            className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 animate-in fade-in duration-200"
+            className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
           >
             {displayed.map((lens, i) => (
               <LensCard
