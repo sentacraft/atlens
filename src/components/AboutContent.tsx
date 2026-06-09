@@ -2,8 +2,8 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
-import AnthropicLogo from "@/components/logos/AnthropicLogo";
-import GeminiLogo from "@/components/logos/GeminiLogo";
+import AnthropicMark from "@/components/logos/AnthropicMark";
+import GeminiMark from "@/components/logos/GeminiMark";
 import GitHubMark from "@/components/logos/GitHubMark";
 import { getLensesByMount } from "@/lib/lens-data";
 import coverageMeta from "@/data/coverage-meta.json";
@@ -168,14 +168,14 @@ export default async function AboutContent() {
       roles: [t("ackClaudeArchitect"), t("ackClaudeEngineer")],
       company: "Anthropic",
       product: "Claude Code",
-      logoComponent: <AnthropicLogo size={37} />,
+      logoComponent: <AnthropicMark size={37} />,
       glowColor: "rgba(226, 112, 37, 0.06)",
     },
     {
       roles: [t("ackGeminiDesigner"), t("ackGeminiBrandStrategist")],
       company: "Google",
       product: "Gemini",
-      logoComponent: <GeminiLogo size={37} />,
+      logoComponent: <GeminiMark size={37} />,
       glowColor: "rgba(66, 133, 244, 0.06)",
     },
   ];

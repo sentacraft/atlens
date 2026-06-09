@@ -3,7 +3,7 @@ interface Props {
   className?: string;
 }
 
-export default function AnthropicLogo({ size = 37, className }: Props) {
+export default function AnthropicMark({ size = 37, className }: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

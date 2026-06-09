@@ -17,7 +17,7 @@ import Redaction from "@/components/Redaction";
 import TestHookPanel from "@/components/TestHookPanel";
 import { CompareProvider } from "@/context/CompareProvider";
 import { MountPreferenceProvider } from "@/context/MountPreferenceProvider";
-import { NavProvider } from "@/context/NavContext";
+import { NavProvider } from "@/context/NavProvider";
 import { TestHookProvider } from "@/context/TestHookProvider";
 import { TESTHOOK_ALLOWED } from "@/lib/testhook";
 import { SITE } from "@/config/site";

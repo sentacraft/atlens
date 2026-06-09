@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNav } from "@/context/NavContext";
+import { useNav } from "@/context/NavProvider";
 import { HorizontalScrollRail } from "@/components/ui/horizontal-scroll-rail";
 
 interface Section {

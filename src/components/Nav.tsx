@@ -12,7 +12,7 @@ import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { mountToUrlSegment } from "@/lib/mount";
-import { useNav } from "@/context/NavContext";
+import { useNav } from "@/context/NavProvider";
 import { usePwa } from "@/hooks/usePwa";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
