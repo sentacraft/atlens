@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import AboutContent from "@/components/AboutContent";
-import BackToTopButton from "@/components/BackToTopButton";
+import AboutContent from "@/components/about/AboutContent";
+import BackToTopButton from "@/components/nav/BackToTopButton";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 
 type Params = Promise<{ locale: string }>;

@@ -12,11 +12,11 @@ import {
   findThetaForInradius,
   findThetaForFStop,
   type IrisMechanismConfig,
-} from "@/lib/iris-kinematics";
+} from "@/lib/iris/kinematics";
 import { readFromConfig, exportToConfig } from "./actions";
 import { IRIS_HERO, IRIS_NAV, IRIS_LAB, R_HOUSING } from "@/config/iris-config";
 import type { IrisConfig, IrisAnimation } from "@/config/iris-config";
-import Iris from "@/components/Iris";
+import Iris from "@/components/iris/Iris";
 
 // SVG coordinate space: origin at iris center, R_HOUSING = outer display radius.
 // viewBox is larger to accommodate the actuator ring sitting outside R_HOUSING.

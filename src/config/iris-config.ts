@@ -7,7 +7,7 @@
 // Derived parameters (pivotRadius, bladeCurvature) are always computed at
 // render time by buildDerivedConfig() and are never persisted here.
 
-import type { StoredIrisParams } from "@/lib/iris-kinematics";
+import type { StoredIrisParams } from "@/lib/iris/kinematics";
 
 // ── Shared rendering constant ─────────────────────────────────────────────────
 //

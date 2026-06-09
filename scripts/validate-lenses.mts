@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-import { formatZodIssues, lensCatalogSchema } from "../src/lib/lens-schema.ts";
+import { formatZodIssues, lensCatalogSchema } from "../src/lib/lens/schema.ts";
 
 // X-mount and GFX are stored as separate catalogs and consumed separately, so
 // validate each on its own (duplicate detection is meant to run per-catalog).

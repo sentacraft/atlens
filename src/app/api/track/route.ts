@@ -16,7 +16,7 @@ import {
   type EventName,
   type EventProps,
   type TrackPayload,
-} from "@/lib/analytics-events";
+} from "@/lib/analytics/events";
 
 const MAX_BODY_BYTES = 4096;
 const SID_COOKIE = "xg_sid";

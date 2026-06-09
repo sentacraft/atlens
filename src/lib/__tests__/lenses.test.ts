@@ -10,15 +10,15 @@ import {
   getFocalCategoriesOf,
   defaultFilters,
   classifyFocusMotor,
-} from "../lens";
+} from "../lens/lens";
 import {
   focalEquiv,
   focalRangeDisplay,
   apertureDisplay,
   primaryApertureDisplay,
   secondaryApertureDisplay,
-} from "../lens.format";
-import { lensSchema } from "../lens-schema";
+} from "../lens/format";
+import { lensSchema } from "../lens/schema";
 
 // Minimal Lens factory — only fill in fields relevant to each test
 function makeLens(

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { serializeFilters, parseFilters, FILTER_PARAM_KEYS } from "../filter-params";
-import { defaultFilters, type FilterState } from "../lens";
+import { serializeFilters, parseFilters, FILTER_PARAM_KEYS } from "../url/filter-params";
+import { defaultFilters, type FilterState } from "../lens/lens";
 
 describe("serializeFilters", () => {
   it("produces empty params for default filters", () => {

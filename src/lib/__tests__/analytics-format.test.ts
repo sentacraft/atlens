@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest";
 import {
   aggregateFilterDimensions,
   formatFilterSnapshot,
-} from "../analytics-format";
+} from "../analytics/format";
 
 describe("formatFilterSnapshot", () => {
   it("renders optical trait (previously dropped from the label)", () => {

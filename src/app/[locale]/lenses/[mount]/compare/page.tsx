@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { parseLensIds, getLensesByMount } from "@/lib/lens-data";
+import { parseLensIds, getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount } from "@/lib/mount";
 import { findPresetByIds } from "@/lib/curated-presets";
-import CompareTable from "@/components/CompareTable";
-import ComparePageHeader from "@/components/ComparePageHeader";
-import CompareCollections from "@/components/CompareCollections";
-import CompareTelemetry from "@/components/telemetry/CompareTelemetry";
-import CuratedComparisons from "@/components/CuratedComparisons";
-import BackToTopButton from "@/components/BackToTopButton";
-import Breadcrumb from "@/components/Breadcrumb";
+import CompareTable from "@/components/compare/CompareTable";
+import ComparePageHeader from "@/components/compare/ComparePageHeader";
+import CompareCollections from "@/components/compare/CompareCollections";
+import CompareTelemetry from "@/components/compare/CompareTelemetry";
+import CuratedComparisons from "@/components/compare/CuratedComparisons";
+import BackToTopButton from "@/components/nav/BackToTopButton";
+import Breadcrumb from "@/components/nav/Breadcrumb";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { mountToUrlSegment } from "@/lib/mount";
-import { lensDisplayName } from "@/lib/lens.format";
+import { lensDisplayName } from "@/lib/lens/format";
 import { notFound } from "next/navigation";
 
 // Compare page depends on ?ids=A,B,C searchParams for server-rendered metadata

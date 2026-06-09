@@ -4,7 +4,7 @@ import * as React from "react";
 import { Select as SelectPrimitive } from "@base-ui/react/select";
 
 import { cn } from "@/lib/utils";
-import { POPUP_SURFACE_CLS } from "@/lib/ui-tokens";
+import { POPUP_SURFACE_CLS } from "@/config/ui-tokens";
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
 
 const Select = SelectPrimitive.Root;

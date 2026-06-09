@@ -4,14 +4,14 @@ import { renderHook, act } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { CompareProvider, useCompare } from "@/context/CompareProvider";
 import { useCompareLensSearch } from "../useCompareLensSearch";
-import { MAX_COMPARE } from "@/lib/lens";
+import { MAX_COMPARE } from "@/lib/lens/lens";
 import type { Lens } from "@/lib/types";
 
 vi.mock("@/hooks/useMountParam", () => ({
   useEffectiveMount: () => "X",
 }));
 
-vi.mock("@/lib/analytics", () => ({
+vi.mock("@/lib/analytics/analytics", () => ({
   track: vi.fn(),
 }));
 

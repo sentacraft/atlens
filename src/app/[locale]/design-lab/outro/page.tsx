@@ -9,7 +9,7 @@
 // (no viewport gating).
 
 import { useEffect, useMemo, useState } from "react";
-import Iris from "@/components/Iris";
+import Iris from "@/components/iris/Iris";
 import { IRIS_HERO } from "@/config/iris-config";
 
 const LOOP_MS = 2600;

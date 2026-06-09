@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSpecGroups, resolveSpecRow } from "@/lib/lens-spec-groups";
+import { buildSpecGroups, resolveSpecRow } from "@/lib/lens/spec-groups";
 import type { Lens } from "@/lib/types";
 
 const labels = {

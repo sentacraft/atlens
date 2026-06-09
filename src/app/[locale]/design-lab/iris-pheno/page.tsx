@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef, useMemo, useEffect } from "react";
-import { bladePath, coverPoints, R } from "@/lib/iris-pheno-kinematics";
-import type { IrisPhenoParams } from "@/lib/iris-pheno-kinematics";
+import { bladePath, coverPoints, R } from "@/lib/iris/pheno-kinematics";
+import type { IrisPhenoParams } from "@/lib/iris/pheno-kinematics";
 const LOGO_SM_THRESHOLD = 40; // px — mirrors brand.ts threshold for reference
 
 // ── ApertureMark ─────────────────────────────────────────────────────────────

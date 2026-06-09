@@ -23,7 +23,7 @@ import {
   lensConfigurationPrimaryDisplay,
   lensConfigurationSecondaryDisplay,
   lensConfigurationDisplay,
-} from "../lens.format";
+} from "../lens/format";
 
 const oisLabels = { yes: "Yes", no: "No" };
 const wrLabels = { yes: "Yes", no: "No", partial: "Partial" };

@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useCompare } from "@/context/CompareProvider";
-import { MAX_COMPARE } from "@/lib/lens";
+import { MAX_COMPARE } from "@/lib/lens/lens";
 import type { Lens } from "@/lib/types";
 
 /**

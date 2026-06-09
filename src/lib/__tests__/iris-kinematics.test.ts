@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { IrisMechanismConfig } from "../iris-kinematics";
+import type { IrisMechanismConfig } from "../iris/kinematics";
 import {
   solveAllBlades,
   thetaRange,
@@ -12,7 +12,7 @@ import {
   findThetaForInradius,
   findThetaForFStop,
   DEFAULT_IRIS_CONFIG,
-} from "../iris-kinematics";
+} from "../iris/kinematics";
 
 // Representative 7-blade config derived from DEFAULT_IRIS_CONFIG at housingRadius=100.
 const cfg7: IrisMechanismConfig = buildDerivedConfig(DEFAULT_IRIS_CONFIG, 100);

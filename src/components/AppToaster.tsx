@@ -1,7 +1,7 @@
 "use client";
 
 import { Toaster } from "sonner";
-import { useBreakpoint } from "@/hooks/useBreakpoint";
+import { useBreakpoint } from "@/hooks/useViewport";
 
 export default function AppToaster() {
   const isDesktop = useBreakpoint("sm");
