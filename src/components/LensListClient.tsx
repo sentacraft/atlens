@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef, useLayoutEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
-import { motion, AnimatePresence } from "motion/react";
 import { useTranslations } from "next-intl";
 import {
   filterLenses,
@@ -39,6 +38,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
   const { compareIds, toggle } = useCompare();
+  const gridRef = useRef<HTMLDivElement>(null);
 
   // Every filter control narrows to the current photo/cine view, so a Cine
   // view never offers a brand, feature, or focus-motor option that has no cine
@@ -87,6 +87,23 @@ export default function LensListClient({ lenses }: LensListClientProps) {
       url.search = [rest, mine].filter(Boolean).join("&");
     });
   }, [filters]);
+
+  // Replay a short fade on the (stable) grid whenever the result set changes,
+  // without remounting it — so memo(LensCard) keeps bailing out unaffected
+  // cards. 
+  useLayoutEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) {
+      return;
+    }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+    grid.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: 300,
+      easing: "ease-out",
+    });
+  }, [displayed]);
 
   return (
     <>
@@ -170,58 +187,52 @@ export default function LensListClient({ lenses }: LensListClientProps) {
           </div>
         </div>
 
-        <AnimatePresence mode="wait" initial={false}>
-          {displayed.length === 0 ? (
-            <motion.div
-              key="empty"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="flex flex-col gap-2"
-            >
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                {t("noResults")}
-              </p>
-              <p className="text-xs text-zinc-400 dark:text-zinc-500">
-                {t("suggestLens")}{" "}
-                <FeedbackTrigger type="general">
-                  {t("suggestLensLink")}
-                </FeedbackTrigger>
-                <span className="mx-2 opacity-40">·</span>
-                <Link
-                  href="/about#coverage"
-                  className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-                >
-                  {t("coverageLink")}
-                </Link>
-              </p>
-            </motion.div>
-          ) : (
-            <motion.div
-              key={displayed.map((l) => l.id).join()}
-              {...hookAttr("grid")}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
-              className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
-            >
-              {displayed.map((lens, i) => (
-                <LensCard
-                  key={lens.id}
-                  lens={lens}
-                  isSelected={compareIds.includes(lens.id)}
-                  selectionDisabled={
-                    !compareIds.includes(lens.id) &&
-                    compareIds.length >= MAX_COMPARE
-                  }
-                  onToggle={toggle}
-                  priority={i < 8}
-                />
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {displayed.length === 0 ? (
+          <div className="flex flex-col gap-2 animate-in fade-in duration-200">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              {t("noResults")}
+            </p>
+            <p className="text-xs text-zinc-400 dark:text-zinc-500">
+              {t("suggestLens")}{" "}
+              <FeedbackTrigger type="general">
+                {t("suggestLensLink")}
+              </FeedbackTrigger>
+              <span className="mx-2 opacity-40">·</span>
+              <Link
+                href="/about#coverage"
+                className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+              >
+                {t("coverageLink")}
+              </Link>
+            </p>
+          </div>
+        ) : (
+          // Stable container — no content-fingerprint key. Filtering/sorting
+          // reconciles cards in place instead of remounting the whole grid, so
+          // memo(LensCard) bails out unaffected cards on every filter change
+          // (previously the keyed remount defeated memo on that path). The fade
+          // is replayed imperatively via the Web Animations API in the effect
+          // above — no remount, so memo stays intact.
+          <div
+            ref={gridRef}
+            {...hookAttr("grid")}
+            className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
+          >
+            {displayed.map((lens, i) => (
+              <LensCard
+                key={lens.id}
+                lens={lens}
+                isSelected={compareIds.includes(lens.id)}
+                selectionDisabled={
+                  !compareIds.includes(lens.id) &&
+                  compareIds.length >= MAX_COMPARE
+                }
+                onToggle={toggle}
+                priority={i < 8}
+              />
+            ))}
+          </div>
+        )}
       </LensIndexShell>
 
       <BackToTopButton />

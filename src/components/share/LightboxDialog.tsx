@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "motion/react";
 import { ChevronDown, Loader2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -53,12 +52,7 @@ export function LightboxDialog({
             <X className="size-3.5" />
           </button>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.12, ease: "easeOut" }}
-            className="relative w-full overflow-hidden rounded-2xl bg-white shadow-[0_8px_40px_rgba(0,0,0,0.22),0_0_0_1px_rgba(0,0,0,0.06)]"
-          >
+          <div className="relative w-full overflow-hidden rounded-2xl bg-white shadow-[0_8px_40px_rgba(0,0,0,0.22),0_0_0_1px_rgba(0,0,0,0.06)] animate-in fade-in-0 zoom-in-95 duration-150 ease-out">
             <div
               ref={scrollRef}
               className="max-h-[calc(100svh-3rem-10px)] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:max-h-[calc(100svh-3rem)]"
@@ -84,7 +78,7 @@ export function LightboxDialog({
                 <ChevronDown className="size-6 text-zinc-600" />
               </div>
             )}
-          </motion.div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
