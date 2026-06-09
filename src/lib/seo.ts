@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { routing } from "@/i18n/routing";
 import { SITE } from "@/config/site";
-import { getLensImageUrl } from "@/lib/lens-image";
+import { getLensImageUrl } from "@/lib/lens/image";
 
 // Default OG image is the site-wide 1200x630 PNG used for the home page and
 // every page that doesn't have a more specific image to advertise.

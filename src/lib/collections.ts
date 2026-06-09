@@ -1,7 +1,7 @@
-import collectionsData from "../data/collections.json";
-import { isZoom } from "./lens";
-import { pickNewEntry } from "./lens-pricing";
-import type { Lens } from "./types";
+import collectionsData from "@/data/collections.json";
+import { isZoom } from "@/lib/lens/lens";
+import { pickNewEntry } from "@/lib/lens/pricing";
+import type { Lens } from "@/lib/types";
 
 type LensFilter = (lens: Lens, locale: string) => boolean;
 

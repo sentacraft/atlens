@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import InstallPage from "@/components/InstallPage";
+import InstallPage from "@/components/pwa/InstallPage";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 
 type Params = Promise<{ locale: string }>;

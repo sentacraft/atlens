@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { getLensesByMount } from "@/lib/lens-data";
+import { getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount } from "@/lib/mount";
-import LensListClient from "@/components/LensListClient";
+import LensListClient from "@/components/browse/LensListClient";
 import LensesLoading from "../loading";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { notFound } from "next/navigation";

@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { FROSTED_OVERLAY_CHROME_CLS } from "@/lib/ui-tokens";
+import { FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
 
 interface ScrollChevronProps {
   direction: "left" | "right";

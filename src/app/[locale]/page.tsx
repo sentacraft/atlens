@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
 import { buildAlternates } from "@/lib/seo";
-import { getLensesByMount, meta } from "@/lib/lens-data";
+import { getLensesByMount, meta } from "@/lib/lens/data";
 import DataInfo from "@/components/DataFooter";
 import HomeCta from "@/components/HomeCta";
-import HeroBrand from "@/components/MountTag";
-import HeroIris from "@/components/HeroIris";
+import HeroBrand from "@/components/mount/MountTag";
+import HeroIris from "@/components/iris/HeroIris";
 import Tagline from "@/components/Tagline";
 
 type Params = Promise<{ locale: string }>;

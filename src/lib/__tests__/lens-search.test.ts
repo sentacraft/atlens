@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Lens } from "@/lib/types";
-import { normalizeLensSearchText, searchLenses } from "@/lib/lens-search";
+import { normalizeLensSearchText, searchLenses } from "@/lib/lens/search";
 
 // ---------------------------------------------------------------------------
 // Shared test fixtures

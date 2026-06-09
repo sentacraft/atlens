@@ -9,9 +9,9 @@ import {
   useRef,
   useState,
 } from "react";
-import { MAX_COMPARE } from "@/lib/lens";
+import { MAX_COMPARE } from "@/lib/lens/lens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
-import { track } from "@/lib/analytics";
+import { track } from "@/lib/analytics/analytics";
 
 type CompareState = { X: string[]; G: string[] };
 const initialCompareState: CompareState = { X: [], G: [] };

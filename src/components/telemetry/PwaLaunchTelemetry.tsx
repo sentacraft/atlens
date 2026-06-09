@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { track } from "@/lib/analytics";
+import { track } from "@/lib/analytics/analytics";
 
 // Set of recognized launch-attribution sources, anchored to the values
 // written into the manifest's start_url and shortcut URLs. Anything else
