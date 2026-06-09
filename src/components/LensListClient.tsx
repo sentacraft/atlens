@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useLayoutEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -90,11 +90,8 @@ export default function LensListClient({ lenses }: LensListClientProps) {
 
   // Replay a short fade on the (stable) grid whenever the result set changes,
   // without remounting it — so memo(LensCard) keeps bailing out unaffected
-  // cards. The Web Animations API restarts the fade cleanly on each call; a CSS
-  // class can't re-trigger on a persistent element without a reflow/RAF dance.
-  // `displayed` is memoized on [lenses, filters], so this fires on filter/sort
-  // changes but not on compare toggles.
-  useEffect(() => {
+  // cards. 
+  useLayoutEffect(() => {
     const grid = gridRef.current;
     if (!grid) {
       return;
@@ -103,7 +100,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
       return;
     }
     grid.animate([{ opacity: 0 }, { opacity: 1 }], {
-      duration: 180,
+      duration: 300,
       easing: "ease-out",
     });
   }, [displayed]);
