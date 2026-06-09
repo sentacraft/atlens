@@ -8,13 +8,13 @@ import { Flag } from "lucide-react";
 import { ShareButton } from "@/components/share/ShareButton";
 import ShareFAB from "@/components/ShareFAB";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
-import { UTILITY_BTN_CLS } from "@/lib/ui-tokens";
+import { UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
 import { findPresetByIds } from "@/lib/curated-presets";
 import type { Lens } from "@/lib/types";
-import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
+import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 
 const ADD_LENS_BTN_BASE =
   "h-9 whitespace-nowrap rounded-full border px-3.5 text-sm transition-colors";

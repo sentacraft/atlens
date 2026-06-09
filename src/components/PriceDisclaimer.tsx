@@ -12,7 +12,7 @@ import {
   PRICE_DISCLAIMER_BODY_CLS,
   PRICE_DISCLAIMER_ICON_CLS,
   PRICE_DISCLAIMER_WARN_CLS,
-} from "@/lib/ui-tokens";
+} from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 
 interface Props {

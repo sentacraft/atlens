@@ -15,7 +15,7 @@ import { Plus, X } from "lucide-react";
 import LensSearchDialog from "@/components/LensSearchDialog";
 import { ScrollChevron } from "@/components/ui/scroll-chevron";
 import { cn } from "@/lib/utils";
-import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/lib/ui-tokens";
+import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { Z } from "@/config/ui";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens.format";
 import type { Lens } from "@/lib/types";

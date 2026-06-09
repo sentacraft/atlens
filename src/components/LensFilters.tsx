@@ -7,7 +7,7 @@ import { FEATURE_ICONS } from "@/lib/feature-icons";
 import type { AvailableFilterOptions, FilterState, FocusFilter, FocusMotorClass, LensType, FilterFeatureKey, FocalCategory } from "@/lib/lens";
 import { OPTICAL_TRAITS, type OpticalTrait } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { TEXT_LINK_CLS } from "@/lib/ui-tokens";
+import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 import BrandFilterMenu from "./lens-filters/BrandFilterMenu";
 import FeatureToggleGroup, { type FeatureToggleOption } from "./lens-filters/FeatureToggleGroup";
 import FilterRow from "./lens-filters/FilterRow";

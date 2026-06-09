@@ -6,7 +6,7 @@ import { ArrowUpRight, ChevronDown, Info } from "lucide-react";
 import { buildPurchaseLinks, purchaseDisclosureKey, shouldShowDisclosure } from "@/lib/purchase-links";
 import type { PurchaseLink } from "@/lib/purchase-links";
 import type { Lens } from "@/lib/types";
-import { ACTION_OUTLINE_CLS, MENU_POPUP_CLS } from "@/lib/ui-tokens";
+import { ACTION_OUTLINE_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
 import { track } from "@/lib/analytics";
 import { useCountryCode } from "@/hooks/useCountryCode";
 import { useIsMobileDevice } from "@/hooks/useIsMobileDevice";

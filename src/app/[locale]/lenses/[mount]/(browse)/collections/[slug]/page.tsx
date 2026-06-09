@@ -10,7 +10,7 @@ import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { buildCollectionItemListSchema } from "@/lib/lens-seo";
 import { lensDisplayName } from "@/lib/lens.format";
 import { SITE } from "@/config/site";
-import { ACTION_ESCAPE_CLS, UTILITY_BTN_CLS } from "@/lib/ui-tokens";
+import { ACTION_ESCAPE_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import JsonLd from "@/components/JsonLd";
 import CollectionLensGrid from "@/components/CollectionLensGrid";
 import RelatedCollectionCard from "@/components/RelatedCollectionCard";

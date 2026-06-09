@@ -16,7 +16,7 @@ import { useNav } from "@/context/NavProvider";
 import { usePwa } from "@/hooks/usePwa";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
-import { MENU_POPUP_CLS } from "@/lib/ui-tokens";
+import { MENU_POPUP_CLS } from "@/config/ui-tokens";
 import MountSwitcher from "@/components/MountSwitcher";
 import FeedbackDialog from "@/components/FeedbackDialog";
 import GitHubMark from "@/components/logos/GitHubMark";

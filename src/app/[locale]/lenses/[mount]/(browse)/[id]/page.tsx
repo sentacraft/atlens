@@ -22,7 +22,7 @@ import Breadcrumb from "@/components/Breadcrumb";
 import SpecialtyBadges from "@/components/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens-specialty";
 import { RetailersDropdown } from "@/components/RetailersDropdown";
-import { UTILITY_BTN_CLS } from "@/lib/ui-tokens";
+import { UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { getMemberCollections } from "@/lib/collections";
 import CollectionPills from "@/components/CollectionPills";
 import { BoolCell } from "@/components/ui/bool-cell";

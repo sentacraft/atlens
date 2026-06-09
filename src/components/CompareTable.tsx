@@ -13,7 +13,7 @@ import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { ArrowUpRight, ChevronLeft, ChevronRight, Flag, TriangleAlert, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ICON_CLOSE_BTN_CLS, TEXT_LINK_CLS } from "@/lib/ui-tokens";
+import { ICON_CLOSE_BTN_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import FeedbackTrigger from "@/components/FeedbackTrigger";
 import { getLensUrl } from "@/lib/lens";
 import { BoolCell } from "@/components/ui/bool-cell";

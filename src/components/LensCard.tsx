@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
-import { ACTION_PRIMARY_CLS, CARD_SELECTED_BORDER_CLS } from "@/lib/ui-tokens";
+import { ACTION_PRIMARY_CLS, CARD_SELECTED_BORDER_CLS } from "@/config/ui-tokens";
 import type { Lens } from "@/lib/types";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens-image";
 import { useUiHookAttr } from "@/context/TestHookProvider";

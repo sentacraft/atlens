@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { Check, Plus } from "lucide-react";
 import { useCompare } from "@/context/CompareProvider";
 import { MAX_COMPARE } from "@/lib/lens";
-import { ACTION_PRIMARY_CLS } from "@/lib/ui-tokens";
+import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
 
 interface Props {
   lensId: string;

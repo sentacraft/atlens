@@ -4,7 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import { ICON_NAV_BTN_CLS } from "@/lib/ui-tokens";
+import { ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
 
 interface BackButtonProps {
   fallbackHref: string;

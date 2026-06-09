@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { LENS_INDEX_SHELL_CLS } from "@/lib/ui-tokens";
+import { LENS_INDEX_SHELL_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import LensSectionNav from "./LensSectionNav";
 

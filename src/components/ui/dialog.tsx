@@ -6,7 +6,7 @@ import { Drawer as DrawerPrimitive } from "@base-ui/react/drawer";
 import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { FROSTED_OVERLAY_CHROME_CLS, ICON_CLOSE_BTN_CLS } from "@/lib/ui-tokens";
+import { FROSTED_OVERLAY_CHROME_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { Z } from "@/config/ui";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 
