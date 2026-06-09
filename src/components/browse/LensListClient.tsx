@@ -21,10 +21,10 @@ import { useUiHookAttr } from "@/context/TestHookProvider";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import LensCard from "@/components/lens/LensCard";
 import LensFilters from "@/components/lens-filters/LensFilters";
-import LensIndexShell from "@/components/lens/LensIndexShell";
-import LensUsageSwitch from "@/components/lens/LensUsageSwitch";
-import LensSortControl from "@/components/lens/LensSortControl";
-import LensSearchDialog from "@/components/lens/LensSearchDialog";
+import LensIndexShell from "@/components/browse/LensIndexShell";
+import LensUsageSwitch from "@/components/browse/LensUsageSwitch";
+import LensSortControl from "@/components/browse/LensSortControl";
+import LensSearchDialog from "@/components/browse/LensSearchDialog";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 
 interface LensListClientProps {

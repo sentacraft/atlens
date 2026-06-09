@@ -3,7 +3,7 @@ interface Props {
   className?: string;
 }
 
-export default function GeminiMark({ size = 37, className }: Props) {
+export default function GeminiLogo({ size = 37, className }: Props) {
   return (
     <svg
       fill="none"

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { LENS_INDEX_SHELL_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
-import LensSectionNav from "@/components/lens/LensSectionNav";
+import LensSectionNav from "@/components/browse/LensSectionNav";
 
 /**
  * Shared outer shell for the two tab-bearing lens index views (All Lenses and

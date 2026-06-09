@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import LensCard from "@/components/lens/LensCard";
-import LensSortControl from "@/components/lens/LensSortControl";
+import LensSortControl from "@/components/browse/LensSortControl";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import { MAX_COMPARE, sortLenses, type SortKey } from "@/lib/lens/lens";

@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
-import LensSearchDialog from "@/components/lens/LensSearchDialog";
+import LensSearchDialog from "@/components/browse/LensSearchDialog";
 import { Flag } from "lucide-react";
 import { ShareButton } from "@/components/share/ShareButton";
 import ShareFAB from "@/components/share/ShareFAB";

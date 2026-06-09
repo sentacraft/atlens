@@ -6,7 +6,7 @@ import { findPresetByIds } from "@/lib/curated-presets";
 import CompareTable from "@/components/compare/CompareTable";
 import ComparePageHeader from "@/components/compare/ComparePageHeader";
 import CompareCollections from "@/components/compare/CompareCollections";
-import CompareTelemetry from "@/components/telemetry/CompareTelemetry";
+import CompareTelemetry from "@/components/compare/CompareTelemetry";
 import CuratedComparisons from "@/components/compare/CuratedComparisons";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import Breadcrumb from "@/components/nav/Breadcrumb";

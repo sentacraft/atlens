@@ -13,7 +13,7 @@ import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens/spec-groups";
 import { ExternalLink } from "@/components/ui/external-link";
 import LensDetailCompareToggle from "@/components/compare/LensDetailCompareToggle";
 import BackToTopButton from "@/components/nav/BackToTopButton";
-import LensDetailTelemetry from "@/components/telemetry/LensDetailTelemetry";
+import LensDetailTelemetry from "@/components/lens/LensDetailTelemetry";
 import ShareFAB from "@/components/share/ShareFAB";
 import { ShareButton } from "@/components/share/ShareButton";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";

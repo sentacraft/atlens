@@ -27,7 +27,7 @@ import { MAX_COMPARE } from "@/lib/lens/lens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
 import { Link } from "@/i18n/navigation";
-import LensSearchDialog from "@/components/lens/LensSearchDialog";
+import LensSearchDialog from "@/components/browse/LensSearchDialog";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
 import { buildSpecGroups, resolveSpecRow } from "@/lib/lens/spec-groups";
 import type { StructuredLine, ResolvedSpecRow } from "@/lib/lens/spec-groups";

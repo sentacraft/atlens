@@ -12,7 +12,7 @@ import { Z } from "@/config/ui";
 import type { Lens } from "@/lib/types";
 import { rasterizePoster } from "@/lib/share-image";
 import { track } from "@/lib/analytics/analytics";
-import { SharePoster, type PosterLabels } from "@/components/poster/SharePoster";
+import { SharePoster, type PosterLabels } from "@/components/share/poster/SharePoster";
 import { useShareCapabilities } from "@/hooks/useShareCapabilities";
 import { useLightbox } from "@/hooks/useLightbox";
 import { LightboxDialog } from "./LightboxDialog";

@@ -19,7 +19,7 @@ import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { lensSubtitleLine } from "@/lib/lens/format";
-import { useSearchTelemetry } from "@/components/lens/LensSearchDialog.telemetry";
+import { useSearchTelemetry } from "@/components/browse/LensSearchDialog.telemetry";
 import {
   Dialog,
   DialogClose,
