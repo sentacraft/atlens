@@ -44,19 +44,6 @@ function Dialog({
   );
 }
 
-function DialogTrigger({
-  className,
-  ...props
-}: DialogPrimitive.Trigger.Props) {
-  return (
-    <DialogPrimitive.Trigger
-      data-slot="dialog-trigger"
-      className={className}
-      {...props}
-    />
-  );
-}
-
 function DialogPortal({
   children,
   ...props
@@ -87,33 +74,25 @@ function DialogBackdrop({ className }: { className?: string }) {
   );
 }
 
-const DialogContent = React.forwardRef<
-  HTMLDivElement,
-  DialogPrimitive.Popup.Props & {
-    backdropClassName?: string;
-    layerRef?: React.Ref<HTMLDivElement>;
-    showCloseButton?: boolean;
-    /** Renders the close button outside the popup at the card's top-right corner (-right-4 -top-4).
-     *  Requires the popup to NOT have overflow-hidden (move it to inner content instead). */
-    showOverlayCloseButton?: boolean;
-    /** Omits the default centered positioning (left-1/2 top-1/2 max-w-2xl -translate-*) so the
-     *  caller can supply custom fixed inset classes without Tailwind class conflicts. */
-    noDefaultPositioning?: boolean;
-  }
->(function DialogContent(
-  {
-    className,
-    backdropClassName,
-    children,
-    layerRef,
-    showCloseButton = true,
-    showOverlayCloseButton = false,
-    noDefaultPositioning = false,
-    render: _render, // eslint-disable-line @typescript-eslint/no-unused-vars -- strip before DOM spread
-    ...props
-  },
-  ref
-) {
+type DialogContentProps = DialogPrimitive.Popup.Props & {
+  backdropClassName?: string;
+  layerRef?: React.Ref<HTMLDivElement>;
+  showCloseButton?: boolean;
+  /** Omits the default centered positioning (left-1/2 top-1/2 max-w-2xl -translate-*) so the
+   *  caller can supply custom fixed inset classes without Tailwind class conflicts. */
+  noDefaultPositioning?: boolean;
+};
+
+function DialogContent({
+  className,
+  backdropClassName,
+  children,
+  layerRef,
+  showCloseButton = true,
+  noDefaultPositioning = false,
+  render: _render, // eslint-disable-line @typescript-eslint/no-unused-vars -- strip before DOM spread
+  ...props
+}: DialogContentProps) {
   const mode = useDialogMode();
 
   return mode === "drawer" ? (
@@ -127,7 +106,6 @@ const DialogContent = React.forwardRef<
       />
       <DrawerPrimitive.Viewport>
         <DrawerPrimitive.Popup
-          ref={ref}
           data-slot="dialog-content"
           className={cn(
             `fixed inset-x-0 bottom-0 ${Z.dialog} flex max-h-[85svh] flex-col border border-b-0 border-zinc-200 bg-white p-0 pb-[var(--safe-inset-bottom)] shadow-2xl duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:border-zinc-800 dark:bg-zinc-950`,
@@ -150,7 +128,6 @@ const DialogContent = React.forwardRef<
       <div ref={layerRef} className={cn("fixed inset-0", Z.dialog)}>
         <DialogBackdrop className={backdropClassName} />
         <DialogPrimitive.Popup
-          ref={ref}
           data-slot="dialog-content"
           className={cn(
             `fixed ${Z.local} rounded-2xl border border-zinc-200 bg-white p-0 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950`,
@@ -166,16 +143,11 @@ const DialogContent = React.forwardRef<
               <X className="h-4 w-4" />
             </DialogPrimitive.Close>
           )}
-          {showOverlayCloseButton && (
-            <DialogPrimitive.Close className="absolute -right-4 -top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md transition-colors hover:bg-black/70">
-              <X className="h-4 w-4" />
-            </DialogPrimitive.Close>
-          )}
         </DialogPrimitive.Popup>
       </div>
     </DialogPortal>
   );
-});
+}
 
 function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
@@ -238,9 +210,6 @@ function DialogClose({ className, ...props }: Omit<DialogPrimitive.Close.Props, 
 
 export {
   Dialog,
-  DialogTrigger,
-  DialogPortal,
-  DialogBackdrop,
   DialogContent,
   DialogClose,
   DialogHeader,
