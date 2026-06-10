@@ -3,10 +3,8 @@
 import * as React from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { Drawer as DrawerPrimitive } from "@base-ui/react/drawer";
-import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { FROSTED_OVERLAY_CHROME_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { Z } from "@/config/ui";
 import { useBreakpoint } from "@/hooks/useViewport";
 
@@ -44,28 +42,34 @@ function Dialog({
   );
 }
 
-function DialogPortal({
-  children,
-  ...props
-}: DialogPrimitive.Portal.Props) {
-  return (
-    <DialogPrimitive.Portal {...props}>
-      {children}
-    </DialogPrimitive.Portal>
-  );
+function DialogPortal({ children }: { children: React.ReactNode }) {
+  const mode = useDialogMode();
+  const Primitive = mode === "drawer" ? DrawerPrimitive.Portal : DialogPrimitive.Portal;
+  return <Primitive>{children}</Primitive>;
 }
 
-// Clicking the backdrop dismisses the dialog. We render it as a
-// DialogPrimitive.Close so the close flows through Base UI's internal
-// onOpenChange — no need to thread the callback through props.
 function DialogBackdrop({ className }: { className?: string }) {
-  return (
+  const mode = useDialogMode();
+
+  return mode === "drawer" ? (
+    <DrawerPrimitive.Backdrop
+      data-slot="dialog-backdrop"
+      className={cn(
+        `fixed inset-0 ${Z.dialog} bg-zinc-950/55 backdrop-blur-sm transition-colors duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0`,
+        className
+      )}
+    />
+  ) : (
+    // Dialog mode has no native click-to-dismiss backdrop, so we render the
+    // backdrop AS a Close trigger: clicking it routes through Base UI's internal
+    // onOpenChange, no callback threading. (DialogPrimitive.Backdrop is purely
+    // presentational — role="presentation", no press handler.)
     <DialogPrimitive.Close
       render={<div />}
       nativeButton={false}
       data-slot="dialog-backdrop"
       className={cn(
-        "absolute inset-0 bg-zinc-950/55 backdrop-blur-sm cursor-default outline-none",
+        `fixed inset-0 ${Z.dialog} bg-zinc-950/55 backdrop-blur-sm cursor-default outline-none`,
         className
       )}
       aria-label="Close"
@@ -74,77 +78,74 @@ function DialogBackdrop({ className }: { className?: string }) {
   );
 }
 
-type DialogContentProps = DialogPrimitive.Popup.Props & {
-  backdropClassName?: string;
-  layerRef?: React.Ref<HTMLDivElement>;
-  showCloseButton?: boolean;
-  /** Omits the default centered positioning (left-1/2 top-1/2 max-w-2xl -translate-*) so the
-   *  caller can supply custom fixed inset classes without Tailwind class conflicts. */
-  noDefaultPositioning?: boolean;
+// Bare popup element with no positioning or box chrome — the escape hatch for
+// callers (e.g. the fullscreen lightbox) that paint their own surface. Drawer
+// mode wraps it in the swipe Viewport. `render` is omitted from the prop type so
+// callers cannot replace the element and corrupt the fixed portal structure.
+// Narrow className/style to their plain forms: Base UI's Dialog and Drawer popups
+// each accept a state-callback variant keyed to their own (incompatible) popup
+// state, so the union forms can't be forwarded to both. Every caller passes plain
+// values anyway. `render` is omitted so callers can't swap the element and corrupt
+// the fixed portal structure.
+type DialogRawPopupProps = Omit<DialogPrimitive.Popup.Props, "render" | "className" | "style"> & {
+  className?: string;
+  style?: React.CSSProperties;
 };
 
-function DialogContent({
-  className,
-  backdropClassName,
-  children,
-  layerRef,
-  showCloseButton = true,
-  noDefaultPositioning = false,
-  render: _render, // eslint-disable-line @typescript-eslint/no-unused-vars -- strip before DOM spread
-  ...props
-}: DialogContentProps) {
+function DialogRawPopup({ className, children, ...props }: DialogRawPopupProps) {
   const mode = useDialogMode();
 
   return mode === "drawer" ? (
-    <DrawerPrimitive.Portal>
-      <DrawerPrimitive.Backdrop
-        data-slot="dialog-backdrop"
-        className={cn(
-          `fixed inset-0 ${Z.dialog} bg-zinc-950/55 backdrop-blur-sm transition-colors duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0`,
-          backdropClassName
-        )}
-      />
-      <DrawerPrimitive.Viewport>
-        <DrawerPrimitive.Popup
-          data-slot="dialog-content"
+    <DrawerPrimitive.Viewport>
+      <DrawerPrimitive.Popup data-slot="dialog-content" className={className} {...props}>
+        {children}
+      </DrawerPrimitive.Popup>
+    </DrawerPrimitive.Viewport>
+  ) : (
+    <DialogPrimitive.Popup data-slot="dialog-content" className={className} {...props}>
+      {children}
+    </DialogPrimitive.Popup>
+  );
+}
+
+// Opinionated surface: Portal + Backdrop + a positioned box (centered card on
+// desktop, bottom sheet on mobile). Callers compose their own header/body/footer
+// and place a <DialogClose> wherever they want one.
+function DialogPopup({ className, children, ...props }: DialogRawPopupProps) {
+  const mode = useDialogMode();
+
+  return (
+    <DialogPortal>
+      <DialogBackdrop />
+      {mode === "drawer" ? (
+        <DialogRawPopup
           className={cn(
-            `fixed inset-x-0 bottom-0 ${Z.dialog} flex max-h-[85svh] flex-col border border-b-0 border-zinc-200 bg-white p-0 pb-[var(--safe-inset-bottom)] shadow-2xl duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:border-zinc-800 dark:bg-zinc-950`,
+            `flex max-h-[85svh] flex-col border border-b-0 border-zinc-200 bg-white p-0 pb-[var(--safe-inset-bottom)] shadow-2xl duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:border-zinc-800 dark:bg-zinc-950`,
+            `fixed inset-x-0 bottom-0 ${Z.dialog}`,
             "transition-[transform,opacity] data-[swipe-dismiss]:!transition-none data-[nested-drawer-open]:scale-[0.94] data-[nested-drawer-open]:opacity-40",
             className,
             "rounded-t-2xl rounded-b-none"
           )}
-          {...(props as Omit<typeof props, "style">)}
+          {...props}
         >
           <div className="flex shrink-0 touch-none justify-center pb-1 pt-3">
             <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
           </div>
           {children}
-          {layerRef && <div ref={layerRef} />}
-        </DrawerPrimitive.Popup>
-      </DrawerPrimitive.Viewport>
-    </DrawerPrimitive.Portal>
-  ) : (
-    <DialogPortal>
-      <div ref={layerRef} className={cn("fixed inset-0", Z.dialog)}>
-        <DialogBackdrop className={backdropClassName} />
-        <DialogPrimitive.Popup
-          data-slot="dialog-content"
+        </DialogRawPopup>
+      ) : (
+        <DialogRawPopup
           className={cn(
-            `fixed ${Z.local} rounded-2xl border border-zinc-200 bg-white p-0 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950`,
-            !noDefaultPositioning && "left-1/2 top-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2",
+            `fixed ${Z.dialog} rounded-2xl border border-zinc-200 bg-white p-0 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950`,
+            "left-1/2 top-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2",
             "origin-[var(--transform-origin)] duration-200 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-90 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-90",
             className
           )}
           {...props}
         >
           {children}
-          {showCloseButton && (
-            <DialogPrimitive.Close className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "absolute right-4 top-4 z-10 h-9 w-9")}>
-              <X className="h-4 w-4" />
-            </DialogPrimitive.Close>
-          )}
-        </DialogPrimitive.Popup>
-      </div>
+        </DialogRawPopup>
+      )}
     </DialogPortal>
   );
 }
@@ -210,7 +211,10 @@ function DialogClose({ className, ...props }: Omit<DialogPrimitive.Close.Props, 
 
 export {
   Dialog,
-  DialogContent,
+  DialogPortal,
+  DialogBackdrop,
+  DialogRawPopup,
+  DialogPopup,
   DialogClose,
   DialogHeader,
   DialogFooter,
