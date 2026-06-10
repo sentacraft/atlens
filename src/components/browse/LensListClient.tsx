@@ -199,19 +199,6 @@ export default function LensListClient({ lenses }: LensListClientProps) {
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
               {t("noResults")}
             </p>
-            <p className="text-xs text-zinc-400 dark:text-zinc-500">
-              {t("suggestLens")}{" "}
-              <FeedbackTrigger type="general">
-                {t("suggestLensLink")}
-              </FeedbackTrigger>
-              <span className="mx-2 opacity-40">·</span>
-              <Link
-                href="/about#coverage"
-                className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-              >
-                {t("coverageLink")}
-              </Link>
-            </p>
           </div>
         ) : (
           // Stable container — no content-fingerprint key. Filtering/sorting
