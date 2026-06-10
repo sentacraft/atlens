@@ -136,6 +136,105 @@ export default function LensSearchDialog({
     }
   }
 
+  function renderResults() {
+    if (query.trim().length === 0) {
+      return null;
+    }
+
+    if (isSearching && results.length === 0) {
+      return (
+        <div className="flex items-center justify-center py-16">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600 dark:border-zinc-700 dark:border-t-zinc-400" />
+        </div>
+      );
+    }
+
+    if (results.length === 0) {
+      return (
+        <div className="rounded-2xl border border-dashed border-zinc-200 px-5 py-10 text-center dark:border-zinc-800">
+          <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+            {t("noResults")}
+          </p>
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+            {t("noResultsHint")}
+          </p>
+          <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-500">
+            {t("suggestLens")}{" "}
+            <FeedbackTrigger
+              type="general"
+              context={{ searchQuery: deferredQuery.trim() }}
+            >
+              {t("suggestLensLink")}
+            </FeedbackTrigger>
+          </p>
+          <Link
+            href="/about#coverage"
+            className="mt-2 inline-block text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+          >
+            {t("coverageLink")}
+          </Link>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        id={resultsId}
+        role="listbox"
+        aria-label={t("results")}
+        className="space-y-2"
+      >
+        {results.map((lens, index) => {
+          const isActive = index === activeIndex;
+          const resultState = getResultState?.(lens);
+          const actionLabel = resultState?.actionLabel ?? t("view");
+          const isDisabled = resultState?.disabled ?? false;
+
+          return (
+            <button
+              key={lens.id}
+              type="button"
+              role="option"
+              aria-selected={isActive}
+              disabled={isDisabled}
+              onMouseEnter={() => setActiveIndex(index)}
+              onClick={() => handleSelect(lens)}
+              className={cn(
+                "flex w-full items-center justify-between gap-4 rounded-2xl border px-4 py-3 text-left transition-colors",
+                isDisabled
+                  ? "cursor-not-allowed border-transparent bg-zinc-50/80 opacity-60 dark:bg-zinc-900/60"
+                  : isActive
+                    ? "border-zinc-200 bg-zinc-50/80 dark:border-zinc-700 dark:bg-zinc-800/50"
+                    : "border-transparent bg-white hover:bg-zinc-50 dark:bg-zinc-950 dark:hover:bg-zinc-900"
+              )}
+            >
+              <div className="min-w-0">
+                <p className="truncate text-xs uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+                  {lensSubtitleLine(tBrand(lens.brand), lens.series)}
+                </p>
+                <p className="mt-0.5 truncate text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                  {lens.model}
+                </p>
+              </div>
+              <span className="shrink-0 text-xs font-medium text-zinc-400 dark:text-zinc-500">
+                {actionLabel}
+              </span>
+            </button>
+          );
+        })}
+        <p className="pt-1 text-center text-xs text-zinc-400 dark:text-zinc-500">
+          {t("suggestLensResults")}{" "}
+          <FeedbackTrigger
+            type="general"
+            context={{ searchQuery: deferredQuery.trim() }}
+          >
+            {t("suggestLensLink")}
+          </FeedbackTrigger>
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       <button
@@ -242,90 +341,7 @@ export default function LensSearchDialog({
             style={{ scrollPaddingBottom: keyboardInset || undefined }}
             className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
           >
-            {query.trim().length === 0 ? null : isSearching && results.length === 0 ? (
-              <div className="flex items-center justify-center py-16">
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600 dark:border-zinc-700 dark:border-t-zinc-400" />
-              </div>
-            ) : results.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-zinc-200 px-5 py-10 text-center dark:border-zinc-800">
-                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
-                  {t("noResults")}
-                </p>
-                <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-                  {t("noResultsHint")}
-                </p>
-                <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-500">
-                  {t("suggestLens")}{" "}
-                  <FeedbackTrigger
-                    type="general"
-                    context={{ searchQuery: deferredQuery.trim() }}
-                  >
-                    {t("suggestLensLink")}
-                  </FeedbackTrigger>
-                </p>
-                <Link
-                  href="/about#coverage"
-                  className="mt-2 inline-block text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-                >
-                  {t("coverageLink")}
-                </Link>
-              </div>
-            ) : (
-              <div
-                id={resultsId}
-                role="listbox"
-                aria-label={t("results")}
-                className="space-y-2"
-              >
-                {results.map((lens, index) => {
-                  const isActive = index === activeIndex;
-                  const resultState = getResultState?.(lens);
-                  const actionLabel = resultState?.actionLabel ?? t("view");
-                  const isDisabled = resultState?.disabled ?? false;
-
-                  return (
-                    <button
-                      key={lens.id}
-                      type="button"
-                      role="option"
-                      aria-selected={isActive}
-                      disabled={isDisabled}
-                      onMouseEnter={() => setActiveIndex(index)}
-                      onClick={() => handleSelect(lens)}
-                      className={cn(
-                        "flex w-full items-center justify-between gap-4 rounded-2xl border px-4 py-3 text-left transition-colors",
-                        isDisabled
-                          ? "cursor-not-allowed border-transparent bg-zinc-50/80 opacity-60 dark:bg-zinc-900/60"
-                          : isActive
-                            ? "border-zinc-200 bg-zinc-50/80 dark:border-zinc-700 dark:bg-zinc-800/50"
-                            : "border-transparent bg-white hover:bg-zinc-50 dark:bg-zinc-950 dark:hover:bg-zinc-900"
-                      )}
-                    >
-                      <div className="min-w-0">
-                        <p className="truncate text-xs uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
-                          {lensSubtitleLine(tBrand(lens.brand), lens.series)}
-                        </p>
-                        <p className="mt-0.5 truncate text-sm font-medium text-zinc-900 dark:text-zinc-50">
-                          {lens.model}
-                        </p>
-                      </div>
-                      <span className="shrink-0 text-xs font-medium text-zinc-400 dark:text-zinc-500">
-                        {actionLabel}
-                      </span>
-                    </button>
-                  );
-                })}
-                <p className="pt-1 text-center text-xs text-zinc-400 dark:text-zinc-500">
-                  {t("suggestLensResults")}{" "}
-                  <FeedbackTrigger
-                    type="general"
-                    context={{ searchQuery: deferredQuery.trim() }}
-                  >
-                    {t("suggestLensLink")}
-                  </FeedbackTrigger>
-                </p>
-              </div>
-            )}
+            {renderResults()}
             {/* Spacer that reserves the keyboard's height inside the scroll area so the
                 last result can be scrolled clear of the on-screen keyboard. Collapses to
                 0 when the keyboard is down. */}
