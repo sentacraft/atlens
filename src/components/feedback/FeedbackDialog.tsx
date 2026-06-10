@@ -2,11 +2,14 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
+import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Iris from "@/components/iris/Iris";
 import type { IrisConfig } from "@/config/iris-config";
+import { ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
 import {
   Dialog,
+  DialogClose,
   DialogPopup,
   DialogFooter,
   DialogHeader,
@@ -206,6 +209,11 @@ export default function FeedbackDialog({
               </a>
             </p>
           )}
+          {/* Desktop-only corner close; the mobile drawer dismisses via swipe /
+              the footer Cancel, matching LensSearchDialog. */}
+          <DialogClose className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "absolute right-4 top-4 hidden h-9 w-9 sm:inline-flex")}>
+            <X className="h-4 w-4" />
+          </DialogClose>
         </DialogHeader>
 
 
