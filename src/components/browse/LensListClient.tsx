@@ -71,7 +71,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
     filters.features.length > 0,
   ].filter(Boolean).length;
 
-  function onSelectLens(lens: Lens) {
+  function handleSelectLens(lens: Lens) {
     router.push(`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`);
   }
 
@@ -145,7 +145,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
             searchSlot={
               <LensSearchDialog
                 lenses={lenses}
-                onSelectLens={onSelectLens}
+                onSelectLens={handleSelectLens}
                 triggerVariant="button"
                 triggerLabel={tSearch("browseTrigger")}
                 triggerClassName="sm:h-10"
