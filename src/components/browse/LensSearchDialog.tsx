@@ -98,7 +98,9 @@ export default function LensSearchDialog({
       : [],
     [searchIndex, deferredQuery],
   );
-  const isSearching = false;
+
+  const hasInput = query.trim().length > 0;
+  const hasResults = results.length > 0;
 
   useSearchTelemetry({ query: deferredQuery, resultsCount: results.length, isOpen: open });
 
@@ -137,46 +139,44 @@ export default function LensSearchDialog({
   }
 
   function renderResults() {
-    if (query.trim().length === 0) {
+    if (!hasInput) {
       return null;
     }
-
-    if (isSearching && results.length === 0) {
-      return (
-        <div className="flex items-center justify-center py-16">
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600 dark:border-zinc-700 dark:border-t-zinc-400" />
-        </div>
-      );
+    if (!hasResults) {
+      return renderNoMatches();
     }
+    return renderMatchList();
+  }
 
-    if (results.length === 0) {
-      return (
-        <div className="rounded-2xl border border-dashed border-zinc-200 px-5 py-10 text-center dark:border-zinc-800">
-          <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
-            {t("noResults")}
-          </p>
-          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-            {t("noResultsHint")}
-          </p>
-          <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-500">
-            {t("suggestLens")}{" "}
-            <FeedbackTrigger
-              type="general"
-              context={{ searchQuery: deferredQuery.trim() }}
-            >
-              {t("suggestLensLink")}
-            </FeedbackTrigger>
-          </p>
-          <Link
-            href="/about#coverage"
-            className="mt-2 inline-block text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+  function renderNoMatches() {
+    return (
+      <div className="rounded-2xl border border-dashed border-zinc-200 px-5 py-10 text-center dark:border-zinc-800">
+        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+          {t("noResults")}
+        </p>
+        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+          {t("noResultsHint")}
+        </p>
+        <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-500">
+          {t("suggestLens")}{" "}
+          <FeedbackTrigger
+            type="general"
+            context={{ searchQuery: deferredQuery.trim() }}
           >
-            {t("coverageLink")}
-          </Link>
-        </div>
-      );
-    }
+            {t("suggestLensLink")}
+          </FeedbackTrigger>
+        </p>
+        <Link
+          href="/about#coverage"
+          className="mt-2 inline-block text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+        >
+          {t("coverageLink")}
+        </Link>
+      </div>
+    );
+  }
 
+  function renderMatchList() {
     return (
       <div
         id={resultsId}
