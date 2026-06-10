@@ -2,6 +2,7 @@
 
 import {
   type KeyboardEvent,
+  useCallback,
   useDeferredValue,
   useEffect,
   useId,
@@ -12,8 +13,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useRouter, Link } from "@/i18n/navigation";
-import { mountToUrlSegment } from "@/lib/mount";
+import { Link } from "@/i18n/navigation";
 import { useKeyboardInset } from "@/hooks/useViewport";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
 import type { Lens } from "@/lib/types";
@@ -38,7 +38,7 @@ interface LensSearchResultState {
 
 interface LensSearchDialogProps {
   lenses: Lens[];
-  onSelectLens?: (lens: Lens) => void;
+  onSelectLens: (lens: Lens) => void;
   getResultState?: (lens: Lens) => LensSearchResultState | undefined;
   triggerClassName?: string;
   triggerLabel?: string;
@@ -58,7 +58,6 @@ export default function LensSearchDialog({
 }: LensSearchDialogProps) {
   const t = useTranslations("Search");
   const tBrand = useTranslations("Brands");
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -103,18 +102,13 @@ export default function LensSearchDialog({
 
   useSearchTelemetry({ query: deferredQuery, resultsCount: results.length, isOpen: open });
 
-  function handleSelect(lens: Lens) {
-    setOpen(false);
-
-    if (onSelectLens) {
-
+  const handleSelect = useCallback(
+    (lens: Lens) => {
+      setOpen(false);
       onSelectLens(lens);
-      return;
-
-    }
-
-    router.push(`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`);
-  }
+    },
+    [onSelectLens]
+  );
 
   function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "ArrowDown") {
@@ -136,11 +130,9 @@ export default function LensSearchDialog({
     }
 
     if (event.key === "Enter" && results[activeIndex]) {
-
       event.preventDefault();
       handleSelect(results[activeIndex]);
       return;
-
     }
   }
 

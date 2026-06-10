@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef, useLayoutEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import {
   filterLenses,
@@ -26,6 +26,7 @@ import LensUsageSwitch from "@/components/browse/LensUsageSwitch";
 import LensSortControl from "@/components/browse/LensSortControl";
 import LensSearchDialog from "@/components/browse/LensSearchDialog";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
+import { mountToUrlSegment } from "@/lib/mount";
 
 interface LensListClientProps {
   lenses: Lens[];
@@ -35,6 +36,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   const t = useTranslations("LensList");
   const tSearch = useTranslations("Search");
   const hookAttr = useUiHookAttr();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
   const { compareIds, toggle } = useCompare();
@@ -68,6 +70,10 @@ export default function LensListClient({ lenses }: LensListClientProps) {
     filters.focalCategories.length > 0,
     filters.features.length > 0,
   ].filter(Boolean).length;
+
+  function onSelectLens(lens: Lens) {
+    router.push(`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`);
+  }
 
   function clearAllFilters() {
     // Reset clears refinements but preserves the photo/cine view mode — usage
@@ -139,6 +145,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
             searchSlot={
               <LensSearchDialog
                 lenses={lenses}
+                onSelectLens={onSelectLens}
                 triggerVariant="button"
                 triggerLabel={tSearch("browseTrigger")}
                 triggerClassName="sm:h-10"
