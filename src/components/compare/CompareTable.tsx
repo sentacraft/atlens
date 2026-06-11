@@ -297,6 +297,7 @@ export default function CompareTable({ lenses: initialLenses, allLenses, minColu
         wr: td("wr"),
         apertureRing: td("apertureRing"),
         powerZoom: td("powerZoom"),
+        internalZoom: td("internalZoom"),
         releaseYear: td("releaseYear"),
         releaseYearLabelNote: td("releaseYearLabelNote"),
         accessories: td("accessories"),

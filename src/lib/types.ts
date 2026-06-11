@@ -4,6 +4,7 @@
  * - filterMm = "N/A" on bulbous fisheye lenses (no front filter thread)
  * - focusMotor = "N/A" on manual-focus lenses (no AF motor)
  * - apertureBladeCount = "N/A" on fixed-aperture lenses (no diaphragm at all)
+ * - powerZoom / internalZoom = "N/A" on primes (no zoom mechanism)
  *
  * Use this whenever a structured field's domain is undefined for a class of
  * lenses, rather than picking 0 / 1 / -1 placeholder values that would be
@@ -490,9 +491,16 @@ export interface Lens {
 
   /**
    * Whether the lens uses a power zoom (motorized zoom) mechanism.
+   *
+   * - `true` — has a motorized zoom.
+   * - `false` — manual zoom ring.
+   * - `"N/A"` — not applicable (prime lenses have no zoom mechanism).
+   *
    * @example true
+   * @example false
+   * @example "N/A"
    */
-  powerZoom: boolean;
+  powerZoom: boolean | typeof SPEC_NA;
 
   /**
    * Whether the lens uses internal zoom — the overall barrel length does not

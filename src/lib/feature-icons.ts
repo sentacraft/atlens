@@ -2,7 +2,7 @@
  * Canonical icon mapping for lens features.
  * Single source of truth — used by both the filter panel and share poster.
  */
-import { Aperture, ArrowLeftRight, Droplets, Focus, Hand, Video } from "lucide-react";
+import { Aperture, ArrowLeftRight, ChevronsRightLeft, Droplets, Focus, Hand, Zap } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export const FEATURE_ICONS: Record<string, LucideIcon> = {
@@ -10,6 +10,7 @@ export const FEATURE_ICONS: Record<string, LucideIcon> = {
   ois: Hand,
   wr: Droplets,
   apertureRing: Aperture,
-  powerZoom: Video,
+  powerZoom: Zap,
   internalFocusing: ArrowLeftRight,
+  internalZoom: ChevronsRightLeft,
 };

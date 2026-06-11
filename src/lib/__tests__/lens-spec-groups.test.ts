@@ -32,6 +32,7 @@ const labels = {
   wr: "WR",
   apertureRing: "Aperture Ring",
   powerZoom: "Power Zoom",
+  internalZoom: "Internal Zoom",
   releaseYear: "Release Year",
   releaseYearLabelNote: "For lenses available in multiple mounts, this is the year the Fujifilm X mount version was released.",
   accessories: "Accessories",
