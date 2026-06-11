@@ -267,12 +267,25 @@ export function dimensionsVariantsDisplay(
   if (!variants) {
     return undefined;
   }
+  // When wide and tele are equal AND match the headline length (length.mm), the
+  // pair is fully redundant — the primary dimensions already show that number
+  // and the internalZoom flag conveys the constant length. Suppress both lines.
+  // Keep them when they differ from length.mm (e.g. length.mm is the retracted
+  // length), since the constant extended length is still new information.
+  const wideTeleRedundant =
+    variants.wide !== undefined &&
+    variants.wide === variants.tele &&
+    variants.wide === length?.mm;
   const parts = [
     variants.retracted !== undefined
       ? `${labels.retracted} ${variants.retracted}mm`
       : null,
-    variants.wide !== undefined ? `${labels.wide} ${variants.wide}mm` : null,
-    variants.tele !== undefined ? `${labels.tele} ${variants.tele}mm` : null,
+    !wideTeleRedundant && variants.wide !== undefined
+      ? `${labels.wide} ${variants.wide}mm`
+      : null,
+    !wideTeleRedundant && variants.tele !== undefined
+      ? `${labels.tele} ${variants.tele}mm`
+      : null,
   ].filter((v): v is string => v !== null);
   return parts.length > 0 ? parts.join("\n") : undefined;
 }

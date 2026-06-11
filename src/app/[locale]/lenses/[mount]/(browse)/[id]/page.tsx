@@ -221,6 +221,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     wr: t("wr"),
     apertureRing: t("apertureRing"),
     powerZoom: t("powerZoom"),
+    internalZoom: t("internalZoom"),
     releaseYear: t("releaseYear"),
     releaseYearLabelNote: t("releaseYearLabelNote"),
     accessories: t("accessories"),

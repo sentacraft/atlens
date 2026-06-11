@@ -201,6 +201,7 @@ export default function LensFilters({
     wr: { label: t("featureWr"), icon: FEATURE_ICONS.wr },
     apertureRing: { label: t("featureApertureRing"), icon: FEATURE_ICONS.apertureRing },
     powerZoom: { label: t("featurePowerZoom"), icon: FEATURE_ICONS.powerZoom },
+    internalZoom: { label: t("featureInternalZoom"), icon: FEATURE_ICONS.internalZoom },
   };
 
   const featureOptions: FeatureToggleOption<FilterFeatureKey>[] = available.features.map((key) => ({
