@@ -9,7 +9,8 @@ import type { Lens } from "@/lib/types";
 import { Weight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TriangleAlert } from "lucide-react";
-import { classifyFocusMotor, isZoom, leadingValue, type FocusMotorClass } from "@/lib/lens/lens";
+import { classifyFocusMotor, leadingValue, type FocusMotorClass } from "@/lib/lens/lens";
+import { SPEC_NA } from "@/lib/types";
 import { pickPriceEntry, formatPrice, formatSampledAt } from "@/lib/lens/pricing";
 import { getLensImageUrl } from "@/lib/lens/image";
 import {
@@ -298,10 +299,12 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   const showFilter = lenses.some((l) => l.filterMm !== undefined);
 
   // ── Zoom-only feature visibility ───────────────────────────────
-  // power zoom / internal zoom only apply to zooms ("N/A" on primes), so the
-  // rows appear only when at least one displayed lens is a zoom. Section-level
-  // (not per-column) keeps the feature rows aligned across columns.
-  const showZoomFeatures = lenses.some(isZoom);
+  // power zoom / internal zoom are "N/A" on primes. Read that signal directly
+  // (same as the detail/compare hasData check) rather than re-deriving from
+  // focal length, and gate per field. Section-level (not per-column) keeps the
+  // feature rows aligned across columns.
+  const showPowerZoom = lenses.some((l) => l.powerZoom !== SPEC_NA);
+  const showInternalZoom = lenses.some((l) => l.internalZoom !== SPEC_NA);
 
   // ── Field notes collection ─────────────────────────────────────
   // Notes with identical text for the same field are aggregated under one
@@ -356,7 +359,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   }
   /* Features always rendered */    lenses.forEach((_, i) => collectNote(i, "ois", labels.featureOIS));
   /* Features always rendered */    lenses.forEach((_, i) => collectNote(i, "wr", labels.featureWR));
-  if (showZoomFeatures) {
+  if (showInternalZoom) {
     lenses.forEach((_, i) => collectNote(i, "internalZoom", labels.featureInternalZoom));
   }
   if (showFocusMotorRow) {
@@ -876,10 +879,10 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   />
                   <PosterFeatureItem present={lens.af} label={labels.featureAF} icon={FEATURE_ICONS.af} />
                   <PosterFeatureItem present={lens.apertureRing} label={labels.featureApertureRing} icon={FEATURE_ICONS.apertureRing} />
-                  {showZoomFeatures && (
+                  {showPowerZoom && (
                     <PosterFeatureItem present={lens.powerZoom === true} label={labels.featurePowerZoom} icon={FEATURE_ICONS.powerZoom} />
                   )}
-                  {showZoomFeatures && (
+                  {showInternalZoom && (
                     <PosterFeatureItem
                       present={lens.internalZoom === true}
                       label={labels.featureInternalZoom}
