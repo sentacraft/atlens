@@ -59,7 +59,8 @@ export interface PosterLabels {
   featureOIS: string;
   featureAF: string;
   featureApertureRing: string;
-  featureInternalFocusing: string;
+  featurePowerZoom: string;
+  featureInternalZoom: string;
   // Focus motor canonical classes
   motorLinear: string;
   motorStepping: string;
@@ -266,7 +267,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
 
   // ── Feature row visibility ─────────────────────────────────────
   // A feature row is shown only when at least one lens has a defined value.
-  // showInternalFocusing hidden — data quality issues, to be re-added later
 
   // ── Conditional Details visibility ────────────────────────────
   const focusMotorClassLabel: Record<FocusMotorClass, string> = {
@@ -350,6 +350,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   }
   /* Features always rendered */    lenses.forEach((_, i) => collectNote(i, "ois", labels.featureOIS));
   /* Features always rendered */    lenses.forEach((_, i) => collectNote(i, "wr", labels.featureWR));
+  /* Features always rendered */    lenses.forEach((_, i) => collectNote(i, "internalZoom", labels.featureInternalZoom));
   if (showFocusMotorRow) {
     lenses.forEach((_, i) => collectNote(i, "focusMotor", labels.focusMotorLabel));
   }
@@ -867,6 +868,13 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   />
                   <PosterFeatureItem present={lens.af} label={labels.featureAF} icon={FEATURE_ICONS.af} />
                   <PosterFeatureItem present={lens.apertureRing} label={labels.featureApertureRing} icon={FEATURE_ICONS.apertureRing} />
+                  <PosterFeatureItem present={lens.powerZoom} label={labels.featurePowerZoom} icon={FEATURE_ICONS.powerZoom} />
+                  <PosterFeatureItem
+                    present={lens.internalZoom === true}
+                    label={labels.featureInternalZoom}
+                    sup={noteSup(i, "internalZoom")}
+                    icon={FEATURE_ICONS.internalZoom}
+                  />
                   </div>
                 </div>
               ))}
