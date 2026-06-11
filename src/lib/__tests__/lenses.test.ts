@@ -41,6 +41,7 @@ function makeLens(
     length: { mm: 45 },
     angleOfViewCalc: 44.2,
     powerZoom: false,
+    internalZoom: "N/A" as const,
     filterMm: 52,
     minFocusDistance: { normal: { cm: 28 } },
     releaseYear: 2012,

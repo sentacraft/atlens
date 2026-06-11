@@ -79,6 +79,7 @@ const lensBaseShape = {
   wr: z.union([z.boolean(), z.literal("partial")]),
   apertureRing: z.boolean(),
   powerZoom: z.boolean(),
+  internalZoom: z.union([z.boolean(), z.literal("N/A")]),
   focusMotor: optionalNonEmptyStringSchema,
   internalFocusing: z.boolean().optional(),
   weightG: z.union([
@@ -220,6 +221,7 @@ const fieldNotesSchema = z.strictObject({
   maxAperture: nonEmptyStringSchema.optional(),
   minAperture: nonEmptyStringSchema.optional(),
   apertureBladeCount: nonEmptyStringSchema.optional(),
+  internalZoom: nonEmptyStringSchema.optional(),
 });
 
 // Compile-time check: the zod schema's keys must equal FIELD_NOTE_KEYS exactly.
