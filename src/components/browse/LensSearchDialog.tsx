@@ -60,7 +60,10 @@ export default function LensSearchDialog({
   const tBrand = useTranslations("Brands");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [activeIndex, setActiveIndex] = useState(0);
+  // null = no active row (idle / cleared / pointer left). Keeping the "nothing
+  // selected" state out of the numeric index space means the keyboard-wrap math
+  // below can't accidentally treat it as a real row.
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputId = useId();
@@ -72,7 +75,7 @@ export default function LensSearchDialog({
   useEffect(() => {
     if (!open) {
       setQuery("");
-      setActiveIndex(0);
+      setActiveIndex(null);
     }
   }, [open]);
 
@@ -118,7 +121,9 @@ export default function LensSearchDialog({
       if (results.length === 0) {
         return;
       }
-      setActiveIndex((current) => (current + 1) % results.length);
+      setActiveIndex((current) =>
+        current === null || current >= results.length - 1 ? 0 : current + 1
+      );
       return;
     }
 
@@ -127,11 +132,13 @@ export default function LensSearchDialog({
       if (results.length === 0) {
         return;
       }
-      setActiveIndex((current) => (current - 1 + results.length) % results.length);
+      setActiveIndex((current) =>
+        current === null || current <= 0 ? results.length - 1 : current - 1
+      );
       return;
     }
 
-    if (event.key === "Enter" && results[activeIndex]) {
+    if (event.key === "Enter" && activeIndex !== null && results[activeIndex]) {
       event.preventDefault();
       handleSelect(results[activeIndex]);
       return;
@@ -198,6 +205,7 @@ export default function LensSearchDialog({
               aria-selected={isActive}
               disabled={isDisabled}
               onMouseEnter={() => setActiveIndex(index)}
+              onMouseLeave={() => setActiveIndex(null)}
               onClick={() => handleSelect(lens)}
               className={cn(
                 "flex w-full items-center justify-between gap-4 rounded-2xl border px-4 py-3 text-left transition-colors",
@@ -300,8 +308,12 @@ export default function LensSearchDialog({
                 type="text"
                 value={query}
                 onChange={(event) => {
-                  setQuery(event.target.value);
-                  setActiveIndex(0);
+                  const value = event.target.value;
+                  setQuery(value);
+                  // Preselect the first row while there is a query (Enter picks
+                  // it); an empty box has no first row, so fall back to null —
+                  // same idle state as the clear button.
+                  setActiveIndex(value.trim() ? 0 : null);
                 }}
                 onKeyDown={handleInputKeyDown}
                 placeholder={t("placeholder")}
@@ -315,7 +327,7 @@ export default function LensSearchDialog({
                   aria-label={t("clear")}
                   onClick={() => {
                     setQuery("");
-                    setActiveIndex(0);
+                    setActiveIndex(null);
                     inputRef.current?.focus();
                   }}
                   className="shrink-0 text-zinc-400 transition-colors hover:text-zinc-600 dark:hover:text-zinc-300"
