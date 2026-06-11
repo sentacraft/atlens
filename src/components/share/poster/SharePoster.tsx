@@ -9,7 +9,7 @@ import type { Lens } from "@/lib/types";
 import { Weight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TriangleAlert } from "lucide-react";
-import { classifyFocusMotor, leadingValue, type FocusMotorClass } from "@/lib/lens/lens";
+import { classifyFocusMotor, isZoom, leadingValue, type FocusMotorClass } from "@/lib/lens/lens";
 import { pickPriceEntry, formatPrice, formatSampledAt } from "@/lib/lens/pricing";
 import { getLensImageUrl } from "@/lib/lens/image";
 import {
@@ -297,6 +297,12 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   );
   const showFilter = lenses.some((l) => l.filterMm !== undefined);
 
+  // ── Zoom-only feature visibility ───────────────────────────────
+  // power zoom / internal zoom only apply to zooms ("N/A" on primes), so the
+  // rows appear only when at least one displayed lens is a zoom. Section-level
+  // (not per-column) keeps the feature rows aligned across columns.
+  const showZoomFeatures = lenses.some(isZoom);
+
   // ── Field notes collection ─────────────────────────────────────
   // Notes with identical text for the same field are aggregated under one
   // superscript. The footnote block then lists all lens models together.
@@ -350,7 +356,9 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   }
   /* Features always rendered */    lenses.forEach((_, i) => collectNote(i, "ois", labels.featureOIS));
   /* Features always rendered */    lenses.forEach((_, i) => collectNote(i, "wr", labels.featureWR));
-  /* Features always rendered */    lenses.forEach((_, i) => collectNote(i, "internalZoom", labels.featureInternalZoom));
+  if (showZoomFeatures) {
+    lenses.forEach((_, i) => collectNote(i, "internalZoom", labels.featureInternalZoom));
+  }
   if (showFocusMotorRow) {
     lenses.forEach((_, i) => collectNote(i, "focusMotor", labels.focusMotorLabel));
   }
@@ -868,13 +876,17 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   />
                   <PosterFeatureItem present={lens.af} label={labels.featureAF} icon={FEATURE_ICONS.af} />
                   <PosterFeatureItem present={lens.apertureRing} label={labels.featureApertureRing} icon={FEATURE_ICONS.apertureRing} />
-                  <PosterFeatureItem present={lens.powerZoom} label={labels.featurePowerZoom} icon={FEATURE_ICONS.powerZoom} />
-                  <PosterFeatureItem
-                    present={lens.internalZoom === true}
-                    label={labels.featureInternalZoom}
-                    sup={noteSup(i, "internalZoom")}
-                    icon={FEATURE_ICONS.internalZoom}
-                  />
+                  {showZoomFeatures && (
+                    <PosterFeatureItem present={lens.powerZoom === true} label={labels.featurePowerZoom} icon={FEATURE_ICONS.powerZoom} />
+                  )}
+                  {showZoomFeatures && (
+                    <PosterFeatureItem
+                      present={lens.internalZoom === true}
+                      label={labels.featureInternalZoom}
+                      sup={noteSup(i, "internalZoom")}
+                      icon={FEATURE_ICONS.internalZoom}
+                    />
+                  )}
                   </div>
                 </div>
               ))}

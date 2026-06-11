@@ -33,26 +33,22 @@ export type FocusFilter = (typeof FOCUS_FILTERS)[number];
 export type FilterFeatureKey = (typeof FILTER_FEATURE_KEYS)[number];
 
 /**
- * Whether a lens satisfies a feature toggle. Each key's semantics are spelled
- * out here rather than riding on truthiness, so the two non-plain-boolean keys
- * are handled on equal footing with the rest:
+ * Whether a lens satisfies a feature toggle. Semantics are spelled out here
+ * rather than riding on truthiness:
  * - wr: "partial" weather sealing still counts as having WR.
- * - internalZoom: tri-state (true | false | "N/A"); only a confirmed internal
- *   zoom (true) counts — "N/A" (primes) and false (extending zooms) do not.
+ * - powerZoom / internalZoom: zoom-only tri-state (true | false | "N/A"); only
+ *   `true` counts, so "N/A" (primes) and false (manual / extending zooms) are
+ *   excluded — handled by the `=== true` default below.
  *
- * Note: internalZoom is not orthogonal to the prime/zoom type facet (only zooms
- * can be internal), same as powerZoom; selecting it alongside type=prime yields
- * an empty set, which is the intended, consistent behavior.
+ * Note: powerZoom and internalZoom are not orthogonal to the prime/zoom type
+ * facet (only zooms can have them); selecting either alongside type=prime
+ * yields an empty set, which is the intended, consistent behavior.
  */
 export function lensHasFeature(lens: Lens, key: FilterFeatureKey): boolean {
-  switch (key) {
-    case "wr":
-      return lens.wr === true || lens.wr === "partial";
-    case "internalZoom":
-      return lens.internalZoom === true;
-    default:
-      return lens[key] === true;
+  if (key === "wr") {
+    return lens.wr === true || lens.wr === "partial";
   }
+  return lens[key] === true;
 }
 
 /**
