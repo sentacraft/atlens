@@ -6,6 +6,7 @@ import {
   useDeferredValue,
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -102,8 +103,11 @@ export default function LensSearchDialog({
   const activeRow =
     activeIndex !== null && activeIndex < results.length ? activeIndex : null;
 
-  // Scroll the active row into view as keyboard navigation moves it.
-  useEffect(() => {
+  // Scroll the active row into view as keyboard navigation moves it. Layout
+  // effect (not passive) so the scroll lands in the same frame the highlight
+  // moves — otherwise the browser paints "highlight moved, list not scrolled"
+  // first, then scrolls, which reads as a jump.
+  useLayoutEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) {
       return;
@@ -198,6 +202,10 @@ export default function LensSearchDialog({
         id={resultsId}
         role="listbox"
         aria-label={t("results")}
+        // Clear the highlight only when the pointer leaves the whole list, not a
+        // single row — a scroll that slides a row out from under a still pointer
+        // would otherwise fire a per-row leave and wrongly clear the selection.
+        onMouseLeave={() => setActiveIndex(null)}
         className="space-y-2"
       >
         {results.map((lens, index) => {
@@ -213,8 +221,10 @@ export default function LensSearchDialog({
               role="option"
               aria-selected={isActive}
               disabled={isDisabled}
-              onMouseEnter={() => setActiveIndex(index)}
-              onMouseLeave={() => setActiveIndex(null)}
+              // onMouseMove, not onMouseEnter: a scroll that moves a row under a
+              // still pointer fires enter (and would hijack the keyboard's active
+              // row), but never fires move. Only real pointer motion sets active.
+              onMouseMove={() => setActiveIndex(index)}
               onClick={() => handleSelect(lens)}
               // scroll-my-2 keeps the active row a small gap clear of the
               // scroll-container edge when scrollIntoView lands it.
