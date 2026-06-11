@@ -94,6 +94,7 @@ function makeLens(overrides: Partial<Lens> = {}): Lens {
     wr: false,
     apertureRing: false,
     powerZoom: false,
+    internalZoom: false,
     weightG: 187,
     diameterMm: 65,
     length: { mm: 70 },

@@ -79,6 +79,7 @@ const lensBaseShape = {
   wr: z.union([z.boolean(), z.literal("partial")]),
   apertureRing: z.boolean(),
   powerZoom: z.boolean(),
+  internalZoom: z.union([z.boolean(), z.literal("N/A")]),
   focusMotor: optionalNonEmptyStringSchema,
   internalFocusing: z.boolean().optional(),
   weightG: z.union([

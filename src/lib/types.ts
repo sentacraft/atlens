@@ -32,7 +32,9 @@ export interface LensOfficialLinks {
 }
 
 /**
- * Optional length variants for lenses whose physical length changes by state or zoom position.
+ * Optional length variants for lenses whose physical length changes by state
+ * or zoom position. Write wide and tele whenever the source gives both values,
+ * even when they are equal.
  */
 export interface LensLengthVariants {
   /**
@@ -66,7 +68,10 @@ export interface LensLength {
 
   /**
    * Optional breakdown by physical state (retracted, wide, tele).
+   * Write wide and tele whenever the source gives both values, even when
+   * they are equal.
    * @example { retracted: 37.5, tele: 57.2 }
+   * @example { wide: 87, tele: 87 }
    */
   variants?: LensLengthVariants;
 }
@@ -487,6 +492,20 @@ export interface Lens {
    * @example true
    */
   powerZoom: boolean;
+
+  /**
+   * Whether the lens uses internal zoom — the overall barrel length does not
+   * change when zooming.
+   *
+   * - `true` — barrel length stays constant across the zoom range.
+   * - `false` — barrel extends or retracts during zooming.
+   * - `"N/A"` — not applicable (prime lenses have no zoom mechanism).
+   *
+   * @example true
+   * @example false
+   * @example "N/A"
+   */
+  internalZoom: boolean | typeof SPEC_NA;
 
   /**
    * Brand's verbatim AF motor or actuator label, copied from the source
