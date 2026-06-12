@@ -6,6 +6,7 @@ import {
   useDeferredValue,
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -60,9 +61,16 @@ export default function LensSearchDialog({
   const tBrand = useTranslations("Brands");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [activeIndex, setActiveIndex] = useState(0);
+  // null = no active row (idle / cleared / pointer left). Keeping the "nothing
+  // selected" state out of the numeric index space means the keyboard-wrap math
+  // below can't accidentally treat it as a real row.
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  // Set by the arrow keys so the scroll effect only reveals keyboard-driven
+  // moves. A pointer hover also changes the active row, but the row it lands on
+  // is already under the cursor (visible) — scrolling it would be unwanted.
+  const scrollActiveRef = useRef(false);
   const inputId = useId();
   const resultsId = useId();
   const deferredQuery = useDeferredValue(query);
@@ -72,21 +80,9 @@ export default function LensSearchDialog({
   useEffect(() => {
     if (!open) {
       setQuery("");
-      setActiveIndex(0);
+      setActiveIndex(null);
     }
   }, [open]);
-
-  // Scroll active result into view when navigating with keyboard
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) {
-      return;
-    }
-    const activeItem = container.querySelector('[aria-selected="true"]');
-    if (activeItem) {
-      (activeItem as HTMLElement).scrollIntoView({ block: "nearest" });
-    }
-  }, [activeIndex]);
 
   const searchIndex = useMemo(
     () => buildLensSearchIndex(lenses),
@@ -101,6 +97,35 @@ export default function LensSearchDialog({
 
   const hasInput = query.trim().length > 0;
   const hasResults = results.length > 0;
+
+  // activeIndex is the user's intent (0 = "first row once results arrive").
+  // activeRow projects that intent onto the current result set, collapsing to
+  // null whenever it points past what's actually there (a query with no matches,
+  // or a result set that shrank under a deferred update). Read activeRow — never
+  // raw activeIndex — for highlight / Enter / scroll, so an out-of-range intent
+  // can never act as a real row.
+  const activeRow =
+    activeIndex !== null && activeIndex < results.length ? activeIndex : null;
+
+  // Reveal the active row only when the keyboard moved it (scrollActiveRef);
+  // pointer hover changes activeRow too, but that row is already under the
+  // cursor, so scrolling it would be wrong. Layout effect (not passive) so the
+  // scroll lands in the same frame the highlight moves, rather than the browser
+  // painting "highlight moved, list not scrolled" first and then scrolling.
+  useLayoutEffect(() => {
+    if (!scrollActiveRef.current) {
+      return;
+    }
+    scrollActiveRef.current = false;
+    const container = scrollContainerRef.current;
+    if (!container) {
+      return;
+    }
+    const activeItem = container.querySelector('[aria-selected="true"]');
+    if (activeItem) {
+      (activeItem as HTMLElement).scrollIntoView({ block: "nearest" });
+    }
+  }, [activeRow]);
 
   useSearchTelemetry({ query: deferredQuery, resultsCount: results.length, isOpen: open });
 
@@ -118,7 +143,10 @@ export default function LensSearchDialog({
       if (results.length === 0) {
         return;
       }
-      setActiveIndex((current) => (current + 1) % results.length);
+      scrollActiveRef.current = true;
+      setActiveIndex(
+        activeRow === null || activeRow >= results.length - 1 ? 0 : activeRow + 1
+      );
       return;
     }
 
@@ -127,13 +155,16 @@ export default function LensSearchDialog({
       if (results.length === 0) {
         return;
       }
-      setActiveIndex((current) => (current - 1 + results.length) % results.length);
+      scrollActiveRef.current = true;
+      setActiveIndex(
+        activeRow === null || activeRow <= 0 ? results.length - 1 : activeRow - 1
+      );
       return;
     }
 
-    if (event.key === "Enter" && results[activeIndex]) {
+    if (event.key === "Enter" && activeRow !== null) {
       event.preventDefault();
-      handleSelect(results[activeIndex]);
+      handleSelect(results[activeRow]);
       return;
     }
   }
@@ -182,10 +213,14 @@ export default function LensSearchDialog({
         id={resultsId}
         role="listbox"
         aria-label={t("results")}
+        // Clear the highlight only when the pointer leaves the whole list, not a
+        // single row — a scroll that slides a row out from under a still pointer
+        // would otherwise fire a per-row leave and wrongly clear the selection.
+        onMouseLeave={() => setActiveIndex(null)}
         className="space-y-2"
       >
         {results.map((lens, index) => {
-          const isActive = index === activeIndex;
+          const isActive = index === activeRow;
           const resultState = getResultState?.(lens);
           const actionLabel = resultState?.actionLabel ?? t("view");
           const isDisabled = resultState?.disabled ?? false;
@@ -197,15 +232,24 @@ export default function LensSearchDialog({
               role="option"
               aria-selected={isActive}
               disabled={isDisabled}
-              onMouseEnter={() => setActiveIndex(index)}
+              // onMouseMove, not onMouseEnter: a scroll that moves a row under a
+              // still pointer fires enter (and would hijack the keyboard's active
+              // row), but never fires move. Only real pointer motion sets active.
+              onMouseMove={() => setActiveIndex(index)}
               onClick={() => handleSelect(lens)}
+              // scroll-my-2 keeps the active row a small gap clear of the
+              // scroll-container edge when scrollIntoView lands it.
               className={cn(
-                "flex w-full items-center justify-between gap-4 rounded-2xl border px-4 py-3 text-left transition-colors",
+                "flex w-full scroll-my-2 items-center justify-between gap-4 rounded-2xl border px-4 py-3 text-left",
                 isDisabled
                   ? "cursor-not-allowed border-transparent bg-zinc-50/80 opacity-60 dark:bg-zinc-900/60"
+                  // Highlight is driven solely by activeIndex (onMouseEnter sets it),
+                  // so the non-active row carries no CSS :hover background. A second
+                  // hover-based source would linger grey on the row the pointer still
+                  // rests on after the highlight moves away via keyboard/scroll.
                   : isActive
                     ? "border-zinc-200 bg-zinc-50/80 dark:border-zinc-700 dark:bg-zinc-800/50"
-                    : "border-transparent bg-white hover:bg-zinc-50 dark:bg-zinc-950 dark:hover:bg-zinc-900"
+                    : "border-transparent bg-white dark:bg-zinc-950"
               )}
             >
               <div className="min-w-0">
@@ -300,8 +344,12 @@ export default function LensSearchDialog({
                 type="text"
                 value={query}
                 onChange={(event) => {
-                  setQuery(event.target.value);
-                  setActiveIndex(0);
+                  const value = event.target.value;
+                  setQuery(value);
+                  // Preselect the first row while there is a query (Enter picks
+                  // it); an empty box has no first row, so fall back to null —
+                  // same idle state as the clear button.
+                  setActiveIndex(value.trim() ? 0 : null);
                 }}
                 onKeyDown={handleInputKeyDown}
                 placeholder={t("placeholder")}
@@ -315,7 +363,7 @@ export default function LensSearchDialog({
                   aria-label={t("clear")}
                   onClick={() => {
                     setQuery("");
-                    setActiveIndex(0);
+                    setActiveIndex(null);
                     inputRef.current?.focus();
                   }}
                   className="shrink-0 text-zinc-400 transition-colors hover:text-zinc-600 dark:hover:text-zinc-300"
