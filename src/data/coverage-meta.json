@@ -11,7 +11,9 @@
     "laowa":       { "active": true,      "discontinued": false,     "cinema": false,     "notes": "" },
     "meike":       { "active": true,      "discontinued": false,     "cinema": "partial", "notes": "" },
     "sirui":       { "active": true,      "discontinued": false,     "cinema": false,     "notes": "" },
-    "voigtlander": { "active": true,      "discontinued": false,     "cinema": "n/a",     "notes": "" }
+    "voigtlander": { "active": true,      "discontinued": false,     "cinema": "n/a",     "notes": "" },
+    "thypoch":     { "active": "planned", "discontinued": false,     "cinema": "n/a",     "notes": "" },
+    "zeiss":       { "active": "planned", "discontinued": false,     "cinema": "n/a",     "notes": "" }
   },
   "g": {
     "fujifilm":    { "active": true,      "discontinued": false,     "cinema": true,      "notes": "" },

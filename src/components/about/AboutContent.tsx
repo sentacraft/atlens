@@ -152,7 +152,7 @@ export default async function AboutContent() {
   const gCounts = getLensesByMount("G", locale).reduce<Record<string, number>>(
     (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
   );
-  const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage","laowa","meike","sirui","voigtlander"];
+  const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage","laowa","meike","sirui","voigtlander","thypoch","zeiss"];
   const G_BRANDS = ["fujifilm", "laowa"];
 
   const pipelineStages = [
