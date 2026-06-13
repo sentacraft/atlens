@@ -9,8 +9,8 @@
     "brightinstar":{ "active": true,      "discontinued": false,     "cinema": "n/a",     "notes": "" },
     "sgimage":     { "active": true,      "discontinued": false,     "cinema": "n/a",     "notes": "" },
     "laowa":       { "active": true,      "discontinued": false,     "cinema": false,     "notes": "" },
-    "meike":       { "active": "planned", "discontinued": false,     "cinema": false,     "notes": "" },
-    "sirui":       { "active": "planned", "discontinued": false,     "cinema": false,     "notes": "" },
+    "meike":       { "active": true,      "discontinued": false,     "cinema": "partial", "notes": "" },
+    "sirui":       { "active": true,      "discontinued": false,     "cinema": false,     "notes": "" },
     "voigtlander": { "active": true,      "discontinued": false,     "cinema": "n/a",     "notes": "" }
   },
   "g": {
