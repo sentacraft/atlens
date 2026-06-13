@@ -793,6 +793,36 @@ export interface Lens {
    */
   translations?: { zh?: LensLocaleTranslations };
 
+  /**
+   * Calendar date (YYYY-MM-DD) when this lens first appeared in the published
+   * catalog. Publish-managed bookkeeping — NOT a spec, and NOT the pipeline
+   * index date (a lens can sit in the pipeline long before it is published).
+   *
+   * Set once when the lens is first written to lenses.json and carried forward
+   * unchanged thereafter. Seeded for the existing catalog from the data file's
+   * git history. Optional because it is owned by the publish stage, not by the
+   * derive/review data; every published lens has it, but a hand-authored
+   * fixture or a pre-backfill record may not.
+   *
+   * Lenses sharing a createdAt were published in the same batch, so clustering
+   * by this value yields a "what was added when" changelog for free.
+   *
+   * @example "2026-05-03"
+   */
+  createdAt?: string;
+
+  /**
+   * Calendar date (YYYY-MM-DD) when this lens's spec content last changed in
+   * the published catalog. Bumped at publish time only when a meaningful field
+   * differs from the previously published version; pricing / searchAliases /
+   * translations refreshes do not count, and structural refactor publishes can
+   * suppress the bump entirely. See {@link createdAt} for the ownership and
+   * seeding model.
+   *
+   * @example "2026-06-13"
+   */
+  updatedAt?: string;
+
 }
 
 /**
