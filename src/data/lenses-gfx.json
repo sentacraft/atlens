@@ -58,17 +58,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0BCR6YBJR",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 2399.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf20-35mmf4-r-wr-lens-600023098/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0BCR6YBJR",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -163,17 +163,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B071R2XGWW",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 2999.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf23mmf4-gf23mmf4/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B071R2XGWW",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -263,17 +263,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B08BQGD44P",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1949.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf30mmf3-5-r-wr-lens-600021771/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B08BQGD44P",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -351,17 +351,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0CHG2XF1Z",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 4499.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf30mmf5-6-t-s-lens-600023617/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0CHG2XF1Z",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -474,17 +474,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B01MR6Z8Z2",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 2099.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf32-64mmf4-gf32-64mmf4/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B01MR6Z8Z2",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -675,17 +675,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B09DTJ9R5T",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1149.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf35-70mmf4-5-5-6-gf35-70mmf4-5-5-6/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B09DTJ9R5T",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -787,17 +787,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B08412X7BV",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 2099.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf45-100mmf4-gf45-100mmf4/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B08412X7BV",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -887,17 +887,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0759FTQ4T",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1949.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf45mmf2-8-gf45mmf2-8/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0759FTQ4T",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -985,17 +985,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B07TWYNDQ2",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1149.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf50mmf3-5-gf50mmf3-5/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B07TWYNDQ2",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -1086,17 +1086,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0CHG23DJC",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 2099.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf55mmf1-7-r-wr-lens-600023613/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0CHG23DJC",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -1185,17 +1185,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B01MS8EWXM",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1699.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf63mmf2-8-gf63mmf2-8/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B01MS8EWXM",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -1284,17 +1284,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B08TPBNCYM",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 2099.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf80mmf1-7-gf80mmf1-7/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B08TPBNCYM",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -1392,17 +1392,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B07MWBDQN3",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1799.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf100-200mmf5-6-gf100-200mmf5-6/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B07MWBDQN3",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -1494,17 +1494,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B071CKRCN6",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 3199.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf110mmf2-gf110mmf2/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B071CKRCN6",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -1598,17 +1598,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0CHG2TGTD",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 3999.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf110mmf5-6ts-gf110mmf5-6ts/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0CHG2TGTD",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -1700,17 +1700,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B01MZARLEQ",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 3099.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf120mmf4-gf120mmf4/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B01MZARLEQ",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -1799,17 +1799,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B07C51T679",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 3799.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf250mmf4-gf250mmf4/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B07C51T679",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -1899,17 +1899,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0D3WJ7CKD",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 3999.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/gf500mmf5-6-r-lm-ois-wr-600023753/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0D3WJ7CKD",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }

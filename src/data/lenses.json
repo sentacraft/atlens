@@ -2839,8 +2839,6 @@
       "global": {
         "new": [
           {
-            "price": 65.99,
-            "currency": "USD",
             "source": "Amazon · Brightin Star Official Store",
             "url": "https://www.amazon.com/Brightin-Fujifilm-Aperture-Portrait-X-Pro1-3/dp/B07Z4B95KM",
             "purchasableChannel": "amazon",
@@ -3570,8 +3568,6 @@
       "global": {
         "new": [
           {
-            "price": 229.99,
-            "currency": "USD",
             "source": "Amazon · Brightin Star Official Store",
             "url": "https://www.amazon.com/Brightin-XF-Mount-Mirrorless-Fit/dp/B0D3KV8TLL",
             "purchasableChannel": "amazon",
@@ -3878,17 +3874,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0FWV2C6TP",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 399.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xc13-33mmf3-5-6-3-ois-lens-16960719/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0FWV2C6TP",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -3990,17 +3986,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B079BRLDF7",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 349.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xc15-45mmf3-5-5-6-xc15-45mmf3-5-5-6/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B079BRLDF7",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -4257,17 +4253,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B08412XPWK",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 239.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xc35mmf2-xc35mmf2/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B08412XPWK",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -4366,17 +4362,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B016YU67L0",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 449.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xc50-230mmf4-5-6-7-xc50-230mmf4-5-6-7/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B016YU67L0",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -4563,17 +4559,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B07FQ83W5W",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1799.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf8-16mmf2-8-xf8-16mmf2-8/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B07FQ83W5W",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -4666,17 +4662,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0C5Q7YSDV",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 949.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf8mmf3-5-xf8mmf3-5/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0C5Q7YSDV",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -4776,17 +4772,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B08L41GDC8",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1049.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf10-24mmf4-ii-xf10-24mmf4-ii/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B08L41GDC8",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -4965,17 +4961,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B009L1HC2I",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 899.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf14mmf2-8-xf14mmf2-8/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B009L1HC2I",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -5058,17 +5054,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0D3WSY8W9",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 849.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf16-50mmf2-8-4-8-r-lm-wr-16814817/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0D3WSY8W9",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -5167,17 +5163,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0DJQ1X149",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1399.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf16-55mmf2-8-r-lm-wr-ii-lens-16836580/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0DJQ1X149",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -5283,17 +5279,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B00RSQTDMA",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 949.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf16-55mmf2-8-xf16-55mmf2-8/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B00RSQTDMA",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -5379,17 +5375,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B07TWYSHYB",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 949.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf16-80mmf4-xf16-80mmf4/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B07TWYSHYB",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -5480,17 +5476,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B00W6VZLFA",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1049.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf16mmf1-4-xf16mmf1-4/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B00W6VZLFA",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -5575,17 +5571,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B07NQDKBDL",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 449.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf16mmf2-8-xf16mmf2-8/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B07NQDKBDL",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -5694,17 +5690,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0092MD6S0",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 699.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf18-55mmf2-8-4-xf18-55mmf2-8-4/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0092MD6S0",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -5788,17 +5784,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0B2HWW749",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 999.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf18-120mmf4-xf18-120mmf4/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0B2HWW749",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -5889,17 +5885,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B00KZHOYSW",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 999.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf18-135mmf3-5-5-6-xf18-135mmf3-5-5-6/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B00KZHOYSW",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -5964,17 +5960,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B006ZSNRWO",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 699.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf18mmf2-xf18mmf2/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B006ZSNRWO",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -6048,17 +6044,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0923F7V45",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1199.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf18mmf1-4-xf18mmf1-4/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0923F7V45",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -6140,17 +6136,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B01KNXOCO8",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 499.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf23mmf2-xf23mmf2/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B01KNXOCO8",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -6240,17 +6236,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B09DTKDNMX",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1049.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf23mmf1-4-r-lm-wr-xf23mmf1-4-r-lm-wr/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B09DTKDNMX",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -6394,17 +6390,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0FD1P65Z3",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 499.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf23mmf2-8-xf23mmf2-8/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0FD1P65Z3",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -6494,17 +6490,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B08TP4QYT2",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 449.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf27mmf2-8-r-wr-xf27mmf2-8-r-wr/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B08TP4QYT2",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -6657,17 +6653,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0BK2P7PNK",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 699.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf30mmf2-8-xf30mmf2-8/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0BK2P7PNK",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -6742,17 +6738,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B09DTJQSCH",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 949.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf33mmf1-4-xf33mmf1-4/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B09DTJQSCH",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -6827,17 +6823,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B016S28I4S",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 449.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf35mmf2-xf35mmf2/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B016S28I4S",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -6928,17 +6924,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B006UL00R6",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 699.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf35mmf1-4-r-lens-16240755/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B006UL00R6",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -7041,17 +7037,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B00NGFLO74",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1699.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf50-140mmf2-8-r-lm-ois-wr-lens-16443060/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B00NGFLO74",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -7146,17 +7142,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B01MS6WINK",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 499.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf50mmf2-xf50mmf2/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B01MS6WINK",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -7245,17 +7241,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B08GX7RYD3",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1799.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf50mmf1-0-xf50mmf1-0/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B08GX7RYD3",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -7346,17 +7342,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B00CNZTPGA",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 849.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf55-200mmf3-5-4-8-xf55-200mmf3-5-4-8/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B00CNZTPGA",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -7427,17 +7423,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B00NF6ZGAA",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1499.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf56mmf1-2r-apd-xf56mmf1-2r-apd/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B00NF6ZGAA",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -7524,17 +7520,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0BCR4STVP",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1199.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf56mmf1-2-r-wr-xf56mmf1-2-r-wr/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0BCR4STVP",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -7620,17 +7616,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B00HK8Z9AG",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 999.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf56mmf1-2-xf56mmf1-2/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B00HK8Z9AG",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -7712,17 +7708,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B006ZSNU4O",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 779.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf60mmf2-4-xf60mmf2-4/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B006ZSNU4O",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -7813,17 +7809,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B08TMZ59ZW",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 849.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf70-300mm-xf70-300mm/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B08TMZ59ZW",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -7902,17 +7898,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0759GMLVP",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1399.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf80mmf2-8-xf80mmf2-8/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0759GMLVP",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -8005,17 +8001,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B00XI4PAZ0",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1149.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf90mmf2-0-xf90mmf2-0/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B00XI4PAZ0",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -8105,17 +8101,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B07Z37HMXQ",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 2249.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf100-400mmf4-5-5-6-xf100-400mmf4-5-5-6/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B07Z37HMXQ",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -8203,17 +8199,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0B2J6YKSH",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 2399.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf150-600mmf5-6-8-xf150-600mmf5-6-8/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0B2J6YKSH",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -8309,17 +8305,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B07FQB2T4F",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 5999.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf200mmf2-r-lm-ois-wr-lens-with-xf1-4x-tc-f2-wr-teleconverter-kit-16586343/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B07FQB2T4F",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -8412,17 +8408,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0DJQ1NB2H",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 3599.95,
             "currency": "USD",
             "source": "FUJIFILM Shop USA",
             "url": "https://shopusa.fujifilm-x.com/xf500mmf5-6-r-lm-ois-wr-lens-white-16900408/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0DJQ1NB2H",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -11207,17 +11203,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0FDH4RZN5",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 919,
             "currency": "USD",
             "source": "sigmaphoto.com",
             "url": "https://www.sigmaphoto.com/17-40mm-f1-8-dc-a",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0FDH4RZN5",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -11329,17 +11325,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0CJVRTY76",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 679,
             "currency": "USD",
             "source": "sigmaphoto.com",
             "url": "https://www.sigmaphoto.com/10-18mm-f2-8-dc-dn-c",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0CJVRTY76",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -11434,17 +11430,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0FMLCR1DR",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 579,
             "currency": "USD",
             "source": "sigmaphoto.com",
             "url": "https://www.sigmaphoto.com/12mm-f1-4-dc-c",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0FMLCR1DR",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -11544,17 +11540,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0GQJ9TLX2",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 579,
             "currency": "USD",
             "source": "sigmaphoto.com",
             "url": "https://www.sigmaphoto.com/15mm-f1-4-dc-c",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0GQJ9TLX2",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -11674,17 +11670,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0DYNPG9NQ",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 694,
             "currency": "USD",
             "source": "sigmaphoto.com",
             "url": "https://www.sigmaphoto.com/16-300mm-f3-5-6-7-dc-os-c",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0DYNPG9NQ",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -11786,17 +11782,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B09T78KGRP",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 464,
             "currency": "USD",
             "source": "sigmaphoto.com",
             "url": "https://www.sigmaphoto.com/16mm-f1-4-dc-dn-c",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B09T78KGRP",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -11907,17 +11903,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0BMD377VK",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 584,
             "currency": "USD",
             "source": "sigmaphoto.com",
             "url": "https://www.sigmaphoto.com/18-50mm-f2-8-dc-dn-c",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0BMD377VK",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -12010,17 +12006,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0C1VKPXP6",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 659,
             "currency": "USD",
             "source": "sigmaphoto.com",
             "url": "https://www.sigmaphoto.com/23mm-f1-4-dc-dn-c",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0C1VKPXP6",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -12113,17 +12109,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B09T6N7HRT",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 344,
             "currency": "USD",
             "source": "sigmaphoto.com",
             "url": "https://www.sigmaphoto.com/30mm-f1-4-dc-dn-c",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B09T6N7HRT",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -12217,17 +12213,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B09T78FM8M",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 484,
             "currency": "USD",
             "source": "sigmaphoto.com",
             "url": "https://www.sigmaphoto.com/56mm-f1-4-dc-dn-c",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B09T78FM8M",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -12334,17 +12330,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0CH1JSJ6V",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 999,
             "currency": "USD",
             "source": "sigmaphoto.com",
             "url": "https://www.sigmaphoto.com/100-400mm-f5-6-3-dg-dn-os-c",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0CH1JSJ6V",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -12602,7 +12598,7 @@
             "price": 319,
             "currency": "USD",
             "source": "store.sirui.com",
-            "url": "https://store.sirui.com/products/sirui-sniper-series-16-75mm-f1-2-aps-c-frame-autofocus-lens-set",
+            "url": "https://store.sirui.com/products/sirui-sniper-series-16-75mm-f1-2-aps-c-frame-autofocus-lens-set?variant=45622748643554",
             "purchasableChannel": "official",
             "sampledAt": "2026-06-12"
           }
@@ -12692,7 +12688,7 @@
             "price": 279,
             "currency": "USD",
             "source": "store.sirui.com",
-            "url": "https://store.sirui.com/products/sirui-sniper-series-16-75mm-f1-2-aps-c-frame-autofocus-lens-set",
+            "url": "https://store.sirui.com/products/sirui-sniper-series-f1-2-aps-c-autofocus-lens-set?variant=44732249571554",
             "purchasableChannel": "official",
             "sampledAt": "2026-06-12"
           }
@@ -12780,7 +12776,7 @@
             "price": 279,
             "currency": "USD",
             "source": "store.sirui.com",
-            "url": "https://store.sirui.com/products/sirui-sniper-series-16-75mm-f1-2-aps-c-frame-autofocus-lens-set",
+            "url": "https://store.sirui.com/products/sirui-sniper-series-f1-2-aps-c-autofocus-lens-set?variant=44732249866466",
             "purchasableChannel": "official",
             "sampledAt": "2026-06-12"
           }
@@ -12869,7 +12865,7 @@
             "price": 279,
             "currency": "USD",
             "source": "store.sirui.com",
-            "url": "https://store.sirui.com/products/sirui-sniper-series-16-75mm-f1-2-aps-c-frame-autofocus-lens-set",
+            "url": "https://store.sirui.com/products/sirui-sniper-series-f1-2-aps-c-autofocus-lens-set?variant=44732250161378",
             "purchasableChannel": "official",
             "sampledAt": "2026-06-12"
           }
@@ -12958,7 +12954,7 @@
             "price": 319,
             "currency": "USD",
             "source": "store.sirui.com",
-            "url": "https://store.sirui.com/products/sirui-sniper-series-16-75mm-f1-2-aps-c-frame-autofocus-lens-set",
+            "url": "https://store.sirui.com/products/sirui-sniper-series-16-75mm-f1-2-aps-c-frame-autofocus-lens-set?variant=45622748741858",
             "purchasableChannel": "official",
             "sampledAt": "2026-06-12"
           }
@@ -13059,17 +13055,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0C6R7DH31",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 599,
             "currency": "USD",
             "source": "tamron-americas.com",
             "url": "https://tamron-americas.com/product/11-20mm-f-2-8-di-iii-a-rxd/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0C6R7DH31",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -13174,17 +13170,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0B3MNLZH3",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 699,
             "currency": "USD",
             "source": "tamron-americas.com",
             "url": "https://tamron-americas.com/product/17-70mm-f-2-8-di-iii-a-vc-rxd/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0B3MNLZH3",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -13294,17 +13290,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B09M5D2NJC",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 599,
             "currency": "USD",
             "source": "tamron-americas.com",
             "url": "https://tamron-americas.com/product/18-300mm-f-3-5-6-3-di-iii-a-vc-vxd/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B09M5D2NJC",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
@@ -13416,17 +13412,17 @@
       "global": {
         "new": [
           {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/dp/B0BJ4939R1",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-30"
-          },
-          {
             "price": 1199,
             "currency": "USD",
             "source": "tamron-americas.com",
             "url": "https://tamron-americas.com/product/150-500mm-f-5-6-7-di-iii-vc-vxd/",
             "sampledAt": "2026-05-09"
+          },
+          {
+            "source": "Amazon",
+            "url": "https://www.amazon.com/dp/B0BJ4939R1",
+            "purchasableChannel": "amazon",
+            "sampledAt": "2026-05-30"
           }
         ]
       }
