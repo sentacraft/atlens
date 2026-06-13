@@ -43,8 +43,8 @@ function xBrand(brand: string): LensFilter {
 }
 
 // Chinese lens brands grouped under their own category. Extend this list as
-// more Chinese makers (AstrHori, Meike, …) get added to the dataset.
-const CHINESE_BRANDS = ["viltrox", "7artisans", "ttartisan", "brightinstar", "sgimage", "laowa"];
+// more Chinese makers (AstrHori, …) get added to the dataset.
+const CHINESE_BRANDS = ["viltrox", "7artisans", "ttartisan", "brightinstar", "sgimage", "laowa", "meike", "sirui"];
 
 const FILTERS: Record<string, LensFilter> = {
   // --- Prime ---

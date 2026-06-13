@@ -99,7 +99,7 @@ function MountCoverageTable({
                   <td className="px-2 sm:px-3 py-2 text-center tabular-nums text-zinc-700 dark:text-zinc-300 border-l border-zinc-200 dark:border-zinc-800">
                     {m.active === true || m.active === "partial"
                       ? (counts[b] ?? 0)
-                      : m.active === "planned"
+                      : m.active === "planned" || m.discontinued === "planned" || m.cinema === "planned"
                         ? <Pending />
                         : <Dash />}
                   </td>
@@ -152,7 +152,7 @@ export default async function AboutContent() {
   const gCounts = getLensesByMount("G", locale).reduce<Record<string, number>>(
     (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
   );
-  const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage","laowa","meike","sirui","voigtlander"];
+  const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage","laowa","meike","sirui","voigtlander","thypoch","zeiss"];
   const G_BRANDS = ["fujifilm", "laowa"];
 
   const pipelineStages = [
