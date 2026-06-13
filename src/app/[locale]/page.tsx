@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
 import { buildAlternates } from "@/lib/seo";
-import { getLensesByMount, meta } from "@/lib/lens/data";
+import { getLensesByMount } from "@/lib/lens/data";
 import DataInfo from "@/components/DataFooter";
 import HomeCta from "@/components/HomeCta";
 import HeroBrand from "@/components/mount/MountTag";
@@ -53,7 +53,7 @@ function HomeContent({ mountStats }: { mountStats: { X: { lensCount: number; bra
           <div className="flex flex-wrap items-center justify-center gap-3">
             <HomeCta />
           </div>
-          <DataInfo mountStats={mountStats} meta={meta} />
+          <DataInfo mountStats={mountStats} />
         </div>
       </section>
 

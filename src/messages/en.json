@@ -391,7 +391,7 @@
     "pipelinePLabel": "Publish Gate",
     "pipelinePDesc": "Schema validation, normalization, independent cross-check, and final merge",
     "dataUpdateNote": "The database is updated when new lenses launch or when existing data needs correction.",
-    "dataVersionNote": "The version number and last-updated timestamp in the footer reflect the latest published data release.",
+    "whatsNewLink": "See recently added lenses",
     "dataPricingTitle": "Price data",
     "dataPricingPoint1Title": "Produced independently from spec data",
     "dataPricingPoint1Body": "Pricing has its own sampling sources and collection process, kept separate from the spec pipeline. It is meant to give rough purchase context, not a live quote.",
@@ -435,11 +435,21 @@
     "ackClosing": "My deepest gratitude to the AI collaborators whose contributions were decisive in making this project a reality — Claude Code, Google Gemini, and Claude Design."
   },
   "Footer": {
-    "updatedPrefix": "Updated",
+    "whatsNew": "What's New",
     "tagline1": "Data over opinions",
     "tagline2": "Glass matters",
     "tagline3": "aperture ring > mode dial",
     "tagline4": "f/2 feels right"
+  },
+  "WhatsNew": {
+    "pageTitle": "What's New",
+    "metaDescription": "Recently added lenses in the Atlens database, by date — new additions across Fujifilm X-mount and GFX-mount coverage.",
+    "intro": "Lenses added to the Atlens library over time, newest first.",
+    "added": "+{count}",
+    "lensesCount": "{count} lenses",
+    "initialLibraryLabel": "Initial library",
+    "mountX": "Fujifilm X",
+    "mountG": "Fujifilm GFX"
   },
   "Feedback": {
     "titleDataIssue": "Report an issue",
