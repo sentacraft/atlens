@@ -9094,6 +9094,872 @@
     }
   },
   {
+    "id": "meike-10mmt22-x",
+    "brand": "meike",
+    "mount": "X",
+    "model": "10mm T2.2",
+    "focalLengthMin": 10,
+    "focalLengthMax": 10,
+    "maxTStop": 2.2,
+    "minTStop": 22,
+    "isCine": true,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "N/A",
+    "weightG": 575,
+    "diameterMm": 80,
+    "length": {
+      "mm": 88
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 30
+      }
+    },
+    "angleOfViewCalc": 109.5,
+    "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "Meike 10mm T2.2 Fuji X",
+      "zh": "美科 10mm T2.2 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "source": "京东·MEKE数码旗舰店",
+            "url": "https://mall.jd.com/index-11734385.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 479.99,
+            "currency": "USD",
+            "source": "meikeglobal.com",
+            "url": "https://meikeglobal.com/products/meike-mini-prime-t2-2-cine-lens-for-fujifilm-x-mount-cameras-x-h1-x-t3-x-t20-x-t10-x-t2-x-pro2-x-e3-x-t1-x-a2-t100-x-e1-x30-x70-x-m1-cine-lens-case-fast-delivery-single-lens",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 12,
+      "elements": 15,
+      "sourceText": "12组15片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "http://www.mkgrip.cn/goods/show-388.html"
+    }
+  },
+  {
+    "id": "meike-23mmf14stm-aps-c-x",
+    "brand": "meike",
+    "mount": "X",
+    "model": "23mm F1.4 STM",
+    "focalLengthMin": 23,
+    "focalLengthMax": 23,
+    "maxAperture": 1.4,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "STM",
+    "internalFocusing": true,
+    "weightG": 299,
+    "diameterMm": 66.5,
+    "length": {
+      "mm": 81
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 25
+      }
+    },
+    "maxMagnification": {
+      "value": 0.12
+    },
+    "angleOfView": 64.1,
+    "angleOfViewCalc": 63.2,
+    "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Meike 23mm f1.4 STM Fuji X",
+      "zh": "美科 23mm f1.4 STM 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 1349,
+            "currency": "CNY",
+            "source": "京东·MEKE数码旗舰店",
+            "url": "https://item.jd.com/10205990456678.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "source": "meikeglobal.com",
+            "url": "https://meikeglobal.com",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm X",
+      "Sony E"
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 11,
+      "elements": 13,
+      "sourceText": "11组13片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "http://www.mkgrip.cn/goods/show-1578.html"
+    }
+  },
+  {
+    "id": "meike-25mm-t22-x",
+    "brand": "meike",
+    "mount": "X",
+    "model": "25mm T2.2",
+    "focalLengthMin": 25,
+    "focalLengthMax": 25,
+    "maxTStop": 2.2,
+    "minTStop": 22,
+    "isCine": true,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "N/A",
+    "weightG": 515,
+    "diameterMm": 80,
+    "length": {
+      "mm": 86
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 25
+      }
+    },
+    "angleOfViewCalc": 59,
+    "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "Meike 25mm T2.2 Fuji X",
+      "zh": "美科 25mm T2.2 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 1590,
+            "currency": "CNY",
+            "source": "京东·MEKE数码旗舰店",
+            "url": "https://item.jd.com/10045199172223.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 359.99,
+            "currency": "USD",
+            "source": "meikeglobal.com",
+            "url": "https://meikeglobal.com/products/meike-mini-prime-t2-2-cine-lens-for-fujifilm-x-mount-cameras-x-h1-x-t3-x-t20-x-t10-x-t2-x-pro2-x-e3-x-t1-x-a2-t100-x-e1-x30-x70-x-m1-cine-lens-case-fast-delivery-single-lens",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 10,
+      "sourceText": "8组10片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "http://www.mkgrip.cn/goods/show-425.html"
+    }
+  },
+  {
+    "id": "meike-33mmf14stm-aps-c-x",
+    "brand": "meike",
+    "mount": "X",
+    "series": "Neo",
+    "model": "33mm F1.4 Neo",
+    "focalLengthMin": 33,
+    "focalLengthMax": 33,
+    "maxAperture": 1.4,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "STM",
+    "internalFocusing": true,
+    "weightG": 315,
+    "diameterMm": 66.5,
+    "length": {
+      "mm": 82
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 40
+      }
+    },
+    "maxMagnification": {
+      "value": 0.1
+    },
+    "angleOfView": 46.3,
+    "angleOfViewCalc": 46.4,
+    "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Meike 33mm f1.4 STM Fuji X",
+      "zh": "美科 33mm f1.4 STM 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 949,
+            "currency": "CNY",
+            "source": "京东·MEKE数码旗舰店",
+            "url": "https://item.jd.com/10110642597745.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 229.99,
+            "currency": "USD",
+            "source": "meikeglobal.com",
+            "url": "https://meikeglobal.com/products/3314x",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm X",
+      "Sony E",
+      "Micro Four Thirds"
+    ],
+    "filterMm": 55,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 12,
+      "sourceText": "9组12片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "http://www.mkgrip.cn/goods/show-520.html"
+    }
+  },
+  {
+    "id": "meike-35mm-t22-x",
+    "brand": "meike",
+    "mount": "X",
+    "model": "35mm T2.2",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxTStop": 2.2,
+    "minTStop": 22,
+    "isCine": true,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "N/A",
+    "weightG": 638,
+    "diameterMm": 80,
+    "length": {
+      "mm": 93.8
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 60
+      }
+    },
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "Meike 35mm T2.2 Fuji X",
+      "zh": "美科 35mm T2.2 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 1590,
+            "currency": "CNY",
+            "source": "京东·MEKE数码旗舰店",
+            "url": "https://item.jd.com/10083007253437.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 359.99,
+            "currency": "USD",
+            "source": "meikeglobal.com",
+            "url": "https://meikeglobal.com/products/meike-mini-prime-t2-2-cine-lens-for-fujifilm-x-mount-cameras-x-h1-x-t3-x-t20-x-t10-x-t2-x-pro2-x-e3-x-t1-x-a2-t100-x-e1-x30-x70-x-m1-cine-lens-case-fast-delivery-single-lens",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 10,
+      "sourceText": "8组10片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "http://www.mkgrip.cn/goods/show-333.html"
+    }
+  },
+  {
+    "id": "meike-50mm-t22-x",
+    "brand": "meike",
+    "mount": "X",
+    "model": "50mm T2.2",
+    "focalLengthMin": 50,
+    "focalLengthMax": 50,
+    "maxTStop": 2.2,
+    "minTStop": 22,
+    "isCine": true,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "N/A",
+    "weightG": 623,
+    "diameterMm": 80,
+    "length": {
+      "mm": 91.4
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 61
+      }
+    },
+    "angleOfViewCalc": 31.6,
+    "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "Meike 50mm T2.2 Fuji X",
+      "zh": "美科 50mm T2.2 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "source": "京东·MEKE数码旗舰店",
+            "url": "https://mall.jd.com/index-11734385.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 359.99,
+            "currency": "USD",
+            "source": "meikeglobal.com",
+            "url": "https://meikeglobal.com/products/meike-mini-prime-t2-2-cine-lens-for-fujifilm-x-mount-cameras-x-h1-x-t3-x-t20-x-t10-x-t2-x-pro2-x-e3-x-t1-x-a2-t100-x-e1-x30-x70-x-m1-cine-lens-case-fast-delivery-single-lens",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 7,
+      "elements": 9,
+      "sourceText": "7组9片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "http://www.mkgrip.cn/goods/show-336.html"
+    }
+  },
+  {
+    "id": "meike-50mmf17-x",
+    "brand": "meike",
+    "mount": "X",
+    "model": "50mm F1.7",
+    "focalLengthMin": 50,
+    "focalLengthMax": 50,
+    "maxAperture": 1.7,
+    "minAperture": 22,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "N/A",
+    "weightG": 310,
+    "diameterMm": 61,
+    "length": {
+      "mm": 54.5
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 50
+      }
+    },
+    "angleOfViewCalc": 31.6,
+    "searchAliases": {
+      "en": "Meike 50mm f1.7 Fuji X",
+      "zh": "美科 50mm f1.7 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "source": "京东·MEKE数码旗舰店",
+            "url": "https://mall.jd.com/index-11734385.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 99.99,
+            "currency": "USD",
+            "source": "meikeglobal.com",
+            "url": "https://meikeglobal.com/products/5017x",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "lensMaterial": "Metal",
+    "filterMm": 52,
+    "lensConfiguration": {
+      "groups": 5,
+      "elements": 6,
+      "sourceText": "5组6片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "http://www.mkgrip.cn/goods/show-279.html"
+    },
+    "translations": {
+      "zh": {
+        "lensMaterial": "金属"
+      }
+    }
+  },
+  {
+    "id": "meike-55mmf14stm-aps-c-x",
+    "brand": "meike",
+    "mount": "X",
+    "series": "Neo",
+    "model": "55mm F1.4 Neo",
+    "focalLengthMin": 55,
+    "focalLengthMax": 55,
+    "maxAperture": 1.4,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "STM",
+    "internalFocusing": true,
+    "weightG": 288,
+    "diameterMm": 66.5,
+    "length": {
+      "mm": 76
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 61
+      }
+    },
+    "maxMagnification": {
+      "value": 0.12
+    },
+    "angleOfView": 28.2,
+    "angleOfViewCalc": 28.9,
+    "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Meike 55mm f1.4 STM Fuji X",
+      "zh": "美科 55mm f1.4 STM 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 949,
+            "currency": "CNY",
+            "source": "京东·MEKE数码旗舰店",
+            "url": "https://item.jd.com/10097189981214.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 199.99,
+            "currency": "USD",
+            "source": "meikeglobal.com",
+            "url": "https://meikeglobal.com/products/5514x",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm X",
+      "Sony E",
+      "Nikon Z"
+    ],
+    "filterMm": 52,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 11,
+      "sourceText": "8组11片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "http://www.mkgrip.cn/goods/show-506.html"
+    }
+  },
+  {
+    "id": "meike-56mmf17-stm-aps-c-x",
+    "brand": "meike",
+    "mount": "X",
+    "series": "Air",
+    "model": "56mm F1.7 Air",
+    "focalLengthMin": 56,
+    "focalLengthMax": 56,
+    "maxAperture": 1.7,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "STM",
+    "internalFocusing": true,
+    "weightG": 190,
+    "diameterMm": 66.5,
+    "length": {
+      "mm": 59.2
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 55
+      }
+    },
+    "maxMagnification": {
+      "value": 0.1
+    },
+    "angleOfView": 27.8,
+    "angleOfViewCalc": 28.4,
+    "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Meike 56mm f1.7 STM Fuji X",
+      "zh": "美科 56mm f1.7 STM 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 799,
+            "currency": "CNY",
+            "source": "京东·MEKE数码旗舰店",
+            "url": "https://item.jd.com/10216859364083.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 159,
+            "currency": "USD",
+            "source": "meikeglobal.com",
+            "url": "https://meikeglobal.com/products/5617x",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm X",
+      "Sony E"
+    ],
+    "filterMm": 52,
+    "lensConfiguration": {
+      "groups": 7,
+      "elements": 11,
+      "sourceText": "7组11片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "http://www.mkgrip.cn/goods/show-1581.html"
+    }
+  },
+  {
+    "id": "meike-65mmt22-x",
+    "brand": "meike",
+    "mount": "X",
+    "model": "65mm T2.2",
+    "focalLengthMin": 65,
+    "focalLengthMax": 65,
+    "maxTStop": 2.2,
+    "minTStop": 22,
+    "isCine": true,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "N/A",
+    "weightG": 545,
+    "diameterMm": 80,
+    "length": {
+      "mm": 84.6
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 68
+      }
+    },
+    "angleOfViewCalc": 24.6,
+    "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "Meike 65mm T2.2 Fuji X",
+      "zh": "美科 65mm T2.2 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "source": "京东·MEKE数码旗舰店",
+            "url": "https://mall.jd.com/index-11734385.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 359.99,
+            "currency": "USD",
+            "source": "meikeglobal.com",
+            "url": "https://meikeglobal.com/products/meike-mini-prime-t2-2-cine-lens-for-fujifilm-x-mount-cameras-x-h1-x-t3-x-t20-x-t10-x-t2-x-pro2-x-e3-x-t1-x-a2-t100-x-e1-x30-x70-x-m1-cine-lens-case-fast-delivery-single-lens",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 7,
+      "elements": 10,
+      "sourceText": "7组10片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "http://www.mkgrip.cn/goods/show-342.html"
+    }
+  },
+  {
+    "id": "meike-85mmf18-stm-x",
+    "brand": "meike",
+    "mount": "X",
+    "series": "Pro",
+    "model": "85mm F1.8 Pro",
+    "focalLengthMin": 85,
+    "focalLengthMax": 85,
+    "maxAperture": 1.8,
+    "minAperture": 22,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "STM",
+    "internalFocusing": true,
+    "weightG": 386,
+    "diameterMm": 80.5,
+    "length": {
+      "mm": 95.2
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 90
+      }
+    },
+    "maxMagnification": {
+      "value": 0.11
+    },
+    "angleOfViewCalc": 18.9,
+    "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Meike 85mm f1.8 FF STM Fuji X",
+      "zh": "美科 85mm f1.8 FF STM 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 1499,
+            "currency": "CNY",
+            "source": "京东·MEKE数码旗舰店",
+            "url": "https://item.jd.com/10140200404664.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 339.99,
+            "currency": "USD",
+            "source": "meikeglobal.com",
+            "url": "https://meikeglobal.com/products/8518prox",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm X",
+      "Sony E",
+      "Nikon Z"
+    ],
+    "filterMm": 67,
+    "lensConfiguration": {
+      "groups": 6,
+      "elements": 9,
+      "sourceText": "6组9片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "http://www.mkgrip.cn/goods/show-403.html"
+    }
+  },
+  {
+    "id": "meike-85mmt22-x",
+    "brand": "meike",
+    "mount": "X",
+    "model": "85mm T2.2",
+    "focalLengthMin": 85,
+    "focalLengthMax": 85,
+    "maxTStop": 2.2,
+    "minTStop": 22,
+    "isCine": true,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "N/A",
+    "weightG": 640,
+    "diameterMm": 80,
+    "length": {
+      "mm": 89.7
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 90
+      }
+    },
+    "angleOfViewCalc": 18.9,
+    "apertureBladeCount": 10,
+    "searchAliases": {
+      "en": "Meike 85mm T2.2 Fuji X",
+      "zh": "美科 85mm T2.2 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "source": "京东·MEKE数码旗舰店",
+            "url": "https://mall.jd.com/index-11734385.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 359.99,
+            "currency": "USD",
+            "source": "meikeglobal.com",
+            "url": "https://meikeglobal.com/products/meike-mini-prime-t2-2-cine-lens-for-fujifilm-x-mount-cameras-x-h1-x-t3-x-t20-x-t10-x-t2-x-pro2-x-e3-x-t1-x-a2-t100-x-e1-x30-x70-x-m1-cine-lens-case-fast-delivery-single-lens",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 7,
+      "elements": 9,
+      "sourceText": "7组9片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "http://www.mkgrip.cn/goods/show-343.html"
+    }
+  },
+  {
     "id": "sgimage-af-25mm-f18-aps-c-mirrorless-lens-x",
     "brand": "sgimage",
     "mount": "X",
@@ -11249,6 +12115,599 @@
           "保护盖 PT-31",
           "前镜头盖 LCF-67mm III",
           "后镜头盖 LCR II"
+        ]
+      }
+    }
+  },
+  {
+    "id": "sirui-aurora-35mmf14-full-frame-autofocus-lens-x",
+    "brand": "sirui",
+    "mount": "X",
+    "series": "Aurora",
+    "model": "AF 35mm F1.4 FF",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 1.4,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": true,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "STM",
+    "weightG": 490,
+    "diameterMm": 76,
+    "length": {
+      "mm": 103.2
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 35
+      }
+    },
+    "maxMagnification": {
+      "value": 0.14
+    },
+    "angleOfViewCalc": 44,
+    "apertureBladeCount": 13,
+    "searchAliases": {
+      "en": "Sirui AF 35mm f1.4 FF Fuji X",
+      "zh": "思锐 AF 35mm f1.4 FF 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 3662,
+            "currency": "CNY",
+            "source": "京东·思锐旗舰店",
+            "url": "https://item.jd.com/10187928195301.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 549,
+            "currency": "USD",
+            "source": "store.sirui.com",
+            "url": "https://store.sirui.com/products/sirui-aurora-series-35mm-f1-4-full-frame-autofocus-lens",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm X",
+      "Sony E",
+      "Leica L"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 11,
+      "elements": 16,
+      "aspherical": 3,
+      "ed": 2,
+      "superEd": 1,
+      "highRefractive": 2,
+      "sourceText": "16 elements in 11 groups (3 aspherical, 2 ED, 2 HRI, 1 SED)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.sirui.com/index/photographic/aurora35mm.html",
+      "global": "https://store.sirui.com/products/sirui-aurora-series-35mm-f1-4-full-frame-autofocus-lens"
+    }
+  },
+  {
+    "id": "sirui-aurora-85mmf14-full-frame-autofocus-lens-x",
+    "brand": "sirui",
+    "mount": "X",
+    "series": "Aurora",
+    "model": "AF 85mm F1.4 FF",
+    "focalLengthMin": 85,
+    "focalLengthMax": 85,
+    "maxAperture": 1.4,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": true,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "weightG": 550,
+    "diameterMm": 80.3,
+    "length": {
+      "mm": 101.7
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 85
+      }
+    },
+    "maxMagnification": {
+      "value": 0.12
+    },
+    "angleOfViewCalc": 18.9,
+    "apertureBladeCount": 15,
+    "searchAliases": {
+      "en": "Sirui AF 85mm f1.4 FF Fuji X",
+      "zh": "思锐 AF 85mm f1.4 FF 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 2969,
+            "currency": "CNY",
+            "source": "京东·思锐旗舰店",
+            "url": "https://item.jd.com/10122115535557.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 449,
+            "currency": "USD",
+            "source": "store.sirui.com",
+            "url": "https://store.sirui.com/products/sirui-aurora-series-85mm-full-frame-autofocus-lens",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm X",
+      "Sony E",
+      "Leica L"
+    ],
+    "filterMm": 67,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 14,
+      "sourceText": "14 elements in 9 groups"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.sirui.com/index/photographic/aurora.html",
+      "global": "https://store.sirui.com/products/sirui-aurora-series-85mm-full-frame-autofocus-lens"
+    }
+  },
+  {
+    "id": "sirui-sniper-16mmf12-aps-c-frame-autofocus-lens-x",
+    "brand": "sirui",
+    "mount": "X",
+    "series": "Sniper",
+    "model": "16mm F1.2",
+    "focalLengthMin": 16,
+    "focalLengthMax": 16,
+    "maxAperture": 1.2,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "weightG": 386,
+    "diameterMm": 70,
+    "length": {
+      "mm": 94
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 30
+      }
+    },
+    "angleOfViewCalc": 83,
+    "apertureBladeCount": 13,
+    "searchAliases": {
+      "en": "Sirui 16mm f1.2 Fuji X",
+      "zh": "思锐 16mm f1.2 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 2058,
+            "currency": "CNY",
+            "source": "京东·思锐旗舰店",
+            "url": "https://item.jd.com/10108184122258.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 319,
+            "currency": "USD",
+            "source": "store.sirui.com",
+            "url": "https://store.sirui.com/products/sirui-sniper-series-16-75mm-f1-2-aps-c-frame-autofocus-lens-set",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm X",
+      "Sony E"
+    ],
+    "accessories": [
+      "Lens hood",
+      "Pouch"
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 11,
+      "elements": 14,
+      "aspherical": 2,
+      "ed": 3,
+      "highRefractive": 2,
+      "sourceText": "14 elements in 11 groups (2 aspherical, 3 ED, 2 HRI)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.sirui.com/index/optical/sniper1675.html",
+      "global": "https://store.sirui.com/products/sirui-sniper-series-16-75mm-f1-2-aps-c-frame-autofocus-lens-set?variant=45622748643554"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "遮光罩",
+          "镜头袋"
+        ]
+      }
+    }
+  },
+  {
+    "id": "sirui-sniper-23mmf12-aps-c-frame-autofocus-lens-x",
+    "brand": "sirui",
+    "mount": "X",
+    "series": "Sniper",
+    "model": "23mm F1.2",
+    "focalLengthMin": 23,
+    "focalLengthMax": 23,
+    "maxAperture": 1.2,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "weightG": 380,
+    "diameterMm": 72,
+    "length": {
+      "mm": 92.2
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 30
+      }
+    },
+    "angleOfViewCalc": 63.2,
+    "apertureBladeCount": 11,
+    "searchAliases": {
+      "en": "Sirui 23mm f1.2 Fuji X",
+      "zh": "思锐 23mm f1.2 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 1583,
+            "currency": "CNY",
+            "source": "京东·思锐旗舰店",
+            "url": "https://item.jd.com/10091315434968.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 279,
+            "currency": "USD",
+            "source": "store.sirui.com",
+            "url": "https://store.sirui.com/products/sirui-sniper-series-16-75mm-f1-2-aps-c-frame-autofocus-lens-set",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm X",
+      "Sony E"
+    ],
+    "accessories": [
+      "Lens hood",
+      "Pouch"
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 11,
+      "elements": 12,
+      "highRefractive": 6,
+      "sourceText": "12 elements in 11 groups (6 HRI)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.sirui.com/index/optical/sniper.html",
+      "global": "https://store.sirui.com/products/sirui-sniper-series-f1-2-aps-c-autofocus-lens-set?variant=44732249571554"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "遮光罩",
+          "镜头袋"
+        ]
+      }
+    }
+  },
+  {
+    "id": "sirui-sniper-33mmf12-aps-c-frame-autofocus-lens-x",
+    "brand": "sirui",
+    "mount": "X",
+    "series": "Sniper",
+    "model": "33mm F1.2",
+    "focalLengthMin": 33,
+    "focalLengthMax": 33,
+    "maxAperture": 1.2,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "weightG": 398,
+    "diameterMm": 72,
+    "length": {
+      "mm": 92.2
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 40
+      }
+    },
+    "angleOfViewCalc": 46.4,
+    "apertureBladeCount": 11,
+    "searchAliases": {
+      "en": "Sirui 33mm f1.2 Fuji X",
+      "zh": "思锐 33mm f1.2 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 1583,
+            "currency": "CNY",
+            "source": "京东·思锐旗舰店",
+            "url": "https://item.jd.com/10091315434977.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 279,
+            "currency": "USD",
+            "source": "store.sirui.com",
+            "url": "https://store.sirui.com/products/sirui-sniper-series-16-75mm-f1-2-aps-c-frame-autofocus-lens-set",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm X",
+      "Sony E"
+    ],
+    "accessories": [
+      "Lens hood",
+      "Pouch"
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 11,
+      "ed": 1,
+      "highRefractive": 1,
+      "sourceText": "11 elements in 10 groups (1 ED, 1 HRI)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.sirui.com/index/optical/sniper.html",
+      "global": "https://store.sirui.com/products/sirui-sniper-series-f1-2-aps-c-autofocus-lens-set?variant=44732249866466"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "遮光罩",
+          "镜头袋"
+        ]
+      }
+    }
+  },
+  {
+    "id": "sirui-sniper-56mmf12-aps-c-frame-autofocus-lens-x",
+    "brand": "sirui",
+    "mount": "X",
+    "series": "Sniper",
+    "model": "56mm F1.2",
+    "focalLengthMin": 56,
+    "focalLengthMax": 56,
+    "maxAperture": 1.2,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "weightG": 419,
+    "diameterMm": 72,
+    "length": {
+      "mm": 92.2
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 60
+      }
+    },
+    "angleOfViewCalc": 28.4,
+    "apertureBladeCount": 11,
+    "searchAliases": {
+      "en": "Sirui 56mm f1.2 Fuji X",
+      "zh": "思锐 56mm f1.2 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 1583,
+            "currency": "CNY",
+            "source": "京东·思锐旗舰店",
+            "url": "https://item.jd.com/10091315434986.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 279,
+            "currency": "USD",
+            "source": "store.sirui.com",
+            "url": "https://store.sirui.com/products/sirui-sniper-series-16-75mm-f1-2-aps-c-frame-autofocus-lens-set",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm X",
+      "Sony E"
+    ],
+    "accessories": [
+      "Lens hood",
+      "Pouch"
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 11,
+      "elements": 12,
+      "ed": 1,
+      "highRefractive": 4,
+      "sourceText": "12 elements in 11 groups (1 ED, 4 HRI)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.sirui.com/index/optical/sniper.html",
+      "global": "https://store.sirui.com/products/sirui-sniper-series-f1-2-aps-c-autofocus-lens-set?variant=44732250161378"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "遮光罩",
+          "镜头袋"
+        ]
+      }
+    }
+  },
+  {
+    "id": "sirui-sniper-75mmf12-aps-c-frame-autofocus-lens-x",
+    "brand": "sirui",
+    "mount": "X",
+    "series": "Sniper",
+    "model": "75mm F1.2",
+    "focalLengthMin": 75,
+    "focalLengthMax": 75,
+    "maxAperture": 1.2,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": false,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "weightG": 466,
+    "diameterMm": 75,
+    "length": {
+      "mm": 93.8
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 70
+      }
+    },
+    "angleOfViewCalc": 21.4,
+    "apertureBladeCount": 15,
+    "searchAliases": {
+      "en": "Sirui 75mm f1.2 Fuji X",
+      "zh": "思锐 75mm f1.2 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 2058,
+            "currency": "CNY",
+            "source": "京东·思锐旗舰店",
+            "url": "https://item.jd.com/10108184122267.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 319,
+            "currency": "USD",
+            "source": "store.sirui.com",
+            "url": "https://store.sirui.com/products/sirui-sniper-series-16-75mm-f1-2-aps-c-frame-autofocus-lens-set",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm X",
+      "Sony E"
+    ],
+    "accessories": [
+      "Lens hood",
+      "Pouch"
+    ],
+    "filterMm": 67,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 13,
+      "highRefractive": 4,
+      "sourceText": "13 elements in 9 groups (4 HRI)"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.sirui.com/index/optical/sniper1675.html",
+      "global": "https://store.sirui.com/products/sirui-sniper-series-16-75mm-f1-2-aps-c-frame-autofocus-lens-set?variant=45622748741858"
+    },
+    "translations": {
+      "zh": {
+        "accessories": [
+          "遮光罩",
+          "镜头袋"
         ]
       }
     }
@@ -14817,6 +16276,86 @@
     }
   },
   {
+    "id": "viltrox-af-75mm-f18-evo-x",
+    "brand": "viltrox",
+    "mount": "X",
+    "series": "EVO",
+    "model": "AF 75mm F1.8 EVO",
+    "focalLengthMin": 75,
+    "focalLengthMax": 75,
+    "maxAperture": 1.8,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": true,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "STM+Lead screw",
+    "internalFocusing": true,
+    "weightG": 325,
+    "diameterMm": 69,
+    "length": {
+      "mm": 76
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 74
+      }
+    },
+    "maxMagnification": {
+      "value": 0.12
+    },
+    "angleOfView": 21.4,
+    "angleOfViewCalc": 21.4,
+    "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Viltrox AF 75mm f1.8 EVO Fuji X",
+      "zh": "唯卓仕 AF 75mm f1.8 EVO 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 1499,
+            "currency": "CNY",
+            "source": "京东·唯卓仕官方旗舰店",
+            "url": "https://item.jd.com/10224478250994.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 312.55,
+            "currency": "USD",
+            "source": "viltrox.com",
+            "url": "https://viltrox.com/products/af-75mm-f1-8-xf",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm X",
+      "Sony E",
+      "Nikon Z"
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 11,
+      "sourceText": "9组11片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.viltrox.com.cn/productinfo/6286436.html",
+      "global": "https://viltrox.com/products/af-75mm-f1-8-xf"
+    }
+  },
+  {
     "id": "viltrox-af-85mm-f18-ii-x",
     "brand": "viltrox",
     "mount": "X",
@@ -14896,6 +16435,86 @@
         },
         "lensMaterial": "金属"
       }
+    }
+  },
+  {
+    "id": "viltrox-af-90mm-f22-evo-x",
+    "brand": "viltrox",
+    "mount": "X",
+    "series": "EVO",
+    "model": "AF 90mm F2.2 EVO",
+    "focalLengthMin": 90,
+    "focalLengthMax": 90,
+    "maxAperture": 2.2,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": true,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "STM+Lead screw",
+    "internalFocusing": true,
+    "weightG": 325,
+    "diameterMm": 69,
+    "length": {
+      "mm": 76
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 74
+      }
+    },
+    "maxMagnification": {
+      "value": 0.14
+    },
+    "angleOfView": 18.6,
+    "angleOfViewCalc": 17.9,
+    "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Viltrox AF 90mm f2.2 EVO Fuji X",
+      "zh": "唯卓仕 AF 90mm f2.2 EVO 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 1699,
+            "currency": "CNY",
+            "source": "京东·唯卓仕官方旗舰店",
+            "url": "https://item.jd.com/10224489965636.html",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 350.55,
+            "currency": "USD",
+            "source": "viltrox.com",
+            "url": "https://viltrox.com/products/af-90mm-f2-2-xf",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-06-12"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Fujifilm X",
+      "Sony E",
+      "Nikon Z"
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 10,
+      "sourceText": "8组10片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "https://www.viltrox.com.cn/productinfo/6286437.html",
+      "global": "https://viltrox.com/products/af-90mm-f2-2-xf"
     }
   },
   {

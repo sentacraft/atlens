@@ -401,6 +401,23 @@ export const KNOWN_DISTINCT_PAIRS = new Set([
   makeAllowlistKey(
     "laowa-ff-s-17mmf4-c-dreamer-g",
     "laowa-ff-ts-17mmf4-c-dreamer-g"),
+  // Sirui Sniper focals are sold as two multi-focal products, so several focals
+  // legitimately share an officialLinks.cn page (sirui.com sniper1675.html for
+  // 16/75, sniper.html for 23/33/56). They are distinct lenses (different focal
+  // lengths) — the shared CN product page is not a collect error. (Global links
+  // were made unique via per-focal ?variant= URLs; only CN still collides.)
+  makeAllowlistKey(
+    "sirui-sniper-16mmf12-aps-c-frame-autofocus-lens-x",
+    "sirui-sniper-75mmf12-aps-c-frame-autofocus-lens-x"),
+  makeAllowlistKey(
+    "sirui-sniper-23mmf12-aps-c-frame-autofocus-lens-x",
+    "sirui-sniper-33mmf12-aps-c-frame-autofocus-lens-x"),
+  makeAllowlistKey(
+    "sirui-sniper-23mmf12-aps-c-frame-autofocus-lens-x",
+    "sirui-sniper-56mmf12-aps-c-frame-autofocus-lens-x"),
+  makeAllowlistKey(
+    "sirui-sniper-33mmf12-aps-c-frame-autofocus-lens-x",
+    "sirui-sniper-56mmf12-aps-c-frame-autofocus-lens-x"),
 ]);
 
 // Fields excluded from the spec similarity comparison.
