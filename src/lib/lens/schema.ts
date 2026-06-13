@@ -161,6 +161,12 @@ const lensBaseShape = {
   compatibleMounts: z.array(nonEmptyStringSchema).min(1).optional(),
   accessories: z.array(nonEmptyStringSchema).min(1).optional(),
   lensMaterial: optionalNonEmptyStringSchema,
+  // Publish-managed timestamps (YYYY-MM-DD), same date shape as pricing
+  // sampledAt. Optional: the publish stage guarantees their presence on every
+  // published lens, but they are not part of the derive/review data, so the
+  // schema permits a record without them (fixtures, pre-backfill rows).
+  createdAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  updatedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 } as const;
 
 export const officialLinksSchema = z
@@ -425,6 +431,9 @@ export const KNOWN_DISTINCT_PAIRS = new Set([
 // all measurable optical/physical fields are included automatically.
 const SIMILARITY_EXCLUDE = new Set([
   "id", "brand", "model", "series", "officialLinks", "fieldNotes", "translations", "searchAliases", "pricing",
+  // Publish bookkeeping, not optical/physical spec — two distinct lenses
+  // published in the same batch would otherwise score as more similar.
+  "createdAt", "updatedAt",
 ]);
 
 // Threshold above which two same-brand lenses are flagged as suspiciously similar.

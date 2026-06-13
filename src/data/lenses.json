@@ -81,7 +81,9 @@
         },
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-6mm-f2-x",
@@ -172,7 +174,9 @@
         },
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-7p5mm-f28-ii-x",
@@ -264,7 +268,9 @@
         },
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-10mm-f35-x",
@@ -351,7 +357,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-10mm-t21-x",
@@ -433,7 +441,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-12mm-f28-x",
@@ -523,7 +533,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-16mm-t21-x",
@@ -604,7 +616,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-18mm-f63-x",
@@ -699,7 +713,9 @@
         },
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-25mm-f18-x",
@@ -784,7 +800,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-25mm-f095-x",
@@ -884,7 +902,9 @@
           "清洁套装"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-25mm-t21-x",
@@ -965,7 +985,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-35mm-f12-x",
@@ -1048,7 +1070,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-35mm-f14-x",
@@ -1137,7 +1161,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-35mm-t21-x",
@@ -1218,7 +1244,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-50mm-f14-ts-x",
@@ -1301,7 +1329,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-50mm-f18-x",
@@ -1382,7 +1412,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-50mm-t21-x",
@@ -1463,7 +1495,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-55mm-f14-x",
@@ -1532,7 +1566,9 @@
     "officialLinks": {
       "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=406",
       "global": "https://en.7artisans.com/prod_view.aspx?nid=3&typeid=104&id=406"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-60mm-f28-x",
@@ -1625,7 +1661,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-85mm-t21-x",
@@ -1701,7 +1739,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-af-10mm-f28-x",
@@ -1796,7 +1836,9 @@
         },
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-af-25mm-f18-x",
@@ -1876,7 +1918,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-af-27mm-f28-x",
@@ -1952,7 +1996,9 @@
       "zh": {
         "lensMaterial": "铝合金"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-af-35mm-f14-x",
@@ -2033,7 +2079,9 @@
       "zh": {
         "lensMaterial": "金属+工程塑料"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-af-35mm-f18-x",
@@ -2119,7 +2167,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-af-50mm-f18-x",
@@ -2205,7 +2255,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "7artisans-mf-12mm-t29-aps-c-cine-x",
@@ -2290,7 +2342,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "brightinstar-af-50mm-f14-x",
@@ -2365,7 +2419,9 @@
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/products/af-50mm-f1-4-%E5%8D%8A%E7%94%BB%E5%B9%85",
       "global": "https://brightinstar.com/products/af50mm-f1-4-aps-c-autofocus-lens-large-aperture-portrait-fixed-focus-lens-suitable-fit-for-fuji-x-mount"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "brightinstar-mf-7p5mm-f28-x",
@@ -2463,7 +2519,9 @@
           "filterMm": "后置 27mm 滤镜插槽（专有规格）；无前置滤镜螺纹。"
         }
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "brightinstar-mf-10mm-f56-pro-x",
@@ -2559,7 +2617,9 @@
           "filterMm": "灯泡状鱼眼前组镜片；无滤镜螺纹。"
         }
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "brightinstar-mf-10mm-f56-x",
@@ -2656,7 +2716,9 @@
           "apertureBladeCount": "固定光圈；无光圈机构。"
         }
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "brightinstar-mf-12mm-f20-x",
@@ -2728,7 +2790,9 @@
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/collections/%E8%B6%85%E5%B9%BF%E8%A7%92%E9%95%9C%E5%A4%B4/products/mf-12mm-f2-0-%E2%85%B2-%E5%8D%8A%E7%94%BB%E5%B9%85",
       "global": "https://brightinstar.com/products/12mm-f2-0-iii-aps-c-ultra-wide-angle-big-aperture-cameras-lens-for-fuji-x-mount"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "brightinstar-mf-25mm-f18-x",
@@ -2799,7 +2863,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/products/mf-25mm-f1-8-%E5%8D%8A%E7%94%BB%E5%B9%85"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "brightinstar-mf-35mm-f12-x",
@@ -2861,7 +2927,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "brightinstar-mf-35mm-f14-x",
@@ -2955,7 +3023,9 @@
           "apertureRing": "光圈环可在有级（咔哒挡位）和无级（顺滑无段）两种模式间切换。"
         }
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "brightinstar-mf-35mm-f17-x",
@@ -3030,7 +3100,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "brightinstar-mf-35mm-f095-x",
@@ -3108,7 +3180,9 @@
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/products/mf-35mm-f0-95-%E5%8D%8A%E7%94%BB%E5%B9%85",
       "global": "https://brightinstar.com/products/35mm-f0-95-aps-c-night-god-portrait-star-manual-fixed-focus-lens-suitable-for-fuji-x-mount"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "brightinstar-mf-50mm-f14-x",
@@ -3180,7 +3254,9 @@
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/collections/%E6%A0%87%E5%87%86%E9%95%9C%E5%A4%B4/products/mf-50mm-f1-4-%E2%85%B2-%E5%8D%8A%E7%94%BB%E5%B9%85",
       "global": "https://brightinstar.com/products/50mm-f1-4-iii-aps-c-manual-focus-portrait-lens-for-fujifilm-x"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "brightinstar-mf-50mm-f18-x",
@@ -3256,7 +3332,9 @@
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/collections/%E6%A0%87%E5%87%86%E9%95%9C%E5%A4%B4/products/mf-50mm-f1-8-%E5%8D%8A%E7%94%BB%E5%B9%85",
       "global": "https://brightinstar.com/products/50mm-f1-8-aps-c-manual-focus-lens-fit-for-fuji-x-mount"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "brightinstar-mf-50mm-f095-x",
@@ -3335,7 +3413,9 @@
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/products/mf-50mm-f0-95-%E2%85%B1-%E5%85%A8%E7%94%BB%E5%B9%85",
       "global": "https://brightinstar.com/products/50mm-f0-95-aps-c-night-god-portrait-star-manual-fixed-focus-lens-suitable-for-fuji-x-mount"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "brightinstar-mf-60mm-f28-ii-x",
@@ -3432,7 +3512,9 @@
           "后镜头盖"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "brightinstar-mf-60mm-f28-x",
@@ -3517,7 +3599,9 @@
     "officialLinks": {
       "cn": "https://brightinstar.com.cn/products/mf-60mm-f2-8-%E5%8D%8A%E7%94%BB%E5%B9%85",
       "global": "https://brightinstar.com/products/brightin-star-60mm-f2-8-2x-macro-aps-c-manual-focus-prime-lens-for-fuji-x-mount"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-mkx-18-55mmt29-x",
@@ -3618,7 +3702,9 @@
           "包裹布"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-mkx-50-135mmt29-x",
@@ -3719,7 +3805,9 @@
           "包裹布"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xc-13-33mmf35-63-ois-x",
@@ -3829,7 +3917,9 @@
           "后镜头盖"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-23",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xc-15-45mmf35-56-ois-pz-x",
@@ -3939,7 +4029,9 @@
           "后镜头盖"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xc-16-50mmf35-56-ois-ii-x",
@@ -4011,7 +4103,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc16-50mmf35-56-ois-2/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xc16-50mmf35-56-ois-2/"
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xc-16-50mmf35-56-ois-x",
@@ -4108,7 +4202,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc16-50mmf35-56-ois/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xc16-50mmf35-56-ois/"
-    }
+    },
+    "createdAt": "2026-05-08",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xc-35mmf2-x",
@@ -4197,7 +4293,9 @@
           "前镜头盖 FLCP-43"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xc-50-230mmf45-67-ois-ii-x",
@@ -4312,7 +4410,9 @@
           "遮光罩"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xc-50-230mmf45-67-ois-x",
@@ -4397,7 +4497,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc50-230mmf45-67-ois/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xc50-230mmf45-67-ois/"
-    }
+    },
+    "createdAt": "2026-05-08",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-8-16mmf28-r-lm-wr-x",
@@ -4508,7 +4610,9 @@
           "包裹布"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-8mmf35-r-wr-x",
@@ -4605,7 +4709,9 @@
           "镜头包裹布"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-10-24mmf4-r-ois-wr-x",
@@ -4708,7 +4814,9 @@
           "internalZoom": "变焦时镜身长度保持不变，但前镜组仍会在镜筒内部前后移动。"
         }
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-10-24mmf4-r-ois-x",
@@ -4801,7 +4909,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf10-24mmf4-r-ois/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf10-24mmf4-r-ois/"
-    }
+    },
+    "createdAt": "2026-05-08",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-14mmf28-r-x",
@@ -4882,7 +4992,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf14mmf28-r/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf14mmf28-r/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-16-50mmf28-48-r-lm-wr-x",
@@ -4989,7 +5101,9 @@
           "镜头包裹布"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-16-55mmf28-r-lm-wr-ii-x",
@@ -5097,7 +5211,9 @@
           "镜头包裹布"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-16-55mmf28-r-lm-wr-x",
@@ -5194,7 +5310,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf16-55mmf28-r-lm-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf16-55mmf28-r-lm-wr/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-16-80mmf4-r-ois-wr-x",
@@ -5304,7 +5422,9 @@
           "包裹布"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-16mmf14-r-wr-x",
@@ -5397,7 +5517,9 @@
           "遮光罩 LH-XF16"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-16mmf28-r-wr-x",
@@ -5497,7 +5619,9 @@
           "PRF-49"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-18-55mmf28-4-r-lm-ois-x",
@@ -5597,7 +5721,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf18-55mmf28-4-r-lm-ois/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf18-55mmf28-4-r-lm-ois/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-18-120mmf4-lm-pz-wr-x",
@@ -5689,7 +5815,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf18-120mmf4-lm-pz-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf18-120mmf4-lm-pz-wr/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-18-135mmf35-56-r-lm-ois-wr-x",
@@ -5788,7 +5916,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf18-135mmf35-56-r-lm-ois-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf18-135mmf35-56-r-lm-ois-wr/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-18mmf2-r-x",
@@ -5860,7 +5990,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf18mmf2-r/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf18mmf2-r/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-18mmf14-r-lm-wr-x",
@@ -5953,7 +6085,9 @@
           "遮光罩 LH-XF18"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-23mmf2-r-wr-x",
@@ -6048,7 +6182,9 @@
           "包裹布"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-23mmf14-r-lm-wr-x",
@@ -6131,7 +6267,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf23mmf14-r-lm-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf23mmf14-r-lm-wr/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-23mmf14-r-x",
@@ -6200,7 +6338,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf23mmf14-r/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf23mmf14-r/"
-    }
+    },
+    "createdAt": "2026-05-08",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-23mmf28-r-wr-x",
@@ -6298,7 +6438,9 @@
           "镜头保护布"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-23",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-27mmf28-r-wr-x",
@@ -6378,7 +6520,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf27mmf28-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf27mmf28-r-wr/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-27mmf28-x",
@@ -6452,7 +6596,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf27mmf28/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf27mmf28/"
-    }
+    },
+    "createdAt": "2026-05-08",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-30mmf28-r-lm-wr-macro-x",
@@ -6538,7 +6684,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf30mmf28-r-lm-wr-macro/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf30mmf28-r-lm-wr-macro/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-33mmf14-r-lm-wr-x",
@@ -6621,7 +6769,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf33mmf14-r-lm-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf33mmf14-r-lm-wr/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-35mmf2-r-wr-x",
@@ -6719,7 +6869,9 @@
           "包裹布"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-35mmf14-r-x",
@@ -6818,7 +6970,9 @@
           "遮光罩盖"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-50-140mmf28-r-lm-ois-wr-x",
@@ -6934,7 +7088,9 @@
           "包裹布"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-50mmf2-r-wr-x",
@@ -7033,7 +7189,9 @@
           "包裹布"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-50mmf10-r-wr-x",
@@ -7114,7 +7272,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf50mmf1-r-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf50mmf1-r-wr/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-55-200mmf35-48-r-lm-ois-x",
@@ -7214,7 +7374,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf55-200mmf35-48-r-lm-ois/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf55-200mmf35-48-r-lm-ois/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-56mmf12-r-apd-x",
@@ -7306,7 +7468,9 @@
           "maxAperture": "f/1.2 是几何光圈；APD 切趾滤镜会使实际透光量降低约 1 档（有效 T 值约为 T1.7）。景深仍等同于 f/1.2。"
         }
       }
-    }
+    },
+    "createdAt": "2026-05-08",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-56mmf12-r-wr-x",
@@ -7403,7 +7567,9 @@
           "镜头包裹布"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-56mmf12-r-x",
@@ -7484,7 +7650,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf56mmf12-r/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf56mmf12-r/"
-    }
+    },
+    "createdAt": "2026-05-08",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-60mmf24-r-macro-x",
@@ -7571,7 +7739,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf60mmf24-r-macro/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf60mmf24-r-macro/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-70-300mmf4-56-r-lm-ois-wr-x",
@@ -7670,7 +7840,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf70-300mmf4-56-r-lm-ois-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf70-300mmf4-56-r-lm-ois-wr/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-80mmf28-r-lm-ois-wr-macro-x",
@@ -7776,7 +7948,9 @@
           "包裹布"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-90mmf2-r-lm-wr-x",
@@ -7857,7 +8031,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf90mmf2-r-lm-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf90mmf2-r-lm-wr/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-100-400mmf45-56-r-lm-ois-wr-x",
@@ -7956,7 +8132,9 @@
     "officialLinks": {
       "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf100-400mmf45-56-r-lm-ois-wr/",
       "global": "https://www.fujifilm-x.com/global/products/lenses/xf100-400mmf45-56-r-lm-ois-wr/"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-150-600mmf56-8-r-lm-ois-wr-x",
@@ -8072,7 +8250,9 @@
           "肩带"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-200mmf2-r-lm-ois-wr-x",
@@ -8174,7 +8354,9 @@
           "镜头包"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "fujifilm-xf-500mmf56-r-lm-ois-wr-x",
@@ -8277,7 +8459,9 @@
           "肩带"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "laowa-cf-4mmf28-210-circular-fisheye-x",
@@ -8369,7 +8553,9 @@
           "filterMm": "灯泡状圆周鱼眼前组镜片；无滤镜螺纹。"
         }
       }
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "laowa-cf-4p5-10mmf28-fisheye-zoom-x",
@@ -8462,7 +8648,9 @@
           "internalZoom": "变焦时镜身长度保持不变，但前镜组仍会在镜筒内部前后移动。"
         }
       }
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "laowa-cf-8-16mmf35-50-c-dreamer-x",
@@ -8551,7 +8739,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "https://www.laowalens.com/camera-lens-76"
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "laowa-cf-9mmf28-cd-dreamer-x",
@@ -8642,7 +8832,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "https://www.laowalens.com/camera-lens-18"
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "laowa-cf-10mmf40-cookie-x",
@@ -8733,7 +8925,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "https://www.laowalens.com/camera-lens-55"
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "laowa-cf-12-24mmf56-zoom-shift-x",
@@ -8825,7 +9019,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "https://www.laowalens.com/camera-lens-81"
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "laowa-cf-65mmf28-ca-dreamer-macro-2x-x",
@@ -8917,7 +9113,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "https://www.laowalens.com/camera-lens-33"
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "laowa-cf-argus-25mm-f095-apo-x",
@@ -9001,7 +9199,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "https://www.laowalens.com/camera-lens-58"
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "laowa-cf-argus-33mmf095-x",
@@ -9091,7 +9291,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "https://www.laowalens.com/camera-lens-42"
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "meike-10mmt22-x",
@@ -9158,7 +9360,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "http://www.mkgrip.cn/goods/show-388.html"
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "meike-23mmf14stm-aps-c-x",
@@ -9233,7 +9437,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "http://www.mkgrip.cn/goods/show-1578.html"
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "meike-25mm-t22-x",
@@ -9302,7 +9508,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "http://www.mkgrip.cn/goods/show-425.html"
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "meike-33mmf14stm-aps-c-x",
@@ -9381,7 +9589,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "http://www.mkgrip.cn/goods/show-520.html"
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "meike-35mm-t22-x",
@@ -9450,7 +9660,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "http://www.mkgrip.cn/goods/show-333.html"
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "meike-50mm-t22-x",
@@ -9517,7 +9729,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "http://www.mkgrip.cn/goods/show-336.html"
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "meike-50mmf17-x",
@@ -9588,7 +9802,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "meike-55mmf14stm-aps-c-x",
@@ -9667,7 +9883,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "http://www.mkgrip.cn/goods/show-506.html"
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "meike-56mmf17-stm-aps-c-x",
@@ -9745,7 +9963,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "http://www.mkgrip.cn/goods/show-1581.html"
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "meike-65mmt22-x",
@@ -9812,7 +10032,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "http://www.mkgrip.cn/goods/show-342.html"
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "meike-85mmf18-stm-x",
@@ -9890,7 +10112,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "http://www.mkgrip.cn/goods/show-403.html"
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "meike-85mmt22-x",
@@ -9957,7 +10181,9 @@
     "fieldNotes": {},
     "officialLinks": {
       "cn": "http://www.mkgrip.cn/goods/show-343.html"
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "sgimage-af-25mm-f18-aps-c-mirrorless-lens-x",
@@ -10041,7 +10267,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sgimage-af-55mm-f18-full-frame-lens-x",
@@ -10116,7 +10344,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sgimage-mf-7p5mm-f28-aps-c-fisheye-lens-x",
@@ -10209,7 +10439,9 @@
         },
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sgimage-mf-12mm-f28-aps-c-ultra-wide-x",
@@ -10290,7 +10522,9 @@
         },
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sgimage-mf-18mm-f63-aps-c-ultra-slim-pancake-lens-x",
@@ -10379,7 +10613,9 @@
         },
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sgimage-mf-24mm-f63-full-frame-ultra-slim-pancake-x",
@@ -10470,7 +10706,9 @@
         },
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sgimage-mf-25mm-f18-aps-c-lens-x",
@@ -10555,7 +10793,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sgimage-mf-35mm-f12-aps-c-lens-x",
@@ -10640,7 +10880,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sgimage-mf-35mm-f095-ultra-bright-aps-c-lens-x",
@@ -10724,7 +10966,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sgimage-mf-50mm-f14-aps-c-lens-x",
@@ -10808,7 +11052,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sgimage-mf-50mm-f18-full-frame-lens-with-shaped-aperture-x",
@@ -10898,7 +11144,9 @@
         },
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sigma-art-17-40mm-f18-dc-x",
@@ -11013,7 +11261,9 @@
           "后镜头盖 LCR III"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sigma-contemporary-10-18mm-f28-dc-dn-x",
@@ -11127,7 +11377,9 @@
           "后镜头盖 LCR II"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sigma-contemporary-12mm-f14-dc-x",
@@ -11235,7 +11487,9 @@
           "后镜头盖 LCR III"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sigma-contemporary-15mm-f14-dc-x",
@@ -11344,7 +11598,9 @@
           "后镜头盖 LCR III"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sigma-contemporary-16-300mm-f35-67-dc-os-x",
@@ -11473,7 +11729,9 @@
           "后镜头盖 LCR III"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sigma-contemporary-16mm-f14-dc-dn-x",
@@ -11581,7 +11839,9 @@
           "后镜头盖 LCR II"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sigma-contemporary-18-50mm-f28-dc-dn-x",
@@ -11694,7 +11954,9 @@
           "后镜头盖 LCR II"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sigma-contemporary-23mm-f14-dc-dn-x",
@@ -11795,7 +12057,9 @@
           "后镜头盖 LCR II"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sigma-contemporary-30mm-f14-dc-dn-x",
@@ -11897,7 +12161,9 @@
           "后镜头盖 LCR II"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sigma-contemporary-56mm-f14-dc-dn-x",
@@ -11999,7 +12265,9 @@
           "后镜头盖 LCR II"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sigma-contemporary-100-400mm-f5-63-dg-dn-os-x",
@@ -12117,7 +12385,9 @@
           "后镜头盖 LCR II"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "sirui-aurora-35mmf14-full-frame-autofocus-lens-x",
@@ -12199,7 +12469,9 @@
     "officialLinks": {
       "cn": "https://www.sirui.com/index/photographic/aurora35mm.html",
       "global": "https://store.sirui.com/products/sirui-aurora-series-35mm-f1-4-full-frame-autofocus-lens"
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "sirui-aurora-85mmf14-full-frame-autofocus-lens-x",
@@ -12276,7 +12548,9 @@
     "officialLinks": {
       "cn": "https://www.sirui.com/index/photographic/aurora.html",
       "global": "https://store.sirui.com/products/sirui-aurora-series-85mm-full-frame-autofocus-lens"
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "sirui-sniper-16mmf12-aps-c-frame-autofocus-lens-x",
@@ -12364,7 +12638,9 @@
           "镜头袋"
         ]
       }
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "sirui-sniper-23mmf12-aps-c-frame-autofocus-lens-x",
@@ -12450,7 +12726,9 @@
           "镜头袋"
         ]
       }
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "sirui-sniper-33mmf12-aps-c-frame-autofocus-lens-x",
@@ -12537,7 +12815,9 @@
           "镜头袋"
         ]
       }
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "sirui-sniper-56mmf12-aps-c-frame-autofocus-lens-x",
@@ -12624,7 +12904,9 @@
           "镜头袋"
         ]
       }
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "sirui-sniper-75mmf12-aps-c-frame-autofocus-lens-x",
@@ -12710,7 +12992,9 @@
           "镜头袋"
         ]
       }
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "tamron-11-20mm-f28-di-iii-a-rxd-x",
@@ -12823,7 +13107,9 @@
           "后镜头盖"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "tamron-17-70mm-f28-di-iii-a-vc-rxd-x",
@@ -12935,7 +13221,9 @@
           "后镜头盖"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "tamron-18-300mm-f35-63-di-iii-a-vc-vxd-x",
@@ -13055,7 +13343,9 @@
           "后镜头盖"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "tamron-150-500mm-f5-67-di-iii-vc-vxd-x-x",
@@ -13171,7 +13461,9 @@
           "三脚架接环"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-35mm-t21-x",
@@ -13255,7 +13547,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-100mm-f28-2x-macro-x",
@@ -13350,7 +13644,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-af-14mm-f35-x",
@@ -13436,7 +13732,9 @@
           "遮光罩"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-af-17mm-f18-air-x",
@@ -13520,7 +13818,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-af-23mm-f18-x",
@@ -13616,7 +13916,9 @@
           "后镜头盖"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-af-27mm-f28-x",
@@ -13705,7 +14007,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-af-35mm-f18-ii-x",
@@ -13807,7 +14111,9 @@
           "后镜头盖"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-af-56mm-f18-x",
@@ -13908,7 +14214,9 @@
           "后镜头盖"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-af-75mm-f2-x",
@@ -13999,7 +14307,9 @@
           "遮光罩"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-aps-c-7p5mm-f2-fisheye-x",
@@ -14099,7 +14409,9 @@
         },
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-aps-c-10mm-f20-asph-x",
@@ -14196,7 +14508,9 @@
         },
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-aps-c-23mm-f14-x",
@@ -14291,7 +14605,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-aps-c-25mm-f2-x",
@@ -14383,7 +14699,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-aps-c-35mm-f14-x",
@@ -14473,7 +14791,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-aps-c-35mm-f095-x",
@@ -14558,7 +14878,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-aps-c-40mm-f28-macro-x",
@@ -14650,7 +14972,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-aps-c-50mm-f12-x",
@@ -14740,7 +15064,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-aps-c-50mm-f095-x",
@@ -14823,7 +15149,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-tilt-50mm-f14-x",
@@ -14909,7 +15237,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-tilt-aps-c-35mm-f14-x",
@@ -14997,7 +15327,9 @@
       "zh": {
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "ttartisan-tilt-shift-100mm-f28-2x-macro-x",
@@ -15104,7 +15436,9 @@
           "冷靴安装支架"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "viltrox-af-9mm-f28-air-x",
@@ -15191,7 +15525,9 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/6117031.html",
       "global": "https://viltrox.com/products/af-9mm-f2-8-x"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "viltrox-af-13mm-f14-x",
@@ -15295,7 +15631,9 @@
           "镜头袋"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "viltrox-af-15mm-f17-air-x",
@@ -15382,7 +15720,9 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/6118527.html",
       "global": "https://viltrox.com/products/af-15mm-f1-7-x"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "viltrox-af-23mm-f14-x",
@@ -15479,7 +15819,9 @@
           "镜头袋"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "viltrox-af-25mm-f17-air-x",
@@ -15564,7 +15906,9 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/3295658.html",
       "global": "https://viltrox.com/products/af-25mm-f1-7-x"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "viltrox-af-27mm-f12-pro-x",
@@ -15658,7 +16002,9 @@
           "wr": "高效防尘防溅结构；内置高级防尘圈。"
         }
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "viltrox-af-28mm-f45-x",
@@ -15749,7 +16095,9 @@
         },
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "viltrox-af-33mm-f14-x",
@@ -15830,7 +16178,9 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/519231.html",
       "global": "https://viltrox.com/products/viltrox-af-33mm-f14-xf-aps-c-lens"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "viltrox-af-35mm-f17-air-x",
@@ -15918,7 +16268,9 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/3229930.html",
       "global": "https://viltrox.com/products/viltrox-af-35mm-f1-7-aps-c-lens-for-fujifilm-x-mount"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "viltrox-af-56mm-f12-pro-x",
@@ -16010,7 +16362,9 @@
           "lensConfiguration": "包含 1 片 UA（超非球面）镜片。"
         }
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "viltrox-af-56mm-f14-x",
@@ -16087,7 +16441,9 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/519234.html",
       "global": "https://viltrox.com/products/viltrox-af-56mm-f14-x-mount-lens"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "viltrox-af-56mm-f17-air-x",
@@ -16173,7 +16529,9 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/2623584.html",
       "global": "https://viltrox.com/products/viltrox-af-56mm-f1-7-xf-z"
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "viltrox-af-75mm-f12-pro-x",
@@ -16273,7 +16631,9 @@
           "后镜头盖"
         ]
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "viltrox-af-75mm-f18-evo-x",
@@ -16353,7 +16713,9 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/6286436.html",
       "global": "https://viltrox.com/products/af-75mm-f1-8-xf"
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "viltrox-af-85mm-f18-ii-x",
@@ -16435,7 +16797,9 @@
         },
         "lensMaterial": "金属"
       }
-    }
+    },
+    "createdAt": "2026-04-19",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "viltrox-af-90mm-f22-evo-x",
@@ -16515,7 +16879,9 @@
     "officialLinks": {
       "cn": "https://www.viltrox.com.cn/productinfo/6286437.html",
       "global": "https://viltrox.com/products/af-90mm-f2-2-xf"
-    }
+    },
+    "createdAt": "2026-06-13",
+    "updatedAt": "2026-06-13"
   },
   {
     "id": "voigtlander-18mm-f28-color-skopar-asph-x",
@@ -16603,7 +16969,9 @@
           "遮光罩"
         ]
       }
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "voigtlander-23mm-f12-nokton-aspherical-x",
@@ -16685,7 +17053,9 @@
           "遮光罩"
         ]
       }
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "voigtlander-27mm-f20-ultron-x",
@@ -16770,7 +17140,9 @@
           "遮光罩"
         ]
       }
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "voigtlander-35mm-f2-macro-apo-ultron-x",
@@ -16864,7 +17236,9 @@
           "遮光罩"
         ]
       }
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "voigtlander-35mm-f09-nokton-aspherical-x",
@@ -16953,7 +17327,9 @@
           "遮光罩"
         ]
       }
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "voigtlander-35mm-f12-nokton-x",
@@ -17035,7 +17411,9 @@
           "遮光罩"
         ]
       }
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   },
   {
     "id": "voigtlander-50mm-f12-nokton-x",
@@ -17117,6 +17495,8 @@
           "遮光罩"
         ]
       }
-    }
+    },
+    "createdAt": "2026-05-18",
+    "updatedAt": "2026-06-11"
   }
 ]
