@@ -26,6 +26,19 @@ const CompareContext = createContext<CompareContextValue | null>(null);
 export function CompareProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState(initialCompareState);
   const value = useMemo(() => ({ state, setState }), [state]);
+  const mount = useEffectiveMount();
+  const compareIds = state[mount];
+  const prevIdsRef = useRef(compareIds);
+
+  useEffect(() => {
+    const prev = prevIdsRef.current;
+    prevIdsRef.current = compareIds;
+    const added = compareIds.filter((id) => !prev.includes(id));
+    if (added.length === 1) {
+      track("compare_add", { lens_slug: added[0] });
+    }
+  }, [compareIds]);
+
   return (
     <CompareContext value={value}>
       {children}
@@ -41,16 +54,6 @@ export function useCompare() {
   const mount = useEffectiveMount();
   const { state, setState } = ctx;
   const compareIds = state[mount];
-
-  const prevIdsRef = useRef(compareIds);
-  useEffect(() => {
-    const prev = prevIdsRef.current;
-    prevIdsRef.current = compareIds;
-    const added = compareIds.filter((id) => !prev.includes(id));
-    if (added.length === 1) {
-      track("compare_add", { lens_slug: added[0] });
-    }
-  }, [compareIds]);
 
   const add = useCallback(
     (id: string) => {
