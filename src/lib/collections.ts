@@ -338,19 +338,38 @@ export interface MemberCollectionInfo {
   lensCount: number;
 }
 
+// Attaches `lensCount` (how many lenses in the whole catalog match this
+// collection) to a collection, producing the shape the UI lists need.
+function withLensCount(
+  collection: LensCollection,
+  allLenses: Lens[],
+  locale: string,
+): MemberCollectionInfo {
+  return {
+    ...collection,
+    lensCount: allLenses.filter((lens) => collection.filter(lens, locale)).length,
+  };
+}
+
+/**
+ * Collections a single lens belongs to — i.e. whose predicate matches the lens.
+ * Used on the lens detail page ("this lens appears in …").
+ */
 export function getMemberCollections(
   lens: Lens,
   allLenses: Lens[],
   locale: string,
 ): MemberCollectionInfo[] {
   return Object.values(COLLECTIONS)
-    .filter((c) => c.filter(lens, locale))
-    .map((c) => ({
-      ...c,
-      lensCount: allLenses.filter((l) => c.filter(l, locale)).length,
-    }));
+    .filter((collection) => collection.filter(lens, locale))
+    .map((collection) => withLensCount(collection, allLenses, locale));
 }
 
+/**
+ * Collections shared by ALL of the given lenses — i.e. whose predicate matches
+ * every lens. Used on the compare page. Degenerate cases: zero lenses → none;
+ * one lens → just that lens's member collections.
+ */
 export function getSharedCollections(
   lenses: Lens[],
   allLenses: Lens[],
@@ -363,9 +382,6 @@ export function getSharedCollections(
     return getMemberCollections(lenses[0], allLenses, locale);
   }
   return Object.values(COLLECTIONS)
-    .filter((c) => lenses.every((lens) => c.filter(lens, locale)))
-    .map((c) => ({
-      ...c,
-      lensCount: allLenses.filter((l) => c.filter(l, locale)).length,
-    }));
+    .filter((collection) => lenses.every((lens) => collection.filter(lens, locale)))
+    .map((collection) => withLensCount(collection, allLenses, locale));
 }
