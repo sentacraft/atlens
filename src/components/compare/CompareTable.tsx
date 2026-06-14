@@ -29,7 +29,7 @@ import { mountToUrlSegment } from "@/lib/mount";
 import { Link } from "@/i18n/navigation";
 import LensSearchDialog from "@/components/browse/LensSearchDialog";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
-import { buildSpecGroups, buildSpecGroupLabels, resolveSpecRow } from "@/lib/lens/spec-groups";
+import { buildSpecGroups, buildSpecGroupLabels, resolveSpecRow, rowPlainText } from "@/lib/lens/spec-groups";
 import type { StructuredLine, ResolvedSpecRow } from "@/lib/lens/spec-groups";
 import type { Lens } from "@/lib/types";
 import { PriceCell } from "@/components/price/PriceCell";
@@ -275,7 +275,7 @@ export default function CompareTable({ lenses: initialLenses, allLenses, minColu
       const rowMap = new Map<string, ResolvedSpecRow>();
       for (const group of allGroups) {
         for (const row of group.rows) {
-          const resolved = resolveSpecRow(row, lens, valueCellLabels);
+          const resolved = resolveSpecRow(row, lens);
           if (resolved) {
             rowMap.set(row.label, resolved);
           }
@@ -284,7 +284,7 @@ export default function CompareTable({ lenses: initialLenses, allLenses, minColu
       map.set(lens.id, rowMap);
     }
     return map;
-  }, [allGroups, orderedLenses, valueCellLabels]);
+  }, [allGroups, orderedLenses]);
 
   // Per-view suppression: hide rows where no compared lens has data.
   const visibleGroups = useMemo(
@@ -832,7 +832,7 @@ export default function CompareTable({ lenses: initialLenses, allLenses, minColu
                     .map((row) => {
                       const resolved = resolvedPerLens.get(lens.id)?.get(row.label);
                       return resolved
-                        ? { label: row.label, currentValue: resolved.plainText, group: group.label }
+                        ? { label: row.label, currentValue: rowPlainText(resolved, valueCellLabels), group: group.label }
                         : null;
                     })
                     .filter((f): f is NonNullable<typeof f> => f !== null)

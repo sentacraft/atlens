@@ -120,8 +120,6 @@ export interface ResolvedTextRow {
   note?: string;
   displayValue?: string;
   subValue?: string;
-  /** Plain-text representation of the visible cell — single source of truth for the Report Dialog. */
-  plainText: string;
 }
 
 export interface ResolvedNumericRow {
@@ -136,7 +134,6 @@ export interface ResolvedNumericRow {
   comparable?: number;
   bestDir?: "min" | "max";
   highlightFragment?: string;
-  plainText: string;
 }
 
 export interface ResolvedBoolRow {
@@ -147,7 +144,6 @@ export interface ResolvedBoolRow {
   note?: string;
   boolValue: boolean | "partial" | undefined;
   subValue?: string;
-  plainText: string;
 }
 
 export type ResolvedSpecRow = ResolvedTextRow | ResolvedNumericRow | ResolvedBoolRow;
@@ -292,18 +288,16 @@ function joinParts(...parts: (string | undefined)[]): string {
 }
 
 /**
- * Resolves a single spec row for a specific lens, calling all formatter functions
- * exactly once. Returns null when this lens has no data for the row (caller should
- * omit the row from the visible set for this lens).
+ * Resolves a single spec row for a specific lens, calling all formatter
+ * functions exactly once. Returns null when this lens has no data for the row
+ * (caller omits the row from the visible set for this lens).
  *
- * The returned `plainText` field is the single source of truth for the Report
- * Dialog's "current value" — identical to what is rendered in the spec table.
+ * Pure extraction — the resolved row carries only the raw values (boolValue,
+ * displayValue, structuredLines, …). The flat text for the Report Dialog is
+ * derived on demand via `rowPlainText`, so this stays free of display labels
+ * and each surface can map raw values to text its own way.
  */
-export function resolveSpecRow(
-  row: SpecRow,
-  lens: Lens,
-  labels: SpecValueTextLabels
-): ResolvedSpecRow | null {
+export function resolveSpecRow(row: SpecRow, lens: Lens): ResolvedSpecRow | null {
   if (!row.hasData(lens)) {
     return null;
   }
@@ -316,66 +310,42 @@ export function resolveSpecRow(
   const labelNoteVariant = row.labelNoteVariant;
 
   if (row.kind === "bool") {
-    const boolValue = row.getValue(lens);
-    const subValue = row.getSubValue?.(lens);
-    const primaryText =
-      boolValue === true
-        ? labels.yes
-        : boolValue === "partial"
-          ? labels.partial
-          : boolValue === false
-            ? labels.no
-            : labels.unknown;
     return {
       kind: "bool",
       label: row.label,
       labelNote,
       labelNoteVariant,
       note,
-      boolValue,
-      subValue,
-      plainText: joinParts(primaryText, subValue, note && `(${note})`),
+      boolValue: row.getValue(lens),
+      subValue: row.getSubValue?.(lens),
     };
   }
 
   if (row.kind === "numeric") {
-    const structuredLines = row.getStructuredLines?.(lens);
-    const displayValue = row.getDisplayValue(lens);
-    const subValue = row.getSubValue?.(lens);
-    const primary =
-      structuredLines && structuredLines.length > 0
-        ? structuredLines
-            .map((l) => (l.label ? `${l.value} (${l.label})` : l.value))
-            .join("\n")
-        : (displayValue ?? labels.missing);
     return {
       kind: "numeric",
       label: row.label,
       labelNote,
       labelNoteVariant,
       note,
-      displayValue,
-      subValue,
-      structuredLines,
+      displayValue: row.getDisplayValue(lens),
+      subValue: row.getSubValue?.(lens),
+      structuredLines: row.getStructuredLines?.(lens),
       comparable: row.toComparable(lens),
       bestDir: row.bestDir,
       highlightFragment: row.getHighlightFragment?.(lens),
-      plainText: joinParts(primary, subValue, note && `(${note})`),
     };
   }
 
   // text
-  const displayValue = row.getDisplayValue(lens);
-  const subValue = row.getSubValue?.(lens);
   return {
     kind: "text",
     label: row.label,
     labelNote,
     labelNoteVariant,
     note,
-    displayValue,
-    subValue,
-    plainText: joinParts(displayValue ?? labels.missing, subValue, note && `(${note})`),
+    displayValue: row.getDisplayValue(lens),
+    subValue: row.getSubValue?.(lens),
   };
 }
 
@@ -383,19 +353,49 @@ export function resolveSpecRow(
  * Resolves all spec groups for a single lens, filtering out rows and groups
  * where the lens has no data. Use on the detail page or any single-lens view.
  */
-export function resolveSpecGroups(
-  groups: SpecGroup[],
-  lens: Lens,
-  labels: SpecValueTextLabels
-): ResolvedSpecGroup[] {
+export function resolveSpecGroups(groups: SpecGroup[], lens: Lens): ResolvedSpecGroup[] {
   return groups
     .map((group) => ({
       label: group.label,
       rows: group.rows
-        .map((row) => resolveSpecRow(row, lens, labels))
+        .map((row) => resolveSpecRow(row, lens))
         .filter((r): r is ResolvedSpecRow => r !== null),
     }))
     .filter((group) => group.rows.length > 0);
+}
+
+/**
+ * Flat-text representation of a resolved row — the single source of truth for
+ * the Report Dialog's "current value". Derived from the already-resolved row
+ * plus the display labels, so it stays in step with the spec table (which
+ * renders the same resolved values). Kept out of `resolveSpecRow` so resolution
+ * is pure data and labels live only at the presentation boundary.
+ */
+export function rowPlainText(row: ResolvedSpecRow, labels: SpecValueTextLabels): string {
+  if (row.kind === "bool") {
+    const primaryText =
+      row.boolValue === true
+        ? labels.yes
+        : row.boolValue === "partial"
+          ? labels.partial
+          : row.boolValue === false
+            ? labels.no
+            : labels.unknown;
+    return joinParts(primaryText, row.subValue, row.note && `(${row.note})`);
+  }
+
+  if (row.kind === "numeric") {
+    const primary =
+      row.structuredLines && row.structuredLines.length > 0
+        ? row.structuredLines
+            .map((l) => (l.label ? `${l.value} (${l.label})` : l.value))
+            .join("\n")
+        : (row.displayValue ?? labels.missing);
+    return joinParts(primary, row.subValue, row.note && `(${row.note})`);
+  }
+
+  // text
+  return joinParts(row.displayValue ?? labels.missing, row.subValue, row.note && `(${row.note})`);
 }
 
 // ---------------------------------------------------------------------------

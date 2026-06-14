@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSpecGroups, resolveSpecRow } from "@/lib/lens/spec-groups";
+import { buildSpecGroups, resolveSpecRow, rowPlainText } from "@/lib/lens/spec-groups";
 import type { Lens } from "@/lib/types";
 
 const labels = {
@@ -114,12 +114,12 @@ function getRow(label: string) {
   return row!;
 }
 
-describe("resolveSpecRow — plainText", () => {
+describe("rowPlainText", () => {
   it("includes secondary text for bool rows", () => {
     const lens = makeLens({ ois: true, oisStops: 5 });
     const row = getRow("OIS");
 
-    expect(resolveSpecRow(row, lens, valueLabels)?.plainText).toBe("Yes\n5 stops");
+    expect(rowPlainText(resolveSpecRow(row, lens)!, valueLabels)).toBe("Yes\n5 stops");
   });
 
   it("serializes MFD with macro-first logic", () => {
@@ -131,7 +131,7 @@ describe("resolveSpecRow — plainText", () => {
     });
     const row = getRow("Min Focus Distance");
 
-    expect(resolveSpecRow(row, lens, valueLabels)?.plainText).toBe("12cm");
+    expect(rowPlainText(resolveSpecRow(row, lens)!, valueLabels)).toBe("12cm");
   });
 
   it("preserves primary and secondary text rows", () => {
@@ -141,7 +141,7 @@ describe("resolveSpecRow — plainText", () => {
     });
     const row = getRow("Dimensions");
 
-    expect(resolveSpecRow(row, lens, valueLabels)?.plainText).toBe(
+    expect(rowPlainText(resolveSpecRow(row, lens)!, valueLabels)).toBe(
       "⌀65 × 71mm\nRetracted 60mm\nTele 89mm"
     );
   });

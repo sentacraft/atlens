@@ -8,7 +8,7 @@ import { getLensUrl } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount, mountToUrlSegment } from "@/lib/mount";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
-import { buildSpecGroups, buildSpecGroupLabels, resolveSpecGroups } from "@/lib/lens/spec-groups";
+import { buildSpecGroups, buildSpecGroupLabels, resolveSpecGroups, rowPlainText } from "@/lib/lens/spec-groups";
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens/spec-groups";
 import { ExternalLink } from "@/components/ui/external-link";
 import LensDetailCompareToggle from "@/components/compare/LensDetailCompareToggle";
@@ -202,9 +202,9 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     missing: t("missing"),
   };
 
-  // Resolve all row values once. This is the single source of truth for both
-  // the rendered spec table and the Report Dialog's field list.
-  const resolvedGroups = resolveSpecGroups(specGroups, lens, valueCellLabels);
+  // Resolve all row values once (raw data). Both the rendered spec table and
+  // the Report Dialog derive from these resolved rows + valueCellLabels.
+  const resolvedGroups = resolveSpecGroups(specGroups, lens);
 
   // Field options for the Report Dialog — taken directly from resolved values,
   // identical to what is rendered in the spec table below.
@@ -214,7 +214,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const priceSelection = pickPriceEntry(lens.pricing, locale);
   const reportableFields = [
     ...resolvedGroups.flatMap((group) =>
-      group.rows.map((row) => ({ label: row.label, currentValue: row.plainText, group: group.label }))
+      group.rows.map((row) => ({ label: row.label, currentValue: rowPlainText(row, valueCellLabels), group: group.label }))
     ),
     ...(priceSelection
       ? [{ label: tPricing("fieldLabel"), currentValue: formatPriceForReport(priceSelection, locale, tPricing), group: tPricing("groupLabel") }]
