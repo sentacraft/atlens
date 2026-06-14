@@ -214,6 +214,79 @@ export interface SpecGroupLabels {
   motorClass: Record<FocusMotorClass, string>;
 }
 
+// Translator compatible with next-intl's getTranslations (server) and
+// useTranslations (client) return types — both are called as t(key). A minimal
+// structural type (not next-intl's) keeps buildSpecGroups consuming plain
+// strings: the schema below never touches a translation key directly.
+type Translator = (key: string, values?: Record<string, string | number>) => string;
+
+/**
+ * Assembles the pre-translated SpecGroupLabels from a `LensDetail`-namespace
+ * translator. Single home for the label assembly shared by the detail page and
+ * the compare table — the one place that maps translation keys to label fields,
+ * so each call site no longer repeats the ~40-line object.
+ */
+export function buildSpecGroupLabels(t: Translator): SpecGroupLabels {
+  return {
+    groupOptics: t("groupOptics"),
+    groupFocus: t("groupFocus"),
+    groupStabilization: t("groupStabilization"),
+    groupPhysical: t("groupPhysical"),
+    groupFeatures: t("groupFeatures"),
+    groupRelease: t("groupRelease"),
+    focalLength: t("focalLength"),
+    focalLengthEquiv: t("focalLengthEquiv"),
+    maxAperture: t("maxAperture"),
+    minAperture: t("minAperture"),
+    maxTStop: t("maxTStop"),
+    minTStop: t("minTStop"),
+    angleOfView: t("angleOfView"),
+    angleOfViewEstNote: t("angleOfViewEstNote"),
+    apertureBladeCount: t("apertureBladeCount"),
+    lensConfiguration: t("lensConfiguration"),
+    af: t("af"),
+    focusMotor: t("focusMotor"),
+    internalFocusing: t("internalFocusing"),
+    minFocusDist: t("minFocusDist"),
+    maxMagnification: t("maxMagnification"),
+    ois: t("ois"),
+    weight: t("weight"),
+    dimensions: t("dimensions"),
+    filterSize: t("filterSize"),
+    lensMaterial: t("lensMaterial"),
+    wr: t("wr"),
+    apertureRing: t("apertureRing"),
+    powerZoom: t("powerZoom"),
+    internalZoom: t("internalZoom"),
+    releaseYear: t("releaseYear"),
+    releaseYearLabelNote: t("releaseYearLabelNote"),
+    accessories: t("accessories"),
+    yes: t("yes"),
+    no: t("no"),
+    partial: t("partial"),
+    retracted: t("lengthRetracted"),
+    wide: t("lengthWide"),
+    tele: t("lengthTele"),
+    lc: {
+      groups: t("lcGroups"),
+      elements: t("lcElements"),
+      aspherical: t("lcAspherical"),
+      ed: t("lcEd"),
+      superEd: t("lcSuperEd"),
+      sld: t("lcSld"),
+      fld: t("lcFld"),
+      highRefractive: t("lcHighRefractive"),
+      incl: t("lcIncl"),
+    },
+    motorClass: {
+      linear: t("motorLinear"),
+      stepping: t("motorStepping"),
+      dc: t("motorDc"),
+      other: t("motorOther"),
+    },
+  };
+}
+
 function joinParts(...parts: (string | undefined)[]): string {
   return parts.filter(Boolean).join("\n");
 }

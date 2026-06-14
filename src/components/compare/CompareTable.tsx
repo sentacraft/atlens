@@ -29,7 +29,7 @@ import { mountToUrlSegment } from "@/lib/mount";
 import { Link } from "@/i18n/navigation";
 import LensSearchDialog from "@/components/browse/LensSearchDialog";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
-import { buildSpecGroups, resolveSpecRow } from "@/lib/lens/spec-groups";
+import { buildSpecGroups, buildSpecGroupLabels, resolveSpecRow } from "@/lib/lens/spec-groups";
 import type { StructuredLine, ResolvedSpecRow } from "@/lib/lens/spec-groups";
 import type { Lens } from "@/lib/types";
 import { PriceCell } from "@/components/price/PriceCell";
@@ -265,68 +265,7 @@ export default function CompareTable({ lenses: initialLenses, allLenses, minColu
     reorder(fromIndex, toIndex);
   }
 
-  const allGroups = useMemo(
-    () =>
-      buildSpecGroups({
-        groupOptics: td("groupOptics"),
-        groupFocus: td("groupFocus"),
-        groupStabilization: td("groupStabilization"),
-        groupPhysical: td("groupPhysical"),
-        groupFeatures: td("groupFeatures"),
-        groupRelease: td("groupRelease"),
-        focalLength: td("focalLength"),
-        focalLengthEquiv: td("focalLengthEquiv"),
-        maxAperture: td("maxAperture"),
-        minAperture: td("minAperture"),
-        maxTStop: td("maxTStop"),
-        minTStop: td("minTStop"),
-        angleOfView: td("angleOfView"),
-        angleOfViewEstNote: td("angleOfViewEstNote"),
-        apertureBladeCount: td("apertureBladeCount"),
-        lensConfiguration: td("lensConfiguration"),
-        af: td("af"),
-        focusMotor: td("focusMotor"),
-        internalFocusing: td("internalFocusing"),
-        minFocusDist: td("minFocusDist"),
-        maxMagnification: td("maxMagnification"),
-        ois: td("ois"),
-        weight: td("weight"),
-        dimensions: td("dimensions"),
-        filterSize: td("filterSize"),
-        lensMaterial: td("lensMaterial"),
-        wr: td("wr"),
-        apertureRing: td("apertureRing"),
-        powerZoom: td("powerZoom"),
-        internalZoom: td("internalZoom"),
-        releaseYear: td("releaseYear"),
-        releaseYearLabelNote: td("releaseYearLabelNote"),
-        accessories: td("accessories"),
-        yes: td("yes"),
-        no: td("no"),
-        partial: td("partial"),
-        retracted: td("lengthRetracted"),
-        wide: td("lengthWide"),
-        tele: td("lengthTele"),
-        lc: {
-          groups: td("lcGroups"),
-          elements: td("lcElements"),
-          aspherical: td("lcAspherical"),
-          ed: td("lcEd"),
-          superEd: td("lcSuperEd"),
-          sld: td("lcSld"),
-          fld: td("lcFld"),
-          highRefractive: td("lcHighRefractive"),
-          incl: td("lcIncl"),
-        },
-        motorClass: {
-          linear: td("motorLinear"),
-          stepping: td("motorStepping"),
-          dc: td("motorDc"),
-          other: td("motorOther"),
-        },
-      }),
-    [td]
-  );
+  const allGroups = useMemo(() => buildSpecGroups(buildSpecGroupLabels(td)), [td]);
 
   // Resolve all row values once per (lens, row) pair — single source of truth
   // for both the rendered cells and the Report Dialog's field list.
