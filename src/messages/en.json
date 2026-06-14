@@ -443,13 +443,13 @@
   },
   "RecentlyAdded": {
     "pageTitle": "Recently Added",
-    "metaDescription": "Recently added lenses in the Atlens database, by date — new additions across Fujifilm X-mount and G-mount (Medium Format) coverage.",
+    "metaDescription": "Recently added lenses in the Atlens database, by date — new additions across Fujifilm X-mount and GFX-mount (Medium Format) coverage.",
     "intro": "Lenses added to the Atlens database over time.",
     "added": "+{count}",
     "lensesCount": "{count} lenses",
     "initialBatchLabel": "First cataloged",
-    "mountX": "Fujifilm X",
-    "mountG": "Fujifilm GFX"
+    "mountX": "X Mount",
+    "mountG": "G Mount"
   },
   "Feedback": {
     "titleDataIssue": "Report an issue",
