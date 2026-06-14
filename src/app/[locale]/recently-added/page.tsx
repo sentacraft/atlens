@@ -128,7 +128,7 @@ export default async function RecentlyAddedPage({ params }: { params: Params }) 
         {seedDate ? (
           <div className="flex items-baseline justify-between gap-3 border-t border-zinc-200 dark:border-zinc-800 pt-4 text-sm text-zinc-500 dark:text-zinc-500">
             <span>
-              {formatDay(seedDate, locale)} · {t("initialLibraryLabel")}
+              {formatDay(seedDate, locale)} · {t("initialBatchLabel")}
             </span>
             <span className="shrink-0 tabular-nums">
               {t("lensesCount", { count: byDate.get(seedDate)?.length ?? 0 })}
