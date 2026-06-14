@@ -23,6 +23,7 @@ import gLensesData from "../data/lenses-gfx.json" with { type: "json" };
 export const STATIC_LOCALIZED_SUBPATHS = [
   "",
   "about",
+  "recently-added",
   "get",
   "lenses/x/browse",
   "lenses/gfx/browse",

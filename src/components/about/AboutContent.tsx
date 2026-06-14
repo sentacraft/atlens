@@ -1,5 +1,6 @@
 import { getTranslations, getLocale } from "next-intl/server";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ArrowRight } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import AnthropicLogo from "@/components/logos/AnthropicLogo";
@@ -267,6 +268,13 @@ export default async function AboutContent() {
             ),
           })}
         </p>
+        <Link
+          href="/recently-added"
+          className="inline-flex items-center gap-0.5 self-start text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
+        >
+          {t("recentlyAddedLink")}
+          <ArrowRight className="size-3" />
+        </Link>
       </Section>
 
       {/* Data & Accuracy */}
@@ -332,7 +340,7 @@ export default async function AboutContent() {
 
         {/* Update cadence */}
         <p className="text-xs text-zinc-500 dark:text-zinc-500">
-          {t("dataUpdateNote")}{"  "}{t("dataVersionNote")}
+          {t("dataUpdateNote")}
         </p>
 
         {/* ── Price Data subsection ── */}
