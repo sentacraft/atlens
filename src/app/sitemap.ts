@@ -31,7 +31,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
     return paths;
   });
-  const staticPaths = [...mountPaths, "/about", "/whats-new", "/get"];
+  const staticPaths = [...mountPaths, "/about", "/recently-added", "/get"];
 
   const staticEntries: MetadataRoute.Sitemap = LOCALES.flatMap((locale) => [
     {

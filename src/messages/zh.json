@@ -391,7 +391,7 @@
     "pipelinePLabel": "发布门控",
     "pipelinePDesc": "数据合法性校验、归一化、独立交叉核查、合并写入",
     "dataUpdateNote": "新镜头上市或已有数据需要修正时，数据库将随之更新。",
-    "whatsNewLink": "查看最近新增的镜头",
+    "recentlyAddedLink": "查看最近新增的镜头",
     "dataPricingTitle": "价格数据",
     "dataPricingPoint1Title": "独立于参数数据生产",
     "dataPricingPoint1Body": "价格有独立的采样源和采集流程，与参数数据互不影响。这里给的是大致的购买参考，不是实时价格。",
@@ -435,13 +435,13 @@
     "ackClosing": "向在这个项目开发过程中给予了决定性帮助的 AI 协作者——Claude Code、Google Gemini 与 Claude Design，致以最诚挚的感激。"
   },
   "Footer": {
-    "whatsNew": "新增镜头",
+    "recentlyAdded": "新增镜头",
     "tagline1": "Data over opinions",
     "tagline2": "Glass matters",
     "tagline3": "aperture ring > mode dial",
     "tagline4": "f/2 feels right"
   },
-  "WhatsNew": {
+  "RecentlyAdded": {
     "pageTitle": "新增镜头",
     "metaDescription": "Atlens 镜头库的增补记录，按日期排列——富士 X 卡口与 GFX 卡口新收录镜头一览。",
     "intro": "Atlens 镜头库的增补记录，新的在前。",

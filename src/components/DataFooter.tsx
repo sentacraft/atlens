@@ -40,14 +40,12 @@ export default function DataInfo({ mountStats, lastAddedAt }: DataInfoProps) {
         {h("dataSnapshotCount", { count: lensCount, brands: brandCount })}
       </p>
       <Link
-        href="/whats-new"
-        className="inline-flex items-center gap-1 text-[11px] tracking-wider font-mono text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
+        href="/recently-added"
+        className="inline-flex items-center gap-1 text-[11px] tracking-wider font-mono text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
       >
         <Sparkles className="size-3" />
-        <span>{t("whatsNew")}</span>
-        {addedLabel ? (
-          <span className="text-zinc-400 dark:text-zinc-500">· {addedLabel}</span>
-        ) : null}
+        <span>{t("recentlyAdded")}</span>
+        {addedLabel ? <span>· {addedLabel}</span> : null}
         <ArrowRight className="size-3" />
       </Link>
     </div>

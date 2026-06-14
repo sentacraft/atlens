@@ -14,7 +14,7 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "WhatsNew" });
+  const t = await getTranslations({ locale, namespace: "RecentlyAdded" });
   const title = t("pageTitle");
   const description = t("metaDescription");
   return {
@@ -25,7 +25,7 @@ export async function generateMetadata({
       description,
       images: defaultOgImages(),
     },
-    alternates: buildAlternates(locale, "whats-new"),
+    alternates: buildAlternates(locale, "recently-added"),
   };
 }
 
@@ -43,11 +43,11 @@ function formatDay(dateStr: string, locale: string): string {
 const byBrandThenModel = (a: Lens, b: Lens) =>
   a.brand.localeCompare(b.brand) || a.model.localeCompare(b.model);
 
-export default async function WhatsNewPage({ params }: { params: Params }) {
+export default async function RecentlyAddedPage({ params }: { params: Params }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const [t, tBrand] = await Promise.all([
-    getTranslations({ locale, namespace: "WhatsNew" }),
+    getTranslations({ locale, namespace: "RecentlyAdded" }),
     getTranslations({ locale, namespace: "Brands" }),
   ]);
 

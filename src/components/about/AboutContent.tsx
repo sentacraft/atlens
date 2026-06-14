@@ -269,10 +269,10 @@ export default async function AboutContent() {
           })}
         </p>
         <Link
-          href="/whats-new"
+          href="/recently-added"
           className="inline-flex items-center gap-0.5 self-start text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
         >
-          {t("whatsNewLink")}
+          {t("recentlyAddedLink")}
           <ArrowRight className="size-3" />
         </Link>
       </Section>
