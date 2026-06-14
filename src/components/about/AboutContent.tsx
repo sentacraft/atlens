@@ -268,6 +268,13 @@ export default async function AboutContent() {
             ),
           })}
         </p>
+        <Link
+          href="/whats-new"
+          className="inline-flex items-center gap-0.5 self-start text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
+        >
+          {t("whatsNewLink")}
+          <ArrowRight className="size-3" />
+        </Link>
       </Section>
 
       {/* Data & Accuracy */}
@@ -333,14 +340,7 @@ export default async function AboutContent() {
 
         {/* Update cadence */}
         <p className="text-xs text-zinc-500 dark:text-zinc-500">
-          {t("dataUpdateNote")}{"  "}
-          <Link
-            href="/whats-new"
-            className="inline-flex items-center gap-0.5 font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
-          >
-            {t("whatsNewLink")}
-            <ArrowRight className="size-3" />
-          </Link>
+          {t("dataUpdateNote")}
         </p>
 
         {/* ── Price Data subsection ── */}

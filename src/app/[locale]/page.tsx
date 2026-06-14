@@ -32,11 +32,19 @@ export default async function HomePage({ params }: { params: Params }) {
     X: { lensCount: xLenses.length, brandCount: new Set(xLenses.map((l) => l.brand)).size },
     G: { lensCount: gLenses.length, brandCount: new Set(gLenses.map((l) => l.brand)).size },
   };
+  // Most recent date any lens entered the library, across both mounts — drives
+  // the "What's New" freshness hint in the footer.
+  const lastAddedAt =
+    [...xLenses, ...gLenses]
+      .map((l) => l.createdAt)
+      .filter((d): d is string => Boolean(d))
+      .sort()
+      .at(-1) ?? null;
 
-  return <HomeContent mountStats={mountStats} />;
+  return <HomeContent mountStats={mountStats} lastAddedAt={lastAddedAt} />;
 }
 
-function HomeContent({ mountStats }: { mountStats: { X: { lensCount: number; brandCount: number }; G: { lensCount: number; brandCount: number } } }) {
+function HomeContent({ mountStats, lastAddedAt }: { mountStats: { X: { lensCount: number; brandCount: number }; G: { lensCount: number; brandCount: number } }; lastAddedAt: string | null }) {
   const t = useTranslations("Common");
 
   return (
@@ -53,7 +61,7 @@ function HomeContent({ mountStats }: { mountStats: { X: { lensCount: number; bra
           <div className="flex flex-wrap items-center justify-center gap-3">
             <HomeCta />
           </div>
-          <DataInfo mountStats={mountStats} />
+          <DataInfo mountStats={mountStats} lastAddedAt={lastAddedAt} />
         </div>
       </section>
 
