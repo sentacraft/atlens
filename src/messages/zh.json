@@ -444,7 +444,7 @@
   "RecentlyAdded": {
     "pageTitle": "新增镜头",
     "metaDescription": "Atlens 数据库的增补记录，按日期排列——富士 X 卡口与 GFX 卡口（中画幅）新收录镜头一览。",
-    "intro": "Atlens 数据库的增补记录。按日期排列，展示最近新增的镜头。",
+    "intro": "记录数据库收录范围的持续扩展。",
     "added": "+{count}",
     "lensesCount": "{count} 支镜头",
     "initialBatchLabel": "首批收录",

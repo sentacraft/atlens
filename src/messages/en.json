@@ -444,7 +444,7 @@
   "RecentlyAdded": {
     "pageTitle": "Recently Added",
     "metaDescription": "Recently added lenses in the Atlens database, by date — new additions across Fujifilm X-mount and GFX-mount (Medium Format) coverage.",
-    "intro": "Lenses added to the Atlens database over time.",
+    "intro": "Tracking the expanding scope of the database.",
     "added": "+{count}",
     "lensesCount": "{count} lenses",
     "initialBatchLabel": "First cataloged",
