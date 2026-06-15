@@ -165,23 +165,13 @@ export function getRelatedCollectionsWithStats(
   });
 }
 
-export interface MemberCollectionInfo extends LensCollection {
-  lensCount: number;
-}
-
-function withLensCount(collection: LensCollection, locale: string): MemberCollectionInfo {
-  return { ...collection, lensCount: membersOf(collection.slug, locale).length };
-}
-
 /**
  * Collections a single lens belongs to — i.e. whose predicate matches the lens.
- * Used on the lens detail page ("this lens appears in …"). The membership test
- * is a cheap per-lens predicate; the count comes from the precomputed members.
+ * Used on the lens detail page ("this lens appears in …"). Consumers that need a
+ * lens count read it via `collectionLensCount` — it is not bundled here.
  */
-export function getMemberCollections(lens: Lens, locale: string): MemberCollectionInfo[] {
-  return Object.values(COLLECTIONS)
-    .filter((collection) => collection.filter(lens, locale))
-    .map((collection) => withLensCount(collection, locale));
+export function getMemberCollections(lens: Lens, locale: string): LensCollection[] {
+  return Object.values(COLLECTIONS).filter((collection) => collection.filter(lens, locale));
 }
 
 /**
@@ -189,14 +179,14 @@ export function getMemberCollections(lens: Lens, locale: string): MemberCollecti
  * every lens. Used on the compare page. Degenerate cases: zero lenses → none;
  * one lens → just that lens's member collections.
  */
-export function getSharedCollections(lenses: Lens[], locale: string): MemberCollectionInfo[] {
+export function getSharedCollections(lenses: Lens[], locale: string): LensCollection[] {
   if (lenses.length === 0) {
     return [];
   }
   if (lenses.length === 1) {
     return getMemberCollections(lenses[0], locale);
   }
-  return Object.values(COLLECTIONS)
-    .filter((collection) => lenses.every((lens) => collection.filter(lens, locale)))
-    .map((collection) => withLensCount(collection, locale));
+  return Object.values(COLLECTIONS).filter((collection) =>
+    lenses.every((lens) => collection.filter(lens, locale)),
+  );
 }
