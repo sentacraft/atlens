@@ -48,6 +48,12 @@ export function generateStaticParams({ params }: { params: { locale: string; mou
   return getLensesByMount(resolvedMount, params.locale).map((lens) => ({ id: lens.id }));
 }
 
+// The lens catalog is a closed set, fully enumerated above. An id outside it can
+// only be a stale link or a probe, so serve a static 404 instead of spending an
+// on-demand render that would just fall through to notFound(). (The default,
+// dynamicParams: true, would render unknown ids at request time.)
+export const dynamicParams = false;
+
 export async function generateMetadata({
   params,
 }: {
