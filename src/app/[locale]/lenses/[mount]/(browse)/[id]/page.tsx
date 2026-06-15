@@ -3,7 +3,6 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Flag } from "lucide-react";
-import { routing } from "@/i18n/routing";
 import { getLensUrl } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount, mountToUrlSegment } from "@/lib/mount";
@@ -36,19 +35,24 @@ import { PriceSection } from "@/components/price/PriceSection";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
 
-// Pre-render every (locale × mount × lens id) combination at build time so the
-// detail page is served as a static HTML asset with zero per-request CPU cost.
-// Lens IDs are language-agnostic — fetching the catalog in the default locale
-// to enumerate IDs is sufficient.
-export function generateStaticParams() {
-  const xLensIds = getLensesByMount("X", routing.defaultLocale).map((l) => l.id);
-  const gLensIds = getLensesByMount("G", routing.defaultLocale).map((l) => l.id);
+// Pre-render every lens id for the (locale × mount) combinations the parent
+// [locale] and [mount] segments supply, so each detail page is a static HTML
+// asset with zero per-request CPU. Lens IDs are language-agnostic, so the
+// catalog read here only enumerates ids — this page returns just { id }.
+export function generateStaticParams({ params }: { params: { locale: string; mount: string } }) {
+  const resolvedMount = urlSegmentToMount(params.mount);
+  if (!resolvedMount) {
+    return [];
+  }
 
-  return routing.locales.flatMap((locale) => [
-    ...xLensIds.map((id) => ({ locale, mount: "x", id })),
-    ...gLensIds.map((id) => ({ locale, mount: "gfx", id })),
-  ]);
+  return getLensesByMount(resolvedMount, params.locale).map((lens) => ({ id: lens.id }));
 }
+
+// The lens catalog is a closed set, fully enumerated above. An id outside it can
+// only be a stale link or a probe, so serve a static 404 instead of spending an
+// on-demand render that would just fall through to notFound(). (The default,
+// dynamicParams: true, would render unknown ids at request time.)
+export const dynamicParams = false;
 
 export async function generateMetadata({
   params,
