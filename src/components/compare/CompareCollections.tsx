@@ -25,8 +25,8 @@ export default function CompareCollections({ allLenses }: { allLenses: Lens[] })
   );
 
   const sharedCollections = useMemo(
-    () => getSharedCollections(activeLenses, allLenses, locale),
-    [activeLenses, allLenses, locale],
+    () => getSharedCollections(activeLenses, locale),
+    [activeLenses, locale],
   );
 
   return (
