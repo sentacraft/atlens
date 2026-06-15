@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/navigation";
-import { collectionLensCount, type LensCollection } from "@/lib/collections";
+import { getCollectionStats, type LensCollection } from "@/lib/collections";
 
 interface CollectionPillsProps {
   collections: LensCollection[];
@@ -44,7 +44,7 @@ export default function CollectionPills({
               {locale === "zh" ? c.title.zh : c.title.en}
             </span>
             <span className="text-xs text-zinc-400 group-hover:text-zinc-400 dark:text-zinc-500 dark:group-hover:text-zinc-500">
-              {collectionLensCount(c.slug, locale)}
+              {getCollectionStats(c.slug, locale)?.lensCount ?? 0}
             </span>
             <span className="text-zinc-300 group-hover:text-zinc-500 dark:text-zinc-600 dark:group-hover:text-zinc-400" aria-hidden="true">→</span>
           </Link>

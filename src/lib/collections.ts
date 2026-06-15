@@ -28,7 +28,7 @@ export type CollectionGroup = keyof typeof collectionsData.groups;
 
 // Display order of the groups = the key order in collections.json. (Group order,
 // within-group order, and group membership all come from that one structure.)
-export const COLLECTION_GROUP_ORDER = Object.keys(collectionsData.groups) as CollectionGroup[];
+const COLLECTION_GROUP_ORDER = Object.keys(collectionsData.groups) as CollectionGroup[];
 
 // Join one JSON entry's metadata with its code-side predicate (forward check:
 // a json entry must have a predicate in FILTERS).
@@ -46,7 +46,7 @@ function toCollection(entry: CollectionMeta): LensCollection {
   };
 }
 
-export interface CollectionGroupBlock {
+interface CollectionGroupBlock {
   group: CollectionGroup;
   collections: LensCollection[];
 }
@@ -89,11 +89,9 @@ function membersOf(slug: string, locale: string): Lens[] {
   return MEMBERS[locale]?.[slug as CollectionSlug] ?? [];
 }
 
-export function getRelatedCollections(
-  slug: string,
-  locale: string,
-  limit = 4,
-): LensCollection[] {
+// Internal: related collections by member overlap. Only the *WithStats wrapper
+// below consumes it, so it stays private.
+function getRelatedCollections(slug: string, locale: string, limit = 4): LensCollection[] {
   if (!COLLECTIONS[slug]) {
     return [];
   }
@@ -116,7 +114,15 @@ export function getRelatedCollections(
     .map((s) => s.collection);
 }
 
-export interface CollectionStats {
+// Internal: members + derived counts for a collection, from the precomputed
+// members. Single place that builds the stat numbers (shared by the two
+// exported stats functions below).
+function statsFor(collection: LensCollection, locale: string) {
+  const lenses = membersOf(collection.slug, locale);
+  return { lenses, lensCount: lenses.length, brandCount: new Set(lenses.map((l) => l.brand)).size };
+}
+
+interface CollectionStats {
   collection: LensCollection;
   lenses: Lens[];
   lensCount: number;
@@ -128,21 +134,10 @@ export function getCollectionStats(slug: string, locale: string): CollectionStat
   if (!collection) {
     return null;
   }
-  const lenses = membersOf(slug, locale);
-  return {
-    collection,
-    lenses,
-    lensCount: lenses.length,
-    brandCount: new Set(lenses.map((l) => l.brand)).size,
-  };
+  return { collection, ...statsFor(collection, locale) };
 }
 
-// Lens count for a collection in the given locale (index-page lists).
-export function collectionLensCount(slug: string, locale: string): number {
-  return membersOf(slug, locale).length;
-}
-
-export interface RelatedCollectionStats {
+interface RelatedCollectionStats {
   collection: LensCollection;
   previewLens: Lens;
   lensCount: number;
@@ -154,14 +149,9 @@ export function getRelatedCollectionsWithStats(
   locale: string,
   limit = 4,
 ): RelatedCollectionStats[] {
-  return getRelatedCollections(slug, locale, limit).map((c) => {
-    const ls = membersOf(c.slug, locale);
-    return {
-      collection: c,
-      previewLens: ls[0],
-      lensCount: ls.length,
-      brandCount: new Set(ls.map((l) => l.brand)).size,
-    };
+  return getRelatedCollections(slug, locale, limit).map((collection) => {
+    const { lenses, lensCount, brandCount } = statsFor(collection, locale);
+    return { collection, previewLens: lenses[0], lensCount, brandCount };
   });
 }
 

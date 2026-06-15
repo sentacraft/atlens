@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import {
   COLLECTION_GROUPS,
-  collectionLensCount,
+  getCollectionStats,
   type CollectionGroup,
 } from "@/lib/collections";
 import { getLensesByMount } from "@/lib/lens/data";
@@ -165,7 +165,7 @@ export default async function CollectionsIndexPage({
           {/* Collection grid */}
           <div className="grid grid-cols-1 gap-x-10 sm:grid-cols-2">
             {cat.collections.map((collection) => {
-              const lensCount = collectionLensCount(collection.slug, locale);
+              const lensCount = getCollectionStats(collection.slug, locale)?.lensCount ?? 0;
               return (
                 <Link
                   key={collection.slug}

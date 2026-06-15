@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { COLLECTIONS, getCollectionStats, getRelatedCollections, getSharedCollections } from "../collections";
+import { COLLECTIONS, getCollectionStats, getRelatedCollectionsWithStats, getSharedCollections } from "../collections";
 import { isZoom } from "../lens/lens";
 import { getAllLenses } from "../lens/data";
 import type { Lens } from "../types";
@@ -314,22 +314,22 @@ describe("Chinese manual-focus collections", () => {
 });
 
 // ---------------------------------------------------------------------------
-// getRelatedCollections
+// getRelatedCollectionsWithStats (exercises the private related-by-overlap logic)
 // ---------------------------------------------------------------------------
-describe("getRelatedCollections", () => {
+describe("getRelatedCollectionsWithStats", () => {
   it("returns empty for unknown slug", () => {
-    expect(getRelatedCollections("nonexistent", "en")).toEqual([]);
+    expect(getRelatedCollectionsWithStats("nonexistent", "en")).toEqual([]);
   });
 
   it("excludes the current collection from results", () => {
     const slug = Object.keys(COLLECTIONS)[0];
-    const related = getRelatedCollections(slug, "en");
-    expect(related.every((c) => c.slug !== slug)).toBe(true);
+    const related = getRelatedCollectionsWithStats(slug, "en");
+    expect(related.every((r) => r.collection.slug !== slug)).toBe(true);
   });
 
   it("respects the limit parameter", () => {
     const slug = Object.keys(COLLECTIONS)[0];
-    const related = getRelatedCollections(slug, "en", 2);
+    const related = getRelatedCollectionsWithStats(slug, "en", 2);
     expect(related.length).toBeLessThanOrEqual(2);
   });
 
@@ -337,11 +337,11 @@ describe("getRelatedCollections", () => {
     const slug = Object.keys(COLLECTIONS)[0];
     const col = COLLECTIONS[slug];
     const currentSet = new Set(allLenses.filter((l) => col.filter(l, "en")).map((l) => l.id));
-    const related = getRelatedCollections(slug, "en", 10);
-    const overlaps = related.map((c) => {
+    const related = getRelatedCollectionsWithStats(slug, "en", 10);
+    const overlaps = related.map((r) => {
       let count = 0;
       for (const l of allLenses) {
-        if (currentSet.has(l.id) && c.filter(l, "en")) {
+        if (currentSet.has(l.id) && r.collection.filter(l, "en")) {
           count++;
         }
       }
