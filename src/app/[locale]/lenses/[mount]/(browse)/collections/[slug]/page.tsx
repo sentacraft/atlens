@@ -25,6 +25,11 @@ export function generateStaticParams() {
   return Object.keys(COLLECTIONS).map((slug) => ({ slug }));
 }
 
+// Collection slugs are a closed set (COLLECTIONS), so an unknown slug gets a
+// static 404 rather than an on-demand render that only falls through to
+// notFound(). Mirrors the [id] detail page.
+export const dynamicParams = false;
+
 function localized(field: { en: string; zh: string }, locale: string): string {
   return locale === "zh" ? field.zh : field.en;
 }
