@@ -4,17 +4,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import {
-  COLLECTIONS,
-  PRIME_SLUGS,
-  ZOOM_SLUGS,
-  BRAND_SLUGS,
-  SERIES_SLUGS,
-  PRICE_SLUGS,
-  PORTABILITY_SLUGS,
-  APERTURE_SLUGS,
-  TRAIT_SLUGS,
-  DEDICATED_SLUGS,
-  CHINESE_SLUGS,
+  COLLECTION_GROUPS,
+  getCollectionStats,
+  type CollectionGroup,
 } from "@/lib/collections";
 import { getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount, mountHasCollections } from "@/lib/mount";
@@ -56,23 +48,25 @@ export async function generateMetadata({
   };
 }
 
-// Ordered by how poorly the browse filters can reconstruct each category:
-// collections covering a dimension the filters lack entirely (price, weight,
-// aperture threshold, sub-brand series, multi-axis Chinese combos) lead, since
-// they are the only path to that set. Categories that a single filter toggle
-// reproduces (brand, weather/OIS traits, optical-trait dedicated optics) trail.
-const CATEGORIES = [
-  { id: "section-portability", key: "category_portability", slugs: PORTABILITY_SLUGS, marker: ["G"] },
-  { id: "section-aperture", key: "category_aperture", slugs: APERTURE_SLUGS, marker: ["ƒ"], markerItalic: true },
-  { id: "section-price", key: "category_price", slugs: PRICE_SLUGS, marker: ["$"] },
-  { id: "section-chinese", key: "category_chinese", slugs: CHINESE_SLUGS, marker: ["CN"] },
-  { id: "section-series", key: "category_series", slugs: SERIES_SLUGS, marker: ["SERIES"] },
-  { id: "section-prime", key: "category_prime", slugs: PRIME_SLUGS, marker: ["PRIME"] },
-  { id: "section-zoom", key: "category_zoom", slugs: ZOOM_SLUGS, marker: ["ZOOM"] },
-  { id: "section-trait", key: "category_trait", slugs: TRAIT_SLUGS, marker: ["WR"] },
-  { id: "section-brand", key: "category_brand", slugs: BRAND_SLUGS, marker: ["BRAND"] },
-  { id: "section-dedicated", key: "category_dedicated", slugs: DEDICATED_SLUGS, marker: ["✦"] },
-] as const;
+// Per-group presentation: the section heading's i18n key and marker badge.
+// Typed Record<CollectionGroup, …> so the compiler guarantees every group in
+// collections.json has presentation here — and no stale extras. The section
+// ORDER is not here: it comes from the group key order in collections.json
+// (COLLECTION_GROUPS), authored "hardest for browse filters to reconstruct"
+// first (portability / aperture / price / sub-brand series / Chinese combos)
+// down to single-toggle categories (brand / traits / dedicated optics).
+const GROUP_META: Record<CollectionGroup, { key: string; marker: string[]; markerItalic?: boolean }> = {
+  portability: { key: "category_portability", marker: ["G"] },
+  aperture: { key: "category_aperture", marker: ["ƒ"], markerItalic: true },
+  price: { key: "category_price", marker: ["$"] },
+  chinese: { key: "category_chinese", marker: ["CN"] },
+  series: { key: "category_series", marker: ["SERIES"] },
+  prime: { key: "category_prime", marker: ["PRIME"] },
+  zoom: { key: "category_zoom", marker: ["ZOOM"] },
+  trait: { key: "category_trait", marker: ["WR"] },
+  brand: { key: "category_brand", marker: ["BRAND"] },
+  dedicated: { key: "category_dedicated", marker: ["✦"] },
+};
 
 export default async function CollectionsIndexPage({
   params,
@@ -90,18 +84,15 @@ export default async function CollectionsIndexPage({
   const t = await getTranslations({ locale, namespace: "Collection" });
   const mountLenses = getLensesByMount(resolvedMount, locale);
 
-  const countFor = (slug: string) => {
-    const c = COLLECTIONS[slug];
-    return c ? mountLenses.filter((l) => c.filter(l, locale)).length : 0;
-  };
-
-  const categories = CATEGORIES.map((cat) => ({
-    ...cat,
-    label: t(cat.key),
-    count: cat.slugs.length,
+  const categories = COLLECTION_GROUPS.map(({ group, collections }) => ({
+    id: `section-${group}`,
+    ...GROUP_META[group],
+    collections,
+    label: t(GROUP_META[group].key),
+    count: collections.length,
   }));
 
-  const totalCollections = Object.keys(COLLECTIONS).length;
+  const totalCollections = COLLECTION_GROUPS.reduce((n, g) => n + g.collections.length, 0);
   const totalLenses = mountLenses.length;
 
   return (
@@ -173,16 +164,12 @@ export default async function CollectionsIndexPage({
 
           {/* Collection grid */}
           <div className="grid grid-cols-1 gap-x-10 sm:grid-cols-2">
-            {cat.slugs.map((slug) => {
-              const collection = COLLECTIONS[slug];
-              if (!collection) {
-                return null;
-              }
-              const lensCount = countFor(slug);
+            {cat.collections.map((collection) => {
+              const lensCount = getCollectionStats(collection.slug, locale)?.lensCount ?? 0;
               return (
                 <Link
-                  key={slug}
-                  href={`/lenses/${mount}/collections/${slug}`}
+                  key={collection.slug}
+                  href={`/lenses/${mount}/collections/${collection.slug}`}
                   className="group grid grid-cols-[1fr_auto] items-start gap-4 border-b border-zinc-100 py-2.5 transition-colors dark:border-zinc-800"
                 >
                   <div>

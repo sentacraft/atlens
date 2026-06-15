@@ -209,7 +209,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   // Field options for the Report Dialog — taken directly from resolved values,
   // identical to what is rendered in the spec table below.
   const mediaGroupLabel = t("fieldGroupMedia");
-  const memberCollections = getMemberCollections(lens, lenses, locale);
+  const memberCollections = getMemberCollections(lens, locale);
 
   const priceSelection = pickPriceEntry(lens.pricing, locale);
   const reportableFields = [

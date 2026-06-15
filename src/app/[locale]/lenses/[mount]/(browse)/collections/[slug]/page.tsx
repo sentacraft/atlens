@@ -39,8 +39,7 @@ export async function generateMetadata({
   if (!resolvedMount || !mountHasCollections(resolvedMount)) {
     return {};
   }
-  const allLenses = getLensesByMount(resolvedMount, locale);
-  const stats = getCollectionStats(slug, allLenses, locale);
+  const stats = getCollectionStats(slug, locale);
   if (!stats) {
     return {};
   }
@@ -84,7 +83,7 @@ export default async function CollectionPage({
     notFound();
   }
   const mountLenses = getLensesByMount(resolvedMount, locale);
-  const collectionStats = getCollectionStats(slug, mountLenses, locale);
+  const collectionStats = getCollectionStats(slug, locale);
   if (!collectionStats) {
     notFound();
   }
@@ -98,7 +97,7 @@ export default async function CollectionPage({
   const mountLabel = t("mountLabel", { mount: mountSeoLabel(resolvedMount) });
   const description = localized(collection.description, locale);
   const statsLabel = t("stats", { count: lensCount, brandCount });
-  const relatedWithStats = getRelatedCollectionsWithStats(slug, mountLenses, locale);
+  const relatedWithStats = getRelatedCollectionsWithStats(slug, locale);
 
   // ItemList schema: declares this page as an ordered list of lenses, each
   // pointing at its own detail page. URLs mirror the lens-detail canonical so
