@@ -48,11 +48,16 @@ export function generateStaticParams({ params }: { params: { locale: string; mou
   return getLensesByMount(resolvedMount, params.locale).map((lens) => ({ id: lens.id }));
 }
 
-// The lens catalog is a closed set, fully enumerated above. An id outside it can
-// only be a stale link or a probe, so serve a static 404 instead of spending an
-// on-demand render that would just fall through to notFound(). (The default,
-// dynamicParams: true, would render unknown ids at request time.)
-export const dynamicParams = false;
+// dynamicParams is left at its default (true) ON PURPOSE — do NOT set it to
+// false here. Every valid id is prerendered above, and an unknown id falls
+// through to notFound() below, so the user-visible behavior is identical either
+// way. But `dynamicParams = false` emits `fallback: false` for this route in the
+// prerender manifest, and our deploy target (Cloudflare Workers via OpenNext)
+// 404s EVERY request to such a route — even the prerendered ids whose HTML is
+// sitting in the cache. `next start` serves them fine, which is what makes the
+// regression invisible locally. Keeping the default makes the route `fallback:
+// null` (served from cache for known ids, on-demand → notFound() for unknown).
+// See PR #397, which set this to false and took the whole detail page down.
 
 export async function generateMetadata({
   params,
