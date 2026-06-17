@@ -25,10 +25,14 @@ export function generateStaticParams() {
   return Object.keys(COLLECTIONS).map((slug) => ({ slug }));
 }
 
-// Collection slugs are a closed set (COLLECTIONS), so an unknown slug gets a
-// static 404 rather than an on-demand render that only falls through to
-// notFound(). Mirrors the [id] detail page.
-export const dynamicParams = false;
+// dynamicParams is left at its default (true) ON PURPOSE — do NOT set it to
+// false here. Every collection slug is prerendered above and an unknown slug
+// falls through to notFound() below, so behavior is identical either way. But
+// `dynamicParams = false` emits `fallback: false` for this route, and our deploy
+// target (Cloudflare Workers via OpenNext) 404s EVERY request to such a route —
+// including the prerendered slugs whose HTML is already cached. `next start`
+// hides this, which is why PR #397 (which set this to false) shipped a total
+// 404 of every collection detail page. See the matching note on the [id] page.
 
 function localized(field: { en: string; zh: string }, locale: string): string {
   return locale === "zh" ? field.zh : field.en;
