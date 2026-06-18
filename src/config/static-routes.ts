@@ -43,9 +43,8 @@ export const INTENTIONALLY_DYNAMIC_ROUTE_PATTERNS = [
   {
     pattern: "/[locale]/lenses/[mount]/compare",
     reason:
-      "Needs server-rendered metadata derived from ?ids=A,B,C searchParams. " +
-      "Marked with `export const revalidate = 31536000` so each unique URL " +
-      "is cached at the edge after first render.",
+      "Reads ?ids=A,B,C from searchParams to build server-rendered metadata, " +
+      "which forces dynamic rendering. Served per request (no-store), not cached.",
   },
   {
     pattern: "/api/feedback",
