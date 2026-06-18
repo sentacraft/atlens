@@ -15,13 +15,12 @@ import { mountToUrlSegment } from "@/lib/mount";
 import { lensDisplayName } from "@/lib/lens/format";
 import { notFound } from "next/navigation";
 
-// Compare page depends on ?ids=A,B,C searchParams for server-rendered metadata
-// (title and OG tag include the lens names), so it cannot be fully SSG. The
-// trade-off: keep it as SSR but mark it cacheable with a long s-maxage so the
-// edge CDN (Vercel Edge Cache / Cloudflare) caches each unique URL after first
-// render. Result: per-URL CPU cost happens once per (ids, preset) combination,
-// then subsequent visitors hit cache.
-export const revalidate = 31536000; // 1 year
+// The compare page reads ?ids=A,B,C from searchParams to build server-rendered
+// metadata (title/OG carry the lens names). Reading searchParams forces dynamic
+// rendering, so this route is served per request (Cache-Control: no-store), not
+// prerendered. It is intentionally uncached: the route cache keys on pathname,
+// not the query string, so caching per ?ids= combination would require moving
+// the ids into the path segment.
 
 type Params = Promise<{ locale: string; mount: string }>;
 type SearchParams = Promise<{ ids?: string }>;
