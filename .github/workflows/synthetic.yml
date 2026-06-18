@@ -35,6 +35,12 @@ jobs:
         run: node scripts/synthetic-check.mjs
         env:
           BASE_URL: https://atlens.app
+          # Sample ~50 URLs per run via deterministic rotation seeded by the
+          # run number, so consecutive runs cover the whole sitemap with no
+          # overlap. (cf-smoke sweeps all URLs against local workerd; the prod
+          # cron stays light.) Bump SYNTHETIC_SAMPLE to widen each run.
+          SYNTHETIC_SAMPLE: "50"
+          SYNTHETIC_RUN_INDEX: ${{ github.run_number }}
 
       - name: Open / update incident issue on failure
         if: failure()

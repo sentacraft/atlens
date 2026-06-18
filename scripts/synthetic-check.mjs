@@ -37,6 +37,56 @@ const BASE_URL = rawBase.replace(/\/$/, "");
 const TIMEOUT_MS = 15000;
 const CONCURRENCY = 20;
 
+// Optional sampling. Unset = probe the WHOLE sitemap (cf-smoke does this against
+// local workerd — free, full coverage pre-merge). Set to a positive integer =
+// probe ~N URLs per run (the prod cron uses this to keep request volume + bot-
+// challenge exposure down).
+//
+// Sampling is DETERMINISTIC ROTATION, not random: sort the sitemap, take every
+// `step`-th URL (step = ceil(total/N)) starting at an offset = runIndex % step.
+// Each run gets an evenly-spread, representative slice (static pages + browse +
+// details all present), and because the offset advances by 1 every run, `step`
+// consecutive runs cover the ENTIRE sitemap with no overlap. The seed is the
+// monotonic CI run number (SYNTHETIC_RUN_INDEX) rather than the clock — it
+// always steps by exactly 1 per run, so rotation can't degenerate at certain
+// cron intervals the way a time-derived offset can.
+//
+// Tradeoff vs full sweep: any single run reliably catches a WIDESPREAD outage
+// (the #397 class) but a one-off single broken page is only caught once
+// rotation reaches it; per-page coverage is cf-smoke's job + the build gate.
+// Invalid/missing values = hard error (no silent fallback).
+const sampleRaw = process.env.SYNTHETIC_SAMPLE;
+let sampleSize = null;
+let runIndex = 0;
+if (sampleRaw !== undefined) {
+  sampleSize = Number(sampleRaw);
+  if (!Number.isInteger(sampleSize) || sampleSize <= 0) {
+    console.error(`✗ SYNTHETIC_SAMPLE must be a positive integer; got "${sampleRaw}".`);
+    process.exit(1);
+  }
+  const idxRaw = process.env.SYNTHETIC_RUN_INDEX;
+  runIndex = Number(idxRaw);
+  if (!Number.isInteger(runIndex) || runIndex < 0) {
+    console.error(
+      `✗ SYNTHETIC_RUN_INDEX (rotation seed) must be a non-negative integer when ` +
+        `SYNTHETIC_SAMPLE is set; got "${idxRaw}". Pass \${{ github.run_number }}.`
+    );
+    process.exit(1);
+  }
+}
+
+// Deterministic rotating stride: ~sampleSize URLs, evenly spread, offset by run.
+function rotatingSample(paths) {
+  const sorted = paths.slice().sort();
+  const step = Math.ceil(sorted.length / sampleSize);
+  const start = runIndex % step;
+  const picked = [];
+  for (let i = start; i < sorted.length; i += step) {
+    picked.push(sorted[i]);
+  }
+  return picked;
+}
+
 async function fetchText(url) {
   const ac = new AbortController();
   const timer = setTimeout(() => ac.abort(), TIMEOUT_MS);
@@ -113,21 +163,31 @@ async function main() {
     console.error("✗ Sitemap yielded no URLs — empty or unparseable.");
     process.exit(1);
   }
-  console.log(`Probing ${paths.length} sitemap URLs (concurrency ${CONCURRENCY})…\n`);
+
+  let targets = paths;
+  if (sampleSize !== null && sampleSize < paths.length) {
+    targets = rotatingSample(paths);
+    console.log(
+      `Sampling ${targets.length} of ${paths.length} URLs ` +
+        `(deterministic rotation, run ${runIndex}, concurrency ${CONCURRENCY})…\n`
+    );
+  } else {
+    console.log(`Probing all ${paths.length} sitemap URLs (concurrency ${CONCURRENCY})…\n`);
+  }
 
   const startedAt = Date.now();
-  const failures = await runPool(paths, CONCURRENCY, check);
+  const failures = await runPool(targets, CONCURRENCY, check);
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
 
   if (failures.length > 0) {
-    console.error(`✗ ${failures.length}/${paths.length} URLs failed (${elapsed}s):`);
+    console.error(`✗ ${failures.length}/${targets.length} URLs failed (${elapsed}s):`);
     for (const f of failures) {
       console.error(`    - ${f.path} — ${f.reason}`);
     }
     process.exit(1);
   }
 
-  console.log(`✓ All ${paths.length} URLs healthy (${elapsed}s).`);
+  console.log(`✓ All ${targets.length} URLs healthy (${elapsed}s).`);
 }
 
 main().catch((err) => {
