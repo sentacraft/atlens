@@ -35,7 +35,12 @@ jobs:
       - run: npm ci
 
       - name: Build for Cloudflare (OpenNext)
-        run: npm run build:cf
+        # `opennextjs-cloudflare build` directly, NOT `npm run build:cf` — the
+        # latter ends in `populateCache remote`, which uploads to the live
+        # Cloudflare account and needs credentials we don't (and shouldn't) have
+        # in CI. The static-assets incremental cache ships its assets with the
+        # build, so local workerd serves them without the remote populate.
+        run: npx opennextjs-cloudflare build
 
       - name: Boot workerd and smoke-test canaries
         run: |
@@ -59,7 +64,7 @@ jobs:
             exit 1
           fi
 
-          BASE_URL=http://localhost:8787 node scripts/synthetic-check.mjs
+          BASE_URL=http://localhost:8787 node scripts/uptime-check.mjs
           status=$?
 
           kill "$WRANGLER_PID" 2>/dev/null || true

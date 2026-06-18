@@ -58,6 +58,7 @@ export function generateStaticParams({ params }: { params: { locale: string; mou
 // regression invisible locally. Keeping the default makes the route `fallback:
 // null` (served from cache for known ids, on-demand → notFound() for unknown).
 // See PR #397, which set this to false and took the whole detail page down.
+export const dynamicParams = false;
 
 export async function generateMetadata({
   params,

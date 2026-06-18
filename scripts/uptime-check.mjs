@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Synthetic check: probe EVERY URL in the sitemap and assert each renders.
+// Uptime check: probe EVERY URL in the sitemap and assert each renders.
 //
 // Decoupling: this script knows nothing about the app's route shapes. Its only
 // contract is the sitemap protocol — `/sitemap.xml` with <loc> entries — which
@@ -20,7 +20,7 @@
 // (http://localhost:8787) in CI as well as prod.
 //
 // Used by:
-//   - .github/workflows/synthetic.yml — cron, BASE_URL=https://atlens.app
+//   - .github/workflows/uptime.yml — cron, BASE_URL=https://atlens.app
 //   - .github/workflows/cf-smoke.yml  — per-PR, BASE_URL=http://localhost:8787
 //     against the real OpenNext/workerd runtime (the only gate that reproduces
 //     CF behavior `next build`/`next start` cannot — see PR #397/#398).
@@ -47,7 +47,7 @@ const CONCURRENCY = 20;
 // Each run gets an evenly-spread, representative slice (static pages + browse +
 // details all present), and because the offset advances by 1 every run, `step`
 // consecutive runs cover the ENTIRE sitemap with no overlap. The seed is the
-// monotonic CI run number (SYNTHETIC_RUN_INDEX) rather than the clock — it
+// monotonic CI run number (UPTIME_RUN_INDEX) rather than the clock — it
 // always steps by exactly 1 per run, so rotation can't degenerate at certain
 // cron intervals the way a time-derived offset can.
 //
@@ -55,21 +55,21 @@ const CONCURRENCY = 20;
 // (the #397 class) but a one-off single broken page is only caught once
 // rotation reaches it; per-page coverage is cf-smoke's job + the build gate.
 // Invalid/missing values = hard error (no silent fallback).
-const sampleRaw = process.env.SYNTHETIC_SAMPLE;
+const sampleRaw = process.env.UPTIME_SAMPLE;
 let sampleSize = null;
 let runIndex = 0;
 if (sampleRaw !== undefined) {
   sampleSize = Number(sampleRaw);
   if (!Number.isInteger(sampleSize) || sampleSize <= 0) {
-    console.error(`✗ SYNTHETIC_SAMPLE must be a positive integer; got "${sampleRaw}".`);
+    console.error(`✗ UPTIME_SAMPLE must be a positive integer; got "${sampleRaw}".`);
     process.exit(1);
   }
-  const idxRaw = process.env.SYNTHETIC_RUN_INDEX;
+  const idxRaw = process.env.UPTIME_RUN_INDEX;
   runIndex = Number(idxRaw);
   if (!Number.isInteger(runIndex) || runIndex < 0) {
     console.error(
-      `✗ SYNTHETIC_RUN_INDEX (rotation seed) must be a non-negative integer when ` +
-        `SYNTHETIC_SAMPLE is set; got "${idxRaw}". Pass \${{ github.run_number }}.`
+      `✗ UPTIME_RUN_INDEX (rotation seed) must be a non-negative integer when ` +
+        `UPTIME_SAMPLE is set; got "${idxRaw}". Pass \${{ github.run_number }}.`
     );
     process.exit(1);
   }
@@ -94,7 +94,7 @@ async function fetchText(url) {
     const res = await fetch(url, {
       redirect: "follow",
       signal: ac.signal,
-      headers: { "user-agent": "atlens-synthetic-check" },
+      headers: { "user-agent": "atlens-uptime-check" },
     });
     const body = await res.text();
     return { status: res.status, body };
@@ -156,7 +156,7 @@ async function runPool(items, concurrency, worker) {
 }
 
 async function main() {
-  console.log(`Synthetic check against ${BASE_URL}`);
+  console.log(`Uptime check against ${BASE_URL}`);
 
   const paths = await sitemapPaths();
   if (paths.length === 0) {
@@ -191,6 +191,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error(`\n✗ Synthetic check crashed: ${err.message}`);
+  console.error(`\n✗ Uptime check crashed: ${err.message}`);
   process.exit(1);
 });
