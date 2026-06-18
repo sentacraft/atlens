@@ -1,0 +1,66 @@
+name: CF Runtime Smoke
+
+# The only gate that exercises the ACTUAL deploy runtime (Cloudflare workerd via
+# OpenNext) before production. `next build` and `next start` cannot see this
+# class of bug: PR #397 set dynamicParams=false, which serves fine under
+# `next start` but 404s every detail page on workerd. This job builds the
+# OpenNext bundle, boots it on local workerd via `wrangler dev`, and smoke-tests
+# one canary URL per route template — the same script the cron uptime check uses.
+#
+# Heavier than the main CI (full next build + opennext transform + workerd boot),
+# so it lives in its own workflow.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: cf-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: OpenNext / workerd smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build for Cloudflare (OpenNext)
+        run: npm run build:cf
+
+      - name: Boot workerd and smoke-test canaries
+        run: |
+          # wrangler dev runs the worker on local workerd (same runtime as prod,
+          # local mode — no CF account needed).
+          npx wrangler dev --port 8787 &
+          WRANGLER_PID=$!
+
+          # Wait for readiness via the homepage (stays up even in the #397 bug;
+          # the per-template assertions below are what catch detail-page outages).
+          ready=""
+          for i in $(seq 1 60); do
+            if curl -sf -o /dev/null "http://localhost:8787/en"; then
+              ready="yes"; echo "workerd ready after ${i} tries"; break
+            fi
+            sleep 2
+          done
+          if [ -z "$ready" ]; then
+            echo "✗ workerd did not become ready in time"
+            kill "$WRANGLER_PID" 2>/dev/null || true
+            exit 1
+          fi
+
+          BASE_URL=http://localhost:8787 node scripts/synthetic-check.mjs
+          status=$?
+
+          kill "$WRANGLER_PID" 2>/dev/null || true
+          exit $status
