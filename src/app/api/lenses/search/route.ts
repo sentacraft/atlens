@@ -80,6 +80,12 @@ export function GET(req: Request) {
     { results, query: query.trim() },
     {
       headers: {
+        // `no-store` because the UI searches client-side and nothing calls this
+        // at runtime, so caching buys nothing today. Results come from a
+        // build-static search index that only changes on redeploy — so if this
+        // becomes a public/hot endpoint, revisit: it is safe to cache (e.g. a
+        // long `s-maxage` keyed on `q`/`mount`/`locale`/`limit`) instead of
+        // `no-store`.
         "Cache-Control": "private, no-store",
       },
     },
