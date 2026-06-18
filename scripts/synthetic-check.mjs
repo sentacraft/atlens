@@ -77,8 +77,12 @@ async function check(path) {
   const url = `${BASE_URL}${path}`;
   try {
     const { status, body } = await fetchText(url);
-    if (status !== 200) return { path, reason: `status ${status}` };
-    if (!/<\/html>/i.test(body)) return { path, reason: "no </html> — empty/broken render" };
+    if (status !== 200) {
+      return { path, reason: `status ${status}` };
+    }
+    if (!/<\/html>/i.test(body)) {
+      return { path, reason: "no </html> — empty/broken render" };
+    }
     return null;
   } catch (err) {
     return { path, reason: `fetch failed: ${err.message}` };
@@ -92,7 +96,9 @@ async function runPool(items, concurrency, worker) {
     let item;
     while ((item = queue.pop()) !== undefined) {
       const failure = await worker(item);
-      if (failure) failures.push(failure);
+      if (failure) {
+        failures.push(failure);
+      }
     }
   }
   await Promise.all(Array.from({ length: concurrency }, drain));
