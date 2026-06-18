@@ -81,6 +81,12 @@ export function GET(req: Request) {
     },
     {
       headers: {
+        // `no-store` because nothing on the site calls this at runtime (the UI
+        // filters client-side over props), so caching buys nothing today. The
+        // payload is derived entirely from build-static data (lenses.json) and
+        // only changes on redeploy — so if this becomes a public/hot endpoint,
+        // revisit: it is safe to cache aggressively (e.g. a long `s-maxage`
+        // keyed on the query params) instead of `no-store`.
         "Cache-Control": "private, no-store",
       },
     },
