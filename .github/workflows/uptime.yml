@@ -86,23 +86,3 @@ jobs:
                 labels: ["uptime-failure"],
               });
             }
-
-      # The GitHub issue above is a record, not an alert — a bot-created issue
-      # notifies nobody. This pushes an actual alert to the phone via Bark.
-      # Set the BARK_URL secret to your Bark base URL incl. device key
-      # (https://api.day.app/<key>); if unset, this step no-ops so the issue
-      # still gets created.
-      - name: Push alert (Bark) on failure
-        if: failure()
-        env:
-          BARK_URL: ${{ secrets.BARK_URL }}
-        run: |
-          if [ -z "$BARK_URL" ]; then
-            echo "BARK_URL secret not set — skipping push (issue still created)."
-            exit 0
-          fi
-          run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          curl -fsS -X POST "${BARK_URL%/}" \
-            -H "Content-Type: application/json" \
-            -d "{\"title\":\"🚨 Atlens production check failed\",\"body\":\"Reachability or SSG-cache check went red. Tap to open the run.\",\"group\":\"atlens\",\"level\":\"timeSensitive\",\"url\":\"$run_url\"}" \
-            || echo "Bark push failed (issue still created)."
