@@ -27,7 +27,7 @@ import {
 
 interface PrerenderManifest {
   routes: Record<string, unknown>;
-  dynamicRoutes: Record<string, unknown>;
+  dynamicRoutes: Record<string, { fallback?: string | false | null }>;
 }
 
 async function main(): Promise<void> {
@@ -80,9 +80,45 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
+  // Second invariant: no dynamic route may be `fallback: false`.
+  //
+  // On our deploy target (Cloudflare Workers via OpenNext), a route whose
+  // prerender-manifest entry is `fallback: false` (which is exactly what
+  // `export const dynamicParams = false` emits) gets a 404 on EVERY request —
+  // even the ids that were prerendered and whose HTML is in the cache. This is
+  // invisible to `next build` and `next start` (they serve such routes fine),
+  // so it cannot be caught by typecheck/build/unit tests. PR #397 set
+  // dynamicParams=false on [id]/[slug] and took down every detail page in
+  // production; #398 reverted it. This gate encodes that invariant.
+  const cfUnsafe = Object.entries(manifest.dynamicRoutes ?? {})
+    .filter(([, entry]) => entry?.fallback === false)
+    .map(([route]) => route);
+
+  if (cfUnsafe.length > 0) {
+    console.error(
+      `\n✗ Cloudflare-unsafe route(s) detected (\`fallback: false\`).\n\n` +
+        `  ${cfUnsafe.length} dynamic route(s) are marked \`fallback: false\` in\n` +
+        `  .next/prerender-manifest.json. On Cloudflare Workers via OpenNext,\n` +
+        `  these 404 on EVERY request — including prerendered ids in cache —\n` +
+        `  while \`next start\` serves them fine (so it passes locally). This is\n` +
+        `  the #397 outage that took down all detail pages.\n\n` +
+        `  Offending route(s):\n`
+    );
+    for (const route of cfUnsafe) {
+      console.error(`    - ${route}`);
+    }
+    console.error(
+      `\n  Cause: \`export const dynamicParams = false\` on the page (or a\n` +
+        `  parent). Remove it — the default (true) emits \`fallback: null\`,\n` +
+        `  which serves prerendered ids from cache and notFound()s the rest.\n`
+    );
+    process.exit(1);
+  }
+
   console.log(
     `✓ Static route check passed (${expected.length} routes prerendered, ` +
-      `${INTENTIONALLY_DYNAMIC_ROUTE_PATTERNS.length} intentionally dynamic).`
+      `${INTENTIONALLY_DYNAMIC_ROUTE_PATTERNS.length} intentionally dynamic, ` +
+      `0 routes fallback:false).`
   );
 }
 
