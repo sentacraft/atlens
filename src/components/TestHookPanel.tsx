@@ -18,17 +18,8 @@ import {
   REDACTION_BLUR_QUERY_KEY,
   DEFAULT_REDACTION_BLUR_PX,
 } from "@/lib/redaction";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const collectionsData = require("@/data/collections.json") as {
-  collections: { slug: string; title: { en: string } }[];
-};
 
 const HIDDEN_ROUTES: { label: string; href: string }[] = [
-  { label: "All Collections", href: "/lenses/x/collections" },
-  ...collectionsData.collections.map((c) => ({
-    label: c.title.en,
-    href: `/lenses/x/collections/${c.slug}`,
-  })),
   { label: "Design Lab — Iris", href: "/design-lab/iris" },
   { label: "Design Lab — Iris Pheno", href: "/design-lab/iris-pheno" },
   { label: "Design Lab — Outro (end card)", href: "/design-lab/outro" },
