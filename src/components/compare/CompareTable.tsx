@@ -65,7 +65,8 @@ function LensHeaderContent({
             sizes="(min-width: 640px) 160px, 80px"
             style={lensImageStyle}
             className="object-contain"
-            priority
+            // Above-fold compare thumbnail: eager, not preloaded (small, not LCP).
+            loading="eager"
           />
         </div>
       </div>
