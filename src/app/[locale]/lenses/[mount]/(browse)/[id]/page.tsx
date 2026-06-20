@@ -270,7 +270,10 @@ export default async function LensDetailPage({ params }: { params: Params }) {
                 sizes="256px"
                 style={lensImageStyle}
                 className="object-contain"
-                priority
+                // LCP hero: preload (early discovery) + high fetch priority.
+                // `priority` is deprecated in Next 16.
+                preload
+                fetchPriority="high"
               />
             </div>
           </div>

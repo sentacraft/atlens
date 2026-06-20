@@ -102,8 +102,9 @@ export default memo(function LensCard({
                 sizes="(max-width: 499px) 112px, (max-width: 640px) 50vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                 style={lensImageStyle}
                 className="object-contain"
-                priority={priority}
-                loading={priority ? undefined : "lazy"}
+                // Next 16: `priority` only adds a head preload link; drive loading
+                // directly so above-fold cards are eager (no preload spam), rest lazy.
+                loading={priority ? "eager" : "lazy"}
               />
             </div>
           </div>
