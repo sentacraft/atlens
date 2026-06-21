@@ -37,10 +37,37 @@ jobs:
 
       - run: npm ci
 
+      # Cache the downloaded browser binaries (chromium + webkit), keyed on the
+      # locked Playwright version so a dependency bump invalidates it. The OS
+      # libraries live outside this path, so they are still installed each run.
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       # chromium for the desktop project; webkit for ios-safari + ios-pwa
-      # (iPhone 15 device descriptors use the WebKit engine).
+      # (iPhone 15 device descriptors use the WebKit engine). On a cache hit only
+      # the system deps are (re)installed; on a miss, download the browsers too.
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium webkit
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium webkit
+
+      # Next.js incremental build cache (compiler/output), per the official CI
+      # guidance. Restored before the webServer build runs and saved at job end;
+      # keyed on lockfile + source so it invalidates correctly, with a lockfile-
+      # level restore-key fallback. Self-contained — no other workflow touched.
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**', 'next.config.ts') }}
+          restore-keys: |
+            nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
 
       # webServer runs `npm run build && next start` itself (CI=true disables
       # reuseExistingServer). The matrix mirrors the agreed CI scope: desktop +
