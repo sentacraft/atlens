@@ -1,0 +1,57 @@
+name: E2E
+
+# Playwright end-to-end tests against a PRODUCTION build (`next build` +
+# `next start`), never `next dev` — dev-mode compilation/HMR makes the
+# animation/scroll/hydration assertions flaky and diverges from what ships.
+# The server is built and booted by Playwright's `webServer` (see
+# playwright.config.ts); this job only needs to install deps + browsers.
+#
+# Why not the workerd/OpenNext runtime here: every page these tests touch
+# renders without runtime CF bindings (search is client-side; only the untested
+# /api/track beacon needs them). The workerd-only regression class is already
+# gated by cf-smoke.yml + uptime.yml, which sweep the whole sitemap on the real
+# runtime — so running the full browser matrix on workerd would add cost without
+# signal. Heavier than the lint/typecheck/unit CI, so it lives on its own.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Playwright (next start)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      # chromium for the desktop project; webkit for ios-safari + ios-pwa
+      # (iPhone 15 device descriptors use the WebKit engine).
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
+
+      # webServer runs `npm run build && next start` itself (CI=true disables
+      # reuseExistingServer). The matrix mirrors the agreed CI scope: desktop +
+      # mobile WebKit + the PWA safe-area project.
+      - name: Run E2E
+        run: npx playwright test --project=chromium --project=ios-safari --project=ios-pwa
+
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

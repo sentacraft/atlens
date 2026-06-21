@@ -83,7 +83,9 @@ test.describe("Compare flow", () => {
   }) => {
     await page.goto(`/en/lenses/x/${LENS_A}`);
 
-    await page.getByRole("button", { name: /Add to Compare/i }).click();
+    // On the detail page the toggle's accessible name is "Compare" (the list
+    // cards say "Add to Compare"; this control is the compact detail variant).
+    await page.getByRole("button", { name: "Compare", exact: true }).click();
 
     // Navigate to compare page via the bar
     await page.getByRole("button", { name: /Compare \(1\)/i }).waitFor();
