@@ -39,7 +39,7 @@ test.describe("Lens search dialog", () => {
     await listbox.getByRole("option").first().click();
 
     // Should have navigated to a lens detail URL
-    await expect(page).toHaveURL(/\/en\/lenses\/[^/]+$/);
+    await expect(page).toHaveURL(/\/en\/lenses\/x\/[^/]+$/);
   });
 
   test("keyboard Enter on first result navigates to detail page", async ({ page }) => {
@@ -53,7 +53,7 @@ test.describe("Lens search dialog", () => {
     await expect(listbox.getByRole("option").first()).toBeVisible();
 
     await input.press("Enter");
-    await expect(page).toHaveURL(/\/en\/lenses\/[^/]+$/);
+    await expect(page).toHaveURL(/\/en\/lenses\/x\/[^/]+$/);
   });
 
   test("clearing the query hides the results listbox", async ({ page }) => {
