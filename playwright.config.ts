@@ -20,6 +20,12 @@ const baseURL = `http://localhost:${PORT}`;
 // ignored everywhere else.
 const PWA_SPEC = /pwa-safe-area\.spec\.ts/;
 
+// Specs where the rendering engine / viewport / touch genuinely change behavior
+// (single-screen layout, scroll/sticky choreography, the mobile search drawer).
+// The WebKit pass (ios-safari) — the slow half of the CI gate — runs only these;
+// engine-agnostic routing/filter/compare-state logic is covered on Chromium.
+const MOBILE_ENGINE_SPECS = /(home-no-scroll|dynamic-ui|search)\.spec\.ts/;
+
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -50,11 +56,14 @@ export default defineConfig({
       use: { ...devices["Pixel 5"] },
       testIgnore: PWA_SPEC,
     },
-    // iOS Safari (WebKit engine — same engine as iOS Chrome due to Apple's policy)
+    // iOS Safari (WebKit engine — same engine as iOS Chrome due to Apple's
+    // policy). Scoped to engine-sensitive specs to keep the CI gate fast; pure
+    // logic is covered on Chromium above. The full-suite WebKit pass still runs
+    // locally via ios-safari-landscape.
     {
       name: "ios-safari",
       use: { ...devices["iPhone 15"] },
-      testIgnore: PWA_SPEC,
+      testMatch: MOBILE_ENGINE_SPECS,
     },
     // iOS landscape — catches layout issues in horizontal orientation
     {

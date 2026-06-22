@@ -50,7 +50,10 @@ async function getIrisAnimating(page: Page): Promise<boolean> {
   });
 }
 
-test.describe("Hero Iris mount animation", () => {
+// @local-only: the hero iris is a decorative animation. These cover its
+// lifecycle thoroughly but are slow (multi-second settle waits) and low-value
+// as a merge gate, so they run locally but are excluded from CI.
+test.describe("Hero Iris mount animation", { tag: "@local-only" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/en");
     // Wait for the iris to be in the DOM and hydrated before any assertions.
@@ -127,7 +130,7 @@ test.describe("Hero Iris mount animation", () => {
   });
 });
 
-test.describe("Hero Iris tap animation", () => {
+test.describe("Hero Iris tap animation", { tag: "@local-only" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/en");
     await page.locator('[data-testid="iris"]').last().waitFor({ state: "attached" });

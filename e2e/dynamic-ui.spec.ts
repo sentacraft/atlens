@@ -98,7 +98,11 @@ test.describe("Nav auto-hide (mobile only)", () => {
   });
 });
 
-test.describe("Compare table phantom header", () => {
+// @local-only: scroll-choreography regression guards (sticky phantom header,
+// share FAB reveal, scroll-to-top). They cover cosmetic scroll behavior, carry
+// multi-second scroll-settle waits, and are low-value as a merge gate — run
+// locally, excluded from CI. Layout-correctness specs below stay in CI.
+test.describe("Compare table phantom header", { tag: "@local-only" }, () => {
   // The phantom header is a sticky h-0 div that mirrors column names and floats
   // up once the real <thead> scrolls out of view. It also locks the nav hidden
   // (via lockNav) so two top-chrome elements never compete on mobile.
@@ -149,7 +153,7 @@ test.describe("Compare table phantom header", () => {
   });
 });
 
-test.describe("Compare page share FAB", () => {
+test.describe("Compare page share FAB", { tag: "@local-only" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(`/en/lenses/x/compare?ids=${LENS_A},${LENS_B}`);
     // Wait for the FAB to be rendered before any interaction
@@ -180,7 +184,7 @@ test.describe("Compare page share FAB", () => {
   });
 });
 
-test.describe("Lens list scroll-to-top button", () => {
+test.describe("Lens list scroll-to-top button", { tag: "@local-only" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/en/lenses");
     await waitForScrollable(page, 200);

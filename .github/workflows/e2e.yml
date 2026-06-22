@@ -70,10 +70,11 @@ jobs:
             nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
 
       # webServer runs `npm run build && next start` itself (CI=true disables
-      # reuseExistingServer). The matrix mirrors the agreed CI scope: desktop +
-      # mobile WebKit + the PWA safe-area project.
+      # reuseExistingServer). Matrix: desktop + mobile WebKit + the PWA project.
+      # --grep-invert drops @local-only tests (slow, low-gate-value animation /
+      # scroll-choreography guards that still run locally).
       - name: Run E2E
-        run: npx playwright test --project=chromium --project=ios-safari --project=ios-pwa
+        run: npx playwright test --project=chromium --project=ios-safari --project=ios-pwa --grep-invert "@local-only"
 
       - name: Upload report
         if: ${{ !cancelled() }}
