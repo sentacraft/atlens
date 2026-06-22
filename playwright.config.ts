@@ -10,10 +10,9 @@ import { defineConfig, devices } from "@playwright/test";
 // uptime.yml, which sweep the whole sitemap on the real runtime.
 //
 // Dedicated port 3100 (not the dev server's 3000) so a stray `next dev` is never
-// silently reused as the target. Override with PLAYWRIGHT_BASE_URL to point at
-// an already-running server (e.g. a workerd preview) and skip the local build.
-const PORT = process.env.PLAYWRIGHT_PORT ?? "3100";
-const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? `http://localhost:${PORT}`;
+// silently reused as the target.
+const PORT = 3100;
+const baseURL = `http://localhost:${PORT}`;
 
 // pwa-safe-area asserts mobile/standalone safe-area math (e.g. sticky `top`
 // resolves to --safe-inset-top below the sm breakpoint). Those values only hold
@@ -74,9 +73,7 @@ export default defineConfig({
   ],
 
   webServer: {
-    // Full production build, then Next's Node production server. When
-    // PLAYWRIGHT_BASE_URL targets an external server this still runs locally;
-    // unset it (the default) for the standard build-and-serve flow.
+    // Full production build, then Next's Node production server.
     command: `npm run build && npx next start -p ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
