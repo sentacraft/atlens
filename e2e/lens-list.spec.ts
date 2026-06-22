@@ -10,7 +10,7 @@ test.describe("Lens list page", () => {
 
   test("loads lens cards", async ({ page }) => {
     // At least one lens card link should be present
-    const cards = page.locator('a[href^="/en/lenses/x/"]:not([href*="/compare"])');
+    const cards = page.locator('a[href^="/en/lenses/x/"]:not([href$="/browse"]):not([href$="/collections"]):not([href*="/compare"])');
     await expect(cards.first()).toBeVisible();
     const count = await cards.count();
     expect(count).toBeGreaterThan(10);
@@ -43,7 +43,7 @@ test.describe("Lens list page", () => {
     await selectBrandFilter(page, "Sigma");
 
     // Clear it
-    await page.getByRole("button", { name: "Clear Filters" }).click();
+    await page.getByRole("button", { name: "Reset" }).click();
 
     const restoredText = await page.getByText(RESULT_COUNT_RE).textContent();
     const restoredCount = parseInt(restoredText!.match(/\d+/)![0], 10);
@@ -53,7 +53,7 @@ test.describe("Lens list page", () => {
   test("clicking a lens card navigates to detail page", async ({ page }) => {
     // Click the first lens card link (exclude list page and compare page)
     const firstCard = page
-      .locator('a[href^="/en/lenses/x/"]:not([href*="/compare"])')
+      .locator('a[href^="/en/lenses/x/"]:not([href$="/browse"]):not([href$="/collections"]):not([href*="/compare"])')
       .first();
     const href = await firstCard.getAttribute("href");
     await firstCard.click();
@@ -71,7 +71,7 @@ test.describe("Lens list page", () => {
   test("applying a brand filter writes it into the URL synchronously", async ({
     page,
   }) => {
-    await expect(page).toHaveURL(/\/lenses\/x$/);
+    await expect(page).toHaveURL(/\/lenses\/x\/browse$/);
 
     await selectBrandFilter(page, "Sigma");
 
@@ -80,7 +80,7 @@ test.describe("Lens list page", () => {
 
     // And it should have arrived without triggering a navigation that pushes
     // a new history entry: we should still be on the same path.
-    await expect(page).toHaveURL(/\/lenses\/x\?/);
+    await expect(page).toHaveURL(/\/lenses\/x\/browse\?/);
   });
 
   test("filter state survives a page refresh", async ({ page }) => {

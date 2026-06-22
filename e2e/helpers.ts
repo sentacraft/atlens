@@ -15,6 +15,17 @@ async function isBelowBreakpoint(page: Page, bp: "sm" | "md" | "lg" | "xl" | "2x
   }, bp);
 }
 
+// Focal range, features, optical and focus-motor filters live in a "More
+// Filters" disclosure that is collapsed by default on every viewport. Open it
+// before interacting with any of those (secondary) chips. No-op if already open
+// (the toggle then reads "Fewer Filters", which this name match skips).
+export async function openSecondaryFilters(page: Page) {
+  const toggle = page.getByRole("button", { name: /more filters/i });
+  if (await toggle.isVisible()) {
+    await toggle.click();
+  }
+}
+
 export async function selectBrandFilter(page: Page, brandName: string) {
   const isMobile = await isBelowBreakpoint(page, "sm");
 

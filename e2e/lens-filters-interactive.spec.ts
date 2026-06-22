@@ -1,10 +1,12 @@
 import { test, expect } from "@playwright/test";
-import { selectBrandFilter } from "./helpers";
+import { openSecondaryFilters, selectBrandFilter } from "./helpers";
 
 test.describe("Focal range filter", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/en/lenses");
     await page.getByText(/\d+ lenses/).waitFor();
+    // Focal chips are secondary filters behind the "More Filters" disclosure.
+    await openSecondaryFilters(page);
   });
 
   test("focal category chip narrows results", async ({ page }) => {
@@ -42,7 +44,7 @@ test.describe("Sort controls", () => {
   test("toggling sort direction reverses card order", async ({ page }) => {
     // Grab the first card href with default (asc) order
     const firstCardAsc = await page
-      .locator('a[href*="/en/lenses/"]:not([href="/en/lenses"]):not([href*="/compare"])')
+      .locator('a[href^="/en/lenses/x/"]:not([href$="/browse"]):not([href$="/collections"]):not([href*="/compare"])')
       .first()
       .getAttribute("href");
 
@@ -53,7 +55,7 @@ test.describe("Sort controls", () => {
     await page.waitForTimeout(200);
 
     const firstCardDesc = await page
-      .locator('a[href*="/en/lenses/"]:not([href="/en/lenses"]):not([href*="/compare"])')
+      .locator('a[href^="/en/lenses/x/"]:not([href$="/browse"]):not([href$="/collections"]):not([href*="/compare"])')
       .first()
       .getAttribute("href");
 

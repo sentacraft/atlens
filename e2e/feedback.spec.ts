@@ -1,5 +1,21 @@
 import { test, expect, type Page } from "@playwright/test";
 
+// These tests exercise the DESKTOP feedback dialog: the nav-bar "Feedback"
+// button trigger and the dialog's desktop chrome (Cancel button, dialog role,
+// corner close). On mobile the nav button collapses into the overflow menu and
+// the dialog becomes a swipe-dismiss drawer — a distinct surface that would
+// need its own spec — so restrict this file to desktop viewports.
+test.beforeEach(({ page }, testInfo) => {
+  const viewport = page.viewportSize();
+  // Needs a desktop-shaped viewport: width >= 640 for the nav trigger, and
+  // enough height for the centered dialog (a landscape phone at 393px tall
+  // can't fit it, so the submit/success flow falls below the fold).
+  testInfo.skip(
+    !viewport || viewport.width < 640 || viewport.height < 600,
+    "Desktop-only feedback dialog spec"
+  );
+});
+
 // Intercepts POST /api/feedback, captures the request body, and returns a
 // fake success so real GitHub issues are never created during tests.
 async function mockFeedbackApi(page: Page): Promise<{ getLastBody: () => Record<string, unknown> | null }> {
@@ -50,8 +66,8 @@ test.describe("FeedbackDialog — open and close", () => {
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole("heading")).toContainText(/report an issue/i);
-    // Lens header ("Affected lens" label) should appear in the dialog
-    await expect(dialog.getByText(/affected lens/i)).toBeVisible();
+    // Lens header ("Reporting on" label) should appear in the dialog
+    await expect(dialog.getByText(/reporting on/i)).toBeVisible();
   });
 });
 
@@ -73,31 +89,34 @@ test.describe("FeedbackDialog — payload sent to API", () => {
     expect(body!.description).toBe("This is a test suggestion");
   });
 
-  test("replyEmail is included in the payload when provided", async ({ page }) => {
+  test("replyContact is included in the payload when provided", async ({ page }) => {
     const { getLastBody } = await mockFeedbackApi(page);
     await page.goto("/en");
     await page.getByRole("button", { name: /feedback/i }).click();
     const dialog = page.getByRole("dialog");
     await dialog.locator("textarea").fill("Please reply to me");
-    await dialog.locator("input[type='email']").fill("test@example.com");
+    // The reply-contact field is gated behind an opt-in toggle and is a plain
+    // text input (aria-label "Your email"), not type=email.
+    await dialog.getByRole("checkbox", { name: /want a reply/i }).check();
+    await dialog.getByRole("textbox", { name: /your email/i }).fill("test@example.com");
     await dialog.getByRole("button", { name: /submit/i }).click();
     await expect(dialog.getByText(/thanks/i)).toBeVisible();
 
     const body = getLastBody();
-    expect(body!.replyEmail).toBe("test@example.com");
+    expect(body!.replyContact).toBe("test@example.com");
   });
 
-  test("replyEmail is omitted from the payload when left empty", async ({ page }) => {
+  test("replyContact is omitted from the payload when left empty", async ({ page }) => {
     const { getLastBody } = await mockFeedbackApi(page);
     await page.goto("/en");
     await page.getByRole("button", { name: /feedback/i }).click();
     const dialog = page.getByRole("dialog");
-    await dialog.locator("textarea").fill("No email provided");
+    await dialog.locator("textarea").fill("No contact provided");
     await dialog.getByRole("button", { name: /submit/i }).click();
     await expect(dialog.getByText(/thanks/i)).toBeVisible();
 
     const body = getLastBody();
-    expect(body!.replyEmail).toBeUndefined();
+    expect(body!.replyContact).toBeUndefined();
   });
 
   test("data_issue sends lens context in payload", async ({ page }) => {
@@ -115,19 +134,20 @@ test.describe("FeedbackDialog — payload sent to API", () => {
     expect((body!.context as Record<string, unknown>).lensModel).toBeTruthy();
   });
 
-  test("data_issue sends replyEmail alongside lens context", async ({ page }) => {
+  test("data_issue sends replyContact alongside lens context", async ({ page }) => {
     const { getLastBody } = await mockFeedbackApi(page);
     await page.goto(LENS_URL);
     await page.getByRole("button", { name: /report an issue/i }).first().click();
     const dialog = page.getByRole("dialog");
     await dialog.locator("textarea").fill("Wrong weight value");
-    await dialog.locator("input[type='email']").fill("reporter@example.com");
+    await dialog.getByRole("checkbox", { name: /want a reply/i }).check();
+    await dialog.getByRole("textbox", { name: /your email/i }).fill("reporter@example.com");
     await dialog.getByRole("button", { name: /submit/i }).click();
     await expect(dialog.getByText(/thanks/i)).toBeVisible();
 
     const body = getLastBody();
     expect(body!.type).toBe("data_issue");
-    expect(body!.replyEmail).toBe("reporter@example.com");
+    expect(body!.replyContact).toBe("reporter@example.com");
     expect((body!.context as Record<string, unknown>).lensId).toBeTruthy();
   });
 
@@ -137,9 +157,9 @@ test.describe("FeedbackDialog — payload sent to API", () => {
     await page.getByRole("button", { name: /search/i }).click();
     const searchDialog = page.getByRole("dialog");
     await searchDialog.locator("input[type='text']").fill("nonexistent-lens-xyz");
-    // Wait for no-results state
-    await expect(searchDialog.getByText(/tell us/i)).toBeVisible();
-    await searchDialog.getByText(/tell us/i).click();
+    // Wait for no-results state — the CTA link reads "Tell me".
+    await expect(searchDialog.getByText(/tell me/i)).toBeVisible();
+    await searchDialog.getByText(/tell me/i).click();
 
     // Feedback dialog should now be open
     const feedbackDialog = page.getByRole("dialog");
