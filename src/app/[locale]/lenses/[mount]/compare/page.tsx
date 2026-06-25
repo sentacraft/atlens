@@ -4,6 +4,7 @@ import { parseLensIds, getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount } from "@/lib/mount";
 import { findPresetByIds } from "@/lib/curated-presets";
 import CompareTable from "@/components/compare/CompareTable";
+import CompareUrlSync from "@/components/compare/CompareUrlSync";
 import ComparePageHeader from "@/components/compare/ComparePageHeader";
 import CompareCollections from "@/components/compare/CompareCollections";
 import CompareTelemetry from "@/components/compare/CompareTelemetry";
@@ -125,6 +126,7 @@ export default async function ComparePage({
       <CompareCollections allLenses={allLenses} />
       {resolvedMount === "X" && <CuratedComparisons allLenses={allLenses} />}
       <BackToTopButton />
+      <CompareUrlSync />
       <CompareTelemetry lensIds={lenses.map((l) => l.id)} />
     </div>
   );

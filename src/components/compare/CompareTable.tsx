@@ -22,7 +22,6 @@ import SpecialtyBadges from "@/components/lens/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens/specialty";
 import { useCompare } from "@/context/CompareProvider";
 import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
-import { useCompareUrlSync } from "@/hooks/useCompareUrlSync";
 import { MAX_COMPARE } from "@/lib/lens/lens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { mountToUrlSegment } from "@/lib/mount";
@@ -210,10 +209,6 @@ export default function CompareTable({ lenses: initialLenses, allLenses, minColu
   const isMobileDevice = useIsMobileDevice();
   const { compareIds, reorder, remove, seed } = useCompare();
   const { onSelectLens, getResultState } = useCompareLensSearch();
-  // Compare page is the only surface that projects compare state onto the
-  // URL. This hook owns that projection so individual write callsites no
-  // longer need to know about address-bar bookkeeping.
-  useCompareUrlSync();
   const mount = useEffectiveMount();
   const mountSegment = mountToUrlSegment(mount);
   const initialLensIds = useMemo(
