@@ -122,11 +122,11 @@ export default async function ComparePage({
         current={tNav("compare")}
       />
       <ComparePageHeader allLenses={allLenses} />
-      <CompareTable key={lenses.length === 0 ? "_empty_" : ids} lenses={lenses} allLenses={allLenses} minColumns={2} hideBodyWhenEmpty />
+      <CompareTable allLenses={allLenses} minColumns={2} />
       <CompareCollections allLenses={allLenses} />
       {resolvedMount === "X" && <CuratedComparisons allLenses={allLenses} />}
       <BackToTopButton />
-      <CompareUrlSync />
+      <CompareUrlSync initialIds={lenses.map((l) => l.id)} />
       <CompareTelemetry lensIds={lenses.map((l) => l.id)} />
     </div>
   );

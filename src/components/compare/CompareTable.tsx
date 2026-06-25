@@ -2,7 +2,6 @@
 
 import React, {
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -187,18 +186,15 @@ function EmptyLensHeader({
 // --- CompareTable ---
 
 interface Props {
-  lenses: Lens[];
   allLenses: Lens[];
   /** Minimum number of columns to display; empty slot headers fill the gap. */
   minColumns?: number;
-  /** When true and the compare list is empty, only the header row is rendered (no skeleton body). */
-  hideBodyWhenEmpty?: boolean;
 }
 
 const LABEL_COLUMN_WIDTH = "6rem";
 const LENS_COLUMN_MIN_WIDTH = "9rem";
 
-export default function CompareTable({ lenses: initialLenses, allLenses, minColumns = 0, hideBodyWhenEmpty = false }: Props) {
+export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
   const t = useTranslations("Compare");
   const td = useTranslations("LensDetail");
   const tBrand = useTranslations("Brands");
@@ -207,31 +203,10 @@ export default function CompareTable({ lenses: initialLenses, allLenses, minColu
   const locale = useLocale();
   const countryCode = useCountryCode();
   const isMobileDevice = useIsMobileDevice();
-  const { compareIds, reorder, remove, seed } = useCompare();
+  const { compareIds, reorder, remove } = useCompare();
   const { onSelectLens, getResultState } = useCompareLensSearch();
   const mount = useEffectiveMount();
   const mountSegment = mountToUrlSegment(mount);
-  const initialLensIds = useMemo(
-    () => initialLenses.map((lens) => lens.id),
-    [initialLenses]
-  );
-
-  // Context is the single client-side source of truth. The URL is a write-only
-  // projection updated via history.replaceState (no RSC round-trip).
-  //
-  // useLayoutEffect so the seed lands BEFORE the browser paints. This means
-  // every context consumer (ComparePageHeader, CompareBar, …) sees
-  // the correct compareIds on the first visible frame — no fallback props or
-  // "hydrated" flags required.
-  //
-  // The seed is a no-op for in-page mutations because those don't change
-  // initialLenses. It also fires on subsequent navigations (e.g., a curated
-  // preset link click that re-renders the server component with new
-  // searchParams).
-  useLayoutEffect(() => {
-    seed(initialLensIds);
-  }, [initialLensIds, seed]);
-
   const orderedLenses = compareIds
     .map((id) => allLenses.find((lens) => lens.id === id))
     .filter((lens): lens is Lens => lens !== undefined);
@@ -472,34 +447,6 @@ export default function CompareTable({ lenses: initialLenses, allLenses, minColu
         </thead>
 
         <tbody>
-          {/* Cold-start skeleton: show all spec dimensions with placeholder cells */}
-          {orderedLenses.length === 0 && !hideBodyWhenEmpty && allGroups.map((group) => (
-            <React.Fragment key={group.label}>
-              <tr className="border-b border-zinc-100 bg-zinc-100/80 dark:border-zinc-800/60 dark:bg-zinc-800/60">
-                <td colSpan={totalColSpan} className="h-8 text-center">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-                    {group.label}
-                  </span>
-                </td>
-              </tr>
-              {group.rows.map((row) => (
-                <tr key={row.label} className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
-                  <td className="sticky left-0 z-10 px-3 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900 break-words">
-                    <div className="flex items-center justify-end gap-1">
-                      {row.labelNote && <FieldNotePopover note={row.labelNote} variant={row.labelNoteVariant} />}
-                      <span>{row.label}</span>
-                    </div>
-                  </td>
-                  {Array.from({ length: emptySlotCount }).map((_, i) => (
-                    <td key={i} className="px-3 py-3 text-center text-xs text-zinc-200 dark:text-zinc-800">
-                      —
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </React.Fragment>
-          ))}
-
           {/* Pricing group — shown when at least one lens has pricing data.
               Disclaimer rows are rendered OUTSIDE the scrollable table so
               they wrap within viewport width instead of being clipped by the
