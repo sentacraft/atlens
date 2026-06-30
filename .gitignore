@@ -41,6 +41,9 @@ yarn-error.log*
 .env*
 !.env.example
 
+# wrangler local secrets (DEEPSEEK_API_KEY etc. for `npm run preview`)
+.dev.vars
+
 # vercel
 .vercel
 
