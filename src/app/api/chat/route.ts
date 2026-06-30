@@ -1,4 +1,3 @@
-import { deepseek } from "@ai-sdk/deepseek";
 import {
   convertToModelMessages,
   createUIMessageStreamResponse,
@@ -6,6 +5,7 @@ import {
   toUIMessageStream,
   type UIMessage,
 } from "ai";
+import { copilotModel, copilotProviderOptions } from "@/lib/ai/model";
 
 // First AI streaming endpoint in the app, backing the experimental Copilot
 // surface (src/app/[locale]/copilot). Deliberately minimal — a bare,
@@ -22,7 +22,8 @@ export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json();
 
   const result = streamText({
-    model: deepseek("deepseek-chat"),
+    model: copilotModel,
+    providerOptions: copilotProviderOptions,
     messages: await convertToModelMessages(messages),
   });
 
