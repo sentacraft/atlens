@@ -51,17 +51,22 @@ export function buildLensTools(mount: Mount, locale: string) {
           .array(z.number())
           .optional()
           .describe(
-            "Full-frame-equivalent mm. The lens must be able to shoot at EACH value. List " +
-              "only focals the user explicitly needs — don't add reach they didn't ask for " +
-              "('over 100mm' is coversFocals [100], not [100, 200]). For 'the longer the " +
-              "better' use sortBy: reach instead. [50] = covers 50mm; [24,70] = spans 24–70.",
+            "Full-frame-equivalent mm; the lens must shoot at EACH value individually (NOT " +
+              "'somewhere in between'). A prime covers only its one focal — never pass two " +
+              "points with type prime (coversFocals [50,85] on a prime matches nothing); for " +
+              "'a prime around 85mm' or 'a portrait prime' use focalWithin. List only focals " +
+              "the user explicitly needs ('over 100mm' is [100], not [100,200]); for 'the " +
+              "longer the better' use sortBy: reach. [50] = covers 50; [24,70] = one zoom " +
+              "spanning 24–70.",
           ),
         focalWithin: z
           .tuple([z.number().nullable(), z.number().nullable()])
           .optional()
           .describe(
-            "Full-frame-equivalent mm [min,max]; null = open end. The lens's WHOLE range " +
-              "must sit inside. [null,35] = a wide lens; [24,null] = nothing wider than 24mm.",
+            "Full-frame-equivalent mm [min,max]; null = open end. The lens's WHOLE range must " +
+              "sit inside — for a PRIME this means its single focal falls in [min,max], so this " +
+              "is the right tool for 'a portrait prime ~85mm' ([75,90]) or 'a 50mm-ish prime' " +
+              "([45,60]). [null,35] = a wide lens; [24,null] = nothing wider than 24mm.",
           ),
         maxWeightG: z
           .number()

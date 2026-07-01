@@ -7,7 +7,7 @@ import {
   type FilterFeatureKey,
   type SortKey,
 } from "@/lib/lens/lens";
-import { focalEquiv } from "@/lib/lens/format";
+import { brandName, focalEquiv } from "@/lib/lens/format";
 import { getLensesByMount } from "@/lib/lens/data";
 import { deriveSpecialty } from "@/lib/lens/specialty";
 import { pickPriceEntry } from "@/lib/lens/pricing";
@@ -96,8 +96,11 @@ export interface LensConstraints {
 // instead of re-picking. RecalledLens is NOT ResolvedLens.
 export type RecalledLens = Pick<
   Lens,
-  "id" | "brand" | "series" | "model" | "af" | "ois" | "wr" | "releaseYear"
+  "id" | "series" | "model" | "af" | "ois" | "wr" | "releaseYear"
 > & {
+  // Locale display name (resolved via brandName), NOT the raw brand key — the
+  // model writes user-facing prose and can't be trusted to localize the key.
+  brand: string;
   focalNativeMm: [number, number];
   focalEquivMm: [number, number];
   maxAperture: ApertureValue | null;
@@ -313,7 +316,7 @@ export function projectLens(lens: Lens, locale: string): RecalledLens {
 
   return {
     id: lens.id,
-    brand: lens.brand,
+    brand: brandName(lens.brand, locale),
     series: lens.series,
     model: lens.model,
     focalNativeMm: [lens.focalLengthMin, lens.focalLengthMax],
