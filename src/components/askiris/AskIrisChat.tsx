@@ -1,14 +1,22 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { useState } from "react";
+import { DefaultChatTransport } from "ai";
+import { useMemo, useState } from "react";
+import type { Mount } from "@/lib/types";
 
-// Bare hello-world chat against /api/chat. No domain logic yet — this exists to
-// de-risk the stack (AI SDK + DeepSeek + workerd streaming) before the lens
-// tools and system prompt land. useChat's default transport POSTs to /api/chat.
-export default function CopilotChat() {
+// Experimental AskIris chat. mount + locale are fixed by the route and passed
+// through the transport body so the server scopes the agent to one mount and
+// replies in one language. Only text parts are rendered today; tool results
+// (structured lens data) fuel the model's prose and become cards in a later
+// frontend pass — see the runtime plan's decoupling section.
+export default function AskIrisChat({ mount, locale }: { mount: Mount; locale: string }) {
   const [input, setInput] = useState("");
-  const { messages, sendMessage, status } = useChat();
+  const transport = useMemo(
+    () => new DefaultChatTransport({ api: "/api/chat", body: { mount, locale } }),
+    [mount, locale],
+  );
+  const { messages, sendMessage, status } = useChat({ transport });
 
   const isBusy = status === "submitted" || status === "streaming";
 
@@ -25,9 +33,9 @@ export default function CopilotChat() {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col px-4 py-8">
       <header className="mb-6">
-        <h1 className="text-lg font-semibold">Copilot</h1>
+        <h1 className="text-lg font-semibold">AskIris</h1>
         <p className="text-muted-foreground text-sm">
-          Experimental — streaming hello world.
+          Experimental — describe what you shoot and I&apos;ll recall lenses.
         </p>
       </header>
 
@@ -35,7 +43,7 @@ export default function CopilotChat() {
         {messages.map((message) => (
           <div key={message.id} className="whitespace-pre-wrap text-sm">
             <span className="text-muted-foreground mr-2 font-medium">
-              {message.role === "user" ? "You" : "AI"}
+              {message.role === "user" ? "You" : "Iris"}
             </span>
             {message.parts.map((part, i) =>
               part.type === "text" ? (
@@ -50,7 +58,7 @@ export default function CopilotChat() {
         <input
           className="border-input flex-1 rounded-md border px-3 py-2 text-sm"
           value={input}
-          placeholder="Say something…"
+          placeholder="e.g. a light lens for travel…"
           onChange={(event) => setInput(event.currentTarget.value)}
           disabled={isBusy}
         />
