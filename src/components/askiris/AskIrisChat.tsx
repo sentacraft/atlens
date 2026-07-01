@@ -1,9 +1,55 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import {
+  DefaultChatTransport,
+  getToolName,
+  isToolUIPart,
+  type DynamicToolUIPart,
+  type ToolUIPart,
+} from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useEffectiveMount } from "@/hooks/useMountParam";
+import { useTestHookEnabled } from "@/context/TestHookProvider";
+
+// One-line recap of a tool's return, so the trace stays readable without
+// unfurling the full payload (which is in the collapsible below it).
+function traceSummary(output: unknown): string {
+  if (output && typeof output === "object") {
+    const o = output as Record<string, unknown>;
+    if (Array.isArray(o.matches) && Array.isArray(o.maybe)) {
+      return `${o.totalMatched ?? "?"} matched · ${o.matches.length} shown · ${o.maybe.length} maybe`;
+    }
+    if (Array.isArray(o.results)) {
+      return `${o.results.length} results`;
+    }
+  }
+  return "—";
+}
+
+// Inline agent trace: what the model called and what came back. Gated on
+// test-hook mode (?testhook=1) — it's a dev probe, not user-facing chat.
+function ToolTrace({ part }: { part: ToolUIPart | DynamicToolUIPart }) {
+  return (
+    <div className="text-muted-foreground border-muted mt-2 rounded border border-dashed px-2 py-1 font-mono text-xs">
+      <div className="font-semibold">
+        🔧 {getToolName(part)} · {part.state}
+      </div>
+      {"input" in part && part.input != null ? (
+        <pre className="mt-1 break-all whitespace-pre-wrap">in: {JSON.stringify(part.input)}</pre>
+      ) : null}
+      {part.state === "output-available" ? (
+        <details className="mt-1">
+          <summary className="cursor-pointer">out: {traceSummary(part.output)}</summary>
+          <pre className="mt-1 break-all whitespace-pre-wrap">{JSON.stringify(part.output, null, 2)}</pre>
+        </details>
+      ) : null}
+      {part.state === "output-error" ? (
+        <pre className="text-destructive mt-1 break-all whitespace-pre-wrap">error: {part.errorText}</pre>
+      ) : null}
+    </div>
+  );
+}
 
 // Experimental AskIris chat. Mount comes from the effective-mount preference
 // (URL has none here) and locale from the route; both go through the transport
@@ -12,6 +58,7 @@ import { useEffectiveMount } from "@/hooks/useMountParam";
 // the model's prose and become cards in a later frontend pass.
 export default function AskIrisChat({ locale }: { locale: string }) {
   const mount = useEffectiveMount();
+  const debug = useTestHookEnabled();
   const [input, setInput] = useState("");
   const transport = useMemo(
     () => new DefaultChatTransport({ api: "/api/chat", body: { mount, locale } }),
@@ -52,11 +99,15 @@ export default function AskIrisChat({ locale }: { locale: string }) {
             <span className="text-muted-foreground mr-2 font-medium">
               {message.role === "user" ? "You" : "Iris"}
             </span>
-            {message.parts.map((part, i) =>
-              part.type === "text" ? (
-                <span key={`${message.id}-${i}`}>{part.text}</span>
-              ) : null,
-            )}
+            {message.parts.map((part, i) => {
+              if (part.type === "text") {
+                return <span key={`${message.id}-${i}`}>{part.text}</span>;
+              }
+              if (debug && isToolUIPart(part)) {
+                return <ToolTrace key={`${message.id}-${i}`} part={part} />;
+              }
+              return null;
+            })}
           </div>
         ))}
       </div>
