@@ -94,22 +94,39 @@ export default function AskIrisChat({ locale }: { locale: string }) {
       </header>
 
       <div ref={logRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto pb-4">
-        {messages.map((message) => (
-          <div key={message.id} className="whitespace-pre-wrap text-sm">
-            <span className="text-muted-foreground mr-2 font-medium">
-              {message.role === "user" ? "You" : "Iris"}
-            </span>
-            {message.parts.map((part, i) => {
-              if (part.type === "text") {
-                return <span key={`${message.id}-${i}`}>{part.text}</span>;
-              }
-              if (debug && isToolUIPart(part)) {
-                return <ToolTrace key={`${message.id}-${i}`} part={part} />;
-              }
-              return null;
-            })}
-          </div>
-        ))}
+        {messages.map((message) => {
+          const isUser = message.role === "user";
+          return (
+            <div
+              key={message.id}
+              className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start"}`}
+            >
+              {isUser ? null : (
+                <span className="text-muted-foreground px-1 text-xs font-medium">Iris</span>
+              )}
+              {message.parts.map((part, i) => {
+                if (part.type === "text") {
+                  return (
+                    <div
+                      key={`${message.id}-${i}`}
+                      className={`rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap ${
+                        isUser
+                          ? "bg-primary text-primary-foreground max-w-[85%]"
+                          : "bg-muted text-foreground max-w-full"
+                      }`}
+                    >
+                      {part.text}
+                    </div>
+                  );
+                }
+                if (debug && isToolUIPart(part)) {
+                  return <ToolTrace key={`${message.id}-${i}`} part={part} />;
+                }
+                return null;
+              })}
+            </div>
+          );
+        })}
       </div>
 
       <form onSubmit={handleSubmit} className="shrink-0 flex gap-2 py-4">
