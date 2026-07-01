@@ -1,12 +1,10 @@
 import { tool } from "ai";
 import { z } from "zod";
-import { FILTER_FEATURE_KEYS, SORT_KEYS } from "@/lib/lens/lens";
+import { FILTER_FEATURE_KEYS } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
-import { projectLens, recallLenses } from "@/lib/lens/recall";
+import { projectLens, recallLenses, RECALL_SORT_FIELDS } from "@/lib/lens/recall";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
-
-const SORT_FIELDS = [...SORT_KEYS, "price"] as const;
 
 // The Copilot's tools, bound to the current mount + locale (both fixed by the
 // route, never model-supplied). Parameter semantics live in `.describe()` so the
@@ -51,8 +49,10 @@ export function buildLensTools(mount: Mount, locale: string) {
           .array(z.number())
           .optional()
           .describe(
-            "Full-frame-equivalent mm. The lens must be able to shoot at EACH value. " +
-              "[50] = covers 50mm; [24,70] = one lens spanning 24–70.",
+            "Full-frame-equivalent mm. The lens must be able to shoot at EACH value. List " +
+              "only focals the user explicitly needs — don't add reach they didn't ask for " +
+              "('over 100mm' is coversFocals [100], not [100, 200]). For 'the longer the " +
+              "better' use sortBy: reach instead. [50] = covers 50mm; [24,70] = spans 24–70.",
           ),
         focalWithin: z
           .tuple([z.number().nullable(), z.number().nullable()])
@@ -80,12 +80,27 @@ export function buildLensTools(mount: Mount, locale: string) {
           .number()
           .optional()
           .describe("Price ceiling in the user's currency (CNY for zh, USD for en)."),
-        sortBy: z
-          .enum(SORT_FIELDS)
+        minMagnification: z
+          .number()
           .optional()
           .describe(
-            "Rank by a single axis — use this for a soft preference (lightest, cheapest, " +
-              "fastest aperture) instead of a hard filter.",
+            "Minimum magnification ratio for close-up work (0.5 = half life-size, 1 = 1:1 " +
+              "true macro). Use only for an explicit close-up need; for a vague 'good for " +
+              "close-ups' use sortBy: magnification.",
+          ),
+        minReleaseYear: z
+          .number()
+          .optional()
+          .describe("Only lenses released in or after this year. For 'newest' use sortBy: releaseYear desc."),
+        sortBy: z
+          .enum(RECALL_SORT_FIELDS)
+          .optional()
+          .describe(
+            "Rank by a single axis — use this for a soft preference instead of a hard filter. " +
+              "reach = longest focal reach ('the longer the better'); wideEnd = widest; " +
+              "weightG = lightest; maxAperture = fastest; length = most compact; price = " +
+              "cheapest; magnification = best close-up; zoomRatio = most versatile / one-lens; " +
+              "releaseYear = newest (with sortDir: desc).",
           ),
         sortDir: z.enum(["asc", "desc"]).optional().describe("asc (default) = smallest first."),
       }),

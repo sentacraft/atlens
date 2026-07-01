@@ -31,7 +31,23 @@ const SPECIALTY_TRAITS: readonly OpticalTrait[] = [
   "probe",
 ];
 
-export type SortField = SortKey | "price";
+// Recall-local sort axes — deliberately NOT the UI's SORT_KEYS. Recall needs
+// unambiguous focal ends (`reach` / `wideEnd`, vs the UI's `focalLength` whose
+// end flips with direction) plus axes the browse UI has no use for
+// (magnification, zoomRatio, releaseYear). Keeping them here avoids polluting
+// the shared sorter.
+export const RECALL_SORT_FIELDS = [
+  "reach", // longest focal reach — tele end, FF-equiv ("越长越好")
+  "wideEnd", // widest focal — wide end, FF-equiv ("越广越好")
+  "weightG", // lightest
+  "maxAperture", // fastest — widest max aperture
+  "length", // most compact
+  "price", // cheapest in the locale's currency
+  "magnification", // most magnifying — close-up / macro
+  "zoomRatio", // most versatile — tele/wide span
+  "releaseYear", // newest
+] as const;
+export type SortField = (typeof RECALL_SORT_FIELDS)[number];
 
 export interface LensConstraints {
   brands?: string[];
@@ -49,6 +65,10 @@ export interface LensConstraints {
   maxApertureF?: { wide?: number; tele?: number };
   // In the locale's currency (zh → CNY, en → USD).
   maxPrice?: number;
+  // Minimum magnification ratio (e.g. 0.5 = at least half life-size). Close-up.
+  minMagnification?: number;
+  // Only lenses released in or after this year.
+  minReleaseYear?: number;
   sortBy?: SortField;
   sortDir?: "asc" | "desc";
 }
@@ -74,11 +94,16 @@ export interface LensConstraints {
 // locale-picks at point of use (pickPriceEntry / getLensUrl) rather than being a
 // globally resolved type. If that ResolvedLens ever lands, project from it here
 // instead of re-picking. RecalledLens is NOT ResolvedLens.
-export type RecalledLens = Pick<Lens, "id" | "brand" | "series" | "model" | "af" | "ois" | "wr"> & {
+export type RecalledLens = Pick<
+  Lens,
+  "id" | "brand" | "series" | "model" | "af" | "ois" | "wr" | "releaseYear"
+> & {
   focalNativeMm: [number, number];
   focalEquivMm: [number, number];
   maxAperture: ApertureValue | null;
   weightG: number | null;
+  // Highest magnification ratio, flattened from Lens.maxMagnification.
+  magnification: number | null;
   opticalTraits: OpticalTrait[];
   isCine: boolean;
   price: { amount: number; currency: "CNY" | "USD"; condition: "new" | "used" } | null;
@@ -200,11 +225,52 @@ function evaluate(lens: Lens, c: LensConstraints, locale: string): Verdict {
     }
   }
 
+  if (c.minMagnification != null) {
+    const mag = lens.maxMagnification?.value;
+    if (mag == null) {
+      missingFields.push("maxMagnification");
+    } else if (mag < c.minMagnification) {
+      return EXCLUDE;
+    }
+  }
+
+  if (c.minReleaseYear != null) {
+    if (lens.releaseYear == null) {
+      missingFields.push("releaseYear");
+    } else if (lens.releaseYear < c.minReleaseYear) {
+      return EXCLUDE;
+    }
+  }
+
   return missingFields.length > 0 ? { kind: "maybe", missingFields } : { kind: "match" };
 }
 
 function apertureEnds(value: ApertureValue): [number, number] {
   return Array.isArray(value) ? [value[0], value[1]] : [value, value];
+}
+
+// Keys recall borrows verbatim from the shared UI sorter, so their comparators
+// (incl. the cine T-stop fallback for maxAperture) are never re-implemented here.
+const DELEGATED_SORTS = new Set<SortField>(["weightG", "maxAperture", "length"]);
+
+// Comparable value for a recall-only sort axis. null = data missing.
+function recallComparable(lens: Lens, key: SortField, locale: string): number | null {
+  switch (key) {
+    case "reach":
+      return focalEquiv(lens.focalLengthMax, lens.mount);
+    case "wideEnd":
+      return focalEquiv(lens.focalLengthMin, lens.mount);
+    case "zoomRatio":
+      return lens.focalLengthMax / lens.focalLengthMin;
+    case "price":
+      return pickPriceEntry(lens.pricing, locale)?.entry.price ?? null;
+    case "magnification":
+      return lens.maxMagnification?.value ?? null;
+    case "releaseYear":
+      return lens.releaseYear ?? null;
+    default:
+      return null; // delegated keys never reach here
+  }
 }
 
 function sortRecalled(
@@ -213,16 +279,21 @@ function sortRecalled(
   dir: "asc" | "desc",
   locale: string,
 ): Lens[] {
-  // Standard keys go through the shared sorter unchanged; only `price` needs the
-  // locale-aware price lookup this module adds. Missing prices sort to the end so
-  // a partial dataset never hides priced candidates up top.
-  if (key !== "price") {
-    return sortLenses(lenses, key, dir);
+  if (DELEGATED_SORTS.has(key)) {
+    return sortLenses(lenses, key as SortKey, dir);
   }
-  const priceOf = (lens: Lens) =>
-    pickPriceEntry(lens.pricing, locale)?.entry.price ?? Number.POSITIVE_INFINITY;
+  // Recall-only axes. Missing data always sorts last, regardless of direction —
+  // a lens with no price / magnification / year shouldn't lead either order.
   return [...lenses].sort((a, b) => {
-    const delta = priceOf(a) - priceOf(b);
+    const va = recallComparable(a, key, locale);
+    const vb = recallComparable(b, key, locale);
+    if (va === null) {
+      return vb === null ? 0 : 1;
+    }
+    if (vb === null) {
+      return -1;
+    }
+    const delta = va - vb;
     return dir === "desc" ? -delta : delta;
   });
 }
@@ -240,6 +311,8 @@ export function projectLens(lens: Lens, locale: string): RecalledLens {
     focalEquivMm: [focalEquiv(lens.focalLengthMin, lens.mount), focalEquiv(lens.focalLengthMax, lens.mount)],
     maxAperture: lens.maxAperture ?? null,
     weightG: leadingValue(lens.weightG) ?? null,
+    magnification: lens.maxMagnification?.value ?? null,
+    releaseYear: lens.releaseYear,
     af: lens.af,
     wr: lens.wr,
     ois: lens.ois,
@@ -274,7 +347,7 @@ export function recallLenses(
     }
   }
 
-  const key = constraints.sortBy ?? "focalLength";
+  const key = constraints.sortBy ?? "wideEnd";
   const dir = constraints.sortDir ?? "asc";
   const sortedMatched = sortRecalled(matched, key, dir, locale);
   const sortedMaybe = sortRecalled(
