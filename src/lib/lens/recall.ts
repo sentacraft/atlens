@@ -67,6 +67,13 @@ export interface LensConstraints {
 //
 // Verbatim fields are Pick'd from Lens so their types can't drift; the rest are
 // intentionally derived (flattened price, equiv focal, one official link).
+//
+// This is a scoped, reduced cousin of the app-wide `ResolvedLens` that the
+// 2026-06-01-locale-data-cleanup plan (B 方案) deferred: same idea (single
+// price/link, no translations) but trimmed for the model boundary, and it still
+// locale-picks at point of use (pickPriceEntry / getLensUrl) rather than being a
+// globally resolved type. If that ResolvedLens ever lands, project from it here
+// instead of re-picking. RecalledLens is NOT ResolvedLens.
 export type RecalledLens = Pick<Lens, "id" | "brand" | "series" | "model" | "af" | "ois" | "wr"> & {
   focalNativeMm: [number, number];
   focalEquivMm: [number, number];
