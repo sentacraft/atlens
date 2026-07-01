@@ -14,9 +14,11 @@ export function buildLensTools(mount: Mount, locale: string) {
     queryLenses: tool({
       description:
         "Recall lenses by objective specs for a need-based request. Translate the " +
-        "user's described needs into these parameters. Returns { matches (meet " +
-        "every constraint), maybe (a constrained field has no data for that lens — " +
-        "surface these honestly, never drop them), totalMatched }.",
+        "user's described needs into these parameters. Returns { matches (meet every " +
+        "constraint), maybe (a constrained field has no data for that lens — surface " +
+        "these honestly, never drop them), totalMatched, totalMaybe }. matches/maybe are " +
+        "capped at the top 20 by your sort; if totalMatched is larger, tell the user the " +
+        "total and NARROW the query (add a constraint) — there is no paging.",
       inputSchema: z.object({
         brands: z
           .array(z.string())

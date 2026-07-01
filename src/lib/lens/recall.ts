@@ -110,10 +110,19 @@ export type RecalledLens = Pick<
   officialLink: string | null;
 };
 
+// Cap on how many lenses one recall hands back to the model. The full counts
+// still ride along (totalMatched / totalMaybe) so the model says "159 match,
+// here are the top 20" and narrows rather than pages. Tool output is the
+// dominant context/token cost — and it's re-sent every turn and can bust the
+// prompt cache — so it must stay bounded no matter how broad the query is.
+const MAX_RECALL_RESULTS = 20;
+
 export interface RecallResult {
+  // Capped to the top MAX_RECALL_RESULTS by the active sort.
   matches: RecalledLens[];
   maybe: { lens: RecalledLens; missingFields: string[] }[];
   totalMatched: number;
+  totalMaybe: number;
 }
 
 type Verdict =
@@ -358,12 +367,14 @@ export function recallLenses(
   );
   const missingById = new Map(maybe.map((m) => [m.lens.id, m.missingFields]));
 
+  // Slice before projecting — no point building DTOs for lenses we won't return.
   return {
-    matches: sortedMatched.map((lens) => projectLens(lens, locale)),
-    maybe: sortedMaybe.map((lens) => ({
+    matches: sortedMatched.slice(0, MAX_RECALL_RESULTS).map((lens) => projectLens(lens, locale)),
+    maybe: sortedMaybe.slice(0, MAX_RECALL_RESULTS).map((lens) => ({
       lens: projectLens(lens, locale),
       missingFields: missingById.get(lens.id) ?? [],
     })),
     totalMatched: matched.length,
+    totalMaybe: maybe.length,
   };
 }
