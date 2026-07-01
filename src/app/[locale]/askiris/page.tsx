@@ -1,23 +1,19 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import AskIrisChat from "@/components/askiris/AskIrisChat";
-import { urlSegmentToMount } from "@/lib/mount";
 
-type Params = Promise<{ locale: string; mount: string }>;
+type Params = Promise<{ locale: string }>;
 
 // Experimental AskIris surface: reachable only by direct URL (no nav entry) and
-// kept out of search indexes until it ships for real.
+// kept out of search indexes until it ships for real. Mount is resolved from the
+// user's effective-mount preference client-side, so the route carries no mount
+// segment.
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
 export default async function AskIrisPage({ params }: { params: Params }) {
-  const { locale, mount: mountParam } = await params;
+  const { locale } = await params;
   setRequestLocale(locale);
-  const mount = urlSegmentToMount(mountParam);
-  if (!mount) {
-    notFound();
-  }
-  return <AskIrisChat mount={mount} locale={locale} />;
+  return <AskIrisChat locale={locale} />;
 }
