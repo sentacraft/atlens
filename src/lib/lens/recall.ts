@@ -1,5 +1,5 @@
 import {
-  CROP_FACTOR,
+  getLensUrl,
   isZoom,
   leadingValue,
   lensHasFeature,
@@ -7,6 +7,7 @@ import {
   type FilterFeatureKey,
   type SortKey,
 } from "@/lib/lens/lens";
+import { focalEquiv } from "@/lib/lens/format";
 import { getLensesByMount } from "@/lib/lens/data";
 import { deriveSpecialty } from "@/lib/lens/specialty";
 import { pickPriceEntry } from "@/lib/lens/pricing";
@@ -52,23 +53,30 @@ export interface LensConstraints {
   sortDir?: "asc" | "desc";
 }
 
-export interface RecalledLens {
-  id: string;
-  brand: string;
-  series?: string;
-  model: string;
+// The lens as the model (and, later, the frontend) sees it: a compact,
+// presentation-agnostic projection of the fat `Lens` domain object.
+//
+// This is a deliberate seam. Today it shapes the tool output the LLM reasons
+// over (token economy + not leaking the internal pricing/pipeline schema). It
+// is ALSO the contract a v2 frontend will render lens cards from — letting the
+// model do prose/judgment while the UI renders specs from this data instead of
+// parsing the model's markdown tables. Keep it presentation-agnostic and
+// card-complete (e.g. `id` stays so a card can link to the detail page); when
+// cards land, they consume this, not a re-fetch. See the runtime plan's
+// output-decoupling section.
+//
+// Verbatim fields are Pick'd from Lens so their types can't drift; the rest are
+// intentionally derived (flattened price, equiv focal, one official link).
+export type RecalledLens = Pick<Lens, "id" | "brand" | "series" | "model" | "af" | "ois" | "wr"> & {
   focalNativeMm: [number, number];
   focalEquivMm: [number, number];
   maxAperture: ApertureValue | null;
   weightG: number | null;
-  af: boolean;
-  wr: boolean | "partial";
-  ois: boolean;
   opticalTraits: OpticalTrait[];
   isCine: boolean;
   price: { amount: number; currency: "CNY" | "USD"; condition: "new" | "used" } | null;
   officialLink: string | null;
-}
+};
 
 export interface RecallResult {
   matches: RecalledLens[];
@@ -127,9 +135,11 @@ function evaluate(lens: Lens, c: LensConstraints, locale: string): Verdict {
     }
   }
 
-  const crop = CROP_FACTOR[lens.mount];
-  const equivMin = lens.focalLengthMin * crop;
-  const equivMax = lens.focalLengthMax * crop;
+  // Rounded FF-equivalent mm — the same value the model is shown (focalEquiv),
+  // so what gets filtered matches what gets displayed. The model only ever
+  // queries coarse round focals, so sub-mm precision would be noise.
+  const equivMin = focalEquiv(lens.focalLengthMin, lens.mount);
+  const equivMax = focalEquiv(lens.focalLengthMax, lens.mount);
   if (c.coversFocals?.length) {
     for (const point of c.coversFocals) {
       if (!(equivMin <= point && point <= equivMax)) {
@@ -211,11 +221,7 @@ function sortRecalled(
 }
 
 export function projectLens(lens: Lens, locale: string): RecalledLens {
-  const crop = CROP_FACTOR[lens.mount];
   const selection = pickPriceEntry(lens.pricing, locale);
-  const links = lens.officialLinks;
-  const officialLink =
-    (locale === "zh" ? links?.cn ?? links?.global : links?.global ?? links?.cn) ?? null;
   const { isCine, opticalTraits } = deriveSpecialty(lens);
 
   return {
@@ -224,7 +230,7 @@ export function projectLens(lens: Lens, locale: string): RecalledLens {
     series: lens.series,
     model: lens.model,
     focalNativeMm: [lens.focalLengthMin, lens.focalLengthMax],
-    focalEquivMm: [Math.round(lens.focalLengthMin * crop), Math.round(lens.focalLengthMax * crop)],
+    focalEquivMm: [focalEquiv(lens.focalLengthMin, lens.mount), focalEquiv(lens.focalLengthMax, lens.mount)],
     maxAperture: lens.maxAperture ?? null,
     weightG: leadingValue(lens.weightG) ?? null,
     af: lens.af,
@@ -239,7 +245,7 @@ export function projectLens(lens: Lens, locale: string): RecalledLens {
           condition: selection.condition,
         }
       : null,
-    officialLink,
+    officialLink: getLensUrl(lens, locale) ?? null,
   };
 }
 
