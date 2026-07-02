@@ -18,7 +18,7 @@ import type { Mount } from "@/lib/types";
 // streaming with `npm run preview`, not just `next dev`.
 
 const MOUNT_LABEL: Record<Mount, string> = {
-  X: "Fujifilm X mount (APS-C, 1.5× crop factor)",
+  X: "Fujifilm X mount (APS-C)",
   G: "Fujifilm G mount (medium format)",
 };
 
