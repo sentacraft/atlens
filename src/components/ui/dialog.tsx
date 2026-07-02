@@ -85,8 +85,7 @@ function DialogBackdrop({ className }: { className?: string }) {
 // Narrow className/style to their plain forms: Base UI's Dialog and Drawer popups
 // each accept a state-callback variant keyed to their own (incompatible) popup
 // state, so the union forms can't be forwarded to both. Every caller passes plain
-// values anyway. `render` is omitted so callers can't swap the element and corrupt
-// the fixed portal structure.
+// values anyway.
 type DialogRawPopupProps = Omit<DialogPrimitive.Popup.Props, "render" | "className" | "style"> & {
   className?: string;
   style?: React.CSSProperties;
