@@ -94,3 +94,10 @@ export function useUiHookAttr(): (value: string) => Record<string, string> {
   const enabled = context?.state.testHook ?? false;
   return enabled ? (value) => ({ "data-ui-hook": value }) : () => ({});
 }
+
+// Boolean read of test-hook mode, for components that gate whole subtrees on it
+// (e.g. an inline agent trace) rather than tagging elements with data-ui-hook.
+export function useTestHookEnabled(): boolean {
+  const context = useContext(TestHookContext);
+  return context?.state.testHook ?? false;
+}
