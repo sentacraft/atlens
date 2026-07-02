@@ -6,10 +6,14 @@ import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
 import { projectLens, recallLenses, RECALL_SORT_FIELDS } from "@/lib/lens/recall";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 
-// The Copilot's tools, bound to the current mount + locale (both fixed by the
+// The agent's tools, bound to the current mount + locale (both fixed by the
 // route, never model-supplied). Parameter semantics live in `.describe()` so the
 // model learns them from the tool schema, not the system prompt.
-export function buildLensTools(mount: Mount, locale: string) {
+export function buildLensTools(
+  mount: Mount,
+  locale: string,
+  tBrand: (brand: string) => string,
+) {
   return {
     queryLenses: tool({
       description:
@@ -111,7 +115,7 @@ export function buildLensTools(mount: Mount, locale: string) {
           ),
         sortDir: z.enum(["asc", "desc"]).optional().describe("asc (default) = smallest first."),
       }),
-      execute: async (constraints) => recallLenses(mount, locale, constraints),
+      execute: async (constraints) => recallLenses(mount, locale, constraints, tBrand),
     }),
 
     searchLensByName: tool({
@@ -125,7 +129,7 @@ export function buildLensTools(mount: Mount, locale: string) {
       execute: async ({ query, limit }) => {
         const index = buildLensSearchIndex(getLensesByMount(mount, locale));
         const results = searchLensIndex(index, query, limit ?? 8);
-        return { results: results.map((lens) => projectLens(lens, locale)) };
+        return { results: results.map((lens) => projectLens(lens, locale, tBrand)) };
       },
     }),
   };

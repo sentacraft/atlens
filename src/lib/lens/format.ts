@@ -8,23 +8,6 @@ import type {
 } from "@/lib/types";
 import { SPEC_NA } from "@/lib/types";
 import { CROP_FACTOR } from "@/lib/lens/lens";
-import enMessages from "@/messages/en.json";
-import zhMessages from "@/messages/zh.json";
-
-const BRAND_NAMES: Record<string, Record<string, string>> = {
-  en: enMessages.Brands,
-  zh: zhMessages.Brands,
-};
-
-// Locale display name for a brand key (`lens.brand`), resolved at the data layer
-// so a non-React consumer (the Copilot recall projection) doesn't hand the model
-// a raw key like "sgimage" and let it invent the localized name (it guesses e.g.
-// "SGIMAGE" for what is actually 深光). Mirrors the component-side tBrand(), minus
-// next-intl ICU — brand names are flat strings. See the 2026-06-01
-// locale-data-cleanup plan (显示派生层 · 数据层查表派生).
-export function brandName(brandKey: string, locale: string): string {
-  return BRAND_NAMES[locale]?.[brandKey] ?? BRAND_NAMES.en[brandKey] ?? brandKey;
-}
 
 export function oisDisplay(
   ois: boolean,

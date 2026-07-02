@@ -7,22 +7,17 @@ import {
   type FilterFeatureKey,
   type SortKey,
 } from "@/lib/lens/lens";
-import { brandName, focalEquiv } from "@/lib/lens/format";
+import { focalEquiv } from "@/lib/lens/format";
 import { getLensesByMount } from "@/lib/lens/data";
 import { deriveSpecialty } from "@/lib/lens/specialty";
 import { pickPriceEntry } from "@/lib/lens/pricing";
 import type { ApertureValue, Lens, Mount, OpticalTrait } from "@/lib/types";
 
-// The Copilot recall layer — distinct from the UX filter layer (filterLenses /
-// FilterState) and the lexical layer (searchLensIndex). It takes objective
-// constraints produced by the LLM and returns a three-way partition. It is the
-// only recall path that supports numeric thresholds (weight / aperture / price)
-// and semantic focal predicates; the UX filter is categorical-only.
+// Agent recall: LLM constraints → matches / maybe / excluded. Unlike the UX
+// filter (filterLenses), it supports numeric thresholds and focal predicates.
 
-// Optical traits whose rendering is unusual enough that they should never
-// surface for a generic query — only when the user explicitly asks by naming
-// one in `opticalTraits`. Macro is deliberately absent: a macro lens renders
-// normally and is a valid everyday pick.
+// Specialty traits hidden from generic queries; surface only when named in
+// `opticalTraits`. Macro is absent — a macro lens is a valid everyday pick.
 const SPECIALTY_TRAITS: readonly OpticalTrait[] = [
   "fisheye",
   "tilt",
@@ -31,21 +26,18 @@ const SPECIALTY_TRAITS: readonly OpticalTrait[] = [
   "probe",
 ];
 
-// Recall-local sort axes — deliberately NOT the UI's SORT_KEYS. Recall needs
-// unambiguous focal ends (`reach` / `wideEnd`, vs the UI's `focalLength` whose
-// end flips with direction) plus axes the browse UI has no use for
-// (magnification, zoomRatio, releaseYear). Keeping them here avoids polluting
-// the shared sorter.
+// Recall-local sort axes, NOT the UI's SORT_KEYS — recall needs unambiguous focal
+// ends (reach/wideEnd) plus axes the browse UI lacks (magnification, zoomRatio).
 export const RECALL_SORT_FIELDS = [
-  "reach", // longest focal reach — tele end, FF-equiv ("越长越好")
-  "wideEnd", // widest focal — wide end, FF-equiv ("越广越好")
-  "weightG", // lightest
-  "maxAperture", // fastest — widest max aperture
-  "length", // most compact
-  "price", // cheapest in the locale's currency
-  "magnification", // most magnifying — close-up / macro
-  "zoomRatio", // most versatile — tele/wide span
-  "releaseYear", // newest
+  "reach", // longest focal reach (tele end)
+  "wideEnd", // widest focal (wide end)
+  "weightG",
+  "maxAperture",
+  "length",
+  "price",
+  "magnification",
+  "zoomRatio",
+  "releaseYear",
 ] as const;
 export type SortField = (typeof RECALL_SORT_FIELDS)[number];
 
@@ -73,33 +65,12 @@ export interface LensConstraints {
   sortDir?: "asc" | "desc";
 }
 
-// The lens as the model (and, later, the frontend) sees it: a compact,
-// presentation-agnostic projection of the fat `Lens` domain object.
-//
-// This is a deliberate seam. Today it shapes the tool output the LLM reasons
-// over (token economy + not leaking the internal pricing/pipeline schema). It
-// is ALSO the contract a v2 frontend will render lens cards from — letting the
-// model do prose/judgment while the UI renders specs from this data instead of
-// parsing the model's markdown tables. Keep it presentation-agnostic and
-// card-complete (e.g. `id` stays so a card can link to the detail page); when
-// cards land, they consume this, not a re-fetch. See the runtime plan's
-// output-decoupling section.
-//
-// Verbatim fields are Pick'd from Lens so their types can't drift; the rest are
-// intentionally derived (flattened price, equiv focal, one official link).
-//
-// This is a scoped, reduced cousin of the app-wide `ResolvedLens` that the
-// 2026-06-01-locale-data-cleanup plan (B 方案) deferred: same idea (single
-// price/link, no translations) but trimmed for the model boundary, and it still
-// locale-picks at point of use (pickPriceEntry / getLensUrl) rather than being a
-// globally resolved type. If that ResolvedLens ever lands, project from it here
-// instead of re-picking. RecalledLens is NOT ResolvedLens.
+// Compact, locale-resolved projection of Lens for tool output.
 export type RecalledLens = Pick<
   Lens,
   "id" | "series" | "model" | "af" | "ois" | "wr" | "releaseYear"
 > & {
-  // Locale display name (resolved via brandName), NOT the raw brand key — the
-  // model writes user-facing prose and can't be trusted to localize the key.
+  // Resolved display name, not the raw brand key.
   brand: string;
   focalNativeMm: [number, number];
   focalEquivMm: [number, number];
@@ -113,11 +84,7 @@ export type RecalledLens = Pick<
   officialLink: string | null;
 };
 
-// Cap on how many lenses one recall hands back to the model. The full counts
-// still ride along (totalMatched / totalMaybe) so the model says "159 match,
-// here are the top 20" and narrows rather than pages. Tool output is the
-// dominant context/token cost — and it's re-sent every turn and can bust the
-// prompt cache — so it must stay bounded no matter how broad the query is.
+// Cap per recall; totalMatched/totalMaybe still report the full counts.
 const MAX_RECALL_RESULTS = 20;
 
 export interface RecallResult {
@@ -179,9 +146,7 @@ function evaluate(lens: Lens, c: LensConstraints, locale: string): Verdict {
     }
   }
 
-  // Rounded FF-equivalent mm — the same value the model is shown (focalEquiv),
-  // so what gets filtered matches what gets displayed. The model only ever
-  // queries coarse round focals, so sub-mm precision would be noise.
+  // Rounded FF-equiv mm — the same value the model is shown, so filter matches display.
   const equivMin = focalEquiv(lens.focalLengthMin, lens.mount);
   const equivMax = focalEquiv(lens.focalLengthMax, lens.mount);
   if (c.coversFocals?.length) {
@@ -261,8 +226,7 @@ function apertureEnds(value: ApertureValue): [number, number] {
   return Array.isArray(value) ? [value[0], value[1]] : [value, value];
 }
 
-// Keys recall borrows verbatim from the shared UI sorter, so their comparators
-// (incl. the cine T-stop fallback for maxAperture) are never re-implemented here.
+// Keys delegated to the shared UI sorter; comparators reused, not re-implemented.
 const DELEGATED_SORTS = new Set<SortField>(["weightG", "maxAperture", "length"]);
 
 // Comparable value for a recall-only sort axis. null = data missing.
@@ -294,8 +258,7 @@ function sortRecalled(
   if (DELEGATED_SORTS.has(key)) {
     return sortLenses(lenses, key as SortKey, dir);
   }
-  // Recall-only axes. Missing data always sorts last, regardless of direction —
-  // a lens with no price / magnification / year shouldn't lead either order.
+  // Recall-only axes; missing data sorts last regardless of direction.
   return [...lenses].sort((a, b) => {
     const va = recallComparable(a, key, locale);
     const vb = recallComparable(b, key, locale);
@@ -310,13 +273,17 @@ function sortRecalled(
   });
 }
 
-export function projectLens(lens: Lens, locale: string): RecalledLens {
+export function projectLens(
+  lens: Lens,
+  locale: string,
+  tBrand: (brand: string) => string,
+): RecalledLens {
   const selection = pickPriceEntry(lens.pricing, locale);
   const { isCine, opticalTraits } = deriveSpecialty(lens);
 
   return {
     id: lens.id,
-    brand: brandName(lens.brand, locale),
+    brand: tBrand(lens.brand),
     series: lens.series,
     model: lens.model,
     focalNativeMm: [lens.focalLengthMin, lens.focalLengthMax],
@@ -345,6 +312,7 @@ export function recallLenses(
   mount: Mount,
   locale: string,
   constraints: LensConstraints,
+  tBrand: (brand: string) => string,
 ): RecallResult {
   const lenses = getLensesByMount(mount, locale);
   const matched: Lens[] = [];
@@ -370,11 +338,12 @@ export function recallLenses(
   );
   const missingById = new Map(maybe.map((m) => [m.lens.id, m.missingFields]));
 
-  // Slice before projecting — no point building DTOs for lenses we won't return.
   return {
-    matches: sortedMatched.slice(0, MAX_RECALL_RESULTS).map((lens) => projectLens(lens, locale)),
+    matches: sortedMatched
+      .slice(0, MAX_RECALL_RESULTS)
+      .map((lens) => projectLens(lens, locale, tBrand)),
     maybe: sortedMaybe.slice(0, MAX_RECALL_RESULTS).map((lens) => ({
-      lens: projectLens(lens, locale),
+      lens: projectLens(lens, locale, tBrand),
       missingFields: missingById.get(lens.id) ?? [],
     })),
     totalMatched: matched.length,

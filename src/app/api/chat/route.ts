@@ -6,19 +6,20 @@ import {
   toUIMessageStream,
   type UIMessage,
 } from "ai";
+import { getTranslations } from "next-intl/server";
 import { agentModel, agentProviderOptions } from "@/lib/ai/model";
 import { buildLensTools } from "@/lib/ai/tools";
 import { routing } from "@/i18n/routing";
 import type { Mount } from "@/lib/types";
 
-// The Copilot ("AskIris") streaming endpoint. mount + locale are supplied by the
-// client (both fixed by the page's route), so the agent is scoped to one mount
-// and answers in one language. Runs on the Cloudflare workerd runtime via
-// OpenNext — validate streaming with `npm run preview`, not just `next dev`.
+// The AskIris streaming endpoint. mount + locale are supplied by the client (both
+// fixed by the page's route), so the agent is scoped to one mount and answers in
+// one language. Runs on the Cloudflare workerd runtime via OpenNext — validate
+// streaming with `npm run preview`, not just `next dev`.
 
 const MOUNT_LABEL: Record<Mount, string> = {
-  X: "Fujifilm X-mount (APS-C, 1.5× crop factor)",
-  G: "Fujifilm GFX / G-mount (medium format)",
+  X: "Fujifilm X mount (APS-C, 1.5× crop factor)",
+  G: "Fujifilm G mount (medium format)",
 };
 
 function systemPrompt(mount: Mount, locale: string): string {
@@ -57,14 +58,14 @@ export async function POST(req: Request) {
     return Response.json({ error: "invalid 'locale'" }, { status: 400 });
   }
 
+  const tBrand = await getTranslations({ locale, namespace: "Brands" });
+
   const result = streamText({
     model: agentModel,
     providerOptions: agentProviderOptions,
     system: systemPrompt(mount, locale),
     messages: await convertToModelMessages(messages),
-    tools: buildLensTools(mount, locale),
-    // Multi-step ReAct: the model may clarify, call tools, and answer across
-    // several steps. Capped to prevent a runaway loop.
+    tools: buildLensTools(mount, locale, tBrand),
     stopWhen: stepCountIs(8),
   });
 
