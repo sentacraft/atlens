@@ -1,3 +1,5 @@
+import type { Mount } from "@/lib/mount";
+
 /**
  * Sentinel value for a field where the concept does not apply to this lens
  * (as opposed to "data missing"). Examples:
@@ -268,7 +270,7 @@ export type FieldNoteKey = (typeof FIELD_NOTE_KEYS)[number];
  * The same physical lens design from a third-party brand may exist for
  * multiple systems; in this catalogue each mount is a separate record.
  */
-export type Mount = "X" | "G";
+export type { Mount };
 
 /**
  * One retail source's price/purchase observation for a lens in one market.
