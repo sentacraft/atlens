@@ -267,8 +267,12 @@ export type FieldNoteKey = (typeof FIELD_NOTE_KEYS)[number];
  *
  * The same physical lens design from a third-party brand may exist for
  * multiple systems; in this catalogue each mount is a separate record.
+ *
+ * MOUNTS is the single source (display order); Mount derives from it, so adding
+ * a mount is a one-line change here.
  */
-export type Mount = "X" | "G";
+export const MOUNTS = ["X", "G"] as const;
+export type Mount = (typeof MOUNTS)[number];
 
 /**
  * One retail source's price/purchase observation for a lens in one market.

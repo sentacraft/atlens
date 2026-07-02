@@ -2,10 +2,9 @@ import type { Mount } from "@/lib/types";
 
 export type MountSegment = "x" | "gfx";
 
-// Canonical list of all mounts, in display order. The single source to iterate
-// over when a surface needs to enumerate mounts (sitemap, param validation), so
-// adding a mount is a one-line change here rather than a hunt across files.
-export const MOUNTS: readonly Mount[] = ["X", "G"];
+// MOUNTS and the Mount type are defined in @/lib/types (single source);
+// re-exported here so mount consumers can pull the list from the mount module.
+export { MOUNTS } from "@/lib/types";
 
 export function urlSegmentToMount(seg: string | null | undefined): Mount | null {
   if (seg === "x") {
