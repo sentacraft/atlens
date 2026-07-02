@@ -6,7 +6,7 @@ import {
   toUIMessageStream,
   type UIMessage,
 } from "ai";
-import { copilotModel, copilotProviderOptions } from "@/lib/ai/model";
+import { agentModel, agentProviderOptions } from "@/lib/ai/model";
 import { buildLensTools } from "@/lib/ai/tools";
 import { routing } from "@/i18n/routing";
 import type { Mount } from "@/lib/types";
@@ -31,6 +31,10 @@ function systemPrompt(mount: Mount, locale: string): string {
     `Turn the user's needs into tool calls. The mount and the user's region are`,
     `fixed by context — don't ask about them.`,
     ``,
+    `When a request is underspecified, assume a sensible reading and recall on it`,
+    `— but name the assumption and invite a correction (e.g. "I read 'portraits'`,
+    `as ~85mm — want wider or longer?"), never presenting it as the only reading.`,
+    ``,
     `Reply in ${language}; if the user writes in another language, match theirs.`,
   ].join("\n");
 }
@@ -54,8 +58,8 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: copilotModel,
-    providerOptions: copilotProviderOptions,
+    model: agentModel,
+    providerOptions: agentProviderOptions,
     system: systemPrompt(mount, locale),
     messages: await convertToModelMessages(messages),
     tools: buildLensTools(mount, locale),
