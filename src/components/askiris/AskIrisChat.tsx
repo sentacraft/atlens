@@ -68,13 +68,26 @@ export default function AskIrisChat({ locale }: { locale: string }) {
 
   const isBusy = status === "submitted" || status === "streaming";
 
-  // Keep the newest message in view as it streams.
-  const logRef = useRef<HTMLDivElement>(null);
+  // Follow the newest content as it streams, but only while the user is pinned to
+  // the bottom — scrolling up to read mid-stream must not get yanked back down.
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const pinnedRef = useRef(true);
+
+  function handleScroll() {
+    const el = scrollRef.current;
+    if (!el) {
+      return;
+    }
+    pinnedRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
+  }
+
   useEffect(() => {
-    logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
+    if (pinnedRef.current) {
+      scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
+    }
   }, [messages]);
 
-  function handleSubmit(event: React.FormEvent) {
+  function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const text = input.trim();
     if (!text || isBusy) {
@@ -93,7 +106,11 @@ export default function AskIrisChat({ locale }: { locale: string }) {
         </p>
       </header>
 
-      <div ref={logRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto pb-4">
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="min-h-0 flex-1 space-y-4 overflow-y-auto pb-4"
+      >
         {messages.map((message) => {
           const isUser = message.role === "user";
           return (
