@@ -115,7 +115,7 @@ export function buildLensTools(
           ),
         sortDir: z.enum(["asc", "desc"]).optional().describe("asc (default) = smallest first."),
       }),
-      execute: async (constraints) => recallLenses(mount, locale, constraints, tBrand),
+      execute: (constraints) => recallLenses(mount, locale, constraints, tBrand),
     }),
 
     searchLensByName: tool({
@@ -126,7 +126,7 @@ export function buildLensTools(
         query: z.string().describe("The model or brand text the user typed."),
         limit: z.number().optional().describe("Max results (default 8)."),
       }),
-      execute: async ({ query, limit }) => {
+      execute: ({ query, limit }) => {
         const index = buildLensSearchIndex(getLensesByMount(mount, locale));
         const results = searchLensIndex(index, query, limit ?? 8);
         return { results: results.map((lens) => projectLens(lens, locale, tBrand)) };
