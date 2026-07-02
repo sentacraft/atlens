@@ -6,9 +6,11 @@ import {
   toUIMessageStream,
   type UIMessage,
 } from "ai";
+import { z } from "zod";
 import { getTranslations } from "next-intl/server";
 import { agentModel, agentProviderOptions } from "@/lib/ai/model";
 import { buildLensTools } from "@/lib/ai/tools";
+import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
 import type { Mount } from "@/lib/types";
 
@@ -40,23 +42,26 @@ function systemPrompt(mount: Mount, locale: string): string {
   ].join("\n");
 }
 
+// Wire contract for POST /api/chat. mount/locale draw their allowed values from
+// the same sources the rest of the app does (MOUNTS, routing.locales), so adding
+// a mount or locale can't drift this route out of sync. messages is the SDK's own
+// shape — validated as an array, its elements trusted to the transport.
+const chatRequestSchema = z.object({
+  messages: z.array(z.custom<UIMessage>()),
+  mount: z.enum(MOUNTS),
+  locale: z.enum(routing.locales),
+});
+
 export async function POST(req: Request) {
   if (!process.env.DEEPSEEK_API_KEY) {
     return Response.json({ error: "DEEPSEEK_API_KEY is not set" }, { status: 500 });
   }
 
-  const {
-    messages,
-    mount,
-    locale,
-  }: { messages: UIMessage[]; mount: Mount; locale: string } = await req.json();
-
-  if (mount !== "X" && mount !== "G") {
-    return Response.json({ error: "invalid 'mount' (expected 'X' or 'G')" }, { status: 400 });
+  const parsed = chatRequestSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return Response.json({ error: z.prettifyError(parsed.error) }, { status: 400 });
   }
-  if (!(routing.locales as readonly string[]).includes(locale)) {
-    return Response.json({ error: "invalid 'locale'" }, { status: 400 });
-  }
+  const { messages, mount, locale } = parsed.data;
 
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
 
