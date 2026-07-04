@@ -15,11 +15,11 @@
     "parts": [
       {
         "type": "text",
-        "text": "好的，我来帮你找适合富士 X 卡口（APS-C）野外拍摄野生动物的自动对焦镜头。野生动物通常需要较长的焦距，我先查询一下。"
+        "text": "好的，我来帮你筛选富士 X 卡口、适合野外野生动物拍摄的自动对焦镜头。野外拍野生动物通常需要较长的焦距，我先查一下有哪些长焦选项。"
       },
       {
         "type": "tool-queryLenses",
-        "toolCallId": "call_00_INZVbWn1w1UagFQzbsr81478",
+        "toolCallId": "call_00_LyXU2mwDTzRQalzSIgIr9833",
         "state": "output-available",
         "input": {
           "type": "prime",
@@ -101,7 +101,776 @@
       },
       {
         "type": "tool-queryLenses",
-        "toolCallId": "call_01_YyJsPqfa0yLQIFebME7J5498",
+        "toolCallId": "call_01_G2WDpMnmGrTaeydD4ovZ3953",
+        "state": "output-available",
+        "input": {
+          "type": "zoom",
+          "focus": "auto",
+          "coversFocals": [
+            200
+          ]
+        },
+        "output": {
+          "matches": [
+            {
+              "id": "sigma-contemporary-16-300mm-f35-67-dc-os-x",
+              "mount": "X",
+              "name": "适马 16-300mm F3.5-6.7 DC OS | Contemporary",
+              "focalNativeMm": [
+                16,
+                300
+              ],
+              "focalEquivMm": [
+                24,
+                450
+              ],
+              "angleOfView": [
+                83.2,
+                5.4
+              ],
+              "angleOfViewCalc": [
+                83,
+                5.4
+              ],
+              "maxAperture": [
+                3.5,
+                6.7
+              ],
+              "minAperture": [
+                22,
+                45
+              ],
+              "apertureBladeCount": 9,
+              "apertureRing": false,
+              "af": true,
+              "focusMotor": "HLA",
+              "internalFocusing": true,
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 17,
+                  "teleCm": 105
+                }
+              },
+              "magnification": 0.5,
+              "ois": true,
+              "oisStops": 6,
+              "wr": "partial",
+              "powerZoom": false,
+              "internalZoom": false,
+              "weightG": 615,
+              "diameterMm": 73.8,
+              "length": {
+                "mm": 123.7
+              },
+              "filterMm": 67,
+              "lensConfiguration": {
+                "groups": 14,
+                "elements": 20,
+                "aspherical": 4,
+                "sld": 4,
+                "fld": 1,
+                "sourceText": "20 elements in 14 groups (1 FLD, 4 SLD, 4 aspherical elements)"
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2025,
+              "compatibleMounts": [
+                "L-Mount",
+                "Canon RF",
+                "Fujifilm X",
+                "Sony E"
+              ],
+              "accessories": [
+                "镜头袋",
+                "遮光罩 LH706-03",
+                "前镜头盖 LCF-67 IV",
+                "后镜头盖 LCR III"
+              ],
+              "fieldNotes": {
+                "wr": "仅防尘防溅；并非完整密封。"
+              },
+              "price": {
+                "amount": 4110,
+                "currency": "CNY",
+                "condition": "new"
+              },
+              "officialLink": "http://www.sigma-photo.com.cn/product/detail?id=334"
+            },
+            {
+              "id": "fujifilm-xf-18-135mmf35-56-r-lm-ois-wr-x",
+              "mount": "X",
+              "name": "富士 XF 18-135mm F3.5-5.6 R LM OIS WR",
+              "focalNativeMm": [
+                18,
+                135
+              ],
+              "focalEquivMm": [
+                27,
+                203
+              ],
+              "angleOfView": [
+                76.5,
+                12
+              ],
+              "angleOfViewCalc": [
+                76.3,
+                12
+              ],
+              "maxAperture": [
+                3.5,
+                5.6
+              ],
+              "minAperture": 22,
+              "apertureBladeCount": 7,
+              "apertureRing": true,
+              "af": true,
+              "focusMotor": "LM",
+              "internalFocusing": true,
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 60
+                },
+                "macro": {
+                  "cm": 45
+                }
+              },
+              "magnification": 0.27,
+              "ois": true,
+              "wr": true,
+              "powerZoom": false,
+              "internalZoom": false,
+              "weightG": 490,
+              "diameterMm": 75.7,
+              "length": {
+                "mm": 97.8,
+                "variants": {
+                  "wide": 97.8,
+                  "tele": 158
+                }
+              },
+              "filterMm": 67,
+              "lensConfiguration": {
+                "groups": 12,
+                "elements": 16,
+                "aspherical": 4,
+                "ed": 2,
+                "sourceText": "16 elements in 12 groups (4 aspherical elements and 2 anomalous dispersion lenses)"
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2014,
+              "fieldNotes": {},
+              "price": {
+                "amount": 2700,
+                "currency": "CNY",
+                "condition": "used"
+              },
+              "officialLink": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf18-135mmf35-56-r-lm-ois-wr/"
+            },
+            {
+              "id": "tamron-18-300mm-f35-63-di-iii-a-vc-vxd-x",
+              "mount": "X",
+              "name": "腾龙 18-300mm F/3.5-6.3 Di III-A VC VXD",
+              "focalNativeMm": [
+                18,
+                300
+              ],
+              "focalEquivMm": [
+                27,
+                450
+              ],
+              "angleOfView": [
+                77.4,
+                5.5
+              ],
+              "angleOfViewCalc": [
+                76.3,
+                5.4
+              ],
+              "maxAperture": [
+                3.5,
+                6.3
+              ],
+              "minAperture": [
+                22,
+                40
+              ],
+              "apertureBladeCount": 7,
+              "apertureRing": false,
+              "af": true,
+              "focusMotor": "VXD",
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 15,
+                  "teleCm": 99
+                }
+              },
+              "magnification": 0.5,
+              "ois": true,
+              "wr": "partial",
+              "powerZoom": false,
+              "internalZoom": false,
+              "weightG": 620,
+              "diameterMm": 75.5,
+              "length": {
+                "mm": 125.8
+              },
+              "filterMm": 67,
+              "lensConfiguration": {
+                "groups": 15,
+                "elements": 19
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2021,
+              "compatibleMounts": [
+                "Sony E",
+                "Nikon Z",
+                "Fujifilm X",
+                "Canon RF"
+              ],
+              "accessories": [
+                "花瓣形遮光罩",
+                "前镜头盖",
+                "后镜头盖"
+              ],
+              "fieldNotes": {
+                "wr": "防潮结构：镜筒各处的防渗密封有助于在户外拍摄时保护设备。"
+              },
+              "price": {
+                "amount": 3490,
+                "currency": "CNY",
+                "condition": "new"
+              },
+              "officialLink": "https://www.tamron.com.cn/cameralens/products/b061/index.shtml"
+            },
+            {
+              "id": "fujifilm-xc-50-230mmf45-67-ois-ii-x",
+              "mount": "X",
+              "name": "富士 XC 50-230mm F4.5-6.7 OIS II",
+              "generation": 2,
+              "focalNativeMm": [
+                50,
+                230
+              ],
+              "focalEquivMm": [
+                75,
+                345
+              ],
+              "angleOfView": [
+                31.7,
+                7.1
+              ],
+              "angleOfViewCalc": [
+                31.6,
+                7
+              ],
+              "maxAperture": [
+                4.5,
+                6.7
+              ],
+              "minAperture": 22,
+              "apertureBladeCount": 7,
+              "apertureRing": false,
+              "af": true,
+              "focusMotor": "High-Precision Motor",
+              "internalFocusing": true,
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 110
+                }
+              },
+              "magnification": 0.2,
+              "ois": true,
+              "oisStops": 3.5,
+              "wr": false,
+              "powerZoom": false,
+              "internalZoom": false,
+              "weightG": 375,
+              "diameterMm": 69.5,
+              "length": {
+                "mm": 111,
+                "variants": {
+                  "wide": 111,
+                  "tele": 177
+                }
+              },
+              "filterMm": 58,
+              "lensConfiguration": {
+                "groups": 10,
+                "elements": 13,
+                "aspherical": 1,
+                "ed": 1,
+                "sourceText": "13 elements in 10 groups (includes 1 aspherical and 1 extra low dispersion elements)"
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2015,
+              "accessories": [
+                "前镜头盖",
+                "遮光罩"
+              ],
+              "fieldNotes": {
+                "focusMotor": "Fujifilm 早期 XF / XC 镜头所用高精度直流马达的营销名称。"
+              },
+              "price": {
+                "amount": 1225,
+                "currency": "CNY",
+                "condition": "used"
+              },
+              "officialLink": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc50-230mmf45-67-ois-ii/"
+            },
+            {
+              "id": "fujifilm-xc-50-230mmf45-67-ois-x",
+              "mount": "X",
+              "name": "富士 XC 50-230mm F4.5-6.7 OIS",
+              "focalNativeMm": [
+                50,
+                230
+              ],
+              "focalEquivMm": [
+                75,
+                345
+              ],
+              "angleOfView": [
+                31.7,
+                7.1
+              ],
+              "angleOfViewCalc": [
+                31.6,
+                7
+              ],
+              "maxAperture": [
+                4.5,
+                6.7
+              ],
+              "minAperture": 22,
+              "apertureBladeCount": 7,
+              "apertureRing": false,
+              "af": true,
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 110
+                }
+              },
+              "magnification": 0.2,
+              "ois": true,
+              "wr": false,
+              "powerZoom": false,
+              "internalZoom": false,
+              "weightG": 375,
+              "diameterMm": 69.5,
+              "length": {
+                "mm": 177,
+                "variants": {
+                  "wide": 111,
+                  "tele": 177
+                }
+              },
+              "filterMm": 58,
+              "lensConfiguration": {
+                "groups": 10,
+                "elements": 13,
+                "aspherical": 1,
+                "ed": 1,
+                "sourceText": "13 elements in 10 groups (includes 1 aspherical element, 1 extra low dispersion element)"
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2013,
+              "compatibleMounts": [
+                "Fujifilm X"
+              ],
+              "fieldNotes": {},
+              "price": null,
+              "officialLink": "https://www.fujifilm-x.com/zh-cn/products/lenses/xc50-230mmf45-67-ois/"
+            },
+            {
+              "id": "fujifilm-xf-50-140mmf28-r-lm-ois-wr-x",
+              "mount": "X",
+              "name": "富士 XF 50-140mm F2.8 R LM OIS WR",
+              "focalNativeMm": [
+                50,
+                140
+              ],
+              "focalEquivMm": [
+                75,
+                210
+              ],
+              "angleOfView": [
+                31.7,
+                11.6
+              ],
+              "angleOfViewCalc": [
+                31.6,
+                11.5
+              ],
+              "maxAperture": 2.8,
+              "minAperture": 22,
+              "apertureBladeCount": 7,
+              "apertureRing": true,
+              "af": true,
+              "focusMotor": "Triple Linear Motor",
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 100
+                }
+              },
+              "magnification": 0.12,
+              "ois": true,
+              "oisStops": 5,
+              "wr": true,
+              "powerZoom": false,
+              "internalZoom": true,
+              "weightG": 995,
+              "diameterMm": 82.9,
+              "length": {
+                "mm": 175.9,
+                "variants": {
+                  "wide": 175.9,
+                  "tele": 175.9
+                }
+              },
+              "filterMm": 72,
+              "lensConfiguration": {
+                "groups": 16,
+                "elements": 23,
+                "ed": 5,
+                "superEd": 1,
+                "sourceText": "23 elements in 16 groups (includes 5 extra low dispersion elements and 1 super extra low dispersion element)"
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2014,
+              "accessories": [
+                "前镜头盖",
+                "后镜头盖",
+                "遮光罩",
+                "脚架底座",
+                "肩带",
+                "包裹布"
+              ],
+              "fieldNotes": {},
+              "price": {
+                "amount": 9990,
+                "currency": "CNY",
+                "condition": "new"
+              },
+              "officialLink": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf50-140mmf28-r-lm-ois-wr/"
+            },
+            {
+              "id": "fujifilm-xf-55-200mmf35-48-r-lm-ois-x",
+              "mount": "X",
+              "name": "富士 XF 55-200mm F3.5-4.8 R LM OIS",
+              "focalNativeMm": [
+                55,
+                200
+              ],
+              "focalEquivMm": [
+                83,
+                300
+              ],
+              "angleOfView": [
+                29,
+                8.1
+              ],
+              "angleOfViewCalc": [
+                28.9,
+                8.1
+              ],
+              "maxAperture": [
+                3.5,
+                4.8
+              ],
+              "minAperture": 22,
+              "apertureBladeCount": 7,
+              "apertureRing": true,
+              "af": true,
+              "focusMotor": "LM",
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 110
+                }
+              },
+              "magnification": 0.18,
+              "ois": true,
+              "oisStops": 5,
+              "wr": false,
+              "powerZoom": false,
+              "internalZoom": false,
+              "weightG": 580,
+              "diameterMm": 75,
+              "length": {
+                "mm": 118,
+                "variants": {
+                  "wide": 118,
+                  "tele": 177
+                }
+              },
+              "filterMm": 62,
+              "lensConfiguration": {
+                "groups": 10,
+                "elements": 14,
+                "aspherical": 1,
+                "ed": 1,
+                "superEd": 1,
+                "sourceText": "14 elements in 10 groups (includes 1 aspherical, 1 ED and 1 super ED elements)"
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2013,
+              "fieldNotes": {},
+              "price": {
+                "amount": 4370,
+                "currency": "CNY",
+                "condition": "new"
+              },
+              "officialLink": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf55-200mmf35-48-r-lm-ois/"
+            },
+            {
+              "id": "fujifilm-xf-70-300mmf4-56-r-lm-ois-wr-x",
+              "mount": "X",
+              "name": "富士 XF 70-300mm F4-5.6 R LM OIS WR",
+              "focalNativeMm": [
+                70,
+                300
+              ],
+              "focalEquivMm": [
+                105,
+                450
+              ],
+              "angleOfView": [
+                22.9,
+                5.4
+              ],
+              "angleOfViewCalc": [
+                22.9,
+                5.4
+              ],
+              "maxAperture": [
+                4,
+                5.6
+              ],
+              "minAperture": 22,
+              "apertureBladeCount": 9,
+              "apertureRing": true,
+              "af": true,
+              "focusMotor": "LM",
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 83
+                }
+              },
+              "magnification": 0.33,
+              "ois": true,
+              "oisStops": 5.5,
+              "wr": true,
+              "powerZoom": false,
+              "internalZoom": false,
+              "weightG": 580,
+              "diameterMm": 75,
+              "length": {
+                "mm": 132.5,
+                "variants": {
+                  "wide": 132.5,
+                  "tele": 205.5
+                }
+              },
+              "filterMm": 67,
+              "lensConfiguration": {
+                "groups": 12,
+                "elements": 17,
+                "aspherical": 1,
+                "ed": 2,
+                "sourceText": "17 elements in 12 groups (includes 1 aspherical and 2 ED elements)"
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2021,
+              "fieldNotes": {},
+              "price": {
+                "amount": 5390,
+                "currency": "CNY",
+                "condition": "new"
+              },
+              "officialLink": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf70-300mmf4-56-r-lm-ois-wr/"
+            },
+            {
+              "id": "fujifilm-xf-100-400mmf45-56-r-lm-ois-wr-x",
+              "mount": "X",
+              "name": "富士 XF 100-400mm F4.5-5.6 R LM OIS WR",
+              "focalNativeMm": [
+                100,
+                400
+              ],
+              "focalEquivMm": [
+                150,
+                600
+              ],
+              "angleOfView": [
+                16.2,
+                4.1
+              ],
+              "angleOfViewCalc": [
+                16.1,
+                4.1
+              ],
+              "maxAperture": [
+                4.5,
+                5.6
+              ],
+              "minAperture": 22,
+              "apertureBladeCount": 9,
+              "apertureRing": true,
+              "af": true,
+              "focusMotor": "LM",
+              "internalFocusing": true,
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 175
+                }
+              },
+              "magnification": 0.19,
+              "ois": true,
+              "wr": true,
+              "powerZoom": false,
+              "internalZoom": false,
+              "weightG": 1375,
+              "diameterMm": 94.8,
+              "length": {
+                "mm": 210.5,
+                "variants": {
+                  "wide": 210.5,
+                  "tele": 270
+                }
+              },
+              "filterMm": 77,
+              "lensConfiguration": {
+                "groups": 14,
+                "elements": 21,
+                "ed": 5,
+                "superEd": 1,
+                "sourceText": "21 elements 14 groups (includes 5 extra low dispersion elements and 1 super extra low dispersion element)"
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2016,
+              "fieldNotes": {},
+              "price": {
+                "amount": 12600,
+                "currency": "CNY",
+                "condition": "new"
+              },
+              "officialLink": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf100-400mmf45-56-r-lm-ois-wr/"
+            },
+            {
+              "id": "sigma-contemporary-100-400mm-f5-63-dg-dn-os-x",
+              "mount": "X",
+              "name": "适马 100-400mm F5-6.3 DG DN OS | Contemporary",
+              "focalNativeMm": [
+                100,
+                400
+              ],
+              "focalEquivMm": [
+                150,
+                600
+              ],
+              "angleOfView": [
+                16.2,
+                4.1
+              ],
+              "angleOfViewCalc": [
+                16.1,
+                4.1
+              ],
+              "maxAperture": [
+                5,
+                6.3
+              ],
+              "minAperture": [
+                22,
+                29
+              ],
+              "apertureBladeCount": 9,
+              "apertureRing": false,
+              "af": true,
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 112,
+                  "teleCm": 160
+                }
+              },
+              "magnification": 0.244,
+              "ois": true,
+              "wr": "partial",
+              "powerZoom": false,
+              "internalZoom": false,
+              "weightG": 1135,
+              "diameterMm": 86,
+              "length": {
+                "mm": 199.5
+              },
+              "filterMm": 67,
+              "lensConfiguration": {
+                "groups": 16,
+                "elements": 22,
+                "sourceText": "22 elements in 16 groups"
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2023,
+              "compatibleMounts": [
+                "L-Mount",
+                "Fujifilm X",
+                "Sony E"
+              ],
+              "accessories": [
+                "遮光罩 LH770-05",
+                "保护盖 PT-31",
+                "前镜头盖 LCF-67mm III",
+                "后镜头盖 LCR II"
+              ],
+              "fieldNotes": {
+                "wr": "仅卡口处有橡胶密封；并非完整防滴防尘。"
+              },
+              "price": {
+                "amount": 5999,
+                "currency": "CNY",
+                "condition": "new"
+              },
+              "officialLink": "http://www.sigma-photo.com.cn/product/detail?id=339"
+            }
+          ],
+          "maybe": [],
+          "totalMatched": 10,
+          "totalMaybe": 0
+        }
+      },
+      {
+        "type": "text",
+        "text": "另外，我留意到还有一款更长的原生超长焦变焦，我再查查有没有更远的长焦选择。"
+      },
+      {
+        "type": "tool-queryLenses",
+        "toolCallId": "call_00_n72lZweaDwUiKEfjl32V9837",
+        "state": "output-available",
+        "input": {
+          "type": "prime",
+          "focus": "auto",
+          "coversFocals": [
+            400
+          ]
+        },
+        "output": {
+          "matches": [],
+          "maybe": [],
+          "totalMatched": 0,
+          "totalMaybe": 0
+        }
+      },
+      {
+        "type": "tool-queryLenses",
+        "toolCallId": "call_01_VXeLhoiYpVqMuvMdayHQ3673",
         "state": "output-available",
         "input": {
           "type": "zoom",
@@ -849,435 +1618,25 @@
       },
       {
         "type": "text",
-        "text": "搜索结果不少，我再把焦距范围放宽一些，看看有没有更多适合野生动物（全画幅等效 300mm 以上）的选项。\n\n先看看有哪些变焦和长焦定焦的选择。"
-      },
-      {
-        "type": "tool-queryLenses",
-        "toolCallId": "call_00_lKf8gUUol8hRmerfIBTr5722",
-        "state": "output-available",
-        "input": {
-          "type": "prime",
-          "focus": "auto",
-          "focalWithin": [
-            250,
-            null
-          ]
-        },
-        "output": {
-          "matches": [
-            {
-              "id": "fujifilm-xf-200mmf2-r-lm-ois-wr-x",
-              "mount": "X",
-              "name": "富士 XF 200mm F2 R LM OIS WR",
-              "focalNativeMm": [
-                200,
-                200
-              ],
-              "focalEquivMm": [
-                300,
-                300
-              ],
-              "angleOfView": 8.1,
-              "angleOfViewCalc": 8.1,
-              "maxAperture": 2,
-              "minAperture": 22,
-              "apertureBladeCount": 9,
-              "apertureRing": true,
-              "af": true,
-              "focusMotor": "LM",
-              "internalFocusing": true,
-              "minFocusDistance": {
-                "normal": {
-                  "cm": 180
-                }
-              },
-              "magnification": 0.12,
-              "ois": true,
-              "oisStops": 5,
-              "wr": true,
-              "powerZoom": "N/A",
-              "internalZoom": "N/A",
-              "weightG": 2265,
-              "diameterMm": 122,
-              "length": {
-                "mm": 205.5
-              },
-              "filterMm": 105,
-              "lensConfiguration": {
-                "groups": 14,
-                "elements": 19,
-                "ed": 1,
-                "superEd": 1,
-                "sourceText": "19 elements 14 groups (includes 2 ED elements, 1 Super ED element)"
-              },
-              "opticalTraits": [],
-              "isCine": false,
-              "releaseYear": 2018,
-              "accessories": [
-                "前镜头盖 FLCP-105",
-                "后镜头盖 RLCP-001",
-                "遮光罩",
-                "肩带",
-                "镜头包"
-              ],
-              "fieldNotes": {},
-              "price": {
-                "amount": 33900,
-                "currency": "CNY",
-                "condition": "new"
-              },
-              "officialLink": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf200mmf2-r-lm-ois-wr/"
-            },
-            {
-              "id": "fujifilm-xf-500mmf56-r-lm-ois-wr-x",
-              "mount": "X",
-              "name": "富士 XF 500mm F5.6 R LM OIS WR",
-              "focalNativeMm": [
-                500,
-                500
-              ],
-              "focalEquivMm": [
-                750,
-                750
-              ],
-              "angleOfView": 3.3,
-              "angleOfViewCalc": 3.2,
-              "maxAperture": 5.6,
-              "minAperture": 22,
-              "apertureBladeCount": 9,
-              "apertureRing": true,
-              "af": true,
-              "focusMotor": "LM",
-              "minFocusDistance": {
-                "normal": {
-                  "cm": 275
-                }
-              },
-              "magnification": 0.2,
-              "ois": true,
-              "oisStops": 5.5,
-              "wr": true,
-              "powerZoom": "N/A",
-              "internalZoom": "N/A",
-              "weightG": 1335,
-              "diameterMm": 104.5,
-              "length": {
-                "mm": 255.5
-              },
-              "filterMm": 95,
-              "lensConfiguration": {
-                "groups": 14,
-                "elements": 21,
-                "ed": 5,
-                "superEd": 2,
-                "sourceText": "21 elements in 14 groups (includes 2 super ED and 5 ED elements)"
-              },
-              "opticalTraits": [],
-              "isCine": false,
-              "releaseYear": 2024,
-              "accessories": [
-                "前镜头盖 FLCP-95",
-                "后镜头盖 RLCP-001",
-                "遮光罩",
-                "脚架底座",
-                "镜头袋",
-                "肩带"
-              ],
-              "fieldNotes": {},
-              "price": {
-                "amount": 21400,
-                "currency": "CNY",
-                "condition": "new"
-              },
-              "officialLink": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf500mmf56-r-lm-ois-wr/"
-            }
-          ],
-          "maybe": [],
-          "totalMatched": 2,
-          "totalMaybe": 0
-        }
-      },
-      {
-        "type": "tool-queryLenses",
-        "toolCallId": "call_01_YNbaERTm6gUUyTZiCD9k9820",
-        "state": "output-available",
-        "input": {
-          "type": "zoom",
-          "focus": "auto",
-          "focalWithin": [
-            250,
-            null
-          ]
-        },
-        "output": {
-          "matches": [],
-          "maybe": [],
-          "totalMatched": 0,
-          "totalMaybe": 0
-        }
-      },
-      {
-        "type": "text",
-        "text": "很好，信息很全面了。现在我来按不同需求层次为你分组推荐。\n\n---\n\n## 野外野生动物镜头推荐\n\n我假设\"野外野生动物\"通常需要 **全画幅等效 300mm 以上的焦距**，可能你会走出较远的路，所以重量和防护也是考虑因素。下面按不同优先级分组推荐。\n\n---\n\n### 主力推荐：兼顾焦段、防护与性价比\n\n这三支是最均衡的野生动物变焦选择，覆盖从入门到进阶。"
+        "text": "下面按不同定位为你梳理适合野外野生动物拍摄的富士 X 卡口自动对焦镜头。\n\n我假设\"野外野生动物\"主要指鸟类、走兽等较远的目标，因此重点推荐等效焦距 300mm 以上的镜头。如果你主要是近距离拍林间动物或大型动物，请告诉我，我可以帮你调整方向。\n\n---\n\n## 旗舰超长焦（等效 600–900mm，极致远摄）\n\n这些是为严肃野生动物爱好者准备的\"重炮\"，适合开阔野外追踪鸟类和远距离动物。"
       },
       {
         "type": "tool-recommendLenses",
-        "toolCallId": "call_00_xWJ41faZBNYkuqM2L6De9555",
-        "state": "output-available",
-        "input": {
-          "picks": [
-            {
-              "id": "fujifilm-xf-70-300mmf4-56-r-lm-ois-wr-x",
-              "reason": "等效 105–450mm，轻巧 580g，全天候防护"
-            },
-            {
-              "id": "fujifilm-xf-100-400mmf45-56-r-lm-ois-wr-x",
-              "reason": "等效 150–600mm，原生富士长焦旗舰级变焦"
-            },
-            {
-              "id": "sigma-contemporary-100-400mm-f5-63-dg-dn-os-x",
-              "reason": "等效 150–600mm，轻于原厂，性价比高"
-            }
-          ]
-        },
-        "output": {
-          "recommendations": [
-            {
-              "id": "fujifilm-xf-70-300mmf4-56-r-lm-ois-wr-x",
-              "mount": "X",
-              "name": "富士 XF 70-300mm F4-5.6 R LM OIS WR",
-              "focalNativeMm": [
-                70,
-                300
-              ],
-              "focalEquivMm": [
-                105,
-                450
-              ],
-              "angleOfView": [
-                22.9,
-                5.4
-              ],
-              "angleOfViewCalc": [
-                22.9,
-                5.4
-              ],
-              "maxAperture": [
-                4,
-                5.6
-              ],
-              "minAperture": 22,
-              "apertureBladeCount": 9,
-              "apertureRing": true,
-              "af": true,
-              "focusMotor": "LM",
-              "minFocusDistance": {
-                "normal": {
-                  "cm": 83
-                }
-              },
-              "magnification": 0.33,
-              "ois": true,
-              "oisStops": 5.5,
-              "wr": true,
-              "powerZoom": false,
-              "internalZoom": false,
-              "weightG": 580,
-              "diameterMm": 75,
-              "length": {
-                "mm": 132.5,
-                "variants": {
-                  "wide": 132.5,
-                  "tele": 205.5
-                }
-              },
-              "filterMm": 67,
-              "lensConfiguration": {
-                "groups": 12,
-                "elements": 17,
-                "aspherical": 1,
-                "ed": 2,
-                "sourceText": "17 elements in 12 groups (includes 1 aspherical and 2 ED elements)"
-              },
-              "opticalTraits": [],
-              "isCine": false,
-              "releaseYear": 2021,
-              "fieldNotes": {},
-              "price": {
-                "amount": 5390,
-                "currency": "CNY",
-                "condition": "new"
-              },
-              "officialLink": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf70-300mmf4-56-r-lm-ois-wr/",
-              "reason": "等效 105–450mm，轻巧 580g，全天候防护"
-            },
-            {
-              "id": "fujifilm-xf-100-400mmf45-56-r-lm-ois-wr-x",
-              "mount": "X",
-              "name": "富士 XF 100-400mm F4.5-5.6 R LM OIS WR",
-              "focalNativeMm": [
-                100,
-                400
-              ],
-              "focalEquivMm": [
-                150,
-                600
-              ],
-              "angleOfView": [
-                16.2,
-                4.1
-              ],
-              "angleOfViewCalc": [
-                16.1,
-                4.1
-              ],
-              "maxAperture": [
-                4.5,
-                5.6
-              ],
-              "minAperture": 22,
-              "apertureBladeCount": 9,
-              "apertureRing": true,
-              "af": true,
-              "focusMotor": "LM",
-              "internalFocusing": true,
-              "minFocusDistance": {
-                "normal": {
-                  "cm": 175
-                }
-              },
-              "magnification": 0.19,
-              "ois": true,
-              "wr": true,
-              "powerZoom": false,
-              "internalZoom": false,
-              "weightG": 1375,
-              "diameterMm": 94.8,
-              "length": {
-                "mm": 210.5,
-                "variants": {
-                  "wide": 210.5,
-                  "tele": 270
-                }
-              },
-              "filterMm": 77,
-              "lensConfiguration": {
-                "groups": 14,
-                "elements": 21,
-                "ed": 5,
-                "superEd": 1,
-                "sourceText": "21 elements 14 groups (includes 5 extra low dispersion elements and 1 super extra low dispersion element)"
-              },
-              "opticalTraits": [],
-              "isCine": false,
-              "releaseYear": 2016,
-              "fieldNotes": {},
-              "price": {
-                "amount": 12600,
-                "currency": "CNY",
-                "condition": "new"
-              },
-              "officialLink": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf100-400mmf45-56-r-lm-ois-wr/",
-              "reason": "等效 150–600mm，原生富士长焦旗舰级变焦"
-            },
-            {
-              "id": "sigma-contemporary-100-400mm-f5-63-dg-dn-os-x",
-              "mount": "X",
-              "name": "适马 100-400mm F5-6.3 DG DN OS | Contemporary",
-              "focalNativeMm": [
-                100,
-                400
-              ],
-              "focalEquivMm": [
-                150,
-                600
-              ],
-              "angleOfView": [
-                16.2,
-                4.1
-              ],
-              "angleOfViewCalc": [
-                16.1,
-                4.1
-              ],
-              "maxAperture": [
-                5,
-                6.3
-              ],
-              "minAperture": [
-                22,
-                29
-              ],
-              "apertureBladeCount": 9,
-              "apertureRing": false,
-              "af": true,
-              "minFocusDistance": {
-                "normal": {
-                  "cm": 112,
-                  "teleCm": 160
-                }
-              },
-              "magnification": 0.244,
-              "ois": true,
-              "wr": "partial",
-              "powerZoom": false,
-              "internalZoom": false,
-              "weightG": 1135,
-              "diameterMm": 86,
-              "length": {
-                "mm": 199.5
-              },
-              "filterMm": 67,
-              "lensConfiguration": {
-                "groups": 16,
-                "elements": 22,
-                "sourceText": "22 elements in 16 groups"
-              },
-              "opticalTraits": [],
-              "isCine": false,
-              "releaseYear": 2023,
-              "compatibleMounts": [
-                "L-Mount",
-                "Fujifilm X",
-                "Sony E"
-              ],
-              "accessories": [
-                "遮光罩 LH770-05",
-                "保护盖 PT-31",
-                "前镜头盖 LCF-67mm III",
-                "后镜头盖 LCR II"
-              ],
-              "fieldNotes": {
-                "wr": "仅卡口处有橡胶密封；并非完整防滴防尘。"
-              },
-              "price": {
-                "amount": 5999,
-                "currency": "CNY",
-                "condition": "new"
-              },
-              "officialLink": "http://www.sigma-photo.com.cn/product/detail?id=339",
-              "reason": "等效 150–600mm，轻于原厂，性价比高"
-            }
-          ]
-        }
-      },
-      {
-        "type": "text",
-        "text": "**富士 XF 70-300mm F4-5.6 R LM OIS WR**（等效 105–450mm）\n- ✅ **最轻便**：仅 580g，搭配机身徒步毫无压力\n- ✅ 防尘防滴 + 5.5 级防抖，野外天气多变时很可靠\n- ✅ 最近对焦 83cm，最大放大倍率 0.33x，还能客串拍些花花草草\n- ⚠️ 300mm 端光圈 f/5.6，弱光下偏紧\n\n**富士 XF 100-400mm F4.5-5.6 R LM OIS WR**（等效 150–600mm）\n- ✅ 原生富士超长焦变焦，画质口碑扎实\n- ✅ 防尘防滴 + 防抖\n- ❌ 重 1375g，体积较大，长时间手持会累\n- 💰 价格 ¥12,600\n\n**适马 100-400mm F5-6.3 DG DN OS | Contemporary**（等效 150–600mm）\n- ✅ 比富士原厂轻 240g（1135g），价格便宜一半多（¥5,999）\n- ✅ 防抖 + 0.244x 放大倍率\n- ⚠️ 仅卡口处有密封，并非完整防滴防尘——野外下雨要注意保护\n- ⚠️ 长焦端 f/6.3 略暗于原厂\n\n---\n\n### 更长、更远：极致远摄\n\n如果主要拍水鸟、猛禽等\"够不着\"的目标："
-      },
-      {
-        "type": "tool-recommendLenses",
-        "toolCallId": "call_00_p6jwC32yGMFafMJlHIP82661",
+        "toolCallId": "call_00_hJrZwVMOm4LnFFl3BBSP2311",
         "state": "output-available",
         "input": {
           "picks": [
             {
               "id": "fujifilm-xf-150-600mmf56-8-r-lm-ois-wr-x",
-              "reason": "等效 225–900mm，富士最长焦变焦"
+              "reason": "等效 225–900mm 是目前富士 X 卡口最长的原生变焦，内变焦结构、5 级防抖和三防机身，专为严苛野外环境而造。代价是 f/5.6–8 光圈偏小，弱光下需提高 ISO。"
+            },
+            {
+              "id": "fujifilm-xf-100-400mmf45-56-r-lm-ois-wr-x",
+              "reason": "等效 150–600mm 覆盖了野生动物最常用的焦段，f/4.5–5.6 光圈比超长焦略大，搭配 1.4× 增距镜还能延伸到 840mm 等效。重 1375g，比 150-600mm 更便携。"
             },
             {
               "id": "tamron-150-500mm-f5-67-di-iii-vc-vxd-x-x",
-              "reason": "等效 225–750mm，0.32x 放大倍率"
+              "reason": "等效 225–750mm，500mm 端比 400mm 更远，f/5–6.7 的光圈在同类中不算慢，最近对焦 60cm 还能兼顾一些近摄。缺点是较重（1710g）且未做完整防滴密封。"
             }
           ]
         },
@@ -1355,7 +1714,76 @@
                 "condition": "new"
               },
               "officialLink": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf150-600mmf56-8-r-lm-ois-wr/",
-              "reason": "等效 225–900mm，富士最长焦变焦"
+              "reason": "等效 225–900mm 是目前富士 X 卡口最长的原生变焦，内变焦结构、5 级防抖和三防机身，专为严苛野外环境而造。代价是 f/5.6–8 光圈偏小，弱光下需提高 ISO。"
+            },
+            {
+              "id": "fujifilm-xf-100-400mmf45-56-r-lm-ois-wr-x",
+              "mount": "X",
+              "name": "富士 XF 100-400mm F4.5-5.6 R LM OIS WR",
+              "focalNativeMm": [
+                100,
+                400
+              ],
+              "focalEquivMm": [
+                150,
+                600
+              ],
+              "angleOfView": [
+                16.2,
+                4.1
+              ],
+              "angleOfViewCalc": [
+                16.1,
+                4.1
+              ],
+              "maxAperture": [
+                4.5,
+                5.6
+              ],
+              "minAperture": 22,
+              "apertureBladeCount": 9,
+              "apertureRing": true,
+              "af": true,
+              "focusMotor": "LM",
+              "internalFocusing": true,
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 175
+                }
+              },
+              "magnification": 0.19,
+              "ois": true,
+              "wr": true,
+              "powerZoom": false,
+              "internalZoom": false,
+              "weightG": 1375,
+              "diameterMm": 94.8,
+              "length": {
+                "mm": 210.5,
+                "variants": {
+                  "wide": 210.5,
+                  "tele": 270
+                }
+              },
+              "filterMm": 77,
+              "lensConfiguration": {
+                "groups": 14,
+                "elements": 21,
+                "ed": 5,
+                "superEd": 1,
+                "sourceText": "21 elements 14 groups (includes 5 extra low dispersion elements and 1 super extra low dispersion element)"
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2016,
+              "fieldNotes": {},
+              "price": {
+                "amount": 12600,
+                "currency": "CNY",
+                "condition": "new"
+              },
+              "officialLink": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf100-400mmf45-56-r-lm-ois-wr/",
+              "reason": "等效 150–600mm 覆盖了野生动物最常用的焦段，f/4.5–5.6 光圈比超长焦略大，搭配 1.4× 增距镜还能延伸到 840mm 等效。重 1375g，比 150-600mm 更便携。"
             },
             {
               "id": "tamron-150-500mm-f5-67-di-iii-vc-vxd-x-x",
@@ -1428,14 +1856,448 @@
                 "condition": "new"
               },
               "officialLink": "https://www.tamron.com.cn/cameralens/products/a057/index.shtml",
-              "reason": "等效 225–750mm，0.32x 放大倍率"
+              "reason": "等效 225–750mm，500mm 端比 400mm 更远，f/5–6.7 的光圈在同类中不算慢，最近对焦 60cm 还能兼顾一些近摄。缺点是较重（1710g）且未做完整防滴密封。"
             }
           ]
         }
       },
       {
         "type": "text",
-        "text": "**富士 XF 150-600mm F5.6-8 R LM OIS WR**（等效 225–900mm）\n- ✅ 富士变焦焦段之最，打鸟、拍大型哺乳动物的利器\n- ✅ 内变焦设计，变焦时镜筒不伸长，防尘性更好\n- ✅ 全密封防滴 + 5 级防抖\n- ❌ 重 1605g，建议搭配独脚架或三脚架\n- 💰 ¥13,500\n\n**腾龙 150-500mm F/5-6.7 Di III VC VXD**（等效 225–750mm）\n- ✅ 0.32x 放大倍率，是这组中近摄能力最强的\n- ✅ 防潮密封结构\n- ❌ 重 1710g，比富士 150-600 还重一点\n- 💰 ¥9,790，介于适马和富士原厂之间\n\n---\n\n### 顶级画质之选\n\n**富士 XF 500mm F5.6 R LM OIS WR**（等效 750mm 定焦）\n- ✅ 超长焦定焦，画质巅峰，比变焦更锐\n- ✅ 仅 1335g——比 150-600 变焦还轻，不可思议\n- ✅ 防尘防滴 + 5.5 级防抖\n- ❌ 定焦限制构图灵活性，拍移动目标需要变焦靠\"走\"\n- 💰 ¥21,400，投入最大\n\n**富士 XF 200mm F2 R LM OIS WR**（等效 300mm）\n- ✅ f/2 超大光圈，弱光/清晨/黄昏野生动物拍摄的终极武器，背景虚化极美\n- ✅ 防尘防滴 + 5 级防抖\n- ⚠️ 等效 300mm 对于大多数野生动物偏短，可能需要搭配 1.4x/2x 增距镜使用\n- 💰 ¥33,900，最昂贵的选择\n\n---\n\n### 入门/轻便选项\n\n如果预算有限或不想背太重：\n\n**腾龙 18-300mm F/3.5-6.3 Di III-A VC VXD**（等效 27–450mm）— ¥3,490\n- ✅ 一镜走天涯，18mm 广角到 300mm 长焦全覆盖\n- ✅ 620g 很轻，0.5x 放大倍率近摄也强\n- ⚠️ 300mm 端 f/6.3 偏暗，且非全密封\n\n**富士 XC 50-230mm F4.5-6.7 OIS II**（等效 75–345mm）— 二手约 ¥1,225\n- ✅ 仅 375g，最轻最便宜的长焦入门选项\n- ⚠️ 无防滴、光圈偏小、无光圈环\n\n---\n\n你想重点考虑哪个价位或焦段范围？或者你对是否要配增距镜、是否一定要防滴有特别要求？我可以进一步帮你细化。"
+        "text": "## 中长焦变焦（等效 300–600mm，轻便灵活）\n\n适合徒步随行、不想背太重器材的情况，兼顾了焦段与便携。"
+      },
+      {
+        "type": "tool-recommendLenses",
+        "toolCallId": "call_00_5HMBsoS34RJoJ20TDAXM4372",
+        "state": "output-available",
+        "input": {
+          "picks": [
+            {
+              "id": "fujifilm-xf-70-300mmf4-56-r-lm-ois-wr-x",
+              "reason": "等效 105–450mm，580g 的重量是专业野生动物变焦中最轻巧的之一，5.5 级防抖、三防、9 片光圈叶片，配合增距镜还能推到 600mm 等效。300mm 端在大型动物和鸟类间取得了一个不错的平衡点。"
+            },
+            {
+              "id": "sigma-contemporary-100-400mm-f5-63-dg-dn-os-x",
+              "reason": "等效 150–600mm 却仅重 1135g，比原厂 100-400mm 轻 240g 且价格只有一半不到。光学素质不俗，但卡口处仅部分密封，恶劣天气下需多加留意。"
+            },
+            {
+              "id": "fujifilm-xf-55-200mmf35-48-r-lm-ois-x",
+              "reason": "等效 83–300mm，f/3.5–4.8 光圈在弱光下更有优势，580g 轻巧便携。300mm 等效对大型动物或半开阔地带够用，但拍小型鸟类就不太够了——适合从风光/人像兼顾野生动物的入门选择。"
+            }
+          ]
+        },
+        "output": {
+          "recommendations": [
+            {
+              "id": "fujifilm-xf-70-300mmf4-56-r-lm-ois-wr-x",
+              "mount": "X",
+              "name": "富士 XF 70-300mm F4-5.6 R LM OIS WR",
+              "focalNativeMm": [
+                70,
+                300
+              ],
+              "focalEquivMm": [
+                105,
+                450
+              ],
+              "angleOfView": [
+                22.9,
+                5.4
+              ],
+              "angleOfViewCalc": [
+                22.9,
+                5.4
+              ],
+              "maxAperture": [
+                4,
+                5.6
+              ],
+              "minAperture": 22,
+              "apertureBladeCount": 9,
+              "apertureRing": true,
+              "af": true,
+              "focusMotor": "LM",
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 83
+                }
+              },
+              "magnification": 0.33,
+              "ois": true,
+              "oisStops": 5.5,
+              "wr": true,
+              "powerZoom": false,
+              "internalZoom": false,
+              "weightG": 580,
+              "diameterMm": 75,
+              "length": {
+                "mm": 132.5,
+                "variants": {
+                  "wide": 132.5,
+                  "tele": 205.5
+                }
+              },
+              "filterMm": 67,
+              "lensConfiguration": {
+                "groups": 12,
+                "elements": 17,
+                "aspherical": 1,
+                "ed": 2,
+                "sourceText": "17 elements in 12 groups (includes 1 aspherical and 2 ED elements)"
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2021,
+              "fieldNotes": {},
+              "price": {
+                "amount": 5390,
+                "currency": "CNY",
+                "condition": "new"
+              },
+              "officialLink": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf70-300mmf4-56-r-lm-ois-wr/",
+              "reason": "等效 105–450mm，580g 的重量是专业野生动物变焦中最轻巧的之一，5.5 级防抖、三防、9 片光圈叶片，配合增距镜还能推到 600mm 等效。300mm 端在大型动物和鸟类间取得了一个不错的平衡点。"
+            },
+            {
+              "id": "sigma-contemporary-100-400mm-f5-63-dg-dn-os-x",
+              "mount": "X",
+              "name": "适马 100-400mm F5-6.3 DG DN OS | Contemporary",
+              "focalNativeMm": [
+                100,
+                400
+              ],
+              "focalEquivMm": [
+                150,
+                600
+              ],
+              "angleOfView": [
+                16.2,
+                4.1
+              ],
+              "angleOfViewCalc": [
+                16.1,
+                4.1
+              ],
+              "maxAperture": [
+                5,
+                6.3
+              ],
+              "minAperture": [
+                22,
+                29
+              ],
+              "apertureBladeCount": 9,
+              "apertureRing": false,
+              "af": true,
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 112,
+                  "teleCm": 160
+                }
+              },
+              "magnification": 0.244,
+              "ois": true,
+              "wr": "partial",
+              "powerZoom": false,
+              "internalZoom": false,
+              "weightG": 1135,
+              "diameterMm": 86,
+              "length": {
+                "mm": 199.5
+              },
+              "filterMm": 67,
+              "lensConfiguration": {
+                "groups": 16,
+                "elements": 22,
+                "sourceText": "22 elements in 16 groups"
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2023,
+              "compatibleMounts": [
+                "L-Mount",
+                "Fujifilm X",
+                "Sony E"
+              ],
+              "accessories": [
+                "遮光罩 LH770-05",
+                "保护盖 PT-31",
+                "前镜头盖 LCF-67mm III",
+                "后镜头盖 LCR II"
+              ],
+              "fieldNotes": {
+                "wr": "仅卡口处有橡胶密封；并非完整防滴防尘。"
+              },
+              "price": {
+                "amount": 5999,
+                "currency": "CNY",
+                "condition": "new"
+              },
+              "officialLink": "http://www.sigma-photo.com.cn/product/detail?id=339",
+              "reason": "等效 150–600mm 却仅重 1135g，比原厂 100-400mm 轻 240g 且价格只有一半不到。光学素质不俗，但卡口处仅部分密封，恶劣天气下需多加留意。"
+            },
+            {
+              "id": "fujifilm-xf-55-200mmf35-48-r-lm-ois-x",
+              "mount": "X",
+              "name": "富士 XF 55-200mm F3.5-4.8 R LM OIS",
+              "focalNativeMm": [
+                55,
+                200
+              ],
+              "focalEquivMm": [
+                83,
+                300
+              ],
+              "angleOfView": [
+                29,
+                8.1
+              ],
+              "angleOfViewCalc": [
+                28.9,
+                8.1
+              ],
+              "maxAperture": [
+                3.5,
+                4.8
+              ],
+              "minAperture": 22,
+              "apertureBladeCount": 7,
+              "apertureRing": true,
+              "af": true,
+              "focusMotor": "LM",
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 110
+                }
+              },
+              "magnification": 0.18,
+              "ois": true,
+              "oisStops": 5,
+              "wr": false,
+              "powerZoom": false,
+              "internalZoom": false,
+              "weightG": 580,
+              "diameterMm": 75,
+              "length": {
+                "mm": 118,
+                "variants": {
+                  "wide": 118,
+                  "tele": 177
+                }
+              },
+              "filterMm": 62,
+              "lensConfiguration": {
+                "groups": 10,
+                "elements": 14,
+                "aspherical": 1,
+                "ed": 1,
+                "superEd": 1,
+                "sourceText": "14 elements in 10 groups (includes 1 aspherical, 1 ED and 1 super ED elements)"
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2013,
+              "fieldNotes": {},
+              "price": {
+                "amount": 4370,
+                "currency": "CNY",
+                "condition": "new"
+              },
+              "officialLink": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf55-200mmf35-48-r-lm-ois/",
+              "reason": "等效 83–300mm，f/3.5–4.8 光圈在弱光下更有优势，580g 轻巧便携。300mm 等效对大型动物或半开阔地带够用，但拍小型鸟类就不太够了——适合从风光/人像兼顾野生动物的入门选择。"
+            }
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "text": "## 超级天涯镜（一镜走天下）\n\n适合旅行途中顺便拍动物，追求最大便利性，远摄能力不弱但光圈偏小。"
+      },
+      {
+        "type": "tool-recommendLenses",
+        "toolCallId": "call_00_laycGzKDZsfiiDqpd1Yc8627",
+        "state": "output-available",
+        "input": {
+          "picks": [
+            {
+              "id": "tamron-18-300mm-f35-63-di-iii-a-vc-vxd-x",
+              "reason": "等效 27–450mm 一镜覆盖广角到远摄，0.5 倍放大率还能拍微距，620g 极轻便。450mm 等效端在光线充足时可以拍到较远的动物，但 f/6.3 长焦光圈在晨昏时受限。"
+            },
+            {
+              "id": "sigma-contemporary-16-300mm-f35-67-dc-os-x",
+              "reason": "2025 年新出的 16-300mm（等效 24–450mm），比腾龙多出 16mm 广角端，0.5 倍放大率同样出色。615g 不到一支矿泉水的重量，6 级防抖非常强悍，适合边走边拍的野外旅行。"
+            }
+          ]
+        },
+        "output": {
+          "recommendations": [
+            {
+              "id": "tamron-18-300mm-f35-63-di-iii-a-vc-vxd-x",
+              "mount": "X",
+              "name": "腾龙 18-300mm F/3.5-6.3 Di III-A VC VXD",
+              "focalNativeMm": [
+                18,
+                300
+              ],
+              "focalEquivMm": [
+                27,
+                450
+              ],
+              "angleOfView": [
+                77.4,
+                5.5
+              ],
+              "angleOfViewCalc": [
+                76.3,
+                5.4
+              ],
+              "maxAperture": [
+                3.5,
+                6.3
+              ],
+              "minAperture": [
+                22,
+                40
+              ],
+              "apertureBladeCount": 7,
+              "apertureRing": false,
+              "af": true,
+              "focusMotor": "VXD",
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 15,
+                  "teleCm": 99
+                }
+              },
+              "magnification": 0.5,
+              "ois": true,
+              "wr": "partial",
+              "powerZoom": false,
+              "internalZoom": false,
+              "weightG": 620,
+              "diameterMm": 75.5,
+              "length": {
+                "mm": 125.8
+              },
+              "filterMm": 67,
+              "lensConfiguration": {
+                "groups": 15,
+                "elements": 19
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2021,
+              "compatibleMounts": [
+                "Sony E",
+                "Nikon Z",
+                "Fujifilm X",
+                "Canon RF"
+              ],
+              "accessories": [
+                "花瓣形遮光罩",
+                "前镜头盖",
+                "后镜头盖"
+              ],
+              "fieldNotes": {
+                "wr": "防潮结构：镜筒各处的防渗密封有助于在户外拍摄时保护设备。"
+              },
+              "price": {
+                "amount": 3490,
+                "currency": "CNY",
+                "condition": "new"
+              },
+              "officialLink": "https://www.tamron.com.cn/cameralens/products/b061/index.shtml",
+              "reason": "等效 27–450mm 一镜覆盖广角到远摄，0.5 倍放大率还能拍微距，620g 极轻便。450mm 等效端在光线充足时可以拍到较远的动物，但 f/6.3 长焦光圈在晨昏时受限。"
+            },
+            {
+              "id": "sigma-contemporary-16-300mm-f35-67-dc-os-x",
+              "mount": "X",
+              "name": "适马 16-300mm F3.5-6.7 DC OS | Contemporary",
+              "focalNativeMm": [
+                16,
+                300
+              ],
+              "focalEquivMm": [
+                24,
+                450
+              ],
+              "angleOfView": [
+                83.2,
+                5.4
+              ],
+              "angleOfViewCalc": [
+                83,
+                5.4
+              ],
+              "maxAperture": [
+                3.5,
+                6.7
+              ],
+              "minAperture": [
+                22,
+                45
+              ],
+              "apertureBladeCount": 9,
+              "apertureRing": false,
+              "af": true,
+              "focusMotor": "HLA",
+              "internalFocusing": true,
+              "minFocusDistance": {
+                "normal": {
+                  "cm": 17,
+                  "teleCm": 105
+                }
+              },
+              "magnification": 0.5,
+              "ois": true,
+              "oisStops": 6,
+              "wr": "partial",
+              "powerZoom": false,
+              "internalZoom": false,
+              "weightG": 615,
+              "diameterMm": 73.8,
+              "length": {
+                "mm": 123.7
+              },
+              "filterMm": 67,
+              "lensConfiguration": {
+                "groups": 14,
+                "elements": 20,
+                "aspherical": 4,
+                "sld": 4,
+                "fld": 1,
+                "sourceText": "20 elements in 14 groups (1 FLD, 4 SLD, 4 aspherical elements)"
+              },
+              "opticalTraits": [],
+              "isCine": false,
+              "releaseYear": 2025,
+              "compatibleMounts": [
+                "L-Mount",
+                "Canon RF",
+                "Fujifilm X",
+                "Sony E"
+              ],
+              "accessories": [
+                "镜头袋",
+                "遮光罩 LH706-03",
+                "前镜头盖 LCF-67 IV",
+                "后镜头盖 LCR III"
+              ],
+              "fieldNotes": {
+                "wr": "仅防尘防溅；并非完整密封。"
+              },
+              "price": {
+                "amount": 4110,
+                "currency": "CNY",
+                "condition": "new"
+              },
+              "officialLink": "http://www.sigma-photo.com.cn/product/detail?id=334",
+              "reason": "2025 年新出的 16-300mm（等效 24–450mm），比腾龙多出 16mm 广角端，0.5 倍放大率同样出色。615g 不到一支矿泉水的重量，6 级防抖非常强悍，适合边走边拍的野外旅行。"
+            }
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "text": "---\n\n**总结一下**：如果以野生动物为主业，**富士 XF 150-600mm F5.6-8 R LM OIS WR** 是焦段最长的选择，**富士 XF 100-400mm F4.5-5.6 R LM OIS WR** 在焦距与光圈之间更均衡，而 **富士 XF 70-300mm F4-5.6 R LM OIS WR** 则是轻装徒步的好搭档。如果你有具体的预算或对重量有硬性要求，告诉我，我可以进一步帮你缩小范围！"
       }
     ]
   }

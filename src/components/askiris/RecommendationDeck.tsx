@@ -7,9 +7,10 @@ import Markdown from "@/components/askiris/Markdown";
 import type { Recommendation } from "@/lib/ai/recall";
 
 // A group of picks the model authored in one recommendLenses call, laid out as a
-// horizontal scroll-snap shelf so the deck stays one card-row tall on every
-// viewport — that's what keeps a multi-deck reply's structure scannable (the next
-// deck's heading never gets pushed off-screen by a tall vertical list).
+// one-or-two-column grid (one on mobile, two on desktop). Following the
+// ChatGPT/Perplexity pattern, each card is self-describing: it carries its own
+// reason so the surrounding prose stays a short synthesis instead of a per-lens
+// essay the reader has to map back onto a card.
 export default function RecommendationDeck({
   recommendations,
   locale,
@@ -18,7 +19,7 @@ export default function RecommendationDeck({
   locale: string;
 }) {
   return (
-    <div className="flex snap-x gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       {recommendations.map((rec) => (
         <RecommendationCard key={rec.id} rec={rec} locale={locale} />
       ))}
@@ -26,9 +27,11 @@ export default function RecommendationDeck({
   );
 }
 
-// Compact, non-prose styling for the one-clause reason inside a card.
+// Non-prose styling for the reason inside a card. Shown in full — the reason is
+// the card's whole point, and the prompt already bounds it to one to three
+// sentences, so there's no clamp to truncate the model's case.
 const REASON_CLS =
-  "text-muted-foreground text-[11px] leading-snug [&_p]:m-0 [&_p]:line-clamp-3 [&_strong]:text-foreground [&_strong]:font-semibold";
+  "text-muted-foreground text-xs leading-relaxed [&_p]:m-0 [&_strong]:text-foreground [&_strong]:font-medium";
 
 function priceLabel(price: NonNullable<Recommendation["price"]>, locale: string): string {
   const symbol = price.currency === "CNY" ? "¥" : "$";
@@ -36,9 +39,8 @@ function priceLabel(price: NonNullable<Recommendation["price"]>, locale: string)
   return `${symbol}${price.amount.toLocaleString()}${used}`;
 }
 
-// Thumbnail-left, text-right: a short card (~one image tall) that fills the column
-// width and gives the model's reason room to be read, rather than a tall column
-// card whose reason gets clamped to a couple of words.
+// Thumbnail-left, text-right, filling its grid cell. The wider cell gives the
+// title, key specs, and the model's reason room to breathe.
 function RecommendationCard({ rec, locale }: { rec: Recommendation; locale: string }) {
   const weight = rec.weightG != null ? weightDisplay(rec.weightG, "g") : null;
   const meta = [rec.price ? priceLabel(rec.price, locale) : null, weight].filter(Boolean);
@@ -47,22 +49,22 @@ function RecommendationCard({ rec, locale }: { rec: Recommendation; locale: stri
     <Link
       href={`/lenses/${mountToUrlSegment(rec.mount)}/${rec.id}`}
       prefetch={false}
-      className="border-border bg-background hover:border-foreground/20 flex w-72 shrink-0 snap-start gap-3 rounded-xl border p-2.5 transition-colors"
+      className="border-border bg-background hover:border-foreground/20 flex gap-3 rounded-xl border p-3 transition-colors"
     >
-      <div className="relative h-24 w-24 shrink-0">
+      <div className="relative h-28 w-28 shrink-0">
         <Image
           src={getLensImageUrl(rec.id)}
           alt={rec.name}
           fill
-          sizes="96px"
+          sizes="112px"
           style={lensImageStyle}
           className="object-contain"
           loading="lazy"
         />
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <h4 className="line-clamp-2 text-xs leading-snug font-semibold" title={rec.name}>
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <h4 className="line-clamp-2 text-sm leading-snug font-semibold" title={rec.name}>
           {rec.name}
         </h4>
         {meta.length ? (

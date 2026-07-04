@@ -150,11 +150,10 @@ export function buildLensTools(
 
     recommendLenses: tool({
       description:
-        "Present your final picks as recommendation cards — call this once you've chosen which " +
-        "lenses to recommend (3–6, ordered best-first). Pass each lens's id (from a prior " +
-        "queryLenses/searchLensByName result) and a short card reason: a readable phrase or at " +
-        "most one short sentence with natural punctuation, giving the single most compelling " +
-        "reason it fits. The detailed comparison and pros/cons belong in your prose bullets, not on the card.",
+        "Present your final picks as a grid of recommendation cards — call this once you've chosen " +
+        "which lenses to recommend (3–6, ordered best-first). Pass each lens's id (from a prior " +
+        "queryLenses/searchLensByName result) and its reason, which is shown on the card and is " +
+        "where that lens's case belongs. Keep any prose around the cards to a short synthesis.",
       inputSchema: z.object({
         picks: z
           .array(
@@ -163,8 +162,8 @@ export function buildLensTools(
               reason: z
                 .string()
                 .describe(
-                  "A short, readable reason in the user's language — a phrase or at most one short " +
-                    "sentence with natural punctuation. Detailed pros/cons go in prose, not here.",
+                  "The lens's case, shown on its card, in the user's language: one to three natural " +
+                    "sentences on what it's good for and its main trade-off.",
                 ),
             }),
           )

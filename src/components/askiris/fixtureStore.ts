@@ -62,6 +62,13 @@ async function refresh() {
 }
 
 if (typeof window !== "undefined") {
+  // Restore query-param repro links, e.g. ?fixture=wildlife — resolves against a
+  // built-in name immediately and a saved one once refresh() lands.
+  const fromUrl = new URLSearchParams(window.location.search).get("fixture");
+  if (fromUrl) {
+    selected = fromUrl;
+    snapshot = { selected, builtin: Object.keys(BUILTIN), saved: [] };
+  }
   void refresh();
 }
 
