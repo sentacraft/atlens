@@ -38,6 +38,12 @@ function systemPrompt(mount: Mount, locale: string): string {
     `— but name the assumption and invite a correction (e.g. "I read 'portraits'`,
     `as ~85mm — want wider or longer?"), never presenting it as the only reading.`,
     ``,
+    `Once you've narrowed to your picks, present them by calling recommendLenses`,
+    `with 3–6 lens ids and a short reason for each — this renders a card deck. You`,
+    `may call it more than once to group picks around different priorities, weaving`,
+    `your prose between the decks. For a specific-lens lookup or a quick factual`,
+    `answer, reply in prose without cards.`,
+    ``,
     `Reply in ${language}; if the user writes in another language, match theirs.`,
   ].join("\n");
 }
@@ -64,13 +70,16 @@ export async function POST(req: Request) {
   const { messages, mount, locale } = parsed.data;
 
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
+  const tools = buildLensTools(mount, locale, tBrand);
 
   const result = streamText({
     model: agentModel,
     providerOptions: agentProviderOptions,
     system: systemPrompt(mount, locale),
-    messages: await convertToModelMessages(messages),
-    tools: buildLensTools(mount, locale, tBrand),
+    // Same `tools` on both calls: recommendLenses.toModelOutput runs inside
+    // convertToModelMessages, so it must see the tool to trim its model-facing output.
+    messages: await convertToModelMessages(messages, { tools }),
+    tools,
     stopWhen: stepCountIs(8),
   });
 

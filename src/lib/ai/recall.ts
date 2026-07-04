@@ -11,6 +11,7 @@ import { focalEquiv } from "@/lib/lens/format";
 import { getLensesByMount } from "@/lib/lens/data";
 import { deriveSpecialty } from "@/lib/lens/specialty";
 import { pickPriceEntry } from "@/lib/lens/pricing";
+import { SPEC_NA } from "@/lib/types";
 import type { ApertureValue, Lens, Mount, OpticalTrait } from "@/lib/types";
 
 // Agent recall: LLM constraints → matches / maybe / excluded. Unlike the UX
@@ -53,44 +54,82 @@ export interface LensConstraints {
   // Full-frame-equivalent millimetres. The lens's whole range must sit inside.
   focalWithin?: [number | null, number | null];
   maxWeightG?: number;
+  // Physical barrel length ceiling in mm (compact / pocketable).
+  maxLengthMm?: number;
   // f-number ceilings at each zoom end (a smaller number = wider).
   maxApertureF?: { wide?: number; tele?: number };
   // In the locale's currency (zh → CNY, en → USD).
   maxPrice?: number;
   // Minimum magnification ratio (e.g. 0.5 = at least half life-size). Close-up.
   minMagnification?: number;
+  // Minimum aperture blade count (rounder out-of-focus rendering).
+  minApertureBladeCount?: number;
   // Only lenses released in or after this year.
   minReleaseYear?: number;
   sortBy?: SortField;
   sortDir?: "asc" | "desc";
 }
 
-// Compact, locale-resolved projection of Lens for tool output.
-export type LensCandidate = Pick<
+// The lens as the model and the card see it: a locale-resolved projection of the
+// full `Lens`. Locale/pipeline-internal fields (raw pricing/links, translations,
+// search aliases, publish bookkeeping) are projected away; price/officialLink are
+// flattened to the active locale; every spec field is kept so the model can recall
+// and cite the long tail (blades, construction, filter size, dimensions).
+export type ResolvedLens = Pick<
   Lens,
-  "id" | "series" | "model" | "af" | "ois" | "wr" | "releaseYear"
+  | "id"
+  | "mount"
+  | "series"
+  | "model"
+  | "generation"
+  | "minAperture"
+  | "maxTStop"
+  | "minTStop"
+  | "apertureBladeCount"
+  | "apertureRing"
+  | "af"
+  | "focusMotor"
+  | "internalFocusing"
+  | "minFocusDistance"
+  | "ois"
+  | "oisStops"
+  | "wr"
+  | "powerZoom"
+  | "internalZoom"
+  | "diameterMm"
+  | "length"
+  | "filterMm"
+  | "lensMaterial"
+  | "lensConfiguration"
+  | "angleOfView"
+  | "angleOfViewCalc"
+  | "releaseYear"
+  | "compatibleMounts"
+  | "accessories"
+  | "fieldNotes"
 > & {
-  // Resolved display name, not the raw brand key.
-  brand: string;
+  brand: string; // resolved display name, not the raw brand key
   focalNativeMm: [number, number];
   focalEquivMm: [number, number];
   maxAperture: ApertureValue | null;
-  weightG: number | null;
-  // Highest magnification ratio, flattened from Lens.maxMagnification.
-  magnification: number | null;
+  weightG: number | null; // flattened from Lens.weightG's range form
+  magnification: number | null; // flattened from Lens.maxMagnification
   opticalTraits: OpticalTrait[];
   isCine: boolean;
   price: { amount: number; currency: "CNY" | "USD"; condition: "new" | "used" } | null;
   officialLink: string | null;
 };
 
+// A resolved lens the model has chosen to recommend, carrying its authored reason.
+export type Recommendation = ResolvedLens & { reason: string };
+
 // Cap per recall; totalMatched/totalMaybe still report the full counts.
 const MAX_RECALL_RESULTS = 20;
 
 export interface RecallResult {
   // Capped to the top MAX_RECALL_RESULTS by the active sort.
-  matches: LensCandidate[];
-  maybe: { lens: LensCandidate; missingFields: string[] }[];
+  matches: ResolvedLens[];
+  maybe: { lens: ResolvedLens; missingFields: string[] }[];
   totalMatched: number;
   totalMaybe: number;
 }
@@ -166,6 +205,11 @@ function evaluate(lens: Lens, c: LensConstraints, locale: string): Verdict {
     }
   }
 
+  // length is always present, so it's a hard filter (never demotes to maybe).
+  if (c.maxLengthMm != null && lens.length.mm > c.maxLengthMm) {
+    return EXCLUDE;
+  }
+
   // Numeric thresholds — the only checks that can be indeterminate (missing
   // data). A miss never excludes silently; it demotes the lens to `maybe`.
   const missingFields: string[] = [];
@@ -207,6 +251,16 @@ function evaluate(lens: Lens, c: LensConstraints, locale: string): Verdict {
     if (mag == null) {
       missingFields.push("maxMagnification");
     } else if (mag < c.minMagnification) {
+      return EXCLUDE;
+    }
+  }
+
+  if (c.minApertureBladeCount != null) {
+    const blades = lens.apertureBladeCount;
+    if (blades == null) {
+      missingFields.push("apertureBladeCount");
+    } else if (blades === SPEC_NA || blades < c.minApertureBladeCount) {
+      // SPEC_NA = fixed-aperture lens with no diaphragm — can't meet a blade count.
       return EXCLUDE;
     }
   }
@@ -273,30 +327,66 @@ function sortRecalled(
   });
 }
 
-export function projectLens(
+export function resolveLens(
   lens: Lens,
   locale: string,
   tBrand: (brand: string) => string,
-): LensCandidate {
+): ResolvedLens {
   const selection = pickPriceEntry(lens.pricing, locale);
   const { isCine, opticalTraits } = deriveSpecialty(lens);
 
   return {
+    // identity
     id: lens.id,
+    mount: lens.mount,
     brand: tBrand(lens.brand),
     series: lens.series,
     model: lens.model,
+    generation: lens.generation,
+    // focal / field of view
     focalNativeMm: [lens.focalLengthMin, lens.focalLengthMax],
-    focalEquivMm: [focalEquiv(lens.focalLengthMin, lens.mount), focalEquiv(lens.focalLengthMax, lens.mount)],
+    focalEquivMm: [
+      focalEquiv(lens.focalLengthMin, lens.mount),
+      focalEquiv(lens.focalLengthMax, lens.mount),
+    ],
+    angleOfView: lens.angleOfView,
+    angleOfViewCalc: lens.angleOfViewCalc,
+    // aperture
     maxAperture: lens.maxAperture ?? null,
-    weightG: leadingValue(lens.weightG) ?? null,
-    magnification: lens.maxMagnification?.value ?? null,
-    releaseYear: lens.releaseYear,
+    minAperture: lens.minAperture,
+    maxTStop: lens.maxTStop,
+    minTStop: lens.minTStop,
+    apertureBladeCount: lens.apertureBladeCount,
+    apertureRing: lens.apertureRing,
+    // focus
     af: lens.af,
-    wr: lens.wr,
+    focusMotor: lens.focusMotor,
+    internalFocusing: lens.internalFocusing,
+    minFocusDistance: lens.minFocusDistance,
+    magnification: lens.maxMagnification?.value ?? null,
+    // stabilization / weather
     ois: lens.ois,
+    oisStops: lens.oisStops,
+    wr: lens.wr,
+    // zoom mechanics
+    powerZoom: lens.powerZoom,
+    internalZoom: lens.internalZoom,
+    // physical
+    weightG: leadingValue(lens.weightG) ?? null,
+    diameterMm: lens.diameterMm,
+    length: lens.length,
+    filterMm: lens.filterMm,
+    lensMaterial: lens.lensMaterial,
+    // optics
+    lensConfiguration: lens.lensConfiguration,
     opticalTraits,
     isCine,
+    // meta
+    releaseYear: lens.releaseYear,
+    compatibleMounts: lens.compatibleMounts,
+    accessories: lens.accessories,
+    fieldNotes: lens.fieldNotes,
+    // commercial (locale-flattened)
     price: selection
       ? {
           amount: selection.entry.price,
@@ -341,12 +431,28 @@ export function recallLenses(
   return {
     matches: sortedMatched
       .slice(0, MAX_RECALL_RESULTS)
-      .map((lens) => projectLens(lens, locale, tBrand)),
+      .map((lens) => resolveLens(lens, locale, tBrand)),
     maybe: sortedMaybe.slice(0, MAX_RECALL_RESULTS).map((lens) => ({
-      lens: projectLens(lens, locale, tBrand),
+      lens: resolveLens(lens, locale, tBrand),
       missingFields: missingById.get(lens.id) ?? [],
     })),
     totalMatched: matched.length,
     totalMaybe: maybe.length,
   };
+}
+
+// Look up lenses by id and resolve them, attaching the model's authored reason.
+// Ids the model invented (not in this mount's set) are dropped.
+export function recommendLenses(
+  mount: Mount,
+  locale: string,
+  picks: { id: string; reason: string }[],
+  tBrand: (brand: string) => string,
+): { recommendations: Recommendation[] } {
+  const byId = new Map(getLensesByMount(mount, locale).map((lens) => [lens.id, lens]));
+  const recommendations = picks.flatMap((pick) => {
+    const lens = byId.get(pick.id);
+    return lens ? [{ ...resolveLens(lens, locale, tBrand), reason: pick.reason }] : [];
+  });
+  return { recommendations };
 }

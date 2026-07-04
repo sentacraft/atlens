@@ -3,7 +3,7 @@ import { z } from "zod";
 import { FILTER_FEATURE_KEYS } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
-import { projectLens, recallLenses, RECALL_SORT_FIELDS } from "@/lib/ai/recall";
+import { recallLenses, recommendLenses, resolveLens, RECALL_SORT_FIELDS } from "@/lib/ai/recall";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 
 // The agent's tools, bound to the current mount + locale (both fixed by the
@@ -79,6 +79,13 @@ export function buildLensTools(
             "Grams; lens weight must be ≤ this. Use only for an explicit limit. For a vague " +
               "'light' preference use sortBy: weightG instead (no hard cutoff).",
           ),
+        maxLengthMm: z
+          .number()
+          .optional()
+          .describe(
+            "Barrel length ceiling in mm — for 'compact', 'pocketable', 'small'. Use only for an " +
+              "explicit size cap; for a vague size preference use sortBy: length instead.",
+          ),
         maxApertureF: z
           .object({ wide: z.number().optional(), tele: z.number().optional() })
           .optional()
@@ -98,6 +105,14 @@ export function buildLensTools(
             "Minimum magnification ratio for close-up work (0.5 = half life-size, 1 = 1:1 " +
               "true macro). Use only for an explicit close-up need; for a vague 'good for " +
               "close-ups' use sortBy: magnification.",
+          ),
+        minApertureBladeCount: z
+          .number()
+          .optional()
+          .describe(
+            "Minimum aperture blades — for 'round bokeh' / 'smooth out-of-focus'. More blades " +
+              "keep the aperture rounder when stopped down. Use only when the user cares about " +
+              "bokeh shape (typically 9+).",
           ),
         minReleaseYear: z
           .number()
@@ -129,8 +144,38 @@ export function buildLensTools(
       execute: ({ query, limit }) => {
         const index = buildLensSearchIndex(getLensesByMount(mount, locale));
         const results = searchLensIndex(index, query, limit ?? 8);
-        return { results: results.map((lens) => projectLens(lens, locale, tBrand)) };
+        return { results: results.map((lens) => resolveLens(lens, locale, tBrand)) };
       },
+    }),
+
+    recommendLenses: tool({
+      description:
+        "Present your final picks as recommendation cards — call this once you've chosen which " +
+        "lenses to recommend (3–6, ordered best-first). Pass each lens's id (from a prior " +
+        "queryLenses/searchLensByName result) and a one- or two-sentence reason written for the " +
+        "user, in their language, citing the concrete spec that makes it fit. This renders the " +
+        "cards and ends your turn, so write any framing prose BEFORE calling it.",
+      inputSchema: z.object({
+        picks: z
+          .array(
+            z.object({
+              id: z.string().describe("The lens id from a prior tool result."),
+              reason: z
+                .string()
+                .describe("Why this lens fits, in the user's language. Cite a concrete spec."),
+            }),
+          )
+          .min(1)
+          .max(6),
+      }),
+      execute: ({ picks }) => recommendLenses(mount, locale, picks, tBrand),
+      // Full recommendations stream to the client (the cards); the model already
+      // saw these lenses in the query result, so feed it a lean ack, not the specs
+      // again. Requires passing this same ToolSet to convertToModelMessages.
+      toModelOutput: ({ output }) => ({
+        type: "text",
+        value: `Rendered ${output.recommendations.length} recommendation card(s) to the user.`,
+      }),
     }),
   };
 }

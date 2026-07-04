@@ -1,10 +1,11 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { cn } from "@/lib/utils";
 
 // Markdown renderer for Iris's replies. This project has no @tailwindcss/typography
 // (`prose`), so the elements Iris actually emits are styled via child selectors on
 // the wrapper. Raw HTML stays disabled (react-markdown's safe default).
-const MARKDOWN_CLS = [
+const MARKDOWN_CLS = cn(
   "space-y-2 leading-relaxed",
   "[&_p]:m-0",
   "[&_strong]:font-semibold",
@@ -17,7 +18,7 @@ const MARKDOWN_CLS = [
   "[&_h1]:text-base [&_h1]:font-semibold",
   "[&_h2]:text-sm [&_h2]:font-semibold",
   "[&_h3]:text-sm [&_h3]:font-semibold",
-].join(" ");
+);
 
 export default function Markdown({ children }: { children: string }) {
   return (
