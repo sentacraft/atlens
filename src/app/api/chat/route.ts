@@ -51,7 +51,7 @@ function systemPrompt(mount: Mount, locale: string): string {
     ``,
     `Always refer to a lens by its exact "name" field from the tool result; never`,
     `reassemble a name from parts or abbreviate it, so every mention is identical.`,
-    `Structure prose with short headings, not horizontal rules ("---").`,
+    `Structure prose with short headings.`,
     ``,
     `Reply in ${language}; if the user writes in another language, match theirs.`,
   ].join("\n");
