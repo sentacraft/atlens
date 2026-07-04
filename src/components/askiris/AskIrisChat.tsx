@@ -75,11 +75,11 @@ export default function AskIrisChat({ locale }: { locale: string }) {
   }
 
   return (
-    <div className="mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-4xl flex-col px-4">
+    <div className="mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4">
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="min-h-0 flex-1 space-y-4 overflow-y-auto py-4 [scrollbar-width:thin] [scrollbar-color:rgb(212_212_216)_transparent] dark:[scrollbar-color:rgb(63_63_70)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300/70 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700/70"
+        className="min-h-0 flex-1 space-y-4 overflow-y-auto pt-4 pr-3 pb-10 [mask-image:linear-gradient(to_bottom,black_calc(100%_-_2.5rem),transparent)] [scrollbar-width:thin] [scrollbar-color:rgb(212_212_216)_transparent] dark:[scrollbar-color:rgb(63_63_70)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300/70 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700/70"
       >
         <AskIrisThread messages={renderMessages} locale={locale} debug={debug} />
       </div>
