@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
-import { lensDisplayName, weightDisplay } from "@/lib/lens/format";
+import { weightDisplay } from "@/lib/lens/format";
 import Markdown from "@/components/askiris/Markdown";
 import type { Recommendation } from "@/lib/ai/recall";
 
@@ -26,6 +26,10 @@ export default function RecommendationDeck({
   );
 }
 
+// Compact, non-prose styling for the one-clause reason inside a card.
+const REASON_CLS =
+  "text-muted-foreground text-[11px] leading-snug [&_p]:m-0 [&_p]:line-clamp-3 [&_strong]:text-foreground [&_strong]:font-semibold";
+
 function priceLabel(price: NonNullable<Recommendation["price"]>, locale: string): string {
   const symbol = price.currency === "CNY" ? "¥" : "$";
   const used = price.condition === "used" ? (locale === "zh" ? " 二手" : " used") : "";
@@ -36,7 +40,6 @@ function priceLabel(price: NonNullable<Recommendation["price"]>, locale: string)
 // width and gives the model's reason room to be read, rather than a tall column
 // card whose reason gets clamped to a couple of words.
 function RecommendationCard({ rec, locale }: { rec: Recommendation; locale: string }) {
-  const name = lensDisplayName(rec.brand, rec.series, rec.model);
   const weight = rec.weightG != null ? weightDisplay(rec.weightG, "g") : null;
   const meta = [rec.price ? priceLabel(rec.price, locale) : null, weight].filter(Boolean);
 
@@ -46,27 +49,27 @@ function RecommendationCard({ rec, locale }: { rec: Recommendation; locale: stri
       prefetch={false}
       className="border-border bg-background hover:border-foreground/20 flex w-72 shrink-0 snap-start gap-3 rounded-xl border p-2.5 transition-colors"
     >
-      <div className="bg-muted/40 relative h-24 w-24 shrink-0 overflow-hidden rounded-lg">
+      <div className="relative h-24 w-24 shrink-0">
         <Image
           src={getLensImageUrl(rec.id)}
-          alt={rec.model}
+          alt={rec.name}
           fill
           sizes="96px"
           style={lensImageStyle}
-          className="object-contain p-1.5"
+          className="object-contain"
           loading="lazy"
         />
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <h4 className="line-clamp-2 text-xs leading-snug font-semibold" title={name}>
-          {name}
+        <h4 className="line-clamp-2 text-xs leading-snug font-semibold" title={rec.name}>
+          {rec.name}
         </h4>
         {meta.length ? (
           <p className="text-foreground text-xs font-medium">{meta.join(" · ")}</p>
         ) : null}
-        <div className="text-muted-foreground mt-0.5 text-[11px] leading-snug [&_p]:line-clamp-3 [&_strong]:text-foreground [&_strong]:font-semibold">
-          <Markdown>{rec.reason}</Markdown>
+        <div className="mt-0.5">
+          <Markdown className={REASON_CLS}>{rec.reason}</Markdown>
         </div>
       </div>
     </Link>

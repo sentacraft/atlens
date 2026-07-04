@@ -7,7 +7,7 @@ import {
   type FilterFeatureKey,
   type SortKey,
 } from "@/lib/lens/lens";
-import { focalEquiv } from "@/lib/lens/format";
+import { focalEquiv, lensDisplayName } from "@/lib/lens/format";
 import { getLensesByMount } from "@/lib/lens/data";
 import { deriveSpecialty } from "@/lib/lens/specialty";
 import { pickPriceEntry } from "@/lib/lens/pricing";
@@ -79,8 +79,6 @@ export type ResolvedLens = Pick<
   Lens,
   | "id"
   | "mount"
-  | "series"
-  | "model"
   | "generation"
   | "minAperture"
   | "maxTStop"
@@ -108,7 +106,10 @@ export type ResolvedLens = Pick<
   | "accessories"
   | "fieldNotes"
 > & {
-  brand: string; // resolved display name, not the raw brand key
+  // Single canonical display name (brand + series + model, locale-resolved). The
+  // model and the card both refer to a lens by this — the raw brand/series/model
+  // are NOT exposed, so the model can't reassemble names inconsistently.
+  name: string;
   focalNativeMm: [number, number];
   focalEquivMm: [number, number];
   maxAperture: ApertureValue | null;
@@ -339,9 +340,7 @@ export function resolveLens(
     // identity
     id: lens.id,
     mount: lens.mount,
-    brand: tBrand(lens.brand),
-    series: lens.series,
-    model: lens.model,
+    name: lensDisplayName(tBrand(lens.brand), lens.series, lens.model),
     generation: lens.generation,
     // focal / field of view
     focalNativeMm: [lens.focalLengthMin, lens.focalLengthMax],

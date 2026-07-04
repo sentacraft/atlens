@@ -1,36 +1,24 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { cn } from "@/lib/utils";
 
-// Markdown renderer for Iris's replies. This project has no @tailwindcss/typography
-// (`prose`), so the elements Iris actually emits are styled via child selectors on
-// the wrapper. Raw HTML stays disabled (react-markdown's safe default).
-const MARKDOWN_CLS = cn(
-  "space-y-2 leading-relaxed",
-  "[&_p]:m-0",
-  "[&_strong]:font-semibold",
-  "[&_em]:italic",
-  "[&_a]:underline [&_a]:underline-offset-2",
-  "[&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5",
-  "[&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5",
-  "[&_li]:marker:text-muted-foreground",
-  "[&_code]:bg-background/60 [&_code]:rounded [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[0.85em]",
-  "[&_h1]:text-base [&_h1]:font-semibold",
-  "[&_h2]:text-sm [&_h2]:font-semibold",
-  "[&_h3]:text-sm [&_h3]:font-semibold",
-  // Iris over-emits `---` between sections; decks + headings already separate
-  // them, so the horizontal rule is just noise — hide it.
-  "[&_hr]:hidden",
-  // Tables scroll inside their own box so a wide summary table never widens the
-  // chat column (which only scrolls vertically).
-  "[&_table]:my-2 [&_table]:block [&_table]:w-max [&_table]:max-w-full [&_table]:overflow-x-auto [&_table]:border-collapse [&_table]:text-xs",
-  "[&_th]:border [&_th]:border-border [&_th]:px-2 [&_th]:py-1 [&_th]:text-left [&_th]:font-medium",
-  "[&_td]:border [&_td]:border-border [&_td]:px-2 [&_td]:py-1 [&_td]:align-top",
-);
+// Renders Iris's Markdown. react-markdown + remark-gfm only parse Markdown into
+// semantic HTML; styling is @tailwindcss/typography's `prose` — the one-stop that
+// covers every element (headings, lists, tables, hr, code…) instead of per-element
+// classes. Callers can override `className` for a compact, non-prose context (cards).
+// The system prompt already asks Iris not to use `---`; this suppresses the rule
+// on the occasions it does anyway (headings + decks already separate sections).
+const PROSE_CLS =
+  "prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-headings:mb-1 prose-hr:hidden";
 
-export default function Markdown({ children }: { children: string }) {
+export default function Markdown({
+  children,
+  className = PROSE_CLS,
+}: {
+  children: string;
+  className?: string;
+}) {
   return (
-    <div className={MARKDOWN_CLS}>
+    <div className={className}>
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{children}</ReactMarkdown>
     </div>
   );

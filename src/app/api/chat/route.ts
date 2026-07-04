@@ -44,6 +44,10 @@ function systemPrompt(mount: Mount, locale: string): string {
     `your prose between the decks. For a specific-lens lookup or a quick factual`,
     `answer, reply in prose without cards.`,
     ``,
+    `Always refer to a lens by its exact "name" field from the tool result; never`,
+    `reassemble a name from parts or abbreviate it, so every mention is identical.`,
+    `Structure prose with short headings, not horizontal rules ("---").`,
+    ``,
     `Reply in ${language}; if the user writes in another language, match theirs.`,
   ].join("\n");
 }
