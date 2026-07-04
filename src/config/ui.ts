@@ -58,7 +58,3 @@ export const Z = {
 // (Back-to-Top, Share) fade in. Shared so the affordances appear in lockstep.
 export const FAB_REVEAL_SCROLL_Y = 400;
 
-// ── Lens list / compare ───────────────────────────────────────────────────────
-
-// TODO: max number of lenses that can be compared simultaneously
-// TODO: default sort field and direction

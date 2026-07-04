@@ -23,7 +23,7 @@ const MARKS: Mark[] = ["A", 1.4, 2, 2.8, 4, 5.6, 8, 11, 16, 22];
 
 // Pixel spacing between consecutive marks. Chosen so ~3 marks are visible in
 // the unfeathered centre zone.
-const SPACING = 31; // reduced 30% from original 48, then an additional 10%
+const SPACING = 31;
 
 // Index of the nearest numeric mark to a given f-stop value.
 function nearestNumericIndex(fStop: number): number {

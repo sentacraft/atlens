@@ -156,24 +156,13 @@ describe("searchLenses — regression", () => {
 
 describe("searchLenses — no false positives from decimal splitting", () => {
   it("'f8' does NOT match an f/2.8 lens", () => {
-    // Before the normalisation fix, "F2.8" was tokenised as ["f2", "8"] and
-    // "8" would exact-match a standalone "8" token, causing "f8" (via the
-    // "8" substring match) or a bare "8" query to falsely hit f/2.8 lenses.
     const results = searchLenses(lenses, "f8");
     expect(results.map((l) => l.id)).not.toContain("fuji-xf40-28");
     expect(results.map((l) => l.id)).not.toContain("sigma-18-50-28");
   });
 
   it("bare '8' does NOT exact-match any f/x.8 lens via a garbage token", () => {
-    // After the fix, "F2.8" → "f2.8" (single token). "8" can still
-    // includes-match "f2.8" as a substring, but that is substring noise,
-    // not a garbage exact token. Ensure it is at least not ranked as
-    // exact-aperture match.
     const results = searchLenses(lenses, "8");
-    // The decimal tokens should no longer appear as isolated digit tokens,
-    // so any f/2.8 match must come from the substring bucket, not from an
-    // exact "8" token. We just verify the result set is non-empty
-    // (substring match is acceptable) without pretending "8" is a precise query.
     expect(results.length).toBeGreaterThanOrEqual(0);
   });
 });

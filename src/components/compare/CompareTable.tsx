@@ -519,10 +519,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
           {orderedLenses.length > 0 && visibleGroups.map((group) => {
             return (
               <React.Fragment key={group.label}>
-                {/* Group header row.
-                    The label is absolutely positioned at --section-center (updated
-                    on scroll/resize) so it stays centered in the visible content
-                    pane regardless of horizontal scroll position. */}
                 <tr className="border-b border-zinc-100 bg-zinc-100/80 dark:border-zinc-800/60 dark:bg-zinc-800/60">
                   <td colSpan={totalColSpan} className="h-8 text-center">
                     <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">

@@ -258,11 +258,6 @@ export default function Iris({
       // Without it, the chase could exit at the Phase-1/Phase-2 boundary (when
       // theta momentarily equals thetaMax) and never drive the iris back to
       // defaultTheta — the root cause of the "iris frozen at minimum aperture" bug.
-      //
-      // hasMovedSignificantly was the previous guard but it was both insufficient
-      // (didn't fix the animation-phase bug) and harmful (if startChase is called
-      // with theta === target and no animation running, the loop never exits because
-      // hasMovedSignificantly stays false — an infinite rAF loop).
       if (delta < 0.001 && initAnimRef.current === null) {
         thetaRef.current = targetThetaRef.current;
         setTheta(targetThetaRef.current);

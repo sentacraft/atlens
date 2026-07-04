@@ -203,10 +203,9 @@ export default function LensListClient({ lenses }: LensListClientProps) {
         ) : (
           // Stable container — no content-fingerprint key. Filtering/sorting
           // reconciles cards in place instead of remounting the whole grid, so
-          // memo(LensCard) bails out unaffected cards on every filter change
-          // (previously the keyed remount defeated memo on that path). The fade
-          // is replayed imperatively via the Web Animations API in the effect
-          // above — no remount, so memo stays intact.
+          // memo(LensCard) bails out unaffected cards on every filter change.
+          // The fade is replayed imperatively via the Web Animations API in the
+          // effect above — no remount, so memo stays intact.
           <div
             ref={gridRef}
             {...hookAttr("grid")}
