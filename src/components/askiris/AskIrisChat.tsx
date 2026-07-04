@@ -3,7 +3,9 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { cn } from "@/lib/utils";
 import { useEffectiveMount } from "@/hooks/useMountParam";
+import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { useTestHookOption } from "@/context/TestHookProvider";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
 import {
@@ -49,6 +51,9 @@ export default function AskIrisChat({ locale }: { locale: string }) {
   // the bottom — scrolling up to read mid-stream must not get yanked back down.
   const scrollRef = useRef<HTMLDivElement>(null);
   const pinnedRef = useRef(true);
+  // Drives the top/bottom fade overlays — shown only when there's more thread in
+  // that direction. Re-measures when the rendered messages change.
+  const { canScrollUp, canScrollDown } = useScrollAffordance(scrollRef, [renderMessages]);
 
   function handleScroll() {
     const el = scrollRef.current;
@@ -76,12 +81,31 @@ export default function AskIrisChat({ locale }: { locale: string }) {
 
   return (
     <div className="mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4">
-      <div
-        ref={scrollRef}
-        onScroll={handleScroll}
-        className="min-h-0 flex-1 space-y-4 overflow-y-auto pt-4 pr-3 pb-10 [mask-image:linear-gradient(to_bottom,black_calc(100%_-_2.5rem),transparent)] [scrollbar-width:thin] [scrollbar-color:rgb(212_212_216)_transparent] dark:[scrollbar-color:rgb(63_63_70)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300/70 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700/70"
-      >
-        <AskIrisThread messages={renderMessages} locale={locale} debug={debug} />
+      <div className="relative min-h-0 flex-1">
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="h-full space-y-4 overflow-y-auto pt-4 pr-3 pb-6 [scrollbar-width:thin] [scrollbar-color:rgb(212_212_216)_transparent] dark:[scrollbar-color:rgb(63_63_70)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300/70 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700/70"
+        >
+          <AskIrisThread messages={renderMessages} locale={locale} debug={debug} />
+        </div>
+        {/* Edge fades as overlays (not a container mask) so the scrollbar stays
+            crisp; each shows only when there's more thread that way. Inset from
+            the right so they clear the scrollbar. */}
+        <div
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute top-0 right-3 left-0 h-8 bg-gradient-to-b from-background to-transparent transition-opacity duration-200",
+            canScrollUp ? "opacity-100" : "opacity-0",
+          )}
+        />
+        <div
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute right-3 bottom-0 left-0 h-10 bg-gradient-to-t from-background to-transparent transition-opacity duration-200",
+            canScrollDown ? "opacity-100" : "opacity-0",
+          )}
+        />
       </div>
 
       <form onSubmit={handleSubmit} className="shrink-0 flex gap-2 py-4">
