@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import AskIrisChat from "@/components/askiris/AskIrisChat";
@@ -16,9 +15,5 @@ export const metadata: Metadata = {
 export default async function AskIrisPage({ params }: { params: Params }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return (
-    <Suspense>
-      <AskIrisChat locale={locale} />
-    </Suspense>
-  );
+  return <AskIrisChat locale={locale} />;
 }

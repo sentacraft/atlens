@@ -30,12 +30,42 @@ export default function TestHookPanel() {
   const [copied, setCopied] = useState(false);
   const [linksOpen, setLinksOpen] = useState(true);
   const [tweaksOpen, setTweaksOpen] = useState(false);
+  const [askIrisOpen, setAskIrisOpen] = useState(false);
 
   if (!context || !context.state.testHook) {
     return null;
   }
 
   const { state, setOption, setTestHook, reset, buildShareableLink } = context;
+
+  const uiTweaks = TESTHOOK_OPTION_DEFINITIONS.filter((o) => o.section !== "askiris");
+  const askIrisOptions = TESTHOOK_OPTION_DEFINITIONS.filter((o) => o.section === "askiris");
+
+  const renderOption = (option: (typeof TESTHOOK_OPTION_DEFINITIONS)[number]) => (
+    <label key={option.key} className="flex flex-col gap-1.5">
+      <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+        {option.label}
+      </span>
+      <Select
+        value={state.options[option.key] ?? option.defaultValue ?? ""}
+        onValueChange={(value) => setOption(option.key, value ?? "")}
+      >
+        <SelectTrigger className="h-10">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {option.values.map((value) => (
+            <SelectItem key={value.id} value={value.id}>
+              {value.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <span className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+        {option.description}
+      </span>
+    </label>
+  );
 
   return (
     <aside className="fixed bottom-4 right-4 z-50 max-h-[calc(100dvh-2rem)] w-[min(24rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl border border-zinc-200/80 bg-white/95 p-4 shadow-xl backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90">
@@ -89,41 +119,29 @@ export default function TestHookPanel() {
           onClick={() => setTweaksOpen(!tweaksOpen)}
         >
           <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
-            UI tweaks ({TESTHOOK_OPTION_DEFINITIONS.length})
+            UI tweaks ({uiTweaks.length})
           </span>
           <span className="text-xs text-zinc-400 dark:text-zinc-500">
             {tweaksOpen ? "▲" : "▼"}
           </span>
         </button>
-        {tweaksOpen && (
-          <div className="mt-3 space-y-4">
-            {TESTHOOK_OPTION_DEFINITIONS.map((option) => (
-              <label key={option.key} className="flex flex-col gap-1.5">
-                <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
-                  {option.label}
-                </span>
-                <Select
-                  value={state.options[option.key] ?? option.defaultValue ?? ""}
-                  onValueChange={(value) => setOption(option.key, value ?? "")}
-                >
-                  <SelectTrigger className="h-10">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {option.values.map((value) => (
-                      <SelectItem key={value.id} value={value.id}>
-                        {value.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <span className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
-                  {option.description}
-                </span>
-              </label>
-            ))}
-          </div>
-        )}
+        {tweaksOpen && <div className="mt-3 space-y-4">{uiTweaks.map(renderOption)}</div>}
+      </div>
+
+      <div className="mt-4 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+        <button
+          type="button"
+          className="flex w-full items-center justify-between"
+          onClick={() => setAskIrisOpen(!askIrisOpen)}
+        >
+          <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+            AskIris debug ({askIrisOptions.length})
+          </span>
+          <span className="text-xs text-zinc-400 dark:text-zinc-500">
+            {askIrisOpen ? "▲" : "▼"}
+          </span>
+        </button>
+        {askIrisOpen && <div className="mt-3 space-y-4">{askIrisOptions.map(renderOption)}</div>}
       </div>
 
       {/* Demo-mode redaction reference. Activated by URL query (read by the

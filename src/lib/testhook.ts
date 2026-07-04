@@ -27,6 +27,9 @@ interface TestHookOptionDefinition {
   description: string;
   values: readonly TestHookOptionValueDefinition[];
   defaultValue?: string;
+  // Panel grouping. Options without a section render under "UI tweaks";
+  // "askiris" options render under their own "AskIris debug" section.
+  section?: "askiris";
 }
 
 export interface TestHookState {
@@ -182,6 +185,30 @@ export const TESTHOOK_OPTION_DEFINITIONS: readonly TestHookOptionDefinition[] = 
         description: "Use tighter gaps and pack more cards per row when space allows.",
         css: CSS_GRID_DENSITY_TIGHT,
       },
+    ],
+  },
+  {
+    key: "askIrisTrace",
+    section: "askiris",
+    label: "Tool trace",
+    description: "Show Iris's tool calls and raw payloads inline in the thread.",
+    defaultValue: "off",
+    values: [
+      { id: "off", label: "Off", description: "Hide the agent trace." },
+      { id: "on", label: "On", description: "Show each tool call and its result." },
+    ],
+  },
+  {
+    key: "askIrisFixture",
+    section: "askiris",
+    label: "Fixture",
+    description: "Replay a saved thread instead of the live chat (dev only).",
+    defaultValue: "off",
+    values: [
+      { id: "off", label: "Live (no fixture)", description: "Use the live agent." },
+      { id: "wildlife", label: "Wildlife (real capture)", description: "A captured multi-deck reply." },
+      { id: "carousel", label: "Carousel (6 cards)", description: "One deck of 6 — shelf overflow." },
+      { id: "table", label: "Summary table", description: "A reply ending in a Markdown table." },
     ],
   },
 ];

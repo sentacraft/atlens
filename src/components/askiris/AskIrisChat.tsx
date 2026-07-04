@@ -2,10 +2,9 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useEffectiveMount } from "@/hooks/useMountParam";
-import { useTestHookEnabled } from "@/context/TestHookProvider";
+import { useTestHookOption } from "@/context/TestHookProvider";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
 import { FIXTURES } from "@/components/askiris/__fixtures__";
 
@@ -16,7 +15,9 @@ import { FIXTURES } from "@/components/askiris/__fixtures__";
 // card deck, interleaved in message.parts order.
 export default function AskIrisChat({ locale }: { locale: string }) {
   const mount = useEffectiveMount();
-  const debug = useTestHookEnabled();
+  // Both gated behind the test-hook panel's "AskIris debug" section.
+  const debug = useTestHookOption("askIrisTrace") === "on";
+  const fixtureId = useTestHookOption("askIrisFixture");
   const [input, setInput] = useState("");
   const transport = useMemo(
     () => new DefaultChatTransport({ api: "/api/chat", body: { mount, locale } }),
@@ -24,11 +25,12 @@ export default function AskIrisChat({ locale }: { locale: string }) {
   );
   const { messages, sendMessage, status } = useChat({ transport });
 
-  // Dev-only: `?fixture=<name>` replays a saved thread through the real page
-  // shell — deterministic UI work (decks, tables, carousel) with no LLM call.
-  const fixtureName = useSearchParams().get("fixture");
+  // Dev-only: the panel's fixture selector replays a saved thread through the real
+  // page shell — deterministic UI work (decks, tables, carousel) with no LLM call.
   const fixtureMessages =
-    process.env.NODE_ENV !== "production" && fixtureName ? FIXTURES[fixtureName] : null;
+    process.env.NODE_ENV !== "production" && fixtureId && fixtureId !== "off"
+      ? FIXTURES[fixtureId]
+      : null;
   const renderMessages = fixtureMessages ?? messages;
 
   const isBusy = status === "submitted" || status === "streaming";
