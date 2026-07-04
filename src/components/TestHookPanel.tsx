@@ -54,11 +54,7 @@ const FIXTURE_INPUT_CLS =
 // system (their list is dynamic — saved files on disk), so this drives the
 // shared fixtureStore directly rather than going through setOption.
 function FixtureControl() {
-  const { selected, builtin, saved } = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot,
-  );
+  const { selected, saved } = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const [name, setName] = useState("");
   const isSaved = saved.includes(selected);
   // Blank when capturing a new one; the current name when a saved one is picked.
@@ -66,8 +62,6 @@ function FixtureControl() {
     setName(isSaved ? selected : "");
   }, [selected, isSaved]);
 
-  // Built-in names not shadowed by a saved file of the same name.
-  const builtinOnly = builtin.filter((n) => !saved.includes(n));
   const trimmed = name.trim();
   const nameOk = SAFE_FIXTURE_NAME.test(trimmed);
 
@@ -82,14 +76,9 @@ function FixtureControl() {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="off">Live (no fixture)</SelectItem>
-          {builtinOnly.map((n) => (
-            <SelectItem key={n} value={n}>
-              {n}
-            </SelectItem>
-          ))}
           {saved.map((n) => (
             <SelectItem key={n} value={n}>
-              {n} · saved
+              {n}
             </SelectItem>
           ))}
         </SelectContent>

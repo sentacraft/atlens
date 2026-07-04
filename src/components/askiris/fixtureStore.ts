@@ -1,35 +1,34 @@
 "use client";
 
 import type { UIMessage } from "ai";
-import { FIXTURES as BUILTIN } from "@/components/askiris/__fixtures__";
 
 // Dev-only fixture store shared between AskIrisChat (publishes its live messages,
 // reads the selected fixture) and the test-hook panel (selects, saves, renames,
-// deletes). Saved fixtures are persisted as JSON files under a gitignored repo
-// dir via /api/askiris-fixtures — a captured session survives reloads and is
-// visible on disk. Built-in fixtures are read-only. None of this ships to prod:
-// the API route 404s outside dev and AskIrisChat gates fixture use on NODE_ENV.
+// deletes). Fixtures are persisted as JSON files under a gitignored repo dir via
+// /api/askiris-fixtures — a captured session survives reloads and is visible on
+// disk, so you can save a live reply and replay it while debugging. None of this
+// ships to prod: the API route 404s outside dev and AskIrisChat gates fixture use
+// on NODE_ENV.
 
 const API = "/api/askiris-fixtures";
 
 let live: UIMessage[] = [];
 let selected = "off";
-// In-memory mirror of the on-disk saved fixtures, so resolveFixture() stays sync
-// for render. Seeded by refresh() on load and kept in step on every mutation.
+// In-memory mirror of the on-disk fixtures, so resolveFixture() stays sync for
+// render. Seeded by refresh() on load and kept in step on every mutation.
 let saved: Record<string, UIMessage[]> = {};
 const listeners = new Set<() => void>();
 
 export interface FixtureSnapshot {
   selected: string;
-  builtin: string[];
   saved: string[];
 }
 
-let snapshot: FixtureSnapshot = { selected, builtin: Object.keys(BUILTIN), saved: [] };
-const SERVER_SNAPSHOT: FixtureSnapshot = { selected: "off", builtin: Object.keys(BUILTIN), saved: [] };
+let snapshot: FixtureSnapshot = { selected, saved: [] };
+const SERVER_SNAPSHOT: FixtureSnapshot = { selected: "off", saved: [] };
 
 function rebuild() {
-  snapshot = { selected, builtin: Object.keys(BUILTIN), saved: Object.keys(saved) };
+  snapshot = { selected, saved: Object.keys(saved) };
 }
 
 function emit() {
@@ -57,17 +56,17 @@ async function refresh() {
       emit();
     }
   } catch {
-    // No API (e.g. prod) — built-in fixtures still work.
+    // No API (e.g. prod) — nothing to replay.
   }
 }
 
 if (typeof window !== "undefined") {
-  // Restore query-param repro links, e.g. ?fixture=wildlife — resolves against a
-  // built-in name immediately and a saved one once refresh() lands.
+  // Restore query-param repro links, e.g. ?fixture=foo — resolves once refresh()
+  // lands the saved fixtures from disk.
   const fromUrl = new URLSearchParams(window.location.search).get("fixture");
   if (fromUrl) {
     selected = fromUrl;
-    snapshot = { selected, builtin: Object.keys(BUILTIN), saved: [] };
+    snapshot = { selected, saved: [] };
   }
   void refresh();
 }
@@ -102,8 +101,7 @@ export function resolveFixture(name: string): UIMessage[] | undefined {
   if (name === "off") {
     return undefined;
   }
-  // Saved wins over built-in, so saving under a built-in name overrides it.
-  return saved[name] ?? BUILTIN[name];
+  return saved[name];
 }
 
 export function saveFixture(name: string) {
