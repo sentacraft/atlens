@@ -152,9 +152,9 @@ export function buildLensTools(
       description:
         "Present your final picks as recommendation cards — call this once you've chosen which " +
         "lenses to recommend (3–6, ordered best-first). Pass each lens's id (from a prior " +
-        "queryLenses/searchLensByName result) and a one- or two-sentence reason written for the " +
-        "user, in their language, citing the concrete spec that makes it fit. This renders the " +
-        "cards and ends your turn, so write any framing prose BEFORE calling it.",
+        "queryLenses/searchLensByName result) and a reason. Keep the reason to ONE short sentence " +
+        "(the card is compact) in the user's language, citing the single concrete spec that makes " +
+        "it fit. Put any longer framing or comparison in your prose BEFORE calling this.",
       inputSchema: z.object({
         picks: z
           .array(
@@ -162,7 +162,9 @@ export function buildLensTools(
               id: z.string().describe("The lens id from a prior tool result."),
               reason: z
                 .string()
-                .describe("Why this lens fits, in the user's language. Cite a concrete spec."),
+                .describe(
+                  "One short sentence: why this lens fits, in the user's language, citing one concrete spec.",
+                ),
             }),
           )
           .min(1)

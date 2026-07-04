@@ -14,6 +14,8 @@ import { useTestHookEnabled } from "@/context/TestHookProvider";
 import Iris from "@/components/iris/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import Markdown from "@/components/askiris/Markdown";
+import RecommendationDeck from "@/components/askiris/RecommendationDeck";
+import type { Recommendation } from "@/lib/ai/recall";
 
 // One-line recap of a tool's return, so the trace stays readable without
 // unfurling the full payload (which is in the collapsible below it).
@@ -57,8 +59,8 @@ function ToolTrace({ part }: { part: ToolUIPart | DynamicToolUIPart }) {
 // Experimental AskIris chat. Mount comes from the effective-mount preference
 // (URL has none here) and locale from the route; both go through the transport
 // body so the server scopes the agent to one mount and replies in one language.
-// Only text parts are rendered today; tool results (structured lens data) fuel
-// the model's prose and become cards in a later frontend pass.
+// Text parts render as Markdown prose; each recommendLenses call renders as a
+// card deck, interleaved in message.parts order.
 export default function AskIrisChat({ locale }: { locale: string }) {
   const mount = useEffectiveMount();
   const debug = useTestHookEnabled();
@@ -133,10 +135,11 @@ export default function AskIrisChat({ locale }: { locale: string }) {
                 </div>
               )}
               {message.parts.map((part, i) => {
+                const key = `${message.id}-${i}`;
                 if (part.type === "text") {
                   return (
                     <div
-                      key={`${message.id}-${i}`}
+                      key={key}
                       className={`rounded-2xl px-3 py-2 text-sm ${
                         isUser
                           ? "bg-primary text-primary-foreground max-w-[85%] whitespace-pre-wrap"
@@ -147,8 +150,20 @@ export default function AskIrisChat({ locale }: { locale: string }) {
                     </div>
                   );
                 }
+                if (
+                  isToolUIPart(part) &&
+                  getToolName(part) === "recommendLenses" &&
+                  part.state === "output-available"
+                ) {
+                  const { recommendations } = part.output as { recommendations: Recommendation[] };
+                  return (
+                    <div key={key} className="w-full">
+                      <RecommendationDeck recommendations={recommendations} locale={locale} />
+                    </div>
+                  );
+                }
                 if (debug && isToolUIPart(part)) {
-                  return <ToolTrace key={`${message.id}-${i}`} part={part} />;
+                  return <ToolTrace key={key} part={part} />;
                 }
                 return null;
               })}
