@@ -1,9 +1,10 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -38,7 +39,19 @@ type TabId = (typeof TABS)[number]["id"];
 export default function TestHookPanel() {
   const context = useContext(TestHookContext);
   const [copied, setCopied] = useState(false);
+  // Persisted in sessionStorage so the active tab survives a panel remount
+  // (e.g. dev Fast Refresh) instead of snapping back to the first tab.
   const [tab, setTab] = useState<TabId>("routes");
+  useEffect(() => {
+    const saved = sessionStorage.getItem("testhook-tab");
+    if (saved && TABS.some((t) => t.id === saved)) {
+      setTab(saved as TabId);
+    }
+  }, []);
+  const selectTab = (id: TabId) => {
+    setTab(id);
+    sessionStorage.setItem("testhook-tab", id);
+  };
 
   if (!context || !context.state.testHook) {
     return null;
@@ -49,31 +62,56 @@ export default function TestHookPanel() {
   const uiTweaks = TESTHOOK_OPTION_DEFINITIONS.filter((o) => o.section !== "askiris");
   const askIrisOptions = TESTHOOK_OPTION_DEFINITIONS.filter((o) => o.section === "askiris");
 
-  const renderOption = (option: (typeof TESTHOOK_OPTION_DEFINITIONS)[number]) => (
-    <label key={option.key} className="flex flex-col gap-1.5">
-      <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
-        {option.label}
-      </span>
-      <Select
-        value={state.options[option.key] ?? option.defaultValue ?? ""}
-        onValueChange={(value) => setOption(option.key, value ?? "")}
-      >
-        <SelectTrigger className="h-10">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {option.values.map((value) => (
-            <SelectItem key={value.id} value={value.id}>
-              {value.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <span className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
-        {option.description}
-      </span>
-    </label>
-  );
+  const renderOption = (option: (typeof TESTHOOK_OPTION_DEFINITIONS)[number]) => {
+    const current = state.options[option.key] ?? option.defaultValue ?? "";
+    const ids = option.values.map((v) => v.id);
+    const isToggle = ids.length === 2 && ids.includes("on") && ids.includes("off");
+
+    if (isToggle) {
+      return (
+        <div key={option.key} className="flex flex-col gap-1.5">
+          <label className="flex items-center gap-2">
+            <Checkbox
+              checked={current === "on"}
+              onCheckedChange={(checked) => setOption(option.key, checked ? "on" : "off")}
+            />
+            <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+              {option.label}
+            </span>
+          </label>
+          <span className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+            {option.description}
+          </span>
+        </div>
+      );
+    }
+
+    return (
+      <label key={option.key} className="flex flex-col gap-1.5">
+        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+          {option.label}
+        </span>
+        <Select
+          value={current}
+          onValueChange={(value) => setOption(option.key, value ?? "")}
+        >
+          <SelectTrigger className="h-10">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {option.values.map((value) => (
+              <SelectItem key={value.id} value={value.id}>
+                {value.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <span className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+          {option.description}
+        </span>
+      </label>
+    );
+  };
 
   return (
     <aside className="fixed bottom-4 right-4 z-50 max-h-[calc(100dvh-2rem)] w-[min(24rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl border border-zinc-200/80 bg-white/95 p-4 shadow-xl backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90">
@@ -89,7 +127,7 @@ export default function TestHookPanel() {
           <button
             key={t.id}
             type="button"
-            onClick={() => setTab(t.id)}
+            onClick={() => selectTab(t.id)}
             className={cn(
               "flex-1 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium transition-colors",
               tab === t.id
