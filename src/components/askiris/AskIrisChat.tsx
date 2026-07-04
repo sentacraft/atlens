@@ -34,7 +34,7 @@ export default function AskIrisChat({ locale }: { locale: string }) {
   const { messages, sendMessage, status } = useChat({ transport });
 
   // Dev-only: the panel's fixture selector replays a saved thread through the real
-  // page shell — deterministic UI work (decks, tables, carousel) with no LLM call.
+  // page shell — deterministic UI work (decks, tables) with no LLM call.
   // Publish live messages so the panel can capture them into a new fixture.
   useEffect(() => {
     publishLive(messages);
