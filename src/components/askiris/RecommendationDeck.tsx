@@ -43,8 +43,9 @@ function priceParts(
   return { symbol, value: `${price.amount.toLocaleString()}${used}` };
 }
 
-// Thumbnail-left, text-right, filling its grid cell. The wider cell gives the
-// title, key specs, and the model's reason room to breathe.
+// Two rows: a header (thumbnail + name + price/weight) and the reason on its own
+// full-width row below, so the reason spans the whole card instead of a narrow
+// column beside the thumbnail — fewer wrapped lines, better use of the space.
 function RecommendationCard({ rec, locale }: { rec: Recommendation; locale: string }) {
   const weight = rec.weightG != null ? weightDisplay(rec.weightG, "g") : null;
   const price = rec.price ? priceParts(rec.price, locale) : null;
@@ -57,45 +58,46 @@ function RecommendationCard({ rec, locale }: { rec: Recommendation; locale: stri
       // same-tab nav would discard the conversation the user is working through.
       target="_blank"
       rel="noopener noreferrer"
-      className="border-border bg-background hover:border-foreground/20 flex items-start gap-3 rounded-xl border p-3 transition-colors"
+      className="border-border bg-background hover:border-foreground/20 flex flex-col gap-2 rounded-xl border p-3 transition-colors"
     >
-      <div className="relative h-28 w-28 shrink-0">
-        <Image
-          src={getLensImageUrl(rec.id)}
-          alt={rec.name}
-          fill
-          sizes="112px"
-          style={lensImageStyle}
-          className="object-contain"
-          loading="lazy"
-        />
-      </div>
+      <div className="flex items-start gap-3">
+        <div className="relative h-20 w-20 shrink-0">
+          <Image
+            src={getLensImageUrl(rec.id)}
+            alt={rec.name}
+            fill
+            sizes="80px"
+            style={lensImageStyle}
+            className="object-contain"
+            loading="lazy"
+          />
+        </div>
 
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <h4 className="line-clamp-2 text-sm leading-snug font-semibold" title={rec.name}>
-          {rec.name}
-        </h4>
-        {price || weight ? (
-          <div className="text-foreground flex flex-wrap items-center gap-x-2 text-xs font-medium">
-            {price ? (
-              <span className="inline-flex items-baseline gap-1">
-                <span className="text-muted-foreground">{price.symbol}</span>
-                {price.value}
-              </span>
-            ) : null}
-            {price && weight ? <span className="text-muted-foreground">·</span> : null}
-            {weight ? (
-              <span className="inline-flex items-center gap-1">
-                <Weight className="text-muted-foreground size-3" aria-hidden />
-                {weight}
-              </span>
-            ) : null}
-          </div>
-        ) : null}
-        <div className="mt-0.5">
-          <Markdown className={REASON_CLS}>{rec.reason}</Markdown>
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <h4 className="line-clamp-2 text-sm leading-snug font-semibold" title={rec.name}>
+            {rec.name}
+          </h4>
+          {price || weight ? (
+            <div className="text-foreground flex flex-wrap items-center gap-x-2 text-xs font-medium">
+              {price ? (
+                <span className="inline-flex items-baseline gap-1">
+                  <span className="text-muted-foreground">{price.symbol}</span>
+                  {price.value}
+                </span>
+              ) : null}
+              {price && weight ? <span className="text-muted-foreground">·</span> : null}
+              {weight ? (
+                <span className="inline-flex items-center gap-1">
+                  <Weight className="text-muted-foreground size-3" aria-hidden />
+                  {weight}
+                </span>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </div>
+
+      <Markdown className={REASON_CLS}>{rec.reason}</Markdown>
     </Link>
   );
 }
