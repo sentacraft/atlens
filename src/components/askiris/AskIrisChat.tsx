@@ -11,6 +11,9 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useTestHookEnabled } from "@/context/TestHookProvider";
+import Iris from "@/components/iris/Iris";
+import { IRIS_NAV } from "@/config/iris-config";
+import Markdown from "@/components/askiris/Markdown";
 
 // One-line recap of a tool's return, so the trace stays readable without
 // unfurling the full payload (which is in the collapsible below it).
@@ -119,20 +122,28 @@ export default function AskIrisChat({ locale }: { locale: string }) {
               className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start"}`}
             >
               {isUser ? null : (
-                <span className="text-muted-foreground px-1 text-xs font-medium">Iris</span>
+                <div className="flex items-center gap-1.5 px-1">
+                  <span className="border-border bg-background inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border">
+                    <Iris config={IRIS_NAV} uid={`iris-${message.id}`} size={14} />
+                  </span>
+                  <span className="text-xs font-medium">Iris</span>
+                  <span className="bg-primary/10 text-primary rounded px-1.5 py-px text-[10px] font-semibold tracking-wide uppercase">
+                    Beta
+                  </span>
+                </div>
               )}
               {message.parts.map((part, i) => {
                 if (part.type === "text") {
                   return (
                     <div
                       key={`${message.id}-${i}`}
-                      className={`rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap ${
+                      className={`rounded-2xl px-3 py-2 text-sm ${
                         isUser
-                          ? "bg-primary text-primary-foreground max-w-[85%]"
+                          ? "bg-primary text-primary-foreground max-w-[85%] whitespace-pre-wrap"
                           : "bg-muted text-foreground max-w-full"
                       }`}
                     >
-                      {part.text}
+                      {isUser ? part.text : <Markdown>{part.text}</Markdown>}
                     </div>
                   );
                 }
