@@ -152,10 +152,9 @@ export function buildLensTools(
       description:
         "Present your final picks as recommendation cards — call this once you've chosen which " +
         "lenses to recommend (3–6, ordered best-first). Pass each lens's id (from a prior " +
-        "queryLenses/searchLensByName result) and a very short reason. The card is tiny, so the " +
-        "reason must be ONE clause naming ONE spec — roughly 10–18 characters, e.g. '等效900mm, " +
-        "最长焦' or 'weighs just 60g'. Do NOT stack several specs or write a full sentence. Put all " +
-        "richer comparison and framing in your prose BEFORE calling this, not in the reason.",
+        "queryLenses/searchLensByName result) and a short card reason: a readable phrase or at " +
+        "most one short sentence with natural punctuation, giving the single most compelling " +
+        "reason it fits. The detailed comparison and pros/cons belong in your prose bullets, not on the card.",
       inputSchema: z.object({
         picks: z
           .array(
@@ -164,8 +163,8 @@ export function buildLensTools(
               reason: z
                 .string()
                 .describe(
-                  "ONE very short clause (~10–18 chars) naming ONE spec, in the user's language. " +
-                    "Not a sentence, not multiple specs.",
+                  "A short, readable reason in the user's language — a phrase or at most one short " +
+                    "sentence with natural punctuation. Detailed pros/cons go in prose, not here.",
                 ),
             }),
           )
