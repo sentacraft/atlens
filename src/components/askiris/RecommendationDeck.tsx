@@ -49,7 +49,7 @@ function RecommendationCard({ rec, locale }: { rec: Recommendation; locale: stri
     <Link
       href={`/lenses/${mountToUrlSegment(rec.mount)}/${rec.id}`}
       prefetch={false}
-      className="border-border bg-background hover:border-foreground/20 flex gap-3 rounded-xl border p-3 transition-colors"
+      className="border-border bg-background hover:border-foreground/20 flex items-start gap-3 rounded-xl border p-3 transition-colors"
     >
       <div className="relative h-28 w-28 shrink-0">
         <Image

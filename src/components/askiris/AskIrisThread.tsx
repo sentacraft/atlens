@@ -99,8 +99,11 @@ export default function AskIrisThread({
                     </div>
                   );
                 }
+                // Prose is capped to a readable measure even though the thread
+                // (and the card grid) runs wider — long synthesis lines hurt
+                // readability, especially in English.
                 return (
-                  <div key={key} className="text-foreground w-full px-1 text-sm">
+                  <div key={key} className="text-foreground w-full max-w-2xl px-1 text-sm">
                     <Markdown>{part.text}</Markdown>
                   </div>
                 );

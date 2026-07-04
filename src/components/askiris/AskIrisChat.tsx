@@ -75,18 +75,11 @@ export default function AskIrisChat({ locale }: { locale: string }) {
   }
 
   return (
-    <div className="mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-2xl flex-col px-4">
-      <header className="shrink-0 py-4">
-        <h1 className="text-lg font-semibold">AskIris</h1>
-        <p className="text-muted-foreground text-sm">
-          Experimental — describe what you shoot and I&apos;ll recall lenses.
-        </p>
-      </header>
-
+    <div className="mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-4xl flex-col px-4">
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="min-h-0 flex-1 space-y-4 overflow-y-auto pb-4"
+        className="min-h-0 flex-1 space-y-4 overflow-y-auto py-4 [scrollbar-width:thin] [scrollbar-color:rgb(212_212_216)_transparent] dark:[scrollbar-color:rgb(63_63_70)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300/70 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700/70"
       >
         <AskIrisThread messages={renderMessages} locale={locale} debug={debug} />
       </div>
