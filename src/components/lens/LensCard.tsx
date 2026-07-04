@@ -74,17 +74,17 @@ export default memo(function LensCard({
   return (
     <div
       {...hookAttr("card")}
-      className={`rounded-2xl border bg-white dark:bg-zinc-900 flex flex-col overflow-hidden transition-[border-color,box-shadow] max-xs:relative ${
+      className={`relative rounded-2xl border bg-white dark:bg-zinc-900 flex flex-col overflow-hidden transition-[border-color,box-shadow,background-color] hover:bg-zinc-50 dark:hover:bg-zinc-800/50 ${
         isSelected
           ? CARD_SELECTED_BORDER_CLS
           : "border-zinc-200 dark:border-zinc-800"
       }`}
     >
-      {/* Clickable detail area */}
+      {/* Stretched via ::after to cover the whole card incl. the footer below; compare buttons use z-10 to stay on top of it. Hover background lives on the outer card, not here, so it spans the whole clickable area. */}
       <Link
         href={`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`}
         prefetch={false}
-        className="flex-1 flex flex-col hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors max-xs:flex-row"
+        className="flex-1 flex flex-col max-xs:flex-row after:absolute after:inset-0 after:content-['']"
       >
         <div
           {...hookAttr("cardMedia")}
@@ -215,7 +215,7 @@ export default memo(function LensCard({
             size="sm"
             onClick={() => onToggle(lens.id)}
             disabled={selectionDisabled}
-            className={`w-full h-10 sm:h-9 font-medium ${
+            className={`relative z-10 w-full h-10 sm:h-9 font-medium ${
               isSelected
                 ? `text-xs ${ACTION_PRIMARY_CLS}`
                 : selectionDisabled
