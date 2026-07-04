@@ -114,8 +114,11 @@ export default function AskIrisThread({
                 part.state === "output-available"
               ) {
                 const { recommendations } = part.output as { recommendations: Recommendation[] };
+                // Bottom margin separates the grid from whatever follows (usually
+                // the next group's heading). Prose headings zero their own top
+                // margin as a first-child, so without this they glue to the cards.
                 return (
-                  <div key={key} className="w-full">
+                  <div key={key} className="mb-4 w-full">
                     <RecommendationDeck recommendations={recommendations} locale={locale} />
                   </div>
                 );

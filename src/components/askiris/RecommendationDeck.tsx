@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Weight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
@@ -33,22 +34,29 @@ export default function RecommendationDeck({
 const REASON_CLS =
   "text-muted-foreground text-xs leading-relaxed [&_p]:m-0 [&_strong]:text-foreground [&_strong]:font-medium";
 
-function priceLabel(price: NonNullable<Recommendation["price"]>, locale: string): string {
+function priceParts(
+  price: NonNullable<Recommendation["price"]>,
+  locale: string,
+): { symbol: string; value: string } {
   const symbol = price.currency === "CNY" ? "¥" : "$";
   const used = price.condition === "used" ? (locale === "zh" ? " 二手" : " used") : "";
-  return `${symbol}${price.amount.toLocaleString()}${used}`;
+  return { symbol, value: `${price.amount.toLocaleString()}${used}` };
 }
 
 // Thumbnail-left, text-right, filling its grid cell. The wider cell gives the
 // title, key specs, and the model's reason room to breathe.
 function RecommendationCard({ rec, locale }: { rec: Recommendation; locale: string }) {
   const weight = rec.weightG != null ? weightDisplay(rec.weightG, "g") : null;
-  const meta = [rec.price ? priceLabel(rec.price, locale) : null, weight].filter(Boolean);
+  const price = rec.price ? priceParts(rec.price, locale) : null;
 
   return (
     <Link
       href={`/lenses/${mountToUrlSegment(rec.mount)}/${rec.id}`}
       prefetch={false}
+      // Opens in a new tab: the AskIris thread is ephemeral client state, so a
+      // same-tab nav would discard the conversation the user is working through.
+      target="_blank"
+      rel="noopener noreferrer"
       className="border-border bg-background hover:border-foreground/20 flex items-start gap-3 rounded-xl border p-3 transition-colors"
     >
       <div className="relative h-28 w-28 shrink-0">
@@ -67,8 +75,22 @@ function RecommendationCard({ rec, locale }: { rec: Recommendation; locale: stri
         <h4 className="line-clamp-2 text-sm leading-snug font-semibold" title={rec.name}>
           {rec.name}
         </h4>
-        {meta.length ? (
-          <p className="text-foreground text-xs font-medium">{meta.join(" · ")}</p>
+        {price || weight ? (
+          <div className="text-foreground flex flex-wrap items-center gap-x-2 text-xs font-medium">
+            {price ? (
+              <span className="inline-flex items-baseline gap-1">
+                <span className="text-muted-foreground">{price.symbol}</span>
+                {price.value}
+              </span>
+            ) : null}
+            {price && weight ? <span className="text-muted-foreground">·</span> : null}
+            {weight ? (
+              <span className="inline-flex items-center gap-1">
+                <Weight className="text-muted-foreground size-3" aria-hidden />
+                {weight}
+              </span>
+            ) : null}
+          </div>
         ) : null}
         <div className="mt-0.5">
           <Markdown className={REASON_CLS}>{rec.reason}</Markdown>
