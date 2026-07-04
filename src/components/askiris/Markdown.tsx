@@ -18,6 +18,14 @@ const MARKDOWN_CLS = cn(
   "[&_h1]:text-base [&_h1]:font-semibold",
   "[&_h2]:text-sm [&_h2]:font-semibold",
   "[&_h3]:text-sm [&_h3]:font-semibold",
+  // Iris over-emits `---` between sections; decks + headings already separate
+  // them, so the horizontal rule is just noise — hide it.
+  "[&_hr]:hidden",
+  // Tables scroll inside their own box so a wide summary table never widens the
+  // chat column (which only scrolls vertically).
+  "[&_table]:my-2 [&_table]:block [&_table]:w-max [&_table]:max-w-full [&_table]:overflow-x-auto [&_table]:border-collapse [&_table]:text-xs",
+  "[&_th]:border [&_th]:border-border [&_th]:px-2 [&_th]:py-1 [&_th]:text-left [&_th]:font-medium",
+  "[&_td]:border [&_td]:border-border [&_td]:px-2 [&_td]:py-1 [&_td]:align-top",
 );
 
 export default function Markdown({ children }: { children: string }) {

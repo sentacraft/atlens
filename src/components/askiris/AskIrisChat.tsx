@@ -137,16 +137,22 @@ export default function AskIrisChat({ locale }: { locale: string }) {
               {message.parts.map((part, i) => {
                 const key = `${message.id}-${i}`;
                 if (part.type === "text") {
+                  // User text sits in a bubble; the assistant reply flows as one
+                  // continuous document (no per-part bubbles) like ChatGPT/Claude,
+                  // with card decks interleaved between the prose blocks.
+                  if (isUser) {
+                    return (
+                      <div
+                        key={key}
+                        className="bg-primary text-primary-foreground max-w-[85%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap"
+                      >
+                        {part.text}
+                      </div>
+                    );
+                  }
                   return (
-                    <div
-                      key={key}
-                      className={`rounded-2xl px-3 py-2 text-sm ${
-                        isUser
-                          ? "bg-primary text-primary-foreground max-w-[85%] whitespace-pre-wrap"
-                          : "bg-muted text-foreground max-w-full"
-                      }`}
-                    >
-                      {isUser ? part.text : <Markdown>{part.text}</Markdown>}
+                    <div key={key} className="text-foreground w-full px-1 text-sm">
+                      <Markdown>{part.text}</Markdown>
                     </div>
                   );
                 }
