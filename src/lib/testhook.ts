@@ -198,19 +198,6 @@ export const TESTHOOK_OPTION_DEFINITIONS: readonly TestHookOptionDefinition[] = 
       { id: "on", label: "On", description: "Show each tool call and its result." },
     ],
   },
-  {
-    key: "askIrisFixture",
-    section: "askiris",
-    label: "Fixture",
-    description: "Replay a saved thread instead of the live chat (dev only).",
-    defaultValue: "off",
-    values: [
-      { id: "off", label: "Live (no fixture)", description: "Use the live agent." },
-      { id: "wildlife", label: "Wildlife (real capture)", description: "A captured multi-deck reply." },
-      { id: "carousel", label: "Carousel (6 cards)", description: "One deck of 6 — shelf overflow." },
-      { id: "table", label: "Summary table", description: "A reply ending in a Markdown table." },
-    ],
-  },
 ];
 
 // -- State helpers ------------------------------------------------------------

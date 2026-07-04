@@ -2,11 +2,17 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useTestHookOption } from "@/context/TestHookProvider";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
-import { FIXTURES } from "@/components/askiris/__fixtures__";
+import {
+  subscribe,
+  getSnapshot,
+  getServerSnapshot,
+  publishLive,
+  resolveFixture,
+} from "@/components/askiris/fixtureStore";
 
 // Experimental AskIris chat. Mount comes from the effective-mount preference
 // (URL has none here) and locale from the route; both go through the transport
@@ -17,7 +23,7 @@ export default function AskIrisChat({ locale }: { locale: string }) {
   const mount = useEffectiveMount();
   // Both gated behind the test-hook panel's "AskIris debug" section.
   const debug = useTestHookOption("askIrisTrace") === "on";
-  const fixtureId = useTestHookOption("askIrisFixture");
+  const { selected } = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const [input, setInput] = useState("");
   const transport = useMemo(
     () => new DefaultChatTransport({ api: "/api/chat", body: { mount, locale } }),
@@ -27,9 +33,13 @@ export default function AskIrisChat({ locale }: { locale: string }) {
 
   // Dev-only: the panel's fixture selector replays a saved thread through the real
   // page shell — deterministic UI work (decks, tables, carousel) with no LLM call.
+  // Publish live messages so the panel can capture them into a new fixture.
+  useEffect(() => {
+    publishLive(messages);
+  }, [messages]);
   const fixtureMessages =
-    process.env.NODE_ENV !== "production" && fixtureId && fixtureId !== "off"
-      ? FIXTURES[fixtureId]
+    process.env.NODE_ENV !== "production" && selected !== "off"
+      ? (resolveFixture(selected) ?? null)
       : null;
   const renderMessages = fixtureMessages ?? messages;
 

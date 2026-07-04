@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useSyncExternalStore } from "react";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  subscribe,
+  getSnapshot,
+  getServerSnapshot,
+  setSelected,
+  saveFixture,
+  renameFixture,
+  deleteFixture,
+} from "@/components/askiris/fixtureStore";
 import { TestHookContext } from "@/context/TestHookProvider";
 import { TESTHOOK_OPTION_DEFINITIONS } from "@/lib/testhook";
 import {
@@ -35,6 +44,97 @@ const TABS = [
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
+
+// Mirror the server's filename guard so Save/Rename disable on unusable names.
+const SAFE_FIXTURE_NAME = /^[\w-]+$/;
+const FIXTURE_INPUT_CLS =
+  "h-9 flex-1 rounded-md border border-input bg-transparent px-2 text-xs outline-none focus-visible:border-ring";
+
+// AskIris fixture capture/replay. Fixtures live outside the test-hook option
+// system (their list is dynamic — saved files on disk), so this drives the
+// shared fixtureStore directly rather than going through setOption.
+function FixtureControl() {
+  const { selected, builtin, saved } = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot,
+  );
+  const [name, setName] = useState("");
+  const isSaved = saved.includes(selected);
+  // Blank when capturing a new one; the current name when a saved one is picked.
+  useEffect(() => {
+    setName(isSaved ? selected : "");
+  }, [selected, isSaved]);
+
+  // Built-in names not shadowed by a saved file of the same name.
+  const builtinOnly = builtin.filter((n) => !saved.includes(n));
+  const trimmed = name.trim();
+  const nameOk = SAFE_FIXTURE_NAME.test(trimmed);
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+        Fixture
+      </span>
+      <Select value={selected} onValueChange={(v) => setSelected(v ?? "off")}>
+        <SelectTrigger className="h-10">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="off">Live (no fixture)</SelectItem>
+          {builtinOnly.map((n) => (
+            <SelectItem key={n} value={n}>
+              {n}
+            </SelectItem>
+          ))}
+          {saved.map((n) => (
+            <SelectItem key={n} value={n}>
+              {n} · saved
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <span className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+        Replay a saved thread instead of the live chat. Saves write to a
+        gitignored .askiris-fixtures/ dir.
+      </span>
+
+      {selected === "off" ? (
+        <div className="mt-1 flex gap-2">
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="name to save current thread"
+            className={FIXTURE_INPUT_CLS}
+          />
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={!nameOk}
+            onClick={() => saveFixture(trimmed)}
+          >
+            Save
+          </Button>
+        </div>
+      ) : isSaved ? (
+        <div className="mt-1 flex gap-2">
+          <input value={name} onChange={(e) => setName(e.target.value)} className={FIXTURE_INPUT_CLS} />
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={!nameOk || trimmed === selected}
+            onClick={() => renameFixture(selected, trimmed)}
+          >
+            Rename
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => deleteFixture(selected)}>
+            Delete
+          </Button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 export default function TestHookPanel() {
   const context = useContext(TestHookContext);
@@ -158,7 +258,12 @@ export default function TestHookPanel() {
 
         {tab === "ui" && <div className="space-y-4">{uiTweaks.map(renderOption)}</div>}
 
-        {tab === "askiris" && <div className="space-y-4">{askIrisOptions.map(renderOption)}</div>}
+        {tab === "askiris" && (
+          <div className="space-y-4">
+            {askIrisOptions.map(renderOption)}
+            <FixtureControl />
+          </div>
+        )}
 
         {/* Demo-mode redaction reference. Activated by URL query (read by the
             Redaction component), so the recording session can blur sensitive
