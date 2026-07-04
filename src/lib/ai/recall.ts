@@ -66,7 +66,7 @@ export interface LensConstraints {
 }
 
 // Compact, locale-resolved projection of Lens for tool output.
-export type RecalledLens = Pick<
+export type LensCandidate = Pick<
   Lens,
   "id" | "series" | "model" | "af" | "ois" | "wr" | "releaseYear"
 > & {
@@ -89,8 +89,8 @@ const MAX_RECALL_RESULTS = 20;
 
 export interface RecallResult {
   // Capped to the top MAX_RECALL_RESULTS by the active sort.
-  matches: RecalledLens[];
-  maybe: { lens: RecalledLens; missingFields: string[] }[];
+  matches: LensCandidate[];
+  maybe: { lens: LensCandidate; missingFields: string[] }[];
   totalMatched: number;
   totalMaybe: number;
 }
@@ -277,7 +277,7 @@ export function projectLens(
   lens: Lens,
   locale: string,
   tBrand: (brand: string) => string,
-): RecalledLens {
+): LensCandidate {
   const selection = pickPriceEntry(lens.pricing, locale);
   const { isCine, opticalTraits } = deriveSpecialty(lens);
 

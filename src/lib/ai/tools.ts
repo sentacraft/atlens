@@ -3,7 +3,7 @@ import { z } from "zod";
 import { FILTER_FEATURE_KEYS } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
-import { projectLens, recallLenses, RECALL_SORT_FIELDS } from "@/lib/lens/recall";
+import { projectLens, recallLenses, RECALL_SORT_FIELDS } from "@/lib/ai/recall";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 
 // The agent's tools, bound to the current mount + locale (both fixed by the
