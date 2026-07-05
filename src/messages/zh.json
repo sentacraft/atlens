@@ -34,7 +34,8 @@
     "send": "发送",
     "chips": ["拍星空 / 银河", "室内拍娃、要虚化", "旅行一镜走天下"],
     "footer": "Iris 是 Atlens 的选镜助手",
-    "beta": "Beta"
+    "beta": "Beta",
+    "switchedMount": "已切换到 {mount}"
   },
   "Search": {
     "open": "打开镜头搜索",
