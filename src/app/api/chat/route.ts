@@ -8,7 +8,7 @@ import {
 } from "ai";
 import { z } from "zod";
 import { getTranslations } from "next-intl/server";
-import { agentModel, agentProviderOptions } from "@/lib/ai/model";
+import { getAgentModel, agentProviderOptions } from "@/lib/ai/model";
 import { buildLensTools } from "@/lib/ai/tools";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
   const tools = buildLensTools(mount, locale, tBrand);
 
   const result = streamText({
-    model: agentModel,
+    model: getAgentModel(),
     providerOptions: agentProviderOptions,
     system: systemPrompt(mount, locale),
     // Same `tools` on both calls: recommendLenses.toModelOutput runs inside
