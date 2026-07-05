@@ -56,7 +56,7 @@ export default function AskIrisComposer({
           disabled={newTopicDisabled}
           aria-label={newTopicLabel}
           title={newTopicLabel}
-          className="border-input bg-background text-muted-foreground hover:text-foreground hover:bg-muted grid aspect-square shrink-0 place-items-center rounded-2xl border shadow-sm transition disabled:pointer-events-none disabled:opacity-40"
+          className="border-input bg-background text-muted-foreground hover:text-foreground hover:bg-muted grid w-12 shrink-0 place-items-center rounded-2xl border shadow-sm transition disabled:pointer-events-none disabled:opacity-40"
         >
           <Plus className={lg ? "size-5" : "size-4"} />
         </button>
