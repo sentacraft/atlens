@@ -6,7 +6,9 @@
 // the CURRENT system prompt is under test. For each case it runs the agent N times
 // (default 1; use more to read a pass-RATE, since the model is non-deterministic),
 // runs the programmatic checks on each run's tool trace, and scores the judge
-// rubric with DeepSeek. Reads DEEPSEEK_API_KEY from the env or .env.local.
+// rubric with an INDEPENDENT model (OpenAI gpt-5.4-mini) — deliberately not the
+// DeepSeek agent under test, to avoid a model grading its own output. Reads
+// OPENAI_API_KEY from the env or .env.local.
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -31,11 +33,12 @@ const ctx = {
   },
 };
 
-// -- DeepSeek key (env, then .env.local) ----------------------------------------
-let KEY = process.env.DEEPSEEK_API_KEY;
+// -- Judge model + key (env, then .env.local) -----------------------------------
+const JUDGE_MODEL = "gpt-5.4-mini";
+let KEY = process.env.OPENAI_API_KEY;
 if (!KEY) {
   try {
-    KEY = readFileSync(join(REPO, ".env.local"), "utf8").match(/^DEEPSEEK_API_KEY=(.+)$/m)?.[1]?.trim();
+    KEY = readFileSync(join(REPO, ".env.local"), "utf8").match(/^OPENAI_API_KEY=(.+)$/m)?.[1]?.trim();
   } catch {
     // no .env.local — judge just reports PENDING.
   }
@@ -87,14 +90,13 @@ async function runAgent({ prompt, mount, locale }) {
 
 // -- LLM-as-judge ---------------------------------------------------------------
 async function judge(rubric, text) {
-  if (!KEY) return { verdict: "PENDING", reason: "no DEEPSEEK_API_KEY" };
+  if (!KEY) return { verdict: "PENDING", reason: "no OPENAI_API_KEY" };
   try {
-    const res = await fetch("https://api.deepseek.com/chat/completions", {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${KEY}` },
       body: JSON.stringify({
-        model: "deepseek-v4-flash",
-        stream: false,
+        model: JUDGE_MODEL,
         messages: [
           { role: "system", content: "你是严格的评测员。第一行只输出 PASS 或 FAIL,第二行给一句话理由。" },
           { role: "user", content: `评分标准:\n${rubric}\n\n---\n待评回复:\n${text}` },
