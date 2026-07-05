@@ -169,7 +169,7 @@ export default function AskIrisChat({ locale }: { locale: string }) {
           input={input}
           onInputChange={setInput}
           onSubmit={() => submitText(input)}
-          onChip={submitText}
+          onChip={setInput}
           disabled={isBusy}
         />
       </div>

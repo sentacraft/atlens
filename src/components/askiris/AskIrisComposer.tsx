@@ -1,5 +1,6 @@
 "use client";
 
+import { type Ref } from "react";
 import { ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +16,7 @@ export default function AskIrisComposer({
   sendLabel,
   size = "md",
   autoFocus = false,
+  inputRef,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -24,6 +26,7 @@ export default function AskIrisComposer({
   sendLabel: string;
   size?: "lg" | "md";
   autoFocus?: boolean;
+  inputRef?: Ref<HTMLInputElement>;
 }) {
   const lg = size === "lg";
   const canSend = !disabled && value.trim().length > 0;
@@ -46,6 +49,7 @@ export default function AskIrisComposer({
         )}
       >
         <input
+          ref={inputRef}
           className={cn(
             "placeholder:text-muted-foreground min-w-0 flex-1 bg-transparent outline-none",
             lg ? "text-base" : "text-sm",
