@@ -178,6 +178,7 @@ async function judge(rubric, text, prompt) {
 const RUNS = Number((process.argv.find((a) => a.startsWith("--runs=")) ?? "--runs=1").split("=")[1]);
 const only = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 const cases = only.length ? CASES.filter((c) => only.includes(c.id)) : CASES;
+const results = [];
 
 for (const c of cases) {
   console.log(`\n=== ${c.id}  (${RUNS} run${RUNS > 1 ? "s" : ""}) ===`);
@@ -203,13 +204,31 @@ for (const c of cases) {
       judgeNotes.push(`${v.verdict} — ${v.reason}`);
     }
   }
+  let progFail = false;
   for (const [name] of checks) {
     const n = pass.get(name) ?? 0;
+    if (n < RUNS) progFail = true;
     console.log(`  [${n}/${RUNS}]${n < RUNS ? " ✗" : "  "} ${name}`);
   }
+  const judgeFail = Boolean(c.judge) && judgePass < RUNS;
+  const gapped = judgeFail && (c.knownGaps?.length ?? 0) > 0;
   if (c.judge) {
-    console.log(`  [${judgePass}/${RUNS}] JUDGE`);
+    console.log(`  [${judgePass}/${RUNS}] JUDGE${gapped ? " ⚠ expected-fail (known gap)" : ""}`);
     judgeNotes.forEach((n) => console.log(`         ${n}`));
+    if (gapped) {
+      c.knownGaps.forEach((g) => console.log(`         · known gap: ${g}`));
+    }
   }
+  results.push({ id: c.id, real: progFail || (judgeFail && !gapped), gapped });
 }
-console.log("\ndone");
+
+// Only a programmatic fail or a judge fail WITHOUT a known gap is a real regression
+// (exit 1). Known-gap judge fails are surfaced but don't fail the suite, so it stays
+// green on what we knowingly can't do yet and flips red the moment something new breaks.
+const real = results.filter((r) => r.real).map((r) => r.id);
+const expected = results.filter((r) => r.gapped).map((r) => r.id);
+console.log(
+  `\n${real.length ? `✗ ${real.length} failing: ${real.join(", ")}` : "✓ all green"}` +
+    (expected.length ? `  ·  ${expected.length} expected-fail on known gaps: ${expected.join(", ")}` : ""),
+);
+process.exitCode = real.length ? 1 : 0;

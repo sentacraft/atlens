@@ -14,6 +14,12 @@
 //     data / missed recall / bad ranking. Its universal duties live in run.mjs's
 //     JUDGE_SYSTEM; each case adds only its scenario-specific point below.
 //
+// `knownGaps` marks a case the judge legitimately fails for a reason we can't fix
+// yet (a data gap, a capability not built). The judge still runs at full strength
+// and prints its verdict; the runner just classifies that FAIL as expected (not a
+// regression) so the suite isn't red for what we knowingly can't do — and the gap
+// keeps surfacing every run, so the test flips green on its own once it closes.
+//
 // Programmatic checks are LAYERED:
 //   Layer 0  universal validity — UNIVERSAL_CHECKS, applied to every case.
 //   Layer 1  stated-constraint satisfaction — also in UNIVERSAL_CHECKS but gated on
@@ -65,6 +71,9 @@ export const CASES = [
     ],
     judge:
       "针对拍银河这个场景,回复是否兼顾了两点:『视野够广』(银河拱桥需要广角)与『对焦方式不该设限』(星空本就手动对焦,是否 AF 不该是硬门槛)?这是权衡维度,不是硬性要求必须列出某支手动镜头。",
+    knownGaps: [
+      "Samyang/Rokinon and similar classic MF ultra-wide astro primes aren't indexed yet — a data gap the judge rightly flags, not a recall/prompt bug",
+    ],
   },
   {
     id: "travel-one-lens",
@@ -72,5 +81,8 @@ export const CASES = [
     checks: [],
     judge:
       "针对『一镜走天下』,回复是否诚实讲清了核心取舍——焦段/变焦覆盖 vs 画质/光圈 vs 体积重量——而不是无脑推最大变焦比的超级变焦?",
+    knownGaps: [
+      "subjective image-quality / distortion / edge-sharpness tradeoffs need phase-2 web-review data the catalogue doesn't carry yet, so the agent can't argue them",
+    ],
   },
 ];
