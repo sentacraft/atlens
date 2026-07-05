@@ -38,6 +38,21 @@ function systemPrompt(mount: Mount, locale: string): string {
     `— but name the assumption and invite a correction (e.g. "I read 'portraits'`,
     `as ~85mm — want wider or longer?"), never presenting it as the only reading.`,
     ``,
+    `Once you've narrowed to your picks, present them by calling recommendLenses`,
+    `with 3–6 lens ids — this renders a grid of cards. You may call it more than`,
+    `once to group picks around different priorities. For a specific-lens lookup or`,
+    `a quick factual answer, reply in prose without cards.`,
+    ``,
+    `Each card carries its own reason, so a lens's case belongs there: one to three`,
+    `natural sentences on what it's good for and its main trade-off. Keep the prose`,
+    `around the cards to a short synthesis — frame your assumption, a brief lead-in`,
+    `per group, a short close. Don't restate each lens's case in the prose or write`,
+    `a separate pros-and-cons section; the cards hold that.`,
+    ``,
+    `Always refer to a lens by its exact "name" field from the tool result; never`,
+    `reassemble a name from parts or abbreviate it, so every mention is identical.`,
+    `Structure prose with short headings.`,
+    ``,
     `Reply in ${language}; if the user writes in another language, match theirs.`,
   ].join("\n");
 }
@@ -64,13 +79,16 @@ export async function POST(req: Request) {
   const { messages, mount, locale } = parsed.data;
 
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
+  const tools = buildLensTools(mount, locale, tBrand);
 
   const result = streamText({
     model: agentModel,
     providerOptions: agentProviderOptions,
     system: systemPrompt(mount, locale),
-    messages: await convertToModelMessages(messages),
-    tools: buildLensTools(mount, locale, tBrand),
+    // Same `tools` on both calls: recommendLenses.toModelOutput runs inside
+    // convertToModelMessages, so it must see the tool to trim its model-facing output.
+    messages: await convertToModelMessages(messages, { tools }),
+    tools,
     stopWhen: stepCountIs(8),
   });
 

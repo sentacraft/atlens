@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type DependencyList, type RefObject } from "react";
 import { cn } from "@/lib/utils";
-import { useHorizontalScrollAffordance } from "@/hooks/useHorizontalScrollAffordance";
+import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 
 interface HorizontalScrollRailProps {
   children: React.ReactNode;
@@ -30,7 +30,7 @@ export function HorizontalScrollRail({
 }: HorizontalScrollRailProps) {
   const internalRef = useRef<HTMLDivElement>(null);
   const ref = scrollRef ?? internalRef;
-  const { canScrollLeft, canScrollRight } = useHorizontalScrollAffordance(ref, deps);
+  const { canScrollLeft, canScrollRight } = useScrollAffordance(ref, deps);
 
   useEffect(() => {
     const el = ref.current;
