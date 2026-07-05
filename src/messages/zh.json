@@ -28,8 +28,8 @@
     "feedback": "反馈"
   },
   "AskIris": {
-    "heading": "想拍什么？\n我来帮你选镜头",
-    "subtitle": "用大白话描述你的拍摄场景就行，不用懂参数。",
+    "heading": "Hi，我是 Iris ✨\n你的专属镜头顾问",
+    "subtitle": "用大白话描述你的拍摄需求，我帮你从海量镜头库中精准匹配",
     "placeholder": "Ask Iris",
     "send": "发送",
     "chips": ["拍星空 / 银河", "室内拍娃、要虚化", "旅行一镜走天下"],
