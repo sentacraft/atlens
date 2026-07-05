@@ -74,7 +74,9 @@ function idsFromOutput(output) {
     for (const v of Object.values(output)) {
       if (Array.isArray(v)) {
         for (const item of v) {
-          if (item && typeof item === "object" && typeof item.id === "string") ids.push(item.id);
+          if (item && typeof item === "object" && typeof item.id === "string") {
+            ids.push(item.id);
+          }
         }
       }
     }
@@ -98,7 +100,9 @@ async function runAgent({ prompt, mount, locale }) {
   const tools = [];
   const byCall = new Map();
   for (const line of body.split("\n")) {
-    if (!line.startsWith("data: ")) continue;
+    if (!line.startsWith("data: ")) {
+      continue;
+    }
     let o;
     try {
       o = JSON.parse(line.slice(6));
@@ -113,7 +117,9 @@ async function runAgent({ prompt, mount, locale }) {
       byCall.set(o.toolCallId, t);
     } else if (o.type === "tool-output-available") {
       const t = byCall.get(o.toolCallId);
-      if (t) t.output = o.output;
+      if (t) {
+        t.output = o.output;
+      }
     }
   }
   // Only count picks from recommendLenses calls that SUCCEEDED (rendered cards).
@@ -124,7 +130,11 @@ async function runAgent({ prompt, mount, locale }) {
     .filter((t) => t.name === "recommendLenses" && Array.isArray(t.output?.recommendations))
     .flatMap((t) => t.input?.picks ?? []);
   const recalledIds = new Set();
-  for (const t of tools) for (const id of idsFromOutput(t.output)) recalledIds.add(id);
+  for (const t of tools) {
+    for (const id of idsFromOutput(t.output)) {
+      recalledIds.add(id);
+    }
+  }
   return {
     text,
     tools,
@@ -153,7 +163,9 @@ function responseText(data) {
 // it doesn't recognise (new models postdate its training) instead of guessing —
 // web search needs at least "low" reasoning (minimal/none are unsupported).
 async function judge(rubric, text, prompt) {
-  if (!KEY) return { verdict: "PENDING", reason: "no OPENAI_API_KEY" };
+  if (!KEY) {
+    return { verdict: "PENDING", reason: "no OPENAI_API_KEY" };
+  }
   try {
     const res = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
@@ -200,14 +212,18 @@ for (const c of cases) {
     }
     if (c.judge) {
       const v = await judge(c.judge, r.text, c.input.prompt);
-      if (v.verdict === "PASS") judgePass++;
+      if (v.verdict === "PASS") {
+        judgePass++;
+      }
       judgeNotes.push(`${v.verdict} — ${v.reason}`);
     }
   }
   let progFail = false;
   for (const [name] of checks) {
     const n = pass.get(name) ?? 0;
-    if (n < RUNS) progFail = true;
+    if (n < RUNS) {
+      progFail = true;
+    }
     console.log(`  [${n}/${RUNS}]${n < RUNS ? " ✗" : "  "} ${name}`);
   }
   const judgeFail = Boolean(c.judge) && judgePass < RUNS;
