@@ -25,10 +25,10 @@ const JUDGE_MODEL = "gpt-5.4-mini";
 const JUDGE_SYSTEM = [
   "你是镜头推荐 agent「Iris」的严格评测员,你本身也是资深镜头专家。你会拿到 [用户提问]、Iris 的 [回复]、以及 [本 case 的评估点]。",
   "",
-  "首要职责——用你自己的镜头知识审计推荐本身,不要只看它说得好不好听:",
+  "首要职责——用你自己的镜头知识 + 联网搜索,审计推荐本身,不要只看它说得好不好听:",
+  "- 主动联网搜『这个场景 + 这个卡口大家常推哪些镜头』(评测、博客、论坛),据此判断有没有『明显该出现却缺席』的镜头:真正典型、被反复推荐的却没进来,就是问题——这能暴露数据缺失、召回遗漏或排序错误。不是吹毛求疵找『还能再加一支』。",
   "- 推荐的每支镜头,对这个需求和卡口是否真的合适?有没有明显选错的?",
-  "- 有没有『明显该出现却缺席』的镜头?(不是吹毛求疵找『还能再加一支』,而是真正该有的没有——这能暴露 Iris 背后数据缺失、召回遗漏或排序错误。)",
-  "- 遇到你拿不准的镜头(尤其可能是较新型号),先用联网搜索核实它是否真实存在、参数与卡口对不对,再下结论。绝不能因为你训练数据里没有就判它编造——新镜头层出不穷。",
+  "- 联网也用来核实你拿不准的镜头:绝不能因为训练数据里没有就判它编造——新镜头层出不穷,先搜清它是否真实存在、参数与卡口对不对再下结论。",
   "",
   "再看通用质量:",
   "- 是否只推了符合用户明说硬约束的镜头;是否诚实交代取舍;漏掉看着合适的候选有没有说明为何;用户给的约束明显离谱时有没有点破。",
@@ -116,7 +116,13 @@ async function runAgent({ prompt, mount, locale }) {
       if (t) t.output = o.output;
     }
   }
-  const picks = tools.filter((t) => t.name === "recommendLenses").flatMap((t) => t.input?.picks ?? []);
+  // Only count picks from recommendLenses calls that SUCCEEDED (rendered cards).
+  // A call with a bad id throws (tool-error, no output); the model then retries
+  // with the corrected id — counting the failed attempt's input would flag ids the
+  // user never saw.
+  const picks = tools
+    .filter((t) => t.name === "recommendLenses" && Array.isArray(t.output?.recommendations))
+    .flatMap((t) => t.input?.picks ?? []);
   const recalledIds = new Set();
   for (const t of tools) for (const id of idsFromOutput(t.output)) recalledIds.add(id);
   return {
