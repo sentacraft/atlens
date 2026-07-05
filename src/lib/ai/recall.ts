@@ -127,6 +127,10 @@ export type Recommendation = ResolvedLens & { reason: string };
 // Cap per recall; totalMatched/totalMaybe still report the full counts.
 const MAX_RECALL_RESULTS = 20;
 
+// coversFocals is matched on native mm within this fraction, so a "56" request
+// still catches a 55mm lens (same class) and never misses a prime by a hair.
+const FOCAL_MATCH_TOLERANCE = 0.1;
+
 export interface RecallResult {
   // Capped to the top MAX_RECALL_RESULTS by the active sort.
   matches: ResolvedLens[];
@@ -186,22 +190,24 @@ function evaluate(lens: Lens, c: LensConstraints, locale: string): Verdict {
     }
   }
 
-  // Rounded FF-equiv mm — the same value the model is shown, so filter matches display.
-  const equivMin = focalEquiv(lens.focalLengthMin, lens.mount);
-  const equivMax = focalEquiv(lens.focalLengthMax, lens.mount);
+  // Native mm — the number the lens is labelled with and the number the user says.
+  // The mount is fixed here, so FF-equiv would only add crop-factor rounding that
+  // makes a prime miss its own focal (56mm → 84 equiv, and a 85 request excludes it).
+  const nativeMin = lens.focalLengthMin;
+  const nativeMax = lens.focalLengthMax;
   if (c.coversFocals?.length) {
     for (const point of c.coversFocals) {
-      if (!(equivMin <= point && point <= equivMax)) {
+      if (!(nativeMin * (1 - FOCAL_MATCH_TOLERANCE) <= point && point <= nativeMax * (1 + FOCAL_MATCH_TOLERANCE))) {
         return EXCLUDE;
       }
     }
   }
   if (c.focalWithin) {
     const [lo, hi] = c.focalWithin;
-    if (lo != null && equivMin < lo) {
+    if (lo != null && nativeMin < lo) {
       return EXCLUDE;
     }
-    if (hi != null && equivMax > hi) {
+    if (hi != null && nativeMax > hi) {
       return EXCLUDE;
     }
   }
@@ -449,9 +455,18 @@ export function recommendLenses(
   tBrand: (brand: string) => string,
 ): { recommendations: Recommendation[] } {
   const byId = new Map(getLensesByMount(mount, locale).map((lens) => [lens.id, lens]));
-  const recommendations = picks.flatMap((pick) => {
+  const recommendations = picks.map((pick) => {
     const lens = byId.get(pick.id);
-    return lens ? [{ ...resolveLens(lens, locale, tBrand), reason: pick.reason }] : [];
+    // Fail loud on an id we can't resolve: dropping it silently would render fewer
+    // cards than the model intended (or none). The SDK surfaces this as a tool-error
+    // and the model retries with the exact id inside its step budget.
+    if (!lens) {
+      throw new Error(
+        `Unknown lens id "${pick.id}". Pass each id exactly as it appears in a prior ` +
+          `queryLenses/searchLensByName result — don't alter or shorten it.`,
+      );
+    }
+    return { ...resolveLens(lens, locale, tBrand), reason: pick.reason };
   });
   return { recommendations };
 }
