@@ -2,7 +2,8 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { SquarePen } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -83,41 +84,49 @@ export default function AskIrisChat({ locale }: { locale: string }) {
     messagesRef.current = messages;
   }, [messages]);
 
-  // Mount switch = a new agent world. Archive the current segment above a
-  // labelled divider (still scrollable) and reset the live thread; the new mount
-  // already flows through the transport body, so the next turn starts clean.
+  // Close off the current segment: archive it above a labelled divider (still
+  // scrollable), abort any in-flight stream so its remaining deltas don't leak
+  // into the reset, and clear the live thread. Shared by the mount switch and
+  // the "new chat" button; only the current segment is ever sent to the model.
+  const startNewSegment = useCallback(
+    (label: string) => {
+      stop();
+      // Snapshot (copy) the segment so it's detached from useChat's array.
+      const live = [...messagesRef.current];
+      setArchived((prev) => {
+        // Nothing live and no history: nothing to divide.
+        if (live.length === 0 && prev.length === 0) {
+          return prev;
+        }
+        // Boundary requested again without chatting — retarget the trailing
+        // divider instead of stacking an empty one.
+        if (live.length === 0 && prev[prev.length - 1]?.kind === "divider") {
+          return [...prev.slice(0, -1), { kind: "divider", label }];
+        }
+        const next = [...prev];
+        if (live.length > 0) {
+          next.push({ kind: "seg", messages: live });
+        }
+        next.push({ kind: "divider", label });
+        return next;
+      });
+      setMessages([]);
+      setInput("");
+    },
+    [stop, setMessages],
+  );
+
+  // Mount switch = a new agent world, so it can't continue a thread. mount/locale
+  // ride on the next sendMessage's body, so the new turn reaches the right
+  // catalogue.
   const prevMountRef = useRef(mount);
   useEffect(() => {
     if (prevMountRef.current === mount) {
       return;
     }
     prevMountRef.current = mount;
-    // Abort any in-flight stream first — otherwise its remaining deltas would
-    // land in the fresh live segment after the reset (duplicating the reply).
-    stop();
-    const label = t("switchedMount", { mount: mount === "G" ? tMount("gfx") : tMount("x") });
-    // Snapshot (copy) the segment so it's detached from useChat's array.
-    const live = [...messagesRef.current];
-    setArchived((prev) => {
-      // Empty-state switch: nothing to divide.
-      if (live.length === 0 && prev.length === 0) {
-        return prev;
-      }
-      // Switched again without chatting — retarget the trailing divider instead
-      // of stacking an empty one.
-      if (live.length === 0 && prev[prev.length - 1]?.kind === "divider") {
-        return [...prev.slice(0, -1), { kind: "divider", label }];
-      }
-      const next = [...prev];
-      if (live.length > 0) {
-        next.push({ kind: "seg", messages: live });
-      }
-      next.push({ kind: "divider", label });
-      return next;
-    });
-    setMessages([]);
-    setInput("");
-  }, [mount, setMessages, stop, t, tMount]);
+    startNewSegment(t("switchedMount", { mount: mount === "G" ? tMount("gfx") : tMount("x") }));
+  }, [mount, startNewSegment, t, tMount]);
 
   // Dev-only: the panel's fixture selector replays a saved thread through the real
   // page shell — deterministic UI work (decks, tables) with no LLM call. Publish
@@ -169,6 +178,17 @@ export default function AskIrisChat({ locale }: { locale: string }) {
 
   return (
     <div className={shell}>
+      <div className="flex shrink-0 items-center justify-end pt-3">
+        <button
+          type="button"
+          onClick={() => startNewSegment(t("newTopic"))}
+          disabled={renderMessages.length === 0}
+          className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition-colors disabled:opacity-40"
+        >
+          <SquarePen className="size-3.5" aria-hidden />
+          {t("newChat")}
+        </button>
+      </div>
       <div className="relative min-h-0 flex-1">
         <div
           ref={scrollRef}

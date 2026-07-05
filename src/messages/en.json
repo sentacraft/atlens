@@ -35,7 +35,9 @@
     "chips": ["Astro / Milky Way", "Indoor kids, blurred bg", "One lens for travel"],
     "footer": "Iris is Atlens's lens assistant",
     "beta": "Beta",
-    "switchedMount": "Switched to {mount}"
+    "switchedMount": "Switched to {mount}",
+    "newChat": "New chat",
+    "newTopic": "New topic"
   },
   "Search": {
     "open": "Open lens search",
