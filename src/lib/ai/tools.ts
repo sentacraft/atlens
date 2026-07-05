@@ -57,22 +57,20 @@ export function buildLensTools(
           .array(z.number())
           .optional()
           .describe(
-            "Full-frame-equivalent mm; the lens must shoot at EACH value individually (NOT " +
-              "'somewhere in between'). A prime covers only its one focal — never pass two " +
-              "points with type prime (coversFocals [50,85] on a prime matches nothing); for " +
-              "'a prime around 85mm' or 'a portrait prime' use focalWithin. List only focals " +
-              "the user explicitly needs ('over 100mm' is [100], not [100,200]); for 'the " +
-              "longer the better' use sortBy: reach. [50] = covers 50; [24,70] = one zoom " +
-              "spanning 24–70.",
+            "Full-frame-equivalent focal length(s) the lens must be able to shoot. Each value " +
+              "is required independently: the lens's focal range must include every one of them, " +
+              "not merely the span between them. A prime is a single focal, so it can satisfy at " +
+              "most one value equal to that focal — passing two or more values excludes every " +
+              "prime. To place a prime within a focal range, use focalWithin instead.",
           ),
         focalWithin: z
           .tuple([z.number().nullable(), z.number().nullable()])
           .optional()
           .describe(
-            "Full-frame-equivalent mm [min,max]; null = open end. The lens's WHOLE range must " +
-              "sit inside — for a PRIME this means its single focal falls in [min,max], so this " +
-              "is the right tool for 'a portrait prime ~85mm' ([75,90]) or 'a 50mm-ish prime' " +
-              "([45,60]). [null,35] = a wide lens; [24,null] = nothing wider than 24mm.",
+            "Full-frame-equivalent [min, max]; null leaves that end open. The lens's ENTIRE " +
+              "focal range must lie inside the window: a zoom passes only if both its ends are " +
+              "inside, a prime passes if its single focal is inside. This is the inverse of " +
+              "coversFocals, whose values must lie inside the lens's range rather than the reverse.",
           ),
         maxWeightG: z
           .number()
