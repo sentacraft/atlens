@@ -449,9 +449,18 @@ export function recommendLenses(
   tBrand: (brand: string) => string,
 ): { recommendations: Recommendation[] } {
   const byId = new Map(getLensesByMount(mount, locale).map((lens) => [lens.id, lens]));
-  const recommendations = picks.flatMap((pick) => {
+  const recommendations = picks.map((pick) => {
     const lens = byId.get(pick.id);
-    return lens ? [{ ...resolveLens(lens, locale, tBrand), reason: pick.reason }] : [];
+    // Fail loud on an id we can't resolve: dropping it silently would render fewer
+    // cards than the model intended (or none). The SDK surfaces this as a tool-error
+    // and the model retries with the exact id inside its step budget.
+    if (!lens) {
+      throw new Error(
+        `Unknown lens id "${pick.id}". Pass each id exactly as it appears in a prior ` +
+          `queryLenses/searchLensByName result — don't alter or shorten it.`,
+      );
+    }
+    return { ...resolveLens(lens, locale, tBrand), reason: pick.reason };
   });
   return { recommendations };
 }
