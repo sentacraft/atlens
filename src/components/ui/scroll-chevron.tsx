@@ -6,7 +6,7 @@ import { FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
 
 interface ScrollChevronProps {
   direction: "left" | "right";
-  /** Visibility is driven by canScrollLeft / canScrollRight from `useHorizontalScrollAffordance`. */
+  /** Visibility is driven by canScrollLeft / canScrollRight from `useScrollAffordance`. */
   visible: boolean;
   onClick: () => void;
   ariaLabel: string;
@@ -17,7 +17,7 @@ interface ScrollChevronProps {
 /**
  * Small circular chevron button used to scroll a horizontal carousel one
  * step in the given direction. Designed to float over the carousel's fade
- * affordance (see `useHorizontalScrollAffordance` + the mask-image helper)
+ * affordance (see `useScrollAffordance` + the mask-image helper)
  * rather than be the fade itself, so the chip / card underneath stays
  * visually intact and only one element handles the click.
  *

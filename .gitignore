@@ -80,3 +80,6 @@ skills-lock.json
 
 # collection-poster.mjs output — regenerated on demand, never committed
 /poster-out/
+
+# AskIris dev-only captured fixtures (test-hook panel)
+.askiris-fixtures/

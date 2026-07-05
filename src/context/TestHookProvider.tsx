@@ -101,3 +101,13 @@ export function useTestHookEnabled(): boolean {
   const context = useContext(TestHookContext);
   return context?.state.testHook ?? false;
 }
+
+// Current value of a test-hook option, or undefined when test hooks are off.
+// Used by behaviour toggles (AskIris trace / fixture) rather than CSS injection.
+export function useTestHookOption(key: string): string | undefined {
+  const context = useContext(TestHookContext);
+  if (!context?.state.testHook) {
+    return undefined;
+  }
+  return context.state.options[key];
+}
