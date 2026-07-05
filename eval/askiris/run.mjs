@@ -6,9 +6,9 @@
 // the CURRENT system prompt is under test. For each case it runs the agent N times
 // (default 1; use more to read a pass-RATE, since the model is non-deterministic),
 // applies the universal + per-case programmatic checks to each run's tool trace,
-// and scores the judge rubric with an INDEPENDENT model (OpenAI gpt-5.4-mini) — not
-// the DeepSeek agent under test, so it doesn't grade its own output. Reads
-// OPENAI_API_KEY from the env or .env.local.
+// and scores the judge rubric with an INDEPENDENT model (OpenAI gpt-5.4-mini via the
+// Responses API, with web search) — not the DeepSeek agent under test, so it doesn't
+// grade its own output. Reads OPENAI_API_KEY from the env or .env.local.
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -20,14 +20,15 @@ const BASE = "http://localhost:3000";
 const JUDGE_MODEL = "gpt-5.4-mini";
 
 // The judge's universal duties (Layers A/B), shared by every case. Its headline job
-// is to AUDIT the recommendation against its own lens knowledge — the one thing the
-// programmatic checks (which only see our own data) structurally cannot do.
+// is to AUDIT the recommendation against its own lens knowledge and the web — the one
+// thing the programmatic checks (which only see our own data) structurally cannot do.
 const JUDGE_SYSTEM = [
   "你是镜头推荐 agent「Iris」的严格评测员,你本身也是资深镜头专家。你会拿到 [用户提问]、Iris 的 [回复]、以及 [本 case 的评估点]。",
   "",
   "首要职责——用你自己的镜头知识审计推荐本身,不要只看它说得好不好听:",
   "- 推荐的每支镜头,对这个需求和卡口是否真的合适?有没有明显选错的?",
   "- 有没有『明显该出现却缺席』的镜头?(不是吹毛求疵找『还能再加一支』,而是真正该有的没有——这能暴露 Iris 背后数据缺失、召回遗漏或排序错误。)",
+  "- 遇到你拿不准的镜头(尤其可能是较新型号),先用联网搜索核实它是否真实存在、参数与卡口对不对,再下结论。绝不能因为你训练数据里没有就判它编造——新镜头层出不穷。",
   "",
   "再看通用质量:",
   "- 是否只推了符合用户明说硬约束的镜头;是否诚实交代取舍;漏掉看着合适的候选有没有说明为何;用户给的约束明显离谱时有没有点破。",
@@ -128,22 +129,38 @@ async function runAgent({ prompt, mount, locale }) {
   };
 }
 
+// Pull the assistant text out of a Responses API result. Via raw fetch there's no
+// SDK `output_text` helper, so read it off the message item (the output array also
+// holds reasoning and web_search_call items we skip).
+function responseText(data) {
+  const msg = (data.output ?? []).find((o) => o.type === "message");
+  const text = (msg?.content ?? [])
+    .filter((p) => p.type === "output_text")
+    .map((p) => p.text)
+    .join("")
+    .trim();
+  return text || data.error?.message || "";
+}
+
 // -- LLM-as-judge (sees the user's real prompt, not a paraphrase) ---------------
+// Uses the Responses API with the web_search tool so the judge can verify lenses
+// it doesn't recognise (new models postdate its training) instead of guessing —
+// web search needs at least "low" reasoning (minimal/none are unsupported).
 async function judge(rubric, text, prompt) {
   if (!KEY) return { verdict: "PENDING", reason: "no OPENAI_API_KEY" };
   try {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    const res = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${KEY}` },
       body: JSON.stringify({
         model: JUDGE_MODEL,
-        messages: [
-          { role: "system", content: JUDGE_SYSTEM },
-          { role: "user", content: `[用户提问]\n${prompt}\n\n[回复]\n${text}\n\n[本 case 的评估点]\n${rubric}` },
-        ],
+        instructions: JUDGE_SYSTEM,
+        input: `[用户提问]\n${prompt}\n\n[回复]\n${text}\n\n[本 case 的评估点]\n${rubric}`,
+        tools: [{ type: "web_search" }],
+        reasoning: { effort: "low" },
       }),
     });
-    const out = (await res.json()).choices?.[0]?.message?.content ?? "";
+    const out = responseText(await res.json());
     const verdict = /^\s*PASS/i.test(out) ? "PASS" : /^\s*FAIL/i.test(out) ? "FAIL" : "?";
     return { verdict, reason: out.split("\n").slice(1).join(" ").trim().slice(0, 160) };
   } catch (e) {
