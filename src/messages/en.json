@@ -28,8 +28,8 @@
     "feedback": "Feedback"
   },
   "AskIris": {
-    "heading": "Hi, I'm Iris<beta></beta>\nYour personal lens advisor",
-    "subtitle": "Describe your shoot in plain words — I'll match it precisely from a vast lens database.",
+    "heading": "Hi, I'm Iris<beta></beta>",
+    "subtitle": "Your personal lens advisor — describe your shoot in plain words, and I'll match it precisely.",
     "placeholder": "Ask Iris",
     "send": "Send",
     "chips": [

@@ -28,8 +28,8 @@
     "feedback": "反馈"
   },
   "AskIris": {
-    "heading": "Hi，我是 Iris<beta></beta>\n你的专属镜头顾问",
-    "subtitle": "用大白话描述你的拍摄需求，我帮你从海量镜头库中精准匹配",
+    "heading": "Hi，我是 Iris<beta></beta>",
+    "subtitle": "你的专属镜头顾问 —— 用大白话说需求，我帮你精准匹配",
     "placeholder": "Ask Iris",
     "send": "发送",
     "chips": [
