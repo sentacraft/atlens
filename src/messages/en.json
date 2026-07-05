@@ -20,6 +20,7 @@
   },
   "Nav": {
     "lenses": "Browse",
+    "askIris": "Ask AI",
     "allLenses": "All Lenses",
     "collections": "Collections",
     "compare": "Compare",
