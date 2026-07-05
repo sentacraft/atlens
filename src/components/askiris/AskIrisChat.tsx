@@ -2,7 +2,6 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { SquarePen } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
@@ -178,17 +177,6 @@ export default function AskIrisChat({ locale }: { locale: string }) {
 
   return (
     <div className={shell}>
-      <div className="flex shrink-0 items-center justify-end pt-3">
-        <button
-          type="button"
-          onClick={() => startNewSegment(t("newTopic"))}
-          disabled={renderMessages.length === 0}
-          className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition-colors disabled:opacity-40"
-        >
-          <SquarePen className="size-3.5" aria-hidden />
-          {t("newChat")}
-        </button>
-      </div>
       <div className="relative min-h-0 flex-1">
         <div
           ref={scrollRef}
@@ -232,6 +220,9 @@ export default function AskIrisChat({ locale }: { locale: string }) {
           disabled={isBusy}
           placeholder={t("placeholder")}
           sendLabel={t("send")}
+          onNewTopic={() => startNewSegment(t("newTopic"))}
+          newTopicLabel={t("newChat")}
+          newTopicDisabled={renderMessages.length === 0}
         />
       </div>
     </div>
