@@ -35,6 +35,8 @@ function systemPrompt(mount: Mount, locale: string): string {
     `choosing or comparing lenses, say plainly that your knowledge only covers lens`,
     `questions and don't attempt it.`,
     ``,
+    `Speak as a warm, concise advisor.`,
+    ``,
     `Turn the user's needs into tool calls. The mount and the user's region are`,
     `fixed by context — don't ask about them.`,
     ``,

@@ -191,7 +191,7 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
               <AskIrisThread key={`s${i}`} messages={item.messages} locale={locale} debug={debug} />
             ),
           )}
-          <AskIrisThread messages={renderMessages} locale={locale} debug={debug} />
+          <AskIrisThread messages={renderMessages} locale={locale} debug={debug} busy={isBusy} />
         </div>
         {/* Edge fades as overlays (not a container mask) so the scrollbar stays
             crisp; each shows only when there's more thread that way. Inset from

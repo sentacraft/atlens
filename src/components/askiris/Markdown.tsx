@@ -1,5 +1,9 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+// CommonMark's emphasis flanking rules mis-classify **bold** hugged by CJK text and
+// punctuation (e.g. **「…」** after a Chinese char), leaving the ** literal. This
+// relaxes the rules for CJK so Iris's bold renders.
+import remarkCjkFriendly from "remark-cjk-friendly";
 
 // Renders Iris's Markdown. react-markdown + remark-gfm only parse Markdown into
 // semantic HTML; styling is @tailwindcss/typography's `prose` — the one-stop that
@@ -19,7 +23,7 @@ export default function Markdown({
 }) {
   return (
     <div className={className}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{children}</ReactMarkdown>
+      <ReactMarkdown remarkPlugins={[remarkCjkFriendly, remarkGfm]}>{children}</ReactMarkdown>
     </div>
   );
 }
