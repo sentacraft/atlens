@@ -41,7 +41,8 @@
     "beta": "Beta",
     "switchedMount": "已切换到 {mount}",
     "newChat": "新对话",
-    "newTopic": "新话题"
+    "newTopic": "新话题",
+    "rateLimited": "Iris 现在有点忙，稍后再试。"
   },
   "Search": {
     "open": "打开镜头搜索",
