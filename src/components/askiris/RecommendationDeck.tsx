@@ -60,7 +60,7 @@ function RecommendationCard({ rec, locale }: { rec: Recommendation; locale: stri
       rel="noopener noreferrer"
       className="border-border bg-background hover:border-foreground/20 flex flex-col gap-2 rounded-xl border p-3 transition-colors"
     >
-      <div className="flex items-start gap-3">
+      <div className="flex gap-3">
         <div className="relative h-20 w-20 shrink-0">
           <Image
             src={getLensImageUrl(rec.id)}
@@ -73,7 +73,10 @@ function RecommendationCard({ rec, locale }: { rec: Recommendation; locale: stri
           />
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
+        {/* Match the thumbnail's height and push the price/weight to the bottom, so
+            that row sits on the thumbnail's baseline in every card regardless of a
+            one- or two-line title — the name stays top-aligned above it. */}
+        <div className="flex h-20 min-w-0 flex-1 flex-col justify-between">
           <h4 className="line-clamp-2 text-sm leading-snug font-semibold" title={rec.name}>
             {rec.name}
           </h4>
