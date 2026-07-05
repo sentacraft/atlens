@@ -36,7 +36,9 @@ export function buildLensTools(
         usage: z
           .enum(["photo", "cine"])
           .optional()
-          .describe("Defaults to photo. Use cine only when the user wants cinema lenses."),
+          .describe(
+            "Which catalogue to search. Defaults to photo; cine lenses are excluded unless set to cine.",
+          ),
         features: z
           .array(z.enum(FILTER_FEATURE_KEYS))
           .optional()
@@ -75,24 +77,17 @@ export function buildLensTools(
         maxWeightG: z
           .number()
           .optional()
-          .describe(
-            "Grams; lens weight must be ≤ this. Use only for an explicit limit. For a vague " +
-              "'light' preference use sortBy: weightG instead (no hard cutoff).",
-          ),
+          .describe("Grams; a hard upper bound on lens weight."),
         maxLengthMm: z
           .number()
           .optional()
-          .describe(
-            "Barrel length ceiling in mm — for 'compact', 'pocketable', 'small'. Use only for an " +
-              "explicit size cap; for a vague size preference use sortBy: length instead.",
-          ),
+          .describe("Barrel length ceiling in mm; a hard upper bound."),
         maxApertureF: z
           .object({ wide: z.number().optional(), tele: z.number().optional() })
           .optional()
           .describe(
-            "f-number ceiling (smaller = wider). wide = wide end (the usual 'large aperture' " +
-              "reading); tele = long end (for 'constant f2.8' / 'f2.8 even at tele'). Use only for " +
-              "an explicit f-number. For a vague 'good bokeh' preference use sortBy: maxAperture.",
+            "f-number ceiling (smaller = wider), a hard bound. wide bounds the wide-end " +
+              "aperture, tele the long-end aperture.",
           ),
         maxPrice: z
           .number()
@@ -102,28 +97,25 @@ export function buildLensTools(
           .number()
           .optional()
           .describe(
-            "Minimum magnification ratio for close-up work (0.5 = half life-size, 1 = 1:1 " +
-              "true macro). Use only for an explicit close-up need; for a vague 'good for " +
-              "close-ups' use sortBy: magnification.",
+            "Minimum magnification ratio (0.5 = half life-size, 1 = 1:1 true macro); a hard lower bound.",
           ),
         minApertureBladeCount: z
           .number()
           .optional()
           .describe(
-            "Minimum aperture blades — for 'round bokeh' / 'smooth out-of-focus'. More blades " +
-              "keep the aperture rounder when stopped down. Use only when the user cares about " +
-              "bokeh shape (typically 9+).",
+            "Minimum aperture blade count; a hard lower bound. More blades keep the aperture " +
+              "opening rounder when stopped down.",
           ),
         minReleaseYear: z
           .number()
           .optional()
-          .describe("Only lenses released in or after this year. For 'newest' use sortBy: releaseYear desc."),
+          .describe("Only lenses released in or after this year; a hard lower bound."),
         sortBy: z
           .enum(RECALL_SORT_FIELDS)
           .optional()
           .describe(
             "Rank by a single axis — use this for a soft preference instead of a hard filter. " +
-              "reach = longest focal reach ('the longer the better'); wideEnd = widest; " +
+              "reach = longest focal reach; wideEnd = widest; " +
               "weightG = lightest; maxAperture = fastest; length = most compact; price = " +
               "cheapest; magnification = best close-up; zoomRatio = most versatile / one-lens; " +
               "releaseYear = newest (with sortDir: desc).",
@@ -135,8 +127,8 @@ export function buildLensTools(
 
     searchLensByName: tool({
       description:
-        "Look up lenses by model or brand name (e.g. '18-55', 'XF35', 'Viltrox 27'). Use when " +
-        "the user names a specific lens rather than describing a need.",
+        "Look up lenses by model or brand name (e.g. '18-55', 'XF35', 'Viltrox 27'). A name-based " +
+        "lookup, as opposed to queryLenses's need-based recall.",
       inputSchema: z.object({
         query: z.string().describe("The model or brand text the user typed."),
         limit: z.number().optional().describe("Max results (default 8)."),
