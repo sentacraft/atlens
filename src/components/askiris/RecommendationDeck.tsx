@@ -58,25 +58,26 @@ function RecommendationCard({ rec, locale }: { rec: Recommendation; locale: stri
       // same-tab nav would discard the conversation the user is working through.
       target="_blank"
       rel="noopener noreferrer"
-      className="border-border bg-background hover:border-foreground/20 flex flex-col gap-2 rounded-xl border p-3 transition-colors"
+      className="border-border bg-background hover:border-foreground/20 flex flex-col gap-2 rounded-xl border p-3.5 transition-colors"
     >
-      <div className="flex gap-3">
-        <div className="relative h-20 w-20 shrink-0">
+      <div className="flex gap-3.5">
+        <div className="bg-muted relative size-24 shrink-0 rounded-xl">
           <Image
             src={getLensImageUrl(rec.id)}
             alt={rec.name}
             fill
-            sizes="80px"
+            sizes="96px"
             style={lensImageStyle}
-            className="object-contain"
+            className="object-contain p-3.5"
             loading="lazy"
           />
         </div>
 
-        {/* Match the thumbnail's height and push the price/weight to the bottom, so
-            that row sits on the thumbnail's baseline in every card regardless of a
-            one- or two-line title — the name stays top-aligned above it. */}
-        <div className="flex h-20 min-w-0 flex-1 flex-col justify-between">
+        {/* Top-aligned with the thumbnail: the name sits at the top and the
+            price/weight follow directly beneath it, not pinned to the thumbnail's
+            base. The 96px thumbnail sets the header height; the full-width reason
+            row below always clears it. */}
+        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <h4 className="line-clamp-2 text-sm leading-snug font-semibold" title={rec.name}>
             {rec.name}
           </h4>
