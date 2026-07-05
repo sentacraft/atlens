@@ -56,6 +56,45 @@ function ToolTrace({ part }: { part: ToolUIPart | DynamicToolUIPart }) {
   );
 }
 
+type ActivityKey = "thinking" | "toolQuerying" | "toolSearching" | "toolRecommending" | "toolWorking";
+
+// The label key for whatever a pending tool call is doing.
+function toolLabelKey(name: string): ActivityKey {
+  switch (name) {
+    case "queryLenses": {
+      return "toolQuerying";
+    }
+    case "searchLensByName": {
+      return "toolSearching";
+    }
+    case "recommendLenses": {
+      return "toolRecommending";
+    }
+    default: {
+      return "toolWorking";
+    }
+  }
+}
+
+// What the live turn is doing right now, as an i18n key — or null for no indicator.
+// A single signal at the growing edge, so parallel tool calls don't stack up and the
+// gaps the per-part states miss (before the first token, between steps) don't read as
+// frozen. Hidden while text visibly streams, since that's its own progress.
+function activityKey(messages: UIMessage[], busy: boolean, debug: boolean): ActivityKey | null {
+  if (debug || !busy || messages.length === 0) {
+    return null;
+  }
+  const last = messages[messages.length - 1];
+  const lastPart = last.parts[last.parts.length - 1];
+  if (last.role !== "user" && lastPart?.type === "text") {
+    return null;
+  }
+  if (lastPart && isToolUIPart(lastPart) && (lastPart.state === "input-streaming" || lastPart.state === "input-available")) {
+    return toolLabelKey(getToolName(lastPart));
+  }
+  return "thinking";
+}
+
 export default function AskIrisThread({
   messages,
   locale,
@@ -68,38 +107,8 @@ export default function AskIrisThread({
   busy?: boolean;
 }) {
   const t = useTranslations("AskIris");
-
-  // A single activity indicator at the growing edge of the live turn. It covers the
-  // gaps the per-part tool states don't — the model thinking before the first token,
-  // and between steps (after a tool returns, before the next text) — so the stream
-  // never reads as frozen. One indicator, so parallel tool calls don't stack up. Hidden
-  // while text is visibly streaming, since that's its own progress.
-  let activity: string | null = null;
-  if (!debug && busy && messages.length > 0) {
-    const last = messages[messages.length - 1];
-    const lastPart = last.parts[last.parts.length - 1];
-    const streamingText = last.role !== "user" && lastPart?.type === "text";
-    const pendingTool =
-      lastPart && isToolUIPart(lastPart) && (lastPart.state === "input-streaming" || lastPart.state === "input-available")
-        ? lastPart
-        : null;
-    if (streamingText) {
-      activity = null;
-    } else if (pendingTool) {
-      const name = getToolName(pendingTool);
-      if (name === "queryLenses") {
-        activity = t("toolQuerying");
-      } else if (name === "searchLensByName") {
-        activity = t("toolSearching");
-      } else if (name === "recommendLenses") {
-        activity = t("toolRecommending");
-      } else {
-        activity = t("toolWorking");
-      }
-    } else {
-      activity = t("thinking");
-    }
-  }
+  const activeKey = activityKey(messages, busy, debug);
+  const activity = activeKey ? t(activeKey) : null;
 
   return (
     <>
