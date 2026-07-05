@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Menu } from "@base-ui/react/menu";
-import { EllipsisVertical, Flag, Info, Download } from "lucide-react";
+import { EllipsisVertical, Flag, Info, Download, Columns2 } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import Iris from "@/components/iris/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
@@ -96,6 +96,7 @@ export default function Nav() {
 
   const isBrowseActive = pathname.startsWith("/lenses") && !pathname.includes("/compare");
   const isCompareActive = pathname.includes("/compare");
+  const isAskIrisActive = pathname.startsWith("/askiris");
   const showMountSwitcher =
     pathname === "/" || pathname.startsWith("/lenses") || pathname.startsWith("/askiris");
 
@@ -150,7 +151,19 @@ export default function Nav() {
           <Link href={browseHref} className={linkCls(isBrowseActive)}>
             {t("lenses")}
           </Link>
-          <Link href={compareHref} onClick={handleCompareLinkClick} className={linkCls(isCompareActive)}>
+          <Link href="/askiris" className={linkCls(isAskIrisActive)}>
+            {t("askIris")}
+            <sup className="relative -top-1.5 ml-0.5 text-[8px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+              Beta
+            </sup>
+          </Link>
+          {/* Compare is a late-funnel utility, so on mobile it folds into the ⋮
+              overflow to make room for the Ask AI entry; stays inline on desktop. */}
+          <Link
+            href={compareHref}
+            onClick={handleCompareLinkClick}
+            className={cn(linkCls(isCompareActive), "hidden sm:inline")}
+          >
             {t("compare")}
           </Link>
 
@@ -191,6 +204,14 @@ export default function Nav() {
             <Menu.Portal>
               <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50 sm:hidden">
                 <Menu.Popup className={cn(MENU_POPUP_CLS, "w-36")}>
+                  <Menu.LinkItem
+                    render={<Link href={compareHref} />}
+                    onClick={handleCompareLinkClick}
+                    className={mobileLinkCls(isCompareActive)}
+                  >
+                    <Columns2 className="h-4 w-4 shrink-0" />
+                    {t("compare")}
+                  </Menu.LinkItem>
                   <Menu.LinkItem
                     render={<Link href="/about" />}
                     className={mobileLinkCls(pathname === "/about")}

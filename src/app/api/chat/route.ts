@@ -8,8 +8,10 @@ import {
 } from "ai";
 import { z } from "zod";
 import { getTranslations } from "next-intl/server";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getAgentModel, agentProviderOptions } from "@/lib/ai/model";
 import { buildLensTools } from "@/lib/ai/tools";
+import { clientIp, isBypassed, checkRateLimit, recordTokens } from "@/lib/ai/rate-limit";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
 import type { Mount } from "@/lib/types";
@@ -29,7 +31,9 @@ function systemPrompt(mount: Mount, locale: string): string {
   return [
     `You help users find lenses for ${MOUNT_LABEL[mount]}. You recall and compare`,
     `candidates by their specs — you never tell the user which one to buy, and you`,
-    `never state a spec that isn't in a tool result.`,
+    `never state a spec that isn't in a tool result. If a request isn't about`,
+    `choosing or comparing lenses, say plainly that your knowledge only covers lens`,
+    `questions and don't attempt it.`,
     ``,
     `Turn the user's needs into tool calls. The mount and the user's region are`,
     `fixed by context — don't ask about them.`,
@@ -90,6 +94,27 @@ export async function POST(req: Request) {
   }
   const { messages, mount, locale } = parsed.data;
 
+  // Abuse guard for this public, no-login endpoint. Fail-open by design: with no KV
+  // binding (e.g. `next dev`) or on any KV hiccup we proceed unlimited rather than
+  // break the chat. See src/lib/ai/rate-limit.ts for the burst + daily-token design.
+  const ip = clientIp(req);
+  let rateKv: KVNamespace | undefined;
+  let waitUntil: ((p: Promise<unknown>) => void) | undefined;
+  try {
+    const { env, ctx } = getCloudflareContext();
+    rateKv = (env as CloudflareEnv).RATE_KV;
+    waitUntil = ctx.waitUntil.bind(ctx);
+    if (rateKv && ip && !isBypassed(req, process.env.RATE_LIMIT_BYPASS)) {
+      const verdict = await checkRateLimit(rateKv, ip);
+      if (!verdict.ok) {
+        const tRate = await getTranslations({ locale, namespace: "AskIris" });
+        return Response.json({ error: tRate("rateLimited") }, { status: 429 });
+      }
+    }
+  } catch {
+    // Never let a missing binding or KV error break chat.
+  }
+
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const tools = buildLensTools(mount, locale, tBrand);
 
@@ -102,6 +127,14 @@ export async function POST(req: Request) {
     messages: await convertToModelMessages(messages, { tools }),
     tools,
     stopWhen: stepCountIs(8),
+    // Fold the finished turn's real token usage (summed across all steps) into the
+    // daily budgets. waitUntil keeps the write alive past the streamed response.
+    onFinish: ({ totalUsage }) => {
+      const tokens = totalUsage.totalTokens;
+      if (rateKv && ip && waitUntil && typeof tokens === "number") {
+        waitUntil(recordTokens(rateKv, ip, tokens));
+      }
+    },
   });
 
   return createUIMessageStreamResponse({

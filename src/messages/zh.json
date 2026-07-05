@@ -20,6 +20,7 @@
   },
   "Nav": {
     "lenses": "镜头库",
+    "askIris": "AI 选镜头",
     "allLenses": "全部镜头",
     "collections": "主题合集",
     "compare": "对比",
@@ -30,7 +31,7 @@
   "AskIris": {
     "heading": "Hi，我是 Iris<beta></beta>",
     "subtitle": "你的专属镜头顾问 —— 用大白话说需求，我帮你精准匹配",
-    "placeholder": "Ask Iris",
+    "placeholder": "问问 Iris",
     "send": "发送",
     "chips": [
       { "emoji": "🌌", "label": "拍星空银河", "prompt": "第一次拍银河，需要广角大光圈，预算 6000 左右，机身 X-T5。" },
@@ -41,7 +42,8 @@
     "beta": "Beta",
     "switchedMount": "已切换到 {mount}",
     "newChat": "新对话",
-    "newTopic": "新话题"
+    "newTopic": "新话题",
+    "rateLimited": "Iris 现在有点忙，稍后再试。"
   },
   "Search": {
     "open": "打开镜头搜索",
