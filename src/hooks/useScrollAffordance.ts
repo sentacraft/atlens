@@ -40,12 +40,24 @@ export function useScrollAffordance(
       if (!el) {
         return;
       }
-      setState({
+      const next = {
         canScrollUp: el.scrollTop > 4,
         canScrollDown: el.scrollTop < el.scrollHeight - el.clientHeight - 4,
         canScrollLeft: el.scrollLeft > 4,
         canScrollRight: el.scrollLeft < el.scrollWidth - el.clientWidth - 4,
-      });
+      };
+      // Bail when nothing changed. update() runs on every scroll and — via the deps —
+      // on every streamed message; returning a fresh object each time would re-render
+      // unconditionally, and under a fast stream (dozens of message writes in one
+      // synchronous batch) those pile into a "Maximum update depth exceeded" loop.
+      setState((prev) =>
+        prev.canScrollUp === next.canScrollUp &&
+        prev.canScrollDown === next.canScrollDown &&
+        prev.canScrollLeft === next.canScrollLeft &&
+        prev.canScrollRight === next.canScrollRight
+          ? prev
+          : next,
+      );
     }
     update();
     el.addEventListener("scroll", update, { passive: true });
