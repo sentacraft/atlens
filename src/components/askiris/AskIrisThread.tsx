@@ -60,12 +60,47 @@ export default function AskIrisThread({
   messages,
   locale,
   debug = false,
+  busy = false,
 }: {
   messages: UIMessage[];
   locale: string;
   debug?: boolean;
+  busy?: boolean;
 }) {
   const t = useTranslations("AskIris");
+
+  // A single activity indicator at the growing edge of the live turn. It covers the
+  // gaps the per-part tool states don't — the model thinking before the first token,
+  // and between steps (after a tool returns, before the next text) — so the stream
+  // never reads as frozen. One indicator, so parallel tool calls don't stack up. Hidden
+  // while text is visibly streaming, since that's its own progress.
+  let activity: string | null = null;
+  if (!debug && busy && messages.length > 0) {
+    const last = messages[messages.length - 1];
+    const lastPart = last.parts[last.parts.length - 1];
+    const streamingText = last.role !== "user" && lastPart?.type === "text";
+    const pendingTool =
+      lastPart && isToolUIPart(lastPart) && (lastPart.state === "input-streaming" || lastPart.state === "input-available")
+        ? lastPart
+        : null;
+    if (streamingText) {
+      activity = null;
+    } else if (pendingTool) {
+      const name = getToolName(pendingTool);
+      if (name === "queryLenses") {
+        activity = t("toolQuerying");
+      } else if (name === "searchLensByName") {
+        activity = t("toolSearching");
+      } else if (name === "recommendLenses") {
+        activity = t("toolRecommending");
+      } else {
+        activity = t("toolWorking");
+      }
+    } else {
+      activity = t("thinking");
+    }
+  }
+
   return (
     <>
       {messages.map((message) => {
@@ -126,31 +161,6 @@ export default function AskIrisThread({
                   </div>
                 );
               }
-              // A tool that's been called but hasn't returned yet: the model is
-              // still generating the call (recommendLenses' picks + reasons take a
-              // few seconds) or the tool is running. Without this the stream looks
-              // frozen — no text flows and the deck only appears on output-available.
-              if (
-                !debug &&
-                isToolUIPart(part) &&
-                (part.state === "input-streaming" || part.state === "input-available")
-              ) {
-                const name = getToolName(part);
-                let label = t("toolWorking");
-                if (name === "queryLenses") {
-                  label = t("toolQuerying");
-                } else if (name === "searchLensByName") {
-                  label = t("toolSearching");
-                } else if (name === "recommendLenses") {
-                  label = t("toolRecommending");
-                }
-                return (
-                  <div key={key} className="text-muted-foreground flex items-center gap-2 px-1 py-1 text-sm">
-                    <Loader2 className="size-3.5 shrink-0 motion-safe:animate-spin" aria-hidden />
-                    <span>{label}</span>
-                  </div>
-                );
-              }
               if (debug && isToolUIPart(part)) {
                 return <ToolTrace key={key} part={part} />;
               }
@@ -159,6 +169,12 @@ export default function AskIrisThread({
           </div>
         );
       })}
+      {activity ? (
+        <div className="text-muted-foreground flex items-center gap-2 px-1 py-1 text-sm">
+          <Loader2 className="size-3.5 shrink-0 motion-safe:animate-spin" aria-hidden />
+          <span>{activity}</span>
+        </div>
+      ) : null}
     </>
   );
 }
