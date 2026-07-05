@@ -5,23 +5,45 @@
 // Needs the dev server up (localhost:3000) — it drives the real /api/chat path so
 // the CURRENT system prompt is under test. For each case it runs the agent N times
 // (default 1; use more to read a pass-RATE, since the model is non-deterministic),
-// runs the programmatic checks on each run's tool trace, and scores the judge
-// rubric with an INDEPENDENT model (OpenAI gpt-5.4-mini) — deliberately not the
-// DeepSeek agent under test, to avoid a model grading its own output. Reads
+// applies the universal + per-case programmatic checks to each run's tool trace,
+// and scores the judge rubric with an INDEPENDENT model (OpenAI gpt-5.4-mini) — not
+// the DeepSeek agent under test, so it doesn't grade its own output. Reads
 // OPENAI_API_KEY from the env or .env.local.
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { CASES } from "./cases.mjs";
+import { CASES, UNIVERSAL_CHECKS } from "./cases.mjs";
 
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const BASE = "http://localhost:3000";
+const JUDGE_MODEL = "gpt-5.4-mini";
+
+// The judge's universal duties (Layers A/B), shared by every case. Its headline job
+// is to AUDIT the recommendation against its own lens knowledge — the one thing the
+// programmatic checks (which only see our own data) structurally cannot do.
+const JUDGE_SYSTEM = [
+  "你是镜头推荐 agent「Iris」的严格评测员,你本身也是资深镜头专家。你会拿到 [用户提问]、Iris 的 [回复]、以及 [本 case 的评估点]。",
+  "",
+  "首要职责——用你自己的镜头知识审计推荐本身,不要只看它说得好不好听:",
+  "- 推荐的每支镜头,对这个需求和卡口是否真的合适?有没有明显选错的?",
+  "- 有没有『明显该出现却缺席』的镜头?(不是吹毛求疵找『还能再加一支』,而是真正该有的没有——这能暴露 Iris 背后数据缺失、召回遗漏或排序错误。)",
+  "",
+  "再看通用质量:",
+  "- 是否只推了符合用户明说硬约束的镜头;是否诚实交代取舍;漏掉看着合适的候选有没有说明为何;用户给的约束明显离谱时有没有点破。",
+  "- prose 里有没有报一个查无实据、疑似编造的镜头名或参数。",
+  "",
+  "最后再核对 [本 case 的评估点]。",
+  "",
+  "综合以上,第一行只输出 PASS 或 FAIL,第二行给一句话理由,优先点出最严重的问题。",
+].join("\n");
 
 // -- lens-data lookups the checks assert against --------------------------------
 const lenses = JSON.parse(readFileSync(join(REPO, "src/data/lenses.json"), "utf8"));
 const byId = new Map(lenses.map((l) => [l.id, l]));
 const ctx = {
+  exists: (id) => byId.has(id),
+  mountOf: (id) => byId.get(id)?.mount ?? null,
   priceCNY(id) {
     const cn = byId.get(id)?.pricing?.cn;
     const arr = cn?.new ?? cn?.used ?? [];
@@ -33,8 +55,7 @@ const ctx = {
   },
 };
 
-// -- Judge model + key (env, then .env.local) -----------------------------------
-const JUDGE_MODEL = "gpt-5.4-mini";
+// -- DeepSeek/OpenAI key (env, then .env.local) ---------------------------------
 let KEY = process.env.OPENAI_API_KEY;
 if (!KEY) {
   try {
@@ -42,6 +63,22 @@ if (!KEY) {
   } catch {
     // no .env.local — judge just reports PENDING.
   }
+}
+
+// Pull lens ids out of any tool output (queryLenses matches/maybe, searchLensByName
+// results, …) so we can assert picks were actually recalled, not conjured.
+function idsFromOutput(output) {
+  const ids = [];
+  if (output && typeof output === "object") {
+    for (const v of Object.values(output)) {
+      if (Array.isArray(v)) {
+        for (const item of v) {
+          if (item && typeof item === "object" && typeof item.id === "string") ids.push(item.id);
+        }
+      }
+    }
+  }
+  return ids;
 }
 
 // -- run one agent turn, fold the SSE stream into a result ----------------------
@@ -79,17 +116,20 @@ async function runAgent({ prompt, mount, locale }) {
     }
   }
   const picks = tools.filter((t) => t.name === "recommendLenses").flatMap((t) => t.input?.picks ?? []);
+  const recalledIds = new Set();
+  for (const t of tools) for (const id of idsFromOutput(t.output)) recalledIds.add(id);
   return {
     text,
     tools,
     queryCalls: tools.filter((t) => t.name === "queryLenses").map((t) => t.input),
     picks,
     pickIds: picks.map((p) => p.id),
+    recalledIds,
   };
 }
 
-// -- LLM-as-judge ---------------------------------------------------------------
-async function judge(rubric, text) {
+// -- LLM-as-judge (sees the user's real prompt, not a paraphrase) ---------------
+async function judge(rubric, text, prompt) {
   if (!KEY) return { verdict: "PENDING", reason: "no OPENAI_API_KEY" };
   try {
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -98,14 +138,14 @@ async function judge(rubric, text) {
       body: JSON.stringify({
         model: JUDGE_MODEL,
         messages: [
-          { role: "system", content: "你是严格的评测员。第一行只输出 PASS 或 FAIL,第二行给一句话理由。" },
-          { role: "user", content: `评分标准:\n${rubric}\n\n---\n待评回复:\n${text}` },
+          { role: "system", content: JUDGE_SYSTEM },
+          { role: "user", content: `[用户提问]\n${prompt}\n\n[回复]\n${text}\n\n[本 case 的评估点]\n${rubric}` },
         ],
       }),
     });
     const out = (await res.json()).choices?.[0]?.message?.content ?? "";
     const verdict = /^\s*PASS/i.test(out) ? "PASS" : /^\s*FAIL/i.test(out) ? "FAIL" : "?";
-    return { verdict, reason: out.split("\n").slice(1).join(" ").trim().slice(0, 140) };
+    return { verdict, reason: out.split("\n").slice(1).join(" ").trim().slice(0, 160) };
   } catch (e) {
     return { verdict: "ERROR", reason: String(e).slice(0, 100) };
   }
@@ -118,32 +158,34 @@ const cases = only.length ? CASES.filter((c) => only.includes(c.id)) : CASES;
 
 for (const c of cases) {
   console.log(`\n=== ${c.id}  (${RUNS} run${RUNS > 1 ? "s" : ""}) ===`);
+  const checks = [...UNIVERSAL_CHECKS, ...(c.checks ?? [])];
   const pass = new Map();
   let judgePass = 0;
   const judgeNotes = [];
   for (let i = 0; i < RUNS; i++) {
     const r = await runAgent(c.input);
     console.log(`  run ${i + 1}: picks=[${r.pickIds.join(", ") || "—"}]`);
-    for (const [name, fn] of c.checks ?? []) {
+    for (const [name, fn] of checks) {
       let ok = false;
       try {
-        ok = !!fn(r, ctx);
+        ok = !!fn(r, ctx, c);
       } catch {
         ok = false;
       }
       pass.set(name, (pass.get(name) ?? 0) + (ok ? 1 : 0));
     }
     if (c.judge) {
-      const v = await judge(c.judge, r.text);
+      const v = await judge(c.judge, r.text, c.input.prompt);
       if (v.verdict === "PASS") judgePass++;
       judgeNotes.push(`${v.verdict} — ${v.reason}`);
     }
   }
-  for (const [name] of c.checks ?? []) {
-    console.log(`  [${pass.get(name)}/${RUNS}] ${name}`);
+  for (const [name] of checks) {
+    const n = pass.get(name) ?? 0;
+    console.log(`  [${n}/${RUNS}]${n < RUNS ? " ✗" : "  "} ${name}`);
   }
   if (c.judge) {
-    console.log(`  [${judgePass}/${RUNS}] JUDGE (rubric)`);
+    console.log(`  [${judgePass}/${RUNS}] JUDGE`);
     judgeNotes.forEach((n) => console.log(`         ${n}`));
   }
 }
