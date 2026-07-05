@@ -41,7 +41,7 @@ export default function AskIrisComposer({
 
   return (
     <form
-      className="flex w-full items-stretch gap-2"
+      className="flex w-full items-center gap-2"
       onSubmit={(event) => {
         event.preventDefault();
         if (canSend) {
@@ -56,7 +56,7 @@ export default function AskIrisComposer({
           disabled={newTopicDisabled}
           aria-label={newTopicLabel}
           title={newTopicLabel}
-          className="border-input bg-background text-muted-foreground hover:text-foreground hover:bg-muted grid w-12 shrink-0 place-items-center rounded-2xl border shadow-sm transition disabled:pointer-events-none disabled:opacity-40"
+          className="border-input bg-background text-muted-foreground hover:text-foreground hover:bg-muted grid size-11 shrink-0 place-items-center rounded-2xl border shadow-sm transition disabled:pointer-events-none disabled:opacity-40"
         >
           <Plus className={lg ? "size-5" : "size-4"} />
         </button>
