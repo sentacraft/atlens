@@ -19,6 +19,13 @@ GITHUB_FEEDBACK_ASSIGNEES = "sentacraft"
 binding = "ANALYTICS"
 dataset = "xglass_events"
 
+# Rate-limit counters for /api/chat (per-IP burst + per-IP/global daily token
+# budgets). The RATE_LIMIT_BYPASS secret (dashboard / `wrangler secret put`) exempts
+# the developer's own testing.
+[[kv_namespaces]]
+binding = "RATE_KV"
+id = "b4eeeb3afdca4f038de649dd3ecbea5f"
+
 [observability]
 enabled = false
 head_sampling_rate = 1

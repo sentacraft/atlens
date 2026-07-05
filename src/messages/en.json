@@ -20,6 +20,7 @@
   },
   "Nav": {
     "lenses": "Browse",
+    "askIris": "Ask AI",
     "allLenses": "All Lenses",
     "collections": "Collections",
     "compare": "Compare",
@@ -41,7 +42,8 @@
     "beta": "Beta",
     "switchedMount": "Switched to {mount}",
     "newChat": "New chat",
-    "newTopic": "New topic"
+    "newTopic": "New topic",
+    "rateLimited": "Iris is taking a lot of questions right now — please try again in a little while."
   },
   "Search": {
     "open": "Open lens search",
