@@ -96,7 +96,8 @@ export default function Nav() {
 
   const isBrowseActive = pathname.startsWith("/lenses") && !pathname.includes("/compare");
   const isCompareActive = pathname.includes("/compare");
-  const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
+  const showMountSwitcher =
+    pathname === "/" || pathname.startsWith("/lenses") || pathname.startsWith("/askiris");
 
   // When the user is *already on* the compare page and clicks the nav's
   // "对比" link, the intuitive read is "reset this comparison and start

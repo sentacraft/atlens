@@ -57,20 +57,22 @@ export function buildLensTools(
           .array(z.number())
           .optional()
           .describe(
-            "Full-frame-equivalent focal length(s) the lens must be able to shoot. Each value " +
-              "is required independently: the lens's focal range must include every one of them, " +
-              "not merely the span between them. A prime is a single focal, so it can satisfy at " +
-              "most one value equal to that focal — passing two or more values excludes every " +
-              "prime. To place a prime within a focal range, use focalWithin instead.",
+            "Native focal length(s) in mm — the number printed on the lens (a 56mm lens is 56), " +
+              "not the full-frame equivalent — that the lens must be able to shoot, matched within " +
+              "a small tolerance. Each value is required independently: the lens's focal range must " +
+              "include every one of them, not merely the span between them. A prime is a single " +
+              "focal, so it can satisfy at most one value near that focal — passing two or more " +
+              "values excludes every prime. To place a prime within a focal range, use focalWithin.",
           ),
         focalWithin: z
           .tuple([z.number().nullable(), z.number().nullable()])
           .optional()
           .describe(
-            "Full-frame-equivalent [min, max]; null leaves that end open. The lens's ENTIRE " +
-              "focal range must lie inside the window: a zoom passes only if both its ends are " +
-              "inside, a prime passes if its single focal is inside. This is the inverse of " +
-              "coversFocals, whose values must lie inside the lens's range rather than the reverse.",
+            "Native focal length [min, max] in mm (the number printed on the lens, not the " +
+              "full-frame equivalent); null leaves that end open. The lens's ENTIRE focal range " +
+              "must lie inside the window: a zoom passes only if both its ends are inside, a prime " +
+              "passes if its single focal is inside. This is the inverse of coversFocals, whose " +
+              "values must lie inside the lens's range rather than the reverse.",
           ),
         maxWeightG: z
           .number()

@@ -8,7 +8,7 @@ import {
 } from "ai";
 import { z } from "zod";
 import { getTranslations } from "next-intl/server";
-import { agentModel, agentProviderOptions } from "@/lib/ai/model";
+import { getAgentModel, agentProviderOptions } from "@/lib/ai/model";
 import { buildLensTools } from "@/lib/ai/tools";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
@@ -34,9 +34,21 @@ function systemPrompt(mount: Mount, locale: string): string {
     `Turn the user's needs into tool calls. The mount and the user's region are`,
     `fixed by context — don't ask about them.`,
     ``,
-    `When a request is underspecified, assume a sensible reading and recall on it`,
-    `— but name the assumption and invite a correction (e.g. "I read 'portraits'`,
-    `as ~85mm — want wider or longer?"), never presenting it as the only reading.`,
+    `Most requests have one spec that looks like the whole answer, but it rarely`,
+    `is: it trades against the others the user also cares about (price, size, focus`,
+    `type, reach). Sorting by that one axis and featuring its top few buries the`,
+    `lens that wins on another; hardening a mere preference into a filter drops`,
+    `otherwise-fitting lenses. Weigh the trade across axes when you choose what to`,
+    `feature, and when you pass on a lens that looked an obvious fit, say why in a line.`,
+    ``,
+    `When a request is underspecified, assume a sensible reading and recall on it,`,
+    `but name the assumption and invite a correction — the focal you read a`,
+    `"portrait" as, or, when no budget / speed / size priority is stated, the one`,
+    `you let drive the picks — never presenting it as the only reading.`,
+    ``,
+    `When your picks land clear of a stated budget or limit — all well under the`,
+    `budget, say — point that out and re-orient (the budget isn't the constraint;`,
+    `ask what should drive the pick) instead of quietly spending to it.`,
     ``,
     `Once you've narrowed to your picks, present them by calling recommendLenses`,
     `with 3–6 lens ids — this renders a grid of cards. You may call it more than`,
@@ -82,7 +94,7 @@ export async function POST(req: Request) {
   const tools = buildLensTools(mount, locale, tBrand);
 
   const result = streamText({
-    model: agentModel,
+    model: getAgentModel(),
     providerOptions: agentProviderOptions,
     system: systemPrompt(mount, locale),
     // Same `tools` on both calls: recommendLenses.toModelOutput runs inside

@@ -27,6 +27,22 @@
     "getApp": "Get App",
     "feedback": "Feedback"
   },
+  "AskIris": {
+    "heading": "Hi, I'm Iris<beta></beta>",
+    "subtitle": "Your personal lens advisor — describe your shoot in plain words, and I'll match it precisely.",
+    "placeholder": "Ask Iris",
+    "send": "Send",
+    "chips": [
+      { "emoji": "🌌", "label": "Astro / Milky Way", "prompt": "First time shooting the Milky Way — I need a wide angle with a fast aperture, budget around $800, body is an X-T5." },
+      { "emoji": "✈️", "label": "Travel light", "prompt": "Swapping two or three primes on trips is a hassle — I want one lens that can do it all." },
+      { "emoji": "📷", "label": "Street photography", "prompt": "I want to get into street photography — not sure whether a prime or a zoom suits it better, budget around $700." },
+      { "emoji": "🌸", "label": "Outdoor portraits", "prompt": "Mostly outdoor half-body portraits — I'm torn between 33mm and 56mm, body is an X-T4." }
+    ],
+    "beta": "Beta",
+    "switchedMount": "Switched to {mount}",
+    "newChat": "New chat",
+    "newTopic": "New topic"
+  },
   "Search": {
     "open": "Open lens search",
     "title": "Search Lenses",
