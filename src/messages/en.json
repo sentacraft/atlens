@@ -28,12 +28,11 @@
     "feedback": "Feedback"
   },
   "AskIris": {
-    "heading": "Hi, I'm Iris ✨\nYour personal lens advisor",
+    "heading": "Hi, I'm Iris<beta></beta>\nYour personal lens advisor",
     "subtitle": "Describe your shoot in plain words — I'll match it precisely from a vast lens database.",
     "placeholder": "Ask Iris",
     "send": "Send",
     "chips": ["Astro / Milky Way", "Indoor kids, blurred bg", "One lens for travel"],
-    "footer": "Iris is Atlens's lens assistant",
     "beta": "Beta",
     "switchedMount": "Switched to {mount}",
     "newChat": "New chat",

@@ -163,6 +163,38 @@ export const IRIS_HERO: IrisConfig = {
   chaseTauMs: 60,
 };
 
+// AskIris landing hero — the assistant introducing itself ("Hi, I'm Iris"). Same
+// optics as the homepage hero so the character reads as the same Iris, but a
+// step smaller and without the homepage's aperture strip: it sweeps open on
+// mount and replays on tap, nothing more.
+export const IRIS_ASSISTANT: IrisConfig = {
+  // Mechanical
+  N: 7,
+  pinDistance: 85,
+  slotOffset: 0.804533,
+  bladeLength: 120,
+  bladeWidth: 40,
+  openFStop: 1.4,
+  defaultFStop: 4,
+  // Size
+  size: 56,
+  // Appearance
+  bladeColor: "#181818",
+  strokeColor: "#b3b3b3",
+  strokeWidth: 1,
+  // Aperture limits
+  closedFStop: 22,
+  // Interaction — tap replays the sweep; no hover, no aperture strip.
+  interactive: {
+    type: "tap",
+    animation: { type: "sweep", sweepMs: 800, totalMs: 1500 },
+  },
+  apertureStrip: false,
+  // Animation
+  onMount: { type: "sweep", sweepMs: 800, totalMs: 1500 },
+  chaseTauMs: 60,
+};
+
 export const IRIS_NAV: IrisConfig = {
   // Mechanical
   N: 5,
