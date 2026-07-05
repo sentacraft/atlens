@@ -33,6 +33,10 @@
     "subtitle": "你的专属镜头顾问 —— 用大白话说需求，我帮你精准匹配",
     "placeholder": "问问 Iris",
     "send": "发送",
+    "toolQuerying": "正在检索镜头库…",
+    "toolSearching": "正在查找镜头…",
+    "toolRecommending": "正在整理推荐…",
+    "toolWorking": "生成中…",
     "chips": [
       { "emoji": "🌌", "label": "拍星空银河", "prompt": "第一次拍银河，需要广角大光圈，预算 6000 左右，机身 X-T5。" },
       { "emoji": "✈️", "label": "旅行精简装备", "prompt": "出门旅游带两三个定焦换来换去太麻烦了，想只带一支镜头走天下。" },

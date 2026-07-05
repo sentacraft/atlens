@@ -33,6 +33,10 @@
     "subtitle": "Your personal lens advisor — describe your shoot in plain words, and I'll match it precisely.",
     "placeholder": "Ask Iris",
     "send": "Send",
+    "toolQuerying": "Searching lenses…",
+    "toolSearching": "Looking up lenses…",
+    "toolRecommending": "Preparing recommendations…",
+    "toolWorking": "Working…",
     "chips": [
       { "emoji": "🌌", "label": "Astro / Milky Way", "prompt": "First time shooting the Milky Way — I need a wide angle with a fast aperture, budget around $800, body is an X-T5." },
       { "emoji": "✈️", "label": "Travel light", "prompt": "Swapping two or three primes on trips is a hassle — I want one lens that can do it all." },

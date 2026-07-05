@@ -5,6 +5,8 @@ import {
   type ToolUIPart,
   type UIMessage,
 } from "ai";
+import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Iris from "@/components/iris/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import Markdown from "@/components/askiris/Markdown";
@@ -63,6 +65,7 @@ export default function AskIrisThread({
   locale: string;
   debug?: boolean;
 }) {
+  const t = useTranslations("AskIris");
   return (
     <>
       {messages.map((message) => {
@@ -120,6 +123,31 @@ export default function AskIrisThread({
                 return (
                   <div key={key} className="mb-4 w-full">
                     <RecommendationDeck recommendations={recommendations} locale={locale} />
+                  </div>
+                );
+              }
+              // A tool that's been called but hasn't returned yet: the model is
+              // still generating the call (recommendLenses' picks + reasons take a
+              // few seconds) or the tool is running. Without this the stream looks
+              // frozen — no text flows and the deck only appears on output-available.
+              if (
+                !debug &&
+                isToolUIPart(part) &&
+                (part.state === "input-streaming" || part.state === "input-available")
+              ) {
+                const name = getToolName(part);
+                let label = t("toolWorking");
+                if (name === "queryLenses") {
+                  label = t("toolQuerying");
+                } else if (name === "searchLensByName") {
+                  label = t("toolSearching");
+                } else if (name === "recommendLenses") {
+                  label = t("toolRecommending");
+                }
+                return (
+                  <div key={key} className="text-muted-foreground flex items-center gap-2 px-1 py-1 text-sm">
+                    <Loader2 className="size-3.5 shrink-0 motion-safe:animate-spin" aria-hidden />
+                    <span>{label}</span>
                   </div>
                 );
               }
