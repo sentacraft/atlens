@@ -27,6 +27,15 @@
     "getApp": "Get App",
     "feedback": "Feedback"
   },
+  "AskIris": {
+    "heading": "What do you want to shoot?\nLet me help you pick a lens",
+    "subtitle": "Describe your shot in plain words — no specs needed.",
+    "placeholder": "Ask Iris",
+    "send": "Send",
+    "chips": ["Astro / Milky Way", "Indoor kids, blurred bg", "One lens for travel"],
+    "footer": "Iris is Atlens's lens assistant",
+    "beta": "Beta"
+  },
   "Search": {
     "open": "Open lens search",
     "title": "Search Lenses",

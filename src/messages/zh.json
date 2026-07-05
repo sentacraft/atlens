@@ -27,6 +27,15 @@
     "getApp": "获取应用",
     "feedback": "反馈"
   },
+  "AskIris": {
+    "heading": "想拍什么？\n我来帮你选镜头",
+    "subtitle": "用大白话描述你的拍摄场景就行，不用懂参数。",
+    "placeholder": "Ask Iris",
+    "send": "发送",
+    "chips": ["拍星空 / 银河", "室内拍娃、要虚化", "旅行一镜走天下"],
+    "footer": "Iris 是 Atlens 的选镜助手",
+    "beta": "Beta"
+  },
   "Search": {
     "open": "打开镜头搜索",
     "title": "搜索镜头",
