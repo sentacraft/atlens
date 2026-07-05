@@ -1,14 +1,14 @@
 "use client";
 
 import { type Ref } from "react";
-import { ArrowUp, SquarePen } from "lucide-react";
+import { ArrowUp, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // The AskIris input box, shared by the empty-state hero (size "lg") and the chat
 // thread (size "md"). The send button lives inside the box in both — an upward
-// arrow, the modern chat convention — so the two states feel like one design.
-// In the thread, an optional compose button sits at the opposite (left) end as
-// the "new topic" entry, balancing the send button and always in reach.
+// arrow, the modern chat convention. In the thread, a separate "new topic" button
+// sits to the LEFT of the box as its own bordered control (not an in-box icon, so
+// it reads as a button rather than a passive hint), balancing the send affordance.
 export default function AskIrisComposer({
   value,
   onChange,
@@ -41,7 +41,7 @@ export default function AskIrisComposer({
 
   return (
     <form
-      className="w-full"
+      className="flex w-full items-stretch gap-2"
       onSubmit={(event) => {
         event.preventDefault();
         if (canSend) {
@@ -49,28 +49,25 @@ export default function AskIrisComposer({
         }
       }}
     >
+      {onNewTopic ? (
+        <button
+          type="button"
+          onClick={onNewTopic}
+          disabled={newTopicDisabled}
+          aria-label={newTopicLabel}
+          title={newTopicLabel}
+          className="border-input bg-background text-muted-foreground hover:text-foreground hover:bg-muted grid aspect-square shrink-0 place-items-center rounded-2xl border shadow-sm transition disabled:pointer-events-none disabled:opacity-40"
+        >
+          <Plus className={lg ? "size-5" : "size-4"} />
+        </button>
+      ) : null}
       <div
         className={cn(
-          "border-input bg-background flex items-center rounded-2xl border shadow-sm",
+          "border-input bg-background flex flex-1 items-center rounded-2xl border shadow-sm",
           "focus-within:border-ring focus-within:ring-ring/40 transition-colors focus-within:ring-2",
           lg ? "gap-3 px-3.5 py-3" : "gap-2 px-3 py-2",
         )}
       >
-        {onNewTopic ? (
-          <button
-            type="button"
-            onClick={onNewTopic}
-            disabled={newTopicDisabled}
-            aria-label={newTopicLabel}
-            title={newTopicLabel}
-            className={cn(
-              "text-muted-foreground hover:text-foreground hover:bg-muted grid shrink-0 place-items-center rounded-full transition disabled:pointer-events-none disabled:opacity-40",
-              lg ? "size-9" : "size-8",
-            )}
-          >
-            <SquarePen className={lg ? "size-5" : "size-4"} />
-          </button>
-        ) : null}
         <input
           ref={inputRef}
           className={cn(
