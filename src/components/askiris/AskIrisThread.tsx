@@ -5,6 +5,8 @@ import {
   type ToolUIPart,
   type UIMessage,
 } from "ai";
+import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Iris from "@/components/iris/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
 import Markdown from "@/components/askiris/Markdown";
@@ -54,15 +56,60 @@ function ToolTrace({ part }: { part: ToolUIPart | DynamicToolUIPart }) {
   );
 }
 
+type ActivityKey = "thinking" | "toolQuerying" | "toolSearching" | "toolRecommending" | "toolWorking";
+
+// The label key for whatever a pending tool call is doing.
+function toolLabelKey(name: string): ActivityKey {
+  switch (name) {
+    case "queryLenses": {
+      return "toolQuerying";
+    }
+    case "searchLensByName": {
+      return "toolSearching";
+    }
+    case "recommendLenses": {
+      return "toolRecommending";
+    }
+    default: {
+      return "toolWorking";
+    }
+  }
+}
+
+// What the live turn is doing right now, as an i18n key — or null for no indicator.
+// A single signal at the growing edge, so parallel tool calls don't stack up and the
+// gaps the per-part states miss (before the first token, between steps) don't read as
+// frozen. Hidden while text visibly streams, since that's its own progress.
+function activityKey(messages: UIMessage[], busy: boolean, debug: boolean): ActivityKey | null {
+  if (debug || !busy || messages.length === 0) {
+    return null;
+  }
+  const last = messages[messages.length - 1];
+  const lastPart = last.parts[last.parts.length - 1];
+  if (last.role !== "user" && lastPart?.type === "text") {
+    return null;
+  }
+  if (lastPart && isToolUIPart(lastPart) && (lastPart.state === "input-streaming" || lastPart.state === "input-available")) {
+    return toolLabelKey(getToolName(lastPart));
+  }
+  return "thinking";
+}
+
 export default function AskIrisThread({
   messages,
   locale,
   debug = false,
+  busy = false,
 }: {
   messages: UIMessage[];
   locale: string;
   debug?: boolean;
+  busy?: boolean;
 }) {
+  const t = useTranslations("AskIris");
+  const activeKey = activityKey(messages, busy, debug);
+  const activity = activeKey ? t(activeKey) : null;
+
   return (
     <>
       {messages.map((message) => {
@@ -131,6 +178,12 @@ export default function AskIrisThread({
           </div>
         );
       })}
+      {activity ? (
+        <div className="text-muted-foreground flex items-center gap-2 px-1 py-1 text-sm">
+          <Loader2 className="size-3.5 shrink-0 motion-safe:animate-spin" aria-hidden />
+          <span>{activity}</span>
+        </div>
+      ) : null}
     </>
   );
 }
