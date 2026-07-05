@@ -30,7 +30,7 @@ type ThreadItem = { kind: "seg"; messages: UIMessage[] } | { kind: "divider"; la
 // (centered hero) before the first message, and the chat thread after. mount
 // comes from the effective-mount preference and locale from the route; both go
 // through the transport body so the server scopes the agent and its language.
-export default function AskIrisChat({ locale }: { locale: string }) {
+export default function AskIrisChat({ locale, initialQuery }: { locale: string; initialQuery?: string }) {
   const t = useTranslations("AskIris");
   const tMount = useTranslations("MountSwitcher");
   const mount = useEffectiveMount();
@@ -58,23 +58,22 @@ export default function AskIrisChat({ locale }: { locale: string }) {
     setInput("");
   }
 
-  // Query entry: /askiris?q=… (e.g. from a Browse-page hand-off) auto-sends once
-  // and strips the param, so refreshing doesn't re-fire it — there's no thread
-  // persistence, so a refresh just returns to the empty state.
+  // Query entry: /askiris?q=… (e.g. from a Browse-page hand-off) auto-sends once.
+  // The page reads it server-side and hands it down as a prop, so the first render
+  // is already the thread (see the empty-state guard below) rather than the hero.
+  // We still strip the param from the URL so a refresh doesn't re-fire it — there's
+  // no thread persistence, so a refresh returns to the empty state.
   const queryFired = useRef(false);
   useEffect(() => {
-    if (queryFired.current) {
+    if (queryFired.current || !initialQuery) {
       return;
     }
-    const q = new URLSearchParams(window.location.search).get("q")?.trim();
-    if (q) {
-      queryFired.current = true;
-      sendMessage({ text: q }, { body: { mount, locale } });
-      const url = new URL(window.location.href);
-      url.searchParams.delete("q");
-      window.history.replaceState(null, "", url.toString());
-    }
-  }, [sendMessage, mount, locale]);
+    queryFired.current = true;
+    sendMessage({ text: initialQuery }, { body: { mount, locale } });
+    const url = new URL(window.location.href);
+    url.searchParams.delete("q");
+    window.history.replaceState(null, "", url.toString());
+  }, [initialQuery, sendMessage, mount, locale]);
 
   // Read the live segment lazily at switch time, without re-running the switch
   // effect on every streamed message.
@@ -161,7 +160,9 @@ export default function AskIrisChat({ locale }: { locale: string }) {
 
   const shell = "mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4";
 
-  if (archived.length === 0 && renderMessages.length === 0) {
+  // Skip the hero when a hand-off query is pending: it fires on mount and fills the
+  // thread, so rendering the empty state first would just flash before the reply.
+  if (archived.length === 0 && renderMessages.length === 0 && !initialQuery) {
     return (
       <div className={shell}>
         <AskIrisEmptyState
