@@ -88,14 +88,22 @@ const chatRequestSchema = z.object({
   locale: z.enum(routing.locales),
 });
 
+// Max agentic steps per turn (one step = one model generation, possibly with tool
+// calls). Bounds worst-case cost/latency; shared by stopWhen and the budget-hit log.
+const STEP_BUDGET = 8;
+
 export async function POST(req: Request) {
   if (!process.env.DEEPSEEK_API_KEY) {
-    return Response.json({ error: "DEEPSEEK_API_KEY is not set" }, { status: 500 });
+    console.error("[askiris] DEEPSEEK_API_KEY is not set");
+    return Response.json({ error: "Service temporarily unavailable" }, { status: 500 });
   }
 
   const parsed = chatRequestSchema.safeParse(await req.json());
   if (!parsed.success) {
-    return Response.json({ error: z.prettifyError(parsed.error) }, { status: 400 });
+    // Keep the validator detail server-side; the client only ever sends this shape, so
+    // a failure is a bug or abuse — surface a generic message, not the schema output.
+    console.warn("[askiris] invalid request", z.prettifyError(parsed.error));
+    return Response.json({ error: "Invalid request" }, { status: 400 });
   }
   const { messages, mount, locale } = parsed.data;
   const tAskIris = await getTranslations({ locale, namespace: "AskIris" });
@@ -131,11 +139,16 @@ export async function POST(req: Request) {
     // convertToModelMessages, so it must see the tool to trim its model-facing output.
     messages: await convertToModelMessages(messages, { tools }),
     tools,
-    stopWhen: stepCountIs(8),
+    stopWhen: stepCountIs(STEP_BUDGET),
     // Fold the finished turn's real token usage (summed across all steps) into the
     // daily budgets. waitUntil keeps the write alive past the streamed response.
-    onFinish: ({ totalUsage }) => {
-      const tokens = totalUsage.totalTokens;
+    onEnd: ({ usage, finishReason, stepNumber }) => {
+      // A natural finish is "stop"; ending on "tool-calls" means the step budget cut
+      // the turn short mid-loop — log it so we know if 8 ever bites in the wild.
+      if (finishReason === "tool-calls") {
+        console.warn(`[askiris] step budget (${STEP_BUDGET}) reached mid-tool-call at step ${stepNumber}`);
+      }
+      const tokens = usage.totalTokens;
       if (rateKv && ip && waitUntil && typeof tokens === "number") {
         waitUntil(recordTokens(rateKv, ip, tokens));
       }
