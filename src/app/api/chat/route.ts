@@ -98,6 +98,7 @@ export async function POST(req: Request) {
     return Response.json({ error: z.prettifyError(parsed.error) }, { status: 400 });
   }
   const { messages, mount, locale } = parsed.data;
+  const tAskIris = await getTranslations({ locale, namespace: "AskIris" });
 
   // Abuse guard for this public, no-login endpoint. Fail-open by design: with no KV
   // binding (e.g. `next dev`) or on any KV hiccup we proceed unlimited rather than
@@ -112,8 +113,7 @@ export async function POST(req: Request) {
     if (rateKv && ip && !isBypassed(req, process.env.RATE_LIMIT_BYPASS)) {
       const verdict = await checkRateLimit(rateKv, ip);
       if (!verdict.ok) {
-        const tRate = await getTranslations({ locale, namespace: "AskIris" });
-        return Response.json({ error: tRate("rateLimited") }, { status: 429 });
+        return Response.json({ error: tAskIris("rateLimited") }, { status: 429 });
       }
     }
   } catch {
@@ -145,9 +145,13 @@ export async function POST(req: Request) {
   return createUIMessageStreamResponse({
     stream: toUIMessageStream({
       stream: result.stream,
-      // Forward the real provider error during bring-up; the SDK otherwise
-      // masks it as an opaque "An error occurred". Tighten before public ship.
-      onError: (error) => (error instanceof Error ? error.message : String(error)),
+      // Log the real provider error server-side (Workers Logs) but surface only a
+      // generic, localized message — this is a public endpoint, so the raw error
+      // (provider internals, quota/config hints) must not reach the client.
+      onError: (error) => {
+        console.error("[askiris] stream error", error);
+        return tAskIris("streamError");
+      },
     }),
   });
 }
