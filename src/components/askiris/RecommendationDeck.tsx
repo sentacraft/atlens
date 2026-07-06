@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import { Weight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { track } from "@/lib/analytics/analytics";
 import { mountToUrlSegment } from "@/lib/mount";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import { weightDisplay } from "@/lib/lens/format";
@@ -54,6 +57,7 @@ function RecommendationCard({ rec, locale }: { rec: Recommendation; locale: stri
     <Link
       href={`/lenses/${mountToUrlSegment(rec.mount)}/${rec.id}`}
       prefetch={false}
+      onClick={() => track("askiris_rec_click", { lens_id: rec.id, source: "askiris" })}
       // Opens in a new tab: the AskIris thread is ephemeral client state, so a
       // same-tab nav would discard the conversation the user is working through.
       target="_blank"
