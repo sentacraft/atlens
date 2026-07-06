@@ -48,7 +48,8 @@
     "switchedMount": "Switched to {mount}",
     "newChat": "New chat",
     "newTopic": "New topic",
-    "rateLimited": "Iris is taking a lot of questions right now — please try again in a little while."
+    "rateLimited": "Iris is taking a lot of questions right now — please try again in a little while.",
+    "streamError": "Something went wrong on Iris's side — please try again."
   },
   "Search": {
     "open": "Open lens search",
