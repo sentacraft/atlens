@@ -72,7 +72,9 @@ export default function AskIrisComposer({
           ref={inputRef}
           className={cn(
             "placeholder:text-muted-foreground min-w-0 flex-1 bg-transparent outline-none",
-            lg ? "text-base" : "text-sm",
+            // 16px minimum on mobile: iOS/Android auto-zoom into an input whose font is
+            // under 16px on focus. Keep the thread composer's compact 14px on desktop only.
+            lg ? "text-base" : "text-base sm:text-sm",
           )}
           value={value}
           placeholder={placeholder}
