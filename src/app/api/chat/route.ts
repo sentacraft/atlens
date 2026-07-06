@@ -88,16 +88,25 @@ const chatRequestSchema = z.object({
   locale: z.enum(routing.locales),
 });
 
+// Max agentic steps per turn (one step = one model generation, possibly with tool
+// calls). Bounds worst-case cost/latency; shared by stopWhen and the budget-hit log.
+const STEP_BUDGET = 8;
+
 export async function POST(req: Request) {
   if (!process.env.DEEPSEEK_API_KEY) {
-    return Response.json({ error: "DEEPSEEK_API_KEY is not set" }, { status: 500 });
+    console.error("[askiris] DEEPSEEK_API_KEY is not set");
+    return Response.json({ error: "Service temporarily unavailable" }, { status: 500 });
   }
 
   const parsed = chatRequestSchema.safeParse(await req.json());
   if (!parsed.success) {
-    return Response.json({ error: z.prettifyError(parsed.error) }, { status: 400 });
+    // Keep the validator detail server-side; the client only ever sends this shape, so
+    // a failure is a bug or abuse — surface a generic message, not the schema output.
+    console.warn("[askiris] invalid request", z.prettifyError(parsed.error));
+    return Response.json({ error: "Invalid request" }, { status: 400 });
   }
   const { messages, mount, locale } = parsed.data;
+  const tAskIris = await getTranslations({ locale, namespace: "AskIris" });
 
   // Abuse guard for this public, no-login endpoint. Fail-open by design: with no KV
   // binding (e.g. `next dev`) or on any KV hiccup we proceed unlimited rather than
@@ -112,8 +121,7 @@ export async function POST(req: Request) {
     if (rateKv && ip && !isBypassed(req, process.env.RATE_LIMIT_BYPASS)) {
       const verdict = await checkRateLimit(rateKv, ip);
       if (!verdict.ok) {
-        const tRate = await getTranslations({ locale, namespace: "AskIris" });
-        return Response.json({ error: tRate("rateLimited") }, { status: 429 });
+        return Response.json({ error: tAskIris("rateLimited") }, { status: 429 });
       }
     }
   } catch {
@@ -131,11 +139,20 @@ export async function POST(req: Request) {
     // convertToModelMessages, so it must see the tool to trim its model-facing output.
     messages: await convertToModelMessages(messages, { tools }),
     tools,
-    stopWhen: stepCountIs(8),
+    stopWhen: stepCountIs(STEP_BUDGET),
+    // Reserve the last allowed step for a text answer: forcing toolChoice "none" means a
+    // turn that reaches the budget ends with a synthesis, not a frozen dangling tool call.
+    prepareStep: ({ stepNumber }) =>
+      stepNumber >= STEP_BUDGET - 1 ? { toolChoice: "none" } : undefined,
     // Fold the finished turn's real token usage (summed across all steps) into the
     // daily budgets. waitUntil keeps the write alive past the streamed response.
-    onFinish: ({ totalUsage }) => {
-      const tokens = totalUsage.totalTokens;
+    onEnd: ({ usage, finishReason, stepNumber }) => {
+      // A natural finish is "stop"; ending on "tool-calls" means the step budget cut
+      // the turn short mid-loop — log it so we know if 8 ever bites in the wild.
+      if (finishReason === "tool-calls") {
+        console.warn(`[askiris] step budget (${STEP_BUDGET}) reached mid-tool-call at step ${stepNumber}`);
+      }
+      const tokens = usage.totalTokens;
       if (rateKv && ip && waitUntil && typeof tokens === "number") {
         waitUntil(recordTokens(rateKv, ip, tokens));
       }
@@ -145,9 +162,13 @@ export async function POST(req: Request) {
   return createUIMessageStreamResponse({
     stream: toUIMessageStream({
       stream: result.stream,
-      // Forward the real provider error during bring-up; the SDK otherwise
-      // masks it as an opaque "An error occurred". Tighten before public ship.
-      onError: (error) => (error instanceof Error ? error.message : String(error)),
+      // Log the real provider error server-side (Workers Logs) but surface only a
+      // generic, localized message — this is a public endpoint, so the raw error
+      // (provider internals, quota/config hints) must not reach the client.
+      onError: (error) => {
+        console.error("[askiris] stream error", error);
+        return tAskIris("streamError");
+      },
     }),
   });
 }
