@@ -146,11 +146,13 @@ export async function POST(req: Request) {
       stepNumber >= STEP_BUDGET - 1 ? { toolChoice: "none" } : undefined,
     // Fold the finished turn's real token usage (summed across all steps) into the
     // daily budgets. waitUntil keeps the write alive past the streamed response.
-    onEnd: ({ usage, finishReason, stepNumber }) => {
-      // A natural finish is "stop"; ending on "tool-calls" means the step budget cut
-      // the turn short mid-loop — log it so we know if 8 ever bites in the wild.
-      if (finishReason === "tool-calls") {
-        console.warn(`[askiris] step budget (${STEP_BUDGET}) reached mid-tool-call at step ${stepNumber}`);
+    onEnd: ({ usage, stepNumber }) => {
+      // The last allowed step is forced to a text answer (prepareStep), so a turn that
+      // spends its whole budget ends on that wrap-up step. Detect the budget biting by
+      // the final step index reaching the cap — the model was still calling tools and
+      // got cut off. (finishReason can't reveal this: the forced step ends on "stop".)
+      if (stepNumber >= STEP_BUDGET - 1) {
+        console.warn(`[askiris] step budget (${STEP_BUDGET}) reached — turn forced to wrap up at final step`);
       }
       const tokens = usage.totalTokens;
       if (rateKv && ip && waitUntil && typeof tokens === "number") {
