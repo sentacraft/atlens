@@ -140,6 +140,10 @@ export async function POST(req: Request) {
     messages: await convertToModelMessages(messages, { tools }),
     tools,
     stopWhen: stepCountIs(STEP_BUDGET),
+    // Reserve the last allowed step for a text answer: forcing toolChoice "none" means a
+    // turn that reaches the budget ends with a synthesis, not a frozen dangling tool call.
+    prepareStep: ({ stepNumber }) =>
+      stepNumber >= STEP_BUDGET - 1 ? { toolChoice: "none" } : undefined,
     // Fold the finished turn's real token usage (summed across all steps) into the
     // daily budgets. waitUntil keeps the write alive past the streamed response.
     onEnd: ({ usage, finishReason, stepNumber }) => {
