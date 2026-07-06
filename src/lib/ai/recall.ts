@@ -117,7 +117,16 @@ export type ResolvedLens = Pick<
   magnification: number | null; // flattened from Lens.maxMagnification
   opticalTraits: OpticalTrait[];
   isCine: boolean;
-  price: { amount: number; currency: "CNY" | "USD"; condition: "new" | "used" } | null;
+  // sampledAt (ISO date) + source stamp the price's provenance, so the model reads it
+  // as a point-in-time sample from one channel — a rough marker, not a live quote to do
+  // exact arithmetic on across differently-sampled lenses.
+  price: {
+    amount: number;
+    currency: "CNY" | "USD";
+    condition: "new" | "used";
+    sampledAt: string;
+    source: string;
+  } | null;
   officialLink: string | null;
 };
 
@@ -397,6 +406,8 @@ export function resolveLens(
           amount: selection.entry.price,
           currency: selection.entry.currency,
           condition: selection.condition,
+          sampledAt: selection.entry.sampledAt,
+          source: selection.entry.source,
         }
       : null,
     officialLink: getLensUrl(lens, locale) ?? null,
