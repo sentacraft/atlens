@@ -28,6 +28,10 @@ export const EVENT_NAMES = [
   "mount_switch",
   "purchase_click",
   "pwa_launch",
+  // AskIris: one per user turn (query text + how it originated), and a click from a
+  // recommendation card through to a lens — the funnel's ask and value actions.
+  "askiris_message",
+  "askiris_rec_click",
 ] as const;
 
 export type EventName = (typeof EVENT_NAMES)[number];

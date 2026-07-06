@@ -1,6 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import { track } from "@/lib/analytics/analytics";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
@@ -55,6 +56,7 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
       return;
     }
     sendMessage({ text: trimmed }, { body: { mount, locale } });
+    track("askiris_message", { query: trimmed, method: "typed" });
     setInput("");
   }
 
@@ -70,6 +72,7 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
     }
     queryFired.current = true;
     sendMessage({ text: initialQuery }, { body: { mount, locale } });
+    track("askiris_message", { query: initialQuery, method: "handoff" });
     const url = new URL(window.location.href);
     url.searchParams.delete("q");
     window.history.replaceState(null, "", url.toString());
