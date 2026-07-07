@@ -4,6 +4,7 @@ import {
   stepCountIs,
   streamText,
   toUIMessageStream,
+  type ModelMessage,
   type UIMessage,
 } from "ai";
 import { z } from "zod";
@@ -12,6 +13,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getAgentModel, agentProviderOptions } from "@/lib/ai/model";
 import { buildLensTools } from "@/lib/ai/tools";
 import { clientIp, isBypassed, checkRateLimit, recordTokens } from "@/lib/ai/rate-limit";
+import { chatErrorResponse } from "@/lib/ai/chat-errors";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
 import type { Mount } from "@/lib/types";
@@ -95,7 +97,7 @@ const STEP_BUDGET = 8;
 export async function POST(req: Request) {
   if (!process.env.DEEPSEEK_API_KEY) {
     console.error("[askiris] DEEPSEEK_API_KEY is not set");
-    return Response.json({ error: "Service temporarily unavailable" }, { status: 500 });
+    return chatErrorResponse("unavailable", 500);
   }
 
   const parsed = chatRequestSchema.safeParse(await req.json());
@@ -103,10 +105,9 @@ export async function POST(req: Request) {
     // Keep the validator detail server-side; the client only ever sends this shape, so
     // a failure is a bug or abuse — surface a generic message, not the schema output.
     console.warn("[askiris] invalid request", z.prettifyError(parsed.error));
-    return Response.json({ error: "Invalid request" }, { status: 400 });
+    return chatErrorResponse("unavailable", 400);
   }
   const { messages, mount, locale } = parsed.data;
-  const tAskIris = await getTranslations({ locale, namespace: "AskIris" });
 
   // Abuse guard for this public, no-login endpoint. Fail-open by design: with no KV
   // binding (e.g. `next dev`) or on any KV hiccup we proceed unlimited rather than
@@ -121,7 +122,7 @@ export async function POST(req: Request) {
     if (rateKv && ip && !isBypassed(req, process.env.RATE_LIMIT_BYPASS)) {
       const verdict = await checkRateLimit(rateKv, ip);
       if (!verdict.ok) {
-        return Response.json({ error: tAskIris("rateLimited") }, { status: 429 });
+        return chatErrorResponse("rate_limit", 429);
       }
     }
   } catch {
@@ -131,13 +132,22 @@ export async function POST(req: Request) {
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const tools = buildLensTools(mount, locale, tBrand);
 
+  // Convert up front so a malformed history fails as a clean 400, not an uncaught
+  // throw. The same `tools` must reach convertToModelMessages and streamText:
+  // recommendLenses.toModelOutput runs during conversion to trim its model output.
+  let modelMessages: ModelMessage[];
+  try {
+    modelMessages = await convertToModelMessages(messages, { tools });
+  } catch (error) {
+    console.error("[askiris] failed to convert messages", error);
+    return chatErrorResponse("unavailable", 400);
+  }
+
   const result = streamText({
     model: getAgentModel(),
     providerOptions: agentProviderOptions,
     system: systemPrompt(mount, locale),
-    // Same `tools` on both calls: recommendLenses.toModelOutput runs inside
-    // convertToModelMessages, so it must see the tool to trim its model-facing output.
-    messages: await convertToModelMessages(messages, { tools }),
+    messages: modelMessages,
     tools,
     stopWhen: stepCountIs(STEP_BUDGET),
     // Reserve the last allowed step for a text answer: forcing toolChoice "none" means a
@@ -156,7 +166,11 @@ export async function POST(req: Request) {
       }
       const tokens = usage.totalTokens;
       if (rateKv && ip && waitUntil && typeof tokens === "number") {
-        waitUntil(recordTokens(rateKv, ip, tokens));
+        waitUntil(
+          recordTokens(rateKv, ip, tokens).catch((error) =>
+            console.error("[askiris] failed to record tokens", error),
+          ),
+        );
       }
     },
   });
@@ -164,12 +178,14 @@ export async function POST(req: Request) {
   return createUIMessageStreamResponse({
     stream: toUIMessageStream({
       stream: result.stream,
-      // Log the real provider error server-side (Workers Logs) but surface only a
-      // generic, localized message — this is a public endpoint, so the raw error
-      // (provider internals, quota/config hints) must not reach the client.
+      // Log the real provider error server-side (Workers Logs); this is a public
+      // endpoint, so the raw error (provider internals, quota/config hints) must not
+      // reach the client. The returned string only masks it in the stream — the
+      // client classifies a stream error as transient and shows its own copy — so a
+      // bare constant is enough, not prose.
       onError: (error) => {
         console.error("[askiris] stream error", error);
-        return tAskIris("streamError");
+        return "Stream error";
       },
     }),
   });
