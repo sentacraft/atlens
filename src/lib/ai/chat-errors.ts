@@ -15,7 +15,9 @@ export function isChatErrorKind(value: unknown): value is ChatErrorKind {
 }
 
 // Build the tagged error body the client reads back off the thrown Error's message
-// (the transport surfaces a non-2xx body verbatim there). One place owns the shape.
-export function chatErrorResponse(message: string, kind: ChatErrorKind, status: number): Response {
-  return Response.json({ error: message, kind }, { status });
+// (the transport surfaces a non-2xx body verbatim there). The client keys its own
+// localized copy off `kind`, so the body carries only that — never a message the
+// user won't see. One place owns the shape.
+export function chatErrorResponse(kind: ChatErrorKind, status: number): Response {
+  return Response.json({ kind }, { status });
 }

@@ -97,7 +97,7 @@ const STEP_BUDGET = 8;
 export async function POST(req: Request) {
   if (!process.env.DEEPSEEK_API_KEY) {
     console.error("[askiris] DEEPSEEK_API_KEY is not set");
-    return chatErrorResponse("Service temporarily unavailable", "unavailable", 500);
+    return chatErrorResponse("unavailable", 500);
   }
 
   const parsed = chatRequestSchema.safeParse(await req.json());
@@ -105,10 +105,9 @@ export async function POST(req: Request) {
     // Keep the validator detail server-side; the client only ever sends this shape, so
     // a failure is a bug or abuse — surface a generic message, not the schema output.
     console.warn("[askiris] invalid request", z.prettifyError(parsed.error));
-    return chatErrorResponse("Invalid request", "unavailable", 400);
+    return chatErrorResponse("unavailable", 400);
   }
   const { messages, mount, locale } = parsed.data;
-  const tAskIris = await getTranslations({ locale, namespace: "AskIris" });
 
   // Abuse guard for this public, no-login endpoint. Fail-open by design: with no KV
   // binding (e.g. `next dev`) or on any KV hiccup we proceed unlimited rather than
@@ -123,7 +122,7 @@ export async function POST(req: Request) {
     if (rateKv && ip && !isBypassed(req, process.env.RATE_LIMIT_BYPASS)) {
       const verdict = await checkRateLimit(rateKv, ip);
       if (!verdict.ok) {
-        return chatErrorResponse(tAskIris("rateLimited"), "rate_limit", 429);
+        return chatErrorResponse("rate_limit", 429);
       }
     }
   } catch {
@@ -141,7 +140,7 @@ export async function POST(req: Request) {
     modelMessages = await convertToModelMessages(messages, { tools });
   } catch (error) {
     console.error("[askiris] failed to convert messages", error);
-    return chatErrorResponse("Invalid request", "unavailable", 400);
+    return chatErrorResponse("unavailable", 400);
   }
 
   const result = streamText({
