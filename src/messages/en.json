@@ -50,7 +50,7 @@
     "newTopic": "New topic",
     "rateLimited": "Iris is taking a lot of questions right now — please try again in a little while.",
     "streamError": "Something went wrong on Iris's side — please try again.",
-    "retry": "Retry"
+    "errorRetry": "Something went wrong on Iris's side — please <retry>try again</retry>."
   },
   "Search": {
     "open": "Open lens search",

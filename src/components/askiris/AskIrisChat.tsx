@@ -46,7 +46,13 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
   // transport — a mid-thread mount switch must reach the server on the very next
   // turn, and useChat doesn't re-adopt a rebuilt transport.
   const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat" }), []);
-  const { messages, sendMessage, status, setMessages, stop, regenerate } = useChat({ transport });
+  // Throttle message/store updates (~20fps): a long stream otherwise re-renders
+  // on every chunk, and with several message-derived effects that can trip React's
+  // update-depth limit on a slow connection.
+  const { messages, sendMessage, status, setMessages, stop, regenerate } = useChat({
+    transport,
+    experimental_throttle: 50,
+  });
 
   const isBusy = status === "submitted" || status === "streaming";
 
@@ -196,18 +202,21 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
           )}
           <AskIrisThread messages={renderMessages} locale={locale} debug={debug} busy={isBusy} />
           {/* Surface a failed turn: useChat catches request/stream errors into
-              status "error" but renders nothing on its own. Show a quiet line +
-              a retry that re-runs the last turn (with mount/locale, or it 400s). */}
+              status "error" but renders nothing on its own. The retry verb is
+              inline and re-runs the last turn (with mount/locale, or it 400s). */}
           {status === "error" && (
-            <div role="alert" className="flex items-center gap-3 px-1 text-sm text-zinc-500 dark:text-zinc-400">
-              <span>{t("streamError")}</span>
-              <button
-                type="button"
-                onClick={() => regenerate({ body: { mount, locale } })}
-                className="shrink-0 font-medium text-zinc-700 underline underline-offset-2 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
-              >
-                {t("retry")}
-              </button>
+            <div role="alert" className="px-1 text-sm text-zinc-500 dark:text-zinc-400">
+              {t.rich("errorRetry", {
+                retry: (chunks) => (
+                  <button
+                    type="button"
+                    onClick={() => regenerate({ body: { mount, locale } })}
+                    className="font-medium text-zinc-700 underline underline-offset-2 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                  >
+                    {chunks}
+                  </button>
+                ),
+              })}
             </div>
           )}
         </div>
