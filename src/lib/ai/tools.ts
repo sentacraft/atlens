@@ -6,32 +6,6 @@ import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
 import { recallLenses, recommendLenses, resolveLens, RECALL_SORT_FIELDS } from "@/lib/ai/recall";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 
-// Collect the lens ids in a tool's output. Shapes differ across tools — matches and
-// results hold the lens directly (item.id), maybe wraps it (item.lens.id) — so check
-// both, or a recalled "maybe" lens would look un-recalled to the recommend guard.
-function idsFromOutput(output: unknown): string[] {
-  const ids: string[] = [];
-  if (output && typeof output === "object") {
-    for (const value of Object.values(output as Record<string, unknown>)) {
-      if (!Array.isArray(value)) {
-        continue;
-      }
-      for (const item of value) {
-        if (item && typeof item === "object") {
-          const record = item as { id?: unknown; lens?: { id?: unknown } };
-          if (typeof record.id === "string") {
-            ids.push(record.id);
-          }
-          if (record.lens && typeof record.lens.id === "string") {
-            ids.push(record.lens.id);
-          }
-        }
-      }
-    }
-  }
-  return ids;
-}
-
 // The agent's tools, bound to the current mount + locale (both fixed by the
 // route, never model-supplied). Parameter semantics live in `.describe()` so the
 // model learns them from the tool schema, not the system prompt.
@@ -155,8 +129,13 @@ export function buildLensTools(
       }),
       execute: (constraints) => {
         const result = recallLenses(mount, locale, constraints, tBrand);
-        for (const id of idsFromOutput(result)) {
-          recalledIds.add(id);
+        // Record what this call surfaced so recommendLenses can check its picks. Both
+        // buckets are shown to the user; matches hold the lens directly, maybe wraps it.
+        for (const lens of result.matches) {
+          recalledIds.add(lens.id);
+        }
+        for (const { lens } of result.maybe) {
+          recalledIds.add(lens.id);
         }
         return result;
       },
@@ -173,11 +152,10 @@ export function buildLensTools(
       execute: ({ query, limit }) => {
         const index = buildLensSearchIndex(getLensesByMount(mount, locale));
         const results = searchLensIndex(index, query, limit ?? 8);
-        const output = { results: results.map((lens) => resolveLens(lens, locale, tBrand)) };
-        for (const id of idsFromOutput(output)) {
-          recalledIds.add(id);
+        for (const lens of results) {
+          recalledIds.add(lens.id);
         }
-        return output;
+        return { results: results.map((lens) => resolveLens(lens, locale, tBrand)) };
       },
     }),
 
