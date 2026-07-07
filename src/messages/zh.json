@@ -49,7 +49,8 @@
     "newChat": "新对话",
     "newTopic": "新话题",
     "rateLimited": "Iris 现在有点忙，稍后再试。",
-    "streamError": "Iris 这边出了点问题，请重试。"
+    "errorRetry": "Iris 这边出了点问题，请<retry>重试</retry>。",
+    "errorUnavailable": "Iris 暂时无法使用，请稍后再来。"
   },
   "Search": {
     "open": "打开镜头搜索",

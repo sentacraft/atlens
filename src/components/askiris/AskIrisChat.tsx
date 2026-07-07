@@ -6,6 +6,7 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
+import { isChatErrorKind, type ChatErrorKind } from "@/lib/ai/chat-errors";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { useTestHookOption } from "@/context/TestHookProvider";
@@ -27,6 +28,36 @@ import {
 // fresh below it, with only the live segment sent to the model.
 type ThreadItem = { kind: "seg"; messages: UIMessage[] } | { kind: "divider"; label: string };
 
+// The client's display bucket = the server's ChatErrorKind plus "transient" (an
+// untagged stream/network error, where a retry may actually succeed).
+type ErrorDisplay = ChatErrorKind | "transient";
+
+// Which localized copy each non-transient kind shows. A Record, so adding a
+// ChatErrorKind server-side won't typecheck until a message is chosen here too.
+const ERROR_MESSAGE_KEY: Record<ChatErrorKind, "rateLimited" | "errorUnavailable"> = {
+  rate_limit: "rateLimited",
+  unavailable: "errorUnavailable",
+};
+
+// Sort a failed turn into how the user should react. The transport throws with the
+// raw response body as the Error message on a non-2xx pre-flight failure (no status
+// code preserved), so the route tags those bodies with a `kind` and we read it back
+// here. A stream or network error carries no such body — JSON.parse fails and we
+// treat it as transient, where a retry may actually succeed.
+function classifyError(error: Error | undefined): ErrorDisplay {
+  if (error) {
+    try {
+      const body = JSON.parse(error.message) as { kind?: unknown };
+      if (isChatErrorKind(body.kind)) {
+        return body.kind;
+      }
+    } catch {
+      // Not a tagged body — fall through to transient.
+    }
+  }
+  return "transient";
+}
+
 // Experimental AskIris chat. Two states on one route: an empty-state landing
 // (centered hero) before the first message, and the chat thread after. mount
 // comes from the effective-mount preference and locale from the route; both go
@@ -46,9 +77,18 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
   // transport — a mid-thread mount switch must reach the server on the very next
   // turn, and useChat doesn't re-adopt a rebuilt transport.
   const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat" }), []);
-  const { messages, sendMessage, status, setMessages, stop } = useChat({ transport });
+  // Throttle message/store updates (~20fps): a long stream otherwise re-renders
+  // on every chunk, and with several message-derived effects that can trip React's
+  // update-depth limit on a slow connection.
+  const { messages, sendMessage, status, setMessages, stop, regenerate, error } = useChat({
+    transport,
+    experimental_throttle: 50,
+  });
 
   const isBusy = status === "submitted" || status === "streaming";
+  // Only a transient failure is worth a retry; a rate-limit needs a wait and a
+  // bad-request/outage will fail identically, so those drop the retry affordance.
+  const errorKind = status === "error" ? classifyError(error) : null;
 
   function submitText(text: string) {
     const trimmed = text.trim();
@@ -195,6 +235,29 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
             ),
           )}
           <AskIrisThread messages={renderMessages} locale={locale} debug={debug} busy={isBusy} />
+          {/* Surface a failed turn: useChat catches request/stream errors into
+              status "error" but renders nothing on its own. Only the transient
+              case offers a retry (inline verb, re-runs the last turn with
+              mount/locale); a rate-limit or outage just states what happened. */}
+          {errorKind && (
+            <div role="alert" className="px-1 text-sm text-zinc-500 dark:text-zinc-400">
+              {errorKind === "transient" ? (
+                t.rich("errorRetry", {
+                  retry: (chunks) => (
+                    <button
+                      type="button"
+                      onClick={() => regenerate({ body: { mount, locale } })}
+                      className="font-medium text-zinc-700 underline underline-offset-2 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                    >
+                      {chunks}
+                    </button>
+                  ),
+                })
+              ) : (
+                <span>{t(ERROR_MESSAGE_KEY[errorKind])}</span>
+              )}
+            </div>
+          )}
         </div>
         {/* Edge fades as overlays (not a container mask) so the scrollbar stays
             crisp; each shows only when there's more thread that way. Inset from

@@ -49,7 +49,8 @@
     "newChat": "New chat",
     "newTopic": "New topic",
     "rateLimited": "Iris is taking a lot of questions right now — please try again in a little while.",
-    "streamError": "Something went wrong on Iris's side — please try again."
+    "errorRetry": "Something went wrong on Iris's side — please <retry>try again</retry>.",
+    "errorUnavailable": "Iris is unavailable right now — please try again later."
   },
   "Search": {
     "open": "Open lens search",
