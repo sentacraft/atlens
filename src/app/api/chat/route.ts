@@ -178,12 +178,14 @@ export async function POST(req: Request) {
   return createUIMessageStreamResponse({
     stream: toUIMessageStream({
       stream: result.stream,
-      // Log the real provider error server-side (Workers Logs) but surface only a
-      // generic, localized message — this is a public endpoint, so the raw error
-      // (provider internals, quota/config hints) must not reach the client.
+      // Log the real provider error server-side (Workers Logs); this is a public
+      // endpoint, so the raw error (provider internals, quota/config hints) must not
+      // reach the client. The returned string only masks it in the stream — the
+      // client classifies a stream error as transient and shows its own copy — so a
+      // bare constant is enough, not prose.
       onError: (error) => {
         console.error("[askiris] stream error", error);
-        return tAskIris("streamError");
+        return "Stream error";
       },
     }),
   });
