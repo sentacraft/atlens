@@ -14,6 +14,11 @@ export function buildLensTools(
   locale: string,
   tBrand: (brand: string) => string,
 ) {
+  // Every lens id this turn's query/search calls have returned, so recommendLenses
+  // can reject a pick the model never recalled. Turn-scoped: a lens recalled only in
+  // an earlier turn must be looked up again before it can be recommended.
+  const recalledIds = new Set<string>();
+
   return {
     queryLenses: tool({
       description:
@@ -122,7 +127,18 @@ export function buildLensTools(
           ),
         sortDir: z.enum(["asc", "desc"]).optional().describe("asc (default) = smallest first."),
       }),
-      execute: (constraints) => recallLenses(mount, locale, constraints, tBrand),
+      execute: (constraints) => {
+        const result = recallLenses(mount, locale, constraints, tBrand);
+        // Record what this call surfaced so recommendLenses can check its picks. Both
+        // buckets are shown to the user; matches hold the lens directly, maybe wraps it.
+        for (const lens of result.matches) {
+          recalledIds.add(lens.id);
+        }
+        for (const { lens } of result.maybe) {
+          recalledIds.add(lens.id);
+        }
+        return result;
+      },
     }),
 
     searchLensByName: tool({
@@ -136,6 +152,9 @@ export function buildLensTools(
       execute: ({ query, limit }) => {
         const index = buildLensSearchIndex(getLensesByMount(mount, locale));
         const results = searchLensIndex(index, query, limit ?? 8);
+        for (const lens of results) {
+          recalledIds.add(lens.id);
+        }
         return { results: results.map((lens) => resolveLens(lens, locale, tBrand)) };
       },
     }),
@@ -162,7 +181,7 @@ export function buildLensTools(
           .min(1)
           .max(6),
       }),
-      execute: ({ picks }) => recommendLenses(mount, locale, picks, tBrand),
+      execute: ({ picks }) => recommendLenses(mount, locale, picks, tBrand, recalledIds),
       // Full recommendations stream to the client (the cards); the model already
       // saw these lenses in the query result, so feed it a lean ack, not the specs
       // again. Requires passing this same ToolSet to convertToModelMessages.
