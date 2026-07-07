@@ -27,6 +27,27 @@ import {
 // fresh below it, with only the live segment sent to the model.
 type ThreadItem = { kind: "seg"; messages: UIMessage[] } | { kind: "divider"; label: string };
 
+type ErrorKind = "transient" | "rate_limit" | "unavailable";
+
+// Sort a failed turn into how the user should react. The transport throws with the
+// raw response body as the Error message on a non-2xx pre-flight failure (no status
+// code preserved), so the route tags those bodies with a `kind` and we read it back
+// here. A stream or network error carries no such body — JSON.parse fails and we
+// treat it as transient, where a retry may actually succeed.
+function classifyError(error: Error | undefined): ErrorKind {
+  if (error) {
+    try {
+      const body = JSON.parse(error.message) as { kind?: unknown };
+      if (body.kind === "rate_limit" || body.kind === "unavailable") {
+        return body.kind;
+      }
+    } catch {
+      // Not a tagged body — fall through to transient.
+    }
+  }
+  return "transient";
+}
+
 // Experimental AskIris chat. Two states on one route: an empty-state landing
 // (centered hero) before the first message, and the chat thread after. mount
 // comes from the effective-mount preference and locale from the route; both go
@@ -49,12 +70,15 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
   // Throttle message/store updates (~20fps): a long stream otherwise re-renders
   // on every chunk, and with several message-derived effects that can trip React's
   // update-depth limit on a slow connection.
-  const { messages, sendMessage, status, setMessages, stop, regenerate } = useChat({
+  const { messages, sendMessage, status, setMessages, stop, regenerate, error } = useChat({
     transport,
     experimental_throttle: 50,
   });
 
   const isBusy = status === "submitted" || status === "streaming";
+  // Only a transient failure is worth a retry; a rate-limit needs a wait and a
+  // bad-request/outage will fail identically, so those drop the retry affordance.
+  const errorKind = status === "error" ? classifyError(error) : null;
 
   function submitText(text: string) {
     const trimmed = text.trim();
@@ -202,21 +226,26 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
           )}
           <AskIrisThread messages={renderMessages} locale={locale} debug={debug} busy={isBusy} />
           {/* Surface a failed turn: useChat catches request/stream errors into
-              status "error" but renders nothing on its own. The retry verb is
-              inline and re-runs the last turn (with mount/locale, or it 400s). */}
-          {status === "error" && (
+              status "error" but renders nothing on its own. Only the transient
+              case offers a retry (inline verb, re-runs the last turn with
+              mount/locale); a rate-limit or outage just states what happened. */}
+          {errorKind && (
             <div role="alert" className="px-1 text-sm text-zinc-500 dark:text-zinc-400">
-              {t.rich("errorRetry", {
-                retry: (chunks) => (
-                  <button
-                    type="button"
-                    onClick={() => regenerate({ body: { mount, locale } })}
-                    className="font-medium text-zinc-700 underline underline-offset-2 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
-                  >
-                    {chunks}
-                  </button>
-                ),
-              })}
+              {errorKind === "transient" ? (
+                t.rich("errorRetry", {
+                  retry: (chunks) => (
+                    <button
+                      type="button"
+                      onClick={() => regenerate({ body: { mount, locale } })}
+                      className="font-medium text-zinc-700 underline underline-offset-2 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                    >
+                      {chunks}
+                    </button>
+                  ),
+                })
+              ) : (
+                <span>{t(errorKind === "rate_limit" ? "rateLimited" : "errorUnavailable")}</span>
+              )}
             </div>
           )}
         </div>
