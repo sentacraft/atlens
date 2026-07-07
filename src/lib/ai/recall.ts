@@ -458,24 +458,32 @@ export function recallLenses(
 }
 
 // Look up lenses by id and resolve them, attaching the model's authored reason.
-// Ids the model invented (not in this mount's set) are dropped.
+// recalledIds is every id this turn's tool calls have returned, so a pick outside it
+// is a lens the model never recalled here.
 export function recommendLenses(
   mount: Mount,
   locale: string,
   picks: { id: string; reason: string }[],
   tBrand: (brand: string) => string,
+  recalledIds: Set<string>,
 ): { recommendations: Recommendation[] } {
   const byId = new Map(getLensesByMount(mount, locale).map((lens) => [lens.id, lens]));
   const recommendations = picks.map((pick) => {
-    const lens = byId.get(pick.id);
-    // Fail loud on an id we can't resolve: dropping it silently would render fewer
-    // cards than the model intended (or none). The SDK surfaces this as a tool-error
-    // and the model retries with the exact id inside its step budget.
-    if (!lens) {
+    // Fail loud on a lens the model never recalled — one it conjured from memory or
+    // an id it altered. Only ids returned by a queryLenses/searchLensByName call this
+    // turn are allowed; the SDK surfaces the throw as a tool-error, so the model
+    // recalls the lens and retries with the exact id inside its step budget.
+    if (!recalledIds.has(pick.id)) {
       throw new Error(
-        `Unknown lens id "${pick.id}". Pass each id exactly as it appears in a prior ` +
-          `queryLenses/searchLensByName result — don't alter or shorten it.`,
+        `Lens id "${pick.id}" was not returned by any queryLenses/searchLensByName ` +
+          `call this turn. Recommend only lenses you've recalled — look it up first, ` +
+          `and pass the id exactly as it appears.`,
       );
+    }
+    const lens = byId.get(pick.id);
+    if (!lens) {
+      // recalledIds only ever holds ids from real tool results, so this is defensive.
+      throw new Error(`Unknown lens id "${pick.id}".`);
     }
     return { ...resolveLens(lens, locale, tBrand), reason: pick.reason };
   });

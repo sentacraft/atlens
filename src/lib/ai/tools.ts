@@ -6,6 +6,32 @@ import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
 import { recallLenses, recommendLenses, resolveLens, RECALL_SORT_FIELDS } from "@/lib/ai/recall";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 
+// Collect the lens ids in a tool's output. Shapes differ across tools — matches and
+// results hold the lens directly (item.id), maybe wraps it (item.lens.id) — so check
+// both, or a recalled "maybe" lens would look un-recalled to the recommend guard.
+function idsFromOutput(output: unknown): string[] {
+  const ids: string[] = [];
+  if (output && typeof output === "object") {
+    for (const value of Object.values(output as Record<string, unknown>)) {
+      if (!Array.isArray(value)) {
+        continue;
+      }
+      for (const item of value) {
+        if (item && typeof item === "object") {
+          const record = item as { id?: unknown; lens?: { id?: unknown } };
+          if (typeof record.id === "string") {
+            ids.push(record.id);
+          }
+          if (record.lens && typeof record.lens.id === "string") {
+            ids.push(record.lens.id);
+          }
+        }
+      }
+    }
+  }
+  return ids;
+}
+
 // The agent's tools, bound to the current mount + locale (both fixed by the
 // route, never model-supplied). Parameter semantics live in `.describe()` so the
 // model learns them from the tool schema, not the system prompt.
@@ -14,6 +40,11 @@ export function buildLensTools(
   locale: string,
   tBrand: (brand: string) => string,
 ) {
+  // Every lens id this turn's query/search calls have returned, so recommendLenses
+  // can reject a pick the model never recalled. Turn-scoped: a lens recalled only in
+  // an earlier turn must be looked up again before it can be recommended.
+  const recalledIds = new Set<string>();
+
   return {
     queryLenses: tool({
       description:
@@ -122,7 +153,13 @@ export function buildLensTools(
           ),
         sortDir: z.enum(["asc", "desc"]).optional().describe("asc (default) = smallest first."),
       }),
-      execute: (constraints) => recallLenses(mount, locale, constraints, tBrand),
+      execute: (constraints) => {
+        const result = recallLenses(mount, locale, constraints, tBrand);
+        for (const id of idsFromOutput(result)) {
+          recalledIds.add(id);
+        }
+        return result;
+      },
     }),
 
     searchLensByName: tool({
@@ -136,7 +173,11 @@ export function buildLensTools(
       execute: ({ query, limit }) => {
         const index = buildLensSearchIndex(getLensesByMount(mount, locale));
         const results = searchLensIndex(index, query, limit ?? 8);
-        return { results: results.map((lens) => resolveLens(lens, locale, tBrand)) };
+        const output = { results: results.map((lens) => resolveLens(lens, locale, tBrand)) };
+        for (const id of idsFromOutput(output)) {
+          recalledIds.add(id);
+        }
+        return output;
       },
     }),
 
@@ -162,7 +203,7 @@ export function buildLensTools(
           .min(1)
           .max(6),
       }),
-      execute: ({ picks }) => recommendLenses(mount, locale, picks, tBrand),
+      execute: ({ picks }) => recommendLenses(mount, locale, picks, tBrand, recalledIds),
       // Full recommendations stream to the client (the cards); the model already
       // saw these lenses in the query result, so feed it a lean ack, not the specs
       // again. Requires passing this same ToolSet to convertToModelMessages.
