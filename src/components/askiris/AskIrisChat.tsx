@@ -6,6 +6,7 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
+import { isChatErrorKind, type ChatErrorKind } from "@/lib/ai/chat-errors";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { useTestHookOption } from "@/context/TestHookProvider";
@@ -27,18 +28,27 @@ import {
 // fresh below it, with only the live segment sent to the model.
 type ThreadItem = { kind: "seg"; messages: UIMessage[] } | { kind: "divider"; label: string };
 
-type ErrorKind = "transient" | "rate_limit" | "unavailable";
+// The client's display bucket = the server's ChatErrorKind plus "transient" (an
+// untagged stream/network error, where a retry may actually succeed).
+type ErrorDisplay = ChatErrorKind | "transient";
+
+// Which localized copy each non-transient kind shows. A Record, so adding a
+// ChatErrorKind server-side won't typecheck until a message is chosen here too.
+const ERROR_MESSAGE_KEY: Record<ChatErrorKind, "rateLimited" | "errorUnavailable"> = {
+  rate_limit: "rateLimited",
+  unavailable: "errorUnavailable",
+};
 
 // Sort a failed turn into how the user should react. The transport throws with the
 // raw response body as the Error message on a non-2xx pre-flight failure (no status
 // code preserved), so the route tags those bodies with a `kind` and we read it back
 // here. A stream or network error carries no such body — JSON.parse fails and we
 // treat it as transient, where a retry may actually succeed.
-function classifyError(error: Error | undefined): ErrorKind {
+function classifyError(error: Error | undefined): ErrorDisplay {
   if (error) {
     try {
       const body = JSON.parse(error.message) as { kind?: unknown };
-      if (body.kind === "rate_limit" || body.kind === "unavailable") {
+      if (isChatErrorKind(body.kind)) {
         return body.kind;
       }
     } catch {
@@ -244,7 +254,7 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
                   ),
                 })
               ) : (
-                <span>{t(errorKind === "rate_limit" ? "rateLimited" : "errorUnavailable")}</span>
+                <span>{t(ERROR_MESSAGE_KEY[errorKind])}</span>
               )}
             </div>
           )}

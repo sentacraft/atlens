@@ -13,6 +13,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getAgentModel, agentProviderOptions } from "@/lib/ai/model";
 import { buildLensTools } from "@/lib/ai/tools";
 import { clientIp, isBypassed, checkRateLimit, recordTokens } from "@/lib/ai/rate-limit";
+import { chatErrorResponse } from "@/lib/ai/chat-errors";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
 import type { Mount } from "@/lib/types";
@@ -96,7 +97,7 @@ const STEP_BUDGET = 8;
 export async function POST(req: Request) {
   if (!process.env.DEEPSEEK_API_KEY) {
     console.error("[askiris] DEEPSEEK_API_KEY is not set");
-    return Response.json({ error: "Service temporarily unavailable", kind: "unavailable" }, { status: 500 });
+    return chatErrorResponse("Service temporarily unavailable", "unavailable", 500);
   }
 
   const parsed = chatRequestSchema.safeParse(await req.json());
@@ -104,7 +105,7 @@ export async function POST(req: Request) {
     // Keep the validator detail server-side; the client only ever sends this shape, so
     // a failure is a bug or abuse — surface a generic message, not the schema output.
     console.warn("[askiris] invalid request", z.prettifyError(parsed.error));
-    return Response.json({ error: "Invalid request", kind: "unavailable" }, { status: 400 });
+    return chatErrorResponse("Invalid request", "unavailable", 400);
   }
   const { messages, mount, locale } = parsed.data;
   const tAskIris = await getTranslations({ locale, namespace: "AskIris" });
@@ -122,7 +123,7 @@ export async function POST(req: Request) {
     if (rateKv && ip && !isBypassed(req, process.env.RATE_LIMIT_BYPASS)) {
       const verdict = await checkRateLimit(rateKv, ip);
       if (!verdict.ok) {
-        return Response.json({ error: tAskIris("rateLimited"), kind: "rate_limit" }, { status: 429 });
+        return chatErrorResponse(tAskIris("rateLimited"), "rate_limit", 429);
       }
     }
   } catch {
@@ -140,7 +141,7 @@ export async function POST(req: Request) {
     modelMessages = await convertToModelMessages(messages, { tools });
   } catch (error) {
     console.error("[askiris] failed to convert messages", error);
-    return Response.json({ error: "Invalid request", kind: "unavailable" }, { status: 400 });
+    return chatErrorResponse("Invalid request", "unavailable", 400);
   }
 
   const result = streamText({
