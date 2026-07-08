@@ -6,6 +6,7 @@
 // The route itself is open — auth lives one layer above at the platform.
 
 import { queryAE } from "@/lib/analytics/query";
+import { ASKIRIS_TURN_EVENT } from "@/lib/analytics/events";
 import {
   aggregateFilterDimensions,
   formatFilterSnapshot,
@@ -251,6 +252,45 @@ const Q_PWA_LAUNCH = `
   ORDER BY launches DESC
 `;
 
+// AskIris — per-turn agent metrics written straight to AE from the chat route's
+// onEnd (not via /api/track), so these rows carry their own positional layout:
+// blob1=mount, blob2=locale; double1..6 = total/input/output/cacheRead tokens,
+// step_count, budget_hit. Counts weight by _sample_interval; summed metrics weight
+// each row's value by it too, to stay correct if AE ever samples this dataset.
+const ASKIRIS_FILTER = `index1 = '${ASKIRIS_TURN_EVENT}' AND timestamp > NOW() - ${WINDOW}`;
+
+const Q_ASKIRIS_OVERVIEW = `
+  SELECT
+    SUM(_sample_interval) AS turns,
+    SUM(double1 * _sample_interval) AS total_tokens,
+    SUM(double2 * _sample_interval) AS input_tokens,
+    SUM(double3 * _sample_interval) AS output_tokens,
+    SUM(double4 * _sample_interval) AS cache_read_tokens,
+    SUM(double5 * _sample_interval) AS total_steps,
+    SUM(double6 * _sample_interval) AS budget_hits
+  FROM xglass_events
+  WHERE ${ASKIRIS_FILTER}
+`;
+
+const Q_ASKIRIS_BY_STEP = `
+  SELECT double5 AS steps, SUM(_sample_interval) AS turns
+  FROM xglass_events
+  WHERE ${ASKIRIS_FILTER}
+  GROUP BY steps
+  ORDER BY steps
+`;
+
+const Q_ASKIRIS_BY_MOUNT = `
+  SELECT
+    blob1 AS mount,
+    SUM(_sample_interval) AS turns,
+    SUM(double1 * _sample_interval) AS total_tokens
+  FROM xglass_events
+  WHERE ${ASKIRIS_FILTER} AND blob1 != ''
+  GROUP BY mount
+  ORDER BY turns DESC
+`;
+
 function pct(num: number, denom: number): string {
   if (denom <= 0) {
     return "—";
@@ -278,6 +318,20 @@ function fmtMaybe(v: unknown): string {
     return "—";
   }
   return n.toLocaleString("en-US");
+}
+
+// DeepSeek V4-Flash list price, USD per 1M tokens (as of 2026-07 —
+// api-docs.deepseek.com/quick_start/pricing). Cache-hit input is billed ~98% off;
+// cache-miss input is (input − cacheRead). Update if the model or rates change.
+const DEEPSEEK_USD_PER_1M = { inputMiss: 0.14, cacheHit: 0.0028, output: 0.28 };
+
+function askirisCostUsd(input: number, cacheRead: number, output: number): number {
+  const inputMiss = Math.max(0, input - cacheRead);
+  return (
+    (inputMiss / 1e6) * DEEPSEEK_USD_PER_1M.inputMiss +
+    (cacheRead / 1e6) * DEEPSEEK_USD_PER_1M.cacheHit +
+    (output / 1e6) * DEEPSEEK_USD_PER_1M.output
+  );
 }
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
@@ -386,6 +440,9 @@ export default async function AnalyticsDashboardPage() {
     purchaseByChannel,
     purchaseByLens,
     pwaLaunch,
+    askirisOverview,
+    askirisByStep,
+    askirisByMount,
   ] = await Promise.all([
     queryAE(Q_OVERVIEW_TOTALS),
     queryAE(Q_OVERVIEW_UNIQUES),
@@ -408,6 +465,9 @@ export default async function AnalyticsDashboardPage() {
     queryAE(Q_PURCHASE_BY_CHANNEL),
     queryAE(Q_PURCHASE_BY_LENS),
     queryAE(Q_PWA_LAUNCH),
+    queryAE(Q_ASKIRIS_OVERVIEW),
+    queryAE(Q_ASKIRIS_BY_STEP),
+    queryAE(Q_ASKIRIS_BY_MOUNT),
   ]);
 
   if (overviewTotals.error === "missing_credentials") {
@@ -478,6 +538,9 @@ export default async function AnalyticsDashboardPage() {
       ["purchaseByChannel", purchaseByChannel],
       ["purchaseByLens", purchaseByLens],
       ["pwaLaunch", pwaLaunch],
+      ["askirisOverview", askirisOverview],
+      ["askirisByStep", askirisByStep],
+      ["askirisByMount", askirisByMount],
     ] as const
   ).flatMap(([name, r]) =>
     r.error && r.error !== "missing_credentials" ? [{ name, code: r.error }] : [],
@@ -521,6 +584,31 @@ export default async function AnalyticsDashboardPage() {
   const purchaseByLensRows = purchaseByLens.data.map((r) => ({
     ...r,
     display: formatLensSlug(String(r.lens_id ?? "")),
+  }));
+
+  // AskIris overview is a single aggregate row; fan its derived rates + cost out here.
+  const askirisRow = askirisOverview.data[0] as
+    | {
+        turns?: number;
+        total_tokens?: number;
+        input_tokens?: number;
+        output_tokens?: number;
+        cache_read_tokens?: number;
+        total_steps?: number;
+        budget_hits?: number;
+      }
+    | undefined;
+  const aiTurns = num(askirisRow?.turns);
+  const aiTotalTokens = num(askirisRow?.total_tokens);
+  const aiInputTokens = num(askirisRow?.input_tokens);
+  const aiOutputTokens = num(askirisRow?.output_tokens);
+  const aiCacheReadTokens = num(askirisRow?.cache_read_tokens);
+  const aiTotalSteps = num(askirisRow?.total_steps);
+  const aiBudgetHits = num(askirisRow?.budget_hits);
+  const aiCostUsd = askirisCostUsd(aiInputTokens, aiCacheReadTokens, aiOutputTokens);
+  const askirisByMountRows = askirisByMount.data.map((r) => ({
+    ...r,
+    total_tokens: fmtNum(num(r.total_tokens)),
   }));
 
   return (
@@ -783,6 +871,62 @@ export default async function AnalyticsDashboardPage() {
           />
         </Card>
       </div>
+
+      {/* AskIris — per-turn agent metrics (server-recorded askiris_turn rows). Its
+          own data source and layout, so it sits in a dedicated section. */}
+      <section className="mt-10">
+        <h2 className="font-heading text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+          AskIris
+        </h2>
+        <p className="mt-1 mb-4 text-sm text-zinc-500 dark:text-zinc-400">
+          One row per completed turn · cost estimated at DeepSeek V4-Flash list price
+        </p>
+
+        <div className="mb-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <Stat label="Turns" value={fmtMaybe(askirisRow?.turns)} />
+          <Stat label="Tokens" value={fmtMaybe(askirisRow?.total_tokens)} />
+          <Stat label="Est. cost" value={aiTurns > 0 ? `$${aiCostUsd.toFixed(2)}` : "—"} />
+          <Stat label="Budget-hit rate" value={pct(aiBudgetHits, aiTurns)} />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Card title="AskIris · efficiency">
+            <dl className="grid grid-cols-[1fr_auto] gap-y-2 text-sm">
+              <dt className="text-zinc-500 dark:text-zinc-400">Avg tokens / turn</dt>
+              <dd className="text-right tabular-nums">
+                {aiTurns > 0 ? fmtNum(Math.round(aiTotalTokens / aiTurns)) : "—"}
+              </dd>
+              <dt className="text-zinc-500 dark:text-zinc-400">Avg steps / turn</dt>
+              <dd className="text-right tabular-nums">
+                {aiTurns > 0 ? (aiTotalSteps / aiTurns).toFixed(1) : "—"}
+              </dd>
+              <dt className="text-zinc-500 dark:text-zinc-400">Cache-hit rate (input)</dt>
+              <dd className="text-right tabular-nums">{pct(aiCacheReadTokens, aiInputTokens)}</dd>
+            </dl>
+          </Card>
+
+          <Card title="AskIris · steps per turn">
+            <Table
+              rows={askirisByStep.data}
+              columns={[
+                { key: "steps", label: "Steps" },
+                { key: "turns", label: "Turns", align: "right", widthClass: COUNT_WIDTH },
+              ]}
+            />
+          </Card>
+
+          <Card title="AskIris · by mount">
+            <Table
+              rows={askirisByMountRows}
+              columns={[
+                { key: "mount", label: "Mount" },
+                { key: "turns", label: "Turns", align: "right", widthClass: COUNT_WIDTH },
+                { key: "total_tokens", label: "Tokens", align: "right", widthClass: COUNT_WIDTH },
+              ]}
+            />
+          </Card>
+        </div>
+      </section>
     </main>
   );
 }
