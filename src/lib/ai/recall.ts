@@ -49,9 +49,10 @@ export interface LensConstraints {
   usage?: "photo" | "cine";
   features?: FilterFeatureKey[];
   opticalTraits?: OpticalTrait[];
-  // Full-frame-equivalent millimetres. The lens must be able to shoot at each.
+  // Native millimetres (the number printed on the lens). The lens must be able to
+  // shoot at each, matched within a small tolerance.
   coversFocals?: number[];
-  // Full-frame-equivalent millimetres. The lens's whole range must sit inside.
+  // Native millimetres. The lens's whole focal range must sit inside this window.
   focalWithin?: [number | null, number | null];
   maxWeightG?: number;
   // Physical barrel length ceiling in mm (compact / pocketable).
@@ -133,15 +134,12 @@ export type ResolvedLens = Pick<
 // A resolved lens the model has chosen to recommend, carrying its authored reason.
 export type Recommendation = ResolvedLens & { reason: string };
 
-// Cap per recall; totalMatched/totalMaybe still report the full counts.
-const MAX_RECALL_RESULTS = 20;
-
 // coversFocals is matched on native mm within this fraction, so a "56" request
 // still catches a 55mm lens (same class) and never misses a prime by a hair.
 const FOCAL_MATCH_TOLERANCE = 0.1;
 
 export interface RecallResult {
-  // Capped to the top MAX_RECALL_RESULTS by the active sort.
+  // Capped to the top `maxCount` (see recallLenses) by the active sort.
   matches: ResolvedLens[];
   maybe: { lens: ResolvedLens; missingFields: string[] }[];
   totalMatched: number;
@@ -419,6 +417,10 @@ export function recallLenses(
   locale: string,
   constraints: LensConstraints,
   tBrand: (brand: string) => string,
+  // Cap on matches and maybes returned, applied after the active sort;
+  // totalMatched/totalMaybe still report the full pre-cap counts. queryLenses fixes
+  // this at RECALL_LIMIT; tests vary it to inspect the full (uncapped) match set.
+  maxCount: number,
 ): RecallResult {
   const lenses = getLensesByMount(mount, locale);
   const matched: Lens[] = [];
@@ -446,9 +448,9 @@ export function recallLenses(
 
   return {
     matches: sortedMatched
-      .slice(0, MAX_RECALL_RESULTS)
+      .slice(0, maxCount)
       .map((lens) => resolveLens(lens, locale, tBrand)),
-    maybe: sortedMaybe.slice(0, MAX_RECALL_RESULTS).map((lens) => ({
+    maybe: sortedMaybe.slice(0, maxCount).map((lens) => ({
       lens: resolveLens(lens, locale, tBrand),
       missingFields: missingById.get(lens.id) ?? [],
     })),

@@ -6,6 +6,12 @@ import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
 import { recallLenses, recommendLenses, resolveLens, RECALL_SORT_FIELDS } from "@/lib/ai/recall";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 
+// How many recalled lenses one queryLenses call returns to the model, after the
+// active sort. Bounds tool-result size / token cost; totalMatched still tells the
+// model how many more matched beyond the cap. Tests call recallLenses with a
+// different cap to inspect the full match set.
+const RECALL_LIMIT = 20;
+
 // The agent's tools, bound to the current mount + locale (both fixed by the
 // route, never model-supplied). Parameter semantics live in `.describe()` so the
 // model learns them from the tool schema, not the system prompt.
@@ -26,7 +32,7 @@ export function buildLensTools(
         "user's described needs into these parameters. Returns { matches (meet every " +
         "constraint), maybe (a constrained field has no data for that lens — surface " +
         "these honestly, never drop them), totalMatched, totalMaybe }. matches/maybe are " +
-        "capped at the top 20 by your sort; if totalMatched is larger, tell the user the " +
+        `capped at the top ${RECALL_LIMIT} by your sort; if totalMatched is larger, tell the user the ` +
         "total and NARROW the query (add a constraint) — there is no paging.",
       inputSchema: z.object({
         brands: z
@@ -128,7 +134,7 @@ export function buildLensTools(
         sortDir: z.enum(["asc", "desc"]).optional().describe("asc (default) = smallest first."),
       }),
       execute: (constraints) => {
-        const result = recallLenses(mount, locale, constraints, tBrand);
+        const result = recallLenses(mount, locale, constraints, tBrand, RECALL_LIMIT);
         // Record what this call surfaced so recommendLenses can check its picks. Both
         // buckets are shown to the user; matches hold the lens directly, maybe wraps it.
         for (const lens of result.matches) {
