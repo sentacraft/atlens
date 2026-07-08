@@ -124,3 +124,42 @@ export function toDataPoint(
     doubles: [primaryNumber],
   };
 }
+
+// AskIris per-turn metrics, written straight to AE from the chat route's onEnd —
+// server-only (the client never sees token usage), so it skips the /api/track path.
+// Its own positional layout in the same dataset; query it by the index. Token counts
+// can be missing from a provider, recorded as 0.
+//   indexes: [askiris_turn]
+//   blobs:   [mount, locale]
+//   doubles: [total, input, output, cacheRead tokens, step_count, budget_hit]
+export const ASKIRIS_TURN_EVENT = "askiris_turn";
+
+export interface AskIrisTurnMetrics {
+  mount: string;
+  locale: string;
+  totalTokens: number;
+  inputTokens: number;
+  outputTokens: number;
+  cacheReadTokens: number;
+  stepCount: number;
+  budgetHit: boolean;
+}
+
+export function askirisTurnDataPoint(m: AskIrisTurnMetrics): {
+  indexes: [string];
+  blobs: [string, string];
+  doubles: [number, number, number, number, number, number];
+} {
+  return {
+    indexes: [ASKIRIS_TURN_EVENT],
+    blobs: [m.mount, m.locale],
+    doubles: [
+      m.totalTokens,
+      m.inputTokens,
+      m.outputTokens,
+      m.cacheReadTokens,
+      m.stepCount,
+      m.budgetHit ? 1 : 0,
+    ],
+  };
+}

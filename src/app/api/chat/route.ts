@@ -14,6 +14,7 @@ import { getAgentModel, agentProviderOptions } from "@/lib/ai/model";
 import { buildLensTools } from "@/lib/ai/tools";
 import { clientIp, isBypassed, checkRateLimit, recordTokens } from "@/lib/ai/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
+import { askirisTurnDataPoint } from "@/lib/analytics/events";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
 import type { Mount } from "@/lib/types";
@@ -94,6 +95,11 @@ const chatRequestSchema = z.object({
 // calls). Bounds worst-case cost/latency; shared by stopWhen and the budget-hit log.
 const STEP_BUDGET = 8;
 
+// Hard ceiling on one turn's streaming, so a stuck provider connection can't hang the
+// request indefinitely. Generous — a legit multi-step turn on a slow provider runs
+// tens of seconds; this only bites a true hang.
+const STREAM_TIMEOUT_MS = 120_000;
+
 export async function POST(req: Request) {
   if (!process.env.DEEPSEEK_API_KEY) {
     console.error("[askiris] DEEPSEEK_API_KEY is not set");
@@ -114,11 +120,13 @@ export async function POST(req: Request) {
   // break the chat. See src/lib/ai/rate-limit.ts for the burst + daily-token design.
   const ip = clientIp(req);
   let rateKv: KVNamespace | undefined;
-  let waitUntil: ((p: Promise<unknown>) => void) | undefined;
+  let ae: AnalyticsEngineDataset | undefined;
+  let ctx: ExecutionContext | undefined;
   try {
-    const { env, ctx } = getCloudflareContext();
-    rateKv = (env as CloudflareEnv).RATE_KV;
-    waitUntil = ctx.waitUntil.bind(ctx);
+    const cf = getCloudflareContext();
+    rateKv = cf.env.RATE_KV;
+    ae = cf.env.ANALYTICS;
+    ctx = cf.ctx;
     if (rateKv && ip && !isBypassed(req, process.env.RATE_LIMIT_BYPASS)) {
       const verdict = await checkRateLimit(rateKv, ip);
       if (!verdict.ok) {
@@ -150,23 +158,40 @@ export async function POST(req: Request) {
     messages: modelMessages,
     tools,
     stopWhen: stepCountIs(STEP_BUDGET),
+    // Cap total streaming time so a stuck provider connection can't hang the request.
+    abortSignal: AbortSignal.timeout(STREAM_TIMEOUT_MS),
     // Reserve the last allowed step for a text answer: forcing toolChoice "none" means a
     // turn that reaches the budget ends with a synthesis, not a frozen dangling tool call.
     prepareStep: ({ stepNumber }) =>
       stepNumber >= STEP_BUDGET - 1 ? { toolChoice: "none" } : undefined,
-    // Fold the finished turn's real token usage (summed across all steps) into the
-    // daily budgets. waitUntil keeps the write alive past the streamed response.
+    // On turn end: emit one metrics row to AE and fold the token usage into the daily
+    // budgets. waitUntil keeps the KV write alive past the streamed response.
     onEnd: ({ usage, stepNumber }) => {
-      // The last allowed step is forced to a text answer (prepareStep), so a turn that
-      // spends its whole budget ends on that wrap-up step. Detect the budget biting by
-      // the final step index reaching the cap — the model was still calling tools and
-      // got cut off. (finishReason can't reveal this: the forced step ends on "stop".)
-      if (stepNumber >= STEP_BUDGET - 1) {
-        console.warn(`[askiris] step budget (${STEP_BUDGET}) reached — turn forced to wrap up at final step`);
+      // Record the finished turn as one AE row (server-only — the client can't see
+      // token usage). The last allowed step is forced to a text answer, so a turn that
+      // spent its whole budget ends on that wrap-up step; the final step index reaching
+      // the cap is how the budget biting is detected (finishReason can't — it's "stop").
+      if (ae) {
+        try {
+          ae.writeDataPoint(
+            askirisTurnDataPoint({
+              mount,
+              locale,
+              totalTokens: usage.totalTokens ?? 0,
+              inputTokens: usage.inputTokens ?? 0,
+              outputTokens: usage.outputTokens ?? 0,
+              cacheReadTokens: usage.inputTokenDetails?.cacheReadTokens ?? 0,
+              stepCount: stepNumber + 1,
+              budgetHit: stepNumber >= STEP_BUDGET - 1,
+            }),
+          );
+        } catch (error) {
+          console.error("[askiris] failed to write turn metrics", error);
+        }
       }
       const tokens = usage.totalTokens;
-      if (rateKv && ip && waitUntil && typeof tokens === "number") {
-        waitUntil(
+      if (rateKv && ip && ctx && typeof tokens === "number") {
+        ctx.waitUntil(
           recordTokens(rateKv, ip, tokens).catch((error) =>
             console.error("[askiris] failed to record tokens", error),
           ),

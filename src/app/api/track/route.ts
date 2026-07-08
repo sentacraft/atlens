@@ -135,7 +135,7 @@ export async function POST(req: Request): Promise<NextResponse> {
 
   try {
     const { env } = getCloudflareContext();
-    const ae = (env as CloudflareEnv).ANALYTICS;
+    const ae = env.ANALYTICS;
     if (ae) {
       ae.writeDataPoint(toDataPoint(event, sid, locale, props, internal));
     }
