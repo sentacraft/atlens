@@ -121,12 +121,12 @@ export async function POST(req: Request) {
   const ip = clientIp(req);
   let rateKv: KVNamespace | undefined;
   let ae: AnalyticsEngineDataset | undefined;
-  let waitUntil: ((p: Promise<unknown>) => void) | undefined;
+  let ctx: ExecutionContext | undefined;
   try {
-    const { env, ctx } = getCloudflareContext();
-    rateKv = (env as CloudflareEnv).RATE_KV;
-    ae = (env as CloudflareEnv).ANALYTICS;
-    waitUntil = ctx.waitUntil.bind(ctx);
+    const cf = getCloudflareContext();
+    rateKv = (cf.env as CloudflareEnv).RATE_KV;
+    ae = (cf.env as CloudflareEnv).ANALYTICS;
+    ctx = cf.ctx;
     if (rateKv && ip && !isBypassed(req, process.env.RATE_LIMIT_BYPASS)) {
       const verdict = await checkRateLimit(rateKv, ip);
       if (!verdict.ok) {
@@ -190,8 +190,8 @@ export async function POST(req: Request) {
         }
       }
       const tokens = usage.totalTokens;
-      if (rateKv && ip && waitUntil && typeof tokens === "number") {
-        waitUntil(
+      if (rateKv && ip && ctx && typeof tokens === "number") {
+        ctx.waitUntil(
           recordTokens(rateKv, ip, tokens).catch((error) =>
             console.error("[askiris] failed to record tokens", error),
           ),
