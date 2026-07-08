@@ -124,8 +124,8 @@ export async function POST(req: Request) {
   let ctx: ExecutionContext | undefined;
   try {
     const cf = getCloudflareContext();
-    rateKv = (cf.env as CloudflareEnv).RATE_KV;
-    ae = (cf.env as CloudflareEnv).ANALYTICS;
+    rateKv = cf.env.RATE_KV;
+    ae = cf.env.ANALYTICS;
     ctx = cf.ctx;
     if (rateKv && ip && !isBypassed(req, process.env.RATE_LIMIT_BYPASS)) {
       const verdict = await checkRateLimit(rateKv, ip);
