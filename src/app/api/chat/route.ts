@@ -14,6 +14,7 @@ import { getAgentModel, agentProviderOptions } from "@/lib/ai/model";
 import { buildLensTools } from "@/lib/ai/tools";
 import { clientIp, isBypassed, checkRateLimit, recordTokens } from "@/lib/ai/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
+import { isCircuitOpen, recordProviderFailure, recordProviderSuccess } from "@/lib/ai/circuit";
 import { askirisTurnDataPoint } from "@/lib/analytics/events";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
@@ -133,6 +134,11 @@ export async function POST(req: Request) {
         return chatErrorResponse("rate_limit", 429);
       }
     }
+    // Fail fast when the DeepSeek circuit is open: a clean "unavailable" beats hanging on a
+    // known-failing provider until the stream timeout. onEnd/onError below feed the breaker.
+    if (rateKv && (await isCircuitOpen(rateKv))) {
+      return chatErrorResponse("unavailable", 503);
+    }
   } catch {
     // Never let a missing binding or KV error break chat.
   }
@@ -197,6 +203,14 @@ export async function POST(req: Request) {
           ),
         );
       }
+      // A completed turn means DeepSeek is healthy — clear any failure streak.
+      if (rateKv && ctx) {
+        ctx.waitUntil(
+          recordProviderSuccess(rateKv).catch((error) =>
+            console.error("[askiris] failed to record circuit success", error),
+          ),
+        );
+      }
     },
   });
 
@@ -210,6 +224,15 @@ export async function POST(req: Request) {
       // bare constant is enough, not prose.
       onError: (error) => {
         console.error("[askiris] stream error", error);
+        // A stream error is a DeepSeek failure — feed the breaker so a sustained outage trips
+        // it and later requests fail fast instead of each hanging to the timeout.
+        if (rateKv && ctx) {
+          ctx.waitUntil(
+            recordProviderFailure(rateKv).catch((e) =>
+              console.error("[askiris] failed to record circuit failure", e),
+            ),
+          );
+        }
         return "Stream error";
       },
     }),
