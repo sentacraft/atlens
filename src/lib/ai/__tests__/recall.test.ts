@@ -87,10 +87,11 @@ describe("recallLenses · filter correctness (precision / recall on labelled que
   });
 });
 
-describe("recallLenses · truncation (the wideEnd-bias validation vehicle)", () => {
-  // "Show me zooms" over-matches (35 zooms > RECALL_LIMIT). The default sort is wideEnd
-  // ascending, so the cap keeps the 20 widest zooms and silently drops the most telephoto
-  // ones — regardless of what the user actually wanted.
+describe("recallLenses · truncation under the no-sortBy default", () => {
+  // "Show me zooms" over-matches (35 zooms > RECALL_LIMIT). With no sortBy the default is
+  // wideEnd-ascending, so in isolation the cap keeps the 20 widest zooms and drops the most
+  // telephoto ones. These tests pin that mechanical behaviour; the note on the last one covers
+  // why it isn't a live user-facing bug.
   const zooms: LensConstraints = { type: "zoom" };
 
   it("caps at RECALL_LIMIT while reporting the honest full match count", () => {
@@ -110,14 +111,16 @@ describe("recallLenses · truncation (the wideEnd-bias validation vehicle)", () 
     expect(capped.matches.length / full.totalMatched).toBeLessThan(1);
   });
 
-  it("documents the directional bias: a genuine telephoto match is dropped by the wide-first cap", () => {
-    // This lens is a true match (a zoom) sitting at the tele extreme — widest focal 150mm
-    // native = 225mm-equiv, the largest wideEnd among zooms — so the wideEnd-asc sort ranks
-    // it last and the cap removes it. For a user asking about reach, the single most relevant
-    // lens is the one that disappears: the bug the truncation-bias task fixes. When the cap is
-    // made intent-aware, this expectation flips (the tele lens should be kept) — update it then.
+  it("no-sortBy default drops the tele extreme — pinned, but not a live bug", () => {
+    // Called with no sortBy, the wideEnd-asc default ranks this true match (a zoom at the tele
+    // extreme: 150mm native = 225mm-equiv, the largest wideEnd among zooms) last, so the cap
+    // removes it. That is a directional bias of the recall function in isolation — but NOT a live
+    // failure: over real turns the model always supplies its own sortBy (a reach need -> reach desc,
+    // which surfaces exactly this lens), so this default path isn't exercised. The guard against a
+    // future model that stops sorting is a behavioural eval (backlog), not an intent-aware cap here
+    // — so this stays a characterization, not a test awaiting a recall-layer fix.
     const tele = "fujifilm-xf-150-600mmf56-8-r-lm-ois-wr-x";
     expect(idsOf(recall(zooms, ALL).matches)).toContain(tele); // it IS a match
-    expect(idsOf(recall(zooms, RECALL_LIMIT).matches)).not.toContain(tele); // but the cap drops it
+    expect(idsOf(recall(zooms, RECALL_LIMIT).matches)).not.toContain(tele); // the no-sortBy cap drops it
   });
 });
