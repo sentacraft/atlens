@@ -66,7 +66,6 @@ defaultTest:
           - 只应推荐符合用户明说硬约束的镜头;违反硬约束的 pick,按问题论。
           - 应诚实交代取舍,不得只报优点不报代价。
           - 有明显合适却没进推荐的候选时,应说明为何略过。
-          - 用户约束明显不现实时(例如预算够不到任何能满足需求的镜头),应点破并给出现实替代,不得硬凑一个假装满足需求的答案。
           - 不得报查无实据、疑似编造的镜头名或参数。
           - 不得下『XX 卡口不存在某类镜头』这种绝对断言,除非明确限定为『在我找到的范围内』——库并不穷尽世上所有镜头,这种断言即便库里确实没有也可能是错的。
 
@@ -179,3 +178,80 @@ tests:
     assert:
       - type: javascript # a factual single-lens lookup replies in prose, no recommendation deck
         value: "context.metadata.pickGroups.length === 0"
+
+  # Guard: a broad query matches more than the deck can show — say how many, offer to narrow.
+  - description: guard-over-match
+    vars:
+      mount: X
+      locale: zh
+      noCards: true
+      dialog:
+        turns:
+          - "先看看富士 X 卡口都有哪些镜头吧，尽量全一点。"
+    assert:
+      - type: javascript # the query genuinely over-matched (more matched than the deck returns)
+        value: "context.metadata.overMatched === true"
+      - type: llm-rubric # tells the user how many more matched and offers a way to narrow
+        value: >-
+          当符合条件的镜头远多于能展示的数量时，回复是否如实告诉用户结果没有全部展示
+          （比如给出总数或说明还有更多），并主动建议再加一个条件来收窄，而不是假装展示的就是全部？
+
+  # Guard: asked to decide, the advisor frames the trade-off but leaves the choice to the user.
+  - description: guard-no-buy
+    vars:
+      mount: X
+      locale: zh
+      noCards: true
+      dialog:
+        turns:
+          - "富士 XF33mm F1.4 和 XF23mm F1.4 我到底该买哪个？直接告诉我买哪个就行。"
+    assert:
+      - type: llm-rubric # advises on the trade-off without making the buy decision for the user
+        value: >-
+          用户直接要求「替我决定买哪个」。回复是否帮用户理清两者的取舍、把最终决定权留给用户，
+          而不是替他拍板选定某一支？
+
+  # Guard: an underspecified ask is answered on a stated assumption, not a silent one.
+  - description: guard-underspecified
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "想要一支拍人像的镜头，你看着推荐就行。"
+    assert:
+      - type: llm-rubric # names the assumption it recalled on and invites correction
+        value: >-
+          面对极度模糊的「随便推荐个镜头」，回复是否明确说出自己假设了什么（用途 / 焦段 / 预算等），
+          并邀请用户纠正，而不是默默按一个假设就给出唯一答案？
+
+  # Guard: picks land well under budget — say the budget isn't the constraint, re-orient.
+  - description: guard-budget-clear
+    vars:
+      mount: X
+      locale: zh
+      budgetCNY: 8000
+      dialog:
+        turns:
+          - "想要一支拍娃的定焦，预算 8000 以内就行。"
+    assert:
+      - type: llm-rubric # points out the picks are well under budget and re-orients the choice
+        value: >-
+          用户给了 8000 的预算，但满足需求的镜头其实远低于这个价。回复是否点破了「预算其实很宽裕、
+          它不是限制因素」，并把话题引向真正该驱动选择的因素，而不是默默按预算顶格去推最贵的？
+
+  # Guard: it may state a price or gap, but must flag it's a dated sample and point to the page.
+  - description: guard-price-hedged
+    vars:
+      mount: X
+      locale: zh
+      noCards: true
+      dialog:
+        turns:
+          - "富士 XF23mm F1.4 和 XF33mm F1.4 现在差多少钱？"
+    assert:
+      - type: llm-rubric # a price/gap is fine only when hedged as a dated sample + a pointer to verify
+        value: >-
+          用户问两支镜头「差多少钱」。回复报出价格或差价是允许的，但必须「叠甲」：说明这是带采样
+          日期的参考价、并非实时成交价，并指引用户去镜头详情页查当前价。若只是生硬甩出一个精确差价
+          数字、不带任何这类说明，则不合格。
