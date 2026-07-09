@@ -73,9 +73,7 @@ export function buildLensTools(
               "a small tolerance. Each value is required independently: the lens's focal range must " +
               "include every one of them, not merely the span between them. A prime is a single " +
               "focal, so it can satisfy at most one value near that focal — passing two or more " +
-              "values excludes every prime. To place a prime within a focal range, use focalWithin. " +
-              "For a one-sided bound — long end at least X, or wide end at most X — use minReach / " +
-              "maxWide, which keep a prime whose single focal is beyond the bound.",
+              "values excludes every prime. To place a prime within a focal range, use focalWithin.",
           ),
         focalWithin: z
           .tuple([z.number().nullable(), z.number().nullable()])
@@ -90,19 +88,11 @@ export function buildLensTools(
         minReach: z
           .number()
           .optional()
-          .describe(
-            "Native mm; a hard lower bound on the long end (focalLengthMax must be at least " +
-              "this). A one-sided bound, unlike coversFocals: a lens whose single focal is even " +
-              "longer than this still qualifies, so it keeps long primes coversFocals would drop.",
-          ),
+          .describe("Native mm; a hard lower bound on the lens's longest focal length (its tele end)."),
         maxWide: z
           .number()
           .optional()
-          .describe(
-            "Native mm; a hard upper bound on the wide end (focalLengthMin must be at most " +
-              "this). A one-sided bound, unlike coversFocals: a lens whose single focal is even " +
-              "wider than this still qualifies, so it keeps wide primes coversFocals would drop.",
-          ),
+          .describe("Native mm; a hard upper bound on the lens's shortest focal length (its wide end)."),
         maxWeightG: z
           .number()
           .optional()
