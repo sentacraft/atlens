@@ -1,0 +1,149 @@
+# AskIris behavior eval — runs the live agent (real POST /api/chat) and grades
+# each turn. Manual eval, not in CI. Design + run instructions: see README.md.
+description: AskIris behavior eval (live /api/chat)
+
+# Every case is a list of user turns (dialog.turns); single-turn is a one-element
+# list. The provider reads dialog.turns directly and threads the dialog itself — a
+# single rendered prompt string can't express multi-turn. turns live under an OBJECT
+# var because a top-level list var would matrix-expand into one test per element.
+# This prompt entry isn't the real input: it exists to satisfy promptfoo's "at least
+# one prompt" requirement and to label each results-table row with the opening turn.
+prompts:
+  - "{{ dialog.turns[0] }}"
+
+providers:
+  - file://provider.mjs
+
+defaultTest:
+  # Universal invariants for every case; read the tool-call trace on context.metadata.
+  assert:
+    - type: javascript # produced recommendations
+      value: "context.metadata.picks.length >= 1"
+    - type: javascript # every pick id resolved to a real catalogue lens
+      value: "context.metadata.picks.every((p) => p.name)"
+    - type: javascript # every pick matches the requested mount
+      value: "context.metadata.picks.every((p) => p.mount === context.vars.mount)"
+    - type: javascript # no lens repeated within one recommendLenses deck
+      value: "context.metadata.pickGroups.every((g) => new Set(g).size === g.length)"
+    - type: javascript # picks were recalled this turn, not conjured
+      value: "context.metadata.picks.every((p) => context.metadata.recalledIds.includes(p.id))"
+    - type: javascript # every pick carries a non-empty reason
+      value: "context.metadata.picks.every((p) => p.reason && p.reason.trim())"
+    - type: javascript # cine catalogue not opened unless asked
+      value: "context.vars.wantsCine === true || !context.metadata.openedCine"
+    - type: javascript # replied in the requested locale
+      value: 'context.vars.locale !== "zh" || /[一-鿿]/.test(output)'
+    - type: javascript # budget is soft — flag only a pick grossly over it (>1.5x)
+      value: "!context.vars.budgetCNY || context.metadata.picks.every((p) => p.price == null || p.price <= context.vars.budgetCNY * 1.5)"
+  options:
+    # Native judge: no rubricPrompt override. The built-in search-rubric template
+    # owns the {pass,score,reason} JSON contract and injects {{output}} + {{rubric}}
+    # as the grader's user message. The judge's standing instructions (persona, audit
+    # method, standards) ride on the grader's config.instructions (the system
+    # channel); each case's `value` is its {{rubric}}.
+    provider:
+      id: openai:responses:gpt-5.4-mini
+      config:
+        tools:
+          - type: web_search
+        reasoning:
+          effort: low
+        instructions: |
+          你是镜头推荐 agent「Iris」的严格评测员,你本身也是资深镜头专家。你会拿到 Iris 给用户的完整回复(待评 output)和本 case 的评估点(rubric);评估点里已框定这次的用户需求与场景。
+
+          回复里文字说明和推荐卡片按 Iris 实际呈现的顺序交织(可能分几组、每组一句引导语)。卡片是真正推给用户的镜头,判断以卡片为准,不要只凭文字措辞;引导语是否如实框定了对应那组卡片的取舍,也要顺着看。
+
+          首要职责——用你自己的镜头知识 + 联网搜索,审计这些卡片:
+          - 遗漏审计:联网搜『这个场景 + 这个卡口常推哪些镜头』。推荐不得漏掉明显典型、被反复推荐的镜头——漏掉即暴露数据缺失、召回遗漏或排序错误。这是找『明显该出现却缺席』的镜头,不是找『还能再加一支』。
+          - 选对审计:每支 pick 都必须对这个需求和卡口真的合适;出现明显选错的镜头,按问题论。
+          - 真伪审计:联网核实你拿不准的镜头是否真实存在、参数(焦段/光圈/重量等)与卡口对不对——这些参数稳定、与地区和时间无关,放心联网核;不得仅因训练数据里没有就判它编造。
+
+          价格是例外:卡片上的采样价一律当作真实、准确,不要联网核价,也不要据此判断有没有超预算(超预算由程序化检查负责);价格只作参考语境。
+
+          再看以下几点:
+          - 只应推荐符合用户明说硬约束的镜头;违反硬约束的 pick,按问题论。
+          - 应诚实交代取舍,不得只报优点不报代价。
+          - 有明显合适却没进推荐的候选时,应说明为何略过。
+          - 用户约束明显不现实时(例如预算够不到任何能满足需求的镜头),应点破并给出现实替代,不得硬凑一个假装满足需求的答案。
+          - 不得报查无实据、疑似编造的镜头名或参数。
+          - 不得下『XX 卡口不存在某类镜头』这种绝对断言,除非明确限定为『在我找到的范围内』——库并不穷尽世上所有镜头,这种断言即便库里确实没有也可能是错的。
+
+tests:
+  - description: smoke-35mm
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "推荐几支富士 X 卡口等效 35mm 的定焦镜头"
+
+  - description: astro-milky-way
+    vars:
+      mount: X
+      locale: zh
+      budgetCNY: 6000
+      dialog:
+        turns:
+          - "第一次拍银河，需要广角大光圈，预算 6000 左右，机身 X-T5。"
+    assert:
+      - type: javascript # at least one pick <= 24mm full-frame-equivalent (wide enough)
+        value: "context.metadata.picks.some((p) => p.fmin != null && Math.round(p.fmin * 1.5) <= 24)"
+      - type: search-rubric # weight 0 = known gap (MF ultra-wide astro primes not indexed yet): reports, doesn't gate
+        weight: 0
+        value: >-
+          针对拍银河这个场景，回复是否兼顾了两点：『视野够广』（银河拱桥需要广角）与
+          『对焦方式不该设限』（星空本就手动对焦，是否 AF 不该是硬门槛）？这是权衡维度，
+          不是硬性要求必须列出某支手动镜头。
+
+  - description: vlog-selfie
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "有没有适合拍 vlog 的镜头？但我听说富士相机对焦都不太好，可能更适合拍照，不适合拍视频，是这么回事吗？这种问题能通过选一个合适的镜头来解决吗？"
+
+  - description: travel-one-lens
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "出门旅游带两三个定焦换来换去太麻烦了，想只带一支镜头走天下。"
+    assert:
+      - type: search-rubric # weight 0 = known gap (subjective IQ/distortion data not in catalogue yet)
+        weight: 0
+        value: >-
+          针对『一镜走天下』，回复是否诚实讲清了核心取舍——焦段/变焦覆盖 vs 画质/光圈 vs
+          体积重量——而不是无脑推最大变焦比的超级变焦？
+
+  - description: reach-wildlife
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "想拍远处的野生动物和鸟，镜头要够长、够得着，越远越好，机身 X-T5，预算不太在意。"
+    assert:
+      - type: javascript # steered recall with an explicit reach sort (not a coversFocals filter)
+        value: 'context.metadata.sortBys.includes("reach")'
+      - type: javascript # at least one pick reaches >= 300mm native
+        value: "context.metadata.picks.some((p) => p.fmax != null && p.fmax >= 300)"
+      - type: search-rubric
+        value: >-
+          针对『拍远处野生动物/鸟、越远越好』这个长焦需求，推荐是否真的把够长焦距的镜头放在前面
+          （而不是被更广的镜头挤掉），并且兼顾了长焦镜头现实的取舍（重量、价格、光圈），
+          而不是无脑只堆最长的那一支？
+
+  - description: refine-budget
+    vars:
+      mount: X
+      locale: zh
+      budgetCNY: 2000
+      dialog:
+        turns:
+          - "想要一支富士 X 卡口的人像镜头，虚化好一点。"
+          - "预算其实只有 2000 左右，帮我在这个预算内重新推荐。"
+    assert:
+      - type: javascript # turn 2 never restates the genre, so portrait-band picks prove "人像" carried
+        value: "context.metadata.picks.every((p) => p.fmin >= 30 && p.fmax <= 100)"

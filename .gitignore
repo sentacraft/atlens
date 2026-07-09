@@ -83,6 +83,3 @@ skills-lock.json
 
 # AskIris dev-only captured fixtures (test-hook panel)
 .askiris-fixtures/
-
-# AskIris behavior-eval harness — still iterating, not ready to publish
-/eval/
