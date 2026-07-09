@@ -66,7 +66,6 @@ defaultTest:
           - 只应推荐符合用户明说硬约束的镜头;违反硬约束的 pick,按问题论。
           - 应诚实交代取舍,不得只报优点不报代价。
           - 有明显合适却没进推荐的候选时,应说明为何略过。
-          - 用户约束明显不现实时(例如预算够不到任何能满足需求的镜头),应点破并给出现实替代,不得硬凑一个假装满足需求的答案。
           - 不得报查无实据、疑似编造的镜头名或参数。
           - 不得下『XX 卡口不存在某类镜头』这种绝对断言,除非明确限定为『在我找到的范围内』——库并不穷尽世上所有镜头,这种断言即便库里确实没有也可能是错的。
 
@@ -93,9 +92,8 @@ tests:
       - type: search-rubric # weight 0 = known gap (MF ultra-wide astro primes not indexed yet): reports, doesn't gate
         weight: 0
         value: >-
-          针对拍银河这个场景，回复是否兼顾了两点：『视野够广』（银河拱桥需要广角）与
-          『对焦方式不该设限』（星空本就手动对焦，是否 AF 不该是硬门槛）？这是权衡维度，
-          不是硬性要求必须列出某支手动镜头。
+          拍银河的推荐应兼顾两点：视野够广（银河拱桥要广角）、不把自动对焦设成硬门槛
+          （星空本就手动对焦）。这是权衡维度、不是必须列出某支手动镜头；两点明显失衡则判不合格。
 
   - description: vlog-selfie
     vars:
@@ -116,8 +114,8 @@ tests:
       - type: search-rubric # weight 0 = known gap (subjective IQ/distortion data not in catalogue yet)
         weight: 0
         value: >-
-          针对『一镜走天下』，回复是否诚实讲清了核心取舍——焦段/变焦覆盖 vs 画质/光圈 vs
-          体积重量——而不是无脑推最大变焦比的超级变焦？
+          『一镜走天下』的推荐应诚实讲清核心取舍——焦段覆盖 vs 画质/光圈 vs 体积重量；
+          若无脑堆最大变焦比、不谈代价，则判不合格。
 
   - description: reach-wildlife
     vars:
@@ -133,9 +131,8 @@ tests:
         value: "context.metadata.picks.some((p) => p.fmax != null && p.fmax >= 300)"
       - type: search-rubric
         value: >-
-          针对『拍远处野生动物/鸟、越远越好』这个长焦需求，推荐是否真的把够长焦距的镜头放在前面
-          （而不是被更广的镜头挤掉），并且兼顾了长焦镜头现实的取舍（重量、价格、光圈），
-          而不是无脑只堆最长的那一支？
+          长焦『越远越好』的需求下，推荐应把够长的镜头排在前面（不被更广的挤掉），并兼顾长焦的
+          现实取舍（重量/价格/光圈）；若被更广的挤占、或无脑只堆最长那一支，则判不合格。
 
   - description: refine-budget
     vars:
@@ -164,8 +161,8 @@ tests:
         value: "context.metadata.pickGroups.length === 0"
       - type: llm-rubric # scopes itself to lens questions and doesn't attempt the off-topic ask
         value: >-
-          面对一个跟选镜头 / 比镜头无关的请求，回复是否礼貌说明自己只覆盖镜头相关问题，
-          并且没有去尝试回答这个无关请求（例如没有真的给出电影推荐）？
+          回复应礼貌说明自己只覆盖镜头相关问题、不去回答这个跟镜头无关的请求；若真去回答了
+          （比如给出了电影推荐），则判不合格。
 
   # Guard: a single-lens factual lookup answers in prose, without opening a card deck.
   - description: guard-factual-lookup
@@ -179,3 +176,79 @@ tests:
     assert:
       - type: javascript # a factual single-lens lookup replies in prose, no recommendation deck
         value: "context.metadata.pickGroups.length === 0"
+
+  # Guard: a broad query matches more than the deck can show — say how many, offer to narrow.
+  - description: guard-over-match
+    vars:
+      mount: X
+      locale: zh
+      noCards: true
+      dialog:
+        turns:
+          - "先看看富士 X 卡口都有哪些镜头吧，尽量全一点。"
+    assert:
+      - type: javascript # the query genuinely over-matched (more matched than the deck returns)
+        value: "context.metadata.overMatched === true"
+      - type: llm-rubric # tells the user how many more matched and offers a way to narrow
+        value: >-
+          回复应如实说明结果没有全部展示（给出总数或说明还有更多）、并主动建议再加一个条件收窄；
+          若把展示的当成全部，则判不合格。
+
+  # Guard: asked to decide, the advisor frames the trade-off but leaves the choice to the user.
+  - description: guard-no-buy
+    vars:
+      mount: X
+      locale: zh
+      noCards: true
+      dialog:
+        turns:
+          - "富士 XF33mm F1.4 和 XF23mm F1.4 我到底该买哪个？直接告诉我买哪个就行。"
+    assert:
+      - type: llm-rubric # advises on the trade-off without making the buy decision for the user
+        value: >-
+          回复应帮用户理清两支镜头的取舍、把最终选择权留给用户；若替用户拍板选定某一支，
+          则判不合格。
+
+  # Guard: an underspecified ask is answered on a stated assumption, not a silent one.
+  - description: guard-underspecified
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "想要一支拍人像的镜头，你看着推荐就行。"
+    assert:
+      - type: llm-rubric # names the assumption it recalled on and invites correction
+        value: >-
+          回复应明确说出自己基于什么假设来推荐（用途 / 焦段 / 预算等）、并邀请用户纠正；
+          若默默按一个假设就给出唯一答案、不点明假设，则判不合格。
+
+  # Guard: picks land well under budget — say the budget isn't the constraint, re-orient.
+  - description: guard-budget-clear
+    vars:
+      mount: X
+      locale: zh
+      budgetCNY: 8000
+      dialog:
+        turns:
+          - "想要一支拍娃的定焦，预算 8000 以内就行。"
+    assert:
+      - type: llm-rubric # points out the picks are well under budget and re-orients the choice
+        value: >-
+          用户预算宽裕、合适的镜头远低于预算。回复应点破预算不是限制、把重点引到真正该驱动选择的
+          因素上；若默默按预算顶格去推最贵的，则判不合格。
+
+  # Guard: it may state a price or gap, but must flag it's a dated sample and point to the page.
+  - description: guard-price-hedged
+    vars:
+      mount: X
+      locale: zh
+      noCards: true
+      dialog:
+        turns:
+          - "富士 XF23mm F1.4 和 XF33mm F1.4 现在差多少钱？"
+    assert:
+      - type: llm-rubric # a price/gap is fine only when hedged as a dated sample + a pointer to verify
+        value: >-
+          回复给出价格或差价时，应带上「采样价、非实时、可去镜头详情页查当前价」这类说明；
+          若只生硬甩出一个精确价格 / 差价、不带这类说明，则判不合格。
