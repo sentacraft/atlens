@@ -32,13 +32,13 @@ export function buildLensTools(
         "user's described needs into these parameters. Returns { matches (meet every " +
         "constraint), maybe (a constrained field has no data for that lens — surface " +
         "these honestly, never drop them), totalMatched, totalMaybe }. matches/maybe are " +
-        `capped at the top ${RECALL_LIMIT} by your sort; if totalMatched is larger, tell the user the ` +
-        "total and NARROW the query (add a constraint) — there is no paging.",
+        `capped at the top ${RECALL_LIMIT} by your sort; totalMatched is the full count beyond the ` +
+        "cap, and there is no paging.",
       inputSchema: z.object({
         brands: z
           .array(z.string())
           .optional()
-          .describe("Brand whitelist, lowercase."),
+          .describe("Brand whitelist, lowercase (e.g. 'fujifilm', 'sigma', 'viltrox')."),
         type: z.enum(["prime", "zoom"]).optional(),
         focus: z
           .enum(["auto", "manual"])
@@ -155,7 +155,7 @@ export function buildLensTools(
     }),
 
     searchLensByName: tool({
-      description: "Look up lenses by model or brand name.",
+      description: "Look up lenses by model or brand name (e.g. '18-55', 'XF35', 'Viltrox 27').",
       inputSchema: z.object({
         query: z.string().describe("The model or brand text the user typed."),
         limit: z.number().optional().describe("Max results (default 8)."),
@@ -172,10 +172,9 @@ export function buildLensTools(
 
     recommendLenses: tool({
       description:
-        "Present your final picks as a grid of recommendation cards — call this once you've chosen " +
-        "which lenses to recommend (3–6, ordered best-first). Pass each lens's id (from a prior " +
-        "queryLenses/searchLensByName result) and its reason, which is shown on the card and is " +
-        "where that lens's case belongs. Keep any prose around the cards to a short synthesis.",
+        "Present picks as a grid of recommendation cards (3–6, ordered best-first). Pass each " +
+        "lens's id from a prior queryLenses/searchLensByName result and its reason, which is " +
+        "shown on the lens's card.",
       inputSchema: z.object({
         picks: z
           .array(
