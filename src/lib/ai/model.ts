@@ -1,6 +1,17 @@
-import { deepseek } from "@ai-sdk/deepseek";
+import { createDeepSeek, deepseek } from "@ai-sdk/deepseek";
 import { openai } from "@ai-sdk/openai";
 import type { LanguageModel } from "ai";
+import { connectTimeoutFetch } from "@/lib/ai/connect-timeout";
+
+// Give up on a DeepSeek call that hasn't returned response headers within this window — a
+// hung or unreachable provider, as opposed to a legit multi-step turn (which returns headers
+// fast, then streams). This bounds time-to-first-response per model call; streamText's own
+// abortSignal in the route still backstops total stream time.
+const CONNECT_TIMEOUT_MS = 18_000;
+
+// The prod DeepSeek provider, wrapped so a hung connection fails in ~18s instead of hanging
+// to the route's total timeout. apiKey still defaults to DEEPSEEK_API_KEY from the env.
+const deepseekProd = createDeepSeek({ fetch: connectTimeoutFetch(CONNECT_TIMEOUT_MS) });
 
 // Iris's production model — the single source of truth. DeepSeek v4-flash is cheap
 // and chains tools reliably; swapping it is a one-line change confined here.
@@ -14,7 +25,7 @@ import type { LanguageModel } from "ai";
 export function getAgentModel(): LanguageModel {
   const override = process.env.AGENT_MODEL;
   if (!override) {
-    return deepseek("deepseek-v4-flash");
+    return deepseekProd("deepseek-v4-flash");
   }
   const sep = override.indexOf(":");
   const provider = override.slice(0, sep);

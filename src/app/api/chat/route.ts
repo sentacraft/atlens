@@ -97,9 +97,10 @@ const chatRequestSchema = z.object({
 // calls). Bounds worst-case cost/latency; shared by stopWhen and the budget-hit log.
 const STEP_BUDGET = 8;
 
-// Hard ceiling on one turn's streaming, so a stuck provider connection can't hang the
-// request indefinitely. Generous — a legit multi-step turn on a slow provider runs
-// tens of seconds; this only bites a true hang.
+// Backstop ceiling on one whole turn's streaming, so a connection that stalls MID-stream
+// can't hang the request forever. Generous — a legit multi-step turn runs tens of seconds.
+// Time-to-first-response is bounded separately, per model call, by the provider connect
+// timeout (see src/lib/ai/model.ts); this only catches a stall after a good start.
 const STREAM_TIMEOUT_MS = 120_000;
 
 export async function POST(req: Request) {
