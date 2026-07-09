@@ -79,6 +79,7 @@ function digest(msg) {
   const sortBys = [];
   const recalledIds = new Set();
   let openedCine = false;
+  let overMatched = false;
   for (const part of msg?.parts ?? []) {
     if (part.type === "text") {
       if (part.text?.trim()) {
@@ -101,6 +102,12 @@ function digest(msg) {
       }
       if (part.input?.usage === "cine") {
         openedCine = true;
+      }
+      // totalMatched is the full match count beyond the capped result set — more matched
+      // than were returned means the recall truncated (the over-match guard's trigger).
+      const returned = Array.isArray(part.output?.matches) ? part.output.matches.length : 0;
+      if (typeof part.output?.totalMatched === "number" && part.output.totalMatched > returned) {
+        overMatched = true;
       }
     }
     for (const id of idsFromOutput(part.output)) {
@@ -131,6 +138,7 @@ function digest(msg) {
     pickGroups,
     sortBys,
     openedCine,
+    overMatched,
     recalledIds: [...recalledIds],
   };
 }
@@ -169,6 +177,7 @@ export default class AskIrisProvider {
         pickGroups: d.pickGroups,
         sortBys: d.sortBys,
         openedCine: d.openedCine,
+        overMatched: d.overMatched,
         recalledIds: d.recalledIds,
         turnsRun: turns.length,
       },
