@@ -124,3 +124,55 @@ describe("recallLenses · truncation under the no-sortBy default", () => {
     expect(idsOf(recall(zooms, RECALL_LIMIT).matches)).not.toContain(tele); // the no-sortBy cap drops it
   });
 });
+
+describe("recallLenses · one-sided focal-reach bounds (minReach / maxWide)", () => {
+  it("minReach keeps a longer PRIME that coversFocals drops", () => {
+    const reach: LensConstraints = { minReach: 400 };
+    const ids = idsOf(recall(reach, ALL).matches);
+
+    // the 500mm prime and the long zooms all reach past 400
+    expect(ids).toContain("fujifilm-xf-500mmf56-r-lm-ois-wr-x");
+    expect(ids).toContain("fujifilm-xf-150-600mmf56-8-r-lm-ois-wr-x");
+    expect(ids).toContain("fujifilm-xf-100-400mmf45-56-r-lm-ois-wr-x");
+
+    // the gap this fixes: coversFocals:[400] drops the 500 prime — it doesn't pass THROUGH 400
+    expect(idsOf(recall({ coversFocals: [400] }, ALL).matches)).not.toContain(
+      "fujifilm-xf-500mmf56-r-lm-ois-wr-x",
+    );
+
+    // precision: every match's long end reaches at least 400 (within tolerance)
+    for (const lens of recall(reach, ALL).matches) {
+      expect(lens.focalNativeMm[1]).toBeGreaterThanOrEqual(400 * (1 - TOL));
+    }
+  });
+
+  it("maxWide keeps a wider PRIME that coversFocals drops", () => {
+    const wide: LensConstraints = { maxWide: 12 };
+    const ids = idsOf(recall(wide, ALL).matches);
+
+    // rectilinear primes WIDER than 12mm (8mm, 9mm) plus a wide zoom
+    expect(ids).toContain("fujifilm-xf-8mmf35-r-wr-x");
+    expect(ids).toContain("viltrox-af-9mm-f28-air-x");
+    expect(ids).toContain("fujifilm-xf-8-16mmf28-r-lm-wr-x");
+
+    // the gap this fixes: coversFocals:[12] drops the 8mm prime — it doesn't pass THROUGH 12
+    expect(idsOf(recall({ coversFocals: [12] }, ALL).matches)).not.toContain(
+      "fujifilm-xf-8mmf35-r-wr-x",
+    );
+
+    // precision: every match's wide end is at least as wide as 12 (within tolerance)
+    for (const lens of recall(wide, ALL).matches) {
+      expect(lens.focalNativeMm[0]).toBeLessThanOrEqual(12 * (1 + TOL));
+    }
+  });
+
+  it("minReach + maxWide compose into an intersection window [A,B]", () => {
+    // range [lo,hi] overlaps [150,300] iff hi >= 150 (minReach) and lo <= 300 (maxWide).
+    const ids = idsOf(recall({ minReach: 150, maxWide: 300 }, ALL).matches);
+
+    expect(ids).toContain("fujifilm-xf-70-300mmf4-56-r-lm-ois-wr-x"); // [70,300] overlaps
+    expect(ids).toContain("fujifilm-xf-100-400mmf45-56-r-lm-ois-wr-x"); // [100,400] overlaps
+    expect(ids).not.toContain("fujifilm-xf-500mmf56-r-lm-ois-wr-x"); // [500,500] is past 300
+    expect(ids).not.toContain("fujifilm-xf-18-55mmf28-4-r-lm-ois-x"); // [18,55] never reaches 150
+  });
+});
