@@ -92,9 +92,8 @@ tests:
       - type: search-rubric # weight 0 = known gap (MF ultra-wide astro primes not indexed yet): reports, doesn't gate
         weight: 0
         value: >-
-          针对拍银河这个场景，回复是否兼顾了两点：『视野够广』（银河拱桥需要广角）与
-          『对焦方式不该设限』（星空本就手动对焦，是否 AF 不该是硬门槛）？这是权衡维度，
-          不是硬性要求必须列出某支手动镜头。
+          拍银河的推荐应兼顾两点：视野够广（银河拱桥要广角）、不把自动对焦设成硬门槛
+          （星空本就手动对焦）。这是权衡维度、不是必须列出某支手动镜头；两点明显失衡则判不合格。
 
   - description: vlog-selfie
     vars:
@@ -115,8 +114,8 @@ tests:
       - type: search-rubric # weight 0 = known gap (subjective IQ/distortion data not in catalogue yet)
         weight: 0
         value: >-
-          针对『一镜走天下』，回复是否诚实讲清了核心取舍——焦段/变焦覆盖 vs 画质/光圈 vs
-          体积重量——而不是无脑推最大变焦比的超级变焦？
+          『一镜走天下』的推荐应诚实讲清核心取舍——焦段覆盖 vs 画质/光圈 vs 体积重量；
+          若无脑堆最大变焦比、不谈代价，则判不合格。
 
   - description: reach-wildlife
     vars:
@@ -132,9 +131,8 @@ tests:
         value: "context.metadata.picks.some((p) => p.fmax != null && p.fmax >= 300)"
       - type: search-rubric
         value: >-
-          针对『拍远处野生动物/鸟、越远越好』这个长焦需求，推荐是否真的把够长焦距的镜头放在前面
-          （而不是被更广的镜头挤掉），并且兼顾了长焦镜头现实的取舍（重量、价格、光圈），
-          而不是无脑只堆最长的那一支？
+          长焦『越远越好』的需求下，推荐应把够长的镜头排在前面（不被更广的挤掉），并兼顾长焦的
+          现实取舍（重量/价格/光圈）；若被更广的挤占、或无脑只堆最长那一支，则判不合格。
 
   - description: refine-budget
     vars:
@@ -163,8 +161,8 @@ tests:
         value: "context.metadata.pickGroups.length === 0"
       - type: llm-rubric # scopes itself to lens questions and doesn't attempt the off-topic ask
         value: >-
-          面对一个跟选镜头 / 比镜头无关的请求，回复是否礼貌说明自己只覆盖镜头相关问题，
-          并且没有去尝试回答这个无关请求（例如没有真的给出电影推荐）？
+          回复应礼貌说明自己只覆盖镜头相关问题、不去回答这个跟镜头无关的请求；若真去回答了
+          （比如给出了电影推荐），则判不合格。
 
   # Guard: a single-lens factual lookup answers in prose, without opening a card deck.
   - description: guard-factual-lookup
@@ -193,8 +191,8 @@ tests:
         value: "context.metadata.overMatched === true"
       - type: llm-rubric # tells the user how many more matched and offers a way to narrow
         value: >-
-          当符合条件的镜头远多于能展示的数量时，回复是否如实告诉用户结果没有全部展示
-          （比如给出总数或说明还有更多），并主动建议再加一个条件来收窄，而不是假装展示的就是全部？
+          回复应如实说明结果没有全部展示（给出总数或说明还有更多）、并主动建议再加一个条件收窄；
+          若把展示的当成全部，则判不合格。
 
   # Guard: asked to decide, the advisor frames the trade-off but leaves the choice to the user.
   - description: guard-no-buy
@@ -208,8 +206,8 @@ tests:
     assert:
       - type: llm-rubric # advises on the trade-off without making the buy decision for the user
         value: >-
-          用户直接要求「替我决定买哪个」。回复是否帮用户理清两者的取舍、把最终决定权留给用户，
-          而不是替他拍板选定某一支？
+          回复应帮用户理清两支镜头的取舍、把最终选择权留给用户；若替用户拍板选定某一支，
+          则判不合格。
 
   # Guard: an underspecified ask is answered on a stated assumption, not a silent one.
   - description: guard-underspecified
@@ -222,8 +220,8 @@ tests:
     assert:
       - type: llm-rubric # names the assumption it recalled on and invites correction
         value: >-
-          面对极度模糊的「随便推荐个镜头」，回复是否明确说出自己假设了什么（用途 / 焦段 / 预算等），
-          并邀请用户纠正，而不是默默按一个假设就给出唯一答案？
+          回复应明确说出自己基于什么假设来推荐（用途 / 焦段 / 预算等）、并邀请用户纠正；
+          若默默按一个假设就给出唯一答案、不点明假设，则判不合格。
 
   # Guard: picks land well under budget — say the budget isn't the constraint, re-orient.
   - description: guard-budget-clear
@@ -237,8 +235,8 @@ tests:
     assert:
       - type: llm-rubric # points out the picks are well under budget and re-orients the choice
         value: >-
-          用户给了 8000 的预算，但满足需求的镜头其实远低于这个价。回复是否点破了「预算其实很宽裕、
-          它不是限制因素」，并把话题引向真正该驱动选择的因素，而不是默默按预算顶格去推最贵的？
+          用户预算宽裕、合适的镜头远低于预算。回复应点破预算不是限制、把重点引到真正该驱动选择的
+          因素上；若默默按预算顶格去推最贵的，则判不合格。
 
   # Guard: it may state a price or gap, but must flag it's a dated sample and point to the page.
   - description: guard-price-hedged
@@ -252,6 +250,5 @@ tests:
     assert:
       - type: llm-rubric # a price/gap is fine only when hedged as a dated sample + a pointer to verify
         value: >-
-          用户问两支镜头「差多少钱」。回复报出价格或差价是允许的，但必须「叠甲」：说明这是带采样
-          日期的参考价、并非实时成交价，并指引用户去镜头详情页查当前价。若只是生硬甩出一个精确差价
-          数字、不带任何这类说明，则不合格。
+          回复给出价格或差价时，应带上「采样价、非实时、可去镜头详情页查当前价」这类说明；
+          若只生硬甩出一个精确价格 / 差价、不带这类说明，则判不合格。
