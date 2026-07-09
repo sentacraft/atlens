@@ -17,14 +17,16 @@ providers:
 defaultTest:
   # Universal invariants for every case; read the tool-call trace on context.metadata.
   assert:
-    - type: javascript # produced recommendations
-      value: "context.metadata.picks.length >= 1"
+    - type: javascript # produced recommendations (card-less cases opt out via noCards)
+      value: "context.vars.noCards === true || context.metadata.picks.length >= 1"
     - type: javascript # every pick id resolved to a real catalogue lens
       value: "context.metadata.picks.every((p) => p.name)"
     - type: javascript # every pick matches the requested mount
       value: "context.metadata.picks.every((p) => p.mount === context.vars.mount)"
     - type: javascript # no lens repeated within one recommendLenses deck
       value: "context.metadata.pickGroups.every((g) => new Set(g).size === g.length)"
+    - type: javascript # each recommendLenses deck is capped at 6 ids (no floor — a thin tier is fine)
+      value: "context.metadata.pickGroups.every((g) => g.length <= 6)"
     - type: javascript # picks were recalled this turn, not conjured
       value: "context.metadata.picks.every((p) => context.metadata.recalledIds.includes(p.id))"
     - type: javascript # every pick carries a non-empty reason
@@ -147,3 +149,33 @@ tests:
     assert:
       - type: javascript # turn 2 never restates the genre, so portrait-band picks prove "人像" carried
         value: "context.metadata.picks.every((p) => p.fmin >= 30 && p.fmax <= 100)"
+
+  # Guard: an off-topic ask is declined, not answered — no cards, and a scoped refusal.
+  - description: guard-non-lens
+    vars:
+      mount: X
+      locale: zh
+      noCards: true
+      dialog:
+        turns:
+          - "推荐几部适合周末看的科幻电影吧。"
+    assert:
+      - type: javascript # declined an off-topic ask — no recommendation deck
+        value: "context.metadata.pickGroups.length === 0"
+      - type: llm-rubric # scopes itself to lens questions and doesn't attempt the off-topic ask
+        value: >-
+          面对一个跟选镜头 / 比镜头无关的请求，回复是否礼貌说明自己只覆盖镜头相关问题，
+          并且没有去尝试回答这个无关请求（例如没有真的给出电影推荐）？
+
+  # Guard: a single-lens factual lookup answers in prose, without opening a card deck.
+  - description: guard-factual-lookup
+    vars:
+      mount: X
+      locale: zh
+      noCards: true
+      dialog:
+        turns:
+          - "富士 XF35mm F1.4 R 这支镜头大概多重？"
+    assert:
+      - type: javascript # a factual single-lens lookup replies in prose, no recommendation deck
+        value: "context.metadata.pickGroups.length === 0"

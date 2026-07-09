@@ -65,7 +65,7 @@ function systemPrompt(mount: Mount, locale: string): string {
     `quote an exact price gap between lenses; for a current figure, point to a lens's page.`,
     ``,
     `Once you've narrowed to your picks, present them by calling recommendLenses`,
-    `with 3–6 lens ids — this renders a grid of cards. You may call it more than`,
+    `with up to 6 lens ids — this renders a grid of cards. You may call it more than`,
     `once to group picks around different priorities. For a specific-lens lookup or`,
     `a quick factual answer, reply in prose without cards.`,
     ``,

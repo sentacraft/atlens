@@ -172,7 +172,7 @@ export function buildLensTools(
 
     recommendLenses: tool({
       description:
-        "Present picks as a grid of recommendation cards (3–6, ordered best-first). Pass each " +
+        "Present picks as a grid of recommendation cards (up to 6, ordered best-first). Pass each " +
         "lens's id from a prior queryLenses/searchLensByName result and its reason, which is " +
         "shown on the lens's card.",
       inputSchema: z.object({
