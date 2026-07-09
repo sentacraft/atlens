@@ -32,8 +32,8 @@ export function buildLensTools(
         "user's described needs into these parameters. Returns { matches (meet every " +
         "constraint), maybe (a constrained field has no data for that lens — surface " +
         "these honestly, never drop them), totalMatched, totalMaybe }. matches/maybe are " +
-        `capped at the top ${RECALL_LIMIT} by your sort; if totalMatched is larger, tell the user the ` +
-        "total and NARROW the query (add a constraint) — there is no paging.",
+        `capped at the top ${RECALL_LIMIT} by your sort; totalMatched is the full count beyond the ` +
+        "cap, and there is no paging.",
       inputSchema: z.object({
         brands: z
           .array(z.string())
@@ -43,7 +43,7 @@ export function buildLensTools(
         focus: z
           .enum(["auto", "manual"])
           .optional()
-          .describe("auto = autofocus, manual = manual-focus only. Omit unless the user implies one."),
+          .describe("auto = autofocus, manual = manual-focus only."),
         usage: z
           .enum(["photo", "cine"])
           .optional()
@@ -73,7 +73,7 @@ export function buildLensTools(
               "a small tolerance. Each value is required independently: the lens's focal range must " +
               "include every one of them, not merely the span between them. A prime is a single " +
               "focal, so it can satisfy at most one value near that focal — passing two or more " +
-              "values excludes every prime. To place a prime within a focal range, use focalWithin.",
+              "values excludes every prime.",
           ),
         focalWithin: z
           .tuple([z.number().nullable(), z.number().nullable()])
@@ -82,9 +82,16 @@ export function buildLensTools(
             "Native focal length [min, max] in mm (the number printed on the lens, not the " +
               "full-frame equivalent); null leaves that end open. The lens's ENTIRE focal range " +
               "must lie inside the window: a zoom passes only if both its ends are inside, a prime " +
-              "passes if its single focal is inside. This is the inverse of coversFocals, whose " +
-              "values must lie inside the lens's range rather than the reverse.",
+              "passes if its single focal is inside.",
           ),
+        minReach: z
+          .number()
+          .optional()
+          .describe("Native mm; a hard lower bound on the lens's longest focal length (its tele end)."),
+        maxWide: z
+          .number()
+          .optional()
+          .describe("Native mm; a hard upper bound on the lens's shortest focal length (its wide end)."),
         maxWeightG: z
           .number()
           .optional()
@@ -125,7 +132,7 @@ export function buildLensTools(
           .enum(RECALL_SORT_FIELDS)
           .optional()
           .describe(
-            "Rank by a single axis — use this for a soft preference instead of a hard filter. " +
+            "Ranks the matches by a single axis; it orders the results, it never excludes any. " +
               "reach = longest focal reach; wideEnd = widest; " +
               "weightG = lightest; maxAperture = fastest; length = most compact; price = " +
               "cheapest; magnification = best close-up; zoomRatio = most versatile / one-lens; " +
@@ -148,9 +155,7 @@ export function buildLensTools(
     }),
 
     searchLensByName: tool({
-      description:
-        "Look up lenses by model or brand name (e.g. '18-55', 'XF35', 'Viltrox 27'). A name-based " +
-        "lookup, as opposed to queryLenses's need-based recall.",
+      description: "Look up lenses by model or brand name (e.g. '18-55', 'XF35', 'Viltrox 27').",
       inputSchema: z.object({
         query: z.string().describe("The model or brand text the user typed."),
         limit: z.number().optional().describe("Max results (default 8)."),
@@ -167,10 +172,9 @@ export function buildLensTools(
 
     recommendLenses: tool({
       description:
-        "Present your final picks as a grid of recommendation cards — call this once you've chosen " +
-        "which lenses to recommend (3–6, ordered best-first). Pass each lens's id (from a prior " +
-        "queryLenses/searchLensByName result) and its reason, which is shown on the card and is " +
-        "where that lens's case belongs. Keep any prose around the cards to a short synthesis.",
+        "Present picks as a grid of recommendation cards (3–6, ordered best-first). Pass each " +
+        "lens's id from a prior queryLenses/searchLensByName result and its reason, which is " +
+        "shown on the lens's card.",
       inputSchema: z.object({
         picks: z
           .array(
