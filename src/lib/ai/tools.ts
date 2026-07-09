@@ -38,12 +38,12 @@ export function buildLensTools(
         brands: z
           .array(z.string())
           .optional()
-          .describe("Brand whitelist, lowercase (e.g. 'fujifilm', 'sigma', 'viltrox')."),
+          .describe("Brand whitelist, lowercase."),
         type: z.enum(["prime", "zoom"]).optional(),
         focus: z
           .enum(["auto", "manual"])
           .optional()
-          .describe("auto = autofocus, manual = manual-focus only. Omit unless the user implies one."),
+          .describe("auto = autofocus, manual = manual-focus only."),
         usage: z
           .enum(["photo", "cine"])
           .optional()
@@ -73,7 +73,7 @@ export function buildLensTools(
               "a small tolerance. Each value is required independently: the lens's focal range must " +
               "include every one of them, not merely the span between them. A prime is a single " +
               "focal, so it can satisfy at most one value near that focal — passing two or more " +
-              "values excludes every prime. To place a prime within a focal range, use focalWithin.",
+              "values excludes every prime.",
           ),
         focalWithin: z
           .tuple([z.number().nullable(), z.number().nullable()])
@@ -82,8 +82,7 @@ export function buildLensTools(
             "Native focal length [min, max] in mm (the number printed on the lens, not the " +
               "full-frame equivalent); null leaves that end open. The lens's ENTIRE focal range " +
               "must lie inside the window: a zoom passes only if both its ends are inside, a prime " +
-              "passes if its single focal is inside. This is the inverse of coversFocals, whose " +
-              "values must lie inside the lens's range rather than the reverse.",
+              "passes if its single focal is inside.",
           ),
         minReach: z
           .number()
@@ -133,7 +132,7 @@ export function buildLensTools(
           .enum(RECALL_SORT_FIELDS)
           .optional()
           .describe(
-            "Rank by a single axis — use this for a soft preference instead of a hard filter. " +
+            "Ranks the matches by a single axis; it orders the results, it never excludes any. " +
               "reach = longest focal reach; wideEnd = widest; " +
               "weightG = lightest; maxAperture = fastest; length = most compact; price = " +
               "cheapest; magnification = best close-up; zoomRatio = most versatile / one-lens; " +
@@ -156,9 +155,7 @@ export function buildLensTools(
     }),
 
     searchLensByName: tool({
-      description:
-        "Look up lenses by model or brand name (e.g. '18-55', 'XF35', 'Viltrox 27'). A name-based " +
-        "lookup, as opposed to queryLenses's need-based recall.",
+      description: "Look up lenses by model or brand name.",
       inputSchema: z.object({
         query: z.string().describe("The model or brand text the user typed."),
         limit: z.number().optional().describe("Max results (default 8)."),
