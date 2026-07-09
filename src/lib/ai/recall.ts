@@ -54,6 +54,12 @@ export interface LensConstraints {
   coversFocals?: number[];
   // Native millimetres. The lens's whole focal range must sit inside this window.
   focalWithin?: [number | null, number | null];
+  // Native millimetres. One-sided focal-reach bounds, the complement of coversFocals
+  // (which needs the range to pass THROUGH a focal): minReach keeps any lens whose long
+  // end reaches at least this far, maxWide any whose wide end is at least this wide — so a
+  // longer or wider prime, which coversFocals would drop, still qualifies.
+  minReach?: number;
+  maxWide?: number;
   maxWeightG?: number;
   // Physical barrel length ceiling in mm (compact / pocketable).
   maxLengthMm?: number;
@@ -217,6 +223,16 @@ function evaluate(lens: Lens, c: LensConstraints, locale: string): Verdict {
     if (hi != null && nativeMax > hi) {
       return EXCLUDE;
     }
+  }
+  // One-sided focal-reach bounds. Focal data is always present, so these are hard filters.
+  // Same tolerance as coversFocals so a near-miss isn't dropped by a hair. Unlike
+  // coversFocals they don't require passing THROUGH a focal, so a longer prime satisfies
+  // minReach and a wider prime satisfies maxWide.
+  if (c.minReach != null && nativeMax < c.minReach * (1 - FOCAL_MATCH_TOLERANCE)) {
+    return EXCLUDE;
+  }
+  if (c.maxWide != null && nativeMin > c.maxWide * (1 + FOCAL_MATCH_TOLERANCE)) {
+    return EXCLUDE;
   }
 
   // length is always present, so it's a hard filter (never demotes to maybe).
