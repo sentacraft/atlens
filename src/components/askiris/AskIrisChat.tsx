@@ -90,12 +90,29 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
   // bad-request/outage will fail identically, so those drop the retry affordance.
   const errorKind = status === "error" ? classifyError(error) : null;
 
+  // A conversation-segment id, minted per segment (a fresh one on each mount switch /
+  // "new chat") and sent with every turn so the server can group turns into sessions.
+  // Kept in a ref: it must not trigger re-renders and is read lazily at send time.
+  const segmentIdRef = useRef<string>("");
+  function currentSegmentId(): string {
+    if (!segmentIdRef.current) {
+      segmentIdRef.current = crypto.randomUUID();
+    }
+    return segmentIdRef.current;
+  }
+
+  // One page view per load — the funnel entry (PV; distinct sid gives UV). Not fired
+  // on a mount switch / new chat: those are in-page and don't reload the route.
+  useEffect(() => {
+    track("askiris_view");
+  }, []);
+
   function submitText(text: string) {
     const trimmed = text.trim();
     if (!trimmed || isBusy) {
       return;
     }
-    sendMessage({ text: trimmed }, { body: { mount, locale } });
+    sendMessage({ text: trimmed }, { body: { mount, locale, segmentId: currentSegmentId() } });
     track("askiris_message", { query: trimmed, method: "typed" });
     setInput("");
   }
@@ -111,7 +128,7 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
       return;
     }
     queryFired.current = true;
-    sendMessage({ text: initialQuery }, { body: { mount, locale } });
+    sendMessage({ text: initialQuery }, { body: { mount, locale, segmentId: currentSegmentId() } });
     track("askiris_message", { query: initialQuery, method: "handoff" });
     const url = new URL(window.location.href);
     url.searchParams.delete("q");
@@ -153,6 +170,8 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
       });
       setMessages([]);
       setInput("");
+      // The next turn belongs to a new session.
+      segmentIdRef.current = crypto.randomUUID();
     },
     [stop, setMessages],
   );
@@ -246,7 +265,7 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
                   retry: (chunks) => (
                     <button
                       type="button"
-                      onClick={() => regenerate({ body: { mount, locale } })}
+                      onClick={() => regenerate({ body: { mount, locale, segmentId: currentSegmentId() } })}
                       className="font-medium text-zinc-700 underline underline-offset-2 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
                     >
                       {chunks}

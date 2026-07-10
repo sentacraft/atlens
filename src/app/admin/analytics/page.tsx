@@ -254,10 +254,13 @@ const Q_PWA_LAUNCH = `
 
 // AskIris — per-turn agent metrics written straight to AE from the chat route's
 // onEnd (not via /api/track), so these rows carry their own positional layout:
-// blob1=mount, blob2=locale; double1..6 = total/input/output/cacheRead tokens,
-// step_count, budget_hit. Counts weight by _sample_interval; summed metrics weight
-// each row's value by it too, to stay correct if AE ever samples this dataset.
+// blob1=mount, blob2=locale, blob3=sid, blob4=segment_id; double1..6 =
+// total/input/output/cacheRead tokens, step_count, budget_hit. Counts weight by
+// _sample_interval; summed metrics weight each row's value by it too, to stay correct
+// if AE ever samples this dataset. The funnel's page-view entry is a separate
+// askiris_view event on the general /api/track layout (blob1=sid).
 const ASKIRIS_FILTER = `index1 = '${ASKIRIS_TURN_EVENT}' AND timestamp > NOW() - ${WINDOW}`;
+const ASKIRIS_VIEW_FILTER = `index1 = 'askiris_view' AND timestamp > NOW() - ${WINDOW}`;
 
 const Q_ASKIRIS_OVERVIEW = `
   SELECT
@@ -291,6 +294,27 @@ const Q_ASKIRIS_BY_MOUNT = `
   ORDER BY turns DESC
 `;
 
+// Session funnel. Views (PV = loads, UV = distinct visitor sid) come from the
+// askiris_view event; the interacted side (visitors who sent a turn, and how those
+// turns group into sessions) comes from the turn rows keyed by sid + segment_id. A
+// session = one conversation segment (a new one starts on a mount switch / new chat).
+const Q_ASKIRIS_VIEWS = `
+  SELECT
+    SUM(_sample_interval) AS pv,
+    count(DISTINCT blob1) AS uv
+  FROM xglass_events
+  WHERE ${ASKIRIS_VIEW_FILTER}
+`;
+
+const Q_ASKIRIS_SESSIONS = `
+  SELECT
+    count(DISTINCT blob3) AS interacted_uv,
+    count(DISTINCT blob4) AS sessions,
+    SUM(_sample_interval) AS turns
+  FROM xglass_events
+  WHERE ${ASKIRIS_FILTER} AND blob4 != ''
+`;
+
 function pct(num: number, denom: number): string {
   if (denom <= 0) {
     return "—";
@@ -320,17 +344,17 @@ function fmtMaybe(v: unknown): string {
   return n.toLocaleString("en-US");
 }
 
-// DeepSeek V4-Flash list price, USD per 1M tokens (as of 2026-07 —
+// DeepSeek V4-Flash list price, CNY per 1M tokens (as of 2026-07 —
 // api-docs.deepseek.com/quick_start/pricing). Cache-hit input is billed ~98% off;
 // cache-miss input is (input − cacheRead). Update if the model or rates change.
-const DEEPSEEK_USD_PER_1M = { inputMiss: 0.14, cacheHit: 0.0028, output: 0.28 };
+const DEEPSEEK_CNY_PER_1M = { inputMiss: 1, cacheHit: 0.02, output: 2 };
 
-function askirisCostUsd(input: number, cacheRead: number, output: number): number {
+function askirisCostCny(input: number, cacheRead: number, output: number): number {
   const inputMiss = Math.max(0, input - cacheRead);
   return (
-    (inputMiss / 1e6) * DEEPSEEK_USD_PER_1M.inputMiss +
-    (cacheRead / 1e6) * DEEPSEEK_USD_PER_1M.cacheHit +
-    (output / 1e6) * DEEPSEEK_USD_PER_1M.output
+    (inputMiss / 1e6) * DEEPSEEK_CNY_PER_1M.inputMiss +
+    (cacheRead / 1e6) * DEEPSEEK_CNY_PER_1M.cacheHit +
+    (output / 1e6) * DEEPSEEK_CNY_PER_1M.output
   );
 }
 
@@ -443,6 +467,8 @@ export default async function AnalyticsDashboardPage() {
     askirisOverview,
     askirisByStep,
     askirisByMount,
+    askirisViews,
+    askirisSessions,
   ] = await Promise.all([
     queryAE(Q_OVERVIEW_TOTALS),
     queryAE(Q_OVERVIEW_UNIQUES),
@@ -468,6 +494,8 @@ export default async function AnalyticsDashboardPage() {
     queryAE(Q_ASKIRIS_OVERVIEW),
     queryAE(Q_ASKIRIS_BY_STEP),
     queryAE(Q_ASKIRIS_BY_MOUNT),
+    queryAE(Q_ASKIRIS_VIEWS),
+    queryAE(Q_ASKIRIS_SESSIONS),
   ]);
 
   if (overviewTotals.error === "missing_credentials") {
@@ -541,6 +569,8 @@ export default async function AnalyticsDashboardPage() {
       ["askirisOverview", askirisOverview],
       ["askirisByStep", askirisByStep],
       ["askirisByMount", askirisByMount],
+      ["askirisViews", askirisViews],
+      ["askirisSessions", askirisSessions],
     ] as const
   ).flatMap(([name, r]) =>
     r.error && r.error !== "missing_credentials" ? [{ name, code: r.error }] : [],
@@ -605,7 +635,17 @@ export default async function AnalyticsDashboardPage() {
   const aiCacheReadTokens = num(askirisRow?.cache_read_tokens);
   const aiTotalSteps = num(askirisRow?.total_steps);
   const aiBudgetHits = num(askirisRow?.budget_hits);
-  const aiCostUsd = askirisCostUsd(aiInputTokens, aiCacheReadTokens, aiOutputTokens);
+  const aiCostCny = askirisCostCny(aiInputTokens, aiCacheReadTokens, aiOutputTokens);
+  // Session funnel: page views/visitors (askiris_view) → interacted visitors →
+  // sessions → turns. "Person" is approximated by the visit sid (no login).
+  const aiViewsRow = askirisViews.data[0] as { pv?: number; uv?: number } | undefined;
+  const aiSessionsRow = askirisSessions.data[0] as
+    | { interacted_uv?: number; sessions?: number; turns?: number }
+    | undefined;
+  const aiUv = num(aiViewsRow?.uv);
+  const aiInteractedUv = num(aiSessionsRow?.interacted_uv);
+  const aiSessions = num(aiSessionsRow?.sessions);
+  const aiSessionTurns = num(aiSessionsRow?.turns);
   const askirisByMountRows = askirisByMount.data.map((r) => ({
     ...r,
     total_tokens: fmtNum(num(r.total_tokens)),
@@ -885,11 +925,32 @@ export default async function AnalyticsDashboardPage() {
         <div className="mb-4 grid grid-cols-2 gap-4 md:grid-cols-4">
           <Stat label="Turns" value={fmtMaybe(askirisRow?.turns)} />
           <Stat label="Tokens" value={fmtMaybe(askirisRow?.total_tokens)} />
-          <Stat label="Est. cost" value={aiTurns > 0 ? `$${aiCostUsd.toFixed(2)}` : "—"} />
+          <Stat label="Est. cost" value={aiTurns > 0 ? `¥${aiCostCny.toFixed(2)}` : "—"} />
           <Stat label="Budget-hit rate" value={pct(aiBudgetHits, aiTurns)} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Card title="AskIris · audience & sessions">
+            <dl className="grid grid-cols-[1fr_auto] gap-y-2 text-sm">
+              <dt className="text-zinc-500 dark:text-zinc-400">Page views (PV)</dt>
+              <dd className="text-right tabular-nums">{fmtMaybe(aiViewsRow?.pv)}</dd>
+              <dt className="text-zinc-500 dark:text-zinc-400">Visitors (UV)</dt>
+              <dd className="text-right tabular-nums">{fmtMaybe(aiViewsRow?.uv)}</dd>
+              <dt className="text-zinc-500 dark:text-zinc-400">Interacted visitors</dt>
+              <dd className="text-right tabular-nums">{fmtMaybe(aiSessionsRow?.interacted_uv)}</dd>
+              <dt className="text-zinc-500 dark:text-zinc-400">Activation (interacted / visited)</dt>
+              <dd className="text-right tabular-nums">{pct(aiInteractedUv, aiUv)}</dd>
+              <dt className="text-zinc-500 dark:text-zinc-400">Avg turns / session</dt>
+              <dd className="text-right tabular-nums">
+                {aiSessions > 0 ? (aiSessionTurns / aiSessions).toFixed(1) : "—"}
+              </dd>
+              <dt className="text-zinc-500 dark:text-zinc-400">Avg sessions / active visitor</dt>
+              <dd className="text-right tabular-nums">
+                {aiInteractedUv > 0 ? (aiSessions / aiInteractedUv).toFixed(1) : "—"}
+              </dd>
+            </dl>
+          </Card>
+
           <Card title="AskIris · efficiency">
             <dl className="grid grid-cols-[1fr_auto] gap-y-2 text-sm">
               <dt className="text-zinc-500 dark:text-zinc-400">Avg tokens / turn</dt>

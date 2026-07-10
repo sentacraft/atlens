@@ -15,6 +15,7 @@ import { buildLensTools } from "@/lib/ai/tools";
 import { clientIp, isBypassed, checkRateLimit, recordTokens } from "@/lib/ai/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
 import { askirisTurnDataPoint } from "@/lib/analytics/events";
+import { parseSid } from "@/lib/analytics/session";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
 import type { Mount } from "@/lib/types";
@@ -92,6 +93,9 @@ const chatRequestSchema = z.object({
   messages: z.array(z.custom<UIMessage>()),
   mount: z.enum(MOUNTS),
   locale: z.enum(routing.locales),
+  // Client-minted conversation-segment id (a fresh one per mount switch / "new
+  // chat"). Optional so a handoff or older client that omits it still succeeds.
+  segmentId: z.string().max(64).optional(),
 });
 
 // Max agentic steps per turn (one step = one model generation, possibly with tool
@@ -116,12 +120,15 @@ export async function POST(req: Request) {
     console.warn("[askiris] invalid request", z.prettifyError(parsed.error));
     return chatErrorResponse("unavailable", 400);
   }
-  const { messages, mount, locale } = parsed.data;
+  const { messages, mount, locale, segmentId } = parsed.data;
 
   // Abuse guard for this public, no-login endpoint. Fail-open by design: with no KV
   // binding (e.g. `next dev`) or on any KV hiccup we proceed unlimited rather than
   // break the chat. See src/lib/ai/rate-limit.ts for the burst + daily-token design.
   const ip = clientIp(req);
+  // Read the anonymous visit id set by /api/track; "" for a turn before its first
+  // call. We only read it here — /api/track owns minting and refreshing the cookie.
+  const sid = parseSid(req.headers.get("cookie")) ?? "";
   let rateKv: KVNamespace | undefined;
   let ae: AnalyticsEngineDataset | undefined;
   let ctx: ExecutionContext | undefined;
@@ -180,6 +187,8 @@ export async function POST(req: Request) {
             askirisTurnDataPoint({
               mount,
               locale,
+              sid,
+              segmentId: segmentId ?? "",
               totalTokens: usage.totalTokens ?? 0,
               inputTokens: usage.inputTokens ?? 0,
               outputTokens: usage.outputTokens ?? 0,
