@@ -17,10 +17,9 @@ import {
   type EventProps,
   type TrackPayload,
 } from "@/lib/analytics/events";
+import { SID_COOKIE, SID_TTL_SECONDS, parseSid } from "@/lib/analytics/session";
 
 const MAX_BODY_BYTES = 4096;
-const SID_COOKIE = "xg_sid";
-const SID_TTL_SECONDS = 1800;
 const MAX_STRING_LEN = 256;
 
 const STRING_FIELDS = [
@@ -55,19 +54,6 @@ function isValidPayload(p: unknown): p is TrackPayload {
     return false;
   }
   return true;
-}
-
-function parseSid(cookieHeader: string | null): string | null {
-  if (!cookieHeader) {
-    return null;
-  }
-  for (const part of cookieHeader.split(";")) {
-    const [k, v] = part.trim().split("=");
-    if (k === SID_COOKIE && v && /^[0-9a-f-]{36}$/i.test(v)) {
-      return v;
-    }
-  }
-  return null;
 }
 
 function parseInternal(cookieHeader: string | null): boolean {

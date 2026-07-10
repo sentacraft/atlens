@@ -15,6 +15,7 @@ import { buildLensTools } from "@/lib/ai/tools";
 import { clientIp, isBypassed, checkRateLimit, recordTokens } from "@/lib/ai/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
 import { askirisTurnDataPoint } from "@/lib/analytics/events";
+import { parseSid } from "@/lib/analytics/session";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
 import type { Mount } from "@/lib/types";
@@ -106,25 +107,6 @@ const STEP_BUDGET = 8;
 // tens of seconds; this only bites a true hang.
 const STREAM_TIMEOUT_MS = 120_000;
 
-// The anonymous visit id set by /api/track (xg_sid, HttpOnly, 30-min sliding). Read
-// only — we don't mint or refresh it here; a turn before the first /api/track call
-// records "". It's the session funnel's visitor key, joined with the segment id.
-function readSid(req: Request): string {
-  const cookie = req.headers.get("cookie");
-  if (!cookie) {
-    return "";
-  }
-  for (const part of cookie.split(";")) {
-    const eq = part.indexOf("=");
-    const key = part.slice(0, eq).trim();
-    const value = part.slice(eq + 1).trim();
-    if (key === "xg_sid" && /^[0-9a-f-]{36}$/i.test(value)) {
-      return value;
-    }
-  }
-  return "";
-}
-
 export async function POST(req: Request) {
   if (!process.env.DEEPSEEK_API_KEY) {
     console.error("[askiris] DEEPSEEK_API_KEY is not set");
@@ -144,7 +126,9 @@ export async function POST(req: Request) {
   // binding (e.g. `next dev`) or on any KV hiccup we proceed unlimited rather than
   // break the chat. See src/lib/ai/rate-limit.ts for the burst + daily-token design.
   const ip = clientIp(req);
-  const sid = readSid(req);
+  // Read the anonymous visit id set by /api/track; "" for a turn before its first
+  // call. We only read it here — /api/track owns minting and refreshing the cookie.
+  const sid = parseSid(req.headers.get("cookie")) ?? "";
   let rateKv: KVNamespace | undefined;
   let ae: AnalyticsEngineDataset | undefined;
   let ctx: ExecutionContext | undefined;
