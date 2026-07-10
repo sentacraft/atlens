@@ -28,8 +28,9 @@ export const EVENT_NAMES = [
   "mount_switch",
   "purchase_click",
   "pwa_launch",
-  // AskIris: one per user turn (query text + how it originated), and a click from a
-  // recommendation card through to a lens — the funnel's ask and value actions.
+  // AskIris funnel: a page view (funnel entry / PV + UV), one per user turn (query
+  // text + how it originated), and a click from a recommendation card through to a lens.
+  "askiris_view",
   "askiris_message",
   "askiris_rec_click",
 ] as const;
@@ -130,13 +131,20 @@ export function toDataPoint(
 // Its own positional layout in the same dataset; query it by the index. Token counts
 // can be missing from a provider, recorded as 0.
 //   indexes: [askiris_turn]
-//   blobs:   [mount, locale]
+//   blobs:   [mount, locale, sid, segment_id]
 //   doubles: [total, input, output, cacheRead tokens, step_count, budget_hit]
 export const ASKIRIS_TURN_EVENT = "askiris_turn";
 
 export interface AskIrisTurnMetrics {
   mount: string;
   locale: string;
+  // Session-funnel join keys: sid = the anonymous visit (xg_sid cookie, read
+  // server-side), segmentId = the conversation segment (a new one starts on a mount
+  // switch or "new chat"). Together they give visitors → sessions → turns, and are
+  // the same keys a future transcript replay would persist against. Either can be ""
+  // when unknown (no cookie yet / a legacy client), which the queries filter out.
+  sid: string;
+  segmentId: string;
   totalTokens: number;
   inputTokens: number;
   outputTokens: number;
@@ -147,12 +155,12 @@ export interface AskIrisTurnMetrics {
 
 export function askirisTurnDataPoint(m: AskIrisTurnMetrics): {
   indexes: [string];
-  blobs: [string, string];
+  blobs: [string, string, string, string];
   doubles: [number, number, number, number, number, number];
 } {
   return {
     indexes: [ASKIRIS_TURN_EVENT],
-    blobs: [m.mount, m.locale],
+    blobs: [m.mount, m.locale, m.sid, m.segmentId],
     doubles: [
       m.totalTokens,
       m.inputTokens,
