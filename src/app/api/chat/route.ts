@@ -92,6 +92,9 @@ const chatRequestSchema = z.object({
   messages: z.array(z.custom<UIMessage>()),
   mount: z.enum(MOUNTS),
   locale: z.enum(routing.locales),
+  // Client-minted conversation-segment id (a fresh one per mount switch / "new
+  // chat"). Optional so a handoff or older client that omits it still succeeds.
+  segmentId: z.string().max(64).optional(),
 });
 
 // Max agentic steps per turn (one step = one model generation, possibly with tool
@@ -102,6 +105,25 @@ const STEP_BUDGET = 8;
 // request indefinitely. Generous — a legit multi-step turn on a slow provider runs
 // tens of seconds; this only bites a true hang.
 const STREAM_TIMEOUT_MS = 120_000;
+
+// The anonymous visit id set by /api/track (xg_sid, HttpOnly, 30-min sliding). Read
+// only — we don't mint or refresh it here; a turn before the first /api/track call
+// records "". It's the session funnel's visitor key, joined with the segment id.
+function readSid(req: Request): string {
+  const cookie = req.headers.get("cookie");
+  if (!cookie) {
+    return "";
+  }
+  for (const part of cookie.split(";")) {
+    const eq = part.indexOf("=");
+    const key = part.slice(0, eq).trim();
+    const value = part.slice(eq + 1).trim();
+    if (key === "xg_sid" && /^[0-9a-f-]{36}$/i.test(value)) {
+      return value;
+    }
+  }
+  return "";
+}
 
 export async function POST(req: Request) {
   if (!process.env.DEEPSEEK_API_KEY) {
@@ -116,12 +138,13 @@ export async function POST(req: Request) {
     console.warn("[askiris] invalid request", z.prettifyError(parsed.error));
     return chatErrorResponse("unavailable", 400);
   }
-  const { messages, mount, locale } = parsed.data;
+  const { messages, mount, locale, segmentId } = parsed.data;
 
   // Abuse guard for this public, no-login endpoint. Fail-open by design: with no KV
   // binding (e.g. `next dev`) or on any KV hiccup we proceed unlimited rather than
   // break the chat. See src/lib/ai/rate-limit.ts for the burst + daily-token design.
   const ip = clientIp(req);
+  const sid = readSid(req);
   let rateKv: KVNamespace | undefined;
   let ae: AnalyticsEngineDataset | undefined;
   let ctx: ExecutionContext | undefined;
@@ -180,6 +203,8 @@ export async function POST(req: Request) {
             askirisTurnDataPoint({
               mount,
               locale,
+              sid,
+              segmentId: segmentId ?? "",
               totalTokens: usage.totalTokens ?? 0,
               inputTokens: usage.inputTokens ?? 0,
               outputTokens: usage.outputTokens ?? 0,
