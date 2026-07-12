@@ -14,6 +14,44 @@ prompts:
 providers:
   - file://provider.mjs
 
+# Two graders, one per assertion kind. promptfoo selects the grader via the
+# provider-precedence chain (defaultTest.options.provider is the default; an
+# assertion's own `provider` overrides it), so both are defined here once and
+# referenced by anchor — neither definition lives inside a test case. promptfoo
+# ignores this unknown top-level key at runtime; its own docs use the same trick
+# for `assertionTemplates`.
+graders:
+  # Behavior judge — no web tool; judges only the reply's own form/stance against
+  # the rubric. The DEFAULT grader; drives the guard llm-rubric cases.
+  behavior: &behavior_grader
+    id: openai:responses:gpt-5.4-mini
+    config:
+      reasoning:
+        effort: low
+      instructions: |
+        你是镜头推荐 agent「Iris」的严格评测员,你本身也是资深镜头专家。你会拿到 Iris 给用户的完整回复(待评 output)和本 case 的评估点(rubric),严格照评估点判 Iris 回复的行为/立场是否达标、别自行加戏。
+
+        若回复含推荐卡片,以卡片实际呈现为准、不只凭文字措辞;没有卡片(纯文字回复)就按评估点判回复本身。你只判回复自身的形态,不需要外部事实、不联网。
+  # Quality judge — web search on; runs the omission/authenticity audits plus the
+  # recommendation-quality standard. Referenced by the search-rubric cases.
+  quality: &quality_grader
+    id: openai:responses:gpt-5.4-mini
+    config:
+      tools:
+        - type: web_search
+      reasoning:
+        effort: low
+      instructions: |
+        你是镜头推荐 agent「Iris」的严格评测员,你本身也是资深镜头专家。你会拿到 Iris 给用户的完整回复(待评 output)和本 case 的评估点(rubric)。回复里文字与推荐卡片按 Iris 实际呈现的顺序交织;卡片才是真正推给用户的镜头,判断以卡片为准、不只凭文字措辞,引导语是否如实框定对应卡片的取舍也顺着看。价格:采样价一律当真实准确、只作参考,不据此判超预算(超预算由程序化检查负责)。
+
+        严格按本 case 的评估点判,并按以下审计推荐质量:
+        - 遗漏审计(联网):搜『这个场景 + 这个卡口常推哪些镜头』。不得漏掉明显典型、被反复推荐的镜头——漏掉即暴露数据缺失/召回遗漏/排序错误;找『明显该出现却缺席』的,不是找『还能再加一支』。
+        - 真伪审计(联网):核实拿不准的镜头是否真实存在、参数(焦段/光圈/重量等)对不对——参数稳定、与地区时间无关,放心核;不得仅因训练数据没有就判编造。
+        - 选对:每支 pick 对需求和卡口是否真的合适;明显选错按问题论。
+        - 硬约束:只推符合用户明说硬约束的镜头,违反按问题论。
+        - 诚实取舍:应交代取舍、不只报优点;有明显合适却没进推荐的应说明为何略过。
+        - 不下『XX 卡口不存在某类镜头』这种绝对断言,除非限定为『在我找到的范围内』。
+
 defaultTest:
   # Universal invariants for every case; read the tool-call trace on context.metadata.
   assert:
@@ -38,36 +76,11 @@ defaultTest:
     - type: javascript # budget is soft — flag only a pick grossly over it (>1.5x)
       value: "!context.vars.budgetCNY || context.metadata.picks.every((p) => p.price == null || p.price <= context.vars.budgetCNY * 1.5)"
   options:
-    # Native judge: no rubricPrompt override. The built-in search-rubric template
-    # owns the {pass,score,reason} JSON contract and injects {{output}} + {{rubric}}
-    # as the grader's user message. The judge's standing instructions (persona, audit
-    # method, standards) ride on the grader's config.instructions (the system
-    # channel); each case's `value` is its {{rubric}}.
-    provider:
-      id: openai:responses:gpt-5.4-mini
-      config:
-        tools:
-          - type: web_search
-        reasoning:
-          effort: low
-        instructions: |
-          你是镜头推荐 agent「Iris」的严格评测员,你本身也是资深镜头专家。你会拿到 Iris 给用户的完整回复(待评 output)和本 case 的评估点(rubric);评估点里已框定这次的用户需求与场景。
-
-          回复里文字说明和推荐卡片按 Iris 实际呈现的顺序交织(可能分几组、每组一句引导语)。卡片是真正推给用户的镜头,判断以卡片为准,不要只凭文字措辞;引导语是否如实框定了对应那组卡片的取舍,也要顺着看。
-
-          首要职责——用你自己的镜头知识 + 联网搜索,审计这些卡片:
-          - 遗漏审计:联网搜『这个场景 + 这个卡口常推哪些镜头』。推荐不得漏掉明显典型、被反复推荐的镜头——漏掉即暴露数据缺失、召回遗漏或排序错误。这是找『明显该出现却缺席』的镜头,不是找『还能再加一支』。
-          - 选对审计:每支 pick 都必须对这个需求和卡口真的合适;出现明显选错的镜头,按问题论。
-          - 真伪审计:联网核实你拿不准的镜头是否真实存在、参数(焦段/光圈/重量等)与卡口对不对——这些参数稳定、与地区和时间无关,放心联网核;不得仅因训练数据里没有就判它编造。
-
-          价格是例外:卡片上的采样价一律当作真实、准确,不要联网核价,也不要据此判断有没有超预算(超预算由程序化检查负责);价格只作参考语境。
-
-          再看以下几点:
-          - 只应推荐符合用户明说硬约束的镜头;违反硬约束的 pick,按问题论。
-          - 应诚实交代取舍,不得只报优点不报代价。
-          - 有明显合适却没进推荐的候选时,应说明为何略过。
-          - 不得报查无实据、疑似编造的镜头名或参数。
-          - 不得下『XX 卡口不存在某类镜头』这种绝对断言,除非明确限定为『在我找到的范围内』——库并不穷尽世上所有镜头,这种断言即便库里确实没有也可能是错的。
+    # Default grader = the behavior judge (defined as &behavior_grader above).
+    # Each search-rubric assertion overrides this with *quality_grader. No
+    # rubricPrompt override: the built-in templates own the {pass,score,reason}
+    # contract; each case's `value` is its {{rubric}}.
+    provider: *behavior_grader
 
 tests:
   - description: smoke-35mm
@@ -91,9 +104,9 @@ tests:
         value: "context.metadata.picks.some((p) => p.fmin != null && Math.round(p.fmin * 1.5) <= 24)"
       - type: search-rubric # weight 0 = known gap (MF ultra-wide astro primes not indexed yet): reports, doesn't gate
         weight: 0
-        value: >-
-          拍银河的推荐应兼顾两点：视野够广（银河拱桥要广角）、不把自动对焦设成硬门槛
-          （星空本就手动对焦）。这是权衡维度、不是必须列出某支手动镜头；两点明显失衡则判不合格。
+        provider: *quality_grader # web + recommendation-audit standard; see `graders` above
+        value: |
+          拍银河的推荐应兼顾视野够广(银河拱桥要广角)、不把自动对焦设成硬门槛(星空本就手动对焦);这是权衡维度、不是必须列出某支手动镜头,两点明显失衡则判不合格。
 
   - description: vlog-selfie
     vars:
@@ -113,9 +126,9 @@ tests:
     assert:
       - type: search-rubric # weight 0 = known gap (subjective IQ/distortion data not in catalogue yet)
         weight: 0
-        value: >-
-          『一镜走天下』的推荐应诚实讲清核心取舍——焦段覆盖 vs 画质/光圈 vs 体积重量；
-          若无脑堆最大变焦比、不谈代价，则判不合格。
+        provider: *quality_grader
+        value: |
+          『一镜走天下』应诚实讲清核心取舍——焦段覆盖 vs 画质/光圈 vs 体积重量;无脑堆最大变焦比、不谈代价则判不合格。
 
   - description: reach-wildlife
     vars:
@@ -130,9 +143,9 @@ tests:
       - type: javascript # at least one pick reaches >= 300mm native
         value: "context.metadata.picks.some((p) => p.fmax != null && p.fmax >= 300)"
       - type: search-rubric
-        value: >-
-          长焦『越远越好』的需求下，推荐应把够长的镜头排在前面（不被更广的挤掉），并兼顾长焦的
-          现实取舍（重量/价格/光圈）；若被更广的挤占、或无脑只堆最长那一支，则判不合格。
+        provider: *quality_grader
+        value: |
+          长焦『越远越好』下,应把够长的镜头排在前面(不被更广的挤掉),兼顾长焦的现实取舍(重量/价格/光圈);被更广的挤占、或无脑只堆最长那一支则判不合格。
 
   - description: refine-budget
     vars:
