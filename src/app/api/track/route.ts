@@ -17,7 +17,8 @@ import {
   type EventProps,
   type TrackPayload,
 } from "@/lib/analytics/events";
-import { SID_COOKIE, SID_TTL_SECONDS, parseSid } from "@/lib/analytics/session";
+import { SID_COOKIE, SID_TTL_SECONDS, parseSid, parseInternal } from "@/lib/analytics/session";
+import { isBypassed } from "@/lib/ai/rate-limit";
 
 const MAX_BODY_BYTES = 4096;
 const MAX_STRING_LEN = 256;
@@ -54,19 +55,6 @@ function isValidPayload(p: unknown): p is TrackPayload {
     return false;
   }
   return true;
-}
-
-function parseInternal(cookieHeader: string | null): boolean {
-  if (!cookieHeader) {
-    return false;
-  }
-  for (const part of cookieHeader.split(";")) {
-    const [k, v] = part.trim().split("=");
-    if (k === "xg_internal" && v === "1") {
-      return true;
-    }
-  }
-  return false;
 }
 
 function sanitizeProps(raw: unknown): EventProps {
@@ -117,7 +105,11 @@ export async function POST(req: Request): Promise<NextResponse> {
 
   const cookieHeader = req.headers.get("cookie");
   const sid = parseSid(cookieHeader) ?? crypto.randomUUID();
-  const internal = parseInternal(cookieHeader);
+  // A valid rate-limit bypass (secret-gated) also counts as internal, so load
+  // tests / dogfooding done with that cookie vanish from every dashboard, not
+  // just AskIris. The xg_internal flag stays an independent, weaker trigger.
+  const internal =
+    parseInternal(cookieHeader) || isBypassed(req, process.env.RATE_LIMIT_BYPASS);
 
   try {
     const { env } = getCloudflareContext();

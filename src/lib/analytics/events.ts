@@ -131,7 +131,7 @@ export function toDataPoint(
 // Its own positional layout in the same dataset; query it by the index. Token counts
 // can be missing from a provider, recorded as 0.
 //   indexes: [askiris_turn]
-//   blobs:   [mount, locale, sid, segment_id]
+//   blobs:   [mount, locale, sid, segment_id, internal]
 //   doubles: [total, input, output, cacheRead tokens, step_count, budget_hit]
 export const ASKIRIS_TURN_EVENT = "askiris_turn";
 
@@ -145,6 +145,9 @@ export interface AskIrisTurnMetrics {
   // when unknown (no cookie yet / a legacy client), which the queries filter out.
   sid: string;
   segmentId: string;
+  // Keep this row out of the dashboards (dogfooding / load tests via the bypass or
+  // xg_internal cookie). The row is still written — the AskIris queries filter it.
+  internal: boolean;
   totalTokens: number;
   inputTokens: number;
   outputTokens: number;
@@ -155,12 +158,12 @@ export interface AskIrisTurnMetrics {
 
 export function askirisTurnDataPoint(m: AskIrisTurnMetrics): {
   indexes: [string];
-  blobs: [string, string, string, string];
+  blobs: [string, string, string, string, string];
   doubles: [number, number, number, number, number, number];
 } {
   return {
     indexes: [ASKIRIS_TURN_EVENT],
-    blobs: [m.mount, m.locale, m.sid, m.segmentId],
+    blobs: [m.mount, m.locale, m.sid, m.segmentId, m.internal ? "1" : ""],
     doubles: [
       m.totalTokens,
       m.inputTokens,
