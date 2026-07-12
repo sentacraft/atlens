@@ -254,13 +254,14 @@ const Q_PWA_LAUNCH = `
 
 // AskIris — per-turn agent metrics written straight to AE from the chat route's
 // onEnd (not via /api/track), so these rows carry their own positional layout:
-// blob1=mount, blob2=locale, blob3=sid, blob4=segment_id; double1..6 =
+// blob1=mount, blob2=locale, blob3=sid, blob4=segment_id, blob5=internal; double1..6 =
 // total/input/output/cacheRead tokens, step_count, budget_hit. Counts weight by
 // _sample_interval; summed metrics weight each row's value by it too, to stay correct
 // if AE ever samples this dataset. The funnel's page-view entry is a separate
-// askiris_view event on the general /api/track layout (blob1=sid).
-const ASKIRIS_FILTER = `index1 = '${ASKIRIS_TURN_EVENT}' AND timestamp > NOW() - ${WINDOW}`;
-const ASKIRIS_VIEW_FILTER = `index1 = 'askiris_view' AND timestamp > NOW() - ${WINDOW}`;
+// Both drop internal rows (dogfooding / load tests). The turn layout carries the
+// flag in blob5; askiris_view rides the general /api/track layout, where it's blob7.
+const ASKIRIS_FILTER = `index1 = '${ASKIRIS_TURN_EVENT}' AND timestamp > NOW() - ${WINDOW} AND blob5 != '1'`;
+const ASKIRIS_VIEW_FILTER = `index1 = 'askiris_view' AND timestamp > NOW() - ${WINDOW} AND blob7 != '1'`;
 
 const Q_ASKIRIS_OVERVIEW = `
   SELECT

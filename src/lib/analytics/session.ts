@@ -20,3 +20,23 @@ export function parseSid(cookieHeader: string | null): string | null {
   }
   return null;
 }
+
+// Marks traffic to keep out of the dashboards (dogfooding, load tests). A mere
+// presence flag — forgeable, but the only privilege it grants is self-exclusion
+// from analytics, so a forged one is harmless. A valid rate-limit bypass also
+// implies internal (the callers OR it in); the reverse is deliberately not true —
+// this flag must never grant the bypass, which is why bypass checks a secret.
+export const INTERNAL_COOKIE = "xg_internal";
+
+export function parseInternal(cookieHeader: string | null): boolean {
+  if (!cookieHeader) {
+    return false;
+  }
+  for (const part of cookieHeader.split(";")) {
+    const [k, v] = part.trim().split("=");
+    if (k === INTERNAL_COOKIE && v === "1") {
+      return true;
+    }
+  }
+  return false;
+}

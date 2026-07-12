@@ -15,7 +15,7 @@ import { buildLensTools } from "@/lib/ai/tools";
 import { clientIp, isBypassed, checkRateLimit, recordTokens } from "@/lib/ai/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
 import { askirisTurnDataPoint } from "@/lib/analytics/events";
-import { parseSid } from "@/lib/analytics/session";
+import { parseSid, parseInternal } from "@/lib/analytics/session";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
 import type { Mount } from "@/lib/types";
@@ -128,9 +128,15 @@ export async function POST(req: Request) {
   // binding (e.g. `next dev`) or on any KV hiccup we proceed unlimited rather than
   // break the chat. See src/lib/ai/rate-limit.ts for the burst + daily-token design.
   const ip = clientIp(req);
+  const cookieHeader = req.headers.get("cookie");
   // Read the anonymous visit id set by /api/track; "" for a turn before its first
   // call. We only read it here — /api/track owns minting and refreshing the cookie.
-  const sid = parseSid(req.headers.get("cookie")) ?? "";
+  const sid = parseSid(cookieHeader) ?? "";
+  // Secret-gated bypass: skips the rate limiter AND (as internal traffic) drops the
+  // turn from the dashboard. xg_internal can also mark a turn internal, but must not
+  // grant the bypass — so the limiter checks `bypassed` only, not `internal`.
+  const bypassed = isBypassed(req, process.env.RATE_LIMIT_BYPASS);
+  const internal = parseInternal(cookieHeader) || bypassed;
   let rateKv: KVNamespace | undefined;
   let ae: AnalyticsEngineDataset | undefined;
   let ctx: ExecutionContext | undefined;
@@ -139,7 +145,7 @@ export async function POST(req: Request) {
     rateKv = cf.env.RATE_KV;
     ae = cf.env.ANALYTICS;
     ctx = cf.ctx;
-    if (rateKv && ip && !isBypassed(req, process.env.RATE_LIMIT_BYPASS)) {
+    if (rateKv && ip && !bypassed) {
       const verdict = await checkRateLimit(rateKv, ip);
       if (!verdict.ok) {
         return chatErrorResponse("rate_limit", 429);
@@ -191,6 +197,7 @@ export async function POST(req: Request) {
               locale,
               sid,
               segmentId: segmentId ?? "",
+              internal,
               totalTokens: usage.totalTokens ?? 0,
               inputTokens: usage.inputTokens ?? 0,
               outputTokens: usage.outputTokens ?? 0,
