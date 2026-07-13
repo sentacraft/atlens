@@ -12,7 +12,10 @@ function formatCard(rec) {
   const ap = Array.isArray(a) ? `F${a[0]}-${a[1]}` : `F${a}`;
   const p = rec.price;
   const price = p ? `${p.currency === "CNY" ? "¥" : "$"}${p.amount}` : "no price";
-  return `- ${rec.name} · ${focal} · ${ap} · ${rec.weightG ?? "?"}g · ${price}`;
+  // The reason is the card's real payload (what it's good for + its trade-off), so
+  // a judge grading card quality or honest trade-offs must see it, not just specs.
+  const reason = rec.reason?.trim() ? `\n    ${rec.reason.trim()}` : "";
+  return `- ${rec.name} · ${focal} · ${ap} · ${rec.weightG ?? "?"}g · ${price}${reason}`;
 }
 
 // POST one turn's running history, rebuild the assistant UIMessage via the SDK.
