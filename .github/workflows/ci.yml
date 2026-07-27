@@ -17,21 +17,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Must precede setup-node: `cache: pnpm` resolves the store path by
+      # invoking pnpm, so pnpm has to be on PATH first. Version comes from the
+      # `packageManager` field in package.json.
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: npm
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Typecheck
-        run: npm run typecheck
+        run: pnpm run typecheck
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
       - name: Unit tests
-        run: npm run test
+        run: pnpm run test

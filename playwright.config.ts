@@ -83,7 +83,7 @@ export default defineConfig({
 
   webServer: {
     // Full production build, then Next's Node production server.
-    command: `npm run build && npx next start -p ${PORT}`,
+    command: `pnpm run build && pnpm exec next start -p ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 360 * 1000,

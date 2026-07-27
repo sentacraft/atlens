@@ -23,7 +23,7 @@ import type { Mount } from "@/lib/types";
 // The AskIris streaming endpoint. mount + locale are supplied by the client (both
 // fixed by the page's route), so the agent is scoped to one mount and answers in
 // one language. Runs on the Cloudflare workerd runtime via OpenNext — validate
-// streaming with `npm run preview`, not just `next dev`.
+// streaming with `pnpm run preview`, not just `next dev`.
 
 const MOUNT_LABEL: Record<Mount, string> = {
   X: "Fujifilm X mount (APS-C)",

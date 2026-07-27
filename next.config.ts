@@ -12,12 +12,12 @@ const nextConfig: NextConfig = {
   // Pin Turbopack's workspace root to the directory `next dev` was launched
   // from. Without this, when running the dev server inside a git worktree
   // located under `.claude/worktrees/<name>/`, Turbopack walks up the tree,
-  // finds the parent repo's package-lock.json, and picks the parent as the
+  // finds the parent repo's pnpm-lock.yaml, and picks the parent as the
   // workspace root — leading to a "multiple lockfiles" warning and broken
   // module resolution for files like the local fonts in `src/app/layout.tsx`
   // (which use paths relative to the worktree's own node_modules).
   //
-  // process.cwd() is the directory where `npm run dev` was invoked, which is
+  // process.cwd() is the directory where `pnpm run dev` was invoked, which is
   // always the worktree's own root, so this works for both the main repo
   // and any worktree without further configuration.
   //
