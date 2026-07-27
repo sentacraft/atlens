@@ -27,26 +27,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Must precede setup-node: `cache: pnpm` resolves the store path by
+      # invoking pnpm, so pnpm has to be on PATH first. Version comes from the
+      # `packageManager` field in package.json.
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: npm
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
       - name: Build for Cloudflare (OpenNext)
-        # `opennextjs-cloudflare build` directly, NOT `npm run build:cf` — the
+        # `opennextjs-cloudflare build` directly, NOT `pnpm run build:cf` — the
         # latter ends in `populateCache remote`, which uploads to the live
         # Cloudflare account and needs credentials we don't (and shouldn't) have
         # in CI. The static-assets incremental cache ships its assets with the
         # build, so local workerd serves them without the remote populate.
-        run: npx opennextjs-cloudflare build
+        run: pnpm exec opennextjs-cloudflare build
 
       - name: Boot workerd and smoke-test canaries
         run: |
           # wrangler dev runs the worker on local workerd (same runtime as prod,
           # local mode — no CF account needed).
-          npx wrangler dev --port 8787 &
+          pnpm exec wrangler dev --port 8787 &
           WRANGLER_PID=$!
 
           # Wait for readiness via the homepage (stays up even in the #397 bug;

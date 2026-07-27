@@ -21,7 +21,7 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Cloudflare Workers / OpenNext build artifacts:
     ".open-next/**",
-    // Wrangler local state (bundled worker written by `npm run preview`):
+    // Wrangler local state (bundled worker written by `pnpm run preview`):
     ".wrangler/**",
   ]),
 ]);
