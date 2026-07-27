@@ -271,7 +271,7 @@ export async function exportToConfig(
 
     // Type-check the written file; restore on failure.
     try {
-      await execAsync("npx tsc --noEmit", { cwd: process.cwd() });
+      await execAsync("pnpm exec tsc --noEmit", { cwd: process.cwd() });
     } catch (tscErr: unknown) {
       await writeFile(CONFIG_PATH, originalContent, "utf-8");
       const e = tscErr as { stderr?: string; stdout?: string };

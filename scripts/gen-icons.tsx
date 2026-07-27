@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 // Generates static icon PNGs and the OG image from the live <Iris> component.
 // Uses react-dom/server to render the SVG, then resvg-js to convert to PNG.
-// Run manually via npm run assets:icons when icon inputs change.
+// Run manually via pnpm run assets:icons when icon inputs change.
 
 import { renderToStaticMarkup } from "react-dom/server";
 import { createElement } from "react";

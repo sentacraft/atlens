@@ -7,7 +7,7 @@
 // This prevents the "fix one, break another" seesaw by pinning each icon's
 // background and dimensions as a testable invariant. Runs as part of `build`.
 //
-// Manual: `npm run verify:icons`
+// Manual: `pnpm run verify:icons`
 
 import { readFileSync, existsSync, statSync } from "node:fs";
 import { inflateSync } from "node:zlib";
@@ -210,7 +210,7 @@ function checkCorner(img: Png, expected: Rgba, path: string): void {
 function checkExpectation(exp: Expectation): void {
   const abs = resolve(exp.path);
   if (!existsSync(abs)) {
-    fail(exp.path, `missing — run \`npm run gen:icons\``);
+    fail(exp.path, `missing — run \`pnpm run gen:icons\``);
     return;
   }
   let img: Png;
@@ -238,7 +238,7 @@ for (const exp of [...ICON_EXPECTATIONS, ...SPLASH_EXPECTATIONS]) {
 for (const { path, minBytes } of EXISTENCE_ONLY) {
   const abs = resolve(path);
   if (!existsSync(abs)) {
-    fail(path, `missing — run \`npm run gen:icons\``);
+    fail(path, `missing — run \`pnpm run gen:icons\``);
     continue;
   }
   const size = statSync(abs).size;

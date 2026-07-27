@@ -148,14 +148,14 @@ flowchart TD
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Copy environment variables
 cp .env.example .env.local
 # Fill in GITHUB_TOKEN and GITHUB_FEEDBACK_REPO
 
 # Start dev server
-npm run dev
+pnpm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).

@@ -4,7 +4,7 @@
 
 ## What's in here
 
-- `iris/actions.ts` — server actions that read/write `src/config/iris-config.ts` and shell out to `npx tsc --noEmit` for type-check feedback.
+- `iris/actions.ts` — server actions that read/write `src/config/iris-config.ts` and shell out to `pnpm exec tsc --noEmit` for type-check feedback.
 - `iris-pheno/actions.ts` — server actions that read/write `preset.json` and `src/config/brand.ts`.
 
 Both use `fs/promises`, `child_process`, and `path.join(process.cwd(), …)` to mutate files on the developer's local disk at runtime. They are author-side tooling, not user-facing features.
