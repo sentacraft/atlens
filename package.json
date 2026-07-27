@@ -19,8 +19,8 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "typecheck": "wrangler types --env-interface CloudflareEnv && tsc --noEmit",
-    "test": "vitest run src",
-    "test:watch": "vitest src",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
