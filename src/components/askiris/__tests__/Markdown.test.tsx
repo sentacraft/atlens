@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render } from "@testing-library/react";
 import Markdown from "../Markdown";
 import { LensLinkProvider } from "../LensLinkContext";
-import type { LensLinkIndex } from "@/lib/ai/lens-link-index";
+import type { LensLinkIndex } from "@/lib/ai/lens-ref";
 
 vi.mock("@/i18n/navigation", () => ({
   // Mirror the locale-aware Link closely enough for href assertions.

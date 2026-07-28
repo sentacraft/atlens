@@ -12,7 +12,7 @@ import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { useTestHookOption } from "@/context/TestHookProvider";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
 import { LensLinkProvider } from "@/components/askiris/LensLinkContext";
-import type { LensLinkIndex } from "@/lib/ai/lens-link-index";
+import type { LensLinkIndex } from "@/lib/ai/lens-ref";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisDivider from "@/components/askiris/AskIrisDivider";

@@ -1,4 +1,4 @@
-import type { Lens } from "@/lib/types";
+import type { Lens, Mount } from "@/lib/types";
 
 // A short opaque handle for one lens, derived from its id — the only lens identifier
 // the model ever sees or passes back.
@@ -55,3 +55,10 @@ export function parseLensLink(href: string | undefined): string | null {
 export function buildRefIndex(lenses: Lens[]): Map<string, Lens> {
   return new Map(lenses.map((lens) => [lensRef(lens.id), lens]));
 }
+
+// The renderer's form of the same lookup: only what a link needs, so it can cross to the
+// client without the catalogue behind it. It lives here rather than beside the function
+// that builds it (lens-link-index) because that one reaches for the catalogue, and a type
+// the client imports must never name a module that does — an `import type` is erased, but
+// one edit turning it into a value import would pull the whole catalogue into the bundle.
+export type LensLinkIndex = Record<string, { id: string; mount: Mount }>;
