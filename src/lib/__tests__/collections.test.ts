@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { COLLECTIONS, getCollectionStats, getRelatedCollectionsWithStats, getSharedCollections } from "../collections";
+import { COLLECTIONS, getSharedCollections } from "../collections";
+import { getCollectionStats, getRelatedCollectionsWithStats } from "../collection-stats";
 import { isZoom } from "../lens/lens";
 import { getAllLenses } from "../lens/data";
 import type { Lens } from "../types";

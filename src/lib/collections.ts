@@ -1,8 +1,12 @@
 import collectionsData from "@/data/collections.json";
-import { FILTERS, type LensFilter, type CollectionSlug } from "@/lib/collection-filters";
-import { getAllLenses } from "@/lib/lens/data";
-import { routing } from "@/i18n/routing";
+import { FILTERS, type LensFilter } from "@/lib/collection-filters";
 import type { Lens } from "@/lib/types";
+
+// The collections themselves: metadata joined to predicates, plus the two lookups that
+// take their lenses as an argument. Nothing here reaches for the catalogue — a client
+// component imports this module, and anything that calls getAllLenses would ship 477KB
+// of JSON to the browser with it. Membership and counts, which do need the catalogue,
+// live in collection-stats.
 
 export interface LensCollection {
   slug: string;
@@ -68,91 +72,6 @@ for (const slug of Object.keys(FILTERS)) {
   if (!(slug in COLLECTIONS)) {
     throw new Error(`FILTERS: "${slug}" has no entry in collections.json`);
   }
-}
-
-// --- Membership, precomputed at module load -------------------------------
-// slug -> member lenses, per locale (price collections vary by region: cn vs
-// global pricing). Computed eagerly once here — no lazy cache — so every count /
-// overlap / stats lookup below is a plain array read instead of re-scanning the
-// whole catalog on each call.
-const MEMBERS: Record<string, Record<CollectionSlug, Lens[]>> = {};
-for (const locale of routing.locales) {
-  const all = getAllLenses(locale);
-  const perSlug = {} as Record<CollectionSlug, Lens[]>;
-  for (const slug of Object.keys(FILTERS) as CollectionSlug[]) {
-    perSlug[slug] = all.filter((lens) => FILTERS[slug](lens, locale));
-  }
-  MEMBERS[locale] = perSlug;
-}
-
-function membersOf(slug: string, locale: string): Lens[] {
-  return MEMBERS[locale]?.[slug as CollectionSlug] ?? [];
-}
-
-// Internal: related collections by member overlap. Only the *WithStats wrapper
-// below consumes it, so it stays private.
-function getRelatedCollections(slug: string, locale: string, limit = 4): LensCollection[] {
-  if (!COLLECTIONS[slug]) {
-    return [];
-  }
-  const currentIds = new Set(membersOf(slug, locale).map((l) => l.id));
-  if (currentIds.size === 0) {
-    return [];
-  }
-
-  const scored = Object.values(COLLECTIONS)
-    .filter((c) => c.slug !== slug)
-    .map((c) => ({
-      collection: c,
-      overlap: membersOf(c.slug, locale).filter((l) => currentIds.has(l.id)).length,
-    }));
-
-  scored.sort((a, b) => b.overlap - a.overlap);
-  return scored
-    .filter((s) => s.overlap > 0)
-    .slice(0, limit)
-    .map((s) => s.collection);
-}
-
-// Internal: members + derived counts for a collection, from the precomputed
-// members. Single place that builds the stat numbers (shared by the two
-// exported stats functions below).
-function statsFor(collection: LensCollection, locale: string) {
-  const lenses = membersOf(collection.slug, locale);
-  return { lenses, lensCount: lenses.length, brandCount: new Set(lenses.map((l) => l.brand)).size };
-}
-
-interface CollectionStats {
-  collection: LensCollection;
-  lenses: Lens[];
-  lensCount: number;
-  brandCount: number;
-}
-
-export function getCollectionStats(slug: string, locale: string): CollectionStats | null {
-  const collection = COLLECTIONS[slug];
-  if (!collection) {
-    return null;
-  }
-  return { collection, ...statsFor(collection, locale) };
-}
-
-interface RelatedCollectionStats {
-  collection: LensCollection;
-  previewLens: Lens;
-  lensCount: number;
-  brandCount: number;
-}
-
-export function getRelatedCollectionsWithStats(
-  slug: string,
-  locale: string,
-  limit = 4,
-): RelatedCollectionStats[] {
-  return getRelatedCollections(slug, locale, limit).map((collection) => {
-    const { lenses, lensCount, brandCount } = statsFor(collection, locale);
-    return { collection, previewLens: lenses[0], lensCount, brandCount };
-  });
 }
 
 /**

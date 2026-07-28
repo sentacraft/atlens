@@ -3,11 +3,8 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import {
-  COLLECTION_GROUPS,
-  getCollectionStats,
-  type CollectionGroup,
-} from "@/lib/collections";
+import { COLLECTION_GROUPS, type CollectionGroup } from "@/lib/collections";
+import { getCollectionStats } from "@/lib/collection-stats";
 import { getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount, mountHasCollections } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";

@@ -23,6 +23,7 @@ import { deriveSpecialty } from "@/lib/lens/specialty";
 import { RetailersDropdown } from "@/components/price/RetailersDropdown";
 import { UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { getMemberCollections } from "@/lib/collections";
+import { getCollectionLensCounts } from "@/lib/collection-stats";
 import CollectionPills from "@/components/collection/CollectionPills";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
@@ -364,6 +365,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
       <CollectionPills
         collections={memberCollections}
+        lensCounts={getCollectionLensCounts(locale)}
         mountSegment={seg}
         locale={locale}
         title={t("collectionsTitle")}

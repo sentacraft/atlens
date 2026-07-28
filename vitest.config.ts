@@ -16,6 +16,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
+      // `server-only` throws on import unless the bundler picks its `react-server`
+      // export condition, which is how it fails a client bundle at build time. Tests
+      // import the guarded modules directly, outside any bundler, so point them at the
+      // same empty module the server build resolves to.
+      'server-only': resolve(__dirname, './node_modules/server-only/empty.js'),
     },
   },
 });
