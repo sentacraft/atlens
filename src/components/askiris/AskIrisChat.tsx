@@ -11,6 +11,7 @@ import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { useTestHookOption } from "@/context/TestHookProvider";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
+import type { LensLinkIndex } from "@/components/askiris/Markdown";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisDivider from "@/components/askiris/AskIrisDivider";
@@ -62,7 +63,15 @@ function classifyError(error: Error | undefined): ErrorDisplay {
 // (centered hero) before the first message, and the chat thread after. mount
 // comes from the effective-mount preference and locale from the route; both go
 // through the transport body so the server scopes the agent and its language.
-export default function AskIrisChat({ locale, initialQuery }: { locale: string; initialQuery?: string }) {
+export default function AskIrisChat({
+  locale,
+  initialQuery,
+  lensIndex,
+}: {
+  locale: string;
+  initialQuery?: string;
+  lensIndex: LensLinkIndex;
+}) {
   const t = useTranslations("AskIris");
   const tMount = useTranslations("MountSwitcher");
   const mount = useEffectiveMount();
@@ -220,6 +229,21 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
     }
   }, [messages]);
 
+  // `archived` only grows when a topic closes (the new-topic button or a mount
+  // switch), appending its divider; jump to that divider so the fresh thread is in
+  // view instead of leaving the user parked up in the archived history. Re-pins so
+  // the next turn's stream follows.
+  useEffect(() => {
+    if (archived.length === 0) {
+      return;
+    }
+    const el = scrollRef.current;
+    if (el) {
+      el.scrollTo({ top: el.scrollHeight });
+      pinnedRef.current = true;
+    }
+  }, [archived]);
+
   const shell = "mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4";
 
   // Skip the hero when a hand-off query is pending: it fires on mount and fills the
@@ -250,10 +274,22 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
             item.kind === "divider" ? (
               <AskIrisDivider key={`d${i}`} label={item.label} />
             ) : (
-              <AskIrisThread key={`s${i}`} messages={item.messages} locale={locale} debug={debug} />
+              <AskIrisThread
+                key={`s${i}`}
+                messages={item.messages}
+                locale={locale}
+                lensIndex={lensIndex}
+                debug={debug}
+              />
             ),
           )}
-          <AskIrisThread messages={renderMessages} locale={locale} debug={debug} busy={isBusy} />
+          <AskIrisThread
+            messages={renderMessages}
+            locale={locale}
+            lensIndex={lensIndex}
+            debug={debug}
+            busy={isBusy}
+          />
           {/* Surface a failed turn: useChat catches request/stream errors into
               status "error" but renders nothing on its own. Only the transient
               case offers a retry (inline verb, re-runs the last turn with

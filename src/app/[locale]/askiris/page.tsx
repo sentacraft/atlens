@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import AskIrisChat from "@/components/askiris/AskIrisChat";
+import type { LensLinkIndex } from "@/components/askiris/Markdown";
+import { getAllLenses } from "@/lib/lens/data";
+import { lensRef } from "@/lib/ai/lens-ref";
 
 type Params = Promise<{ locale: string }>;
 type SearchParams = Promise<{ q?: string | string[] }>;
@@ -27,5 +30,11 @@ export default async function AskIrisPage({
   setRequestLocale(locale);
   const { q } = await searchParams;
   const initialQuery = (Array.isArray(q) ? q[0] : q)?.trim() || undefined;
-  return <AskIrisChat locale={locale} initialQuery={initialQuery} />;
+  // ref -> lens for the whole catalogue, so the thread can turn Iris's inline
+  // `lens:<ref>` references into real links. Every mount, not just the active one:
+  // a mount switch keeps earlier segments on screen, and their links must still work.
+  const lensIndex: LensLinkIndex = Object.fromEntries(
+    getAllLenses(locale).map((lens) => [lensRef(lens.id), { id: lens.id, mount: lens.mount }]),
+  );
+  return <AskIrisChat locale={locale} initialQuery={initialQuery} lensIndex={lensIndex} />;
 }

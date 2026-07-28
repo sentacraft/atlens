@@ -1,9 +1,37 @@
 // promptfoo custom provider: POST each turn to /api/chat, rebuild the assistant
 // message with readUIMessageStream, return the transcript + tool-call trace for
 // the assertions. See README.md.
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 import { readUIMessageStream } from "ai";
 
 const ENDPOINT = "http://localhost:3000/api/chat";
+
+// Every real lens ref. A `lens:<ref>` link is legitimate exactly when the renderer can
+// resolve it, and the renderer checks the catalogue — not what this turn recalled, since
+// a link back to a lens from an earlier turn still resolves and still clicks through.
+// Mirrors src/lib/ai/lens-ref.ts; kept in sync by the assertions failing loudly if not.
+function lensRef(id) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < id.length; i++) {
+    h = Math.imul(h ^ id.charCodeAt(i), 0x01000193);
+  }
+  h ^= h >>> 16;
+  h = Math.imul(h, 0x85ebca6b);
+  h ^= h >>> 13;
+  h = Math.imul(h, 0xc2b2ae35);
+  h ^= h >>> 16;
+  return ((h >>> 0) % 36 ** 5).toString(36).padStart(5, "0");
+}
+
+const CATALOGUE = JSON.parse(
+  readFileSync(
+    path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "src/data/lenses.json"),
+    "utf8",
+  ),
+);
+const REF_TO_ID = new Map(CATALOGUE.map((lens) => [lensRef(lens.id), lens.id]));
 
 function formatCard(rec) {
   const f = rec.focalNativeMm;
@@ -51,39 +79,64 @@ async function postTurn(messages, mount, locale) {
   return msg;
 }
 
-// Lens ids from any tool output (queryLenses matches/maybe, searchLensByName
-// results) for the "picks were recalled" check — id may sit on the item or nested
-// under `.lens`.
-function idsFromOutput(output) {
-  const ids = [];
+// Lens refs from any tool output, for the "picks were recalled" check. Recall results
+// carry `ref` directly (the id never reaches the model); the render tools echo full
+// records, so an id there is converted. Either may sit on the item or under `.lens`.
+function refsFromOutput(output) {
+  const refs = [];
   if (output && typeof output === "object") {
     for (const v of Object.values(output)) {
       if (Array.isArray(v)) {
         for (const item of v) {
-          if (item && typeof item === "object") {
-            if (typeof item.id === "string") {
-              ids.push(item.id);
-            } else if (typeof item.lens?.id === "string") {
-              ids.push(item.lens.id);
+          const lens = item && typeof item === "object" && "lens" in item ? item.lens : item;
+          if (lens && typeof lens === "object") {
+            if (typeof lens.ref === "string") {
+              refs.push(lens.ref);
+            } else if (typeof lens.id === "string") {
+              refs.push(lensRef(lens.id));
             }
           }
         }
       }
     }
   }
-  return ids;
+  return refs;
 }
 
 // Fold the final turn's message into { output: transcript, ...trace } for the asserts.
+// The trace exposes two full-fidelity sources so a new check never needs a new field:
+// `picks` is the complete lens projection per recommended lens, and `queries` carries
+// each queryLenses call's raw input. Everything else (a sort used, a focus filter, an
+// over-match, the cine catalogue) is derived off those in the assertion itself.
 function digest(msg) {
   const transcript = [];
   const picks = [];
   const pickGroups = [];
-  const sortBys = [];
-  const recalledIds = new Set();
-  let openedCine = false;
-  let overMatched = false;
-  for (const part of msg?.parts ?? []) {
+  const tables = [];
+  const queries = [];
+  const searches = [];
+  const recalledRefs = new Set();
+  // Third source alongside picks/queries: the agent loop's own state. The route caps a
+  // turn at STEP_BUDGET steps and forces the last one to text-only, so a turn that spends
+  // its budget recalling can end in prose with nothing rendered — indistinguishable from
+  // a deliberate prose answer unless the step count is visible.
+  let steps = 0;
+  // Text emitted while the turn still had tool calls ahead of it. This is a shape
+  // signal, not a violation: opening with the need restated or a focal equivalence
+  // worked out is content for the user, and only announcing one's own actions is
+  // barred. Counted off part order: non-empty text parts before the final tool part.
+  const parts = msg?.parts ?? [];
+  const lastToolIndex = parts.findLastIndex(
+    (p) => p.type === "dynamic-tool" || (typeof p.type === "string" && p.type.startsWith("tool-")),
+  );
+  const preToolText = parts.filter(
+    (p, i) => p.type === "text" && p.text?.trim() && i < lastToolIndex,
+  ).length;
+  for (const part of parts) {
+    if (part.type === "step-start") {
+      steps++;
+      continue;
+    }
     if (part.type === "text") {
       if (part.text?.trim()) {
         transcript.push(part.text.trim());
@@ -100,49 +153,79 @@ function digest(msg) {
       continue;
     }
     if (name === "queryLenses") {
-      if (part.input?.sortBy) {
-        sortBys.push(part.input.sortBy);
-      }
-      if (part.input?.usage === "cine") {
-        openedCine = true;
-      }
-      // totalMatched is the full match count beyond the capped result set — more matched
-      // than were returned means the recall truncated (the over-match guard's trigger).
+      // Raw input (any filter/sort is checkable off it) + result-size counts:
+      // returned < totalMatched is the over-match guard's trigger.
       const returned = Array.isArray(part.output?.matches) ? part.output.matches.length : 0;
-      if (typeof part.output?.totalMatched === "number" && part.output.totalMatched > returned) {
-        overMatched = true;
-      }
+      queries.push({
+        input: part.input ?? {},
+        totalMatched: typeof part.output?.totalMatched === "number" ? part.output.totalMatched : returned,
+        returned,
+      });
     }
-    for (const id of idsFromOutput(part.output)) {
-      recalledIds.add(id);
+    if (name === "searchLensByName") {
+      searches.push({ query: part.input?.query ?? null, refs: refsFromOutput(part.output) });
+    }
+    for (const ref of refsFromOutput(part.output)) {
+      recalledRefs.add(ref);
     }
     if (name === "recommendLenses" && Array.isArray(part.output?.recommendations)) {
       const group = [];
       for (const rec of part.output.recommendations) {
         const f = rec.focalNativeMm;
+        const a = rec.maxAperture;
+        // Full flat projection of the recommended lens — every spec an assertion might
+        // check. No `brand` (ResolvedLens hides it); a non-first-party test uses the id.
         picks.push({
           id: rec.id,
+          // The handle the model actually passed; the id beside it is for readable
+          // assertion failures, since a ref names nothing on its own.
+          ref: lensRef(rec.id),
           name: rec.name ?? null,
           mount: rec.mount ?? null,
           reason: rec.reason ?? null,
           fmin: Array.isArray(f) ? f[0] : null,
           fmax: Array.isArray(f) ? f[1] : null,
+          // Wide-open f-number (the wide end for a zoom) — smaller is faster.
+          aperture: Array.isArray(a) ? a[0] : (a ?? null),
+          weightG: rec.weightG ?? null,
           price: rec.price?.amount ?? null,
+          af: rec.af ?? null,
+          ois: rec.ois ?? null,
+          oisStops: rec.oisStops ?? null,
+          magnification: rec.magnification ?? null,
+          minFocusDistance: rec.minFocusDistance ?? null,
+          opticalTraits: rec.opticalTraits ?? [],
+          isCine: rec.isCine ?? null,
+          wr: rec.wr ?? null,
+          apertureRing: rec.apertureRing ?? null,
+          releaseYear: rec.releaseYear ?? null,
         });
         group.push(rec.id);
       }
       pickGroups.push(group);
       transcript.push(`[cards]\n${part.output.recommendations.map(formatCard).join("\n")}`);
     }
+    if (name === "listLenses" && Array.isArray(part.output?.lenses)) {
+      const ids = part.output.lenses.map((l) => l.id);
+      const columns = Array.isArray(part.output.columns) ? part.output.columns : [];
+      tables.push({ ids, columns, names: part.output.lenses.map((l) => l.name ?? null) });
+      transcript.push(
+        `[table: ${columns.join(", ")}]\n${part.output.lenses
+          .map((l) => `- ${l.name}`)
+          .join("\n")}`,
+      );
+    }
   }
   return {
     output: transcript.join("\n\n") || "(empty)",
     picks,
     pickGroups,
-    sortBys,
-    openedCine,
-    overMatched,
-    recalledIds: [...recalledIds],
+    tables,
+    queries,
+    searches,
+    recalledRefs: [...recalledRefs],
+    steps,
+    preToolText,
   };
 }
 
@@ -163,25 +246,41 @@ export default class AskIrisProvider {
     // matrix-expand into one test per element); else the single rendered prompt.
     const turns = Array.isArray(context?.vars?.dialog?.turns) ? context.vars.dialog.turns : [prompt];
     const messages = [];
-    let final = null;
+    // The judge grades the WHOLE conversation (a multi-turn arc is where quality lives),
+    // so assemble the full transcript across turns with the latest reply marked. metadata
+    // stays the FINAL turn's tool trace — the last rendering is what the JS checks grade.
+    const convo = [];
+    let d = digest(null);
     for (let i = 0; i < turns.length; i++) {
       messages.push({ id: `u${i + 1}`, role: "user", parts: [{ type: "text", text: turns[i] }] });
+      convo.push(`【用户】${turns[i]}`);
       const assistant = await postTurn(messages, mount, locale);
       if (assistant) {
         messages.push(assistant);
+        d = digest(assistant);
+        // Every turn is labeled the same — the whole conversation is graded, and the last
+        // Iris turn is identifiable by position, so no turn is singled out.
+        convo.push(`【Iris】\n${d.output}`);
       }
-      final = assistant;
     }
-    const d = digest(final);
+    const transcript = convo.join("\n\n") || "(empty)";
+    const linkRefs = [...transcript.matchAll(/\]\(lens:([^)\s]+)\)/g)].map((m) => m[1]);
     return {
-      output: d.output,
+      output: transcript,
       metadata: {
+        // Inline lens references, resolved back to ids so a failing assertion names a
+        // lens rather than an opaque handle, plus the ones no catalogue entry backs —
+        // those render as dead plain text, which is the defect worth gating on.
+        linkIds: linkRefs.map((ref) => REF_TO_ID.get(ref) ?? ref),
+        unknownLinkIds: [...new Set(linkRefs.filter((ref) => !REF_TO_ID.has(ref)))],
         picks: d.picks,
         pickGroups: d.pickGroups,
-        sortBys: d.sortBys,
-        openedCine: d.openedCine,
-        overMatched: d.overMatched,
-        recalledIds: d.recalledIds,
+        tables: d.tables,
+        queries: d.queries,
+        searches: d.searches,
+        recalledRefs: d.recalledRefs,
+        steps: d.steps,
+        preToolText: d.preToolText,
         turnsRun: turns.length,
       },
     };

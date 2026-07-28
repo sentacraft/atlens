@@ -36,7 +36,16 @@
     "toolQuerying": "Searching lenses…",
     "toolSearching": "Looking up lenses…",
     "toolRecommending": "Preparing recommendations…",
+    "toolInspecting": "Checking specs…",
+    "toolListing": "Building a table…",
     "toolWorking": "Working…",
+    "table": {
+      "lensHeader": "Lens",
+      "focus": "Focus",
+      "auto": "Autofocus",
+      "manual": "Manual",
+      "used": "used"
+    },
     "thinking": "Thinking…",
     "chips": [
       { "emoji": "🌌", "label": "Astro / Milky Way", "prompt": "First time shooting the Milky Way — I need a wide angle with a fast aperture, budget around $800, body is an X-T5." },

@@ -9,9 +9,10 @@ import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Iris from "@/components/iris/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
-import Markdown from "@/components/askiris/Markdown";
+import Markdown, { type LensLinkIndex } from "@/components/askiris/Markdown";
 import RecommendationDeck from "@/components/askiris/RecommendationDeck";
-import type { Recommendation } from "@/lib/ai/recall";
+import LensTable from "@/components/askiris/LensTable";
+import type { LensTableColumn, Recommendation, ResolvedLens } from "@/lib/ai/recall";
 
 // Presentational render of a message thread — no data fetching. AskIrisChat feeds
 // it live useChat messages; the dev preview route feeds it fixtures, so the exact
@@ -27,6 +28,9 @@ function traceSummary(output: unknown): string {
     }
     if (Array.isArray(o.results)) {
       return `${o.results.length} results`;
+    }
+    if (Array.isArray(o.lenses)) {
+      return `${o.lenses.length} tabled`;
     }
   }
   return "—";
@@ -56,7 +60,14 @@ function ToolTrace({ part }: { part: ToolUIPart | DynamicToolUIPart }) {
   );
 }
 
-type ActivityKey = "thinking" | "toolQuerying" | "toolSearching" | "toolRecommending" | "toolWorking";
+type ActivityKey =
+  | "thinking"
+  | "toolQuerying"
+  | "toolSearching"
+  | "toolInspecting"
+  | "toolRecommending"
+  | "toolListing"
+  | "toolWorking";
 
 // The label key for whatever a pending tool call is doing.
 function toolLabelKey(name: string): ActivityKey {
@@ -67,8 +78,14 @@ function toolLabelKey(name: string): ActivityKey {
     case "searchLensByName": {
       return "toolSearching";
     }
+    case "lensDetails": {
+      return "toolInspecting";
+    }
     case "recommendLenses": {
       return "toolRecommending";
+    }
+    case "listLenses": {
+      return "toolListing";
     }
     default: {
       return "toolWorking";
@@ -98,11 +115,13 @@ function activityKey(messages: UIMessage[], busy: boolean, debug: boolean): Acti
 export default function AskIrisThread({
   messages,
   locale,
+  lensIndex,
   debug = false,
   busy = false,
 }: {
   messages: UIMessage[];
   locale: string;
+  lensIndex?: LensLinkIndex;
   debug?: boolean;
   busy?: boolean;
 }) {
@@ -151,7 +170,7 @@ export default function AskIrisThread({
                 // readability, especially in English.
                 return (
                   <div key={key} className="text-foreground w-full px-1 text-sm">
-                    <Markdown>{part.text}</Markdown>
+                    <Markdown lensIndex={lensIndex}>{part.text}</Markdown>
                   </div>
                 );
               }
@@ -167,6 +186,22 @@ export default function AskIrisThread({
                 return (
                   <div key={key} className="mb-4 w-full">
                     <RecommendationDeck recommendations={recommendations} locale={locale} />
+                  </div>
+                );
+              }
+              if (
+                isToolUIPart(part) &&
+                getToolName(part) === "listLenses" &&
+                part.state === "output-available"
+              ) {
+                const { lenses, columns, caption } = part.output as {
+                  lenses: ResolvedLens[];
+                  columns: LensTableColumn[];
+                  caption: string | null;
+                };
+                return (
+                  <div key={key} className="mb-4 w-full">
+                    <LensTable lenses={lenses} columns={columns} caption={caption} />
                   </div>
                 );
               }
