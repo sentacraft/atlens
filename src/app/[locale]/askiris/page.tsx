@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import AskIrisChat from "@/components/askiris/AskIrisChat";
+import { getLensLinkIndex } from "@/lib/ai/lens-link-index";
 
 type Params = Promise<{ locale: string }>;
 type SearchParams = Promise<{ q?: string | string[] }>;
@@ -27,5 +28,11 @@ export default async function AskIrisPage({
   setRequestLocale(locale);
   const { q } = await searchParams;
   const initialQuery = (Array.isArray(q) ? q[0] : q)?.trim() || undefined;
-  return <AskIrisChat locale={locale} initialQuery={initialQuery} />;
+  return (
+    <AskIrisChat
+      locale={locale}
+      initialQuery={initialQuery}
+      lensIndex={getLensLinkIndex(locale)}
+    />
+  );
 }

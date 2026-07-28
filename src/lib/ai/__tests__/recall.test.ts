@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { recallLenses, type LensConstraints, type ResolvedLens } from "../recall";
+import { recallLenses, type LensConstraints, type RecalledLens } from "../recall";
+import { lensRef } from "../lens-ref";
+import { getLensesByMount } from "@/lib/lens/data";
+
+const refToId = new Map(getLensesByMount("X", "zh").map((l) => [lensRef(l.id), l.id]));
 
 // Component-level eval for the recall layer — the engine behind the queryLenses tool.
 // recallLenses is a pure, deterministic function over the static lens catalogue (no LLM),
@@ -21,12 +25,13 @@ const tBrand = (brand: string) => brand; // brand translation isn't under test
 function recall(constraints: LensConstraints, maxCount: number) {
   return recallLenses(MOUNT, LOCALE, constraints, tBrand, maxCount);
 }
-const idsOf = (lenses: ResolvedLens[]) => lenses.map((l) => l.id);
-const wideAperture = (a: ResolvedLens["maxAperture"]): number | null =>
+// The model-facing projection carries refs, not ids; resolve back for readable assertions.
+const idsOf = (lenses: RecalledLens[]) => lenses.map((l) => refToId.get(l.ref) ?? l.ref);
+const wideAperture = (a: RecalledLens["maxAperture"]): number | null =>
   a == null ? null : Array.isArray(a) ? a[0] : a;
 // Mirrors evaluate()'s coversFocals predicate: the point sits inside the lens's native
 // focal range, widened by the tolerance at both ends.
-const coversNative = (lens: ResolvedLens, point: number) => {
+const coversNative = (lens: RecalledLens, point: number) => {
   const [min, max] = lens.focalNativeMm;
   return min * (1 - TOL) <= point && point <= max * (1 + TOL);
 };
