@@ -2,8 +2,6 @@
 // message with readUIMessageStream, return the transcript + tool-call trace for
 // the assertions. See README.md.
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import path from "node:path";
 import { readUIMessageStream } from "ai";
 // The real implementation, not a copy of it: a second version of the hash would drift
 // silently and the eval would just measure the wrong thing. Node strips the types.
@@ -14,13 +12,17 @@ const ENDPOINT = "http://localhost:3000/api/chat";
 // Every real lens ref. A `lens:<ref>` link is legitimate exactly when the renderer can
 // resolve it, and the renderer checks the catalogue — not what this turn recalled, since
 // a link back to a lens from an earlier turn still resolves and still clicks through.
-const CATALOGUE = JSON.parse(
-  readFileSync(
-    path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "src/data/lenses.json"),
-    "utf8",
-  ),
+// Read straight off the catalogue files rather than through src/lib/lens/data.ts: that
+// module's imports are `@/` aliases, which only TypeScript and the bundler resolve, and
+// teaching plain Node to follow them costs more than it saves for a manual harness.
+// Both mounts — a G-mount case would otherwise find no refs at all.
+const REF_TO_ID = new Map(
+  ["lenses.json", "lenses-gfx.json"]
+    .flatMap((file) =>
+      JSON.parse(readFileSync(new URL(`../../src/data/${file}`, import.meta.url), "utf8")),
+    )
+    .map((lens) => [lensRef(lens.id), lens.id]),
 );
-const REF_TO_ID = new Map(CATALOGUE.map((lens) => [lensRef(lens.id), lens.id]));
 
 function formatCard(rec) {
   const f = rec.focalNativeMm;
