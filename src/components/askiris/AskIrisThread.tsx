@@ -9,7 +9,7 @@ import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Iris from "@/components/iris/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
-import Markdown, { type LensLinkIndex } from "@/components/askiris/Markdown";
+import Markdown from "@/components/askiris/Markdown";
 import RecommendationDeck from "@/components/askiris/RecommendationDeck";
 import LensTable from "@/components/askiris/LensTable";
 import type { LensTableColumn, Recommendation, ResolvedLens } from "@/lib/ai/recall";
@@ -60,37 +60,23 @@ function ToolTrace({ part }: { part: ToolUIPart | DynamicToolUIPart }) {
   );
 }
 
-type ActivityKey =
-  | "thinking"
-  | "toolQuerying"
-  | "toolSearching"
-  | "toolInspecting"
-  | "toolRecommending"
-  | "toolListing"
-  | "toolWorking";
+// What the user is told Iris is doing. Three states, not one per tool: from the
+// outside the only distinction that means anything is whether Iris is still gathering
+// or already putting the answer together, so the label set stays flat as tools are added.
+type ActivityKey = "thinking" | "gathering" | "composing";
 
-// The label key for whatever a pending tool call is doing.
+const TOOL_ACTIVITY: Record<string, ActivityKey> = {
+  queryLenses: "gathering",
+  searchLensByName: "gathering",
+  lensDetails: "gathering",
+  recommendLenses: "composing",
+  listLenses: "composing",
+};
+
+// An unmapped tool is a new one nobody has classified yet; "thinking" is the honest
+// thing to show rather than inventing a label for it.
 function toolLabelKey(name: string): ActivityKey {
-  switch (name) {
-    case "queryLenses": {
-      return "toolQuerying";
-    }
-    case "searchLensByName": {
-      return "toolSearching";
-    }
-    case "lensDetails": {
-      return "toolInspecting";
-    }
-    case "recommendLenses": {
-      return "toolRecommending";
-    }
-    case "listLenses": {
-      return "toolListing";
-    }
-    default: {
-      return "toolWorking";
-    }
-  }
+  return TOOL_ACTIVITY[name] ?? "thinking";
 }
 
 // What the live turn is doing right now, as an i18n key — or null for no indicator.
@@ -115,13 +101,11 @@ function activityKey(messages: UIMessage[], busy: boolean, debug: boolean): Acti
 export default function AskIrisThread({
   messages,
   locale,
-  lensIndex,
   debug = false,
   busy = false,
 }: {
   messages: UIMessage[];
   locale: string;
-  lensIndex?: LensLinkIndex;
   debug?: boolean;
   busy?: boolean;
 }) {
@@ -170,7 +154,7 @@ export default function AskIrisThread({
                 // readability, especially in English.
                 return (
                   <div key={key} className="text-foreground w-full px-1 text-sm">
-                    <Markdown lensIndex={lensIndex}>{part.text}</Markdown>
+                    <Markdown>{part.text}</Markdown>
                   </div>
                 );
               }

@@ -7,7 +7,7 @@ import remarkCjkFriendly from "remark-cjk-friendly";
 import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
 import { mountToUrlSegment } from "@/lib/mount";
-import type { Mount } from "@/lib/types";
+import { useLensLinks } from "@/components/askiris/LensLinkContext";
 
 // Renders Iris's Markdown. react-markdown + remark-gfm only parse Markdown into
 // semantic HTML; styling is @tailwindcss/typography's `prose` — the one-stop that
@@ -18,23 +18,14 @@ import type { Mount } from "@/lib/types";
 const PROSE_CLS =
   "prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-headings:mb-1 prose-hr:hidden";
 
-// ref -> { id, mount } for the whole catalogue, built once on the server. Iris writes
-// `lens:<ref>` — a short opaque handle it can only have copied from a tool result — and
-// this turns it back into a real lens page. A ref it invented resolves to nothing and
-// renders as plain text rather than a dead link. Catalogue-wide rather than
-// recalled-this-conversation: a reference back to a lens from an earlier turn still
-// points somewhere real, and the narrow check needed walking every tool-output shape.
-export type LensLinkIndex = Record<string, { id: string; mount: Mount }>;
-
 export default function Markdown({
   children,
   className = PROSE_CLS,
-  lensIndex,
 }: {
   children: string;
   className?: string;
-  lensIndex?: LensLinkIndex;
 }) {
+  const lensIndex = useLensLinks();
   return (
     <div className={className}>
       <ReactMarkdown

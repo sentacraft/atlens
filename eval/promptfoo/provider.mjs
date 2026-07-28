@@ -244,14 +244,14 @@ export default class AskIrisProvider {
     let d = digest(null);
     for (let i = 0; i < turns.length; i++) {
       messages.push({ id: `u${i + 1}`, role: "user", parts: [{ type: "text", text: turns[i] }] });
-      convo.push(`【用户】${turns[i]}`);
+      convo.push(`[User] ${turns[i]}`);
       const assistant = await postTurn(messages, mount, locale);
       if (assistant) {
         messages.push(assistant);
         d = digest(assistant);
         // Every turn is labeled the same — the whole conversation is graded, and the last
         // Iris turn is identifiable by position, so no turn is singled out.
-        convo.push(`【Iris】\n${d.output}`);
+        convo.push(`[Iris]\n${d.output}`);
       }
     }
     const transcript = convo.join("\n\n") || "(empty)";
