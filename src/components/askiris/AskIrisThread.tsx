@@ -63,6 +63,49 @@ function ToolTrace({ part }: { part: ToolUIPart | DynamicToolUIPart }) {
 // What the user is told Iris is doing. Three states, not one per tool: from the
 // outside the only distinction that means anything is whether Iris is still gathering
 // or already putting the answer together, so the label set stays flat as tools are added.
+// What one tool call puts on screen. Only the two rendering tools have a surface of
+// their own; the ones that fetch (query, search, details) show nothing, which is why
+// the debug trace is the fallthrough rather than a branch — it makes the invisible half
+// of a turn inspectable without changing what a normal reader sees.
+function ToolPart({
+  part,
+  locale,
+  debug,
+}: {
+  part: ToolUIPart | DynamicToolUIPart;
+  locale: string;
+  debug: boolean;
+}) {
+  if (part.state === "output-available") {
+    switch (getToolName(part)) {
+      case "recommendLenses": {
+        const { recommendations } = part.output as { recommendations: Recommendation[] };
+        // Bottom margin separates the grid from whatever follows (usually the next
+        // group's heading). Prose headings zero their own top margin as a first-child,
+        // so without this they glue to the cards.
+        return (
+          <div className="mb-4 w-full">
+            <RecommendationDeck recommendations={recommendations} locale={locale} />
+          </div>
+        );
+      }
+      case "listLenses": {
+        const { lenses, columns, caption } = part.output as {
+          lenses: ResolvedLens[];
+          columns: LensTableColumn[];
+          caption: string | null;
+        };
+        return (
+          <div className="mb-4 w-full">
+            <LensTable lenses={lenses} columns={columns} caption={caption} />
+          </div>
+        );
+      }
+    }
+  }
+  return debug ? <ToolTrace part={part} /> : null;
+}
+
 type ActivityKey = "thinking" | "gathering" | "composing";
 
 const TOOL_ACTIVITY: Record<string, ActivityKey> = {
@@ -137,60 +180,25 @@ export default function AskIrisThread({
               const key = `${message.id}-${i}`;
               if (part.type === "text") {
                 // User text sits in a bubble; the assistant reply flows as one
-                // continuous document (no per-part bubbles) like ChatGPT/Claude,
-                // with card decks interleaved between the prose blocks.
-                if (isUser) {
-                  return (
-                    <div
-                      key={key}
-                      className="bg-primary text-primary-foreground max-w-[85%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap"
-                    >
-                      {part.text}
-                    </div>
-                  );
-                }
-                // Prose is capped to a readable measure even though the thread
-                // (and the card grid) runs wider — long synthesis lines hurt
-                // readability, especially in English.
-                return (
+                // continuous document (no per-part bubbles) like ChatGPT/Claude, with
+                // card decks interleaved between the prose blocks. Assistant prose is
+                // capped to a readable measure even though the thread (and the card
+                // grid) runs wider — long synthesis lines hurt readability in English.
+                return isUser ? (
+                  <div
+                    key={key}
+                    className="bg-primary text-primary-foreground max-w-[85%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap"
+                  >
+                    {part.text}
+                  </div>
+                ) : (
                   <div key={key} className="text-foreground w-full px-1 text-sm">
                     <Markdown>{part.text}</Markdown>
                   </div>
                 );
               }
-              if (
-                isToolUIPart(part) &&
-                getToolName(part) === "recommendLenses" &&
-                part.state === "output-available"
-              ) {
-                const { recommendations } = part.output as { recommendations: Recommendation[] };
-                // Bottom margin separates the grid from whatever follows (usually
-                // the next group's heading). Prose headings zero their own top
-                // margin as a first-child, so without this they glue to the cards.
-                return (
-                  <div key={key} className="mb-4 w-full">
-                    <RecommendationDeck recommendations={recommendations} locale={locale} />
-                  </div>
-                );
-              }
-              if (
-                isToolUIPart(part) &&
-                getToolName(part) === "listLenses" &&
-                part.state === "output-available"
-              ) {
-                const { lenses, columns, caption } = part.output as {
-                  lenses: ResolvedLens[];
-                  columns: LensTableColumn[];
-                  caption: string | null;
-                };
-                return (
-                  <div key={key} className="mb-4 w-full">
-                    <LensTable lenses={lenses} columns={columns} caption={caption} />
-                  </div>
-                );
-              }
-              if (debug && isToolUIPart(part)) {
-                return <ToolTrace key={key} part={part} />;
+              if (isToolUIPart(part)) {
+                return <ToolPart key={key} part={part} locale={locale} debug={debug} />;
               }
               return null;
             })}

@@ -43,6 +43,14 @@ export function lensRef(id: string): string {
   return (hash32(id) % SPACE).toString(36).padStart(LENS_REF_LENGTH, "0");
 }
 
+// The wire form of a lens reference in Iris's prose: [name](lens:<ref>). The prefix and
+// the parse live together so neither the renderer nor the eval has to know how long it is.
+export const LENS_LINK_PREFIX = "lens:";
+
+export function parseLensLink(href: string | undefined): string | null {
+  return href?.startsWith(LENS_LINK_PREFIX) ? href.slice(LENS_LINK_PREFIX.length) : null;
+}
+
 // ref -> lens, for turning what the model wrote back into a real lens.
 export function buildRefIndex(lenses: Lens[]): Map<string, Lens> {
   return new Map(lenses.map((lens) => [lensRef(lens.id), lens]));

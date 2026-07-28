@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { readUIMessageStream } from "ai";
 // The real implementation, not a copy of it: a second version of the hash would drift
 // silently and the eval would just measure the wrong thing. Node strips the types.
-import { lensRef } from "../../src/lib/ai/lens-ref.ts";
+import { lensRef, LENS_LINK_PREFIX } from "../../src/lib/ai/lens-ref.ts";
 
 const ENDPOINT = "http://localhost:3000/api/chat";
 
@@ -16,6 +16,9 @@ const ENDPOINT = "http://localhost:3000/api/chat";
 // module's imports are `@/` aliases, which only TypeScript and the bundler resolve, and
 // teaching plain Node to follow them costs more than it saves for a manual harness.
 // Both mounts — a G-mount case would otherwise find no refs at all.
+// Matches the scheme the renderer parses, built from the same prefix.
+const LENS_LINK_RE = new RegExp(`\\]\\(${LENS_LINK_PREFIX}([^)\\s]+)\\)`, "g");
+
 const REF_TO_ID = new Map(
   ["lenses.json", "lenses-gfx.json"]
     .flatMap((file) =>
@@ -255,7 +258,7 @@ export default class AskIrisProvider {
       }
     }
     const transcript = convo.join("\n\n") || "(empty)";
-    const linkRefs = [...transcript.matchAll(/\]\(lens:([^)\s]+)\)/g)].map((m) => m[1]);
+    const linkRefs = [...transcript.matchAll(LENS_LINK_RE)].map((m) => m[1]);
     return {
       output: transcript,
       metadata: {
