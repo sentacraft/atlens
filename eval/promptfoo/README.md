@@ -17,6 +17,10 @@ OPENAI_API_KEY=$(grep '^OPENAI_API_KEY=' .env.local | cut -d= -f2-) \
 npx promptfoo@latest view      # local web UI: browse results, compare runs
 ```
 
+`provider.mjs` imports `src/lib/ai/lens-ref.ts` directly rather than restating the hash,
+so it needs the repo's pinned Node (see `.nvmrc`) for type stripping — a second copy of
+that function would drift silently and the eval would measure the wrong thing.
+
 This is a **manual** eval, deliberately not wired into per-PR CI: it needs the app running
 plus a DeepSeek key for the agent, and the judge needs an OpenAI key that must never reach
 public CI.

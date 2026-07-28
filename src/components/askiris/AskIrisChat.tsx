@@ -11,6 +11,8 @@ import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { useTestHookOption } from "@/context/TestHookProvider";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
+import { LensLinkProvider } from "@/components/askiris/LensLinkContext";
+import type { LensLinkIndex } from "@/lib/ai/lens-ref";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisDivider from "@/components/askiris/AskIrisDivider";
@@ -62,7 +64,15 @@ function classifyError(error: Error | undefined): ErrorDisplay {
 // (centered hero) before the first message, and the chat thread after. mount
 // comes from the effective-mount preference and locale from the route; both go
 // through the transport body so the server scopes the agent and its language.
-export default function AskIrisChat({ locale, initialQuery }: { locale: string; initialQuery?: string }) {
+export default function AskIrisChat({
+  locale,
+  initialQuery,
+  lensIndex,
+}: {
+  locale: string;
+  initialQuery?: string;
+  lensIndex: LensLinkIndex;
+}) {
   const t = useTranslations("AskIris");
   const tMount = useTranslations("MountSwitcher");
   const mount = useEffectiveMount();
@@ -220,6 +230,21 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
     }
   }, [messages]);
 
+  // `archived` only grows when a topic closes (the new-topic button or a mount
+  // switch), appending its divider; jump to that divider so the fresh thread is in
+  // view instead of leaving the user parked up in the archived history. Re-pins so
+  // the next turn's stream follows.
+  useEffect(() => {
+    if (archived.length === 0) {
+      return;
+    }
+    const el = scrollRef.current;
+    if (el) {
+      el.scrollTo({ top: el.scrollHeight });
+      pinnedRef.current = true;
+    }
+  }, [archived]);
+
   const shell = "mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4";
 
   // Skip the hero when a hand-off query is pending: it fires on mount and fills the
@@ -239,78 +264,90 @@ export default function AskIrisChat({ locale, initialQuery }: { locale: string; 
   }
 
   return (
-    <div className={shell}>
-      <div className="relative min-h-0 flex-1">
-        <div
-          ref={scrollRef}
-          onScroll={handleScroll}
-          className="h-full space-y-4 overflow-y-auto pt-4 pr-3 pb-6 [scrollbar-width:thin] [scrollbar-color:rgb(212_212_216)_transparent] dark:[scrollbar-color:rgb(63_63_70)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300/70 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700/70"
-        >
-          {archived.map((item, i) =>
-            item.kind === "divider" ? (
-              <AskIrisDivider key={`d${i}`} label={item.label} />
-            ) : (
-              <AskIrisThread key={`s${i}`} messages={item.messages} locale={locale} debug={debug} />
-            ),
-          )}
-          <AskIrisThread messages={renderMessages} locale={locale} debug={debug} busy={isBusy} />
-          {/* Surface a failed turn: useChat catches request/stream errors into
-              status "error" but renders nothing on its own. Only the transient
-              case offers a retry (inline verb, re-runs the last turn with
-              mount/locale); a rate-limit or outage just states what happened. */}
-          {errorKind && (
-            <div role="alert" className="px-1 text-sm text-zinc-500 dark:text-zinc-400">
-              {errorKind === "transient" ? (
-                t.rich("errorRetry", {
-                  retry: (chunks) => (
-                    <button
-                      type="button"
-                      onClick={() => regenerate({ body: { mount, locale, segmentId: currentSegmentId() } })}
-                      className="font-medium text-zinc-700 underline underline-offset-2 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
-                    >
-                      {chunks}
-                    </button>
-                  ),
-                })
+    <LensLinkProvider index={lensIndex}>
+      <div className={shell}>
+        <div className="relative min-h-0 flex-1">
+          <div
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="h-full space-y-4 overflow-y-auto pt-4 pr-3 pb-6 [scrollbar-width:thin] [scrollbar-color:rgb(212_212_216)_transparent] dark:[scrollbar-color:rgb(63_63_70)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300/70 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700/70"
+          >
+            {archived.map((item, i) =>
+              item.kind === "divider" ? (
+                <AskIrisDivider key={`d${i}`} label={item.label} />
               ) : (
-                <span>{t(ERROR_MESSAGE_KEY[errorKind])}</span>
-              )}
-            </div>
-          )}
+                <AskIrisThread
+                  key={`s${i}`}
+                  messages={item.messages}
+                  locale={locale}
+                  debug={debug}
+                />
+              ),
+            )}
+            <AskIrisThread
+              messages={renderMessages}
+              locale={locale}
+              debug={debug}
+              busy={isBusy}
+            />
+            {/* Surface a failed turn: useChat catches request/stream errors into
+                status "error" but renders nothing on its own. Only the transient
+                case offers a retry (inline verb, re-runs the last turn with
+                mount/locale); a rate-limit or outage just states what happened. */}
+            {errorKind && (
+              <div role="alert" className="px-1 text-sm text-zinc-500 dark:text-zinc-400">
+                {errorKind === "transient" ? (
+                  t.rich("errorRetry", {
+                    retry: (chunks) => (
+                      <button
+                        type="button"
+                        onClick={() => regenerate({ body: { mount, locale, segmentId: currentSegmentId() } })}
+                        className="font-medium text-zinc-700 underline underline-offset-2 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                      >
+                        {chunks}
+                      </button>
+                    ),
+                  })
+                ) : (
+                  <span>{t(ERROR_MESSAGE_KEY[errorKind])}</span>
+                )}
+              </div>
+            )}
+          </div>
+          {/* Edge fades as overlays (not a container mask) so the scrollbar stays
+              crisp; each shows only when there's more thread that way. Inset from
+              the right so they clear the scrollbar. */}
+          <div
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute top-0 right-3 left-0 h-8 bg-gradient-to-b from-background to-transparent transition-opacity duration-200",
+              canScrollUp ? "opacity-100" : "opacity-0",
+            )}
+          />
+          <div
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute right-3 bottom-0 left-0 h-10 bg-gradient-to-t from-background to-transparent transition-opacity duration-200",
+              canScrollDown ? "opacity-100" : "opacity-0",
+            )}
+          />
         </div>
-        {/* Edge fades as overlays (not a container mask) so the scrollbar stays
-            crisp; each shows only when there's more thread that way. Inset from
-            the right so they clear the scrollbar. */}
-        <div
-          aria-hidden
-          className={cn(
-            "pointer-events-none absolute top-0 right-3 left-0 h-8 bg-gradient-to-b from-background to-transparent transition-opacity duration-200",
-            canScrollUp ? "opacity-100" : "opacity-0",
-          )}
-        />
-        <div
-          aria-hidden
-          className={cn(
-            "pointer-events-none absolute right-3 bottom-0 left-0 h-10 bg-gradient-to-t from-background to-transparent transition-opacity duration-200",
-            canScrollDown ? "opacity-100" : "opacity-0",
-          )}
-        />
-      </div>
 
-      <div className="shrink-0 py-4">
-        <AskIrisComposer
-          size="md"
-          value={input}
-          onChange={setInput}
-          onSubmit={() => submitText(input)}
-          disabled={isBusy}
-          placeholder={t("placeholder")}
-          sendLabel={t("send")}
-          onNewTopic={() => startNewSegment(t("newTopic"))}
-          newTopicLabel={t("newChat")}
-          newTopicDisabled={renderMessages.length === 0}
-        />
+        <div className="shrink-0 py-4">
+          <AskIrisComposer
+            size="md"
+            value={input}
+            onChange={setInput}
+            onSubmit={() => submitText(input)}
+            disabled={isBusy}
+            placeholder={t("placeholder")}
+            sendLabel={t("send")}
+            onNewTopic={() => startNewSegment(t("newTopic"))}
+            newTopicLabel={t("newChat")}
+            newTopicDisabled={renderMessages.length === 0}
+          />
+        </div>
       </div>
-    </div>
+    </LensLinkProvider>
   );
 }

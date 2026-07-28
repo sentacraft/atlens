@@ -64,7 +64,7 @@ defaultTest:
       value: "context.metadata.pickGroups.every((g) => g.length <= 6)"
     - type: javascript # picks were recalled this turn, not conjured
       metric: programmatic
-      value: "context.metadata.picks.every((p) => context.metadata.recalledIds.includes(p.id))"
+      value: "context.metadata.picks.every((p) => context.metadata.recalledRefs.includes(p.ref))"
     - type: javascript # every pick carries a non-empty reason
       metric: programmatic
       value: "context.metadata.picks.every((p) => p.reason && p.reason.trim())"
