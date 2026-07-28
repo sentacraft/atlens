@@ -5,26 +5,15 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { readUIMessageStream } from "ai";
+// The real implementation, not a copy of it: a second version of the hash would drift
+// silently and the eval would just measure the wrong thing. Node strips the types.
+import { lensRef } from "../../src/lib/ai/lens-ref.ts";
 
 const ENDPOINT = "http://localhost:3000/api/chat";
 
 // Every real lens ref. A `lens:<ref>` link is legitimate exactly when the renderer can
 // resolve it, and the renderer checks the catalogue — not what this turn recalled, since
 // a link back to a lens from an earlier turn still resolves and still clicks through.
-// Mirrors src/lib/ai/lens-ref.ts; kept in sync by the assertions failing loudly if not.
-function lensRef(id) {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < id.length; i++) {
-    h = Math.imul(h ^ id.charCodeAt(i), 0x01000193);
-  }
-  h ^= h >>> 16;
-  h = Math.imul(h, 0x85ebca6b);
-  h ^= h >>> 13;
-  h = Math.imul(h, 0xc2b2ae35);
-  h ^= h >>> 16;
-  return ((h >>> 0) % 36 ** 5).toString(36).padStart(5, "0");
-}
-
 const CATALOGUE = JSON.parse(
   readFileSync(
     path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "src/data/lenses.json"),
