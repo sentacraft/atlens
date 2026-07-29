@@ -19,6 +19,11 @@ const ENDPOINT = "http://localhost:3000/api/chat";
 // Matches the scheme the renderer parses, built from the same prefix.
 const LENS_LINK_RE = new RegExp(`\\]\\(${LENS_LINK_PREFIX}([^)\\s]+)\\)`, "g");
 
+// The same links, whole, so the judge can be handed what a reader actually sees. The
+// renderer turns `[name](lens:ref)` into a clickable name; a judge shown the raw form
+// reads the ref as leaked internals and fails the reply for doing what the prompt asks.
+const LENS_LINK_DISPLAY_RE = new RegExp(`\\[([^\\]]+)\\]\\(${LENS_LINK_PREFIX}[^)\\s]+\\)`, "g");
+
 const REF_TO_ID = new Map(
   ["lenses.json", "lenses-gfx.json"]
     .flatMap((file) =>
@@ -258,9 +263,10 @@ export default class AskIrisProvider {
       }
     }
     const transcript = convo.join("\n\n") || "(empty)";
+    // Refs come off the raw text; the graders get the rendered form.
     const linkRefs = [...transcript.matchAll(LENS_LINK_RE)].map((m) => m[1]);
     return {
-      output: transcript,
+      output: transcript.replace(LENS_LINK_DISPLAY_RE, "$1"),
       metadata: {
         // Inline lens references, resolved back to ids so a failing assertion names a
         // lens rather than an opaque handle, plus the ones no catalogue entry backs —

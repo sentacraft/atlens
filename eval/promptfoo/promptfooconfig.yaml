@@ -76,6 +76,23 @@ defaultTest:
     - type: javascript # cine catalogue not opened unless asked
       metric: programmatic
       value: 'context.vars.wantsCine === true || context.metadata.queries.every((q) => q.input.usage !== "cine")'
+    - type: javascript # every inline lens link resolves — an unknown ref renders as dead plain text
+      metric: programmatic
+      value: "context.metadata.unknownLinkIds.length === 0"
+    - type: javascript # searchLensByName is for models the user named, not for fishing out ones it already had in mind
+      metric: programmatic
+      value: "context.vars.namesModels === true || context.metadata.searches.length === 0"
+    # A lens the reply puts in front of the user is backed by a card or a table row —
+    # a prose link is not a substitute for one. Exempt when the user named the models
+    # themselves: answering a question about a lens someone asked about by name is not
+    # recommending it, and those cases assert their own no-deck shape.
+    - type: javascript
+      metric: programmatic
+      value: >-
+        context.vars.namesModels === true ||
+        context.metadata.linkIds.every((id) =>
+          context.metadata.picks.some((p) => p.id === id) ||
+          context.metadata.tables.some((t) => t.ids.includes(id)))
     - type: javascript # replied in the requested locale (\u4e00-\u9fff = any CJK ideograph)
       metric: programmatic
       value: 'context.vars.locale !== "zh" || /[\u4e00-\u9fff]/.test(output)'
@@ -243,6 +260,7 @@ tests:
     vars:
       mount: X
       locale: zh
+      namesModels: true
       dialog:
         turns:
           - "富士 XF35mm F1.4 R 这支镜头大概多重？"
@@ -276,6 +294,7 @@ tests:
     vars:
       mount: X
       locale: zh
+      namesModels: true
       dialog:
         turns:
           - "富士 XF33mm F1.4 和 XF23mm F1.4 我到底该买哪个？直接告诉我买哪个就行。"
@@ -325,11 +344,54 @@ tests:
           the factors that should actually drive the choice; if it quietly spends up
           to the budget and pushes the most expensive picks, it fails.
 
+  # Guard: a budget that cannot buy what was asked for — say so, don't quietly serve
+  # something that misses the spec as though it met it. No budgetCNY var on purpose:
+  # relaxing the budget out loud is a correct answer here, and the default over-budget
+  # check would fail exactly that.
+  - description: guard-budget-tight
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "想要一支富士 X 卡口 F1.2 的大光圈人像镜头，预算 800 以内。"
+    assert:
+      - type: llm-rubric # names the gap between budget and spec instead of silently substituting
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          Nothing on this mount meets both the stated aperture and the stated budget.
+          The reply should say so plainly and either ask which constraint to relax or
+          state which one it relaxed and why; it fails if it presents lenses that miss
+          the stated aperture as if they answered the request, or silently drops either
+          constraint without saying so.
+
+  # Guard: constraints that cannot hold together — name the conflict rather than
+  # picking a winner among them without saying so.
+  - description: guard-conflicting-constraints
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "想要一支又小又轻能揣兜里的镜头，同时要 F1.4 恒定光圈，还得能拍到 200mm。"
+    assert:
+      - type: llm-rubric # surfaces the conflict and asks which constraint gives
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          These constraints cannot hold together in one lens — that much reach at that
+          aperture cannot be pocketable. The reply should name the conflict and ask
+          which constraint gives, rather than answering as though the combination
+          existed; it fails if it recommends lenses without acknowledging that the
+          request is not satisfiable as stated.
+
   # Guard: it may state a price or gap, but must flag it's a dated sample and point to the page.
   - description: guard-price-hedged
     vars:
       mount: X
       locale: zh
+      namesModels: true
       dialog:
         turns:
           - "富士 XF23mm F1.4 和 XF33mm F1.4 现在差多少钱？"

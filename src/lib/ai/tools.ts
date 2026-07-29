@@ -259,8 +259,8 @@ export function buildLensTools(
 
     listLenses: tool({
       description:
-        "Lay out already-recalled lenses as a neutral spec table; their names link to each " +
-        "lens's page. Pass refs from a prior queryLenses/searchLensByName result.",
+        "Lay out already-recalled lenses as a spec table; their names link to each lens's " +
+        "page. Pass refs from a prior queryLenses/searchLensByName result.",
       inputSchema: z.object({
         refs: z
           .array(z.string())

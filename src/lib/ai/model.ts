@@ -79,6 +79,24 @@ export function getAgentModel(): LanguageModel {
         apiKey: process.env.ZHIPU_API_KEY,
         transformRequestBody: (args) => ({ ...args, thinking: { type: "disabled" } }),
       }).chatModel(modelId);
+    case "dashscope":
+      // Qwen's first-party endpoint, OpenAI-compatible. Reasoning is on unless switched
+      // off, and it is off for the same reason as everywhere else: measured on
+      // qwen3.7-plus with an 8k-token prompt, a turn takes 12.1s with it and 1.9s
+      // without, and the agent pays that on every step.
+      //
+      // Nothing here marks an explicit cache. Qwen caches a matching prefix on its own
+      // at 20% of the input price and measures 95% hits on this workload; the explicit
+      // path would halve that rate, but it can only be marked on a message block and
+      // needs 1024 tokens to create one, and the prompt is 582. What would clear the
+      // floor is the tool schema, which rides in its own request field and cannot carry
+      // the mark.
+      return createOpenAICompatible({
+        name: "dashscope",
+        baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        apiKey: process.env.DASHSCOPE_API_KEY,
+        transformRequestBody: (args) => ({ ...args, enable_thinking: false }),
+      }).chatModel(modelId);
     case "openrouter":
       // OpenRouter speaks the OpenAI wire format behind a different base URL, so one
       // gateway key reaches every vendor's model — which is what makes a candidate sweep
@@ -109,6 +127,7 @@ const KEY_VAR: Record<string, string> = {
   openai: "OPENAI_API_KEY",
   google: "GOOGLE_GENERATIVE_AI_API_KEY",
   zhipu: "ZHIPU_API_KEY",
+  dashscope: "DASHSCOPE_API_KEY",
   openrouter: "OPENROUTER_API_KEY",
 };
 
