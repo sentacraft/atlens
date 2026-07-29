@@ -38,13 +38,10 @@ export function buildLensTools(
   return {
     queryLenses: tool({
       description:
-        "Recall lenses by objective specs for a need-based request. Every parameter is a " +
-        "hard constraint that excludes non-matching lenses, and an unset parameter leaves " +
-        "that axis unrestricted — so a parameter is only ever set to a requirement the " +
-        "request actually makes. Returns { matches (meet every " +
-        "constraint), maybe (a constrained field has no data for that lens — surface " +
-        "these honestly, never drop them), totalMatched, totalMaybe }. matches/maybe are " +
-        `capped at the top ${RECALL_LIMIT} by your sort; totalMatched is the full count beyond the ` +
+        "Recall lenses by spec. Every parameter is a hard constraint, so set one only for a " +
+        "requirement the request makes; an unset one leaves that axis unrestricted. `maybe` " +
+        "holds lenses with no data on a constrained field — surface them, never drop them. " +
+        `Results are capped at ${RECALL_LIMIT} by your sort, totalMatched is the count beyond the ` +
         "cap, and there is no paging.",
       inputSchema: z.object({
         brands: z
@@ -60,32 +57,29 @@ export function buildLensTools(
           .enum(["photo", "cine"])
           .optional()
           .describe(
-            "Which catalogue to search. Defaults to photo; cine lenses are excluded unless set to cine.",
+            "Defaults to photo; cine lenses appear only when set to cine.",
           ),
         features: z
           .array(z.enum(FILTER_FEATURE_KEYS))
           .optional()
           .describe(
-            "Lens must have ALL of these. ois = stabilization, wr = weather-resistant, " +
-              "apertureRing, powerZoom, internalZoom.",
+            "Lens must have ALL of these. ois = stabilization, wr = weather-resistant.",
           ),
         opticalTraits: z
           .array(z.enum(OPTICAL_TRAITS))
           .optional()
           .describe(
             "Restrict to lenses having any of these. fisheye/tilt/shift/anamorphic/probe " +
-              "are hidden by default and appear ONLY when named here; macro is always available.",
+              "appear only when named here; macro always appears.",
           ),
         coversFocals: z
           .array(z.number())
           .optional()
           .describe(
-            "Native focal length(s) in mm — the number printed on the lens (a 56mm lens is 56), " +
-              "not the full-frame equivalent — that the lens must be able to shoot, matched within " +
-              "a small tolerance. Each value is required independently: the lens's focal range must " +
-              "include every one of them, not merely the span between them. A prime is a single " +
-              "focal, so it can satisfy at most one value near that focal — passing two or more " +
-              "values excludes every prime.",
+            "Native focal lengths in mm (the number printed on the lens, not the full-frame " +
+              "equivalent) the lens must reach, matched within a small tolerance. Each value is " +
+              "required independently, so the lens's range must include every one — two or more " +
+              "values exclude every prime.",
           ),
         // An object rather than a [min, max] tuple: a tuple compiles to prefixItems, which
         // the OpenAPI-3.0 subset behind Google's function declarations rejects outright.
@@ -94,10 +88,8 @@ export function buildLensTools(
           .object({ min: z.number().optional(), max: z.number().optional() })
           .optional()
           .describe(
-            "Native focal length window in mm (the number printed on the lens, not the " +
-              "full-frame equivalent); an omitted end leaves that side open. The lens's ENTIRE " +
-              "focal range must lie inside the window: a zoom passes only if both its ends are " +
-              "inside, a prime passes if its single focal is inside.",
+            "Native focal window in mm (the number printed on the lens, not the full-frame " +
+              "equivalent); an omitted end is open. The lens's ENTIRE focal range must lie inside it.",
           ),
         minReach: z
           .number()
@@ -119,8 +111,7 @@ export function buildLensTools(
           .object({ wide: z.number().optional(), tele: z.number().optional() })
           .optional()
           .describe(
-            "f-number ceiling (smaller = wider), a hard bound. wide bounds the wide-end " +
-              "aperture, tele the long-end aperture.",
+            "f-number ceiling at each zoom end (smaller = wider); a hard bound.",
           ),
         maxPrice: z
           .number()
@@ -130,14 +121,13 @@ export function buildLensTools(
           .number()
           .optional()
           .describe(
-            "Minimum magnification ratio (0.5 = half life-size, 1 = 1:1 true macro); a hard lower bound.",
+            "Minimum magnification ratio (1 = life-size); a hard lower bound.",
           ),
         minApertureBladeCount: z
           .number()
           .optional()
           .describe(
-            "Minimum aperture blade count; a hard lower bound. More blades keep the aperture " +
-              "opening rounder when stopped down.",
+            "Minimum aperture blade count; a hard lower bound.",
           ),
         minReleaseYear: z
           .number()
@@ -264,10 +254,8 @@ export function buildLensTools(
 
     listLenses: tool({
       description:
-        "Lay out already-recalled lenses as a neutral spec table — their names link to " +
-        "each lens's page, and the columns you choose sit side by side. It carries no " +
-        "reasons and takes no position; the user reads the specs and judges. Pass refs " +
-        "from a prior queryLenses/searchLensByName result.",
+        "Lay out already-recalled lenses as a neutral spec table; their names link to each " +
+        "lens's page. Pass refs from a prior queryLenses/searchLensByName result.",
       inputSchema: z.object({
         refs: z
           .array(z.string())
