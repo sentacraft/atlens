@@ -1,6 +1,7 @@
 import { deepseek } from "@ai-sdk/deepseek";
 import { google } from "@ai-sdk/google";
-import { openai, createOpenAI } from "@ai-sdk/openai";
+import { openai } from "@ai-sdk/openai";
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import type { LanguageModel } from "ai";
 
 // Iris's production model — the single source of truth. DeepSeek v4-flash is cheap
@@ -37,35 +38,37 @@ export function getAgentModel(): LanguageModel {
       // stay reliable, and a translation layer in between is where they get dropped.
       return google(modelId);
     case "zhipu":
-      // Zhipu's own endpoint speaks the OpenAI wire format. The base URL stops at /v4 with
-      // no trailing slash: the SDK appends /chat/completions to it, and a client that adds
-      // a /v1 of its own 404s here.
+      // Zhipu's endpoint speaks the OpenAI wire format but is not OpenAI, so it goes
+      // through the openai-compatible provider — which is also where a body field the
+      // OpenAI schema has no slot for is allowed to live. The base URL stops at /v4 with
+      // no trailing slash: the SDK appends /chat/completions, and a client that adds a
+      // /v1 of its own 404s here.
       //
       // GLM reasons before answering unless told not to, and omitting the field is not
       // neutral — it means enabled. Measured on glm-5-turbo with an 8k-token prompt, the
       // first token takes 14.8s left alone and 0.8s with it off, and the agent pays that
-      // once per step. `thinking` is Zhipu's own field, not OpenAI's, so the SDK has no
-      // slot for it and it goes on the wire here.
-      return createOpenAI({
+      // on every step. It is off for every Zhipu model rather than per call, so it belongs
+      // on the provider, not in the caller's providerOptions.
+      return createOpenAICompatible({
+        name: "zhipu",
         baseURL: "https://open.bigmodel.cn/api/paas/v4",
         apiKey: process.env.ZHIPU_API_KEY,
-        fetch: (input, init) => {
-          const body = init?.body;
-          if (typeof body !== "string") {
-            return fetch(input, init);
-          }
-          const merged = { ...JSON.parse(body), thinking: { type: "disabled" } };
-          return fetch(input, { ...init, body: JSON.stringify(merged) });
-        },
-      }).chat(modelId);
+        transformRequestBody: (args) => ({ ...args, thinking: { type: "disabled" } }),
+      }).chatModel(modelId);
     case "openrouter":
-      // OpenRouter speaks the OpenAI wire format, so the same provider talks to it with
-      // a different base URL — one gateway key reaches every vendor's model, which is
-      // what makes a candidate sweep cheap.
-      return createOpenAI({
+      // OpenRouter speaks the OpenAI wire format behind a different base URL, so one
+      // gateway key reaches every vendor's model — which is what makes a candidate sweep
+      // cheap. It normalises reasoning across vendors under its own field and drops the
+      // upstream one: measured on glm-4.7, `thinking: disabled` sent through here still
+      // came back with reasoning and a 40s first token, while `reasoning: { enabled:
+      // false }` took it to 1.5s. A sweep that leaves it on measures reasoning latency
+      // rather than the candidate.
+      return createOpenAICompatible({
+        name: "openrouter",
         baseURL: "https://openrouter.ai/api/v1",
         apiKey: process.env.OPENROUTER_API_KEY,
-      }).chat(modelId);
+        transformRequestBody: (args) => ({ ...args, reasoning: { enabled: false } }),
+      }).chatModel(modelId);
     default:
       throw new Error(
         `AGENT_MODEL has an unknown provider "${activeProvider()}" (expected deepseek|openai|google|zhipu|openrouter)`,
