@@ -276,20 +276,10 @@ export default function AskIrisChat({
               item.kind === "divider" ? (
                 <AskIrisDivider key={`d${i}`} label={item.label} />
               ) : (
-                <AskIrisThread
-                  key={`s${i}`}
-                  messages={item.messages}
-                  locale={locale}
-                  debug={debug}
-                />
+                <AskIrisThread key={`s${i}`} messages={item.messages} debug={debug} />
               ),
             )}
-            <AskIrisThread
-              messages={renderMessages}
-              locale={locale}
-              debug={debug}
-              busy={isBusy}
-            />
+            <AskIrisThread messages={renderMessages} debug={debug} busy={isBusy} />
             {/* Surface a failed turn: useChat catches request/stream errors into
                 status "error" but renders nothing on its own. Only the transient
                 case offers a retry (inline verb, re-runs the last turn with
