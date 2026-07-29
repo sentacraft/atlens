@@ -583,22 +583,14 @@ export interface RecommendationGroup {
   title: string | null;
 }
 
-export interface PickGroup {
-  title?: string;
-  picks: { ref: string; reason: string }[];
-}
-
-// Every group of one turn's picks, rendered from a single call. Grouping used to mean
-// calling this once per group, and each call is a separate generation step: on a model
-// whose first token costs seconds, a three-group answer paid that three times over for a
-// split the reader sees all at once anyway.
 export function recommendLenses(
   mount: Mount,
   locale: string,
-  groups: PickGroup[],
+  picks: { ref: string; reason: string }[],
+  title: string | undefined,
   tBrand: (brand: string) => string,
   recalledRefs: Set<string>,
-): { groups: RecommendationGroup[] } {
+): RecommendationGroup {
   const byRef = buildRefIndex(getLensesByMount(mount, locale));
   // Fail loud on a lens the model never recalled — one it conjured from memory or a ref
   // it altered. Only refs returned by a queryLenses/searchLensByName call this turn are
@@ -620,9 +612,7 @@ export function recommendLenses(
       }
       return { ...resolveLens(lens, locale, tBrand), reason: pick.reason };
     });
-  return {
-    groups: groups.map((g) => ({ recommendations: resolve(g.picks), title: g.title ?? null })),
-  };
+  return { recommendations: resolve(picks), title: title ?? null };
 }
 
 // Resolve a set of already-recalled ids into a neutral spec table — no reasons, the
