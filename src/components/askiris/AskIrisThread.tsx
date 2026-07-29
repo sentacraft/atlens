@@ -1,3 +1,5 @@
+"use client";
+
 import {
   getToolName,
   isToolUIPart,
@@ -69,11 +71,9 @@ function ToolTrace({ part }: { part: ToolUIPart | DynamicToolUIPart }) {
 // of a turn inspectable without changing what a normal reader sees.
 function ToolPart({
   part,
-  locale,
   debug,
 }: {
   part: ToolUIPart | DynamicToolUIPart;
-  locale: string;
   debug: boolean;
 }) {
   if (part.state === "output-available") {
@@ -85,7 +85,7 @@ function ToolPart({
         // so without this they glue to the cards.
         return (
           <div className="mb-4 w-full">
-            <RecommendationDeck recommendations={recommendations} locale={locale} />
+            <RecommendationDeck recommendations={recommendations} />
           </div>
         );
       }
@@ -143,12 +143,10 @@ function activityKey(messages: UIMessage[], busy: boolean, debug: boolean): Acti
 
 export default function AskIrisThread({
   messages,
-  locale,
   debug = false,
   busy = false,
 }: {
   messages: UIMessage[];
-  locale: string;
   debug?: boolean;
   busy?: boolean;
 }) {
@@ -198,7 +196,7 @@ export default function AskIrisThread({
                 );
               }
               if (isToolUIPart(part)) {
-                return <ToolPart key={key} part={part} locale={locale} debug={debug} />;
+                return <ToolPart key={key} part={part} debug={debug} />;
               }
               return null;
             })}

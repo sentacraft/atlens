@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useLocale } from "next-intl";
 import { Weight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
@@ -17,15 +18,13 @@ import type { Recommendation } from "@/lib/ai/recall";
 // essay the reader has to map back onto a card.
 export default function RecommendationDeck({
   recommendations,
-  locale,
 }: {
   recommendations: Recommendation[];
-  locale: string;
 }) {
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       {recommendations.map((rec) => (
-        <RecommendationCard key={rec.id} rec={rec} locale={locale} />
+        <RecommendationCard key={rec.id} rec={rec} />
       ))}
     </div>
   );
@@ -49,7 +48,8 @@ function priceParts(
 // Two rows: a header (thumbnail + name + price/weight) and the reason on its own
 // full-width row below, so the reason spans the whole card instead of a narrow
 // column beside the thumbnail — fewer wrapped lines, better use of the space.
-function RecommendationCard({ rec, locale }: { rec: Recommendation; locale: string }) {
+function RecommendationCard({ rec }: { rec: Recommendation }) {
+  const locale = useLocale();
   const weight = rec.weightG != null ? weightDisplay(rec.weightG, "g") : null;
   const price = rec.price ? priceParts(rec.price, locale) : null;
 
