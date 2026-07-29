@@ -70,7 +70,7 @@ export function buildLensTools(
           .optional()
           .describe(
             "Restrict to lenses having any of these. fisheye/tilt/shift/anamorphic/probe " +
-              "are hidden by default and appear ONLY when named here; macro is always available.",
+              "appear only when named here; macro always appears.",
           ),
         coversFocals: z
           .array(z.number())
@@ -111,8 +111,7 @@ export function buildLensTools(
           .object({ wide: z.number().optional(), tele: z.number().optional() })
           .optional()
           .describe(
-            "f-number ceiling (smaller = wider), a hard bound. wide bounds the wide-end " +
-              "aperture, tele the long-end aperture.",
+            "f-number ceiling at each zoom end (smaller = wider); a hard bound.",
           ),
         maxPrice: z
           .number()
@@ -122,7 +121,7 @@ export function buildLensTools(
           .number()
           .optional()
           .describe(
-            "Minimum magnification ratio (0.5 = half life-size, 1 = 1:1 true macro); a hard lower bound.",
+            "Minimum magnification ratio (1 = life-size); a hard lower bound.",
           ),
         minApertureBladeCount: z
           .number()
@@ -255,10 +254,8 @@ export function buildLensTools(
 
     listLenses: tool({
       description:
-        "Lay out already-recalled lenses as a neutral spec table — their names link to " +
-        "each lens's page, and the columns you choose sit side by side. It carries no " +
-        "reasons and takes no position; the user reads the specs and judges. Pass refs " +
-        "from a prior queryLenses/searchLensByName result.",
+        "Lay out already-recalled lenses as a neutral spec table; their names link to each " +
+        "lens's page. Pass refs from a prior queryLenses/searchLensByName result.",
       inputSchema: z.object({
         refs: z
           .array(z.string())
