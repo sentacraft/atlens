@@ -92,6 +92,32 @@ describe("recallLenses · filter correctness (precision / recall on labelled que
   });
 });
 
+// Sorting is on the raw value with asc as the default, so for four of the nine axes the
+// end a request usually wants — the longest reach, the most magnification, the widest
+// zoom range, the newest lens — is the one asc puts LAST, where the RECALL_LIMIT cap then
+// cuts it off. sortDir's description is what tells the model that; these pin the runtime
+// side of it so the two can't drift apart silently.
+describe("recallLenses · sort direction", () => {
+  const firstValue = (constraints: LensConstraints, read: (l: RecalledLens) => number | null) =>
+    read(recall(constraints, RECALL_LIMIT).matches[0]);
+
+  it.each([
+    ["reach", (l: RecalledLens) => l.focalNativeMm[1]],
+    ["zoomRatio", (l: RecalledLens) => l.focalNativeMm[1] / l.focalNativeMm[0]],
+  ] as const)("%s ranks low-end-first under asc and high-end-first under desc", (sortBy, read) => {
+    const asc = firstValue({ type: "zoom", sortBy }, read);
+    const desc = firstValue({ type: "zoom", sortBy, sortDir: "desc" }, read);
+    expect(asc).not.toBeNull();
+    expect(desc as number).toBeGreaterThan(asc as number);
+  });
+
+  it("weightG already leads with the lightest under asc, so it needs no sortDir", () => {
+    const asc = firstValue({ type: "prime", sortBy: "weightG" }, (l) => l.weightG);
+    const desc = firstValue({ type: "prime", sortBy: "weightG", sortDir: "desc" }, (l) => l.weightG);
+    expect(asc as number).toBeLessThan(desc as number);
+  });
+});
+
 describe("recallLenses · truncation under the no-sortBy default", () => {
   // "Show me zooms" over-matches (35 zooms > RECALL_LIMIT). With no sortBy the default is
   // wideEnd-ascending, so in isolation the cap keeps the 20 widest zooms and drops the most

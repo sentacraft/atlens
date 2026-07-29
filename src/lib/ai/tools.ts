@@ -147,13 +147,16 @@ export function buildLensTools(
           .enum(RECALL_SORT_FIELDS)
           .optional()
           .describe(
-            "Ranks the matches by a single axis; it orders the results, it never excludes any. " +
-              "reach = longest focal reach; wideEnd = widest; " +
-              "weightG = lightest; maxAperture = fastest; length = most compact; price = " +
-              "cheapest; magnification = best close-up; zoomRatio = most versatile / one-lens; " +
-              "releaseYear = newest (with sortDir: desc).",
+            "Ranks the matches by a single axis; it orders the results, it never excludes any.",
           ),
-        sortDir: z.enum(["asc", "desc"]).optional().describe("asc (default) = smallest first."),
+        sortDir: z
+          .enum(["asc", "desc"])
+          .optional()
+          .describe(
+            "asc (default) ranks from the smallest value: lightest, cheapest, most compact, " +
+              "widest, fastest. The other four axes — reach, magnification, zoomRatio, " +
+              "releaseYear — put their desirable end first only under desc.",
+          ),
       }),
       execute: (constraints) => {
         const result = recallLenses(mount, locale, constraints, tBrand, RECALL_LIMIT);
@@ -232,7 +235,7 @@ export function buildLensTools(
     recommendLenses: tool({
       description:
         "Present picks as a grid of recommendation cards (up to 6, ordered best-first). Pass each " +
-        "lens's id from a prior queryLenses/searchLensByName result and its reason, which is " +
+        "lens's ref from a prior queryLenses/searchLensByName result and its reason, which is " +
         "shown on the lens's card.",
       inputSchema: z.object({
         picks: z
