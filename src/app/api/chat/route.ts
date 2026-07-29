@@ -10,7 +10,12 @@ import {
 import { z } from "zod";
 import { getTranslations } from "next-intl/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { getAgentModel, agentProviderOptions, AGENT_TEMPERATURE } from "@/lib/ai/model";
+import {
+  getAgentModel,
+  agentProviderOptions,
+  agentModelProblem,
+  AGENT_TEMPERATURE,
+} from "@/lib/ai/model";
 import { systemPrompt } from "@/lib/ai/system-prompt";
 import { buildLensTools } from "@/lib/ai/tools";
 import { clientIp, isBypassed, checkRateLimit, recordTokens } from "@/lib/ai/rate-limit";
@@ -48,8 +53,11 @@ const STEP_BUDGET = 8;
 const STREAM_TIMEOUT_MS = 120_000;
 
 export async function POST(req: Request) {
-  if (!process.env.DEEPSEEK_API_KEY) {
-    console.error("[askiris] DEEPSEEK_API_KEY is not set");
+  // Whichever provider AGENT_MODEL selects, not a hardcoded one — the model layer owns
+  // which key its active provider needs.
+  const modelProblem = agentModelProblem();
+  if (modelProblem) {
+    console.error(`[askiris] ${modelProblem}`);
     return chatErrorResponse("unavailable", 500);
   }
 
