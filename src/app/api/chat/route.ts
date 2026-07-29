@@ -10,7 +10,7 @@ import {
 import { z } from "zod";
 import { getTranslations } from "next-intl/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { getAgentModel, agentProviderOptions } from "@/lib/ai/model";
+import { getAgentModel, agentProviderOptions, AGENT_TEMPERATURE } from "@/lib/ai/model";
 import { systemPrompt } from "@/lib/ai/system-prompt";
 import { buildLensTools } from "@/lib/ai/tools";
 import { clientIp, isBypassed, checkRateLimit, recordTokens } from "@/lib/ai/rate-limit";
@@ -110,6 +110,7 @@ export async function POST(req: Request) {
   const result = streamText({
     model: getAgentModel(),
     providerOptions: agentProviderOptions,
+    temperature: AGENT_TEMPERATURE,
     system: systemPrompt(mount, locale),
     messages: modelMessages,
     tools,
