@@ -79,6 +79,12 @@ defaultTest:
     - type: javascript # every inline lens link resolves — an unknown ref renders as dead plain text
       metric: programmatic
       value: "context.metadata.unknownLinkIds.length === 0"
+    - type: javascript # a titled deck already names its group; a prose heading beside it says it twice
+      metric: programmatic
+      value: 'context.metadata.deckTitles.filter(Boolean).length === 0 || !/^#{1,6}\s/m.test(output)'
+    - type: javascript # tables come from listLenses, never from markdown in the reply
+      metric: programmatic
+      value: '!/^\s*\|.*\|\s*$/m.test(output)'
     - type: javascript # searchLensByName is for models the user named, not for fishing out ones it already had in mind
       metric: programmatic
       value: "context.vars.namesModels === true || context.metadata.searches.length === 0"
@@ -86,13 +92,11 @@ defaultTest:
     # a prose link is not a substitute for one. Exempt when the user named the models
     # themselves: answering a question about a lens someone asked about by name is not
     # recommending it, and those cases assert their own no-deck shape.
+    # One line, deliberately: promptfoo reads a multi-line value as a function body, and
+    # an expression written across lines then returns undefined and fails every case.
     - type: javascript
       metric: programmatic
-      value: >-
-        context.vars.namesModels === true ||
-        context.metadata.linkIds.every((id) =>
-          context.metadata.picks.some((p) => p.id === id) ||
-          context.metadata.tables.some((t) => t.ids.includes(id)))
+      value: 'context.vars.namesModels === true || context.metadata.linkIds.every((id) => context.metadata.picks.some((p) => p.id === id) || context.metadata.tables.some((t) => t.ids.includes(id)))'
     - type: javascript # replied in the requested locale (\u4e00-\u9fff = any CJK ideograph)
       metric: programmatic
       value: 'context.vars.locale !== "zh" || /[\u4e00-\u9fff]/.test(output)'
@@ -114,13 +118,14 @@ defaultTest:
       value: >-
         If the reply includes recommendation cards, it must read as a warm, concise
         advisor: each card carries its own reason line — one to three sentences on
-        what the lens is good for and its main trade-off. The prose around the cards is
+        what the lens is good for and its main trade-off. A spec table is not a card
+        deck; its rows carry no reason and this standard does not apply to them. The prose around the cards is
         connective — it frames the assumption, organizes the groups, and guides the
         choice. Overlap with a card is fine, including singling out one pick and
         briefly saying why, or mapping needs to picks to help the user decide. It fails
         only if the prose works through the set lens-by-lens, re-describing each card's
         case as a standalone write-up parallel to the cards, or if it names a specific
-        lens that has no card. A prose-only reply passes this check.
+        lens that has no card. A reply with no cards passes this check.
 
 tests:
   - description: smoke-35mm
@@ -229,7 +234,9 @@ tests:
       dialog:
         turns:
           - "想要一支富士 X 卡口的人像镜头，虚化好一点。"
-          - "预算其实只有 2000 左右，帮我在这个预算内重新推荐。"
+          # No instruction to re-recommend: turn 1 is repeatable at temperature 0, so this
+          # turn can carry only the new constraint and let the reply decide what follows.
+          - "预算其实只有 2000 左右。"
     assert:
       - type: javascript # turn 2 never restates the genre, so portrait-band picks prove "人像" carried
         metric: programmatic
@@ -406,6 +413,45 @@ tests:
           which constraint gives, rather than answering as though the combination
           existed; it fails if it recommends lenses without acknowledging that the
           request is not satisfiable as stated.
+
+  # Guard: the reply is about lenses, not about the work of finding them.
+  - description: guard-no-narration
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "想给 X-T5 配一支拍室内宠物的镜头，室内光线一般，预算 4000。"
+    assert:
+      - type: llm-rubric # no sentence whose subject is its own activity
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          The reply must not narrate its own process: no announcing what it is about to
+          do, what it is doing, or what it has just done — searching, pulling something
+          up, filtering, having found results. Restating the user's need, or working out
+          a focal-length equivalence, is content written for the user and is fine. It
+          fails on any sentence whose subject is the assistant's own activity.
+
+  # Guard: a spec the catalogue does not carry is answered as unknown, not filled in.
+  - description: guard-unknown-spec
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "富士 XF 23mm F1.4 R LM WR 是几组几片的光学结构？边缘画质怎么样？"
+    assert:
+      - type: llm-rubric # says it doesn't have the figure rather than producing one
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          Neither the optical construction (a count of elements and groups) nor any
+          measurement of edge sharpness is something this assistant holds data for. The
+          reply should say it does not have that and offer what it can speak to instead;
+          it fails if it states an element or group count, or delivers a verdict on edge
+          quality, as though either were looked up.
 
   # Guard: it may state a price or gap, but must flag it's a dated sample and point to the page.
   - description: guard-price-hedged

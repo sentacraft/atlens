@@ -111,6 +111,9 @@ function digest(msg) {
   const transcript = [];
   const picks = [];
   const pickGroups = [];
+  // What each deck called its group. The name belongs to the deck, so a heading in the
+  // prose next to one is the same name said twice.
+  const deckTitles = [];
   const tables = [];
   const queries = [];
   const searches = [];
@@ -202,7 +205,14 @@ function digest(msg) {
         group.push(rec.id);
       }
       pickGroups.push(group);
-      transcript.push(`[cards]\n${part.output.recommendations.map(formatCard).join("\n")}`);
+      deckTitles.push(part.output.title ?? null);
+      // The title rides with the deck it names, so the judge reads the group the way the
+      // page presents it rather than as an unlabelled block of cards.
+      transcript.push(
+        `[cards${part.output.title ? `: ${part.output.title}` : ""}]\n${part.output.recommendations
+          .map(formatCard)
+          .join("\n")}`,
+      );
     }
     if (name === "listLenses" && Array.isArray(part.output?.lenses)) {
       const ids = part.output.lenses.map((l) => l.id);
@@ -219,6 +229,7 @@ function digest(msg) {
     output: transcript.join("\n\n") || "(empty)",
     picks,
     pickGroups,
+    deckTitles,
     tables,
     queries,
     searches,
@@ -275,6 +286,7 @@ export default class AskIrisProvider {
         unknownLinkIds: [...new Set(linkRefs.filter((ref) => !REF_TO_ID.has(ref)))],
         picks: d.picks,
         pickGroups: d.pickGroups,
+        deckTitles: d.deckTitles,
         tables: d.tables,
         queries: d.queries,
         searches: d.searches,

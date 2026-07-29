@@ -4,20 +4,23 @@ import { openai } from "@ai-sdk/openai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import type { LanguageModel } from "ai";
 
-// Iris's production model — the single source of truth. DeepSeek v4-flash is cheap
-// and chains tools reliably; swapping it is a one-line change confined here.
+// Iris's production model — the single source of truth. Qwen3.7-plus goes through
+// Alibaba's own endpoint rather than a gateway: the list price is the same either way,
+// but first-party billing is where the promotional rate and the free allowance live,
+// and a gateway's dollar price is pegged to a fixed exchange rate that drifts against
+// the yuan one. Swapping it is a one-line change confined here.
 //
 // AGENT_MODEL is an OPTIONAL local override ("provider:modelId", e.g.
 // "google:gemini-3.5-flash-lite") for A/B-ing providers or sweeping the eval harness
 // across candidates without a code edit. Unset — the normal case, including all of
 // production — means "use the model below", so prod needs no extra env var and no
-// provider but DeepSeek enters the deployed path. This is the sanctioned
+// provider but the one above enters the deployed path. This is the sanctioned
 // optional-override case, not a config fallback: an unset value is normal, not a bug.
 // Which model production serves is decided here in code, never inferred from whether
 // some other provider's key happens to be present.
 
 // The deployed model, named once so nothing below can drift from it.
-const DEFAULT_MODEL = { provider: "deepseek", modelId: "deepseek-v4-flash" } as const;
+const DEFAULT_MODEL = { provider: "dashscope", modelId: "qwen3.7-plus" } as const;
 
 export interface AgentModelInfo {
   provider: string;
@@ -145,9 +148,11 @@ export function missingAgentModelKey(): string | null {
 export const AGENT_TEMPERATURE = 0;
 
 // Provider-specific knobs passed to streamText; the SDK reads only the block that
-// matches the active provider, so this is inert under any override. v4-flash emits
-// reasoning tokens before answering — it costs tokens and latency, and it is what
-// buys the instruction adherence the tool and format rules depend on.
+// matches the active provider, so this is inert unless an override selects DeepSeek.
+// v4-flash emits reasoning tokens before answering — it costs tokens and latency, and
+// it is what buys the instruction adherence the tool and format rules depend on. The
+// deployed model needs no entry: reasoning is switched off in its own provider branch,
+// where a body field the OpenAI schema has no slot for is the only place it can go.
 export const agentProviderOptions = {
   deepseek: { thinking: { type: "enabled" } },
 } as const;
