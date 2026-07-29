@@ -9,7 +9,7 @@ import {
   listLenses,
   resolveLens,
   toRecalled,
-  RECALL_SORT_FIELDS,
+  RECALL_SORT_NAMES,
   LENS_TABLE_COLUMNS,
 } from "@/lib/ai/recall";
 import { lensRef, buildRefIndex } from "@/lib/ai/lens-ref";
@@ -144,16 +144,13 @@ export function buildLensTools(
           .optional()
           .describe("Only lenses released in or after this year; a hard lower bound."),
         sortBy: z
-          .enum(RECALL_SORT_FIELDS)
+          .enum(RECALL_SORT_NAMES)
           .optional()
           .describe(
-            "Ranks the matches by a single axis; it orders the results, it never excludes any. " +
-              "reach = longest focal reach; wideEnd = widest; " +
-              "weightG = lightest; maxAperture = fastest; length = most compact; price = " +
-              "cheapest; magnification = best close-up; zoomRatio = most versatile / one-lens; " +
-              "releaseYear = newest (with sortDir: desc).",
+            "Which lenses lead the results. It orders them, it never excludes any, so the " +
+              "cap keeps the ones this names. fastest = widest maximum aperture; " +
+              "widestZoomRange = highest ratio of longest to shortest focal.",
           ),
-        sortDir: z.enum(["asc", "desc"]).optional().describe("asc (default) = smallest first."),
       }),
       execute: (constraints) => {
         const result = recallLenses(mount, locale, constraints, tBrand, RECALL_LIMIT);
@@ -232,7 +229,7 @@ export function buildLensTools(
     recommendLenses: tool({
       description:
         "Present picks as a grid of recommendation cards (up to 6, ordered best-first). Pass each " +
-        "lens's id from a prior queryLenses/searchLensByName result and its reason, which is " +
+        "lens's ref from a prior queryLenses/searchLensByName result and its reason, which is " +
         "shown on the lens's card.",
       inputSchema: z.object({
         picks: z

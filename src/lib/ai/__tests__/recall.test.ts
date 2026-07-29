@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { recallLenses, type LensConstraints, type RecalledLens } from "../recall";
+import {
+  recallLenses,
+  RECALL_SORTS,
+  RECALL_SORT_NAMES,
+  type LensConstraints,
+  type RecalledLens,
+} from "../recall";
 import { lensRef } from "../lens-ref";
 import { getLensesByMount } from "@/lib/lens/data";
 
@@ -88,6 +94,55 @@ describe("recallLenses · filter correctness (precision / recall on labelled que
       // maxWeightG demotes missing-weight lenses to `maybe`, so every match has a weight.
       expect(lens.weightG).not.toBeNull();
       expect(lens.weightG as number).toBeLessThanOrEqual(200);
+    }
+  });
+});
+
+// Every sort name promises which end leads, and the RECALL_LIMIT cap makes that promise
+// load-bearing: whatever the sort puts last is what the model never sees. These assert the
+// promise against the catalogue, so a name can't come to mean its opposite the way
+// zoomRatio-ascending once did while its gloss read "most versatile".
+describe("recallLenses · each sort name leads with the end it names", () => {
+  const lead = (constraints: LensConstraints, read: (l: RecalledLens) => number | null) =>
+    read(recall(constraints, RECALL_LIMIT).matches[0]);
+
+  it.each([
+    ["longestReach", "widest", (l: RecalledLens) => l.focalNativeMm[1]],
+    ["widestZoomRange", "widest", (l: RecalledLens) => l.focalNativeMm[1] / l.focalNativeMm[0]],
+    ["heaviest", "lightest", (l: RecalledLens) => l.weightG],
+    ["priciest", "cheapest", (l: RecalledLens) => l.price?.amount ?? null],
+    ["newest", "oldest", (l: RecalledLens) => l.releaseYear ?? null],
+  ] as const)("%s leads with a larger value than %s", (high, low, read) => {
+    const hi = lead({ type: "zoom", sortBy: high }, read);
+    const lo = lead({ type: "zoom", sortBy: low }, read);
+    expect(hi).not.toBeNull();
+    expect(lo).not.toBeNull();
+    expect(hi as number).toBeGreaterThan(lo as number);
+  });
+
+  // The two axes whose named end is the SMALLER value, so a sign error here reads as a
+  // pass on the table above.
+  it.each([
+    ["fastest", (l: RecalledLens) => wideAperture(l.maxAperture)],
+    ["mostCompact", (l: RecalledLens) => l.length?.mm ?? null],
+  ] as const)("%s leads with the smallest value on its axis", (sortBy, read) => {
+    const leadValue = lead({ type: "prime", sortBy }, read);
+    const rest = recall({ type: "prime", sortBy }, RECALL_LIMIT)
+      .matches.map(read)
+      .filter((v): v is number => v !== null);
+    expect(leadValue).not.toBeNull();
+    expect(leadValue as number).toBe(Math.min(...rest));
+  });
+
+  it("mostMagnification leads with the highest magnification", () => {
+    const { matches } = recall({ sortBy: "mostMagnification" }, RECALL_LIMIT);
+    const values = matches.map((l) => l.magnification).filter((v): v is number => v !== null);
+    expect(matches[0].magnification).toBe(Math.max(...values));
+  });
+
+  it("every name in the schema is covered by a runtime mapping", () => {
+    for (const name of RECALL_SORT_NAMES) {
+      expect(RECALL_SORTS[name], `${name} has no field/direction`).toBeDefined();
     }
   });
 });

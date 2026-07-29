@@ -29,18 +29,45 @@ const SPECIALTY_TRAITS: readonly OpticalTrait[] = [
 
 // Recall-local sort axes, NOT the UI's SORT_KEYS — recall needs unambiguous focal
 // ends (reach/wideEnd) plus axes the browse UI lacks (magnification, zoomRatio).
-export const RECALL_SORT_FIELDS = [
-  "reach", // longest focal reach (tele end)
-  "wideEnd", // widest focal (wide end)
-  "weightG",
-  "maxAperture",
-  "length",
-  "price",
-  "magnification",
-  "zoomRatio",
-  "releaseYear",
-] as const;
-export type SortField = (typeof RECALL_SORT_FIELDS)[number];
+export type SortField =
+  | "reach" // the lens's longest focal length (tele end)
+  | "wideEnd" // the lens's shortest focal length (wide end)
+  | "weightG"
+  | "maxAperture" // the f-number, so a faster lens is a smaller value
+  | "length"
+  | "price"
+  | "magnification"
+  | "zoomRatio"
+  | "releaseYear";
+
+// What the model picks from: each name states the end it puts first, and the direction is
+// baked in rather than left to a companion parameter. A field plus a direction lets a
+// request for the most versatile zoom arrive as zoomRatio ascending — the twenty least
+// versatile — and nothing about the call looks wrong. A name cannot be pointed backwards.
+//
+// A field appears twice only where both ends answer a question someone asks; the other
+// ends are reachable as constraints, where an "under 200g" intent belongs anyway.
+export const RECALL_SORTS = {
+  widest: ["wideEnd", "asc"],
+  longestReach: ["reach", "desc"],
+  lightest: ["weightG", "asc"],
+  heaviest: ["weightG", "desc"],
+  fastest: ["maxAperture", "asc"],
+  mostCompact: ["length", "asc"],
+  cheapest: ["price", "asc"],
+  priciest: ["price", "desc"],
+  mostMagnification: ["magnification", "desc"],
+  widestZoomRange: ["zoomRatio", "desc"],
+  newest: ["releaseYear", "desc"],
+  oldest: ["releaseYear", "asc"],
+} as const satisfies Record<string, readonly [SortField, "asc" | "desc"]>;
+
+export type RecallSort = keyof typeof RECALL_SORTS;
+export const RECALL_SORT_NAMES = Object.keys(RECALL_SORTS) as [RecallSort, ...RecallSort[]];
+
+// Applied when a call names no sort. Widest-first is the least opinionated ordering of a
+// focal-diverse result set, not a claim that wide is better.
+const DEFAULT_SORT: RecallSort = "widest";
 
 // Spec columns listLenses can lay side by side. The lens name is always the first
 // column (and a link), so these are the comparison fields the model picks from to
@@ -98,8 +125,7 @@ export interface LensConstraints {
   minApertureBladeCount?: number;
   // Only lenses released in or after this year.
   minReleaseYear?: number;
-  sortBy?: SortField;
-  sortDir?: "asc" | "desc";
+  sortBy?: RecallSort;
 }
 
 // The lens as the model and the card see it: a locale-resolved projection of the
@@ -524,8 +550,7 @@ export function recallLenses(
     }
   }
 
-  const key = constraints.sortBy ?? "wideEnd";
-  const dir = constraints.sortDir ?? "asc";
+  const [key, dir] = RECALL_SORTS[constraints.sortBy ?? DEFAULT_SORT];
   const sortedMatched = sortRecalled(matched, key, dir, locale);
   const sortedMaybe = sortRecalled(
     maybe.map((m) => m.lens),
