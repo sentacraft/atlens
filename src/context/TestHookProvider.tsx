@@ -27,6 +27,9 @@ interface TestHookContextValue {
   buildShareableLink: () => string;
 }
 
+// Dev-only, and the panel already keeps its active tab this way.
+const STORAGE_KEY = "testhook-state";
+
 export const TestHookContext = createContext<TestHookContextValue | null>(null);
 
 export function TestHookProvider({ children }: { children: ReactNode }) {
@@ -36,6 +39,33 @@ export function TestHookProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<TestHookState>(() =>
     parseTestHookState(searchParams)
   );
+
+  // Survive a reload. The URL params are stripped right after boot so a shared link
+  // stays clean, which used to mean every Fast Refresh dropped whatever was toggled —
+  // a trace you turned on to watch one turn was gone by the next edit. The URL still
+  // wins when it carries anything, so a shared link opens as its author left it.
+  useEffect(() => {
+    if (searchParams.has(TESTHOOK_QUERY_KEYS.testHook)) {
+      return;
+    }
+    try {
+      const saved = window.localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        setState(JSON.parse(saved) as TestHookState);
+      }
+    } catch {
+      // Unparseable or unavailable storage: start from the defaults, not a crash.
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- cold-start restore, once
+  }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch {
+      // Private mode or a full quota — persistence is a convenience, not a feature.
+    }
+  }, [state]);
 
   // Strip testhook params from URL after cold-start init
   useEffect(() => {

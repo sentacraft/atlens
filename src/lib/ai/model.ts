@@ -16,18 +16,42 @@ import type { LanguageModel } from "ai";
 // Which model production serves is decided here in code, never inferred from whether
 // some other provider's key happens to be present.
 
-function activeProvider(): string {
+// The deployed model, named once so nothing below can drift from it.
+const DEFAULT_MODEL = { provider: "deepseek", modelId: "deepseek-v4-flash" } as const;
+
+export interface AgentModelInfo {
+  provider: string;
+  modelId: string;
+  temperature: number;
+  // False when AGENT_MODEL is unset, i.e. this is what production would serve.
+  overridden: boolean;
+}
+
+// What the test-hook panel shows. Assembled here because the panel is a client
+// component and AGENT_MODEL is read server-side.
+export function agentModelInfo(): AgentModelInfo {
+  return {
+    ...activeAgentModel(),
+    temperature: AGENT_TEMPERATURE,
+    overridden: Boolean(process.env.AGENT_MODEL),
+  };
+}
+
+// The one reader of AGENT_MODEL. Everything that needs to know what will answer —
+// which client to build, which key to check, what to show in the test-hook panel —
+// asks here rather than splitting the string again.
+export function activeAgentModel(): { provider: string; modelId: string } {
   const override = process.env.AGENT_MODEL;
-  return override ? override.slice(0, override.indexOf(":")) : "deepseek";
+  if (!override) {
+    return DEFAULT_MODEL;
+  }
+  const sep = override.indexOf(":");
+  return { provider: override.slice(0, sep), modelId: override.slice(sep + 1) };
 }
 
 export function getAgentModel(): LanguageModel {
-  const override = process.env.AGENT_MODEL;
-  if (!override) {
-    return deepseek("deepseek-v4-flash");
-  }
-  const modelId = override.slice(override.indexOf(":") + 1);
-  switch (activeProvider()) {
+  const { provider, modelId } = activeAgentModel();
+  switch (provider) {
     case "deepseek":
       return deepseek(modelId);
     case "openai":
@@ -71,7 +95,7 @@ export function getAgentModel(): LanguageModel {
       }).chatModel(modelId);
     default:
       throw new Error(
-        `AGENT_MODEL has an unknown provider "${activeProvider()}" (expected deepseek|openai|google|zhipu|openrouter)`,
+        `AGENT_MODEL has an unknown provider "${provider}" (expected ${Object.keys(KEY_VAR).join("|")})`,
       );
   }
 }
@@ -90,7 +114,7 @@ const KEY_VAR: Record<string, string> = {
 
 // The env var the active model needs but does not have, or null when it is set.
 export function missingAgentModelKey(): string | null {
-  const keyVar = KEY_VAR[activeProvider()];
+  const keyVar = KEY_VAR[activeAgentModel().provider];
   return keyVar && !process.env[keyVar] ? keyVar : null;
 }
 
