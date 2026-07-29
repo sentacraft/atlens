@@ -1,8 +1,12 @@
 import { Link } from "@/i18n/navigation";
-import { getCollectionStats, type LensCollection } from "@/lib/collections";
+import type { LensCollection } from "@/lib/collections";
 
 interface CollectionPillsProps {
   collections: LensCollection[];
+  // slug -> member count, from getCollectionLensCounts. Passed in rather than looked up
+  // here: one caller renders inside a client component, and counting members needs the
+  // catalogue, which would put 267KB of it in that bundle to print 43 numbers.
+  lensCounts: Record<string, number>;
   mountSegment: string;
   locale: string;
   title: string;
@@ -11,6 +15,7 @@ interface CollectionPillsProps {
 
 export default function CollectionPills({
   collections,
+  lensCounts,
   mountSegment,
   locale,
   title,
@@ -44,7 +49,7 @@ export default function CollectionPills({
               {locale === "zh" ? c.title.zh : c.title.en}
             </span>
             <span className="text-xs text-zinc-400 group-hover:text-zinc-400 dark:text-zinc-500 dark:group-hover:text-zinc-500">
-              {getCollectionStats(c.slug, locale)?.lensCount ?? 0}
+              {lensCounts[c.slug] ?? 0}
             </span>
             <span className="text-zinc-300 group-hover:text-zinc-500 dark:text-zinc-600 dark:group-hover:text-zinc-400" aria-hidden="true">→</span>
           </Link>

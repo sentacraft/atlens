@@ -1,3 +1,4 @@
+import "server-only";
 import lensesData from "@/data/lenses.json";
 import gfxLensesData from "@/data/lenses-gfx.json";
 import metaData from "@/data/meta.json";

@@ -1,3 +1,4 @@
+import "server-only";
 import { getAllLenses } from "@/lib/lens/data";
 import { lensRef, type LensLinkIndex } from "@/lib/ai/lens-ref";
 

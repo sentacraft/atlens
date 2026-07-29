@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { parseLensIds, getLensesByMount } from "@/lib/lens/data";
+import { getCollectionLensCounts } from "@/lib/collection-stats";
 import { urlSegmentToMount } from "@/lib/mount";
 import { findPresetByIds } from "@/lib/curated-presets";
 import CompareTable from "@/components/compare/CompareTable";
@@ -123,7 +124,7 @@ export default async function ComparePage({
       />
       <ComparePageHeader allLenses={allLenses} />
       <CompareTable allLenses={allLenses} minColumns={2} />
-      <CompareCollections allLenses={allLenses} />
+      <CompareCollections allLenses={allLenses} lensCounts={getCollectionLensCounts(locale)} />
       {resolvedMount === "X" && <CuratedComparisons allLenses={allLenses} />}
       <BackToTopButton />
       <CompareUrlSync initialIds={lenses.map((l) => l.id)} />
