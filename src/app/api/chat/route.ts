@@ -13,7 +13,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import {
   getAgentModel,
   agentProviderOptions,
-  agentModelProblem,
+  missingAgentModelKey,
   AGENT_TEMPERATURE,
 } from "@/lib/ai/model";
 import { systemPrompt } from "@/lib/ai/system-prompt";
@@ -53,11 +53,10 @@ const STEP_BUDGET = 8;
 const STREAM_TIMEOUT_MS = 120_000;
 
 export async function POST(req: Request) {
-  // Whichever provider AGENT_MODEL selects, not a hardcoded one — the model layer owns
-  // which key its active provider needs.
-  const modelProblem = agentModelProblem();
-  if (modelProblem) {
-    console.error(`[askiris] ${modelProblem}`);
+  // Whichever provider AGENT_MODEL selects, not a hardcoded one.
+  const missingKey = missingAgentModelKey();
+  if (missingKey) {
+    console.error(`[askiris] ${missingKey} is not set`);
     return chatErrorResponse("unavailable", 500);
   }
 

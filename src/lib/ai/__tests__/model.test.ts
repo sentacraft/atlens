@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { agentModelProblem, getAgentModel } from "../model";
+import { missingAgentModelKey, getAgentModel } from "../model";
 
 // The chat route refuses a turn when the model it is about to call has no key. The
 // check has to follow AGENT_MODEL rather than name one provider: with a hardcoded
@@ -33,25 +33,25 @@ afterEach(() => {
   }
 });
 
-describe("agentModelProblem", () => {
+describe("missingAgentModelKey", () => {
   it("names the default provider's key when nothing overrides it", () => {
-    expect(agentModelProblem()).toContain("DEEPSEEK_API_KEY");
+    expect(missingAgentModelKey()).toBe("DEEPSEEK_API_KEY");
     process.env.DEEPSEEK_API_KEY = "set";
-    expect(agentModelProblem()).toBeNull();
+    expect(missingAgentModelKey()).toBeNull();
   });
 
   it("follows the override rather than the default provider", () => {
     // The deployed provider's key is present; the overridden one's is not.
     process.env.DEEPSEEK_API_KEY = "set";
     process.env.AGENT_MODEL = "google:gemini-3.5-flash-lite";
-    expect(agentModelProblem()).toContain("GOOGLE_GENERATIVE_AI_API_KEY");
+    expect(missingAgentModelKey()).toBe("GOOGLE_GENERATIVE_AI_API_KEY");
     process.env.GOOGLE_GENERATIVE_AI_API_KEY = "set";
-    expect(agentModelProblem()).toBeNull();
+    expect(missingAgentModelKey()).toBeNull();
   });
 
-  it("reports a provider the table does not know", () => {
+  it("has nothing to check for a provider it does not know, which getAgentModel rejects", () => {
     process.env.AGENT_MODEL = "anthropic:claude";
-    expect(agentModelProblem()).toContain("unknown provider");
+    expect(missingAgentModelKey()).toBeNull();
     expect(() => getAgentModel()).toThrow(/unknown provider/);
   });
 });

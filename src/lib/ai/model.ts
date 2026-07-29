@@ -9,75 +9,63 @@ import type { LanguageModel } from "ai";
 // AGENT_MODEL is an OPTIONAL local override ("provider:modelId", e.g.
 // "google:gemini-3.5-flash-lite") for A/B-ing providers or sweeping the eval harness
 // across candidates without a code edit. Unset — the normal case, including all of
-// production — means "use DEFAULT_MODEL", so prod needs no extra env var and no
+// production — means "use the model below", so prod needs no extra env var and no
 // provider but DeepSeek enters the deployed path. This is the sanctioned
 // optional-override case, not a config fallback: an unset value is normal, not a bug.
 // Which model production serves is decided here in code, never inferred from whether
 // some other provider's key happens to be present.
 
-// Each provider paired with the env var whose absence makes it uncallable — the same
-// name its SDK reads, so the route can report which key to set without knowing which
-// provider is active. One table, so adding a provider cannot leave the readiness check
-// behind: a new entry has to name its key to compile.
-const PROVIDERS = {
-  deepseek: { keyVar: "DEEPSEEK_API_KEY", model: (id: string) => deepseek(id) },
-  openai: { keyVar: "OPENAI_API_KEY", model: (id: string) => openai(id) },
-  // Google's own provider rather than an OpenAI-compatible shim: Gemini 3 requires its
-  // thought signatures to be echoed back on later requests for tool calling to stay
-  // reliable, and a translation layer in between is where they get dropped.
-  google: { keyVar: "GOOGLE_GENERATIVE_AI_API_KEY", model: (id: string) => google(id) },
-  // OpenRouter speaks the OpenAI wire format, so the same provider talks to it with a
-  // different base URL — one gateway key reaches every vendor's model, which is what
-  // makes a candidate sweep cheap.
-  openrouter: {
-    keyVar: "OPENROUTER_API_KEY",
-    model: (id: string) =>
-      createOpenAI({
-        baseURL: "https://openrouter.ai/api/v1",
-        apiKey: process.env.OPENROUTER_API_KEY,
-      }).chat(id),
-  },
-} as const satisfies Record<string, { keyVar: string; model: (id: string) => LanguageModel }>;
-
-type ProviderName = keyof typeof PROVIDERS;
-
-const DEFAULT_MODEL = { provider: "deepseek", modelId: "deepseek-v4-flash" } as const;
-
-// The model this process will call, resolved from the override or the default. Returns
-// the raw provider string when it names nothing we have, so the caller can say so.
-function activeModel(): { provider: ProviderName | string; modelId: string } {
+function activeProvider(): string {
   const override = process.env.AGENT_MODEL;
-  if (!override) {
-    return DEFAULT_MODEL;
-  }
-  const sep = override.indexOf(":");
-  return { provider: override.slice(0, sep), modelId: override.slice(sep + 1) };
-}
-
-function isKnown(provider: string): provider is ProviderName {
-  return provider in PROVIDERS;
+  return override ? override.slice(0, override.indexOf(":")) : "deepseek";
 }
 
 export function getAgentModel(): LanguageModel {
-  const { provider, modelId } = activeModel();
-  if (!isKnown(provider)) {
-    throw new Error(
-      `AGENT_MODEL has an unknown provider "${provider}" (expected ${Object.keys(PROVIDERS).join("|")})`,
-    );
+  const override = process.env.AGENT_MODEL;
+  if (!override) {
+    return deepseek("deepseek-v4-flash");
   }
-  return PROVIDERS[provider].model(modelId);
+  const modelId = override.slice(override.indexOf(":") + 1);
+  switch (activeProvider()) {
+    case "deepseek":
+      return deepseek(modelId);
+    case "openai":
+      return openai(modelId);
+    case "google":
+      // Google's own provider rather than an OpenAI-compatible shim: Gemini 3 requires
+      // its thought signatures to be echoed back on later requests for tool calling to
+      // stay reliable, and a translation layer in between is where they get dropped.
+      return google(modelId);
+    case "openrouter":
+      // OpenRouter speaks the OpenAI wire format, so the same provider talks to it with
+      // a different base URL — one gateway key reaches every vendor's model, which is
+      // what makes a candidate sweep cheap.
+      return createOpenAI({
+        baseURL: "https://openrouter.ai/api/v1",
+        apiKey: process.env.OPENROUTER_API_KEY,
+      }).chat(modelId);
+    default:
+      throw new Error(
+        `AGENT_MODEL has an unknown provider "${activeProvider()}" (expected deepseek|openai|google|openrouter)`,
+      );
+  }
 }
 
-// Why the active model can't be called, or null when it can be. Only a config check —
-// a key that is present but wrong still fails at request time, which is the provider's
-// error to report, not something worth a preflight round trip on every turn.
-export function agentModelProblem(): string | null {
-  const { provider } = activeModel();
-  if (!isKnown(provider)) {
-    return `AGENT_MODEL names an unknown provider "${provider}"`;
-  }
-  const { keyVar } = PROVIDERS[provider];
-  return process.env[keyVar] ? null : `${keyVar} is not set (required by provider "${provider}")`;
+// The env var each provider's SDK reads. A provider constructor does NOT throw when its
+// key is missing — the error surfaces on the first request, by which point the response
+// has started streaming and can no longer become a clean 500. Hence the name here, so
+// the route can check before it opens the stream.
+const KEY_VAR: Record<string, string> = {
+  deepseek: "DEEPSEEK_API_KEY",
+  openai: "OPENAI_API_KEY",
+  google: "GOOGLE_GENERATIVE_AI_API_KEY",
+  openrouter: "OPENROUTER_API_KEY",
+};
+
+// The env var the active model needs but does not have, or null when it is set.
+export function missingAgentModelKey(): string | null {
+  const keyVar = KEY_VAR[activeProvider()];
+  return keyVar && !process.env[keyVar] ? keyVar : null;
 }
 
 // Iris follows format rules and picks tools off a decision axis, so she wants the
