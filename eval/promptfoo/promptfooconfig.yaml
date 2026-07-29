@@ -166,9 +166,9 @@ tests:
         turns:
           - "想拍远处的野生动物和鸟，镜头要够长、够得着，越远越好，机身 X-T5，预算不太在意。"
     assert:
-      - type: javascript # steered recall with an explicit reach sort (not a coversFocals filter)
+      - type: javascript # steered recall toward the long end (not a coversFocals filter)
         metric: programmatic
-        value: 'context.metadata.sortBys.includes("reach")'
+        value: 'context.metadata.queries.some((q) => q.input.sortBy === "longestReach")'
       - type: javascript # at least one pick reaches >= 300mm native
         metric: programmatic
         value: "context.metadata.picks.some((p) => p.fmax != null && p.fmax >= 300)"

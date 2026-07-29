@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { recallLenses, type LensConstraints, type RecalledLens } from "../recall";
+import {
+  recallLenses,
+  RECALL_SORTS,
+  RECALL_SORT_NAMES,
+  type LensConstraints,
+  type RecalledLens,
+} from "../recall";
 import { lensRef } from "../lens-ref";
 import { getLensesByMount } from "@/lib/lens/data";
 
@@ -92,29 +98,52 @@ describe("recallLenses · filter correctness (precision / recall on labelled que
   });
 });
 
-// Sorting is on the raw value with asc as the default, so for four of the nine axes the
-// end a request usually wants — the longest reach, the most magnification, the widest
-// zoom range, the newest lens — is the one asc puts LAST, where the RECALL_LIMIT cap then
-// cuts it off. sortDir's description is what tells the model that; these pin the runtime
-// side of it so the two can't drift apart silently.
-describe("recallLenses · sort direction", () => {
-  const firstValue = (constraints: LensConstraints, read: (l: RecalledLens) => number | null) =>
+// Every sort name promises which end leads, and the RECALL_LIMIT cap makes that promise
+// load-bearing: whatever the sort puts last is what the model never sees. These assert the
+// promise against the catalogue, so a name can't come to mean its opposite the way
+// zoomRatio-ascending once did while its gloss read "most versatile".
+describe("recallLenses · each sort name leads with the end it names", () => {
+  const lead = (constraints: LensConstraints, read: (l: RecalledLens) => number | null) =>
     read(recall(constraints, RECALL_LIMIT).matches[0]);
 
   it.each([
-    ["reach", (l: RecalledLens) => l.focalNativeMm[1]],
-    ["zoomRatio", (l: RecalledLens) => l.focalNativeMm[1] / l.focalNativeMm[0]],
-  ] as const)("%s ranks low-end-first under asc and high-end-first under desc", (sortBy, read) => {
-    const asc = firstValue({ type: "zoom", sortBy }, read);
-    const desc = firstValue({ type: "zoom", sortBy, sortDir: "desc" }, read);
-    expect(asc).not.toBeNull();
-    expect(desc as number).toBeGreaterThan(asc as number);
+    ["longestReach", "widest", (l: RecalledLens) => l.focalNativeMm[1]],
+    ["widestZoomRange", "widest", (l: RecalledLens) => l.focalNativeMm[1] / l.focalNativeMm[0]],
+    ["heaviest", "lightest", (l: RecalledLens) => l.weightG],
+    ["priciest", "cheapest", (l: RecalledLens) => l.price?.amount ?? null],
+    ["newest", "oldest", (l: RecalledLens) => l.releaseYear ?? null],
+  ] as const)("%s leads with a larger value than %s", (high, low, read) => {
+    const hi = lead({ type: "zoom", sortBy: high }, read);
+    const lo = lead({ type: "zoom", sortBy: low }, read);
+    expect(hi).not.toBeNull();
+    expect(lo).not.toBeNull();
+    expect(hi as number).toBeGreaterThan(lo as number);
   });
 
-  it("weightG already leads with the lightest under asc, so it needs no sortDir", () => {
-    const asc = firstValue({ type: "prime", sortBy: "weightG" }, (l) => l.weightG);
-    const desc = firstValue({ type: "prime", sortBy: "weightG", sortDir: "desc" }, (l) => l.weightG);
-    expect(asc as number).toBeLessThan(desc as number);
+  // The two axes whose named end is the SMALLER value, so a sign error here reads as a
+  // pass on the table above.
+  it.each([
+    ["fastest", (l: RecalledLens) => wideAperture(l.maxAperture)],
+    ["mostCompact", (l: RecalledLens) => l.length?.mm ?? null],
+  ] as const)("%s leads with the smallest value on its axis", (sortBy, read) => {
+    const leadValue = lead({ type: "prime", sortBy }, read);
+    const rest = recall({ type: "prime", sortBy }, RECALL_LIMIT)
+      .matches.map(read)
+      .filter((v): v is number => v !== null);
+    expect(leadValue).not.toBeNull();
+    expect(leadValue as number).toBe(Math.min(...rest));
+  });
+
+  it("mostMagnification leads with the highest magnification", () => {
+    const { matches } = recall({ sortBy: "mostMagnification" }, RECALL_LIMIT);
+    const values = matches.map((l) => l.magnification).filter((v): v is number => v !== null);
+    expect(matches[0].magnification).toBe(Math.max(...values));
+  });
+
+  it("every name in the schema is covered by a runtime mapping", () => {
+    for (const name of RECALL_SORT_NAMES) {
+      expect(RECALL_SORTS[name], `${name} has no field/direction`).toBeDefined();
+    }
   });
 });
 

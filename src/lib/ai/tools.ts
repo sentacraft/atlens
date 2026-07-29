@@ -9,7 +9,7 @@ import {
   listLenses,
   resolveLens,
   toRecalled,
-  RECALL_SORT_FIELDS,
+  RECALL_SORT_NAMES,
   LENS_TABLE_COLUMNS,
 } from "@/lib/ai/recall";
 import { lensRef, buildRefIndex } from "@/lib/ai/lens-ref";
@@ -144,18 +144,12 @@ export function buildLensTools(
           .optional()
           .describe("Only lenses released in or after this year; a hard lower bound."),
         sortBy: z
-          .enum(RECALL_SORT_FIELDS)
+          .enum(RECALL_SORT_NAMES)
           .optional()
           .describe(
-            "Ranks the matches by a single axis; it orders the results, it never excludes any.",
-          ),
-        sortDir: z
-          .enum(["asc", "desc"])
-          .optional()
-          .describe(
-            "asc (default) ranks from the smallest value: lightest, cheapest, most compact, " +
-              "widest, fastest. The other four axes — reach, magnification, zoomRatio, " +
-              "releaseYear — put their desirable end first only under desc.",
+            "Which lenses lead the results. It orders them, it never excludes any, so the " +
+              "cap keeps the ones this names. fastest = widest maximum aperture; " +
+              "widestZoomRange = highest ratio of longest to shortest focal.",
           ),
       }),
       execute: (constraints) => {
