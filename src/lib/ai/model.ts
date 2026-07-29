@@ -36,6 +36,28 @@ export function getAgentModel(): LanguageModel {
       // its thought signatures to be echoed back on later requests for tool calling to
       // stay reliable, and a translation layer in between is where they get dropped.
       return google(modelId);
+    case "zhipu":
+      // Zhipu's own endpoint speaks the OpenAI wire format. The base URL stops at /v4 with
+      // no trailing slash: the SDK appends /chat/completions to it, and a client that adds
+      // a /v1 of its own 404s here.
+      //
+      // GLM reasons before answering unless told not to, and omitting the field is not
+      // neutral — it means enabled. Measured on glm-5-turbo with an 8k-token prompt, the
+      // first token takes 14.8s left alone and 0.8s with it off, and the agent pays that
+      // once per step. `thinking` is Zhipu's own field, not OpenAI's, so the SDK has no
+      // slot for it and it goes on the wire here.
+      return createOpenAI({
+        baseURL: "https://open.bigmodel.cn/api/paas/v4",
+        apiKey: process.env.ZHIPU_API_KEY,
+        fetch: (input, init) => {
+          const body = init?.body;
+          if (typeof body !== "string") {
+            return fetch(input, init);
+          }
+          const merged = { ...JSON.parse(body), thinking: { type: "disabled" } };
+          return fetch(input, { ...init, body: JSON.stringify(merged) });
+        },
+      }).chat(modelId);
     case "openrouter":
       // OpenRouter speaks the OpenAI wire format, so the same provider talks to it with
       // a different base URL — one gateway key reaches every vendor's model, which is
@@ -46,7 +68,7 @@ export function getAgentModel(): LanguageModel {
       }).chat(modelId);
     default:
       throw new Error(
-        `AGENT_MODEL has an unknown provider "${activeProvider()}" (expected deepseek|openai|google|openrouter)`,
+        `AGENT_MODEL has an unknown provider "${activeProvider()}" (expected deepseek|openai|google|zhipu|openrouter)`,
       );
   }
 }
@@ -59,6 +81,7 @@ const KEY_VAR: Record<string, string> = {
   deepseek: "DEEPSEEK_API_KEY",
   openai: "OPENAI_API_KEY",
   google: "GOOGLE_GENERATIVE_AI_API_KEY",
+  zhipu: "ZHIPU_API_KEY",
   openrouter: "OPENROUTER_API_KEY",
 };
 

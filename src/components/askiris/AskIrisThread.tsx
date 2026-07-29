@@ -79,13 +79,20 @@ function ToolPart({
   if (part.state === "output-available") {
     switch (getToolName(part)) {
       case "recommendLenses": {
-        const { recommendations, title } = part.output as RecommendationGroup;
-        // Bottom margin separates the grid from whatever follows (usually the next
-        // group's heading). Prose headings zero their own top margin as a first-child,
+        const { groups } = part.output as { groups: RecommendationGroup[] };
+        // Bottom margin separates the grid from whatever follows (the next group's
+        // heading, or prose). Prose headings zero their own top margin as a first-child,
         // so without this they glue to the cards.
         return (
-          <div className="mb-4 w-full">
-            <RecommendationDeck recommendations={recommendations} title={title} />
+          <div className="w-full">
+            {groups.map((group, i) => (
+              <div key={i} className="mb-4">
+                <RecommendationDeck
+                  recommendations={group.recommendations}
+                  title={group.title}
+                />
+              </div>
+            ))}
           </div>
         );
       }

@@ -583,35 +583,46 @@ export interface RecommendationGroup {
   title: string | null;
 }
 
+export interface PickGroup {
+  title?: string;
+  picks: { ref: string; reason: string }[];
+}
+
+// Every group of one turn's picks, rendered from a single call. Grouping used to mean
+// calling this once per group, and each call is a separate generation step: on a model
+// whose first token costs seconds, a three-group answer paid that three times over for a
+// split the reader sees all at once anyway.
 export function recommendLenses(
   mount: Mount,
   locale: string,
-  picks: { ref: string; reason: string }[],
-  title: string | undefined,
+  groups: PickGroup[],
   tBrand: (brand: string) => string,
   recalledRefs: Set<string>,
-): RecommendationGroup {
+): { groups: RecommendationGroup[] } {
   const byRef = buildRefIndex(getLensesByMount(mount, locale));
-  const recommendations = picks.map((pick) => {
-    // Fail loud on a lens the model never recalled — one it conjured from memory or a
-    // ref it altered. Only refs returned by a queryLenses/searchLensByName call this
-    // turn are allowed; the SDK surfaces the throw as a tool-error, so the model
-    // recalls the lens and retries with the exact ref inside its step budget.
-    if (!recalledRefs.has(pick.ref)) {
-      throw new Error(
-        `Lens ref "${pick.ref}" was not returned by any queryLenses/searchLensByName ` +
-          `call this turn. Recommend only lenses you've recalled — look it up first, ` +
-          `and pass the ref exactly as it appears.`,
-      );
-    }
-    const lens = byRef.get(pick.ref);
-    if (!lens) {
-      // recalledRefs only ever holds refs from real tool results, so this is defensive.
-      throw new Error(`Unknown lens ref "${pick.ref}".`);
-    }
-    return { ...resolveLens(lens, locale, tBrand), reason: pick.reason };
-  });
-  return { recommendations, title: title ?? null };
+  // Fail loud on a lens the model never recalled — one it conjured from memory or a ref
+  // it altered. Only refs returned by a queryLenses/searchLensByName call this turn are
+  // allowed; the SDK surfaces the throw as a tool-error, so the model recalls the lens
+  // and retries with the exact ref inside its step budget.
+  const resolve = (picks: { ref: string; reason: string }[]) =>
+    picks.map((pick) => {
+      if (!recalledRefs.has(pick.ref)) {
+        throw new Error(
+          `Lens ref "${pick.ref}" was not returned by any queryLenses/searchLensByName ` +
+            `call this turn. Recommend only lenses you've recalled — look it up first, ` +
+            `and pass the ref exactly as it appears.`,
+        );
+      }
+      const lens = byRef.get(pick.ref);
+      if (!lens) {
+        // recalledRefs only ever holds refs from real tool results, so this is defensive.
+        throw new Error(`Unknown lens ref "${pick.ref}".`);
+      }
+      return { ...resolveLens(lens, locale, tBrand), reason: pick.reason };
+    });
+  return {
+    groups: groups.map((g) => ({ recommendations: resolve(g.picks), title: g.title ?? null })),
+  };
 }
 
 // Resolve a set of already-recalled ids into a neutral spec table — no reasons, the
