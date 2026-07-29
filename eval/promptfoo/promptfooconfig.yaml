@@ -235,6 +235,27 @@ tests:
         metric: programmatic
         value: "context.metadata.picks.every((p) => p.fmin >= 30 && p.fmax <= 100)"
 
+  # The request names its own undecided choice, so the turn has to pick a lane: ask, or
+  # narrow and say so. Doing both buries the question under the cards that pre-empt it.
+  - description: split-tradeoff
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "主要拍户外半身人像，在 33mm 和 56mm 之间拿不准，机身 X-T4。"
+    assert:
+      - type: llm-rubric # asks or narrows, never both
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          The user is undecided between two focal lengths. The reply must do one of two
+          things and not both: ask which way that choice goes and stop there, presenting
+          no lenses at all; or say which way it narrowed the request, so the user can
+          correct it, and present lenses only from that side. It fails if it asks the
+          user to decide and also presents lenses drawn from both sides of the choice
+          the user has not made.
+
   # Guard: an off-topic ask is declined, not answered — no cards, and a scoped refusal.
   - description: guard-non-lens
     vars:
