@@ -9,7 +9,13 @@ import { mountToUrlSegment } from "@/lib/mount";
 import CollectionPills from "@/components/collection/CollectionPills";
 import type { Lens } from "@/lib/types";
 
-export default function CompareCollections({ allLenses }: { allLenses: Lens[] }) {
+export default function CompareCollections({
+  allLenses,
+  lensCounts,
+}: {
+  allLenses: Lens[];
+  lensCounts: Record<string, number>;
+}) {
   const t = useTranslations("Compare");
   const locale = useLocale();
   const { compareIds } = useCompare();
@@ -32,6 +38,7 @@ export default function CompareCollections({ allLenses }: { allLenses: Lens[] })
   return (
     <CollectionPills
       collections={sharedCollections}
+      lensCounts={lensCounts}
       mountSegment={seg}
       locale={locale}
       title={t("collectionsTitle")}
