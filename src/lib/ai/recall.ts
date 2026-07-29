@@ -576,14 +576,11 @@ export function recallLenses(
 // Look up lenses by id and resolve them, attaching the model's authored reason.
 // recalledIds is every id this turn's tool calls have returned, so a pick outside it
 // is a lens the model never recalled here.
-// A group's heading and the line under it travel with the picks rather than as prose
-// around them. The model emits one thing per generation step — a tool call or text,
-// never both — so anything it writes as prose lands after every card group, however the
-// reply is meant to read. Carried here, a group's framing renders where it belongs.
+// A group's heading travels with its picks: it names what the group is, which is the
+// one thing none of its cards can say.
 export interface RecommendationGroup {
   recommendations: Recommendation[];
   title: string | null;
-  summary: string | null;
 }
 
 export function recommendLenses(
@@ -591,7 +588,6 @@ export function recommendLenses(
   locale: string,
   picks: { ref: string; reason: string }[],
   title: string | undefined,
-  summary: string | undefined,
   tBrand: (brand: string) => string,
   recalledRefs: Set<string>,
 ): RecommendationGroup {
@@ -615,7 +611,7 @@ export function recommendLenses(
     }
     return { ...resolveLens(lens, locale, tBrand), reason: pick.reason };
   });
-  return { recommendations, title: title ?? null, summary: summary ?? null };
+  return { recommendations, title: title ?? null };
 }
 
 // Resolve a set of already-recalled ids into a neutral spec table — no reasons, the
