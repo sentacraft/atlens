@@ -118,7 +118,6 @@ tests:
     vars:
       mount: X
       locale: zh
-      budgetCNY: 6000
       dialog:
         turns:
           - "第一次拍银河，需要广角大光圈，机身 X-T5。"
