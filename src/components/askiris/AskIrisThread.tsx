@@ -14,7 +14,7 @@ import { IRIS_NAV } from "@/config/iris-config";
 import Markdown from "@/components/askiris/Markdown";
 import RecommendationDeck from "@/components/askiris/RecommendationDeck";
 import LensTable from "@/components/askiris/LensTable";
-import type { LensTableColumn, Recommendation, ResolvedLens } from "@/lib/ai/recall";
+import type { LensTableColumn, RecommendationGroup, ResolvedLens } from "@/lib/ai/recall";
 
 // Presentational render of a message thread — no data fetching. AskIrisChat feeds
 // it live useChat messages; the dev preview route feeds it fixtures, so the exact
@@ -79,13 +79,13 @@ function ToolPart({
   if (part.state === "output-available") {
     switch (getToolName(part)) {
       case "recommendLenses": {
-        const { recommendations } = part.output as { recommendations: Recommendation[] };
+        const { recommendations, title, summary } = part.output as RecommendationGroup;
         // Bottom margin separates the grid from whatever follows (usually the next
         // group's heading). Prose headings zero their own top margin as a first-child,
         // so without this they glue to the cards.
         return (
           <div className="mb-4 w-full">
-            <RecommendationDeck recommendations={recommendations} />
+            <RecommendationDeck recommendations={recommendations} title={title} summary={summary} />
           </div>
         );
       }

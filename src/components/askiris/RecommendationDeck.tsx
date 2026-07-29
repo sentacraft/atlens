@@ -16,19 +16,38 @@ import type { Recommendation } from "@/lib/ai/recall";
 // ChatGPT/Perplexity pattern, each card is self-describing: it carries its own
 // reason so the surrounding prose stays a short synthesis instead of a per-lens
 // essay the reader has to map back onto a card.
+//
+// The heading and summary come from the same tool call as the picks, not from the prose
+// around them: the model emits one thing per step — a tool call or text, never both — so
+// what it writes as prose always lands after every group. Rendered here, a group's
+// framing sits with the group it frames.
 export default function RecommendationDeck({
   recommendations,
+  title,
+  summary,
 }: {
   recommendations: Recommendation[];
+  title?: string | null;
+  summary?: string | null;
 }) {
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-      {recommendations.map((rec) => (
-        <RecommendationCard key={rec.id} rec={rec} />
-      ))}
-    </div>
+    <>
+      {title ? (
+        <h3 className="text-foreground mt-0 mb-1.5 px-1 text-sm font-semibold">{title}</h3>
+      ) : null}
+      {summary ? <Markdown className={SUMMARY_CLS}>{summary}</Markdown> : null}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {recommendations.map((rec) => (
+          <RecommendationCard key={rec.id} rec={rec} />
+        ))}
+      </div>
+    </>
   );
 }
+
+// The group's own line, between its heading and its cards. Sized like body prose rather
+// than like a card's reason — it is read as part of the reply, not as card furniture.
+const SUMMARY_CLS = "text-muted-foreground mb-2.5 px-1 text-sm [&_p]:m-0";
 
 // Non-prose styling for the reason inside a card. Shown in full — the reason is
 // the card's whole point, and the prompt already bounds it to one to three
