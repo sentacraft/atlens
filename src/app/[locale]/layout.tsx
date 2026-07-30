@@ -15,6 +15,7 @@ import ConsoleEgg from "@/components/ConsoleEgg";
 import { meta, brandCount } from "@/lib/lens/data";
 import Redaction from "@/components/Redaction";
 import TestHookPanel from "@/components/TestHookPanel";
+import { agentModelInfo } from "@/lib/ai/model";
 import { CompareProvider } from "@/context/CompareProvider";
 import { MountPreferenceProvider } from "@/context/MountPreferenceProvider";
 import { NavProvider } from "@/context/NavProvider";
@@ -174,7 +175,7 @@ export default async function LocaleLayout({
                 {TESTHOOK_ALLOWED ? (
                   <TestHookProvider>
                     {children}
-                    <TestHookPanel />
+                    <TestHookPanel model={agentModelInfo()} />
                   </TestHookProvider>
                 ) : (
                   children

@@ -22,8 +22,12 @@ so it needs the repo's pinned Node (see `.nvmrc`) for type stripping — a secon
 that function would drift silently and the eval would measure the wrong thing.
 
 This is a **manual** eval, deliberately not wired into per-PR CI: it needs the app running
-plus a DeepSeek key for the agent, and the judge needs an OpenAI key that must never reach
-public CI.
+plus a key for whichever provider `AGENT_MODEL` selects, and the judge needs an OpenAI key
+that must never reach public CI.
+
+Whichever model the dev server booted with is the one under test — `AGENT_MODEL` is read
+server-side at startup, so switching candidates means editing `.env.local` **and restarting
+the dev server**. The test-hook panel's AskIris tab shows what is actually live.
 
 ## How it's built
 
@@ -42,6 +46,8 @@ public CI.
   - `search-rubric` is the LLM judge **with live web search** — it audits the picks against
     what the web actually recommends for the scenario (catching omissions our own data can't).
     The shared `rubricPrompt` under `defaultTest.options` carries the full judge system prompt.
-- **Known gaps** — a judge failure we can't fix yet (a data gap the web-judge rightly flags)
-  is marked `weight: 0`: the judge still runs and reports, but doesn't gate the suite, so it
-  stays green on what we knowingly can't do and flips the moment something new breaks.
+- **Observed, not gated** — the web-searching judges read the live web, so their verdict
+  moves with what the search returns that minute. They are wrapped in an `assert-set` with
+  `threshold: 0`: the judge still runs and its reasoning still shows up in the results, but
+  it cannot fail the case. (`weight: 0` does **not** do this — promptfoo computes
+  `pass = !failedReason`, so a zero-weight assertion still fails the case.)
