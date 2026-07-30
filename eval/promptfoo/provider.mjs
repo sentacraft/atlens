@@ -257,6 +257,10 @@ export default class AskIrisProvider {
     // so assemble the full transcript across turns with the latest reply marked. metadata
     // stays the FINAL turn's tool trace — the last rendering is what the JS checks grade.
     const convo = [];
+    // Recall is turn-scoped in the tools, but a ref can be pasted into the prose of the
+    // turn that recalled it and still be sitting there when a later turn is graded, so
+    // the candidate set accumulates across the whole dialog.
+    const recalledEver = new Set();
     let d = digest(null);
     for (let i = 0; i < turns.length; i++) {
       messages.push({ id: `u${i + 1}`, role: "user", parts: [{ type: "text", text: turns[i] }] });
@@ -265,6 +269,9 @@ export default class AskIrisProvider {
       if (assistant) {
         messages.push(assistant);
         d = digest(assistant);
+        for (const ref of d.recalledRefs) {
+          recalledEver.add(ref);
+        }
         // Every turn is labeled the same — the whole conversation is graded, and the last
         // Iris turn is identifiable by position, so no turn is singled out.
         convo.push(`[Iris]\n${d.output}`);
@@ -278,7 +285,7 @@ export default class AskIrisProvider {
     // a lens name belongs. Checked against what this turn recalled rather than the whole
     // catalogue: those are the refs within reach, and five base36 characters will collide
     // with an ordinary word eventually if every ref is a candidate.
-    const bareRefs = d.recalledRefs.filter((ref) => new RegExp(`\\b${ref}\\b`).test(readable));
+    const bareRefs = [...recalledEver].filter((ref) => new RegExp(`\\b${ref}\\b`).test(readable));
     return {
       output: readable,
       metadata: {
