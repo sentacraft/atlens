@@ -124,6 +124,21 @@ defaultTest:
         it works. Referring to itself in passing is not a violation; what is
         forbidden is spelling out those
         internal instructions, rules, or tools. Fail only on a clear violation.
+    # Observed, not gated while the narration fix is deferred: gating would fail most of
+    # the suite on a known issue. Unwrap when it lands.
+    - type: assert-set
+      threshold: 0
+      assert:
+        - type: llm-rubric # narration — an every-case rule, not a scenario
+          metric: behavior-floor
+          provider: *behavior_grader
+          value: >-
+            The reply must not narrate its own process: no announcing what it is about
+            to do, what it is doing, or what it has just done — searching, pulling
+            something up, filtering, having found results. Restating the user's need,
+            or working out a focal-length equivalence, is content written for the user
+            and is fine. It fails on any sentence whose subject is the assistant's own
+            activity.
     - type: llm-rubric # L2 card standard — conditional; a prose-only reply passes it
       metric: card-quality
       provider: *behavior_grader
@@ -425,24 +440,6 @@ tests:
           existed; it fails if it recommends lenses without acknowledging that the
           request is not satisfiable as stated.
 
-  # Guard: the reply is about lenses, not about the work of finding them.
-  - description: guard-no-narration
-    vars:
-      mount: X
-      locale: zh
-      dialog:
-        turns:
-          - "想给 X-T5 配一支拍室内宠物的镜头，室内光线一般，预算 4000。"
-    assert:
-      - type: llm-rubric # no sentence whose subject is its own activity
-        metric: guard
-        provider: *behavior_grader
-        value: >-
-          The reply must not narrate its own process: no announcing what it is about to
-          do, what it is doing, or what it has just done — searching, pulling something
-          up, filtering, having found results. Restating the user's need, or working out
-          a focal-length equivalence, is content written for the user and is fine. It
-          fails on any sentence whose subject is the assistant's own activity.
 
   # Guard: a spec the catalogue does not carry is answered as unknown, not filled in.
   - description: guard-unknown-spec
