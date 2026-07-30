@@ -19,6 +19,11 @@ const ENDPOINT = "http://localhost:3000/api/chat";
 // Matches the scheme the renderer parses, built from the same prefix.
 const LENS_LINK_RE = new RegExp(`\\]\\(${LENS_LINK_PREFIX}([^)\\s]+)\\)`, "g");
 
+// The same links, whole, so the judge can be handed what a reader actually sees. The
+// renderer turns `[name](lens:ref)` into a clickable name; a judge shown the raw form
+// reads the ref as leaked internals and fails the reply for doing what the prompt asks.
+const LENS_LINK_DISPLAY_RE = new RegExp(`\\[([^\\]]+)\\]\\(${LENS_LINK_PREFIX}[^)\\s]+\\)`, "g");
+
 const REF_TO_ID = new Map(
   ["lenses.json", "lenses-gfx.json"]
     .flatMap((file) =>
@@ -109,6 +114,8 @@ function digest(msg) {
   const tables = [];
   const queries = [];
   const searches = [];
+  // Refs the model inspected in full via lensDetails this turn.
+  const details = [];
   const recalledRefs = new Set();
   // Third source alongside picks/queries: the agent loop's own state. The route caps a
   // turn at STEP_BUDGET steps and forces the last one to text-only, so a turn that spends
@@ -155,6 +162,9 @@ function digest(msg) {
         totalMatched: typeof part.output?.totalMatched === "number" ? part.output.totalMatched : returned,
         returned,
       });
+    }
+    if (name === "lensDetails") {
+      details.push(...(part.input?.refs ?? []));
     }
     if (name === "searchLensByName") {
       searches.push({ query: part.input?.query ?? null, refs: refsFromOutput(part.output) });
@@ -217,6 +227,7 @@ function digest(msg) {
     tables,
     queries,
     searches,
+    details,
     recalledRefs: [...recalledRefs],
     steps,
     preToolText,
@@ -244,6 +255,9 @@ export default class AskIrisProvider {
     // so assemble the full transcript across turns with the latest reply marked. metadata
     // stays the FINAL turn's tool trace — the last rendering is what the JS checks grade.
     const convo = [];
+    // Refs recalled by any turn — a ref pasted in turn one's prose is still on the page
+    // when a later turn is graded.
+    const recalledEver = new Set();
     let d = digest(null);
     for (let i = 0; i < turns.length; i++) {
       messages.push({ id: `u${i + 1}`, role: "user", parts: [{ type: "text", text: turns[i] }] });
@@ -252,16 +266,25 @@ export default class AskIrisProvider {
       if (assistant) {
         messages.push(assistant);
         d = digest(assistant);
+        for (const ref of d.recalledRefs) {
+          recalledEver.add(ref);
+        }
         // Every turn is labeled the same — the whole conversation is graded, and the last
         // Iris turn is identifiable by position, so no turn is singled out.
         convo.push(`[Iris]\n${d.output}`);
       }
     }
     const transcript = convo.join("\n\n") || "(empty)";
+    // Refs come off the raw text; the graders get the rendered form.
     const linkRefs = [...transcript.matchAll(LENS_LINK_RE)].map((m) => m[1]);
+    const readable = transcript.replace(LENS_LINK_DISPLAY_RE, "$1");
+    // Recalled refs sitting in the prose outside a link. Matched against recalled refs
+    // only — five base36 chars collide with ordinary words if the whole catalogue counts.
+    const bareRefs = [...recalledEver].filter((ref) => new RegExp(`\\b${ref}\\b`).test(readable));
     return {
-      output: transcript,
+      output: readable,
       metadata: {
+        bareRefs,
         // Inline lens references, resolved back to ids so a failing assertion names a
         // lens rather than an opaque handle, plus the ones no catalogue entry backs —
         // those render as dead plain text, which is the defect worth gating on.
@@ -272,6 +295,7 @@ export default class AskIrisProvider {
         tables: d.tables,
         queries: d.queries,
         searches: d.searches,
+        details: d.details,
         recalledRefs: d.recalledRefs,
         steps: d.steps,
         preToolText: d.preToolText,

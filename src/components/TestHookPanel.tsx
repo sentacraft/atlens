@@ -23,6 +23,7 @@ import {
 } from "@/components/askiris/fixtureStore";
 import { TestHookContext } from "@/context/TestHookProvider";
 import { TESTHOOK_OPTION_DEFINITIONS } from "@/lib/testhook";
+import type { AgentModelInfo } from "@/lib/ai/model";
 import {
   REDACTION_KEYS,
   REDACTION_QUERY_KEY,
@@ -49,6 +50,29 @@ type TabId = (typeof TABS)[number]["id"];
 const SAFE_FIXTURE_NAME = /^[\w-]+$/;
 const FIXTURE_INPUT_CLS =
   "h-9 flex-1 rounded-md border border-input bg-transparent px-2 text-xs outline-none focus-visible:border-ring";
+
+// Which model just answered. AGENT_MODEL is a server-side override, so the value comes
+// down as a prop from the layout that renders this — a sweep across candidates is
+// otherwise invisible from the browser, and reading a trace without knowing who produced
+// it is how two candidates' output gets conflated.
+function ModelReadout({ model }: { model: AgentModelInfo }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+        Model
+      </span>
+      <div className="flex flex-col gap-0.5 rounded-md border border-input px-2 py-1.5 font-mono text-[11px] leading-5">
+        <div className="text-zinc-900 dark:text-zinc-100">
+          {model.provider}:{model.modelId}
+        </div>
+        <div className="text-zinc-500 dark:text-zinc-400">
+          temperature {model.temperature} ·{" "}
+          {model.overridden ? "AGENT_MODEL override" : "deployed default"}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // AskIris fixture capture/replay. Fixtures live outside the test-hook option
 // system (their list is dynamic — saved files on disk), so this drives the
@@ -125,7 +149,7 @@ function FixtureControl() {
   );
 }
 
-export default function TestHookPanel() {
+export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
   const context = useContext(TestHookContext);
   const [copied, setCopied] = useState(false);
   // Persisted in sessionStorage so the active tab survives a panel remount
@@ -249,6 +273,7 @@ export default function TestHookPanel() {
 
         {tab === "askiris" && (
           <div className="space-y-4">
+            <ModelReadout model={model} />
             {askIrisOptions.map(renderOption)}
             <FixtureControl />
           </div>

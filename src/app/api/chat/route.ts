@@ -156,6 +156,18 @@ export async function POST(req: Request) {
           console.error("[askiris] failed to write turn metrics", error);
         }
       }
+      // Dev-only spend readout. The AE row is the durable record, but it is not legible
+      // while a candidate is being swept, and cost on this workload is decided by one
+      // number the row hides in aggregate: how much of the input the provider served
+      // from its cache, which is billed at a fraction of the rest.
+      if (process.env.NODE_ENV !== "production") {
+        const input = usage.inputTokens ?? 0;
+        const cached = usage.inputTokenDetails?.cacheReadTokens ?? 0;
+        const hit = input ? Math.round((cached / input) * 100) : 0;
+        console.log(
+          `[askiris] in ${input} (cached ${cached} = ${hit}%) · out ${usage.outputTokens ?? 0} · ${stepNumber + 1} steps`,
+        );
+      }
       const tokens = usage.totalTokens;
       if (rateKv && ip && ctx && typeof tokens === "number") {
         ctx.waitUntil(

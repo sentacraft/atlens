@@ -220,7 +220,7 @@ export function buildLensTools(
       description:
         "Present picks as a grid of recommendation cards (up to 6, ordered best-first). Pass each " +
         "lens's ref from a prior queryLenses/searchLensByName result and its reason, which is " +
-        "shown on the lens's card.",
+        "shown on the lens's card. Call it once per group.",
       inputSchema: z.object({
         picks: z
           .array(
@@ -254,8 +254,8 @@ export function buildLensTools(
 
     listLenses: tool({
       description:
-        "Lay out already-recalled lenses as a neutral spec table; their names link to each " +
-        "lens's page. Pass refs from a prior queryLenses/searchLensByName result.",
+        "Lay out already-recalled lenses as a spec table; their names link to each lens's " +
+        "page. Pass refs from a prior queryLenses/searchLensByName result.",
       inputSchema: z.object({
         refs: z
           .array(z.string())

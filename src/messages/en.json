@@ -44,9 +44,9 @@
     },
     "thinking": "Thinking…",
     "chips": [
-      { "emoji": "🌌", "label": "Astro / Milky Way", "prompt": "First time shooting the Milky Way — I need a wide angle with a fast aperture, budget around $800, body is an X-T5." },
+      { "emoji": "🌌", "label": "Astro / Milky Way", "prompt": "First time shooting the Milky Way — I need a wide angle with a fast aperture, body is an X-T5." },
       { "emoji": "✈️", "label": "Travel light", "prompt": "Swapping two or three primes on trips is a hassle — I want one lens that can do it all." },
-      { "emoji": "📷", "label": "Street photography", "prompt": "I want to get into street photography — not sure whether a prime or a zoom suits it better, budget around $700." },
+      { "emoji": "📷", "label": "Street photography", "prompt": "I want to get into street photography — not sure whether a prime or a zoom suits it better, budget around $350." },
       { "emoji": "🌸", "label": "Outdoor portraits", "prompt": "Mostly outdoor half-body portraits — I'm torn between 33mm and 56mm, body is an X-T4." }
     ],
     "beta": "Beta",

@@ -584,26 +584,27 @@ export function recommendLenses(
   recalledRefs: Set<string>,
 ): { recommendations: Recommendation[] } {
   const byRef = buildRefIndex(getLensesByMount(mount, locale));
-  const recommendations = picks.map((pick) => {
-    // Fail loud on a lens the model never recalled — one it conjured from memory or a
-    // ref it altered. Only refs returned by a queryLenses/searchLensByName call this
-    // turn are allowed; the SDK surfaces the throw as a tool-error, so the model
-    // recalls the lens and retries with the exact ref inside its step budget.
-    if (!recalledRefs.has(pick.ref)) {
-      throw new Error(
-        `Lens ref "${pick.ref}" was not returned by any queryLenses/searchLensByName ` +
-          `call this turn. Recommend only lenses you've recalled — look it up first, ` +
-          `and pass the ref exactly as it appears.`,
-      );
-    }
-    const lens = byRef.get(pick.ref);
-    if (!lens) {
-      // recalledRefs only ever holds refs from real tool results, so this is defensive.
-      throw new Error(`Unknown lens ref "${pick.ref}".`);
-    }
-    return { ...resolveLens(lens, locale, tBrand), reason: pick.reason };
-  });
-  return { recommendations };
+  // Fail loud on a lens the model never recalled — one it conjured from memory or a ref
+  // it altered. Only refs returned by a queryLenses/searchLensByName call this turn are
+  // allowed; the SDK surfaces the throw as a tool-error, so the model recalls the lens
+  // and retries with the exact ref inside its step budget.
+  const resolve = (picks: { ref: string; reason: string }[]) =>
+    picks.map((pick) => {
+      if (!recalledRefs.has(pick.ref)) {
+        throw new Error(
+          `Lens ref "${pick.ref}" was not returned by any queryLenses/searchLensByName ` +
+            `call this turn. Recommend only lenses you've recalled — look it up first, ` +
+            `and pass the ref exactly as it appears.`,
+        );
+      }
+      const lens = byRef.get(pick.ref);
+      if (!lens) {
+        // recalledRefs only ever holds refs from real tool results, so this is defensive.
+        throw new Error(`Unknown lens ref "${pick.ref}".`);
+      }
+      return { ...resolveLens(lens, locale, tBrand), reason: pick.reason };
+    });
+  return { recommendations: resolve(picks) };
 }
 
 // Resolve a set of already-recalled ids into a neutral spec table — no reasons, the

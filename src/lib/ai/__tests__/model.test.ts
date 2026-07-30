@@ -8,6 +8,7 @@ import { missingAgentModelKey, getAgentModel } from "../model";
 
 const AGENT_KEYS = [
   "AGENT_MODEL",
+  "DASHSCOPE_API_KEY",
   "DEEPSEEK_API_KEY",
   "OPENAI_API_KEY",
   "GOOGLE_GENERATIVE_AI_API_KEY",
@@ -35,14 +36,14 @@ afterEach(() => {
 
 describe("missingAgentModelKey", () => {
   it("names the default provider's key when nothing overrides it", () => {
-    expect(missingAgentModelKey()).toBe("DEEPSEEK_API_KEY");
-    process.env.DEEPSEEK_API_KEY = "set";
+    expect(missingAgentModelKey()).toBe("DASHSCOPE_API_KEY");
+    process.env.DASHSCOPE_API_KEY = "set";
     expect(missingAgentModelKey()).toBeNull();
   });
 
   it("follows the override rather than the default provider", () => {
     // The deployed provider's key is present; the overridden one's is not.
-    process.env.DEEPSEEK_API_KEY = "set";
+    process.env.DASHSCOPE_API_KEY = "set";
     process.env.AGENT_MODEL = "google:gemini-3.5-flash-lite";
     expect(missingAgentModelKey()).toBe("GOOGLE_GENERATIVE_AI_API_KEY");
     process.env.GOOGLE_GENERATIVE_AI_API_KEY = "set";
