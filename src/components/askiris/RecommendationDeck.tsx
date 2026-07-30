@@ -16,10 +16,6 @@ import type { Recommendation } from "@/lib/ai/recall";
 // ChatGPT/Perplexity pattern, each card is self-describing: it carries its own
 // reason so the surrounding prose stays a short synthesis instead of a per-lens
 // essay the reader has to map back onto a card.
-//
-// The group's name is not here. It used to arrive on the tool call as well as in the
-// prose above the deck, and every group was announced twice — once verbatim. The prose
-// is where the model puts it unprompted, so that is where it lives.
 export default function RecommendationDeck({
   recommendations,
 }: {

@@ -114,9 +114,7 @@ function digest(msg) {
   const tables = [];
   const queries = [];
   const searches = [];
-  // Which lenses were inspected in full. Without this the trace cannot tell a spec the
-  // model looked up from one it produced, and reading a reply against a blind trace is
-  // how a correct answer gets called a fabrication.
+  // Refs the model inspected in full via lensDetails this turn.
   const details = [];
   const recalledRefs = new Set();
   // Third source alongside picks/queries: the agent loop's own state. The route caps a
@@ -257,9 +255,8 @@ export default class AskIrisProvider {
     // so assemble the full transcript across turns with the latest reply marked. metadata
     // stays the FINAL turn's tool trace — the last rendering is what the JS checks grade.
     const convo = [];
-    // Recall is turn-scoped in the tools, but a ref can be pasted into the prose of the
-    // turn that recalled it and still be sitting there when a later turn is graded, so
-    // the candidate set accumulates across the whole dialog.
+    // Refs recalled by any turn — a ref pasted in turn one's prose is still on the page
+    // when a later turn is graded.
     const recalledEver = new Set();
     let d = digest(null);
     for (let i = 0; i < turns.length; i++) {
@@ -281,10 +278,8 @@ export default class AskIrisProvider {
     // Refs come off the raw text; the graders get the rendered form.
     const linkRefs = [...transcript.matchAll(LENS_LINK_RE)].map((m) => m[1]);
     const readable = transcript.replace(LENS_LINK_DISPLAY_RE, "$1");
-    // A ref left in the prose reaches the reader as a five-character token standing where
-    // a lens name belongs. Checked against what this turn recalled rather than the whole
-    // catalogue: those are the refs within reach, and five base36 characters will collide
-    // with an ordinary word eventually if every ref is a candidate.
+    // Recalled refs sitting in the prose outside a link. Matched against recalled refs
+    // only — five base36 chars collide with ordinary words if the whole catalogue counts.
     const bareRefs = [...recalledEver].filter((ref) => new RegExp(`\\b${ref}\\b`).test(readable));
     return {
       output: readable,

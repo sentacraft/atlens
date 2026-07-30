@@ -576,9 +576,6 @@ export function recallLenses(
 // Look up lenses by id and resolve them, attaching the model's authored reason.
 // recalledIds is every id this turn's tool calls have returned, so a pick outside it
 // is a lens the model never recalled here.
-// A group carries no name of its own. Two places to put one — a field here and the
-// prose around the deck — is what made every group arrive twice; the prose is the one
-// the model reaches for unprompted, so it is the one that stays.
 export interface RecommendationGroup {
   recommendations: Recommendation[];
 }
