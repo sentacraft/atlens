@@ -139,6 +139,21 @@ defaultTest:
             or working out a focal-length equivalence, is content written for the user
             and is fine. It fails on any sentence whose subject is the assistant's own
             activity.
+    # Observed, not gated: card rows always carry a bare reference price by design, and a
+    # judge that counts those would fail every deck. Gate stays on guard-price-hedged.
+    - type: assert-set
+      threshold: 0
+      assert:
+        - type: llm-rubric # a price quoted in the prose is hedged, whatever the case
+          metric: guard
+          provider: *behavior_grader
+          value: >-
+            This applies only to prices stated in the running prose; the price printed on
+            a card or table row is a reference figure by design and is not what this
+            checks. If the prose states a price or a price gap, it must flag it as a
+            dated reference — not a live figure — with the current price on the lens's
+            page; prose that quotes no price passes. It fails only on a prose price or
+            gap stated with no such caveat.
     - type: llm-rubric # L2 card standard — conditional; a prose-only reply passes it
       metric: card-quality
       provider: *behavior_grader
