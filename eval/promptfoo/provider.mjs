@@ -273,9 +273,16 @@ export default class AskIrisProvider {
     const transcript = convo.join("\n\n") || "(empty)";
     // Refs come off the raw text; the graders get the rendered form.
     const linkRefs = [...transcript.matchAll(LENS_LINK_RE)].map((m) => m[1]);
+    const readable = transcript.replace(LENS_LINK_DISPLAY_RE, "$1");
+    // A ref left in the prose reaches the reader as a five-character token standing where
+    // a lens name belongs. Checked against what this turn recalled rather than the whole
+    // catalogue: those are the refs within reach, and five base36 characters will collide
+    // with an ordinary word eventually if every ref is a candidate.
+    const bareRefs = d.recalledRefs.filter((ref) => new RegExp(`\\b${ref}\\b`).test(readable));
     return {
-      output: transcript.replace(LENS_LINK_DISPLAY_RE, "$1"),
+      output: readable,
       metadata: {
+        bareRefs,
         // Inline lens references, resolved back to ids so a failing assertion names a
         // lens rather than an opaque handle, plus the ones no catalogue entry backs —
         // those render as dead plain text, which is the defect worth gating on.

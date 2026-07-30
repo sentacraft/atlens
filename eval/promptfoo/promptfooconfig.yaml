@@ -76,6 +76,9 @@ defaultTest:
     - type: javascript # cine catalogue not opened unless asked
       metric: programmatic
       value: 'context.vars.wantsCine === true || context.metadata.queries.every((q) => q.input.usage !== "cine")'
+    - type: javascript # a ref left in the prose reaches the reader as a token, not a lens name
+      metric: programmatic
+      value: "context.metadata.bareRefs.length === 0"
     - type: javascript # every inline lens link resolves — an unknown ref renders as dead plain text
       metric: programmatic
       value: "context.metadata.unknownLinkIds.length === 0"
