@@ -79,9 +79,6 @@ defaultTest:
     - type: javascript # every inline lens link resolves — an unknown ref renders as dead plain text
       metric: programmatic
       value: "context.metadata.unknownLinkIds.length === 0"
-    - type: javascript # a titled deck already names its group; a prose heading beside it says it twice
-      metric: programmatic
-      value: 'context.metadata.deckTitles.filter(Boolean).length === 0 || !/^#{1,6}\s/m.test(output)'
     - type: javascript # tables come from listLenses, never from markdown in the reply
       metric: programmatic
       value: '!/^\s*\|.*\|\s*$/m.test(output)'
@@ -257,11 +254,12 @@ tests:
         provider: *behavior_grader
         value: >-
           The user is undecided between two focal lengths. The reply must do one of two
-          things and not both: ask which way that choice goes and stop there, presenting
-          no lenses at all; or say which way it narrowed the request, so the user can
-          correct it, and present lenses only from that side. It fails if it asks the
-          user to decide and also presents lenses drawn from both sides of the choice
-          the user has not made.
+          things and not both: ask which way that choice goes and name no lens at all;
+          or say which way it narrowed the request, so the user can correct it, and
+          offer lenses only from that side. Characterising what each focal length is
+          like is how the question gets asked and is not offering a lens — only naming
+          or showing particular lenses counts. It fails if it asks the user to decide
+          and also puts forward specific lenses from both sides.
 
   # Guard: an off-topic ask is declined, not answered — no cards, and a scoped refusal.
   - description: guard-non-lens
@@ -382,13 +380,15 @@ tests:
       locale: zh
       dialog:
         turns:
-          - "想要一支富士 X 卡口 F1.2 的大光圈人像镜头，预算 800 以内。"
+          - "想要一支富士 X 卡口 F1.2 的大光圈人像镜头，要自动对焦，预算 800 以内。"
     assert:
       - type: llm-rubric # names the gap between budget and spec instead of silently substituting
         metric: guard
         provider: *behavior_grader
         value: >-
-          Nothing on this mount meets both the stated aperture and the stated budget.
+          Nothing on this mount is autofocus at the stated aperture anywhere near the
+          stated budget — the cheapest is several times over it, and everything that
+          does fit the budget at that aperture is manual focus.
           The reply should say so plainly and either ask which constraint to relax or
           state which one it relaxed and why; it fails if it presents lenses that miss
           the stated aperture as if they answered the request, or silently drops either
@@ -441,17 +441,18 @@ tests:
       namesModels: true
       dialog:
         turns:
-          - "富士 XF 23mm F1.4 R LM WR 是几组几片的光学结构？边缘画质怎么样？"
+          - "富士 XF 23mm F1.4 R LM WR 的边缘画质和紫边控制怎么样？跟 XF 33mm F1.4 比呢？"
     assert:
       - type: llm-rubric # says it doesn't have the figure rather than producing one
         metric: guard
         provider: *behavior_grader
         value: >-
-          Neither the optical construction (a count of elements and groups) nor any
-          measurement of edge sharpness is something this assistant holds data for. The
-          reply should say it does not have that and offer what it can speak to instead;
-          it fails if it states an element or group count, or delivers a verdict on edge
-          quality, as though either were looked up.
+          Rendered image quality — edge sharpness, chromatic aberration, how one lens
+          compares to another on either — is not something the catalogue holds; it has
+          specifications, not test results. The reply should say it cannot speak to that
+          and offer what it can (the specs, and where to look); it fails if it delivers a
+          verdict on either lens's edge quality or purple fringing, or ranks the two on
+          those, as though it had been looked up.
 
   # Guard: it may state a price or gap, but must flag it's a dated sample and point to the page.
   - description: guard-price-hedged

@@ -111,12 +111,13 @@ function digest(msg) {
   const transcript = [];
   const picks = [];
   const pickGroups = [];
-  // What each deck called its group. The name belongs to the deck, so a heading in the
-  // prose next to one is the same name said twice.
-  const deckTitles = [];
   const tables = [];
   const queries = [];
   const searches = [];
+  // Which lenses were inspected in full. Without this the trace cannot tell a spec the
+  // model looked up from one it produced, and reading a reply against a blind trace is
+  // how a correct answer gets called a fabrication.
+  const details = [];
   const recalledRefs = new Set();
   // Third source alongside picks/queries: the agent loop's own state. The route caps a
   // turn at STEP_BUDGET steps and forces the last one to text-only, so a turn that spends
@@ -164,6 +165,9 @@ function digest(msg) {
         returned,
       });
     }
+    if (name === "lensDetails") {
+      details.push(...(part.input?.refs ?? []));
+    }
     if (name === "searchLensByName") {
       searches.push({ query: part.input?.query ?? null, refs: refsFromOutput(part.output) });
     }
@@ -205,14 +209,7 @@ function digest(msg) {
         group.push(rec.id);
       }
       pickGroups.push(group);
-      deckTitles.push(part.output.title ?? null);
-      // The title rides with the deck it names, so the judge reads the group the way the
-      // page presents it rather than as an unlabelled block of cards.
-      transcript.push(
-        `[cards${part.output.title ? `: ${part.output.title}` : ""}]\n${part.output.recommendations
-          .map(formatCard)
-          .join("\n")}`,
-      );
+      transcript.push(`[cards]\n${part.output.recommendations.map(formatCard).join("\n")}`);
     }
     if (name === "listLenses" && Array.isArray(part.output?.lenses)) {
       const ids = part.output.lenses.map((l) => l.id);
@@ -229,10 +226,10 @@ function digest(msg) {
     output: transcript.join("\n\n") || "(empty)",
     picks,
     pickGroups,
-    deckTitles,
     tables,
     queries,
     searches,
+    details,
     recalledRefs: [...recalledRefs],
     steps,
     preToolText,
@@ -286,10 +283,10 @@ export default class AskIrisProvider {
         unknownLinkIds: [...new Set(linkRefs.filter((ref) => !REF_TO_ID.has(ref)))],
         picks: d.picks,
         pickGroups: d.pickGroups,
-        deckTitles: d.deckTitles,
         tables: d.tables,
         queries: d.queries,
         searches: d.searches,
+        details: d.details,
         recalledRefs: d.recalledRefs,
         steps: d.steps,
         preToolText: d.preToolText,

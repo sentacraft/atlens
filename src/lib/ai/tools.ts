@@ -220,7 +220,7 @@ export function buildLensTools(
       description:
         "Present picks as a grid of recommendation cards (up to 6, ordered best-first). Pass each " +
         "lens's ref from a prior queryLenses/searchLensByName result and its reason, which is " +
-        "shown on the lens's card. Call it once per group, and title each group here.",
+        "shown on the lens's card. Call it once per group.",
       inputSchema: z.object({
         picks: z
           .array(
@@ -236,13 +236,8 @@ export function buildLensTools(
           )
           .min(1)
           .max(6),
-        title: z
-          .string()
-          .optional()
-          .describe("A short heading above this group, in the user's language."),
       }),
-      execute: ({ picks, title }) =>
-        recommendLenses(mount, locale, picks, title, tBrand, recalledRefs),
+      execute: ({ picks }) => recommendLenses(mount, locale, picks, tBrand, recalledRefs),
       // Full recommendations stream to the client (the cards); the model already saw
       // these lenses in the query result, so feed it a lean ack, not the specs again.
       // The refs do come back, though: the synthesis prose that follows has to cite them

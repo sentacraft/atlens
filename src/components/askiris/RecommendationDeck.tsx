@@ -17,26 +17,20 @@ import type { Recommendation } from "@/lib/ai/recall";
 // reason so the surrounding prose stays a short synthesis instead of a per-lens
 // essay the reader has to map back onto a card.
 //
-// The heading comes from the same tool call as the picks: naming what a group is, is the
-// one thing none of its cards can do.
+// The group's name is not here. It used to arrive on the tool call as well as in the
+// prose above the deck, and every group was announced twice — once verbatim. The prose
+// is where the model puts it unprompted, so that is where it lives.
 export default function RecommendationDeck({
   recommendations,
-  title,
 }: {
   recommendations: Recommendation[];
-  title?: string | null;
 }) {
   return (
-    <>
-      {title ? (
-        <h3 className="text-foreground mt-0 mb-1.5 px-1 text-sm font-semibold">{title}</h3>
-      ) : null}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {recommendations.map((rec) => (
-          <RecommendationCard key={rec.id} rec={rec} />
-        ))}
-      </div>
-    </>
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      {recommendations.map((rec) => (
+        <RecommendationCard key={rec.id} rec={rec} />
+      ))}
+    </div>
   );
 }
 
