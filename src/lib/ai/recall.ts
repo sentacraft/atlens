@@ -576,17 +576,13 @@ export function recallLenses(
 // Look up lenses by id and resolve them, attaching the model's authored reason.
 // recalledIds is every id this turn's tool calls have returned, so a pick outside it
 // is a lens the model never recalled here.
-export interface RecommendationGroup {
-  recommendations: Recommendation[];
-}
-
 export function recommendLenses(
   mount: Mount,
   locale: string,
   picks: { ref: string; reason: string }[],
   tBrand: (brand: string) => string,
   recalledRefs: Set<string>,
-): RecommendationGroup {
+): { recommendations: Recommendation[] } {
   const byRef = buildRefIndex(getLensesByMount(mount, locale));
   // Fail loud on a lens the model never recalled — one it conjured from memory or a ref
   // it altered. Only refs returned by a queryLenses/searchLensByName call this turn are
