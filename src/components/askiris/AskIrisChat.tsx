@@ -24,28 +24,20 @@ import {
   resolveFixture,
 } from "@/components/askiris/fixtureStore";
 
-// A finished conversation segment, or the divider that closes one off. Mount is
-// the agent's whole lens world, so switching it can't continue a thread — the
-// prior segment is archived above a divider (still scrollable) and Iris starts
-// fresh below it, with only the live segment sent to the model.
 type ThreadItem = { kind: "seg"; messages: UIMessage[] } | { kind: "divider"; label: string };
 
-// The client's display bucket = the server's ChatErrorKind plus "transient" (an
-// untagged stream/network error, where a retry may actually succeed).
+// "transient" is an untagged stream or network error, where a retry may succeed.
 type ErrorDisplay = ChatErrorKind | "transient";
 
-// Which localized copy each non-transient kind shows. A Record, so adding a
-// ChatErrorKind server-side won't typecheck until a message is chosen here too.
+// A Record, so adding a ChatErrorKind server-side won't typecheck until a message
+// is chosen here too.
 const ERROR_MESSAGE_KEY: Record<ChatErrorKind, "rateLimited" | "errorUnavailable"> = {
   rate_limit: "rateLimited",
   unavailable: "errorUnavailable",
 };
 
-// Sort a failed turn into how the user should react. The transport throws with the
-// raw response body as the Error message on a non-2xx pre-flight failure (no status
-// code preserved), so the route tags those bodies with a `kind` and we read it back
-// here. A stream or network error carries no such body — JSON.parse fails and we
-// treat it as transient, where a retry may actually succeed.
+// The transport throws with the raw response body as the Error message and no status
+// code, so the route tags those bodies with a `kind` and we read it back out here.
 function classifyError(error: Error | undefined): ErrorDisplay {
   if (error) {
     try {
@@ -60,10 +52,8 @@ function classifyError(error: Error | undefined): ErrorDisplay {
   return "transient";
 }
 
-// Experimental AskIris chat. Two states on one route: an empty-state landing
-// (centered hero) before the first message, and the chat thread after. mount
-// comes from the effective-mount preference and locale from the route; both ride
-// on each turn's request body so the server scopes the agent and its language.
+// Two states on one route: an empty-state landing (centered hero) before the first
+// message, and the chat thread after.
 export default function AskIrisChat({
   locale,
   initialQuery,
@@ -80,24 +70,20 @@ export default function AskIrisChat({
   const debug = useTestHookOption("askIrisTrace") === "on";
   const { selected } = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const [input, setInput] = useState("");
-  // Segments closed off by an earlier mount switch — rendered read-only above the
-  // live thread, never re-sent to the model.
+  // Closed-off segments, rendered read-only above the live thread and never re-sent
+  // to the model.
   const [archived, setArchived] = useState<ThreadItem[]>([]);
-  // Throttle message/store updates (~20fps): a long stream otherwise re-renders
-  // on every chunk, and with several message-derived effects that can trip React's
-  // update-depth limit on a slow connection.
+  // Unthrottled, a long stream re-renders on every chunk and the message-derived
+  // effects below can trip React's update-depth limit.
   const { messages, sendMessage, status, setMessages, stop, regenerate, error } = useChat({
     experimental_throttle: 50,
   });
 
   const isBusy = status === "submitted" || status === "streaming";
-  // Only a transient failure is worth a retry; a rate-limit needs a wait and a
-  // bad-request/outage will fail identically, so those drop the retry affordance.
   const errorKind = status === "error" ? classifyError(error) : null;
 
-  // A conversation-segment id, minted per segment (a fresh one on each mount switch /
-  // "new chat") and sent with every turn so the server can group turns into sessions.
-  // Kept in a ref: it must not trigger re-renders and is read lazily at send time.
+  // Sent with every turn so the server can group turns into sessions. In a ref: it
+  // must not trigger a re-render, and is read lazily at send time.
   const segmentIdRef = useRef<string>("");
   function currentSegmentId(): string {
     if (!segmentIdRef.current) {
@@ -106,8 +92,7 @@ export default function AskIrisChat({
     return segmentIdRef.current;
   }
 
-  // One page view per load — the funnel entry (PV; distinct sid gives UV). Not fired
-  // on a mount switch / new chat: those are in-page and don't reload the route.
+  // One per load; a mount switch or new chat is in-page and doesn't re-fire it.
   useEffect(() => {
     track("askiris_view");
   }, []);
@@ -122,11 +107,8 @@ export default function AskIrisChat({
     setInput("");
   }
 
-  // Query entry: /askiris?q=… (e.g. from a Browse-page hand-off) auto-sends once.
-  // The page reads it server-side and hands it down as a prop, so the first render
-  // is already the thread (see the empty-state guard below) rather than the hero.
-  // We still strip the param from the URL so a refresh doesn't re-fire it — there's
-  // no thread persistence, so a refresh returns to the empty state.
+  // /askiris?q=… (a Browse-page hand-off) auto-sends once. The param is stripped from
+  // the URL afterwards so a refresh doesn't re-fire it.
   const queryFired = useRef(false);
   useEffect(() => {
     if (queryFired.current || !initialQuery) {
@@ -140,29 +122,26 @@ export default function AskIrisChat({
     window.history.replaceState(null, "", url.toString());
   }, [initialQuery, sendMessage, mount, locale]);
 
-  // Read the live segment lazily at switch time, without re-running the switch
-  // effect on every streamed message.
+  // Lets the switch below read the live segment without re-running on every streamed
+  // message.
   const messagesRef = useRef(messages);
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
 
-  // Close off the current segment: archive it above a labelled divider (still
-  // scrollable), abort any in-flight stream so its remaining deltas don't leak
-  // into the reset, and clear the live thread. Shared by the mount switch and
-  // the "new chat" button; only the current segment is ever sent to the model.
+  // Shared by the mount switch and the "new chat" button.
   const startNewSegment = useCallback(
     (label: string) => {
+      // So the remaining deltas of an in-flight stream don't leak past the reset.
       stop();
       // Snapshot (copy) the segment so it's detached from useChat's array.
       const live = [...messagesRef.current];
       setArchived((prev) => {
-        // Nothing live and no history: nothing to divide.
         if (live.length === 0 && prev.length === 0) {
           return prev;
         }
-        // Boundary requested again without chatting — retarget the trailing
-        // divider instead of stacking an empty one.
+        // Asked again without chatting — retarget the trailing divider rather than
+        // stack an empty one.
         if (live.length === 0 && prev[prev.length - 1]?.kind === "divider") {
           return [...prev.slice(0, -1), { kind: "divider", label }];
         }
@@ -175,15 +154,13 @@ export default function AskIrisChat({
       });
       setMessages([]);
       setInput("");
-      // The next turn belongs to a new session.
       segmentIdRef.current = crypto.randomUUID();
     },
     [stop, setMessages],
   );
 
-  // Mount switch = a new agent world, so it can't continue a thread. mount/locale
-  // ride on the next sendMessage's body, so the new turn reaches the right
-  // catalogue.
+  // A mount switch swaps the agent's whole lens catalogue, so a thread can't continue
+  // across one.
   const prevMountRef = useRef(mount);
   useEffect(() => {
     if (prevMountRef.current === mount) {
@@ -193,9 +170,9 @@ export default function AskIrisChat({
     startNewSegment(t("switchedMount", { mount: mount === "G" ? tMount("gfx") : tMount("x") }));
   }, [mount, startNewSegment, t, tMount]);
 
-  // Dev-only: the panel's fixture selector replays a saved thread through the real
-  // page shell — deterministic UI work (decks, tables) with no LLM call. Publish
-  // live messages so the panel can capture them into a new fixture.
+  // Dev-only: publish live messages so the test-hook panel can capture them into a
+  // fixture, and replay a selected one through the real page shell — deterministic
+  // UI work (decks, tables) with no LLM call.
   useEffect(() => {
     publishLive(messages);
   }, [messages]);
@@ -205,8 +182,8 @@ export default function AskIrisChat({
       : null;
   const renderMessages = fixtureMessages ?? messages;
 
-  // Follow the newest content as it streams, but only while the user is pinned to
-  // the bottom — scrolling up to read mid-stream must not get yanked back down.
+  // Follow the stream only while the user is pinned to the bottom — scrolling up to
+  // read mid-stream must not yank them back down.
   const scrollRef = useRef<HTMLDivElement>(null);
   const pinnedRef = useRef(true);
   const { canScrollUp, canScrollDown } = useScrollAffordance(scrollRef, [archived, renderMessages]);
@@ -225,10 +202,8 @@ export default function AskIrisChat({
     }
   }, [messages]);
 
-  // `archived` only grows when a topic closes (the new-topic button or a mount
-  // switch), appending its divider; jump to that divider so the fresh thread is in
-  // view instead of leaving the user parked up in the archived history. Re-pins so
-  // the next turn's stream follows.
+  // A closed topic appends its divider; jump to it so the fresh thread is in view
+  // rather than leaving the user parked up in the archived history.
   useEffect(() => {
     if (archived.length === 0) {
       return;
@@ -275,10 +250,9 @@ export default function AskIrisChat({
               ),
             )}
             <AskIrisThread messages={renderMessages} debug={debug} busy={isBusy} />
-            {/* Surface a failed turn: useChat catches request/stream errors into
-                status "error" but renders nothing on its own. Only the transient
-                case offers a retry (inline verb, re-runs the last turn with
-                mount/locale); a rate-limit or outage just states what happened. */}
+            {/* useChat catches request and stream errors into status "error" but
+                renders nothing on its own. Only a transient failure is worth a retry:
+                a rate-limit needs a wait, an outage will fail identically. */}
             {errorKind && (
               <div role="alert" className="px-1 text-sm text-zinc-500 dark:text-zinc-400">
                 {errorKind === "transient" ? (
@@ -299,9 +273,8 @@ export default function AskIrisChat({
               </div>
             )}
           </div>
-          {/* Edge fades as overlays (not a container mask) so the scrollbar stays
-              crisp; each shows only when there's more thread that way. Inset from
-              the right so they clear the scrollbar. */}
+          {/* Overlays rather than a container mask, so the scrollbar stays crisp;
+              inset from the right so they clear it. */}
           <div
             aria-hidden
             className={cn(
