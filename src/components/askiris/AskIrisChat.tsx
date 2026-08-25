@@ -2,8 +2,8 @@
 
 import { useChat } from "@ai-sdk/react";
 import { track } from "@/lib/analytics/analytics";
-import { DefaultChatTransport, type UIMessage } from "ai";
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import type { UIMessage } from "ai";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { isChatErrorKind, type ChatErrorKind } from "@/lib/ai/chat-errors";
@@ -62,8 +62,8 @@ function classifyError(error: Error | undefined): ErrorDisplay {
 
 // Experimental AskIris chat. Two states on one route: an empty-state landing
 // (centered hero) before the first message, and the chat thread after. mount
-// comes from the effective-mount preference and locale from the route; both go
-// through the transport body so the server scopes the agent and its language.
+// comes from the effective-mount preference and locale from the route; both ride
+// on each turn's request body so the server scopes the agent and its language.
 export default function AskIrisChat({
   locale,
   initialQuery,
@@ -83,15 +83,10 @@ export default function AskIrisChat({
   // Segments closed off by an earlier mount switch — rendered read-only above the
   // live thread, never re-sent to the model.
   const [archived, setArchived] = useState<ThreadItem[]>([]);
-  // mount + locale ride on each sendMessage's per-request body (below), not the
-  // transport — a mid-thread mount switch must reach the server on the very next
-  // turn, and useChat doesn't re-adopt a rebuilt transport.
-  const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat" }), []);
   // Throttle message/store updates (~20fps): a long stream otherwise re-renders
   // on every chunk, and with several message-derived effects that can trip React's
   // update-depth limit on a slow connection.
   const { messages, sendMessage, status, setMessages, stop, regenerate, error } = useChat({
-    transport,
     experimental_throttle: 50,
   });
 

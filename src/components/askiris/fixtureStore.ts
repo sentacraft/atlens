@@ -1,14 +1,13 @@
 "use client";
 
 import type { UIMessage } from "ai";
+import { TESTHOOK_ALLOWED } from "@/lib/testhook";
 
 // Dev-only fixture store shared between AskIrisChat (publishes its live messages,
 // reads the selected fixture) and the test-hook panel (selects, saves, renames,
 // deletes). Fixtures are persisted as JSON files under a gitignored repo dir via
 // /api/askiris-fixtures — a captured session survives reloads and is visible on
-// disk, so you can save a live reply and replay it while debugging. None of this
-// ships to prod: the API route 404s outside dev and AskIrisChat gates fixture use
-// on NODE_ENV.
+// disk, so you can save a live reply and replay it while debugging.
 
 const API = "/api/askiris-fixtures";
 
@@ -56,11 +55,13 @@ async function refresh() {
       emit();
     }
   } catch {
-    // No API (e.g. prod) — nothing to replay.
+    // Route unreachable (dev server restarting) — nothing to replay.
   }
 }
 
-if (typeof window !== "undefined") {
+// TESTHOOK_ALLOWED, not `typeof window`: AskIrisChat imports this module in
+// production too, and a client chunk always has a window.
+if (TESTHOOK_ALLOWED && typeof window !== "undefined") {
   // Restore query-param repro links, e.g. ?fixture=foo — resolves once refresh()
   // lands the saved fixtures from disk.
   const fromUrl = new URLSearchParams(window.location.search).get("fixture");
