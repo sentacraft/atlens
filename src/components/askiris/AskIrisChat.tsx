@@ -3,10 +3,9 @@
 import { useChat } from "@ai-sdk/react";
 import { track } from "@/lib/analytics/analytics";
 import type { UIMessage } from "ai";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { isChatErrorKind, type ChatErrorKind } from "@/lib/ai/chat-errors";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { useTestHookOption } from "@/context/TestHookProvider";
@@ -16,59 +15,28 @@ import type { LensLinkIndex } from "@/lib/ai/lens-ref";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisDivider from "@/components/askiris/AskIrisDivider";
-import {
-  subscribe,
-  getSnapshot,
-  getServerSnapshot,
-  publishLive,
-  resolveFixture,
-} from "@/components/askiris/fixtureStore";
+import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
+import { useFixtureMessages } from "@/components/askiris/fixtureStore";
 
 type ThreadItem = { kind: "seg"; messages: UIMessage[] } | { kind: "divider"; label: string };
 
-// "transient" is an untagged stream or network error, where a retry may succeed.
-type ErrorDisplay = ChatErrorKind | "transient";
-
-// A Record, so adding a ChatErrorKind server-side won't typecheck until a message
-// is chosen here too.
-const ERROR_MESSAGE_KEY: Record<ChatErrorKind, "rateLimited" | "errorUnavailable"> = {
-  rate_limit: "rateLimited",
-  unavailable: "errorUnavailable",
-};
-
-// The transport throws with the raw response body as the Error message and no status
-// code, so the route tags those bodies with a `kind` and we read it back out here.
-function classifyError(error: Error | undefined): ErrorDisplay {
-  if (error) {
-    try {
-      const body = JSON.parse(error.message) as { kind?: unknown };
-      if (isChatErrorKind(body.kind)) {
-        return body.kind;
-      }
-    } catch {
-      // Not a tagged body — fall through to transient.
-    }
-  }
-  return "transient";
-}
+const SHELL_CLS =
+  "mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4";
 
 // Two states on one route: an empty-state landing (centered hero) before the first
 // message, and the chat thread after.
 export default function AskIrisChat({
-  locale,
   initialQuery,
   lensIndex,
 }: {
-  locale: string;
   initialQuery?: string;
   lensIndex: LensLinkIndex;
 }) {
   const t = useTranslations("AskIris");
   const tMount = useTranslations("MountSwitcher");
+  const locale = useLocale();
   const mount = useEffectiveMount();
-  // Both gated behind the test-hook panel's "AskIris debug" section.
   const debug = useTestHookOption("askIrisTrace") === "on";
-  const { selected } = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const [input, setInput] = useState("");
   // Closed-off segments, rendered read-only above the live thread and never re-sent
   // to the model.
@@ -82,15 +50,10 @@ export default function AskIrisChat({
   const isBusy = status === "submitted" || status === "streaming";
   const errorKind = status === "error" ? classifyError(error) : null;
 
-  // Sent with every turn so the server can group turns into sessions. In a ref: it
-  // must not trigger a re-render, and is read lazily at send time.
-  const segmentIdRef = useRef<string>("");
-  function currentSegmentId(): string {
-    if (!segmentIdRef.current) {
-      segmentIdRef.current = crypto.randomUUID();
-    }
-    return segmentIdRef.current;
-  }
+  // The segment id groups turns into sessions server-side; a new one starts at each
+  // segment boundary.
+  const [segmentId, setSegmentId] = useState(() => crypto.randomUUID());
+  const turnBody = { mount, locale, segmentId };
 
   // One per load; a mount switch or new chat is in-page and doesn't re-fire it.
   useEffect(() => {
@@ -102,25 +65,30 @@ export default function AskIrisChat({
     if (!trimmed || isBusy) {
       return;
     }
-    sendMessage({ text: trimmed }, { body: { mount, locale, segmentId: currentSegmentId() } });
+    sendMessage({ text: trimmed }, { body: turnBody });
     track("askiris_message", { query: trimmed, method: "typed" });
     setInput("");
   }
 
-  // /askiris?q=… (a Browse-page hand-off) auto-sends once. The param is stripped from
-  // the URL afterwards so a refresh doesn't re-fire it.
-  const queryFired = useRef(false);
+  // /askiris?q=… arrives as a prop off the server render and auto-sends. The param is
+  // then stripped so a refresh doesn't re-fire it. The ref keeps the send out of the
+  // dev double-mount, and is a ref rather than a module flag because navigating away
+  // and returning with a new query should send again.
+  const submitInitialQuery = useEffectEvent((query: string) => {
+    sendMessage({ text: query }, { body: turnBody });
+    track("askiris_message", { query, method: "handoff" });
+  });
+  const initialQuerySent = useRef(false);
   useEffect(() => {
-    if (queryFired.current || !initialQuery) {
+    if (initialQuerySent.current || !initialQuery) {
       return;
     }
-    queryFired.current = true;
-    sendMessage({ text: initialQuery }, { body: { mount, locale, segmentId: currentSegmentId() } });
-    track("askiris_message", { query: initialQuery, method: "handoff" });
+    initialQuerySent.current = true;
+    submitInitialQuery(initialQuery);
     const url = new URL(window.location.href);
     url.searchParams.delete("q");
     window.history.replaceState(null, "", url.toString());
-  }, [initialQuery, sendMessage, mount, locale]);
+  }, [initialQuery]);
 
   // Lets the switch below read the live segment without re-running on every streamed
   // message.
@@ -154,7 +122,7 @@ export default function AskIrisChat({
       });
       setMessages([]);
       setInput("");
-      segmentIdRef.current = crypto.randomUUID();
+      setSegmentId(crypto.randomUUID());
     },
     [stop, setMessages],
   );
@@ -170,17 +138,7 @@ export default function AskIrisChat({
     startNewSegment(t("switchedMount", { mount: mount === "G" ? tMount("gfx") : tMount("x") }));
   }, [mount, startNewSegment, t, tMount]);
 
-  // Dev-only: publish live messages so the test-hook panel can capture them into a
-  // fixture, and replay a selected one through the real page shell — deterministic
-  // UI work (decks, tables) with no LLM call.
-  useEffect(() => {
-    publishLive(messages);
-  }, [messages]);
-  const fixtureMessages =
-    process.env.NODE_ENV !== "production" && selected !== "off"
-      ? (resolveFixture(selected) ?? null)
-      : null;
-  const renderMessages = fixtureMessages ?? messages;
+  const renderMessages = useFixtureMessages(messages);
 
   // Follow the stream only while the user is pinned to the bottom — scrolling up to
   // read mid-stream must not yank them back down.
@@ -215,13 +173,11 @@ export default function AskIrisChat({
     }
   }, [archived]);
 
-  const shell = "mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4";
-
   // Skip the hero when a hand-off query is pending: it fires on mount and fills the
   // thread, so rendering the empty state first would just flash before the reply.
   if (archived.length === 0 && renderMessages.length === 0 && !initialQuery) {
     return (
-      <div className={shell}>
+      <div className={SHELL_CLS}>
         <AskIrisEmptyState
           input={input}
           onInputChange={setInput}
@@ -235,7 +191,7 @@ export default function AskIrisChat({
 
   return (
     <LensLinkProvider index={lensIndex}>
-      <div className={shell}>
+      <div className={SHELL_CLS}>
         <div className="relative min-h-0 flex-1">
           <div
             ref={scrollRef}
@@ -250,27 +206,8 @@ export default function AskIrisChat({
               ),
             )}
             <AskIrisThread messages={renderMessages} debug={debug} busy={isBusy} />
-            {/* useChat catches request and stream errors into status "error" but
-                renders nothing on its own. Only a transient failure is worth a retry:
-                a rate-limit needs a wait, an outage will fail identically. */}
             {errorKind && (
-              <div role="alert" className="px-1 text-sm text-zinc-500 dark:text-zinc-400">
-                {errorKind === "transient" ? (
-                  t.rich("errorRetry", {
-                    retry: (chunks) => (
-                      <button
-                        type="button"
-                        onClick={() => regenerate({ body: { mount, locale, segmentId: currentSegmentId() } })}
-                        className="font-medium text-zinc-700 underline underline-offset-2 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
-                      >
-                        {chunks}
-                      </button>
-                    ),
-                  })
-                ) : (
-                  <span>{t(ERROR_MESSAGE_KEY[errorKind])}</span>
-                )}
-              </div>
+              <AskIrisError kind={errorKind} onRetry={() => regenerate({ body: turnBody })} />
             )}
           </div>
           {/* Overlays rather than a container mask, so the scrollbar stays crisp;
