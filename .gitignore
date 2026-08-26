@@ -57,11 +57,11 @@ worker-configuration.d.ts
 src/data/lens-images.generated.ts
 
 # coding agents
+# AGENTS.md (project rules) and its CLAUDE.md symlink are tracked on purpose:
+# every harness reads them from the worktree root, and worktrees get no ignored files.
 .agents/
 .claude/
 !.claude/launch.json
-CLAUDE.md
-agents.md
 .playwright-mcp/
 skills-lock.json
 
