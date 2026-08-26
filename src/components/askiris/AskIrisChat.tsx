@@ -2,8 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { track } from "@/lib/analytics/analytics";
-import type { UIMessage } from "ai";
-import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -17,8 +16,7 @@ import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisDivider from "@/components/askiris/AskIrisDivider";
 import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
 import { useFixtureMessages } from "@/components/askiris/fixtureStore";
-
-type ThreadItem = { kind: "seg"; messages: UIMessage[] } | { kind: "divider"; label: string };
+import { useConversationSegments } from "@/components/askiris/useConversationSegments";
 
 const SHELL_CLS =
   "mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4";
@@ -38,21 +36,19 @@ export default function AskIrisChat({
   const mount = useEffectiveMount();
   const debug = useTestHookOption("askIrisTrace") === "on";
   const [input, setInput] = useState("");
-  // Closed-off segments, rendered read-only above the live thread and never re-sent
-  // to the model.
-  const [archived, setArchived] = useState<ThreadItem[]>([]);
   // Unthrottled, a long stream re-renders on every chunk and the message-derived
   // effects below can trip React's update-depth limit.
   const { messages, sendMessage, status, setMessages, stop, regenerate, error } = useChat({
     experimental_throttle: 50,
   });
+  const { archived, segmentId, startNewSegment } = useConversationSegments({
+    messages,
+    stop,
+    setMessages,
+  });
 
   const isBusy = status === "submitted" || status === "streaming";
   const errorKind = status === "error" ? classifyError(error) : null;
-
-  // The segment id groups turns into sessions server-side; a new one starts at each
-  // segment boundary.
-  const [segmentId, setSegmentId] = useState(() => crypto.randomUUID());
   const turnBody = { mount, locale, segmentId };
 
   // One per load; a mount switch or new chat is in-page and doesn't re-fire it.
@@ -90,43 +86,6 @@ export default function AskIrisChat({
     window.history.replaceState(null, "", url.toString());
   }, [initialQuery]);
 
-  // Lets the switch below read the live segment without re-running on every streamed
-  // message.
-  const messagesRef = useRef(messages);
-  useEffect(() => {
-    messagesRef.current = messages;
-  }, [messages]);
-
-  // Shared by the mount switch and the "new chat" button.
-  const startNewSegment = useCallback(
-    (label: string) => {
-      // So the remaining deltas of an in-flight stream don't leak past the reset.
-      stop();
-      // Snapshot (copy) the segment so it's detached from useChat's array.
-      const live = [...messagesRef.current];
-      setArchived((prev) => {
-        if (live.length === 0 && prev.length === 0) {
-          return prev;
-        }
-        // Asked again without chatting — retarget the trailing divider rather than
-        // stack an empty one.
-        if (live.length === 0 && prev[prev.length - 1]?.kind === "divider") {
-          return [...prev.slice(0, -1), { kind: "divider", label }];
-        }
-        const next = [...prev];
-        if (live.length > 0) {
-          next.push({ kind: "seg", messages: live });
-        }
-        next.push({ kind: "divider", label });
-        return next;
-      });
-      setMessages([]);
-      setInput("");
-      setSegmentId(crypto.randomUUID());
-    },
-    [stop, setMessages],
-  );
-
   // A mount switch swaps the agent's whole lens catalogue, so a thread can't continue
   // across one.
   const prevMountRef = useRef(mount);
@@ -140,34 +99,32 @@ export default function AskIrisChat({
 
   const renderMessages = useFixtureMessages(messages);
 
-  // Follow the stream only while the user is pinned to the bottom — scrolling up to
-  // read mid-stream must not yank them back down.
   const scrollRef = useRef<HTMLDivElement>(null);
-  const pinnedRef = useRef(true);
   const { canScrollUp, canScrollDown } = useScrollAffordance(scrollRef, [archived, renderMessages]);
 
+  // Follow the stream only while the user is pinned to the bottom — scrolling up to
+  // read mid-stream must not yank them back down. The tolerance absorbs the fractional
+  // scrollTop a growing container reports at the bottom on non-integer pixel ratios.
+  const pinnedRef = useRef(true);
   function handleScroll() {
     const el = scrollRef.current;
-    if (!el) {
-      return;
+    if (el) {
+      pinnedRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
     }
-    pinnedRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
   }
 
   useEffect(() => {
-    if (pinnedRef.current) {
-      scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
+    const el = scrollRef.current;
+    if (el && pinnedRef.current) {
+      el.scrollTo({ top: el.scrollHeight });
     }
-  }, [messages]);
+  }, [renderMessages]);
 
   // A closed topic appends its divider; jump to it so the fresh thread is in view
   // rather than leaving the user parked up in the archived history.
   useEffect(() => {
-    if (archived.length === 0) {
-      return;
-    }
     const el = scrollRef.current;
-    if (el) {
+    if (archived.length > 0 && el) {
       el.scrollTo({ top: el.scrollHeight });
       pinnedRef.current = true;
     }
@@ -239,7 +196,7 @@ export default function AskIrisChat({
             sendLabel={t("send")}
             onNewTopic={() => startNewSegment(t("newTopic"))}
             newTopicLabel={t("newChat")}
-            newTopicDisabled={renderMessages.length === 0}
+            newTopicDisabled={messages.length === 0}
           />
         </div>
       </div>
