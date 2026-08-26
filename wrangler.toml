@@ -29,6 +29,16 @@ namespace_id = "1001"
   limit = 6
   period = 60
 
+# Short-window request limit for the public feedback endpoint. The key is supplied
+# by the Worker at runtime; Cloudflare owns the counter and window.
+[[ratelimits]]
+name = "FEEDBACK_BURST"
+namespace_id = "1002"
+
+  [ratelimits.simple]
+  limit = 5
+  period = 60
+
 # KV counters for /api/chat's per-IP/global daily token budgets. The RATE_LIMIT_BYPASS
 # secret (dashboard / `wrangler secret put`) exempts the developer's own testing.
 [[kv_namespaces]]
