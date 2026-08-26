@@ -28,11 +28,5 @@ export default async function AskIrisPage({
   setRequestLocale(locale);
   const { q } = await searchParams;
   const initialQuery = (Array.isArray(q) ? q[0] : q)?.trim() || undefined;
-  return (
-    <AskIrisChat
-      locale={locale}
-      initialQuery={initialQuery}
-      lensIndex={getLensLinkIndex(locale)}
-    />
-  );
+  return <AskIrisChat initialQuery={initialQuery} lensIndex={getLensLinkIndex(locale)} />;
 }

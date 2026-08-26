@@ -1,6 +1,7 @@
 "use client";
 
 import type { UIMessage } from "ai";
+import { useEffect, useSyncExternalStore } from "react";
 import { TESTHOOK_ALLOWED } from "@/lib/testhook";
 
 // Dev-only fixture store shared between AskIrisChat (publishes its live messages,
@@ -87,9 +88,9 @@ export function getServerSnapshot(): FixtureSnapshot {
   return SERVER_SNAPSHOT;
 }
 
-// AskIrisChat publishes on every change; not reactive (no emit) so streaming
-// doesn't churn the panel — the panel reads `live` only when Save is pressed.
-export function publishLive(messages: UIMessage[]) {
+// Not reactive (no emit) so streaming doesn't churn the panel — it reads `live`
+// only when Save is pressed.
+function publishLive(messages: UIMessage[]) {
   live = messages;
 }
 
@@ -98,7 +99,7 @@ export function setSelected(name: string) {
   emit();
 }
 
-export function resolveFixture(name: string): UIMessage[] | undefined {
+function resolveFixture(name: string): UIMessage[] | undefined {
   if (name === "off") {
     return undefined;
   }
@@ -136,4 +137,16 @@ export function renameFixture(from: string, to: string) {
   }
   emit();
   void post({ action: "rename", from, to });
+}
+
+// The chat's whole contact with this module: hand it the live thread, render what
+// comes back. In dev that is a selected fixture replayed through the real page shell
+// — deterministic UI work (decks, tables) with no LLM call.
+export function useFixtureMessages(messages: UIMessage[]): UIMessage[] {
+  const { selected } = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  useEffect(() => {
+    publishLive(messages);
+  }, [messages]);
+  const fixture = TESTHOOK_ALLOWED && selected !== "off" ? resolveFixture(selected) : undefined;
+  return fixture ?? messages;
 }
