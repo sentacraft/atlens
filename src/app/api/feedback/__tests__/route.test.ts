@@ -1,15 +1,31 @@
 import { describe, it, expect, vi, beforeAll, afterEach } from "vitest";
 
+const { mockFeedbackRateLimit } = vi.hoisted(() => ({
+  mockFeedbackRateLimit: vi.fn(),
+}));
+
+vi.mock("@opennextjs/cloudflare", () => ({
+  getCloudflareContext: () => ({
+    env: {
+      FEEDBACK_BURST: { limit: mockFeedbackRateLimit },
+    },
+  }),
+}));
+
+// Mock global fetch so the route never hits GitHub.
+const mockFetch = vi.fn();
+vi.stubGlobal("fetch", mockFetch);
+
 // Must set env before importing the route module.
 const env = process.env as Record<string, string | undefined>;
 beforeAll(() => {
   env.GITHUB_TOKEN = "test-token";
   env.GITHUB_FEEDBACK_REPO = "test/repo";
+  mockFeedbackRateLimit.mockResolvedValue({ success: true });
+  mockFetch.mockResolvedValue(
+    new Response(JSON.stringify({ number: 1 }), { status: 201 }),
+  );
 });
-
-// Mock global fetch so the route never hits GitHub.
-const mockFetch = vi.fn();
-vi.stubGlobal("fetch", mockFetch);
 
 // Import after env is set so the module picks up the vars.
 const { POST } = await import("../route");
@@ -22,7 +38,7 @@ function makeRequest(body: Record<string, unknown>): Request {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-forwarded-for": `10.0.${Math.floor(ipCounter / 256)}.${ipCounter % 256}`,
+      "CF-Connecting-IP": `10.0.${Math.floor(ipCounter / 256)}.${ipCounter % 256}`,
     },
     body: JSON.stringify(body),
   });
@@ -30,6 +46,24 @@ function makeRequest(body: Record<string, unknown>): Request {
 
 afterEach(() => {
   vi.clearAllMocks();
+});
+
+describe("POST /api/feedback — Cloudflare rate limit", () => {
+  it("passes the edge IP to the native rate limiter", async () => {
+    await POST(makeRequest({ type: "general", description: "Great app!" }));
+    expect(mockFeedbackRateLimit).toHaveBeenCalledWith({
+      key: expect.stringMatching(/^10\.0\./),
+    });
+  });
+
+  it("rejects a request when the native rate limiter denies it", async () => {
+    mockFeedbackRateLimit.mockResolvedValueOnce({ success: false });
+
+    const res = await POST(makeRequest({ type: "general", description: "Great app!" }));
+
+    expect(res.status).toBe(429);
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
 });
 
 describe("POST /api/feedback — description validation", () => {
