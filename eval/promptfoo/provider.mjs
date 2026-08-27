@@ -32,17 +32,14 @@ const REF_TO_ID = new Map(
     .map((lens) => [lensRef(lens.id), lens.id]),
 );
 
+// One card as the judge reads it: the display name — also the handle the web-searching
+// judge audits a pick by — and the reason, which is the card-quality standard's whole
+// subject. The bar for adding a field here is that some rubric grades it; a spec no
+// rubric reads only invites the judge to weigh something nobody is asking about.
+// RecommendationDeck.tsx renders the card this mirrors.
 function formatCard(rec) {
-  const f = rec.focalNativeMm;
-  const focal = Array.isArray(f) ? (f[0] === f[1] ? `${f[0]}mm` : `${f[0]}-${f[1]}mm`) : "?";
-  const a = rec.maxAperture;
-  const ap = Array.isArray(a) ? `F${a[0]}-${a[1]}` : `F${a}`;
-  const p = rec.price;
-  const price = p ? `${p.currency === "CNY" ? "¥" : "$"}${p.amount}` : "no price";
-  // The reason is the card's real payload (what it's good for + its trade-off), so
-  // a judge grading card quality or honest trade-offs must see it, not just specs.
   const reason = rec.reason?.trim() ? `\n    ${rec.reason.trim()}` : "";
-  return `- ${rec.name} · ${focal} · ${ap} · ${rec.weightG ?? "?"}g · ${price}${reason}`;
+  return `- ${rec.name}${reason}`;
 }
 
 // The same transport the browser uses: AskIrisChat's useChat() takes the default, which
@@ -202,8 +199,12 @@ function digest(msg) {
       const ids = part.output.lenses.map((l) => l.id);
       const columns = Array.isArray(part.output.columns) ? part.output.columns : [];
       tables.push({ ids, columns, names: part.output.lenses.map((l) => l.name ?? null) });
+      // The caption is prose the model wrote for the reader, and LensTable renders it
+      // above the table — so the rubrics that grade prose have to see it. Cell values
+      // stay out: no rubric reads them. LensTable.tsx renders the table this mirrors.
+      const caption = part.output.caption?.trim() ? `\n${part.output.caption.trim()}` : "";
       transcript.push(
-        `[table: ${columns.join(", ")}]\n${part.output.lenses
+        `[table: ${columns.join(", ")}]${caption}\n${part.output.lenses
           .map((l) => `- ${l.name}`)
           .join("\n")}`,
       );
