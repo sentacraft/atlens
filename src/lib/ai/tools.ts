@@ -171,13 +171,17 @@ export function buildLensTools(
       }),
       execute: ({ query, limit }) => {
         const index = buildLensSearchIndex(getLensesByMount(mount, locale));
-        const results = searchLensIndex(index, query, limit ?? 8);
-        for (const lens of results) {
-          recalledRefs.add(lensRef(lens.id));
-        }
         // Same projection as a recall: a name lookup is still the model choosing between
         // lenses, so it gets refs and the fields to choose on — never the id.
-        return { results: results.map((lens) => toRecalled(resolveLens(lens, locale, tBrand))) };
+        const results = searchLensIndex(index, query, limit ?? 8).map((lens) =>
+          toRecalled(resolveLens(lens, locale, tBrand)),
+        );
+        // Refs read off the projection, the way queryLenses does it, so the gate and the
+        // payload cannot disagree about what this call surfaced.
+        for (const lens of results) {
+          recalledRefs.add(lens.ref);
+        }
+        return { results };
       },
     }),
 

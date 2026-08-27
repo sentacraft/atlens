@@ -27,6 +27,26 @@ function idsIn(node: unknown, path: string, found: string[]): void {
   }
 }
 
+// The gate and the payload are two readings of the same question — "what did this call
+// surface?" — so they have to come from one place. searchLensByName used to answer it
+// twice, hashing the id for the gate and again inside the projection for the payload.
+describe("a recall tool's gate accepts exactly what it returned", () => {
+  it.each([
+    ["queryLenses", { type: "prime" }, (out: { matches: { ref: string }[] }) => out.matches],
+    ["searchLensByName", { query: "35" }, (out: { results: { ref: string }[] }) => out.results],
+  ])("%s", async (name, input, pick) => {
+    const tools = buildLensTools("X", "zh", (brand) => brand);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const refs = pick(await run((tools as any)[name], input)).map((lens) => lens.ref);
+    expect(refs.length).toBeGreaterThan(0);
+
+    // lensDetails throws on a ref the turn never recalled, so resolving every one of
+    // them is the gate asserting it holds what the payload advertised.
+    const details = await run(tools.lensDetails, { refs: refs.slice(0, 6) });
+    expect(details.lenses.map((lens: { ref: string }) => lens.ref)).toEqual(refs.slice(0, 6));
+  });
+});
+
 describe("lensDetails hands the model refs, never ids", () => {
   it("returns a ref per lens and no id anywhere in the payload", async () => {
     // lensDetails only resolves refs the same turn already recalled, so seed the gate.
