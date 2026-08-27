@@ -72,6 +72,17 @@ export async function POST(req: Request) {
   // Abuse guard for this public, no-login endpoint. Fail-open by design: with no KV
   // binding (e.g. `next dev`) or on any KV hiccup we proceed unlimited rather than
   // break the chat. See src/lib/ai/rate-limit.ts for the burst + daily-token design.
+  //
+  // TODO: move the burst half to a WAF rate limiting rule, so a flood is shed at the
+  // edge without costing a Worker invocation or a model call. Two things the rule has
+  // to carry: the bypass cookie below must appear in its match expression, since the
+  // bypass has to skip the burst gate as well; and the secret then lives in firewall
+  // config as well as in RATE_LIMIT_BYPASS, so rotating it is a two-step.
+  //
+  // The daily token budgets stay here. A WAF rule counts requests, not tokens, its
+  // counting window tops out at one hour, and it cannot count site-wide at all —
+  // complexity-based counting is Enterprise-only and reads a response header, which
+  // a streamed reply has already sent before the token count is known.
   const ip = clientIp(req);
   const cookieHeader = req.headers.get("cookie");
   // Read the anonymous visit id set by /api/track; "" for a turn before its first

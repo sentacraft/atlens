@@ -4,9 +4,6 @@ import { buildLensSearchIndex, searchLensIndex, type LensSearchIndex } from "@/l
 import { urlSegmentToMount } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
 import { routing } from "@/i18n/routing";
-import { createRateLimiter, rateLimitedResponse } from "@/lib/rate-limit";
-
-const checkRateLimit = createRateLimiter({ windowMs: 60_000, max: 120 });
 
 const MAX_QUERY_LENGTH = 200;
 const DEFAULT_LIMIT = 8;
@@ -28,12 +25,10 @@ export function GET(req: Request) {
   // Dormant endpoint with no consumers today — search runs client-side in the
   // browser (see LensSearchDialog). Reserved for a future internal BFF, never
   // external-facing; 404 in production until then, mirroring /api/lenses.
+  // TODO: this endpoint carries no rate limit. Add one together with the BFF that
+  // makes it reachable — as a WAF rate limiting rule, not in code.
   if (process.env.NODE_ENV === "production") {
     return new NextResponse(null, { status: 404 });
-  }
-
-  if (!checkRateLimit(req)) {
-    return rateLimitedResponse();
   }
 
   const { searchParams } = new URL(req.url);

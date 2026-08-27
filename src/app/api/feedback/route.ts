@@ -23,6 +23,14 @@ const MAX_DESCRIPTION_LENGTH = 2000;
 // Max length (in code points) of the description snippet used as an issue title.
 const TITLE_SNIPPET_MAX = 60;
 
+// Per-isolate, so on Workers this bounds one isolate's traffic rather than a
+// caller's: the platform runs as many isolates as it likes and each gets a fresh
+// counter. It is a speed bump, not a limit.
+//
+// TODO: replace with a WAF rate limiting rule, which counts at the edge and sheds
+// the request before it reaches the Worker. Not the Workers rate limiting binding
+// — its counters are per Cloudflare location, so a caller spread across N
+// locations gets N times the limit.
 const checkRateLimit = createRateLimiter({ windowMs: 60_000, max: 5 });
 
 // Collapse a (possibly multi-line) description into a single-line title snippet,
