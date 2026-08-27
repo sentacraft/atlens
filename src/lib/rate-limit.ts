@@ -37,7 +37,9 @@ export function createRateLimiter({ windowMs, max }: RateLimiterOptions) {
   };
 }
 
-export const RATE_LIMITED_RESPONSE = NextResponse.json(
-  { error: "rate_limited" },
-  { status: 429 },
-);
+// A function, not a shared constant: a Response body is a stream that can only be
+// consumed once, so returning the same instance from a second rate-limited request
+// throws on read and the caller gets a 500 instead of a 429.
+export function rateLimitedResponse(): NextResponse {
+  return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+}
