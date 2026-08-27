@@ -240,6 +240,17 @@ export function toRecalled(lens: ResolvedLens): RecalledLens {
   };
 }
 
+// What lensDetails hands back: the full record with the opaque handle in place of the
+// id, the same substitution toRecalled makes. Nothing renders this tool's output, so the
+// id reached the model and no one else — and an id in context is a patterned handle the
+// model can extend into lenses it never recalled.
+export type DetailedLens = Omit<ResolvedLens, "id"> & { ref: string };
+
+export function toDetailed(lens: ResolvedLens): DetailedLens {
+  const { id, ...rest } = lens;
+  return { ref: lensRef(id), ...rest };
+}
+
 // A resolved lens the model has chosen to recommend, carrying its authored reason.
 export type Recommendation = ResolvedLens & { reason: string };
 
