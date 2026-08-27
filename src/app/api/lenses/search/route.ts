@@ -4,7 +4,7 @@ import { buildLensSearchIndex, searchLensIndex, type LensSearchIndex } from "@/l
 import { urlSegmentToMount } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
 import { routing } from "@/i18n/routing";
-import { createRateLimiter, RATE_LIMITED_RESPONSE } from "@/lib/rate-limit";
+import { createRateLimiter, rateLimitedResponse } from "@/lib/rate-limit";
 
 const checkRateLimit = createRateLimiter({ windowMs: 60_000, max: 120 });
 
@@ -33,7 +33,7 @@ export function GET(req: Request) {
   }
 
   if (!checkRateLimit(req)) {
-    return RATE_LIMITED_RESPONSE;
+    return rateLimitedResponse();
   }
 
   const { searchParams } = new URL(req.url);

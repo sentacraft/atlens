@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createRateLimiter, RATE_LIMITED_RESPONSE } from "@/lib/rate-limit";
+import { createRateLimiter, rateLimitedResponse } from "@/lib/rate-limit";
 
 type FeedbackType = "data_issue" | "general";
 
@@ -131,7 +131,7 @@ export function GET() {
 
 export async function POST(req: Request) {
   if (!checkRateLimit(req)) {
-    return RATE_LIMITED_RESPONSE;
+    return rateLimitedResponse();
   }
 
   let payload: FeedbackPayload;
