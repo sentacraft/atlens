@@ -8,6 +8,7 @@ import {
   recommendLenses,
   listLenses,
   resolveLens,
+  toDetailed,
   toRecalled,
   RECALL_SORT_NAMES,
   LENS_TABLE_COLUMNS,
@@ -210,7 +211,7 @@ export function buildLensTools(
             if (!lens) {
               throw new Error(`Unknown lens ref "${ref}".`);
             }
-            return resolveLens(lens, locale, tBrand);
+            return toDetailed(resolveLens(lens, locale, tBrand));
           }),
         };
       },
