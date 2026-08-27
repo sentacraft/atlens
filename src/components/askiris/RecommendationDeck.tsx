@@ -48,6 +48,11 @@ function priceParts(
 // Two rows: a header (thumbnail + name + price/weight) and the reason on its own
 // full-width row below, so the reason spans the whole card instead of a narrow
 // column beside the thumbnail — fewer wrapped lines, better use of the space.
+//
+// EVAL MIRROR — `formatCard` in eval/promptfoo/provider.mjs hand-writes what the
+// judges read for a card, and nothing keeps the two in step. Changing what this card
+// shows means deciding whether that string changes too: a field belongs there only if
+// some rubric in promptfooconfig.yaml grades it.
 function RecommendationCard({ rec }: { rec: Recommendation }) {
   const locale = useLocale();
   const weight = rec.weightG != null ? weightDisplay(rec.weightG, "g") : null;

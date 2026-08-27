@@ -63,6 +63,11 @@ function priceCell(price: NonNullable<ResolvedLens["price"]>, usedLabel: string)
 // has no data for it — rendered as a dash). Values run through the shared format
 // helpers; enum-like values (focus, WR, aperture ring) resolve through localized
 // labels rather than raw booleans.
+//
+// EVAL MIRROR — the table block in eval/promptfoo/provider.mjs hand-writes what the
+// judges read, and nothing keeps the two in step. It carries the caption and the lens
+// names but no cell values, because no rubric reads them; adding a column here is a
+// change to this table only until a rubric starts grading what the cells say.
 const RENDERERS: Record<LensTableColumn, (lens: ResolvedLens, l: Labels) => string | null> = {
   focalEquiv: (lens) => focalRangeDisplay(lens.focalEquivMm[0], lens.focalEquivMm[1]),
   focalNative: (lens) => focalRangeDisplay(lens.focalNativeMm[0], lens.focalNativeMm[1]),
