@@ -10,9 +10,6 @@ import { parseFilters } from "@/lib/url/filter-params";
 import { urlSegmentToMount } from "@/lib/mount";
 import { OPTICAL_TRAITS, type OpticalTrait } from "@/lib/types";
 import { routing } from "@/i18n/routing";
-import { createRateLimiter, rateLimitedResponse } from "@/lib/rate-limit";
-
-const checkRateLimit = createRateLimiter({ windowMs: 60_000, max: 120 });
 
 function computeAvailableOpticalTraits(lenses: { isCine?: boolean; opticalTraits?: OpticalTrait[] }[]): OpticalTrait[] {
   const present = new Set(
@@ -26,12 +23,11 @@ export function GET(req: Request) {
   // BFF, never external-facing. 404 in production until that lands so it is not
   // a live, full-dataset surface. (A page would call notFound(); a route
   // handler returns the 404 response directly.)
+  //
+  // TODO: this endpoint carries no rate limit. Add one together with the BFF that
+  // makes it reachable — as a WAF rate limiting rule, not in code.
   if (process.env.NODE_ENV === "production") {
     return new NextResponse(null, { status: 404 });
-  }
-
-  if (!checkRateLimit(req)) {
-    return rateLimitedResponse();
   }
 
   const { searchParams } = new URL(req.url);
