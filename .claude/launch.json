@@ -3,14 +3,14 @@
   "configurations": [
     {
       "name": "Next.js Dev",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "pnpm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000,
       "autoPort": true
     },
     {
       "name": "Playwright UI",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "pnpm",
       "runtimeArgs": ["run", "test:e2e:ui"],
       "port": 9323
     }

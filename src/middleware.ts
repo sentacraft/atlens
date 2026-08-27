@@ -1,3 +1,7 @@
+// FILENAME — this file must stay `middleware.ts`. next-intl's docs recommend
+// `proxy.ts`, but Next.js 16 reserves that name for a Node.js-runtime proxy and
+// forces it to build as nodejs runtime, which no Edge-runtime deploy target can
+// accept. The cost of keeping this name is a deprecation warning from Next.js 16.
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
