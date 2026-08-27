@@ -32,15 +32,14 @@ const REF_TO_ID = new Map(
     .map((lens) => [lensRef(lens.id), lens.id]),
 );
 
-// One card as the judge reads it, carrying what the rubrics actually grade: the display
-// name, which is also the handle the web-searching judge audits the pick by, and the
-// reason, which is the card-quality standard's whole subject. Specs stay out — the
-// rendered card shows none of them — and so does the price, which every rubric treats as
-// a by-design reference figure rather than a claim to grade.
+// One card as the judge reads it: the display name — also the handle the web-searching
+// judge audits a pick by — and the reason, which is the card-quality standard's whole
+// subject. The bar for adding a field here is that some rubric grades it; a spec no
+// rubric reads only invites the judge to weigh something nobody is asking about.
+// RecommendationDeck.tsx renders the card this mirrors.
 function formatCard(rec) {
-  const weight = rec.weightG != null ? ` · ${rec.weightG}g` : "";
   const reason = rec.reason?.trim() ? `\n    ${rec.reason.trim()}` : "";
-  return `- ${rec.name}${weight}${reason}`;
+  return `- ${rec.name}${reason}`;
 }
 
 // The same transport the browser uses: AskIrisChat's useChat() takes the default, which
@@ -200,8 +199,12 @@ function digest(msg) {
       const ids = part.output.lenses.map((l) => l.id);
       const columns = Array.isArray(part.output.columns) ? part.output.columns : [];
       tables.push({ ids, columns, names: part.output.lenses.map((l) => l.name ?? null) });
+      // The caption is prose the model wrote for the reader, and LensTable renders it
+      // above the table — so the rubrics that grade prose have to see it. Cell values
+      // stay out: no rubric reads them. LensTable.tsx renders the table this mirrors.
+      const caption = part.output.caption?.trim() ? `\n${part.output.caption.trim()}` : "";
       transcript.push(
-        `[table: ${columns.join(", ")}]\n${part.output.lenses
+        `[table: ${columns.join(", ")}]${caption}\n${part.output.lenses
           .map((l) => `- ${l.name}`)
           .join("\n")}`,
       );
