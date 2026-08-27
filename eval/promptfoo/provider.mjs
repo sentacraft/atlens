@@ -2,7 +2,7 @@
 // message with readUIMessageStream, return the transcript + tool-call trace for
 // the assertions. See README.md.
 import { readFileSync } from "node:fs";
-import { readUIMessageStream } from "ai";
+import { DefaultChatTransport, readUIMessageStream } from "ai";
 // The real implementation, not a copy of it: a second version of the hash would drift
 // silently and the eval would just measure the wrong thing. Node strips the types.
 import { lensRef, LENS_LINK_PREFIX } from "../../src/lib/ai/lens-ref.ts";
@@ -45,31 +45,20 @@ function formatCard(rec) {
   return `- ${rec.name} · ${focal} · ${ap} · ${rec.weightG ?? "?"}g · ${price}${reason}`;
 }
 
-// POST one turn's running history, rebuild the assistant UIMessage via the SDK.
+// The same transport the browser uses: AskIrisChat's useChat() takes the default, which
+// is this class. Going through it means the eval exercises the request the real client
+// builds — turn history, chunk protocol and all — instead of a second implementation of
+// it that can drift from the route without anything failing.
+const transport = new DefaultChatTransport({ api: ENDPOINT });
+
+// POST one turn's running history, rebuild the assistant UIMessage via the SDK. mount and
+// locale ride in `body`, exactly as the client passes them per send.
 async function postTurn(messages, mount, locale) {
-  const res = await fetch(ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages, mount, locale }),
-  });
-  const body = await res.text();
-  const chunks = [];
-  for (const line of body.split("\n")) {
-    if (line.startsWith("data: ")) {
-      try {
-        chunks.push(JSON.parse(line.slice(6)));
-      } catch {
-        // keep-alive / non-JSON — skip
-      }
-    }
-  }
-  const stream = new ReadableStream({
-    start(c) {
-      for (const x of chunks) {
-        c.enqueue(x);
-      }
-      c.close();
-    },
+  const stream = await transport.sendMessages({
+    chatId: "eval",
+    messages,
+    trigger: "submit-message",
+    body: { mount, locale },
   });
   let msg = null;
   for await (const m of readUIMessageStream({ stream, onError: () => {} })) {

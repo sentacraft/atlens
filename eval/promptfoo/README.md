@@ -31,13 +31,15 @@ the dev server**. The test-hook panel's AskIris tab shows what is actually live.
 
 ## How it's built
 
-- **`provider.mjs`** — a custom promptfoo provider. It POSTs each turn to `/api/chat`,
-  rebuilds the streamed assistant message with the AI SDK's `readUIMessageStream` (threading
-  prior turns back in for multi-turn cases), and returns two things: the ordered transcript
-  (prose + recommendation cards, for the judge) and the structured tool-call trace on
-  `metadata` (for the deterministic checks). This adapter is the only bespoke code — the
-  transport (AI-SDK UI-message SSE) and domain (a `recommendLenses` output _is_ a card deck)
-  are ours; everything else is promptfoo's.
+- **`provider.mjs`** — a custom promptfoo provider. It sends each turn to `/api/chat`
+  through the AI SDK's `DefaultChatTransport` — the same transport `useChat` hands the
+  browser, so the eval issues the request the real client builds rather than a second
+  implementation of it — rebuilds the streamed assistant message with `readUIMessageStream`
+  (threading prior turns back in for multi-turn cases), and returns two things: the ordered
+  transcript (prose + recommendation cards, for the judge) and the structured tool-call
+  trace on `metadata` (for the deterministic checks). What remains bespoke is the reading of
+  a turn, not the moving of it: the domain mapping (a `recommendLenses` output _is_ a card
+  deck) is ours; everything else is the SDK's or promptfoo's.
 - **`promptfooconfig.yaml`** — the cases and their graders, two tiers:
   - `javascript` assertions check invariants against the **tool-call trace** (did it sort by
     reach? do the picks stay in the focal band? is any pick over budget?). These read
