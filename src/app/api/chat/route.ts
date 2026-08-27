@@ -18,7 +18,7 @@ import {
 } from "@/lib/ai/model";
 import { systemPrompt } from "@/lib/ai/system-prompt";
 import { buildLensTools } from "@/lib/ai/tools";
-import { clientIp, isBypassed, checkDailyTokenBudget, recordTokens } from "@/lib/ai/rate-limit";
+import { clientIp, isBypassed, checkRateLimit, recordTokens } from "@/lib/ai/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
 import { askirisTurnDataPoint } from "@/lib/analytics/events";
 import { parseSid, parseInternal } from "@/lib/analytics/session";
@@ -69,10 +69,9 @@ export async function POST(req: Request) {
   }
   const { messages, mount, locale, segmentId } = parsed.data;
 
-  // Abuse guard for this public, no-login endpoint. Fail-open by design: with no
-  // Cloudflare bindings (e.g. `next dev`) or on any binding hiccup we proceed rather
-  // than break the chat. The native binding handles the short request burst; KV handles
-  // the custom daily-token budgets. See src/lib/ai/rate-limit.ts.
+  // Abuse guard for this public, no-login endpoint. Fail-open by design: with no KV
+  // binding (e.g. `next dev`) or on any KV hiccup we proceed unlimited rather than
+  // break the chat. See src/lib/ai/rate-limit.ts for the burst + daily-token design.
   const ip = clientIp(req);
   const cookieHeader = req.headers.get("cookie");
   // Read the anonymous visit id set by /api/track; "" for a turn before its first
@@ -91,19 +90,10 @@ export async function POST(req: Request) {
     rateKv = cf.env.RATE_KV;
     ae = cf.env.ANALYTICS;
     ctx = cf.ctx;
-    if (ip && !bypassed) {
-      const burstLimiter = cf.env.ASKIRIS_BURST;
-      if (burstLimiter) {
-        const verdict = await burstLimiter.limit({ key: ip });
-        if (!verdict.success) {
-          return chatErrorResponse("rate_limit", 429);
-        }
-      }
-      if (rateKv) {
-        const verdict = await checkDailyTokenBudget(rateKv, ip);
-        if (!verdict.ok) {
-          return chatErrorResponse("rate_limit", 429);
-        }
+    if (rateKv && ip && !bypassed) {
+      const verdict = await checkRateLimit(rateKv, ip);
+      if (!verdict.ok) {
+        return chatErrorResponse("rate_limit", 429);
       }
     }
   } catch {

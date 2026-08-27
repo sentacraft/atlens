@@ -1,6 +1,5 @@
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { NextResponse } from "next/server";
-import { RATE_LIMITED_RESPONSE } from "@/lib/rate-limit";
+import { createRateLimiter, RATE_LIMITED_RESPONSE } from "@/lib/rate-limit";
 
 type FeedbackType = "data_issue" | "general";
 
@@ -23,6 +22,8 @@ const MAX_DESCRIPTION_LENGTH = 2000;
 
 // Max length (in code points) of the description snippet used as an issue title.
 const TITLE_SNIPPET_MAX = 60;
+
+const checkRateLimit = createRateLimiter({ windowMs: 60_000, max: 5 });
 
 // Collapse a (possibly multi-line) description into a single-line title snippet,
 // truncating at a word boundary with an ellipsis when it exceeds the limit.
@@ -129,20 +130,8 @@ export function GET() {
 }
 
 export async function POST(req: Request) {
-  // The endpoint creates GitHub issues, so rate limiting must be shared across Worker
-  // isolates. Cloudflare-Connecting-IP is edge-provided and cannot be spoofed by the
-  // client. The binding is optional in local development and fails open like /api/chat.
-  try {
-    const ip = req.headers.get("CF-Connecting-IP");
-    const { env } = getCloudflareContext();
-    if (ip && env.FEEDBACK_BURST) {
-      const { success } = await env.FEEDBACK_BURST.limit({ key: ip });
-      if (!success) {
-        return RATE_LIMITED_RESPONSE;
-      }
-    }
-  } catch {
-    // Binding may be unavailable outside the Cloudflare runtime.
+  if (!checkRateLimit(req)) {
+    return RATE_LIMITED_RESPONSE;
   }
 
   let payload: FeedbackPayload;
