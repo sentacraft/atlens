@@ -32,17 +32,15 @@ const REF_TO_ID = new Map(
     .map((lens) => [lensRef(lens.id), lens.id]),
 );
 
+// One card as the judge reads it, carrying what the rubrics actually grade: the display
+// name, which is also the handle the web-searching judge audits the pick by, and the
+// reason, which is the card-quality standard's whole subject. Specs stay out — the
+// rendered card shows none of them — and so does the price, which every rubric treats as
+// a by-design reference figure rather than a claim to grade.
 function formatCard(rec) {
-  const f = rec.focalNativeMm;
-  const focal = Array.isArray(f) ? (f[0] === f[1] ? `${f[0]}mm` : `${f[0]}-${f[1]}mm`) : "?";
-  const a = rec.maxAperture;
-  const ap = Array.isArray(a) ? `F${a[0]}-${a[1]}` : `F${a}`;
-  const p = rec.price;
-  const price = p ? `${p.currency === "CNY" ? "¥" : "$"}${p.amount}` : "no price";
-  // The reason is the card's real payload (what it's good for + its trade-off), so
-  // a judge grading card quality or honest trade-offs must see it, not just specs.
+  const weight = rec.weightG != null ? ` · ${rec.weightG}g` : "";
   const reason = rec.reason?.trim() ? `\n    ${rec.reason.trim()}` : "";
-  return `- ${rec.name} · ${focal} · ${ap} · ${rec.weightG ?? "?"}g · ${price}${reason}`;
+  return `- ${rec.name}${weight}${reason}`;
 }
 
 // The same transport the browser uses: AskIrisChat's useChat() takes the default, which
