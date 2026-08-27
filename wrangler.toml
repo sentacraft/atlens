@@ -19,28 +19,9 @@ GITHUB_FEEDBACK_ASSIGNEES = "sentacraft"
 binding = "ANALYTICS"
 dataset = "xglass_events"
 
-# Short-window request limit for the public /api/chat endpoint. The key is supplied
-# by the Worker at runtime; Cloudflare owns the counter and window.
-[[ratelimits]]
-name = "ASKIRIS_BURST"
-namespace_id = "1001"
-
-  [ratelimits.simple]
-  limit = 6
-  period = 60
-
-# Short-window request limit for the public feedback endpoint. The key is supplied
-# by the Worker at runtime; Cloudflare owns the counter and window.
-[[ratelimits]]
-name = "FEEDBACK_BURST"
-namespace_id = "1002"
-
-  [ratelimits.simple]
-  limit = 5
-  period = 60
-
-# KV counters for /api/chat's per-IP/global daily token budgets. The RATE_LIMIT_BYPASS
-# secret (dashboard / `wrangler secret put`) exempts the developer's own testing.
+# Rate-limit counters for /api/chat (per-IP burst + per-IP/global daily token
+# budgets). The RATE_LIMIT_BYPASS secret (dashboard / `wrangler secret put`) exempts
+# the developer's own testing.
 [[kv_namespaces]]
 binding = "RATE_KV"
 id = "b4eeeb3afdca4f038de649dd3ecbea5f"
