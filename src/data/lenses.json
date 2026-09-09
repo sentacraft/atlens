@@ -1841,6 +1841,96 @@
     "updatedAt": "2026-06-11"
   },
   {
+    "id": "7artisans-af-18mmf20-x",
+    "brand": "7artisans",
+    "mount": "X",
+    "model": "AF 18mm F2",
+    "focalLengthMin": 18,
+    "focalLengthMax": 18,
+    "maxAperture": 2,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": "partial",
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "STM",
+    "weightG": 109,
+    "diameterMm": 64,
+    "length": {
+      "mm": 32
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 20
+      }
+    },
+    "angleOfView": 77,
+    "angleOfViewCalc": 76.3,
+    "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "7Artisans AF 18mm f2 Fuji X",
+      "zh": "七工匠 AF 18mm f2 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 799,
+            "currency": "CNY",
+            "source": "京东·七工匠官方旗舰店",
+            "url": "https://item.jd.com/10233478535634.html",
+            "sampledAt": "2026-09-09"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "E",
+      "X"
+    ],
+    "accessories": [
+      "Square lens hood",
+      "Front lens cap",
+      "Rear lens cap",
+      "USB-C cable"
+    ],
+    "lensMaterial": "Aluminium",
+    "filterMm": 52,
+    "lensConfiguration": {
+      "groups": 7,
+      "elements": 9,
+      "ed": 2,
+      "highRefractive": 5,
+      "sourceText": "镜片结构 7 组 9 片"
+    },
+    "fieldNotes": {
+      "wr": "Sealing ring at the mount only; the barrel is not fully sealed.",
+      "weightG": "Manufacturer states the weight for the E-mount version."
+    },
+    "officialLinks": {
+      "cn": "https://www.7artisans.com/prod_view.aspx?nid=3&typeid=126&id=588"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "仅卡口处配备密封圈，镜身未做完整密封。",
+          "weightG": "厂商给出的重量为 E 卡口版本。"
+        },
+        "lensMaterial": "铝合金",
+        "accessories": [
+          "方形遮光罩",
+          "前镜头盖",
+          "后镜头盖",
+          "USB-C 数据线"
+        ]
+      }
+    },
+    "createdAt": "2026-09-09",
+    "updatedAt": "2026-09-09"
+  },
+  {
     "id": "7artisans-af-25mm-f18-x",
     "brand": "7artisans",
     "mount": "X",
@@ -2345,6 +2435,112 @@
     },
     "createdAt": "2026-04-19",
     "updatedAt": "2026-06-11"
+  },
+  {
+    "id": "brightinstar-7p5mmf28-iv-aps-c-ultra-wide-fisheye-x",
+    "brand": "brightinstar",
+    "mount": "X",
+    "model": "MF 7.5mm F2.8 IV",
+    "generation": 4,
+    "focalLengthMin": 7.5,
+    "focalLengthMax": 7.5,
+    "maxAperture": 2.8,
+    "minAperture": 16,
+    "opticalTraits": [
+      "fisheye"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "N/A",
+    "weightG": 276,
+    "diameterMm": 64,
+    "length": {
+      "mm": 53
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 15
+      }
+    },
+    "angleOfView": 190,
+    "angleOfViewCalc": 124.1,
+    "apertureBladeCount": 5,
+    "searchAliases": {
+      "en": "Brightin Star 7.5mm f2.8 IV Fuji X",
+      "zh": "星曜 7.5mm f2.8 IV 富士"
+    },
+    "pricing": {
+      "cn": {
+        "new": [
+          {
+            "price": 649,
+            "currency": "CNY",
+            "source": "京东·星曜光学官方旗舰店",
+            "url": "https://item.jd.com/10221134528950.html",
+            "sampledAt": "2026-09-09"
+          }
+        ]
+      },
+      "global": {
+        "new": [
+          {
+            "price": 149.99,
+            "currency": "USD",
+            "source": "brightinstar.com",
+            "url": "https://brightinstar.com/products/brightin-star-7-5mm-f2-8-iv-fisheye-lens-for-fujifilm-x-mount",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-09-09"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "E",
+      "Z",
+      "RF-S",
+      "EF-M",
+      "X",
+      "M43"
+    ],
+    "accessories": [
+      "Front lens cap",
+      "Rear lens cap"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 27,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 11,
+      "ed": 3,
+      "highRefractive": 3,
+      "sourceText": "Precision optical structure with 8 groups and 11 elements, including 3 high-refractive-index lenses and 3 ED (extra-low dispersion) lenses"
+    },
+    "fieldNotes": {
+      "weightG": "Figure for the X-mount version; other mounts range 274-291 g.",
+      "filterMm": "Rear filter slot behind the mount; the bulbous front element takes no filter."
+    },
+    "officialLinks": {
+      "global": "https://brightinstar.com/products/brightin-star-7-5mm-f2-8-iv-fisheye-lens-for-fujifilm-x-mount"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "给出的数值为 X 卡口版本；其他卡口为 274-291 g。",
+          "filterMm": "卡口后方设有后置滤镜槽；灯泡状前组镜片无法安装滤镜。"
+        },
+        "lensMaterial": "金属",
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖"
+        ]
+      }
+    },
+    "createdAt": "2026-09-09",
+    "updatedAt": "2026-09-09"
   },
   {
     "id": "brightinstar-af-50mm-f14-x",
@@ -8353,6 +8549,99 @@
     },
     "createdAt": "2026-04-19",
     "updatedAt": "2026-06-11"
+  },
+  {
+    "id": "fujifilm-xf-400mmf45-r-lm-ois-wr-x",
+    "brand": "fujifilm",
+    "mount": "X",
+    "series": "XF",
+    "model": "XF 400mm F4.5 R LM OIS WR",
+    "focalLengthMin": 400,
+    "focalLengthMax": 400,
+    "maxAperture": 4.5,
+    "minAperture": 22,
+    "af": true,
+    "ois": true,
+    "oisStops": 5.5,
+    "wr": true,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "LM",
+    "weightG": 1245,
+    "diameterMm": 104.5,
+    "length": {
+      "mm": 239.5
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 275
+      }
+    },
+    "maxMagnification": {
+      "value": 0.16
+    },
+    "angleOfView": 4.1,
+    "angleOfViewCalc": 4.1,
+    "apertureBladeCount": 9,
+    "releaseYear": 2026,
+    "searchAliases": {
+      "en": "Fujifilm XF 400mm f4.5 OIS WR",
+      "zh": "富士 XF 400mm f4.5 OIS WR"
+    },
+    "pricing": {
+      "global": {
+        "new": [
+          {
+            "price": 3199.95,
+            "currency": "USD",
+            "source": "FUJIFILM Shop USA",
+            "url": "https://shopusa.fujifilm-x.com/xf400mmf4-5-r-lm-ois-wr-lens-16981452",
+            "sampledAt": "2026-09-09"
+          }
+        ]
+      }
+    },
+    "accessories": [
+      "Front lens cap FLCP-95",
+      "Rear lens cap RLCP-001",
+      "Lens hood",
+      "Lens pouch",
+      "Tripod collar foot",
+      "Shoulder strap"
+    ],
+    "filterMm": 95,
+    "lensConfiguration": {
+      "groups": 14,
+      "elements": 21,
+      "ed": 4,
+      "superEd": 2,
+      "sourceText": "21 elements in 14 groups (includes 4 ED and 2 super ED elements)"
+    },
+    "fieldNotes": {
+      "weightG": "Excludes cap and hood."
+    },
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/xf400mmf45-r-lm-ois-wr/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/xf400mmf45-r-lm-ois-wr/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "不含镜头盖和遮光罩。"
+        },
+        "accessories": [
+          "前镜头盖 FLCP-95",
+          "后镜头盖 RLCP-001",
+          "遮光罩",
+          "镜头袋",
+          "脚架底座",
+          "肩带"
+        ]
+      }
+    },
+    "createdAt": "2026-09-09",
+    "updatedAt": "2026-09-09"
   },
   {
     "id": "fujifilm-xf-500mmf56-r-lm-ois-wr-x",
