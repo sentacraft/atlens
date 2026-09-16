@@ -35,6 +35,7 @@ if (!rawBase) {
 }
 const BASE_URL = rawBase.replace(/\/$/, "");
 const TIMEOUT_MS = 15000;
+const MAX_FETCH_ATTEMPTS = 3;
 const CONCURRENCY = 20;
 
 // Optional sampling. Unset = probe the WHOLE sitemap (cf-smoke does this against
@@ -88,19 +89,36 @@ function rotatingSample(paths) {
 }
 
 async function fetchText(url) {
-  const ac = new AbortController();
-  const timer = setTimeout(() => ac.abort(), TIMEOUT_MS);
-  try {
-    const res = await fetch(url, {
-      redirect: "follow",
-      signal: ac.signal,
-      headers: { "user-agent": "atlens-uptime-check" },
-    });
-    const body = await res.text();
-    return { status: res.status, body };
-  } finally {
-    clearTimeout(timer);
+  let lastError;
+
+  for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt += 1) {
+    const ac = new AbortController();
+    const timer = setTimeout(() => ac.abort(), TIMEOUT_MS);
+    try {
+      const res = await fetch(url, {
+        redirect: "follow",
+        signal: ac.signal,
+        headers: { "user-agent": "atlens-uptime-check" },
+      });
+      const body = await res.text();
+
+      // Retry transient upstream responses before treating a URL as unhealthy.
+      if (attempt < MAX_FETCH_ATTEMPTS && (res.status === 408 || res.status === 429 || res.status >= 500)) {
+        await new Promise((resolve) => setTimeout(resolve, 250 * 2 ** (attempt - 1)));
+        continue;
+      }
+      return { status: res.status, body };
+    } catch (err) {
+      lastError = err;
+      if (attempt < MAX_FETCH_ATTEMPTS) {
+        await new Promise((resolve) => setTimeout(resolve, 250 * 2 ** (attempt - 1)));
+      }
+    } finally {
+      clearTimeout(timer);
+    }
   }
+
+  throw lastError;
 }
 
 // Every <loc> in the sitemap, re-based onto BASE_URL (pathname only).
