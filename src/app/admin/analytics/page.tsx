@@ -345,20 +345,6 @@ function fmtMaybe(v: unknown): string {
   return n.toLocaleString("en-US");
 }
 
-// DeepSeek V4-Flash list price, CNY per 1M tokens (as of 2026-07 —
-// api-docs.deepseek.com/quick_start/pricing). Cache-hit input is billed ~98% off;
-// cache-miss input is (input − cacheRead). Update if the model or rates change.
-const DEEPSEEK_CNY_PER_1M = { inputMiss: 1, cacheHit: 0.02, output: 2 };
-
-function askirisCostCny(input: number, cacheRead: number, output: number): number {
-  const inputMiss = Math.max(0, input - cacheRead);
-  return (
-    (inputMiss / 1e6) * DEEPSEEK_CNY_PER_1M.inputMiss +
-    (cacheRead / 1e6) * DEEPSEEK_CNY_PER_1M.cacheHit +
-    (output / 1e6) * DEEPSEEK_CNY_PER_1M.output
-  );
-}
-
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
@@ -632,11 +618,9 @@ export default async function AnalyticsDashboardPage() {
   const aiTurns = num(askirisRow?.turns);
   const aiTotalTokens = num(askirisRow?.total_tokens);
   const aiInputTokens = num(askirisRow?.input_tokens);
-  const aiOutputTokens = num(askirisRow?.output_tokens);
   const aiCacheReadTokens = num(askirisRow?.cache_read_tokens);
   const aiTotalSteps = num(askirisRow?.total_steps);
   const aiBudgetHits = num(askirisRow?.budget_hits);
-  const aiCostCny = askirisCostCny(aiInputTokens, aiCacheReadTokens, aiOutputTokens);
   // Session funnel: page views/visitors (askiris_view) → interacted visitors →
   // sessions → turns. "Person" is approximated by the visit sid (no login).
   const aiViewsRow = askirisViews.data[0] as { pv?: number; uv?: number } | undefined;
@@ -920,13 +904,12 @@ export default async function AnalyticsDashboardPage() {
           AskIris
         </h2>
         <p className="mt-1 mb-4 text-sm text-zinc-500 dark:text-zinc-400">
-          One row per completed turn · cost estimated at DeepSeek V4-Flash list price
+          One row per completed turn
         </p>
 
         <div className="mb-4 grid grid-cols-2 gap-4 md:grid-cols-4">
           <Stat label="Turns" value={fmtMaybe(askirisRow?.turns)} />
           <Stat label="Tokens" value={fmtMaybe(askirisRow?.total_tokens)} />
-          <Stat label="Est. cost" value={aiTurns > 0 ? `¥${aiCostCny.toFixed(2)}` : "—"} />
           <Stat label="Budget-hit rate" value={pct(aiBudgetHits, aiTurns)} />
         </div>
 

@@ -83,3 +83,6 @@ skills-lock.json
 
 # AskIris dev-only captured fixtures (test-hook panel)
 .askiris-fixtures/
+
+# AskIris evaluation roadmap is maintained in the private Obsidian vault
+/docs/askiris-evaluation.md
