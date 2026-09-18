@@ -1,6 +1,7 @@
 import {
   convertToModelMessages,
   createUIMessageStreamResponse,
+  generateId,
   stepCountIs,
   streamText,
   toUIMessageStream,
@@ -11,6 +12,7 @@ import { z } from "zod";
 import { getTranslations } from "next-intl/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import {
+  activeAgentModel,
   getAgentModel,
   agentProviderOptions,
   missingAgentModelKey,
@@ -22,6 +24,12 @@ import { clientIp, isBypassed, checkRateLimit, recordTokens } from "@/lib/ai/rat
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
 import { askirisTurnDataPoint } from "@/lib/analytics/events";
 import { parseSid, parseInternal } from "@/lib/analytics/session";
+import {
+  AskIrisTraceCollector,
+  traceMessageContext,
+  type AskIrisTraceCompletion,
+} from "@/lib/askiris/trace-capture";
+import { workerReleaseId, writeAskIrisTrace } from "@/lib/askiris/trace-repository";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
 
@@ -68,6 +76,11 @@ export async function POST(req: Request) {
     return chatErrorResponse("unavailable", 400);
   }
   const { messages, mount, locale, segmentId } = parsed.data;
+  const startedAt = Date.now();
+  const traceId = crypto.randomUUID();
+  const messageContext = traceMessageContext(messages);
+  const model = activeAgentModel();
+  const traceCollector = new AskIrisTraceCollector(startedAt);
 
   // Abuse guard for this public, no-login endpoint. Fail-open by design: with no KV
   // binding (e.g. `next dev`) or on any KV hiccup we proceed unlimited rather than
@@ -84,11 +97,15 @@ export async function POST(req: Request) {
   const internal = parseInternal(cookieHeader) || bypassed;
   let rateKv: KVNamespace | undefined;
   let ae: AnalyticsEngineDataset | undefined;
+  let traceDb: D1Database | undefined;
+  let releaseId: string | undefined;
   let ctx: ExecutionContext | undefined;
   try {
     const cf = getCloudflareContext();
     rateKv = cf.env.RATE_KV;
     ae = cf.env.ANALYTICS;
+    traceDb = cf.env.ASKIRIS_DB;
+    releaseId = workerReleaseId(cf.env.CF_VERSION_METADATA);
     ctx = cf.ctx;
     if (rateKv && ip && !bypassed) {
       const verdict = await checkRateLimit(rateKv, ip);
@@ -97,8 +114,38 @@ export async function POST(req: Request) {
       }
     }
   } catch {
-    // Never let a missing binding or KV error break chat.
+    // Never let a missing binding or persistence error break chat.
   }
+
+  const persistTrace = (completion: AskIrisTraceCompletion | undefined) => {
+    if (!completion || !traceDb || !messageContext) {
+      return;
+    }
+
+    const write = writeAskIrisTrace(traceDb, {
+      traceId,
+      turnId: messageContext.turnId,
+      segmentId: segmentId ?? "",
+      mount,
+      locale,
+      userMessage: messageContext.userMessage,
+      contextMessageIds: messageContext.contextMessageIds,
+      ...completion,
+      responseMessageId: completion.responseMessage?.id,
+      modelProvider: model.provider,
+      modelName: model.modelId,
+      releaseId,
+      startedAt,
+      finishedAt: Date.now(),
+      internal,
+    }).catch((error) => console.error("[askiris] failed to persist trace", error));
+
+    if (ctx) {
+      ctx.waitUntil(write);
+    } else {
+      void write;
+    }
+  };
 
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const tools = buildLensTools(mount, locale, tBrand);
@@ -111,8 +158,15 @@ export async function POST(req: Request) {
     modelMessages = await convertToModelMessages(messages, { tools });
   } catch (error) {
     console.error("[askiris] failed to convert messages", error);
+    persistTrace(traceCollector.finalizeError("message_conversion_failed"));
     return chatErrorResponse("unavailable", 400);
   }
+
+  const markStreamError = (error: unknown) => {
+    if (traceCollector.recordError()) {
+      console.error("[askiris] stream error", error);
+    }
+  };
 
   const result = streamText({
     model: getAgentModel(),
@@ -128,9 +182,15 @@ export async function POST(req: Request) {
     // turn that reaches the budget ends with a synthesis, not a frozen dangling tool call.
     prepareStep: ({ stepNumber }) =>
       stepNumber >= STEP_BUDGET - 1 ? { toolChoice: "none" } : undefined,
+    onChunk: ({ chunk }) => traceCollector.recordChunk(chunk),
+    onError: ({ error }) => markStreamError(error),
+    onStepEnd: (step) => traceCollector.recordStep(step),
+    onAbort: () => traceCollector.recordAbort(),
     // On turn end: emit one metrics row to AE and fold the token usage into the daily
     // budgets. waitUntil keeps the KV write alive past the streamed response.
-    onEnd: ({ usage, stepNumber }) => {
+    onEnd: (result) => {
+      traceCollector.recordGenerationEnd(result);
+      const { usage, stepNumber } = result;
       // Record the finished turn as one AE row (server-only — the client can't see
       // token usage). The last allowed step is forced to a text answer, so a turn that
       // spent its whole budget ends on that wrap-up step; the final step index reaching
@@ -182,13 +242,16 @@ export async function POST(req: Request) {
   return createUIMessageStreamResponse({
     stream: toUIMessageStream({
       stream: result.stream,
+      originalMessages: messages,
+      generateMessageId: generateId,
+      onEnd: (result) => persistTrace(traceCollector.finalizeStream(result)),
       // Log the real provider error server-side (Workers Logs); this is a public
       // endpoint, so the raw error (provider internals, quota/config hints) must not
       // reach the client. The returned string only masks it in the stream — the
       // client classifies a stream error as transient and shows its own copy — so a
       // bare constant is enough, not prose.
       onError: (error) => {
-        console.error("[askiris] stream error", error);
+        markStreamError(error);
         return "Stream error";
       },
     }),
