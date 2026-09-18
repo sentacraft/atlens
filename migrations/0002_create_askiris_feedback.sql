@@ -1,4 +1,5 @@
 CREATE TABLE askiris_feedback (
+  -- No foreign key: feedback submission can race the trace's waitUntil write.
   -- Unique identifier retained for the lifetime of one feedback record.
   feedback_id TEXT PRIMARY KEY,
   -- Stable identifier for the user turn being evaluated.
