@@ -19,6 +19,15 @@ GITHUB_FEEDBACK_ASSIGNEES = "sentacraft"
 binding = "ANALYTICS"
 dataset = "xglass_events"
 
+[[d1_databases]]
+binding = "ASKIRIS_DB"
+database_name = "atlens-askiris-traces"
+database_id = "6e45555d-ee19-4a77-af3c-b7fdebd11a61"
+migrations_dir = "migrations"
+
+[version_metadata]
+binding = "CF_VERSION_METADATA"
+
 # Rate-limit counters for /api/chat (per-IP burst + per-IP/global daily token
 # budgets). The RATE_LIMIT_BYPASS secret (dashboard / `wrangler secret put`) exempts
 # the developer's own testing.
