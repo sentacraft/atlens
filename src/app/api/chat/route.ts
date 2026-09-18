@@ -22,6 +22,13 @@ import { clientIp, isBypassed, checkRateLimit, recordTokens } from "@/lib/ai/rat
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
 import { askirisTurnDataPoint } from "@/lib/analytics/events";
 import { parseSid, parseInternal } from "@/lib/analytics/session";
+import {
+  traceTurnId,
+  summarizeAskIrisStep,
+  writeAskIrisTrace,
+  type AskIrisTraceRecord,
+  type AskIrisTraceStatus,
+} from "@/lib/askiris/trace";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
 
@@ -68,6 +75,9 @@ export async function POST(req: Request) {
     return chatErrorResponse("unavailable", 400);
   }
   const { messages, mount, locale, segmentId } = parsed.data;
+  const turnId = traceTurnId(messages);
+  const traceId = crypto.randomUUID();
+  const traceStartedAt = new Date().toISOString();
 
   // Abuse guard for this public, no-login endpoint. Fail-open by design: with no KV
   // binding (e.g. `next dev`) or on any KV hiccup we proceed unlimited rather than
@@ -84,11 +94,13 @@ export async function POST(req: Request) {
   const internal = parseInternal(cookieHeader) || bypassed;
   let rateKv: KVNamespace | undefined;
   let ae: AnalyticsEngineDataset | undefined;
+  let traceDb: D1Database | undefined;
   let ctx: ExecutionContext | undefined;
   try {
     const cf = getCloudflareContext();
     rateKv = cf.env.RATE_KV;
     ae = cf.env.ANALYTICS;
+    traceDb = (cf.env as typeof cf.env & { ASKIRIS_TRACES?: D1Database }).ASKIRIS_TRACES;
     ctx = cf.ctx;
     if (rateKv && ip && !bypassed) {
       const verdict = await checkRateLimit(rateKv, ip);
@@ -98,6 +110,78 @@ export async function POST(req: Request) {
     }
   } catch {
     // Never let a missing binding or KV error break chat.
+  }
+
+  let completedEvent:
+    | {
+        usage: {
+          totalTokens?: number;
+          inputTokens?: number;
+          outputTokens?: number;
+          inputTokenDetails?: { cacheReadTokens?: number };
+        };
+        stepNumber: number;
+        steps: unknown[];
+        model?: { provider?: string; modelId?: string };
+        finishReason?: string;
+      }
+    | undefined;
+  let abortedSteps: unknown[] | undefined;
+  let streamError: string | undefined;
+  let tracePersisted = false;
+
+  function scheduleTracePersistence(record: AskIrisTraceRecord): void {
+    if (tracePersisted) {
+      return;
+    }
+    tracePersisted = true;
+    if (!traceDb) {
+      console.warn("[askiris] trace persistence unavailable");
+      return;
+    }
+    const write = writeAskIrisTrace(traceDb, record).catch((error) => {
+      console.error("[askiris] failed to persist trace", error);
+    });
+    if (ctx) {
+      ctx.waitUntil(write);
+    } else {
+      void write;
+    }
+  }
+
+  function persistTrace(
+    status: AskIrisTraceStatus,
+    responseMessage: unknown,
+    finishReason?: string,
+  ): void {
+    const event = completedEvent;
+    const usage = event?.usage;
+    const steps = event?.steps ?? abortedSteps ?? [];
+    scheduleTracePersistence({
+      traceId,
+      turnId,
+      segmentId: segmentId ?? "",
+      mount,
+      locale,
+      status,
+      startedAt: traceStartedAt,
+      finishedAt: new Date().toISOString(),
+      modelProvider: event?.model?.provider,
+      modelId: event?.model?.modelId,
+      finishReason: finishReason ?? event?.finishReason,
+      totalTokens: usage?.totalTokens ?? 0,
+      inputTokens: usage?.inputTokens ?? 0,
+      outputTokens: usage?.outputTokens ?? 0,
+      cacheReadTokens: usage?.inputTokenDetails?.cacheReadTokens ?? 0,
+      stepCount: event?.stepNumber !== undefined ? event.stepNumber + 1 : steps.length,
+      internal,
+      payload: {
+        inputMessages: messages,
+        responseMessage,
+        steps: steps.map(summarizeAskIrisStep),
+        ...(streamError ? { error: streamError } : {}),
+      },
+    });
   }
 
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
@@ -111,6 +195,7 @@ export async function POST(req: Request) {
     modelMessages = await convertToModelMessages(messages, { tools });
   } catch (error) {
     console.error("[askiris] failed to convert messages", error);
+    persistTrace("error", undefined, "message_conversion_failed");
     return chatErrorResponse("unavailable", 400);
   }
 
@@ -130,7 +215,9 @@ export async function POST(req: Request) {
       stepNumber >= STEP_BUDGET - 1 ? { toolChoice: "none" } : undefined,
     // On turn end: emit one metrics row to AE and fold the token usage into the daily
     // budgets. waitUntil keeps the KV write alive past the streamed response.
-    onEnd: ({ usage, stepNumber }) => {
+    onEnd: (event) => {
+      const { usage, stepNumber } = event;
+      completedEvent = event;
       // Record the finished turn as one AE row (server-only — the client can't see
       // token usage). The last allowed step is forced to a text answer, so a turn that
       // spent its whole budget ends on that wrap-up step; the final step index reaching
@@ -177,6 +264,9 @@ export async function POST(req: Request) {
         );
       }
     },
+    onAbort: ({ steps }) => {
+      abortedSteps = steps;
+    },
   });
 
   return createUIMessageStreamResponse({
@@ -188,8 +278,16 @@ export async function POST(req: Request) {
       // client classifies a stream error as transient and shows its own copy — so a
       // bare constant is enough, not prose.
       onError: (error) => {
+        streamError = error instanceof Error ? error.message : "stream_error";
         console.error("[askiris] stream error", error);
         return "Stream error";
+      },
+      onEnd: ({ responseMessage, isAborted, finishReason }) => {
+        persistTrace(
+          isAborted ? "aborted" : streamError ? "error" : "completed",
+          responseMessage,
+          finishReason,
+        );
       },
     }),
   });
