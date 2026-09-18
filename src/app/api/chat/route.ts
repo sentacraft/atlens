@@ -25,18 +25,11 @@ import { chatErrorResponse } from "@/lib/ai/chat-errors";
 import { askirisTurnDataPoint } from "@/lib/analytics/events";
 import { parseSid, parseInternal } from "@/lib/analytics/session";
 import {
-  addTraceUsage,
-  countTraceToolCalls,
-  isTraceOutputChunk,
+  AskIrisTraceCollector,
   traceMessageContext,
-  traceUsage,
-  type AskIrisTraceUsage,
+  type AskIrisTraceCompletion,
 } from "@/lib/askiris/trace-capture";
-import {
-  workerReleaseId,
-  writeAskIrisTrace,
-  type AskIrisTraceStatus,
-} from "@/lib/askiris/trace-repository";
+import { workerReleaseId, writeAskIrisTrace } from "@/lib/askiris/trace-repository";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
 
@@ -87,6 +80,7 @@ export async function POST(req: Request) {
   const traceId = crypto.randomUUID();
   const messageContext = traceMessageContext(messages);
   const model = activeAgentModel();
+  const traceCollector = new AskIrisTraceCollector(startedAt);
 
   // Abuse guard for this public, no-login endpoint. Fail-open by design: with no KV
   // binding (e.g. `next dev`) or on any KV hiccup we proceed unlimited rather than
@@ -123,28 +117,10 @@ export async function POST(req: Request) {
     // Never let a missing binding or persistence error break chat.
   }
 
-  let traceWritten = false;
-  const persistTrace = ({
-    status,
-    responseMessage,
-    finishReason,
-    errorCode,
-    usage = {},
-    stepCount,
-    firstOutputMs,
-  }: {
-    status: AskIrisTraceStatus;
-    responseMessage?: UIMessage;
-    finishReason?: string;
-    errorCode?: string;
-    usage?: AskIrisTraceUsage;
-    stepCount: number;
-    firstOutputMs?: number;
-  }) => {
-    if (!traceDb || !messageContext || traceWritten) {
+  const persistTrace = (completion: AskIrisTraceCompletion | undefined) => {
+    if (!completion || !traceDb || !messageContext) {
       return;
     }
-    traceWritten = true;
 
     const write = writeAskIrisTrace(traceDb, {
       traceId,
@@ -152,22 +128,15 @@ export async function POST(req: Request) {
       segmentId: segmentId ?? "",
       mount,
       locale,
-      status,
       userMessage: messageContext.userMessage,
       contextMessageIds: messageContext.contextMessageIds,
-      responseMessageId: responseMessage?.id,
-      responseMessage,
+      ...completion,
+      responseMessageId: completion.responseMessage?.id,
       modelProvider: model.provider,
       modelName: model.modelId,
       releaseId,
       startedAt,
       finishedAt: Date.now(),
-      finishReason,
-      errorCode,
-      ...usage,
-      stepCount,
-      toolCallCount: countTraceToolCalls(responseMessage),
-      firstOutputMs,
       internal,
     }).catch((error) => console.error("[askiris] failed to persist trace", error));
 
@@ -189,22 +158,14 @@ export async function POST(req: Request) {
     modelMessages = await convertToModelMessages(messages, { tools });
   } catch (error) {
     console.error("[askiris] failed to convert messages", error);
-    persistTrace({ status: "error", errorCode: "message_conversion_failed", stepCount: 0 });
+    persistTrace(traceCollector.finalizeError("message_conversion_failed"));
     return chatErrorResponse("unavailable", 400);
   }
 
-  let capturedUsage: AskIrisTraceUsage = {};
-  let capturedStepCount = 0;
-  let capturedFinishReason: string | undefined;
-  let firstOutputMs: number | undefined;
-  let generationAborted = false;
-  let streamErrored = false;
-
   const markStreamError = (error: unknown) => {
-    if (!streamErrored) {
+    if (traceCollector.recordError()) {
       console.error("[askiris] stream error", error);
     }
-    streamErrored = true;
   };
 
   const result = streamText({
@@ -221,26 +182,15 @@ export async function POST(req: Request) {
     // turn that reaches the budget ends with a synthesis, not a frozen dangling tool call.
     prepareStep: ({ stepNumber }) =>
       stepNumber >= STEP_BUDGET - 1 ? { toolChoice: "none" } : undefined,
-    onChunk: ({ chunk }) => {
-      if (firstOutputMs === undefined && isTraceOutputChunk(chunk.type)) {
-        firstOutputMs = Date.now() - startedAt;
-      }
-    },
+    onChunk: ({ chunk }) => traceCollector.recordChunk(chunk),
     onError: ({ error }) => markStreamError(error),
-    onStepEnd: ({ usage, stepNumber, finishReason }) => {
-      capturedUsage = addTraceUsage(capturedUsage, traceUsage(usage));
-      capturedStepCount = Math.max(capturedStepCount, stepNumber + 1);
-      capturedFinishReason = finishReason;
-    },
-    onAbort: () => {
-      generationAborted = true;
-    },
+    onStepEnd: (step) => traceCollector.recordStep(step),
+    onAbort: () => traceCollector.recordAbort(),
     // On turn end: emit one metrics row to AE and fold the token usage into the daily
     // budgets. waitUntil keeps the KV write alive past the streamed response.
-    onEnd: ({ usage, stepNumber, finishReason }) => {
-      capturedUsage = traceUsage(usage);
-      capturedStepCount = stepNumber + 1;
-      capturedFinishReason = finishReason;
+    onEnd: (result) => {
+      traceCollector.recordGenerationEnd(result);
+      const { usage, stepNumber } = result;
       // Record the finished turn as one AE row (server-only — the client can't see
       // token usage). The last allowed step is forced to a text answer, so a turn that
       // spent its whole budget ends on that wrap-up step; the final step index reaching
@@ -294,19 +244,7 @@ export async function POST(req: Request) {
       stream: result.stream,
       originalMessages: messages,
       generateMessageId: generateId,
-      onEnd: ({ responseMessage, isAborted, finishReason }) => {
-        const aborted = isAborted || generationAborted;
-        const errored = streamErrored || finishReason === "error";
-        persistTrace({
-          status: aborted ? "aborted" : errored ? "error" : "completed",
-          responseMessage,
-          finishReason: finishReason ?? capturedFinishReason,
-          errorCode: errored ? "stream_failed" : undefined,
-          usage: capturedUsage,
-          stepCount: capturedStepCount,
-          firstOutputMs,
-        });
-      },
+      onEnd: (result) => persistTrace(traceCollector.finalizeStream(result)),
       // Log the real provider error server-side (Workers Logs); this is a public
       // endpoint, so the raw error (provider internals, quota/config hints) must not
       // reach the client. The returned string only masks it in the stream — the

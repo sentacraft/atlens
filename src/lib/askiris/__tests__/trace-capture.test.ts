@@ -1,12 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { LanguageModelUsage, UIMessage } from "ai";
-import {
-  addTraceUsage,
-  countTraceToolCalls,
-  isTraceOutputChunk,
-  traceMessageContext,
-  traceUsage,
-} from "../trace-capture";
+import { AskIrisTraceCollector, traceMessageContext } from "../trace-capture";
 
 function usage(overrides: Partial<LanguageModelUsage> = {}): LanguageModelUsage {
   return {
@@ -50,63 +44,108 @@ describe("traceMessageContext", () => {
   });
 });
 
-describe("trace usage", () => {
-  it("maps provider usage and accumulates completed steps", () => {
-    const first = traceUsage(
-      usage({
-        inputTokens: 100,
+describe("AskIrisTraceCollector", () => {
+  it("combines generation metrics with the final UI message", () => {
+    let now = 1_100;
+    const collector = new AskIrisTraceCollector(1_000, () => now);
+    collector.recordChunk({ type: "start" });
+    now = 1_250;
+    collector.recordChunk({ type: "text-delta" });
+    collector.recordGenerationEnd({
+      usage: usage({
+        inputTokens: 220,
         inputTokenDetails: {
-          noCacheTokens: 20,
-          cacheReadTokens: 80,
+          noCacheTokens: 40,
+          cacheReadTokens: 180,
           cacheWriteTokens: undefined,
         },
-        outputTokens: 10,
+        outputTokens: 30,
+        outputTokenDetails: { textTokens: 25, reasoningTokens: 5 },
       }),
-    );
-    const second = traceUsage(
-      usage({
-        inputTokens: 120,
-        inputTokenDetails: {
-          noCacheTokens: undefined,
-          cacheReadTokens: 100,
-          cacheWriteTokens: undefined,
-        },
-        outputTokens: 20,
-        outputTokenDetails: {
-          textTokens: 15,
-          reasoningTokens: 5,
-        },
-      }),
-    );
-
-    expect(addTraceUsage(first, second)).toEqual({
-      inputTokens: 220,
-      outputTokens: 30,
-      cacheReadTokens: 180,
-      reasoningTokens: 5,
+      stepNumber: 1,
+      finishReason: "stop",
     });
-  });
-});
-
-describe("trace response capture", () => {
-  it("counts static and dynamic tool parts once", () => {
-    const message = {
+    const responseMessage = {
       id: "assistant-1",
       role: "assistant",
       parts: [
         { type: "text", text: "Checking" },
-        { type: "tool-findLenses", toolCallId: "call-1", state: "output-available", input: {}, output: [] },
-        { type: "dynamic-tool", toolName: "compare", toolCallId: "call-2", state: "output-available", input: {}, output: {} },
+        {
+          type: "tool-findLenses",
+          toolCallId: "call-1",
+          state: "output-available",
+          input: {},
+          output: [],
+        },
+        {
+          type: "dynamic-tool",
+          toolName: "compare",
+          toolCallId: "call-2",
+          state: "output-available",
+          input: {},
+          output: {},
+        },
       ],
     } as UIMessage;
 
-    expect(countTraceToolCalls(message)).toBe(2);
+    expect(
+      collector.finalizeStream({ responseMessage, isAborted: false, finishReason: "stop" }),
+    ).toEqual({
+      status: "completed",
+      responseMessage,
+      finishReason: "stop",
+      errorCode: undefined,
+      inputTokens: 220,
+      outputTokens: 30,
+      cacheReadTokens: 180,
+      reasoningTokens: 5,
+      stepCount: 2,
+      toolCallCount: 2,
+      firstOutputMs: 250,
+    });
   });
 
-  it("starts latency on generated output rather than stream bookkeeping", () => {
-    expect(isTraceOutputChunk("start")).toBe(false);
-    expect(isTraceOutputChunk("start-step")).toBe(false);
-    expect(isTraceOutputChunk("text-delta")).toBe(true);
-    expect(isTraceOutputChunk("tool-call")).toBe(true);
+  it("keeps completed-step usage when a stream is aborted", () => {
+    const collector = new AskIrisTraceCollector(1_000);
+    collector.recordStep({
+      usage: usage({ inputTokens: 100, outputTokens: 10 }),
+      stepNumber: 0,
+      finishReason: "tool-calls",
+    });
+    collector.recordStep({
+      usage: usage({ inputTokens: 120, outputTokens: 20 }),
+      stepNumber: 1,
+      finishReason: "stop",
+    });
+    collector.recordAbort();
+
+    expect(
+      collector.finalizeStream({
+        responseMessage: { id: "assistant-1", role: "assistant", parts: [] },
+        isAborted: false,
+      }),
+    ).toMatchObject({
+      status: "aborted",
+      inputTokens: 220,
+      outputTokens: 30,
+      stepCount: 2,
+    });
+  });
+
+  it("logs an error once and finalizes once", () => {
+    const collector = new AskIrisTraceCollector(1_000);
+
+    expect(collector.recordError()).toBe(true);
+    expect(collector.recordError()).toBe(false);
+    expect(
+      collector.finalizeStream({
+        responseMessage: { id: "assistant-1", role: "assistant", parts: [] },
+        isAborted: false,
+      }),
+    ).toMatchObject({
+      status: "error",
+      errorCode: "stream_failed",
+    });
+    expect(collector.finalizeError("another_error")).toBeUndefined();
   });
 });
