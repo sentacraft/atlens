@@ -13,9 +13,7 @@ CREATE TABLE askiris_feedback (
   -- Unix timestamp in milliseconds when feedback was first submitted.
   created_at INTEGER NOT NULL,
   -- Unix timestamp in milliseconds when feedback was last changed.
-  updated_at INTEGER NOT NULL CHECK (updated_at >= created_at),
-  -- Version of the feedback record contract used by this row.
-  schema_version INTEGER NOT NULL CHECK (schema_version > 0)
+  updated_at INTEGER NOT NULL CHECK (updated_at >= created_at)
 );
 
 CREATE INDEX askiris_feedback_turn_updated_at

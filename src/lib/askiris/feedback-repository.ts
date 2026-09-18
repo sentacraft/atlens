@@ -1,7 +1,5 @@
 import "server-only";
 
-export const ASKIRIS_FEEDBACK_SCHEMA_VERSION = 1;
-
 export type AskIrisFeedbackRating = "helpful" | "unhelpful";
 
 export interface AskIrisFeedbackRecord {
@@ -34,15 +32,13 @@ export async function saveAskIrisFeedback(
         rating,
         reason_code,
         created_at,
-        updated_at,
-        schema_version
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(response_message_id) DO UPDATE SET
         turn_id = excluded.turn_id,
         rating = excluded.rating,
         reason_code = excluded.reason_code,
-        updated_at = excluded.updated_at,
-        schema_version = excluded.schema_version`,
+        updated_at = excluded.updated_at`,
     )
     .bind(
       record.feedbackId,
@@ -52,7 +48,6 @@ export async function saveAskIrisFeedback(
       record.reasonCode ?? null,
       record.createdAt,
       record.updatedAt,
-      ASKIRIS_FEEDBACK_SCHEMA_VERSION,
     )
     .run();
 }

@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
 import {
-  ASKIRIS_FEEDBACK_SCHEMA_VERSION,
   saveAskIrisFeedback,
   type AskIrisFeedbackRecord,
 } from "../feedback-repository";
@@ -38,7 +37,6 @@ describe("saveAskIrisFeedback", () => {
       "incorrect_recommendation",
       1_800_000_000_000,
       1_800_000_000_000,
-      ASKIRIS_FEEDBACK_SCHEMA_VERSION,
     );
     expect(run).toHaveBeenCalledOnce();
   });
@@ -59,7 +57,6 @@ describe("saveAskIrisFeedback", () => {
       null,
       expect.anything(),
       expect.anything(),
-      ASKIRIS_FEEDBACK_SCHEMA_VERSION,
     );
   });
 });
