@@ -7,30 +7,55 @@ export const ASKIRIS_TRACE_MAX_RESPONSE_MESSAGE_BYTES = 512 * 1024;
 export type AskIrisTraceStatus = "completed" | "aborted" | "error";
 
 export interface AskIrisTraceRecord {
+  /** Unique identifier for one agent execution attempt. */
   traceId: string;
+  /** Stable identifier for one user turn; retries reuse it. */
   turnId: string;
+  /** Groups consecutive turns in the current client-side topic. */
   segmentId: string;
+  /** Lens catalogue used by this turn, such as X or G. */
   mount: string;
+  /** Locale used for the request and response. */
   locale: string;
+  /** Terminal outcome of the execution attempt. */
   status: AskIrisTraceStatus;
+  /** Current user UIMessage, not the full message history. */
   userMessage: unknown;
+  /** Ordered UIMessage identifiers supplied as context for this execution. */
   contextMessageIds: string[];
+  /** Identifier extracted from the assistant UIMessage for indexed lookup. */
   responseMessageId?: string;
+  /** Assistant UIMessage, including client-visible tool output. */
   responseMessage?: unknown;
+  /** Provider that handled the model call. */
   modelProvider?: string;
+  /** Provider-specific model identifier used for the execution. */
   modelName?: string;
+  /** Cloudflare Worker Version ID serving the request. */
   releaseId?: string;
+  /** Unix timestamp in milliseconds when execution began. */
   startedAt: number;
+  /** Unix timestamp in milliseconds when execution ended. */
   finishedAt: number;
+  /** Normalized AI SDK finish reason for the final model call. */
   finishReason?: string;
+  /** Sanitized application error category; raw provider errors are not stored. */
   errorCode?: string;
+  /** Provider-reported input token count for the full execution. */
   inputTokens?: number;
+  /** Provider-reported output token count for the full execution. */
   outputTokens?: number;
+  /** Provider-reported input tokens served from cache. */
   cacheReadTokens?: number;
+  /** Provider-reported reasoning token count when available. */
   reasoningTokens?: number;
+  /** Number of model-generation steps in the execution. */
   stepCount: number;
+  /** Number of tool calls represented in the assistant UIMessage. */
   toolCallCount: number;
+  /** Milliseconds from execution start until the first streamed output. */
   firstOutputMs?: number;
+  /** Marks developer traffic that should be excluded from product analysis. */
   internal: boolean;
 }
 
