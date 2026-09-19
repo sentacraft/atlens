@@ -1,8 +1,6 @@
 import "server-only";
 import type { AskIrisResponseFeedbackInput } from "./response-feedback-contract";
 
-export type { AskIrisResponseFeedbackRating } from "./response-feedback-contract";
-
 export interface AskIrisResponseFeedbackRecord extends AskIrisResponseFeedbackInput {
   /** Unique identifier retained when an existing response rating is changed. */
   feedbackId: string;

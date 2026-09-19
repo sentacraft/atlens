@@ -16,5 +16,3 @@ export const askIrisResponseFeedbackInputSchema = z.object({
 export type AskIrisResponseFeedbackInput = z.infer<
   typeof askIrisResponseFeedbackInputSchema
 >;
-
-export type AskIrisResponseFeedbackRating = AskIrisResponseFeedbackInput["rating"];
