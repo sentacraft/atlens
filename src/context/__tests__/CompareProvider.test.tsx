@@ -5,8 +5,18 @@ import type { ReactNode } from "react";
 import { CompareProvider, useCompare } from "../CompareProvider";
 import { MAX_COMPARE } from "@/lib/lens/lens";
 
+const { getMount, setMount } = vi.hoisted(() => {
+  let mount: "X" | "G" = "X";
+  return {
+    getMount: () => mount,
+    setMount: (nextMount: "X" | "G") => {
+      mount = nextMount;
+    },
+  };
+});
+
 vi.mock("@/hooks/useMountParam", () => ({
-  useEffectiveMount: () => "X",
+  useEffectiveMount: getMount,
 }));
 
 vi.mock("@/lib/analytics/analytics", () => ({
@@ -20,6 +30,7 @@ function wrapper({ children }: { children: ReactNode }) {
 describe("useCompare", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    setMount("X");
   });
 
   it("starts with empty compareIds", () => {
@@ -177,5 +188,42 @@ describe("useCompare", () => {
     expect(() => {
       renderHook(() => useCompare());
     }).toThrow("useCompare must be used within CompareProvider");
+  });
+
+  it("binds actions to the current mount after a mount switch", () => {
+    const { result, rerender } = renderHook(() => useCompare(), { wrapper });
+
+    act(() => result.current.add("x-lens"));
+    setMount("G");
+    rerender();
+    act(() => result.current.add("g-lens"));
+    expect(result.current.compareIds).toEqual(["g-lens"]);
+
+    setMount("X");
+    rerender();
+    expect(result.current.compareIds).toEqual(["x-lens"]);
+    act(() => result.current.remove("x-lens"));
+    expect(result.current.compareIds).toEqual([]);
+  });
+
+  it("keeps action references stable while state changes", () => {
+    const { result } = renderHook(() => useCompare(), { wrapper });
+    const actions = {
+      add: result.current.add,
+      remove: result.current.remove,
+      toggle: result.current.toggle,
+      reorder: result.current.reorder,
+      clear: result.current.clear,
+      seed: result.current.seed,
+    };
+
+    act(() => result.current.add("lens-a"));
+
+    expect(result.current.add).toBe(actions.add);
+    expect(result.current.remove).toBe(actions.remove);
+    expect(result.current.toggle).toBe(actions.toggle);
+    expect(result.current.reorder).toBe(actions.reorder);
+    expect(result.current.clear).toBe(actions.clear);
+    expect(result.current.seed).toBe(actions.seed);
   });
 });
