@@ -1,22 +1,10 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { createRateLimiter, rateLimitedResponse } from "@/lib/rate-limit";
+import { askIrisResponseFeedbackInputSchema } from "@/lib/askiris/response-feedback-contract";
 import { saveAskIrisResponseFeedback } from "@/lib/askiris/response-feedback-repository";
 
 const MAX_BODY_BYTES = 8 * 1024;
-const MAX_REASON_COUNT = 10;
-
-const responseFeedbackSchema = z.object({
-  turnId: z.string().trim().min(1).max(128),
-  responseMessageId: z.string().trim().min(1).max(128),
-  rating: z.enum(["helpful", "unhelpful"]),
-  reasonCodes: z
-    .array(z.string().trim().min(1).max(64))
-    .max(MAX_REASON_COUNT)
-    .optional(),
-  comment: z.string().trim().max(2000).optional(),
-});
 
 const checkRateLimit = createRateLimiter({ windowMs: 60_000, max: 30 });
 
@@ -41,7 +29,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     return invalidFeedbackResponse();
   }
 
-  const parsed = responseFeedbackSchema.safeParse(payload);
+  const parsed = askIrisResponseFeedbackInputSchema.safeParse(payload);
   if (!parsed.success) {
     return invalidFeedbackResponse();
   }

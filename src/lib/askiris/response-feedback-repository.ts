@@ -1,20 +1,11 @@
 import "server-only";
+import type { AskIrisResponseFeedbackInput } from "./response-feedback-contract";
 
-export type AskIrisResponseFeedbackRating = "helpful" | "unhelpful";
+export type { AskIrisResponseFeedbackRating } from "./response-feedback-contract";
 
-export interface AskIrisResponseFeedbackRecord {
+export interface AskIrisResponseFeedbackRecord extends AskIrisResponseFeedbackInput {
   /** Unique identifier retained when an existing response rating is changed. */
   feedbackId: string;
-  /** Stable identifier for the user turn being evaluated. */
-  turnId: string;
-  /** Assistant UIMessage identifier for the exact response being evaluated. */
-  responseMessageId: string;
-  /** Binary user assessment of the response. */
-  rating: AskIrisResponseFeedbackRating;
-  /** Optional stable codes explaining an unhelpful rating. */
-  reasonCodes?: string[];
-  /** Optional free-form detail supplied with an unhelpful rating. */
-  comment?: string;
   /** Unix timestamp in milliseconds when feedback was first submitted. */
   createdAt: number;
   /** Unix timestamp in milliseconds when feedback was last changed. */
