@@ -89,6 +89,14 @@ desktop-only screenshot is not evidence that a UI change works.
 
 ## Git workflow
 
+- Commit completed changes and push the current branch immediately without asking for separate
+  confirmation.
 - PR titles follow Conventional Commits. Titles and descriptions are written in English.
 - Describe what the diff does not make obvious. Do not restate the changes.
 - Do not merge. Wait for CI, report the result, and leave the merge decision to the maintainer.
+
+## Compatibility
+
+- Do not keep legacy exports, aliases, fallback paths, duplicate fields, or compatibility layers
+  for hypothetical consumers. Search for actual consumers first. If compatibility is required,
+  document the consumer, removal condition, and expected lifetime; otherwise remove the old path.
