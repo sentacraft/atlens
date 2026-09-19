@@ -1,6 +1,5 @@
 import "server-only";
 
-export const ASKIRIS_TRACE_SCHEMA_VERSION = 1;
 export const ASKIRIS_TRACE_MAX_USER_MESSAGE_BYTES = 64 * 1024;
 export const ASKIRIS_TRACE_MAX_RESPONSE_MESSAGE_BYTES = 512 * 1024;
 
@@ -153,9 +152,8 @@ export async function writeAskIrisTrace(
         step_count,
         tool_call_count,
         first_output_ms,
-        internal,
-        schema_version
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        internal
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       record.traceId,
@@ -184,7 +182,6 @@ export async function writeAskIrisTrace(
       record.toolCallCount,
       record.firstOutputMs ?? null,
       record.internal ? 1 : 0,
-      ASKIRIS_TRACE_SCHEMA_VERSION,
     )
     .run();
 }

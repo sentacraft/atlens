@@ -117,7 +117,6 @@ describe("writeAskIrisTrace", () => {
       1,
       250,
       0,
-      1,
     );
     expect(run).toHaveBeenCalledOnce();
   });
@@ -157,7 +156,6 @@ describe("writeAskIrisTrace", () => {
       expect.anything(),
       expect.anything(),
       "message_conversion_failed",
-      expect.anything(),
       expect.anything(),
       expect.anything(),
       expect.anything(),
