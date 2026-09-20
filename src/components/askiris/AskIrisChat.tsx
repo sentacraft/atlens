@@ -62,7 +62,7 @@ export default function AskIrisChat({
       return;
     }
     sendMessage({ text: trimmed }, { body: turnBody });
-    track("askiris_message", { query: trimmed, method: "typed" });
+    track("askiris_message", { method: "typed" });
     setInput("");
   }
 
@@ -72,7 +72,7 @@ export default function AskIrisChat({
   // and returning with a new query should send again.
   const submitInitialQuery = useEffectEvent((query: string) => {
     sendMessage({ text: query }, { body: turnBody });
-    track("askiris_message", { query, method: "handoff" });
+    track("askiris_message", { method: "handoff" });
   });
   const initialQuerySent = useRef(false);
   useEffect(() => {

@@ -10,6 +10,7 @@ import { getLensesByMount } from "@/lib/lens/data";
 import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/about/AckCard";
 import { isPurchaseLocale } from "@/lib/purchase/links";
+import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 
 type CoverageState = boolean | "planned" | "partial" | "n/a";
 type CoverageMeta = {
@@ -198,6 +199,7 @@ export default async function AboutContent() {
           { id: "background", label: t("backgroundTitle") },
           { id: "coverage", label: t("coverageTitle") },
           { id: "data-accuracy", label: t("dataAccuracyTitle") },
+          { id: "ask-iris", label: t("askIrisTitle") },
           { id: "disclaimer", label: t("disclaimerTitle") },
           { id: "privacy", label: t("privacyTitle") },
           { id: "support", label: t("supportTitle") },
@@ -383,6 +385,19 @@ export default async function AboutContent() {
             </span>
           </div>
         </a>
+      </Section>
+
+      {/* Ask Iris */}
+      <Section id="ask-iris" title={t("askIrisTitle")}>
+        <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+          {t.rich("askIrisBody", {
+            askIris: (chunks) => (
+              <Link href="/askiris" className={TEXT_LINK_CLS}>
+                {chunks}
+              </Link>
+            ),
+          })}
+        </p>
       </Section>
 
       {/* Disclaimer */}
