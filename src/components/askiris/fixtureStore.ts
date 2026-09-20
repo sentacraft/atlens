@@ -1,8 +1,8 @@
 "use client";
 
-import type { UIMessage } from "ai";
 import { useEffect, useSyncExternalStore } from "react";
 import { TESTHOOK_ALLOWED } from "@/lib/testhook";
+import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 
 // Dev-only fixture store shared between AskIrisChat (publishes its live messages,
 // reads the selected fixture) and the test-hook panel (selects, saves, renames,
@@ -12,11 +12,11 @@ import { TESTHOOK_ALLOWED } from "@/lib/testhook";
 
 const API = "/api/askiris-fixtures";
 
-let live: UIMessage[] = [];
+let live: AskIrisUIMessage[] = [];
 let selected = "off";
 // In-memory mirror of the on-disk fixtures, so resolveFixture() stays sync for
 // render. Seeded by refresh() on load and kept in step on every mutation.
-let saved: Record<string, UIMessage[]> = {};
+let saved: Record<string, AskIrisUIMessage[]> = {};
 const listeners = new Set<() => void>();
 
 export interface FixtureSnapshot {
@@ -90,7 +90,7 @@ export function getServerSnapshot(): FixtureSnapshot {
 
 // Not reactive (no emit) so streaming doesn't churn the panel — it reads `live`
 // only when Save is pressed.
-function publishLive(messages: UIMessage[]) {
+function publishLive(messages: AskIrisUIMessage[]) {
   live = messages;
 }
 
@@ -99,7 +99,7 @@ export function setSelected(name: string) {
   emit();
 }
 
-function resolveFixture(name: string): UIMessage[] | undefined {
+function resolveFixture(name: string): AskIrisUIMessage[] | undefined {
   if (name === "off") {
     return undefined;
   }
@@ -142,7 +142,7 @@ export function renameFixture(from: string, to: string) {
 // The chat's whole contact with this module: hand it the live thread, render what
 // comes back. In dev that is a selected fixture replayed through the real page shell
 // — deterministic UI work (decks, tables) with no LLM call.
-export function useFixtureMessages(messages: UIMessage[]): UIMessage[] {
+export function useFixtureMessages(messages: AskIrisUIMessage[]): AskIrisUIMessage[] {
   const { selected } = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   useEffect(() => {
     publishLive(messages);

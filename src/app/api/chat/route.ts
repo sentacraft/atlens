@@ -1,12 +1,10 @@
 import {
   convertToModelMessages,
   createUIMessageStreamResponse,
-  generateId,
   stepCountIs,
   streamText,
   toUIMessageStream,
   type ModelMessage,
-  type UIMessage,
 } from "ai";
 import { z } from "zod";
 import { getTranslations } from "next-intl/server";
@@ -30,6 +28,7 @@ import {
   type AskIrisTraceCompletion,
 } from "@/lib/askiris/trace-capture";
 import { workerReleaseId, writeAskIrisTrace } from "@/lib/askiris/trace-repository";
+import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
 
@@ -43,7 +42,7 @@ import { routing } from "@/i18n/routing";
 // a mount or locale can't drift this route out of sync. messages is the SDK's own
 // shape — validated as an array, its elements trusted to the transport.
 const chatRequestSchema = z.object({
-  messages: z.array(z.custom<UIMessage>()),
+  messages: z.array(z.custom<AskIrisUIMessage>()),
   mount: z.enum(MOUNTS),
   locale: z.enum(routing.locales),
   // Client-minted conversation-segment id (a fresh one per mount switch / "new
@@ -243,7 +242,16 @@ export async function POST(req: Request) {
     stream: toUIMessageStream({
       stream: result.stream,
       originalMessages: messages,
-      generateMessageId: generateId,
+      generateMessageId: () => crypto.randomUUID(),
+      messageMetadata: ({ part }) => {
+        if (part.type !== "start" || !messageContext) {
+          return undefined;
+        }
+        return {
+          turnId: messageContext.turnId,
+          traceId,
+        };
+      },
       onEnd: (result) => persistTrace(traceCollector.finalizeStream(result)),
       // Log the real provider error server-side (Workers Logs); this is a public
       // endpoint, so the raw error (provider internals, quota/config hints) must not

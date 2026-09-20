@@ -17,6 +17,10 @@ import AskIrisDivider from "@/components/askiris/AskIrisDivider";
 import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
 import { useFixtureMessages } from "@/components/askiris/fixtureStore";
 import { useConversationSegments } from "@/components/askiris/useConversationSegments";
+import {
+  askIrisMessageMetadataSchema,
+  type AskIrisUIMessage,
+} from "@/lib/askiris/message-metadata";
 
 const SHELL_CLS =
   "mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4";
@@ -38,7 +42,9 @@ export default function AskIrisChat({
   const [input, setInput] = useState("");
   // Unthrottled, a long stream re-renders on every chunk and the message-derived
   // effects below can trip React's update-depth limit.
-  const { messages, sendMessage, status, setMessages, stop, regenerate, error } = useChat({
+  const { messages, sendMessage, status, setMessages, stop, regenerate, error } = useChat<AskIrisUIMessage>({
+    generateId: () => crypto.randomUUID(),
+    messageMetadataSchema: askIrisMessageMetadataSchema,
     experimental_throttle: 50,
   });
   const { archived, segmentId, startNewSegment } = useConversationSegments({
