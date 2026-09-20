@@ -4,8 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Iris from "@/components/iris/Iris";
-import type { IrisConfig } from "@/config/iris-config";
+import FeedbackSuccessState from "@/components/feedback/FeedbackSuccessState";
 import { ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
 import {
   Dialog,
@@ -60,20 +59,6 @@ interface FeedbackDialogProps {
 }
 
 type Status = "idle" | "submitting" | "success";
-
-const IRIS_FEEDBACK: IrisConfig = {
-  N: 7,
-  pinDistance: 85,
-  slotOffset: 0.804533,
-  bladeLength: 120,
-  bladeWidth: 40,
-  openFStop: 1.4,
-  defaultFStop: 4,
-  size: 48,
-  strokeWidth: 1,
-  onMount: { type: "sweep", sweepMs: 600, totalMs: 1200 },
-  chaseTauMs: 60,
-};
 
 export default function FeedbackDialog({
   open,
@@ -222,17 +207,7 @@ export default function FeedbackDialog({
 
 
         {status === "success" ? (
-          <div className="flex flex-col items-center gap-3 px-5 py-6">
-            <Iris config={IRIS_FEEDBACK} uid="feedback-iris" />
-            <div className="flex flex-col items-center gap-1">
-              <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
-                {t("success")}
-              </p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center leading-relaxed">
-                {t("successBody")}
-              </p>
-            </div>
-          </div>
+          <FeedbackSuccessState onClose={() => onOpenChange(false)} />
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-3 px-5 pb-4">
             {lensHeader && (
@@ -381,16 +356,8 @@ export default function FeedbackDialog({
           </form>
         )}
 
-        <DialogFooter>
-          {status === "success" ? (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              {t("close")}
-            </Button>
-          ) : (
+        {status !== "success" ? (
+          <DialogFooter>
             <>
               <Button
                 type="button"
@@ -407,8 +374,8 @@ export default function FeedbackDialog({
                 {status === "submitting" ? t("submitting") : t("submit")}
               </Button>
             </>
-          )}
-        </DialogFooter>
+          </DialogFooter>
+        ) : null}
         {/* Portal anchor for the nested field-picker Select: rendering its popup
             inside the dialog (not document.body) keeps clicks within the dialog's
             dismiss scope, so picking a field doesn't close the dialog. */}

@@ -14,6 +14,8 @@ import { IRIS_NAV } from "@/config/iris-config";
 import Markdown from "@/components/askiris/Markdown";
 import RecommendationDeck from "@/components/askiris/RecommendationDeck";
 import LensTable from "@/components/askiris/LensTable";
+import ResponseFeedback from "@/components/askiris/ResponseFeedback";
+import { findTurnIdForResponse } from "@/components/askiris/response-feedback";
 import type { LensTableColumn, Recommendation, ResolvedLens } from "@/lib/ai/recall";
 
 // Presentational render of a message thread — no data fetching. AskIrisChat feeds
@@ -156,8 +158,11 @@ export default function AskIrisThread({
 
   return (
     <>
-      {messages.map((message) => {
+      {messages.map((message, messageIndex) => {
         const isUser = message.role === "user";
+        const turnId = isUser ? null : findTurnIdForResponse(messages, messageIndex);
+        const isStreamingResponse =
+          busy && message.id === messages[messages.length - 1]?.id;
         return (
           <div
             key={message.id}
@@ -200,6 +205,9 @@ export default function AskIrisThread({
               }
               return null;
             })}
+            {!isUser && turnId && !isStreamingResponse ? (
+              <ResponseFeedback turnId={turnId} responseMessageId={message.id} />
+            ) : null}
           </div>
         );
       })}

@@ -55,7 +55,26 @@
     "newTopic": "新话题",
     "rateLimited": "Iris 现在有点忙，稍后再试。",
     "errorRetry": "Iris 这边出了点问题，请<retry>重试</retry>。",
-    "errorUnavailable": "Iris 暂时无法使用，请稍后再来。"
+    "errorUnavailable": "Iris 暂时无法使用，请稍后再来。",
+    "responseFeedback": {
+      "title": "哪里没有做好？",
+      "description": "可多选，也可以补充具体问题。",
+      "helpful": "有帮助",
+      "unhelpful": "没有帮助",
+      "skip": "跳过",
+      "submit": "提交",
+      "submitting": "提交中…",
+      "commentLabel": "补充说明",
+      "commentPlaceholder": "还可以告诉我们更多细节",
+      "reasons": {
+        "incorrect_information": "信息有误",
+        "did_not_answer": "没有理解我的需求",
+        "irrelevant_recommendation": "镜头推荐不合适",
+        "missing_information": "缺少重要信息",
+        "unclear_answer": "解释不清楚",
+        "other": "其他"
+      }
+    }
   },
   "Search": {
     "open": "打开镜头搜索",
