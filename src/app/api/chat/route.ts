@@ -190,6 +190,10 @@ export async function POST(req: Request) {
     onEnd: (result) => {
       traceCollector.recordGenerationEnd(result);
       const { usage, stepNumber } = result;
+      const maxContextTokens = result.steps.reduce(
+        (maximum, step) => Math.max(maximum, step.usage.inputTokens ?? 0),
+        0,
+      );
       // Record the finished turn as one AE row (server-only — the client can't see
       // token usage). The last allowed step is forced to a text answer, so a turn that
       // spent its whole budget ends on that wrap-up step; the final step index reaching
@@ -209,6 +213,7 @@ export async function POST(req: Request) {
               cacheReadTokens: usage.inputTokenDetails?.cacheReadTokens ?? 0,
               stepCount: stepNumber + 1,
               budgetHit: stepNumber >= STEP_BUDGET - 1,
+              maxContextTokens,
             }),
           );
         } catch (error) {

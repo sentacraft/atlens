@@ -132,7 +132,7 @@ export function toDataPoint(
 // can be missing from a provider, recorded as 0.
 //   indexes: [askiris_turn]
 //   blobs:   [mount, locale, sid, segment_id, internal]
-//   doubles: [total, input, output, cacheRead tokens, step_count, budget_hit]
+//   doubles: [total, input, output, cacheRead tokens, step_count, budget_hit, max_context]
 export const ASKIRIS_TURN_EVENT = "askiris_turn";
 
 export interface AskIrisTurnMetrics {
@@ -154,12 +154,14 @@ export interface AskIrisTurnMetrics {
   cacheReadTokens: number;
   stepCount: number;
   budgetHit: boolean;
+  // Maximum input token count reported by any model step in this turn.
+  maxContextTokens: number;
 }
 
 export function askirisTurnDataPoint(m: AskIrisTurnMetrics): {
   indexes: [string];
   blobs: [string, string, string, string, string];
-  doubles: [number, number, number, number, number, number];
+  doubles: [number, number, number, number, number, number, number];
 } {
   return {
     indexes: [ASKIRIS_TURN_EVENT],
@@ -171,6 +173,7 @@ export function askirisTurnDataPoint(m: AskIrisTurnMetrics): {
       m.cacheReadTokens,
       m.stepCount,
       m.budgetHit ? 1 : 0,
+      m.maxContextTokens,
     ],
   };
 }
