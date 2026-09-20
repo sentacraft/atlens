@@ -12,6 +12,7 @@ import AskIrisThread from "@/components/askiris/AskIrisThread";
 import { LensLinkProvider } from "@/components/askiris/LensLinkContext";
 import type { LensLinkIndex } from "@/lib/ai/lens-ref";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
+import AskIrisPrivacyNotice from "@/components/askiris/AskIrisPrivacyNotice";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisDivider from "@/components/askiris/AskIrisDivider";
 import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
@@ -198,6 +199,9 @@ export default function AskIrisChat({
             newTopicLabel={t("newChat")}
             newTopicDisabled={messages.length === 0}
           />
+          <div className="mt-2 text-center">
+            <AskIrisPrivacyNotice />
+          </div>
         </div>
       </div>
     </LensLinkProvider>

@@ -196,6 +196,7 @@ export default async function AboutContent() {
       <nav className="flex flex-col gap-1">
         {[
           { id: "background", label: t("backgroundTitle") },
+          { id: "ask-iris", label: t("askIrisTitle") },
           { id: "coverage", label: t("coverageTitle") },
           { id: "data-accuracy", label: t("dataAccuracyTitle") },
           { id: "disclaimer", label: t("disclaimerTitle") },
@@ -226,6 +227,13 @@ export default async function AboutContent() {
         </p>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("backgroundBody3")}
+        </p>
+      </Section>
+
+      {/* Ask Iris */}
+      <Section id="ask-iris" title={t("askIrisTitle")}>
+        <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+          {t("askIrisBody")}
         </p>
       </Section>
 
@@ -407,9 +415,6 @@ export default async function AboutContent() {
       <Section id="privacy" title={t("privacyTitle")}>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("privacyBody")}
-        </p>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-          {t("privacyAnalytics")}
         </p>
       </Section>
 
