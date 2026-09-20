@@ -2,9 +2,11 @@ import { z } from "zod";
 
 const MAX_REASON_COUNT = 10;
 
+export const askIrisResponseMessageIdSchema = z.string().trim().min(1).max(128);
+
 export const askIrisResponseFeedbackInputSchema = z.object({
   turnId: z.string().trim().min(1).max(128),
-  responseMessageId: z.string().trim().min(1).max(128),
+  responseMessageId: askIrisResponseMessageIdSchema,
   rating: z.enum(["helpful", "unhelpful"]),
   reasonCodes: z
     .array(z.string().trim().min(1).max(64))
