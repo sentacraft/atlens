@@ -24,13 +24,13 @@ dataset = "xglass_events"
 binding = "ASKIRIS_DB"
 database_name = "atlens-askiris-traces"
 database_id = "6e45555d-ee19-4a77-af3c-b7fdebd11a61"
-migrations_dir = "migrations"
+migrations_dir = "migrations/askiris-internal"
 
 [[d1_databases]]
 binding = "APP_DB"
 database_name = "atlens-app"
 database_id = "6a75a5c7-643e-414b-9cd2-51cf3826a2f2"
-migrations_dir = "migrations-app"
+migrations_dir = "migrations/app"
 
 [[send_email]]
 name = "EMAIL"
