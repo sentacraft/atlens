@@ -81,9 +81,9 @@ if (uiFiles.length === 0) {
 
 const fileList = uiFiles.map((file) => `- ${file}`).join("\n");
 const additionalContext = [
-  "本次修改涉及 UI 文件：",
+  "The latest edit touched UI files:",
   fileList,
-  "请检查 src/config/ui-tokens.ts：判断是否应复用已有 UI Token，或把新的可复用交互样式固化为 Token。一次性布局样式可以保留在组件中。",
+  "Review src/config/ui-tokens.ts and decide whether to reuse an existing UI token or extract a reusable interaction style into a token. One-off layout styles may remain local to the component.",
 ].join("\n");
 
 process.stdout.write(
