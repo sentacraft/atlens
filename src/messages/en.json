@@ -53,9 +53,6 @@
     "switchedMount": "Switched to {mount}",
     "newChat": "New chat",
     "newTopic": "New topic",
-    "privacyNoticeTrigger": "Privacy notice",
-    "privacyNoticeBody": "Your messages and the AI's replies may be retained for a short period as service records. These records are used to provide the service, troubleshoot issues, evaluate response quality, and improve the feature. Your messages are sent to an AI provider to generate a reply. Please do not enter passwords, government ID numbers, payment information, health information, or other sensitive personal data.",
-    "privacyNoticeLink": "Read the full privacy notice",
     "rateLimited": "Iris is taking a lot of questions right now — please try again in a little while.",
     "errorRetry": "Something went wrong on Iris's side — please <retry>try again</retry>.",
     "errorUnavailable": "Iris is unavailable right now — please try again later."

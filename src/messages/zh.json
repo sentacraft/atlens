@@ -53,9 +53,6 @@
     "switchedMount": "已切换到 {mount}",
     "newChat": "新对话",
     "newTopic": "新话题",
-    "privacyNoticeTrigger": "隐私说明",
-    "privacyNoticeBody": "你发送的消息和 AI 的回复可能会短期保存为服务运行记录，用于提供服务、排查问题、评估回答质量以及改进功能。你的消息会发送给 AI 服务商以生成回答。请不要输入密码、身份证号、支付信息、健康信息或其他敏感个人信息。",
-    "privacyNoticeLink": "查看完整隐私说明",
     "rateLimited": "Iris 现在有点忙，稍后再试。",
     "errorRetry": "Iris 这边出了点问题，请<retry>重试</retry>。",
     "errorUnavailable": "Iris 暂时无法使用，请稍后再来。"

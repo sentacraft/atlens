@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import Iris from "@/components/iris/Iris";
 import { IRIS_ASSISTANT } from "@/config/iris-config";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
-import AskIrisPrivacyNotice from "@/components/askiris/AskIrisPrivacyNotice";
 
 // The empty-state landing: the animated Iris mark introducing itself, CTA copy,
 // the (large) composer, and a row of cold-start chips. Shown before the first
@@ -71,9 +70,6 @@ export default function AskIrisEmptyState({
           sendLabel={t("send")}
           autoFocus
         />
-        <div className="mt-2 text-center">
-          <AskIrisPrivacyNotice />
-        </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-2.5">

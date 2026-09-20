@@ -1,20 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Ask Iris privacy notice", () => {
-  test("opens the privacy popover below the composer", async ({ page }) => {
-    await page.goto("/en/askiris");
-
-    await page.getByTestId("askiris-privacy-trigger").click();
-
-    const popup = page.getByRole("dialog");
-    await expect(popup).toBeVisible();
-    await expect(popup).toContainText("Your messages and the AI's replies may be retained");
-    await expect(popup.getByRole("link", { name: "Read the full privacy notice" })).toHaveAttribute(
-      "href",
-      "/en/about#privacy",
-    );
-  });
-
+test.describe("About content", () => {
   test("About includes the Ask Iris feature and privacy sections", async ({ page }) => {
     await page.goto("/en/about");
 
@@ -31,5 +17,13 @@ test.describe("Ask Iris privacy notice", () => {
       sections.map((section) => section.id),
     );
     expect(sectionIds.indexOf("ask-iris")).toBe(sectionIds.indexOf("data-accuracy") + 1);
+  });
+});
+
+test.describe("Ask Iris page", () => {
+  test("does not render a privacy notice entry below the composer", async ({ page }) => {
+    await page.goto("/en/askiris");
+
+    await expect(page.getByTestId("askiris-privacy-trigger")).toHaveCount(0);
   });
 });
