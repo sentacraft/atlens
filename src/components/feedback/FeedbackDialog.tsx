@@ -4,8 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Iris from "@/components/iris/Iris";
-import type { IrisConfig } from "@/config/iris-config";
+import FeedbackSuccessState from "@/components/feedback/FeedbackSuccessState";
 import { ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
 import {
   Dialog,
@@ -17,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -60,20 +60,6 @@ interface FeedbackDialogProps {
 }
 
 type Status = "idle" | "submitting" | "success";
-
-const IRIS_FEEDBACK: IrisConfig = {
-  N: 7,
-  pinDistance: 85,
-  slotOffset: 0.804533,
-  bladeLength: 120,
-  bladeWidth: 40,
-  openFStop: 1.4,
-  defaultFStop: 4,
-  size: 48,
-  strokeWidth: 1,
-  onMount: { type: "sweep", sweepMs: 600, totalMs: 1200 },
-  chaseTauMs: 60,
-};
 
 export default function FeedbackDialog({
   open,
@@ -198,7 +184,9 @@ export default function FeedbackDialog({
       <DialogPopup className="max-w-md max-h-none">
         <DialogHeader className="flex-row items-start justify-between gap-3 pr-5">
           <div className="flex min-w-0 flex-col gap-1.5">
-            <DialogTitle>{t(titleKey)}</DialogTitle>
+            <DialogTitle className={status === "success" ? "sr-only" : undefined}>
+              {t(titleKey)}
+            </DialogTitle>
             {status !== "success" && (
               <p className="text-xs text-zinc-400 dark:text-zinc-500">
                 {t("emailLabel")}{" "}
@@ -222,17 +210,7 @@ export default function FeedbackDialog({
 
 
         {status === "success" ? (
-          <div className="flex flex-col items-center gap-3 px-5 py-6">
-            <Iris config={IRIS_FEEDBACK} uid="feedback-iris" />
-            <div className="flex flex-col items-center gap-1">
-              <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
-                {t("success")}
-              </p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center leading-relaxed">
-                {t("successBody")}
-              </p>
-            </div>
-          </div>
+          <FeedbackSuccessState onClose={() => onOpenChange(false)} />
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-3 px-5 pb-4">
             {lensHeader && (
@@ -333,14 +311,13 @@ export default function FeedbackDialog({
                 </span>
               </label>
             )}
-            <textarea
+            <Textarea
               id={textareaId}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder={t(showFieldPicker ? "descriptionPlaceholder" : "descriptionPlaceholderMain")}
               rows={4}
               maxLength={2000}
-              className="w-full resize-none rounded-lg border border-zinc-200 bg-white px-3 py-2 text-base sm:text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600"
             />
             <div className="flex flex-col gap-2">
               <label
@@ -381,16 +358,8 @@ export default function FeedbackDialog({
           </form>
         )}
 
-        <DialogFooter>
-          {status === "success" ? (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              {t("close")}
-            </Button>
-          ) : (
+        {status !== "success" ? (
+          <DialogFooter>
             <>
               <Button
                 type="button"
@@ -407,8 +376,8 @@ export default function FeedbackDialog({
                 {status === "submitting" ? t("submitting") : t("submit")}
               </Button>
             </>
-          )}
-        </DialogFooter>
+          </DialogFooter>
+        ) : null}
         {/* Portal anchor for the nested field-picker Select: rendering its popup
             inside the dialog (not document.body) keeps clicks within the dialog's
             dismiss scope, so picking a field doesn't close the dialog. */}

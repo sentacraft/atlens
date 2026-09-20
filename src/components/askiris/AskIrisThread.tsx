@@ -5,7 +5,6 @@ import {
   isToolUIPart,
   type DynamicToolUIPart,
   type ToolUIPart,
-  type UIMessage,
 } from "ai";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -14,7 +13,9 @@ import { IRIS_NAV } from "@/config/iris-config";
 import Markdown from "@/components/askiris/Markdown";
 import RecommendationDeck from "@/components/askiris/RecommendationDeck";
 import LensTable from "@/components/askiris/LensTable";
+import ResponseFeedback from "@/components/askiris/ResponseFeedback";
 import type { LensTableColumn, Recommendation, ResolvedLens } from "@/lib/ai/recall";
+import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 
 // Presentational render of a message thread — no data fetching. AskIrisChat feeds
 // it live useChat messages; the dev preview route feeds it fixtures, so the exact
@@ -126,7 +127,7 @@ function toolLabelKey(name: string): ActivityKey {
 // A single signal at the growing edge, so parallel tool calls don't stack up and the
 // gaps the per-part states miss (before the first token, between steps) don't read as
 // frozen. Hidden while text visibly streams, since that's its own progress.
-function activityKey(messages: UIMessage[], busy: boolean, debug: boolean): ActivityKey | null {
+function activityKey(messages: AskIrisUIMessage[], busy: boolean, debug: boolean): ActivityKey | null {
   if (debug || !busy || messages.length === 0) {
     return null;
   }
@@ -146,7 +147,7 @@ export default function AskIrisThread({
   debug = false,
   busy = false,
 }: {
-  messages: UIMessage[];
+  messages: AskIrisUIMessage[];
   debug?: boolean;
   busy?: boolean;
 }) {
@@ -158,6 +159,9 @@ export default function AskIrisThread({
     <>
       {messages.map((message) => {
         const isUser = message.role === "user";
+        const turnId = isUser ? null : (message.metadata?.turnId ?? null);
+        const isStreamingResponse =
+          busy && message.id === messages[messages.length - 1]?.id;
         return (
           <div
             key={message.id}
@@ -200,6 +204,9 @@ export default function AskIrisThread({
               }
               return null;
             })}
+            {!isUser && turnId && !isStreamingResponse ? (
+              <ResponseFeedback turnId={turnId} responseMessageId={message.id} />
+            ) : null}
           </div>
         );
       })}
