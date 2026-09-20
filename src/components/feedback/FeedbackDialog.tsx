@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import FeedbackSuccessState from "@/components/feedback/FeedbackSuccessState";
@@ -59,7 +59,30 @@ interface FeedbackDialogProps {
   fields?: FeedbackField[];
 }
 
-type Status = "idle" | "submitting" | "success";
+interface FeedbackSubmission {
+  type: FeedbackType;
+  description: string;
+  replyContact?: string;
+  context: FeedbackContext & {
+    currentValue?: string;
+    suggestedCorrection?: string;
+  };
+}
+
+async function submitFeedback(payload: FeedbackSubmission): Promise<void> {
+  const res = await fetch("/api/feedback", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const data = (await res.json().catch(() => null)) as
+      | { error?: string }
+      | null;
+    throw new Error(data?.error ?? "request_failed");
+  }
+}
 
 export default function FeedbackDialog({
   open,
@@ -75,12 +98,28 @@ export default function FeedbackDialog({
   const [replyContact, setReplyContact] = useState("");
   const [wantsReply, setWantsReply] = useState(false);
   const wantsReplyCheckboxId = useId();
-  const [status, setStatus] = useState<Status>("idle");
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const dialogLayerRef = useRef<HTMLDivElement | null>(null);
   const textareaId = useId();
   const correctionId = useId();
   const contactId = useId();
+
+  const {
+    isPending,
+    isSuccess,
+    mutate,
+    reset: resetMutation,
+  } = useMutation({
+    mutationFn: submitFeedback,
+    onSuccess: (_, payload) => {
+      track("feedback_submit", { feedback_type: payload.type });
+    },
+    onError: (error) => {
+      console.error("[feedback] submission failed", {
+        errorType: error instanceof Error ? error.name : "unknown",
+      });
+    },
+  });
 
   const showFieldPicker = type === "data_issue" && fields && fields.length > 0;
 
@@ -114,10 +153,10 @@ export default function FeedbackDialog({
       setSuggestedCorrection("");
       setReplyContact("");
       setWantsReply(false);
-      setStatus("idle");
+      resetMutation();
       setSubmitAttempted(false);
     }
-  }, [open]);
+  }, [open, resetMutation]);
 
   const titleKey = type === "data_issue" ? "titleDataIssue" : "titleGeneral";
 
@@ -126,9 +165,9 @@ export default function FeedbackDialog({
       ? { brand: context.lensBrand ?? "", model: context.lensModel }
       : null;
 
-  async function handleSubmit(event: React.FormEvent) {
+  function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (status === "submitting") {
+    if (isPending) {
       return;
     }
     if (!hasContent) {
@@ -136,44 +175,22 @@ export default function FeedbackDialog({
       return;
     }
 
-    setStatus("submitting");
-
-    try {
-      const res = await fetch("/api/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type,
-          description: description.trim(),
-          ...(wantsReply && replyContact.trim() ? { replyContact: replyContact.trim() } : {}),
-          context: {
-            ...(context ?? {}),
-            ...(selectedFieldLabel ? { field: selectedFieldLabel } : {}),
-            ...(selectedField?.currentValue ? { currentValue: selectedField.currentValue } : {}),
-            ...(suggestedCorrection.trim() ? { suggestedCorrection: suggestedCorrection.trim() } : {}),
-          },
-        }),
-      });
-
-      if (!res.ok) {
-        const data = (await res.json().catch(() => null)) as
-          | { error?: string }
-          | null;
-        throw new Error(data?.error ?? "request_failed");
-      }
-
-      setStatus("success");
-      track("feedback_submit", { feedback_type: type });
-    } catch (err) {
-      setStatus("idle");
-      const detail = err instanceof Error ? err.message : "unknown";
-      toast.error(`${t("error")} (${detail})`);
-    }
+    mutate({
+      type,
+      description: description.trim(),
+      ...(wantsReply && replyContact.trim() ? { replyContact: replyContact.trim() } : {}),
+      context: {
+        ...(context ?? {}),
+        ...(selectedFieldLabel ? { field: selectedFieldLabel } : {}),
+        ...(selectedField?.currentValue ? { currentValue: selectedField.currentValue } : {}),
+        ...(suggestedCorrection.trim() ? { suggestedCorrection: suggestedCorrection.trim() } : {}),
+      },
+    });
   }
 
   const hasContent =
     description.trim().length > 0 || suggestedCorrection.trim().length > 0;
-  const canSubmit = status !== "submitting";
+  const canSubmit = !isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -184,10 +201,10 @@ export default function FeedbackDialog({
       <DialogPopup className="max-w-md max-h-none">
         <DialogHeader className="flex-row items-start justify-between gap-3 pr-5">
           <div className="flex min-w-0 flex-col gap-1.5">
-            <DialogTitle className={status === "success" ? "sr-only" : undefined}>
+            <DialogTitle className={isSuccess ? "sr-only" : undefined}>
               {t(titleKey)}
             </DialogTitle>
-            {status !== "success" && (
+            {!isSuccess && (
               <p className="text-xs text-zinc-400 dark:text-zinc-500">
                 {t("emailLabel")}{" "}
                 <a
@@ -209,7 +226,7 @@ export default function FeedbackDialog({
         </DialogHeader>
 
 
-        {status === "success" ? (
+        {isSuccess ? (
           <FeedbackSuccessState onClose={() => onOpenChange(false)} />
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-3 px-5 pb-4">
@@ -354,11 +371,11 @@ export default function FeedbackDialog({
                 {t("contentRequired")}
               </p>
             )}
-            {/* Submission errors are shown via toast, not inline */}
+            {/* Submission errors are recorded in the client log, not shown inline. */}
           </form>
         )}
 
-        {status !== "success" ? (
+        {!isSuccess ? (
           <DialogFooter>
             <>
               <Button
@@ -373,7 +390,7 @@ export default function FeedbackDialog({
                 onClick={handleSubmit}
                 disabled={!canSubmit}
               >
-                {status === "submitting" ? t("submitting") : t("submit")}
+                {isPending ? t("submitting") : t("submit")}
               </Button>
             </>
           </DialogFooter>
