@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Loader2, ThumbsDown, ThumbsUp, X } from "lucide-react";
 import FeedbackSuccessState from "@/components/feedback/FeedbackSuccessState";
@@ -50,7 +51,6 @@ interface ResponseFeedbackDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   responseMessageId: string;
-  savedDetails: ResponseFeedbackDetails;
   onSubmit: (details: ResponseFeedbackDetails) => Promise<void>;
 }
 
@@ -61,17 +61,42 @@ async function postResponseFeedback({
   reasonCodes,
   comment,
 }: ResponseFeedbackWrite): Promise<void> {
+  const body: {
+    turnId: string;
+    responseMessageId: string;
+    rating: Rating;
+    reasonCodes?: ReasonCode[];
+    comment?: string;
+  } = {
+    turnId,
+    responseMessageId,
+    rating,
+  };
+
+  if (reasonCodes?.length) {
+    body.reasonCodes = reasonCodes;
+  }
+  const trimmedComment = comment?.trim();
+  if (trimmedComment) {
+    body.comment = trimmedComment;
+  }
+
   const res = await fetch("/api/askiris/feedback", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      turnId,
-      responseMessageId,
-      rating,
-      ...(reasonCodes?.length ? { reasonCodes } : {}),
-      ...(comment?.trim() ? { comment: comment.trim() } : {}),
-    }),
+    body: JSON.stringify(body),
   });
+
+  if (!res.ok) {
+    throw new Error(`feedback_${res.status}`);
+  }
+}
+
+async function deleteResponseFeedback(responseMessageId: string): Promise<void> {
+  const res = await fetch(
+    `/api/askiris/feedback/${encodeURIComponent(responseMessageId)}`,
+    { method: "DELETE" },
+  );
 
   if (!res.ok) {
     throw new Error(`feedback_${res.status}`);
@@ -89,18 +114,12 @@ function ResponseFeedbackDialog({
   open,
   onOpenChange,
   responseMessageId,
-  savedDetails,
   onSubmit,
 }: ResponseFeedbackDialogProps) {
   const t = useTranslations("AskIris.responseFeedback");
   const [status, setStatus] = useState<FeedbackStatus>("idle");
   const [selectedReasons, setSelectedReasons] = useState<ReasonCode[]>([]);
   const [comment, setComment] = useState("");
-  const savedDetailsRef = useRef(savedDetails);
-
-  useEffect(() => {
-    savedDetailsRef.current = savedDetails;
-  }, [savedDetails]);
 
   useEffect(() => {
     if (!open) {
@@ -109,8 +128,8 @@ function ResponseFeedbackDialog({
     }
 
     setStatus("idle");
-    setSelectedReasons(savedDetailsRef.current.reasonCodes);
-    setComment(savedDetailsRef.current.comment);
+    setSelectedReasons([]);
+    setComment("");
   }, [open]);
 
   function toggleReason(reason: ReasonCode, checked: boolean) {
@@ -250,55 +269,51 @@ export default function ResponseFeedback({
   const t = useTranslations("AskIris.responseFeedback");
   const [rating, setRating] = useState<Rating | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const writeQueueRef = useRef<Promise<void>>(Promise.resolve());
-  const [savedDetails, setSavedDetails] = useState<ResponseFeedbackDetails>({
-    reasonCodes: [],
-    comment: "",
+  const mutationScope = {
+    id: `askiris-response-feedback:${responseMessageId}`,
+  };
+  const writeMutation = useMutation({
+    mutationFn: postResponseFeedback,
+    scope: mutationScope,
+    retry: false,
+    onError: (error) => logFeedbackFailure(responseMessageId, error),
   });
-
-  function enqueueFeedbackWrite(payload: ResponseFeedbackWrite): Promise<void> {
-    const request = writeQueueRef.current
-      .catch(() => undefined)
-      .then(() => postResponseFeedback(payload));
-    writeQueueRef.current = request.catch(() => undefined);
-    return request;
-  }
+  const deleteMutation = useMutation({
+    mutationFn: deleteResponseFeedback,
+    scope: mutationScope,
+    retry: false,
+    onError: (error) => logFeedbackFailure(responseMessageId, error),
+  });
 
   function submitRating(nextRating: Rating): void {
     if (rating === nextRating) {
-      if (nextRating === "unhelpful") {
-        setDialogOpen(true);
-      }
+      setRating(null);
+      setDialogOpen(false);
+      deleteMutation.mutate(responseMessageId);
       return;
     }
 
     setRating(nextRating);
-    if (nextRating === "helpful") {
-      setSavedDetails({ reasonCodes: [], comment: "" });
-    } else {
-      setSavedDetails({ reasonCodes: [], comment: "" });
-      setDialogOpen(true);
-    }
+    setDialogOpen(nextRating === "unhelpful");
 
-    void enqueueFeedbackWrite({
+    writeMutation.mutate({
       turnId,
       responseMessageId,
       rating: nextRating,
-    }).catch((error) => logFeedbackFailure(responseMessageId, error));
+    });
   }
 
   async function submitDetails(details: ResponseFeedbackDetails): Promise<void> {
-    setSavedDetails(details);
     try {
-      await enqueueFeedbackWrite({
+      await writeMutation.mutateAsync({
         turnId,
         responseMessageId,
         rating: "unhelpful",
         reasonCodes: details.reasonCodes,
         comment: details.comment,
       });
-    } catch (error) {
-      logFeedbackFailure(responseMessageId, error);
+    } catch {
+      // The rating remains optimistic; the mutation handler already logs the failure.
     }
   }
 
@@ -338,7 +353,6 @@ export default function ResponseFeedback({
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         responseMessageId={responseMessageId}
-        savedDetails={savedDetails}
         onSubmit={submitDetails}
       />
     </>

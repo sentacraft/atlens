@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  deleteAskIrisResponseFeedback,
   saveAskIrisResponseFeedback,
   type AskIrisResponseFeedbackRecord,
 } from "../response-feedback-repository";
@@ -64,5 +65,22 @@ describe("saveAskIrisResponseFeedback", () => {
       expect.anything(),
       expect.anything(),
     );
+  });
+});
+
+describe("deleteAskIrisResponseFeedback", () => {
+  it("deletes the active feedback for an assistant response", async () => {
+    const run = vi.fn().mockResolvedValue({ success: true });
+    const bind = vi.fn().mockReturnValue({ run });
+    const prepare = vi.fn().mockReturnValue({ bind });
+    const db = { prepare } as unknown as D1Database;
+
+    await deleteAskIrisResponseFeedback(db, "assistant-message-1");
+
+    expect(prepare).toHaveBeenCalledWith(
+      expect.stringContaining("DELETE FROM askiris_response_feedback"),
+    );
+    expect(bind).toHaveBeenCalledWith("assistant-message-1");
+    expect(run).toHaveBeenCalledOnce();
   });
 });

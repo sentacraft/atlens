@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import ResponseFeedback from "../ResponseFeedback";
 
@@ -17,11 +18,23 @@ afterEach(() => {
 });
 
 describe("ResponseFeedback", () => {
+  function renderResponseFeedback() {
+    const queryClient = new QueryClient({
+      defaultOptions: { mutations: { retry: false } },
+    });
+
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <ResponseFeedback turnId="user-1" responseMessageId="assistant-1" />
+      </QueryClientProvider>,
+    );
+  }
+
   it("submits a helpful rating immediately and highlights the button", async () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
 
-    render(<ResponseFeedback turnId="user-1" responseMessageId="assistant-1" />);
+    renderResponseFeedback();
     const helpful = screen.getByRole("button", { name: "helpful" });
 
     fireEvent.click(helpful);
@@ -39,7 +52,7 @@ describe("ResponseFeedback", () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
 
-    render(<ResponseFeedback turnId="user-1" responseMessageId="assistant-1" />);
+    renderResponseFeedback();
     const unhelpful = screen.getByRole("button", { name: "unhelpful" });
     fireEvent.click(unhelpful);
 
@@ -62,7 +75,7 @@ describe("ResponseFeedback", () => {
     vi.stubGlobal("fetch", fetchMock);
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    render(<ResponseFeedback turnId="user-1" responseMessageId="assistant-1" />);
+    renderResponseFeedback();
     const unhelpful = screen.getByRole("button", { name: "unhelpful" });
     fireEvent.click(unhelpful);
     fireEvent.click(await screen.findByRole("checkbox", { name: "reasons.incorrect_information" }));
@@ -85,7 +98,7 @@ describe("ResponseFeedback", () => {
       .mockResolvedValueOnce(new Response(null, { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
 
-    render(<ResponseFeedback turnId="user-1" responseMessageId="assistant-1" />);
+    renderResponseFeedback();
     fireEvent.click(screen.getByRole("button", { name: "unhelpful" }));
     const dialog = await screen.findByRole("dialog");
     fireEvent.click(screen.getByRole("checkbox", { name: "reasons.incorrect_information" }));
@@ -101,5 +114,43 @@ describe("ResponseFeedback", () => {
       reasonCodes: ["incorrect_information"],
     });
     expect(dialog).toBeInTheDocument();
+  });
+
+  it("deletes a helpful rating when the selected button is clicked again", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    renderResponseFeedback();
+    const helpful = screen.getByRole("button", { name: "helpful" });
+
+    fireEvent.click(helpful);
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
+    fireEvent.click(helpful);
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    expect(helpful).toHaveAttribute("aria-pressed", "false");
+    expect(fetchMock.mock.calls[1][0]).toBe(
+      "/api/askiris/feedback/assistant-1",
+    );
+    expect(fetchMock.mock.calls[1][1]).toEqual({ method: "DELETE" });
+  });
+
+  it("deletes an unhelpful rating after the detail dialog is skipped", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    renderResponseFeedback();
+    const unhelpful = screen.getByRole("button", { name: "unhelpful" });
+    fireEvent.click(unhelpful);
+    await screen.findByRole("dialog");
+    fireEvent.click(screen.getByRole("button", { name: "skip" }));
+    fireEvent.click(unhelpful);
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    expect(unhelpful).toHaveAttribute("aria-pressed", "false");
+    expect(fetchMock.mock.calls[1][0]).toBe(
+      "/api/askiris/feedback/assistant-1",
+    );
+    expect(fetchMock.mock.calls[1][1]).toEqual({ method: "DELETE" });
   });
 });
