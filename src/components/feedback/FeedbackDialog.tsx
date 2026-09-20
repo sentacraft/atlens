@@ -183,7 +183,9 @@ export default function FeedbackDialog({
       <DialogPopup className="max-w-md max-h-none">
         <DialogHeader className="flex-row items-start justify-between gap-3 pr-5">
           <div className="flex min-w-0 flex-col gap-1.5">
-            <DialogTitle>{t(titleKey)}</DialogTitle>
+            <DialogTitle className={status === "success" ? "sr-only" : undefined}>
+              {t(titleKey)}
+            </DialogTitle>
             {status !== "success" && (
               <p className="text-xs text-zinc-400 dark:text-zinc-500">
                 {t("emailLabel")}{" "}

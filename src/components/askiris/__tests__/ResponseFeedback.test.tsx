@@ -45,6 +45,10 @@ describe("ResponseFeedback", () => {
 
     expect(unhelpful).toHaveAttribute("aria-pressed", "true");
     expect(await screen.findByRole("dialog")).toBeInTheDocument();
+    const submit = screen.getByRole("button", { name: "submit" });
+    expect(submit).toBeDisabled();
+    fireEvent.click(screen.getByRole("checkbox", { name: "reasons.incorrect_information" }));
+    expect(submit).toBeEnabled();
     await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
       turnId: "user-1",
@@ -61,9 +65,11 @@ describe("ResponseFeedback", () => {
     render(<ResponseFeedback turnId="user-1" responseMessageId="assistant-1" />);
     const unhelpful = screen.getByRole("button", { name: "unhelpful" });
     fireEvent.click(unhelpful);
+    fireEvent.click(await screen.findByRole("checkbox", { name: "reasons.incorrect_information" }));
     fireEvent.click(await screen.findByRole("button", { name: "submit" }));
 
     expect(await screen.findByText("success")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "title" })).toHaveClass("sr-only");
     expect(errorSpy).toHaveBeenCalled();
     errorSpy.mockRestore();
   });

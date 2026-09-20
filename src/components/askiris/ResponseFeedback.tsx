@@ -147,7 +147,9 @@ function ResponseFeedbackDialog({
       <DialogPopup className="max-w-md max-h-none">
         <DialogHeader className="flex-row items-start justify-between gap-3 pr-5">
           <div className="flex min-w-0 flex-col gap-1.5">
-            <DialogTitle>{t("title")}</DialogTitle>
+            <DialogTitle className={status === "success" ? "sr-only" : undefined}>
+              {t("title")}
+            </DialogTitle>
             {status !== "success" ? (
               <DialogDescription>{t("description")}</DialogDescription>
             ) : null}
@@ -209,7 +211,7 @@ function ResponseFeedbackDialog({
                 {comment.length} / 2000
               </span>
             </div>
-            <DialogFooter className="-mx-5 border-t-0 px-0 pb-0 pt-1">
+            <DialogFooter className="border-t-0 px-0 pb-0 pt-1">
               <Button
                 type="button"
                 variant="ghost"
@@ -217,7 +219,10 @@ function ResponseFeedbackDialog({
               >
                 {t("skip")}
               </Button>
-              <Button type="submit" disabled={status === "submitting"}>
+              <Button
+                type="submit"
+                disabled={status === "submitting" || selectedReasons.length === 0}
+              >
                 {status === "submitting" ? (
                   <>
                     <Loader2 className="size-4 animate-spin" aria-hidden />
