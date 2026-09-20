@@ -10,6 +10,7 @@ import { getLensesByMount } from "@/lib/lens/data";
 import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/about/AckCard";
 import { isPurchaseLocale } from "@/lib/purchase/links";
+import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 
 type CoverageState = boolean | "planned" | "partial" | "n/a";
 type CoverageMeta = {
@@ -196,9 +197,9 @@ export default async function AboutContent() {
       <nav className="flex flex-col gap-1">
         {[
           { id: "background", label: t("backgroundTitle") },
-          { id: "ask-iris", label: t("askIrisTitle") },
           { id: "coverage", label: t("coverageTitle") },
           { id: "data-accuracy", label: t("dataAccuracyTitle") },
+          { id: "ask-iris", label: t("askIrisTitle") },
           { id: "disclaimer", label: t("disclaimerTitle") },
           { id: "privacy", label: t("privacyTitle") },
           { id: "support", label: t("supportTitle") },
@@ -227,13 +228,6 @@ export default async function AboutContent() {
         </p>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("backgroundBody3")}
-        </p>
-      </Section>
-
-      {/* Ask Iris */}
-      <Section id="ask-iris" title={t("askIrisTitle")}>
-        <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-          {t("askIrisBody")}
         </p>
       </Section>
 
@@ -393,6 +387,19 @@ export default async function AboutContent() {
         </a>
       </Section>
 
+      {/* Ask Iris */}
+      <Section id="ask-iris" title={t("askIrisTitle")}>
+        <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+          {t.rich("askIrisBody", {
+            askIris: (chunks) => (
+              <Link href="/askiris" className={TEXT_LINK_CLS}>
+                {chunks}
+              </Link>
+            ),
+          })}
+        </p>
+      </Section>
+
       {/* Disclaimer */}
       <Section id="disclaimer" title={t("disclaimerTitle")}>
         <div className="rounded-lg bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/70 dark:border-amber-800/40 px-4 py-3 flex flex-col gap-2">
@@ -415,6 +422,9 @@ export default async function AboutContent() {
       <Section id="privacy" title={t("privacyTitle")}>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("privacyBody")}
+        </p>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+          {t("privacyAnalytics")}
         </p>
       </Section>
 

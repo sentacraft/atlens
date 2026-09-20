@@ -82,6 +82,11 @@ export const TEXT_LINK_CLS =
   "hover:text-zinc-900 hover:decoration-zinc-500 " +
   "dark:text-zinc-300 dark:decoration-zinc-600 dark:hover:text-zinc-100 dark:hover:decoration-zinc-400";
 
+/** Low-emphasis disclosure link used for contextual privacy and usage notices. */
+export const DISCLOSURE_LINK_CLS =
+  "rounded-sm text-xs text-muted-foreground underline decoration-dotted underline-offset-3 outline-none transition-colors " +
+  "hover:text-foreground focus-visible:ring-2 focus-visible:ring-zinc-400";
+
 /**
  * Circular dismiss / close icon button.
  * Normal state is transparent; hover/active shows a red fill + icon.
