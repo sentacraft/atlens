@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -310,14 +311,13 @@ export default function FeedbackDialog({
                 </span>
               </label>
             )}
-            <textarea
+            <Textarea
               id={textareaId}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder={t(showFieldPicker ? "descriptionPlaceholder" : "descriptionPlaceholderMain")}
               rows={4}
               maxLength={2000}
-              className="w-full resize-none rounded-lg border border-zinc-200 bg-white px-3 py-2 text-base sm:text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600"
             />
             <div className="flex flex-col gap-2">
               <label

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import { ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
 import type { AskIrisResponseFeedbackInput } from "@/lib/askiris/response-feedback-contract";
 import { cn } from "@/lib/utils";
@@ -198,14 +199,13 @@ function ResponseFeedbackDialog({
               >
                 {t("commentLabel")}
               </label>
-              <textarea
+              <Textarea
                 id={`askiris-feedback-comment-${responseMessageId}`}
                 value={comment}
                 onChange={(event) => setComment(event.target.value)}
                 placeholder={t("commentPlaceholder")}
                 rows={4}
                 maxLength={2000}
-                className="w-full resize-none rounded-lg border border-zinc-200 bg-white px-3 py-2 text-base text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600 sm:text-sm"
               />
               <span className="self-end text-xs text-zinc-400 dark:text-zinc-500">
                 {comment.length} / 2000
