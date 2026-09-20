@@ -316,6 +316,31 @@ const Q_ASKIRIS_SESSIONS = `
   WHERE ${ASKIRIS_FILTER} AND blob4 != ''
 `;
 
+// The current AE row stores cumulative model input tokens for one completed
+// turn. Reduce those rows to one maximum per anonymous visitor + segment, then
+// summarize the resulting segment-level distribution. Segments without a
+// recorded positive input count are excluded from the distribution.
+const Q_ASKIRIS_CONTEXT_BY_SEGMENT = `
+  SELECT
+    count() AS segments,
+    max(segment_context_tokens) AS max_context_tokens,
+    quantileExactWeighted(0.75)(segment_context_tokens, segment_weight) AS p75_context_tokens,
+    quantileExactWeighted(0.5)(segment_context_tokens, segment_weight) AS p50_context_tokens
+  FROM (
+    SELECT
+      blob3 AS sid,
+      blob4 AS segment_id,
+      max(double2) AS segment_context_tokens,
+      1 AS segment_weight
+    FROM xglass_events
+    WHERE ${ASKIRIS_FILTER}
+      AND blob3 != ''
+      AND blob4 != ''
+      AND double2 > 0
+    GROUP BY sid, segment_id
+  )
+`;
+
 function pct(num: number, denom: number): string {
   if (denom <= 0) {
     return "—";
@@ -456,6 +481,7 @@ export default async function AnalyticsDashboardPage() {
     askirisByMount,
     askirisViews,
     askirisSessions,
+    askirisContextBySegment,
   ] = await Promise.all([
     queryAE(Q_OVERVIEW_TOTALS),
     queryAE(Q_OVERVIEW_UNIQUES),
@@ -483,6 +509,7 @@ export default async function AnalyticsDashboardPage() {
     queryAE(Q_ASKIRIS_BY_MOUNT),
     queryAE(Q_ASKIRIS_VIEWS),
     queryAE(Q_ASKIRIS_SESSIONS),
+    queryAE(Q_ASKIRIS_CONTEXT_BY_SEGMENT),
   ]);
 
   if (overviewTotals.error === "missing_credentials") {
@@ -558,6 +585,7 @@ export default async function AnalyticsDashboardPage() {
       ["askirisByMount", askirisByMount],
       ["askirisViews", askirisViews],
       ["askirisSessions", askirisSessions],
+      ["askirisContextBySegment", askirisContextBySegment],
     ] as const
   ).flatMap(([name, r]) =>
     r.error && r.error !== "missing_credentials" ? [{ name, code: r.error }] : [],
@@ -631,6 +659,14 @@ export default async function AnalyticsDashboardPage() {
   const aiInteractedUv = num(aiSessionsRow?.interacted_uv);
   const aiSessions = num(aiSessionsRow?.sessions);
   const aiSessionTurns = num(aiSessionsRow?.turns);
+  const aiContextRow = askirisContextBySegment.data[0] as
+    | {
+        segments?: number;
+        max_context_tokens?: number;
+        p75_context_tokens?: number;
+        p50_context_tokens?: number;
+      }
+    | undefined;
   const askirisByMountRows = askirisByMount.data.map((r) => ({
     ...r,
     total_tokens: fmtNum(num(r.total_tokens)),
@@ -947,6 +983,25 @@ export default async function AnalyticsDashboardPage() {
               </dd>
               <dt className="text-zinc-500 dark:text-zinc-400">Cache-hit rate (input)</dt>
               <dd className="text-right tabular-nums">{pct(aiCacheReadTokens, aiInputTokens)}</dd>
+            </dl>
+          </Card>
+
+          <Card title="AskIris · context per segment">
+            <dl className="grid grid-cols-[1fr_auto] gap-y-2 text-sm">
+              <dt className="text-zinc-500 dark:text-zinc-400">Measured segments</dt>
+              <dd className="text-right tabular-nums">{fmtMaybe(aiContextRow?.segments)}</dd>
+              <dt className="text-zinc-500 dark:text-zinc-400">Max context (input tokens)</dt>
+              <dd className="text-right tabular-nums">
+                {fmtMaybe(aiContextRow?.max_context_tokens)}
+              </dd>
+              <dt className="text-zinc-500 dark:text-zinc-400">P75 context (input tokens)</dt>
+              <dd className="text-right tabular-nums">
+                {fmtMaybe(aiContextRow?.p75_context_tokens)}
+              </dd>
+              <dt className="text-zinc-500 dark:text-zinc-400">P50 context (input tokens)</dt>
+              <dd className="text-right tabular-nums">
+                {fmtMaybe(aiContextRow?.p50_context_tokens)}
+              </dd>
             </dl>
           </Card>
 
