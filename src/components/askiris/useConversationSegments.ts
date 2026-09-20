@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { UIMessage } from "ai";
+import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 
 export type ThreadItem =
-  | { kind: "seg"; messages: UIMessage[] }
+  | { kind: "seg"; messages: AskIrisUIMessage[] }
   | { kind: "divider"; label: string };
 
 /**
@@ -19,9 +19,9 @@ export function useConversationSegments({
   stop,
   setMessages,
 }: {
-  messages: UIMessage[];
+  messages: AskIrisUIMessage[];
   stop: () => void;
-  setMessages: (messages: UIMessage[]) => void;
+  setMessages: (messages: AskIrisUIMessage[]) => void;
 }) {
   const [archived, setArchived] = useState<ThreadItem[]>([]);
   const [segmentId, setSegmentId] = useState(() => crypto.randomUUID());
