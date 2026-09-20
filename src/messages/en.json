@@ -55,7 +55,26 @@
     "newTopic": "New topic",
     "rateLimited": "Iris is taking a lot of questions right now — please try again in a little while.",
     "errorRetry": "Something went wrong on Iris's side — please <retry>try again</retry>.",
-    "errorUnavailable": "Iris is unavailable right now — please try again later."
+    "errorUnavailable": "Iris is unavailable right now — please try again later.",
+    "responseFeedback": {
+      "title": "What could be improved?",
+      "description": "Select any that apply, and add more detail if you want.",
+      "helpful": "Helpful",
+      "unhelpful": "Not helpful",
+      "skip": "Skip",
+      "submit": "Submit",
+      "submitting": "Submitting…",
+      "commentLabel": "Additional details",
+      "commentPlaceholder": "Tell us anything else that would help",
+      "reasons": {
+        "incorrect_information": "The information was incorrect",
+        "did_not_answer": "It did not address my needs",
+        "irrelevant_recommendation": "The lens recommendation was not a good fit",
+        "missing_information": "Important information was missing",
+        "unclear_answer": "The explanation was unclear",
+        "other": "Other"
+      }
+    }
   },
   "Search": {
     "open": "Open lens search",
