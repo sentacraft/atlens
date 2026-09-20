@@ -59,14 +59,21 @@ interface FeedbackDialogProps {
   fields?: FeedbackField[];
 }
 
+interface FeedbackSubmissionContext extends FeedbackContext {
+  currentValue?: string;
+  suggestedCorrection?: string;
+}
+
 interface FeedbackSubmission {
   type: FeedbackType;
   description: string;
   replyContact?: string;
-  context: FeedbackContext & {
-    currentValue?: string;
-    suggestedCorrection?: string;
-  };
+  context?: FeedbackSubmissionContext;
+}
+
+function nonEmpty(value?: string): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed || undefined;
 }
 
 async function submitFeedback(payload: FeedbackSubmission): Promise<void> {
@@ -165,6 +172,32 @@ export default function FeedbackDialog({
       ? { brand: context.lensBrand ?? "", model: context.lensModel }
       : null;
 
+  function createSubmissionPayload(): FeedbackSubmission {
+    const contextPayload: FeedbackSubmissionContext = {
+      lensId: nonEmpty(context?.lensId),
+      lensModel: nonEmpty(context?.lensModel),
+      lensBrand: nonEmpty(context?.lensBrand),
+      searchQuery: nonEmpty(context?.searchQuery),
+      field: nonEmpty(selectedFieldLabel) ?? nonEmpty(context?.field),
+      currentValue: nonEmpty(selectedField?.currentValue),
+      suggestedCorrection: nonEmpty(suggestedCorrection),
+    };
+    const payload: FeedbackSubmission = {
+      type,
+      description: description.trim(),
+    };
+    const replyContactValue = nonEmpty(replyContact);
+
+    if (wantsReply && replyContactValue) {
+      payload.replyContact = replyContactValue;
+    }
+    if (Object.values(contextPayload).some((value) => value !== undefined)) {
+      payload.context = contextPayload;
+    }
+
+    return payload;
+  }
+
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (isPending) {
@@ -175,17 +208,7 @@ export default function FeedbackDialog({
       return;
     }
 
-    mutate({
-      type,
-      description: description.trim(),
-      ...(wantsReply && replyContact.trim() ? { replyContact: replyContact.trim() } : {}),
-      context: {
-        ...(context ?? {}),
-        ...(selectedFieldLabel ? { field: selectedFieldLabel } : {}),
-        ...(selectedField?.currentValue ? { currentValue: selectedField.currentValue } : {}),
-        ...(suggestedCorrection.trim() ? { suggestedCorrection: suggestedCorrection.trim() } : {}),
-      },
-    });
+    mutate(createSubmissionPayload());
   }
 
   const hasContent =

@@ -50,7 +50,6 @@ describe("FeedbackDialog", () => {
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
       type: "general",
       description: "The lens description needs clarification.",
-      context: {},
     });
   });
 
