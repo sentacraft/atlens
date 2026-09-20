@@ -51,3 +51,16 @@ export async function saveAskIrisResponseFeedback(
     )
     .run();
 }
+
+export async function deleteAskIrisResponseFeedback(
+  db: D1Database,
+  responseMessageId: string,
+): Promise<void> {
+  await db
+    .prepare(
+      `DELETE FROM askiris_response_feedback
+       WHERE response_message_id = ?`,
+    )
+    .bind(responseMessageId)
+    .run();
+}

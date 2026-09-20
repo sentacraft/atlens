@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   getCloudflareContext: vi.fn(),
+  deleteAskIrisResponseFeedback: vi.fn(),
   saveAskIrisResponseFeedback: vi.fn(),
 }));
 
@@ -9,10 +10,12 @@ vi.mock("@opennextjs/cloudflare", () => ({
   getCloudflareContext: mocks.getCloudflareContext,
 }));
 vi.mock("@/lib/askiris/response-feedback-repository", () => ({
+  deleteAskIrisResponseFeedback: mocks.deleteAskIrisResponseFeedback,
   saveAskIrisResponseFeedback: mocks.saveAskIrisResponseFeedback,
 }));
 
 const { GET, POST } = await import("../route");
+const { DELETE } = await import("../[responseMessageId]/route");
 
 let ipCounter = 0;
 function makeRequest(body: unknown): Request {
@@ -37,6 +40,7 @@ const validPayload = {
 
 beforeEach(() => {
   mocks.getCloudflareContext.mockReturnValue({ env: { ASKIRIS_DB: {} } });
+  mocks.deleteAskIrisResponseFeedback.mockResolvedValue(undefined);
   mocks.saveAskIrisResponseFeedback.mockResolvedValue(undefined);
 });
 
@@ -131,5 +135,51 @@ describe("GET /api/askiris/feedback", () => {
 
     expect(response.status).toBe(405);
     expect(response.headers.get("allow")).toBe("POST");
+  });
+});
+
+describe("DELETE /api/askiris/feedback/:responseMessageId", () => {
+  it("deletes the active response feedback", async () => {
+    const response = await DELETE(
+      new Request("http://localhost/api/askiris/feedback/assistant-message-1", {
+        method: "DELETE",
+        headers: { "x-forwarded-for": "10.3.0.1" },
+      }),
+      { params: Promise.resolve({ responseMessageId: "assistant-message-1" }) },
+    );
+
+    expect(response.status).toBe(204);
+    expect(mocks.deleteAskIrisResponseFeedback).toHaveBeenCalledWith(
+      {},
+      "assistant-message-1",
+    );
+  });
+
+  it("rejects an empty response message id", async () => {
+    const response = await DELETE(
+      new Request("http://localhost/api/askiris/feedback/", {
+        method: "DELETE",
+        headers: { "x-forwarded-for": "10.3.0.2" },
+      }),
+      { params: Promise.resolve({ responseMessageId: "" }) },
+    );
+
+    expect(response.status).toBe(400);
+    expect(mocks.deleteAskIrisResponseFeedback).not.toHaveBeenCalled();
+  });
+
+  it("returns a service error when deletion fails", async () => {
+    mocks.deleteAskIrisResponseFeedback.mockRejectedValueOnce(new Error("D1 unavailable"));
+
+    const response = await DELETE(
+      new Request("http://localhost/api/askiris/feedback/assistant-message-2", {
+        method: "DELETE",
+        headers: { "x-forwarded-for": "10.3.0.3" },
+      }),
+      { params: Promise.resolve({ responseMessageId: "assistant-message-2" }) },
+    );
+
+    expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toEqual({ error: "feedback_unavailable" });
   });
 });
