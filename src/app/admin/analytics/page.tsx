@@ -254,8 +254,8 @@ const Q_PWA_LAUNCH = `
 
 // AskIris — per-turn agent metrics written straight to AE from the chat route's
 // onEnd (not via /api/track), so these rows carry their own positional layout:
-// blob1=mount, blob2=locale, blob3=sid, blob4=segment_id, blob5=internal; double1..6 =
-// total/input/output/cacheRead tokens, step_count, budget_hit. Counts weight by
+// blob1=mount, blob2=locale, blob3=sid, blob4=segment_id, blob5=internal; double1..7 =
+// total/input/output/cacheRead tokens, step_count, budget_hit, max_context. Counts weight by
 // _sample_interval; summed metrics weight each row's value by it too, to stay correct
 // if AE ever samples this dataset. The funnel's page-view entry is a separate
 // Both drop internal rows (dogfooding / load tests). The turn layout carries the
@@ -316,10 +316,9 @@ const Q_ASKIRIS_SESSIONS = `
   WHERE ${ASKIRIS_FILTER} AND blob4 != ''
 `;
 
-// The current AE row stores cumulative model input tokens for one completed
-// turn. Reduce those rows to one maximum per anonymous visitor + segment, then
-// summarize the resulting segment-level distribution. Segments without a
-// recorded positive input count are excluded from the distribution.
+// Reduce each turn's maximum single-step prompt size to one maximum per
+// anonymous visitor + segment, then summarize the segment-level distribution.
+// Segments without a recorded positive context count are excluded.
 const Q_ASKIRIS_CONTEXT_BY_SEGMENT = `
   SELECT
     count() AS segments,
@@ -330,13 +329,13 @@ const Q_ASKIRIS_CONTEXT_BY_SEGMENT = `
     SELECT
       blob3 AS sid,
       blob4 AS segment_id,
-      max(double2) AS segment_context_tokens,
+      max(double7) AS segment_context_tokens,
       1 AS segment_weight
     FROM xglass_events
     WHERE ${ASKIRIS_FILTER}
       AND blob3 != ''
       AND blob4 != ''
-      AND double2 > 0
+      AND double7 > 0
     GROUP BY sid, segment_id
   )
 `;
