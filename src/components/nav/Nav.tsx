@@ -20,6 +20,7 @@ import { MENU_POPUP_CLS } from "@/config/ui-tokens";
 import MountSwitcher from "@/components/mount/MountSwitcher";
 import FeedbackDialog from "@/components/feedback/FeedbackDialog";
 import GitHubMark from "@/components/logos/GitHubMark";
+import AuthControl from "@/components/auth/AuthControl";
 
 export default function Nav() {
   const t = useTranslations("Nav");
@@ -192,6 +193,7 @@ export default function Nav() {
           >
             <GitHubMark />
           </a>
+          <AuthControl />
 
           {/* Mobile-only overflow menu */}
           <Menu.Root>
