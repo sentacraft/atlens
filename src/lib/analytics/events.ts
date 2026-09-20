@@ -28,8 +28,8 @@ export const EVENT_NAMES = [
   "mount_switch",
   "purchase_click",
   "pwa_launch",
-  // AskIris funnel: a page view (funnel entry / PV + UV), one per user turn (query
-  // text + how it originated), and a click from a recommendation card through to a lens.
+  // AskIris funnel: a page view (funnel entry / PV + UV), one per user turn (how it
+  // originated), and a click from a recommendation card through to a lens.
   "askiris_view",
   "askiris_message",
   "askiris_rec_click",
