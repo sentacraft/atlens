@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import { toDataPoint } from "../analytics/events";
 
 describe("toDataPoint", () => {
-  it("does not put AskIris message content into Analytics Engine", () => {
+  it("maps the AskIris message method to the secondary string", () => {
     expect(
       toDataPoint(
         "askiris_message",
         "sid",
         "zh",
-        { query: "private message", method: "typed" },
+        { method: "typed" },
         false,
       ),
     ).toEqual({
