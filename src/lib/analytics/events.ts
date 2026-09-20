@@ -28,8 +28,8 @@ export const EVENT_NAMES = [
   "mount_switch",
   "purchase_click",
   "pwa_launch",
-  // AskIris funnel: a page view (funnel entry / PV + UV), one per user turn (query
-  // text + how it originated), and a click from a recommendation card through to a lens.
+  // AskIris funnel: a page view (funnel entry / PV + UV), one per user turn (how it
+  // originated), and a click from a recommendation card through to a lens.
   "askiris_view",
   "askiris_message",
   "askiris_rec_click",
@@ -94,22 +94,27 @@ export function toDataPoint(
   props: EventProps,
   internal: boolean,
 ): AnalyticsEnginePoint {
-  const primaryString =
-    props.query ??
-    props.filters_json ??
-    props.lens_slug ??
-    props.href ??
-    props.to_mount ??
-    props.feedback_type ??
-    props.channel ??
-    "";
-  const secondaryString =
-    props.lens_slugs ??
-    props.method ??
-    props.from_mount ??
-    props.referrer ??
-    props.lens_id ??
-    "";
+  // AskIris message content is already retained in D1 traces. Keep it out of the
+  // analytics stream even if a caller accidentally includes a query prop.
+  const askIrisMessage = event === "askiris_message";
+  const primaryString = askIrisMessage
+    ? ""
+    : props.query ??
+      props.filters_json ??
+      props.lens_slug ??
+      props.href ??
+      props.to_mount ??
+      props.feedback_type ??
+      props.channel ??
+      "";
+  const secondaryString = askIrisMessage
+    ? props.method ?? ""
+    : props.lens_slugs ??
+      props.method ??
+      props.from_mount ??
+      props.referrer ??
+      props.lens_id ??
+      "";
   const tertiaryString =
     props.source ??
     "";
