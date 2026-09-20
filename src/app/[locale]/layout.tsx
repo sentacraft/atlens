@@ -25,6 +25,7 @@ import { SITE } from "@/config/site";
 import { SPLASH_DEVICES, splashUrl, splashMedia } from "@/config/splash";
 import AppToaster from "@/components/AppToaster";
 import RenameToast from "@/components/RenameToast";
+import QueryProvider from "@/components/providers/QueryProvider";
 import { fontClassName } from "../fonts";
 import "../globals.css";
 
@@ -157,6 +158,7 @@ export default async function LocaleLayout({
           <NavProgress />
         </Suspense>
         <SiteJsonLd locale={locale} />
+        <QueryProvider>
         <NextIntlClientProvider messages={messages}>
           <MountPreferenceProvider>
           <CompareProvider>
@@ -187,6 +189,7 @@ export default async function LocaleLayout({
           <AppToaster />
           <RenameToast />
         </NextIntlClientProvider>
+        </QueryProvider>
         <RegisterSW />
         <AssetTelemetry />
         <OutboundLinkTelemetry />
