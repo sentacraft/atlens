@@ -129,7 +129,16 @@ export function useUiHookAttr(): (value: string) => Record<string, string> {
 // (e.g. an inline agent trace) rather than tagging elements with data-ui-hook.
 export function useTestHookEnabled(): boolean {
   const context = useContext(TestHookContext);
-  return context?.state.testHook ?? false;
+  const [queryEnabled, setQueryEnabled] = useState(false);
+
+  useEffect(() => {
+    setQueryEnabled(
+      new URLSearchParams(window.location.search).get(TESTHOOK_QUERY_KEYS.testHook) ===
+        "1"
+    );
+  }, []);
+
+  return context?.state.testHook ?? queryEnabled;
 }
 
 // Current value of a test-hook option, or undefined when test hooks are off.

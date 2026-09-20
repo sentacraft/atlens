@@ -11,6 +11,7 @@ import {
   MENU_POPUP_CLS,
 } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
+import { useTestHookEnabled } from "@/context/TestHookProvider";
 import {
   Dialog,
   DialogClose,
@@ -33,6 +34,7 @@ function initials(name: string, email: string) {
 export default function AuthControl() {
   const t = useTranslations("Auth");
   const { data: session } = authClient.useSession();
+  const testHookEnabled = useTestHookEnabled();
   const [loginOpen, setLoginOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -58,6 +60,10 @@ export default function AuthControl() {
   }
 
   const user = session?.user;
+  if (!testHookEnabled) {
+    return null;
+  }
+
   if (!user) {
     return (
       <>

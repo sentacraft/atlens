@@ -5,6 +5,9 @@ test.describe("account access", () => {
     await page.goto("/en/about");
 
     const login = page.getByRole("button", { name: "Log in", exact: true });
+    await expect(login).toHaveCount(0);
+
+    await page.goto("/en/about?testhook=1");
     await expect(login).toBeVisible();
     await login.click();
 
