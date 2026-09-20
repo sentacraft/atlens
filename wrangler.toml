@@ -14,6 +14,7 @@ binding = "ASSETS"
 SITE_URL = "https://xglass.sentacraft.com"
 GITHUB_FEEDBACK_REPO = "sentacraft/x-glass-pipeline"
 GITHUB_FEEDBACK_ASSIGNEES = "sentacraft"
+AUTH_EMAIL_FROM = "login@atlens.app"
 
 [[analytics_engine_datasets]]
 binding = "ANALYTICS"
@@ -24,6 +25,16 @@ binding = "ASKIRIS_DB"
 database_name = "atlens-askiris-traces"
 database_id = "6e45555d-ee19-4a77-af3c-b7fdebd11a61"
 migrations_dir = "migrations"
+
+[[d1_databases]]
+binding = "APP_DB"
+database_name = "atlens-app"
+database_id = "6a75a5c7-643e-414b-9cd2-51cf3826a2f2"
+migrations_dir = "migrations-app"
+
+[[send_email]]
+name = "EMAIL"
+remote = true
 
 [version_metadata]
 binding = "CF_VERSION_METADATA"
