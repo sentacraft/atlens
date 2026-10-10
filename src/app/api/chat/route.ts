@@ -28,6 +28,8 @@ import {
   type AskIrisTraceCompletion,
 } from "@/lib/askiris/trace-capture";
 import { workerReleaseId, writeAskIrisTrace } from "@/lib/askiris/trace-repository";
+import { saveAskIrisConversationTurn } from "@/lib/askiris/conversation-repository";
+import { createAuth } from "@/lib/auth";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
@@ -45,9 +47,9 @@ const chatRequestSchema = z.object({
   messages: z.array(z.custom<AskIrisUIMessage>()),
   mount: z.enum(MOUNTS),
   locale: z.enum(routing.locales),
-  // Client-minted conversation-segment id (a fresh one per mount switch / "new
-  // chat"). Optional so a handoff or older client that omits it still succeeds.
-  segmentId: z.string().max(64).optional(),
+  // Client-minted conversation id. Optional so anonymous clients can continue to
+  // use the endpoint without persistence.
+  conversationId: z.string().max(64).optional(),
 });
 
 // Max agentic steps per turn (one step = one model generation, possibly with tool
@@ -74,7 +76,7 @@ export async function POST(req: Request) {
     console.warn("[askiris] invalid request", z.prettifyError(parsed.error));
     return chatErrorResponse("unavailable", 400);
   }
-  const { messages, mount, locale, segmentId } = parsed.data;
+  const { messages, mount, locale, conversationId } = parsed.data;
   const startedAt = Date.now();
   const traceId = crypto.randomUUID();
   const messageContext = traceMessageContext(messages);
@@ -97,13 +99,16 @@ export async function POST(req: Request) {
   let rateKv: KVNamespace | undefined;
   let ae: AnalyticsEngineDataset | undefined;
   let traceDb: D1Database | undefined;
+  let appDb: D1Database | undefined;
   let releaseId: string | undefined;
   let ctx: ExecutionContext | undefined;
+  let userId: string | undefined;
   try {
     const cf = getCloudflareContext();
     rateKv = cf.env.RATE_KV;
     ae = cf.env.ANALYTICS;
     traceDb = cf.env.ASKIRIS_DB;
+    appDb = cf.env.APP_DB;
     releaseId = workerReleaseId(cf.env.CF_VERSION_METADATA);
     ctx = cf.ctx;
     if (rateKv && ip && !bypassed) {
@@ -116,6 +121,15 @@ export async function POST(req: Request) {
     // Never let a missing binding or persistence error break chat.
   }
 
+  try {
+    const session = await createAuth().api.getSession({ headers: req.headers });
+    userId = session?.user.id;
+  } catch (error) {
+    console.error("[askiris] failed to resolve authenticated user", {
+      errorType: error instanceof Error ? error.name : "unknown",
+    });
+  }
+
   const persistTrace = (completion: AskIrisTraceCompletion | undefined) => {
     if (!completion || !traceDb || !messageContext) {
       return;
@@ -124,7 +138,7 @@ export async function POST(req: Request) {
     const write = writeAskIrisTrace(traceDb, {
       traceId,
       turnId: messageContext.turnId,
-      segmentId: segmentId ?? "",
+      conversationId: conversationId ?? "",
       mount,
       locale,
       userMessage: messageContext.userMessage,
@@ -201,7 +215,7 @@ export async function POST(req: Request) {
               mount,
               locale,
               sid,
-              segmentId: segmentId ?? "",
+              conversationId: conversationId ?? "",
               internal,
               totalTokens: usage.totalTokens ?? 0,
               inputTokens: usage.inputTokens ?? 0,
@@ -252,7 +266,44 @@ export async function POST(req: Request) {
           traceId,
         };
       },
-      onEnd: (result) => persistTrace(traceCollector.finalizeStream(result)),
+      onEnd: async (result) => {
+        persistTrace(traceCollector.finalizeStream(result));
+        if (!userId || !conversationId || result.isAborted || !messageContext) {
+          return;
+        }
+
+        const currentUserMessage = result.messages.findLast(
+          (message) => message.id === messageContext.turnId,
+        );
+        if (!currentUserMessage) {
+          return;
+        }
+
+        if (!appDb) {
+          return;
+        }
+
+        try {
+          await saveAskIrisConversationTurn(appDb, {
+            conversationId,
+            userId,
+            title: String(
+              currentUserMessage.parts.find((part) => part.type === "text")?.text ??
+                "New conversation",
+            ).slice(0, 120),
+            messages: result.messages,
+            currentTurnId: messageContext.turnId,
+            responseMessageId: result.responseMessage.id,
+            context: { mount, locale },
+            now: Date.now(),
+          });
+        } catch (error) {
+          console.error("[askiris] failed to persist conversation", {
+            errorType: error instanceof Error ? error.name : "unknown",
+            conversationId,
+          });
+        }
+      },
       // Log the real provider error server-side (Workers Logs); this is a public
       // endpoint, so the raw error (provider internals, quota/config hints) must not
       // reach the client. The returned string only masks it in the stream — the

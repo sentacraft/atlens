@@ -254,7 +254,7 @@ const Q_PWA_LAUNCH = `
 
 // AskIris — per-turn agent metrics written straight to AE from the chat route's
 // onEnd (not via /api/track), so these rows carry their own positional layout:
-// blob1=mount, blob2=locale, blob3=sid, blob4=segment_id, blob5=internal; double1..6 =
+// blob1=mount, blob2=locale, blob3=sid, blob4=conversation_id, blob5=internal; double1..6 =
 // total/input/output/cacheRead tokens, step_count, budget_hit. Counts weight by
 // _sample_interval; summed metrics weight each row's value by it too, to stay correct
 // if AE ever samples this dataset. The funnel's page-view entry is a separate
@@ -297,7 +297,7 @@ const Q_ASKIRIS_BY_MOUNT = `
 
 // Session funnel. Views (PV = loads, UV = distinct visitor sid) come from the
 // askiris_view event; the interacted side (visitors who sent a turn, and how those
-// turns group into sessions) comes from the turn rows keyed by sid + segment_id. A
+// turns group into sessions) comes from the turn rows keyed by sid + conversation_id. A
 // session = one conversation segment (a new one starts on a mount switch / new chat).
 const Q_ASKIRIS_VIEWS = `
   SELECT

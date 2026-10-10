@@ -4,17 +4,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 
 export type ThreadItem =
-  | { kind: "seg"; messages: AskIrisUIMessage[] }
+  | { kind: "conversation"; messages: AskIrisUIMessage[] }
   | { kind: "divider"; label: string };
 
 /**
- * A chat thread cut into segments. Only the live segment is ever sent to the
- * model; closed-off ones stay on screen above a labelled divider, read-only.
- *
- * `segmentId` rides on each turn's request body so the server can group turns
- * into sessions, and is re-minted at every boundary.
+ * Keeps the current conversation in the client while a future conversation list
+ * loads and switches persisted conversations. Archived items remain a temporary
+ * presentation detail until the persisted list UI replaces them.
  */
-export function useConversationSegments({
+export function useConversation({
   messages,
   stop,
   setMessages,
@@ -24,9 +22,9 @@ export function useConversationSegments({
   setMessages: (messages: AskIrisUIMessage[]) => void;
 }) {
   const [archived, setArchived] = useState<ThreadItem[]>([]);
-  const [segmentId, setSegmentId] = useState(() => crypto.randomUUID());
+  const [conversationId, setConversationId] = useState(() => crypto.randomUUID());
 
-  // Lets startNewSegment read the live thread without re-running on every streamed
+  // Lets startNewConversation read the live thread without re-running on every streamed
   // message. Not a useEffectEvent: that would forbid the call from the composer's
   // button, which is one of the two callers.
   const messagesRef = useRef(messages);
@@ -34,11 +32,11 @@ export function useConversationSegments({
     messagesRef.current = messages;
   }, [messages]);
 
-  const startNewSegment = useCallback(
+  const startNewConversation = useCallback(
     (label: string) => {
       // So the remaining deltas of an in-flight stream don't leak past the reset.
       stop();
-      // Snapshot (copy) the segment so it's detached from useChat's array.
+      // Snapshot (copy) the messages so they are detached from useChat's array.
       const live = [...messagesRef.current];
       setArchived((prev) => {
         if (live.length === 0 && prev.length === 0) {
@@ -51,16 +49,16 @@ export function useConversationSegments({
         }
         const next = [...prev];
         if (live.length > 0) {
-          next.push({ kind: "seg", messages: live });
+          next.push({ kind: "conversation", messages: live });
         }
         next.push({ kind: "divider", label });
         return next;
       });
       setMessages([]);
-      setSegmentId(crypto.randomUUID());
+      setConversationId(crypto.randomUUID());
     },
     [stop, setMessages],
   );
 
-  return { archived, segmentId, startNewSegment };
+  return { archived, conversationId, startNewConversation };
 }

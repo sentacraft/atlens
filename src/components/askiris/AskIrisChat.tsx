@@ -16,7 +16,7 @@ import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisDivider from "@/components/askiris/AskIrisDivider";
 import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
 import { useFixtureMessages } from "@/components/askiris/fixtureStore";
-import { useConversationSegments } from "@/components/askiris/useConversationSegments";
+import { useConversation } from "@/components/askiris/useConversation";
 import {
   askIrisMessageMetadataSchema,
   type AskIrisUIMessage,
@@ -35,7 +35,6 @@ export default function AskIrisChat({
   lensIndex: LensLinkIndex;
 }) {
   const t = useTranslations("AskIris");
-  const tMount = useTranslations("MountSwitcher");
   const locale = useLocale();
   const mount = useEffectiveMount();
   const debug = useTestHookOption("askIrisTrace") === "on";
@@ -47,7 +46,7 @@ export default function AskIrisChat({
     messageMetadataSchema: askIrisMessageMetadataSchema,
     experimental_throttle: 50,
   });
-  const { archived, segmentId, startNewSegment } = useConversationSegments({
+  const { archived, conversationId, startNewConversation } = useConversation({
     messages,
     stop,
     setMessages,
@@ -55,9 +54,9 @@ export default function AskIrisChat({
 
   const isBusy = status === "submitted" || status === "streaming";
   const errorKind = status === "error" ? classifyError(error) : null;
-  const turnBody = { mount, locale, segmentId };
+  const turnBody = { mount, locale, conversationId };
 
-  // One per load; a mount switch or new chat is in-page and doesn't re-fire it.
+  // One per load; switching the current lens context does not create a new chat.
   useEffect(() => {
     track("askiris_view");
   }, []);
@@ -91,17 +90,6 @@ export default function AskIrisChat({
     url.searchParams.delete("q");
     window.history.replaceState(null, "", url.toString());
   }, [initialQuery]);
-
-  // A mount switch swaps the agent's whole lens catalogue, so a thread can't continue
-  // across one.
-  const prevMountRef = useRef(mount);
-  useEffect(() => {
-    if (prevMountRef.current === mount) {
-      return;
-    }
-    prevMountRef.current = mount;
-    startNewSegment(t("switchedMount", { mount: mount === "G" ? tMount("gfx") : tMount("x") }));
-  }, [mount, startNewSegment, t, tMount]);
 
   const renderMessages = useFixtureMessages(messages);
 
@@ -200,7 +188,7 @@ export default function AskIrisChat({
             disabled={isBusy}
             placeholder={t("placeholder")}
             sendLabel={t("send")}
-            onNewTopic={() => startNewSegment(t("newTopic"))}
+            onNewTopic={() => startNewConversation(t("newTopic"))}
             newTopicLabel={t("newChat")}
             newTopicDisabled={messages.length === 0}
           />
