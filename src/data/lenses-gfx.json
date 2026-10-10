@@ -1,5 +1,91 @@
 [
   {
+    "id": "fujifilm-gf-19-35mmt35-pz-ois-wr-g",
+    "brand": "fujifilm",
+    "mount": "G",
+    "series": "GF",
+    "model": "GF 19-35mmT3.5 PZ OIS WR",
+    "focalLengthMin": 19,
+    "focalLengthMax": 35,
+    "maxTStop": 3.5,
+    "minTStop": 32,
+    "isCine": true,
+    "af": true,
+    "ois": true,
+    "wr": true,
+    "apertureRing": true,
+    "powerZoom": true,
+    "internalZoom": true,
+    "weightG": 2090,
+    "diameterMm": 123.5,
+    "length": {
+      "mm": 222.5
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 55,
+        "teleCm": 55
+      }
+    },
+    "maxMagnification": {
+      "value": 0.1
+    },
+    "angleOfView": [
+      110,
+      76
+    ],
+    "angleOfViewCalc": [
+      110.5,
+      76.1
+    ],
+    "apertureBladeCount": 13,
+    "releaseYear": 2026,
+    "searchAliases": {
+      "en": "Fujifilm GF 19-35mm T3.5 PZ OIS WR",
+      "zh": "富士 GF 19-35mm T3.5 PZ OIS WR"
+    },
+    "accessories": [
+      "Front lens cap",
+      "Rear lens cap",
+      "Support foot",
+      "Zoom lever",
+      "Lens case"
+    ],
+    "filterMm": 111,
+    "lensConfiguration": {
+      "groups": 15,
+      "elements": 23,
+      "aspherical": 3,
+      "ed": 4,
+      "sourceText": "23 elements in 15 groups (includes 3 aspherical and 4 ED elements)"
+    },
+    "fieldNotes": {
+      "diameterMm": "The source lists Φ123.5mm (Φ114mm) for the outer diameter.",
+      "internalZoom": "Review decision: the GF19-35mmT3.5 PZ OIS WR is treated as an internal-zoom lens."
+    },
+    "officialLinks": {
+      "cn": "https://www.fujifilm-x.com/zh-cn/products/lenses/gf19-35mmt35-pz-ois-wr/",
+      "global": "https://www.fujifilm-x.com/global/products/lenses/gf19-35mmt35-pz-ois-wr/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "diameterMm": "来源列出的外径为 Φ123.5mm（Φ114mm）。",
+          "internalZoom": "Review 决定将 GF19-35mmT3.5 PZ OIS WR 视为内变焦镜头。"
+        },
+        "accessories": [
+          "前镜头盖",
+          "后镜头盖",
+          "脚架底座",
+          "变焦拨杆",
+          "镜头包"
+        ]
+      }
+    },
+    "createdAt": "2026-10-10",
+    "updatedAt": "2026-10-10"
+  },
+  {
     "id": "fujifilm-gf-20-35mmf4-r-wr-g",
     "brand": "fujifilm",
     "mount": "G",
@@ -2223,6 +2309,73 @@
     },
     "createdAt": "2026-05-18",
     "updatedAt": "2026-06-11"
+  },
+  {
+    "id": "laowa-ff-ts-24mmf2-c-dreamer-g",
+    "brand": "laowa",
+    "mount": "G",
+    "series": "Dreamer",
+    "model": "FFⅡ TS 24mm F2 C-Dreamer",
+    "focalLengthMin": 24,
+    "focalLengthMax": 24,
+    "maxAperture": 2,
+    "minAperture": 22,
+    "af": false,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "N/A",
+    "weightG": 860,
+    "diameterMm": 93,
+    "length": {
+      "mm": 119
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 25
+      }
+    },
+    "maxMagnification": {
+      "value": 0.194
+    },
+    "angleOfView": 108.8,
+    "angleOfViewCalc": 97.5,
+    "releaseYear": 2026,
+    "searchAliases": {
+      "en": "Laowa FFⅡ TS 24mm f2 Fuji GFX",
+      "zh": "老蛙 FFⅡ TS 24mm f2 GFX"
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Nikon Z",
+      "Canon RF",
+      "Leica L",
+      "Fujifilm GFX",
+      "Hasselblad XCD"
+    ],
+    "filterMm": 77,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 13,
+      "sourceText": "10组13片"
+    },
+    "fieldNotes": {
+      "wr": "This lens is not weather-sealed."
+    },
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-101"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "该镜头不具备防滴防尘密封。"
+        }
+      }
+    },
+    "createdAt": "2026-10-10",
+    "updatedAt": "2026-10-10"
   },
   {
     "id": "laowa-ff-ts-35mmf28-c-dreamer-macro-05x-g",
