@@ -2991,77 +2991,6 @@
     "updatedAt": "2026-06-11"
   },
   {
-    "id": "brightinstar-mf-25mm-f18-x",
-    "brand": "brightinstar",
-    "mount": "X",
-    "model": "MF 25mm F1.8",
-    "focalLengthMin": 25,
-    "focalLengthMax": 25,
-    "maxAperture": 1.8,
-    "minAperture": 16,
-    "af": false,
-    "ois": false,
-    "wr": false,
-    "apertureRing": true,
-    "powerZoom": "N/A",
-    "internalZoom": "N/A",
-    "focusMotor": "N/A",
-    "weightG": 192,
-    "diameterMm": 57,
-    "length": {
-      "mm": 33
-    },
-    "minFocusDistance": {
-      "normal": {
-        "cm": 20
-      }
-    },
-    "angleOfView": 57.4,
-    "angleOfViewCalc": 59,
-    "apertureBladeCount": 10,
-    "searchAliases": {
-      "en": "Brightin Star 25mm f1.8 Fuji X",
-      "zh": "星曜 25mm f1.8 富士"
-    },
-    "pricing": {
-      "cn": {
-        "used": {
-          "price": 165,
-          "currency": "CNY",
-          "source": "闲鱼",
-          "sampledAt": "2026-05-10"
-        }
-      },
-      "global": {
-        "new": [
-          {
-            "source": "Amazon",
-            "url": "https://www.amazon.com/Brightin-Fujifilm-Aperture-Portrait-X-Pro1-3/dp/B07Z4B95KM",
-            "purchasableChannel": "amazon",
-            "sampledAt": "2026-05-10"
-          }
-        ]
-      }
-    },
-    "compatibleMounts": [
-      "Sony E",
-      "Canon EF-M",
-      "Fujifilm X",
-      "Micro Four Thirds"
-    ],
-    "filterMm": 43,
-    "lensConfiguration": {
-      "groups": 5,
-      "elements": 7
-    },
-    "fieldNotes": {},
-    "officialLinks": {
-      "cn": "https://brightinstar.com.cn/products/mf-25mm-f1-8-%E5%8D%8A%E7%94%BB%E5%B9%85"
-    },
-    "createdAt": "2026-04-19",
-    "updatedAt": "2026-06-11"
-  },
-  {
     "id": "brightinstar-mf-35mm-f12-x",
     "brand": "brightinstar",
     "mount": "X",
@@ -8749,6 +8678,84 @@
     "updatedAt": "2026-06-11"
   },
   {
+    "id": "laowa-af-ff-35mmf28-ca-dreamer-macro-1x-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "Dreamer",
+    "model": "AF FF 35mm F2.8 CA-Dreamer Macro 1X",
+    "focalLengthMin": 35,
+    "focalLengthMax": 35,
+    "maxAperture": 2.8,
+    "minAperture": 22,
+    "opticalTraits": [
+      "macro"
+    ],
+    "af": true,
+    "ois": false,
+    "wr": true,
+    "apertureRing": false,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "weightG": [
+      530,
+      570
+    ],
+    "diameterMm": 79,
+    "length": {
+      "mm": 87.4
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 18
+      }
+    },
+    "maxMagnification": {
+      "value": 1
+    },
+    "angleOfView": 63.4,
+    "angleOfViewCalc": 44,
+    "releaseYear": 2026,
+    "searchAliases": {
+      "en": "Laowa AF FF 35mm f2.8 Macro 1X Fuji X",
+      "zh": "老蛙 AF FF 35mm f2.8 Macro 1X 富士"
+    },
+    "compatibleMounts": [
+      "Canon EF",
+      "Sony E",
+      "Nikon Z",
+      "Fujifilm X",
+      "Canon RF",
+      "Leica L"
+    ],
+    "filterMm": 72,
+    "lensConfiguration": {
+      "groups": 10,
+      "elements": 13,
+      "sourceText": "10组13片"
+    },
+    "fieldNotes": {
+      "wr": "Official product page explicitly describes a dust- and splash-resistant structure.",
+      "weightG": "Weight varies by mount variant: EF 530g, E 560g, and Z 570g.",
+      "minFocusDistance": "Minimum focus distance varies by focus mode: AF 500mm and MF 180mm.",
+      "apertureRing": "User-confirmed: the AF 35mm F2.8 X version has no aperture ring."
+    },
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-100"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "官方产品页明确描述为防尘防溅结构。",
+          "weightG": "重量因卡口版本而异：EF 为 530g，E 为 560g，Z 为 570g。",
+          "minFocusDistance": "最近对焦距离因对焦模式而异：AF 为 500mm，MF 为 180mm。",
+          "apertureRing": "用户确认：AF 35mm F2.8 X 版本没有光圈环。"
+        }
+      }
+    },
+    "createdAt": "2026-10-10",
+    "updatedAt": "2026-10-10"
+  },
+  {
     "id": "laowa-cf-4mmf28-210-circular-fisheye-x",
     "brand": "laowa",
     "mount": "X",
@@ -9581,6 +9588,94 @@
     "updatedAt": "2026-06-11"
   },
   {
+    "id": "laowa-ff-180mmf45-ca-dreamer-macro-15x-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "Dreamer",
+    "model": "FF 180mm F4.5 CA-Dreamer Macro 1.5X",
+    "focalLengthMin": 180,
+    "focalLengthMax": 180,
+    "maxAperture": 4.5,
+    "minAperture": 22,
+    "opticalTraits": [
+      "macro"
+    ],
+    "af": false,
+    "ois": false,
+    "wr": true,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "N/A",
+    "weightG": 521.6,
+    "diameterMm": 67.6,
+    "length": {
+      "mm": 134.4
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 30
+      }
+    },
+    "maxMagnification": {
+      "value": 1.5
+    },
+    "angleOfView": 13.7,
+    "angleOfViewCalc": 9,
+    "apertureBladeCount": 9,
+    "releaseYear": 2025,
+    "searchAliases": {
+      "en": "Laowa 180mm f4.5 Macro 1.5X Fuji X",
+      "zh": "老蛙 180mm f4.5 Macro 1.5X 富士"
+    },
+    "pricing": {
+      "global": {
+        "new": [
+          {
+            "price": 499,
+            "currency": "USD",
+            "source": "venuslens.net",
+            "url": "https://www.venuslens.net/product/laowa-180mm-f-4-5-1-5x-ultra-macro-apo/ref/159/",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-10-03"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Canon EF",
+      "Sony E",
+      "Nikon Z",
+      "Fujifilm X",
+      "Canon RF",
+      "Leica L",
+      "Nikon F"
+    ],
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 12,
+      "ed": 2,
+      "highRefractive": 1,
+      "sourceText": "9组12片；2枚ED和1枚高折射镜片"
+    },
+    "fieldNotes": {
+      "wr": "The official specification says the AF version has a waterproof gasket; the X variant is AF."
+    },
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-90"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "官方规格说明 AF 版本配有防水密封圈；X 版本为 AF。"
+        }
+      }
+    },
+    "createdAt": "2026-10-10",
+    "updatedAt": "2026-10-10"
+  },
+  {
     "id": "meike-10mmt22-x",
     "brand": "meike",
     "mount": "X",
@@ -10171,6 +10266,71 @@
     },
     "createdAt": "2026-06-13",
     "updatedAt": "2026-06-13"
+  },
+  {
+    "id": "meike-55mmf18-pro-stm-x",
+    "brand": "meike",
+    "mount": "X",
+    "model": "55mmF1.8 PRO STM 全画幅定焦镜头",
+    "focalLengthMin": 55,
+    "focalLengthMax": 55,
+    "maxAperture": 1.8,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "STM",
+    "internalFocusing": true,
+    "weightG": 365,
+    "diameterMm": 74,
+    "length": {
+      "mm": 90
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 55
+      }
+    },
+    "maxMagnification": {
+      "value": 0.12
+    },
+    "angleOfView": 43.3,
+    "angleOfViewCalc": 28.9,
+    "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Meike 55mmf1.8 PRO STM 全画幅定焦镜头 Fuji X",
+      "zh": "美科 55mmf1.8 PRO STM 全画幅定焦镜头 富士"
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X"
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 11,
+      "sourceText": "8组11片"
+    },
+    "fieldNotes": {
+      "weightG": "Official HTML table states 365g; the specification image says approximately 364g.",
+      "apertureRing": "User-confirmed: the Meike 55mm F1.8 PRO STM X version has an aperture ring."
+    },
+    "officialLinks": {
+      "cn": "http://www.mkgrip.cn/goods/show-527.html"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "weightG": "官网 HTML 表格标注 365g；规格图标注约 364g。",
+          "apertureRing": "用户确认：美科 55mm F1.8 PRO STM X 版本带有光圈环。"
+        }
+      }
+    },
+    "createdAt": "2026-10-10",
+    "updatedAt": "2026-10-10"
   },
   {
     "id": "meike-56mmf17-stm-aps-c-x",
