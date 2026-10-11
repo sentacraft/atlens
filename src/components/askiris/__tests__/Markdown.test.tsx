@@ -3,7 +3,11 @@ import { describe, it, expect, vi } from "vitest";
 import { render } from "@testing-library/react";
 import Markdown from "../Markdown";
 import { LensLinkProvider } from "../LensLinkContext";
-import type { LensLinkIndex } from "@/lib/ai/lens-ref";
+import { lensRef, type LensLinkIndex } from "@/lib/ai/lens-ref";
+import { getAllLenses } from "@/lib/lens/data";
+import { lensDisplayName } from "@/lib/lens/format";
+import en from "@/messages/en.json";
+import zh from "@/messages/zh.json";
 
 vi.mock("@/i18n/navigation", () => ({
   // Mirror the locale-aware Link closely enough for href assertions.
@@ -75,5 +79,62 @@ describe("Markdown lens: links", () => {
     );
     const link = container.querySelector("a");
     expect(link!.getAttribute("href")).toBe("https://example.com");
+  });
+});
+
+describe("Markdown lens: links in tables", () => {
+  it("keeps a lens name containing a pipe in one table cell", () => {
+    const ref = "c01n5";
+    const index: LensLinkIndex = {
+      [ref]: { id: "sigma-contemporary-12mm-f14-dc-x", mount: "X" },
+    };
+    const table = [
+      "| Lens | Weight | Price |",
+      "|---|---|---|",
+      `| [Sigma 12mm F1.4 DC | Contemporary](lens:${ref}) | 235g | $579 |`,
+    ].join("\n");
+    const { container } = render(
+      <LensLinkProvider index={index}>
+        <Markdown>{table}</Markdown>
+      </LensLinkProvider>,
+    );
+    const cells = [...container.querySelectorAll("tbody td")].map((td) => td.textContent);
+    expect(cells).toEqual(["Sigma 12mm F1.4 DC | Contemporary", "235g", "$579"]);
+    expect(container.querySelector("tbody a")?.getAttribute("href")).toBe(
+      "/lenses/x/sigma-contemporary-12mm-f14-dc-x",
+    );
+  });
+});
+
+describe("Markdown lens: links across the catalogue", () => {
+  // Names are pipeline output, so the hazard set is whatever the data contains. Writing
+  // every real name into a table cell, as the model would, turns a new Markdown-active
+  // character in a future name into a CI failure instead of a broken answer.
+  it.each([
+    ["en", en.Brands],
+    ["zh", zh.Brands],
+  ] as const)("keeps every %s lens name intact in a table cell", (locale, brands) => {
+    const lenses = getAllLenses(locale);
+    const index: LensLinkIndex = Object.fromEntries(
+      lenses.map((lens) => [lensRef(lens.id), { id: lens.id, mount: lens.mount }]),
+    );
+    const names = lenses.map((lens) =>
+      lensDisplayName(brands[lens.brand as keyof typeof brands] ?? lens.brand, lens.series, lens.model),
+    );
+    const table = [
+      "| Lens | Note |",
+      "|---|---|",
+      ...lenses.map((lens, i) => `| [${names[i]}](lens:${lensRef(lens.id)}) | ok |`),
+    ].join("\n");
+    const { container } = render(
+      <LensLinkProvider index={index}>
+        <Markdown>{table}</Markdown>
+      </LensLinkProvider>,
+    );
+    const rows = [...container.querySelectorAll("tbody tr")].map((tr) =>
+      [...tr.querySelectorAll("td")].map((td) => td.textContent),
+    );
+    expect(rows).toEqual(names.map((name) => [name, "ok"]));
+    expect(container.querySelectorAll("tbody a")).toHaveLength(lenses.length);
   });
 });
