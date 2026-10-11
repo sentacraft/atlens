@@ -61,7 +61,9 @@ src/data/lens-images.generated.ts
 # every harness reads them from the worktree root, and worktrees get no ignored files.
 .agents/
 .claude/
+!.claude/
 !.claude/launch.json
+!.claude/settings.json
 .playwright-mcp/
 skills-lock.json
 
