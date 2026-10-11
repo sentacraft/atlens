@@ -26,7 +26,7 @@ describe("askirisTurnDataPoint", () => {
         mount: "X",
         locale: "zh",
         sid: "sid",
-        segmentId: "segment",
+        conversationId: "conversation",
         internal: false,
         totalTokens: 1200,
         inputTokens: 900,
@@ -38,7 +38,7 @@ describe("askirisTurnDataPoint", () => {
       }),
     ).toEqual({
       indexes: ["askiris_turn"],
-      blobs: ["X", "zh", "sid", "segment", ""],
+      blobs: ["X", "zh", "sid", "conversation", ""],
       doubles: [1200, 900, 300, 500, 3, 0, 400],
     });
   });

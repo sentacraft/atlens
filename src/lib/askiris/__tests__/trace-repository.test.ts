@@ -11,7 +11,7 @@ function traceRecord(overrides: Partial<AskIrisTraceRecord> = {}): AskIrisTraceR
   return {
     traceId: "trace-1",
     turnId: "user-message-2",
-    segmentId: "segment-1",
+    conversationId: "conversation-1",
     mount: "X",
     locale: "en",
     status: "completed",
@@ -93,7 +93,7 @@ describe("writeAskIrisTrace", () => {
     expect(bind).toHaveBeenCalledWith(
       "trace-1",
       "user-message-2",
-      "segment-1",
+      "conversation-1",
       "X",
       "en",
       "completed",
