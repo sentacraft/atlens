@@ -118,6 +118,66 @@ export async function saveAskIrisConversationTurn(
   await db.batch(statements);
 }
 
+export async function importAskIrisConversation(
+  db: D1Database,
+  input: {
+    conversationId: string;
+    userId: string;
+    title: string;
+    messages: UIMessage[];
+    context: AskIrisConversationContext;
+    now: number;
+  },
+): Promise<void> {
+  const conversation = await db
+    .prepare("SELECT user_id FROM askiris_conversations WHERE id = ?")
+    .bind(input.conversationId)
+    .first<{ user_id: string }>();
+
+  if (conversation && conversation.user_id !== input.userId) {
+    throw new ConversationOwnershipError();
+  }
+
+  const statements = [
+    db
+      .prepare(
+        `INSERT INTO askiris_conversations (id, user_id, title, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?)
+         ON CONFLICT(id) DO UPDATE SET updated_at = excluded.updated_at
+         WHERE askiris_conversations.user_id = excluded.user_id`,
+      )
+      .bind(input.conversationId, input.userId, input.title, input.now, input.now),
+  ];
+
+  for (const [sequence, message] of input.messages.entries()) {
+    statements.push(
+      db
+        .prepare(
+          `INSERT OR IGNORE INTO askiris_messages (
+            id,
+            conversation_id,
+            role,
+            sequence,
+            message_json,
+            context_json,
+            created_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        )
+        .bind(
+          message.id,
+          input.conversationId,
+          message.role,
+          sequence,
+          serializeMessage(message),
+          serializeContext(input.context),
+          input.now,
+        ),
+    );
+  }
+
+  await db.batch(statements);
+}
+
 export async function listAskIrisConversations(
   db: D1Database,
   userId: string,

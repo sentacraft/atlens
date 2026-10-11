@@ -3,62 +3,160 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 
-export type ThreadItem =
-  | { kind: "conversation"; messages: AskIrisUIMessage[] }
-  | { kind: "divider"; label: string };
+export type ConversationSummary = {
+  id: string;
+  title: string;
+  createdAt: number;
+  updatedAt: number;
+};
 
-/**
- * Keeps the current conversation in the client while a future conversation list
- * loads and switches persisted conversations. Archived items remain a temporary
- * presentation detail until the persisted list UI replaces them.
- */
+function updateConversationUrl(conversationId: string | null) {
+  const url = new URL(window.location.href);
+  if (conversationId) {
+    url.searchParams.set("conversation", conversationId);
+  } else {
+    url.searchParams.delete("conversation");
+  }
+  window.history.pushState(null, "", url.toString());
+}
+
 export function useConversation({
+  initialConversationId,
+  loadInitialConversation = true,
+  authenticated,
   messages,
   stop,
   setMessages,
 }: {
+  initialConversationId?: string;
+  loadInitialConversation?: boolean;
+  authenticated: boolean;
   messages: AskIrisUIMessage[];
   stop: () => void;
   setMessages: (messages: AskIrisUIMessage[]) => void;
 }) {
-  const [archived, setArchived] = useState<ThreadItem[]>([]);
-  const [conversationId, setConversationId] = useState(() => crypto.randomUUID());
-
-  // Lets startNewConversation read the live thread without re-running on every streamed
-  // message. Not a useEffectEvent: that would forbid the call from the composer's
-  // button, which is one of the two callers.
+  const [conversations, setConversations] = useState<ConversationSummary[]>([]);
+  const [conversationId, setConversationId] = useState(
+    () => initialConversationId || crypto.randomUUID(),
+  );
+  const [loadingList, setLoadingList] = useState(false);
+  const [loadingConversation, setLoadingConversation] = useState(false);
+  const [listError, setListError] = useState(false);
+  const loadedConversationRef = useRef<string | null>(null);
+  const selectionRequestRef = useRef(0);
   const messagesRef = useRef(messages);
+
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
 
-  const startNewConversation = useCallback(
-    (label: string) => {
-      // So the remaining deltas of an in-flight stream don't leak past the reset.
+  const refreshConversations = useCallback(async () => {
+    if (!authenticated) {
+      setConversations([]);
+      return;
+    }
+
+    setLoadingList(true);
+    setListError(false);
+    try {
+      const response = await fetch("/api/askiris/conversations", { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error("conversation_list_failed");
+      }
+      const data = (await response.json()) as { conversations: ConversationSummary[] };
+      setConversations(data.conversations);
+    } catch {
+      setListError(true);
+    } finally {
+      setLoadingList(false);
+    }
+  }, [authenticated]);
+
+  const selectConversation = useCallback(
+    async (nextConversationId: string) => {
+      if (nextConversationId === conversationId && messagesRef.current.length > 0) {
+        return;
+      }
       stop();
-      // Snapshot (copy) the messages so they are detached from useChat's array.
-      const live = [...messagesRef.current];
-      setArchived((prev) => {
-        if (live.length === 0 && prev.length === 0) {
-          return prev;
+      const requestId = selectionRequestRef.current + 1;
+      selectionRequestRef.current = requestId;
+      setLoadingConversation(true);
+      try {
+        const response = await fetch(
+          `/api/askiris/conversations/${encodeURIComponent(nextConversationId)}`,
+          { cache: "no-store" },
+        );
+        if (!response.ok) {
+          throw new Error("conversation_load_failed");
         }
-        // Asked again without chatting — retarget the trailing divider rather than
-        // stack an empty one.
-        if (live.length === 0 && prev[prev.length - 1]?.kind === "divider") {
-          return [...prev.slice(0, -1), { kind: "divider", label }];
+        const data = (await response.json()) as {
+          conversationId: string;
+          messages: Array<{ message: AskIrisUIMessage }>;
+        };
+        if (selectionRequestRef.current !== requestId) {
+          return;
         }
-        const next = [...prev];
-        if (live.length > 0) {
-          next.push({ kind: "conversation", messages: live });
+        setMessages(data.messages.map((item) => item.message));
+        setConversationId(data.conversationId);
+        updateConversationUrl(data.conversationId);
+        loadedConversationRef.current = data.conversationId;
+      } finally {
+        if (selectionRequestRef.current === requestId) {
+          setLoadingConversation(false);
         }
-        next.push({ kind: "divider", label });
-        return next;
-      });
-      setMessages([]);
-      setConversationId(crypto.randomUUID());
+      }
     },
-    [stop, setMessages],
+    [conversationId, setMessages, stop],
   );
 
-  return { archived, conversationId, startNewConversation };
+  useEffect(() => {
+    void refreshConversations();
+  }, [refreshConversations]);
+
+  useEffect(() => {
+    if (
+      !authenticated ||
+      !loadInitialConversation ||
+      !initialConversationId ||
+      loadedConversationRef.current
+    ) {
+      return;
+    }
+    loadedConversationRef.current = initialConversationId;
+    void selectConversation(initialConversationId).catch(() => {
+      loadedConversationRef.current = null;
+      setMessages([]);
+    });
+  }, [
+    authenticated,
+    initialConversationId,
+    loadInitialConversation,
+    selectConversation,
+    setMessages,
+  ]);
+
+  const startNewConversation = useCallback(() => {
+    stop();
+    setMessages([]);
+    const nextConversationId = crypto.randomUUID();
+    setConversationId(nextConversationId);
+    loadedConversationRef.current = null;
+    updateConversationUrl(null);
+  }, [setMessages, stop]);
+
+  const syncConversationUrl = useCallback(() => {
+    updateConversationUrl(conversationId);
+  }, [conversationId]);
+
+  return {
+    conversations,
+    conversationId,
+    loadingList,
+    loadingConversation,
+    listError,
+    refreshConversations,
+    selectConversation,
+    syncConversationUrl,
+    startNewConversation,
+  };
 }

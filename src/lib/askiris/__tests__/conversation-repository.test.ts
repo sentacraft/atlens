@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   ConversationOwnershipError,
   getAskIrisConversationMessages,
+  importAskIrisConversation,
   listAskIrisConversations,
   saveAskIrisConversationTurn,
 } from "../conversation-repository";
@@ -64,6 +65,28 @@ describe("saveAskIrisConversationTurn", () => {
       }),
     ).rejects.toBeInstanceOf(ConversationOwnershipError);
     expect(batch).not.toHaveBeenCalled();
+  });
+});
+
+describe("importAskIrisConversation", () => {
+  it("inserts an anonymous conversation without duplicating its messages", async () => {
+    const first = vi.fn().mockResolvedValue(undefined);
+    const prepare = vi.fn().mockReturnValue({ bind: vi.fn().mockReturnValue({ first }) });
+    const batch = vi.fn().mockResolvedValue([]);
+    const db = { prepare, batch } as unknown as D1Database;
+
+    await importAskIrisConversation(db, {
+      conversationId: "conversation-1",
+      userId: "user-1",
+      title: "Which lens is lighter?",
+      messages,
+      context: { mount: "X", locale: "en" },
+      now: 1_800_000_000_000,
+    });
+
+    expect(batch).toHaveBeenCalledOnce();
+    expect(batch.mock.calls[0][0]).toHaveLength(3);
+    expect(prepare.mock.calls[2][0]).toContain("INSERT OR IGNORE");
   });
 });
 

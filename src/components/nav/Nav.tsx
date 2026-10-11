@@ -99,7 +99,7 @@ export default function Nav() {
   const isCompareActive = pathname.includes("/compare");
   const isAskIrisActive = pathname.startsWith("/askiris");
   const showMountSwitcher =
-    pathname === "/" || pathname.startsWith("/lenses") || pathname.startsWith("/askiris");
+    pathname === "/" || pathname.startsWith("/lenses");
 
   // When the user is *already on* the compare page and clicks the nav's
   // "对比" link, the intuitive read is "reset this comparison and start
