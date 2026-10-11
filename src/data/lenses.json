@@ -9581,6 +9581,102 @@
     "updatedAt": "2026-06-11"
   },
   {
+    "id": "laowa-ff-180mmf45-ca-dreamer-macro-15x-x",
+    "brand": "laowa",
+    "mount": "X",
+    "series": "Dreamer",
+    "model": "FF 180mm F4.5 CA-Dreamer Macro 1.5X",
+    "focalLengthMin": 180,
+    "focalLengthMax": 180,
+    "maxAperture": 4.5,
+    "minAperture": 22,
+    "opticalTraits": [
+      "macro"
+    ],
+    "af": true,
+    "ois": false,
+    "wr": "partial",
+    "apertureRing": false,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "weightG": 521.6,
+    "diameterMm": 67.6,
+    "length": {
+      "mm": 134.4
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 30
+      }
+    },
+    "maxMagnification": {
+      "value": 1.5
+    },
+    "angleOfView": 13.7,
+    "angleOfViewCalc": 9,
+    "apertureBladeCount": 9,
+    "releaseYear": 2025,
+    "searchAliases": {
+      "en": "Laowa 180mm f4.5 Macro 1.5X Fuji X",
+      "zh": "老蛙 180mm f4.5 Macro 1.5X 富士"
+    },
+    "pricing": {
+      "global": {
+        "new": [
+          {
+            "price": 499,
+            "currency": "USD",
+            "source": "venuslens.net",
+            "url": "https://www.venuslens.net/product/laowa-180mm-f-4-5-1-5x-ultra-macro-apo/ref/159/",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-10-03"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Canon EF",
+      "Sony E",
+      "Nikon Z",
+      "Fujifilm X",
+      "Canon RF",
+      "Leica L",
+      "Nikon F"
+    ],
+    "lensMaterial": "Metal",
+    "filterMm": 62,
+    "lensConfiguration": {
+      "groups": 9,
+      "elements": 12,
+      "ed": 2,
+      "highRefractive": 1,
+      "sourceText": "9组12片；2枚ED和1枚高折射镜片"
+    },
+    "fieldNotes": {
+      "wr": "The AF version has a sealing gasket around the mount; this does not indicate full-lens weather sealing.",
+      "weightG": "Weight is for the Sony E-mount version, without front and rear caps.",
+      "lengthMm": "Dimensions are for the Sony E-mount version.",
+      "minFocusDistance": "Autofocus covers 1.5m to infinity; focusing closer, down to 0.3m, is manual."
+    },
+    "officialLinks": {
+      "cn": "https://www.laowalens.com/camera-lens-90",
+      "global": "https://www.venuslens.net/product/laowa-180mm-f-4-5-1-5x-ultra-macro-apo/"
+    },
+    "translations": {
+      "zh": {
+        "fieldNotes": {
+          "wr": "AF 版本的卡口周围带有密封圈，但这不代表整镜具备完整的防滴防尘密封。",
+          "weightG": "重量为索尼 E 卡口版本数据，不含前后镜头盖。",
+          "lengthMm": "尺寸为索尼 E 卡口版本数据。",
+          "minFocusDistance": "自动对焦范围为 1.5m 至无穷远；更近距离（最近 0.3m）需手动对焦。"
+        },
+        "lensMaterial": "金属"
+      }
+    },
+    "createdAt": "2026-10-11",
+    "updatedAt": "2026-10-11"
+  },
+  {
     "id": "meike-10mmt22-x",
     "brand": "meike",
     "mount": "X",
@@ -10171,6 +10267,75 @@
     },
     "createdAt": "2026-06-13",
     "updatedAt": "2026-06-13"
+  },
+  {
+    "id": "meike-55mmf18-pro-stm-x",
+    "brand": "meike",
+    "mount": "X",
+    "model": "55mm F1.8 PRO STM",
+    "focalLengthMin": 55,
+    "focalLengthMax": 55,
+    "maxAperture": 1.8,
+    "minAperture": 16,
+    "af": true,
+    "ois": false,
+    "wr": false,
+    "apertureRing": true,
+    "powerZoom": "N/A",
+    "internalZoom": "N/A",
+    "focusMotor": "STM",
+    "internalFocusing": true,
+    "weightG": 365,
+    "diameterMm": 74,
+    "length": {
+      "mm": 90
+    },
+    "minFocusDistance": {
+      "normal": {
+        "cm": 55
+      }
+    },
+    "maxMagnification": {
+      "value": 0.12
+    },
+    "angleOfView": 43.3,
+    "angleOfViewCalc": 28.9,
+    "apertureBladeCount": 9,
+    "searchAliases": {
+      "en": "Meike 55mm f1.8 PRO STM Fuji X",
+      "zh": "美科 55mm f1.8 PRO STM 富士"
+    },
+    "pricing": {
+      "global": {
+        "new": [
+          {
+            "price": 329.99,
+            "currency": "USD",
+            "source": "meikeglobal.com",
+            "url": "https://meikeglobal.com/collections/fujifilm/products/5518x",
+            "purchasableChannel": "official",
+            "sampledAt": "2026-10-11"
+          }
+        ]
+      }
+    },
+    "compatibleMounts": [
+      "Sony E",
+      "Fujifilm X"
+    ],
+    "filterMm": 58,
+    "lensConfiguration": {
+      "groups": 8,
+      "elements": 11,
+      "sourceText": "8组11片"
+    },
+    "fieldNotes": {},
+    "officialLinks": {
+      "cn": "http://www.mkgrip.cn/goods/show-527.html",
+      "global": "https://meikeglobal.com/collections/fujifilm/products/5518x"
+    },
+    "createdAt": "2026-10-11",
+    "updatedAt": "2026-10-11"
   },
   {
     "id": "meike-56mmf17-stm-aps-c-x",
