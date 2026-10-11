@@ -131,7 +131,7 @@ export function toDataPoint(
 // Its own positional layout in the same dataset; query it by the index. Token counts
 // can be missing from a provider, recorded as 0.
 //   indexes: [askiris_turn]
-//   blobs:   [mount, locale, sid, segment_id, internal]
+//   blobs:   [mount, locale, sid, conversation_id, internal]
 //   doubles: [total, input, output, cacheRead tokens, step_count, budget_hit, max_context]
 export const ASKIRIS_TURN_EVENT = "askiris_turn";
 
@@ -139,12 +139,12 @@ export interface AskIrisTurnMetrics {
   mount: string;
   locale: string;
   // Session-funnel join keys: sid = the anonymous visit (xg_sid cookie, read
-  // server-side), segmentId = the conversation segment (a new one starts on a mount
-  // switch or "new chat"). Together they give visitors → sessions → turns, and are
+  // server-side), conversationId = the user-visible conversation identifier. Together
+  // they give visitors → conversations → turns, and are
   // the same keys a future transcript replay would persist against. Either can be ""
   // when unknown (no cookie yet / a legacy client), which the queries filter out.
   sid: string;
-  segmentId: string;
+  conversationId: string;
   // Keep this row out of the dashboards (dogfooding / load tests via the bypass or
   // xg_internal cookie). The row is still written — the AskIris queries filter it.
   internal: boolean;
@@ -165,7 +165,7 @@ export function askirisTurnDataPoint(m: AskIrisTurnMetrics): {
 } {
   return {
     indexes: [ASKIRIS_TURN_EVENT],
-    blobs: [m.mount, m.locale, m.sid, m.segmentId, m.internal ? "1" : ""],
+    blobs: [m.mount, m.locale, m.sid, m.conversationId, m.internal ? "1" : ""],
     doubles: [
       m.totalTokens,
       m.inputTokens,

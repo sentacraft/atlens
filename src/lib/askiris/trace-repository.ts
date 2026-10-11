@@ -10,8 +10,8 @@ export interface AskIrisTraceRecord {
   traceId: string;
   /** Stable identifier for one user turn; retries reuse it. */
   turnId: string;
-  /** Groups consecutive turns in the current client-side topic. */
-  segmentId: string;
+  /** Groups turns in one user-visible conversation. */
+  conversationId: string;
   /** Lens catalogue used by this turn, such as X or G. */
   mount: string;
   /** Locale used for the request and response. */
@@ -129,7 +129,7 @@ export async function writeAskIrisTrace(
       `INSERT INTO askiris_traces (
         trace_id,
         turn_id,
-        segment_id,
+        conversation_id,
         mount,
         locale,
         status,
@@ -158,7 +158,7 @@ export async function writeAskIrisTrace(
     .bind(
       record.traceId,
       record.turnId,
-      record.segmentId,
+      record.conversationId,
       record.mount,
       record.locale,
       record.status,
