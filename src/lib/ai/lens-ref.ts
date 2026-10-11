@@ -51,6 +51,22 @@ export function parseLensLink(href: string | undefined): string | null {
   return href?.startsWith(LENS_LINK_PREFIX) ? href.slice(LENS_LINK_PREFIX.length) : null;
 }
 
+// A lens link label is a catalogue name the model copies verbatim, so it must render as
+// literal text. GFM splits a table row on `|` before it parses inline syntax, so a pipe
+// in link text ends the cell (https://github.github.com/gfm/#tables-extension-), and
+// Sigma names carry one ("12mm F1.4 DC | Contemporary"). CommonMark renders a backslash
+// before any ASCII punctuation as that character, so escaping all of it is safe in every
+// context and also neutralises emphasis, strikethrough, code and entity markers.
+const LENS_LINK_LABEL = /\[([^[\]\n]*)\]\(lens:/g;
+const LABEL_PUNCTUATION = /\\[!-/:-@[-`{-~]|[!-/:-@[-`{-~]/g;
+
+export function escapeLensLinkLabels(markdown: string): string {
+  return markdown.replace(LENS_LINK_LABEL, (_, label: string) => {
+    const escaped = label.replace(LABEL_PUNCTUATION, (char) => (char.length === 2 ? char : `\\${char}`));
+    return `[${escaped}](${LENS_LINK_PREFIX}`;
+  });
+}
+
 // ref -> lens, for turning what the model wrote back into a real lens.
 export function buildRefIndex(lenses: Lens[]): Map<string, Lens> {
   return new Map(lenses.map((lens) => [lensRef(lens.id), lens]));

@@ -11,7 +11,7 @@ import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
 import { mountToUrlSegment } from "@/lib/mount";
 import { useLensLinks } from "@/components/askiris/LensLinkContext";
-import { LENS_LINK_PREFIX, parseLensLink } from "@/lib/ai/lens-ref";
+import { LENS_LINK_PREFIX, escapeLensLinkLabels, parseLensLink } from "@/lib/ai/lens-ref";
 
 // Renders Iris's Markdown. react-markdown + remark-gfm only parse Markdown into
 // semantic HTML; styling is @tailwindcss/typography's `prose` — the one-stop that
@@ -69,7 +69,7 @@ export default function Markdown({
         urlTransform={(url) => (url.startsWith(LENS_LINK_PREFIX) ? url : defaultUrlTransform(url))}
         components={{ a: LensAwareAnchor }}
       >
-        {children}
+        {escapeLensLinkLabels(children)}
       </ReactMarkdown>
     </div>
   );
