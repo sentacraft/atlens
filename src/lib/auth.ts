@@ -15,29 +15,33 @@ type AuthEnv = Cloudflare.Env & {
 function getAuthContext() {
   const context = getCloudflareContext();
   const env = context.env as AuthEnv;
+  const secret = process.env.BETTER_AUTH_SECRET;
 
-  if (!env.BETTER_AUTH_SECRET) {
+  if (!secret) {
     throw new Error("BETTER_AUTH_SECRET is not configured");
   }
 
-  return { context, env };
+  return { context, env, secret };
 }
 
 export function createAuth() {
-  const { context, env } = getAuthContext();
+  const { context, env, secret } = getAuthContext();
+  const googleClientId = process.env.GOOGLE_CLIENT_ID;
+  const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const siteURL = process.env.SITE_URL;
   const socialProviders =
-    env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
+    googleClientId && googleClientSecret
       ? {
           google: {
-            clientId: env.GOOGLE_CLIENT_ID,
-            clientSecret: env.GOOGLE_CLIENT_SECRET,
+            clientId: googleClientId,
+            clientSecret: googleClientSecret,
           },
         }
       : undefined;
 
   return betterAuth({
     appName: "Atlens",
-    secret: env.BETTER_AUTH_SECRET,
+    secret,
     baseURL: {
       allowedHosts: [
         "localhost",
@@ -46,7 +50,7 @@ export function createAuth() {
         "*.atlens.app",
         "*.sentacraft.com",
       ],
-      fallback: env.SITE_URL,
+      fallback: siteURL,
     },
     database: {
       dialect: new D1Dialect({ database: env.APP_DB }),
