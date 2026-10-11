@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { lensRef, buildRefIndex, LENS_REF_LENGTH } from "../lens-ref";
+import { lensRef, buildRefIndex, LENS_REF_LENGTH, escapeLensLinkLabels } from "../lens-ref";
 import { getAllLenses } from "@/lib/lens/data";
 
 const lenses = getAllLenses("zh");
@@ -35,5 +35,29 @@ describe("lensRef", () => {
     const sample = lenses[0];
     expect(index.get(lensRef(sample.id))?.id).toBe(sample.id);
     expect(index.get("zzzzz")).toBeUndefined();
+  });
+});
+
+describe("escapeLensLinkLabels", () => {
+  it("escapes a pipe and other punctuation inside a lens link label", () => {
+    expect(escapeLensLinkLabels("| [Sigma 12mm F1.4 DC | Contemporary](lens:c01n5) | 12mm |")).toBe(
+      "| [Sigma 12mm F1\\.4 DC \\| Contemporary](lens:c01n5) | 12mm |",
+    );
+  });
+
+  it("leaves already-escaped punctuation alone", () => {
+    const text = "[Sigma 12mm F1\\.4 DC \\| Contemporary](lens:c01n5)";
+    expect(escapeLensLinkLabels(text)).toBe(text);
+  });
+
+  it("does not touch pipes outside lens links", () => {
+    const text = "| a | [Official | site](https://example.com) | b |";
+    expect(escapeLensLinkLabels(text)).toBe(text);
+  });
+
+  it("escapes emphasis, strikethrough and code markers in a lens link label", () => {
+    expect(escapeLensLinkLabels("[A *B* ~C~ `D`](lens:abcde)")).toBe(
+      "[A \\*B\\* \\~C\\~ \\`D\\`](lens:abcde)",
+    );
   });
 });
