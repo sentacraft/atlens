@@ -35,6 +35,7 @@ function setup(overrides: Partial<Props> = {}) {
     stop: vi.fn(),
     setMessages: vi.fn(),
     clearError: vi.fn(),
+    onNotice: vi.fn(),
     ...overrides,
   };
   const hook = renderHook((p: Props) => useConversation(p), { initialProps: props });
@@ -157,9 +158,9 @@ describe("useConversation", () => {
     client.fetchConversationMessages.mockResolvedValue("unavailable");
     window.history.replaceState(null, "", "/en/askiris?conversation=conv-gone");
 
-    const { result } = setup({ initialConversationId: "conv-gone" });
+    const { result, props } = setup({ initialConversationId: "conv-gone" });
 
-    await waitFor(() => expect(result.current.notice).toBe("unavailable"));
+    await waitFor(() => expect(props.onNotice).toHaveBeenCalledWith("unavailable"));
     expect(result.current.conversationId).not.toBe("conv-gone");
     expect(param()).toBeNull();
   });
@@ -171,7 +172,7 @@ describe("useConversation", () => {
 
     act(() => result.current.selectConversation("conv-a"));
 
-    await waitFor(() => expect(result.current.notice).toBe("loadFailed"));
+    await waitFor(() => expect(props.onNotice).toHaveBeenCalledWith("loadFailed"));
     expect(result.current.conversationId).toBe(idBefore);
     expect(props.setMessages).not.toHaveBeenCalled();
     expect(param()).toBeNull();
@@ -181,10 +182,10 @@ describe("useConversation", () => {
     client.fetchConversationMessages.mockResolvedValue("unavailable");
     window.history.replaceState(null, "", "/en/askiris?conversation=conv-a");
 
-    const { result } = setup({ initialConversationId: "conv-a", authenticated: false });
+    const { result, props } = setup({ initialConversationId: "conv-a", authenticated: false });
 
     expect(client.fetchConversationMessages).toHaveBeenCalledWith("conv-a");
-    await waitFor(() => expect(result.current.notice).toBe("unavailable"));
+    await waitFor(() => expect(props.onNotice).toHaveBeenCalledWith("unavailable"));
     expect(param()).toBeNull();
     expect(result.current.loading).toBe(false);
   });
@@ -201,6 +202,7 @@ describe("useConversation", () => {
         stop: vi.fn(),
         setMessages: vi.fn(),
         clearError: vi.fn(),
+        onNotice: vi.fn(),
       }),
     );
 

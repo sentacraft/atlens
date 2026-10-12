@@ -1,12 +1,11 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import { toast } from "sonner";
 import { track } from "@/lib/analytics/analytics";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { useTestHookEnabled, useTestHookOption } from "@/context/TestHookProvider";
@@ -20,7 +19,7 @@ import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
 import { useFixtureMessages } from "@/components/askiris/fixtureStore";
-import { useConversation, type ConversationNotice } from "@/components/askiris/useConversation";
+import { useConversation } from "@/components/askiris/useConversation";
 import ConversationHistory from "@/components/askiris/ConversationHistory";
 import {
   askIrisMessageMetadataSchema,
@@ -65,6 +64,13 @@ export default function AskIrisChat({
     stop,
     setMessages,
     clearError,
+    onNotice: (notice) => {
+      if (notice === "unavailable") {
+        toast(t("conversationUnavailable"));
+      } else {
+        toast.error(t("conversationLoadFailed"));
+      }
+    },
   });
   const { conversationId } = conversation;
   const errorKind = status === "error" ? classifyError(error) : null;
@@ -158,10 +164,6 @@ export default function AskIrisChat({
     </div>
   ) : null;
 
-  const notice = conversation.notice ? (
-    <ConversationNoticeBanner kind={conversation.notice} onDismiss={conversation.dismissNotice} />
-  ) : null;
-
   if (conversation.loading) {
     return (
       <div className={SHELL_CLS}>
@@ -179,7 +181,6 @@ export default function AskIrisChat({
     return (
       <div className={SHELL_CLS}>
         {historyBar}
-        {notice}
         <AskIrisEmptyState
           input={input}
           onInputChange={setInput}
@@ -195,7 +196,6 @@ export default function AskIrisChat({
     <LensLinkProvider index={lensIndex}>
       <div className={SHELL_CLS}>
         {historyBar}
-        {notice}
         <div className="relative min-h-0 flex-1">
           <div
             ref={scrollRef}
@@ -244,31 +244,5 @@ export default function AskIrisChat({
         </div>
       </div>
     </LensLinkProvider>
-  );
-}
-
-function ConversationNoticeBanner({
-  kind,
-  onDismiss,
-}: {
-  kind: ConversationNotice;
-  onDismiss: () => void;
-}) {
-  const t = useTranslations("AskIris");
-  return (
-    <div
-      role="status"
-      className="mt-2 flex shrink-0 items-center justify-between gap-3 rounded-lg bg-zinc-100 px-3 py-2 text-xs text-zinc-600 dark:bg-zinc-900 dark:text-zinc-300"
-    >
-      <span>{t(kind === "unavailable" ? "conversationUnavailable" : "conversationLoadFailed")}</span>
-      <button
-        type="button"
-        onClick={onDismiss}
-        aria-label={t("dismiss")}
-        className={cn(ICON_CLOSE_BTN_CLS, "size-6")}
-      >
-        <X className="size-3.5" />
-      </button>
-    </div>
   );
 }

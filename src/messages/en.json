@@ -88,7 +88,6 @@
     "loadingConversation": "Loading conversation…",
     "conversationUnavailable": "That conversation isn’t available, so a new one has started.",
     "conversationLoadFailed": "Couldn’t open that conversation. Please try again.",
-    "dismiss": "Dismiss",
     "rateLimited": "Iris is taking a lot of questions right now — please try again in a little while.",
     "errorRetry": "Something went wrong on Iris's side — please <retry>try again</retry>.",
     "errorUnavailable": "Iris is unavailable right now — please try again later.",

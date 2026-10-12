@@ -28,6 +28,7 @@ export function useConversation({
   stop,
   setMessages,
   clearError,
+  onNotice,
 }: {
   initialConversationId?: string;
   authenticated: boolean;
@@ -35,6 +36,8 @@ export function useConversation({
   stop: () => void;
   setMessages: (messages: AskIrisUIMessage[]) => void;
   clearError: () => void;
+  // One-off events the user should hear about; the caller decides how to show them.
+  onNotice: (notice: ConversationNotice) => void;
 }) {
   // The id only changes once its messages are on screen: sending a turn under an id
   // whose history never loaded would write new messages over its stored sequence.
@@ -42,11 +45,14 @@ export function useConversation({
   // Starts true for a linked conversation, so neither the server render nor the first
   // client render flashes the empty-state hero before the thread loads.
   const [loading, setLoading] = useState(() => Boolean(initialConversationId));
-  const [notice, setNotice] = useState<ConversationNotice | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [listState, setListState] = useState<ConversationListState>("idle");
 
   const requestRef = useRef(0);
+  const onNoticeRef = useRef(onNotice);
+  useEffect(() => {
+    onNoticeRef.current = onNotice;
+  }, [onNotice]);
   const conversationIdRef = useRef(conversationId);
   useEffect(() => {
     conversationIdRef.current = conversationId;
@@ -65,7 +71,6 @@ export function useConversation({
       const token = ++requestRef.current;
       stop();
       clearError();
-      setNotice(null);
       setLoading(true);
       try {
         const result = await fetchConversationMessages(targetId);
@@ -75,7 +80,7 @@ export function useConversation({
         if (result === "unavailable") {
           resetToNew();
           writeConversationParam(null, "replace");
-          setNotice("unavailable");
+          onNoticeRef.current("unavailable");
           return;
         }
         setMessages(result);
@@ -91,7 +96,7 @@ export function useConversation({
         if (readConversationParam() === targetId) {
           writeConversationParam(null, "replace");
         }
-        setNotice("loadFailed");
+        onNoticeRef.current("loadFailed");
       } finally {
         if (token === requestRef.current) {
           setLoading(false);
@@ -117,7 +122,6 @@ export function useConversation({
     }
     requestRef.current += 1;
     resetToNew();
-    setNotice(null);
     writeConversationParam(null, "push");
   }, [busy, resetToNew]);
 
@@ -177,7 +181,6 @@ export function useConversation({
       } else {
         requestRef.current += 1;
         resetToNew();
-        setNotice(null);
       }
     }
     window.addEventListener("popstate", onPopState);
@@ -196,8 +199,6 @@ export function useConversation({
   return {
     conversationId,
     loading,
-    notice,
-    dismissNotice: () => setNotice(null),
     conversations,
     listState,
     selectConversation,
