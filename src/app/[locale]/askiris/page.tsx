@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import AskIrisChat from "@/components/askiris/AskIrisChat";
 import { getLensLinkIndex } from "@/lib/ai/lens-link-index";
+import { resolveAskIrisEntry } from "@/lib/url/askiris";
 
 type Params = Promise<{ locale: string }>;
-type SearchParams = Promise<{ q?: string | string[] }>;
+type SearchParams = Promise<{ q?: string | string[]; conversation?: string | string[] }>;
 
 // Experimental AskIris surface: reachable only by direct URL (no nav entry) and
 // kept out of search indexes until it ships for real. Mount is resolved from the
@@ -26,7 +27,7 @@ export default async function AskIrisPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const { q } = await searchParams;
-  const initialQuery = (Array.isArray(q) ? q[0] : q)?.trim() || undefined;
-  return <AskIrisChat initialQuery={initialQuery} lensIndex={getLensLinkIndex(locale)} />;
+  return (
+    <AskIrisChat entry={resolveAskIrisEntry(await searchParams)} lensIndex={getLensLinkIndex(locale)} />
+  );
 }

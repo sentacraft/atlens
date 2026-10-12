@@ -31,6 +31,10 @@ Business logic, types, and data access live in `src/lib/`; components under `src
 render and do not embed business logic. Keep that separation when adding code — the split
 exists so the logic layer can move to a shared package later.
 
+Components do not call `fetch` or hard-code API paths: each feature's requests live in a client
+module under `src/lib/`, and client-side reads go through TanStack Query. Each feature's URL query
+params are named, parsed, and written in one module under `src/lib/url/`.
+
 Demos, design explorations, and UX experiments belong under `src/app/[locale]/design-lab/`,
 never in production code. Pages and components there — and all Test Hook pages and components —
 hardcode English strings, do not use `next-intl`, and must not add keys to `en.json` or
