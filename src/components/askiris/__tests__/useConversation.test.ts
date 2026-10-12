@@ -1,4 +1,6 @@
 // @vitest-environment jsdom
+import { createElement, type ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
@@ -28,9 +30,16 @@ function deferred<T>() {
 
 type Props = Parameters<typeof useConversation>[0];
 
+function queryWrapper() {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return function QueryWrapper({ children }: { children: ReactNode }) {
+    return createElement(QueryClientProvider, { client: queryClient }, children);
+  };
+}
+
 function setup(overrides: Partial<Props> = {}) {
   const props: Props = {
-    authenticated: true,
+    userId: "user-1",
     busy: false,
     stop: vi.fn(),
     setMessages: vi.fn(),
@@ -38,7 +47,10 @@ function setup(overrides: Partial<Props> = {}) {
     onNotice: vi.fn(),
     ...overrides,
   };
-  const hook = renderHook((p: Props) => useConversation(p), { initialProps: props });
+  const hook = renderHook((p: Props) => useConversation(p), {
+    initialProps: props,
+    wrapper: queryWrapper(),
+  });
   return { ...hook, props };
 }
 
@@ -119,7 +131,7 @@ describe("useConversation", () => {
   });
 
   it("keeps an unsaved conversation out of the URL", async () => {
-    const { result } = setup({ authenticated: false });
+    const { result } = setup({ userId: undefined });
     await waitFor(() => expect(result.current.listState).toBe("idle"));
 
     expect(param()).toBeNull();
@@ -182,7 +194,7 @@ describe("useConversation", () => {
     client.fetchConversationMessages.mockResolvedValue("unavailable");
     window.history.replaceState(null, "", "/en/askiris?conversation=conv-a");
 
-    const { result, props } = setup({ initialConversationId: "conv-a", authenticated: false });
+    const { result, props } = setup({ initialConversationId: "conv-a", userId: undefined });
 
     expect(client.fetchConversationMessages).toHaveBeenCalledWith("conv-a");
     await waitFor(() => expect(props.onNotice).toHaveBeenCalledWith("unavailable"));
@@ -194,17 +206,7 @@ describe("useConversation", () => {
     client.fetchConversationMessages.mockResolvedValue([message("a1")]);
     window.history.replaceState(null, "", "/en/askiris?conversation=conv-a");
 
-    const { result } = renderHook(() =>
-      useConversation({
-        initialConversationId: "conv-a",
-        authenticated: true,
-        busy: false,
-        stop: vi.fn(),
-        setMessages: vi.fn(),
-        clearError: vi.fn(),
-        onNotice: vi.fn(),
-      }),
-    );
+    const { result } = setup({ initialConversationId: "conv-a" });
 
     expect(result.current.loading).toBe(true);
     await waitFor(() => expect(result.current.conversationId).toBe("conv-a"));
@@ -221,9 +223,25 @@ describe("useConversation", () => {
 
     rerender({ ...props, busy: true });
     rerender({ ...props, busy: false });
+    await waitFor(() => expect(client.fetchConversationList).toHaveBeenCalledTimes(2));
     expect(result.current.listState).toBe("ready");
     await act(async () => refresh.resolve(updated));
 
-    expect(result.current.conversations).toEqual(updated);
+    await waitFor(() => expect(result.current.conversations).toEqual(updated));
+  });
+
+  it("never shows one account's list to the next account in the same tab", async () => {
+    const first = [{ id: "conv-1", title: "First", createdAt: 1, updatedAt: 1 }];
+    client.fetchConversationList.mockResolvedValueOnce(first);
+    const { result, rerender, props } = setup();
+    await waitFor(() => expect(result.current.conversations).toEqual(first));
+    const pending = deferred<typeof first>();
+    client.fetchConversationList.mockReturnValueOnce(pending.promise);
+
+    rerender({ ...props, userId: "user-2" });
+
+    expect(result.current.conversations).toEqual([]);
+    expect(result.current.listState).toBe("loading");
+    await act(async () => pending.resolve([]));
   });
 });

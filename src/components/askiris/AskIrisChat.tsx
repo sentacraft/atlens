@@ -13,8 +13,7 @@ import { authClient } from "@/lib/auth-client";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
 import { LensLinkProvider } from "@/components/askiris/LensLinkContext";
 import type { LensLinkIndex } from "@/lib/ai/lens-ref";
-import type { AskIrisEntry } from "@/lib/askiris/entry";
-import { CONVERSATION_PARAM } from "@/lib/askiris/conversation-client";
+import { clearEntryParams, type AskIrisEntry } from "@/lib/url/askiris";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
@@ -46,7 +45,7 @@ export default function AskIrisChat({
   const [input, setInput] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
   const { data: session } = authClient.useSession();
-  const authenticated = Boolean(session?.user);
+  const userId = session?.user.id;
   // The history entry's placement and look are still being designed.
   const historyEnabled = useTestHookEnabled();
   // Unthrottled, a long stream re-renders on every chunk and the message-derived
@@ -59,7 +58,7 @@ export default function AskIrisChat({
   const isBusy = status === "submitted" || status === "streaming";
   const conversation = useConversation({
     initialConversationId: entry.kind === "resume" ? entry.conversationId : undefined,
-    authenticated,
+    userId,
     busy: isBusy,
     stop,
     setMessages,
@@ -105,11 +104,7 @@ export default function AskIrisChat({
       return;
     }
     initialQuerySent.current = true;
-    // A `conversation` param arriving alongside `q` was overridden by the hand-off.
-    const url = new URL(window.location.href);
-    url.searchParams.delete("q");
-    url.searchParams.delete(CONVERSATION_PARAM);
-    window.history.replaceState(null, "", url.toString());
+    clearEntryParams();
     submitInitialQuery(initialQuery);
   }, [initialQuery]);
 
@@ -146,7 +141,7 @@ export default function AskIrisChat({
     setHistoryOpen(false);
   }
 
-  const historyBar = authenticated && historyEnabled ? (
+  const historyBar = userId && historyEnabled ? (
     <div className="flex h-12 shrink-0 items-center">
       <ConversationHistory
         open={historyOpen}

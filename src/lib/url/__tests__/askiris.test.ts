@@ -1,5 +1,6 @@
+// @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
-import { resolveAskIrisEntry } from "../entry";
+import { clearEntryParams, resolveAskIrisEntry } from "../askiris";
 
 describe("resolveAskIrisEntry", () => {
   it("starts a new conversation by default", () => {
@@ -26,5 +27,15 @@ describe("resolveAskIrisEntry", () => {
       kind: "handoff",
       query: "Which 23mm?",
     });
+  });
+});
+
+describe("clearEntryParams", () => {
+  it("removes the entry params and keeps foreign ones", () => {
+    window.history.replaceState(null, "", "/en/askiris?q=hi&conversation=c1&utm_source=x");
+
+    clearEntryParams();
+
+    expect(window.location.search).toBe("?utm_source=x");
   });
 });

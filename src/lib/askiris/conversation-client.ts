@@ -7,7 +7,11 @@ export interface ConversationSummary {
   updatedAt: number;
 }
 
-export const CONVERSATION_PARAM = "conversation";
+// Scoped by user: the query cache outlives a sign-out, so a second account in the
+// same tab must never be served the first one's list.
+export function conversationListQueryKey(userId: string) {
+  return ["askiris", "conversations", userId] as const;
+}
 
 export async function fetchConversationList(): Promise<ConversationSummary[]> {
   const response = await fetch("/api/askiris/conversations", { cache: "no-store" });
@@ -35,30 +39,4 @@ export async function fetchConversationMessages(
   }
   const data = (await response.json()) as { messages: Array<{ message: AskIrisUIMessage }> };
   return data.messages.map((item) => item.message);
-}
-
-export function readConversationParam(): string | null {
-  return new URL(window.location.href).searchParams.get(CONVERSATION_PARAM) || null;
-}
-
-// "push" for user-initiated switches, so Back returns to the previous conversation;
-// "replace" for bookkeeping that must not add a history entry.
-export function writeConversationParam(
-  conversationId: string | null,
-  mode: "push" | "replace",
-): void {
-  const url = new URL(window.location.href);
-  if ((url.searchParams.get(CONVERSATION_PARAM) || null) === conversationId) {
-    return;
-  }
-  if (conversationId) {
-    url.searchParams.set(CONVERSATION_PARAM, conversationId);
-  } else {
-    url.searchParams.delete(CONVERSATION_PARAM);
-  }
-  if (mode === "push") {
-    window.history.pushState(null, "", url.toString());
-  } else {
-    window.history.replaceState(null, "", url.toString());
-  }
 }

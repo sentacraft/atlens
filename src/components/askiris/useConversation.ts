@@ -1,14 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import {
+  conversationListQueryKey,
   fetchConversationList,
   fetchConversationMessages,
-  readConversationParam,
-  writeConversationParam,
-  type ConversationSummary,
 } from "@/lib/askiris/conversation-client";
+import { readConversationParam, writeConversationParam } from "@/lib/url/askiris";
 
 export type ConversationNotice = "unavailable" | "loadFailed";
 export type ConversationListState = "idle" | "loading" | "ready" | "error";
@@ -23,7 +23,7 @@ export type ConversationListState = "idle" | "loading" | "ready" | "error";
  */
 export function useConversation({
   initialConversationId,
-  authenticated,
+  userId,
   busy,
   stop,
   setMessages,
@@ -31,7 +31,8 @@ export function useConversation({
   onNotice,
 }: {
   initialConversationId?: string;
-  authenticated: boolean;
+  // Undefined while signed out or while the session is still resolving.
+  userId: string | undefined;
   busy: boolean;
   stop: () => void;
   setMessages: (messages: AskIrisUIMessage[]) => void;
@@ -45,8 +46,6 @@ export function useConversation({
   // Starts true for a linked conversation, so neither the server render nor the first
   // client render flashes the empty-state hero before the thread loads.
   const [loading, setLoading] = useState(() => Boolean(initialConversationId));
-  const [conversations, setConversations] = useState<ConversationSummary[]>([]);
-  const [listState, setListState] = useState<ConversationListState>("idle");
 
   const requestRef = useRef(0);
   const onNoticeRef = useRef(onNotice);
@@ -125,38 +124,29 @@ export function useConversation({
     writeConversationParam(null, "push");
   }, [busy, resetToNew]);
 
-  const refreshConversations = useCallback(
-    async ({ background }: { background: boolean }) => {
-      if (!authenticated) {
-        setConversations([]);
-        setListState("idle");
-        return;
-      }
-      if (!background) {
-        setListState("loading");
-      }
-      try {
-        const list = await fetchConversationList();
-        setConversations(list);
-        setListState("ready");
-        // Name the shown conversation in the URL once the server has it, so a reload
-        // reopens it; earlier, a reload would find nothing to open.
-        if (list.some((item) => item.id === conversationIdRef.current)) {
-          writeConversationParam(conversationIdRef.current, "replace");
-        }
-      } catch {
-        // A failed background refresh keeps the list it already has.
-        if (!background) {
-          setListState("error");
-        }
-      }
-    },
-    [authenticated],
-  );
+  const queryClient = useQueryClient();
+  const listQuery = useQuery({
+    queryKey: conversationListQueryKey(userId ?? ""),
+    queryFn: fetchConversationList,
+    enabled: Boolean(userId),
+  });
+  const conversations = userId ? (listQuery.data ?? []) : [];
+  // A background refetch keeps showing the list it has, so only a first load is "loading".
+  const listState: ConversationListState = !userId
+    ? "idle"
+    : listQuery.data
+      ? "ready"
+      : listQuery.isError
+        ? "error"
+        : "loading";
 
+  // Name the shown conversation in the URL once the server lists it, so a reload
+  // reopens it; earlier, a reload would find nothing to open.
   useEffect(() => {
-    void refreshConversations({ background: false });
-  }, [refreshConversations]);
+    if (listQuery.data?.some((item) => item.id === conversationIdRef.current)) {
+      writeConversationParam(conversationIdRef.current, "replace");
+    }
+  }, [listQuery.data]);
 
   // Loaded without waiting for the session: the endpoint answers a signed-out visitor
   // with 401, which shows the same "unavailable" notice as a missing conversation.
@@ -190,11 +180,11 @@ export function useConversation({
   // A finished turn moves its conversation to the top of the list (or adds it).
   const wasBusyRef = useRef(busy);
   useEffect(() => {
-    if (wasBusyRef.current && !busy) {
-      void refreshConversations({ background: true });
+    if (wasBusyRef.current && !busy && userId) {
+      void queryClient.invalidateQueries({ queryKey: conversationListQueryKey(userId) });
     }
     wasBusyRef.current = busy;
-  }, [busy, refreshConversations]);
+  }, [busy, queryClient, userId]);
 
   return {
     conversationId,

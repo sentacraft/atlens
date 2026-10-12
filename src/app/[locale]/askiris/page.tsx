@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import AskIrisChat from "@/components/askiris/AskIrisChat";
 import { getLensLinkIndex } from "@/lib/ai/lens-link-index";
-import { resolveAskIrisEntry } from "@/lib/askiris/entry";
+import { resolveAskIrisEntry } from "@/lib/url/askiris";
 
 type Params = Promise<{ locale: string }>;
 type SearchParams = Promise<{ q?: string | string[]; conversation?: string | string[] }>;

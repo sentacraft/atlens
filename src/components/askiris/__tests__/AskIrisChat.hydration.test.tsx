@@ -3,6 +3,7 @@ import { act } from "react";
 import { createRoot, hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { authClient } from "@/lib/auth-client";
 import AskIrisChat from "../AskIrisChat";
 
@@ -39,6 +40,17 @@ const signedIn = {
   },
 };
 
+// One client for the server render and hydration, as the app's QueryProvider would.
+const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+
+function Chat() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AskIrisChat entry={{ kind: "new" }} lensIndex={{}} />
+    </QueryClientProvider>
+  );
+}
+
 function stubFetch() {
   vi.stubGlobal(
     "fetch",
@@ -63,14 +75,14 @@ describe("AskIrisChat hydration", () => {
   it("hydrates cleanly when the session resolves before the page hydrates", async () => {
     stubFetch();
     const container = document.createElement("div");
-    container.innerHTML = renderToString(<AskIrisChat entry={{ kind: "new" }} lensIndex={{}} />);
+    container.innerHTML = renderToString(<Chat />);
     document.body.appendChild(container);
     expect(container.querySelector('button[aria-label="openHistory"]')).toBeNull();
 
     authClient.hydrateSession(signedIn);
     const onRecoverableError = vi.fn();
     await act(async () => {
-      hydrateRoot(container, <AskIrisChat entry={{ kind: "new" }} lensIndex={{}} />, {
+      hydrateRoot(container, <Chat />, {
         onRecoverableError,
       });
     });
@@ -87,7 +99,7 @@ describe("AskIrisChat hydration", () => {
     document.body.appendChild(container);
 
     await act(async () => {
-      createRoot(container).render(<AskIrisChat entry={{ kind: "new" }} lensIndex={{}} />);
+      createRoot(container).render(<Chat />);
     });
 
     expect(container.querySelector('button[aria-label="openHistory"]')).toBeNull();
