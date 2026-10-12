@@ -86,7 +86,7 @@
     "historyError": "Couldn’t load your conversations.",
     "historyBusy": "You can switch once Iris finishes replying.",
     "loadingConversation": "Loading conversation…",
-    "conversationNotFound": "That conversation isn’t available, so a new one has started.",
+    "conversationUnavailable": "That conversation isn’t available, so a new one has started.",
     "conversationLoadFailed": "Couldn’t open that conversation. Please try again.",
     "dismiss": "Dismiss",
     "rateLimited": "Iris is taking a lot of questions right now — please try again in a little while.",

@@ -10,7 +10,7 @@ import {
   type ConversationSummary,
 } from "@/lib/askiris/conversation-client";
 
-export type ConversationNotice = "notFound" | "loadFailed";
+export type ConversationNotice = "unavailable" | "loadFailed";
 export type ConversationListState = "idle" | "loading" | "ready" | "error";
 
 /**
@@ -41,7 +41,7 @@ export function useConversation({
   const [conversationId, setConversationId] = useState(() => crypto.randomUUID());
   // Starts true for a linked conversation, so neither the server render nor the first
   // client render flashes the empty-state hero before the thread loads.
-  const [loading, setLoading] = useState(() => Boolean(initialConversationId && authenticated));
+  const [loading, setLoading] = useState(() => Boolean(initialConversationId));
   const [notice, setNotice] = useState<ConversationNotice | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [listState, setListState] = useState<ConversationListState>("idle");
@@ -72,10 +72,10 @@ export function useConversation({
         if (token !== requestRef.current) {
           return;
         }
-        if (result === "not_found") {
+        if (result === "unavailable") {
           resetToNew();
           writeConversationParam(null, "replace");
-          setNotice("notFound");
+          setNotice("unavailable");
           return;
         }
         setMessages(result);
@@ -121,14 +121,6 @@ export function useConversation({
     writeConversationParam(null, "push");
   }, [busy, resetToNew]);
 
-  // Called when a turn is sent, so a reload or a shared link reopens this conversation.
-  // Replace rather than push: sending is not navigation.
-  const commitConversationUrl = useCallback(() => {
-    if (authenticated) {
-      writeConversationParam(conversationIdRef.current, "replace");
-    }
-  }, [authenticated]);
-
   const refreshConversations = useCallback(
     async ({ background }: { background: boolean }) => {
       if (!authenticated) {
@@ -140,8 +132,14 @@ export function useConversation({
         setListState("loading");
       }
       try {
-        setConversations(await fetchConversationList());
+        const list = await fetchConversationList();
+        setConversations(list);
         setListState("ready");
+        // Name the shown conversation in the URL once the server has it, so a reload
+        // reopens it; earlier, a reload would find nothing to open.
+        if (list.some((item) => item.id === conversationIdRef.current)) {
+          writeConversationParam(conversationIdRef.current, "replace");
+        }
       } catch {
         // A failed background refresh keeps the list it already has.
         if (!background) {
@@ -156,19 +154,16 @@ export function useConversation({
     void refreshConversations({ background: false });
   }, [refreshConversations]);
 
-  // Signed out, a linked conversation cannot be loaded, so drop it from the URL.
+  // Loaded without waiting for the session: the endpoint answers a signed-out visitor
+  // with 401, which shows the same "unavailable" notice as a missing conversation.
   const initialHandledRef = useRef(false);
   useEffect(() => {
     if (initialHandledRef.current || !initialConversationId) {
       return;
     }
     initialHandledRef.current = true;
-    if (authenticated) {
-      void load(initialConversationId, "none");
-    } else {
-      writeConversationParam(null, "replace");
-    }
-  }, [authenticated, initialConversationId, load]);
+    void load(initialConversationId, "none");
+  }, [initialConversationId, load]);
 
   // Back/Forward cannot be blocked, so a reply still streaming is stopped by load().
   useEffect(() => {
@@ -177,7 +172,7 @@ export function useConversation({
       if (target === conversationIdRef.current) {
         return;
       }
-      if (target && authenticated) {
+      if (target) {
         void load(target, "none");
       } else {
         requestRef.current += 1;
@@ -187,7 +182,7 @@ export function useConversation({
     }
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, [authenticated, load, resetToNew]);
+  }, [load, resetToNew]);
 
   // A finished turn moves its conversation to the top of the list (or adds it).
   const wasBusyRef = useRef(busy);
@@ -207,6 +202,5 @@ export function useConversation({
     listState,
     selectConversation,
     startNewConversation,
-    commitConversationUrl,
   };
 }

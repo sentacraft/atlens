@@ -101,21 +101,25 @@ describe("useConversation", () => {
     expect(param()).toBeNull();
   });
 
-  it("records a sent turn in the URL without adding a history entry", () => {
-    const { result } = setup();
+  it("names the conversation in the URL once the server lists it", async () => {
+    const { result, rerender, props } = setup();
+    await waitFor(() => expect(result.current.listState).toBe("ready"));
+    expect(param()).toBeNull();
     const lengthBefore = window.history.length;
+    client.fetchConversationList.mockResolvedValueOnce([
+      { id: result.current.conversationId, title: "New", createdAt: 1, updatedAt: 1 },
+    ]);
 
-    act(() => result.current.commitConversationUrl());
-    act(() => result.current.commitConversationUrl());
+    rerender({ ...props, busy: true });
+    rerender({ ...props, busy: false });
 
-    expect(param()).toBe(result.current.conversationId);
+    await waitFor(() => expect(param()).toBe(result.current.conversationId));
     expect(window.history.length).toBe(lengthBefore);
   });
 
-  it("leaves the URL alone for a signed-out sender", () => {
+  it("keeps an unsaved conversation out of the URL", async () => {
     const { result } = setup({ authenticated: false });
-
-    act(() => result.current.commitConversationUrl());
+    await waitFor(() => expect(result.current.listState).toBe("idle"));
 
     expect(param()).toBeNull();
   });
@@ -150,12 +154,12 @@ describe("useConversation", () => {
   });
 
   it("starts fresh and says so when a linked conversation is gone", async () => {
-    client.fetchConversationMessages.mockResolvedValue("not_found");
+    client.fetchConversationMessages.mockResolvedValue("unavailable");
     window.history.replaceState(null, "", "/en/askiris?conversation=conv-gone");
 
     const { result } = setup({ initialConversationId: "conv-gone" });
 
-    await waitFor(() => expect(result.current.notice).toBe("notFound"));
+    await waitFor(() => expect(result.current.notice).toBe("unavailable"));
     expect(result.current.conversationId).not.toBe("conv-gone");
     expect(param()).toBeNull();
   });
@@ -173,14 +177,16 @@ describe("useConversation", () => {
     expect(param()).toBeNull();
   });
 
-  it("drops a link a signed-out visitor cannot open", () => {
+  it("loads a linked conversation without waiting for the session", async () => {
+    client.fetchConversationMessages.mockResolvedValue("unavailable");
     window.history.replaceState(null, "", "/en/askiris?conversation=conv-a");
 
     const { result } = setup({ initialConversationId: "conv-a", authenticated: false });
 
+    expect(client.fetchConversationMessages).toHaveBeenCalledWith("conv-a");
+    await waitFor(() => expect(result.current.notice).toBe("unavailable"));
     expect(param()).toBeNull();
     expect(result.current.loading).toBe(false);
-    expect(client.fetchConversationMessages).not.toHaveBeenCalled();
   });
 
   it("starts in the loading state for a signed-in visitor's linked conversation", async () => {

@@ -86,7 +86,7 @@
     "historyError": "暂时无法加载历史对话。",
     "historyBusy": "Iris 回复完成后才能切换对话。",
     "loadingConversation": "正在加载对话…",
-    "conversationNotFound": "这个对话已不可用，已为你开始新的对话。",
+    "conversationUnavailable": "这个对话已不可用，已为你开始新的对话。",
     "conversationLoadFailed": "暂时打不开这个对话，请稍后再试。",
     "dismiss": "关闭",
     "rateLimited": "Iris 现在有点忙，稍后再试。",

@@ -18,17 +18,17 @@ export async function fetchConversationList(): Promise<ConversationSummary[]> {
   return data.conversations;
 }
 
-// "not_found" covers both a deleted conversation and one owned by another user; the
-// endpoint deliberately answers both with 404.
+// "unavailable" covers a deleted conversation, one owned by another user (both 404 by
+// design), and a signed-out visitor (401): none of them can be shown.
 export async function fetchConversationMessages(
   conversationId: string,
-): Promise<AskIrisUIMessage[] | "not_found"> {
+): Promise<AskIrisUIMessage[] | "unavailable"> {
   const response = await fetch(
     `/api/askiris/conversations/${encodeURIComponent(conversationId)}`,
     { cache: "no-store" },
   );
-  if (response.status === 404) {
-    return "not_found";
+  if (response.status === 404 || response.status === 401) {
+    return "unavailable";
   }
   if (!response.ok) {
     throw new Error(`conversation_load_${response.status}`);

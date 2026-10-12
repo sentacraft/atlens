@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { setRequestLocale } from "next-intl/server";
 import AskIrisChat from "@/components/askiris/AskIrisChat";
 import { getLensLinkIndex } from "@/lib/ai/lens-link-index";
-import { hasAskIrisSession } from "@/lib/askiris/conversation-auth";
+import { resolveAskIrisEntry } from "@/lib/askiris/entry";
 
 type Params = Promise<{ locale: string }>;
 type SearchParams = Promise<{ q?: string | string[]; conversation?: string | string[] }>;
@@ -28,16 +27,7 @@ export default async function AskIrisPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const { q, conversation } = await searchParams;
-  const initialQuery = (Array.isArray(q) ? q[0] : q)?.trim() || undefined;
-  const initialConversationId =
-    (Array.isArray(conversation) ? conversation[0] : conversation)?.trim() || undefined;
   return (
-    <AskIrisChat
-      initialQuery={initialQuery}
-      initialConversationId={initialConversationId}
-      initialAuthenticated={await hasAskIrisSession(await headers())}
-      lensIndex={getLensLinkIndex(locale)}
-    />
+    <AskIrisChat entry={resolveAskIrisEntry(await searchParams)} lensIndex={getLensLinkIndex(locale)} />
   );
 }

@@ -14,6 +14,8 @@ import { authClient } from "@/lib/auth-client";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
 import { LensLinkProvider } from "@/components/askiris/LensLinkContext";
 import type { LensLinkIndex } from "@/lib/ai/lens-ref";
+import type { AskIrisEntry } from "@/lib/askiris/entry";
+import { CONVERSATION_PARAM } from "@/lib/askiris/conversation-client";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
@@ -31,27 +33,21 @@ const SHELL_CLS =
 // Two states on one route: an empty-state landing (centered hero) before the first
 // message, and the chat thread after.
 export default function AskIrisChat({
-  initialQuery,
-  initialConversationId,
-  initialAuthenticated = false,
+  entry,
   lensIndex,
 }: {
-  initialQuery?: string;
-  initialConversationId?: string;
-  initialAuthenticated?: boolean;
+  entry: AskIrisEntry;
   lensIndex: LensLinkIndex;
 }) {
+  const initialQuery = entry.kind === "handoff" ? entry.query : undefined;
   const t = useTranslations("AskIris");
   const locale = useLocale();
   const mount = useEffectiveMount();
   const debug = useTestHookOption("askIrisTrace") === "on";
   const [input, setInput] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
-  const { data: session, isPending: sessionPending } = authClient.useSession();
-  // The page reads the session on the server, so the first render agrees with the
-  // server HTML however early the shared client store resolves; the store takes over
-  // once it has an answer (e.g. a sign-out in another tab).
-  const authenticated = sessionPending ? initialAuthenticated : Boolean(session?.user);
+  const { data: session } = authClient.useSession();
+  const authenticated = Boolean(session?.user);
   // The history entry's placement and look are still being designed.
   const historyEnabled = useTestHookEnabled();
   // Unthrottled, a long stream re-renders on every chunk and the message-derived
@@ -63,7 +59,7 @@ export default function AskIrisChat({
   });
   const isBusy = status === "submitted" || status === "streaming";
   const conversation = useConversation({
-    initialConversationId,
+    initialConversationId: entry.kind === "resume" ? entry.conversationId : undefined,
     authenticated,
     busy: isBusy,
     stop,
@@ -84,7 +80,6 @@ export default function AskIrisChat({
     if (!trimmed || isBusy) {
       return;
     }
-    conversation.commitConversationUrl();
     sendMessage({ text: trimmed }, { body: turnBody });
     track("askiris_message", { method: "typed" });
     setInput("");
@@ -95,7 +90,6 @@ export default function AskIrisChat({
   // dev double-mount, and is a ref rather than a module flag because navigating away
   // and returning with a new query should send again.
   const submitInitialQuery = useEffectEvent((query: string) => {
-    conversation.commitConversationUrl();
     sendMessage({ text: query }, { body: turnBody });
     track("askiris_message", { method: "handoff" });
   });
@@ -105,10 +99,12 @@ export default function AskIrisChat({
       return;
     }
     initialQuerySent.current = true;
-    submitInitialQuery(initialQuery);
+    // A `conversation` param arriving alongside `q` was overridden by the hand-off.
     const url = new URL(window.location.href);
     url.searchParams.delete("q");
+    url.searchParams.delete(CONVERSATION_PARAM);
     window.history.replaceState(null, "", url.toString());
+    submitInitialQuery(initialQuery);
   }, [initialQuery]);
 
   const renderMessages = useFixtureMessages(messages);
@@ -264,7 +260,7 @@ function ConversationNoticeBanner({
       role="status"
       className="mt-2 flex shrink-0 items-center justify-between gap-3 rounded-lg bg-zinc-100 px-3 py-2 text-xs text-zinc-600 dark:bg-zinc-900 dark:text-zinc-300"
     >
-      <span>{t(kind === "notFound" ? "conversationNotFound" : "conversationLoadFailed")}</span>
+      <span>{t(kind === "unavailable" ? "conversationUnavailable" : "conversationLoadFailed")}</span>
       <button
         type="button"
         onClick={onDismiss}
