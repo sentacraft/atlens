@@ -4,19 +4,22 @@ import { useChat } from "@ai-sdk/react";
 import { track } from "@/lib/analytics/analytics";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { useTestHookOption } from "@/context/TestHookProvider";
+import { authClient } from "@/lib/auth-client";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
 import { LensLinkProvider } from "@/components/askiris/LensLinkContext";
 import type { LensLinkIndex } from "@/lib/ai/lens-ref";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
-import AskIrisDivider from "@/components/askiris/AskIrisDivider";
 import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
 import { useFixtureMessages } from "@/components/askiris/fixtureStore";
-import { useConversation } from "@/components/askiris/useConversation";
+import { useConversation, type ConversationNotice } from "@/components/askiris/useConversation";
+import ConversationHistory from "@/components/askiris/ConversationHistory";
 import {
   askIrisMessageMetadataSchema,
   type AskIrisUIMessage,
@@ -29,9 +32,11 @@ const SHELL_CLS =
 // message, and the chat thread after.
 export default function AskIrisChat({
   initialQuery,
+  initialConversationId,
   lensIndex,
 }: {
   initialQuery?: string;
+  initialConversationId?: string;
   lensIndex: LensLinkIndex;
 }) {
   const t = useTranslations("AskIris");
@@ -39,20 +44,27 @@ export default function AskIrisChat({
   const mount = useEffectiveMount();
   const debug = useTestHookOption("askIrisTrace") === "on";
   const [input, setInput] = useState("");
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const { data: session, isPending: sessionPending } = authClient.useSession();
+  const authenticated = Boolean(session?.user);
   // Unthrottled, a long stream re-renders on every chunk and the message-derived
   // effects below can trip React's update-depth limit.
-  const { messages, sendMessage, status, setMessages, stop, regenerate, error } = useChat<AskIrisUIMessage>({
+  const { messages, sendMessage, status, setMessages, stop, regenerate, error, clearError } = useChat<AskIrisUIMessage>({
     generateId: () => crypto.randomUUID(),
     messageMetadataSchema: askIrisMessageMetadataSchema,
     experimental_throttle: 50,
   });
-  const { archived, conversationId, startNewConversation } = useConversation({
-    messages,
+  const isBusy = status === "submitted" || status === "streaming";
+  const conversation = useConversation({
+    initialConversationId,
+    sessionPending,
+    authenticated,
+    busy: isBusy,
     stop,
     setMessages,
+    clearError,
   });
-
-  const isBusy = status === "submitted" || status === "streaming";
+  const { conversationId } = conversation;
   const errorKind = status === "error" ? classifyError(error) : null;
   const turnBody = { mount, locale, conversationId };
 
@@ -66,6 +78,7 @@ export default function AskIrisChat({
     if (!trimmed || isBusy) {
       return;
     }
+    conversation.commitConversationUrl();
     sendMessage({ text: trimmed }, { body: turnBody });
     track("askiris_message", { method: "typed" });
     setInput("");
@@ -76,6 +89,7 @@ export default function AskIrisChat({
   // dev double-mount, and is a ref rather than a module flag because navigating away
   // and returning with a new query should send again.
   const submitInitialQuery = useEffectEvent((query: string) => {
+    conversation.commitConversationUrl();
     sendMessage({ text: query }, { body: turnBody });
     track("askiris_message", { method: "handoff" });
   });
@@ -94,7 +108,7 @@ export default function AskIrisChat({
   const renderMessages = useFixtureMessages(messages);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { canScrollUp, canScrollDown } = useScrollAffordance(scrollRef, [archived, renderMessages]);
+  const { canScrollUp, canScrollDown } = useScrollAffordance(scrollRef, [renderMessages]);
 
   // Follow the stream only while the user is pinned to the bottom — scrolling up to
   // read mid-stream must not yank them back down. The tolerance absorbs the fractional
@@ -114,21 +128,58 @@ export default function AskIrisChat({
     }
   }, [renderMessages]);
 
-  // A closed topic appends its divider; jump to it so the fresh thread is in view
-  // rather than leaving the user parked up in the archived history.
+  // A switched-to conversation opens at its latest turn.
   useEffect(() => {
-    const el = scrollRef.current;
-    if (archived.length > 0 && el) {
-      el.scrollTo({ top: el.scrollHeight });
-      pinnedRef.current = true;
-    }
-  }, [archived]);
+    pinnedRef.current = true;
+  }, [conversationId]);
+
+  function startNewConversation() {
+    conversation.startNewConversation();
+    setHistoryOpen(false);
+  }
+
+  const historyBar = authenticated ? (
+    <div className="flex h-12 shrink-0 items-center">
+      <ConversationHistory
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+        conversations={conversation.conversations}
+        listState={conversation.listState}
+        activeConversationId={conversationId}
+        busy={isBusy}
+        onSelect={(id) => {
+          conversation.selectConversation(id);
+          setHistoryOpen(false);
+        }}
+        onNew={startNewConversation}
+      />
+    </div>
+  ) : null;
+
+  const notice = conversation.notice ? (
+    <ConversationNoticeBanner kind={conversation.notice} onDismiss={conversation.dismissNotice} />
+  ) : null;
+
+  // Holding the hero back while a linked conversation resolves avoids flashing it
+  // before the thread replaces it.
+  if (conversation.loading || (initialConversationId && sessionPending)) {
+    return (
+      <div className={SHELL_CLS}>
+        {historyBar}
+        <div className="grid flex-1 place-items-center text-sm text-zinc-500 dark:text-zinc-400">
+          {t("loadingConversation")}
+        </div>
+      </div>
+    );
+  }
 
   // Skip the hero when a hand-off query is pending: it fires on mount and fills the
   // thread, so rendering the empty state first would just flash before the reply.
-  if (archived.length === 0 && renderMessages.length === 0 && !initialQuery) {
+  if (renderMessages.length === 0 && !initialQuery) {
     return (
       <div className={SHELL_CLS}>
+        {historyBar}
+        {notice}
         <AskIrisEmptyState
           input={input}
           onInputChange={setInput}
@@ -143,19 +194,14 @@ export default function AskIrisChat({
   return (
     <LensLinkProvider index={lensIndex}>
       <div className={SHELL_CLS}>
+        {historyBar}
+        {notice}
         <div className="relative min-h-0 flex-1">
           <div
             ref={scrollRef}
             onScroll={handleScroll}
             className="h-full space-y-4 overflow-y-auto pt-4 pr-3 pb-6 [scrollbar-width:thin] [scrollbar-color:rgb(212_212_216)_transparent] dark:[scrollbar-color:rgb(63_63_70)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300/70 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700/70"
           >
-            {archived.map((item, i) =>
-              item.kind === "divider" ? (
-                <AskIrisDivider key={`d${i}`} label={item.label} />
-              ) : (
-                <AskIrisThread key={`s${i}`} messages={item.messages} debug={debug} />
-              ),
-            )}
             <AskIrisThread messages={renderMessages} debug={debug} busy={isBusy} />
             {errorKind && (
               <AskIrisError kind={errorKind} onRetry={() => regenerate({ body: turnBody })} />
@@ -188,12 +234,38 @@ export default function AskIrisChat({
             disabled={isBusy}
             placeholder={t("placeholder")}
             sendLabel={t("send")}
-            onNewTopic={() => startNewConversation(t("newTopic"))}
+            onNewTopic={startNewConversation}
             newTopicLabel={t("newChat")}
-            newTopicDisabled={messages.length === 0}
+            newTopicDisabled={messages.length === 0 || isBusy}
           />
         </div>
       </div>
     </LensLinkProvider>
+  );
+}
+
+function ConversationNoticeBanner({
+  kind,
+  onDismiss,
+}: {
+  kind: ConversationNotice;
+  onDismiss: () => void;
+}) {
+  const t = useTranslations("AskIris");
+  return (
+    <div
+      role="status"
+      className="mt-2 flex shrink-0 items-center justify-between gap-3 rounded-lg bg-zinc-100 px-3 py-2 text-xs text-zinc-600 dark:bg-zinc-900 dark:text-zinc-300"
+    >
+      <span>{t(kind === "notFound" ? "conversationNotFound" : "conversationLoadFailed")}</span>
+      <button
+        type="button"
+        onClick={onDismiss}
+        aria-label={t("dismiss")}
+        className={cn(ICON_CLOSE_BTN_CLS, "size-6")}
+      >
+        <X className="size-3.5" />
+      </button>
+    </div>
   );
 }
