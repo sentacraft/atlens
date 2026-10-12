@@ -44,6 +44,73 @@
 - 在真实本地环境验证 Google 登录、邮箱验证码登录、匿名聊天登录后导入和历史 Conversation 切换。
 - 确认远程 APP DB migration、生产配置和部署 smoke test 状态。
 
+#### 阶段二的技术实现拆分
+
+阶段二原本计划拆成四个技术 PR。当前实现没有按四个独立 PR 拆开，而是集中在当前阶段二分支和 PR #488 中；下面的拆分仍然是后续 agent 理解范围和验证遗漏的依据。
+
+##### PR2-A：历史列表和恢复
+
+目标：把 Ask Iris 从单栏临时状态变成可恢复的 Conversation workspace。
+
+包括：
+
+- 两栏布局和 Conversation 列表。
+- 获取 Conversation 列表与详情。
+- 点击列表项恢复消息。
+- New chat。
+- 使用 URL 保存当前 Conversation。
+- loading、empty、error 状态。
+- 移除内存 archived thread 作为主要历史机制。
+
+当前状态：已在 `aae1a3e feat(askiris): add conversation history workspace` 中实现。
+
+##### PR2-B：对话切换和状态安全
+
+目标：保证 Conversation 切换不会被正在进行的请求或旧状态覆盖。
+
+包括：
+
+- 正在生成回复时禁止或确认切换。
+- 切换 Conversation 时停止当前 stream。
+- 防止旧请求覆盖新 Conversation。
+- 切换后正确同步 `useChat` 的 messages。
+- 新消息完成后更新列表顺序。
+- 新建 Conversation 后正确更新 URL。
+
+当前状态：主要逻辑已随阶段二 workspace 实现，合并前需要重点做竞态和刷新回归验证。
+
+##### PR2-C：匿名聊天登录后的导入
+
+目标：用户匿名聊天后登录时，立即把当前聊天保存到账户。
+
+包括：
+
+- 登录成功后保存当前匿名 Conversation。
+- 创建 Conversation 记录。
+- 批量保存完整 UI message list。
+- 防止重复导入。
+- 导入失败时保留当前页面内容并显示错误。
+- 登录后将当前 Conversation 纳入历史列表。
+
+当前状态：导入 endpoint 和前端触发逻辑已在阶段二实现；合并前需要验证登录成功、重复触发、失败保留和列表刷新。
+
+##### PR2-D：响应式 UI 和交互细节
+
+目标：让 Conversation workspace 在 desktop 和 mobile 上可用。
+
+包括：
+
+- 移动端 drawer。
+- desktop/mobile 视觉验证。
+- 会话标题截断和更新时间显示。
+- 用户入口和当前 Conversation 状态。
+- 键盘无障碍操作。
+- 触摸交互。
+
+当前状态：基础 UI 已随阶段二实现；合并前仍需完成 375px mobile 和 desktop 的人工验证。
+
+阶段二明确不包含：读取旧 Feedback、恢复旧 Thumb Up/Thumb Down 状态、用户名编辑、器材配置、收藏镜头、分享器材配置、Conversation 搜索/重命名、自动生成标题，以及完整的 Agent 上下文推理和确认机制。
+
 ### 阶段三：统一 AI Assistant 与上下文/意图处理
 
 状态：尚未开始实现，仍需先完成产品和 Agent 方案讨论。
