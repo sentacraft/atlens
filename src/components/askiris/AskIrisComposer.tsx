@@ -1,7 +1,7 @@
 "use client";
 
 import { type Ref } from "react";
-import { ArrowUp, Plus } from "lucide-react";
+import { ArrowUp, Plus, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // The AskIris input box, shared by the empty-state hero (size "lg") and the chat
@@ -22,6 +22,9 @@ export default function AskIrisComposer({
   onNewTopic,
   newTopicLabel,
   newTopicDisabled = false,
+  streaming = false,
+  onStop,
+  stopLabel,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -35,6 +38,10 @@ export default function AskIrisComposer({
   onNewTopic?: () => void;
   newTopicLabel?: string;
   newTopicDisabled?: boolean;
+  // While a reply streams, the send button becomes a stop button.
+  streaming?: boolean;
+  onStop?: () => void;
+  stopLabel?: string;
 }) {
   const lg = size === "lg";
   const canSend = !disabled && value.trim().length > 0;
@@ -82,17 +89,32 @@ export default function AskIrisComposer({
           autoFocus={autoFocus}
           onChange={(event) => onChange(event.currentTarget.value)}
         />
-        <button
-          type="submit"
-          disabled={!canSend}
-          aria-label={sendLabel}
-          className={cn(
-            "bg-primary text-primary-foreground grid shrink-0 place-items-center rounded-full transition disabled:opacity-40",
-            lg ? "size-9" : "size-8",
-          )}
-        >
-          <ArrowUp className={lg ? "size-5" : "size-4"} />
-        </button>
+        {streaming && onStop ? (
+          <button
+            type="button"
+            onClick={onStop}
+            aria-label={stopLabel}
+            title={stopLabel}
+            className={cn(
+              "bg-primary text-primary-foreground grid shrink-0 place-items-center rounded-full transition",
+              lg ? "size-9" : "size-8",
+            )}
+          >
+            <Square className={cn("fill-current", lg ? "size-3.5" : "size-3")} />
+          </button>
+        ) : (
+          <button
+            type="submit"
+            disabled={!canSend}
+            aria-label={sendLabel}
+            className={cn(
+              "bg-primary text-primary-foreground grid shrink-0 place-items-center rounded-full transition disabled:opacity-40",
+              lg ? "size-9" : "size-8",
+            )}
+          >
+            <ArrowUp className={lg ? "size-5" : "size-4"} />
+          </button>
+        )}
       </div>
     </form>
   );

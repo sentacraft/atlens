@@ -60,6 +60,7 @@
     "subtitle": "Your personal lens advisor — describe your shoot in plain words, and I'll match it precisely.",
     "placeholder": "Ask Iris",
     "send": "Send",
+    "stop": "Stop",
     "gathering": "Searching lenses…",
     "composing": "Putting it together…",
     "table": {

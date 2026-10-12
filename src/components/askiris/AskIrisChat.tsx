@@ -238,6 +238,9 @@ export default function AskIrisChat({
             disabled={isBusy}
             placeholder={t("placeholder")}
             sendLabel={t("send")}
+            streaming={isBusy}
+            onStop={stop}
+            stopLabel={t("stop")}
             onNewTopic={startNewConversation}
             newTopicLabel={t("newChat")}
             newTopicDisabled={messages.length === 0 || isBusy}
