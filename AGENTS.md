@@ -75,6 +75,9 @@ Do not write:
   and give it a value in the main checkout's `.env.local`. Setting the production value with
   `wrangler secret put` changes production, so ask first. Values for third-party keys come
   from the maintainer and never pass through the chat.
+- Google sign-in works locally only on `localhost:3000` (`pnpm run dev`) and `localhost:8787`
+  (`pnpm run preview`): the OAuth client lists exact redirect URIs, and Google forbids
+  wildcards. A dev server moved to another port by `autoPort` must test sign-in with email OTP.
 
 ## Data
 
