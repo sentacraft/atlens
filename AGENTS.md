@@ -65,20 +65,13 @@ Do not write:
 
 ## Environment variables
 
-- Read secrets and per-environment config through `process.env`. On Workers it is populated
-  from vars and secrets (`nodejs_compat`, compatibility date ≥ 2025-04-01); under `next dev` it
-  holds `.env.local`. Read Cloudflare resource bindings (D1, KV, Email, Analytics Engine)
-  through `getCloudflareContext().env`.
-- Non-secret config goes in `wrangler.toml` `[vars]`. Override it in `.env.local` only when the
-  local value must differ, as `SITE_URL` does.
-- Add a secret with `pnpm run secret:add NAME`, never by hand. It registers the name in
-  `wrangler.toml` and `.env.example` and writes the local value to `.env.local` in the main
-  checkout and every worktree. Self-owned secrets (signing keys): run it with `--generate`.
-  Third-party keys: the maintainer runs it in their own terminal, so the value never passes
-  through the chat. `--prod` uploads to production, so ask first.
-- Google sign-in works locally only on `localhost:3000` (`pnpm run dev`) and `localhost:8787`
-  (`pnpm run preview`): the OAuth client lists exact redirect URIs, and Google forbids
-  wildcards. A dev server moved to another port by `autoPort` must test sign-in with email OTP.
+- Read secrets and per-environment config from `process.env`, and Cloudflare bindings from
+  `getCloudflareContext().env`.
+- Non-secret config lives in `wrangler.toml` `[vars]`; override it in `.env.local` only where the
+  local value must differ.
+- Add secrets with `pnpm run secret:add`. Setting a production value changes production, so ask
+  first, and third-party key values never pass through the chat.
+- Google sign-in works locally only on ports 3000 (`dev`) and 8787 (`preview`).
 
 ## Data
 
