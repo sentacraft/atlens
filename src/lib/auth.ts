@@ -38,8 +38,11 @@ export function createAuth() {
     secret,
     baseURL: {
       allowedHosts: [
+        // Patterns are compared against the Host header, which carries the port.
         "localhost",
+        "localhost:*",
         "127.0.0.1",
+        "127.0.0.1:*",
         "atlens.app",
         "*.atlens.app",
         "*.sentacraft.com",

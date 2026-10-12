@@ -50,6 +50,24 @@ describe("createAuth", () => {
     expect(config.socialProviders).toBeUndefined();
   });
 
+  it.each([
+    ["localhost:3000", "http://localhost:3000/api/auth"],
+    ["localhost:8787", "http://localhost:8787/api/auth"],
+    ["127.0.0.1:8787", "http://127.0.0.1:8787/api/auth"],
+    ["atlens.app", "https://atlens.app/api/auth"],
+    ["evil.example", "http://localhost:3000/api/auth"],
+  ])("resolves the auth base URL for host %s", async (host, expected) => {
+    const { resolveDynamicBaseURL } =
+      await vi.importActual<typeof import("better-auth")>("better-auth");
+    const config = createAuth() as unknown as {
+      baseURL: Parameters<typeof resolveDynamicBaseURL>[0];
+    };
+
+    expect(resolveDynamicBaseURL(config.baseURL, new Headers({ host }), "/api/auth")).toBe(
+      expected,
+    );
+  });
+
   it("refuses to start without a secret", () => {
     vi.stubEnv("BETTER_AUTH_SECRET", "");
 
