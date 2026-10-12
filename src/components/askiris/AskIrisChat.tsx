@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
+import { useHydrated } from "@/hooks/useHydrated";
 import { useTestHookOption } from "@/context/TestHookProvider";
 import { authClient } from "@/lib/auth-client";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
@@ -45,8 +46,10 @@ export default function AskIrisChat({
   const debug = useTestHookOption("askIrisTrace") === "on";
   const [input, setInput] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
-  const { data: session, isPending: sessionPending } = authClient.useSession();
-  const authenticated = Boolean(session?.user);
+  const { data: session, isPending } = authClient.useSession();
+  const hydrated = useHydrated();
+  const sessionPending = !hydrated || isPending;
+  const authenticated = !sessionPending && Boolean(session?.user);
   // Unthrottled, a long stream re-renders on every chunk and the message-derived
   // effects below can trip React's update-depth limit.
   const { messages, sendMessage, status, setMessages, stop, regenerate, error, clearError } = useChat<AskIrisUIMessage>({
