@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { reportTelemetry } from "@/lib/analytics/telemetry";
 
 // Client-side telemetry: reports two classes of problem that the Cloudflare
 // Workers ASSETS pipeline and Cloudflare Web Analytics do not surface:
@@ -11,37 +12,10 @@ import { useEffect } from "react";
 // here — Cloudflare Web Analytics' auto-injected beacon already collects them
 // with country breakdowns, on all plans. Adding `web-vitals` would duplicate
 // that with worse aggregation.
-//
-// Events are sent to /api/telemetry; the Worker tags each with CF-IPCountry
-// and CF-Ray (PoP) before logging. Dedupe to keep volume sane.
 
-const ENDPOINT = "/api/telemetry";
-const DEDUPE_WINDOW_MS = 30_000;
 const ASSET_TAGS = new Set(["IMG", "SCRIPT", "LINK"]);
 const SLOW_ASSET_THRESHOLD_MS = 3000;
 const SLOW_ASSET_KINDS = new Set(["img", "script", "link", "css"]);
-
-const recentlySent = new Map<string, number>();
-
-function send(payload: Record<string, unknown>): void {
-  const key = JSON.stringify(payload);
-  const now = Date.now();
-  const last = recentlySent.get(key);
-  if (last !== undefined && now - last < DEDUPE_WINDOW_MS) {
-    return;
-  }
-  recentlySent.set(key, now);
-  try {
-    const body = JSON.stringify({ ...payload, ts: now, page: location.pathname });
-    if (typeof navigator.sendBeacon === "function") {
-      navigator.sendBeacon(ENDPOINT, body);
-    } else {
-      fetch(ENDPOINT, { method: "POST", body, keepalive: true }).catch(() => {});
-    }
-  } catch {
-    // Telemetry must never throw into the host page.
-  }
-}
 
 export default function AssetTelemetry() {
   useEffect(() => {
@@ -54,7 +28,7 @@ export default function AssetTelemetry() {
       if (!url) {
         return;
       }
-      send({
+      reportTelemetry({
         evt: "asset-error",
         tag: target.tagName,
         url,
@@ -80,7 +54,7 @@ export default function AssetTelemetry() {
             if (e.duration < SLOW_ASSET_THRESHOLD_MS) {
               continue;
             }
-            send({
+            reportTelemetry({
               evt: "slow-asset",
               kind: e.initiatorType,
               url: e.name,

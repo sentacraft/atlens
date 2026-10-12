@@ -28,8 +28,13 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { track } from "@/lib/analytics/analytics";
-
-export type FeedbackType = "data_issue" | "general";
+import {
+  submitFeedback,
+  type FeedbackContext,
+  type FeedbackSubmission,
+  type FeedbackSubmissionContext,
+  type FeedbackType,
+} from "@/lib/feedback/feedback-client";
 
 export interface FeedbackField {
   /** The label exactly as shown on the page, used both as display text and issue payload. */
@@ -42,14 +47,6 @@ export interface FeedbackField {
   hideCurrentValue?: boolean;
 }
 
-export interface FeedbackContext {
-  lensId?: string;
-  lensModel?: string;
-  lensBrand?: string;
-  searchQuery?: string;
-  field?: string;
-}
-
 interface FeedbackDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -59,36 +56,9 @@ interface FeedbackDialogProps {
   fields?: FeedbackField[];
 }
 
-interface FeedbackSubmissionContext extends FeedbackContext {
-  currentValue?: string;
-  suggestedCorrection?: string;
-}
-
-interface FeedbackSubmission {
-  type: FeedbackType;
-  description: string;
-  replyContact?: string;
-  context?: FeedbackSubmissionContext;
-}
-
 function nonEmpty(value?: string): string | undefined {
   const trimmed = value?.trim();
   return trimmed || undefined;
-}
-
-async function submitFeedback(payload: FeedbackSubmission): Promise<void> {
-  const res = await fetch("/api/feedback", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  if (!res.ok) {
-    const data = (await res.json().catch(() => null)) as
-      | { error?: string }
-      | null;
-    throw new Error(data?.error ?? "request_failed");
-  }
 }
 
 export default function FeedbackDialog({
