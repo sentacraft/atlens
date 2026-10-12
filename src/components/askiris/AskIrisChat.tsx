@@ -9,8 +9,7 @@ import { cn } from "@/lib/utils";
 import { ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
-import { useHydrated } from "@/hooks/useHydrated";
-import { useTestHookOption } from "@/context/TestHookProvider";
+import { useTestHookEnabled, useTestHookOption } from "@/context/TestHookProvider";
 import { authClient } from "@/lib/auth-client";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
 import { LensLinkProvider } from "@/components/askiris/LensLinkContext";
@@ -34,10 +33,12 @@ const SHELL_CLS =
 export default function AskIrisChat({
   initialQuery,
   initialConversationId,
+  initialAuthenticated = false,
   lensIndex,
 }: {
   initialQuery?: string;
   initialConversationId?: string;
+  initialAuthenticated?: boolean;
   lensIndex: LensLinkIndex;
 }) {
   const t = useTranslations("AskIris");
@@ -46,10 +47,13 @@ export default function AskIrisChat({
   const debug = useTestHookOption("askIrisTrace") === "on";
   const [input, setInput] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
-  const { data: session, isPending } = authClient.useSession();
-  const hydrated = useHydrated();
-  const sessionPending = !hydrated || isPending;
-  const authenticated = !sessionPending && Boolean(session?.user);
+  const { data: session, isPending: sessionPending } = authClient.useSession();
+  // The page reads the session on the server, so the first render agrees with the
+  // server HTML however early the shared client store resolves; the store takes over
+  // once it has an answer (e.g. a sign-out in another tab).
+  const authenticated = sessionPending ? initialAuthenticated : Boolean(session?.user);
+  // The history entry's placement and look are still being designed.
+  const historyEnabled = useTestHookEnabled();
   // Unthrottled, a long stream re-renders on every chunk and the message-derived
   // effects below can trip React's update-depth limit.
   const { messages, sendMessage, status, setMessages, stop, regenerate, error, clearError } = useChat<AskIrisUIMessage>({
@@ -60,7 +64,6 @@ export default function AskIrisChat({
   const isBusy = status === "submitted" || status === "streaming";
   const conversation = useConversation({
     initialConversationId,
-    sessionPending,
     authenticated,
     busy: isBusy,
     stop,
@@ -141,7 +144,7 @@ export default function AskIrisChat({
     setHistoryOpen(false);
   }
 
-  const historyBar = authenticated ? (
+  const historyBar = authenticated && historyEnabled ? (
     <div className="flex h-12 shrink-0 items-center">
       <ConversationHistory
         open={historyOpen}
@@ -163,9 +166,7 @@ export default function AskIrisChat({
     <ConversationNoticeBanner kind={conversation.notice} onDismiss={conversation.dismissNotice} />
   ) : null;
 
-  // Holding the hero back while a linked conversation resolves avoids flashing it
-  // before the thread replaces it.
-  if (conversation.loading || (initialConversationId && sessionPending)) {
+  if (conversation.loading) {
     return (
       <div className={SHELL_CLS}>
         {historyBar}

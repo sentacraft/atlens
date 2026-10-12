@@ -30,7 +30,6 @@ type Props = Parameters<typeof useConversation>[0];
 
 function setup(overrides: Partial<Props> = {}) {
   const props: Props = {
-    sessionPending: false,
     authenticated: true,
     busy: false,
     stop: vi.fn(),
@@ -174,19 +173,34 @@ describe("useConversation", () => {
     expect(param()).toBeNull();
   });
 
-  it("waits for the session, then drops a link a signed-out visitor cannot open", async () => {
+  it("drops a link a signed-out visitor cannot open", () => {
     window.history.replaceState(null, "", "/en/askiris?conversation=conv-a");
-    const { rerender, props } = setup({
-      initialConversationId: "conv-a",
-      sessionPending: true,
-      authenticated: false,
-    });
-    expect(param()).toBe("conv-a");
 
-    rerender({ ...props, sessionPending: false });
+    const { result } = setup({ initialConversationId: "conv-a", authenticated: false });
 
     expect(param()).toBeNull();
+    expect(result.current.loading).toBe(false);
     expect(client.fetchConversationMessages).not.toHaveBeenCalled();
+  });
+
+  it("starts in the loading state for a signed-in visitor's linked conversation", async () => {
+    client.fetchConversationMessages.mockResolvedValue([message("a1")]);
+    window.history.replaceState(null, "", "/en/askiris?conversation=conv-a");
+
+    const { result } = renderHook(() =>
+      useConversation({
+        initialConversationId: "conv-a",
+        authenticated: true,
+        busy: false,
+        stop: vi.fn(),
+        setMessages: vi.fn(),
+        clearError: vi.fn(),
+      }),
+    );
+
+    expect(result.current.loading).toBe(true);
+    await waitFor(() => expect(result.current.conversationId).toBe("conv-a"));
+    expect(result.current.loading).toBe(false);
   });
 
   it("refreshes the list after a reply without showing the loading state", async () => {

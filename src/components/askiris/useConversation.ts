@@ -23,7 +23,6 @@ export type ConversationListState = "idle" | "loading" | "ready" | "error";
  */
 export function useConversation({
   initialConversationId,
-  sessionPending,
   authenticated,
   busy,
   stop,
@@ -31,7 +30,6 @@ export function useConversation({
   clearError,
 }: {
   initialConversationId?: string;
-  sessionPending: boolean;
   authenticated: boolean;
   busy: boolean;
   stop: () => void;
@@ -41,7 +39,9 @@ export function useConversation({
   // The id only changes once its messages are on screen: sending a turn under an id
   // whose history never loaded would write new messages over its stored sequence.
   const [conversationId, setConversationId] = useState(() => crypto.randomUUID());
-  const [loading, setLoading] = useState(false);
+  // Starts true for a linked conversation, so neither the server render nor the first
+  // client render flashes the empty-state hero before the thread loads.
+  const [loading, setLoading] = useState(() => Boolean(initialConversationId && authenticated));
   const [notice, setNotice] = useState<ConversationNotice | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [listState, setListState] = useState<ConversationListState>("idle");
@@ -156,11 +156,10 @@ export function useConversation({
     void refreshConversations({ background: false });
   }, [refreshConversations]);
 
-  // The URL can only be resolved once the session is known: signed in, load it;
-  // signed out, it cannot be loaded, so drop it from the URL.
+  // Signed out, a linked conversation cannot be loaded, so drop it from the URL.
   const initialHandledRef = useRef(false);
   useEffect(() => {
-    if (sessionPending || initialHandledRef.current || !initialConversationId) {
+    if (initialHandledRef.current || !initialConversationId) {
       return;
     }
     initialHandledRef.current = true;
@@ -169,7 +168,7 @@ export function useConversation({
     } else {
       writeConversationParam(null, "replace");
     }
-  }, [authenticated, initialConversationId, load, sessionPending]);
+  }, [authenticated, initialConversationId, load]);
 
   // Back/Forward cannot be blocked, so a reply still streaming is stopped by load().
   useEffect(() => {
