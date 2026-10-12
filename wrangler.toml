@@ -16,9 +16,10 @@ GITHUB_FEEDBACK_REPO = "sentacraft/x-glass-pipeline"
 GITHUB_FEEDBACK_ASSIGNEES = "sentacraft"
 AUTH_EMAIL_FROM = "login@atlens.app"
 
-# Secret names the Worker expects. Values live in `wrangler secret put` (production)
-# and each developer's .env.local (local). `wrangler deploy` fails if one is missing
-# remotely; `pnpm run env:check` (run by predev) warns if one is missing locally.
+# Secret names the Worker expects; add new ones with `pnpm run secret:add`. Values live
+# in `wrangler secret put` (production) and each developer's .env.local (local).
+# `wrangler deploy` fails if one is missing remotely; `pnpm run env:check` (run by
+# predev) warns if one is missing locally.
 [secrets]
 required = [
   "BETTER_AUTH_SECRET",
