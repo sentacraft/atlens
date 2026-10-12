@@ -16,6 +16,21 @@ GITHUB_FEEDBACK_REPO = "sentacraft/x-glass-pipeline"
 GITHUB_FEEDBACK_ASSIGNEES = "sentacraft"
 AUTH_EMAIL_FROM = "login@atlens.app"
 
+# Secret names the Worker expects. Values live in `wrangler secret put` (production)
+# and each developer's .env.local (local). `wrangler deploy` fails if one is missing
+# remotely; `pnpm run env:check` (run by predev) warns if one is missing locally.
+[secrets]
+required = [
+  "BETTER_AUTH_SECRET",
+  "CF_ACCOUNT_ID",
+  "CF_ANALYTICS_TOKEN",
+  "DASHSCOPE_API_KEY",
+  "GITHUB_TOKEN",
+  "GOOGLE_CLIENT_ID",
+  "GOOGLE_CLIENT_SECRET",
+  "RATE_LIMIT_BYPASS",
+]
+
 [[analytics_engine_datasets]]
 binding = "ANALYTICS"
 dataset = "xglass_events"

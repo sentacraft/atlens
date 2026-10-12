@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Suspense } from "react";
+import { Suspense, type ReactNode } from "react";
 import { notFound } from "next/navigation";
 import NavProgress from "@/components/nav/NavProgress";
 import { NextIntlClientProvider } from "next-intl";
@@ -129,6 +129,16 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+// Offset fixed nav and iOS home indicator. Body also carries bg-background, so the
+// safe-area strip and any short-page gap render as a single seamless canvas color.
+function PageFrame({ children }: { children: ReactNode }) {
+  return (
+    <div className="pt-[var(--nav-height)] pb-[var(--safe-inset-bottom)] min-h-svh">
+      {children}
+    </div>
+  );
+}
+
 export default async function LocaleLayout({
   children,
   params,
@@ -169,20 +179,21 @@ export default async function LocaleLayout({
               <Suspense fallback={null}>
                 <Redaction />
               </Suspense>
-              <Nav />
-              {/* Offset fixed nav and iOS home indicator. Body also carries
-                  bg-background, so the safe-area strip and any short-page gap
-                  render as a single seamless canvas color. */}
-              <div className="pt-[var(--nav-height)] pb-[var(--safe-inset-bottom)] min-h-svh">
-                {TESTHOOK_ALLOWED ? (
-                  <TestHookProvider>
+              {TESTHOOK_ALLOWED ? (
+                // Wraps Nav too: its AuthControl reads the persisted test hook state.
+                <TestHookProvider>
+                  <Nav />
+                  <PageFrame>
                     {children}
                     <TestHookPanel model={agentModelInfo()} />
-                  </TestHookProvider>
-                ) : (
-                  children
-                )}
-              </div>
+                  </PageFrame>
+                </TestHookProvider>
+              ) : (
+                <>
+                  <Nav />
+                  <PageFrame>{children}</PageFrame>
+                </>
+              )}
             </NavProvider>
           </CompareProvider>
           </MountPreferenceProvider>
