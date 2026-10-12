@@ -1,22 +1,25 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import { toast } from "sonner";
 import { track } from "@/lib/analytics/analytics";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
-import { useTestHookOption } from "@/context/TestHookProvider";
+import { useTestHookEnabled, useTestHookOption } from "@/context/TestHookProvider";
+import { authClient } from "@/lib/auth-client";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
 import { LensLinkProvider } from "@/components/askiris/LensLinkContext";
 import type { LensLinkIndex } from "@/lib/ai/lens-ref";
+import { clearEntryParams, type AskIrisEntry } from "@/lib/url/askiris";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
-import AskIrisDivider from "@/components/askiris/AskIrisDivider";
 import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
 import { useFixtureMessages } from "@/components/askiris/fixtureStore";
 import { useConversation } from "@/components/askiris/useConversation";
+import ConversationHistory from "@/components/askiris/ConversationHistory";
 import {
   askIrisMessageMetadataSchema,
   type AskIrisUIMessage,
@@ -28,31 +31,47 @@ const SHELL_CLS =
 // Two states on one route: an empty-state landing (centered hero) before the first
 // message, and the chat thread after.
 export default function AskIrisChat({
-  initialQuery,
+  entry,
   lensIndex,
 }: {
-  initialQuery?: string;
+  entry: AskIrisEntry;
   lensIndex: LensLinkIndex;
 }) {
+  const initialQuery = entry.kind === "handoff" ? entry.query : undefined;
   const t = useTranslations("AskIris");
   const locale = useLocale();
   const mount = useEffectiveMount();
   const debug = useTestHookOption("askIrisTrace") === "on";
   const [input, setInput] = useState("");
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const { data: session } = authClient.useSession();
+  const userId = session?.user.id;
+  // The history entry's placement and look are still being designed.
+  const historyEnabled = useTestHookEnabled();
   // Unthrottled, a long stream re-renders on every chunk and the message-derived
   // effects below can trip React's update-depth limit.
-  const { messages, sendMessage, status, setMessages, stop, regenerate, error } = useChat<AskIrisUIMessage>({
+  const { messages, sendMessage, status, setMessages, stop, regenerate, error, clearError } = useChat<AskIrisUIMessage>({
     generateId: () => crypto.randomUUID(),
     messageMetadataSchema: askIrisMessageMetadataSchema,
     experimental_throttle: 50,
   });
-  const { archived, conversationId, startNewConversation } = useConversation({
-    messages,
+  const isBusy = status === "submitted" || status === "streaming";
+  const conversation = useConversation({
+    initialConversationId: entry.kind === "resume" ? entry.conversationId : undefined,
+    userId,
+    busy: isBusy,
     stop,
     setMessages,
+    clearError,
+    onNotice: (notice) => {
+      if (notice === "unavailable") {
+        toast(t("conversationUnavailable"));
+      } else {
+        toast.error(t("conversationLoadFailed"));
+      }
+    },
   });
-
-  const isBusy = status === "submitted" || status === "streaming";
+  const { conversationId } = conversation;
   const errorKind = status === "error" ? classifyError(error) : null;
   const turnBody = { mount, locale, conversationId };
 
@@ -85,16 +104,14 @@ export default function AskIrisChat({
       return;
     }
     initialQuerySent.current = true;
+    clearEntryParams();
     submitInitialQuery(initialQuery);
-    const url = new URL(window.location.href);
-    url.searchParams.delete("q");
-    window.history.replaceState(null, "", url.toString());
   }, [initialQuery]);
 
   const renderMessages = useFixtureMessages(messages);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { canScrollUp, canScrollDown } = useScrollAffordance(scrollRef, [archived, renderMessages]);
+  const { canScrollUp, canScrollDown } = useScrollAffordance(scrollRef, [renderMessages]);
 
   // Follow the stream only while the user is pinned to the bottom — scrolling up to
   // read mid-stream must not yank them back down. The tolerance absorbs the fractional
@@ -114,21 +131,51 @@ export default function AskIrisChat({
     }
   }, [renderMessages]);
 
-  // A closed topic appends its divider; jump to it so the fresh thread is in view
-  // rather than leaving the user parked up in the archived history.
+  // A switched-to conversation opens at its latest turn.
   useEffect(() => {
-    const el = scrollRef.current;
-    if (archived.length > 0 && el) {
-      el.scrollTo({ top: el.scrollHeight });
-      pinnedRef.current = true;
-    }
-  }, [archived]);
+    pinnedRef.current = true;
+  }, [conversationId]);
+
+  function startNewConversation() {
+    conversation.startNewConversation();
+    setHistoryOpen(false);
+  }
+
+  const historyBar = userId && historyEnabled ? (
+    <div className="flex h-12 shrink-0 items-center">
+      <ConversationHistory
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+        conversations={conversation.conversations}
+        listState={conversation.listState}
+        activeConversationId={conversationId}
+        busy={isBusy}
+        onSelect={(id) => {
+          conversation.selectConversation(id);
+          setHistoryOpen(false);
+        }}
+        onNew={startNewConversation}
+      />
+    </div>
+  ) : null;
+
+  if (conversation.loading) {
+    return (
+      <div className={SHELL_CLS}>
+        {historyBar}
+        <div className="grid flex-1 place-items-center text-sm text-zinc-500 dark:text-zinc-400">
+          {t("loadingConversation")}
+        </div>
+      </div>
+    );
+  }
 
   // Skip the hero when a hand-off query is pending: it fires on mount and fills the
   // thread, so rendering the empty state first would just flash before the reply.
-  if (archived.length === 0 && renderMessages.length === 0 && !initialQuery) {
+  if (renderMessages.length === 0 && !initialQuery) {
     return (
       <div className={SHELL_CLS}>
+        {historyBar}
         <AskIrisEmptyState
           input={input}
           onInputChange={setInput}
@@ -143,19 +190,13 @@ export default function AskIrisChat({
   return (
     <LensLinkProvider index={lensIndex}>
       <div className={SHELL_CLS}>
+        {historyBar}
         <div className="relative min-h-0 flex-1">
           <div
             ref={scrollRef}
             onScroll={handleScroll}
             className="h-full space-y-4 overflow-y-auto pt-4 pr-3 pb-6 [scrollbar-width:thin] [scrollbar-color:rgb(212_212_216)_transparent] dark:[scrollbar-color:rgb(63_63_70)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300/70 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700/70"
           >
-            {archived.map((item, i) =>
-              item.kind === "divider" ? (
-                <AskIrisDivider key={`d${i}`} label={item.label} />
-              ) : (
-                <AskIrisThread key={`s${i}`} messages={item.messages} debug={debug} />
-              ),
-            )}
             <AskIrisThread messages={renderMessages} debug={debug} busy={isBusy} />
             {errorKind && (
               <AskIrisError kind={errorKind} onRetry={() => regenerate({ body: turnBody })} />
@@ -188,9 +229,12 @@ export default function AskIrisChat({
             disabled={isBusy}
             placeholder={t("placeholder")}
             sendLabel={t("send")}
-            onNewTopic={() => startNewConversation(t("newTopic"))}
+            streaming={isBusy}
+            onStop={stop}
+            stopLabel={t("stop")}
+            onNewTopic={startNewConversation}
             newTopicLabel={t("newChat")}
-            newTopicDisabled={messages.length === 0}
+            newTopicDisabled={messages.length === 0 || isBusy}
           />
         </div>
       </div>
