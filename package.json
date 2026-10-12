@@ -8,6 +8,7 @@
     "predev": "node --experimental-strip-types scripts/check-env.mts && node --experimental-strip-types scripts/build-lens-image-manifest.mts",
     "dev": "next dev",
     "env:check": "node --experimental-strip-types scripts/check-env.mts",
+    "secret:add": "node --experimental-strip-types scripts/secret-add.mts",
     "check": "pnpm run lint && pnpm run typecheck",
     "prebuild": "wrangler types --env-interface CloudflareEnv && node --experimental-strip-types scripts/build-lens-image-manifest.mts",
     "build": "tsx scripts/gen-icons.tsx && tsx scripts/verify-icons.ts && node --experimental-strip-types scripts/validate-lenses.mts && next build && node --experimental-strip-types scripts/check-static-routes.mts",

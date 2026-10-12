@@ -71,10 +71,11 @@ Do not write:
   through `getCloudflareContext().env`.
 - Non-secret config goes in `wrangler.toml` `[vars]`. Override it in `.env.local` only when the
   local value must differ, as `SITE_URL` does.
-- Adding a secret: add its name to `[secrets] required` in `wrangler.toml` and to `.env.example`,
-  and give it a value in the main checkout's `.env.local`. Setting the production value with
-  `wrangler secret put` changes production, so ask first. Values for third-party keys come
-  from the maintainer and never pass through the chat.
+- Add a secret with `pnpm run secret:add NAME`, never by hand. It registers the name in
+  `wrangler.toml` and `.env.example` and writes the local value to `.env.local` in the main
+  checkout and every worktree. Self-owned secrets (signing keys): run it with `--generate`.
+  Third-party keys: the maintainer runs it in their own terminal, so the value never passes
+  through the chat. `--prod` uploads to production, so ask first.
 - Google sign-in works locally only on `localhost:3000` (`pnpm run dev`) and `localhost:8787`
   (`pnpm run preview`): the OAuth client lists exact redirect URIs, and Google forbids
   wildcards. A dev server moved to another port by `autoPort` must test sign-in with email OTP.
