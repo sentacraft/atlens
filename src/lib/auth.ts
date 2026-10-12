@@ -6,47 +6,48 @@ import { emailOTP } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { D1Dialect } from "kysely-d1";
 
-type AuthEnv = Cloudflare.Env & {
-  BETTER_AUTH_SECRET?: string;
-  GOOGLE_CLIENT_ID?: string;
-  GOOGLE_CLIENT_SECRET?: string;
-};
-
 function getAuthContext() {
   const context = getCloudflareContext();
-  const env = context.env as AuthEnv;
+  const env = context.env;
+  const secret = process.env.BETTER_AUTH_SECRET;
 
-  if (!env.BETTER_AUTH_SECRET) {
+  if (!secret) {
     throw new Error("BETTER_AUTH_SECRET is not configured");
   }
 
-  return { context, env };
+  return { context, env, secret };
 }
 
 export function createAuth() {
-  const { context, env } = getAuthContext();
+  const { context, env, secret } = getAuthContext();
+  const googleClientId = process.env.GOOGLE_CLIENT_ID;
+  const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const siteURL = process.env.SITE_URL;
   const socialProviders =
-    env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
+    googleClientId && googleClientSecret
       ? {
           google: {
-            clientId: env.GOOGLE_CLIENT_ID,
-            clientSecret: env.GOOGLE_CLIENT_SECRET,
+            clientId: googleClientId,
+            clientSecret: googleClientSecret,
           },
         }
       : undefined;
 
   return betterAuth({
     appName: "Atlens",
-    secret: env.BETTER_AUTH_SECRET,
+    secret,
     baseURL: {
       allowedHosts: [
+        // Patterns are compared against the Host header, which carries the port.
         "localhost",
+        "localhost:*",
         "127.0.0.1",
+        "127.0.0.1:*",
         "atlens.app",
         "*.atlens.app",
         "*.sentacraft.com",
       ],
-      fallback: env.SITE_URL,
+      fallback: siteURL,
     },
     database: {
       dialect: new D1Dialect({ database: env.APP_DB }),
