@@ -25,7 +25,7 @@ describe("ResponseFeedback", () => {
 
     return render(
       <QueryClientProvider client={queryClient}>
-        <ResponseFeedback turnId="user-1" responseMessageId="assistant-1" />
+        <ResponseFeedback responseMessageId="assistant-1" />
       </QueryClientProvider>,
     );
   }
@@ -42,7 +42,6 @@ describe("ResponseFeedback", () => {
     expect(helpful).toHaveAttribute("aria-pressed", "true");
     await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
-      turnId: "user-1",
       responseMessageId: "assistant-1",
       rating: "helpful",
     });
@@ -64,7 +63,6 @@ describe("ResponseFeedback", () => {
     expect(submit).toBeEnabled();
     await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
-      turnId: "user-1",
       responseMessageId: "assistant-1",
       rating: "unhelpful",
     });
@@ -108,7 +106,6 @@ describe("ResponseFeedback", () => {
     resolveInitial(new Response(null, { status: 200 }));
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
     expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({
-      turnId: "user-1",
       responseMessageId: "assistant-1",
       rating: "unhelpful",
       reasonCodes: ["incorrect_information"],

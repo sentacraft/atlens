@@ -3,7 +3,8 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { isRateLimited, rateLimitedResponse } from "@/lib/rate-limit";
 import { askIrisResponseMessageIdSchema } from "@/lib/askiris/response-feedback-contract";
 import { deleteAskIrisResponseFeedback } from "@/lib/askiris/response-feedback-repository";
-
+import { getAskIrisUserId } from "@/lib/askiris/conversation-auth";
+import { getOwnedAskIrisResponseTurnId } from "@/lib/askiris/conversation-repository";
 
 export async function DELETE(
   req: Request,
@@ -19,16 +20,29 @@ export async function DELETE(
     return NextResponse.json({ error: "invalid_feedback" }, { status: 400 });
   }
 
-  let db: D1Database;
+  const userId = await getAskIrisUserId(req);
+  if (!userId) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+
+  let env: CloudflareEnv;
   try {
-    db = getCloudflareContext().env.ASKIRIS_DB;
+    env = getCloudflareContext().env;
   } catch (error) {
     console.error("[askiris] response feedback database unavailable", error);
     return NextResponse.json({ error: "feedback_unavailable" }, { status: 503 });
   }
 
   try {
-    await deleteAskIrisResponseFeedback(db, parsed.data);
+    const turnId = await getOwnedAskIrisResponseTurnId(env.APP_DB, {
+      responseMessageId: parsed.data,
+      userId,
+    });
+    if (!turnId) {
+      return NextResponse.json({ error: "not_found" }, { status: 404 });
+    }
+
+    await deleteAskIrisResponseFeedback(env.ASKIRIS_DB, parsed.data);
   } catch (error) {
     const errorType = error instanceof Error ? error.name : "unknown";
     console.error("[askiris] response feedback deletion failed", {

@@ -1,14 +1,12 @@
 import type { AskIrisResponseFeedbackInput } from "@/lib/askiris/response-feedback-contract";
 
 export async function postResponseFeedback({
-  turnId,
   responseMessageId,
   rating,
   reasonCodes,
   comment,
 }: AskIrisResponseFeedbackInput): Promise<void> {
   const body: AskIrisResponseFeedbackInput = {
-    turnId,
     responseMessageId,
     rating,
   };

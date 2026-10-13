@@ -205,13 +205,7 @@ function ResponseFeedbackDialog({
   );
 }
 
-export default function ResponseFeedback({
-  turnId,
-  responseMessageId,
-}: {
-  turnId: string;
-  responseMessageId: string;
-}) {
+export default function ResponseFeedback({ responseMessageId }: { responseMessageId: string }) {
   const t = useTranslations("AskIris.responseFeedback");
   const [rating, setRating] = useState<Rating | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -243,7 +237,6 @@ export default function ResponseFeedback({
     setDialogOpen(nextRating === "unhelpful");
 
     writeMutation.mutate({
-      turnId,
       responseMessageId,
       rating: nextRating,
     });
@@ -252,7 +245,6 @@ export default function ResponseFeedback({
   async function submitDetails(details: ResponseFeedbackDetails): Promise<void> {
     try {
       await writeMutation.mutateAsync({
-        turnId,
         responseMessageId,
         rating: "unhelpful",
         reasonCodes: details.reasonCodes,

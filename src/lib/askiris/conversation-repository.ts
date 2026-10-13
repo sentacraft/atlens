@@ -222,3 +222,20 @@ export async function getAskIrisConversationMessages(
     createdAt: row.created_at,
   }));
 }
+
+/** The turn a stored response answers, or null unless the response belongs to `userId`. */
+export async function getOwnedAskIrisResponseTurnId(
+  db: D1Database,
+  input: { responseMessageId: string; userId: string },
+): Promise<string | null> {
+  const row = await db
+    .prepare(
+      `SELECT json_extract(m.message_json, '$.metadata.turnId') AS turn_id
+       FROM askiris_messages AS m
+       INNER JOIN askiris_conversations AS c ON c.id = m.conversation_id
+       WHERE m.id = ? AND m.role = 'assistant' AND c.user_id = ?`,
+    )
+    .bind(input.responseMessageId, input.userId)
+    .first<{ turn_id: string | null }>();
+  return row?.turn_id ?? null;
+}

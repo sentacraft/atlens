@@ -176,7 +176,7 @@ export default function AskIrisThread({
               return null;
             })}
             {!isUser && turnId && !isStreamingResponse ? (
-              <ResponseFeedback turnId={turnId} responseMessageId={message.id} />
+              <ResponseFeedback responseMessageId={message.id} />
             ) : null}
           </div>
         );
