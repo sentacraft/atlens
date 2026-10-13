@@ -5,6 +5,7 @@ import { betterAuth } from "better-auth";
 import { anonymous, emailOTP } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { D1Dialect } from "kysely-d1";
+import { linkAnonymousUser } from "@/lib/askiris/link-anonymous-user";
 
 function getAuthContext() {
   const context = getCloudflareContext();
@@ -68,7 +69,18 @@ export function createAuth() {
       },
     },
     plugins: [
-      anonymous(),
+      anonymous({
+        // The plugin would delete the anonymous user even when moving its conversations
+        // failed, and the delete cascades to them; linkAnonymousUser deletes only on success.
+        disableDeleteAnonymousUser: true,
+        onLinkAccount: ({ anonymousUser, newUser, ctx }) =>
+          linkAnonymousUser(env.APP_DB, {
+            anonymousUserId: anonymousUser.user.id,
+            newUserId: newUser.user.id,
+            newUserIsAnonymous: Boolean(newUser.user.isAnonymous),
+            deleteUser: (userId) => ctx.context.internalAdapter.deleteUser(userId),
+          }),
+      }),
       emailOTP({
         storeOTP: "hashed",
         async sendVerificationOTP({ email, otp }) {

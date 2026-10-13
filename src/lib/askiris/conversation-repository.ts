@@ -149,6 +149,16 @@ export async function appendAskIrisTurn(
   await db.batch(statements);
 }
 
+export async function transferAskIrisConversations(
+  db: D1Database,
+  input: { fromUserId: string; toUserId: string },
+): Promise<void> {
+  await db
+    .prepare("UPDATE askiris_conversations SET user_id = ? WHERE user_id = ?")
+    .bind(input.toUserId, input.fromUserId)
+    .run();
+}
+
 export async function listAskIrisConversations(
   db: D1Database,
   userId: string,
