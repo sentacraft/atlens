@@ -57,18 +57,12 @@ Device insets (iOS notch, home indicator, Window Controls Overlay) are consumed 
 `env(safe-area-inset-*)` directly in a component. Cover any new inset in
 `e2e/pwa-safe-area.spec.ts`.
 
-Write all code comments in English. Comment on:
+Write all code comments in English. Default to no comment. Write one only where a reader would
+otherwise "fix" the code back — it looks wrong or roundabout but is required — and say in a line
+or two what breaks without it, linking the upstream issue or spec when there is one.
 
-- code that looks wrong but is required for a historical reason
-- non-obvious side effects, ordering dependencies, and implicit contracts
-- references to an external doc or spec
-
-Do not write:
-
-- restatements of what the code literally does
-- explanations of what was *not* written, and why
-- root-cause narratives for a bug that was just fixed — those belong in the commit message or
-  PR description, not in the source
+Background, design rationale, alternatives considered, and bug histories belong in the commit
+message or PR description, not in the source.
 
 ## Environment variables
 
