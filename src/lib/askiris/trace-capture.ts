@@ -135,9 +135,10 @@ export class AskIrisTraceCollector {
   finalizeStream(result: {
     responseMessage: UIMessage;
     isAborted: boolean;
+    isCancelled?: true;
     finishReason?: string;
   }): AskIrisTraceCompletion | undefined {
-    const isAborted = result.isAborted || this.aborted;
+    const isAborted = result.isAborted || result.isCancelled === true || this.aborted;
     const isErrored = this.errored || result.finishReason === "error";
     return this.finalize({
       status: isAborted ? "aborted" : isErrored ? "error" : "completed",
