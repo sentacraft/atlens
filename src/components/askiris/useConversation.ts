@@ -13,14 +13,7 @@ import { readConversationParam, writeConversationParam } from "@/lib/url/askiris
 export type ConversationNotice = "unavailable" | "loadFailed";
 export type ConversationListState = "idle" | "loading" | "ready" | "error";
 
-/**
- * Owns which persisted conversation the chat shows and keeps it in step with the
- * `?conversation=` URL param and the signed-in user's conversation list.
- *
- * Every switch (select, new chat, Back/Forward) bumps one request token; a load that
- * resolves under a stale token is dropped, so a slow response can never overwrite the
- * conversation the user moved to since.
- */
+// Every switch bumps one request token; a load resolving under a stale token is dropped.
 export function useConversation({
   initialConversationId,
   userId,
@@ -31,20 +24,16 @@ export function useConversation({
   onNotice,
 }: {
   initialConversationId?: string;
-  // Undefined while signed out or while the session is still resolving.
   userId: string | undefined;
   busy: boolean;
   stop: () => void;
   setMessages: (messages: AskIrisUIMessage[]) => void;
   clearError: () => void;
-  // One-off events the user should hear about; the caller decides how to show them.
   onNotice: (notice: ConversationNotice) => void;
 }) {
-  // The id only changes once its messages are on screen: sending a turn under an id
-  // whose history never loaded would write new messages over its stored sequence.
+  // Changes only once its messages are on screen: a turn sent under an id whose history never
+  // loaded would overwrite its stored sequence.
   const [conversationId, setConversationId] = useState(() => crypto.randomUUID());
-  // Starts true for a linked conversation, so neither the server render nor the first
-  // client render flashes the empty-state hero before the thread loads.
   const [loading, setLoading] = useState(() => Boolean(initialConversationId));
 
   const requestRef = useRef(0);
@@ -91,7 +80,6 @@ export function useConversation({
         if (token !== requestRef.current) {
           return;
         }
-        // Keep showing what was there, and stop the URL from naming the failed target.
         if (readConversationParam() === targetId) {
           writeConversationParam(null, "replace");
         }
@@ -131,7 +119,6 @@ export function useConversation({
     enabled: Boolean(userId),
   });
   const conversations = userId ? (listQuery.data ?? []) : [];
-  // A background refetch keeps showing the list it has, so only a first load is "loading".
   const listState: ConversationListState = !userId
     ? "idle"
     : listQuery.data
@@ -140,16 +127,12 @@ export function useConversation({
         ? "error"
         : "loading";
 
-  // Name the shown conversation in the URL once the server lists it, so a reload
-  // reopens it; earlier, a reload would find nothing to open.
   useEffect(() => {
     if (listQuery.data?.some((item) => item.id === conversationIdRef.current)) {
       writeConversationParam(conversationIdRef.current, "replace");
     }
   }, [listQuery.data]);
 
-  // Loaded without waiting for the session: the endpoint answers a signed-out visitor
-  // with 401, which shows the same "unavailable" notice as a missing conversation.
   const initialHandledRef = useRef(false);
   useEffect(() => {
     if (initialHandledRef.current || !initialConversationId) {
@@ -159,7 +142,6 @@ export function useConversation({
     void load(initialConversationId, "none");
   }, [initialConversationId, load]);
 
-  // Back/Forward cannot be blocked, so a reply still streaming is stopped by load().
   useEffect(() => {
     function onPopState() {
       const target = readConversationParam();
@@ -177,7 +159,6 @@ export function useConversation({
     return () => window.removeEventListener("popstate", onPopState);
   }, [load, resetToNew]);
 
-  // A finished turn moves its conversation to the top of the list (or adds it).
   const wasBusyRef = useRef(busy);
   useEffect(() => {
     if (wasBusyRef.current && !busy && userId) {

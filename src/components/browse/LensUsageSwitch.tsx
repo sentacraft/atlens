@@ -5,14 +5,6 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import type { UsageFilter } from "@/lib/lens/lens";
 
-/**
- * Photo/Cine view-mode switch that rides the section-nav row, not the filter
- * panel. Photo and cine are two largely-separate product universes — a top
- * partition of the catalog, not a refinement — so this reads as a light text
- * toggle (icon + label, divided by a hairline), deliberately quieter than the
- * filter pills below. Both options carry their own icon at all times; the
- * active one is emphasized by colour rather than a heavy pill.
- */
 const OPTIONS: {
   value: UsageFilter;
   labelKey: string;

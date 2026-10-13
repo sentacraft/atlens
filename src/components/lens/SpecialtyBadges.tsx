@@ -4,12 +4,6 @@ import type { OpticalTrait } from "@/lib/types";
 interface SpecialtyBadgesProps {
   isCine: boolean;
   opticalTraits: OpticalTrait[];
-  /**
-   * When set, only the first `maxInline` pills render; the rest collapse
-   * into a `+N` chip whose title attribute lists the hidden labels. Use on
-   * narrow containers (lens card subtitle row) to keep the row single-line.
-   * Omit on detail / compare pages to render every pill.
-   */
   maxInline?: number;
 }
 
@@ -22,13 +16,7 @@ const traitPillCls =
 const overflowPillCls =
   "inline-flex shrink-0 items-center whitespace-nowrap rounded-md px-1.5 py-0.5 text-[11px] font-medium text-zinc-500 dark:text-zinc-400";
 
-/**
- * Renders specialty pills as a Fragment with no wrapper element — the caller
- * is responsible for placing them inside a flex container. This lets the
- * lens card put them on the same row as the feature badges (so cards with
- * and without specialty share the same vertical rhythm), while the detail
- * and compare pages can wrap them in a dedicated row.
- */
+// No wrapper element: the caller places the pills in its own flex row.
 export default function SpecialtyBadges({
   isCine,
   opticalTraits,

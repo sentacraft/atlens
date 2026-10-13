@@ -4,9 +4,6 @@ import type { EventName, EventProps, TrackPayload } from "@/lib/analytics/events
 
 const ENDPOINT = "/api/track";
 
-// Fire-and-forget analytics. Never throws, never blocks, never logs to the
-// console. Failures are silent on purpose — if the beacon doesn't make it,
-// the user shouldn't see a console error or a failed network request.
 export function track(event: EventName, props?: EventProps): void {
   if (typeof window === "undefined") {
     return;
@@ -36,6 +33,5 @@ export function track(event: EventName, props?: EventProps): void {
       keepalive: true,
     }).catch(() => {});
   } catch {
-    // Analytics must never break the page.
   }
 }

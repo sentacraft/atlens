@@ -3,11 +3,6 @@ import { cn } from "@/lib/utils";
 export type SegmentedLabel = { default: string; mobile?: string };
 export type SegmentedOption<T> = { value: T; label: SegmentedLabel };
 
-// Layout variant — all three converge to the same content-width inline control
-// at sm+; they differ only in how the control sits at mobile width:
-//   full   — owns its row, full width (the neutral default)
-//   paired — shares a row with a sibling, takes an equal flex share, tighter
-//   wrap   — owns its row, full width, pills wrap onto multiple lines
 type SegmentedVariant = "full" | "paired" | "wrap";
 
 interface TypeSegmentedControlProps<T> {

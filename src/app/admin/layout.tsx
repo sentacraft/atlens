@@ -1,7 +1,4 @@
-// Minimal layout for the admin section. No i18n, no nav — gated by
-// Cloudflare Access in production (see PR description for setup).
-// Shares the main site's font stack (Geist Sans + Source Serif 4) via
-// the exported fontClassName so admin looks of-a-piece with the product.
+// Gated by Cloudflare Access in production.
 
 import { fontClassName } from "../fonts";
 import "../globals.css";

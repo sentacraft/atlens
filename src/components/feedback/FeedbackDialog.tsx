@@ -38,13 +38,9 @@ import {
 } from "@/lib/feedback/feedback-client";
 
 export interface FeedbackField {
-  /** The label exactly as shown on the page, used both as display text and issue payload. */
   label: string;
-  /** Current display value for this field on this lens, shown read-only after selection. */
   currentValue?: string;
-  /** Group label for the dropdown. Fields with the same group are rendered together. */
   group?: string;
-  /** When true, the current value is not shown to the user (e.g. internal image paths). */
   hideCurrentValue?: boolean;
 }
 
@@ -53,7 +49,6 @@ interface FeedbackDialogProps {
   onOpenChange: (open: boolean) => void;
   type: FeedbackType;
   context?: FeedbackContext;
-  /** Pre-built list of reportable fields for this lens. Only shown for data_issue type. */
   fields?: FeedbackField[];
 }
 
@@ -107,7 +102,6 @@ export default function FeedbackDialog({
 
   const selectedField = allFields.find((f) => f.label === selectedFieldLabel);
 
-  // Group fields by their `group` property, preserving insertion order.
   const groupedFields = showFieldPicker
     ? (() => {
         const groups: { label: string; fields: FeedbackField[] }[] = [];
@@ -189,10 +183,7 @@ export default function FeedbackDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* max-h-none drops the shared drawer's 85svh cap: as the field picker expands,
-          the drawer grows upward from its pinned bottom edge so the Cancel/Submit row
-          stays put, instead of the cap clipping the footer off the bottom. No inner
-          scroll region — the action row is always the bottom of the sheet. */}
+      {/* max-h-none: the drawer grows upward so the footer stays put instead of being clipped. */}
       <DialogPopup className="max-w-md max-h-none">
         <DialogHeader className="flex-row items-start justify-between gap-3 pr-5">
           <div className="flex min-w-0 flex-col gap-1.5">
@@ -211,15 +202,10 @@ export default function FeedbackDialog({
               </p>
             )}
           </div>
-          {/* Desktop-only corner close; the mobile drawer dismisses via swipe /
-              the footer Cancel, matching LensSearchDialog. As a flex item (not
-              absolute) it occupies real space, so a long title wraps to its left
-              instead of running underneath it. */}
           <DialogClose className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "hidden h-9 w-9 shrink-0 sm:inline-flex")}>
             <X className="h-4 w-4" />
           </DialogClose>
         </DialogHeader>
-
 
         {isSuccess ? (
           <FeedbackSuccessState onClose={() => onOpenChange(false)} />
@@ -366,7 +352,6 @@ export default function FeedbackDialog({
                 {t("contentRequired")}
               </p>
             )}
-            {/* Submission errors are shown via toast, not inline. */}
           </form>
         )}
 
@@ -390,9 +375,7 @@ export default function FeedbackDialog({
             </>
           </DialogFooter>
         ) : null}
-        {/* Portal anchor for the nested field-picker Select: rendering its popup
-            inside the dialog (not document.body) keeps clicks within the dialog's
-            dismiss scope, so picking a field doesn't close the dialog. */}
+        {/* Portal anchor inside the dialog, so picking a field does not dismiss the dialog. */}
         <div ref={dialogLayerRef} />
       </DialogPopup>
     </Dialog>

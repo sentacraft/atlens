@@ -6,10 +6,6 @@ import Iris from "@/components/iris/Iris";
 import { IRIS_ASSISTANT } from "@/config/iris-config";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 
-// The empty-state landing: the animated Iris mark introducing itself, CTA copy,
-// the (large) composer, and a row of cold-start chips. Shown before the first
-// message; sending anything (typed or a chip) hands off to the chat thread.
-// Copy is placeholder for now.
 export default function AskIrisEmptyState({
   input,
   onInputChange,
@@ -27,9 +23,6 @@ export default function AskIrisEmptyState({
   const chips = t.raw("chips") as { emoji: string; label: string; prompt: string }[];
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // A chip fills its full prompt into the composer (not send) so the user can
-  // tweak the specifics — budget, body — before asking. Focus + caret-to-end so
-  // they can edit or hit enter straight away.
   function fillFromChip(prompt: string) {
     onChip(prompt);
     requestAnimationFrame(() => {

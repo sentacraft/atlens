@@ -38,8 +38,6 @@ import { useIsMobileDevice } from "@/hooks/useViewport";
 import { pickPriceEntry } from "@/lib/lens/pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
 
-// --- LensHeaderContent: shared inner card content ---
-
 function LensHeaderContent({
   lens,
   mountSegment,
@@ -63,7 +61,6 @@ function LensHeaderContent({
             sizes="(min-width: 640px) 160px, 80px"
             style={lensImageStyle}
             className="object-contain"
-            // Above-fold compare thumbnail: eager, not preloaded (small, not LCP).
             loading="eager"
           />
         </div>
@@ -81,8 +78,6 @@ function LensHeaderContent({
     </Link>
   );
 }
-
-// --- LensHeader ---
 
 function LensHeader({
   lens,
@@ -107,12 +102,8 @@ function LensHeader({
   onShiftLeft: () => void;
   onShiftRight: () => void;
 }) {
-
   return (
     <th className="group relative z-20 h-px align-top border-l border-zinc-200 bg-zinc-50 px-3 py-1 text-left transition-colors sm:py-1.5 sm:group-hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:sm:group-hover:bg-zinc-800">
-      {/* Outer wrapper stretches to full cell height (h-full + h-px on th).
-          On mobile the action buttons are in normal flow; on sm+ they are
-          absolutely positioned so they overlap the card content on hover. */}
       <div className="flex h-full flex-col">
         <div className="flex items-start justify-between gap-1 transition-opacity sm:absolute sm:inset-x-3 sm:top-1.5 sm:z-10 sm:opacity-0 sm:group-hover:opacity-100">
           <button
@@ -144,8 +135,6 @@ function LensHeader({
             </button>
           </div>
         </div>
-        {/* flex-1 fills remaining space after action buttons so mt-auto
-            on links works without overflowing the cell */}
         <div className="mt-1 flex flex-1 flex-col text-center sm:mt-0">
           <LensHeaderContent lens={lens} mountSegment={mountSegment} />
         </div>
@@ -154,8 +143,6 @@ function LensHeader({
     </th>
   );
 }
-
-// --- EmptyLensHeader: placeholder column header with a search trigger ---
 
 function EmptyLensHeader({
   lenses,
@@ -169,7 +156,7 @@ function EmptyLensHeader({
   getResultState: (lens: Lens) => { actionLabel: string; disabled: boolean };
 }) {
   return (
-    // h-px is the CSS trick that allows children to use h-full inside a table cell
+    // h-px lets children use h-full inside a table cell.
     <th className="h-px align-top border-l border-zinc-200 bg-zinc-50 p-2 dark:border-zinc-800 dark:bg-zinc-900">
       <LensSearchDialog
         lenses={lenses}
@@ -183,11 +170,8 @@ function EmptyLensHeader({
   );
 }
 
-// --- CompareTable ---
-
 interface Props {
   allLenses: Lens[];
-  /** Minimum number of columns to display; empty slot headers fill the gap. */
   minColumns?: number;
 }
 
@@ -211,7 +195,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
     .map((id) => allLenses.find((lens) => lens.id === id))
     .filter((lens): lens is Lens => lens !== undefined);
 
-  // Number of empty slot columns to render (search triggers filling up to minColumns)
   const emptySlotCount = Math.max(0, minColumns - orderedLenses.length);
 
   const allPurchaseLinks = orderedLenses.flatMap((l) =>
@@ -238,8 +221,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
 
   const allGroups = useMemo(() => buildSpecGroups(buildSpecGroupLabels(td)), [td]);
 
-  // Resolve all row values once per (lens, row) pair — single source of truth
-  // for both the rendered cells and the Report Dialog's field list.
   const resolvedPerLens = useMemo(() => {
     const map = new Map<string, Map<string, ResolvedSpecRow>>();
     for (const lens of orderedLenses) {
@@ -257,7 +238,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
     return map;
   }, [allGroups, orderedLenses]);
 
-  // Per-view suppression: hide rows where no compared lens has data.
   const visibleGroups = useMemo(
     () =>
       allGroups
@@ -275,7 +255,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
   const { lockNav } = useNav();
   const isPwa = usePwa();
 
-  // --- Phantom sticky header ---
   const theadRef = useRef<HTMLTableSectionElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const phantomInnerRef = useRef<HTMLDivElement>(null);
@@ -295,8 +274,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
     return () => observer.disconnect();
   }, []);
 
-  // phantomVisible is the single source of truth for whether the phantom header
-  // is active. lockNav mirrors it so the two stay in sync automatically.
   const phantomVisible = showPhantom && orderedLenses.length > 0;
 
   useEffect(() => {
@@ -342,8 +319,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
 
   return (
     <>
-    {/* Phantom sticky header: h-0 so it takes no layout space; sticky (not fixed)
-        so it bounces with content during iOS overscroll instead of staying put */}
+    {/* Sticky, not fixed: it bounces with the content during iOS overscroll. */}
     <div data-testid="compare-phantom-container" className={`sticky z-20 h-0 overflow-x-clip ${isPwa ? "top-[var(--nav-height)]" : "top-[var(--safe-inset-top)] sm:top-[var(--nav-height)]"}`}>
       <div
         data-testid="compare-phantom-header"
@@ -356,11 +332,9 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
       >
       <div className="overflow-hidden border-b border-zinc-200 bg-white/95 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-950/95">
       <div className="flex">
-        {/* Fixed blank area matching the sticky label column — never scrolls */}
         {colWidths[0] != null && (
           <div style={{ width: colWidths[0], flexShrink: 0 }} />
         )}
-        {/* Lens columns only — translateX syncs with table horizontal scroll */}
         <div className="flex-1 overflow-hidden">
           <div ref={phantomInnerRef} className="flex">
             {orderedLenses.map((lens, i) => (
@@ -401,7 +375,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
             <col key={lens.id} style={{ width: LENS_COLUMN_MIN_WIDTH }} />
           ))}
           {Array.from({ length: emptySlotCount }).map((_, i) => (
-            // Empty state: no fixed width — table-fixed distributes remaining space evenly
             <col key={`empty-col-${i}`} style={orderedLenses.length > 0 ? { width: LENS_COLUMN_MIN_WIDTH } : undefined} />
           ))}
         </colgroup>
@@ -447,10 +420,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
         </thead>
 
         <tbody>
-          {/* Pricing group — shown when at least one lens has pricing data.
-              Disclaimer rows are rendered OUTSIDE the scrollable table so
-              they wrap within viewport width instead of being clipped by the
-              horizontal overflow container. */}
+          {/* Disclaimers render outside the scrolling table so they wrap instead of being clipped. */}
           {orderedLenses.length > 0 && orderedLenses.some((l) => pickPriceEntry(l.pricing, locale) !== null) && (
             <React.Fragment>
               <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
@@ -459,10 +429,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                     <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
                       {tPricing("rowLabel")}
                     </span>
-                    {/* The "Check price" CTA carries the verify-the-live-price
-                        nudge whenever retailer links render. Show this caveat
-                        only when none do (e.g. locales with no purchase links),
-                        so a bare reference price is never left uncaveated. */}
+                    {/* Only when no retailer link renders: the Check price CTA otherwise carries the caveat. */}
                     {!hasAnyPurchaseLinks && (
                       <span className="text-[11px] leading-tight text-amber-600 dark:text-amber-400">
                         <TriangleAlert className="inline-block align-[-0.125em] size-3 mr-0.5" aria-hidden="true" />
@@ -491,7 +458,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                 ))}
               </tr>
 
-              {/* Where to Buy row — only rendered when purchase links exist */}
               {hasAnyPurchaseLinks && (
                 <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
                   <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 align-middle">
@@ -515,7 +481,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
             </React.Fragment>
           )}
 
-          {/* Populated table: only rendered when at least one lens is selected */}
           {orderedLenses.length > 0 && visibleGroups.map((group) => {
             return (
               <React.Fragment key={group.label}>
@@ -527,9 +492,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                   </td>
                 </tr>
 
-                {/* Data rows */}
                 {group.rows.map((row) => {
-                  // Compute best value for numeric rows using pre-resolved comparables.
                   let bestVal: number | null = null;
                   if (row.kind === "numeric" && row.bestDir) {
                     const vals = orderedLenses
@@ -551,7 +514,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                       key={row.label}
                       className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
                     >
-                      {/* Label cell */}
                       <td className="sticky left-0 z-10 px-3 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900 break-words">
                         <div className="flex items-center justify-end gap-1">
                           {row.labelNote && <FieldNotePopover note={row.labelNote} variant={row.labelNoteVariant} />}
@@ -559,11 +521,9 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                         </div>
                       </td>
 
-                      {/* Value cells — filled lenses */}
                       {orderedLenses.map((lens) => {
                         const resolved = resolvedPerLens.get(lens.id)?.get(row.label);
 
-                        // Lens has no data for this row — render empty cell.
                         if (!resolved) {
                           return (
                             <td
@@ -607,7 +567,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                             bestVal !== null && resolved.comparable === bestVal;
                           const fragment = isBest ? resolved.highlightFragment : undefined;
 
-                          // --- Structured multi-line rendering ---
                           if (resolved.structuredLines && resolved.structuredLines.length > 0) {
                             return (
                               <td
@@ -654,7 +613,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                             );
                           }
 
-                          // --- Plain string rendering ---
                           const displayVal = resolved.displayValue;
                           const usePartialHighlight =
                             isBest &&
@@ -723,7 +681,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                           );
                         }
 
-                        // text row
                         return (
                           <td
                             key={lens.id}
@@ -745,7 +702,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                           </td>
                         );
                       })}
-                      {/* Empty slot cells for unfilled columns */}
                       {Array.from({ length: emptySlotCount }).map((_, i) => (
                         <td
                           key={`empty-cell-${i}`}

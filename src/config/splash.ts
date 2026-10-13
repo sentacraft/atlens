@@ -1,25 +1,12 @@
-// iOS PWA launch-screen configuration.
-//
-// Consumed by two separate places:
-//   scripts/gen-icons.tsx  — generates the PNG files at build time
-//   src/app/[locale]/layout.tsx — emits <link rel="apple-touch-startup-image">
-//
-// Keep this file framework-agnostic (no Next.js imports).
+// Also read by scripts/gen-icons.tsx: no Next.js imports.
 
 export interface SplashDevice {
-  /** Short identifier used as the filename stem, e.g. "12" → splash-12-light.png */
   readonly label: string;
-  /** Physical pixel width of the generated PNG. */
   readonly w: number;
-  /** Physical pixel height of the generated PNG. */
   readonly h: number;
-  /** CSS logical pixel width for the device-width media query. */
   readonly cssW: number;
-  /** CSS logical pixel height for the device-height media query. */
   readonly cssH: number;
-  /** Device pixel ratio for the -webkit-device-pixel-ratio media query. */
   readonly dpr: 2 | 3;
-  /** Human-readable device names for documentation only. */
   readonly devices: string;
 }
 
@@ -38,13 +25,11 @@ export const SPLASH_DEVICES: readonly SplashDevice[] = [
 
 export type SplashScheme = "light" | "dark";
 
-/** Background colours that match the app's primary backgrounds. */
 export const SPLASH_BG: Record<SplashScheme, string> = {
   light: "#ffffff",
   dark:  "#0a0a0a",
 };
 
-/** Absolute URL path to a splash PNG for a given device label and color scheme. */
 export function splashUrl(label: string, scheme: SplashScheme): string {
   return `/splash/splash-${label}-${scheme}.png`;
 }

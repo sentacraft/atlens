@@ -5,7 +5,6 @@ test.describe("Focal range filter", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/en/lenses");
     await page.getByText(/\d+ lenses/).waitFor();
-    // Focal chips are secondary filters behind the "More Filters" disclosure.
     await openSecondaryFilters(page);
   });
 
@@ -13,7 +12,6 @@ test.describe("Focal range filter", () => {
     const countText = await page.getByText(/\d+ lenses/).textContent();
     const totalCount = parseInt(countText!.match(/\d+/)![0], 10);
 
-    // "Standard" (24–50mm) is a stable focal category chip label
     await page.getByRole("button", { name: /^Standard/ }).click();
 
     const filteredText = await page.getByText(/\d+ lenses/).textContent();
@@ -42,16 +40,13 @@ test.describe("Sort controls", () => {
   });
 
   test("toggling sort direction reverses card order", async ({ page }) => {
-    // Grab the first card href with default (asc) order
     const firstCardAsc = await page
       .locator('a[href^="/en/lenses/x/"]:not([href$="/browse"]):not([href$="/collections"]):not([href*="/compare"])')
       .first()
       .getAttribute("href");
 
-    // Click the sort direction toggle button
     await page.getByRole("button", { name: /ascending|descending/i }).click();
 
-    // Wait for the grid to re-render
     await page.waitForTimeout(200);
 
     const firstCardDesc = await page

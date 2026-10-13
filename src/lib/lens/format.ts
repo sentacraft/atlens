@@ -43,11 +43,6 @@ export function tStopDisplay(
   return Array.isArray(tStop) ? `T${tStop[0]}–${tStop[1]}` : `T${tStop}`;
 }
 
-/**
- * Primary aperture string for prominent UI slots (card titles, posters).
- * Cine lenses without a published f-stop show T-stop in the primary slot.
- * Returns undefined when neither value is available.
- */
 export function primaryApertureDisplay(lens: Lens): string | undefined {
   if (lens.maxAperture !== undefined) {
     return apertureDisplay(lens.maxAperture);
@@ -55,11 +50,6 @@ export function primaryApertureDisplay(lens: Lens): string | undefined {
   return tStopDisplay(lens.maxTStop);
 }
 
-/**
- * Secondary aperture string shown beneath the primary slot when both an
- * f-stop and a T-stop are published. Returns undefined when only one (or
- * neither) is available, so callers can suppress the secondary line.
- */
 export function secondaryApertureDisplay(lens: Lens): string | undefined {
   if (lens.maxAperture === undefined) {
     return undefined;
@@ -133,12 +123,6 @@ export function magnificationDisplay(
   return `${maxMagnification.value}x`;
 }
 
-// --- Rich combined formatters ---
-
-/**
- * Combined dimensions display: ⌀diameter × length, with optional length variants
- * on a second line (retracted / wide / tele).
- */
 export function dimensionsRichDisplay(
   diameterMm: number | undefined,
   length: LensLength | undefined,
@@ -180,10 +164,6 @@ export function dimensionsRichDisplay(
   return parts.join("\n");
 }
 
-/**
- * Combined max magnification display. Shows wide/tele variants for zoom lenses,
- * otherwise the single value.
- */
 export function maxMagnificationRichDisplay(
   maxMag: MaxMagnification | undefined,
   labels: { wide: string; tele: string }
@@ -207,14 +187,7 @@ export function maxMagnificationRichDisplay(
   return `${maxMag.value}x`;
 }
 
-// --- Lens name formatters ---
-
-/**
- * Single-line full display name: "Brand [Series] Model".
- * Use in chips, aria-labels, captions, and any single-line context.
- * For Fujifilm the series (XF/XC/MKX) is already embedded in the model
- * name, so it is omitted to avoid duplication.
- */
+// Fujifilm model names already contain the series, so it is omitted.
 export function lensDisplayName(
   brandName: string,
   series: string | undefined,
@@ -226,10 +199,6 @@ export function lensDisplayName(
   return `${brandName} ${series} ${model}`;
 }
 
-/**
- * First line of the two-line name layout: "Brand [· Series]".
- * Use as the subtitle/eyebrow above the model name.
- */
 export function lensSubtitleLine(
   brandName: string,
   series: string | undefined
@@ -237,9 +206,6 @@ export function lensSubtitleLine(
   return series ? `${brandName} · ${series}` : brandName;
 }
 
-// --- Split primary / secondary formatters ---
-
-/** Primary dimensions line: ⌀D × Lmm */
 export function dimensionsPrimaryDisplay(
   diameterMm: number | undefined,
   length: LensLength | undefined
@@ -258,7 +224,6 @@ export function dimensionsPrimaryDisplay(
   return `${length!.mm}mm`;
 }
 
-/** Secondary dimensions: one line per state (Retracted / Wide / Tele). */
 export function dimensionsVariantsDisplay(
   length: LensLength | undefined,
   labels: { retracted: string; wide: string; tele: string }
@@ -267,11 +232,7 @@ export function dimensionsVariantsDisplay(
   if (!variants) {
     return undefined;
   }
-  // When wide and tele are equal AND match the headline length (length.mm), the
-  // pair is fully redundant — the primary dimensions already show that number
-  // and the internalZoom flag conveys the constant length. Suppress both lines.
-  // Keep them when they differ from length.mm (e.g. length.mm is the retracted
-  // length), since the constant extended length is still new information.
+  // Wide and tele equal to length.mm repeat the headline; any other constant length is new information.
   const wideTeleRedundant =
     variants.wide !== undefined &&
     variants.wide === variants.tele &&
@@ -344,12 +305,6 @@ export function mfdComparable(mfd: MinFocusDistance | undefined): number | undef
   return mode.teleCm !== undefined ? Math.min(mode.cm, mode.teleCm) : mode.cm;
 }
 
-/**
- * Primary magnification display.
- * - Zoom with wide/tele variants: shows "Wide Xx · Tele Yx" (avoids redundant value line).
- * - Everything else: shows the primary value.
- * toComparable always uses maxMag.value regardless of display format.
- */
 export function maxMagnificationPrimaryDisplay(
   maxMag: MaxMagnification | undefined,
   labels: { wide: string; tele: string }
@@ -371,7 +326,6 @@ export function maxMagnificationPrimaryDisplay(
   return `${maxMag.value}x`;
 }
 
-/** Secondary magnification: wide/tele breakdown, if any. */
 export function maxMagnificationSecondaryDisplay(
   maxMag: MaxMagnification | undefined,
   labels: { wide: string; tele: string }
@@ -390,8 +344,6 @@ export function maxMagnificationSecondaryDisplay(
   return parts.length > 0 ? parts.join(" · ") : undefined;
 }
 
-// --- Lens configuration ---
-
 export interface LensConfigurationLabels {
   groups: string;
   elements: string;
@@ -404,10 +356,6 @@ export interface LensConfigurationLabels {
   incl: string;
 }
 
-/**
- * Merge manufacturer-specific low-dispersion counts into a unified display line.
- * e.g. ed=3 + sld=2 → "5 ED (incl. 2 SLD)"
- */
 function mergedElementLine(
   base: number | undefined,
   baseLabel: string,
@@ -433,7 +381,6 @@ function mergedElementLine(
   return `${total} ${baseLabel} (${inclLabel} ${vendorCount} ${vendorLabel})`;
 }
 
-/** Primary lens configuration line: "9 groups / 11 elements" */
 export function lensConfigurationPrimaryDisplay(
   configuration: LensConfiguration | undefined,
   labels: LensConfigurationLabels
@@ -444,10 +391,6 @@ export function lensConfigurationPrimaryDisplay(
   return `${configuration.groups} ${labels.groups} / ${configuration.elements} ${labels.elements}`;
 }
 
-/**
- * Secondary lens configuration line: element types joined with " · ".
- * e.g. "3 Asph. · 3 ED · 1 Super ED"
- */
 export function lensConfigurationSecondaryDisplay(
   configuration: LensConfiguration | undefined,
   labels: LensConfigurationLabels

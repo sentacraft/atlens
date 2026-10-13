@@ -73,7 +73,6 @@ export default function AckCard({
         </div>
       </button>
 
-      {/* Grid rows trick: animates height from 0 to auto */}
       <div
         style={{
           display: "grid",

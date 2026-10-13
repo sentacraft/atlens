@@ -1,23 +1,6 @@
-// Physical iris diaphragm mechanism — kinematic engine.
-//
-// Models a 2-point constrained iris: each blade has a fixed pivot pin on the
-// base plate, and a guide pin that slides inside a radial slot on the rotating
-// actuator ring. A single actuator rotation angle theta drives all N blades
-// simultaneously through this constraint.
-//
-// Coordinate convention: SVG space, origin at iris center, +x right, +y down.
-// Angles increase clockwise (SVG convention).
-//
-// Key distinction from src/lib/aperture.ts:
-//   aperture.ts  — parametric / physical-approximation model for the logo mark.
-//   iris-kinematics.ts — full 3-body kinematic model: base plate (fixed) +
-//                       actuator ring (rotates) + N rigid blades (constrained).
+// SVG space: origin at the iris center, +y down, angles clockwise.
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-/** Full configuration for the iris mechanism and blade visual shape. */
 export interface IrisMechanismConfig {
-  // Mechanism topology
   /** Number of blades (5–9). */
   N: number;
   /** Radius of the pivot-pin circle on the base plate (px). */
@@ -35,7 +18,6 @@ export interface IrisMechanismConfig {
    */
   slotOffset: number;
 
-  // Blade visual shape
   /** Total blade length from pivot to tip (px). Should be > pinDistance. */
   bladeLength: number;
   /** Blade body width at its widest point (px). */
@@ -47,9 +29,7 @@ export interface IrisMechanismConfig {
   bladeCurvature: number;
 }
 
-/** Kinematic state of a single blade at a given actuator angle. */
 export interface BladeState {
-  /** Blade index (0 … N-1). */
   index: number;
   /** Fixed pivot-pin world position. */
   pivotPos: { x: number; y: number };
@@ -62,8 +42,6 @@ export interface BladeState {
    */
   bladeAngle: number;
 }
-
-// ── Kinematic solver ──────────────────────────────────────────────────────────
 
 /**
  * Solve the guide-pin radial position r for blade 0 given actuator angle theta.
@@ -118,20 +96,17 @@ export function solveAllBlades(
   return Array.from({ length: N }, (_, i) => {
     const phi = i * step; // pivot angular position for blade i
 
-    // Pivot pin — fixed on base plate
     const pivotPos = {
       x: Rp * Math.cos(phi),
       y: Rp * Math.sin(phi),
     };
 
-    // Guide pin — on slot (β_i = phi + delta + theta = phi + slotDir)
     const beta = phi + slotDir;
     const guidePinPos = {
       x: r * Math.cos(beta),
       y: r * Math.sin(beta),
     };
 
-    // Blade orientation: direction from pivot to guide pin
     const bladeAngle = Math.atan2(
       guidePinPos.y - pivotPos.y,
       guidePinPos.x - pivotPos.x
@@ -140,8 +115,6 @@ export function solveAllBlades(
     return { index: i, pivotPos, guidePinPos, bladeAngle };
   });
 }
-
-// ── Range of motion ───────────────────────────────────────────────────────────
 
 /**
  * Compute the valid theta range based on the discriminant condition:
@@ -178,8 +151,6 @@ export function thetaRange(config: IrisMechanismConfig): {
     max: -delta + halfSpan,
   };
 }
-
-// ── Blade shape ───────────────────────────────────────────────────────────────
 
 /**
  * Generate the SVG path d-string for a single blade in local coordinates.
@@ -241,29 +212,21 @@ export function bladeShapePath(config: IrisMechanismConfig): string {
   const Ro = R + hw;                                       // outer arc radius
   const Ri = R - hw;                                       // inner arc radius
 
-  // Outer arc endpoints (above chord: negative y)
   const OTailX = -cx * f,        OTailY = -cy * f;
   const OTipX  =  cx * (2 + f),  OTipY  = OTailY;
 
-  // Inner arc endpoints (below chord: positive y)
   const ITailX =  cx * f,        ITailY =  cy * f;
   const ITipX  =  cx * (2 - f),  ITipY  = ITailY;
 
   return [
     `M ${fmt(OTailX)} ${fmt(OTailY)}`,
-    // Outer arc tail→tip (CW, bows through −y)
     `A ${fmt(Ro)} ${fmt(Ro)} 0 0 1 ${fmt(OTipX)} ${fmt(OTipY)}`,
-    // Tip semicircle cap outer→inner (CW, bulges outward at tip)
     `A ${fmt(hw)} ${fmt(hw)} 0 0 1 ${fmt(ITipX)} ${fmt(ITipY)}`,
-    // Inner arc tip→tail (CCW, bows through −y)
     `A ${fmt(Ri)} ${fmt(Ri)} 0 0 0 ${fmt(ITailX)} ${fmt(ITailY)}`,
-    // Tail semicircle cap inner→outer (CW, bulges outward at tail)
     `A ${fmt(hw)} ${fmt(hw)} 0 0 1 ${fmt(OTailX)} ${fmt(OTailY)}`,
     "Z",
   ].join(" ");
 }
-
-// ── Derived-config helpers ────────────────────────────────────────────────────
 
 /**
  * The subset of IrisMechanismConfig that is stored in brand.ts / config files.
@@ -362,7 +325,6 @@ export function computeThetaOpen(
   const hi = kinRange.max;
 
   if (apexRadius(lo) < housingRadius) {
-
     return lo;
 
   }
@@ -423,8 +385,6 @@ export function tNormToTheta(
   return thetaOpen + t * (thetaMax - thetaOpen);
 }
 
-// ── Aperture inradius ─────────────────────────────────────────────────────────
-
 /**
  * Compute the aperture inradius (inscribed-circle radius of the aperture polygon)
  * by finding where two adjacent blades' inner arcs intersect. The nearer
@@ -442,7 +402,6 @@ export function apertureInradius(theta: number, dc: IrisMechanismConfig): number
   const cx = L / 2;
 
   if (C < 0.005) {
-
     return 0;
 
   }
@@ -453,7 +412,6 @@ export function apertureInradius(theta: number, dc: IrisMechanismConfig): number
   const Ri  = Ro - hw;
 
   if (Ri <= 0) {
-
     return 0;
 
   }
@@ -473,7 +431,6 @@ export function apertureInradius(theta: number, dc: IrisMechanismConfig): number
   const d   = Math.sqrt(dx * dx + dy * dy);
 
   if (d < 0.001) {
-
     return Ri;
 
   }
@@ -544,8 +501,6 @@ export function findThetaForFStop(
   }
   return (lo + hi) / 2;
 }
-
-// ── Default config ────────────────────────────────────────────────────────────
 
 /**
  * Reasonable starting configuration for a 7-blade iris.

@@ -104,8 +104,6 @@ function ResponseFeedbackDialog({
     try {
       await onSubmit(details);
     } finally {
-      // The response feedback is already visible optimistically. Whether the
-      // optional detail update succeeds is intentionally not shown to the user.
       setStatus("success");
     }
   }
@@ -261,7 +259,6 @@ export default function ResponseFeedback({
         comment: details.comment,
       });
     } catch {
-      // The rating remains optimistic; the mutation handler already logs the failure.
     }
   }
 

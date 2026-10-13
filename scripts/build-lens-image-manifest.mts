@@ -1,13 +1,3 @@
-// Walks public/lenses/ at build time and writes a TypeScript module
-// listing every lens id whose product webp exists on disk. LensCard
-// imports the generated module to decide between rendering <Image> and
-// the Iris fallback for placeholder lenses.
-//
-// Why a generated module instead of an extra field on the Lens type:
-// "does a webp exist in public/lenses/" is a build-output concern, not a
-// catalog-data concern. Keeping it out of lenses.json lets the pipeline
-// own spec data exclusively and lets x-glass own asset-state detection.
-
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, resolve } from "node:path";
 

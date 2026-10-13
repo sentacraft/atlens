@@ -15,9 +15,7 @@ export default function BackToTopButton() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Always mounted, visibility toggled via a data attribute so CSS can
-  // transition both the enter and the exit. Conditionally rendering
-  // (`{show && …}`) would unmount the node before any fade-out could run.
+  // Always mounted: conditional rendering would unmount it before the fade-out runs.
   return (
     <button
       data-visible={show}

@@ -24,8 +24,7 @@ export default function ShareFAB({ lenses, presetTitle, presetSubtitle }: Props)
     return null;
   }
 
-  // Always mounted, visibility toggled via a data attribute so CSS can
-  // transition both directions (see BackToTopButton for the same pattern).
+  // Always mounted so CSS can transition both directions.
   return (
     <div
       data-visible={show}

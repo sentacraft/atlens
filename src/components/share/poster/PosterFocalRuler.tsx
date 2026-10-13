@@ -1,18 +1,14 @@
 import type { Lens } from "@/lib/types";
 
-// Per-lens bar colors (zinc-900 → zinc-500 → zinc-400 → zinc-300)
 const LENS_COLORS = ["#18181b", "#71717a", "#a1a1aa", "#d4d4d8"];
 
-// Standard focal length reference ticks
 const TICK_CANDIDATES = [10, 14, 18, 24, 35, 50, 70, 100, 135, 200, 300, 400];
 
 const FONT_STACK = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
 
-// Right-side label column dimensions
 const LABEL_W = 158;
 const LABEL_GAP = 14;
 
-// Row dimensions — tall enough to fit a two-line label
 const ROW_H = 32;
 const BAR_H = 6;
 const TICK_AREA = 24;
@@ -25,7 +21,6 @@ export interface FocalLensLabel {
 interface PosterFocalRulerProps {
   lenses: Lens[];
   lensLabels: FocalLensLabel[];
-  /** Total width available (matches poster content width). */
   width?: number;
 }
 
@@ -57,10 +52,8 @@ export function PosterFocalRuler({ lenses, lensLabels, width = 670 }: PosterFoca
       viewBox={`0 0 ${width} ${totalH}`}
       style={{ overflow: "visible" }}
     >
-      {/* Per-lens rows */}
       {lenses.map((lens, i) => {
         const rowY = i * ROW_H;
-        // Bar vertically centered in the row
         const barY = rowY + (ROW_H - BAR_H) / 2;
         const x1 = toX(lens.focalLengthMin);
         const x2 = toX(lens.focalLengthMax);
@@ -71,7 +64,6 @@ export function PosterFocalRuler({ lenses, lensLabels, width = 670 }: PosterFoca
 
         return (
           <g key={i}>
-            {/* Focal range bar */}
             {isPrime ? (
               <rect
                 x={Math.max(0, x1 - 1.5)}
@@ -92,7 +84,6 @@ export function PosterFocalRuler({ lenses, lensLabels, width = 670 }: PosterFoca
               />
             )}
 
-            {/* Brand name — small-caps style, above bar */}
             <text
               x={labelX}
               y={rowY + 11}
@@ -104,7 +95,6 @@ export function PosterFocalRuler({ lenses, lensLabels, width = 670 }: PosterFoca
               {brand}
             </text>
 
-            {/* Focal range + aperture — bold, below bar */}
             <text
               x={labelX}
               y={rowY + 24}
@@ -119,7 +109,6 @@ export function PosterFocalRuler({ lenses, lensLabels, width = 670 }: PosterFoca
         );
       })}
 
-      {/* Tick marks and mm labels */}
       {visibleTicks.map((mm) => {
         const x = toX(mm);
         return (

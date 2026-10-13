@@ -5,8 +5,6 @@ import { track } from "@/lib/analytics/analytics";
 
 const SCROLL_MILESTONES = [50, 90] as const;
 
-// `lens_view`: fires once per slug on mount, with referrer attached so the
-// dashboard can later answer "where do detail-page visits come from?".
 export function useLensViewTelemetry(lensSlug: string) {
   const firedRef = useRef(false);
   useEffect(() => {
@@ -21,8 +19,6 @@ export function useLensViewTelemetry(lensSlug: string) {
   }, [lensSlug]);
 }
 
-// `lens_scroll`: fires at 50% and 90% scroll depth, once each per mount.
-// Lets us see how much of the spec table users actually read.
 export function useLensScrollTelemetry(lensSlug: string) {
   const firedRef = useRef<Set<number>>(new Set());
   useEffect(() => {

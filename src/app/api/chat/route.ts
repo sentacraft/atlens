@@ -35,35 +35,18 @@ import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
 
-// The AskIris streaming endpoint. mount + locale are supplied by the client (both
-// fixed by the page's route), so the agent is scoped to one mount and answers in
-// one language. Runs on the Cloudflare workerd runtime via OpenNext — validate
-// streaming with `npm run preview`, not just `next dev`.
-
-// Wire contract for POST /api/chat. mount/locale draw their allowed values from
-// the same sources the rest of the app does (MOUNTS, routing.locales), so adding
-// a mount or locale can't drift this route out of sync. messages is the SDK's own
-// shape — validated as an array, its elements trusted to the transport.
 const chatRequestSchema = z.object({
   messages: z.array(z.custom<AskIrisUIMessage>()),
   mount: z.enum(MOUNTS),
   locale: z.enum(routing.locales),
-  // Client-minted conversation id. Optional so anonymous clients can continue to
-  // use the endpoint without persistence.
   conversationId: z.string().max(64).optional(),
 });
 
-// Max agentic steps per turn (one step = one model generation, possibly with tool
-// calls). Bounds worst-case cost/latency; shared by stopWhen and the budget-hit log.
 const STEP_BUDGET = 8;
 
-// Hard ceiling on one turn's streaming, so a stuck provider connection can't hang the
-// request indefinitely. Generous — a legit multi-step turn on a slow provider runs
-// tens of seconds; this only bites a true hang.
 const STREAM_TIMEOUT_MS = 120_000;
 
 export async function POST(req: Request) {
-  // Whichever provider AGENT_MODEL selects, not a hardcoded one.
   const missingKey = missingAgentModelKey();
   if (missingKey) {
     console.error(`[askiris] ${missingKey} is not set`);
@@ -72,8 +55,6 @@ export async function POST(req: Request) {
 
   const parsed = chatRequestSchema.safeParse(await req.json());
   if (!parsed.success) {
-    // Keep the validator detail server-side; the client only ever sends this shape, so
-    // a failure is a bug or abuse — surface a generic message, not the schema output.
     console.warn("[askiris] invalid request", z.prettifyError(parsed.error));
     return chatErrorResponse("unavailable", 400);
   }
@@ -86,12 +67,8 @@ export async function POST(req: Request) {
 
   const ip = clientIp(req);
   const cookieHeader = req.headers.get("cookie");
-  // Read the anonymous visit id set by /api/track; "" for a turn before its first
-  // call. We only read it here — /api/track owns minting and refreshing the cookie.
   const sid = parseSid(cookieHeader) ?? "";
-  // Secret-gated bypass: skips the rate limiter AND (as internal traffic) drops the
-  // turn from the dashboard. xg_internal can also mark a turn internal, but must not
-  // grant the bypass — so the limiter checks `bypassed` only, not `internal`.
+  // xg_internal marks a turn internal but must never grant the rate-limit bypass.
   const bypassed = isBypassed(req);
   const internal = parseInternal(cookieHeader) || bypassed;
   let rateKv: KVNamespace | undefined;
@@ -116,7 +93,6 @@ export async function POST(req: Request) {
       return chatErrorResponse("rate_limit", 429);
     }
   } catch {
-    // Never let a missing binding or persistence error break chat.
   }
 
   try {
@@ -161,9 +137,7 @@ export async function POST(req: Request) {
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const tools = buildLensTools(mount, locale, tBrand);
 
-  // Convert up front so a malformed history fails as a clean 400, not an uncaught
-  // throw. The same `tools` must reach convertToModelMessages and streamText:
-  // recommendLenses.toModelOutput runs during conversion to trim its model output.
+  // The same `tools` must reach convertToModelMessages: recommendLenses.toModelOutput runs there.
   let modelMessages: ModelMessage[];
   try {
     modelMessages = await convertToModelMessages(messages, { tools });
@@ -187,21 +161,14 @@ export async function POST(req: Request) {
     messages: modelMessages,
     tools,
     stopWhen: stepCountIs(STEP_BUDGET),
-    // Stop when the client disconnects (the composer's stop button), so a stopped reply
-    // is not generated and billed to the end; also cap total streaming time so a stuck
-    // provider connection can't hang the request. On Workers, req.signal only fires with
-    // the enable_request_signal compatibility flag.
+    // req.signal only fires on Workers with the enable_request_signal compatibility flag.
     abortSignal: AbortSignal.any([req.signal, AbortSignal.timeout(STREAM_TIMEOUT_MS)]),
-    // Reserve the last allowed step for a text answer: forcing toolChoice "none" means a
-    // turn that reaches the budget ends with a synthesis, not a frozen dangling tool call.
     prepareStep: ({ stepNumber }) =>
       stepNumber >= STEP_BUDGET - 1 ? { toolChoice: "none" } : undefined,
     onChunk: ({ chunk }) => traceCollector.recordChunk(chunk),
     onError: ({ error }) => markStreamError(error),
     onStepEnd: (step) => traceCollector.recordStep(step),
     onAbort: () => traceCollector.recordAbort(),
-    // On turn end: emit one metrics row to AE and fold the token usage into the daily
-    // budgets. waitUntil keeps the KV write alive past the streamed response.
     onEnd: (result) => {
       traceCollector.recordGenerationEnd(result);
       const { usage, stepNumber } = result;
@@ -209,10 +176,7 @@ export async function POST(req: Request) {
         (maximum, step) => Math.max(maximum, step.usage.inputTokens ?? 0),
         0,
       );
-      // Record the finished turn as one AE row (server-only — the client can't see
-      // token usage). The last allowed step is forced to a text answer, so a turn that
-      // spent its whole budget ends on that wrap-up step; the final step index reaching
-      // the cap is how the budget biting is detected (finishReason can't — it's "stop").
+      // The last step is forced to text, so finishReason is "stop" even when the budget ran out.
       if (ae) {
         try {
           ae.writeDataPoint(
@@ -235,10 +199,6 @@ export async function POST(req: Request) {
           console.error("[askiris] failed to write turn metrics", error);
         }
       }
-      // Dev-only spend readout. The AE row is the durable record, but it is not legible
-      // while a candidate is being swept, and cost on this workload is decided by one
-      // number the row hides in aggregate: how much of the input the provider served
-      // from its cache, which is billed at a fraction of the rest.
       if (process.env.NODE_ENV !== "production") {
         const input = usage.inputTokens ?? 0;
         const cached = usage.inputTokenDetails?.cacheReadTokens ?? 0;
@@ -310,11 +270,7 @@ export async function POST(req: Request) {
           });
         }
       },
-      // Log the real provider error server-side (Workers Logs); this is a public
-      // endpoint, so the raw error (provider internals, quota/config hints) must not
-      // reach the client. The returned string only masks it in the stream — the
-      // client classifies a stream error as transient and shows its own copy — so a
-      // bare constant is enough, not prose.
+      // Public endpoint: raw provider errors stay in the server log.
       onError: (error) => {
         markStreamError(error);
         return "Stream error";

@@ -32,10 +32,6 @@ export default async function GetPage({ params }: { params: Params }) {
   const t = await getTranslations({ locale, namespace: "Install" });
   return (
     <>
-      {/* Server-rendered h1 so search engines see a page heading without
-          waiting for the client-only InstallPage to hydrate. The platform-
-          specific titles inside InstallPage are h2 by convention since this
-          h1 already names the page. */}
       <h1 className="sr-only">{t("pageTitle")}</h1>
       <InstallPage />
     </>

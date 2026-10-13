@@ -1,7 +1,3 @@
-// Shared font declarations consumed by both [locale]/layout.tsx and
-// offline/layout.tsx. Extracted from the root layout so each top-level layout
-// can apply the font CSS variables to its own <html> without duplicating
-// localFont() calls (which would re-import the woff2 files multiple times).
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import localFont from "next/font/local";

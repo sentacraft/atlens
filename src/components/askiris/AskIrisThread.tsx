@@ -17,12 +17,6 @@ import ResponseFeedback from "@/components/askiris/ResponseFeedback";
 import type { LensTableColumn, Recommendation, ResolvedLens } from "@/lib/ai/recall";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 
-// Presentational render of a message thread — no data fetching. AskIrisChat feeds
-// it live useChat messages; the dev preview route feeds it fixtures, so the exact
-// same rendering can be exercised with deterministic data (no LLM round-trip).
-
-// One-line recap of a tool's return, so the trace stays readable without
-// unfurling the full payload (which is in the collapsible below it).
 function traceSummary(output: unknown): string {
   if (output && typeof output === "object") {
     const o = output as Record<string, unknown>;
@@ -39,8 +33,6 @@ function traceSummary(output: unknown): string {
   return "—";
 }
 
-// Inline agent trace: what the model called and what came back. Gated on
-// test-hook mode (?testhook=1) — it's a dev probe, not user-facing chat.
 function ToolTrace({ part }: { part: ToolUIPart | DynamicToolUIPart }) {
   return (
     <div className="text-muted-foreground border-muted mt-2 rounded border border-dashed px-2 py-1 font-mono text-xs">
@@ -63,13 +55,6 @@ function ToolTrace({ part }: { part: ToolUIPart | DynamicToolUIPart }) {
   );
 }
 
-// What the user is told Iris is doing. Three states, not one per tool: from the
-// outside the only distinction that means anything is whether Iris is still gathering
-// or already putting the answer together, so the label set stays flat as tools are added.
-// What one tool call puts on screen. Only the two rendering tools have a surface of
-// their own; the ones that fetch (query, search, details) show nothing, which is why
-// the debug trace is the fallthrough rather than a branch — it makes the invisible half
-// of a turn inspectable without changing what a normal reader sees.
 function ToolPart({
   part,
   debug,
@@ -81,9 +66,6 @@ function ToolPart({
     switch (getToolName(part)) {
       case "recommendLenses": {
         const { recommendations } = part.output as { recommendations: Recommendation[] };
-        // Bottom margin separates the grid from whatever follows (usually the next
-        // group's heading). Prose headings zero their own top margin as a first-child,
-        // so without this they glue to the cards.
         return (
           <div className="mb-4 w-full">
             <RecommendationDeck recommendations={recommendations} />
@@ -117,16 +99,10 @@ const TOOL_ACTIVITY: Record<string, ActivityKey> = {
   listLenses: "composing",
 };
 
-// An unmapped tool is a new one nobody has classified yet; "thinking" is the honest
-// thing to show rather than inventing a label for it.
 function toolLabelKey(name: string): ActivityKey {
   return TOOL_ACTIVITY[name] ?? "thinking";
 }
 
-// What the live turn is doing right now, as an i18n key — or null for no indicator.
-// A single signal at the growing edge, so parallel tool calls don't stack up and the
-// gaps the per-part states miss (before the first token, between steps) don't read as
-// frozen. Hidden while text visibly streams, since that's its own progress.
 function activityKey(messages: AskIrisUIMessage[], busy: boolean, debug: boolean): ActivityKey | null {
   if (debug || !busy || messages.length === 0) {
     return null;
@@ -181,11 +157,6 @@ export default function AskIrisThread({
             {message.parts.map((part, i) => {
               const key = `${message.id}-${i}`;
               if (part.type === "text") {
-                // User text sits in a bubble; the assistant reply flows as one
-                // continuous document (no per-part bubbles) like ChatGPT/Claude, with
-                // card decks interleaved between the prose blocks. Assistant prose is
-                // capped to a readable measure even though the thread (and the card
-                // grid) runs wider — long synthesis lines hurt readability in English.
                 return isUser ? (
                   <div
                     key={key}

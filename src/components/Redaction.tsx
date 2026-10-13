@@ -1,12 +1,7 @@
 "use client";
 
-// Mounts the demo-mode redaction CSS layer. Activation:
-//   ?redact=posterQr,priceSource   — toggle the active set (empty clears)
-//   ?redactBlur=8                  — blur radius in px (default 5, empty resets)
-// Both params are stripped from the URL after parsing and mirrored to
-// localStorage so the effect persists across browser restarts until cleared.
-// Caller must wrap this in <Suspense fallback={null}> because useSearchParams
-// would otherwise force a CSR bailout on prerendered pages.
+// Wrap in <Suspense fallback={null}>: useSearchParams otherwise forces a CSR bailout on
+// prerendered pages.
 
 import { useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";

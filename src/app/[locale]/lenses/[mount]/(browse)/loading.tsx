@@ -1,10 +1,8 @@
 function SkeletonCard() {
   return (
     <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex flex-col overflow-hidden max-xs:flex-row">
-      {/* Image area */}
       <div className="relative aspect-[3/2] sm:aspect-[5/4] bg-zinc-100 dark:bg-zinc-800 animate-pulse max-xs:aspect-auto max-xs:w-[132px] max-xs:shrink-0 border-b border-zinc-100 dark:border-zinc-800 max-xs:border-b-0 max-xs:border-r" />
 
-      {/* Body */}
       <div className="flex flex-1 flex-col gap-2 p-3 sm:gap-2.5 sm:p-4">
         <div className="flex flex-col gap-1.5">
           <div className="h-2.5 w-16 rounded bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
@@ -27,7 +25,6 @@ function SkeletonCard() {
         </dl>
       </div>
 
-      {/* Footer button */}
       <div className="px-3 pb-3 sm:px-4 sm:pb-4 max-xs:hidden">
         <div className="h-9 w-full rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
       </div>
@@ -38,12 +35,10 @@ function SkeletonCard() {
 export default function LensesLoading() {
   return (
     <div className="w-full max-w-7xl mx-auto px-5 sm:px-6 pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col gap-6">
-      {/* Header */}
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="h-8 w-32 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
         </div>
-        {/* Filter bar placeholder */}
         <div className="h-9 w-full rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
         <div className="flex justify-between">
           <div className="h-4 w-24 rounded bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
@@ -51,7 +46,6 @@ export default function LensesLoading() {
         </div>
       </div>
 
-      {/* Grid */}
       <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {Array.from({ length: 12 }).map((_, i) => (
           <SkeletonCard key={i} />

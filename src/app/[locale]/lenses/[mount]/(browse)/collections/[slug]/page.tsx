@@ -26,14 +26,7 @@ export function generateStaticParams() {
   return Object.keys(COLLECTIONS).map((slug) => ({ slug }));
 }
 
-// dynamicParams is left at its default (true) ON PURPOSE — do NOT set it to
-// false here. Every collection slug is prerendered above and an unknown slug
-// falls through to notFound() below, so behavior is identical either way. But
-// `dynamicParams = false` emits `fallback: false` for this route, and our deploy
-// target (Cloudflare Workers via OpenNext) 404s EVERY request to such a route —
-// including the prerendered slugs whose HTML is already cached. `next start`
-// hides this, which is why PR #397 (which set this to false) shipped a total
-// 404 of every collection detail page. See the matching note on the [id] page.
+// Keep dynamicParams at its default: see the note in [id]/page.tsx.
 
 function localized(field: { en: string; zh: string }, locale: string): string {
   return locale === "zh" ? field.zh : field.en;
@@ -58,9 +51,7 @@ export async function generateMetadata({
   const title = localized(stats.collection.title, locale);
   const mountLabel = t("mountLabel", { mount: mountSeoLabel(resolvedMount) });
   const baseTitle = `${title} — ${mountLabel}`;
-  // Current-year suffix lives only in the SERP <title> as a freshness/CTR cue;
-  // resolved at build time, so it rolls forward on the next deploy. The on-page
-  // <h1> and collection cards render the bare title, never this string.
+  // The year suffix is for the SERP title only; it rolls forward on each deploy.
   const seoTitle = t("seoTitleYear", { base: baseTitle, year: String(new Date().getFullYear()) });
   const description = localized(stats.collection.description, locale);
 
@@ -71,7 +62,6 @@ export async function generateMetadata({
     title: seoTitle,
     description: metaDesc,
     openGraph: {
-      // OG title stays year-free — a shared social card has no freshness intent.
       title: `${baseTitle} | Atlens`,
       description: metaDesc,
       images: defaultOgImages(),
@@ -109,9 +99,6 @@ export default async function CollectionPage({
   const statsLabel = t("stats", { count: lensCount, brandCount });
   const relatedWithStats = getRelatedCollectionsWithStats(slug, locale);
 
-  // ItemList schema: declares this page as an ordered list of lenses, each
-  // pointing at its own detail page. URLs mirror the lens-detail canonical so
-  // the list resolves to the same entities Google already knows.
   const itemListSchema = buildCollectionItemListSchema({
     name: title,
     description,
@@ -160,9 +147,6 @@ export default async function CollectionPage({
         </header>
         <CollectionLensGrid lenses={lenses} />
 
-        {/* Completeness feedback sits right after the grid, while the user is
-            still in this collection's context — not after the leave-the-page
-            CTA below. */}
         <p className="mt-8 text-sm text-zinc-500 dark:text-zinc-400">
           {t("feedbackPrompt")}{" "}
           <FeedbackTrigger type="general">

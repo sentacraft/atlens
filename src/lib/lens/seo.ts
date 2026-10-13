@@ -9,21 +9,9 @@ import {
   mfdHeroValue,
 } from "@/lib/lens/format";
 
-// Translator signature compatible with next-intl's `getTranslations(...)` return
-// type. Helpers here accept the resolved `t` function rather than calling
-// getTranslations themselves so callers control await timing and namespace.
 type T = (key: string, values?: Record<string, string | number>) => string;
 
-/**
- * Build the meta description string for a lens detail page.
- *
- * Clauses are intentionally limited to facts the brand-and-model display name
- * does NOT already carry — focal length and max aperture are usually already
- * in the model (e.g. "XF 35mm F1.4 R"), so repeating them in the description
- * is keyword-stuffing with no information gain. We surface weight, filter
- * thread, MFD, max magnification, focus motor label, weather sealing, OIS,
- * and MF — each conditional on data presence.
- */
+// Leaves out focal length and aperture: the display name already carries them.
 export function buildLensDescription(args: {
   lens: Lens;
   mount: Mount;
@@ -79,14 +67,7 @@ type PropertyValue = {
   unitText?: string;
 };
 
-/**
- * Build the schema.org Product JSON-LD payload for a lens.
- *
- * `Product` is the standard schema.org type for any catalogued item (sale not
- * required — see schema.org examples for non-commercial product descriptions).
- * Offers are intentionally omitted: catalog prices in this DB are informational
- * not authoritative, and surfacing a stale Offer in the SERP would mislead.
- */
+// No Offers: catalogue prices are informational, and a stale Offer in search results misleads.
 export function buildLensProductSchema(args: {
   lens: Lens;
   mount: Mount;
@@ -140,15 +121,6 @@ export function buildLensProductSchema(args: {
   };
 }
 
-/**
- * Build the schema.org ItemList JSON-LD for a collection page.
- *
- * A collection is a curated list of lenses, so the summary-page ItemList form
- * is used: each ListItem points (by url) at the lens's own canonical detail
- * page rather than embedding a full Product, keeping this payload light and the
- * authoritative Product schema in one place (the detail page). Carries no date
- * — freshness is deliberately not asserted here.
- */
 export function buildCollectionItemListSchema(args: {
   name: string;
   description: string;

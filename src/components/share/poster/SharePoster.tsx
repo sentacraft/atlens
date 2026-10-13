@@ -27,23 +27,16 @@ import type { OpticalTrait, FieldNoteKey } from "@/lib/types";
 import { PosterSection } from "./PosterSection";
 import { PosterFeatureItem } from "./PosterFeatureItem";
 
-// ── Labels ─────────────────────────────────────────────────────────
-
 export interface PosterLabels {
   appName: string;
   siteUrl: string;
-  /** Brand tagline shown directly under the wordmark. */
   brandTagline: string;
-  /** Short CTA / tagline shown in the header top-right. */
   cta: string;
-  /** One line per lens — shown as stacked title lines when no custom title is set. */
   comparison: string[];
-  // Section titles
   sectionFocalCoverage: string;
   sectionFocus: string;
   sectionSizeWeight: string;
   sectionFeatures: string;
-  // Stat labels (shown below values)
   minFocusLabel: string;
   maxMagLabel: string;
   macroLabel: string;
@@ -54,7 +47,6 @@ export interface PosterLabels {
   focusMotorLabel: string;
   tStopLabel: string;
   lensConfigLabel: string;
-  // Feature names
   featureWR: string;
   wrPartialSub: string;
   featureOIS: string;
@@ -62,15 +54,12 @@ export interface PosterLabels {
   featureApertureRing: string;
   featurePowerZoom: string;
   featureInternalZoom: string;
-  // Focus motor canonical classes
   motorLinear: string;
   motorStepping: string;
   motorDc: string;
   motorOther: string;
-  // Sub-labels used by format functions
   wide: string;
   tele: string;
-  // Specialty tags
   tagCine: string;
   tagAnamorphic: string;
   tagTilt: string;
@@ -78,18 +67,12 @@ export interface PosterLabels {
   tagMacro: string;
   tagFisheye: string;
   tagProbe: string;
-  // Pricing
   priceLabel: string;
   usedBadge: string;
-  /** CNY display template, e.g. "{value} Yuan" or "¥{value}". {value} is replaced with the formatted number. */
   cnyAmount: string;
-  /** Sampled-date template, e.g. "Sampled {date}". */
   sampledAt: string;
-  /** Short warn label rendered under each price, e.g. "Indicative price". */
   disclaimerWarn: string;
-  // Fallback
   na: string;
-  // Locale hint for formatting
   locale: string;
 }
 
@@ -98,15 +81,9 @@ export interface PosterCustom {
   slogan?: string;
 }
 
-// ── Helpers ────────────────────────────────────────────────────────
-
-// ── Constants ──────────────────────────────────────────────────────
-
 const POSTER_W = 750;
 const POSTER_PX = 40; // horizontal padding
 const COL_GAP = 16;
-
-// ── Helpers ────────────────────────────────────────────────────────
 
 function gridStyle(n: number): React.CSSProperties {
   return {
@@ -120,13 +97,7 @@ function hasVariantValue<T>(variants: { wide?: T; tele?: T } | undefined): boole
   return variants?.wide !== undefined || variants?.tele !== undefined;
 }
 
-/**
- * Returns labeled wide/tele lines whenever at least one end is present.
- * Labeling single-variant cases (e.g. tele-only) is critical: without the
- * label, a zoom's "0.27x achievable only at tele" reads as "0.27x across
- * the whole range" when compared side-by-side with lenses that do carry
- * wide/tele breakdowns.
- */
+// Single-variant values keep their label: a tele-only 0.27x must not read as the whole range.
 function toVariantLines<T>(
   variants: { wide?: T; tele?: T } | undefined,
   format: (v: T) => string,
@@ -137,12 +108,6 @@ function toVariantLines<T>(
     variants?.tele !== undefined ? { label: labels.tele, value: format(variants.tele) } : null,
   ].filter((v): v is { label: string; value: string } => v !== null);
 }
-
-// ── Parameter-card primitives ──────────────────────────────────────
-// A "parameter card" in the Focus / Size sections follows label-at-top
-// layout: small eyebrow label first, then the hero value, then optional
-// caption. Label-above keeps ambiguous-unit values (17cm, 67mm, 0.27x)
-// self-identifying during horizontal scan across columns.
 
 function EyebrowLabel({ children, sup }: { children: React.ReactNode; sup?: number }) {
   return (
@@ -229,13 +194,10 @@ function VariantCaption({
   );
 }
 
-// ── Component ──────────────────────────────────────────────────────
-
 interface SharePosterProps {
   lenses: Lens[];
   labels: PosterLabels;
   custom?: PosterCustom;
-  /** Full URL of the current comparison page — used to generate the QR code. */
   shareUrl?: string;
   ref?: Ref<HTMLDivElement>;
 }
@@ -248,12 +210,10 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   const slogan = custom?.slogan?.trim();
   const titleFontSize = titleLines.length <= 1 ? (slogan ? 28 : 32) : titleLines.length === 2 ? 22 : 17;
 
-  // Hero font sizes — scale down as more lenses are added
   const focalSize = n <= 2 ? "text-5xl" : n === 3 ? "text-4xl" : "text-3xl";
   const apertureSize = n <= 2 ? "text-3xl" : "text-2xl";
   const statSize = n <= 3 ? "text-xl" : "text-lg";
 
-  // Section label helpers
   const wideTeleLabels = { wide: labels.wide, tele: labels.tele };
 
   const specialtyTagLabels: Record<OpticalTrait | "cine", string> = {
@@ -266,10 +226,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
     probe: labels.tagProbe,
   };
 
-  // ── Feature row visibility ─────────────────────────────────────
-  // A feature row is shown only when at least one lens has a defined value.
-
-  // ── Conditional Details visibility ────────────────────────────
   const focusMotorClassLabel: Record<FocusMotorClass, string> = {
     linear: labels.motorLinear,
     stepping: labels.motorStepping,
@@ -282,15 +238,12 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   });
   const showFocusMotorRow = focusMotorValues.some(Boolean);
 
-  // ── Focus section visibility ───────────────────────────────────
   const showMinFocus = lenses.some((l) => l.minFocusDistance !== undefined);
   const showMaxMag = lenses.some((l) => l.maxMagnification !== undefined);
 
-  // ── Pricing visibility ─────────────────────────────────────────
   const priceSelections = lenses.map((l) => pickPriceEntry(l.pricing, labels.locale));
   const showPrice = priceSelections.some((s) => s !== null);
 
-  // ── Size & Weight visibility ───────────────────────────────────
   const weights = lenses.map((l) => leadingValue(l.weightG));
   const showWeight = weights.some((w) => w !== undefined);
   const showDimensions = lenses.some(
@@ -298,17 +251,9 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   );
   const showFilter = lenses.some((l) => l.filterMm !== undefined);
 
-  // ── Zoom-only feature visibility ───────────────────────────────
-  // power zoom / internal zoom are "N/A" on primes. Read that signal directly
-  // (same as the detail/compare hasData check) rather than re-deriving from
-  // focal length, and gate per field. Section-level (not per-column) keeps the
-  // feature rows aligned across columns.
   const showPowerZoom = lenses.some((l) => l.powerZoom !== SPEC_NA);
   const showInternalZoom = lenses.some((l) => l.internalZoom !== SPEC_NA);
 
-  // ── Field notes collection ─────────────────────────────────────
-  // Notes with identical text for the same field are aggregated under one
-  // superscript. The footnote block then lists all lens models together.
   interface CollectedNote {
     sup: number;
     lensModels: string[];
@@ -316,7 +261,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
     note: string;
   }
   const noteMap = new Map<string, number>(); // `${lensIndex}:${fieldKey}` → sup
-  // Dedup key → index in footnotes array for aggregation
   const dedupMap = new Map<string, number>(); // `${fieldKey}::${noteText}` → footnotes index
   const footnotes: CollectedNote[] = [];
   let _supCounter = 1;
@@ -330,7 +274,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
     if (noteMap.has(lensMapKey)) {
       return;
     }
-    // Aggregate: if an identical note already exists for this field, reuse its sup
     const dedupKey = `${key}::${note}`;
     const existingIdx = dedupMap.get(dedupKey);
     if (existingIdx !== undefined) {
@@ -345,9 +288,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
     }
   };
 
-  // Collect in section display order, lenses left-to-right within each field.
-  // Weight variance is intentionally omitted from the poster (shown on compare
-  // and detail pages instead), so no weightG footnote.
+  // No weightG footnote: weight variance is not shown on the poster.
   if (showMinFocus) {
     lenses.forEach((_, i) => collectNote(i, "minFocusDistance", labels.minFocusLabel));
   }
@@ -357,8 +298,8 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
   if (showFilter) {
     lenses.forEach((_, i) => collectNote(i, "filterMm", labels.filterLabel));
   }
-  /* Features always rendered */    lenses.forEach((_, i) => collectNote(i, "ois", labels.featureOIS));
-  /* Features always rendered */    lenses.forEach((_, i) => collectNote(i, "wr", labels.featureWR));
+  lenses.forEach((_, i) => collectNote(i, "ois", labels.featureOIS));
+  lenses.forEach((_, i) => collectNote(i, "wr", labels.featureWR));
   if (showInternalZoom) {
     lenses.forEach((_, i) => collectNote(i, "internalZoom", labels.featureInternalZoom));
   }
@@ -366,11 +307,9 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
     lenses.forEach((_, i) => collectNote(i, "focusMotor", labels.focusMotorLabel));
   }
 
-  // Helper: look up superscript for a given lens + field (undefined if no note)
   const noteSup = (lensIndex: number, key: FieldNoteKey): number | undefined =>
     noteMap.get(`${lensIndex}:${key}`);
 
-  // ── OIS stops helper ───────────────────────────────────────────
   const oisSub = (l: Lens) =>
     l.ois && l.oisStops !== undefined ? `${l.oisStops}-stop` : undefined;
 
@@ -380,10 +319,8 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
       className="bg-white"
       style={{ width: POSTER_W }}
     >
-      {/* ── Header ────────────────────────────────────────────── */}
       <div style={{ padding: `28px ${POSTER_PX}px 24px` }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 24 }}>
-          {/* Left column: brand-stack on top, title+slogan below */}
           <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <Iris config={IRIS_NAV} size={40} uid="poster" />
@@ -423,7 +360,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
             </div>
           </div>
 
-          {/* Right column: QR + CTA */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flexShrink: 0, gap: 8 }}>
             <div
               data-redact-hook="posterQr"
@@ -464,10 +400,8 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
         </div>
       </div>
 
-      {/* separator */}
       <div className="h-px bg-zinc-200" />
 
-      {/* ── Product Row ───────────────────────────────────────── */}
       <div style={{ padding: `16px ${POSTER_PX}px` }}>
         <div style={gridStyle(n)}>
           {lenses.map((lens, i) => {
@@ -477,7 +411,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                 key={i}
                 style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}
               >
-                {/* Image */}
                 <div
                   style={{
                     width: "100%",
@@ -487,7 +420,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                     justifyContent: "center",
                   }}
                 >
-                  {/* Must use native img here because canvas capture cannot handle Next Image wrappers/srcset. */}
+                  {/* Native img: canvas capture cannot handle next/image srcset. */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={getLensImageUrl(lens.id)}
@@ -496,7 +429,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                     style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
                   />
                 </div>
-                {/* Brand */}
                 <div
                   className="text-zinc-400"
                   style={{
@@ -509,7 +441,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                 >
                   {lens.brand}
                 </div>
-                {/* Model */}
                 <div
                   className="text-zinc-900"
                   style={{
@@ -521,11 +452,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                 >
                   {lens.model}
                 </div>
-                {/* Specialty chips (cine + optical traits), inline next to
-                    the identity block. Outline-only style — Poster aesthetic
-                    is grayscale and dense, so a single low-weight pill style
-                    keeps cine/macro/tilt visually subordinate to the model
-                    name while still acting as a recognizable tag. */}
                 {(() => {
                   const { isCine, opticalTraits } = deriveSpecialty(lens);
                   const tags: string[] = [];
@@ -576,12 +502,9 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
         </div>
       </div>
 
-      {/* separator */}
       <div className="h-px bg-zinc-200" />
 
-      {/* ── Hero Block ────────────────────────────────────────── */}
       <div style={{ padding: `20px ${POSTER_PX}px` }}>
-        {/* Row 1: Focal length numbers */}
         <div style={{ ...gridStyle(n), marginBottom: 20 }}>
           {lenses.map((lens, i) => (
             <div
@@ -601,7 +524,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
           ))}
         </div>
 
-        {/* Row 2: Aperture */}
         <div style={{ ...gridStyle(n), marginBottom: 12 }}>
           {lenses.map((lens, i) => (
             <div
@@ -626,11 +548,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
           ))}
         </div>
 
-        {/* Row 3: Price column — value (+Used badge) / source · date / ⚠ warn.
-            The warn line sits BELOW the value (not above) so it doesn't
-            occupy the field-name slot used by other hero stats (focal,
-            aperture). Each column carries its own warn line — repetition is
-            intentional: every price independently needs the caveat. */}
         {showPrice && (
           <div style={{ ...gridStyle(n), marginTop: 32 }}>
             {lenses.map((lens, i) => {
@@ -655,15 +572,12 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   <span data-redact-hook="price" className={cn("font-semibold tabular-nums text-zinc-700 leading-none", statSize)}>
                     {priceDisplay}
                   </span>
-                  {/* Caption row 1: source */}
                   <span data-redact-hook="priceSource" className="tabular-nums text-zinc-400 leading-tight text-center" style={{ fontSize: 9, maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {sel.entry.source}
                   </span>
-                  {/* Caption row 2: sampled date */}
                   <span className="tabular-nums text-zinc-400 leading-tight" style={{ fontSize: 9 }}>
                     {labels.sampledAt.replace("{date}", sampledDisplay)}
                   </span>
-                  {/* Caption row 3: ⚠ warn (amber, slightly bolder) */}
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d97706", fontSize: 9, fontWeight: 600 }}>
                     <TriangleAlert size={9} />
                     {labels.disclaimerWarn}
@@ -675,7 +589,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
         )}
       </div>
 
-      {/* ── Size Section ─────────────────────────────────────── */}
       {(showWeight || showDimensions || showFilter) && (
         <>
           <div className="h-px bg-zinc-200" />
@@ -723,7 +636,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                 </div>
               )}
 
-              {/* Filter size */}
               {showFilter && (
                 <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
                   {lenses.map((lens, i) => {
@@ -751,7 +663,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
         </>
       )}
 
-      {/* ── Focus Section ────────────────────────────────────── */}
       {(showMinFocus || showMaxMag || showFocusMotorRow) && (
         <>
           <div className="h-px bg-zinc-200" />
@@ -832,7 +743,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                 </div>
               )}
 
-              {/* Focus motor */}
               {showFocusMotorRow && (
                 <div style={{ ...gridStyle(n), alignItems: "flex-start" }}>
                   {focusMotorValues.map((val, i) => (
@@ -854,7 +764,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
         </>
       )}
 
-      {/* ── Features Section ──────────────────────────────────── */}
       <>
         <div className="h-px bg-zinc-200" />
         <div style={{ padding: `20px ${POSTER_PX}px` }}>
@@ -898,7 +807,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
         </div>
       </>
 
-      {/* ── Footnotes ─────────────────────────────────────────── */}
       {footnotes.length > 0 && (
         <>
           <div className="h-px bg-zinc-100" />

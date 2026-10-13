@@ -14,9 +14,6 @@ function getSnapshot(): boolean {
   return window.matchMedia(STANDALONE).matches;
 }
 
-// Browser (non-PWA) default during SSR + hydration — no matchMedia on the
-// server. Corrected on the client right after hydration, which removes the
-// post-mount flash the previous useState(false)+useEffect version had.
 function getServerSnapshot(): boolean {
   return false;
 }

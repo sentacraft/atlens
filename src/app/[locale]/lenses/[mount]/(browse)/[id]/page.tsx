@@ -36,10 +36,6 @@ import { PriceSection } from "@/components/price/PriceSection";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
 
-// Pre-render every lens id for the (locale × mount) combinations the parent
-// [locale] and [mount] segments supply, so each detail page is a static HTML
-// asset with zero per-request CPU. Lens IDs are language-agnostic, so the
-// catalog read here only enumerates ids — this page returns just { id }.
 export function generateStaticParams({ params }: { params: { locale: string; mount: string } }) {
   const resolvedMount = urlSegmentToMount(params.mount);
   if (!resolvedMount) {
@@ -49,16 +45,8 @@ export function generateStaticParams({ params }: { params: { locale: string; mou
   return getLensesByMount(resolvedMount, params.locale).map((lens) => ({ id: lens.id }));
 }
 
-// dynamicParams is left at its default (true) ON PURPOSE — do NOT set it to
-// false here. Every valid id is prerendered above, and an unknown id falls
-// through to notFound() below, so the user-visible behavior is identical either
-// way. But `dynamicParams = false` emits `fallback: false` for this route in the
-// prerender manifest, and our deploy target (Cloudflare Workers via OpenNext)
-// 404s EVERY request to such a route — even the prerendered ids whose HTML is
-// sitting in the cache. `next start` serves them fine, which is what makes the
-// regression invisible locally. Keeping the default makes the route `fallback:
-// null` (served from cache for known ids, on-demand → notFound() for unknown).
-// See PR #397, which set this to false and took the whole detail page down.
+// Keep dynamicParams at its default: `false` makes OpenNext 404 every request to this route,
+// prerendered ids included, while `next start` serves them fine (PR #397).
 
 export async function generateMetadata({
   params,
@@ -68,11 +56,6 @@ export async function generateMetadata({
   const { locale, mount, id } = await params;
   const t = await getTranslations({ locale, namespace: "LensDetail" });
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
-  // The [mount]/layout.tsx ahead of this page already calls notFound() on an
-  // invalid mount segment, so urlSegmentToMount is guaranteed to return a
-  // valid Mount here. Re-check defensively in case the layout contract is
-  // ever weakened — silently treating an unknown mount as "X" would mis-route
-  // lens lookups and is far worse than a 404.
   const resolvedMount = urlSegmentToMount(mount);
   if (!resolvedMount) {
     return { title: t("notFoundTitle") };
@@ -150,7 +133,6 @@ function renderRowValue(
       </div>
     );
   }
-  // resolved is ResolvedTextRow here
   return (
     <div>
       <span className="whitespace-pre-line">{resolved.displayValue ?? labels.missing}</span>
@@ -166,9 +148,6 @@ function renderRowValue(
 export default async function LensDetailPage({ params }: { params: Params }) {
   const { id, locale, mount } = await params;
   setRequestLocale(locale);
-  // See note on the matching guard in generateMetadata — the parent layout
-  // already validates mount, but we re-check rather than silently fall back
-  // to "X" and mis-route the lens lookup.
   const resolvedMount = urlSegmentToMount(mount);
   if (!resolvedMount) {
     notFound();
@@ -187,7 +166,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const url = getLensUrl(lens, locale);
 
   const seg = mountToUrlSegment(resolvedMount);
-  // Derived values shared between the visible header and the Product JSON-LD.
   const brandName = tBrand(lens.brand);
   const displayName = lensDisplayName(brandName, lens.series, lens.model);
   const description = buildLensDescription({ lens, mount: resolvedMount, brandName, t });
@@ -203,7 +181,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
   const specGroups = buildSpecGroups(buildSpecGroupLabels(t));
 
-  // Per-view suppression: hide rows where this lens has no data.
   const valueCellLabels = {
     yes: t("yes"),
     no: t("no"),
@@ -212,12 +189,8 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     missing: t("missing"),
   };
 
-  // Resolve all row values once (raw data). Both the rendered spec table and
-  // the Report Dialog derive from these resolved rows + valueCellLabels.
   const resolvedGroups = resolveSpecGroups(specGroups, lens);
 
-  // Field options for the Report Dialog — taken directly from resolved values,
-  // identical to what is rendered in the spec table below.
   const mediaGroupLabel = t("fieldGroupMedia");
   const memberCollections = getMemberCollections(lens, locale);
 
@@ -235,9 +208,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
   return (
     <>
-    {/* Product structured data — earns this page eligibility for Google's
-        Product rich result treatment. Emitted via JsonLd which handles the
-        `</script>` defensive escape; see that component for rationale. */}
     <JsonLd data={productSchema} />
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] flex flex-col gap-8">
       <div className="flex items-center justify-between">
@@ -259,7 +229,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
         </div>
       </div>
 
-      {/* Header: image + key info side by side */}
       <div className="flex flex-col sm:flex-row gap-8">
         <div className="w-full max-w-64 mx-auto sm:mx-0 shrink-0 sm:w-64">
           <div className="flex aspect-square items-center justify-center overflow-hidden rounded-2xl border border-zinc-100 bg-zinc-50/70 p-5 dark:border-zinc-800 dark:bg-zinc-900/50">
@@ -271,7 +240,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
                 sizes="256px"
                 style={lensImageStyle}
                 className="object-contain"
-                // LCP hero: preload (early discovery) + high fetch priority.
                 // `priority` is deprecated in Next 16.
                 preload
                 fetchPriority="high"
@@ -309,7 +277,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
         </div>
       </div>
 
-      {/* Grouped spec table — full-width section below the header */}
       <div>
         <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
             {resolvedGroups.map((group, groupIdx) => (
@@ -317,14 +284,12 @@ export default async function LensDetailPage({ params }: { params: Params }) {
                 key={group.label}
                 className={groupIdx > 0 ? "border-t border-zinc-200 dark:border-zinc-800" : ""}
               >
-                {/* Group header */}
                 <div className="px-4 py-2 bg-zinc-100/80 dark:bg-zinc-800/60">
                   <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
                     {group.label}
                   </span>
                 </div>
 
-                {/* Rows */}
                 <table className="w-full text-sm">
                   <tbody>
                     {group.rows.map((resolved) => (

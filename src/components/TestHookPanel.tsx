@@ -46,15 +46,10 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]["id"];
 
-// Mirror the server's filename guard so Save/Rename disable on unusable names.
 const SAFE_FIXTURE_NAME = /^[\w-]+$/;
 const FIXTURE_INPUT_CLS =
   "h-9 flex-1 rounded-md border border-input bg-transparent px-2 text-xs outline-none focus-visible:border-ring";
 
-// Which model just answered. AGENT_MODEL is a server-side override, so the value comes
-// down as a prop from the layout that renders this — a sweep across candidates is
-// otherwise invisible from the browser, and reading a trace without knowing who produced
-// it is how two candidates' output gets conflated.
 function ModelReadout({ model }: { model: AgentModelInfo }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -74,14 +69,10 @@ function ModelReadout({ model }: { model: AgentModelInfo }) {
   );
 }
 
-// AskIris fixture capture/replay. Fixtures live outside the test-hook option
-// system (their list is dynamic — saved files on disk), so this drives the
-// shared fixtureStore directly rather than going through setOption.
 function FixtureControl() {
   const { selected, saved } = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const [name, setName] = useState("");
   const isSaved = saved.includes(selected);
-  // Blank when capturing a new one; the current name when a saved one is picked.
   useEffect(() => {
     setName(isSaved ? selected : "");
   }, [selected, isSaved]);
@@ -152,8 +143,6 @@ function FixtureControl() {
 export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
   const context = useContext(TestHookContext);
   const [copied, setCopied] = useState(false);
-  // Persisted in sessionStorage so the active tab survives a panel remount
-  // (e.g. dev Fast Refresh) instead of snapping back to the first tab.
   const [tab, setTab] = useState<TabId>("routes");
   useEffect(() => {
     const saved = sessionStorage.getItem("testhook-tab");
@@ -279,10 +268,6 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
           </div>
         )}
 
-        {/* Demo-mode redaction reference. Activated by URL query (read by the
-            Redaction component), so the recording session can blur sensitive
-            surfaces without touching code. Values come from the redaction
-            constants to stay in sync. */}
         {tab === "redaction" && (
           <div className="space-y-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400 [&_code]:rounded [&_code]:bg-zinc-100 [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[11px] [&_code]:text-zinc-700 dark:[&_code]:bg-zinc-800 dark:[&_code]:text-zinc-300">
             <p>

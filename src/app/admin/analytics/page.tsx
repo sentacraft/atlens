@@ -1,10 +1,3 @@
-// Analytics dashboard. Reads from the `xglass_events` Analytics Engine
-// dataset via the SQL API. All queries cover the last 30 days unless
-// stated otherwise.
-//
-// Access control: Cloudflare Access in production (see PR description).
-// The route itself is open — auth lives one layer above at the platform.
-
 import { queryAE } from "@/lib/analytics/query";
 import { ASKIRIS_TURN_EVENT } from "@/lib/analytics/events";
 import {
@@ -22,10 +15,7 @@ export const revalidate = 0;
 const WINDOW = "INTERVAL '30' DAY";
 const DASHBOARD_FILTER = `timestamp > NOW() - ${WINDOW} AND blob7 != '1'`;
 
-// AE SQL only accepts a bare column inside `count(DISTINCT …)`, not an
-// expression like `IF(cond, col, NULL)`. To get per-event-type distinct
-// counts, split the work across two queries: one for global totals,
-// one with `GROUP BY index1` so each event class becomes its own row.
+// AE SQL allows only a bare column inside count(DISTINCT …), so per-event counts group by index1.
 const Q_OVERVIEW_TOTALS = `
   SELECT
     SUM(_sample_interval) AS events,
@@ -95,10 +85,6 @@ const Q_FILTER_USAGE = `
   LIMIT 10
 `;
 
-// Same source as Q_FILTER_USAGE but pulls a deep slice of distinct combos so
-// the server can decompose them into per-dimension counts (see
-// aggregateFilterDimensions). The limit is a safety cap; real distinct-combo
-// cardinality is far below it.
 const Q_FILTER_DIMENSIONS = `
   SELECT blob4 AS filters, SUM(_sample_interval) AS n
   FROM xglass_events
@@ -109,9 +95,6 @@ const Q_FILTER_DIMENSIONS = `
   LIMIT 1000
 `;
 
-// Same constraint as the overview uniques: instead of conditional
-// distinct counts in a flat row, fan out by index1 and reassemble the
-// funnel rows in JS.
 const Q_COMPARE_FUNNEL = `
   SELECT
     index1 AS step,
@@ -240,9 +223,6 @@ const Q_PURCHASE_BY_LENS = `
   LIMIT 20
 `;
 
-// Cold-launch attribution for PWA entry points. `source` distinguishes
-// the home-screen icon (pwa) from each manifest shortcut so we can see
-// which entry point actually gets used after install.
 const Q_PWA_LAUNCH = `
   SELECT blob6 AS source, SUM(_sample_interval) AS launches
   FROM xglass_events
@@ -252,14 +232,10 @@ const Q_PWA_LAUNCH = `
   ORDER BY launches DESC
 `;
 
-// AskIris — per-turn agent metrics written straight to AE from the chat route's
-// onEnd (not via /api/track), so these rows carry their own positional layout:
-// blob1=mount, blob2=locale, blob3=sid, blob4=conversation_id, blob5=internal; double1..7 =
-// total/input/output/cacheRead tokens, step_count, budget_hit, max_context. Counts weight by
-// _sample_interval; summed metrics weight each row's value by it too, to stay correct
-// if AE ever samples this dataset. The funnel's page-view entry is a separate
-// Both drop internal rows (dogfooding / load tests). The turn layout carries the
-// flag in blob5; askiris_view rides the general /api/track layout, where it's blob7.
+// Turn rows have their own layout: blob1=mount, blob2=locale, blob3=sid, blob4=conversation_id,
+// blob5=internal; double1..7 = total/input/output/cacheRead tokens, step_count, budget_hit,
+// max_context. Sums weight by _sample_interval in case AE ever samples. The internal flag is
+// blob5 here and blob7 on askiris_view.
 const ASKIRIS_FILTER = `index1 = '${ASKIRIS_TURN_EVENT}' AND timestamp > NOW() - ${WINDOW} AND blob5 != '1'`;
 const ASKIRIS_VIEW_FILTER = `index1 = 'askiris_view' AND timestamp > NOW() - ${WINDOW} AND blob7 != '1'`;
 
@@ -295,9 +271,6 @@ const Q_ASKIRIS_BY_MOUNT = `
   ORDER BY turns DESC
 `;
 
-// Session funnel. Views (PV = loads, UV = distinct visitor sid) come from the
-// askiris_view event; the interacted side (visitors who sent a turn, and how those
-// turns group into sessions) comes from the turn rows keyed by sid + conversation_id.
 const Q_ASKIRIS_VIEWS = `
   SELECT
     SUM(_sample_interval) AS pv,
@@ -315,9 +288,6 @@ const Q_ASKIRIS_SESSIONS = `
   WHERE ${ASKIRIS_FILTER} AND blob4 != ''
 `;
 
-// Reduce each turn's maximum single-step prompt size to one maximum per
-// anonymous visitor + conversation, then summarize the conversation-level distribution.
-// Conversations without a recorded positive context count are excluded.
 const Q_ASKIRIS_CONTEXT_BY_CONVERSATION = `
   SELECT
     count() AS conversations,
@@ -355,8 +325,6 @@ function fmtNum(n: number): string {
   return n.toLocaleString("en-US");
 }
 
-// Renders "—" for absent values so the dashboard can distinguish "AE
-// returned no row / null aggregate" from "AE returned a genuine 0".
 function fmtMaybe(v: unknown): string {
   if (v === null || v === undefined) {
     return "—";
@@ -383,12 +351,7 @@ interface Column {
   key: string;
   label: string;
   align?: "left" | "right";
-  // When set, also use the value at this key (the raw / unformatted form)
-  // for the cell's `title` tooltip attribute so truncated content remains
-  // discoverable on hover.
   titleKey?: string;
-  // Constrain a numeric column so a 1-digit count doesn't take half the
-  // row width; left undefined for primary string columns to let them fill.
   widthClass?: string;
 }
 
@@ -433,7 +396,6 @@ function Table({ rows, columns }: { rows: Array<Record<string, unknown>>; column
   );
 }
 
-// Single-number stat for the top overview bar.
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-1 rounded-2xl border border-zinc-200 bg-white px-5 py-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
@@ -447,8 +409,6 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-// Narrow width class shared by every "count" / "n" column so the long
-// primary string column gets the remaining space.
 const COUNT_WIDTH = "w-20";
 
 export default async function AnalyticsDashboardPage() {
@@ -529,7 +489,6 @@ export default async function AnalyticsDashboardPage() {
     | { events?: number; sessions?: number }
     | undefined;
 
-  // Q_OVERVIEW_UNIQUES returns one row per event class.
   const uniquesByEvent = new Map<string, unknown>();
   for (const r of overviewUniques.data as Array<{ event?: string; uniques?: number }>) {
     if (r.event) {
@@ -537,7 +496,6 @@ export default async function AnalyticsDashboardPage() {
     }
   }
 
-  // Q_COMPARE_FUNNEL returns one row per step.
   const funnelByStep = new Map<string, { n: number; sids: number }>();
   for (const r of compareFunnel.data as Array<{ step?: string; n?: number; sids?: number }>) {
     if (r.step) {
@@ -553,8 +511,6 @@ export default async function AnalyticsDashboardPage() {
 
   const installCount = num((install.data[0] as { n?: number } | undefined)?.n);
 
-  // Surface non-credential query failures so a 0/empty card can be told
-  // apart from "AE call actually failed and we silently rendered nothing".
   const queryErrors = (
     [
       ["overviewTotals", overviewTotals],
@@ -589,8 +545,6 @@ export default async function AnalyticsDashboardPage() {
     r.error && r.error !== "missing_credentials" ? [{ name, code: r.error }] : [],
   );
 
-  // Pre-format rows so JSX cells stay simple and `title` tooltips can
-  // reference the original strings.
   const compareCombosRows = compareCombos.data.map((r) => ({
     ...r,
     display: formatLensSlugList(String(r.slugs ?? "")),
@@ -629,7 +583,6 @@ export default async function AnalyticsDashboardPage() {
     display: formatLensSlug(String(r.lens_id ?? "")),
   }));
 
-  // AskIris overview is a single aggregate row; fan its derived rates + cost out here.
   const askirisRow = askirisOverview.data[0] as
     | {
         turns?: number;
@@ -647,8 +600,6 @@ export default async function AnalyticsDashboardPage() {
   const aiCacheReadTokens = num(askirisRow?.cache_read_tokens);
   const aiTotalSteps = num(askirisRow?.total_steps);
   const aiBudgetHits = num(askirisRow?.budget_hits);
-  // Session funnel: page views/visitors (askiris_view) → interacted visitors →
-  // sessions → turns. "Person" is approximated by the visit sid (no login).
   const aiViewsRow = askirisViews.data[0] as { pv?: number; uv?: number } | undefined;
   const aiSessionsRow = askirisSessions.data[0] as
     | { interacted_uv?: number; sessions?: number; turns?: number }
@@ -696,7 +647,6 @@ export default async function AnalyticsDashboardPage() {
         </div>
       )}
 
-      {/* Overview stats bar */}
       <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
         <Stat label="Events" value={fmtMaybe(overviewTotalsRow?.events)} />
         <Stat label="Sessions" value={fmtMaybe(overviewTotalsRow?.sessions)} />
@@ -931,8 +881,6 @@ export default async function AnalyticsDashboardPage() {
         </Card>
       </div>
 
-      {/* AskIris — per-turn agent metrics (server-recorded askiris_turn rows). Its
-          own data source and layout, so it sits in a dedicated section. */}
       <section className="mt-10">
         <h2 className="font-heading text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           AskIris

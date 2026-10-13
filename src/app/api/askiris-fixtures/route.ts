@@ -1,11 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
-// Dev-only fixture persistence for the AskIris test-hook panel. Saved fixtures
-// are JSON files under a gitignored repo dir so a captured session lives on disk
-// and survives reloads. The route 404s outside development, so nothing here is
-// reachable on the deployed (Cloudflare workerd) runtime.
-
 const DIR = path.join(process.cwd(), ".askiris-fixtures");
 const SAFE_NAME = /^[\w-]+$/;
 
@@ -27,7 +22,6 @@ export async function GET() {
       out[file.slice(0, -".json".length)] = JSON.parse(raw);
     }
   } catch {
-    // No dir yet — no saved fixtures.
   }
   return Response.json(out);
 }

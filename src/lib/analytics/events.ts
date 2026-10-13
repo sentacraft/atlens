@@ -1,15 +1,7 @@
-// Shared event schema. Imported by both the client `track()` helper and the
-// `/api/track` route so the wire format stays in lock-step with the AE row
-// layout used downstream by the dashboard.
-//
-// AE layout (fixed positional, single dataset `xglass_events`):
+// AE layout is positional; the dashboard SQL depends on it.
 //   indexes: [event_name]
 //   blobs:   [sid, locale, path, primary_string, secondary_string, tertiary_string, internal]
 //   doubles: [primary_number]
-//
-// Keeping the layout positional (instead of named) is what makes the
-// dashboard SQL simple: blob3 always means the same column class regardless
-// of event type.
 
 export const EVENT_NAMES = [
   "search",
@@ -28,8 +20,6 @@ export const EVENT_NAMES = [
   "mount_switch",
   "purchase_click",
   "pwa_launch",
-  // AskIris funnel: a page view (funnel entry / PV + UV), one per user turn (how it
-  // originated), and a click from a recommendation card through to a lens.
   "askiris_view",
   "askiris_message",
   "askiris_rec_click",
@@ -38,38 +28,30 @@ export const EVENT_NAMES = [
 export type EventName = (typeof EVENT_NAMES)[number];
 
 export interface EventProps {
-  // Common
   path?: string;
 
-  // Search
   query?: string;
   results_count?: number;
 
-  // Filters
   filters_json?: string;
 
-  // Compare / detail
   lens_slug?: string;
   lens_slugs?: string;
   lens_count?: number;
   depth_pct?: number;
 
-  // CTA / feedback
   feedback_type?: string;
   method?: string;
 
-  // Outbound / mount
   href?: string;
   from_mount?: string;
   to_mount?: string;
 
-  // Purchase
   channel?: string;
   lens_id?: string;
   source?: string;
   is_affiliate?: boolean;
 
-  // Context
   referrer?: string;
 }
 
@@ -126,10 +108,7 @@ export function toDataPoint(
   };
 }
 
-// AskIris per-turn metrics, written straight to AE from the chat route's onEnd —
-// server-only (the client never sees token usage), so it skips the /api/track path.
-// Its own positional layout in the same dataset; query it by the index. Token counts
-// can be missing from a provider, recorded as 0.
+// Written directly by the chat route, in its own positional layout. Missing token counts are 0.
 //   indexes: [askiris_turn]
 //   blobs:   [mount, locale, sid, conversation_id, internal]
 //   doubles: [total, input, output, cacheRead tokens, step_count, budget_hit, max_context]
@@ -138,15 +117,10 @@ export const ASKIRIS_TURN_EVENT = "askiris_turn";
 export interface AskIrisTurnMetrics {
   mount: string;
   locale: string;
-  // Session-funnel join keys: sid = the anonymous visit (xg_sid cookie, read
-  // server-side), conversationId = the user-visible conversation identifier. Together
-  // they give visitors → conversations → turns, and are
-  // the same keys a future transcript replay would persist against. Either can be ""
-  // when unknown (no cookie yet / a legacy client), which the queries filter out.
+  // "" when unknown; the queries filter it out.
   sid: string;
   conversationId: string;
-  // Keep this row out of the dashboards (dogfooding / load tests via the bypass or
-  // xg_internal cookie). The row is still written — the AskIris queries filter it.
+  // Still written; the Ask Iris queries filter it out.
   internal: boolean;
   totalTokens: number;
   inputTokens: number;
@@ -154,7 +128,6 @@ export interface AskIrisTurnMetrics {
   cacheReadTokens: number;
   stepCount: number;
   budgetHit: boolean;
-  // Maximum input token count reported by any model step in this turn.
   maxContextTokens: number;
 }
 

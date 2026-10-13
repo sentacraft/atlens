@@ -7,8 +7,7 @@ export interface ConversationSummary {
   updatedAt: number;
 }
 
-// Scoped by user: the query cache outlives a sign-out, so a second account in the
-// same tab must never be served the first one's list.
+// Keyed by user: the cache outlives a sign-out.
 export function conversationListQueryKey(userId: string) {
   return ["askiris", "conversations", userId] as const;
 }
@@ -22,8 +21,6 @@ export async function fetchConversationList(): Promise<ConversationSummary[]> {
   return data.conversations;
 }
 
-// "unavailable" covers a deleted conversation, one owned by another user (both 404 by
-// design), and a signed-out visitor (401): none of them can be shown.
 export async function fetchConversationMessages(
   conversationId: string,
 ): Promise<AskIrisUIMessage[] | "unavailable"> {

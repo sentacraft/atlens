@@ -1,21 +1,10 @@
 #!/usr/bin/env tsx
-// Regression test for all generated icons.
-// Verifies that every PNG produced by scripts/gen-icons.tsx matches the
-// contract expected by its downstream consumer — the PWA manifest, the iOS
-// apple-touch-* conventions, and the Next.js file-convention favicon.
-//
-// This prevents the "fix one, break another" seesaw by pinning each icon's
-// background and dimensions as a testable invariant. Runs as part of `build`.
-//
-// Manual: `pnpm run verify:icons`
 
 import { readFileSync, existsSync, statSync } from "node:fs";
 import { inflateSync } from "node:zlib";
 import { resolve } from "node:path";
 
 import { SPLASH_DEVICES, SPLASH_BG, splashUrl, type SplashScheme } from "../src/config/splash.ts";
-
-// ── Minimal PNG decoder (8-bit RGBA only — matches resvg output) ────────────
 
 interface Png {
   width: number;
@@ -103,12 +92,6 @@ function rgbaEq(a: Rgba, b: Rgba): boolean {
   return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
 }
 
-// ── Contract definitions ────────────────────────────────────────────────────
-//
-// Each icon declares its background contract — what the four corners of the
-// PNG must contain. "mark" means the image must have a non-trivial amount of
-// opaque pixels (sanity check against a fully-blank render).
-
 type BgContract = "transparent" | "opaque-white" | Rgba;
 
 interface Expectation {
@@ -130,27 +113,18 @@ function expectedCorner(bg: BgContract): Rgba {
 }
 
 const ICON_EXPECTATIONS: Expectation[] = [
-  // PWA manifest purpose="any" — transparent, so Chrome's omnibox install
-  // chip, the macOS Dock, and Windows taskbar render the bare mark without
-  // a white square around it.
   { path: "public/icons/icon-192.png",  width: 192,  height: 192,  bg: "transparent", mark: true },
   { path: "public/icons/icon-512.png",  width: 512,  height: 512,  bg: "transparent", mark: true },
   { path: "public/icons/icon-1024.png", width: 1024, height: 1024, bg: "transparent", mark: true },
 
-  // iOS apple-touch-icon — must be opaque. iOS fills transparent pixels with
-  // an uncontrolled color on the home screen, so we ship a baked white
-  // background specifically for this surface.
+  // iOS fills transparent pixels with an uncontrolled color.
   { path: "public/icons/icon-192-white.png",  width: 192,  height: 192,  bg: "opaque-white", mark: true },
   { path: "public/icons/icon-512-white.png",  width: 512,  height: 512,  bg: "opaque-white", mark: true },
   { path: "public/icons/icon-1024-white.png", width: 1024, height: 1024, bg: "opaque-white", mark: true },
 
-  // Android maskable — transparent canvas, Android supplies its own adaptive
-  // background. Mark lives inside the 80% safe zone (enforced by the padding
-  // constant in gen-icons.tsx, validated here by the mark presence).
   { path: "public/icons/icon-maskable-192.png", width: 192, height: 192, bg: "transparent", mark: true },
   { path: "public/icons/icon-maskable-512.png", width: 512, height: 512, bg: "transparent", mark: true },
 
-  // Next.js file-convention browser favicon (src/app/icon.png).
   { path: "src/app/icon.png", width: 32, height: 32, bg: "transparent", mark: true },
 ];
 
@@ -164,13 +138,10 @@ const SPLASH_EXPECTATIONS: Expectation[] = SPLASH_DEVICES.flatMap((device) =>
   }))
 );
 
-// Non-PNG artifacts — existence + size sanity only.
 const EXISTENCE_ONLY: Array<{ path: string; minBytes: number }> = [
   { path: "public/favicon.ico", minBytes: 500 },
   { path: "public/opengraph-image.png", minBytes: 2000 },
 ];
-
-// ── Run checks ──────────────────────────────────────────────────────────────
 
 const errors: string[] = [];
 
@@ -179,8 +150,6 @@ function fail(file: string, msg: string): void {
 }
 
 function hasMark(img: Png): boolean {
-  // "Mark present" = at least 1% of pixels have non-zero alpha. Blank
-  // renders (e.g. SVG rendered against a viewBox mismatch) would fail this.
   let opaque = 0;
   const total = img.width * img.height;
   for (let i = 3; i < img.data.length; i += 4) {
@@ -230,7 +199,6 @@ function checkExpectation(exp: Expectation): void {
 }
 
 for (const exp of [...ICON_EXPECTATIONS, ...SPLASH_EXPECTATIONS]) {
-
   checkExpectation(exp);
 
 }

@@ -140,10 +140,6 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
                 })}
               </AnimatePresence>
             </HorizontalScrollRail>
-            {/* Cluster ordering: destructive (清空) → additive (+) → primary CTA (查看对比).
-                Left-to-right rising visual weight, and keeps the two button-shaped
-                elements adjacent on the right so the text affordance doesn't sit
-                marooned between two button silhouettes. */}
             <div className="flex items-center justify-end gap-3 sm:shrink-0">
               <button
                 onClick={clearCompareWithUndo}

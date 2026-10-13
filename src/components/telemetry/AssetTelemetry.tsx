@@ -3,15 +3,7 @@
 import { useEffect } from "react";
 import { reportTelemetry } from "@/lib/analytics/telemetry";
 
-// Client-side telemetry: reports two classes of problem that the Cloudflare
-// Workers ASSETS pipeline and Cloudflare Web Analytics do not surface:
-//   1. asset-error  — `<img>/<script>/<link>` load failures (404, network reset)
-//   2. slow-asset   — successful but >3s loads (the dominant trans-Pacific mode)
-//
-// Page-level Core Web Vitals (LCP/INP/CLS) are intentionally NOT reported
-// here — Cloudflare Web Analytics' auto-injected beacon already collects them
-// with country breakdowns, on all plans. Adding `web-vitals` would duplicate
-// that with worse aggregation.
+// No Core Web Vitals: Cloudflare Web Analytics already collects them.
 
 const ASSET_TAGS = new Set(["IMG", "SCRIPT", "LINK"]);
 const SLOW_ASSET_THRESHOLD_MS = 3000;
@@ -36,13 +28,9 @@ export default function AssetTelemetry() {
           .connection?.effectiveType,
       });
     }
-    // Capture phase = true: <img>/<script>/<link> error events don't bubble.
+    // Capture phase: asset error events do not bubble.
     window.addEventListener("error", onAssetError, true);
 
-    // Slow-but-successful resources are invisible to the 'error' listener.
-    // Resource Timing surfaces per-resource durations, so we can flag
-    // stragglers that load but take painfully long — the dominant failure
-    // mode for users on congested trans-Pacific links.
     let resourceObs: PerformanceObserver | null = null;
     if (typeof PerformanceObserver === "function") {
       try {
@@ -65,8 +53,6 @@ export default function AssetTelemetry() {
             });
           }
         });
-        // buffered: also receive entries that completed before observe() ran,
-        // which catches the initial-page-load burst.
         resourceObs.observe({ type: "resource", buffered: true });
       } catch {
         resourceObs = null;

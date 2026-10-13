@@ -2,10 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Navigation", () => {
   test("home page loads and CTA links to lenses", async ({ page }, testInfo) => {
-    // The home hero is a height-locked single screen (no scroll). On a very
-    // short viewport (e.g. a landscape phone at ~393px tall) the CTA falls
-    // below the fold and, with scrolling disabled, can't be reached — that is
-    // the hero's portrait/desktop design, not a navigation regression.
+    // The hero is height-locked, so on a very short viewport the CTA is unreachable by design.
     const viewport = page.viewportSize();
     testInfo.skip(!viewport || viewport.height < 500, "Home hero CTA needs portrait/desktop height");
 
@@ -27,8 +24,6 @@ test.describe("Navigation", () => {
     if (await aboutLink.isVisible()) {
       await aboutLink.click();
     } else {
-      // On mobile the nav links collapse into an overflow menu where About is
-      // a base-ui menuitem (role="menuitem"), not a plain link.
       await page.getByRole("button", { name: "Menu" }).click();
       await page.getByRole("menuitem", { name: "About" }).click();
     }
@@ -39,13 +34,11 @@ test.describe("Navigation", () => {
   test("locale switch to zh changes URL prefix", async ({ page }) => {
     await page.goto("/en/lenses/x");
 
-    // Find the language switcher — it should link to the matching zh path.
     const zhLink = page.getByRole("link", { name: /中文|zh/i });
     if (await zhLink.isVisible()) {
       await zhLink.click();
       await expect(page).toHaveURL(/\/zh\/lenses\/x/);
     } else {
-      // Directly navigate to confirm zh locale works
       await page.goto("/zh/lenses/x");
       await expect(page).toHaveURL(/\/zh\/lenses\/x/);
       await expect(page.locator("body")).toBeVisible();

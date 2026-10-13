@@ -3,98 +3,50 @@ import type { LensConfigurationLabels } from "@/lib/lens/format";
 import { classifyFocusMotor, leadingValue, type FocusMotorClass } from "@/lib/lens/lens";
 import * as fmt from "@/lib/lens/format";
 
-// ---------------------------------------------------------------------------
-// Structured line type
-// ---------------------------------------------------------------------------
-
-/**
- * A single display line with a primary value and an optional context label.
- * Rendered as: `value (label)` where label is smaller and muted.
- * Used when a row contains multiple values (e.g. Wide / Tele variants).
- */
 export interface StructuredLine {
   value: string;
   label?: string;
 }
 
-// ---------------------------------------------------------------------------
-// Row types
-// ---------------------------------------------------------------------------
-
 interface BaseRow {
-  /** Resolved label string (pre-translated by the caller). */
   label: string;
-  /** Static note shown in a popover next to the label (not the value). Pre-translated by the caller. */
   labelNote?: string;
-  /** Controls the icon and color of the labelNote popover. Defaults to "info". */
   labelNoteVariant?: "info" | "warning";
-  /** If set, look up lens.fieldNotes[fieldNoteKey] and show a ⓘ popover. */
   fieldNoteKey?: FieldNoteKey;
-  /**
-   * Returns a note string to show in a ⓘ popover, computed from the lens.
-   * Use when the note is not stored in lens.fieldNotes (e.g. a fixed
-   * methodology note that applies whenever a derived value is displayed).
-   * Takes precedence after fieldNoteKey when both are defined.
-   */
+  // For notes not stored in lens.fieldNotes. fieldNoteKey wins when both are set.
   getNote?: (l: Lens) => string | undefined;
-  /**
-   * Returns true when this lens has meaningful data for this row.
-   * Used for per-view suppression: a row is hidden when no displayed lens has data.
-   */
+  // A row is hidden when no displayed lens has data for it.
   hasData: (l: Lens) => boolean;
 }
 
 export interface TextRow extends BaseRow {
   kind: "text";
   getDisplayValue: (l: Lens) => string | undefined;
-  /**
-   * Optional secondary value rendered smaller and muted below the primary.
-   * Use for supplemental details (e.g. length variants, macro mode).
-   */
   getSubValue?: (l: Lens) => string | undefined;
 }
 
 export interface NumericRow extends BaseRow {
   kind: "numeric";
-  /**
-   * Plain-text display value. Used as fallback when getStructuredLines is
-   * undefined or returns nothing, and in text-only contexts (e.g. drag ghost).
-   */
+  // Fallback when getStructuredLines returns nothing, and for text-only contexts.
   getDisplayValue: (l: Lens) => string | undefined;
-  /** Optional secondary value rendered smaller and muted below the primary. */
   getSubValue?: (l: Lens) => string | undefined;
-  /**
-   * Structured lines for rich per-line rendering.
-   * When defined and returns data, replaces getDisplayValue in the UI.
-   * Each line renders `value` prominently with an optional `label` in lighter
-   * color: "13cm (Wide)". getDisplayValue still serves as a plain-text fallback.
-   */
   getStructuredLines?: (l: Lens) => StructuredLine[] | undefined;
-  /** Returns a number for best-value comparison in the compare table. */
   toComparable: (l: Lens) => number | undefined;
-  /** Which direction is "best": min (lower = better) or max (higher = better). */
   bestDir?: "min" | "max";
-  /**
-   * When this row wins best-value comparison:
-   * - Structured mode: matched exactly against StructuredLine.value to find
-   *   which line to highlight.
-   * - Plain string mode: matched as substring to find which portion to highlight.
-   * When omitted the full display value / whole cell is highlighted.
-   */
+  // Structured mode matches a line's value exactly; plain mode matches a substring.
+  // Omitted: the whole cell is highlighted.
   getHighlightFragment?: (l: Lens) => string | undefined;
 }
 
 export interface BoolRow extends BaseRow {
   kind: "bool";
   getValue: (l: Lens) => boolean | "partial" | undefined;
-  /** Optional supplemental text rendered below the bool indicator (e.g. "6 stops" for OIS). */
   getSubValue?: (l: Lens) => string | undefined;
 }
 
 export type SpecRow = TextRow | NumericRow | BoolRow;
 
 export interface SpecGroup {
-  /** Resolved group header label (pre-translated by the caller). */
   label: string;
   rows: SpecRow[];
 }
@@ -107,16 +59,11 @@ export interface SpecValueTextLabels {
   missing: string;
 }
 
-// ---------------------------------------------------------------------------
-// Resolved row types — all formatter functions already called, values are plain data
-// ---------------------------------------------------------------------------
-
 export interface ResolvedTextRow {
   kind: "text";
   label: string;
   labelNote?: string;
   labelNoteVariant?: "info" | "warning";
-  /** Resolved note for the ⓘ popover, if any. */
   note?: string;
   displayValue?: string;
   subValue?: string;
@@ -153,12 +100,7 @@ export interface ResolvedSpecGroup {
   rows: ResolvedSpecRow[];
 }
 
-// ---------------------------------------------------------------------------
-// Labels interface — caller passes all pre-translated strings
-// ---------------------------------------------------------------------------
-
 export interface SpecGroupLabels {
-  // Group headers
   groupOptics: string;
   groupFocus: string;
   groupStabilization: string;
@@ -166,7 +108,6 @@ export interface SpecGroupLabels {
   groupFeatures: string;
   groupRelease: string;
 
-  // Row labels
   focalLength: string;
   focalLengthEquiv: string;
   maxAperture: string;
@@ -195,7 +136,6 @@ export interface SpecGroupLabels {
   releaseYearLabelNote: string;
   accessories: string;
 
-  // Sub-labels used inside formatters
   yes: string;
   no: string;
   partial: string;
@@ -203,25 +143,13 @@ export interface SpecGroupLabels {
   wide: string;
   tele: string;
 
-  // Lens configuration sub-labels
   lc: LensConfigurationLabels;
 
-  // Focus motor canonical class labels
   motorClass: Record<FocusMotorClass, string>;
 }
 
-// Translator compatible with next-intl's getTranslations (server) and
-// useTranslations (client) return types — both are called as t(key). A minimal
-// structural type (not next-intl's) keeps buildSpecGroups consuming plain
-// strings: the schema below never touches a translation key directly.
 type Translator = (key: string, values?: Record<string, string | number>) => string;
 
-/**
- * Assembles the pre-translated SpecGroupLabels from a `LensDetail`-namespace
- * translator. Single home for the label assembly shared by the detail page and
- * the compare table — the one place that maps translation keys to label fields,
- * so each call site no longer repeats the ~40-line object.
- */
 export function buildSpecGroupLabels(t: Translator): SpecGroupLabels {
   return {
     groupOptics: t("groupOptics"),
@@ -287,16 +215,6 @@ function joinParts(...parts: (string | undefined)[]): string {
   return parts.filter(Boolean).join("\n");
 }
 
-/**
- * Resolves a single spec row for a specific lens, calling all formatter
- * functions exactly once. Returns null when this lens has no data for the row
- * (caller omits the row from the visible set for this lens).
- *
- * Pure extraction — the resolved row carries only the raw values (boolValue,
- * displayValue, structuredLines, …). The flat text for the Report Dialog is
- * derived on demand via `rowPlainText`, so this stays free of display labels
- * and each surface can map raw values to text its own way.
- */
 export function resolveSpecRow(row: SpecRow, lens: Lens): ResolvedSpecRow | null {
   if (!row.hasData(lens)) {
     return null;
@@ -337,7 +255,6 @@ export function resolveSpecRow(row: SpecRow, lens: Lens): ResolvedSpecRow | null
     };
   }
 
-  // text
   return {
     kind: "text",
     label: row.label,
@@ -349,10 +266,6 @@ export function resolveSpecRow(row: SpecRow, lens: Lens): ResolvedSpecRow | null
   };
 }
 
-/**
- * Resolves all spec groups for a single lens, filtering out rows and groups
- * where the lens has no data. Use on the detail page or any single-lens view.
- */
 export function resolveSpecGroups(groups: SpecGroup[], lens: Lens): ResolvedSpecGroup[] {
   return groups
     .map((group) => ({
@@ -364,13 +277,6 @@ export function resolveSpecGroups(groups: SpecGroup[], lens: Lens): ResolvedSpec
     .filter((group) => group.rows.length > 0);
 }
 
-/**
- * Flat-text representation of a resolved row — the single source of truth for
- * the Report Dialog's "current value". Derived from the already-resolved row
- * plus the display labels, so it stays in step with the spec table (which
- * renders the same resolved values). Kept out of `resolveSpecRow` so resolution
- * is pure data and labels live only at the presentation boundary.
- */
 export function rowPlainText(row: ResolvedSpecRow, labels: SpecValueTextLabels): string {
   if (row.kind === "bool") {
     const primaryText =
@@ -394,22 +300,9 @@ export function rowPlainText(row: ResolvedSpecRow, labels: SpecValueTextLabels):
     return joinParts(primary, row.subValue, row.note && `(${row.note})`);
   }
 
-  // text
   return joinParts(row.displayValue ?? labels.missing, row.subValue, row.note && `(${row.note})`);
 }
 
-// ---------------------------------------------------------------------------
-// Factory
-// ---------------------------------------------------------------------------
-
-/**
- * Builds the full list of spec groups with all rows.
- * Call once per render (or memoize) with pre-translated labels.
- *
- * Per-view suppression: filter each group's rows with `row.hasData(lens)`
- * (detail page) or `lenses.some(l => row.hasData(l))` (compare table),
- * then drop groups where no rows remain.
- */
 export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
   const {
     retracted,
@@ -421,9 +314,6 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
   } = labels;
 
   return [
-    // -----------------------------------------------------------------------
-    // Optics
-    // -----------------------------------------------------------------------
     {
       label: labels.groupOptics,
       rows: [
@@ -512,9 +402,6 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
       ] satisfies SpecRow[],
     },
 
-    // -----------------------------------------------------------------------
-    // Physical
-    // -----------------------------------------------------------------------
     {
       label: labels.groupPhysical,
       rows: [
@@ -553,9 +440,6 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
       ] satisfies SpecRow[],
     },
 
-    // -----------------------------------------------------------------------
-    // Autofocus
-    // -----------------------------------------------------------------------
     {
       label: labels.groupFocus,
       rows: [
@@ -576,7 +460,7 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
           },
           getSubValue: (l) => (classifyFocusMotor(l) ? l.focusMotor : undefined),
         },
-        // internalFocusing row hidden — data quality issues, to be re-added later
+        // internalFocusing is hidden until its data quality is fixed.
         {
           kind: "numeric",
           label: labels.minFocusDist,
@@ -619,9 +503,6 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
       ] satisfies SpecRow[],
     },
 
-    // -----------------------------------------------------------------------
-    // Stabilization
-    // -----------------------------------------------------------------------
     {
       label: labels.groupStabilization,
       rows: [
@@ -639,9 +520,6 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
       ] satisfies SpecRow[],
     },
 
-    // -----------------------------------------------------------------------
-    // Features
-    // -----------------------------------------------------------------------
     {
       label: labels.groupFeatures,
       rows: [
@@ -658,8 +536,6 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
           hasData: () => true,
           getValue: (l) => l.apertureRing,
         },
-        // powerZoom and internalZoom are zoom-only tri-state specs: "N/A" on
-        // primes carries no meaning, so the row is hidden for them.
         {
           kind: "bool",
           label: labels.powerZoom,
@@ -676,9 +552,6 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
       ] satisfies SpecRow[],
     },
 
-    // -----------------------------------------------------------------------
-    // Release
-    // -----------------------------------------------------------------------
     {
       label: labels.groupRelease,
       rows: [

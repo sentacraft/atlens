@@ -48,9 +48,7 @@ export async function isRateLimited(req: Request, policy: RateLimitPolicy): Prom
   return !success;
 }
 
-// A function, not a shared constant: a Response body is a stream that can only be
-// consumed once, so returning the same instance from a second rate-limited request
-// throws on read and the caller gets a 500 instead of a 429.
+// A Response body can be read once, so each caller needs its own instance.
 export function rateLimitedResponse(): NextResponse {
   return NextResponse.json({ error: "rate_limited" }, { status: 429 });
 }

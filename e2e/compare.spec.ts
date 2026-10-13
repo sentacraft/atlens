@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
 
-// Two stable Fujifilm lenses from the dataset
 const LENS_A = "fujifilm-mkx-18-55mmt29-x";
 const LENS_B = "fujifilm-mkx-50-135mmt29-x";
 const LENS_A_MODEL = "MKX 18-55mmT2.9";
@@ -16,7 +15,6 @@ test.describe("Compare flow", () => {
     await addButtons.nth(0).click();
     await addButtons.nth(1).click();
 
-    // Compare bar should now show "Compare (2)"
     await expect(page.getByRole("button", { name: /Compare \(2\)/i })).toBeVisible();
   });
 
@@ -45,7 +43,6 @@ test.describe("Compare flow", () => {
     page,
   }) => {
     await page.goto(`/en/lenses/x/compare`);
-    // Should render, not throw 500
     await expect(page.locator("body")).toBeVisible();
   });
 
@@ -57,7 +54,6 @@ test.describe("Compare flow", () => {
     await addButtons.nth(1).click();
     await expect(page.getByRole("button", { name: /Compare \(2\)/i })).toBeVisible();
 
-    // Click the X button on the first chip in the compare bar
     const removeBtn = page.getByRole("button", { name: /^Remove /i }).first();
     await removeBtn.click();
 
@@ -74,7 +70,6 @@ test.describe("Compare flow", () => {
 
     await page.getByRole("button", { name: /Clear/i }).click();
 
-    // Compare bar should disappear entirely
     await expect(page.getByRole("button", { name: /Compare \(/i })).not.toBeVisible();
   });
 
@@ -83,24 +78,16 @@ test.describe("Compare flow", () => {
   }) => {
     await page.goto(`/en/lenses/x/${LENS_A}`);
 
-    // On the detail page the toggle's accessible name is "Compare" (the list
-    // cards say "Add to Compare"; this control is the compact detail variant).
     await page.getByRole("button", { name: "Compare", exact: true }).click();
 
-    // Navigate to compare page via the bar
     await page.getByRole("button", { name: /Compare \(1\)/i }).waitFor();
 
-    // Go to the compare page URL that includes LENS_A
     await page.goto(`/en/lenses/x/compare?ids=${LENS_A},${LENS_B}`);
 
     await expect(page.getByText(LENS_A_MODEL).first()).toBeVisible();
   });
 
-  // Regression guard: when the compare table renders from Context (not local
-  // state), any mutation must persist — the Context-seeding effect must not
-  // clobber it on the next render. This was broken when the scoped
-  // replaceCompare wrapper had an unstable identity across state changes,
-  // causing the seeding effect to re-fire and overwrite every mutation.
+  // Regression: Context seeding must not clobber a mutation on the next render.
   test("removing a lens column from the compare table actually removes it", async ({
     page,
   }) => {
@@ -109,17 +96,13 @@ test.describe("Compare flow", () => {
     await expect(page.getByText(LENS_A_MODEL).first()).toBeVisible();
     await expect(page.getByText(LENS_B_MODEL).first()).toBeVisible();
 
-    // Hover the second column header to reveal the controls (they're
-    // sm:opacity-0 sm:group-hover:opacity-100 by default on desktop).
+    // Controls are hover-revealed on desktop.
     const secondColumnRemove = page
       .getByRole("button", { name: new RegExp(`Remove .*${LENS_B_MODEL}`, "i") });
     await secondColumnRemove.click();
 
-    // After removal, LENS_B should no longer be in the table headers.
     await expect(page.getByText(LENS_B_MODEL)).toHaveCount(0);
-    // LENS_A should still be there.
     await expect(page.getByText(LENS_A_MODEL).first()).toBeVisible();
-    // URL should be updated to drop LENS_B.
     await expect(page).toHaveURL(new RegExp(`ids=${LENS_A}(?!,)`));
   });
 
@@ -131,12 +114,9 @@ test.describe("Compare flow", () => {
     await expect(page.getByText(LENS_A_MODEL).first()).toBeVisible();
     await expect(page.getByText(LENS_B_MODEL).first()).toBeVisible();
 
-    // Click the "move left" arrow on the second (rightmost) column header.
-    // There's exactly one move-left button enabled (the first column's is disabled).
     const shiftLeft = page.locator('button[aria-label="Move left"]:not([disabled])').first();
     await shiftLeft.click();
 
-    // After the swap, the URL ids should be reversed.
     await expect(page).toHaveURL(new RegExp(`ids=${LENS_B},${LENS_A}`));
   });
 

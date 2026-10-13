@@ -35,11 +35,8 @@ export default function Nav() {
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
 
-  // Both nav entries (desktop link + mobile menu item) open one Nav-level
-  // dialog rather than going through FeedbackTrigger: the mobile menu unmounts
-  // on select, which would tear down a trigger-owned dialog before it opens.
-  // Route both through this one handler so they still fire the same
-  // feedback_open event FeedbackTrigger does — no tracking gap.
+  // One Nav-level dialog, not FeedbackTrigger: the mobile menu unmounts on select, tearing down a
+  // trigger-owned dialog before it opens.
   function openFeedback() {
     track("feedback_open", { feedback_type: "general" });
     setFeedbackOpen(true);
@@ -98,16 +95,8 @@ export default function Nav() {
   const isBrowseActive = pathname.startsWith("/lenses") && !pathname.includes("/compare");
   const isCompareActive = pathname.includes("/compare");
   const isAskIrisActive = pathname.startsWith("/askiris");
-  // Not on Ask Iris: a conversation spans whatever mounts it discusses, so the catalog's
-  // mount must not look like a setting of the chat.
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
 
-  // When the user is *already on* the compare page and clicks the nav's
-  // "对比" link, the intuitive read is "reset this comparison and start
-  // fresh" — but plain navigation would just be a no-op. Intercept the
-  // click and delegate to the shared clear-with-undo hook so the
-  // destructive action stays reversible (and is consistent with the
-  // other "清空" entry points on the bar and compare-page header).
   function handleCompareLinkClick(e: React.MouseEvent) {
     if (!isCompareActive || compareIds.length === 0) {
       return;
@@ -130,7 +119,6 @@ export default function Nav() {
       style={{ paddingTop: "calc(var(--safe-inset-top) + var(--titlebar-height))" }}
     >
       <nav className="wco-no-drag max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-        {/* Left: brand / mount-scope path (GitHub namespace pattern) */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           <Link
             href="/"
@@ -148,7 +136,6 @@ export default function Nav() {
           )}
         </div>
 
-        {/* Right: shared items + breakpoint-specific overflow */}
         <div className="flex items-center gap-1 sm:gap-2">
           <Link href={browseHref} className={linkCls(isBrowseActive)}>
             {t("lenses")}
@@ -159,8 +146,6 @@ export default function Nav() {
               Beta
             </sup>
           </Link>
-          {/* Compare is a late-funnel utility, so on mobile it folds into the ⋮
-              overflow to make room for the Ask AI entry; stays inline on desktop. */}
           <Link
             href={compareHref}
             onClick={handleCompareLinkClick}
@@ -169,7 +154,6 @@ export default function Nav() {
             {t("compare")}
           </Link>
 
-          {/* Desktop-only links */}
           <Link href="/about" className={cn(linkCls(pathname === "/about"), "hidden sm:inline")}>
             {t("about")}
           </Link>
@@ -196,7 +180,6 @@ export default function Nav() {
           </a>
           <AuthControl />
 
-          {/* Mobile-only overflow menu */}
           <Menu.Root>
             <Menu.Trigger
               aria-label="Menu"

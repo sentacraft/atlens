@@ -80,7 +80,6 @@ export default memo(function LensCard({
           : "border-zinc-200 dark:border-zinc-800"
       }`}
     >
-      {/* Stretched via ::after to cover the whole card incl. the footer below; compare buttons use z-10 to stay on top of it. Hover background lives on the outer card, not here, so it spans the whole clickable area. */}
       <Link
         href={`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`}
         prefetch={false}
@@ -102,8 +101,7 @@ export default memo(function LensCard({
                 sizes="(max-width: 499px) 112px, (max-width: 640px) 50vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                 style={lensImageStyle}
                 className="object-contain"
-                // Next 16: `priority` only adds a head preload link; drive loading
-                // directly so above-fold cards are eager (no preload spam), rest lazy.
+                // Next 16's `priority` only adds a preload link, so loading is set directly.
                 loading={priority ? "eager" : "lazy"}
               />
             </div>
@@ -138,10 +136,6 @@ export default memo(function LensCard({
             </h3>
           </div>
 
-          {/* Feature badges with the reference price pinned to the row's right
-              edge — price shares this line instead of taking its own. Badges
-              flex-wrap in the flexible left column; price is shrink-0 so it
-              never wraps, and the row grows downward if badges need a 2nd line. */}
           <div className="flex min-h-[20px] items-start justify-between gap-1">
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
               {badges.map((badge) => (
@@ -153,21 +147,16 @@ export default memo(function LensCard({
                 />
               ))}
             </div>
-            {/* Price rides the badge row on wider cards; on the narrow
-                horizontal card it drops to its own line below, where the badge
-                row has no room to spare without stacking badges vertically. */}
             <div className="hidden shrink-0 xs:block">
               <LensCardPrice lens={lens} />
             </div>
           </div>
 
-          {/* Specs (and, on the narrow card, the price) pinned to the bottom. */}
           <div className="mt-auto flex flex-col gap-2">
             <div className="xs:hidden">
               <LensCardPrice lens={lens} />
             </div>
 
-            {/* Mobile: single-row dl */}
             <dl className="flex items-baseline justify-between gap-2 border-t border-zinc-100 pt-2 text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400 sm:hidden">
               <div className="min-w-0 truncate">
                 {equivDisplay} {t("equivSuffix")}
@@ -175,7 +164,6 @@ export default memo(function LensCard({
               <div className="shrink-0">{weightDisplay}</div>
             </dl>
 
-            {/* Desktop: 2×2 data grid */}
             <dl className="hidden border-t border-zinc-100 pt-2.5 text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400 sm:grid sm:grid-cols-2 sm:gap-x-3">
               <div className="truncate">MFD {mfdDisplay}</div>
               <div className="text-right">⌀{filterDisplay}</div>
@@ -188,7 +176,6 @@ export default memo(function LensCard({
         </div>
       </Link>
 
-      {/* Mobile-only icon compare toggle — absolute in top-right corner */}
       {!hideCompare && (
         <button
           onClick={selectionDisabled ? () => toast(t("compareFullToast")) : () => onToggle(lens.id)}
@@ -205,7 +192,6 @@ export default memo(function LensCard({
         </button>
       )}
 
-      {/* Compare toggle */}
       {!hideCompare && (
         <div
           {...hookAttr("cardFooter")}
