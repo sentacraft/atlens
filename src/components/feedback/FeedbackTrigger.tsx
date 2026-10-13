@@ -1,11 +1,8 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import FeedbackDialog, {
-  type FeedbackContext,
-  type FeedbackField,
-  type FeedbackType,
-} from "@/components/feedback/FeedbackDialog";
+import FeedbackDialog, { type FeedbackField } from "@/components/feedback/FeedbackDialog";
+import type { FeedbackContext, FeedbackType } from "@/lib/feedback/feedback-client";
 import { track } from "@/lib/analytics/analytics";
 import { FEEDBACK_LINK_CLS } from "@/config/ui-tokens";
 
