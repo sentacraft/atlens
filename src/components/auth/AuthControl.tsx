@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Menu } from "@base-ui/react/menu";
 import { LogOut, Trash2, UserRound, X } from "lucide-react";
 import { accountUser, authClient } from "@/lib/auth-client";
@@ -33,24 +33,27 @@ function initials(name: string, email: string) {
 
 export default function AuthControl() {
   const t = useTranslations("Auth");
+  const locale = useLocale();
   const { data: session } = authClient.useSession();
   const testHookEnabled = useTestHookEnabled();
   const [loginOpen, setLoginOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [deleteEmailSent, setDeleteEmailSent] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  async function deleteAccount() {
+  async function requestDeletion() {
     setDeleting(true);
     setDeleteError(null);
     try {
-      const { error } = await authClient.deleteUser();
+      const { error } = await authClient.deleteUser({ callbackURL: `/${locale}` });
       if (error) {
         throw new Error("delete_failed");
       }
-      window.location.reload();
+      setDeleteEmailSent(true);
     } catch {
       setDeleteError(t("genericError"));
+    } finally {
       setDeleting(false);
     }
   }
@@ -129,7 +132,9 @@ export default function AuthControl() {
               <X className="h-4 w-4" />
             </DialogClose>
             <DialogTitle>{t("deleteTitle")}</DialogTitle>
-            <DialogDescription>{t("deleteDescription")}</DialogDescription>
+            <DialogDescription>
+              {deleteEmailSent ? t("deleteEmailSent", { email: user.email }) : t("deleteDescription")}
+            </DialogDescription>
           </DialogHeader>
           {deleteError && (
             <p className="px-5 pb-2 text-sm text-red-600 dark:text-red-400">{deleteError}</p>
@@ -139,19 +144,21 @@ export default function AuthControl() {
               type="button"
               className="h-9 rounded-lg px-3 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
             >
-              {t("cancel")}
+              {deleteEmailSent ? t("close") : t("cancel")}
             </DialogClose>
-            <button
-              type="button"
-              onClick={deleteAccount}
-              disabled={deleting}
-              className={cn(
-                ACTION_PRIMARY_CLS,
-                "h-9 rounded-lg bg-red-600 px-3 text-sm hover:bg-red-700 dark:bg-red-500 dark:text-white dark:hover:bg-red-600",
-              )}
-            >
-              {deleting ? t("deleting") : t("deleteAccount")}
-            </button>
+            {!deleteEmailSent && (
+              <button
+                type="button"
+                onClick={requestDeletion}
+                disabled={deleting}
+                className={cn(
+                  ACTION_PRIMARY_CLS,
+                  "h-9 rounded-lg bg-red-600 px-3 text-sm hover:bg-red-700 dark:bg-red-500 dark:text-white dark:hover:bg-red-600",
+                )}
+              >
+                {deleting ? t("deleteEmailSending") : t("deleteEmailSend")}
+              </button>
+            )}
           </DialogFooter>
         </DialogPopup>
       </Dialog>
