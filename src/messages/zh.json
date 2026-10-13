@@ -50,8 +50,10 @@
     "logout": "退出登录",
     "deleteAccount": "删除账户",
     "deleteTitle": "删除账户？",
-    "deleteDescription": "这会退出登录并永久删除你的账户，且无法撤销。",
-    "deleting": "删除中…",
+    "deleteDescription": "我们会给你发一封确认邮件，打开其中的链接后，你的账户和 Ask Iris 对话会被永久删除，且无法撤销。",
+    "deleteEmailSend": "发送确认邮件",
+    "deleteEmailSending": "发送中…",
+    "deleteEmailSent": "确认链接已发送到 {email}。请在当前浏览器中打开它完成删除，链接 24 小时内有效。",
     "cancel": "取消",
     "close": "关闭"
   },
