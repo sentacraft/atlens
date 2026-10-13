@@ -61,6 +61,41 @@ function initials(name: string, email: string) {
     .join("") || "?";
 }
 
+function Avatar({
+  name,
+  email,
+  image,
+  className,
+}: {
+  name: string;
+  email: string;
+  image: string | null | undefined;
+  className?: string;
+}) {
+  const [failed, setFailed] = useState(false);
+  return (
+    <span
+      className={cn(
+        "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-zinc-300 bg-zinc-100 font-semibold text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300",
+        className,
+      )}
+    >
+      {image && !failed ? (
+        // eslint-disable-next-line @next/next/no-img-element -- remote avatar; images are unoptimized on Workers
+        <img
+          src={image}
+          alt=""
+          referrerPolicy="no-referrer"
+          onError={() => setFailed(true)}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        initials(name, email)
+      )}
+    </span>
+  );
+}
+
 export default function AuthControl() {
   const t = useTranslations("Auth");
   const locale = useLocale();
@@ -115,23 +150,33 @@ export default function AuthControl() {
       <Menu.Root>
         <Menu.Trigger
           aria-label={t("accountLabel")}
-          className={cn(
-            ICON_NAV_BTN_CLS,
-            "h-8 min-w-8 px-1.5 text-xs font-semibold",
-          )}
+          className={cn(ICON_NAV_BTN_CLS, "h-8 w-8 rounded-full")}
         >
-          {initials(user.name, user.email)}
+          <Avatar
+            name={user.name}
+            email={user.email}
+            image={user.image}
+            className="h-7 w-7 text-[11px]"
+          />
         </Menu.Trigger>
         <Menu.Portal>
           <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50">
             <Menu.Popup className={cn(MENU_POPUP_CLS, "w-64")}>
-              <div className="border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
-                <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                  {user.name || t("account")}
-                </p>
-                <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
-                  {user.email}
-                </p>
+              <div className="flex items-center gap-3 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
+                <Avatar
+                  name={user.name}
+                  email={user.email}
+                  image={user.image}
+                  className="h-9 w-9 text-sm"
+                />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                    {user.name || t("account")}
+                  </p>
+                  <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
+                    {user.email}
+                  </p>
+                </div>
               </div>
               <Menu.Item
                 onClick={() => authClient.signOut()}
