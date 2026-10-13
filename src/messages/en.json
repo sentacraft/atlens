@@ -57,6 +57,15 @@
     "cancel": "Cancel",
     "close": "Close"
   },
+  "AuthEmail": {
+    "signInSubject": "Your Atlens sign-in code",
+    "signInBody": "Your Atlens sign-in code is <strong>{otp}</strong>.",
+    "signInExpiry": "It expires in five minutes.",
+    "deleteSubject": "Confirm deleting your Atlens account",
+    "deleteBody": "Open this link in the browser where you are signed in to Atlens to permanently delete your account and your Ask Iris conversations:",
+    "deleteLink": "Delete my Atlens account",
+    "deleteFooter": "The link expires in 24 hours. If you did not ask to delete your account, ignore this email."
+  },
   "AskIris": {
     "heading": "Hi, I'm Iris<beta></beta>",
     "subtitle": "Your personal lens advisor — describe your shoot in plain words, and I'll match it precisely.",
