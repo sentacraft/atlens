@@ -35,6 +35,9 @@ Components do not call `fetch` or hard-code API paths: each feature's requests l
 module under `src/lib/`, and client-side reads go through TanStack Query. Each feature's URL query
 params are named, parsed, and written in one module under `src/lib/url/`.
 
+Pure helpers and UI state used by a single component stay in its file; extract when the code does
+I/O, carries testable logic, or gains a second consumer.
+
 Demos, design explorations, and UX experiments belong under `src/app/[locale]/design-lab/`,
 never in production code. Pages and components there — and all Test Hook pages and components —
 hardcode English strings, do not use `next-intl`, and must not add keys to `en.json` or
