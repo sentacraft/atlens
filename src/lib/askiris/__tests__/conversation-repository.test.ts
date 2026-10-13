@@ -1,128 +1,165 @@
-import { describe, expect, it, vi } from "vitest";
+import type { UIMessage } from "ai";
+import { beforeEach, describe, expect, it } from "vitest";
+import { createSqliteD1 } from "../../__tests__/support/sqlite-d1";
 import {
+  appendAskIrisTurn,
   ConversationOwnershipError,
   getAskIrisConversationMessages,
   listAskIrisConversations,
-  saveAskIrisConversationTurn,
+  loadAskIrisTurnHistory,
+  MAX_MESSAGE_BYTES,
+  serializeMessage,
 } from "../conversation-repository";
 
-const messages = [
-  {
-    id: "user-1",
-    role: "user" as const,
-    parts: [{ type: "text" as const, text: "Which lens is lighter?" }],
-  },
-  {
-    id: "assistant-1",
-    role: "assistant" as const,
-    parts: [{ type: "text" as const, text: "The 16-80 is lighter." }],
-  },
-];
+const CONVERSATION = "conversation-1";
+const context = { mount: "X", locale: "en" };
 
-describe("saveAskIrisConversationTurn", () => {
-  it("creates a conversation and inserts each message once", async () => {
-    const first = vi.fn().mockResolvedValue(undefined);
-    const prepare = vi.fn().mockReturnValue({ bind: vi.fn().mockReturnValue({ first }) });
-    const batch = vi.fn().mockResolvedValue([]);
-    const db = { prepare, batch } as unknown as D1Database;
+function text(id: string, role: "user" | "assistant", body: string): UIMessage {
+  return { id, role, parts: [{ type: "text", text: body }] };
+}
 
-    await saveAskIrisConversationTurn(db, {
-      conversationId: "conversation-1",
-      userId: "user-1",
-      title: "Which lens is lighter?",
-      messages,
-      currentTurnId: "user-1",
-      responseMessageId: "assistant-1",
-      context: { mount: "X", locale: "en" },
-      now: 1_800_000_000_000,
-    });
+let db: D1Database;
 
-    expect(batch).toHaveBeenCalledOnce();
-    expect(batch.mock.calls[0][0]).toHaveLength(3);
-    expect(prepare.mock.calls[0][0]).toContain("SELECT user_id");
+beforeEach(() => {
+  const { d1, sqlite } = createSqliteD1("migrations/app");
+  for (const id of ["owner", "stranger"]) {
+    sqlite
+      .prepare("INSERT INTO user (id, name, email, createdAt, updatedAt) VALUES (?, ?, ?, 0, 0)")
+      .run(id, id, `${id}@example.test`);
+  }
+  db = d1;
+});
+
+function append(input: Partial<Parameters<typeof appendAskIrisTurn>[1]> = {}) {
+  return appendAskIrisTurn(db, {
+    conversationId: CONVERSATION,
+    userId: "owner",
+    title: "Which lens is lighter?",
+    context,
+    now: 1,
+    ...input,
+  });
+}
+
+async function storedIds() {
+  const rows = await getAskIrisConversationMessages(db, {
+    conversationId: CONVERSATION,
+    userId: "owner",
+  });
+  return rows.map((row) => [row.sequence, row.id]);
+}
+
+describe("appendAskIrisTurn", () => {
+  it("appends each turn after the last stored message", async () => {
+    await append({ userMessage: text("u1", "user", "a"), responseMessage: text("a1", "assistant", "b") });
+    await append({ userMessage: text("u2", "user", "c"), responseMessage: text("a2", "assistant", "d") });
+
+    expect(await storedIds()).toEqual([
+      [0, "u1"],
+      [1, "a1"],
+      [2, "u2"],
+      [3, "a2"],
+    ]);
   });
 
-  it("rejects a conversation owned by another user", async () => {
-    const prepare = vi.fn().mockReturnValue({
-      bind: vi.fn().mockReturnValue({
-        first: vi.fn().mockResolvedValue({ user_id: "other-user" }),
-      }),
-    });
-    const batch = vi.fn();
-    const db = { prepare, batch } as unknown as D1Database;
+  it("keeps both turns when they finish out of order", async () => {
+    await append({ userMessage: text("u2", "user", "second"), responseMessage: text("a2", "assistant", "x") });
+    await append({ userMessage: text("u1", "user", "first"), responseMessage: text("a1", "assistant", "y") });
+
+    expect((await storedIds()).map(([, id]) => id)).toEqual(["u2", "a2", "u1", "a1"]);
+  });
+
+  it("replaces the answer after a regenerated user message", async () => {
+    await append({ userMessage: text("u1", "user", "a"), responseMessage: text("a1", "assistant", "old") });
+
+    await append({ replaceAfterMessageId: "u1", responseMessage: text("a1b", "assistant", "new") });
+
+    expect(await storedIds()).toEqual([
+      [0, "u1"],
+      [1, "a1b"],
+    ]);
+  });
+
+  it("stores the user message of a turn with nothing to keep in its response", async () => {
+    await append({ userMessage: text("u1", "user", "a") });
+
+    expect(await storedIds()).toEqual([[0, "u1"]]);
+  });
+
+  it("rejects a conversation owned by another user without writing", async () => {
+    await append({ userMessage: text("u1", "user", "a") });
 
     await expect(
-      saveAskIrisConversationTurn(db, {
-        conversationId: "conversation-1",
-        userId: "user-1",
-        title: "A title",
-        messages,
-        currentTurnId: "user-1",
-        responseMessageId: "assistant-1",
-        context: { mount: "X", locale: "en" },
-        now: 1,
-      }),
+      append({ userId: "stranger", userMessage: text("u9", "user", "b") }),
     ).rejects.toBeInstanceOf(ConversationOwnershipError);
-    expect(batch).not.toHaveBeenCalled();
+    expect(await storedIds()).toEqual([[0, "u1"]]);
+  });
+
+  it("stores the turn context with each message", async () => {
+    await append({ userMessage: text("u1", "user", "a") });
+
+    const [row] = await getAskIrisConversationMessages(db, {
+      conversationId: CONVERSATION,
+      userId: "owner",
+    });
+    expect(row.context).toEqual(context);
   });
 });
 
-describe("conversation reads", () => {
-  it("maps conversation rows to the public repository shape", async () => {
-    const all = vi.fn().mockResolvedValue({
-      results: [
-        {
-          id: "conversation-1",
-          user_id: "user-1",
-          title: "A title",
-          created_at: 1,
-          updated_at: 2,
-        },
-      ],
-    });
-    const prepare = vi.fn().mockReturnValue({ bind: vi.fn().mockReturnValue({ all }) });
+describe("loadAskIrisTurnHistory", () => {
+  it("returns stored messages in order, and nothing for a new conversation", async () => {
+    expect(await loadAskIrisTurnHistory(db, { conversationId: CONVERSATION, userId: "owner" })).toEqual([]);
 
-    await expect(listAskIrisConversations({ prepare } as unknown as D1Database, "user-1")).resolves.toEqual([
-      {
-        id: "conversation-1",
-        title: "A title",
-        createdAt: 1,
-        updatedAt: 2,
-      },
-    ]);
+    const user = text("u1", "user", "a");
+    await append({ userMessage: user });
+
+    expect(await loadAskIrisTurnHistory(db, { conversationId: CONVERSATION, userId: "owner" })).toEqual([user]);
   });
 
-  it("parses stored messages and their turn context", async () => {
-    const all = vi.fn().mockResolvedValue({
-      results: [
-        {
-          id: "user-1",
-          conversation_id: "conversation-1",
-          role: "user",
-          sequence: 0,
-          message_json: JSON.stringify(messages[0]),
-          context_json: JSON.stringify({ mount: "X", locale: "en" }),
-          created_at: 1,
-        },
-      ],
-    });
-    const prepare = vi.fn().mockReturnValue({ bind: vi.fn().mockReturnValue({ all }) });
+  it("refuses another user's conversation", async () => {
+    await append({ userMessage: text("u1", "user", "a") });
 
     await expect(
-      getAskIrisConversationMessages(
-        { prepare } as unknown as D1Database,
-        { conversationId: "conversation-1", userId: "user-1" },
-      ),
-    ).resolves.toEqual([
-      {
-        id: "user-1",
-        conversationId: "conversation-1",
-        role: "user",
-        sequence: 0,
-        message: messages[0],
-        context: { mount: "X", locale: "en" },
-        createdAt: 1,
-      },
+      loadAskIrisTurnHistory(db, { conversationId: CONVERSATION, userId: "stranger" }),
+    ).rejects.toBeInstanceOf(ConversationOwnershipError);
+  });
+});
+
+describe("listAskIrisConversations", () => {
+  it("lists only the user's own conversations", async () => {
+    await append({ userMessage: text("u1", "user", "a") });
+
+    expect(await listAskIrisConversations(db, "owner")).toEqual([
+      { id: CONVERSATION, title: "Which lens is lighter?", createdAt: 1, updatedAt: 1 },
     ]);
+    expect(await listAskIrisConversations(db, "stranger")).toEqual([]);
+  });
+});
+
+describe("serializeMessage", () => {
+  it("keeps only the text of a message over the size limit", () => {
+    const huge = "x".repeat(MAX_MESSAGE_BYTES);
+    const message = {
+      id: "a1",
+      role: "assistant",
+      parts: [
+        { type: "text", text: "kept" },
+        {
+          type: "tool-queryLenses",
+          toolCallId: "call-1",
+          state: "output-available",
+          input: {},
+          output: huge,
+        },
+      ],
+    } as UIMessage;
+
+    expect(JSON.parse(serializeMessage(message)).parts).toEqual([{ type: "text", text: "kept" }]);
+  });
+
+  it("refuses a message whose text alone is over the limit", () => {
+    expect(() => serializeMessage(text("a1", "assistant", "x".repeat(MAX_MESSAGE_BYTES)))).toThrow(
+      "message_too_large",
+    );
   });
 });
