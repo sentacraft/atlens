@@ -305,6 +305,7 @@ export async function POST(req: Request) {
         } catch (error) {
           console.error("[askiris] failed to persist conversation", {
             errorType: error instanceof Error ? error.name : "unknown",
+            message: error instanceof Error ? error.message : String(error),
             conversationId,
           });
         }

@@ -33,12 +33,23 @@ export class ConversationOwnershipError extends Error {
   }
 }
 
+function fitsLimit(json: string): boolean {
+  return new TextEncoder().encode(json).byteLength <= MAX_MESSAGE_BYTES;
+}
+
+// Every save rewrites the whole conversation, so a message that cannot be stored
+// would block all later turns. Oversized messages keep their text (what the user
+// reads) and drop the rest, typically large tool outputs.
 function serializeMessage(message: UIMessage): string {
   const json = JSON.stringify(message);
-  if (!json || new TextEncoder().encode(json).byteLength > MAX_MESSAGE_BYTES) {
-    throw new Error("message_too_large");
+  if (fitsLimit(json)) {
+    return json;
   }
-  return json;
+  const textOnly = JSON.stringify({
+    ...message,
+    parts: message.parts.filter((part) => part.type === "text"),
+  });
+  return fitsLimit(textOnly) ? textOnly : JSON.stringify({ ...message, parts: [] });
 }
 
 function serializeContext(context: AskIrisConversationContext): string {

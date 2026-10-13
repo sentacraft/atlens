@@ -104,4 +104,30 @@ describe("saveAskIrisConversationTurn against SQLite", () => {
       ["a2", 2, "X"],
     ]);
   });
+
+  it("keeps saving a conversation after an oversized message, trimming that message", async () => {
+    const huge: UIMessage = {
+      id: "a1",
+      role: "assistant",
+      parts: [
+        { type: "text", text: "Here is the full table." },
+        {
+          type: "tool-queryLenses",
+          toolCallId: "call-1",
+          state: "output-available",
+          input: {},
+          output: { rows: "x".repeat(600 * 1024) },
+        } as UIMessage["parts"][number],
+      ],
+    };
+    await save([u1, huge], "u1", "a1", 1);
+    await save([u1, huge, u2, text("a2", "assistant", "Yes.")], "u2", "a2", 2);
+
+    const rows = await getAskIrisConversationMessages(d1, {
+      conversationId: "conv-1",
+      userId: "user-1",
+    });
+    expect(rows.map((row) => row.id)).toEqual(["u1", "a1", "u2", "a2"]);
+    expect(rows[1].message.parts).toEqual([{ type: "text", text: "Here is the full table." }]);
+  });
 });
