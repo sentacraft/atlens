@@ -20,7 +20,6 @@ export default function ConversationHistory({
   conversations,
   listState,
   activeConversationId,
-  busy,
   onSelect,
   onNew,
 }: {
@@ -29,7 +28,6 @@ export default function ConversationHistory({
   conversations: ConversationSummary[];
   listState: ConversationListState;
   activeConversationId: string;
-  busy: boolean;
   onSelect: (conversationId: string) => void;
   onNew: () => void;
 }) {
@@ -74,15 +72,11 @@ export default function ConversationHistory({
               <button
                 type="button"
                 onClick={onNew}
-                disabled={busy}
-                className={cn(ACTION_OUTLINE_CLS, "w-full disabled:cursor-not-allowed disabled:opacity-40")}
+                className={cn(ACTION_OUTLINE_CLS, "w-full")}
               >
                 <Plus className="size-4" />
                 {t("newChat")}
               </button>
-              {busy ? (
-                <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">{t("historyBusy")}</p>
-              ) : null}
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-4">
               {listState === "loading" ? (
@@ -104,10 +98,9 @@ export default function ConversationHistory({
                         <button
                           type="button"
                           onClick={() => onSelect(conversation.id)}
-                          disabled={busy && !active}
                           aria-current={active ? "true" : undefined}
                           className={cn(
-                            "flex w-full flex-col gap-0.5 rounded-lg border px-3 py-2.5 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+                            "flex w-full flex-col gap-0.5 rounded-lg border px-3 py-2.5 text-left transition-colors",
                             active
                               ? LIST_ITEM_ACTIVE_CLS
                               : "border-transparent hover:bg-zinc-50 dark:hover:bg-zinc-900",

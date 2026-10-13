@@ -20,7 +20,17 @@ import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
 import { useFixtureMessages } from "@/components/askiris/fixtureStore";
-import { useConversation } from "@/components/askiris/useConversation";
+import { useConversation, useTurnSync } from "@/components/askiris/useConversation";
+import {
+  Dialog,
+  DialogClose,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPopup,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
 import ConversationHistory from "@/components/askiris/ConversationHistory";
 import {
   askIrisMessageMetadataSchema,
@@ -28,10 +38,12 @@ import {
 } from "@/lib/askiris/message-metadata";
 
 const transport = new DefaultChatTransport<AskIrisUIMessage>({
-  prepareSendMessagesRequest: ({ messages, body }) => ({
-    body: askIrisChatRequestBody(messages, body),
+  prepareSendMessagesRequest: ({ id, messages, body }) => ({
+    body: askIrisChatRequestBody({ id, messages, body }),
   }),
 });
+
+type ConversationSwitch = { kind: "select"; id: string } | { kind: "new" };
 
 const SHELL_CLS =
   "mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4";
@@ -51,26 +63,13 @@ export default function AskIrisChat({
   const [input, setInput] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
+  const [pendingSwitch, setPendingSwitch] = useState<ConversationSwitch | null>(null);
   const { data: session } = authClient.useSession();
   const userId = accountUser(session)?.id;
   const historyEnabled = useTestHookEnabled();
-  // Unthrottled, per-chunk re-renders trip React's update-depth limit.
-  const { messages, sendMessage, status, setMessages, stop, regenerate, error, clearError } = useChat<AskIrisUIMessage>({
-    transport,
-    generateId: () => crypto.randomUUID(),
-    messageMetadataSchema: askIrisMessageMetadataSchema,
-    experimental_throttle: 50,
-  });
-  const isBusy = signingIn || status === "submitted" || status === "streaming";
   const conversation = useConversation({
     initialConversationId: entry.kind === "resume" ? entry.conversationId : undefined,
     userId,
-    busy: isBusy,
-    turnFailed: status === "error",
-    historyChanged: messages.at(-1)?.metadata?.historyChanged === true,
-    stop,
-    setMessages,
-    clearError,
     onNotice: (notice) => {
       if (notice === "unavailable") {
         toast(t("conversationUnavailable"));
@@ -80,8 +79,26 @@ export default function AskIrisChat({
     },
   });
   const { conversationId } = conversation;
+  // Unthrottled, per-chunk re-renders trip React's update-depth limit.
+  const { messages, sendMessage, status, setMessages, stop, regenerate, error } = useChat<AskIrisUIMessage>({
+    id: conversationId,
+    messages: conversation.initialMessages,
+    transport,
+    generateId: () => crypto.randomUUID(),
+    messageMetadataSchema: askIrisMessageMetadataSchema,
+    experimental_throttle: 50,
+  });
+  const isBusy = signingIn || status === "submitted" || status === "streaming";
+  useTurnSync({
+    conversationId,
+    userId,
+    busy: isBusy,
+    turnFailed: status === "error",
+    historyChanged: messages.at(-1)?.metadata?.historyChanged === true,
+    setMessages,
+  });
   const errorKind = status === "error" ? classifyError(error) : null;
-  const turnBody = { mount, locale, conversationId };
+  const turnBody = { mount, locale };
 
   useEffect(() => {
     track("askiris_view");
@@ -151,9 +168,35 @@ export default function AskIrisChat({
     pinnedRef.current = true;
   }, [conversationId]);
 
-  function startNewConversation() {
-    conversation.startNewConversation();
+  function switchConversation(target: ConversationSwitch) {
     setHistoryOpen(false);
+    if (target.kind === "new") {
+      conversation.startNewConversation();
+    } else {
+      conversation.selectConversation(target.id);
+    }
+  }
+
+  // Leaving a conversation stops its reply, so ask first while one is being written.
+  function requestSwitch(target: ConversationSwitch) {
+    if (isBusy) {
+      setHistoryOpen(false);
+      setPendingSwitch(target);
+    } else {
+      switchConversation(target);
+    }
+  }
+
+  function confirmSwitch() {
+    if (pendingSwitch) {
+      stop();
+      switchConversation(pendingSwitch);
+    }
+    setPendingSwitch(null);
+  }
+
+  function startNewConversation() {
+    requestSwitch({ kind: "new" });
   }
 
   const historyBar = userId && historyEnabled ? (
@@ -164,11 +207,7 @@ export default function AskIrisChat({
         conversations={conversation.conversations}
         listState={conversation.listState}
         activeConversationId={conversationId}
-        busy={isBusy}
-        onSelect={(id) => {
-          conversation.selectConversation(id);
-          setHistoryOpen(false);
-        }}
+        onSelect={(id) => requestSwitch({ kind: "select", id })}
         onNew={startNewConversation}
       />
     </div>
@@ -245,10 +284,33 @@ export default function AskIrisChat({
             stopLabel={t("stop")}
             onNewTopic={startNewConversation}
             newTopicLabel={t("newChat")}
-            newTopicDisabled={messages.length === 0 || isBusy}
+            newTopicDisabled={messages.length === 0}
           />
         </div>
       </div>
+      <Dialog open={pendingSwitch !== null} onOpenChange={(open) => !open && setPendingSwitch(null)}>
+        <DialogPopup className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("switchWhileBusyTitle")}</DialogTitle>
+            <DialogDescription>{t("switchWhileBusyBody")}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose
+              type="button"
+              className="h-9 rounded-lg px-3 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            >
+              {t("switchWhileBusyCancel")}
+            </DialogClose>
+            <button
+              type="button"
+              onClick={confirmSwitch}
+              className={cn(ACTION_PRIMARY_CLS, "h-9 rounded-lg px-3 text-sm")}
+            >
+              {t("switchWhileBusyConfirm")}
+            </button>
+          </DialogFooter>
+        </DialogPopup>
+      </Dialog>
     </LensLinkProvider>
   );
 }

@@ -51,7 +51,7 @@ const chatRequestSchema = z.object({
   previousMessageId: z.string().max(128).nullable(),
   mount: z.enum(MOUNTS),
   locale: z.enum(routing.locales),
-  conversationId: z.uuid(),
+  id: z.uuid(),
 });
 
 const STEP_BUDGET = 8;
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
     console.warn("[askiris] invalid request", z.prettifyError(parsed.error));
     return chatErrorResponse("unavailable", 400);
   }
-  const { message, previousMessageId, mount, locale, conversationId } = parsed.data;
+  const { message, previousMessageId, mount, locale, id: conversationId } = parsed.data;
   const startedAt = Date.now();
   const traceId = crypto.randomUUID();
   const model = activeAgentModel();

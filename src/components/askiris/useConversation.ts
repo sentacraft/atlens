@@ -5,41 +5,40 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import {
   conversationListQueryKey,
+  conversationMessagesQuery,
   fetchConversationList,
-  fetchConversationMessages,
 } from "@/lib/askiris/conversation-client";
 import { readConversationParam, writeConversationParam } from "@/lib/url/askiris";
 
 export type ConversationNotice = "unavailable" | "loadFailed";
 export type ConversationListState = "idle" | "loading" | "ready" | "error";
 
-// Every switch bumps one request token; a load resolving under a stale token is dropped.
+interface ActiveConversation {
+  id: string;
+  messages: AskIrisUIMessage[];
+}
+
+function newConversation(): ActiveConversation {
+  return { id: crypto.randomUUID(), messages: [] };
+}
+
+/**
+ * Which conversation the chat shows. `id` and `messages` feed `useChat({ id, messages })`,
+ * which starts a fresh Chat whenever the id changes, so the id moves only together with
+ * the messages it was loaded with. Every switch bumps one request token; a load resolving
+ * under a stale token is dropped.
+ */
 export function useConversation({
   initialConversationId,
   userId,
-  busy,
-  turnFailed,
-  historyChanged,
-  stop,
-  setMessages,
-  clearError,
   onNotice,
 }: {
   initialConversationId?: string;
   userId: string | undefined;
-  busy: boolean;
-  // Describe the turn that just ended: whether it errored, and whether the server
-  // reported a history this client had not seen.
-  turnFailed: boolean;
-  historyChanged: boolean;
-  stop: () => void;
-  setMessages: (messages: AskIrisUIMessage[]) => void;
-  clearError: () => void;
   onNotice: (notice: ConversationNotice) => void;
 }) {
-  // Changes only once its messages are on screen: a turn sent under an id whose history never
-  // loaded would overwrite its stored sequence.
-  const [conversationId, setConversationId] = useState(() => crypto.randomUUID());
+  const queryClient = useQueryClient();
+  const [active, setActive] = useState(newConversation);
   const [loading, setLoading] = useState(() => Boolean(initialConversationId));
 
   const requestRef = useRef(0);
@@ -47,27 +46,23 @@ export function useConversation({
   useEffect(() => {
     onNoticeRef.current = onNotice;
   }, [onNotice]);
-  const conversationIdRef = useRef(conversationId);
+  const activeIdRef = useRef(active.id);
   useEffect(() => {
-    conversationIdRef.current = conversationId;
-  }, [conversationId]);
+    activeIdRef.current = active.id;
+  }, [active.id]);
 
   const resetToNew = useCallback(() => {
-    stop();
-    clearError();
-    setMessages([]);
-    setConversationId(crypto.randomUUID());
+    requestRef.current += 1;
+    setActive(newConversation());
     setLoading(false);
-  }, [clearError, setMessages, stop]);
+  }, []);
 
   const load = useCallback(
     async (targetId: string, history: "push" | "none") => {
       const token = ++requestRef.current;
-      stop();
-      clearError();
       setLoading(true);
       try {
-        const result = await fetchConversationMessages(targetId);
+        const result = await queryClient.fetchQuery(conversationMessagesQuery(targetId));
         if (token !== requestRef.current) {
           return;
         }
@@ -77,8 +72,7 @@ export function useConversation({
           onNoticeRef.current("unavailable");
           return;
         }
-        setMessages(result);
-        setConversationId(targetId);
+        setActive({ id: targetId, messages: result });
         if (history === "push") {
           writeConversationParam(targetId, "push");
         }
@@ -96,29 +90,23 @@ export function useConversation({
         }
       }
     },
-    [clearError, resetToNew, setMessages, stop],
+    [queryClient, resetToNew],
   );
 
   const selectConversation = useCallback(
     (targetId: string) => {
-      if (busy || targetId === conversationIdRef.current) {
-        return;
+      if (targetId !== activeIdRef.current) {
+        void load(targetId, "push");
       }
-      void load(targetId, "push");
     },
-    [busy, load],
+    [load],
   );
 
   const startNewConversation = useCallback(() => {
-    if (busy) {
-      return;
-    }
-    requestRef.current += 1;
     resetToNew();
     writeConversationParam(null, "push");
-  }, [busy, resetToNew]);
+  }, [resetToNew]);
 
-  const queryClient = useQueryClient();
   const listQuery = useQuery({
     queryKey: conversationListQueryKey(userId ?? ""),
     queryFn: fetchConversationList,
@@ -145,13 +133,12 @@ export function useConversation({
   useEffect(() => {
     function onPopState() {
       const target = readConversationParam();
-      if (target === conversationIdRef.current) {
+      if (target === activeIdRef.current) {
         return;
       }
       if (target) {
         void load(target, "none");
       } else {
-        requestRef.current += 1;
         resetToNew();
       }
     }
@@ -159,44 +146,71 @@ export function useConversation({
     return () => window.removeEventListener("popstate", onPopState);
   }, [load, resetToNew]);
 
-  const resync = useCallback(async () => {
-    const token = ++requestRef.current;
-    try {
-      const result = await fetchConversationMessages(conversationIdRef.current);
-      if (token === requestRef.current && result !== "unavailable") {
-        setMessages(result);
-      }
-    } catch {
-      // The thread on screen stays usable; the next turn reports the difference again.
-    }
-  }, [setMessages]);
-
-  // The server saves a turn before its stream closes, so a finished turn can be
-  // reopened from the URL and reloaded at once.
-  const wasBusyRef = useRef(busy);
-  useEffect(() => {
-    const turnEnded = wasBusyRef.current && !busy;
-    wasBusyRef.current = busy;
-    if (!turnEnded) {
-      return;
-    }
-    if (!turnFailed && readConversationParam() !== conversationIdRef.current) {
-      writeConversationParam(conversationIdRef.current, "replace");
-    }
-    if (historyChanged) {
-      void resync();
-    }
-    if (userId) {
-      void queryClient.invalidateQueries({ queryKey: conversationListQueryKey(userId) });
-    }
-  }, [busy, turnFailed, historyChanged, resync, queryClient, userId]);
-
   return {
-    conversationId,
+    conversationId: active.id,
+    initialMessages: active.messages,
     loading,
     conversations,
     listState,
     selectConversation,
     startNewConversation,
   };
+}
+
+/** Follows up a finished turn: names it in the URL, realigns a diverged history, refreshes the list. */
+export function useTurnSync({
+  conversationId,
+  userId,
+  busy,
+  turnFailed,
+  historyChanged,
+  setMessages,
+}: {
+  conversationId: string;
+  userId: string | undefined;
+  busy: boolean;
+  turnFailed: boolean;
+  // The server reported a history this client had not seen.
+  historyChanged: boolean;
+  // Bound to the chat that ran the turn, so a reload landing after a switch changes nothing on screen.
+  setMessages: (messages: AskIrisUIMessage[]) => void;
+}) {
+  const queryClient = useQueryClient();
+
+  // The server saves a turn before its stream closes, so a finished turn can be
+  // reopened from the URL and reloaded at once.
+  const wasBusyRef = useRef(busy);
+  const lastConversationIdRef = useRef(conversationId);
+  useEffect(() => {
+    const wasBusy = wasBusyRef.current;
+    wasBusyRef.current = busy;
+    if (lastConversationIdRef.current !== conversationId) {
+      lastConversationIdRef.current = conversationId;
+      // Switching away mid-reply stops it; the server still saves what was written.
+      if (wasBusy && userId) {
+        void queryClient.invalidateQueries({ queryKey: conversationListQueryKey(userId) });
+      }
+      return;
+    }
+    if (!wasBusy || busy) {
+      return;
+    }
+    if (!turnFailed && readConversationParam() !== conversationId) {
+      writeConversationParam(conversationId, "replace");
+    }
+    if (historyChanged) {
+      queryClient
+        .fetchQuery(conversationMessagesQuery(conversationId))
+        .then((result) => {
+          if (result !== "unavailable") {
+            setMessages(result);
+          }
+        })
+        // The thread on screen stays usable; the next turn reports the difference again.
+        .catch(() => {});
+    }
+    if (userId) {
+      void queryClient.invalidateQueries({ queryKey: conversationListQueryKey(userId) });
+    }
+  }, [busy, turnFailed, historyChanged, conversationId, setMessages, queryClient, userId]);
 }

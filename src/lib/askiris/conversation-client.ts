@@ -1,3 +1,4 @@
+import { queryOptions } from "@tanstack/react-query";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 
 export interface ConversationSummary {
@@ -19,6 +20,16 @@ export async function fetchConversationList(): Promise<ConversationSummary[]> {
   }
   const data = (await response.json()) as { conversations: ConversationSummary[] };
   return data.conversations;
+}
+
+// Always refetched: a cached copy would miss the turns saved since.
+export function conversationMessagesQuery(conversationId: string) {
+  return queryOptions({
+    queryKey: ["askiris", "conversation", conversationId],
+    queryFn: () => fetchConversationMessages(conversationId),
+    staleTime: 0,
+    retry: false,
+  });
 }
 
 export async function fetchConversationMessages(
