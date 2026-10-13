@@ -14,17 +14,6 @@ import {
 } from "@/lib/lens/format";
 import type { LensTableColumn, ResolvedLens } from "@/lib/ai/recall";
 
-// The neutral counterpart to RecommendationDeck: a listLenses call renders as a
-// spec table with no reasons, so the user reads the objective columns and judges.
-// The whole row links to the lens's page (new tab, like the cards) — the row click
-// delegates to the row's name link so locale-prefixing, new-tab, and tracking all
-// run through one path — giving the clickable exit a plain markdown table couldn't.
-//
-// Labels and value formatting are the SAME layer the detail and compare pages use:
-// column headers come from the shared LensDetail / Pricing i18n namespaces, and the
-// cell values run through src/lib/lens/format. Only the markup is AskIris's own —
-// the compare table is transposed (specs as rows), so its JSX doesn't fit here.
-
 type Labels = {
   yes: string;
   no: string;
@@ -35,8 +24,6 @@ type Labels = {
   na: string;
 };
 
-// The LensDetail label key each column borrows for its header. price (Pricing
-// namespace) and focus (AskIris-specific auto/manual) are resolved separately.
 const DETAIL_HEADER_KEY: Record<
   Exclude<LensTableColumn, "price" | "focus">,
   string
@@ -59,15 +46,7 @@ function priceCell(price: NonNullable<ResolvedLens["price"]>, usedLabel: string)
   return `${symbol}${price.amount.toLocaleString()}${used}`;
 }
 
-// Each column turns a resolved lens into one display string (or null when the lens
-// has no data for it — rendered as a dash). Values run through the shared format
-// helpers; enum-like values (focus, WR, aperture ring) resolve through localized
-// labels rather than raw booleans.
-//
-// EVAL MIRROR — the table block in eval/promptfoo/provider.mjs hand-writes what the
-// judges read, and nothing keeps the two in step. It carries the caption and the lens
-// names but no cell values, because no rubric reads them; adding a column here is a
-// change to this table only until a rubric starts grading what the cells say.
+// EVAL MIRROR: eval/promptfoo/provider.mjs hand-writes what the judges read from this table.
 const RENDERERS: Record<LensTableColumn, (lens: ResolvedLens, l: Labels) => string | null> = {
   focalEquiv: (lens) => focalRangeDisplay(lens.focalEquivMm[0], lens.focalEquivMm[1]),
   focalNative: (lens) => focalRangeDisplay(lens.focalNativeMm[0], lens.focalNativeMm[1]),
@@ -123,8 +102,6 @@ export default function LensTable({
           {caption}
         </figcaption>
       ) : null}
-      {/* Wide tables scroll inside their own container so the thread body never
-          scrolls horizontally, even on mobile with many columns. */}
       <div className="w-full overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <thead>
@@ -150,14 +127,11 @@ export default function LensTable({
                   <Link
                     href={`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`}
                     prefetch={false}
-                    // Stop the click bubbling to the row handler, which would
-                    // re-trigger this same link — a direct name click fires once.
                     onClick={(e) => {
                       e.stopPropagation();
                       track("askiris_rec_click", { lens_id: lens.id, source: "askiris_table" });
                     }}
-                    // New tab: the thread is ephemeral client state, so a same-tab
-                    // nav would discard the conversation in progress.
+                    // New tab: a same-tab navigation would discard the conversation.
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-foreground hover:text-primary font-medium underline-offset-2 hover:underline"

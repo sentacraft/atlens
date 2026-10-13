@@ -14,9 +14,6 @@ import {
 import type { ConversationSummary } from "@/lib/askiris/conversation-client";
 import type { ConversationListState } from "@/components/askiris/useConversation";
 
-// The conversation list lives in a left drawer on every viewport rather than a
-// standing sidebar: most visitors hold one or two conversations, and a permanent
-// column would mostly sit empty.
 export default function ConversationHistory({
   open,
   onOpenChange,

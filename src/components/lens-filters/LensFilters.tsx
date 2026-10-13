@@ -18,12 +18,10 @@ import { useFiltersTelemetry } from "@/components/lens-filters/LensFilters.telem
 
 interface Props {
   filters: FilterState;
-  /** Option values present in the current scope; every control narrows to these. */
   available: AvailableFilterOptions;
   onFiltersChange: (filters: FilterState) => void;
   activeFilterCount: number;
   onReset: () => void;
-  /** Rendered at the right edge of the brand row (e.g. the lens search trigger). */
   searchSlot?: ReactNode;
 }
 
@@ -42,10 +40,6 @@ export default function LensFilters({
 
   useFiltersTelemetry(filters);
 
-  // Each control below is its own block: derived values + option list + JSX
-  // fragment, so everything one control needs reads top-to-bottom in one place.
-  // The return at the end only assembles those fragments into the layout. Shared
-  // helpers and the "all" label live up here since several controls reuse them.
   function updateFilters<K extends keyof FilterState>(key: K, value: FilterState[K]) {
     onFiltersChange({ ...filters, [key]: value });
   }
@@ -76,12 +70,8 @@ export default function LensFilters({
     ];
   }
 
-  // ── Brand ─────────────────────────────────────────────────────────────────────
-  // The mobile dropdown lists up to BRAND_PREVIEW_LIMIT selected brand names; any
-  // beyond that collapse into a separate "+N" badge (rendered outside the
-  // truncating label in BrandFilterMenu) so the count is never clipped. Once a
-  // brand is chosen the label drops the "Brand:" prefix — the filled pill plus its
-  // position already read as the brand filter, and the names get the room.
+  // Selected brands beyond BRAND_PREVIEW_LIMIT collapse into a separate "+N" badge so the count is
+  // never clipped.
   const BRAND_PREVIEW_LIMIT = 2;
   const brandJoiner = t("brandSeparator");
   const brandNames = Object.fromEntries(available.brands.map((b) => [b, tBrand(b)]));
@@ -95,9 +85,6 @@ export default function LensFilters({
     key: brand,
     label: tBrand(brand),
   }));
-  // The brand row carries the search trigger on its right edge so search shares a
-  // line with the first filter. The brand control itself swaps between a dropdown
-  // (mobile) and a chip group (desktop); search renders once, outside that swap.
   const brandRow = (
     <div className="flex items-center gap-2 sm:items-start sm:gap-2.5">
       <div className="min-w-0 flex-1">
@@ -134,7 +121,6 @@ export default function LensFilters({
     </div>
   );
 
-  // ── Type ──────────────────────────────────────────────────────────────────────
   const typeLabels: Record<LensType, SegmentedLabel> = {
     prime: { default: t("primes"), mobile: t("primesMobile") },
     zoom: { default: t("zooms"), mobile: t("zoomsMobile") },
@@ -152,7 +138,6 @@ export default function LensFilters({
     </FilterRow>
   );
 
-  // ── Focus ─────────────────────────────────────────────────────────────────────
   const focusLabels: Record<FocusFilter, SegmentedLabel> = {
     auto: { default: t("focusAuto"), mobile: t("focusAutoMobile") },
     manual: { default: t("focusManual"), mobile: t("focusManualMobile") },
@@ -170,7 +155,6 @@ export default function LensFilters({
     </FilterRow>
   );
 
-  // ── Focal range ───────────────────────────────────────────────────────────────
   const focalOptions: MultiSelectChipOption<FocalCategory>[] = available.focalCategories.map((key) => ({
     key,
     label: t(`category-${key}`),
@@ -195,7 +179,6 @@ export default function LensFilters({
       </FilterRow>
     ) : null;
 
-  // ── Features ──────────────────────────────────────────────────────────────────
   const featureMeta: Record<FilterFeatureKey, {label: string; icon: LucideIcon}> = {
     ois: { label: t("featureOis"), icon: FEATURE_ICONS.ois },
     wr: { label: t("featureWr"), icon: FEATURE_ICONS.wr },
@@ -221,7 +204,6 @@ export default function LensFilters({
       </FilterRow>
     ) : null;
 
-  // ── Optical trait ─────────────────────────────────────────────────────────────
   const opticalMobileLabels: Partial<Record<OpticalTrait, string>> = {
     tilt: tBadge("tiltMobile"),
     shift: tBadge("shiftMobile"),
@@ -243,7 +225,6 @@ export default function LensFilters({
       </FilterRow>
     ) : null;
 
-  // ── Focus motor ───────────────────────────────────────────────────────────────
   const motorLabels: Record<FocusMotorClass, SegmentedLabel> = {
     linear: { default: t("motorLinear"), mobile: t("motorLinearMobile") },
     stepping: { default: t("motorStepping"), mobile: t("motorSteppingMobile") },
@@ -264,7 +245,6 @@ export default function LensFilters({
       </FilterRow>
     ) : null;
 
-  // ── More-filters toggle + reset ────────────────────────────────────────────────
   const moreFiltersCount = [
     filters.focalCategories.length > 0,
     filters.features.length > 0,
@@ -327,11 +307,8 @@ export default function LensFilters({
 
   return (
     <div className="flex min-w-0 flex-1 flex-col">
-      {/* Primary filters: always visible on all viewports */}
       <div className="flex flex-col gap-2 sm:gap-3">
         {brandRow}
-        {/* Type + focus share one row on mobile (side by side) and split into two
-            labeled rows on desktop — both shapes are pure responsive CSS. */}
         <div className="flex gap-2 sm:flex-col sm:gap-3">
           {typeRow}
           {focusRow}
@@ -339,7 +316,6 @@ export default function LensFilters({
         <div className="sm:my-1.5">{filtersMetaRow}</div>
       </div>
 
-      {/* Secondary filters: collapsed on mobile by default, always open on desktop */}
       <div
         className={cn(
           "grid overflow-hidden transition-[grid-template-rows] duration-500 ease-in-out",

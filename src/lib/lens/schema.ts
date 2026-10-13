@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-// Relative import with explicit .ts extension (not the @/ alias): this module is
-// also loaded by scripts/validate-lenses.mts under raw `node --experimental-strip-types`,
-// which does not resolve tsconfig path aliases.
+// Relative .ts import: scripts/validate-lenses.mts runs under plain Node, which ignores tsconfig paths.
 import { FIELD_NOTE_KEYS, OPTICAL_TRAITS, SPEC_NA } from "../types.ts";
 import type { ApertureValue, Lens } from "../types.ts";
 
@@ -28,9 +26,7 @@ const minTStopSchema = createApertureSchema("minTStop");
 const opticalTraitSchema = z.enum(OPTICAL_TRAITS);
 export const specNaSchema = z.literal(SPEC_NA);
 const lensPriceEntrySchema = z.strictObject({
-  // price/currency are optional: a source may contribute only a purchase link
-  // (e.g. Amazon ASIN with no sampled price). When price is present, currency
-  // is required and (in the pricing superRefine) must match the market.
+  // A source may contribute only a purchase link, with no sampled price.
   price: z.number().positive().optional(),
   currency: z.enum(["CNY", "USD"]).optional(),
   source: z.string().min(1),
@@ -41,8 +37,6 @@ const lensPriceEntrySchema = z.strictObject({
   message: "currency is required when price is present",
   path: ["currency"],
 });
-// new is a multi-source array in priority order (new[0] = most preferred);
-// used stays single-source.
 const pricingMarketSchema = z.strictObject({
   new: lensPriceEntrySchema.array().optional(),
   used: lensPriceEntrySchema.optional(),
@@ -130,12 +124,6 @@ const lensBaseShape = {
     cn: pricingMarketSchema.optional(),
     global: pricingMarketSchema.optional(),
   }).superRefine((value, ctx) => {
-    // Per-market currency (cn → CNY, global → USD) is enforced here at the
-    // validation layer rather than in the schema/type, so currency stays a
-    // flexible union and a future locale with a different currency only
-    // relaxes this one guard. `new` is a multi-source array — each entry is
-    // checked; only entries that carry a price are validated (price-less
-    // purchase-link-only sources have no currency).
     const checkEntry = (
       market: "cn" | "global",
       slot: "new" | "used",
@@ -161,10 +149,7 @@ const lensBaseShape = {
   compatibleMounts: z.array(nonEmptyStringSchema).min(1).optional(),
   accessories: z.array(nonEmptyStringSchema).min(1).optional(),
   lensMaterial: optionalNonEmptyStringSchema,
-  // Publish-managed timestamps (YYYY-MM-DD), same date shape as pricing
-  // sampledAt. Optional: the publish stage guarantees their presence on every
-  // published lens, but they are not part of the derive/review data, so the
-  // schema permits a record without them (fixtures, pre-backfill rows).
+  // Optional: fixtures and pre-backfill rows lack them.
   createdAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   updatedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 } as const;
@@ -206,12 +191,7 @@ export const lensConfigurationSchema = z
     }
   });
 
-// z.record(enum, string) infers Record<K, string> (all keys required), but the
-// intended semantics are Partial<Record<K, string>> (keys are individually optional).
-// Using strictObject + optional per-field produces the correct inferred type.
-// Keys mirror FIELD_NOTE_KEYS in types.ts — keep both in lockstep. The static
-// `_AssertFieldNotesShape` below produces a compile-time error if a key gets
-// added to FIELD_NOTE_KEYS but not to this schema (or vice versa).
+// z.record(enum, …) would make every key required.
 const fieldNotesSchema = z.strictObject({
   wr: nonEmptyStringSchema.optional(),
   weightG: nonEmptyStringSchema.optional(),
@@ -230,9 +210,6 @@ const fieldNotesSchema = z.strictObject({
   internalZoom: nonEmptyStringSchema.optional(),
 });
 
-// Compile-time check: the zod schema's keys must equal FIELD_NOTE_KEYS exactly.
-// If either set has a key the other lacks, _AssertExtra/_AssertMissing resolves
-// to a tuple type that fails to assign to `true`, triggering a TS error.
 type _AssertTrue<T extends true> = T;
 type _FieldNotesSchemaKeys = keyof z.infer<typeof fieldNotesSchema>;
 type _FieldNoteKeyConst = (typeof FIELD_NOTE_KEYS)[number];
@@ -343,11 +320,7 @@ function applyLensBusinessRules(
     });
   }
 
-  // At least one fully-populated aperture pair must be present. f-stop is the
-  // primary path for stills lenses; T-stop is allowed as the sole path for
-  // cine lenses whose source publishes only T-stop. Schema is intentionally
-  // tag-independent — the cine vs non-cine distinction is enforced by the
-  // pipeline's readiness gate, not here.
+  // Cine lenses may publish only T-stops.
   const hasFStopPair =
     value.maxAperture !== undefined && value.minAperture !== undefined;
   const hasTStopPair =
@@ -426,19 +399,12 @@ export const KNOWN_DISTINCT_PAIRS = new Set([
     "sirui-sniper-56mmf12-aps-c-frame-autofocus-lens-x"),
 ]);
 
-// Fields excluded from the spec similarity comparison.
-// Identifiers, human-readable labels, links, and freeform notes are excluded;
-// all measurable optical/physical fields are included automatically.
 const SIMILARITY_EXCLUDE = new Set([
   "id", "brand", "model", "series", "officialLinks", "fieldNotes", "translations", "searchAliases", "pricing",
-  // Publish bookkeeping, not optical/physical spec — two distinct lenses
-  // published in the same batch would otherwise score as more similar.
   "createdAt", "updatedAt",
 ]);
 
-// Threshold above which two same-brand lenses are flagged as suspiciously similar.
-// Calibrated against the full catalog: the two legitimate high-scoring pairs sit
-// at 0.895 and 0.870; the next-highest unrelated pair is 0.762.
+// Calibrated: legitimate pairs score 0.895 and 0.870; the next unrelated pair 0.762.
 const SPEC_SIMILARITY_THRESHOLD = 0.85;
 
 type JsonValue = string | number | boolean | null | JsonValue[] | { [k: string]: JsonValue };
@@ -501,8 +467,6 @@ export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) =
   const seenGlobalLinks = new Map<string, number>();
   const seenBrandModels = new Map<string, number>();
 
-  // Group by brand for pairwise similarity comparison (within-brand only,
-  // matching the scope of the previous tuple-based check).
   const byBrand = new Map<string, { lens: Lens; index: number }[]>();
 
   lenses.forEach((lens, index) => {
@@ -521,9 +485,6 @@ export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) =
     if (lens.officialLinks.cn) {
       const previousCnIndex = seenCnLinks.get(lens.officialLinks.cn);
       if (previousCnIndex !== undefined) {
-        // Honor KNOWN_DISTINCT_PAIRS: pairs that legitimately share a product
-        // page (e.g. Laowa S 17 / TS 17 are two SKUs on the same Tmall listing)
-        // would otherwise need URL data stripped just to pass this gate.
         const pairKey = makeAllowlistKey(lens.id, lenses[previousCnIndex].id);
         if (!KNOWN_DISTINCT_PAIRS.has(pairKey)) {
           ctx.addIssue({
@@ -574,7 +535,6 @@ export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) =
     byBrand.set(lens.brand, group);
   });
 
-  // Pairwise spec similarity check within each brand.
   for (const group of byBrand.values()) {
     for (let i = 0; i < group.length; i++) {
       for (let j = i + 1; j < group.length; j++) {
@@ -603,9 +563,6 @@ export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) =
   }
 });
 
-// Compile-time assertion: Lens interface and lensSchema's inferred type must stay
-// bidirectionally compatible. A type error here means the two have drifted —
-// update whichever definition is stale.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time type assertion
 type _AssertExtends<T, U extends T> = true;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time type assertion

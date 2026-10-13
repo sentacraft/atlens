@@ -4,16 +4,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { pickPriceEntry, formatPrice } from "@/lib/lens/pricing";
 import type { Lens } from "@/lib/types";
 
-/**
- * Reference price on a lens card. Deliberately a plain labelled datum, not a
- * sortable/comparable number: the price is a volatile sampled reference, so we
- * show it for positioning and let the reader judge — the "~" approx qualifier
- * carries the disclaimer in condensed form (full disclaimer lives on detail).
- *
- * Market + new/used selection is delegated to pickPriceEntry (locale → cn/global,
- * new preferred, used fallback). Used-only lenses (mostly discontinued) keep a
- * "Used" tag so the number isn't mistaken for a new price. Missing → "Price N/A".
- */
 export default function LensCardPrice({ lens }: { lens: Lens }) {
   const t = useTranslations("Pricing");
   const locale = useLocale();

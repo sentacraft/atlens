@@ -1,14 +1,6 @@
 "use server";
 
-// Server actions for reading and writing iris configs in iris-config.ts.
-// exportToConfig does a full replacement of the preset body — no regex patching.
-// The only constraint: numeric fields must be plain decimal literals so that
-// readFromConfig can parse them back with a simple regex.
-//
-// CLOUDFLARE WORKERS: this file uses `fs/promises` and `child_process`, neither
-// of which exist in the Workers runtime (nodejs_compat does not cover them).
-// Only runs in local dev because ../layout.tsx 404s in production. See
-// ../README.md before editing.
+// Numeric fields must be plain decimal literals so readFromConfig can parse them.
 
 import { writeFile, readFile } from "fs/promises";
 import { exec } from "child_process";
@@ -20,7 +12,6 @@ const execAsync = promisify(exec);
 
 const CONFIG_PATH = path.join(process.cwd(), "src/config/iris-config.ts");
 
-/** Find the body of the named preset object literal `export const NAME: IrisConfig = { … }`. */
 function findPresetBody(content: string, presetName: string): { bodyStart: number; bodyEnd: number } | null {
   const startPattern = new RegExp(`export const ${presetName}[^{]*\\{`);
   const startMatch = startPattern.exec(content);
@@ -42,10 +33,6 @@ function findPresetBody(content: string, presetName: string): { bodyStart: numbe
   return { bodyStart, bodyEnd: bodyEnd - 1 };
 }
 
-/**
- * Extract the content between the braces of a nested object field, e.g.
- * `fieldName: { … }` → returns the string between the braces.
- */
 function extractObjectBlock(body: string, key: string): string | null {
   const startPattern = new RegExp(`\\b${key}:\\s*\\{`);
   const startMatch = startPattern.exec(body);
@@ -67,12 +54,10 @@ function extractObjectBlock(body: string, key: string): string | null {
   return body.slice(blockStart, pos - 1);
 }
 
-/** Serialize an IrisConfig into a tidy object-literal body (indented with 2 spaces). */
 function serializeBody(v: IrisConfig): string {
   const lines: string[] = [];
   const add = (key: string, val: string) => lines.push(`  ${key}: ${val},`);
 
-  // Kinematic fields
   add("N",            String(v.N));
   add("pinDistance",  String(v.pinDistance));
   add("slotOffset",   v.slotOffset.toFixed(6));
@@ -82,7 +67,6 @@ function serializeBody(v: IrisConfig): string {
   add("defaultFStop", v.defaultFStop.toFixed(1));
   add("size",         String(v.size));
 
-  // Appearance
   if (v.strokeWidth !== undefined) {
     add("strokeWidth", v.strokeWidth.toFixed(2));
   }
@@ -93,12 +77,10 @@ function serializeBody(v: IrisConfig): string {
     add("strokeColor", `"${v.strokeColor}"`);
   }
 
-  // Aperture limit
   if (v.closedFStop !== undefined) {
     add("closedFStop", String(v.closedFStop));
   }
 
-  // Interactive mode — serialized as a nested object
   if (v.interactive !== undefined) {
     if (v.interactive.type === "hover") {
       const h = v.interactive;
@@ -132,13 +114,11 @@ function serializeBody(v: IrisConfig): string {
     add("apertureStrip", String(v.apertureStrip));
   }
 
-  // Mount animation
   if (v.onMount !== undefined && v.onMount.type === "sweep") {
     add("onMount", `{ type: "sweep", sweepMs: ${v.onMount.sweepMs}, totalMs: ${v.onMount.totalMs} }`);
   }
 
   if (v.chaseTauMs !== undefined) {
-
     add("chaseTauMs", String(v.chaseTauMs));
 
   }
@@ -146,11 +126,6 @@ function serializeBody(v: IrisConfig): string {
   return "\n" + lines.join("\n") + "\n";
 }
 
-/**
- * Read the current values from a named preset in iris-config.ts.
- * Optional fields absent from the block are returned as undefined.
- * Returns null if the preset cannot be found or parsed.
- */
 export async function readFromConfig(
   presetName: "IRIS_HERO" | "IRIS_NAV" | "IRIS_LAB",
 ): Promise<IrisConfig | null> {
@@ -217,7 +192,6 @@ export async function readFromConfig(
     const defaultFStop = extractNum("defaultFStop");
     const size         = extractNum("size");
 
-    // Required fields — return null if any are missing.
     if (N === undefined || pinDistance === undefined || slotOffset === undefined ||
         bladeLength === undefined || bladeWidth === undefined || openFStop === undefined ||
         defaultFStop === undefined || size === undefined) {
@@ -246,11 +220,7 @@ export async function readFromConfig(
   }
 }
 
-/**
- * Overwrite the body of a named preset in iris-config.ts with the given values.
- * The entire `{ … }` block is replaced — no field-level patching.
- * Runs tsc --noEmit after writing; restores the original on failure.
- */
+// Runs tsc after writing and restores the original on failure.
 export async function exportToConfig(
   presetName: "IRIS_HERO" | "IRIS_NAV" | "IRIS_LAB",
   values: IrisConfig,
@@ -269,7 +239,6 @@ export async function exportToConfig(
 
     await writeFile(CONFIG_PATH, newContent, "utf-8");
 
-    // Type-check the written file; restore on failure.
     try {
       await execAsync("pnpm exec tsc --noEmit", { cwd: process.cwd() });
     } catch (tscErr: unknown) {

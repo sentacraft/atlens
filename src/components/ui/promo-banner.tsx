@@ -5,26 +5,14 @@ import { ArrowRight, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
 interface PromoBannerProps {
-  /** Body text. */
   message: string;
-  /** Call-to-action link text (e.g. "查看专题"). */
   ctaLabel: string;
-  /** Internal route the CTA links to. */
   ctaHref: string;
-  /** Cookie name used to remember dismissal. Should be unique per campaign. */
   dismissKey: string;
-  /** Aria label / tooltip for the dismiss button. */
   dismissLabel: string;
 }
 
-/**
- * Generic one-line promo strip with persistent dismiss. The cookie is read
- * client-side after mount — kept off the server boundary so the parent route
- * stays statically prerendered (server-side cookies() reads would force
- * /lenses/[mount] into dynamic rendering). The small consequence: a
- * returning visitor who has dismissed it sees the banner for a frame
- * before useEffect hides it. Acceptable for a secondary discovery surface.
- */
+// Reads the cookie after mount so the parent route stays statically prerendered.
 export default function PromoBanner({
   message,
   ctaLabel,
@@ -48,8 +36,6 @@ export default function PromoBanner({
   }
 
   const dismiss = () => {
-    // 1-year max-age; Lax SameSite is fine since the cookie is purely a
-    // client-side UX preference, not an auth/identity signal.
     document.cookie = `${dismissKey}=1; max-age=31536000; path=/; SameSite=Lax`;
     setVisible(false);
   };

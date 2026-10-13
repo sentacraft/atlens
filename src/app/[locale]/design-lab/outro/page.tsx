@@ -1,13 +1,5 @@
 "use client";
 
-// Design Lab · Outro — a clean, full-viewport end card for recording the
-// closing frame of a demo video: the animated brand Iris alongside the
-// "Atlens" wordmark + URL (+ optional tagline). Layout, gap, alignment, size,
-// loop, aperture strip and light/dark are all tweakable from a bottom control
-// bar that hides with the "h" key so the recording frame stays clean. The
-// aperture strip is driven purely by the Iris config's `apertureStrip` flag
-// (no viewport gating).
-
 import { useEffect, useMemo, useState } from "react";
 import Iris from "@/components/iris/Iris";
 import { IRIS_HERO } from "@/config/iris-config";
@@ -27,14 +19,11 @@ export default function OutroPage() {
   const [controls, setControls] = useState(true);
   const [replay, setReplay] = useState(0);
 
-  // Stable config reference — Iris has config-dependent effects, so passing a
-  // fresh object literal every render would loop ("Maximum update depth").
+  // Stable reference: a fresh config object every render loops Iris's effects.
   const irisConfig = useMemo(() => ({ ...IRIS_HERO, apertureStrip: showStrip }), [showStrip]);
 
-  // Re-mount the Iris to replay its onMount sweep.
   const triggerReplay = () => setReplay((r) => r + 1);
 
-  // Auto-loop the open/close animation while recording.
   useEffect(() => {
     if (!loop) {
       return;
@@ -43,7 +32,6 @@ export default function OutroPage() {
     return () => clearInterval(id);
   }, [loop]);
 
-  // "h" toggles the control bar so the recording crop stays clean; space replays.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "h" || e.key === "H") {
@@ -64,7 +52,6 @@ export default function OutroPage() {
     <div
       className={`fixed inset-0 z-[100] grid place-items-center ${dark ? "bg-zinc-950" : "bg-white"}`}
     >
-      {/* Recording frame */}
       <div
         className={`flex px-10 ${vertical ? "flex-col" : "flex-row"} ${align}`}
         style={{ gap }}
@@ -94,7 +81,6 @@ export default function OutroPage() {
         </div>
       </div>
 
-      {/* Controls — press "h" to hide, space to replay */}
       {controls && (
         <div className="fixed bottom-5 left-1/2 flex max-w-[min(94vw,920px)] -translate-x-1/2 flex-wrap items-center justify-center gap-x-4 gap-y-2 rounded-2xl border border-zinc-200 bg-white/95 px-5 py-3 text-sm text-zinc-700 shadow-lg backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/95 dark:text-zinc-200">
           <button

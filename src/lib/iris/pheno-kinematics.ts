@@ -1,6 +1,4 @@
-// Pure aperture-mark geometry functions — no React, no hooks.
-// Shared between the interactive Iris component and server-side renderers
-// (OG image, apple-icon) that cannot use client components.
+// No React: also used by server renderers (OG image, apple-icon).
 
 export const R = 100;
 
@@ -8,8 +6,6 @@ export interface IrisPhenoParams {
   N: number;
   /**
    * Half-spread of the two inner blade tips around the arc midpoint.
-   * Replaces the old "skew" parameter.
-   *
    * The arc midpoint is always at step/2 (= 180°/N). With halfSpread h:
    *   trailing tip = step/2 − h×step
    *   leading  tip = step/2 + h×step
@@ -33,7 +29,6 @@ function fmt(x: number, y: number) {
   return `${x.toFixed(3)},${y.toFixed(3)}`;
 }
 
-/** SVG path string for a single aperture blade at openness t ∈ [0, 1]. */
 export function bladePath(t: number, p: IrisPhenoParams): string {
   const { N, halfSpread, overlap: OVERLAP, curve: CURVE, twist: TWIST } = p;
   const step = (2 * Math.PI) / N;
@@ -46,7 +41,6 @@ export function bladePath(t: number, p: IrisPhenoParams): string {
   const ax1 = R * Math.cos(arcEnd);
   const ay1 = R * Math.sin(arcEnd);
   const off = TWIST * (1 - t) * step;
-  // Symmetric tip placement — guarantees equal gap on both sides of every blade
   const p3Angle = step / 2 - halfSpread * step + off;
   const p2Angle = step / 2 + halfSpread * step + off;
   const p2x = rInner * Math.cos(p2Angle);
@@ -68,18 +62,7 @@ export function bladePath(t: number, p: IrisPhenoParams): string {
   ].join(" ");
 }
 
-// ── Physical iris diaphragm model ─────────────────────────────────────────────
-//
-// Simulates real mechanical iris blade geometry. Each blade is a rigid body
-// that rotates around a fixed pivot pin on the outer ring. A single rotation
-// angle phi (derived from openness t) controls everything — aperture size AND
-// twist are coupled consequences of the rotation, not independent parameters.
-//
-// Key difference from the parametric model above:
-//   Parametric: rInner(t) and twist(t) are independent → can produce
-//               physically impossible blade motions.
-//   Physical:   blade shape is fixed, only phi changes → size and twist
-//               are coupled exactly as in a real lens.
+// Physical model: one rotation angle drives both aperture size and twist, as in a real lens.
 
 export interface PhysicalIrisParams {
   N: number;
@@ -127,22 +110,16 @@ export function physicalBladePath(t: number, p: PhysicalIrisParams): string {
 
   const phi = t * physicalPhiMax(p);
 
-  // Single inner tip: rigid blade at distance L from pivot (Rp, 0),
-  // initially pointing toward origin (angle π), rotated by φ around pivot.
-  // Tip position determines aperture size AND twist — physically coupled.
   const tipX = Rp - L * Math.cos(phi);
   const tipY = -L * Math.sin(phi);
 
-  // Outer arc endpoints — fixed on circle R (never rotated by pivot).
-  // This guarantees the outer edge is always a perfect circle, matching
-  // the parametric model. The clipPath is redundant but kept for safety.
+  // Outer arc endpoints stay on circle R, never rotated by the pivot.
   const halfA = bladeSpan * step;
   const largeArc = 2 * halfA > Math.PI ? 1 : 0;
   const ax0x = R * Math.cos(-halfA), ax0y = R * Math.sin(-halfA);
   const ax1x = R * Math.cos(+halfA), ax1y = R * Math.sin(+halfA);
 
   if (bladeCurve <= 0) {
-    // Straight side edges — polygonal aperture
     return [
       `M ${fmt(ax0x, ax0y)}`,
       `A ${R} ${R} 0 ${largeArc} 1 ${fmt(ax1x, ax1y)}`,
@@ -157,7 +134,6 @@ export function physicalBladePath(t: number, p: PhysicalIrisParams): string {
   // the edge direction (outward from blade interior). This distributes
   // curvature uniformly along the entire edge — no straight segments.
 
-  // Leading edge: ax1 → tip
   const ldx = tipX - ax1x, ldy = tipY - ax1y;
   const llen = Math.sqrt(ldx * ldx + ldy * ldy);
   // CW perpendicular = outward normal (exterior of CCW-wound path)
@@ -169,7 +145,6 @@ export function physicalBladePath(t: number, p: PhysicalIrisParams): string {
   const cp2Lx = ax1x + 2 * ldx / 3 + lnx * lbulge;
   const cp2Ly = ax1y + 2 * ldy / 3 + lny * lbulge;
 
-  // Trailing edge: tip → ax0 (opposite perpendicular for symmetric petal)
   const tdx = ax0x - tipX, tdy = ax0y - tipY;
   const tlen = Math.sqrt(tdx * tdx + tdy * tdy);
   const tnx = tdy / tlen, tny = -tdx / tlen;
@@ -200,11 +175,9 @@ export function physicalCoverPoints(t: number, p: PhysicalIrisParams): string {
   const L = bladeReach * R;
   const phi = t * physicalPhiMax(p);
 
-  // Single tip of blade 0 after physical rotation
   const tipX = Rp - L * Math.cos(phi);
   const tipY = -L * Math.sin(phi);
 
-  // Blade i: rotate tip by i·step around origin
   return Array.from({ length: N }, (_, i) => {
     const a = i * step;
     const x = tipX * Math.cos(a) - tipY * Math.sin(a);
@@ -243,8 +216,7 @@ export function physicalCoverPath(t: number, p: PhysicalIrisParams): string {
     ).join(" ") + " Z";
   }
 
-  // Recompute blade edge tangent vectors at the tip (blade 0, pre-rotation).
-  // These match physicalBladePath's CP computation exactly.
+  // Must match physicalBladePath's control points exactly.
   const halfA = bladeSpan * step;
   const ax0x = R * Math.cos(-halfA), ax0y = R * Math.sin(-halfA);
   const ax1x = R * Math.cos(+halfA), ax1y = R * Math.sin(+halfA);
@@ -259,17 +231,13 @@ export function physicalCoverPath(t: number, p: PhysicalIrisParams): string {
   const tnx = tdy / tlen, tny = -tdx / tlen;
   const tbulge = bladeCurve * tlen * 0.3;
 
-  // Tangent departing tip along trailing edge: cp1T − tip
   const trailTanX = tdx / 3 + tnx * tbulge;
   const trailTanY = tdy / 3 + tny * tbulge;
 
-  // Tangent arriving at tip along leading edge: cp2L − tip
   const leadArrX = -ldx / 3 + lnx * lbulge;
   const leadArrY = -ldy / 3 + lny * lbulge;
 
-  // k controls CP distance — larger = more curvature matching with blade edges.
-  // Slightly > 0.5 ensures the cover extends just past the blade edge,
-  // so the blade fill hides the cover boundary.
+  // Slightly over 0.5 so the cover extends just past the blade edge.
   const k = 0.6;
 
   const parts: string[] = [`M ${fmt(tips[0][0], tips[0][1])}`];
@@ -277,13 +245,11 @@ export function physicalCoverPath(t: number, p: PhysicalIrisParams): string {
     const [tx0, ty0] = tips[i];
     const [tx1, ty1] = tips[(i + 1) % N];
 
-    // Rotate trailing tangent by i·step (matches blade i's trailing edge at tip_i)
     const ai = i * step;
     const cosI = Math.cos(ai), sinI = Math.sin(ai);
     const cp1x = tx0 + k * (trailTanX * cosI - trailTanY * sinI);
     const cp1y = ty0 + k * (trailTanX * sinI + trailTanY * cosI);
 
-    // Rotate leading tangent by (i+1)·step (matches blade i+1's leading edge at tip_{i+1})
     const ai1 = ((i + 1) % N) * step;
     const cosI1 = Math.cos(ai1), sinI1 = Math.sin(ai1);
     const cp2x = tx1 + k * (leadArrX * cosI1 - leadArrY * sinI1);
@@ -295,7 +261,6 @@ export function physicalCoverPath(t: number, p: PhysicalIrisParams): string {
   return parts.join(" ");
 }
 
-/** Space-separated x,y pairs for the center cover polygon at openness t. */
 export function coverPoints(t: number, p: IrisPhenoParams): string {
   const { N, halfSpread, twist: TWIST } = p;
   const step = (2 * Math.PI) / N;

@@ -4,22 +4,13 @@ import { getChannelPriority } from "@/lib/purchase/channel-priority";
 const EPN_CAMPAIGN_ID = "5339154376";
 const EPN_TOOL_ID = "10001";
 
-// Cap how many purchase buttons render per lens. Links are priority-ordered, so
-// this keeps the top-ranked channels and drops the long tail.
 const MAX_PURCHASE_LINKS = 3;
 
-// Affiliate query param to set on a product URL, keyed by hostname (no www).
-// Independent of channel — any purchase URL whose host is here gets its param.
-// Amazon (tag) and the GoAffPro DTC stores (ref) live in one table; each value
-// is a [key, value] pair fed straight to URLSearchParams.set.
-// Amazon Associates tracking ID. Under Earn Globally a single tracking ID earns
-// across every enrolled marketplace, so all Amazon storefronts below share it.
+// Keyed by hostname. One Amazon tracking ID covers every Earn Globally storefront.
 const AMAZON_TAG = "atlens-20";
 
 const AFFILIATE_PARAMS: Record<string, [string, string]> = {
-  // Amazon storefronts covered by Earn Globally enrolment — all share the one
-  // store ID. Storefronts not listed (amazon.com.au, amazon.co.jp) are not
-  // enrolled: they still localize for the shopper but stay non-affiliate.
+  // amazon.com.au and amazon.co.jp are not enrolled, so they stay non-affiliate.
   "amazon.com": ["tag", AMAZON_TAG],
   "amazon.ca": ["tag", AMAZON_TAG],
   "amazon.co.uk": ["tag", AMAZON_TAG],
@@ -60,13 +51,8 @@ const EBAY_MARKETS: Record<string, EbayMarket> = {
 
 const EBAY_DEFAULT_MARKET = EBAY_MARKETS.US;
 
-// Amazon storefront domain by GeoIP country. Locale stays the master switch for
-// market/currency; GeoIP only refines which Amazon marketplace an international
-// (non-zh) visitor lands on. Earn-Globally storefronts carry the affiliate tag
-// via AFFILIATE_PARAMS; utility-only regions (AU/JP) localize the storefront but
-// stay non-affiliate. Unmapped countries fall back to amazon.com.
-// Countries without an enrolled store of their own route to the nearest enrolled
-// neighbour (AT→.de, IE→.co.uk, BE→.nl) to keep both localization and affiliate.
+// Locale picks the market; GeoIP only picks the Amazon storefront for non-zh visitors.
+// Countries without an enrolled store route to an enrolled neighbour (AT→.de, IE→.co.uk, BE→.nl).
 const AMAZON_MARKETS: Record<string, string> = {
   US: "amazon.com",
   CA: "amazon.ca",
@@ -92,8 +78,7 @@ const CHANNEL_LABELS: Record<PurchaseChannelType, string> = {
   amazon: "Amazon",
   ebay: "eBay",
   bhphoto: "B&H",
-  // zh-only channels — labels stay hardcoded Chinese since they only render
-  // under the zh locale.
+  // Only rendered under zh.
   jd: "京东",
   taobao: "淘宝",
 };
@@ -139,14 +124,8 @@ function buildBhPhotoUrl(lens: Lens, locale: string): string {
   return `https://www.bhphotovideo.com/c/search?Ntt=${encodeURIComponent(query)}`;
 }
 
-// Mainland search-jump links. We can't run an affiliate program here (JD/Taobao
-// promotion filing requires an ICP-registered site), so these are plain search
-// URLs built from the lens's zh alias — a non-affiliate price-check convenience.
-// On phones we target the mobile H5 domains (so.m.jd.com / main.m.taobao.com) so
-// the platforms' own "open in app" handoff kicks in; on desktop we keep the
-// regular search site, which is laid out for a wide viewport. (WeChat's in-app
-// browser still blocks the app handoff — a platform limitation we can't work
-// around.)
+// No affiliate program here: JD/Taobao promotion requires an ICP-registered site. Phones get
+// the mobile H5 domains so the platforms hand off to their apps.
 function buildJdUrl(lens: Lens, isMobileDevice: boolean): string {
   const query = encodeURIComponent(getSearchQuery(lens, "zh"));
   return isMobileDevice
@@ -168,18 +147,12 @@ function buildCnSearchLinks(lens: Lens, isMobileDevice: boolean): PurchaseLink[]
   ];
 }
 
-// Extract the 10-char ASIN from an Amazon product URL (/dp/, /gp/product/,
-// /product/ forms). Returns null for search/storefront URLs that carry none.
 function extractAsin(url: string): string | null {
   const match = url.match(/\/(?:dp|gp\/product|product)\/([A-Z0-9]{10})(?:[/?]|$)/);
   return match ? match[1] : null;
 }
 
-// Build the Amazon URL for the visitor's region. On amazon.com (US, and the
-// fallback for unmapped countries) we deep-link to the product by ASIN. On any
-// other storefront the US-sourced ASIN often does not exist in the regional
-// catalog, so we search the storefront by model name instead of risking a 404
-// product page. Affiliate tags are applied later by host (applyAffiliate).
+// Outside amazon.com the US ASIN often does not exist, so other storefronts search by name.
 function buildAmazonUrl(
   lens: Lens,
   locale: string,
@@ -195,8 +168,6 @@ function buildAmazonUrl(
   return `https://www.${domain}/s?k=${encodeURIComponent(query)}`;
 }
 
-// Set the affiliate param for a product URL's host, if registered. Channel-
-// agnostic: official (ref) and amazon (tag) both go through here.
 function applyAffiliate(url: string): { url: string; isAffiliate: boolean } {
   let parsed: URL;
   try {
@@ -212,24 +183,17 @@ function applyAffiliate(url: string): { url: string; isAffiliate: boolean } {
   return { url: parsed.toString(), isAffiliate: true };
 }
 
-// Whether the locale runs an affiliate program. zh renders JD/Taobao buttons
-// but earns nothing from them, so it is NOT a purchase (affiliate) locale — the
-// About page uses this to gate the affiliate disclosure copy.
+// zh renders JD/Taobao links but earns nothing from them.
 export function isPurchaseLocale(locale: string): boolean {
   return locale !== "zh";
 }
 
-// The disclosure caption flips by locale: zh links are non-affiliate JD/Taobao
-// search jumps, so we state plainly there's no commercial tie; other locales
-// disclose the affiliate relationship instead.
 export function purchaseDisclosureKey(
   locale: string,
 ): "disclosureDetail" | "disclosureNoAffiliate" {
   return locale === "zh" ? "disclosureNoAffiliate" : "disclosureDetail";
 }
 
-// Whether to render the disclosure caption: zh shows it whenever any link is
-// present; other locales only when an affiliate link actually rendered.
 export function shouldShowDisclosure(
   hasLinks: boolean,
   hasAffiliate: boolean,
@@ -251,10 +215,7 @@ export function buildPurchaseLinks(
 
   const newEntries = lens.pricing?.global?.new ?? [];
 
-  // Data-driven channels: first pricing entry per channel that carries a url.
-  // The array is priority-ordered (publish sorts by storefront order), so the
-  // first occurrence per channel is the preferred storefront (same-channel
-  // dedup).
+  // Pricing is priority-ordered, so the first entry per channel wins.
   const urlByChannel = new Map<string, string>();
   for (const entry of newEntries) {
     if (entry.purchasableChannel && entry.url && !urlByChannel.has(entry.purchasableChannel)) {

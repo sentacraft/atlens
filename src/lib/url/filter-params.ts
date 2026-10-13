@@ -15,18 +15,11 @@ import { isOneOf } from "@/lib/utils";
 
 const FOCAL_KEYS = FOCAL_CATEGORIES.map((c) => c.key) as FocalCategory[];
 
-// Every URL query key the filter state owns — the single list a URL-sync writer
-// deletes before re-writing, so it touches only its own params and leaves
-// foreign ones (utm, …) intact. Must stay in step with serializeFilters below
-// (asserted by a test).
 export const FILTER_PARAM_KEYS = ["b", "t", "f", "u", "ot", "m", "feat", "fc", "sort", "dir"] as const;
 type FilterParamKey = (typeof FILTER_PARAM_KEYS)[number];
 
-// Compact param keys — only non-default values are serialized.
 // b=brands, t=typeFilter, f=focusFilter, u=usage, m=focusMotorClass,
 // feat=features, fc=focalCategories, sort=sortKey, dir=sortDir
-//
-// Usage default is "photo", so it is serialized only when the user picks "cine".
 export function serializeFilters(filters: FilterState): URLSearchParams {
   const p = new URLSearchParams();
   if (filters.brands.length > 0) {
@@ -63,8 +56,6 @@ export function serializeFilters(filters: FilterState): URLSearchParams {
 }
 
 export function parseFilters(params: URLSearchParams): FilterState {
-  // Object.fromEntries widens the key type back to string, so re-narrow it so
-  // the per-key access below (raw.b, raw.t, …) still type-checks.
   const raw = Object.fromEntries(
     FILTER_PARAM_KEYS.map((k) => [k, params.get(k)]),
   ) as Record<FilterParamKey, string | null>;
@@ -73,7 +64,7 @@ export function parseFilters(params: URLSearchParams): FilterState {
     brands: raw.b ? raw.b.split(",").filter(Boolean) : [],
     typeFilter: raw.t && isOneOf(raw.t, LENS_TYPES) ? raw.t : null,
     focusFilter: raw.f && isOneOf(raw.f, FOCUS_FILTERS) ? raw.f : null,
-    // Legacy `?u=all` (the removed union view) and unknown tokens fall back to photo.
+    // Legacy `?u=all` and unknown values fall back to photo.
     usage: raw.u && isOneOf(raw.u, USAGE_VALUES) ? raw.u : defaultFilters.usage,
     opticalTrait: raw.ot && isOneOf(raw.ot, OPTICAL_TRAITS) ? raw.ot : null,
     focusMotorClass: raw.m && isOneOf(raw.m, FOCUS_MOTOR_CLASSES) ? raw.m : null,

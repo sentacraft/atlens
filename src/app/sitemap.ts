@@ -9,8 +9,6 @@ import gfxLensesData from "@/data/lenses-gfx.json";
 
 const LOCALES = routing.locales;
 
-// Lens catalogs keyed by mount, so the per-mount loops below stay data-driven
-// rather than hardcoding one branch per mount.
 const LENS_DATA: Record<Mount, { id: string }[]> = {
   X: xLensesData as { id: string }[],
   G: gfxLensesData as { id: string }[],
@@ -21,8 +19,6 @@ function url(path: string): string {
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  // Per-mount index paths: browse + compare always, collections only where the
-  // mount actually has them (gated by the same flag as the routes/tab).
   const mountPaths = MOUNTS.flatMap((mount) => {
     const seg = mountToUrlSegment(mount);
     const paths = [`/lenses/${seg}/browse`, `/lenses/${seg}/compare`];

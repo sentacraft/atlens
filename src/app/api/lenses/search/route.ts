@@ -22,9 +22,7 @@ function getCachedIndex(mount: Mount, locale: string): LensSearchIndex {
 }
 
 export function GET(req: Request) {
-  // Dormant endpoint with no consumers today — search runs client-side in the
-  // browser (see LensSearchDialog). Reserved for a future internal BFF, never
-  // external-facing; 404 in production until then, mirroring /api/lenses.
+  // No consumers yet (search runs client-side); 404 in production.
   if (process.env.NODE_ENV === "production") {
     return new NextResponse(null, { status: 404 });
   }
@@ -73,12 +71,6 @@ export function GET(req: Request) {
     { results, query: query.trim() },
     {
       headers: {
-        // `no-store` because the UI searches client-side and nothing calls this
-        // at runtime, so caching buys nothing today. Results come from a
-        // build-static search index that only changes on redeploy — so if this
-        // becomes a public/hot endpoint, revisit: it is safe to cache (e.g. a
-        // long `s-maxage` keyed on `q`/`mount`/`locale`/`limit`) instead of
-        // `no-store`.
         "Cache-Control": "private, no-store",
       },
     },

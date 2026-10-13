@@ -1,27 +1,5 @@
 "use client";
 
-// Aperture mark component — renders the X-Glass logo using the physical
-// iris kinematic model (iris-kinematics.ts).
-//
-// Accepts a single IrisConfig (from iris-config.ts) covering kinematic params,
-// render size, appearance, and interactive behaviour.
-//
-// Theming: bladeColor/strokeColor in the config override the Tailwind
-// fill-*/stroke-* utilities used for automatic light/dark switching.
-//
-// Interaction modes (mutually exclusive, set via config.interactive):
-//   "hover" — aperture tracks horizontal mouse position across a hotzone div
-//             sized by hotzoneScaleH/V.
-//   "tap"   — clicking (desktop) or touching (mobile) plays the configured
-//             animation. Shows a pointer cursor.
-//   absent  — no interaction; iris sits at defaultFStop.
-//
-// Animations: config.onMount plays on mount; interactive.type === "tap" plays
-// on click/touch. Both share the same playAnimation() engine and chase loop.
-//
-// ApertureStrip: when apertureStrip is true in the config, an interactive
-// aperture strip is rendered below the iris (shown on all viewports).
-
 import { useState, useRef, useEffect, useMemo } from "react";
 import {
   solveAllBlades,
@@ -36,17 +14,10 @@ import {
 import { R_HOUSING, type IrisConfig, type IrisAnimation } from "@/config/iris-config";
 import ApertureStrip from "@/components/iris/ApertureStrip";
 
-// ── Component ─────────────────────────────────────────────────────────────────
-
 interface IrisProps {
   config: IrisConfig;
-  /**
-   * Render size override in px. Falls back to config.size when omitted.
-   * Use this only when you need a one-off size that differs from the named
-   * config (e.g. about page, poster).
-   */
   size?: number;
-  /** Must be unique per page — used as SVG def ID prefix. */
+  // Unique per page: prefixes the SVG def ids.
   uid?: string;
   className?: string;
 }
@@ -70,7 +41,6 @@ export default function Iris({
   } = rawConfig;
   const size = sizeProp ?? configSize;
 
-  // Derive interaction mode flags and hover-specific config.
   const isHover     = interactive?.type === "hover";
   const isTap       = interactive?.type === "tap";
   const hoverConfig = isHover ? interactive : null;
@@ -102,7 +72,6 @@ export default function Iris({
   const blades = useMemo(
     () => solveAllBlades(theta, dc),
      
-    // function imported from a stable module; adding it to deps would be noise.
     [theta, dc]
   );
   const shape = useMemo(() => bladeShapePath(dc), [dc]);
@@ -119,8 +88,6 @@ export default function Iris({
     }
   }, []);
 
-  // When not in hover mode, keep theta in sync with DEFAULT_THETA so the iris
-  // reflects any config change (e.g. Design Lab parameter tuning).
   useEffect(() => {
     if (isHover) {
       return;
@@ -129,12 +96,6 @@ export default function Iris({
     setTheta(DEFAULT_THETA);
   }, [DEFAULT_THETA, isHover]);
 
-  // ── Animation engine ──────────────────────────────────────────────────────
-  // Shared by mount animation and tap interaction. Cancels any in-flight
-  // animations before starting, so the two triggers can never overlap.
-  // startChase / stopChase are function declarations hoisted to the top of
-  // this render function — accessible here even though defined below.
-
   function playAnimation(anim: IrisAnimation) {
     if (anim.type !== "sweep") {
       return;
@@ -142,7 +103,6 @@ export default function Iris({
     const { sweepMs, totalMs } = anim;
 
     if (animRef.current) {
-
       cancelAnimationFrame(animRef.current);     animRef.current = null;
 
     }
@@ -175,7 +135,6 @@ export default function Iris({
     initAnimRef.current = requestAnimationFrame(tick);
   }
 
-  // ── Mount animation ───────────────────────────────────────────────────────
   useEffect(() => {
     if (!onMount) {
       return;
@@ -191,8 +150,6 @@ export default function Iris({
   // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only: reads stable refs
   }, []);
 
-  // ── Imperative controls (used by ApertureStrip) ───────────────────────────
-
   function driveToFStop(fStop: number) {
     if (animRef.current) {
       cancelAnimationFrame(animRef.current);     animRef.current = null;
@@ -205,15 +162,11 @@ export default function Iris({
     startChase();
   }
 
-  // ── Derived geometry ──────────────────────────────────────────────────────
-
   const { N } = dc;
   const stepDeg = 360 / N;
   const maskCount = Math.floor((N - 1) / 2);
 
-  // currentFStop is always computed (not gated by apertureStrip) so it can be
-  // exposed as a data attribute for E2E testing regardless of whether the strip
-  // is rendered. apertureStrip consumers still receive it via props as before.
+  // Always computed: E2E tests read it from a data attribute.
   const currentFStop = useMemo(() => {
     const r = apertureInradius(theta, dc);
     if (r <= 0 || inradiusOpen <= 0) {
@@ -223,7 +176,6 @@ export default function Iris({
   }, [theta, dc, inradiusOpen, closedFStop, rawConfig.openFStop]);
 
   if (blades.length === 0) {
-
     return null;
 
   }
@@ -232,12 +184,8 @@ export default function Iris({
   const b0AngleDeg = (b0.bladeAngle * 180) / Math.PI;
   const b0Transform = `translate(${b0.pivotPos.x.toFixed(3)},${b0.pivotPos.y.toFixed(3)}) rotate(${b0AngleDeg.toFixed(3)})`;
 
-  // ViewBox is tight around the visible blade area (clipped at R_HOUSING − bladeWidth).
-  // A 2-unit pad prevents subpixel fringing at the clip boundary.
   const vbHalf  = R_HOUSING - dc.bladeWidth + 2;
   const viewBox = `${-vbHalf} ${-vbHalf} ${vbHalf * 2} ${vbHalf * 2}`;
-
-  // ── Chase loop ────────────────────────────────────────────────────────────
 
   function startChase() {
     if (chaseRef.current) {
@@ -252,12 +200,8 @@ export default function Iris({
       thetaRef.current = next;
       setTheta(next);
       const delta = Math.abs(next - targetThetaRef.current);
-      // Stop only when the iris has settled at the target AND no animation tick is
-      // actively driving the target. The initAnimRef guard is load-bearing:
-      //
-      // Without it, the chase could exit at the Phase-1/Phase-2 boundary (when
-      // theta momentarily equals thetaMax) and never drive the iris back to
-      // defaultTheta — the root cause of the "iris frozen at minimum aperture" bug.
+      // The initAnimRef check is load-bearing: without it the chase can stop at the phase boundary
+      // and leave the iris frozen at minimum aperture.
       if (delta < 0.001 && initAnimRef.current === null) {
         thetaRef.current = targetThetaRef.current;
         setTheta(targetThetaRef.current);
@@ -274,10 +218,6 @@ export default function Iris({
       cancelAnimationFrame(chaseRef.current); chaseRef.current = null;
     }
   }
-
-  // ── Hover interaction ─────────────────────────────────────────────────────
-  // Events fire on the hotzone wrapper div (sized by hotzoneScaleH/V), not
-  // the SVG itself, so the interactive area can extend beyond the iris footprint.
 
   function posToDiameterTheta(clientX: number, rect: DOMRect): number {
     const rawPos = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
@@ -336,20 +276,12 @@ export default function Iris({
     animRef.current = requestAnimationFrame(tick);
   }
 
-  // ── Tap interaction ───────────────────────────────────────────────────────
-
   function handleClick() {
     if (interactive?.type !== "tap") {
       return;
     }
     playAnimation(interactive.animation);
   }
-
-  // ── Current f-stop (for ApertureStrip sync) ────────────────────────────────
-  // Derived from theta so the strip can mirror the iris position during any
-  // animation and after release easing. Uses f = f_open × (r_open / r).
-
-  // ── Render ─────────────────────────────────────────────────────────────────
 
   const wrapperW = isHover ? size * hotzoneScaleH : size;
   const wrapperH = isHover ? size * hotzoneScaleV : size;
@@ -362,7 +294,6 @@ export default function Iris({
       data-fstop={currentFStop?.toFixed(2)}
       data-animating={isAnimating}
     >
-      {/* Hotzone wrapper — captures mouse/tap events */}
       <div
         style={{
           width:          wrapperW,
@@ -406,7 +337,6 @@ export default function Iris({
           </defs>
 
           <g clipPath={`url(#${uid}-clip)`}>
-            {/* Fill pass */}
             {Array.from({ length: N }, (_, i) => (
               <g key={i} transform={`rotate(${(stepDeg * i).toFixed(3)})`}>
                 <g transform={b0Transform}>
@@ -419,7 +349,6 @@ export default function Iris({
                 </g>
               </g>
             ))}
-            {/* Stroke pass */}
             {Array.from({ length: N }, (_, i) => (
               <g key={i} mask={`url(#${uid}-sm-${i})`}>
                 <g transform={`rotate(${(stepDeg * i).toFixed(3)})`}>
@@ -439,7 +368,6 @@ export default function Iris({
         </svg>
       </div>
 
-      {/* Aperture strip — shown whenever the config opts in (all viewports) */}
       {apertureStrip && (
         <div className="mt-1" style={{ width: size }}>
           <ApertureStrip

@@ -3,7 +3,6 @@
 export default function OfflineContent() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 px-6 text-center">
-      {/* Aperture ring placeholder */}
       <div className="flex h-14 w-14 items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800">
         <svg
           viewBox="0 0 24 24"

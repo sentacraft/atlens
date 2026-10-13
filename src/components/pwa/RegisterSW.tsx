@@ -2,8 +2,6 @@
 
 import { useEffect } from "react";
 
-// Registers the service worker once on first client render.
-// Mounted in the root layout so it runs on every page.
 export default function RegisterSW() {
   useEffect(() => {
     if (!("serviceWorker" in navigator)) {
@@ -11,9 +9,7 @@ export default function RegisterSW() {
     }
 
     if (process.env.NODE_ENV === "development") {
-
-      // In dev, unregister any SW (e.g. left over from a prod build) so that
-      // its cache-first strategy never intercepts Turbopack's hot-updated bundles.
+      // Dev unregisters any leftover SW: its cache-first strategy would serve stale hot-updated bundles.
       navigator.serviceWorker
         .getRegistrations()
         .then((regs) => regs.forEach((r) => r.unregister()));

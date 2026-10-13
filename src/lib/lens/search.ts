@@ -5,42 +5,18 @@ import zhMessages from "@/messages/zh.json";
 const EN_BRAND_NAMES = enMessages.Brands as Record<string, string>;
 const ZH_BRAND_NAMES = zhMessages.Brands as Record<string, string>;
 
-/**
- * Brand display names from the i18n message catalogs serve as the only
- * search aliases. Variant spellings ("Fuji", "Fujinon", "フジ") are deliberately
- * not maintained — the canonical display name in each locale is enough.
- */
+// Variant spellings ("Fuji", "Fujinon") are deliberately not aliases.
 function getBrandSearchAliases(brandKey: string): string[] {
   return [EN_BRAND_NAMES[brandKey], ZH_BRAND_NAMES[brandKey]].filter(Boolean);
 }
 
-// ---------------------------------------------------------------------------
-// Normalisation & tokenisation
-// ---------------------------------------------------------------------------
-
-/** Unicode Han/Hiragana/Katakana ranges kept intact during normalisation. */
 const CJK_RANGE = "\u4e00-\u9fff\u3400-\u4dbf\u3040-\u309f\u30a0-\u30ff";
 
-/** Private placeholder for digit-between-dots protection during normalisation. */
 const DOT_SENTINEL = "\u0001";
 
-/**
- * Characters that are neither ASCII alphanumeric, the dot sentinel, nor CJK —
- * treated as delimiters. Note: real dots are still delimiters; only the
- * sentinel (which has temporarily replaced digit-dot-digit sequences) is kept.
- */
 const DELIMITER_PATTERN = new RegExp(`[^a-z0-9${DOT_SENTINEL}${CJK_RANGE}]+`, "gu");
 
-/**
- * Normalise a single string into a clean, lowercase searchable form.
- * - Applies NFKD decomposition so accented / diacritic characters fold to ASCII
- *   (e.g. Voigtländer → voigtlander).
- * - Preserves CJK characters so Chinese/Japanese queries work.
- * - Preserves dots between digits so decimal aperture / focal values remain a
- *   single semantic token (e.g. "F2.8" → "f2.8", not "f2 8"). Dots in other
- *   positions are still treated as delimiters.
- * - Collapses any non-alphanumeric, non-CJK run into a single space.
- */
+// Dots between digits survive so "F2.8" stays one token.
 export function normalizeLensSearchText(value: string): string {
   return value
     .normalize("NFKD")
@@ -53,11 +29,6 @@ export function normalizeLensSearchText(value: string): string {
     .replace(/\s+/g, " ");
 }
 
-/**
- * Split a normalised string into individual tokens.
- * CJK characters are each treated as their own token (no word-boundary
- * concept in CJK), while ASCII alphanumeric runs are split on spaces.
- */
 export function tokenize(normalised: string): string[] {
   if (!normalised) {
     return [];
@@ -81,37 +52,17 @@ export function tokenize(normalised: string): string[] {
   return tokens;
 }
 
-/**
- * Expand a query token at the letter→digit boundary so that compound inputs
- * like "xf35" behave as if the user had typed "xf 35". Single-letter prefixes
- * (e.g. "f1.4") are kept whole because they are canonical tokens, not compounds.
- */
+// "xf35" splits like "xf 35"; single-letter prefixes such as "f1.4" stay whole.
 function expandCompoundToken(token: string): string[] {
   const match = token.match(/^([a-z]{2,})(\d.*)$/);
   return match ? [match[1], match[2]] : [token];
 }
 
-/**
- * Tokenise a user query. Applies the letter→digit expansion on top of the
- * shared tokenizer so that query-side compound splitting is explicit and the
- * index path (buildLensSearchIndex) stays untouched.
- */
 export function tokenizeQuery(normalised: string): string[] {
   return tokenize(normalised).flatMap(expandCompoundToken);
 }
 
-// ---------------------------------------------------------------------------
-// Aperture synthetic token generation
-// ---------------------------------------------------------------------------
-//
-// Why only aperture (and not focal)? With the normalisation fix above, model
-// strings preserve decimal dots, so "XF 35mm F1.4 R" → tokens
-// ["xf", "35mm", "f1.4", "r"]. Focal numbers ("35", "35mm") and dotted
-// apertures ("f1.4") are therefore already present in the model bucket.
-//
-// Aperture still needs synthetic tokens for the "no-dot" writing style
-// (e.g. "f28" for f/2.8) which users commonly type but which is not a
-// substring of the canonical "f2.8" form.
+// Only apertures need synthetic tokens, for the no-dot style ("f28" for f/2.8).
 
 function apertureNums(v: ApertureValue): number[] {
   return Array.isArray(v) ? v : [v];
@@ -121,13 +72,7 @@ function formatApertureNum(n: number): string {
   return n % 1 === 0 ? String(n) : n.toFixed(1).replace(/\.?0+$/, "");
 }
 
-/**
- * Synthetic "no-hyphen focal range" token for zoom lenses (e.g. an 18-50mm
- * lens emits "1850"). Users commonly type zoom ranges without the hyphen,
- * but the model string normalises "18-50mm" into separate "18" and "50mm"
- * tokens, so the joined form is otherwise unreachable. Skipped for primes
- * since the single focal length is already an exact token.
- */
+// Zoom ranges typed without the hyphen ("1850").
 function focalRangeTokens(lens: Lens): string[] {
   if (lens.focalLengthMin === lens.focalLengthMax) {
     return [];
@@ -144,17 +89,11 @@ function apertureTokens(lens: Lens): string[] {
     const s = formatApertureNum(n);
     const noDot = s.replace(".", "");
     if (noDot !== s) {
-      // Only emit no-dot variants; dotted forms ("2.8", "f2.8") are covered
-      // by the model bucket after the normalisation fix.
       tokens.push(noDot, `f${noDot}`);
     }
   }
   return tokens;
 }
-
-// ---------------------------------------------------------------------------
-// Index structure
-// ---------------------------------------------------------------------------
 
 interface TokenBucket {
   brand: string[];
@@ -193,10 +132,6 @@ export function buildLensSearchIndex(lenses: Lens[]): LensSearchIndex {
   return lenses.map(createSearchableLensEntry);
 }
 
-// ---------------------------------------------------------------------------
-// Scoring
-// ---------------------------------------------------------------------------
-
 type MatchStrength =
   | "exact"
   | "boundaryPrefix"
@@ -212,14 +147,11 @@ function isBoundaryPrefix(token: string, query: string): boolean {
   const nextChar = token[query.length];
 
   if (/^\d+$/.test(query)) {
-
-    // digit query: boundary when next char is non-digit (e.g. "40" in "40mm")
     return /\D/.test(nextChar);
 
   }
 
-  // alpha/mixed query: boundary only when next char is a digit (e.g. "xf" in "xf35").
-  // alpha→alpha is not a meaningful boundary ("art" in "artisans" should not match).
+  // Alpha→alpha is not a boundary: "art" must not match "artisans".
   return /\d/.test(nextChar);
 }
 
@@ -247,32 +179,14 @@ const WEIGHTS: Record<keyof TokenBucket, Record<MatchStrength, number>> = {
   aperture: { exact: 190, boundaryPrefix: 180, wordPrefix: 170, includes: 140, none: 0 },
 };
 
-/**
- * Soft preference for first-party (Fujifilm) lenses. Atlens is framed
- * around the Fuji X-mount ecosystem, so on near-ties Fuji lenses should
- * appear first. Small enough (~4-25% of a typical total score) to avoid
- * overriding clearly better third-party matches.
- */
+// Small enough not to override a clearly better third-party match.
 const FIRST_PARTY_BRAND = "fujifilm";
 const FIRST_PARTY_BONUS = 50;
 
-/**
- * Minimum absolute total score a result must reach to show up in
- * auto-suggest. Roughly equivalent to a single wordPrefix-on-aperture
- * match, i.e. the weakest result we would still consider relevant.
- */
 const MIN_ABSOLUTE_SCORE = 200;
 
-/**
- * Minimum fraction of the best result's score a candidate must reach
- * to show up alongside it. Prunes the long tail of weak includes-only
- * matches from cluttering the dropdown when better results exist.
- */
 const MIN_RELATIVE_SCORE_RATIO = 0.4;
 
-/**
- * Score a single query token across all buckets. Returns 0 if nothing matches.
- */
 function scoreToken(buckets: TokenBucket, queryToken: string): number {
   let best = 0;
   for (const key of Object.keys(WEIGHTS) as (keyof TokenBucket)[]) {
@@ -284,12 +198,6 @@ function scoreToken(buckets: TokenBucket, queryToken: string): number {
   return best;
 }
 
-/**
- * Score a multi-token query against a lens with AND semantics — every query
- * token must match at least one bucket, otherwise the lens is excluded.
- * First-party lenses get a small constant bonus on top of the raw match
- * score so they win near-ties against third-party lenses.
- */
 function scoreLens(entry: SearchableLensEntry, queryTokens: string[]): number {
   let total = 0;
   for (const qt of queryTokens) {
@@ -305,10 +213,6 @@ function scoreLens(entry: SearchableLensEntry, queryTokens: string[]): number {
   return total;
 }
 
-// ---------------------------------------------------------------------------
-// Public search API
-// ---------------------------------------------------------------------------
-
 export function searchLensIndex(
   index: LensSearchIndex,
   query: string,
@@ -317,7 +221,6 @@ export function searchLensIndex(
   const queryTokens = tokenizeQuery(normalizeLensSearchText(query));
 
   if (queryTokens.length === 0) {
-
     return [];
 
   }
@@ -330,7 +233,6 @@ export function searchLensIndex(
     .filter((item) => item.score >= MIN_ABSOLUTE_SCORE);
 
   if (scored.length === 0) {
-
     return [];
 
   }

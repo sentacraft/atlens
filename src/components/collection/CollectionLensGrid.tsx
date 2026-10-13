@@ -8,15 +8,11 @@ import { useUiHookAttr } from "@/context/TestHookProvider";
 import { MAX_COMPARE, sortLenses, type SortKey } from "@/lib/lens/lens";
 import type { Lens } from "@/lib/types";
 
-// A collection smaller than this fits within ~one desktop grid row, so sorting
-// it is noise rather than help — hide the control below the threshold.
 const SORT_MIN_LENSES = 5;
 
 export default function CollectionLensGrid({ lenses }: { lenses: Lens[] }) {
   const hookAttr = useUiHookAttr();
   const { compareIds, toggle } = useCompare();
-  // Local sort only — a collection is already a fixed membership set, so order
-  // is purely a view concern and never touches the URL or server data path.
   const [sort, setSort] = useState<SortKey>("focalLength");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 

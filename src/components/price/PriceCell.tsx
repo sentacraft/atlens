@@ -1,10 +1,5 @@
 "use client";
 
-// Per-lens price cell used in the compare table.
-//
-// Shows the captured price with an "approx." qualifier,
-// and persistent source · sampled-date caption below.
-
 import { Calendar } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import {

@@ -16,24 +16,14 @@ import {
 import { lensRef, buildRefIndex } from "@/lib/ai/lens-ref";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 
-// How many recalled lenses one queryLenses call returns to the model, after the
-// active sort. Bounds tool-result size / token cost; totalMatched still tells the
-// model how many more matched beyond the cap. Tests call recallLenses with a
-// different cap to inspect the full match set.
 const RECALL_LIMIT = 20;
 
-// The agent's tools, bound to the current mount + locale (both fixed by the
-// route, never model-supplied). Parameter semantics live in `.describe()` so the
-// model learns them from the tool schema, not the system prompt.
 export function buildLensTools(
   mount: Mount,
   locale: string,
   tBrand: (brand: string) => string,
 ) {
-  // Every lens ref this turn's query/search calls have returned, so recommendLenses can
-  // reject a pick the model never recalled. Turn-scoped: a lens recalled only in an
-  // earlier turn must be looked up again before it can be recommended. Refs, not ids —
-  // the id never reaches the model, so it is not what comes back either.
+  // Turn-scoped: a lens recalled only in an earlier turn must be looked up again.
   const recalledRefs = new Set<string>();
 
   return {
@@ -82,9 +72,8 @@ export function buildLensTools(
               "required independently, so the lens's range must include every one — two or more " +
               "values exclude every prime.",
           ),
-        // An object rather than a [min, max] tuple: a tuple compiles to prefixItems, which
-        // the OpenAPI-3.0 subset behind Google's function declarations rejects outright.
-        // Named bounds are portable everywhere, and match maxApertureF's shape below.
+        // Not a [min, max] tuple: it compiles to prefixItems, which Google's function
+        // declarations reject.
         focalWithin: z
           .object({ min: z.number().optional(), max: z.number().optional() })
           .optional()
@@ -145,8 +134,6 @@ export function buildLensTools(
       }),
       execute: (constraints) => {
         const result = recallLenses(mount, locale, constraints, tBrand, RECALL_LIMIT);
-        // Record what this call surfaced so recommendLenses can check its picks. Both
-        // buckets are shown to the user; matches hold the lens directly, maybe wraps it.
         for (const lens of result.matches) {
           recalledRefs.add(lens.ref);
         }
@@ -171,13 +158,9 @@ export function buildLensTools(
       }),
       execute: ({ query, limit }) => {
         const index = buildLensSearchIndex(getLensesByMount(mount, locale));
-        // Same projection as a recall: a name lookup is still the model choosing between
-        // lenses, so it gets refs and the fields to choose on — never the id.
         const results = searchLensIndex(index, query, limit ?? 8).map((lens) =>
           toRecalled(resolveLens(lens, locale, tBrand)),
         );
-        // Refs read off the projection, the way queryLenses does it, so the gate and the
-        // payload cannot disagree about what this call surfaced.
         for (const lens of results) {
           recalledRefs.add(lens.ref);
         }
@@ -203,8 +186,6 @@ export function buildLensTools(
         const byRef = buildRefIndex(getLensesByMount(mount, locale));
         return {
           lenses: refs.map((ref) => {
-            // Same gate as the render tools: a lens this turn never recalled can't be
-            // inspected either, so a conjured ref fails loudly instead of resolving.
             if (!recalledRefs.has(ref)) {
               throw new Error(
                 `Lens ref "${ref}" was not returned by any queryLenses/searchLensByName call ` +
@@ -243,12 +224,8 @@ export function buildLensTools(
           .max(6),
       }),
       execute: ({ picks }) => recommendLenses(mount, locale, picks, tBrand, recalledRefs),
-      // Full recommendations stream to the client (the cards); the model already saw
-      // these lenses in the query result, so feed it a lean ack, not the specs again.
-      // The refs do come back, though: the synthesis prose that follows has to cite them
-      // to link a lens, and digging them back out of an earlier 20-lens query result is
-      // the kind of retrieval cost that gets skipped. Requires passing this same ToolSet
-      // to convertToModelMessages.
+      // The model already has these specs; it gets the refs back so its prose can link them.
+      // Requires passing this same ToolSet to convertToModelMessages.
       toModelOutput: ({ output }) => ({
         type: "text",
         value:
@@ -280,10 +257,7 @@ export function buildLensTools(
       }),
       execute: ({ refs, columns, caption }) =>
         listLenses(mount, locale, refs, columns, caption, tBrand, recalledRefs),
-      // The rows stream to the client (the table); the model already saw these lenses in
-      // the query result, so feed it a lean ack, not the specs again — but the refs come
-      // back, since the prose after it has to cite them to link a lens. Requires passing
-      // this same ToolSet to convertToModelMessages.
+      // Same as recommendLenses: refs back for linking; needs this ToolSet in convertToModelMessages.
       toModelOutput: ({ output }) => ({
         type: "text",
         value:

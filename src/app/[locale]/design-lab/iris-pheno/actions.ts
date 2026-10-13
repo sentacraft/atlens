@@ -1,8 +1,6 @@
 "use server";
 
-// CLOUDFLARE WORKERS: this file uses `fs/promises`, which does not exist in
-// the Workers runtime (nodejs_compat does not cover it). Only runs in local
-// dev because ../layout.tsx 404s in production. See ../README.md before editing.
+// Uses fs/promises: dev only, guarded by ../layout.tsx. See ../README.md.
 
 import { writeFile, readFile } from "fs/promises";
 import path from "path";
@@ -41,10 +39,6 @@ export interface BrandExportValues {
   shadowStdDeviation: number;
 }
 
-/**
- * Read current numeric values from a named `export const <presetName> = { … }` block
- * in brand.ts. Returns null if the preset cannot be found or parsed.
- */
 export async function readFromBrand(
   presetName: "IRIS_LG" | "IRIS_SM",
 ): Promise<BrandExportValues | null> {
@@ -90,11 +84,6 @@ export async function readFromBrand(
   }
 }
 
-/**
- * Patch numeric values inside a named `export const <presetName> = { … }` block
- * in brand.ts. Uses string replacement scoped to that object's body so
- * IRIS_LG and IRIS_SM don't interfere with each other.
- */
 export async function exportToBrand(
   presetName: "IRIS_LG" | "IRIS_SM",
   values: BrandExportValues,
@@ -102,7 +91,6 @@ export async function exportToBrand(
   try {
     let content = await readFile(BRAND_PATH, "utf-8");
 
-    // Locate the object body for the target preset
     const startPattern = new RegExp(`export const ${presetName}[^=]*=\\s*\\{`);
     const startMatch = startPattern.exec(content);
     if (!startMatch) {
@@ -111,7 +99,6 @@ export async function exportToBrand(
 
     const bodyStart = startMatch.index + startMatch[0].length;
 
-    // Walk forward to find the matching closing brace
     let depth = 1;
     let bodyEnd = bodyStart;
     while (bodyEnd < content.length && depth > 0) {
@@ -124,7 +111,6 @@ export async function exportToBrand(
       bodyEnd++;
     }
 
-    // Patch each value with a regex that matches `key: <number>` (ignores JSDoc lines)
     let body = content.slice(bodyStart, bodyEnd - 1);
     const patch: Record<string, number> = {
       N:                  values.N,

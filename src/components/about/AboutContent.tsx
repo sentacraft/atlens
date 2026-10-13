@@ -70,21 +70,13 @@ function MountCoverageTable({
       <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-x-auto self-start max-w-full">
         <table className="text-sm">
           <thead>
-            {/* Row 1 — semantic grouping: "Photo Lenses" spans Active+Discontinued (lifecycle states
-                within the photo category); "Cinema" stands alone (orthogonal category presence). */}
             <tr className="bg-zinc-50 dark:bg-zinc-900/50">
-              {/* Brand is the row identifier, horizontally centered to match
-                  the centered data columns to its right. */}
               <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-sm font-semibold text-zinc-500 dark:text-zinc-400 align-middle border-b border-r border-zinc-200 dark:border-zinc-800 w-24 sm:w-28">{col.brand}</th>
-              {/* Three top-level column groups share the same eyebrow style
-                  (uppercase, dim) so they read as parallel categories. */}
               <th colSpan={2} className="px-2 sm:px-3 pt-2 pb-1 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 whitespace-nowrap border-b border-zinc-200 dark:border-zinc-800/70">{col.photoGroup}</th>
               <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 whitespace-nowrap align-middle border-b border-zinc-200 dark:border-zinc-800 w-16 sm:w-20 border-l border-zinc-200 dark:border-zinc-800">{col.cinema}</th>
               <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 whitespace-nowrap align-middle border-b border-zinc-200 dark:border-zinc-800 border-l border-zinc-200 dark:border-zinc-800 w-16 sm:w-20">{col.count}</th>
             </tr>
             <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
-              {/* Sub-headers under "Photo Lenses": visually subordinate via
-                  smaller text + dimmer color, vertically centered in the row. */}
               <th className="px-2 sm:px-3 py-2 text-center text-xs font-medium text-zinc-400 dark:text-zinc-500 align-middle w-20 sm:w-28">{col.active}</th>
               <th className="px-2 sm:px-3 py-2 text-center text-xs font-medium text-zinc-400 dark:text-zinc-500 align-middle w-20 sm:w-28">{col.discontinued}</th>
             </tr>
@@ -193,7 +185,6 @@ export default async function AboutContent() {
         {t("rebrandNote")}
       </p>
 
-      {/* Table of Contents */}
       <nav className="flex flex-col gap-1">
         {[
           { id: "background", label: t("backgroundTitle") },
@@ -218,7 +209,6 @@ export default async function AboutContent() {
         ))}
       </nav>
 
-      {/* Background */}
       <Section id="background" title={t("backgroundTitle")}>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("backgroundBody1")}
@@ -231,7 +221,6 @@ export default async function AboutContent() {
         </p>
       </Section>
 
-      {/* Coverage */}
       <Section id="coverage" title={t("coverageTitle")}>
         <div className="flex flex-col gap-4">
           {([
@@ -279,7 +268,6 @@ export default async function AboutContent() {
         </Link>
       </Section>
 
-      {/* Data & Accuracy */}
       <Section id="data-accuracy" title={t("dataAccuracyTitle")}>
         <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3">
           <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
@@ -297,7 +285,6 @@ export default async function AboutContent() {
           {t("dataAccuracyIntro")}
         </p>
 
-        {/* ── Spec Data subsection ── */}
         <div className="flex flex-col gap-3 mt-1">
           <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
             {t("dataSpecTitle")}
@@ -316,7 +303,6 @@ export default async function AboutContent() {
           </div>
         </div>
 
-        {/* Pipeline overview */}
         <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3 flex flex-col gap-3">
           <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
             {t("dataPipelineIntro")}
@@ -340,12 +326,10 @@ export default async function AboutContent() {
           </ol>
         </div>
 
-        {/* Update cadence */}
         <p className="text-xs text-zinc-500 dark:text-zinc-500">
           {t("dataUpdateNote")}
         </p>
 
-        {/* ── Price Data subsection ── */}
         <div className="flex flex-col gap-3 mt-1">
           <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
             {t("dataPricingTitle")}
@@ -364,7 +348,6 @@ export default async function AboutContent() {
           </div>
         </div>
 
-        {/* GitHub CTA card — closing deep-dive link */}
         <a
           href="https://github.com/sentacraft/atlens#data-pipeline"
           target="_blank"
@@ -387,7 +370,6 @@ export default async function AboutContent() {
         </a>
       </Section>
 
-      {/* Ask Iris */}
       <Section id="ask-iris" title={t("askIrisTitle")}>
         <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
           {t.rich("askIrisBody", {
@@ -400,7 +382,6 @@ export default async function AboutContent() {
         </p>
       </Section>
 
-      {/* Disclaimer */}
       <Section id="disclaimer" title={t("disclaimerTitle")}>
         <div className="rounded-lg bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/70 dark:border-amber-800/40 px-4 py-3 flex flex-col gap-2">
           <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
@@ -418,7 +399,6 @@ export default async function AboutContent() {
         </div>
       </Section>
 
-      {/* Privacy */}
       <Section id="privacy" title={t("privacyTitle")}>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("privacyBody")}
@@ -428,7 +408,6 @@ export default async function AboutContent() {
         </p>
       </Section>
 
-      {/* Support the Project — cost, affiliate (en only), donate */}
       <Section id="support" title={t("supportTitle")}>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("supportCost")}
@@ -483,13 +462,11 @@ export default async function AboutContent() {
         )}
       </Section>
 
-      {/* Acknowledgments */}
       <Section id="ack" title={t("ackTitle")}>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t("ackBody")}
         </p>
 
-        {/* Card + story pairs — card IS the accordion trigger */}
         <div className="flex flex-col divide-y divide-zinc-100 dark:divide-zinc-800">
           {ackCredits.map(({ roles, company, product, logoComponent, glowColor }, i) => {
             const storyKey = i === 0 ? "1" : "2";
@@ -509,7 +486,6 @@ export default async function AboutContent() {
           })}
         </div>
 
-        {/* Closing line */}
         <div className="pt-6 border-t border-zinc-100 dark:border-zinc-800 text-center">
           <p className="text-xs text-zinc-400 dark:text-zinc-500 leading-relaxed">
             {t("ackClosing")}

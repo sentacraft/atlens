@@ -3,9 +3,6 @@
 import { useEffect, useRef } from "react";
 import { track } from "@/lib/analytics/analytics";
 
-// `compare_view`: fired once per mount when the comparison page has at
-// least one lens loaded. The slug list (comma-joined) drives the
-// "hot combinations" dashboard panel.
 export function useCompareViewTelemetry(lensIds: string[]) {
   const firedRef = useRef(false);
   useEffect(() => {
@@ -20,9 +17,6 @@ export function useCompareViewTelemetry(lensIds: string[]) {
   }, [lensIds]);
 }
 
-// `compare_scroll`: fired once when the user scrolls past 80% of the
-// comparison table. Signals whether users actually read the comparison
-// versus bouncing at the header.
 export function useCompareScrollTelemetry(lensIds: string[]) {
   const firedRef = useRef(false);
   useEffect(() => {

@@ -28,8 +28,6 @@ import {
 const SHELL_CLS =
   "mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4";
 
-// Two states on one route: an empty-state landing (centered hero) before the first
-// message, and the chat thread after.
 export default function AskIrisChat({
   entry,
   lensIndex,
@@ -46,10 +44,8 @@ export default function AskIrisChat({
   const [historyOpen, setHistoryOpen] = useState(false);
   const { data: session } = authClient.useSession();
   const userId = accountUser(session)?.id;
-  // The history entry's placement and look are still being designed.
   const historyEnabled = useTestHookEnabled();
-  // Unthrottled, a long stream re-renders on every chunk and the message-derived
-  // effects below can trip React's update-depth limit.
+  // Unthrottled, per-chunk re-renders trip React's update-depth limit.
   const { messages, sendMessage, status, setMessages, stop, regenerate, error, clearError } = useChat<AskIrisUIMessage>({
     generateId: () => crypto.randomUUID(),
     messageMetadataSchema: askIrisMessageMetadataSchema,
@@ -75,7 +71,6 @@ export default function AskIrisChat({
   const errorKind = status === "error" ? classifyError(error) : null;
   const turnBody = { mount, locale, conversationId };
 
-  // One per load; switching the current lens context does not create a new chat.
   useEffect(() => {
     track("askiris_view");
   }, []);
@@ -90,10 +85,7 @@ export default function AskIrisChat({
     setInput("");
   }
 
-  // /askiris?q=… arrives as a prop off the server render and auto-sends. The param is
-  // then stripped so a refresh doesn't re-fire it. The ref keeps the send out of the
-  // dev double-mount, and is a ref rather than a module flag because navigating away
-  // and returning with a new query should send again.
+  // A ref, not a module flag: returning with a new query must send again.
   const submitInitialQuery = useEffectEvent((query: string) => {
     sendMessage({ text: query }, { body: turnBody });
     track("askiris_message", { method: "handoff" });
@@ -113,9 +105,6 @@ export default function AskIrisChat({
   const scrollRef = useRef<HTMLDivElement>(null);
   const { canScrollUp, canScrollDown } = useScrollAffordance(scrollRef, [renderMessages]);
 
-  // Follow the stream only while the user is pinned to the bottom — scrolling up to
-  // read mid-stream must not yank them back down. The tolerance absorbs the fractional
-  // scrollTop a growing container reports at the bottom on non-integer pixel ratios.
   const pinnedRef = useRef(true);
   function handleScroll() {
     const el = scrollRef.current;
@@ -131,7 +120,6 @@ export default function AskIrisChat({
     }
   }, [renderMessages]);
 
-  // A switched-to conversation opens at its latest turn.
   useEffect(() => {
     pinnedRef.current = true;
   }, [conversationId]);
@@ -170,8 +158,6 @@ export default function AskIrisChat({
     );
   }
 
-  // Skip the hero when a hand-off query is pending: it fires on mount and fills the
-  // thread, so rendering the empty state first would just flash before the reply.
   if (renderMessages.length === 0 && !initialQuery) {
     return (
       <div className={SHELL_CLS}>
@@ -202,8 +188,6 @@ export default function AskIrisChat({
               <AskIrisError kind={errorKind} onRetry={() => regenerate({ body: turnBody })} />
             )}
           </div>
-          {/* Overlays rather than a container mask, so the scrollbar stays crisp;
-              inset from the right so they clear it. */}
           <div
             aria-hidden
             className={cn(

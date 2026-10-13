@@ -5,17 +5,9 @@ import { getAllLenses } from "@/lib/lens/data";
 import { routing } from "@/i18n/routing";
 import type { Lens } from "@/lib/types";
 
-// The half of collections that needs the catalogue: which lenses are in a collection,
-// and the counts derived from that. It is separate from collections.ts because that one
-// is imported by a client component, and a module reaching for getAllLenses drags 477KB
-// of JSON into whatever bundle names it — the `server-only` import above turns that into
-// a build error rather than a silent payload.
+// Kept apart from collections.ts, which a client component imports; `server-only` makes a
+// client import of this file a build error.
 
-// --- Membership, precomputed at module load -------------------------------
-// slug -> member lenses, per locale (price collections vary by region: cn vs
-// global pricing). Computed eagerly once here — no lazy cache — so every count /
-// overlap / stats lookup below is a plain array read instead of re-scanning the
-// whole catalog on each call.
 const MEMBERS: Record<string, Record<CollectionSlug, Lens[]>> = {};
 for (const locale of routing.locales) {
   const all = getAllLenses(locale);
@@ -30,8 +22,6 @@ function membersOf(slug: string, locale: string): Lens[] {
   return MEMBERS[locale]?.[slug as CollectionSlug] ?? [];
 }
 
-// Internal: related collections by member overlap. Only the *WithStats wrapper
-// below consumes it, so it stays private.
 function getRelatedCollections(slug: string, locale: string, limit = 4): LensCollection[] {
   if (!COLLECTIONS[slug]) {
     return [];
@@ -55,9 +45,6 @@ function getRelatedCollections(slug: string, locale: string, limit = 4): LensCol
     .map((s) => s.collection);
 }
 
-// Internal: members + derived counts for a collection, from the precomputed
-// members. Single place that builds the stat numbers (shared by the two
-// exported stats functions below).
 function statsFor(collection: LensCollection, locale: string) {
   const lenses = membersOf(collection.slug, locale);
   return { lenses, lensCount: lenses.length, brandCount: new Set(lenses.map((l) => l.brand)).size };
@@ -85,9 +72,6 @@ interface RelatedCollectionStats {
   brandCount: number;
 }
 
-// slug -> member count, for every collection. The one projection of membership small
-// enough to hand to a client component: 43 collections, ~683 bytes, against the 267KB
-// of catalogue a client would otherwise need to count them itself.
 export function getCollectionLensCounts(locale: string): Record<string, number> {
   return Object.fromEntries(
     Object.keys(COLLECTIONS).map((slug) => [slug, membersOf(slug, locale).length]),

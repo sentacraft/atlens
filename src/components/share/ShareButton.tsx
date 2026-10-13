@@ -19,7 +19,6 @@ import { LightboxDialog } from "./LightboxDialog";
 import { CustomizePopover } from "./CustomizePopover";
 import { lensDisplayName } from "@/lib/lens/format";
 
-// Scale the 750px poster down to fit the panel content area
 const POSTER_W = 750;
 const PREVIEW_SCALE = 352 / POSTER_W; // ≈ 0.469
 const PREVIEW_SCALED_W = POSTER_W * PREVIEW_SCALE; // 352px — visual width after scale
@@ -28,21 +27,11 @@ const PREVIEW_H = 310; // visible preview height in pixels
 interface ShareButtonProps {
   lenses: Lens[];
   variant?: "default" | "fab";
-  /** Override the default trigger button class (non-fab variant only). */
   triggerClassName?: string;
-  /** Hide the text label, showing only the icon. */
   iconOnly?: boolean;
-  /** Pre-fill the poster title from a curated preset. User can still override in Customize. */
   presetTitle?: string;
-  /** Pre-fill the poster slogan from a curated preset subtitle. User can still override. */
   presetSubtitle?: string;
-  /**
-   * Link-only mode: skip the comparison-poster surface entirely and offer just
-   * copy-link + native share. For pages whose subject isn't a ≤MAX_COMPARE lens
-   * set (e.g. a collection of many lenses), where the spec poster doesn't apply.
-   */
   linkOnly?: boolean;
-  /** Native-share message body in linkOnly mode. Falls back to the lens CTA. */
   shareText?: string;
 }
 
@@ -80,7 +69,6 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
 
   const lightbox = useLightbox(posterRef);
 
-  // Keep shareUrl and slug in sync when panel opens
   useEffect(() => {
     if (!open) {
       return;
@@ -217,9 +205,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
     setPosterGenerating(true);
     let blobUrl: string | undefined;
     try {
-      // Cap share output at 1280px — the long-axis threshold used by the
-      // most aggressive mainstream IM compressors. Staying at/below this
-      // avoids the resize stage and only takes a single quality pass.
+      // 1280px is the long-axis threshold of the most aggressive IM compressors.
       blobUrl = await rasterizePoster(posterRef.current, { maxWidth: 1280 });
       const blob = await (await fetch(blobUrl)).blob();
       const file = new File([blob], `${posterTitle}.png`, { type: "image/png" });
@@ -234,7 +220,6 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
         return;
       }
       if (blobUrl) {
-        // Share API failed but poster was generated — fall back to download
         const link = document.createElement("a");
         link.download = `atlens_${slugRef.current}.png`;
         link.href = blobUrl;
@@ -257,8 +242,6 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
   const tabClass =
     "flex-1 rounded-md px-3 py-1.5 text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900 data-[active]:bg-white data-[active]:text-zinc-900 data-[active]:shadow-xs dark:text-zinc-400 dark:hover:text-zinc-50 dark:data-[active]:bg-zinc-700 dark:data-[active]:text-zinc-50 outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 cursor-pointer";
 
-  // Copy-link + native-share controls. Shared between the Link tab (poster
-  // mode) and the linkOnly panel so the two never drift.
   const linkSection = (
     <div className="flex flex-col gap-3">
       <div className="select-all break-all rounded-md bg-zinc-100 px-3 py-2.5 font-mono text-xs leading-relaxed text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
@@ -297,7 +280,6 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
     </div>
   );
 
-  // Link-only panel: no poster surface, just the copy/share controls.
   const linkOnlyContent = (
     <div className="flex flex-col gap-4 p-4">
       <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
@@ -322,14 +304,11 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
           <Tabs.Tab value="link" className={tabClass}>{t("tabLink")}</Tabs.Tab>
         </Tabs.List>
 
-        {/* ── Link tab ─────────────────────────────────────────── */}
         <Tabs.Panel value="link">
           {linkSection}
         </Tabs.Panel>
 
-        {/* ── Image tab ────────────────────────────────────────── */}
         <Tabs.Panel value="image" className="flex flex-col gap-3">
-          {/* Poster preview: full-bleed, breaks out of p-4 padding */}
           <div
             className="group relative -mx-4 cursor-zoom-in overflow-hidden"
             style={{ height: PREVIEW_H }}
@@ -363,11 +342,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
 
           <LightboxDialog {...lightbox} />
 
-          {/* Action row */}
           <div className="flex gap-2">
-            {/* Customize (title/slogan) is a nested popover — desktop only. On mobile the
-                share surface is a drawer, where a nested popover-in-drawer is awkward, so
-                the entry point is dropped entirely. */}
             {isDesktop && (
               <CustomizePopover
                 title={effectiveTitle}

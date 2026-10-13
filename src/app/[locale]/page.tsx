@@ -22,8 +22,7 @@ export async function generateMetadata({
 
 export default async function HomePage({ params }: { params: Params }) {
   const { locale } = await params;
-  // Enables static rendering for this page. Must be called before any
-  // useTranslations/getTranslations descendant access.
+  // Must run before any translation access.
   setRequestLocale(locale);
 
   const xLenses = getLensesByMount("X", locale);
@@ -32,8 +31,6 @@ export default async function HomePage({ params }: { params: Params }) {
     X: { lensCount: xLenses.length, brandCount: new Set(xLenses.map((l) => l.brand)).size },
     G: { lensCount: gLenses.length, brandCount: new Set(gLenses.map((l) => l.brand)).size },
   };
-  // Most recent date any lens entered the library, across both mounts — drives
-  // the "What's New" freshness hint in the footer.
   const lastAddedAt =
     [...xLenses, ...gLenses]
       .map((l) => l.createdAt)

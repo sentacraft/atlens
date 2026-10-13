@@ -5,16 +5,8 @@ import { TESTHOOK_ALLOWED } from "@/lib/testhook";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { fetchFixtures, writeFixture } from "@/lib/askiris/fixture-client";
 
-// Dev-only fixture store shared between AskIrisChat (publishes its live messages,
-// reads the selected fixture) and the test-hook panel (selects, saves, renames,
-// deletes). Fixtures are persisted as JSON files under a gitignored repo dir via
-// /api/askiris-fixtures — a captured session survives reloads and is visible on
-// disk, so you can save a live reply and replay it while debugging.
-
 let live: AskIrisUIMessage[] = [];
 let selected = "off";
-// In-memory mirror of the on-disk fixtures, so resolveFixture() stays sync for
-// render. Seeded by refresh() on load and kept in step on every mutation.
 let saved: Record<string, AskIrisUIMessage[]> = {};
 const listeners = new Set<() => void>();
 
@@ -43,11 +35,8 @@ async function refresh() {
   }
 }
 
-// TESTHOOK_ALLOWED, not `typeof window`: AskIrisChat imports this module in
-// production too, and a client chunk always has a window.
+// TESTHOOK_ALLOWED, not `typeof window`: this module ships in production client chunks.
 if (TESTHOOK_ALLOWED && typeof window !== "undefined") {
-  // Restore query-param repro links, e.g. ?fixture=foo — resolves once refresh()
-  // lands the saved fixtures from disk.
   const fromUrl = new URLSearchParams(window.location.search).get("fixture");
   if (fromUrl) {
     selected = fromUrl;
@@ -71,8 +60,7 @@ export function getServerSnapshot(): FixtureSnapshot {
   return SERVER_SNAPSHOT;
 }
 
-// Not reactive (no emit) so streaming doesn't churn the panel — it reads `live`
-// only when Save is pressed.
+// Not reactive, so streaming does not churn the panel.
 function publishLive(messages: AskIrisUIMessage[]) {
   live = messages;
 }
@@ -122,9 +110,6 @@ export function renameFixture(from: string, to: string) {
   void writeFixture({ action: "rename", from, to });
 }
 
-// The chat's whole contact with this module: hand it the live thread, render what
-// comes back. In dev that is a selected fixture replayed through the real page shell
-// — deterministic UI work (decks, tables) with no LLM call.
 export function useFixtureMessages(messages: AskIrisUIMessage[]): AskIrisUIMessage[] {
   const { selected } = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   useEffect(() => {

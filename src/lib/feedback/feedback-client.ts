@@ -1,5 +1,3 @@
-// Client for POST /api/feedback, which files a GitHub issue for the maintainer.
-
 export type FeedbackType = "data_issue" | "general";
 
 export interface FeedbackContext {

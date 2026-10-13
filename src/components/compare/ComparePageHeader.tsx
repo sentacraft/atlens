@@ -32,21 +32,10 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
     .map((id) => allLenses.find((l) => l.id === id))
     .filter((l): l is Lens => l !== undefined);
 
-  // Reverse-derive the matching curated preset (if any) from the current
-  // compare state. `?ids=` is the URL's single source of truth, so a preset
-  // is "active" iff its lensIds exactly equal the live compareIds —
-  // regardless of how the user got here (curated link, deep link, or
-  // assembling by hand on the compare page itself).
   const matchedPreset = useMemo(() => findPresetByIds(compareIds), [compareIds]);
   const presetTitle = matchedPreset?.title[lang];
   const presetSubtitle = matchedPreset?.subtitle[lang];
 
-  // On mobile cold-start the entire row is invisible (h1 is `sm:block`,
-  // no buttons render until there's at least one lens), but the wrapper
-  // still occupies a flex slot in the parent column — its zero height
-  // plus the parent's `gap-3` doubles to ~24px of empty space between
-  // the breadcrumb and the table. Collapse the wrapper to `display:none`
-  // when there's nothing in it on mobile.
   const isEmpty = activeLenses.length === 0;
 
   return (
@@ -66,9 +55,6 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
               triggerClassName={`${ADD_LENS_BTN_BASE} border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900`}
             />
           ) : (
-            // Slot is full: skip the dialog and surface an immediate toast hint
-            // instead. The disabled-looking button keeps the layout slot stable
-            // so the row's other affordances (clear, share) don't reflow.
             <button
               onClick={() => toast(t("compareFullHint"))}
               className={`${ADD_LENS_BTN_BASE} border-zinc-200 bg-white text-zinc-400 cursor-not-allowed dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-600`}

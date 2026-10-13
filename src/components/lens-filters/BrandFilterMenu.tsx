@@ -46,10 +46,7 @@ export default function BrandFilterMenu({
     <Menu.Root>
       <Menu.Trigger
         className={cn(
-          // max-w-full (not a fraction): the trigger grows to fit the selected
-          // brand names up to the row's width, then the label truncates. A
-          // fractional cap could fall below min-w on a narrow phone, which pins
-          // the trigger to min-w and forces truncation even when there's room.
+          // max-w-full, not a fraction: a fractional cap can fall below min-w on a narrow phone.
           "inline-flex h-9 min-w-36 max-w-full items-center justify-between gap-1.5 rounded-full border px-3.5 text-[12px] shadow-sm shadow-zinc-950/[0.02] transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 sm:min-w-28",
           hasSelection
             ? "border-transparent bg-zinc-900 font-medium text-white hover:border-zinc-800 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200"

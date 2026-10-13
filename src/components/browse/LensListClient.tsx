@@ -42,10 +42,6 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   const { compareIds, toggle } = useCompare();
   const gridRef = useRef<HTMLDivElement>(null);
 
-  // Every filter control narrows to the current photo/cine view, so a Cine
-  // view never offers a brand, feature, or focus-motor option that has no cine
-  // lenses behind it. Derived from the already-in-memory lenses, so this costs
-  // a memo, not a fetch.
   const scopedLenses = useMemo(
     () => selectByUsage(lenses, filters.usage),
     [lenses, filters.usage],
@@ -58,9 +54,6 @@ export default function LensListClient({ lenses }: LensListClientProps) {
     [lenses, filters]
   );
 
-  // `usage` (photo/cine) is a view mode, not a filter dimension, so it is left
-  // out of the active-filter count and the reset trigger. Reset still returns
-  // usage to its default via defaultFilters below.
   const activeFilterCount = [
     filters.brands.length > 0,
     filters.typeFilter !== null,
@@ -76,17 +69,12 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   }
 
   function clearAllFilters() {
-    // Reset clears refinements but preserves the photo/cine view mode — usage
-    // is a view partition, not a filter, so leaving the current view intact
-    // mirrors how switching tabs would not reset the user's filters.
     setFilters((current) => ({ ...defaultFilters, usage: current.usage }));
   }
 
   useEffect(() => {
     projectToUrl((url) => {
-      // Own only the filter params; foreign params (utm, …) are left intact.
-      // Assign url.search as a string (URLSearchParams would encode the commas
-      // to %2C) so the comma-joined values stay raw, matching CompareUrlSync.
+      // A string, not URLSearchParams, so commas stay unencoded (as in CompareUrlSync).
       FILTER_PARAM_KEYS.forEach((k) => url.searchParams.delete(k));
       const rest = url.searchParams.toString();
       const mine = serializeFilters(filters).toString().replace(/%2C/g, ",");
@@ -94,9 +82,6 @@ export default function LensListClient({ lenses }: LensListClientProps) {
     });
   }, [filters]);
 
-  // Replay a short fade on the (stable) grid whenever the result set changes,
-  // without remounting it — so memo(LensCard) keeps bailing out unaffected
-  // cards. 
   useLayoutEffect(() => {
     const grid = gridRef.current;
     if (!grid) {
@@ -118,10 +103,6 @@ export default function LensListClient({ lenses }: LensListClientProps) {
           <LensUsageSwitch
             value={filters.usage}
             onChange={(usage) =>
-              // Switching the photo/cine view enters a different scope, so it
-              // resets refinements to a clean slate — only the chosen sort
-              // order carries over. This also sidesteps stale brand selections
-              // that no longer exist in the new view.
               setFilters((current) => ({
                 ...defaultFilters,
                 usage,
@@ -140,8 +121,6 @@ export default function LensListClient({ lenses }: LensListClientProps) {
             onFiltersChange={setFilters}
             activeFilterCount={activeFilterCount}
             onReset={clearAllFilters}
-            // Search shares the brand row's right edge — it scopes the lens
-            // list, so it belongs in the refine zone, not the navigation bar.
             searchSlot={
               <LensSearchDialog
                 lenses={lenses}
@@ -167,9 +146,6 @@ export default function LensListClient({ lenses }: LensListClientProps) {
                   ),
                 })}
               </p>
-              {/* Coverage is otherwise buried in About; surfacing it next to the
-                  count puts it where users form the "is this complete?" judgment,
-                  not only on the dead-end empty state. */}
               <Link
                 href="/about#coverage"
                 className="whitespace-nowrap text-xs text-zinc-400 underline-offset-2 transition-colors hover:text-zinc-600 hover:underline dark:text-zinc-500 dark:hover:text-zinc-300"
@@ -201,11 +177,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
             </p>
           </div>
         ) : (
-          // Stable container — no content-fingerprint key. Filtering/sorting
-          // reconciles cards in place instead of remounting the whole grid, so
-          // memo(LensCard) bails out unaffected cards on every filter change.
-          // The fade is replayed imperatively via the Web Animations API in the
-          // effect above — no remount, so memo stays intact.
+          // No content key: remounting would defeat memo(LensCard); the fade is replayed imperatively.
           <div
             ref={gridRef}
             {...hookAttr("grid")}

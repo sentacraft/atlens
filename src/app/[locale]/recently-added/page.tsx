@@ -29,8 +29,7 @@ export async function generateMetadata({
   };
 }
 
-// Date-only strings are formatted in UTC so the rendered day matches the stored
-// createdAt regardless of the server's timezone.
+// UTC so the day matches the stored createdAt regardless of server timezone.
 function formatDay(dateStr: string, locale: string): string {
   return new Intl.DateTimeFormat(locale, {
     year: "numeric",
@@ -51,10 +50,6 @@ export default async function RecentlyAddedPage({ params }: { params: Params }) 
     getTranslations({ locale, namespace: "Brands" }),
   ]);
 
-  // Group every lens by its createdAt day. The earliest day is the launch seed
-  // (the library's initial bulk import, backfilled from git history) — it is
-  // rendered as a single collapsed line rather than an enumerated batch, since
-  // it represents the starting catalog rather than a real daily addition.
   const byDate = new Map<string, Lens[]>();
   for (const lens of getAllLenses(locale)) {
     if (!lens.createdAt) {

@@ -19,9 +19,6 @@ export default function FeedbackTrigger({
   type,
   context,
   fields,
-  // Defaults to the shared inline feedback-link look; callers that need a
-  // different shape (the page-chrome report button, the compare-table cell)
-  // pass their own className to override.
   className = FEEDBACK_LINK_CLS,
   children,
   stopPropagation = false,

@@ -16,8 +16,6 @@ interface FeatureToggleGroupProps<K extends string> {
   onToggle: (key: K) => void;
 }
 
-// Controlled group: selection state and the toggle handler live here, not on each
-// option. Generic over the key type so the caller keeps its key union.
 export default function FeatureToggleGroup<K extends string>({
   options,
   selectedKeys,

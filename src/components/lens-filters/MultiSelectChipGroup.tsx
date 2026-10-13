@@ -22,9 +22,6 @@ interface MultiSelectChipGroupProps<K extends string> {
   onToggle: (key: K) => void;
 }
 
-// Controlled group: selection state and the toggle handler live here, not on each
-// option. Generic over the key type so callers keep their key union (brand string
-// vs FocalCategory) without a cast.
 export default function MultiSelectChipGroup<K extends string>({
   allLabel,
   onSelectAll,

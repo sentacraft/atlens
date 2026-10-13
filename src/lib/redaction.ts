@@ -1,11 +1,4 @@
-// Demo-mode redaction. Used to blur sensitive surfaces (poster QR, price
-// figure, price source channel) while screen-recording, so platform moderators
-// don't flag the footage. To redact another surface, add a key here and mark
-// the element with `data-redact-hook="<key>"`.
-//
-// INTERNAL PARAM — keep the Atlens Obsidian doc "Internal params & cookies"
-// (Engineering/) in sync whenever a key, the query key, or the blur default
-// changes here.
+// Internal param: keep the Obsidian doc "Internal params & cookies" in sync.
 
 export const REDACTION_KEYS = ["posterQr", "price", "priceSource"] as const;
 
