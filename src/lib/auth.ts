@@ -6,6 +6,7 @@ import { anonymous, emailOTP } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { D1Dialect } from "kysely-d1";
 import { linkAnonymousUser } from "@/lib/askiris/link-anonymous-user";
+import { authEmailLocale, deleteAccountEmail, signInCodeEmail } from "@/lib/auth-email";
 
 function getAuthContext() {
   const context = getCloudflareContext();
@@ -61,13 +62,11 @@ export function createAuth() {
         enabled: true,
         // Without a confirmation email, deletion needs a session under a day old: these
         // accounts have no password to re-check instead.
-        async sendDeleteAccountVerification({ user, url }) {
+        async sendDeleteAccountVerification({ user, url }, request) {
           await env.EMAIL.send({
             from: env.AUTH_EMAIL_FROM,
             to: user.email,
-            subject: "Confirm deleting your Atlens account",
-            text: `Open this link in the browser where you are signed in to Atlens to permanently delete your account and your Ask Iris conversations:\n\n${url}\n\nThe link expires in 24 hours. If you did not ask to delete your account, ignore this email.`,
-            html: `<p>Open this link in the browser where you are signed in to Atlens to permanently delete your account and your Ask Iris conversations:</p><p><a href="${url}">Delete my Atlens account</a></p><p>The link expires in 24 hours. If you did not ask to delete your account, ignore this email.</p>`,
+            ...deleteAccountEmail(authEmailLocale(request?.headers), url),
           });
         },
       },
@@ -94,13 +93,11 @@ export function createAuth() {
       }),
       emailOTP({
         storeOTP: "hashed",
-        async sendVerificationOTP({ email, otp }) {
+        async sendVerificationOTP({ email, otp }, ctx) {
           await env.EMAIL.send({
             from: env.AUTH_EMAIL_FROM,
             to: email,
-            subject: "Your Atlens sign-in code",
-            text: `Your Atlens sign-in code is ${otp}. It expires in five minutes.`,
-            html: `<p>Your Atlens sign-in code is <strong>${otp}</strong>.</p><p>It expires in five minutes.</p>`,
+            ...signInCodeEmail(authEmailLocale(ctx?.headers), otp),
           });
         },
       }),

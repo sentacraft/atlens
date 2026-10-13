@@ -57,6 +57,15 @@
     "cancel": "取消",
     "close": "关闭"
   },
+  "AuthEmail": {
+    "signInSubject": "你的 Atlens 登录验证码",
+    "signInBody": "你的 Atlens 登录验证码是 <strong>{otp}</strong>。",
+    "signInExpiry": "验证码 5 分钟内有效。",
+    "deleteSubject": "确认删除你的 Atlens 账号",
+    "deleteBody": "请在登录 Atlens 的浏览器中打开下面的链接，永久删除你的账号和所有 Ask Iris 对话：",
+    "deleteLink": "删除我的 Atlens 账号",
+    "deleteFooter": "链接 24 小时内有效。如果不是你本人申请删除账号，请忽略这封邮件。"
+  },
   "AskIris": {
     "heading": "Hi，我是 Iris<beta></beta>",
     "subtitle": "你的专属镜头顾问 —— 用大白话说需求，我帮你精准匹配",
