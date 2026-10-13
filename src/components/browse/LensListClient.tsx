@@ -25,7 +25,6 @@ import LensIndexShell from "@/components/browse/LensIndexShell";
 import LensUsageSwitch from "@/components/browse/LensUsageSwitch";
 import LensSortControl from "@/components/browse/LensSortControl";
 import LensSearchDialog from "@/components/browse/LensSearchDialog";
-import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import { mountToUrlSegment } from "@/lib/mount";
 
 interface LensListClientProps {

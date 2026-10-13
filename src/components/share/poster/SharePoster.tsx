@@ -563,7 +563,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                 sel.entry.price,
                 sel.entry.currency,
                 labels.locale,
-                sel.condition,
                 labels.cnyAmount,
               );
               const sampledDisplay = formatSampledAt(sel.entry.sampledAt, labels.locale);

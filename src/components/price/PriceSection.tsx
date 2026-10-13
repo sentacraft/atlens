@@ -24,8 +24,8 @@ export function PriceSection({ lens }: Props) {
     return null;
   }
 
-  const { entry, condition } = selection;
-  const priceDisplay = formatPrice(entry.price, entry.currency, locale, condition, t.raw("cnyAmount"));
+  const { entry } = selection;
+  const priceDisplay = formatPrice(entry.price, entry.currency, locale, t.raw("cnyAmount"));
   const sourceDisplay = entry.source;
   const sampledDisplay = formatSampledAt(entry.sampledAt, locale);
 
