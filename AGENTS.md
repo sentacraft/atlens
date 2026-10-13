@@ -35,6 +35,8 @@ Components do not call `fetch` or hard-code API paths: each feature's requests l
 module under `src/lib/`, and client-side reads go through TanStack Query. Each feature's URL query
 params are named, parsed, and written in one module under `src/lib/url/`.
 
+Rate limits go through `src/lib/rate-limit.ts`, which lists every limit the app enforces.
+
 Pure helpers and UI state used by a single component stay in its file; extract when the code does
 I/O, carries testable logic, or gains a second consumer.
 

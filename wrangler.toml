@@ -54,9 +54,7 @@ name = "EMAIL"
 [version_metadata]
 binding = "CF_VERSION_METADATA"
 
-# Rate-limit counters for /api/chat (per-IP burst + per-IP/global daily token
-# budgets). The RATE_LIMIT_BYPASS secret (dashboard / `wrangler secret put`) exempts
-# the developer's own testing.
+# Ask Iris daily token budgets (src/lib/ai/token-budget.ts).
 [[kv_namespaces]]
 binding = "RATE_KV"
 id = "b4eeeb3afdca4f038de649dd3ecbea5f"
@@ -75,3 +73,19 @@ invocation_logs = true
 enabled = true
 persist = true
 head_sampling_rate = 1
+
+# Per-IP request rates (src/lib/rate-limit.ts). namespace_id must be unique in the account.
+[[ratelimits]]
+name = "RL_FEEDBACK"
+namespace_id = "4801"
+simple = { limit = 5, period = 60 }
+
+[[ratelimits]]
+name = "RL_ASKIRIS_FEEDBACK"
+namespace_id = "4802"
+simple = { limit = 30, period = 60 }
+
+[[ratelimits]]
+name = "RL_CHAT"
+namespace_id = "4803"
+simple = { limit = 6, period = 60 }

@@ -4,9 +4,6 @@ import { buildLensSearchIndex, searchLensIndex, type LensSearchIndex } from "@/l
 import { urlSegmentToMount } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
 import { routing } from "@/i18n/routing";
-import { createRateLimiter, rateLimitedResponse } from "@/lib/rate-limit";
-
-const checkRateLimit = createRateLimiter({ windowMs: 60_000, max: 120 });
 
 const MAX_QUERY_LENGTH = 200;
 const DEFAULT_LIMIT = 8;
@@ -30,10 +27,6 @@ export function GET(req: Request) {
   // external-facing; 404 in production until then, mirroring /api/lenses.
   if (process.env.NODE_ENV === "production") {
     return new NextResponse(null, { status: 404 });
-  }
-
-  if (!checkRateLimit(req)) {
-    return rateLimitedResponse();
   }
 
   const { searchParams } = new URL(req.url);
