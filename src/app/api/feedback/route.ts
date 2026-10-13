@@ -20,13 +20,8 @@ interface FeedbackPayload {
 
 const MAX_DESCRIPTION_LENGTH = 2000;
 
-// Max length (in code points) of the description snippet used as an issue title.
 const TITLE_SNIPPET_MAX = 60;
 
-
-// Collapse a (possibly multi-line) description into a single-line title snippet,
-// truncating at a word boundary with an ellipsis when it exceeds the limit.
-// Returns "" for a blank description so the caller can fall back to a label.
 function titleSnippet(description: string): string {
   const oneLine = description.replace(/\s+/g, " ").trim();
   const chars = Array.from(oneLine);
@@ -92,8 +87,6 @@ function buildIssue(payload: FeedbackPayload): {
   } else if (context?.searchQuery) {
     title = `[Feedback] Missing lens: ${context.searchQuery}`;
   } else {
-    // Use a one-line snippet of the description so general-feedback issues are
-    // distinguishable in the list instead of all sharing one title.
     const snippet = titleSnippet(description);
     title = snippet ? `[Feedback] ${snippet}` : `[Feedback] General feedback`;
   }
@@ -112,8 +105,6 @@ function buildIssue(payload: FeedbackPayload): {
   };
 }
 
-// Health probe. Reports whether required env vars are wired up in the
-// current runtime, without leaking values — names are already in source.
 export function GET() {
   const hasToken = Boolean(process.env.GITHUB_TOKEN);
   const hasRepo = Boolean(process.env.GITHUB_FEEDBACK_REPO);
@@ -182,8 +173,7 @@ export async function POST(req: Request) {
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",
       "Content-Type": "application/json",
-      // Required by the GitHub REST API. Workers' fetch sends no default
-      // UA, so omitting it returns 403 before reaching the endpoint.
+      // GitHub returns 403 without a User-Agent, and Workers' fetch sends none.
       "User-Agent": "x-glass-feedback",
     },
     body: JSON.stringify(issue),

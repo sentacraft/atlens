@@ -14,11 +14,7 @@ import { pickPriceEntry } from "@/lib/lens/pricing";
 import { SPEC_NA } from "@/lib/types";
 import type { ApertureValue, Lens, Mount, OpticalTrait } from "@/lib/types";
 
-// Agent recall: LLM constraints → matches / maybe / excluded. Unlike the UX
-// filter (filterLenses), it supports numeric thresholds and focal predicates.
-
-// Specialty traits hidden from generic queries; surface only when named in
-// `opticalTraits`. Macro is absent — a macro lens is a valid everyday pick.
+// Hidden unless named in `opticalTraits`. Macro is absent: a macro lens is a valid everyday pick.
 const SPECIALTY_TRAITS: readonly OpticalTrait[] = [
   "fisheye",
   "tilt",
@@ -27,26 +23,19 @@ const SPECIALTY_TRAITS: readonly OpticalTrait[] = [
   "probe",
 ];
 
-// Recall-local sort axes, NOT the UI's SORT_KEYS — recall needs unambiguous focal
-// ends (reach/wideEnd) plus axes the browse UI lacks (magnification, zoomRatio).
 export type SortField =
-  | "reach" // the lens's longest focal length (tele end)
-  | "wideEnd" // the lens's shortest focal length (wide end)
+  | "reach"
+  | "wideEnd"
   | "weightG"
-  | "maxAperture" // the f-number, so a faster lens is a smaller value
+  | "maxAperture"
   | "length"
   | "price"
   | "magnification"
   | "zoomRatio"
   | "releaseYear";
 
-// What the model picks from: each name states the end it puts first, and the direction is
-// baked in rather than left to a companion parameter. A field plus a direction lets a
-// request for the most versatile zoom arrive as zoomRatio ascending — the twenty least
-// versatile — and nothing about the call looks wrong. A name cannot be pointed backwards.
-//
-// A field appears twice only where both ends answer a question someone asks; the other
-// ends are reachable as constraints, where an "under 200g" intent belongs anyway.
+// Direction is baked into each name: with a separate direction parameter the model asked for
+// "most versatile" as zoomRatio ascending and got the least versatile lenses.
 export const RECALL_SORTS = {
   widest: ["wideEnd", "asc"],
   longestReach: ["reach", "desc"],
@@ -65,15 +54,8 @@ export const RECALL_SORTS = {
 export type RecallSort = keyof typeof RECALL_SORTS;
 export const RECALL_SORT_NAMES = Object.keys(RECALL_SORTS) as [RecallSort, ...RecallSort[]];
 
-// Applied when a call names no sort. Widest-first is the least opinionated ordering of a
-// focal-diverse result set, not a claim that wide is better.
 const DEFAULT_SORT: RecallSort = "widest";
 
-// Spec columns listLenses can lay side by side. The lens name is always the first
-// column (and a link), so these are the comparison fields the model picks from to
-// answer the question at hand. The client renders each column, sourcing its header
-// from the shared LensDetail/Pricing labels and its value from src/lib/lens/format —
-// the same label + formatting layer the detail and compare pages use.
 export const LENS_TABLE_COLUMNS = [
   "focalEquiv",
   "focalNative",
@@ -90,8 +72,7 @@ export const LENS_TABLE_COLUMNS = [
 ] as const;
 export type LensTableColumn = (typeof LENS_TABLE_COLUMNS)[number];
 
-// Shown when the model asks for a table without naming columns. Aperture is left
-// out — it's almost always already in the lens name (the first column).
+// Aperture is already in the lens name, the first column.
 const DEFAULT_TABLE_COLUMNS: LensTableColumn[] = ["focalEquiv", "weight", "price"];
 
 export interface LensConstraints {
@@ -101,42 +82,24 @@ export interface LensConstraints {
   usage?: "photo" | "cine";
   features?: FilterFeatureKey[];
   opticalTraits?: OpticalTrait[];
-  // Native millimetres (the number printed on the lens). The lens must be able to
-  // shoot at each, matched within a small tolerance.
+  // Focal fields are native mm, the number printed on the lens.
   coversFocals?: number[];
-  // Native millimetres. The lens's whole focal range must sit inside this window.
   focalWithin?: { min?: number; max?: number };
-  // Native millimetres. One-sided focal-reach bounds, the complement of coversFocals
-  // (which needs the range to pass THROUGH a focal): minReach keeps any lens whose long
-  // end reaches at least this far, maxWide any whose wide end is at least this wide — so a
-  // longer or wider prime, which coversFocals would drop, still qualifies.
   minReach?: number;
   maxWide?: number;
   maxWeightG?: number;
-  // Physical barrel length ceiling in mm (compact / pocketable).
   maxLengthMm?: number;
-  // f-number ceilings at each zoom end (a smaller number = wider).
   maxApertureF?: { wide?: number; tele?: number };
   // In the locale's currency (zh → CNY, en → USD).
   maxPrice?: number;
-  // Minimum magnification ratio (e.g. 0.5 = at least half life-size). Close-up.
   minMagnification?: number;
-  // Minimum aperture blade count (rounder out-of-focus rendering).
   minApertureBladeCount?: number;
-  // Only lenses released in or after this year.
   minReleaseYear?: number;
   sortBy?: RecallSort;
 }
 
-// The lens as the model and the card see it: a locale-resolved projection of the
-// full `Lens`. Locale/pipeline-internal fields (raw pricing/links, translations,
-// search aliases, publish bookkeeping) are projected away; price is flattened to the
-// active locale; every spec field is kept so the model can recall and cite the long
-// tail (blades, construction, filter size, dimensions). Four fields are deliberately
-// absent: the official link (the client builds its own links), both angle-of-view
-// forms (equivalent focal already says it), and compatibleMounts (recall is already
-// scoped to one mount) — none was ever read, and together they were a fifth of the
-// payload the model re-reads on every step.
+// officialLink, both angle-of-view forms, and compatibleMounts are left out: nothing read
+// them, and they were a fifth of the payload the model re-reads on every step.
 export type ResolvedLens = Pick<
   Lens,
   | "id"
@@ -165,20 +128,16 @@ export type ResolvedLens = Pick<
   | "accessories"
   | "fieldNotes"
 > & {
-  // Single canonical display name (brand + series + model, locale-resolved). The
-  // model and the card both refer to a lens by this — the raw brand/series/model
-  // are NOT exposed, so the model can't reassemble names inconsistently.
+  // Raw brand/series/model are not exposed, so the model cannot reassemble names inconsistently.
   name: string;
   focalNativeMm: [number, number];
   focalEquivMm: [number, number];
   maxAperture: ApertureValue | null;
-  weightG: number | null; // flattened from Lens.weightG's range form
-  magnification: number | null; // flattened from Lens.maxMagnification
+  weightG: number | null;
+  magnification: number | null;
   opticalTraits: OpticalTrait[];
   isCine: boolean;
-  // sampledAt (ISO date) + source stamp the price's provenance, so the model reads it
-  // as a point-in-time sample from one channel — a rough marker, not a live quote to do
-  // exact arithmetic on across differently-sampled lenses.
+  // sampledAt and source tell the model this is a sample, not a live quote.
   price: {
     amount: number;
     currency: "CNY" | "USD";
@@ -188,10 +147,7 @@ export type ResolvedLens = Pick<
   } | null;
 };
 
-// What a bulk recall shows the model: the fields it actually chooses between. A recall
-// returns up to RECALL_LIMIT lenses and every one of them is re-read on each later step,
-// so the long tail (construction, filter thread, blades, T-stops, motor, materials…) is
-// left out here and fetched per-lens through lensDetails when a question needs it.
+// Every recalled lens is re-read on each later step, so the long tail is left to lensDetails.
 export type RecalledLens = Pick<
   ResolvedLens,
   | "name"
@@ -216,8 +172,7 @@ export type RecalledLens = Pick<
 
 export function toRecalled(lens: ResolvedLens): RecalledLens {
   return {
-    // The opaque handle replaces the id outright here: leaving both in context would
-    // leave the patterned one to be reconstructed, which is the failure being fixed.
+    // Never the id as well: the model extends patterned ids into lenses it never recalled.
     ref: lensRef(lens.id),
     name: lens.name,
     mount: lens.mount,
@@ -240,10 +195,6 @@ export function toRecalled(lens: ResolvedLens): RecalledLens {
   };
 }
 
-// What lensDetails hands back: the full record with the opaque handle in place of the
-// id, the same substitution toRecalled makes. Nothing renders this tool's output, so the
-// id reached the model and no one else — and an id in context is a patterned handle the
-// model can extend into lenses it never recalled.
 export type DetailedLens = Omit<ResolvedLens, "id"> & { ref: string };
 
 export function toDetailed(lens: ResolvedLens): DetailedLens {
@@ -251,15 +202,12 @@ export function toDetailed(lens: ResolvedLens): DetailedLens {
   return { ref: lensRef(id), ...rest };
 }
 
-// A resolved lens the model has chosen to recommend, carrying its authored reason.
 export type Recommendation = ResolvedLens & { reason: string };
 
-// coversFocals is matched on native mm within this fraction, so a "56" request
-// still catches a 55mm lens (same class) and never misses a prime by a hair.
+// A "56" request still catches a 55mm lens.
 const FOCAL_MATCH_TOLERANCE = 0.1;
 
 export interface RecallResult {
-  // Capped to the top `maxCount` (see recallLenses) by the active sort.
   matches: RecalledLens[];
   maybe: { lens: RecalledLens; missingFields: string[] }[];
   totalMatched: number;
@@ -297,12 +245,9 @@ function evaluate(lens: Lens, c: LensConstraints, locale: string): Verdict {
   }
 
   const requested = c.opticalTraits ?? [];
-  // Positive filter: when traits are requested, the lens must have at least one.
   if (requested.length && !requested.some((t) => opticalTraits.includes(t))) {
     return EXCLUDE;
   }
-  // Specialty guard: a lens carrying a specialty trait the user did not ask for
-  // never surfaces (a fisheye must not answer "a light lens").
   for (const trait of opticalTraits) {
     if (SPECIALTY_TRAITS.includes(trait) && !requested.includes(trait)) {
       return EXCLUDE;
@@ -317,9 +262,7 @@ function evaluate(lens: Lens, c: LensConstraints, locale: string): Verdict {
     }
   }
 
-  // Native mm — the number the lens is labelled with and the number the user says.
-  // The mount is fixed here, so FF-equiv would only add crop-factor rounding that
-  // makes a prime miss its own focal (56mm → 84 equiv, and a 85 request excludes it).
+  // Native, not equivalent: crop-factor rounding made a 56mm prime miss an "85 equiv" request.
   const nativeMin = lens.focalLengthMin;
   const nativeMax = lens.focalLengthMax;
   if (c.coversFocals?.length) {
@@ -338,10 +281,6 @@ function evaluate(lens: Lens, c: LensConstraints, locale: string): Verdict {
       return EXCLUDE;
     }
   }
-  // One-sided focal-reach bounds. Focal data is always present, so these are hard filters.
-  // Same tolerance as coversFocals so a near-miss isn't dropped by a hair. Unlike
-  // coversFocals they don't require passing THROUGH a focal, so a longer prime satisfies
-  // minReach and a wider prime satisfies maxWide.
   if (c.minReach != null && nativeMax < c.minReach * (1 - FOCAL_MATCH_TOLERANCE)) {
     return EXCLUDE;
   }
@@ -349,13 +288,10 @@ function evaluate(lens: Lens, c: LensConstraints, locale: string): Verdict {
     return EXCLUDE;
   }
 
-  // length is always present, so it's a hard filter (never demotes to maybe).
   if (c.maxLengthMm != null && lens.length.mm > c.maxLengthMm) {
     return EXCLUDE;
   }
 
-  // Numeric thresholds — the only checks that can be indeterminate (missing
-  // data). A miss never excludes silently; it demotes the lens to `maybe`.
   const missingFields: string[] = [];
 
   if (c.maxWeightG != null) {
@@ -404,7 +340,6 @@ function evaluate(lens: Lens, c: LensConstraints, locale: string): Verdict {
     if (blades == null) {
       missingFields.push("apertureBladeCount");
     } else if (blades === SPEC_NA || blades < c.minApertureBladeCount) {
-      // SPEC_NA = fixed-aperture lens with no diaphragm — can't meet a blade count.
       return EXCLUDE;
     }
   }
@@ -424,10 +359,8 @@ function apertureEnds(value: ApertureValue): [number, number] {
   return Array.isArray(value) ? [value[0], value[1]] : [value, value];
 }
 
-// Keys delegated to the shared UI sorter; comparators reused, not re-implemented.
 const DELEGATED_SORTS = new Set<SortField>(["weightG", "maxAperture", "length"]);
 
-// Comparable value for a recall-only sort axis. null = data missing.
 function recallComparable(lens: Lens, key: SortField, locale: string): number | null {
   switch (key) {
     case "reach":
@@ -443,7 +376,7 @@ function recallComparable(lens: Lens, key: SortField, locale: string): number | 
     case "releaseYear":
       return lens.releaseYear ?? null;
     default:
-      return null; // delegated keys never reach here
+      return null;
   }
 }
 
@@ -456,7 +389,6 @@ function sortRecalled(
   if (DELEGATED_SORTS.has(key)) {
     return sortLenses(lenses, key as SortKey, dir);
   }
-  // Recall-only axes; missing data sorts last regardless of direction.
   return [...lenses].sort((a, b) => {
     const va = recallComparable(a, key, locale);
     const vb = recallComparable(b, key, locale);
@@ -480,52 +412,42 @@ export function resolveLens(
   const { isCine, opticalTraits } = deriveSpecialty(lens);
 
   return {
-    // identity
     id: lens.id,
     mount: lens.mount,
     name: lensDisplayName(tBrand(lens.brand), lens.series, lens.model),
     generation: lens.generation,
-    // focal / field of view
     focalNativeMm: [lens.focalLengthMin, lens.focalLengthMax],
     focalEquivMm: [
       focalEquiv(lens.focalLengthMin, lens.mount),
       focalEquiv(lens.focalLengthMax, lens.mount),
     ],
-    // aperture
     maxAperture: lens.maxAperture ?? null,
     minAperture: lens.minAperture,
     maxTStop: lens.maxTStop,
     minTStop: lens.minTStop,
     apertureBladeCount: lens.apertureBladeCount,
     apertureRing: lens.apertureRing,
-    // focus
     af: lens.af,
     focusMotor: lens.focusMotor,
     internalFocusing: lens.internalFocusing,
     minFocusDistance: lens.minFocusDistance,
     magnification: lens.maxMagnification?.value ?? null,
-    // stabilization / weather
     ois: lens.ois,
     oisStops: lens.oisStops,
     wr: lens.wr,
-    // zoom mechanics
     powerZoom: lens.powerZoom,
     internalZoom: lens.internalZoom,
-    // physical
     weightG: leadingValue(lens.weightG) ?? null,
     diameterMm: lens.diameterMm,
     length: lens.length,
     filterMm: lens.filterMm,
     lensMaterial: lens.lensMaterial,
-    // optics
     lensConfiguration: lens.lensConfiguration,
     opticalTraits,
     isCine,
-    // meta
     releaseYear: lens.releaseYear,
     accessories: lens.accessories,
     fieldNotes: lens.fieldNotes,
-    // commercial (locale-flattened)
     price: selection
       ? {
           amount: selection.entry.price,
@@ -543,9 +465,6 @@ export function recallLenses(
   locale: string,
   constraints: LensConstraints,
   tBrand: (brand: string) => string,
-  // Cap on matches and maybes returned, applied after the active sort;
-  // totalMatched/totalMaybe still report the full pre-cap counts. queryLenses fixes
-  // this at RECALL_LIMIT; tests vary it to inspect the full (uncapped) match set.
   maxCount: number,
 ): RecallResult {
   const lenses = getLensesByMount(mount, locale);
@@ -584,9 +503,6 @@ export function recallLenses(
   };
 }
 
-// Look up lenses by id and resolve them, attaching the model's authored reason.
-// recalledIds is every id this turn's tool calls have returned, so a pick outside it
-// is a lens the model never recalled here.
 export function recommendLenses(
   mount: Mount,
   locale: string,
@@ -595,10 +511,7 @@ export function recommendLenses(
   recalledRefs: Set<string>,
 ): { recommendations: Recommendation[] } {
   const byRef = buildRefIndex(getLensesByMount(mount, locale));
-  // Fail loud on a lens the model never recalled — one it conjured from memory or a ref
-  // it altered. Only refs returned by a queryLenses/searchLensByName call this turn are
-  // allowed; the SDK surfaces the throw as a tool-error, so the model recalls the lens
-  // and retries with the exact ref inside its step budget.
+  // The SDK returns a throw to the model as a tool error, so it recalls the lens and retries.
   const resolve = (picks: { ref: string; reason: string }[]) =>
     picks.map((pick) => {
       if (!recalledRefs.has(pick.ref)) {
@@ -610,7 +523,6 @@ export function recommendLenses(
       }
       const lens = byRef.get(pick.ref);
       if (!lens) {
-        // recalledRefs only ever holds refs from real tool results, so this is defensive.
         throw new Error(`Unknown lens ref "${pick.ref}".`);
       }
       return { ...resolveLens(lens, locale, tBrand), reason: pick.reason };
@@ -618,9 +530,6 @@ export function recommendLenses(
   return { recommendations: resolve(picks) };
 }
 
-// Resolve a set of already-recalled ids into a neutral spec table — no reasons, the
-// user judges. Same recalledIds gate as recommendLenses: a lens the model didn't
-// recall this turn can't be tabled either. Duplicate ids collapse, order preserved.
 export function listLenses(
   mount: Mount,
   locale: string,

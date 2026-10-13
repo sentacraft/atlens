@@ -1,13 +1,3 @@
-// Product-analytics event sink. Writes to the `xglass_events` Analytics
-// Engine dataset bound as `ANALYTICS` in wrangler.toml. Anonymous session
-// continuity is provided by a server-managed first-party cookie (`xg_sid`,
-// HttpOnly, 30-min sliding window). Sid is the only field that crosses
-// events for funnel/path analysis.
-//
-// No auth: events are fire-and-forget from any page view. Cloudflare's
-// platform-level DDoS/Bot protection is sufficient. Body is size-capped
-// and shape-validated to keep junk out of the dataset.
-
 import { NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import {
@@ -105,9 +95,6 @@ export async function POST(req: Request): Promise<NextResponse> {
 
   const cookieHeader = req.headers.get("cookie");
   const sid = parseSid(cookieHeader) ?? crypto.randomUUID();
-  // A valid rate-limit bypass (secret-gated) also counts as internal, so load
-  // tests / dogfooding done with that cookie vanish from every dashboard, not
-  // just AskIris. The xg_internal flag stays an independent, weaker trigger.
   const internal =
     parseInternal(cookieHeader) || isBypassed(req);
 
@@ -118,8 +105,6 @@ export async function POST(req: Request): Promise<NextResponse> {
       ae.writeDataPoint(toDataPoint(event, sid, locale, props, internal));
     }
   } catch {
-    // Binding may be unavailable (e.g. `next dev` without initOpenNext bound).
-    // Swallow — analytics must never break a page.
   }
 
   const isSecure =
