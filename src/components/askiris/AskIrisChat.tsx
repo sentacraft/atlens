@@ -20,7 +20,7 @@ import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
 import { useFixtureMessages } from "@/components/askiris/fixtureStore";
-import { useConversation } from "@/components/askiris/useConversation";
+import { useConversation, useTurnSync } from "@/components/askiris/useConversation";
 import ConversationHistory from "@/components/askiris/ConversationHistory";
 import {
   askIrisMessageMetadataSchema,
@@ -28,8 +28,8 @@ import {
 } from "@/lib/askiris/message-metadata";
 
 const transport = new DefaultChatTransport<AskIrisUIMessage>({
-  prepareSendMessagesRequest: ({ messages, body }) => ({
-    body: askIrisChatRequestBody(messages, body),
+  prepareSendMessagesRequest: ({ id, messages, body }) => ({
+    body: askIrisChatRequestBody({ id, messages, body }),
   }),
 });
 
@@ -54,23 +54,9 @@ export default function AskIrisChat({
   const { data: session } = authClient.useSession();
   const userId = accountUser(session)?.id;
   const historyEnabled = useTestHookEnabled();
-  // Unthrottled, per-chunk re-renders trip React's update-depth limit.
-  const { messages, sendMessage, status, setMessages, stop, regenerate, error, clearError } = useChat<AskIrisUIMessage>({
-    transport,
-    generateId: () => crypto.randomUUID(),
-    messageMetadataSchema: askIrisMessageMetadataSchema,
-    experimental_throttle: 50,
-  });
-  const isBusy = signingIn || status === "submitted" || status === "streaming";
   const conversation = useConversation({
     initialConversationId: entry.kind === "resume" ? entry.conversationId : undefined,
     userId,
-    busy: isBusy,
-    turnFailed: status === "error",
-    historyChanged: messages.at(-1)?.metadata?.historyChanged === true,
-    stop,
-    setMessages,
-    clearError,
     onNotice: (notice) => {
       if (notice === "unavailable") {
         toast(t("conversationUnavailable"));
@@ -80,8 +66,26 @@ export default function AskIrisChat({
     },
   });
   const { conversationId } = conversation;
+  // Unthrottled, per-chunk re-renders trip React's update-depth limit.
+  const { messages, sendMessage, status, setMessages, stop, regenerate, error } = useChat<AskIrisUIMessage>({
+    id: conversationId,
+    messages: conversation.initialMessages,
+    transport,
+    generateId: () => crypto.randomUUID(),
+    messageMetadataSchema: askIrisMessageMetadataSchema,
+    experimental_throttle: 50,
+  });
+  const isBusy = signingIn || status === "submitted" || status === "streaming";
+  useTurnSync({
+    conversationId,
+    userId,
+    busy: isBusy,
+    turnFailed: status === "error",
+    historyChanged: messages.at(-1)?.metadata?.historyChanged === true,
+    setMessages,
+  });
   const errorKind = status === "error" ? classifyError(error) : null;
-  const turnBody = { mount, locale, conversationId };
+  const turnBody = { mount, locale };
 
   useEffect(() => {
     track("askiris_view");
@@ -152,6 +156,9 @@ export default function AskIrisChat({
   }, [conversationId]);
 
   function startNewConversation() {
+    if (isBusy) {
+      return;
+    }
     conversation.startNewConversation();
     setHistoryOpen(false);
   }
@@ -166,6 +173,9 @@ export default function AskIrisChat({
         activeConversationId={conversationId}
         busy={isBusy}
         onSelect={(id) => {
+          if (isBusy) {
+            return;
+          }
           conversation.selectConversation(id);
           setHistoryOpen(false);
         }}

@@ -91,6 +91,8 @@ describe("AskIrisChat send", () => {
       locale: "en",
     });
     expect(chatBody).not.toHaveProperty("messages");
+    expect(chatBody).not.toHaveProperty("conversationId");
+    expect(chatBody?.id).toMatch(/^[0-9a-f-]{36}$/);
   });
 
   it("sends nothing when the anonymous sign-in fails", async () => {
