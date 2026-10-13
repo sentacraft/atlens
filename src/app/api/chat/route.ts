@@ -1,6 +1,7 @@
 import {
   convertToModelMessages,
   createUIMessageStreamResponse,
+  safeValidateUIMessages,
   stepCountIs,
   streamText,
   toUIMessageStream,
@@ -36,18 +37,16 @@ import {
 } from "@/lib/askiris/conversation-repository";
 import { resolveTurn } from "@/lib/askiris/turn-history";
 import { createAuth } from "@/lib/auth";
-import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
+import {
+  askIrisMessageMetadataSchema,
+  type AskIrisUIMessage,
+} from "@/lib/askiris/message-metadata";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
 
 const chatRequestSchema = z.object({
-  message: z
-    .looseObject({
-      id: z.string().min(1).max(128),
-      role: z.literal("user"),
-      parts: z.array(z.unknown()),
-    })
-    .transform((message) => message as unknown as AskIrisUIMessage),
+  // The rest of the message is checked by validateUIMessages, against the tools.
+  message: z.looseObject({ id: z.string().min(1).max(128) }),
   previousMessageId: z.string().max(128).nullable(),
   mount: z.enum(MOUNTS),
   locale: z.enum(routing.locales),
@@ -120,9 +119,35 @@ export async function POST(req: Request) {
     return chatErrorResponse("unavailable", userId ? 500 : 401);
   }
 
+  const tBrand = await getTranslations({ locale, namespace: "Brands" });
+  const tools = buildLensTools(mount, locale, tBrand);
+  const validate = (messages: unknown) =>
+    safeValidateUIMessages<AskIrisUIMessage>({
+      messages,
+      // Only Iris's responses carry metadata.
+      metadataSchema: askIrisMessageMetadataSchema.optional(),
+      tools,
+    });
+
+  const incoming = await validate([message]);
+  if (!incoming.success) {
+    console.warn("[askiris] invalid message", incoming.error.message.slice(0, 500));
+    return chatErrorResponse("unavailable", 400);
+  }
+
   let stored: AskIrisUIMessage[];
   try {
     stored = (await loadAskIrisTurnHistory(appDb, { conversationId, userId })) as AskIrisUIMessage[];
+    // validateUIMessages rejects an empty list, which a new conversation has.
+    const checked = stored.length > 0 ? await validate(stored) : undefined;
+    // Stored turns that no longer match the tool schemas are still replayed: dropping
+    // them would erase the conversation's context.
+    if (checked && !checked.success) {
+      console.warn("[askiris] stored history failed validation", {
+        conversationId,
+        errorMessage: checked.error.message.slice(0, 500),
+      });
+    }
   } catch (error) {
     if (error instanceof ConversationOwnershipError) {
       return chatErrorResponse("unavailable", 404);
@@ -130,7 +155,7 @@ export async function POST(req: Request) {
     console.error("[askiris] failed to load conversation", error);
     return chatErrorResponse("unavailable", 500);
   }
-  const turn = resolveTurn(stored, message, previousMessageId);
+  const turn = resolveTurn(stored, incoming.data[0], previousMessageId);
   if (turn.kind === "invalid") {
     return chatErrorResponse("unavailable", 400);
   }
@@ -166,9 +191,6 @@ export async function POST(req: Request) {
       void write;
     }
   };
-
-  const tBrand = await getTranslations({ locale, namespace: "Brands" });
-  const tools = buildLensTools(mount, locale, tBrand);
 
   // The same `tools` must reach convertToModelMessages: recommendLenses.toModelOutput runs there.
   // A stopped turn is stored with its unfinished tool calls, which the model cannot take back.
