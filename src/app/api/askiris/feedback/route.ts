@@ -3,9 +3,10 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { isRateLimited, rateLimitedResponse } from "@/lib/rate-limit";
 import { askIrisResponseFeedbackInputSchema } from "@/lib/askiris/response-feedback-contract";
 import { saveAskIrisResponseFeedback } from "@/lib/askiris/response-feedback-repository";
+import { getAskIrisUserId } from "@/lib/askiris/conversation-auth";
+import { getOwnedAskIrisResponseTurnId } from "@/lib/askiris/conversation-repository";
 
 const MAX_BODY_BYTES = 8 * 1024;
-
 
 function invalidFeedbackResponse(): NextResponse {
   return NextResponse.json({ error: "invalid_feedback" }, { status: 400 });
@@ -38,18 +39,31 @@ export async function POST(req: Request): Promise<NextResponse> {
     : undefined;
   const comment = parsed.data.comment || undefined;
 
-  let db: D1Database;
+  const userId = await getAskIrisUserId(req);
+  if (!userId) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+
+  let env: CloudflareEnv;
   try {
-    db = getCloudflareContext().env.ASKIRIS_DB;
+    env = getCloudflareContext().env;
   } catch (error) {
     console.error("[askiris] response feedback database unavailable", error);
     return NextResponse.json({ error: "feedback_unavailable" }, { status: 503 });
   }
 
   try {
-    await saveAskIrisResponseFeedback(db, {
+    const turnId = await getOwnedAskIrisResponseTurnId(env.APP_DB, {
+      responseMessageId: parsed.data.responseMessageId,
+      userId,
+    });
+    if (!turnId) {
+      return NextResponse.json({ error: "not_found" }, { status: 404 });
+    }
+
+    await saveAskIrisResponseFeedback(env.ASKIRIS_DB, {
       feedbackId: crypto.randomUUID(),
-      turnId: parsed.data.turnId,
+      turnId,
       responseMessageId: parsed.data.responseMessageId,
       rating: parsed.data.rating,
       reasonCodes,

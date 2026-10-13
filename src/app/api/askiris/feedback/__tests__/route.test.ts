@@ -4,6 +4,8 @@ const mocks = vi.hoisted(() => ({
   getCloudflareContext: vi.fn(),
   deleteAskIrisResponseFeedback: vi.fn(),
   saveAskIrisResponseFeedback: vi.fn(),
+  getAskIrisUserId: vi.fn(),
+  getOwnedAskIrisResponseTurnId: vi.fn(),
 }));
 
 vi.mock("@opennextjs/cloudflare", () => ({
@@ -12,6 +14,13 @@ vi.mock("@opennextjs/cloudflare", () => ({
 vi.mock("@/lib/askiris/response-feedback-repository", () => ({
   deleteAskIrisResponseFeedback: mocks.deleteAskIrisResponseFeedback,
   saveAskIrisResponseFeedback: mocks.saveAskIrisResponseFeedback,
+}));
+
+vi.mock("@/lib/askiris/conversation-auth", () => ({
+  getAskIrisUserId: mocks.getAskIrisUserId,
+}));
+vi.mock("@/lib/askiris/conversation-repository", () => ({
+  getOwnedAskIrisResponseTurnId: mocks.getOwnedAskIrisResponseTurnId,
 }));
 
 const { GET, POST } = await import("../route");
@@ -31,7 +40,6 @@ function makeRequest(body: unknown): Request {
 }
 
 const validPayload = {
-  turnId: "user-message-1",
   responseMessageId: "assistant-message-1",
   rating: "unhelpful",
   reasonCodes: ["incorrect_information", "missed_requirement"],
@@ -39,7 +47,9 @@ const validPayload = {
 };
 
 beforeEach(() => {
-  mocks.getCloudflareContext.mockReturnValue({ env: { ASKIRIS_DB: {} } });
+  mocks.getCloudflareContext.mockReturnValue({ env: { ASKIRIS_DB: {}, APP_DB: {} } });
+  mocks.getAskIrisUserId.mockResolvedValue("owner");
+  mocks.getOwnedAskIrisResponseTurnId.mockResolvedValue("user-message-1");
   mocks.deleteAskIrisResponseFeedback.mockResolvedValue(undefined);
   mocks.saveAskIrisResponseFeedback.mockResolvedValue(undefined);
 });
@@ -70,6 +80,34 @@ describe("POST /api/askiris/feedback", () => {
     );
   });
 
+  it("takes the turn from the stored response, not the request", async () => {
+    await POST(makeRequest({ ...validPayload, turnId: "forged-turn" }));
+
+    expect(mocks.getOwnedAskIrisResponseTurnId).toHaveBeenCalledWith(
+      {},
+      { responseMessageId: "assistant-message-1", userId: "owner" },
+    );
+    expect(mocks.saveAskIrisResponseFeedback.mock.calls[0][1].turnId).toBe("user-message-1");
+  });
+
+  it("rejects a visitor without a session", async () => {
+    mocks.getAskIrisUserId.mockResolvedValueOnce(undefined);
+
+    const response = await POST(makeRequest(validPayload));
+
+    expect(response.status).toBe(401);
+    expect(mocks.saveAskIrisResponseFeedback).not.toHaveBeenCalled();
+  });
+
+  it("does not rate a response the user does not own", async () => {
+    mocks.getOwnedAskIrisResponseTurnId.mockResolvedValueOnce(null);
+
+    const response = await POST(makeRequest(validPayload));
+
+    expect(response.status).toBe(404);
+    expect(mocks.saveAskIrisResponseFeedback).not.toHaveBeenCalled();
+  });
+
   it("deduplicates reason codes before persisting", async () => {
     const response = await POST(
       makeRequest({ ...validPayload, reasonCodes: ["unclear_answer", "unclear_answer"] }),
@@ -84,7 +122,6 @@ describe("POST /api/askiris/feedback", () => {
   it("accepts a helpful rating without optional details", async () => {
     const response = await POST(
       makeRequest({
-        turnId: "user-message-1",
         responseMessageId: "assistant-message-1",
         rating: "helpful",
       }),
@@ -153,6 +190,36 @@ describe("DELETE /api/askiris/feedback/:responseMessageId", () => {
       {},
       "assistant-message-1",
     );
+  });
+
+  it("rejects a visitor without a session", async () => {
+    mocks.getAskIrisUserId.mockResolvedValueOnce(undefined);
+
+    const response = await DELETE(
+      new Request("http://localhost/api/askiris/feedback/assistant-message-1", {
+        method: "DELETE",
+        headers: { "x-forwarded-for": "10.3.0.4" },
+      }),
+      { params: Promise.resolve({ responseMessageId: "assistant-message-1" }) },
+    );
+
+    expect(response.status).toBe(401);
+    expect(mocks.deleteAskIrisResponseFeedback).not.toHaveBeenCalled();
+  });
+
+  it("does not delete feedback on a response the user does not own", async () => {
+    mocks.getOwnedAskIrisResponseTurnId.mockResolvedValueOnce(null);
+
+    const response = await DELETE(
+      new Request("http://localhost/api/askiris/feedback/assistant-message-1", {
+        method: "DELETE",
+        headers: { "x-forwarded-for": "10.3.0.5" },
+      }),
+      { params: Promise.resolve({ responseMessageId: "assistant-message-1" }) },
+    );
+
+    expect(response.status).toBe(404);
+    expect(mocks.deleteAskIrisResponseFeedback).not.toHaveBeenCalled();
   });
 
   it("rejects an empty response message id", async () => {
