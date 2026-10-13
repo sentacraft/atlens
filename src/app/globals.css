@@ -7,8 +7,19 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
+/* Static so these reach :root: useBreakpoint and the e2e helpers read them at runtime, and
+   Tailwind otherwise emits a theme variable only when CSS references it. Values match
+   Tailwind's defaults, plus xs. https://tailwindcss.com/docs/theme */
+@theme static {
   --breakpoint-xs: 500px;
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+}
+
+@theme inline {
   --spacing-nav: var(--nav-height);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
