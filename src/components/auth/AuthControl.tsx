@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Menu } from "@base-ui/react/menu";
 import { LogOut, Trash2, UserRound, X } from "lucide-react";
@@ -21,6 +21,36 @@ import {
   DialogPopup,
   DialogTitle,
 } from "@/components/ui/dialog";
+
+// Matches the email-otp plugin's server limit: 3 sends per 60 seconds.
+const RESEND_COOLDOWN_MS = 60_000;
+
+function useCountdown(durationMs: number) {
+  const [until, setUntil] = useState<number | null>(null);
+  const [now, setNow] = useState(0);
+  useEffect(() => {
+    if (until === null) {
+      return;
+    }
+    const id = setInterval(() => {
+      const current = Date.now();
+      setNow(current);
+      if (current >= until) {
+        clearInterval(id);
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [until]);
+
+  function start() {
+    const current = Date.now();
+    setNow(current);
+    setUntil(current + durationMs);
+  }
+
+  const seconds = until === null ? 0 : Math.max(0, Math.ceil((until - now) / 1000));
+  return [seconds, start] as const;
+}
 
 function initials(name: string, email: string) {
   const source = name.trim() || email;
@@ -179,6 +209,11 @@ function AuthDialog({
   const [step, setStep] = useState<"email" | "otp">("email");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resendSeconds, startResendCooldown] = useCountdown(RESEND_COOLDOWN_MS);
+
+  function errorMessage(error: { status?: number; message?: string }) {
+    return error.status === 429 ? t("tooManyRequests") : error.message || t("genericError");
+  }
 
   function reset() {
     setEmail("");
@@ -204,7 +239,7 @@ function AuthDialog({
         callbackURL: window.location.href,
       });
       if (result.error) {
-        setError(result.error.message || t("genericError"));
+        setError(errorMessage(result.error));
         setPending(false);
       }
     } catch {
@@ -213,8 +248,7 @@ function AuthDialog({
     }
   }
 
-  async function sendOtp(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function sendOtp() {
     setPending(true);
     setError(null);
     try {
@@ -223,10 +257,11 @@ function AuthDialog({
         type: "sign-in",
       });
       if (result.error) {
-        setError(result.error.message || t("genericError"));
+        setError(errorMessage(result.error));
         setPending(false);
         return;
       }
+      startResendCooldown();
       setStep("otp");
       setPending(false);
     } catch {
@@ -242,7 +277,7 @@ function AuthDialog({
     try {
       const result = await authClient.signIn.emailOtp({ email, otp });
       if (result.error) {
-        setError(result.error.message || t("genericError"));
+        setError(errorMessage(result.error));
         setPending(false);
         return;
       }
@@ -282,7 +317,13 @@ function AuthDialog({
                 {t("or")}
                 <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
               </div>
-              <form onSubmit={sendOtp} className="flex flex-col gap-3">
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void sendOtp();
+                }}
+                className="flex flex-col gap-3"
+              >
                 <label className="flex flex-col gap-1.5 text-sm text-zinc-700 dark:text-zinc-300">
                   {t("emailLabel")}
                   <input
@@ -328,6 +369,14 @@ function AuthDialog({
                 className={cn(ACTION_PRIMARY_CLS, "h-10 rounded-lg text-sm")}
               >
                 {pending ? t("signingIn") : t("signIn")}
+              </button>
+              <button
+                type="button"
+                onClick={() => void sendOtp()}
+                disabled={pending || resendSeconds > 0}
+                className="text-sm text-zinc-500 underline underline-offset-4 transition-colors hover:text-zinc-900 disabled:cursor-not-allowed disabled:no-underline disabled:hover:text-zinc-500 dark:text-zinc-400 dark:hover:text-zinc-100 dark:disabled:hover:text-zinc-400"
+              >
+                {resendSeconds > 0 ? t("resendIn", { seconds: resendSeconds }) : t("resendCode")}
               </button>
               <button
                 type="button"
