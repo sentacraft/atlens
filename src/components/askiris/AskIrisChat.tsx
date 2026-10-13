@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { useTestHookEnabled, useTestHookOption } from "@/context/TestHookProvider";
-import { authClient } from "@/lib/auth-client";
+import { accountUser, authClient } from "@/lib/auth-client";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
 import { LensLinkProvider } from "@/components/askiris/LensLinkContext";
 import type { LensLinkIndex } from "@/lib/ai/lens-ref";
@@ -45,7 +45,7 @@ export default function AskIrisChat({
   const [input, setInput] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
   const { data: session } = authClient.useSession();
-  const userId = session?.user.id;
+  const userId = accountUser(session)?.id;
   // The history entry's placement and look are still being designed.
   const historyEnabled = useTestHookEnabled();
   // Unthrottled, a long stream re-renders on every chunk and the message-derived

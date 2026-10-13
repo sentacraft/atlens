@@ -2,7 +2,7 @@ import "server-only";
 
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { betterAuth } from "better-auth";
-import { emailOTP } from "better-auth/plugins";
+import { anonymous, emailOTP } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { D1Dialect } from "kysely-d1";
 
@@ -60,7 +60,15 @@ export function createAuth() {
         enabled: true,
       },
     },
+    rateLimit: {
+      enabled: true,
+      storage: "database",
+      customRules: {
+        "/get-session": false,
+      },
+    },
     plugins: [
+      anonymous(),
       emailOTP({
         storeOTP: "hashed",
         async sendVerificationOTP({ email, otp }) {
@@ -76,6 +84,9 @@ export function createAuth() {
       nextCookies(),
     ],
     advanced: {
+      ipAddress: {
+        ipAddressHeaders: ["cf-connecting-ip"],
+      },
       database: {
         // D1 does not authorize the schema introspection queries Better Auth uses for validation.
         validateSchema: false,

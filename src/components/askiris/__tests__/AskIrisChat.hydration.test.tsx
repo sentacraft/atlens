@@ -27,6 +27,7 @@ const signedIn = {
     email: "iris@example.test",
     name: "Iris",
     emailVerified: true,
+    isAnonymous: false,
     createdAt: new Date(0),
     updatedAt: new Date(0),
   },
