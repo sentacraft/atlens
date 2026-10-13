@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import FeedbackSuccessState from "@/components/feedback/FeedbackSuccessState";
@@ -95,6 +96,7 @@ export default function FeedbackDialog({
       console.error("[feedback] submission failed", {
         errorType: error instanceof Error ? error.name : "unknown",
       });
+      toast.error(`${t("error")} (${error instanceof Error ? error.message : "unknown"})`);
     },
   });
 
@@ -364,7 +366,7 @@ export default function FeedbackDialog({
                 {t("contentRequired")}
               </p>
             )}
-            {/* Submission errors are recorded in the client log, not shown inline. */}
+            {/* Submission errors are shown via toast, not inline. */}
           </form>
         )}
 
