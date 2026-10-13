@@ -89,11 +89,25 @@ export async function saveAskIrisConversationTurn(
       .bind(input.conversationId, input.userId, input.title, input.now, input.now),
   ];
 
+  // The client's list is the conversation as the user sees it, so each save replaces
+  // the stored list wholesale: a retried reply takes the failed one's position, which
+  // per-message inserts could not do under UNIQUE(conversation_id, sequence). Rows
+  // that survive keep their original timestamp and turn context.
+  const { results: existing } = await db
+    .prepare("SELECT id, context_json, created_at FROM askiris_messages WHERE conversation_id = ?")
+    .bind(input.conversationId)
+    .all<{ id: string; context_json: string | null; created_at: number }>();
+  const previous = new Map(existing.map((row) => [row.id, row]));
+
+  statements.push(
+    db.prepare("DELETE FROM askiris_messages WHERE conversation_id = ?").bind(input.conversationId),
+  );
   for (const [sequence, message] of input.messages.entries()) {
+    const kept = previous.get(message.id);
     statements.push(
       db
         .prepare(
-          `INSERT OR IGNORE INTO askiris_messages (
+          `INSERT INTO askiris_messages (
             id,
             conversation_id,
             role,
@@ -109,8 +123,10 @@ export async function saveAskIrisConversationTurn(
           message.role,
           sequence,
           serializeMessage(message),
-          getMessageContext(message, input.currentTurnId, input.responseMessageId, input.context),
-          input.now,
+          getMessageContext(message, input.currentTurnId, input.responseMessageId, input.context) ??
+            kept?.context_json ??
+            null,
+          kept?.created_at ?? input.now,
         ),
     );
   }
