@@ -189,8 +189,11 @@ export async function POST(req: Request) {
     messages: modelMessages,
     tools,
     stopWhen: stepCountIs(STEP_BUDGET),
-    // Cap total streaming time so a stuck provider connection can't hang the request.
-    abortSignal: AbortSignal.timeout(STREAM_TIMEOUT_MS),
+    // Stop when the client disconnects (the composer's stop button), so a stopped reply
+    // is not generated and billed to the end; also cap total streaming time so a stuck
+    // provider connection can't hang the request. On Workers, req.signal only fires with
+    // the enable_request_signal compatibility flag.
+    abortSignal: AbortSignal.any([req.signal, AbortSignal.timeout(STREAM_TIMEOUT_MS)]),
     // Reserve the last allowed step for a text answer: forcing toolChoice "none" means a
     // turn that reaches the budget ends with a synthesis, not a frozen dangling tool call.
     prepareStep: ({ stepNumber }) =>
