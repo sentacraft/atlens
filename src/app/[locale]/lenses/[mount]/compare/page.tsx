@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { parseLensIds, getLensesByMount } from "@/lib/lens/data";
+import { readCompareIds } from "@/lib/url/compare";
 import { getCollectionLensCounts } from "@/lib/collection-stats";
 import { urlSegmentToMount } from "@/lib/mount";
 import { findPresetByIds } from "@/lib/curated-presets";
@@ -25,7 +26,7 @@ import { notFound } from "next/navigation";
 // the ids into the path segment.
 
 type Params = Promise<{ locale: string; mount: string }>;
-type SearchParams = Promise<{ ids?: string }>;
+type SearchParams = Promise<{ ids?: string | string[] }>;
 
 export async function generateMetadata({
   params,
@@ -43,7 +44,7 @@ export async function generateMetadata({
     return { title: t("title") };
   }
 
-  const lenses = parseLensIds(ids, resolvedMount, locale);
+  const lenses = parseLensIds(readCompareIds(ids), resolvedMount, locale);
   const alternates = buildAlternates(locale, `lenses/${mount}/compare`);
   const emptyTitle = resolvedMount === "X" ? t("metaTitleX") : t("metaTitleG");
   const emptyDescription = resolvedMount === "X" ? t("metaDescX") : t("metaDescG");
@@ -113,7 +114,7 @@ export default async function ComparePage({
 
   const tNav = await getTranslations("Nav");
   const seg = mountToUrlSegment(resolvedMount);
-  const lenses = parseLensIds(ids, resolvedMount, locale);
+  const lenses = parseLensIds(readCompareIds(ids), resolvedMount, locale);
   const allLenses = getLensesByMount(resolvedMount, locale);
 
   return (
