@@ -1,6 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
 import { toast } from "sonner";
 import { track } from "@/lib/analytics/analytics";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
@@ -9,7 +10,8 @@ import { cn } from "@/lib/utils";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { useTestHookEnabled, useTestHookOption } from "@/context/TestHookProvider";
-import { accountUser, authClient } from "@/lib/auth-client";
+import { accountUser, authClient, ensureSession } from "@/lib/auth-client";
+import { askIrisChatRequestBody } from "@/lib/askiris/chat-request";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
 import { LensLinkProvider } from "@/components/askiris/LensLinkContext";
 import type { LensLinkIndex } from "@/lib/ai/lens-ref";
@@ -24,6 +26,12 @@ import {
   askIrisMessageMetadataSchema,
   type AskIrisUIMessage,
 } from "@/lib/askiris/message-metadata";
+
+const transport = new DefaultChatTransport<AskIrisUIMessage>({
+  prepareSendMessagesRequest: ({ messages, body }) => ({
+    body: askIrisChatRequestBody(messages, body),
+  }),
+});
 
 const SHELL_CLS =
   "mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4";
@@ -42,20 +50,24 @@ export default function AskIrisChat({
   const debug = useTestHookOption("askIrisTrace") === "on";
   const [input, setInput] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [signingIn, setSigningIn] = useState(false);
   const { data: session } = authClient.useSession();
   const userId = accountUser(session)?.id;
   const historyEnabled = useTestHookEnabled();
   // Unthrottled, per-chunk re-renders trip React's update-depth limit.
   const { messages, sendMessage, status, setMessages, stop, regenerate, error, clearError } = useChat<AskIrisUIMessage>({
+    transport,
     generateId: () => crypto.randomUUID(),
     messageMetadataSchema: askIrisMessageMetadataSchema,
     experimental_throttle: 50,
   });
-  const isBusy = status === "submitted" || status === "streaming";
+  const isBusy = signingIn || status === "submitted" || status === "streaming";
   const conversation = useConversation({
     initialConversationId: entry.kind === "resume" ? entry.conversationId : undefined,
     userId,
     busy: isBusy,
+    turnFailed: status === "error",
+    historyChanged: messages.at(-1)?.metadata?.historyChanged === true,
     stop,
     setMessages,
     clearError,
@@ -75,20 +87,35 @@ export default function AskIrisChat({
     track("askiris_view");
   }, []);
 
-  function submitText(text: string) {
+  // Conversations are stored per user, so a visitor's first turn creates an anonymous one.
+  async function send(text: string, method: "typed" | "handoff"): Promise<boolean> {
+    if (!session) {
+      setSigningIn(true);
+      const ready = await ensureSession();
+      setSigningIn(false);
+      if (!ready) {
+        toast.error(t("errorUnavailable"));
+        return false;
+      }
+    }
+    void sendMessage({ text }, { body: turnBody });
+    track("askiris_message", { method });
+    return true;
+  }
+
+  async function submitText(text: string) {
     const trimmed = text.trim();
     if (!trimmed || isBusy) {
       return;
     }
-    sendMessage({ text: trimmed }, { body: turnBody });
-    track("askiris_message", { method: "typed" });
-    setInput("");
+    if (await send(trimmed, "typed")) {
+      setInput("");
+    }
   }
 
   // A ref, not a module flag: returning with a new query must send again.
   const submitInitialQuery = useEffectEvent((query: string) => {
-    sendMessage({ text: query }, { body: turnBody });
-    track("askiris_message", { method: "handoff" });
+    void send(query, "handoff");
   });
   const initialQuerySent = useRef(false);
   useEffect(() => {
@@ -165,7 +192,7 @@ export default function AskIrisChat({
         <AskIrisEmptyState
           input={input}
           onInputChange={setInput}
-          onSubmit={() => submitText(input)}
+          onSubmit={() => void submitText(input)}
           onChip={setInput}
           disabled={isBusy}
         />
@@ -209,7 +236,7 @@ export default function AskIrisChat({
             size="md"
             value={input}
             onChange={setInput}
-            onSubmit={() => submitText(input)}
+            onSubmit={() => void submitText(input)}
             disabled={isBusy}
             placeholder={t("placeholder")}
             sendLabel={t("send")}

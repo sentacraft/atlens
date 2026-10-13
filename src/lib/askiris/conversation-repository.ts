@@ -2,7 +2,8 @@ import "server-only";
 
 import type { UIMessage } from "ai";
 
-const MAX_MESSAGE_BYTES = 512 * 1024;
+// D1 caps a row at 2MB.
+export const MAX_MESSAGE_BYTES = 1.5 * 1024 * 1024;
 
 export interface AskIrisConversationContext {
   mount: string;
@@ -33,51 +34,67 @@ export class ConversationOwnershipError extends Error {
   }
 }
 
-function serializeMessage(message: UIMessage): string {
+function byteLength(json: string): number {
+  return new TextEncoder().encode(json).byteLength;
+}
+
+// An oversized message keeps only its text, so the turns after it can still be saved.
+export function serializeMessage(message: UIMessage): string {
   const json = JSON.stringify(message);
-  if (!json || new TextEncoder().encode(json).byteLength > MAX_MESSAGE_BYTES) {
+  if (byteLength(json) <= MAX_MESSAGE_BYTES) {
+    return json;
+  }
+  const textOnly = JSON.stringify({
+    ...message,
+    parts: message.parts.filter((part) => part.type === "text"),
+  });
+  if (byteLength(textOnly) > MAX_MESSAGE_BYTES) {
     throw new Error("message_too_large");
   }
-  return json;
+  return textOnly;
 }
 
-function serializeContext(context: AskIrisConversationContext): string {
-  return JSON.stringify(context);
+async function assertOwnedOrNew(db: D1Database, conversationId: string, userId: string) {
+  const conversation = await db
+    .prepare("SELECT user_id FROM askiris_conversations WHERE id = ?")
+    .bind(conversationId)
+    .first<{ user_id: string }>();
+  if (conversation && conversation.user_id !== userId) {
+    throw new ConversationOwnershipError();
+  }
 }
 
-function getMessageContext(
-  message: UIMessage,
-  currentTurnId: string,
-  responseMessageId: string,
-  context: AskIrisConversationContext,
-): string | null {
-  return message.id === currentTurnId || message.id === responseMessageId
-    ? serializeContext(context)
-    : null;
+/** The stored history a new turn builds on; empty for a conversation not saved yet. */
+export async function loadAskIrisTurnHistory(
+  db: D1Database,
+  input: { conversationId: string; userId: string },
+): Promise<UIMessage[]> {
+  await assertOwnedOrNew(db, input.conversationId, input.userId);
+  const rows = await getAskIrisConversationMessages(db, input);
+  return rows.map((row) => row.message);
 }
 
-export async function saveAskIrisConversationTurn(
+/**
+ * Appends one turn after the conversation's last stored message. With
+ * `replaceAfterMessageId` (a regenerate), everything stored after that user message
+ * is deleted first, and only the response is appended.
+ */
+export async function appendAskIrisTurn(
   db: D1Database,
   input: {
     conversationId: string;
     userId: string;
     title: string;
-    messages: UIMessage[];
-    currentTurnId: string;
-    responseMessageId: string;
+    userMessage?: UIMessage;
+    replaceAfterMessageId?: string;
+    responseMessage?: UIMessage;
     context: AskIrisConversationContext;
     now: number;
   },
 ): Promise<void> {
-  const conversation = await db
-    .prepare("SELECT user_id FROM askiris_conversations WHERE id = ?")
-    .bind(input.conversationId)
-    .first<{ user_id: string }>();
+  await assertOwnedOrNew(db, input.conversationId, input.userId);
 
-  if (conversation && conversation.user_id !== input.userId) {
-    throw new ConversationOwnershipError();
-  }
-
+  const context = JSON.stringify(input.context);
   const statements = [
     db
       .prepare(
@@ -89,28 +106,42 @@ export async function saveAskIrisConversationTurn(
       .bind(input.conversationId, input.userId, input.title, input.now, input.now),
   ];
 
-  for (const [sequence, message] of input.messages.entries()) {
+  if (input.replaceAfterMessageId) {
     statements.push(
       db
         .prepare(
-          `INSERT OR IGNORE INTO askiris_messages (
-            id,
-            conversation_id,
-            role,
-            sequence,
-            message_json,
-            context_json,
-            created_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          `DELETE FROM askiris_messages
+           WHERE conversation_id = ?
+             AND sequence > (
+               SELECT sequence FROM askiris_messages WHERE id = ? AND conversation_id = ?
+             )`,
+        )
+        .bind(input.conversationId, input.replaceAfterMessageId, input.conversationId),
+    );
+  }
+
+  for (const message of [input.userMessage, input.responseMessage]) {
+    if (!message) {
+      continue;
+    }
+    statements.push(
+      db
+        .prepare(
+          `INSERT INTO askiris_messages (
+             id, conversation_id, role, sequence, message_json, context_json, created_at
+           )
+           SELECT ?, ?, ?, COALESCE(MAX(sequence) + 1, 0), ?, ?, ?
+           FROM askiris_messages
+           WHERE conversation_id = ?`,
         )
         .bind(
           message.id,
           input.conversationId,
           message.role,
-          sequence,
           serializeMessage(message),
-          getMessageContext(message, input.currentTurnId, input.responseMessageId, input.context),
+          context,
           input.now,
+          input.conversationId,
         ),
     );
   }
