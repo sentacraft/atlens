@@ -35,6 +35,17 @@ test.describe("FeedbackDialog — open and close", () => {
     await expect(dialog.getByRole("heading")).toContainText(/send feedback/i);
   });
 
+  // Regression: useBreakpoint read an empty sm breakpoint variable, so desktop got the mobile drawer.
+  test("opens centered, not as the mobile drawer", async ({ page }) => {
+    await page.goto("/en");
+    await page.getByRole("button", { name: /feedback/i }).click();
+    const box = await page.getByRole("dialog").boundingBox();
+    const viewport = page.viewportSize()!;
+    // The drawer sits flush with the bottom edge; the dialog is centered with room below.
+    expect(box).not.toBeNull();
+    expect(viewport.height - (box!.y + box!.height)).toBeGreaterThan(24);
+  });
+
   test("Escape closes the dialog", async ({ page }) => {
     await page.goto("/en");
     await page.getByRole("button", { name: /feedback/i }).click();
