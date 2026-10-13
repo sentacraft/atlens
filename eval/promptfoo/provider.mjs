@@ -50,8 +50,8 @@ async function signIn() {
 const transport = new DefaultChatTransport({
   api: ENDPOINT,
   headers: async () => ({ cookie: await signIn() }),
-  prepareSendMessagesRequest: ({ messages, body }) => ({
-    body: askIrisChatRequestBody(messages, body),
+  prepareSendMessagesRequest: ({ id, messages, body }) => ({
+    body: askIrisChatRequestBody({ id, messages, body }),
   }),
 });
 
@@ -60,7 +60,7 @@ async function postTurn(messages, mount, locale, conversationId) {
     chatId: conversationId,
     messages,
     trigger: "submit-message",
-    body: { mount, locale, conversationId },
+    body: { mount, locale },
   });
   let msg = null;
   for await (const m of readUIMessageStream({ stream, onError: () => {} })) {

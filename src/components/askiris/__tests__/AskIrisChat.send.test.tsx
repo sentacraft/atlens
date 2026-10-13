@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ensureSession } from "@/lib/auth-client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -45,6 +45,19 @@ beforeEach(() => {
   Element.prototype.scrollTo = () => {};
 });
 
+// A reply that keeps streaming until the request is aborted.
+function openStream(onAbort: () => void, signal?: AbortSignal | null) {
+  signal?.addEventListener("abort", onAbort);
+  return new Response(
+    new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('data: {"type":"start"}\n\n'));
+      },
+    }),
+    { headers: { "content-type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" } },
+  );
+}
+
 function renderChat() {
   return render(
     <QueryClientProvider client={new QueryClient()}>
@@ -60,6 +73,7 @@ function submit(container: HTMLElement, text: string) {
 }
 
 afterEach(() => {
+  cleanup();
   vi.unstubAllGlobals();
   window.history.replaceState(null, "", "/");
 });
@@ -91,6 +105,8 @@ describe("AskIrisChat send", () => {
       locale: "en",
     });
     expect(chatBody).not.toHaveProperty("messages");
+    expect(chatBody).not.toHaveProperty("conversationId");
+    expect(chatBody?.id).toMatch(/^[0-9a-f-]{36}$/);
   });
 
   it("sends nothing when the anonymous sign-in fails", async () => {
@@ -104,5 +120,32 @@ describe("AskIrisChat send", () => {
     await waitFor(() => expect(ensureSession).toHaveBeenCalled());
     expect(fetchMock.mock.calls.some(([input]) => String(input).includes("/api/chat"))).toBe(false);
     expect((container.querySelector("form input") as HTMLInputElement).value).toBe("Which lens?");
+  });
+
+  it("asks before a new chat stops a reply in progress", async () => {
+    let aborted = false;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) =>
+        String(input).includes("/api/chat")
+          ? openStream(() => (aborted = true), init?.signal)
+          : Response.json({}),
+      ),
+    );
+
+    const { container } = renderChat();
+    submit(container, "Which lens?");
+    await screen.findByRole("button", { name: "stop" });
+
+    fireEvent.click(screen.getByRole("button", { name: "newChat" }));
+    fireEvent.click(await screen.findByRole("button", { name: "switchWhileBusyCancel" }));
+    expect(aborted).toBe(false);
+    expect(screen.getByRole("button", { name: "stop" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "newChat" }));
+    fireEvent.click(await screen.findByRole("button", { name: "switchWhileBusyConfirm" }));
+
+    await waitFor(() => expect(aborted).toBe(true));
+    await waitFor(() => expect(screen.queryByText("Which lens?")).toBeNull());
   });
 });
