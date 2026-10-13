@@ -22,6 +22,7 @@ AUTH_EMAIL_FROM = "login@atlens.app"
 # predev) warns if one is missing locally.
 [secrets]
 required = [
+  "ANALYTICS_ID_SECRET",
   "BETTER_AUTH_SECRET",
   "CF_ACCOUNT_ID",
   "CF_ANALYTICS_TOKEN",
