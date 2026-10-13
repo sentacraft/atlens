@@ -180,10 +180,19 @@ export function useTurnSync({
   // The server saves a turn before its stream closes, so a finished turn can be
   // reopened from the URL and reloaded at once.
   const wasBusyRef = useRef(busy);
+  const lastConversationIdRef = useRef(conversationId);
   useEffect(() => {
-    const turnEnded = wasBusyRef.current && !busy;
+    const wasBusy = wasBusyRef.current;
     wasBusyRef.current = busy;
-    if (!turnEnded) {
+    if (lastConversationIdRef.current !== conversationId) {
+      lastConversationIdRef.current = conversationId;
+      // Switching away mid-reply stops it; the server still saves what was written.
+      if (wasBusy && userId) {
+        void queryClient.invalidateQueries({ queryKey: conversationListQueryKey(userId) });
+      }
+      return;
+    }
+    if (!wasBusy || busy) {
       return;
     }
     if (!turnFailed && readConversationParam() !== conversationId) {

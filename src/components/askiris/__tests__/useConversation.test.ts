@@ -281,6 +281,24 @@ describe("useTurnSync", () => {
     expect(client.fetchConversationMessages).not.toHaveBeenCalled();
   });
 
+  it("does not treat switching away mid-reply as a finished turn", async () => {
+    const { result, rerender, turn } = setupWithTurns();
+    await waitFor(() => expect(client.fetchConversationList).toHaveBeenCalledTimes(1));
+
+    rerender({ ...turn, busy: true });
+    // useChat swaps in the new, idle chat in the same render as the id change.
+    act(() => {
+      result.current.startNewConversation();
+      rerender({ ...turn, busy: false, historyChanged: true });
+    });
+    rerender({ ...turn, busy: false });
+
+    expect(param()).toBeNull();
+    expect(client.fetchConversationMessages).not.toHaveBeenCalled();
+    // The interrupted conversation was saved, so the list is refreshed anyway.
+    await waitFor(() => expect(client.fetchConversationList).toHaveBeenCalledTimes(2));
+  });
+
   it("refreshes the list after a reply without showing the loading state", async () => {
     client.fetchConversationList.mockResolvedValueOnce([]);
     const { result, rerender, turn } = setupWithTurns();
