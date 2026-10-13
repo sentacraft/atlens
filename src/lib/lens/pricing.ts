@@ -56,8 +56,6 @@ export function formatPrice(
   price: number,
   currency: "CNY" | "USD",
   locale: string,
-  // Unused.
-  _condition: Condition,
   cnyTemplate: string
 ): string {
   if (currency === "CNY") {
@@ -86,7 +84,7 @@ export function formatPriceForReport(
   t: Translator
 ): string {
   const { entry, condition } = selection;
-  const price = formatPrice(entry.price, entry.currency, locale, condition, t.raw("cnyAmount"));
+  const price = formatPrice(entry.price, entry.currency, locale, t.raw("cnyAmount"));
   const conditionLabel = t(condition === "new" ? "conditionNew" : "conditionUsed");
   return `${price} · ${entry.source} · ${entry.sampledAt} · ${conditionLabel}`;
 }

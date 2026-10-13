@@ -18,7 +18,7 @@ export default function LensCardPrice({ lens }: { lens: Lens }) {
   }
 
   const { entry, condition } = selection;
-  const priceDisplay = formatPrice(entry.price, entry.currency, locale, condition, t.raw("cnyAmount"));
+  const priceDisplay = formatPrice(entry.price, entry.currency, locale, t.raw("cnyAmount"));
 
   return (
     <p className="flex items-baseline gap-1 text-sm">
