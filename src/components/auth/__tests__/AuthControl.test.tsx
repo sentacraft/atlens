@@ -29,8 +29,8 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-function user(isAnonymous: boolean) {
-  return { user: { id: "u1", name: "Iris", email: "iris@example.test", isAnonymous } };
+function user(isAnonymous: boolean, image: string | null = null) {
+  return { user: { id: "u1", name: "Iris", email: "iris@example.test", isAnonymous, image } };
 }
 
 describe("AuthControl", () => {
@@ -102,5 +102,25 @@ describe("AuthControl", () => {
     fireEvent.click(screen.getByRole("button", { name: "sendCode" }));
 
     expect(await screen.findByText("tooManyRequests")).toBeInTheDocument();
+  });
+
+  it("shows the account's picture in the menu button", () => {
+    session.current = { data: user(false, "https://lh3.googleusercontent.com/a/photo") };
+
+    const { container } = render(<AuthControl />);
+
+    const img = container.querySelector("img");
+    expect(img).toHaveAttribute("src", "https://lh3.googleusercontent.com/a/photo");
+    expect(img).toHaveAttribute("referrerpolicy", "no-referrer");
+  });
+
+  it("falls back to initials when the picture is missing or fails to load", () => {
+    session.current = { data: user(false, "https://lh3.googleusercontent.com/a/broken") };
+
+    const { container } = render(<AuthControl />);
+    fireEvent.error(container.querySelector("img")!);
+
+    expect(container.querySelector("img")).toBeNull();
+    expect(screen.getByRole("button", { name: "accountLabel" })).toHaveTextContent("I");
   });
 });
