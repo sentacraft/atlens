@@ -60,11 +60,7 @@ export default async function LensesPage({ params }: { params: Params }) {
 
   return (
     <>
-      {/* Server-rendered h1 so the static HTML carries a heading even when the
-          Suspense fallback (loading.tsx skeleton) is what Next.js pre-renders
-          for the initial response. LensListClient's own visible heading is
-          rendered client-side after hydration; this sr-only h1 is the SEO
-          anchor. */}
+      {/* sr-only h1: the prerendered response is the Suspense fallback, which has no heading. */}
       <h1 className="sr-only">{h1Title}</h1>
       <Suspense fallback={<LensesLoading />}>
         <LensListClient lenses={allLenses} />

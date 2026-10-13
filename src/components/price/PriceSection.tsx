@@ -1,12 +1,5 @@
 "use client";
 
-// Expanded price display for the lens detail page.
-//
-// Layout:
-//   ~¥1,299  (zh) / $999 approx.  (en)
-//   source · Sampled date
-//   ⚠ Disclaimer · …
-
 import { Popover } from "@base-ui/react/popover";
 import { Calendar, Info } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
@@ -38,7 +31,6 @@ export function PriceSection({ lens }: Props) {
 
   return (
     <div className="flex flex-col gap-1">
-      {/* Row 1: Price + approx */}
       <span data-redact-hook="price" className="text-xl font-semibold tabular-nums text-zinc-700 dark:text-zinc-200">
         {t.rich("priceApprox", {
           price: priceDisplay,
@@ -48,7 +40,6 @@ export function PriceSection({ lens }: Props) {
         })}
       </span>
 
-      {/* Row 2: Source + sampled date */}
       <div className="inline-flex items-center gap-2 text-[11px] text-zinc-400 dark:text-zinc-500">
         <span data-redact-hook="priceSource">{sourceDisplay}</span>
         <span className="opacity-30">|</span>
@@ -58,7 +49,6 @@ export function PriceSection({ lens }: Props) {
         </span>
       </div>
 
-      {/* Row 3: Inline disclaimer */}
       <PriceDisclaimer className="mt-1 pt-2 border-t border-zinc-100 dark:border-zinc-800" />
     </div>
   );

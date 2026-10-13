@@ -125,7 +125,6 @@ export class AskIrisTraceCollector {
     this.aborted = true;
   }
 
-  /** Marks the execution errored and returns true only for the first reported error. */
   recordError(): boolean {
     const firstError = !this.errored;
     this.errored = true;

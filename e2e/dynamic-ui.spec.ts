@@ -3,7 +3,6 @@ import { type Page, test, expect } from "@playwright/test";
 const LENS_A = "fujifilm-mkx-18-55mmt29-x";
 const LENS_B = "fujifilm-mkx-50-135mmt29-x";
 
-/** Returns the current --compare-bar-height CSS variable value in pixels (0 if unset). */
 async function getCompareBarHeightVar(page: Page): Promise<number> {
   return page.evaluate(() => {
     const raw = getComputedStyle(document.documentElement).getPropertyValue("--compare-bar-height").trim();
@@ -11,11 +10,9 @@ async function getCompareBarHeightVar(page: Page): Promise<number> {
   });
 }
 
-// Scrolls the page via window.scrollBy so the browser fires a real scroll event
-// on window (which is what Nav and other components now listen to).
+// window.scrollBy fires a real window scroll event, which Nav listens to.
 async function scrollBy(page: import("@playwright/test").Page, deltaY: number) {
   await page.evaluate((dy) => window.scrollBy(0, dy), deltaY);
-  // Brief pause so the scroll event has time to propagate to React state.
   await page.waitForTimeout(50);
 }
 
@@ -24,16 +21,12 @@ async function scrollToTop(page: import("@playwright/test").Page) {
   await page.waitForTimeout(50);
 }
 
-// Scrolls to the bottom. Used for reveal assertions (phantom header, share FAB)
-// that fire only once the table header has fully left view / scrollY crosses a
-// threshold — a fixed scrollBy is viewport-dependent (the compare header is much
-// taller on desktop, and the FAB threshold is 400px), so scroll all the way.
+// Scrolls to the bottom: a fixed scrollBy is viewport-dependent.
 async function scrollToBottom(page: import("@playwright/test").Page) {
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
   await page.waitForTimeout(50);
 }
 
-// Waits until the document has enough content height to allow scrolling.
 async function waitForScrollable(page: import("@playwright/test").Page, minDelta = 200) {
   await page.waitForFunction(
     (minY) => document.documentElement.scrollHeight > window.innerHeight + minY,
@@ -43,22 +36,15 @@ async function waitForScrollable(page: import("@playwright/test").Page, minDelta
 }
 
 test.describe("Nav auto-hide (mobile only)", () => {
-  // Nav only hides on mobile viewports (< 640px). Skip on desktop Chromium.
   test.beforeEach(async ({ page, browserName }, testInfo) => {
     const viewport = page.viewportSize();
     if (!viewport || viewport.width >= 640) {
       testInfo.skip();
       return;
     }
-    // The nav's hide-on-scroll-down logic reads scroll DIRECTION from window
-    // scroll events. WebKit's emulated programmatic scroll (window.scrollBy)
-    // does not reliably drive that direction detection, making these assertions
-    // ~50% flaky on the ios-safari project even at workers=1. The behavior is
-    // exercised on the mobile-Chromium (android) project locally, where
-    // synthetic scroll is reliable; skip WebKit to keep the gate deterministic.
+    // WebKit's emulated programmatic scroll does not reliably drive direction detection.
     testInfo.skip(browserName === "webkit", "Nav auto-hide is flaky under WebKit emulated scroll");
     await page.goto("/en/lenses");
-    // Ensure the lens list has rendered enough content to be scrollable
     await waitForScrollable(page, 200);
   });
 
@@ -70,9 +56,7 @@ test.describe("Nav auto-hide (mobile only)", () => {
 
   test("nav hides after scrolling down past threshold", async ({ page }) => {
     await scrollBy(page, 300);
-    // Assert on data-hidden (React state) rather than getBoundingClientRect — avoids
-    // waiting for the 300ms CSS transition and is unaffected by Playwright's synthetic
-    // scroll event timing in mobile emulation.
+    // data-hidden, not geometry: avoids waiting on the 300ms transition.
     const header = page.locator("header").first();
     await expect(header).toHaveAttribute("data-hidden", "true", { timeout: 3000 });
   });
@@ -98,14 +82,8 @@ test.describe("Nav auto-hide (mobile only)", () => {
   });
 });
 
-// @local-only: scroll-choreography regression guards (sticky phantom header,
-// share FAB reveal, scroll-to-top). They cover cosmetic scroll behavior, carry
-// multi-second scroll-settle waits, and are low-value as a merge gate — run
-// locally, excluded from CI. Layout-correctness specs below stay in CI.
+// @local-only: cosmetic scroll choreography with slow settle waits; excluded from CI.
 test.describe("Compare table phantom header", { tag: "@local-only" }, () => {
-  // The phantom header is a sticky h-0 div that mirrors column names and floats
-  // up once the real <thead> scrolls out of view. It also locks the nav hidden
-  // (via lockNav) so two top-chrome elements never compete on mobile.
   test.beforeEach(async ({ page }) => {
     await page.goto(`/en/lenses/x/compare?ids=${LENS_A},${LENS_B}`);
     await page.locator('[data-testid="compare-phantom-header"]').waitFor({ state: "attached" });
@@ -136,10 +114,8 @@ test.describe("Compare table phantom header", { tag: "@local-only" }, () => {
   });
 
   test("nav is locked hidden while phantom header is visible", async ({ page }) => {
-    // On mobile, the phantom header locks the nav so they don't both occupy the top
     const viewport = page.viewportSize();
     if (!viewport || viewport.width >= 640) {
-      // Nav auto-hide only applies on mobile — skip on desktop
       test.skip();
       return;
     }
@@ -156,7 +132,6 @@ test.describe("Compare table phantom header", { tag: "@local-only" }, () => {
 test.describe("Compare page share FAB", { tag: "@local-only" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(`/en/lenses/x/compare?ids=${LENS_A},${LENS_B}`);
-    // Wait for the FAB to be rendered before any interaction
     await page.locator('[data-testid="share-fab"]').waitFor({ state: "attached" });
   });
 
@@ -173,12 +148,10 @@ test.describe("Compare page share FAB", { tag: "@local-only" }, () => {
   });
 
   test("FAB hides again after scrolling back to top", async ({ page }) => {
-    // Show FAB
     await scrollToBottom(page);
     const fab = page.locator('[data-testid="share-fab"]');
     await expect(fab).toHaveAttribute("aria-hidden", "false", { timeout: 3000 });
 
-    // Hide FAB by returning to top
     await scrollToTop(page);
     await expect(fab).toHaveAttribute("aria-hidden", "true", { timeout: 3000 });
   });
@@ -188,8 +161,6 @@ test.describe("Lens list scroll-to-top button", { tag: "@local-only" }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/en/lenses");
     await waitForScrollable(page, 200);
-    // Wait for React hydration of LensListClient (which owns the scroll listener)
-    // before asserting scroll-driven state changes.
     await page.waitForLoadState("networkidle");
   });
 
@@ -214,13 +185,7 @@ test.describe("Lens list scroll-to-top button", { tag: "@local-only" }, () => {
   });
 });
 
-// ─── CompareBar height CSS variable ─────────────────────────────────────────
-//
-// Regression tests for the bug where the CompareBar (fixed bottom-0) covered
-// the last rows of spec tables and the BackToTopButton on mobile viewports.
-// The fix uses ResizeObserver in CompareBar to keep --compare-bar-height in
-// sync with the bar's actual rendered height. These tests verify the variable
-// lifecycle and that dependent elements use it correctly.
+// Regression: the fixed CompareBar covered the last table rows and BackToTopButton on mobile.
 
 test.describe("CompareBar --compare-bar-height CSS variable", () => {
   test.beforeEach(async ({ page }) => {
@@ -247,7 +212,6 @@ test.describe("CompareBar --compare-bar-height CSS variable", () => {
     await bar.waitFor({ state: "visible" });
 
     await page.getByRole("button", { name: /clear/i }).click();
-    // Wait for exit animation to finish and variable to be reset
     await page.waitForFunction(
       () =>
         parseFloat(
@@ -273,7 +237,7 @@ test.describe("CompareBar --compare-bar-height CSS variable", () => {
       return [varVal, el.getBoundingClientRect().height];
     });
 
-    // Allow 1px rounding tolerance between ResizeObserver contentRect and getBoundingClientRect
+    // 1px tolerance between ResizeObserver and getBoundingClientRect.
     expect(Math.abs(cssVar - domHeight)).toBeLessThanOrEqual(1);
   });
 });
@@ -318,11 +282,8 @@ test.describe("CompareBar does not obscure BackToTopButton or page content", () 
 
     const barHeight = await getCompareBarHeightVar(page);
 
-    // The content wrapper uses pb-[max(6rem, calc(--compare-bar-height + 2rem))].
-    // Read the actual computed padding-bottom and verify it exceeds the bar height.
     const paddingBottom = await page.evaluate(() => {
-      // The nav also uses .max-w-7xl, so scope to the content wrapper outside
-      // <header> (querySelector would otherwise return the nav, padding 0).
+      // Scoped outside <header>: the nav also uses .max-w-7xl.
       const el = [...document.querySelectorAll(".max-w-7xl")].find(
         (e) => !e.closest("header")
       ) as HTMLElement | undefined;
@@ -339,7 +300,6 @@ test.describe("CompareBar does not obscure BackToTopButton or page content", () 
     await page.goto(`/en/lenses/x/${LENS_A}`);
     await page.waitForLoadState("networkidle");
 
-    // The detail-page compare toggle's accessible name is "Compare".
     await page.getByRole("button", { name: "Compare", exact: true }).click();
     await page.locator('[data-testid="compare-bar"]').waitFor({ state: "visible" });
 

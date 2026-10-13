@@ -2,11 +2,10 @@ import "server-only";
 import type { AskIrisResponseFeedbackInput } from "./response-feedback-contract";
 
 export interface AskIrisResponseFeedbackRecord extends AskIrisResponseFeedbackInput {
-  /** Unique identifier retained when an existing response rating is changed. */
   feedbackId: string;
-  /** Unix timestamp in milliseconds when feedback was first submitted. */
+  // Unix ms.
   createdAt: number;
-  /** Unix timestamp in milliseconds when feedback was last changed. */
+  // Unix ms.
   updatedAt: number;
 }
 

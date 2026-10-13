@@ -7,7 +7,6 @@ test.describe("Lens search dialog", () => {
 
   test("opens dialog when search icon is clicked", async ({ page }) => {
     await page.getByRole("button", { name: /search/i }).click();
-    // Dialog title should appear
     await expect(page.getByRole("dialog")).toBeVisible();
   });
 
@@ -18,7 +17,6 @@ test.describe("Lens search dialog", () => {
     const input = page.getByRole("dialog").locator("input[type='text']");
     await input.fill("35mm");
 
-    // At least one result should appear in the listbox
     const listbox = page.getByRole("listbox");
     await expect(listbox).toBeVisible();
     const results = listbox.getByRole("option");
@@ -35,10 +33,8 @@ test.describe("Lens search dialog", () => {
     const listbox = page.getByRole("listbox");
     await expect(listbox.getByRole("option").first()).toBeVisible();
 
-    // Click the first result
     await listbox.getByRole("option").first().click();
 
-    // Should have navigated to a lens detail URL
     await expect(page).toHaveURL(/\/en\/lenses\/x\/[^/]+$/);
   });
 

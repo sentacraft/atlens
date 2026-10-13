@@ -18,28 +18,16 @@ import { IRIS_HERO, IRIS_NAV, IRIS_LAB, R_HOUSING } from "@/config/iris-config";
 import type { IrisConfig, IrisAnimation } from "@/config/iris-config";
 import Iris from "@/components/iris/Iris";
 
-// SVG coordinate space: origin at iris center, R_HOUSING = outer display radius.
-// viewBox is larger to accommodate the actuator ring sitting outside R_HOUSING.
 const VIEWBOX = "-150 -150 300 300";
 
-// ── F-stop ring constants ─────────────────────────────────────────────────────
-// Ring sits just inside the housing cover plate: inner radius = R_HOUSING − bladeWidth.
-// Ring radius is computed dynamically from bladeWidth in IrisStage.
-
-// Sequence: "A" (Auto) replaces f/1 and is drawn in red.
-// Arc spans 125° total across 9 equal steps (10 values → 9 gaps → 125/9 ≈ 13.9° per step).
 const FSTOP_SEQUENCE: (number | "A")[] = ["A", 1.4, 2, 2.8, 4, 5.6, 8, 11, 16, 22];
 const FSTOP_ARC_SPAN = 125;                                  // degrees
 const FSTOP_ANGLE_STEP = FSTOP_ARC_SPAN / (FSTOP_SEQUENCE.length - 1);  // ~13.9° per step
 const FSTOP_A_COLOR = "#f87171";                             // Auto marker red (Tailwind red-400)
 
-// Continuous angle (degrees) in ring frame for a given f-stop value.
-// Uses the same log₂ scale as the sequence: f/1→0°, f/1.4→STEP, …, f/22→ARC_SPAN.
 function fStopToRingAngle(f: number): number {
   return Math.log2(Math.max(0.5, f)) * 2 * FSTOP_ANGLE_STEP;
 }
-
-// ── IrisStage ─────────────────────────────────────────────────────────
 
 function IrisStage({
   config,
@@ -67,8 +55,7 @@ function IrisStage({
   const { N } = config;
   const stepDeg = 360 / N;
 
-  // All blade states — only blade[0] transform is needed for the SVG trick:
-  // blade i = rotate(stepDeg * i) ∘ blade[0] transform (proved analytically).
+  // Only blade[0]'s transform is needed: blade i = rotate(stepDeg * i) ∘ blade[0].
   const blades = useMemo(
     () => solveAllBlades(theta, config),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -81,14 +68,12 @@ function IrisStage({
   );
 
   if (blades.length === 0) {
-
     return null;
 
   }
 
   const b0 = blades[0];
   const b0AngleDeg = (b0.bladeAngle * 180) / Math.PI;
-  // blade[0] base transform (pivot at P0, rotated to α_0)
   const b0Transform = `translate(${b0.pivotPos.x.toFixed(3)},${b0.pivotPos.y.toFixed(3)}) rotate(${b0AngleDeg.toFixed(3)})`;
 
   return (
@@ -97,21 +82,10 @@ function IrisStage({
       style={{ display: "block", width: "100%", height: "100%" }}
     >
       <defs>
-        {/* Housing clip — blades stay inside R_HOUSING. The cover plate
-            then masks the outer annular ring (R_HOUSING−bladeWidth → R_HOUSING)
-            where the blade roots and pivot mechanism sit. */}
         <clipPath id={`clip-${uid}`}>
           <circle r={R_HOUSING} />
         </clipPath>
-        {/*
-          Stroke masks — cyclic overlap with forward-half masking.
-
-          Blade i's stroke is hidden wherever any of the next floor((N-1)/2)
-          blades in the cycle cover it. This handles multi-blade overlaps at
-          small apertures while maintaining perfect symmetry (every blade has
-          the same number of masking blades) and a consistent pairwise z-order
-          with no mutual-masking contradictions.
-        */}
+        {/* Blade i's stroke is masked wherever the next floor((N-1)/2) blades cover it, which keeps the overlap symmetric at small apertures. */}
         {Array.from({ length: N }, (_, i) => {
           const maskCount = Math.floor((N - 1) / 2);
           return (
@@ -132,15 +106,11 @@ function IrisStage({
         })}
       </defs>
 
-      {/* ── Background ── */}
       <circle r="150" fill="#f5f5f4" />
-      {/* Inner cavity — slightly warmer tone to differentiate aperture opening */}
       <circle r={R_HOUSING} fill="#ede9e4" />
 
-      {/* ── Mechanics overlay: base plate (fixed) ── */}
       {showMechanics && (
         <g opacity="0.8">
-          {/* Pivot-pin circle */}
           <circle
             r={config.pivotRadius}
             fill="none"
@@ -148,7 +118,6 @@ function IrisStage({
             strokeWidth="0.6"
             strokeDasharray="3 3"
           />
-          {/* Pivot pins */}
           {blades.map((blade, i) => (
             <g key={i}>
               <circle
@@ -170,18 +139,7 @@ function IrisStage({
         </g>
       )}
 
-      {/*
-        ── Blade layer: fill (flat) + stroke (cyclic) ──
-
-        Fill: all blades rendered flat with no masks. Since every blade shares
-        the same fill color, z-order is invisible — only edges carry depth.
-
-        Stroke: each blade i is stroked with a mask that hides the edge wherever
-        blade (i+1)%N sits on top. Cyclic masking is safe here because a 1-D
-        edge cannot produce the triple-overlap fill paradox.
-      */}
       <g clipPath={`url(#clip-${uid})`}>
-        {/* Fill pass — flat, no masks */}
         {Array.from({ length: N }, (_, i) => (
           <g key={i} transform={`rotate(${(stepDeg * i).toFixed(3)})`}>
             <g transform={b0Transform}>
@@ -189,7 +147,6 @@ function IrisStage({
             </g>
           </g>
         ))}
-        {/* Stroke pass — cyclic masks */}
         {Array.from({ length: N }, (_, i) => (
           <g key={i} mask={`url(#mask-stroke-${i}-${uid})`}>
             <g transform={`rotate(${(stepDeg * i).toFixed(3)})`}>
@@ -201,13 +158,11 @@ function IrisStage({
         ))}
       </g>
 
-      {/* ── Mechanics overlay: actuator ring (rotates with theta) ── */}
       {showMechanics && (
         <g
           transform={`rotate(${((theta * 180) / Math.PI).toFixed(3)})`}
           opacity="0.7"
         >
-          {/* Actuator ring body */}
           <circle
             r={R_HOUSING + 20}
             fill="none"
@@ -215,7 +170,6 @@ function IrisStage({
             strokeWidth="16"
             opacity="0.4"
           />
-          {/* Radial slots (one per blade) */}
           {Array.from({ length: N }, (_, i) => {
             const slotAngle =
               (i * 2 * Math.PI) / N + config.slotOffset + theta;
@@ -233,7 +187,6 @@ function IrisStage({
               />
             );
           })}
-          {/* Guide pins (current position in world frame, shown on actuator ring) */}
           {blades.map((blade, i) => (
             <circle
               key={i}
@@ -248,12 +201,6 @@ function IrisStage({
         </g>
       )}
 
-      {/*
-        ── Housing cover plate ──
-        Physical ring that covers the blade-root / pivot zone:
-        inner edge at R_HOUSING − bladeWidth, outer edge at R_HOUSING.
-        Hidden when showMechanics is true so the internals are visible.
-      */}
       {!showMechanics && (
         <circle
           r={R_HOUSING - config.bladeWidth / 2}
@@ -263,7 +210,6 @@ function IrisStage({
         />
       )}
 
-      {/* ── Housing ring ── */}
       <circle
         r={R_HOUSING}
         fill="none"
@@ -277,39 +223,24 @@ function IrisStage({
         strokeWidth="2"
       />
 
-      {/* ── F-stop ring overlay ── */}
       {showFStopRing && (() => {
-        // The boundary between the visible dark iris body and the cream cover-plate zone
-        // is the inner edge of the housing cover plate: R_HOUSING − bladeWidth.
-        //
-        // Outer mode: ring circle at that boundary; labels go OUTWARD into the cream zone.
-        // Inner mode: ring circle at that boundary; labels go INWARD into the dark blade zone.
-        // The housing ring position is irrelevant to either mode.
         const blackEdge = R_HOUSING - config.bladeWidth;
         const ringR     = blackEdge;
-        // Outer mode: labels hug the iris black edge, tick above the text.
-        // Inner mode: labels sit inward of the ring circle.
         const labelR    = fStopRingOuter ? blackEdge + 4 : blackEdge - 10;
 
         const isValid = isFinite(fStop) && fStop >= 1;
-        // Rotate ring so that the current f-stop lands at 12 o'clock (-90° in SVG).
         const ringRot = isValid ? -90 - fStopToRingAngle(fStop) : -90;
         const ringRotStr = ringRot.toFixed(3);
 
-        // Fixed index marker position.
-        // Outer: above the text (further from centre) — starts 2 px beyond labelR.
-        // Inner: inward of the ring circle (unchanged).
         const markerNear = fStopRingOuter ? labelR + 2    : ringR - 2;
         const markerFar  = fStopRingOuter ? labelR + 7.6  : ringR - 7.6;
         return (
           <g>
-            {/* Fixed index mark at 12 o'clock — white, 5.6 px (70 % of original 8 px). */}
             <line
               x1="0" y1={-markerNear}
               x2="0" y2={-markerFar}
               stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round"
             />
-            {/* Rotating group: ring arc + labels */}
             <g transform={`rotate(${ringRotStr})`}>
               <circle r={ringR} fill="none" stroke="#d4d4d8" strokeWidth="0.6" />
               {FSTOP_SEQUENCE.map((f, i) => {
@@ -323,9 +254,6 @@ function IrisStage({
                 const label = isA ? "A"
                   : (f === 1.4 || f === 2.8 || f === 5.6) ? (f as number).toFixed(1)
                   : String(f);
-                // Radial orientation: text bottom faces the iris centre.
-                // deg=0 (12 o'clock within the rotating group) → rotate +90 = upright.
-                // Labels at the sides tilt to follow the arc curvature.
                 return (
                   <g key={label}>
                     <text
@@ -349,10 +277,6 @@ function IrisStage({
   );
 }
 
-// ── F-stop helpers ────────────────────────────────────────────────────────────
-// apertureInradius and findThetaForInradius are imported from iris-kinematics.
-
-// Numeric f-stop options (excludes Auto) used for the Default F-Stop dropdown.
 const FSTOP_OPTIONS = FSTOP_SEQUENCE.filter((f): f is number => f !== "A");
 
 function formatFStop(f: number): string {
@@ -362,29 +286,18 @@ function formatFStop(f: number): string {
   return `f/${f.toFixed(1)}`;
 }
 
-
-
-// ── Page ──────────────────────────────────────────────────────────────────────
-
 export default function ApertureV2Lab() {
   const [config, setConfig] = useState<IrisMechanismConfig>(DEFAULT_IRIS_CONFIG);
 
-  // Studio profiles: all three read/write iris-config.ts via server actions.
-  // The workspace seeds from IRIS_LAB on mount.
   type StudioProfile = "lab" | "production:hero" | "production:nav";
   const [selectedProfile, setSelectedProfile] = useState<StudioProfile>("lab");
-  // Preview: tracks the pixel size of the last-loaded profile.
-  // The full previewConfig is computed live as a useMemo below.
   const [previewSize, setPreviewSize] = useState(IRIS_LAB.size);
-  // Incrementing this key forces the preview <Iris> to remount, replaying initAnimation.
   const [previewAnimKey, setPreviewAnimKey] = useState(0);
   const [exportStatus, setExportStatus] = useState<string | null>(null);
 
   const setField = (patch: Partial<IrisMechanismConfig>) => {
     setConfig(prev => {
       const next = { ...prev, ...patch };
-      // Keep pinDistance inside [Rp, bladeLength − 1] after any change.
-      // Rp is derived from bladeWidth, so it shifts when bladeWidth changes.
       const rp = R_HOUSING - next.bladeWidth / 2;
       const dMax = next.bladeLength - 1;
       next.pinDistance = Math.max(rp, Math.min(dMax, next.pinDistance));
@@ -394,7 +307,6 @@ export default function ApertureV2Lab() {
     startRef.current = undefined;
   };
 
-  // Load the selected profile's params into the workspace.
   async function handleLoad() {
     const key = selectedProfile === "production:hero" ? "IRIS_HERO"
       : selectedProfile === "production:nav" ? "IRIS_NAV" : "IRIS_LAB";
@@ -405,7 +317,6 @@ export default function ApertureV2Lab() {
     applyConfig(v);
   }
 
-  // Apply a loaded IrisConfig to all workspace state variables.
   function applyConfig(v: IrisConfig) {
     setConfig(buildDerivedConfig(v, R_HOUSING));
     if (v.bladeColor) {
@@ -433,7 +344,6 @@ export default function ApertureV2Lab() {
     startRef.current = undefined;
   }
 
-  // Export current workspace params to the selected profile.
   async function handleExport() {
     setExportStatus("Saving…");
     const profileSize = selectedProfile === "production:hero" ? IRIS_HERO.size
@@ -470,7 +380,6 @@ export default function ApertureV2Lab() {
     }
   }
 
-  // Seed the workspace from IRIS_LAB on first mount.
   useEffect(() => {
     readFromConfig("IRIS_LAB").then(v => {
       if (v) {
@@ -479,7 +388,6 @@ export default function ApertureV2Lab() {
     });
   }, []);  
 
-  // Derive geometry-constrained parameters via the shared helper.
   const derivedConfig = useMemo(
     () => buildDerivedConfig(config, R_HOUSING),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -487,7 +395,6 @@ export default function ApertureV2Lab() {
      config.bladeLength, config.bladeWidth]
   );
 
-  // Physical range: [θ_open, kinRange.max]
   const range = useMemo(
     () => ({
       min: computeThetaOpen(derivedConfig, R_HOUSING),
@@ -496,7 +403,6 @@ export default function ApertureV2Lab() {
     [derivedConfig]
   );
 
-  // Start at t=0 (fully open) for the default config.
   const [theta, setTheta] = useState(() => {
     const initDerived = buildDerivedConfig(DEFAULT_IRIS_CONFIG, R_HOUSING);
     return computeThetaOpen(initDerived, R_HOUSING);
@@ -525,10 +431,6 @@ export default function ApertureV2Lab() {
     return `#${h}${h}${h}`;
   }
 
-  // Live preview config — rebuilt from all current control state so the preview
-  // stays in sync with every slider/input change without requiring a Load.
-  // The small right-panel preview renders as non-interactive (interactive: false)
-  // to avoid mouse-follow in a thumbnail; the full-size DL stage handles that.
   const previewConfig = useMemo((): IrisConfig => ({
     N: config.N,
     pinDistance: config.pinDistance,
@@ -550,7 +452,6 @@ export default function ApertureV2Lab() {
       openFStop, defaultFStop, closedFStop, chaseTauMs,
       previewSize, bladeGray, strokeGray, strokeWidth, onMount]);
 
-  // Animation: theta oscillates between range.min and range.max
   const rafRef = useRef<number | undefined>(undefined);
   const startRef = useRef<number | undefined>(undefined);
   const thetaRef = useRef(theta);
@@ -571,7 +472,6 @@ export default function ApertureV2Lab() {
 
     function tick(now: number) {
       if (!startRef.current) {
-        // Phase-align so animation starts from current theta position
         const { min, max } = range;
         const mid = (min + max) / 2;
         const amp = (max - min) / 2;
@@ -597,22 +497,16 @@ export default function ApertureV2Lab() {
     };
   }, [isPlaying, speed, range]);
 
-  // Reset theta to fully-open (range.min) whenever any design parameter changes.
-  // Clamping to the new range would leave theta at an arbitrary relative position,
-  // which is confusing when e.g. slotOffset shifts the entire valid range.
   useEffect(() => {
     setTheta(range.min);
     thetaRef.current = range.min;
     startRef.current = undefined;
   }, [range]);
 
-  // Opening percentage: 0% = fully open (range.min), 100% = fully closed (range.max).
   const openPct = Math.round(
     ((theta - range.min) / (range.max - range.min)) * 100
   );
 
-  // F-stop: physics-derived from the arc-arc intersection aperture inradius.
-  // f = 1.4 × (r_open / r_current). Displays f/— when r_current < 0.5 px.
   const inradiusCurrent = useMemo(
     () => apertureInradius(theta, derivedConfig),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -631,8 +525,6 @@ export default function ApertureV2Lab() {
     ? openFStop * (inradiusOpen / inradiusCurrent)
     : Infinity;
 
-  // In Auto mode (openPct === 0) the ring stays pinned at "A" (ring angle 0 = f/1.0 position).
-  // The blades render at the theta corresponding to defaultFStop (configurable, default f/5.6).
   const autoTheta = useMemo(
     () => findThetaForFStop(defaultFStop, derivedConfig, range, openFStop),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -640,25 +532,9 @@ export default function ApertureV2Lab() {
      derivedConfig.pinDistance, derivedConfig.slotOffset, derivedConfig.bladeLength,
      derivedConfig.bladeWidth, derivedConfig.bladeCurvature]
   );
-  // Ring shows "A" (ring angle 0 → position 0 → f=1.0 in the log-scale mapping)
-  // so that the pointer stays at "A" instead of rotating to 5.6.
   const ringFStop = openPct === 0 ? 1.0 : fStop;
-  // Blades: use the defaultFStop theta in Auto mode so the aperture looks right.
   const displayTheta = openPct === 0 ? autoTheta : theta;
 
-  // Follow-mouse: global listener + RAF-based exponential smoothing.
-  //
-  // Architecture:
-  //   mousemove → writes to followTargetRef (raw desired theta, with entry offset)
-  //   chase RAF  → each frame: current += (target - current) * k(dt)
-  //                where k = 1 - exp(-dt / FOLLOW_TAU_MS)  [framerate-independent]
-  //
-  // This decouples mouse sampling from rendering and acts as a low-pass filter,
-  // suppressing high-frequency jitter while keeping the response feeling live.
-  //
-  // Entry:  offset recorded on first hotzone frame, decays (1-p)^2 over 300 ms.
-  // Leave:  cubic ease-out back to autoTheta over 700 ms.
-  // chaseTauMs / easeOutMs / catchupMs / hotzoneScale / closedFStop come from state (controls).
   const followTargetRef      = useRef(0);
   const followEntryOffsetRef = useRef(0);
   const followEntryTimeRef   = useRef(0);
@@ -667,7 +543,6 @@ export default function ApertureV2Lab() {
   const followLeaveRafRef    = useRef<number | null>(null);
   const followLastFrameRef   = useRef(0);
 
-  // Cleanup all RAFs on unmount.
   useEffect(() => () => {
     if (followChaseRafRef.current) {
       cancelAnimationFrame(followChaseRafRef.current);
@@ -689,7 +564,6 @@ export default function ApertureV2Lab() {
       return;
     }
 
-    // Chase loop: runs while in hotzone, smoothly tracks followTargetRef.
     function startChase() {
       if (followChaseRafRef.current) {
         return;
@@ -720,8 +594,6 @@ export default function ApertureV2Lab() {
       }
       const rect = irisContainerRef.current.getBoundingClientRect();
 
-      // D = actual iris diameter in CSS px.
-      // SVG viewBox is 300 units wide; iris black body radius = R_HOUSING − bladeWidth.
       const scale    = rect.width / 300;
       const irisSVGR = R_HOUSING - derivedConfig.bladeWidth;
       const D        = 2 * irisSVGR * scale;
@@ -741,7 +613,6 @@ export default function ApertureV2Lab() {
         if (wasInHotzoneRef.current) {
           wasInHotzoneRef.current = false;
           stopChase();
-          // Cubic ease-out back to autoTheta over easeOutMs
           if (followLeaveRafRef.current) {
             cancelAnimationFrame(followLeaveRafRef.current);
           }
@@ -766,16 +637,12 @@ export default function ApertureV2Lab() {
         return;
       }
 
-      // Cancel any in-progress leave animation and ensure chase is running
       if (followLeaveRafRef.current) {
         cancelAnimationFrame(followLeaveRafRef.current); followLeaveRafRef.current = null;
       }
       startChase();
 
-      // Map horizontal position within hotzone → aperture diameter (inradius) linearly.
-      // Left = max open (rOpen), right = r at f/22. Then binary-search for theta.
-      // This is a log transform in f-stop space: large-aperture end feels "faster",
-      // small-aperture end feels "slower" — matching a physical aperture ring.
+      // Hotzone position maps linearly to inradius, not f-stop, so the wide end feels faster.
       const t       = Math.max(0, Math.min(1, (e.clientX - hotLeft) / (hotRight - hotLeft)));
       const rOpen   = inradiusOpen;
       const r22     = (openFStop * rOpen) / closedFStop;
@@ -783,15 +650,12 @@ export default function ApertureV2Lab() {
       const rawTarget = findThetaForInradius(targetR, derivedConfig, range);
 
       if (!wasInHotzoneRef.current) {
-
-        // First frame: record entry offset for smooth catchup
         followEntryOffsetRef.current = thetaRef.current - rawTarget;
         followEntryTimeRef.current   = performance.now();
         wasInHotzoneRef.current      = true;
 
       }
 
-      // Quadratic ease-out on entry offset: (1-p)^2 over catchupMs
       const p                  = Math.min(1, (performance.now() - followEntryTimeRef.current) / catchupMs);
       const off                = followEntryOffsetRef.current * (1 - p) ** 2;
       followTargetRef.current  = rawTarget + off; // chase RAF reads this every frame
@@ -815,7 +679,6 @@ export default function ApertureV2Lab() {
       style={{ background: "#f5f5f4", minHeight: "100vh" }}
       className="flex flex-col"
     >
-      {/* Header */}
       <div className="pt-8 pb-4" style={{ paddingLeft: 100, paddingRight: 100 }}>
         <div className="text-xs text-zinc-600 uppercase tracking-wider mb-1">
           Design Lab
@@ -829,9 +692,7 @@ export default function ApertureV2Lab() {
         </p>
       </div>
 
-      {/* Body */}
       <div className="flex-1 flex pb-8 gap-8 items-start" style={{ paddingLeft: 100, paddingRight: 100 }}>
-        {/* Iris display */}
         <div className="flex flex-col items-center gap-5">
           <div
             ref={irisContainerRef}
@@ -851,7 +712,6 @@ export default function ApertureV2Lab() {
             />
           </div>
 
-          {/* Theta slider */}
           <div className="w-full" style={{ maxWidth: 480 }}>
             <input
               type="range"
@@ -881,8 +741,6 @@ export default function ApertureV2Lab() {
 
         </div>
 
-        {/* Production preview — renders the current config via the real Iris
-            component at its actual production pixel size. Stays live with controls. */}
         <div className="flex flex-col items-center gap-2" style={{ paddingTop: 4 }}>
           <span className="text-xs font-mono text-zinc-400">
             {previewConfig.size} px
@@ -890,14 +748,11 @@ export default function ApertureV2Lab() {
           <Iris key={previewAnimKey} config={previewConfig} uid="lab-preview" />
         </div>
 
-        {/* Controls — 3-column grid */}
         <div style={{ flexShrink: 0, width: 580, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", columnGap: 32, paddingTop: 4 }}>
 
-          {/* ── Col 1: Playback & View ── */}
           <div className="space-y-5">
             <section className="space-y-2.5">
               <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">Studio</p>
-              {/* Profile selector — switching does not load; only Load/Export act */}
               <div className="flex gap-1.5">
                 {(["lab", "production:hero", "production:nav"] as const).map((profile) => (
                   <button
@@ -939,7 +794,6 @@ export default function ApertureV2Lab() {
                   </pre>
                 )
               )}
-              {/* Production size indicator */}
               {selectedProfile !== "lab" && (
                 <p className="text-xs font-mono text-zinc-400">
                   {selectedProfile === "production:hero" ? IRIS_HERO.size : IRIS_NAV.size} px production
@@ -975,7 +829,6 @@ export default function ApertureV2Lab() {
                   className="w-full" style={{ accentColor: "#18181b" }}
                 />
               </div>
-              {/* Interactive (follow mouse) toggle */}
               <label
                 className="flex items-center gap-2 text-sm cursor-pointer select-none"
                 style={{ color: "#3f3f46" }}
@@ -995,7 +848,6 @@ export default function ApertureV2Lab() {
                 />
                 Interactive (follow mouse)
               </label>
-              {/* Init Animation toggle + timing sliders */}
               <label
                 className="flex items-center gap-2 text-sm cursor-pointer select-none"
                 style={{ color: "#3f3f46" }}
@@ -1048,7 +900,6 @@ export default function ApertureV2Lab() {
                   </div>
                 </>
               )}
-              {/* Open F-Stop — the f-stop at the fully-open (maximum aperture) position. */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs text-zinc-500">
                   <span>Open F-Stop</span>
@@ -1059,7 +910,6 @@ export default function ApertureV2Lab() {
                   onChange={(e) => {
                     const v = parseFloat(e.target.value);
                     setOpenFStop(v);
-                    // Clamp defaultFStop to be ≥ the new openFStop.
                     if (defaultFStop < v) {
                       setDefaultFStop(v);
                     }
@@ -1075,7 +925,6 @@ export default function ApertureV2Lab() {
                   ))}
                 </select>
               </div>
-              {/* Default F-Stop — sets the static openness and the Auto-mode openness. */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs text-zinc-500">
                   <span>Default F-Stop</span>
@@ -1095,7 +944,6 @@ export default function ApertureV2Lab() {
                   ))}
                 </select>
               </div>
-              {/* Closed F-Stop — minimum aperture (maximum f-number) for interactive range. */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs text-zinc-500">
                   <span>Closed F-Stop</span>
@@ -1115,7 +963,6 @@ export default function ApertureV2Lab() {
                   ))}
                 </select>
               </div>
-              {/* Chase τ — exponential-smoothing time constant for follow-mouse (ms). */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-500">Chase τ</span>
@@ -1126,7 +973,6 @@ export default function ApertureV2Lab() {
                   className="w-full" style={{ accentColor: "#18181b" }}
                 />
               </div>
-              {/* Ease Out — cubic ease-out return duration after mouse leaves (ms). */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-500">Ease Out</span>
@@ -1137,7 +983,6 @@ export default function ApertureV2Lab() {
                   className="w-full" style={{ accentColor: "#18181b" }}
                 />
               </div>
-              {/* Catchup — entry offset decay duration (ms). */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-500">Catchup</span>
@@ -1148,7 +993,6 @@ export default function ApertureV2Lab() {
                   className="w-full" style={{ accentColor: "#18181b" }}
                 />
               </div>
-              {/* Hotzone Scale H — horizontal multiplier on iris diameter. */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-500">Hotzone H</span>
@@ -1159,7 +1003,6 @@ export default function ApertureV2Lab() {
                   className="w-full" style={{ accentColor: "#18181b" }}
                 />
               </div>
-              {/* Hotzone Scale V — vertical multiplier on iris diameter. */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-500">Hotzone V</span>
@@ -1206,7 +1049,6 @@ export default function ApertureV2Lab() {
             </section>
           </div>
 
-          {/* ── Col 2: Mechanism ── */}
           <div className="space-y-5">
             <section className="space-y-2.5">
               <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">Blades</p>
@@ -1281,12 +1123,10 @@ export default function ApertureV2Lab() {
             </section>
           </div>
 
-          {/* ── Col 3: Shape & Appearance ── */}
           <div className="space-y-5">
             <section className="space-y-2.5">
               <p className="text-sm font-semibold text-zinc-800 uppercase tracking-wide pt-3">Appearance</p>
 
-              {/* Blade fill gray */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs items-center">
                   <span className="text-zinc-500">Fill</span>
@@ -1301,7 +1141,6 @@ export default function ApertureV2Lab() {
                 />
               </div>
 
-              {/* Blade stroke gray */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs items-center">
                   <span className="text-zinc-500">Stroke color</span>
@@ -1316,7 +1155,6 @@ export default function ApertureV2Lab() {
                 />
               </div>
 
-              {/* Stroke width */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-500">Stroke width</span>

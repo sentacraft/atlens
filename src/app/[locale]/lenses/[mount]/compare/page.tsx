@@ -18,12 +18,7 @@ import { mountToUrlSegment } from "@/lib/mount";
 import { lensDisplayName } from "@/lib/lens/format";
 import { notFound } from "next/navigation";
 
-// The compare page reads ?ids=A,B,C from searchParams to build server-rendered
-// metadata (title/OG carry the lens names). Reading searchParams forces dynamic
-// rendering, so this route is served per request (Cache-Control: no-store), not
-// prerendered. It is intentionally uncached: the route cache keys on pathname,
-// not the query string, so caching per ?ids= combination would require moving
-// the ids into the path segment.
+// Dynamic: metadata needs ?ids=, and the route cache keys on pathname only.
 
 type Params = Promise<{ locale: string; mount: string }>;
 type SearchParams = Promise<{ ids?: string | string[] }>;
@@ -49,9 +44,6 @@ export async function generateMetadata({
   const emptyTitle = resolvedMount === "X" ? t("metaTitleX") : t("metaTitleG");
   const emptyDescription = resolvedMount === "X" ? t("metaDescX") : t("metaDescG");
 
-  // Reverse-derive the curated preset, if any, from the URL's ids.
-  // Lets shared `?ids=...` links render with the curated framing in SEO /
-  // OG metadata without keeping a separate `?preset=` URL param.
   const matchedPreset = findPresetByIds(lenses.map((l) => l.id));
   if (matchedPreset) {
     const lang = locale === "zh" ? "zh" : "en";

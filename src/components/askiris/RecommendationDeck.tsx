@@ -11,11 +11,6 @@ import { weightDisplay } from "@/lib/lens/format";
 import Markdown from "@/components/askiris/Markdown";
 import type { Recommendation } from "@/lib/ai/recall";
 
-// A group of picks the model authored in one recommendLenses call, laid out as a
-// one-or-two-column grid (one on mobile, two on desktop). Following the
-// ChatGPT/Perplexity pattern, each card is self-describing: it carries its own
-// reason so the surrounding prose stays a short synthesis instead of a per-lens
-// essay the reader has to map back onto a card.
 export default function RecommendationDeck({
   recommendations,
 }: {
@@ -30,9 +25,6 @@ export default function RecommendationDeck({
   );
 }
 
-// Non-prose styling for the reason inside a card. Shown in full — the reason is
-// the card's whole point, and the prompt already bounds it to one to three
-// sentences, so there's no clamp to truncate the model's case.
 const REASON_CLS =
   "text-muted-foreground text-xs leading-relaxed [&_p]:m-0 [&_strong]:text-foreground [&_strong]:font-medium";
 
@@ -45,14 +37,8 @@ function priceParts(
   return { symbol, value: `${price.amount.toLocaleString()}${used}` };
 }
 
-// Two rows: a header (thumbnail + name + price/weight) and the reason on its own
-// full-width row below, so the reason spans the whole card instead of a narrow
-// column beside the thumbnail — fewer wrapped lines, better use of the space.
-//
-// EVAL MIRROR — `formatCard` in eval/promptfoo/provider.mjs hand-writes what the
-// judges read for a card, and nothing keeps the two in step. Changing what this card
-// shows means deciding whether that string changes too: a field belongs there only if
-// some rubric in promptfooconfig.yaml grades it.
+// EVAL MIRROR: `formatCard` in eval/promptfoo/provider.mjs hand-writes what the judges read
+// for a card.
 function RecommendationCard({ rec }: { rec: Recommendation }) {
   const locale = useLocale();
   const weight = rec.weightG != null ? weightDisplay(rec.weightG, "g") : null;
@@ -63,8 +49,7 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
       href={`/lenses/${mountToUrlSegment(rec.mount)}/${rec.id}`}
       prefetch={false}
       onClick={() => track("askiris_rec_click", { lens_id: rec.id, source: "askiris" })}
-      // Opens in a new tab: the AskIris thread is ephemeral client state, so a
-      // same-tab nav would discard the conversation the user is working through.
+      // New tab: a same-tab navigation would discard the conversation.
       target="_blank"
       rel="noopener noreferrer"
       className="border-border bg-background hover:border-foreground/20 flex flex-col gap-2 rounded-xl border p-3.5 transition-colors"
@@ -82,10 +67,6 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
           />
         </div>
 
-        {/* Top-aligned with the thumbnail: the name sits at the top and the
-            price/weight follow directly beneath it, not pinned to the thumbnail's
-            base. The 96px thumbnail sets the header height; the full-width reason
-            row below always clears it. */}
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <h4 className="line-clamp-2 text-sm leading-snug font-semibold" title={rec.name}>
             {rec.name}

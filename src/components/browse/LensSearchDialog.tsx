@@ -44,7 +44,6 @@ interface LensSearchDialogProps {
   triggerClassName?: string;
   triggerLabel?: string;
   triggerVariant?: "icon" | "button" | "slot";
-  /** Trigger glyph for `icon` and `button` variants. Defaults to Search. */
   triggerIcon?: LucideIcon;
 }
 
@@ -61,22 +60,15 @@ export default function LensSearchDialog({
   const tBrand = useTranslations("Brands");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  // null = no active row (idle / cleared / pointer left). Keeping the "nothing
-  // selected" state out of the numeric index space means the keyboard-wrap math
-  // below can't accidentally treat it as a real row.
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  // Set by the arrow keys so the scroll effect only reveals keyboard-driven
-  // moves. A pointer hover also changes the active row, but the row it lands on
-  // is already under the cursor (visible) — scrolling it would be unwanted.
   const scrollActiveRef = useRef(false);
   const inputId = useId();
   const resultsId = useId();
   const deferredQuery = useDeferredValue(query);
   const keyboardInset = useKeyboardInset();
 
-  // Reset state on close
   useEffect(() => {
     if (!open) {
       setQuery("");
@@ -98,20 +90,12 @@ export default function LensSearchDialog({
   const hasInput = query.trim().length > 0;
   const hasResults = results.length > 0;
 
-  // activeIndex is the user's intent (0 = "first row once results arrive").
-  // activeRow projects that intent onto the current result set, collapsing to
-  // null whenever it points past what's actually there (a query with no matches,
-  // or a result set that shrank under a deferred update). Read activeRow — never
-  // raw activeIndex — for highlight / Enter / scroll, so an out-of-range intent
-  // can never act as a real row.
+  // Read activeRow, never activeIndex: an out-of-range index must not act as a row.
   const activeRow =
     activeIndex !== null && activeIndex < results.length ? activeIndex : null;
 
-  // Reveal the active row only when the keyboard moved it (scrollActiveRef);
-  // pointer hover changes activeRow too, but that row is already under the
-  // cursor, so scrolling it would be wrong. Layout effect (not passive) so the
-  // scroll lands in the same frame the highlight moves, rather than the browser
-  // painting "highlight moved, list not scrolled" first and then scrolling.
+  // Keyboard moves only: a hovered row is already visible. Layout effect so the scroll lands in
+  // the same frame as the highlight.
   useLayoutEffect(() => {
     if (!scrollActiveRef.current) {
       return;
@@ -213,9 +197,7 @@ export default function LensSearchDialog({
         id={resultsId}
         role="listbox"
         aria-label={t("results")}
-        // Clear the highlight only when the pointer leaves the whole list, not a
-        // single row — a scroll that slides a row out from under a still pointer
-        // would otherwise fire a per-row leave and wrongly clear the selection.
+        // On the list, not each row: scrolling a row out from under a still pointer fires a row leave.
         onMouseLeave={() => setActiveIndex(null)}
         className="space-y-2"
       >
@@ -232,21 +214,14 @@ export default function LensSearchDialog({
               role="option"
               aria-selected={isActive}
               disabled={isDisabled}
-              // onMouseMove, not onMouseEnter: a scroll that moves a row under a
-              // still pointer fires enter (and would hijack the keyboard's active
-              // row), but never fires move. Only real pointer motion sets active.
+              // onMouseMove, not onMouseEnter: scrolling a row under a still pointer fires enter.
               onMouseMove={() => setActiveIndex(index)}
               onClick={() => handleSelect(lens)}
-              // scroll-my-2 keeps the active row a small gap clear of the
-              // scroll-container edge when scrollIntoView lands it.
               className={cn(
                 "flex w-full scroll-my-2 items-center justify-between gap-4 rounded-2xl border px-4 py-3 text-left",
                 isDisabled
                   ? "cursor-not-allowed border-transparent bg-zinc-50/80 opacity-60 dark:bg-zinc-900/60"
-                  // Highlight is driven solely by activeIndex (onMouseEnter sets it),
-                  // so the non-active row carries no CSS :hover background. A second
-                  // hover-based source would linger grey on the row the pointer still
-                  // rests on after the highlight moves away via keyboard/scroll.
+                  // No :hover background: it would linger on the row under the pointer after a keyboard move.
                   : isActive
                     ? "border-zinc-200 bg-zinc-50/80 dark:border-zinc-700 dark:bg-zinc-800/50"
                     : "border-transparent bg-white dark:bg-zinc-950"
@@ -314,10 +289,7 @@ export default function LensSearchDialog({
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        {/* Base UI focuses the popup (not the input) on touch-open to suppress the
-            keyboard; for a search box we want the keyboard, so we hand it the input
-            ref. Routing focus through the library's own open sequence (instead of a
-            post-open setTimeout) makes it deterministic on the first open too. */}
+        {/* Base UI focuses the popup, not the input, on touch-open; hand it the input so the keyboard opens. */}
         <DialogPopup
           initialFocus={inputRef}
           className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-2xl shadow-zinc-950/20 dark:border-zinc-800 dark:bg-zinc-950"
@@ -346,9 +318,6 @@ export default function LensSearchDialog({
                 onChange={(event) => {
                   const value = event.target.value;
                   setQuery(value);
-                  // Preselect the first row while there is a query (Enter picks
-                  // it); an empty box has no first row, so fall back to null —
-                  // same idle state as the clear button.
                   setActiveIndex(value.trim() ? 0 : null);
                 }}
                 onKeyDown={handleInputKeyDown}
@@ -376,22 +345,13 @@ export default function LensSearchDialog({
 
           <div
             ref={scrollContainerRef}
-            // data-base-ui-swipe-ignore: tapping a result triggers close (handleSelect →
-            // setOpen(false)); without it the tap starts Base UI swipe tracking and flashes
-            // the drawer mid-close on iOS. Scoped to the results region, not the header, on
-            // purpose — the attribute also turns off Base UI's background-scroll guard, so
-            // swipe-ignoring the non-scrollable header would let the overlay pan / the page
-            // scroll through with the keyboard up. This region is natively scrollable, so
-            // the browser still contains the drag.
+            // Stops a result tap from starting Base UI's swipe tracking, which flashes the drawer on iOS.
+            // Only on this natively scrollable region: the attribute also disables the background-scroll guard.
             data-base-ui-swipe-ignore=""
-            // scrollPaddingBottom keeps arrow-key scrollIntoView landing above the keyboard
             style={{ scrollPaddingBottom: keyboardInset || undefined }}
             className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
           >
             {renderResults()}
-            {/* Spacer that reserves the keyboard's height inside the scroll area so the
-                last result can be scrolled clear of the on-screen keyboard. Collapses to
-                0 when the keyboard is down. */}
             {keyboardInset > 0 && (
               <div aria-hidden style={{ height: keyboardInset }} />
             )}

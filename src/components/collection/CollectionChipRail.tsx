@@ -28,7 +28,6 @@ export default function CollectionChipRail({
   const railRef = useRef<HTMLDivElement>(null);
   const isClickScrolling = useRef(false);
 
-  // Scroll-spy: highlight the chip whose section is currently in view.
   useEffect(() => {
     const ids = sections.map((s) => s.id);
 
@@ -77,7 +76,6 @@ export default function CollectionChipRail({
     return () => window.removeEventListener("scroll", pickActive);
   }, [sections]);
 
-  // Keep the active chip visible inside the horizontal rail.
   useEffect(() => {
     const rail = railRef.current;
     if (!rail) {
@@ -93,12 +91,7 @@ export default function CollectionChipRail({
     }
     const active = rail.querySelector("[data-active=true]") as HTMLElement | null;
     if (active) {
-      // Scroll the rail horizontally by hand instead of Element.scrollIntoView:
-      // scrollIntoView walks up to the document scrolling element to satisfy
-      // its block axis, and that programmatic scroll cancels the page's
-      // in-flight touch momentum — so a fast flick would dead-stop the moment
-      // scroll-spy lit a chip near the rail edge. scrollBy on the rail only
-      // ever touches the rail's own horizontal axis.
+      // Not scrollIntoView: it also scrolls the page, which cancels in-flight touch momentum.
       const railRect = rail.getBoundingClientRect();
       const chipRect = active.getBoundingClientRect();
       const pad = 24;

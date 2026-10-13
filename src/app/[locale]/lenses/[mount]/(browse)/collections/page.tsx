@@ -45,13 +45,6 @@ export async function generateMetadata({
   };
 }
 
-// Per-group presentation: the section heading's i18n key and marker badge.
-// Typed Record<CollectionGroup, …> so the compiler guarantees every group in
-// collections.json has presentation here — and no stale extras. The section
-// ORDER is not here: it comes from the group key order in collections.json
-// (COLLECTION_GROUPS), authored "hardest for browse filters to reconstruct"
-// first (portability / aperture / price / sub-brand series / Chinese combos)
-// down to single-toggle categories (brand / traits / dedicated optics).
 const GROUP_META: Record<CollectionGroup, { key: string; marker: string[]; markerItalic?: boolean }> = {
   portability: { key: "category_portability", marker: ["G"] },
   aperture: { key: "category_aperture", marker: ["ƒ"], markerItalic: true },
@@ -95,20 +88,12 @@ export default async function CollectionsIndexPage({
   return (
     <LensIndexShell className="pb-16">
       <main className="pt-5">
-      {/* The section nav and its position are owned by LensIndexShell, so the
-          tab row lands identically to the browse view. The summary keeps the
-          keyword-rich title as an sr-only h1 for SEO (mirroring the browse
-          page); the visible header is a one-line summary the tab label can't
-          convey — collection and lens counts — plus a short subtitle. */}
       <header id="collections-top" className="pb-3">
         <h1 className="sr-only">{t("indexTitle")}</h1>
         <div className="flex min-w-0 flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
           <p className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
             {t("indexStats", { count: totalCollections, lensCount: totalLenses })}
           </p>
-          {/* Mirror the browse view: surface coverage next to the count, where
-              users form the "is this complete?" judgment, instead of leaving it
-              buried in About. */}
           <Link
             href="/about#coverage"
             className="whitespace-nowrap text-xs text-zinc-400 underline-offset-2 transition-colors hover:text-zinc-600 hover:underline dark:text-zinc-500 dark:hover:text-zinc-300"
@@ -121,7 +106,6 @@ export default async function CollectionsIndexPage({
         </p>
       </header>
 
-      {/* Sticky chip rail */}
       <CollectionChipRail
         sections={categories.map((cat) => ({
           id: cat.id,
@@ -132,14 +116,12 @@ export default async function CollectionsIndexPage({
         allLabel={t("chipAll")}
       />
 
-      {/* Section blocks */}
       {categories.map((cat, catIdx) => (
         <section
           key={cat.id}
           id={cat.id}
           className={`scroll-mt-[calc(var(--nav-height)+56px)] pt-7 pb-2 ${catIdx === categories.length - 1 ? "pb-8" : ""}`}
         >
-          {/* Section head */}
           <div className="mb-4 flex items-center gap-3">
             <span aria-hidden="true" className="inline-flex shrink-0 gap-[3px]">
               {cat.marker.map((label) => (
@@ -159,7 +141,6 @@ export default async function CollectionsIndexPage({
             </span>
           </div>
 
-          {/* Collection grid */}
           <div className="grid grid-cols-1 gap-x-10 sm:grid-cols-2">
             {cat.collections.map((collection) => {
               const lensCount = getCollectionStats(collection.slug, locale)?.lensCount ?? 0;
@@ -187,7 +168,6 @@ export default async function CollectionsIndexPage({
         </section>
       ))}
 
-      {/* Footer CTA */}
       <footer className="mt-8 flex justify-center">
         <Link
           href={`/lenses/${mount}/browse`}

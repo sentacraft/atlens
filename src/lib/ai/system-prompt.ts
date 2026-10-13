@@ -1,52 +1,17 @@
 import type { Mount } from "@/lib/types";
 
-// Iris's system prompt. It lives alone in this file so that anyone editing it reads
-// the discipline below first — this prompt has a history of drifting: it grows a
-// sentence per bad case, paragraphs swell until they hold four unrelated rules, and
-// sections start contradicting each other.
-//
-// ── Structure ──
-// The paragraphs group into six sections: identity and boundaries; presentation
-// (which surface a lens goes on, how a lens is named); silence (what a reply may
-// contain, and in what order); recall discipline; judgement (what to show, when to
-// ask instead); factual detail (specs, price, language).
-//
-// That decomposition is the current best one, not a law — it may change. What must
-// not happen is changing it by accident. When adding a paragraph, say which section
-// it joins; if it joins none, either it is misplaced or the architecture genuinely
-// needs a new section, and both are decisions to make out loud.
-//
-// ── Editing discipline ──
-// 1. Prefer a mechanism to a sentence. Before adding a rule, ask whether code, a
-//    schema, or the renderer can enforce it instead — and whether the rule only
-//    exists to compensate for a mechanism that is missing, in which case build the
-//    mechanism. But a mechanism must not silently change what the user sees: make it
-//    visible to the model (a validation error, a tool error) or keep the output
-//    intact. Silently dropping what the model produced leaves it writing on top of a
-//    belief that is now false.
-// 2. Every line must carry information the model cannot derive. "Don't do the
-//    obviously wrong thing" carries none: either the model already knows, or the
-//    sentence won't save it.
-// 3. Generalize, don't patch. When a bad case appears, find the formulation that
-//    covers its whole class, and prefer stating what is allowed over enumerating
-//    what is banned — a ban on one form just moves the behaviour to the next form.
-//    Never append one sentence per bad case.
-// 4. Split, don't stuff. A paragraph holds one kind of rule. A new rule that isn't
-//    that kind starts a new paragraph, and a paragraph past ~160 characters is
-//    usually holding two things that should come apart.
-// 5. Delete before adding, and re-read the whole prompt afterwards — looking for
-//    contradiction, duplication, and lines left stranded between sections.
-// 6. Write the instruction and nothing else: no rationale clauses, no examples.
+// This prompt drifts, so edits follow these rules: say which section a new paragraph joins
+// (identity, presentation, silence, recall, judgement, factual detail); prefer enforcing a
+// rule in code, a schema, or a tool error over adding a sentence; generalise rather than
+// patch one bad case; one kind of rule per paragraph; delete before adding; no rationale
+// clauses or examples.
 
 const MOUNT_LABEL: Record<Mount, string> = {
   X: "富士 X 卡口（APS-C 画幅）",
   G: "富士 G 卡口（中画幅）",
 };
 
-// The prompt is authored in Chinese and serves both locales — the reply language is
-// set by the last paragraph, not by the prompt's own language. Rules a tool can carry
-// live in buildLensTools' .describe() instead; what stays here is the policy a single
-// tool's description can't own (which surface to reach for, when to narrow).
+// Chinese for both locales; the last paragraph sets the reply language.
 export function systemPrompt(mount: Mount, locale: string): string {
   const language = locale === "zh" ? "简体中文" : "英文";
   return `你是 Atlens 网站的镜头顾问 Iris，帮用户理清拍摄需求、检索镜头、权衡利弊，给出推荐。语气亲切自然，说话简洁。

@@ -1,7 +1,3 @@
-/**
- * Canonical icon mapping for lens features.
- * Single source of truth — used by both the filter panel and share poster.
- */
 import { Aperture, ArrowLeftRight, ChevronsRightLeft, Droplets, Focus, Hand, Zap } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 

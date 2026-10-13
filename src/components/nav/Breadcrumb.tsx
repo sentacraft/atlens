@@ -21,7 +21,6 @@ export default function Breadcrumb({ segments, current }: BreadcrumbProps) {
 
   return (
     <>
-      {/* Mobile: back link to parent */}
       {parent && (
         <Link
           href={parent.href}
@@ -32,7 +31,6 @@ export default function Breadcrumb({ segments, current }: BreadcrumbProps) {
         </Link>
       )}
 
-      {/* Desktop: full hierarchical breadcrumb */}
       <nav
         aria-label="breadcrumb"
         className="hidden items-center gap-1.5 text-xs sm:flex"

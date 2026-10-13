@@ -60,10 +60,7 @@ function DialogBackdrop({ className }: { className?: string }) {
       )}
     />
   ) : (
-    // Dialog mode has no native click-to-dismiss backdrop, so we render the
-    // backdrop AS a Close trigger: clicking it routes through Base UI's internal
-    // onOpenChange, no callback threading. (DialogPrimitive.Backdrop is purely
-    // presentational — role="presentation", no press handler.)
+    // Dialog mode has no click-to-dismiss backdrop, so the backdrop is a Close trigger.
     <DialogPrimitive.Close
       render={<div />}
       nativeButton={false}
@@ -78,14 +75,7 @@ function DialogBackdrop({ className }: { className?: string }) {
   );
 }
 
-// Bare popup element with no positioning or box chrome — the escape hatch for
-// callers (e.g. the fullscreen lightbox) that paint their own surface. Drawer
-// mode wraps it in the swipe Viewport. `render` is omitted from the prop type so
-// callers cannot replace the element and corrupt the fixed portal structure.
-// Narrow className/style to their plain forms: Base UI's Dialog and Drawer popups
-// each accept a state-callback variant keyed to their own (incompatible) popup
-// state, so the union forms can't be forwarded to both. Every caller passes plain
-// values anyway.
+// `render` is omitted so callers cannot break the portal structure.
 type DialogRawPopupProps = Omit<DialogPrimitive.Popup.Props, "render" | "className" | "style"> & {
   className?: string;
   style?: React.CSSProperties;
@@ -107,9 +97,6 @@ function DialogRawPopup({ className, children, ...props }: DialogRawPopupProps) 
   );
 }
 
-// Opinionated surface: Portal + Backdrop + a positioned box (centered card on
-// desktop, bottom sheet on mobile). Callers compose their own header/body/footer
-// and place a <DialogClose> wherever they want one.
 function DialogPopup({ className, children, ...props }: DialogRawPopupProps) {
   const mode = useDialogMode();
 
@@ -161,14 +148,8 @@ function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
 
 function DialogFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    // data-base-ui-swipe-ignore stops a TAP on these buttons from starting Base UI's
-    // swipe tracking, which puts `transition: none` on the popup and flashes the drawer
-    // back mid-close on iOS. Keep it scoped to close-triggering controls — do NOT swipe-
-    // ignore the whole popup/header: the same attribute also disables Base UI's
-    // background-scroll guard for that element (its document touchmove handler early-
-    // returns on `ignoreTouchSwipeRef`), and on the non-scrollable header that lets the
-    // overlay pan + the page scroll through when the keyboard is up. The header must stay
-    // swipe-active so the guard keeps protecting it.
+    // Stops a tap here from starting Base UI's swipe tracking, which flashes the drawer on iOS.
+    // Never on the whole header: the attribute also disables the background-scroll guard.
     <div
       data-slot="dialog-footer"
       data-base-ui-swipe-ignore=""

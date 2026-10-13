@@ -5,8 +5,6 @@ import { bladePath, coverPoints, R } from "@/lib/iris/pheno-kinematics";
 import type { IrisPhenoParams } from "@/lib/iris/pheno-kinematics";
 const LOGO_SM_THRESHOLD = 40; // px — mirrors brand.ts threshold for reference
 
-// ── ApertureMark ─────────────────────────────────────────────────────────────
-
 function ApertureMark({
   N, t, halfSpread, overlap, curve, twist, shadowIntensity, bladeStroke,
   fill, gap, size, uid,
@@ -59,8 +57,6 @@ function ApertureMark({
   );
 }
 
-// ── Slider ────────────────────────────────────────────────────────────────────
-
 function Slider({ label, value, min, max, step, onChange, display }: {
   label: string; value: number; min: number; max: number; step: number;
   onChange: (v: number) => void; display?: string;
@@ -77,8 +73,6 @@ function Slider({ label, value, min, max, step, onChange, display }: {
     </div>
   );
 }
-
-// ── ApertureRingControl ───────────────────────────────────────────────────────
 
 const RING_SPACING = 64;
 const RING_VALUES = [
@@ -183,8 +177,6 @@ function ApertureRingControl({ value, onChange }: {
   );
 }
 
-// ── constants ─────────────────────────────────────────────────────────────────
-
 const BLADE_OPTIONS  = [5, 6, 7, 9] as const;
 const PREVIEW_SIZES  = [16, 24, 32, 48, 64, 128] as const;
 const LIGHT_BG = "#f3f4f6";
@@ -197,8 +189,6 @@ const THEMES = [
 function fStop(t: number) {
   return "f/" + (1.4 * Math.pow(2, (1 - t) * 5)).toFixed(1);
 }
-
-// ── ParamControls ─────────────────────────────────────────────────────────────
 
 function ParamControls({
   N, setN, aperture, setAperture,
@@ -219,7 +209,6 @@ function ParamControls({
 }) {
   return (
     <aside className="w-72 shrink-0 space-y-5 rounded-xl border border-gray-200 p-5">
-      {/* Blade count */}
       <div>
         <p className="mb-2 text-xs font-medium text-gray-400 uppercase tracking-wider">Blade count</p>
         <div className="flex gap-2">
@@ -234,7 +223,6 @@ function ParamControls({
         </div>
       </div>
 
-      {/* Sliders */}
       <div className="space-y-4">
         <Slider label="Aperture openness" value={aperture} min={0.02} max={0.98} step={0.01}
           onChange={setAperture} display={fStop(aperture)} />
@@ -252,7 +240,6 @@ function ParamControls({
           onChange={setShadow} display={shadow === 0 ? "off" : shadow.toFixed(2)} />
       </div>
 
-      {/* Reset only — export is handled by Aperture V2 Studio */}
       <div className="pt-1">
         <button onClick={onReset}
           className="w-full rounded-md py-1.5 text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
@@ -266,10 +253,7 @@ function ParamControls({
   );
 }
 
-// ── Page ──────────────────────────────────────────────────────────────────────
-
 export default function IrisPhenoLab() {
-  // ─ Large section (IRIS_LG) ─────────────────────────────────────────────
   const [lgN,           setLgN]           = useState(7);
   const [lgT,           setLgT]           = useState(0.3);
   const [lgHalfSpread,  setLgHalfSpread]  = useState(0.6);
@@ -279,7 +263,6 @@ export default function IrisPhenoLab() {
   const [lgBladeStroke, setLgBladeStroke] = useState(0.5);
   const [lgShadow,      setLgShadow]      = useState(0.8);
 
-  // Mouse-driven display aperture (fades to lgT on leave)
   const [lgDisplayT, _setLgDisplayT] = useState(0.3);
   const lgDisplayTRef  = useRef(0.3);
   const lgTRef         = useRef(0.3);
@@ -294,7 +277,6 @@ export default function IrisPhenoLab() {
     _setLgDisplayT(v);
   }
 
-  // Keep lgTRef in sync; mirror to display when not hovering
   useEffect(() => {
     lgTRef.current = lgT;
     if (!lgHoveringRef.current) {
@@ -355,7 +337,6 @@ export default function IrisPhenoLab() {
     lgEaseRaf.current = requestAnimationFrame(tick);
   }
 
-  // ─ Small section (IRIS_SM) ─────────────────────────────────────────
   const [smN,           setSmN]           = useState(5);
   const [smT,           setSmT]           = useState(0.35);
   const [smHalfSpread,  setSmHalfSpread]  = useState(0.6);
@@ -365,7 +346,6 @@ export default function IrisPhenoLab() {
   const [smBladeStroke, setSmBladeStroke] = useState(4.0);
   const [smShadow,      setSmShadow]      = useState(0.4);
 
-  // ─ Reset handlers (local only — no brand.ts I/O) ─────────────────────────
   function handleLgReset() {
     setLgN(7); setLgT(0.3); lgTRef.current = 0.3; setLgDisplayT(0.3);
     setLgHalfSpread(0.6); setLgOverlap(0.65); setLgCurve(1.0);
@@ -378,13 +358,11 @@ export default function IrisPhenoLab() {
     setSmTwist(0.35); setSmBladeStroke(4.0); setSmShadow(0.4);
   }
 
-  // ─ Render ─────────────────────────────────────────────────────────────────
   const lgShared = { N: lgN, halfSpread: lgHalfSpread, overlap: lgOverlap, curve: lgCurve, twist: lgTwist, bladeStroke: lgBladeStroke, shadowIntensity: lgShadow };
   const smShared = { N: smN, halfSpread: smHalfSpread, overlap: smOverlap, curve: smCurve, twist: smTwist, bladeStroke: smBladeStroke, shadowIntensity: smShadow };
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-10 space-y-14">
-      {/* Header */}
       <div>
         <div className="mb-1 text-xs text-gray-400 tracking-wide uppercase">Design Lab</div>
         <h1 className="text-2xl font-semibold tracking-tight">Iris Pheno — Phenomenokinematic Model (demo)</h1>
@@ -394,14 +372,12 @@ export default function IrisPhenoLab() {
         </p>
       </div>
 
-      {/* ── Section 1: Large / IRIS_LG ──────────────────────────────────── */}
       <section>
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-5">
           Large size — <span className="font-mono">IRIS_LG</span>
           <span className="ml-2 font-normal normal-case text-gray-400">(≥{LOGO_SM_THRESHOLD}px)</span>
         </h2>
         <div className="flex gap-6 items-start">
-          {/* Preview + ring */}
           <div className="flex-1 min-w-0 space-y-4">
             <div
               ref={lgPreviewRef}
@@ -420,7 +396,6 @@ export default function IrisPhenoLab() {
             <ApertureRingControl value={lgT} onChange={setLgT} />
           </div>
 
-          {/* Controls */}
           <ParamControls
             N={lgN} setN={setLgN}
             aperture={lgT} setAperture={setLgT}
@@ -435,14 +410,12 @@ export default function IrisPhenoLab() {
         </div>
       </section>
 
-      {/* ── Section 2: Favicon / IRIS_SM ─────────────────────────────── */}
       <section>
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-5">
           Favicon / icon size preview — <span className="font-mono">IRIS_SM</span>
           <span className="ml-2 font-normal normal-case text-gray-400">(&lt;{LOGO_SM_THRESHOLD}px)</span>
         </h2>
         <div className="flex gap-6 items-start">
-          {/* Preview grid */}
           <div className="flex-1 min-w-0">
             <div className="rounded-xl border border-gray-200 p-6 space-y-6">
               {THEMES.map((theme, tidx) => (
@@ -462,7 +435,6 @@ export default function IrisPhenoLab() {
             </div>
           </div>
 
-          {/* Controls */}
           <ParamControls
             N={smN} setN={setSmN}
             aperture={smT} setAperture={setSmT}

@@ -1,16 +1,10 @@
-// FILENAME — this file must stay `middleware.ts`. next-intl's docs recommend
-// `proxy.ts`, but Next.js 16 reserves that name for a Node.js-runtime proxy and
-// forces it to build as nodejs runtime, which no Edge-runtime deploy target can
-// accept. The cost of keeping this name is a deprecation warning from Next.js 16.
+// Must stay middleware.ts: Next 16 builds proxy.ts for the Node runtime, which Workers rejects.
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 import { INTERNAL_COOKIE } from "@/lib/analytics/session";
 
-// INTERNAL PARAM — xg_internal is the internal-user gate cookie (set here after
-// passing Cloudflare Access on /admin), read by the analytics routes to drop the
-// traffic from dashboards. When changing how it is set/named, keep the Atlens
-// Obsidian doc "Internal params & cookies" (Engineering/) in sync.
+// Internal param: keep the Obsidian doc "Internal params & cookies" in sync.
 const COUNTRY_COOKIE = "xg_country";
 const ONE_YEAR = 60 * 60 * 24 * 365;
 

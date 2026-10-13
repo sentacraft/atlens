@@ -6,7 +6,6 @@ import { Share } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
 
-// Augment the standard Event type with the non-standard Chrome prompt API.
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
@@ -21,7 +20,6 @@ type Platform =
   | "generic";      // everything else — show browser menu hint
 
 function detectSync(): Platform | null {
-  // Check standalone mode first (works everywhere).
   const standalone =
     window.matchMedia("(display-mode: standalone)").matches ||
     (navigator as { standalone?: boolean }).standalone === true;
@@ -34,7 +32,7 @@ function detectSync(): Platform | null {
     return "ios";
   }
 
-  // macOS Safari — does not fire beforeinstallprompt; uses Share → Add to Dock.
+  // macOS Safari never fires beforeinstallprompt.
   if (/Macintosh/.test(ua) && /Safari\//.test(ua) && !/Chrome|Edg\//.test(ua)) {
     return "macos-safari";
   }
@@ -64,7 +62,6 @@ export default function InstallPage() {
     };
     window.addEventListener("beforeinstallprompt", handler);
 
-    // If the event never fires (unsupported browser), fall back to generic hint.
     const timer = setTimeout(() => {
       setPlatform((prev) => (prev === "loading" ? "generic" : prev));
     }, 600);
@@ -87,14 +84,12 @@ export default function InstallPage() {
     }
   }
 
-  // Render nothing during the brief detection window to avoid layout flash.
   if (platform === "loading") {
     return null;
   }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-full px-6 py-16 text-center">
-      {/* App icon — shows the user exactly what will appear on their home screen */}
       {/* eslint-disable-next-line @next/next/no-img-element -- PWA icon is a static asset, not an optimized image */}
       <img
         src="/icons/icon-192-white.png"

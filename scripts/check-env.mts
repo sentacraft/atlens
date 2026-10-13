@@ -1,7 +1,4 @@
-// Warns when a secret listed in wrangler.toml's `secrets.required` has no local value.
-// Wrangler performs the same check under `pnpm run preview`, but `next dev` loads
-// .env files itself and never consults Wrangler, so predev runs this instead.
-// Warn-only: some production secrets (e.g. RATE_LIMIT_BYPASS) are optional locally.
+// `next dev` loads .env files itself and never consults Wrangler's secrets check.
 
 import { existsSync, readFileSync } from "node:fs";
 
@@ -14,7 +11,6 @@ function readRequiredSecrets(): string[] {
   return [...section[1].matchAll(/"([^"]+)"/g)].map((match) => match[1]);
 }
 
-// Same files `next dev` loads, minus the committed .env.development.
 function readLocalKeys(): Set<string> {
   const keys = new Set<string>();
   for (const file of [".env.development.local", ".env.local", ".env"]) {

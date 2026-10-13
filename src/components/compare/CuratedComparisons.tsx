@@ -41,7 +41,6 @@ export function PresetCard({ preset, allLenses, onSelect }: { preset: CuratedPre
         {preset.subtitle[lang]}
       </p>
 
-      {/* Lens model badge strip */}
       <div className="mt-2.5 flex flex-wrap gap-1">
         {lenses.map((lens) => {
           if (!lens) {
@@ -58,10 +57,6 @@ export function PresetCard({ preset, allLenses, onSelect }: { preset: CuratedPre
         })}
       </div>
 
-      {/* CTA — fades in on hover. The grid above uses `items-start` so
-          cards size to content (no stretch); the hover-reveal of this CTA
-          adds a row of text in flow rather than appearing inside an
-          empty padding-bottom block. */}
       <p className="pt-3 text-xs font-medium text-zinc-400 opacity-0 transition-opacity group-hover:opacity-100 dark:text-zinc-500">
         {tCompare("presetCardCta")} →
       </p>
@@ -84,7 +79,6 @@ export default function CuratedComparisons({ allLenses }: { allLenses: Lens[] })
   }
 
   if (compareIds.length > 0) {
-
     return null;
 
   }
@@ -95,7 +89,6 @@ export default function CuratedComparisons({ allLenses }: { allLenses: Lens[] })
         {t("curatedHint")}
       </p>
 
-      {/* Mobile: horizontal snap carousel */}
       <HorizontalScrollRail
         scrollRef={scrollRef}
         className="snap-x snap-mandatory scroll-pl-4 items-start gap-2 px-4 py-0.5"
@@ -125,11 +118,6 @@ export default function CuratedComparisons({ allLenses }: { allLenses: Lens[] })
         ))}
       </HorizontalScrollRail>
 
-      {/* Desktop: grid. `items-start` lets each card size to its own
-          content height rather than stretching to the row's tallest —
-          short cards no longer leave an empty padding block above the
-          hover-reveal CTA. Cards in the same row may end at slightly
-          different y, mirroring how Apple Music's content cards lay out. */}
       <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-2 items-start">
         {curatedPresets.map((preset) => (
           <PresetCard key={preset.slug} preset={preset} allLenses={allLenses} />

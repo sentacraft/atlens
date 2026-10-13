@@ -3,9 +3,6 @@
 import { useEffect } from "react";
 import { track } from "@/lib/analytics/analytics";
 
-// Fires a `search` event 500ms after the query stops changing while the
-// dialog is open. The trailing-edge debounce ensures we record the user's
-// "settled" query (including zero-result ones) without one row per keystroke.
 export function useSearchTelemetry({
   query,
   resultsCount,

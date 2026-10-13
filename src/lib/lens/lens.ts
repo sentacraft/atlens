@@ -15,10 +15,6 @@ export function isZoom(lens: Lens): boolean {
   return lens.focalLengthMin !== lens.focalLengthMax;
 }
 
-// Lens fields that can be used as filter conditions.
-// satisfies (keyof Lens)[] enforces at compile time that each key exists on Lens.
-// Most are plain booleans; wr and internalZoom carry richer semantics resolved
-// by lensHasFeature below.
 export const FILTER_FEATURE_KEYS = [
   "ois",
   "wr",
@@ -32,18 +28,7 @@ export type FocusFilter = (typeof FOCUS_FILTERS)[number];
 
 export type FilterFeatureKey = (typeof FILTER_FEATURE_KEYS)[number];
 
-/**
- * Whether a lens satisfies a feature toggle. Semantics are spelled out here
- * rather than riding on truthiness:
- * - wr: "partial" weather sealing still counts as having WR.
- * - powerZoom / internalZoom: zoom-only tri-state (true | false | "N/A"); only
- *   `true` counts, so "N/A" (primes) and false (manual / extending zooms) are
- *   excluded — handled by the `=== true` default below.
- *
- * Note: powerZoom and internalZoom are not orthogonal to the prime/zoom type
- * facet (only zooms can have them); selecting either alongside type=prime
- * yields an empty set, which is the intended, consistent behavior.
- */
+// wr: "partial" counts. powerZoom / internalZoom: only `true` counts, so primes ("N/A") never match.
 export function lensHasFeature(lens: Lens, key: FilterFeatureKey): boolean {
   if (key === "wr") {
     return lens.wr === true || lens.wr === "partial";
@@ -51,14 +36,7 @@ export function lensHasFeature(lens: Lens, key: FilterFeatureKey): boolean {
   return lens[key] === true;
 }
 
-/**
- * Focal-length categories based on full-frame equivalent focal length.
- * A lens matches a category if its [focalLengthMin, focalLengthMax] range
- * overlaps with the category's equivalent range.
- *
- * Boundaries are defined in FF-equivalent mm and divided by 1.5 at runtime
- * to produce the raw X-mount crop-sensor boundaries used for filtering.
- */
+// Boundaries are FF-equivalent mm.
 export const FOCAL_CATEGORIES = [
   {
     key: "ultrawide",
@@ -89,11 +67,6 @@ export const FOCAL_CATEGORIES = [
 
 export type FocalCategory = (typeof FOCAL_CATEGORIES)[number]["key"];
 
-/**
- * Returns the FocalCategory keys that a lens overlaps.
- * A lens matches a category when [focalLengthMin * 1.5, focalLengthMax * 1.5]
- * has any overlap with the category's full-frame equivalent range.
- */
 export function getFocalCategoriesOf(lens: {
   focalLengthMin: number;
   focalLengthMax: number;
@@ -106,7 +79,6 @@ export function getFocalCategoriesOf(lens: {
   return FOCAL_CATEGORIES.filter((cat) => {
     const catMin = "equivMinInclusive" in cat ? cat.equivMinInclusive : -Infinity;
     const catMax = "equivMaxExclusive" in cat ? cat.equivMaxExclusive : Infinity;
-    // overlap: lens range intersects [catMin, catMax)
     return lensEquivMin < catMax && lensEquivMax >= catMin;
   }).map((cat) => cat.key);
 }
@@ -114,23 +86,8 @@ export function getFocalCategoriesOf(lens: {
 export const FOCUS_MOTOR_CLASSES = ["linear", "stepping", "dc", "other"] as const;
 export type FocusMotorClass = (typeof FOCUS_MOTOR_CLASSES)[number];
 
-/**
- * Classify a brand-specific focus motor string into a canonical class.
- *
- * Returns:
- * - undefined for MF-only lenses (af === false), or AF lenses with no
- *   documented motor type (focusMotor field absent). The two cases are
- *   distinguishable upstream by checking lens.af; this function collapses
- *   both into "no class to filter on".
- * - "linear" | "stepping" | "dc" | "other" for AF lenses with a documented
- *   motor type.
- *
- * Scope assumption: the four classes cover every motor seen on X-mount and
- * G-mount today. Ultrasonic motors (USM / SWM / SSM / HSM / SDM) are a
- * fifth global category but absent from this project's data; if a future
- * lens lands with one, add an "ultrasonic" class to FOCUS_MOTOR_CLASSES (and
- * classify it in this function).
- */
+// Undefined for MF lenses and for AF lenses with no documented motor. No ultrasonic class:
+// no lens in the data has one yet.
 export function classifyFocusMotor(lens: Lens): FocusMotorClass | undefined {
   if (!lens.af) {
     return undefined;
@@ -141,28 +98,21 @@ export function classifyFocusMotor(lens: Lens): FocusMotorClass | undefined {
   }
 
   const s = m.toLowerCase();
-  // Linear family: LM, HLA, VXD, VCM, Triple/Quad Linear Motor, Dual HyperVCM
+  // LM, HLA, VXD, VCM, Linear Motor variants, HyperVCM
   if (/\b(lm|hla|vxd|vcm)\b/.test(s) || s.includes("linear") || s.includes("hypervcm")) {
     return "linear";
   }
-  // Stepping family: STM, RXD, "Stepping Motor", "Stepper Motor", "STM+Lead screw"
+  // STM, RXD, Stepping/Stepper Motor
   if (/\b(stm|rxd)\b/.test(s) || s.includes("stepping") || s.includes("stepper")) {
     return "stepping";
   }
-  // DC family: "DC Motor" (any casing), "DC Coreless Motor", and Fujifilm's
-  // legacy "High-Precision Motor" marketing label (high-precision DC motor).
+  // Includes Fujifilm's legacy "High-Precision Motor" label.
   if (/\bdc\b/.test(s) || s.includes("high-precision motor") || s.includes("high precision motor")) {
     return "dc";
   }
   return "other";
 }
 
-/**
- * Top-level usage category — a view partition, not an additive refinement.
- * Photo and cine are two largely-separate product universes: most photo
- * shoppers don't want cine lenses cluttering their list, and a cine shopper
- * wants exclusive cine results. Always one of the two; defaults to "photo".
- */
 export const USAGE_VALUES = ["photo", "cine"] as const;
 export type UsageFilter = (typeof USAGE_VALUES)[number];
 
@@ -203,7 +153,6 @@ export function filterLenses(lenses: Lens[], filters: FilterState): Lens[] {
     }
 
     if (filters.focusFilter === "auto" && !lens.af) {
-
       return false;
 
     }
@@ -223,7 +172,6 @@ export function filterLenses(lenses: Lens[], filters: FilterState): Lens[] {
     }
 
     if (filters.focusMotorClass && classifyFocusMotor(lens) !== filters.focusMotorClass) {
-
       return false;
 
     }
@@ -269,9 +217,6 @@ export function getAvailableOpticalTraits(lenses: { isCine?: boolean; opticalTra
   return OPTICAL_TRAITS.filter((trait) => present.has(trait));
 }
 
-// Partition lenses by the photo/cine view. This is the scope axis the brand
-// and optical-trait controls narrow to, so switching the usage view surfaces
-// only the brands/traits that actually exist in that universe.
 export function selectByUsage(lenses: Lens[], usage: UsageFilter): Lens[] {
   return lenses.filter((lens) => {
     const { isCine } = deriveSpecialty(lens);
@@ -296,11 +241,7 @@ export interface AvailableFilterOptions {
   focusModes: FocusFilter[];
 }
 
-// Which control values actually occur in a given lens set, in display order.
-// Every browse filter narrows to these so a scope (e.g. the cine view) never
-// shows a control whose every value yields zero results — cine lenses carry no
-// AF motor and none of the photo feature flags, so those whole rows drop out
-// rather than sitting there dead.
+// A control whose every value yields zero results in the current scope is hidden.
 export function getAvailableFilterOptions(lenses: Lens[]): AvailableFilterOptions {
   const features = new Set<FilterFeatureKey>();
   const motors = new Set<FocusMotorClass>();
@@ -336,8 +277,7 @@ export function getAvailableFilterOptions(lenses: Lens[]): AvailableFilterOption
   };
 }
 
-// Returns the locale-appropriate official link with no fallback:
-// zh → cn only, others → global only. Returns undefined if the locale's link is absent.
+// No fallback to the other locale's link.
 export function getLensUrl(lens: Lens, locale?: string): string | undefined {
   if (locale === "zh") {
     return lens.officialLinks?.cn;
@@ -355,8 +295,7 @@ export function sortLenses(
 ): Lens[] {
   const toComparable: Record<SortKey, (lens: Lens) => number> = {
     focalLength: (lens) => (dir === "asc" ? lens.focalLengthMin : lens.focalLengthMax),
-    // Cine lenses publish only T-stop (no f-stop); fall back to it so they
-    // still rank against each other in the cine / unfiltered views.
+    // Cine lenses publish only T-stops.
     maxAperture: (lens) => leadingValue(lens.maxAperture ?? lens.maxTStop) ?? Number.POSITIVE_INFINITY,
     weightG: (lens) => leadingValue(lens.weightG) ?? Number.POSITIVE_INFINITY,
     length: (lens) => lens.length?.mm ?? Number.POSITIVE_INFINITY,
@@ -372,12 +311,6 @@ export function defaultMarketForLocale(locale: string): "cn" | "global" {
   return locale === "zh" ? "cn" : "global";
 }
 
-/**
- * Leading end of a scalar-or-range spec: the bare number, or the low end of
- * a [low, high] tuple. Undefined passes through so each caller decides how to
- * rank missing data (e.g. sort pushes it to the end with `?? Infinity`, while
- * the compare table keeps it undefined to skip highlighting).
- */
 export function leadingValue(value: number | [number, number] | undefined): number | undefined {
   return Array.isArray(value) ? value[0] : value;
 }

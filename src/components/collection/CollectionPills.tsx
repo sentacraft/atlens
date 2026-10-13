@@ -3,9 +3,7 @@ import type { LensCollection } from "@/lib/collections";
 
 interface CollectionPillsProps {
   collections: LensCollection[];
-  // slug -> member count, from getCollectionLensCounts. Passed in rather than looked up
-  // here: one caller renders inside a client component, and counting members needs the
-  // catalogue, which would put 267KB of it in that bundle to print 43 numbers.
+  // Passed in: counting needs the catalogue, and one caller is a client component.
   lensCounts: Record<string, number>;
   mountSegment: string;
   locale: string;

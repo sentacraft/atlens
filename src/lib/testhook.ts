@@ -1,18 +1,11 @@
 import type { ReadonlyURLSearchParams } from "next/navigation";
 
-// -- Constants ----------------------------------------------------------------
-
-// INTERNAL PARAM — this query key and the option keys in
-// TESTHOOK_OPTION_DEFINITIONS below are internal/debug URL params. When adding,
-// renaming, or removing any, keep the Atlens Obsidian doc "Internal params &
-// cookies" (Engineering/) in sync.
+// Internal params: keep the Obsidian doc "Internal params & cookies" in sync.
 export const TESTHOOK_QUERY_KEYS = {
   testHook: "testhook",
 } as const;
 
 export const TESTHOOK_ALLOWED = process.env.NODE_ENV !== "production";
-
-// -- Types --------------------------------------------------------------------
 
 interface TestHookOptionValueDefinition {
   id: string;
@@ -27,8 +20,6 @@ interface TestHookOptionDefinition {
   description: string;
   values: readonly TestHookOptionValueDefinition[];
   defaultValue?: string;
-  // Panel grouping. Options without a section render under "UI tweaks";
-  // "askiris" options render under their own "AskIris debug" section.
   section?: "askiris";
 }
 
@@ -36,8 +27,6 @@ export interface TestHookState {
   testHook: boolean;
   options: Record<string, string>;
 }
-
-// -- Option CSS ---------------------------------------------------------------
 
 const CSS_CARD_CHROME_BARE = `
 [data-ui-hook="card"] {
@@ -121,8 +110,6 @@ const CSS_GRID_DENSITY_TIGHT = `
 }
 `;
 
-// -- Option definitions -------------------------------------------------------
-
 export const TESTHOOK_OPTION_DEFINITIONS: readonly TestHookOptionDefinition[] = [
   {
     key: "lensCardChrome",
@@ -200,8 +187,6 @@ export const TESTHOOK_OPTION_DEFINITIONS: readonly TestHookOptionDefinition[] = 
   },
 ];
 
-// -- State helpers ------------------------------------------------------------
-
 export function getDefaultTestHookState(): TestHookState {
   const options = Object.fromEntries(
     TESTHOOK_OPTION_DEFINITIONS.flatMap((option) =>
@@ -230,8 +215,6 @@ export function parseTestHookState(
     options,
   };
 }
-
-// -- DOM helpers --------------------------------------------------------------
 
 export function resolveTestHookCss(state: TestHookState): string {
   return TESTHOOK_OPTION_DEFINITIONS.flatMap((option) => {

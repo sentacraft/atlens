@@ -19,10 +19,7 @@ function computeAvailableOpticalTraits(lenses: { isCine?: boolean; opticalTraits
 }
 
 export function GET(req: Request) {
-  // Dormant endpoint with no consumers today; reserved for a future internal
-  // BFF, never external-facing. 404 in production until that lands so it is not
-  // a live, full-dataset surface. (A page would call notFound(); a route
-  // handler returns the 404 response directly.)
+  // No consumers yet; 404 in production so the full dataset is not a public surface.
   if (process.env.NODE_ENV === "production") {
     return new NextResponse(null, { status: 404 });
   }
@@ -74,12 +71,6 @@ export function GET(req: Request) {
     },
     {
       headers: {
-        // `no-store` because nothing on the site calls this at runtime (the UI
-        // filters client-side over props), so caching buys nothing today. The
-        // payload is derived entirely from build-static data (lenses.json) and
-        // only changes on redeploy — so if this becomes a public/hot endpoint,
-        // revisit: it is safe to cache aggressively (e.g. a long `s-maxage`
-        // keyed on the query params) instead of `no-store`.
         "Cache-Control": "private, no-store",
       },
     },

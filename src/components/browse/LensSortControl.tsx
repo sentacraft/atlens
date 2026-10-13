@@ -18,11 +18,6 @@ interface Props {
   onToggleDir: () => void;
 }
 
-/**
- * Sort key picker + direction toggle, shared by the browse list and the
- * collection detail grid so both surfaces sort identically. Owns only the
- * control UI and label copy; the caller holds the sort state.
- */
 export default function LensSortControl({
   sort,
   sortDir,
@@ -62,9 +57,6 @@ export default function LensSortControl({
             <SelectItem
               key={option.value}
               value={option.value}
-              // Full-bleed highlight: square corners let the popup's own
-              // rounded-lg + overflow clip the top/bottom rows, instead of a
-              // rounded bar floating inside the menu with gaps at the edges.
               className="rounded-none py-2 sm:py-2 text-[12px] text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
             >
               {option.label}

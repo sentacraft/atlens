@@ -1,22 +1,6 @@
 #!/usr/bin/env node
-// CI gate: ensure routes that should be statically prerendered actually are.
-//
-// Motivation: in Next.js App Router, accessing request-time context
-// (cookies(), headers(), getLocale()) anywhere up the layout tree silently
-// forces every descendant route into dynamic rendering. The build doesn't
-// fail — it just emits `ƒ Dynamic` instead of `○ Static` / `● SSG`. This
-// regression is invisible until production CPU usage / TTFB suffers (or, on
-// Cloudflare Workers, until the 10ms CPU limit causes 503s).
-//
-// This script reads .next/prerender-manifest.json after `next build` and
-// compares it against the canonical expectation declared in
-// src/config/static-routes.ts. Any expected static route that didn't get
-// prerendered fails the build immediately.
-//
-// History: commit b20d263 ("fix(seo): move lang attr to <html> via
-// getLocale() in root layout") unintentionally turned the entire [locale]
-// tree dynamic and went unnoticed for weeks. This gate prevents that class
-// of regression.
+// Fails the build when an expected static route was not prerendered: request context read up
+// the layout tree silently makes every descendant dynamic.
 
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -80,16 +64,8 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  // Second invariant: no dynamic route may be `fallback: false`.
-  //
-  // On our deploy target (Cloudflare Workers via OpenNext), a route whose
-  // prerender-manifest entry is `fallback: false` (which is exactly what
-  // `export const dynamicParams = false` emits) gets a 404 on EVERY request —
-  // even the ids that were prerendered and whose HTML is in the cache. This is
-  // invisible to `next build` and `next start` (they serve such routes fine),
-  // so it cannot be caught by typecheck/build/unit tests. PR #397 set
-  // dynamicParams=false on [id]/[slug] and took down every detail page in
-  // production; #398 reverted it. This gate encodes that invariant.
+  // No dynamic route may be `fallback: false`: OpenNext then 404s every request to it, while
+  // `next start` serves it fine (PR #397).
   const cfUnsafe = Object.entries(manifest.dynamicRoutes ?? {})
     .filter(([, entry]) => entry?.fallback === false)
     .map(([route]) => route);

@@ -1,12 +1,3 @@
-// Telemetry sink for AssetTelemetry.tsx beacons. Stays minimal on purpose:
-// the goal is to surface client-side asset failures and degraded Web Vitals
-// in Cloudflare Workers Observability logs, attributed by CF-IPCountry and
-// CF-Ray (PoP). Query in the CF Dashboard with messages prefixed `[tlm]`.
-//
-// No auth: beacons are fire-and-forget from any page view. Cloudflare's
-// platform-level DDoS/Bot protection is sufficient for this volume. We cap
-// the body size and validate the shape so a malicious POST can't fill logs.
-
 import { NextResponse } from "next/server";
 
 const MAX_BODY_BYTES = 2048;
@@ -81,8 +72,6 @@ export async function POST(req: Request): Promise<NextResponse> {
   const pop = ray.includes("-") ? ray.slice(ray.lastIndexOf("-") + 1) : "-";
   const ua = headers.get("user-agent") ?? "-";
 
-  // Single-line JSON log so CF Observability indexes the fields. Prefix
-  // `[tlm]` makes it trivial to grep / filter in the dashboard.
   console.log(
     "[tlm]",
     JSON.stringify({ ...payload, country, ray, pop, ua: ua.slice(0, 200) }),

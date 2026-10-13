@@ -1,10 +1,4 @@
-// Collection poster slicer.
-//
-// Renders a collection page at a mobile viewport, captures one full-page
-// screenshot, then slices it into share-ready segments cut at the gaps
-// between lens cards (never through a card). Range is the page top down to
-// the bottom of the lens grid — the "report an issue" CTA and the "related
-// collections" footer below it are excluded.
+// Slices a collection page screenshot into share-ready segments, cut between cards.
 //
 // Usage:
 //   node scripts/collection-poster.mjs --slug pancake --locale zh
@@ -25,13 +19,9 @@ function arg(name, fallback) {
 const SLUG = arg("slug", "pancake");
 const LOCALE = arg("locale", "zh");
 const MOUNT = arg("mount", "x");
-// Default to production: no dev indicator / HMR artifacts, real optimized
-// images. Point --base at a local dev server to preview unreleased copy.
 const BASE = arg("base", "https://atlens.app");
 const WIDTH = Number(arg("width", "390"));
 const DPR = Number(arg("dpr", "3"));
-// Max CSS height per segment. A single card taller than this still ships
-// whole (never split) — the cap only governs how many cards we pack together.
 const MAX_SEG = Number(arg("max", "1100"));
 
 const url = `${BASE}/${LOCALE}/lenses/${MOUNT}/collections/${SLUG}`;
@@ -54,14 +44,11 @@ async function main() {
   const page = await ctx.newPage();
 
   console.log(`→ ${url}`);
-  // 'load' not 'networkidle': the Next dev server keeps an HMR websocket open,
-  // so the page never reaches network idle. Settle with a fixed pause instead.
+  // 'load', not 'networkidle': the dev server's HMR websocket never idles.
   await page.goto(url, { waitUntil: "load", timeout: 60000 });
   await page.waitForTimeout(1500);
 
-  // Trigger lazy-loaded card images: step-scroll to the bottom, then back up.
-  // Driven from Node in short hops (not one long in-page loop) so a stray
-  // re-render can't destroy a long-lived execution context mid-scroll.
+  // Short hops from Node: a re-render can destroy a long-lived in-page loop.
   const docHeight = await page.evaluate(() => document.body.scrollHeight);
   const vh = await page.evaluate(() => window.innerHeight);
   for (let y = 0; y < docHeight; y += vh) {
@@ -70,7 +57,6 @@ async function main() {
   }
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.waitForTimeout(500);
-  // Wait for every <img> to finish decoding so no card renders half-loaded.
   await page.evaluate(() =>
     Promise.all(
       [...document.images].map((img) =>
@@ -79,9 +65,6 @@ async function main() {
     ),
   );
 
-  // Hide bottom-anchored fixed/sticky chrome (back-to-top, compare bar, etc.)
-  // so it doesn't get baked into the last segment. The top Nav (anchored at
-  // y≈0) is kept — it appears once at the page top in segment 1.
   await page.evaluate(() => {
     for (const el of document.querySelectorAll("*")) {
       const pos = getComputedStyle(el).position;
@@ -93,7 +76,6 @@ async function main() {
     }
   });
 
-  // Measure card boundaries and the grid bottom (the hard end of the range).
   const layout = await page.evaluate(() => {
     const grid = [...document.querySelectorAll("main div.grid")].find((el) =>
       el.className.includes("grid-cols-1"),
@@ -115,8 +97,6 @@ async function main() {
   }
   const { cards, gridBottom } = layout;
 
-  // Pack whole cards into segments up to MAX_SEG; cut at the midpoint of the
-  // gap between the last card of one segment and the first of the next.
   const segments = [];
   let segStart = 0;
   let i = 0;
@@ -137,7 +117,6 @@ async function main() {
     i = j + 1;
   }
 
-  // One full-page capture; slice it with sharp at device-pixel coordinates.
   const buf = await page.screenshot({ fullPage: true, type: "png" });
   const meta = await sharp(buf).metadata();
 

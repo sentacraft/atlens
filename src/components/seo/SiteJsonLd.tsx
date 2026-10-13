@@ -5,10 +5,7 @@ import JsonLd from "@/components/seo/JsonLd";
 const ORG_ID = `${SITE.url}/#organization`;
 const SITE_ID = `${SITE.url}/#website`;
 
-// Brand alternate names — including the China-market 图鉴 variant — so Google
-// learns that short queries like "atlens" or "富士镜头图鉴" resolve to this site.
-// The legacy "X-Glass" spellings are kept so users searching the former name
-// still land here after the rename.
+// Legacy "X-Glass" names stay so searches for the former name still land here.
 const BRAND_ALTERNATE_NAMES = [
   "atlens",
   "Atlens",

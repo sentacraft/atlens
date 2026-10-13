@@ -29,9 +29,6 @@ export function RetailersDropdown({ lens, customId }: Props) {
     return null;
   }
 
-  // Single-channel preview keeps the trigger compact: "Check price" is the
-  // primary label, the retailer name is just a secondary hint of what's behind
-  // it. Remaining channels collapse into a "+N" count and show on open.
   const preview = links[0].label;
   const extra = links.length > 1 ? ` +${links.length - 1}` : "";
   const hasAffiliate = links.some((l) => l.isAffiliate);
@@ -40,8 +37,6 @@ export function RetailersDropdown({ lens, customId }: Props) {
   return (
     <Popover.Root>
       <Popover.Trigger className={`${ACTION_OUTLINE_CLS} cursor-pointer`}>
-        {/* Baseline-align the label and the smaller retailer hint so their text
-            sits on one line; the chevron stays center-aligned via the trigger. */}
         <span className="inline-flex items-baseline gap-1.5">
           {t("buyAt")}
           <span data-redact-hook="priceSource" className="text-xs text-zinc-400 dark:text-zinc-500">

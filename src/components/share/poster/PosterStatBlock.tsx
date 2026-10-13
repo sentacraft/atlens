@@ -4,14 +4,9 @@ interface PosterStatBlockProps {
   value: string | null | undefined;
   label: string;
   valueClassName?: string;
-  /** Footnote superscript number to render after the value. */
   sup?: number;
 }
 
-/**
- * A single centered stat: large value + small label beneath.
- * Renders an empty div when value is absent to maintain grid structure.
- */
 export function PosterStatBlock({ value, label, valueClassName, sup }: PosterStatBlockProps) {
   if (!value) {
     return (

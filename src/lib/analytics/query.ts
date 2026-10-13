@@ -1,14 +1,3 @@
-// Server-side helper for querying the Workers Analytics Engine SQL API.
-// Used by /admin/analytics. Returns rows as plain objects, or surfaces a
-// structured error when credentials aren't configured (so the dashboard
-// can render a "not configured" hint without throwing).
-//
-// Required env:
-//   CF_ACCOUNT_ID         — Cloudflare account ID (public, but kept as a
-//                           runtime var to avoid baking it into static HTML)
-//   CF_ANALYTICS_TOKEN    — API token with Account Analytics:Read
-//                           (use `wrangler secret put CF_ANALYTICS_TOKEN`)
-
 export interface QueryResult<T = Record<string, unknown>> {
   ok: boolean;
   data: T[];

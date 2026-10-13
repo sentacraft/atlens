@@ -21,9 +21,7 @@ export async function GET(
     userId,
   });
 
-  // A conversation row is only ever written together with its first turn, so no
-  // messages means it does not exist for this user. Missing and foreign ids share one
-  // response so the endpoint does not reveal which ids exist.
+  // Missing and foreign ids return the same 404, so ids cannot be probed.
   if (messages.length === 0) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }

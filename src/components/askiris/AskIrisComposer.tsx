@@ -4,11 +4,6 @@ import { type Ref } from "react";
 import { ArrowUp, Plus, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// The AskIris input box, shared by the empty-state hero (size "lg") and the chat
-// thread (size "md"). The send button lives inside the box in both — an upward
-// arrow, the modern chat convention. In the thread, a separate "new topic" button
-// sits to the LEFT of the box as its own bordered control (not an in-box icon, so
-// it reads as a button rather than a passive hint), balancing the send affordance.
 export default function AskIrisComposer({
   value,
   onChange,
@@ -38,7 +33,6 @@ export default function AskIrisComposer({
   onNewTopic?: () => void;
   newTopicLabel?: string;
   newTopicDisabled?: boolean;
-  // While a reply streams, the send button becomes a stop button.
   streaming?: boolean;
   onStop?: () => void;
   stopLabel?: string;
@@ -79,8 +73,7 @@ export default function AskIrisComposer({
           ref={inputRef}
           className={cn(
             "placeholder:text-muted-foreground min-w-0 flex-1 bg-transparent outline-none",
-            // 16px minimum on mobile: iOS/Android auto-zoom into an input whose font is
-            // under 16px on focus. Keep the thread composer's compact 14px on desktop only.
+            // 16px minimum on mobile: iOS and Android zoom into smaller inputs on focus.
             lg ? "text-base" : "text-base sm:text-sm",
           )}
           value={value}

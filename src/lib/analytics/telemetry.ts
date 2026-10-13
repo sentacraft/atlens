@@ -1,7 +1,3 @@
-// Transport for client telemetry. Events are sent to /api/telemetry; the Worker tags
-// each with CF-IPCountry and CF-Ray (PoP) before logging. Identical events within the
-// dedupe window are dropped to keep volume sane.
-
 const ENDPOINT = "/api/telemetry";
 const DEDUPE_WINDOW_MS = 30_000;
 
@@ -23,6 +19,5 @@ export function reportTelemetry(payload: Record<string, unknown>): void {
       fetch(ENDPOINT, { method: "POST", body, keepalive: true }).catch(() => {});
     }
   } catch {
-    // Telemetry must never throw into the host page.
   }
 }

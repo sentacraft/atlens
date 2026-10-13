@@ -11,10 +11,6 @@ interface BackButtonProps {
   className?: string;
 }
 
-/**
- * Navigates to `fallbackHref`. The destination is determined by the caller —
- * use URL `?from=` params to pass context-aware targets.
- */
 export default function BackButton({ fallbackHref, className }: BackButtonProps) {
   const router = useRouter();
   const t = useTranslations("Common");

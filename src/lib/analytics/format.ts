@@ -1,15 +1,7 @@
-// Server-only formatters used by the /admin/analytics dashboard to turn
-// the raw rows that come out of Analytics Engine into something a human
-// can actually scan. Keep these functions pure and synchronous so they
-// stay cheap to call inline in JSX cells.
-
 import { defaultFilters } from "@/lib/lens/lens";
 import { getAllLenses } from "@/lib/lens/data";
 import { lensDisplayName } from "@/lib/lens/format";
 
-// Lazy-built lookup: slug → "Brand Series Model". Resolved once per
-// server process (the analytics route is force-dynamic but the catalog
-// itself never changes between requests within a deploy).
 let lensNameCache: Map<string, string> | null = null;
 
 function lensNameMap(): Map<string, string> {
@@ -25,16 +17,10 @@ function lensNameMap(): Map<string, string> {
   return map;
 }
 
-// Replace one slug with its display name; fall back to the slug if the
-// lens has been removed from the catalog (so the dashboard never breaks
-// on stale events).
 export function formatLensSlug(slug: string): string {
   return lensNameMap().get(slug) ?? slug;
 }
 
-// Replace a comma-separated slug list (used by compare_view.lens_slugs)
-// with a comma-separated display-name list, suitable for a single cell
-// with `title` set to the original string.
 export function formatLensSlugList(joined: string): string {
   if (!joined) {
     return "";
@@ -45,16 +31,6 @@ export function formatLensSlugList(joined: string): string {
     .join(" · ");
 }
 
-// Compact, human-readable summary of a filter_apply snapshot. Drops
-// any field that is null / empty array / empty string so that the
-// "interesting" parts of the filter stand out.
-//
-// Example input:
-//   {"brands":["sigma"],"typeFilter":"zoom","focusFilter":"auto",
-//    "usage":"photo","focusMotorClass":null,"features":[],
-//    "focalCategories":["standard"]}
-// Becomes:
-//   "Brand: sigma · Zoom · AF · Focal: standard"
 export function formatFilterSnapshot(json: string): string {
   let parsed: unknown;
   try {
@@ -99,8 +75,7 @@ export function formatFilterSnapshot(json: string): string {
   return parts.length > 0 ? parts.join(" · ") : "(no filters)";
 }
 
-// One filter dimension and the predicate that decides whether a snapshot has
-// it active (non-default). Order here is the display fallback when counts tie.
+// Order is the tie-break.
 const FILTER_DIMENSIONS: {
   label: string;
   isActive: (f: Record<string, unknown>) => boolean;
@@ -115,20 +90,12 @@ const FILTER_DIMENSIONS: {
   { label: "Optical trait", isActive: (f) => typeof f.opticalTrait === "string" && !!f.opticalTrait },
 ];
 
-// A `type` (not `interface`) so the row is assignable to the dashboard
-// Table's `Record<string, unknown>[]` prop — interfaces are treated as
-// open/augmentable and lack the implicit index signature.
+// A type, not an interface: interfaces lack the implicit index signature Table's prop needs.
 export type FilterDimensionUsage = {
   dimension: string;
   n: number;
 };
 
-// The "most-used snapshots" card groups by the whole filter combo, so a
-// filter used across many different combos never accumulates into a visible
-// row. This decomposes each snapshot and tallies how often every individual
-// filter dimension was active — answering "how many applies touched filter X"
-// rather than "what's the most common full combo". `n` is the per-combo
-// apply weight (SUM(_sample_interval)) that the caller already aggregated.
 export function aggregateFilterDimensions(
   rows: Array<{ filters?: unknown; n?: unknown }>,
 ): FilterDimensionUsage[] {
@@ -156,15 +123,12 @@ export function aggregateFilterDimensions(
     .sort((a, b) => b.n - a.n);
 }
 
-// Strip protocol + trailing slash from a URL for compact display.
-// Keeps host + path so it still uniquely identifies the destination.
 export function formatHref(href: string): string {
   return href
     .replace(/^https?:\/\//, "")
     .replace(/\/$/, "");
 }
 
-// Compact share method labels for the dashboard.
 const SHARE_METHOD_LABELS: Record<string, string> = {
   copy_link: "Copy link",
   native: "Native share",

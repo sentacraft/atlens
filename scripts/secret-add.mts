@@ -1,8 +1,5 @@
-// Adds a Worker secret in every place it has to exist:
-//   - wrangler.toml `[secrets] required` (names, so deploys fail when one is missing)
-//   - .env.example (names, for new checkouts)
-//   - .env.local in the main checkout and every worktree (local values)
-//   - production via `wrangler secret put`, only with --prod
+// Adds a secret to wrangler.toml `[secrets] required`, .env.example, every checkout's
+// .env.local, and production with --prod.
 //
 // Usage:
 //   pnpm run secret:add NAME                 prompt for the local value
@@ -10,9 +7,6 @@
 //   pnpm run secret:add NAME --prod          also prompt for and upload the production value
 //   pnpm run secret:add NAME --generate --prod   independent random values for each
 //   pnpm run secret:add NAME --prod --skip-local  production only, local already set
-//
-// Production values for self-owned secrets are generated separately from the local one, so
-// a leaked .env.local never unlocks production.
 
 import { execFileSync, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
@@ -38,7 +32,7 @@ function generateSecret(): string {
   return randomBytes(32).toString("base64url");
 }
 
-// Raw-mode read so the value is never echoed or written to shell history.
+// Raw mode, so the value is never echoed.
 async function promptHidden(label: string): Promise<string> {
   if (!process.stdin.isTTY) {
     throw new Error(`${label}: no terminal to prompt on; rerun interactively or pass --generate`);
@@ -131,8 +125,7 @@ function upsertEnvLocal(dir: string, value: string): "added" | "updated" | "unch
   return "added";
 }
 
-// Collect every value before writing anything, so a cancelled or failed prompt leaves no
-// half-registered secret behind.
+// Collected before any write, so a cancelled prompt leaves nothing half-registered.
 async function collectValues(): Promise<{ local?: string; production?: string }> {
   const local = skipLocal
     ? undefined

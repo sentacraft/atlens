@@ -19,9 +19,7 @@ function detectCapabilities() {
       files: [testFile],
     });
   }
-  // iOS non-Safari browsers run inside WKWebView, where canShare({ files })
-  // can return true while navigator.share() silently downloads the file
-  // instead of opening the system share sheet.
+  // iOS non-Safari browsers (WKWebView) report canShare({ files }) but share() just downloads.
   if (/CriOS|FxiOS|EdgiOS|OPiOS|GSA/i.test(navigator.userAgent)) {
     canShareFile = false;
   }
