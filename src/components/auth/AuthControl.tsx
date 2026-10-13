@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Menu } from "@base-ui/react/menu";
 import { LogOut, Trash2, UserRound, X } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
+import { accountUser, authClient } from "@/lib/auth-client";
 import {
   ACTION_PRIMARY_CLS,
   ICON_NAV_BTN_CLS,
@@ -55,7 +55,7 @@ export default function AuthControl() {
     }
   }
 
-  const user = session?.user;
+  const user = accountUser(session);
   if (!testHookEnabled) {
     return null;
   }

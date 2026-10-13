@@ -2,7 +2,7 @@ import "server-only";
 
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { betterAuth } from "better-auth";
-import { emailOTP } from "better-auth/plugins";
+import { anonymous, emailOTP } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { D1Dialect } from "kysely-d1";
 
@@ -60,7 +60,19 @@ export function createAuth() {
         enabled: true,
       },
     },
+    // On by default only in production; the in-memory store does not survive across
+    // Worker isolates, so counters live in D1. The default per-path rules already
+    // throttle /sign-in/* (including anonymous sign-in) and OTP sending.
+    rateLimit: {
+      enabled: true,
+      storage: "database",
+      customRules: {
+        // Called on every page load; read-only.
+        "/get-session": false,
+      },
+    },
     plugins: [
+      anonymous(),
       emailOTP({
         storeOTP: "hashed",
         async sendVerificationOTP({ email, otp }) {
@@ -76,6 +88,11 @@ export function createAuth() {
       nextCookies(),
     ],
     advanced: {
+      // Cloudflare sets this to the connecting client; X-Forwarded-For can be supplied
+      // by the client and would let it pick its own rate-limit bucket.
+      ipAddress: {
+        ipAddressHeaders: ["cf-connecting-ip"],
+      },
       database: {
         // D1 does not authorize the schema introspection queries Better Auth uses for validation.
         validateSchema: false,
