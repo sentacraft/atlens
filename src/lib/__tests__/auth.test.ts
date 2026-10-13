@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const betterAuth = vi.fn((config: unknown) => config);
 
 vi.mock("better-auth", () => ({ betterAuth }));
-vi.mock("better-auth/plugins", () => ({ emailOTP: vi.fn(() => ({})) }));
+vi.mock("better-auth/plugins", () => ({ anonymous: vi.fn(() => ({})), emailOTP: vi.fn(() => ({})) }));
 vi.mock("better-auth/next-js", () => ({ nextCookies: vi.fn(() => ({})) }));
 vi.mock("kysely-d1", () => ({ D1Dialect: vi.fn() }));
 // `next dev` exposes only Wrangler bindings here; `.env.local` values reach process.env.
