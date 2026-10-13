@@ -132,6 +132,21 @@ describe("AskIrisTraceCollector", () => {
     });
   });
 
+  // A client disconnect cancels the stream before streamText's abort part arrives, so
+  // isAborted stays false; the SDK reports it as isCancelled instead (vercel/ai#21218).
+  it("records a client disconnect as aborted", () => {
+    const collector = new AskIrisTraceCollector(1_000);
+
+    expect(
+      collector.finalizeStream({
+        responseMessage: { id: "assistant-1", role: "assistant", parts: [] },
+        isAborted: false,
+        isCancelled: true,
+        finishReason: "tool-calls",
+      }),
+    ).toMatchObject({ status: "aborted" });
+  });
+
   it("logs an error once and finalizes once", () => {
     const collector = new AskIrisTraceCollector(1_000);
 
