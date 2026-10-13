@@ -3,6 +3,7 @@ import type { AskIrisResponseFeedbackInput } from "./response-feedback-contract"
 
 export interface AskIrisResponseFeedbackRecord extends AskIrisResponseFeedbackInput {
   feedbackId: string;
+  turnId: string;
   // Unix ms.
   createdAt: number;
   // Unix ms.

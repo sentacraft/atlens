@@ -5,6 +5,7 @@ import {
   appendAskIrisTurn,
   ConversationOwnershipError,
   getAskIrisConversationMessages,
+  getOwnedAskIrisResponseTurnId,
   listAskIrisConversations,
   loadAskIrisTurnHistory,
   MAX_MESSAGE_BYTES,
@@ -133,6 +134,33 @@ describe("listAskIrisConversations", () => {
       { id: CONVERSATION, title: "Which lens is lighter?", createdAt: 1, updatedAt: 1 },
     ]);
     expect(await listAskIrisConversations(db, "stranger")).toEqual([]);
+  });
+});
+
+describe("getOwnedAskIrisResponseTurnId", () => {
+  beforeEach(async () => {
+    await append({
+      userMessage: text("u1", "user", "a"),
+      responseMessage: { ...text("a1", "assistant", "b"), metadata: { turnId: "u1" } },
+    });
+  });
+
+  it("returns the turn of a response the user owns", async () => {
+    await expect(
+      getOwnedAskIrisResponseTurnId(db, { responseMessageId: "a1", userId: "owner" }),
+    ).resolves.toBe("u1");
+  });
+
+  it("returns null for another user's response, a user message, or an unknown id", async () => {
+    for (const [responseMessageId, userId] of [
+      ["a1", "stranger"],
+      ["u1", "owner"],
+      ["missing", "owner"],
+    ]) {
+      await expect(
+        getOwnedAskIrisResponseTurnId(db, { responseMessageId, userId }),
+      ).resolves.toBeNull();
+    }
   });
 });
 
