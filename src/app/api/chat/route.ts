@@ -22,6 +22,7 @@ import { buildLensTools } from "@/lib/ai/tools";
 import { isOverTokenBudget, recordTokens } from "@/lib/ai/token-budget";
 import { clientIp, isBypassed, isRateLimited } from "@/lib/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
+import { anonymizeId } from "@/lib/analytics/anonymize";
 import { askirisTurnDataPoint } from "@/lib/analytics/events";
 import { parseSid, parseInternal } from "@/lib/analytics/session";
 import {
@@ -161,6 +162,10 @@ export async function POST(req: Request) {
   }
   const { history, userMessage, historyChanged } = turn;
   const messageContext = traceMessageContext(history);
+  const analyticsConversationId = await anonymizeId(
+    conversationId,
+    process.env.ANALYTICS_ID_SECRET,
+  );
 
   const persistTrace = (completion: AskIrisTraceCompletion | undefined) => {
     if (!completion || !traceDb || !messageContext) {
@@ -240,7 +245,7 @@ export async function POST(req: Request) {
               mount,
               locale,
               sid,
-              conversationId,
+              conversationId: analyticsConversationId,
               internal,
               totalTokens: usage.totalTokens ?? 0,
               inputTokens: usage.inputTokens ?? 0,
