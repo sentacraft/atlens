@@ -43,28 +43,3 @@ export function resolveTurn<MESSAGE extends UIMessage>(
     historyChanged: (stored[index - 1]?.id ?? null) !== previousMessageId,
   };
 }
-
-function isToolPart(part: UIMessage["parts"][number]): part is Extract<
-  UIMessage["parts"][number],
-  { state: string; toolCallId: string }
-> {
-  return part.type === "dynamic-tool" || part.type.startsWith("tool-");
-}
-
-/**
- * The response as it can be stored and replayed to the model. A stopped turn can end
- * mid tool call, and a call with no result cannot be converted back into model
- * messages, so unfinished calls are dropped. Undefined when nothing is left to keep.
- */
-export function storableResponse<MESSAGE extends UIMessage>(
-  message: MESSAGE,
-): MESSAGE | undefined {
-  const parts = message.parts.filter(
-    (part) =>
-      !isToolPart(part) || part.state === "output-available" || part.state === "output-error",
-  );
-  if (!parts.some((part) => part.type !== "step-start")) {
-    return undefined;
-  }
-  return { ...message, parts };
-}

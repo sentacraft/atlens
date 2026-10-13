@@ -34,7 +34,7 @@ import {
   ConversationOwnershipError,
   loadAskIrisTurnHistory,
 } from "@/lib/askiris/conversation-repository";
-import { resolveTurn, storableResponse } from "@/lib/askiris/turn-history";
+import { resolveTurn } from "@/lib/askiris/turn-history";
 import { createAuth } from "@/lib/auth";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { MOUNTS } from "@/lib/mount";
@@ -171,9 +171,10 @@ export async function POST(req: Request) {
   const tools = buildLensTools(mount, locale, tBrand);
 
   // The same `tools` must reach convertToModelMessages: recommendLenses.toModelOutput runs there.
+  // A stopped turn is stored with its unfinished tool calls, which the model cannot take back.
   let modelMessages: ModelMessage[];
   try {
-    modelMessages = await convertToModelMessages(history, { tools });
+    modelMessages = await convertToModelMessages(history, { tools, ignoreIncompleteToolCalls: true });
   } catch (error) {
     console.error("[askiris] failed to convert messages", error);
     persistTrace(traceCollector.finalizeError("message_conversion_failed"));
@@ -280,7 +281,7 @@ export async function POST(req: Request) {
           ).slice(0, 120),
           userMessage: turn.kind === "new" ? userMessage : undefined,
           replaceAfterMessageId: turn.kind === "regenerate" ? userMessage.id : undefined,
-          responseMessage: storableResponse(result.responseMessage),
+          responseMessage: result.responseMessage,
           context: { mount, locale },
           now: Date.now(),
         }).catch((error) =>
