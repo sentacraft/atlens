@@ -1,5 +1,13 @@
 import type { Mount } from "@/lib/types";
 import { mountToUrlSegment } from "@/lib/mount";
+import { firstSearchParam } from "@/lib/url/search-params";
+
+export const COMPARE_IDS_PARAM = "ids";
+
+/** The lens ids in `?ids=A,B,C`, in order. */
+export function readCompareIds(value: string | string[] | undefined): string[] {
+  return (firstSearchParam(value) ?? "").split(",").filter(Boolean);
+}
 
 /**
  * Single source of truth for the compare page URL shape.
@@ -30,7 +38,7 @@ export function buildComparePath(
   locale?: string,
 ): string {
   const seg = mountToUrlSegment(mount);
-  const qs = ids.length > 0 ? `?ids=${ids.join(",")}` : "";
+  const qs = ids.length > 0 ? `?${COMPARE_IDS_PARAM}=${ids.join(",")}` : "";
   const prefix = locale ? `/${locale}` : "";
   return `${prefix}/lenses/${seg}/compare${qs}`;
 }

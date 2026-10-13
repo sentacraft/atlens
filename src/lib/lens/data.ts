@@ -38,11 +38,9 @@ export function getAllLenses(locale: string): Lens[] {
   return [...getLensesByMount("X", locale), ...getLensesByMount("G", locale)];
 }
 
-export function parseLensIds(ids: string | undefined, mount: Mount, locale: string): Lens[] {
+export function parseLensIds(ids: string[], mount: Mount, locale: string): Lens[] {
   const pool = getLensesByMount(mount, locale);
-  return (ids ?? "")
-    .split(",")
-    .filter(Boolean)
+  return ids
     .slice(0, MAX_COMPARE)
     .map((id) => pool.find((l) => l.id === id))
     .filter((l): l is Lens => l !== undefined);

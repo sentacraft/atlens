@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect } from "react";
 import { useCompare } from "@/context/CompareProvider";
 import { projectToUrl } from "@/lib/url/projection";
+import { COMPARE_IDS_PARAM } from "@/lib/url/compare";
 
 // Headless: syncs the compare page's `?ids` ⇄ compare context. Page-scoped so the
 // global provider doesn't write ?ids= onto every route.
@@ -18,11 +19,11 @@ export default function CompareUrlSync({ initialIds }: { initialIds: string[] })
   // Project context → URL. Assign url.search as a string so the commas stay raw.
   useEffect(() => {
     projectToUrl((url) => {
-      url.searchParams.delete("ids");
+      url.searchParams.delete(COMPARE_IDS_PARAM);
       const rest = url.searchParams.toString();
       url.search =
         compareIds.length > 0
-          ? (rest ? `${rest}&` : "") + `ids=${compareIds.join(",")}`
+          ? (rest ? `${rest}&` : "") + `${COMPARE_IDS_PARAM}=${compareIds.join(",")}`
           : rest;
     });
   }, [compareIds]);
