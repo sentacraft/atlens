@@ -16,6 +16,9 @@ vi.mock("@/lib/analytics/analytics", () => ({
   track: vi.fn(),
 }));
 
+const toast = vi.hoisted(() => ({ error: vi.fn() }));
+vi.mock("sonner", () => ({ toast }));
+
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
@@ -53,7 +56,9 @@ describe("FeedbackDialog", () => {
     });
   });
 
-  it("logs failures without showing an error toast or rolling back the form", async () => {
+  // The submitter typed a description (and maybe a reply contact); a silent failure
+  // would lose it without their knowing. Ask Iris response ratings stay silent.
+  it("tells the user when submission fails and keeps what they typed", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ error: "feedback_unavailable" }), {
         status: 503,
@@ -61,17 +66,14 @@ describe("FeedbackDialog", () => {
       }),
     );
     vi.stubGlobal("fetch", fetchMock);
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.spyOn(console, "error").mockImplementation(() => {});
 
     renderFeedbackDialog();
     const description = screen.getByPlaceholderText("descriptionPlaceholderMain");
     fireEvent.change(description, { target: { value: "Please check this field." } });
     fireEvent.click(screen.getByRole("button", { name: "submit" }));
 
-    await waitFor(() => expect(errorSpy).toHaveBeenCalledWith(
-      "[feedback] submission failed",
-      { errorType: "Error" },
-    ));
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith("error (feedback_unavailable)"));
     expect(screen.queryByText("success")).not.toBeInTheDocument();
     expect(description).toHaveValue("Please check this field.");
   });
