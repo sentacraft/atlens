@@ -18,7 +18,7 @@ import {
   type TrackPayload,
 } from "@/lib/analytics/events";
 import { SID_COOKIE, SID_TTL_SECONDS, parseSid, parseInternal } from "@/lib/analytics/session";
-import { isBypassed } from "@/lib/ai/rate-limit";
+import { isBypassed } from "@/lib/rate-limit";
 
 const MAX_BODY_BYTES = 4096;
 const MAX_STRING_LEN = 256;
@@ -109,7 +109,7 @@ export async function POST(req: Request): Promise<NextResponse> {
   // tests / dogfooding done with that cookie vanish from every dashboard, not
   // just AskIris. The xg_internal flag stays an independent, weaker trigger.
   const internal =
-    parseInternal(cookieHeader) || isBypassed(req, process.env.RATE_LIMIT_BYPASS);
+    parseInternal(cookieHeader) || isBypassed(req);
 
   try {
     const { env } = getCloudflareContext();

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createRateLimiter, rateLimitedResponse } from "@/lib/rate-limit";
+import { isRateLimited, rateLimitedResponse } from "@/lib/rate-limit";
 
 type FeedbackType = "data_issue" | "general";
 
@@ -23,7 +23,6 @@ const MAX_DESCRIPTION_LENGTH = 2000;
 // Max length (in code points) of the description snippet used as an issue title.
 const TITLE_SNIPPET_MAX = 60;
 
-const checkRateLimit = createRateLimiter({ windowMs: 60_000, max: 5 });
 
 // Collapse a (possibly multi-line) description into a single-line title snippet,
 // truncating at a word boundary with an ellipsis when it exceeds the limit.
@@ -130,7 +129,7 @@ export function GET() {
 }
 
 export async function POST(req: Request) {
-  if (!checkRateLimit(req)) {
+  if (await isRateLimited(req, "feedback")) {
     return rateLimitedResponse();
   }
 
