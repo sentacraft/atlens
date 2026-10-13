@@ -11,7 +11,7 @@
    Tailwind otherwise emits a theme variable only when CSS references it. Values match
    Tailwind's defaults, plus xs. https://tailwindcss.com/docs/theme */
 @theme static {
-  --breakpoint-xs: 500px;
+  --breakpoint-xs: 31.25rem;
   --breakpoint-sm: 40rem;
   --breakpoint-md: 48rem;
   --breakpoint-lg: 64rem;
