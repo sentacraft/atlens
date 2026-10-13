@@ -18,7 +18,8 @@ import {
 } from "@/lib/ai/model";
 import { systemPrompt } from "@/lib/ai/system-prompt";
 import { buildLensTools } from "@/lib/ai/tools";
-import { clientIp, isBypassed, checkRateLimit, recordTokens } from "@/lib/ai/rate-limit";
+import { isOverTokenBudget, recordTokens } from "@/lib/ai/token-budget";
+import { clientIp, isBypassed, isRateLimited } from "@/lib/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
 import { askirisTurnDataPoint } from "@/lib/analytics/events";
 import { parseSid, parseInternal } from "@/lib/analytics/session";
@@ -83,9 +84,6 @@ export async function POST(req: Request) {
   const model = activeAgentModel();
   const traceCollector = new AskIrisTraceCollector(startedAt);
 
-  // Abuse guard for this public, no-login endpoint. Fail-open by design: with no KV
-  // binding (e.g. `next dev`) or on any KV hiccup we proceed unlimited rather than
-  // break the chat. See src/lib/ai/rate-limit.ts for the burst + daily-token design.
   const ip = clientIp(req);
   const cookieHeader = req.headers.get("cookie");
   // Read the anonymous visit id set by /api/track; "" for a turn before its first
@@ -94,7 +92,7 @@ export async function POST(req: Request) {
   // Secret-gated bypass: skips the rate limiter AND (as internal traffic) drops the
   // turn from the dashboard. xg_internal can also mark a turn internal, but must not
   // grant the bypass — so the limiter checks `bypassed` only, not `internal`.
-  const bypassed = isBypassed(req, process.env.RATE_LIMIT_BYPASS);
+  const bypassed = isBypassed(req);
   const internal = parseInternal(cookieHeader) || bypassed;
   let rateKv: KVNamespace | undefined;
   let ae: AnalyticsEngineDataset | undefined;
@@ -111,11 +109,11 @@ export async function POST(req: Request) {
     appDb = cf.env.APP_DB;
     releaseId = workerReleaseId(cf.env.CF_VERSION_METADATA);
     ctx = cf.ctx;
-    if (rateKv && ip && !bypassed) {
-      const verdict = await checkRateLimit(rateKv, ip);
-      if (!verdict.ok) {
-        return chatErrorResponse("rate_limit", 429);
-      }
+    if (
+      (await isRateLimited(req, "chat")) ||
+      (rateKv && ip && !bypassed && (await isOverTokenBudget(rateKv, ip)))
+    ) {
+      return chatErrorResponse("rate_limit", 429);
     }
   } catch {
     // Never let a missing binding or persistence error break chat.

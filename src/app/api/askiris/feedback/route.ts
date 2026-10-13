@@ -1,19 +1,18 @@
 import { NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { createRateLimiter, rateLimitedResponse } from "@/lib/rate-limit";
+import { isRateLimited, rateLimitedResponse } from "@/lib/rate-limit";
 import { askIrisResponseFeedbackInputSchema } from "@/lib/askiris/response-feedback-contract";
 import { saveAskIrisResponseFeedback } from "@/lib/askiris/response-feedback-repository";
 
 const MAX_BODY_BYTES = 8 * 1024;
 
-const checkRateLimit = createRateLimiter({ windowMs: 60_000, max: 30 });
 
 function invalidFeedbackResponse(): NextResponse {
   return NextResponse.json({ error: "invalid_feedback" }, { status: 400 });
 }
 
 export async function POST(req: Request): Promise<NextResponse> {
-  if (!checkRateLimit(req)) {
+  if (await isRateLimited(req, "askirisFeedback")) {
     return rateLimitedResponse();
   }
 

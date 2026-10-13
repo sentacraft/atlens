@@ -1,16 +1,15 @@
 import { NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { createRateLimiter, rateLimitedResponse } from "@/lib/rate-limit";
+import { isRateLimited, rateLimitedResponse } from "@/lib/rate-limit";
 import { askIrisResponseMessageIdSchema } from "@/lib/askiris/response-feedback-contract";
 import { deleteAskIrisResponseFeedback } from "@/lib/askiris/response-feedback-repository";
 
-const checkRateLimit = createRateLimiter({ windowMs: 60_000, max: 30 });
 
 export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ responseMessageId: string }> },
 ): Promise<NextResponse> {
-  if (!checkRateLimit(req)) {
+  if (await isRateLimited(req, "askirisFeedback")) {
     return rateLimitedResponse();
   }
 
