@@ -2,8 +2,10 @@ import { readFileSync } from "node:fs";
 import { DefaultChatTransport, readUIMessageStream } from "ai";
 // The real implementation: a copy of the hash would drift silently.
 import { lensRef, LENS_LINK_PREFIX } from "../../src/lib/ai/lens-ref.ts";
+import { askIrisChatRequestBody } from "../../src/lib/askiris/chat-request.ts";
 
-const ENDPOINT = "http://localhost:3000/api/chat";
+const ORIGIN = "http://localhost:3000";
+const ENDPOINT = `${ORIGIN}/api/chat`;
 
 const LENS_LINK_RE = new RegExp(`\\]\\(${LENS_LINK_PREFIX}([^)\\s]+)\\)`, "g");
 
@@ -24,15 +26,41 @@ function formatCard(rec) {
   return `- ${rec.name}${reason}`;
 }
 
-// The browser's own transport, so the eval sends the request the real client builds.
-const transport = new DefaultChatTransport({ api: ENDPOINT });
+// /api/chat needs a session, as the browser's first turn gets one; one anonymous user
+// serves the whole run.
+let sessionCookie;
+async function signIn() {
+  sessionCookie ??= fetch(`${ORIGIN}/api/auth/sign-in/anonymous`, {
+    method: "POST",
+    headers: { origin: ORIGIN, "content-type": "application/json" },
+    body: "{}",
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error(`anonymous sign-in failed: ${response.status}`);
+    }
+    return response.headers
+      .getSetCookie()
+      .map((cookie) => cookie.split(";")[0])
+      .join("; ");
+  });
+  return sessionCookie;
+}
 
-async function postTurn(messages, mount, locale) {
+// The browser's own transport and request body, so the eval sends what the real client sends.
+const transport = new DefaultChatTransport({
+  api: ENDPOINT,
+  headers: async () => ({ cookie: await signIn() }),
+  prepareSendMessagesRequest: ({ messages, body }) => ({
+    body: askIrisChatRequestBody(messages, body),
+  }),
+});
+
+async function postTurn(messages, mount, locale, conversationId) {
   const stream = await transport.sendMessages({
-    chatId: "eval",
+    chatId: conversationId,
     messages,
     trigger: "submit-message",
-    body: { mount, locale },
+    body: { mount, locale, conversationId },
   });
   let msg = null;
   for await (const m of readUIMessageStream({ stream, onError: () => {} })) {
@@ -189,14 +217,15 @@ export default class AskIrisProvider {
     const locale = context?.vars?.locale ?? "zh";
     // An object var: a top-level list var would matrix-expand into one test per element.
     const turns = Array.isArray(context?.vars?.dialog?.turns) ? context.vars.dialog.turns : [prompt];
+    const conversationId = crypto.randomUUID();
     const messages = [];
     const convo = [];
     const recalledEver = new Set();
     let d = digest(null);
     for (let i = 0; i < turns.length; i++) {
-      messages.push({ id: `u${i + 1}`, role: "user", parts: [{ type: "text", text: turns[i] }] });
+      messages.push({ id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text: turns[i] }] });
       convo.push(`[User] ${turns[i]}`);
-      const assistant = await postTurn(messages, mount, locale);
+      const assistant = await postTurn(messages, mount, locale, conversationId);
       if (assistant) {
         messages.push(assistant);
         d = digest(assistant);

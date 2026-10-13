@@ -41,6 +41,8 @@ function setup(overrides: Partial<Props> = {}) {
   const props: Props = {
     userId: "user-1",
     busy: false,
+    turnFailed: false,
+    historyChanged: false,
     stop: vi.fn(),
     setMessages: vi.fn(),
     clearError: vi.fn(),
@@ -114,27 +116,46 @@ describe("useConversation", () => {
     expect(param()).toBeNull();
   });
 
-  it("names the conversation in the URL once the server lists it", async () => {
-    const { result, rerender, props } = setup();
-    await waitFor(() => expect(result.current.listState).toBe("ready"));
+  it("names the conversation in the URL once a turn ends, for any visitor", () => {
+    const { result, rerender, props } = setup({ userId: undefined });
     expect(param()).toBeNull();
     const lengthBefore = window.history.length;
-    client.fetchConversationList.mockResolvedValueOnce([
-      { id: result.current.conversationId, title: "New", createdAt: 1, updatedAt: 1 },
-    ]);
 
     rerender({ ...props, busy: true });
     rerender({ ...props, busy: false });
 
-    await waitFor(() => expect(param()).toBe(result.current.conversationId));
+    expect(param()).toBe(result.current.conversationId);
     expect(window.history.length).toBe(lengthBefore);
   });
 
-  it("keeps an unsaved conversation out of the URL", async () => {
-    const { result } = setup({ userId: undefined });
-    await waitFor(() => expect(result.current.listState).toBe("idle"));
+  it("keeps a conversation whose turn failed out of the URL", () => {
+    const { rerender, props } = setup();
+
+    rerender({ ...props, busy: true });
+    rerender({ ...props, busy: false, turnFailed: true });
 
     expect(param()).toBeNull();
+  });
+
+  it("reloads the conversation when the server reports a history the client had not seen", async () => {
+    const serverHistory = [message("u0"), message("u1")];
+    client.fetchConversationMessages.mockResolvedValue(serverHistory);
+    const { result, rerender, props } = setup();
+
+    rerender({ ...props, busy: true, historyChanged: true });
+    rerender({ ...props, busy: false, historyChanged: true });
+
+    await waitFor(() => expect(props.setMessages).toHaveBeenLastCalledWith(serverHistory));
+    expect(client.fetchConversationMessages).toHaveBeenCalledWith(result.current.conversationId);
+  });
+
+  it("does not reload after a turn on an unchanged history", () => {
+    const { rerender, props } = setup();
+
+    rerender({ ...props, busy: true });
+    rerender({ ...props, busy: false });
+
+    expect(client.fetchConversationMessages).not.toHaveBeenCalled();
   });
 
   it("refuses to switch while a reply is streaming", () => {

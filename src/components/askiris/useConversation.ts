@@ -18,6 +18,8 @@ export function useConversation({
   initialConversationId,
   userId,
   busy,
+  turnFailed,
+  historyChanged,
   stop,
   setMessages,
   clearError,
@@ -26,6 +28,10 @@ export function useConversation({
   initialConversationId?: string;
   userId: string | undefined;
   busy: boolean;
+  // Describe the turn that just ended: whether it errored, and whether the server
+  // reported a history this client had not seen.
+  turnFailed: boolean;
+  historyChanged: boolean;
   stop: () => void;
   setMessages: (messages: AskIrisUIMessage[]) => void;
   clearError: () => void;
@@ -127,12 +133,6 @@ export function useConversation({
         ? "error"
         : "loading";
 
-  useEffect(() => {
-    if (listQuery.data?.some((item) => item.id === conversationIdRef.current)) {
-      writeConversationParam(conversationIdRef.current, "replace");
-    }
-  }, [listQuery.data]);
-
   const initialHandledRef = useRef(false);
   useEffect(() => {
     if (initialHandledRef.current || !initialConversationId) {
@@ -159,13 +159,37 @@ export function useConversation({
     return () => window.removeEventListener("popstate", onPopState);
   }, [load, resetToNew]);
 
+  const resync = useCallback(async () => {
+    const token = ++requestRef.current;
+    try {
+      const result = await fetchConversationMessages(conversationIdRef.current);
+      if (token === requestRef.current && result !== "unavailable") {
+        setMessages(result);
+      }
+    } catch {
+      // The thread on screen stays usable; the next turn reports the difference again.
+    }
+  }, [setMessages]);
+
+  // The server saves a turn before its stream closes, so a finished turn can be
+  // reopened from the URL and reloaded at once.
   const wasBusyRef = useRef(busy);
   useEffect(() => {
-    if (wasBusyRef.current && !busy && userId) {
+    const turnEnded = wasBusyRef.current && !busy;
+    wasBusyRef.current = busy;
+    if (!turnEnded) {
+      return;
+    }
+    if (!turnFailed && readConversationParam() !== conversationIdRef.current) {
+      writeConversationParam(conversationIdRef.current, "replace");
+    }
+    if (historyChanged) {
+      void resync();
+    }
+    if (userId) {
       void queryClient.invalidateQueries({ queryKey: conversationListQueryKey(userId) });
     }
-    wasBusyRef.current = busy;
-  }, [busy, queryClient, userId]);
+  }, [busy, turnFailed, historyChanged, resync, queryClient, userId]);
 
   return {
     conversationId,

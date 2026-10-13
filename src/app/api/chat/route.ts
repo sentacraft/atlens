@@ -29,17 +29,29 @@ import {
   type AskIrisTraceCompletion,
 } from "@/lib/askiris/trace-capture";
 import { workerReleaseId, writeAskIrisTrace } from "@/lib/askiris/trace-repository";
-import { saveAskIrisConversationTurn } from "@/lib/askiris/conversation-repository";
+import {
+  appendAskIrisTurn,
+  ConversationOwnershipError,
+  loadAskIrisTurnHistory,
+} from "@/lib/askiris/conversation-repository";
+import { resolveTurn, storableResponse } from "@/lib/askiris/turn-history";
 import { createAuth } from "@/lib/auth";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
 
 const chatRequestSchema = z.object({
-  messages: z.array(z.custom<AskIrisUIMessage>()),
+  message: z
+    .looseObject({
+      id: z.string().min(1).max(128),
+      role: z.literal("user"),
+      parts: z.array(z.unknown()),
+    })
+    .transform((message) => message as unknown as AskIrisUIMessage),
+  previousMessageId: z.string().max(128).nullable(),
   mount: z.enum(MOUNTS),
   locale: z.enum(routing.locales),
-  conversationId: z.string().max(64).optional(),
+  conversationId: z.uuid(),
 });
 
 const STEP_BUDGET = 8;
@@ -58,10 +70,9 @@ export async function POST(req: Request) {
     console.warn("[askiris] invalid request", z.prettifyError(parsed.error));
     return chatErrorResponse("unavailable", 400);
   }
-  const { messages, mount, locale, conversationId } = parsed.data;
+  const { message, previousMessageId, mount, locale, conversationId } = parsed.data;
   const startedAt = Date.now();
   const traceId = crypto.randomUUID();
-  const messageContext = traceMessageContext(messages);
   const model = activeAgentModel();
   const traceCollector = new AskIrisTraceCollector(startedAt);
 
@@ -93,6 +104,7 @@ export async function POST(req: Request) {
       return chatErrorResponse("rate_limit", 429);
     }
   } catch {
+    // A missing binding (e.g. under `next dev` without one) must not block chat.
   }
 
   try {
@@ -103,6 +115,27 @@ export async function POST(req: Request) {
       errorType: error instanceof Error ? error.name : "unknown",
     });
   }
+  // Every visitor has a session: the client signs in anonymously before its first turn.
+  if (!userId || !appDb) {
+    return chatErrorResponse("unavailable", userId ? 500 : 401);
+  }
+
+  let stored: AskIrisUIMessage[];
+  try {
+    stored = (await loadAskIrisTurnHistory(appDb, { conversationId, userId })) as AskIrisUIMessage[];
+  } catch (error) {
+    if (error instanceof ConversationOwnershipError) {
+      return chatErrorResponse("unavailable", 404);
+    }
+    console.error("[askiris] failed to load conversation", error);
+    return chatErrorResponse("unavailable", 500);
+  }
+  const turn = resolveTurn(stored, message, previousMessageId);
+  if (turn.kind === "invalid") {
+    return chatErrorResponse("unavailable", 400);
+  }
+  const { history, userMessage, historyChanged } = turn;
+  const messageContext = traceMessageContext(history);
 
   const persistTrace = (completion: AskIrisTraceCompletion | undefined) => {
     if (!completion || !traceDb || !messageContext) {
@@ -112,7 +145,7 @@ export async function POST(req: Request) {
     const write = writeAskIrisTrace(traceDb, {
       traceId,
       turnId: messageContext.turnId,
-      conversationId: conversationId ?? "",
+      conversationId,
       mount,
       locale,
       userMessage: messageContext.userMessage,
@@ -140,7 +173,7 @@ export async function POST(req: Request) {
   // The same `tools` must reach convertToModelMessages: recommendLenses.toModelOutput runs there.
   let modelMessages: ModelMessage[];
   try {
-    modelMessages = await convertToModelMessages(messages, { tools });
+    modelMessages = await convertToModelMessages(history, { tools });
   } catch (error) {
     console.error("[askiris] failed to convert messages", error);
     persistTrace(traceCollector.finalizeError("message_conversion_failed"));
@@ -184,7 +217,7 @@ export async function POST(req: Request) {
               mount,
               locale,
               sid,
-              conversationId: conversationId ?? "",
+              conversationId,
               internal,
               totalTokens: usage.totalTokens ?? 0,
               inputTokens: usage.inputTokens ?? 0,
@@ -221,7 +254,7 @@ export async function POST(req: Request) {
   return createUIMessageStreamResponse({
     stream: toUIMessageStream({
       stream: result.stream,
-      originalMessages: messages,
+      originalMessages: history,
       generateMessageId: () => crypto.randomUUID(),
       messageMetadata: ({ part }) => {
         if (part.type !== "start" || !messageContext) {
@@ -230,45 +263,37 @@ export async function POST(req: Request) {
         return {
           turnId: messageContext.turnId,
           traceId,
+          ...(historyChanged ? { historyChanged: true as const } : {}),
         };
       },
       onEnd: async (result) => {
         persistTrace(traceCollector.finalizeStream(result));
-        if (!userId || !conversationId || result.isAborted || !messageContext) {
+        // A failed turn stores nothing; its retry arrives as a new turn or a regenerate.
+        if (result.outcome.status === "failed" || !appDb || !userId) {
           return;
         }
-
-        const currentUserMessage = result.messages.findLast(
-          (message) => message.id === messageContext.turnId,
-        );
-        if (!currentUserMessage) {
-          return;
-        }
-
-        if (!appDb) {
-          return;
-        }
-
-        try {
-          await saveAskIrisConversationTurn(appDb, {
-            conversationId,
-            userId,
-            title: String(
-              currentUserMessage.parts.find((part) => part.type === "text")?.text ??
-                "New conversation",
-            ).slice(0, 120),
-            messages: result.messages,
-            currentTurnId: messageContext.turnId,
-            responseMessageId: result.responseMessage.id,
-            context: { mount, locale },
-            now: Date.now(),
-          });
-        } catch (error) {
+        const save = appendAskIrisTurn(appDb, {
+          conversationId,
+          userId,
+          title: String(
+            userMessage.parts.find((part) => part.type === "text")?.text ?? "New conversation",
+          ).slice(0, 120),
+          userMessage: turn.kind === "new" ? userMessage : undefined,
+          replaceAfterMessageId: turn.kind === "regenerate" ? userMessage.id : undefined,
+          responseMessage: storableResponse(result.responseMessage),
+          context: { mount, locale },
+          now: Date.now(),
+        }).catch((error) =>
           console.error("[askiris] failed to persist conversation", {
             errorType: error instanceof Error ? error.name : "unknown",
+            errorMessage: error instanceof Error ? error.message : String(error),
             conversationId,
-          });
-        }
+          }),
+        );
+        // Awaited so the stream closes only after the save, letting the client reload the
+        // conversation right away; waitUntil covers a stopped turn whose client is gone.
+        ctx?.waitUntil(save);
+        await save;
       },
       // Public endpoint: raw provider errors stay in the server log.
       onError: (error) => {
