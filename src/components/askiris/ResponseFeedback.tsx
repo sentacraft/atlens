@@ -19,6 +19,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
 import type { AskIrisResponseFeedbackInput } from "@/lib/askiris/response-feedback-contract";
+import {
+  deleteResponseFeedback,
+  postResponseFeedback,
+} from "@/lib/askiris/response-feedback-client";
 import { cn } from "@/lib/utils";
 
 type Rating = AskIrisResponseFeedbackInput["rating"];
@@ -34,13 +38,6 @@ const REASONS = [
 ] as const;
 
 type ReasonCode = (typeof REASONS)[number];
-type ResponseFeedbackWrite = Omit<
-  AskIrisResponseFeedbackInput,
-  "reasonCodes" | "comment"
-> & {
-  reasonCodes?: ReasonCode[];
-  comment?: string;
-};
 
 interface ResponseFeedbackDetails {
   reasonCodes: ReasonCode[];
@@ -52,55 +49,6 @@ interface ResponseFeedbackDialogProps {
   onOpenChange: (open: boolean) => void;
   responseMessageId: string;
   onSubmit: (details: ResponseFeedbackDetails) => Promise<void>;
-}
-
-async function postResponseFeedback({
-  turnId,
-  responseMessageId,
-  rating,
-  reasonCodes,
-  comment,
-}: ResponseFeedbackWrite): Promise<void> {
-  const body: {
-    turnId: string;
-    responseMessageId: string;
-    rating: Rating;
-    reasonCodes?: ReasonCode[];
-    comment?: string;
-  } = {
-    turnId,
-    responseMessageId,
-    rating,
-  };
-
-  if (reasonCodes?.length) {
-    body.reasonCodes = reasonCodes;
-  }
-  const trimmedComment = comment?.trim();
-  if (trimmedComment) {
-    body.comment = trimmedComment;
-  }
-
-  const res = await fetch("/api/askiris/feedback", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    throw new Error(`feedback_${res.status}`);
-  }
-}
-
-async function deleteResponseFeedback(responseMessageId: string): Promise<void> {
-  const res = await fetch(
-    `/api/askiris/feedback/${encodeURIComponent(responseMessageId)}`,
-    { method: "DELETE" },
-  );
-
-  if (!res.ok) {
-    throw new Error(`feedback_${res.status}`);
-  }
 }
 
 function logFeedbackFailure(responseMessageId: string, error: unknown): void {

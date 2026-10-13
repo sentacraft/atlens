@@ -44,12 +44,8 @@ export default function AuthControl() {
     setDeleting(true);
     setDeleteError(null);
     try {
-      const response = await fetch("/api/auth/delete-user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: "{}",
-      });
-      if (!response.ok) {
+      const { error } = await authClient.deleteUser();
+      if (error) {
         throw new Error("delete_failed");
       }
       window.location.reload();

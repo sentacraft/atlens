@@ -3,14 +3,13 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { TESTHOOK_ALLOWED } from "@/lib/testhook";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
+import { fetchFixtures, writeFixture } from "@/lib/askiris/fixture-client";
 
 // Dev-only fixture store shared between AskIrisChat (publishes its live messages,
 // reads the selected fixture) and the test-hook panel (selects, saves, renames,
 // deletes). Fixtures are persisted as JSON files under a gitignored repo dir via
 // /api/askiris-fixtures — a captured session survives reloads and is visible on
 // disk, so you can save a live reply and replay it while debugging.
-
-const API = "/api/askiris-fixtures";
 
 let live: AskIrisUIMessage[] = [];
 let selected = "off";
@@ -36,27 +35,11 @@ function emit() {
   listeners.forEach((l) => l());
 }
 
-async function post(body: Record<string, unknown>) {
-  try {
-    await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-  } catch {
-    // Dev-only convenience; a failed write just leaves disk out of step.
-  }
-}
-
 async function refresh() {
-  try {
-    const res = await fetch(API);
-    if (res.ok) {
-      saved = await res.json();
-      emit();
-    }
-  } catch {
-    // Route unreachable (dev server restarting) — nothing to replay.
+  const fixtures = await fetchFixtures();
+  if (fixtures) {
+    saved = fixtures;
+    emit();
   }
 }
 
@@ -110,7 +93,7 @@ export function saveFixture(name: string) {
   saved = { ...saved, [name]: live };
   selected = name;
   emit();
-  void post({ action: "save", name, messages: live });
+  void writeFixture({ action: "save", name, messages: live });
 }
 
 export function deleteFixture(name: string) {
@@ -121,7 +104,7 @@ export function deleteFixture(name: string) {
     selected = "off";
   }
   emit();
-  void post({ action: "delete", name });
+  void writeFixture({ action: "delete", name });
 }
 
 export function renameFixture(from: string, to: string) {
@@ -136,7 +119,7 @@ export function renameFixture(from: string, to: string) {
     selected = to;
   }
   emit();
-  void post({ action: "rename", from, to });
+  void writeFixture({ action: "rename", from, to });
 }
 
 // The chat's whole contact with this module: hand it the live thread, render what
