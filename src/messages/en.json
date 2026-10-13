@@ -50,8 +50,10 @@
     "logout": "Log out",
     "deleteAccount": "Delete account",
     "deleteTitle": "Delete your account?",
-    "deleteDescription": "This will sign you out and permanently remove your account. This cannot be undone.",
-    "deleting": "Deleting…",
+    "deleteDescription": "We'll email you a confirmation link. Opening it permanently removes your account and your Ask Iris conversations. This cannot be undone.",
+    "deleteEmailSend": "Send confirmation email",
+    "deleteEmailSending": "Sending…",
+    "deleteEmailSent": "We sent a link to {email}. Open it in this browser to finish deleting your account. It expires in 24 hours.",
     "cancel": "Cancel",
     "close": "Close"
   },
