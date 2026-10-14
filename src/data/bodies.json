@@ -1,0 +1,718 @@
+{
+  "$schema": "./bodies.schema.json",
+  "lineupCheckedAt": "2026-10-14",
+  "lineupSource": "https://www.fujifilm-x.com/global/products/cameras/",
+  "bodies": [
+    {
+      "id": "fujifilm-x-pro1",
+      "name": "X-Pro1",
+      "series": "X-Pro",
+      "mount": "X",
+      "releaseYear": 2012,
+      "megapixels": 16.3,
+      "sensor": "X-Trans CMOS",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 450,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-Pro1"
+      ]
+    },
+    {
+      "id": "fujifilm-x-e1",
+      "name": "X-E1",
+      "series": "X-E",
+      "mount": "X",
+      "releaseYear": 2012,
+      "megapixels": 16.3,
+      "sensor": "X-Trans CMOS",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 350,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-E1"
+      ]
+    },
+    {
+      "id": "fujifilm-x-m1",
+      "name": "X-M1",
+      "series": "X-M",
+      "mount": "X",
+      "releaseYear": 2013,
+      "megapixels": 16.3,
+      "sensor": "X-Trans CMOS",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 330,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-M1"
+      ]
+    },
+    {
+      "id": "fujifilm-x-a1",
+      "name": "X-A1",
+      "series": "X-A",
+      "mount": "X",
+      "releaseYear": 2013,
+      "megapixels": 16.3,
+      "sensor": "APS-C Bayer CMOS",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 330,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-A1"
+      ]
+    },
+    {
+      "id": "fujifilm-x-e2",
+      "name": "X-E2",
+      "series": "X-E",
+      "mount": "X",
+      "releaseYear": 2013,
+      "megapixels": 16.3,
+      "sensor": "X-Trans CMOS II",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 350,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-E2s"
+      ]
+    },
+    {
+      "id": "fujifilm-x-t1",
+      "name": "X-T1",
+      "series": "X-T",
+      "mount": "X",
+      "releaseYear": 2014,
+      "megapixels": 16.3,
+      "sensor": "X-Trans CMOS II",
+      "ibis": false,
+      "weatherSealed": true,
+      "weightGrams": 440,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-T1"
+      ]
+    },
+    {
+      "id": "fujifilm-x-a2",
+      "name": "X-A2",
+      "series": "X-A",
+      "mount": "X",
+      "releaseYear": 2015,
+      "megapixels": 16.3,
+      "sensor": "APS-C Bayer CMOS",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 350,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-A2"
+      ]
+    },
+    {
+      "id": "fujifilm-x-t10",
+      "name": "X-T10",
+      "series": "X-T",
+      "mount": "X",
+      "releaseYear": 2015,
+      "megapixels": 16.3,
+      "sensor": "X-Trans CMOS II",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 381,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-T10"
+      ]
+    },
+    {
+      "id": "fujifilm-x-pro2",
+      "name": "X-Pro2",
+      "series": "X-Pro",
+      "mount": "X",
+      "releaseYear": 2016,
+      "megapixels": 24.3,
+      "sensor": "X-Trans CMOS III",
+      "ibis": false,
+      "weatherSealed": true,
+      "weightGrams": 495,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-e2s",
+      "name": "X-E2S",
+      "series": "X-E",
+      "mount": "X",
+      "releaseYear": 2016,
+      "megapixels": 16.3,
+      "sensor": "X-Trans CMOS II",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 350,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-E2s"
+      ]
+    },
+    {
+      "id": "fujifilm-x-t2",
+      "name": "X-T2",
+      "series": "X-T",
+      "mount": "X",
+      "releaseYear": 2016,
+      "megapixels": 24.3,
+      "sensor": "X-Trans CMOS III",
+      "ibis": false,
+      "weatherSealed": true,
+      "weightGrams": 500,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-a3",
+      "name": "X-A3",
+      "series": "X-A",
+      "mount": "X",
+      "releaseYear": 2016,
+      "megapixels": 24.2,
+      "sensor": "APS-C Bayer CMOS",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 339,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-A3"
+      ]
+    },
+    {
+      "id": "fujifilm-x-a10",
+      "name": "X-A10",
+      "series": "X-A",
+      "mount": "X",
+      "releaseYear": 2016,
+      "megapixels": 16.3,
+      "sensor": "APS-C Bayer CMOS",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 331,
+      "discontinued": true,
+      "sources": [
+        "https://www.fujifilm-x.com/en-us/products/cameras/x-a10/",
+        "https://sansmirror.com/cameras/older-mirrorless-camera/fujifilm-x-cameras/fujifilm-x-a10-camera-speci.html"
+      ]
+    },
+    {
+      "id": "fujifilm-x-t20",
+      "name": "X-T20",
+      "series": "X-T",
+      "mount": "X",
+      "releaseYear": 2017,
+      "megapixels": 24.3,
+      "sensor": "X-Trans CMOS III",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 383,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-T20"
+      ]
+    },
+    {
+      "id": "fujifilm-x-e3",
+      "name": "X-E3",
+      "series": "X-E",
+      "mount": "X",
+      "releaseYear": 2017,
+      "megapixels": 24.3,
+      "sensor": "X-Trans CMOS III",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 337,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-E3"
+      ]
+    },
+    {
+      "id": "fujifilm-x-a5",
+      "name": "X-A5",
+      "series": "X-A",
+      "mount": "X",
+      "releaseYear": 2018,
+      "megapixels": 24.2,
+      "sensor": "APS-C Bayer CMOS",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 361,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-A5"
+      ]
+    },
+    {
+      "id": "fujifilm-x-a20",
+      "name": "X-A20",
+      "series": "X-A",
+      "mount": "X",
+      "releaseYear": 2018,
+      "megapixels": 16.3,
+      "sensor": "APS-C Bayer CMOS",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 348,
+      "discontinued": true,
+      "sources": [
+        "https://fujifilm-dsc.com/en/manual/x-a20/appendix/spec/index.html"
+      ]
+    },
+    {
+      "id": "fujifilm-x-h1",
+      "name": "X-H1",
+      "series": "X-H",
+      "mount": "X",
+      "releaseYear": 2018,
+      "megapixels": 24.3,
+      "sensor": "X-Trans CMOS III",
+      "ibis": true,
+      "weatherSealed": true,
+      "weightGrams": 673,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-t100",
+      "name": "X-T100",
+      "series": "X-T",
+      "mount": "X",
+      "releaseYear": 2018,
+      "megapixels": 24.2,
+      "sensor": "APS-C Bayer CMOS",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 448,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-T100"
+      ]
+    },
+    {
+      "id": "fujifilm-x-t3",
+      "name": "X-T3",
+      "series": "X-T",
+      "mount": "X",
+      "releaseYear": 2018,
+      "megapixels": 26.1,
+      "sensor": "X-Trans CMOS 4",
+      "ibis": false,
+      "weatherSealed": true,
+      "weightGrams": 539,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-T3",
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-t30",
+      "name": "X-T30",
+      "series": "X-T",
+      "mount": "X",
+      "releaseYear": 2019,
+      "megapixels": 26.1,
+      "sensor": "X-Trans CMOS 4",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 383,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-a7",
+      "name": "X-A7",
+      "series": "X-A",
+      "mount": "X",
+      "releaseYear": 2019,
+      "megapixels": 24.2,
+      "sensor": "APS-C Bayer CMOS",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 320,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-A7"
+      ]
+    },
+    {
+      "id": "fujifilm-x-pro3",
+      "name": "X-Pro3",
+      "series": "X-Pro",
+      "mount": "X",
+      "releaseYear": 2019,
+      "megapixels": 26.1,
+      "sensor": "X-Trans CMOS 4",
+      "ibis": false,
+      "weatherSealed": true,
+      "weightGrams": 497,
+      "discontinued": false,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-Pro3",
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-t200",
+      "name": "X-T200",
+      "series": "X-T",
+      "mount": "X",
+      "releaseYear": 2020,
+      "megapixels": 24.2,
+      "sensor": "APS-C Bayer CMOS",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 370,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-T200"
+      ]
+    },
+    {
+      "id": "fujifilm-x-t4",
+      "name": "X-T4",
+      "series": "X-T",
+      "mount": "X",
+      "releaseYear": 2020,
+      "megapixels": 26.1,
+      "sensor": "X-Trans CMOS 4",
+      "ibis": true,
+      "weatherSealed": true,
+      "weightGrams": 607,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-T4",
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-s10",
+      "name": "X-S10",
+      "series": "X-S",
+      "mount": "X",
+      "releaseYear": 2020,
+      "megapixels": 26.1,
+      "sensor": "X-Trans CMOS 4",
+      "ibis": true,
+      "weatherSealed": false,
+      "weightGrams": 465,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-e4",
+      "name": "X-E4",
+      "series": "X-E",
+      "mount": "X",
+      "releaseYear": 2021,
+      "megapixels": 26.1,
+      "sensor": "X-Trans CMOS 4",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 364,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-t30-ii",
+      "name": "X-T30 II",
+      "series": "X-T",
+      "mount": "X",
+      "releaseYear": 2021,
+      "megapixels": 26.1,
+      "sensor": "X-Trans CMOS 4",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 378,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-h2s",
+      "name": "X-H2S",
+      "series": "X-H",
+      "mount": "X",
+      "releaseYear": 2022,
+      "megapixels": 26.1,
+      "sensor": "X-Trans CMOS 5 HS",
+      "ibis": true,
+      "weatherSealed": true,
+      "weightGrams": 660,
+      "discontinued": false,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-h2",
+      "name": "X-H2",
+      "series": "X-H",
+      "mount": "X",
+      "releaseYear": 2022,
+      "megapixels": 40.2,
+      "sensor": "X-Trans CMOS 5 HR",
+      "ibis": true,
+      "weatherSealed": true,
+      "weightGrams": 660,
+      "discontinued": false,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-t5",
+      "name": "X-T5",
+      "series": "X-T",
+      "mount": "X",
+      "releaseYear": 2022,
+      "megapixels": 40.2,
+      "sensor": "X-Trans CMOS 5 HR",
+      "ibis": true,
+      "weatherSealed": true,
+      "weightGrams": 557,
+      "discontinued": false,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-s20",
+      "name": "X-S20",
+      "series": "X-S",
+      "mount": "X",
+      "releaseYear": 2023,
+      "megapixels": 26.1,
+      "sensor": "X-Trans CMOS 4",
+      "ibis": true,
+      "weatherSealed": false,
+      "weightGrams": 491,
+      "discontinued": false,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-t50",
+      "name": "X-T50",
+      "series": "X-T",
+      "mount": "X",
+      "releaseYear": 2024,
+      "megapixels": 40.2,
+      "sensor": "X-Trans CMOS 5 HR",
+      "ibis": true,
+      "weatherSealed": false,
+      "weightGrams": 438,
+      "discontinued": false,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-m5",
+      "name": "X-M5",
+      "series": "X-M",
+      "mount": "X",
+      "releaseYear": 2024,
+      "megapixels": 26.1,
+      "sensor": "X-Trans CMOS 4",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 355,
+      "discontinued": false,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_X-M5",
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-e5",
+      "name": "X-E5",
+      "series": "X-E",
+      "mount": "X",
+      "releaseYear": 2025,
+      "megapixels": 40.2,
+      "sensor": "X-Trans CMOS 5 HR",
+      "ibis": true,
+      "weatherSealed": false,
+      "weightGrams": 445,
+      "discontinued": false,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-x-t30-iii",
+      "name": "X-T30 III",
+      "series": "X-T",
+      "mount": "X",
+      "releaseYear": 2025,
+      "megapixels": 26.1,
+      "sensor": "X-Trans CMOS 4",
+      "ibis": false,
+      "weatherSealed": false,
+      "weightGrams": 378,
+      "discontinued": false,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+      ]
+    },
+    {
+      "id": "fujifilm-gfx-50s",
+      "name": "GFX 50S",
+      "series": "GFX",
+      "mount": "G",
+      "releaseYear": 2017,
+      "megapixels": 51.4,
+      "sensor": "GFX 51.4MP CMOS",
+      "ibis": false,
+      "weatherSealed": true,
+      "weightGrams": 825,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_GFX_50S"
+      ]
+    },
+    {
+      "id": "fujifilm-gfx-50r",
+      "name": "GFX 50R",
+      "series": "GFX",
+      "mount": "G",
+      "releaseYear": 2018,
+      "megapixels": 51.4,
+      "sensor": "GFX 51.4MP CMOS",
+      "ibis": false,
+      "weatherSealed": true,
+      "weightGrams": 775,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_GFX_50R"
+      ]
+    },
+    {
+      "id": "fujifilm-gfx100",
+      "name": "GFX100",
+      "series": "GFX",
+      "mount": "G",
+      "releaseYear": 2019,
+      "megapixels": 102.0,
+      "sensor": "GFX 102MP BSI CMOS",
+      "ibis": true,
+      "weatherSealed": true,
+      "weightGrams": 1320,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_GFX100",
+        "https://fujifilm-dsc.com/en/manual/gfx100/technical_notes/spec/index.html"
+      ]
+    },
+    {
+      "id": "fujifilm-gfx100s",
+      "name": "GFX100S",
+      "series": "GFX",
+      "mount": "G",
+      "releaseYear": 2021,
+      "megapixels": 102.0,
+      "sensor": "GFX 102MP BSI CMOS",
+      "ibis": true,
+      "weatherSealed": true,
+      "weightGrams": 900,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_GFX100S"
+      ]
+    },
+    {
+      "id": "fujifilm-gfx50s-ii",
+      "name": "GFX50S II",
+      "series": "GFX",
+      "mount": "G",
+      "releaseYear": 2021,
+      "megapixels": 51.4,
+      "sensor": "GFX 51.4MP CMOS",
+      "ibis": true,
+      "weatherSealed": true,
+      "weightGrams": 900,
+      "discontinued": true,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_GFX50S_II"
+      ]
+    },
+    {
+      "id": "fujifilm-gfx100-ii",
+      "name": "GFX100 II",
+      "series": "GFX",
+      "mount": "G",
+      "releaseYear": 2023,
+      "megapixels": 102.0,
+      "sensor": "GFX 102MP CMOS II HS",
+      "ibis": true,
+      "weatherSealed": true,
+      "weightGrams": 1030,
+      "discontinued": false,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_GFX100_II"
+      ]
+    },
+    {
+      "id": "fujifilm-gfx100s-ii",
+      "name": "GFX100S II",
+      "series": "GFX",
+      "mount": "G",
+      "releaseYear": 2024,
+      "megapixels": 102.0,
+      "sensor": "GFX 102MP CMOS II",
+      "ibis": true,
+      "weatherSealed": true,
+      "weightGrams": 883,
+      "discontinued": false,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fujifilm_GFX100S_II"
+      ]
+    },
+    {
+      "id": "fujifilm-gfx-eterna-55",
+      "name": "GFX ETERNA 55",
+      "aliases": [
+        "GFX ETERNA"
+      ],
+      "series": "GFX",
+      "mount": "G",
+      "releaseYear": 2025,
+      "megapixels": 102.0,
+      "sensor": "GFX 102MP CMOS II HS",
+      "ibis": false,
+      "discontinued": false,
+      "sources": [
+        "https://fujifilm-dsc.com/en/manual/gfx-eterna-55/technical_notes/spec/"
+      ]
+    }
+  ]
+}

@@ -1,15 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-  getAskIrisUserId: vi.fn(),
+  getSessionUserId: vi.fn(),
   getAskIrisConversationMessages: vi.fn(),
 }));
 
 vi.mock("@opennextjs/cloudflare", () => ({
   getCloudflareContext: () => ({ env: { APP_DB: {} } }),
 }));
-vi.mock("@/lib/askiris/conversation-auth", () => ({
-  getAskIrisUserId: mocks.getAskIrisUserId,
+vi.mock("@/lib/auth-session", () => ({
+  getSessionUserId: mocks.getSessionUserId,
 }));
 vi.mock("@/lib/askiris/conversation-repository", () => ({
   getAskIrisConversationMessages: mocks.getAskIrisConversationMessages,
@@ -24,7 +24,7 @@ function get(conversationId: string) {
 }
 
 beforeEach(() => {
-  mocks.getAskIrisUserId.mockResolvedValue("user-1");
+  mocks.getSessionUserId.mockResolvedValue("user-1");
 });
 
 afterEach(() => {
@@ -53,7 +53,7 @@ describe("GET /api/askiris/conversations/[conversationId]", () => {
   });
 
   it("returns 401 without a session", async () => {
-    mocks.getAskIrisUserId.mockResolvedValue(undefined);
+    mocks.getSessionUserId.mockResolvedValue(undefined);
 
     const response = await get("conversation-1");
 

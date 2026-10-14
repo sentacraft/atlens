@@ -29,6 +29,22 @@ export function normalizeLensSearchText(value: string): string {
     .replace(/\s+/g, " ");
 }
 
+function brandKey(value: string): string {
+  return normalizeLensSearchText(value).replace(/ /g, "");
+}
+
+const catalogBrandByKey = new Map(
+  Object.keys(EN_BRAND_NAMES).flatMap((slug) =>
+    [slug, ...getBrandSearchAliases(slug)].map((name) => [brandKey(name), slug] as const),
+  ),
+);
+
+/** A catalog brand's slug when the input names one; otherwise the trimmed input. */
+export function normalizeBrand(input: string): string {
+  const trimmed = input.trim();
+  return catalogBrandByKey.get(brandKey(trimmed)) ?? trimmed;
+}
+
 export function tokenize(normalised: string): string[] {
   if (!normalised) {
     return [];

@@ -3,7 +3,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { isRateLimited, rateLimitedResponse } from "@/lib/rate-limit";
 import { askIrisResponseFeedbackInputSchema } from "@/lib/askiris/response-feedback-contract";
 import { saveAskIrisResponseFeedback } from "@/lib/askiris/response-feedback-repository";
-import { getAskIrisUserId } from "@/lib/askiris/conversation-auth";
+import { getSessionUserId } from "@/lib/auth-session";
 import { getOwnedAskIrisResponseTurnId } from "@/lib/askiris/conversation-repository";
 
 const MAX_BODY_BYTES = 8 * 1024;
@@ -39,7 +39,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     : undefined;
   const comment = parsed.data.comment || undefined;
 
-  const userId = await getAskIrisUserId(req);
+  const userId = await getSessionUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }

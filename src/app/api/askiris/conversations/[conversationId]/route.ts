@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getAskIrisConversationMessages } from "@/lib/askiris/conversation-repository";
-import { getAskIrisUserId } from "@/lib/askiris/conversation-auth";
+import { getSessionUserId } from "@/lib/auth-session";
 
 type Params = Promise<{ conversationId: string }>;
 
@@ -9,7 +9,7 @@ export async function GET(
   request: Request,
   { params }: { params: Params },
 ): Promise<NextResponse> {
-  const userId = await getAskIrisUserId(request);
+  const userId = await getSessionUserId(request);
   if (!userId) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
