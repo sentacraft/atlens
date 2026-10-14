@@ -58,6 +58,7 @@ const STEP_BUDGET = 8;
 
 const STREAM_TIMEOUT_MS = 120_000;
 
+/** Runs one Ask Iris turn and streams the reply, saving it to the conversation. Any session, guests included; 401 without one, 429 when over the rate limit or token budget. */
 export async function POST(req: Request) {
   const missingKey = missingAgentModelKey();
   if (missingKey) {

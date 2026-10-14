@@ -21,6 +21,7 @@ function getCachedIndex(mount: Mount, locale: string): LensSearchIndex {
   return index;
 }
 
+/** Ranks one mount's lenses against a search query. No consumers (search runs in the browser): 404 in production. */
 export function GET(req: Request) {
   // No consumers yet (search runs client-side); 404 in production.
   if (process.env.NODE_ENV === "production") {

@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 // AE layout is positional; the dashboard SQL depends on it.
 //   indexes: [event_name]
 //   blobs:   [sid, locale, path, primary_string, secondary_string, tertiary_string, internal]
@@ -27,41 +29,54 @@ export const EVENT_NAMES = [
 
 export type EventName = (typeof EVENT_NAMES)[number];
 
-export interface EventProps {
-  path?: string;
+const MAX_PROP_STRING_LENGTH = 256;
 
-  query?: string;
-  results_count?: number;
+// Props are best-effort: a malformed prop is dropped, not a reason to lose the event.
+const propString = z
+  .string()
+  .transform((value) => value.slice(0, MAX_PROP_STRING_LENGTH))
+  .optional()
+  .catch(undefined);
+const propNumber = z.number().optional().catch(undefined);
+const propBoolean = z.boolean().optional().catch(undefined);
 
-  filters_json?: string;
+export const eventPropsSchema = z.object({
+  path: propString,
 
-  lens_slug?: string;
-  lens_slugs?: string;
-  lens_count?: number;
-  depth_pct?: number;
+  query: propString,
+  results_count: propNumber,
 
-  feedback_type?: string;
-  method?: string;
+  filters_json: propString,
 
-  href?: string;
-  from_mount?: string;
-  to_mount?: string;
+  lens_slug: propString,
+  lens_slugs: propString,
+  lens_count: propNumber,
+  depth_pct: propNumber,
 
-  channel?: string;
-  lens_id?: string;
-  source?: string;
-  is_affiliate?: boolean;
+  feedback_type: propString,
+  method: propString,
 
-  referrer?: string;
-}
+  href: propString,
+  from_mount: propString,
+  to_mount: propString,
 
-export interface TrackPayload {
-  event: EventName;
-  locale?: string;
-  props?: EventProps;
-}
+  channel: propString,
+  lens_id: propString,
+  source: propString,
+  is_affiliate: propBoolean,
 
-export const EVENT_NAME_SET: ReadonlySet<string> = new Set<string>(EVENT_NAMES);
+  referrer: propString,
+});
+
+export type EventProps = z.input<typeof eventPropsSchema>;
+
+export const trackPayloadSchema = z.object({
+  event: z.enum(EVENT_NAMES),
+  locale: z.string().optional(),
+  props: eventPropsSchema.optional(),
+});
+
+export type TrackPayload = z.input<typeof trackPayloadSchema>;
 
 interface AnalyticsEnginePoint {
   indexes: [string];

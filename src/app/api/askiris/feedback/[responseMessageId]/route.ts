@@ -6,6 +6,7 @@ import { deleteAskIrisResponseFeedback } from "@/lib/askiris/response-feedback-r
 import { getSessionUserId } from "@/lib/auth-session";
 import { getOwnedAskIrisResponseTurnId } from "@/lib/askiris/conversation-repository";
 
+/** Withdraws the caller's rating of one Iris response. Any session, guests included; 401 without one, 404 when the response is not the caller's, 429 when rate limited. */
 export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ responseMessageId: string }> },

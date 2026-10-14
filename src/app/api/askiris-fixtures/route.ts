@@ -8,6 +8,7 @@ function forbidden() {
   return process.env.NODE_ENV === "production";
 }
 
+/** Lists the saved Ask Iris replay fixtures. Development only: 404 in production. */
 export async function GET() {
   if (forbidden()) {
     return new Response(null, { status: 404 });
@@ -38,6 +39,7 @@ function safe(value: unknown): value is string {
   return typeof value === "string" && SAFE_NAME.test(value);
 }
 
+/** Saves or deletes an Ask Iris replay fixture for the Test Hook. Development only: 404 in production. */
 export async function POST(req: Request) {
   if (forbidden()) {
     return new Response(null, { status: 404 });
