@@ -74,17 +74,49 @@ function isUiFile(relative) {
   return /\bclassName\b|(?:^|\s)(?:[a-z-]+:)?(?:rounded|text|bg|border|shadow|ring|transition|hover|focus)-/.test(source);
 }
 
-const uiFiles = [...candidates].map(relativePath).filter(isUiFile);
-if (uiFiles.length === 0) {
+// Files the design system artifact mirrors; keep in sync with its component list.
+const DESIGN_SYSTEM_URL = "https://claude.ai/artifact/4HmVRpfNHU5zsrhynoCceH";
+const DESIGN_SOURCES = new Set([
+  "src/app/theme.css",
+  "src/app/globals.css",
+  "src/app/fonts.ts",
+  "src/config/ui-tokens.ts",
+  "src/components/ui/button.tsx",
+  "src/components/ui/checkbox.tsx",
+  "src/components/ui/dialog.tsx",
+  "src/components/ui/select.tsx",
+  "src/components/ui/textarea.tsx",
+  "src/components/auth/AuthControl.tsx",
+  "src/components/lens/LensCard.tsx",
+  "src/components/askiris/AskIrisComposer.tsx",
+  "src/components/askiris/AskIrisThread.tsx",
+  "src/components/askiris/ConversationHistory.tsx",
+]);
+
+const touched = [...candidates].map(relativePath);
+const uiFiles = touched.filter(isUiFile);
+const designFiles = touched.filter((file) => DESIGN_SOURCES.has(file));
+if (uiFiles.length === 0 && designFiles.length === 0) {
   process.exit(0);
 }
 
-const fileList = uiFiles.map((file) => `- ${file}`).join("\n");
-const additionalContext = [
-  "The latest edit touched UI files:",
-  fileList,
-  "Review src/config/ui-tokens.ts and decide whether to reuse an existing UI token or extract a reusable interaction style into a token. One-off layout styles may remain local to the component.",
-].join("\n");
+const list = (files) => files.map((file) => `- ${file}`).join("\n");
+const sections = [];
+if (uiFiles.length > 0) {
+  sections.push(
+    "The latest edit touched UI files:",
+    list(uiFiles),
+    "Review src/config/ui-tokens.ts and decide whether to reuse an existing UI token or extract a reusable interaction style into a token. One-off layout styles may remain local to the component.",
+  );
+}
+if (designFiles.length > 0) {
+  sections.push(
+    "The latest edit touched files the design system mirrors:",
+    list(designFiles),
+    `If the change alters colors, type, spacing, radii, shadows or a mirrored component's look, re-sync the design system (${DESIGN_SYSTEM_URL}): update only the affected tokens or component files there, and mention it in the PR.`,
+  );
+}
+const additionalContext = sections.join("\n");
 
 process.stdout.write(
   JSON.stringify({
