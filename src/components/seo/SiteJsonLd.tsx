@@ -31,9 +31,9 @@ export default function SiteJsonLd({ locale }: { locale: string }) {
       ],
       logo: {
         "@type": "ImageObject",
-        url: `${SITE.url}/logo.png`,
-        width: 1912,
-        height: 1912,
+        url: `${SITE.url}/icons/icon-512.png`,
+        width: 512,
+        height: 512,
       },
     },
     {
