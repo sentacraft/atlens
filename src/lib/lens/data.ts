@@ -45,3 +45,10 @@ export function parseLensIds(ids: string[], mount: Mount, locale: string): Lens[
     .map((id) => pool.find((l) => l.id === id))
     .filter((l): l is Lens => l !== undefined);
 }
+
+const lensesById = new Map([...xLenses, ...gfxLenses].map((lens) => [lens.id, lens]));
+
+/** The unresolved catalog record, so the name stays the same whatever the page locale. */
+export function getLensById(id: string): Lens | undefined {
+  return lensesById.get(id);
+}

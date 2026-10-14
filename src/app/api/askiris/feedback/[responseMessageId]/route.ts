@@ -3,7 +3,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { isRateLimited, rateLimitedResponse } from "@/lib/rate-limit";
 import { askIrisResponseMessageIdSchema } from "@/lib/askiris/response-feedback-contract";
 import { deleteAskIrisResponseFeedback } from "@/lib/askiris/response-feedback-repository";
-import { getAskIrisUserId } from "@/lib/askiris/conversation-auth";
+import { getSessionUserId } from "@/lib/auth-session";
 import { getOwnedAskIrisResponseTurnId } from "@/lib/askiris/conversation-repository";
 
 export async function DELETE(
@@ -20,7 +20,7 @@ export async function DELETE(
     return NextResponse.json({ error: "invalid_feedback" }, { status: 400 });
   }
 
-  const userId = await getAskIrisUserId(req);
+  const userId = await getSessionUserId(req);
   if (!userId) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }

@@ -4,7 +4,7 @@ const mocks = vi.hoisted(() => ({
   getCloudflareContext: vi.fn(),
   deleteAskIrisResponseFeedback: vi.fn(),
   saveAskIrisResponseFeedback: vi.fn(),
-  getAskIrisUserId: vi.fn(),
+  getSessionUserId: vi.fn(),
   getOwnedAskIrisResponseTurnId: vi.fn(),
 }));
 
@@ -16,8 +16,8 @@ vi.mock("@/lib/askiris/response-feedback-repository", () => ({
   saveAskIrisResponseFeedback: mocks.saveAskIrisResponseFeedback,
 }));
 
-vi.mock("@/lib/askiris/conversation-auth", () => ({
-  getAskIrisUserId: mocks.getAskIrisUserId,
+vi.mock("@/lib/auth-session", () => ({
+  getSessionUserId: mocks.getSessionUserId,
 }));
 vi.mock("@/lib/askiris/conversation-repository", () => ({
   getOwnedAskIrisResponseTurnId: mocks.getOwnedAskIrisResponseTurnId,
@@ -48,7 +48,7 @@ const validPayload = {
 
 beforeEach(() => {
   mocks.getCloudflareContext.mockReturnValue({ env: { ASKIRIS_DB: {}, APP_DB: {} } });
-  mocks.getAskIrisUserId.mockResolvedValue("owner");
+  mocks.getSessionUserId.mockResolvedValue("owner");
   mocks.getOwnedAskIrisResponseTurnId.mockResolvedValue("user-message-1");
   mocks.deleteAskIrisResponseFeedback.mockResolvedValue(undefined);
   mocks.saveAskIrisResponseFeedback.mockResolvedValue(undefined);
@@ -91,7 +91,7 @@ describe("POST /api/askiris/feedback", () => {
   });
 
   it("rejects a visitor without a session", async () => {
-    mocks.getAskIrisUserId.mockResolvedValueOnce(undefined);
+    mocks.getSessionUserId.mockResolvedValueOnce(undefined);
 
     const response = await POST(makeRequest(validPayload));
 
@@ -193,7 +193,7 @@ describe("DELETE /api/askiris/feedback/:responseMessageId", () => {
   });
 
   it("rejects a visitor without a session", async () => {
-    mocks.getAskIrisUserId.mockResolvedValueOnce(undefined);
+    mocks.getSessionUserId.mockResolvedValueOnce(undefined);
 
     const response = await DELETE(
       new Request("http://localhost/api/askiris/feedback/assistant-message-1", {
