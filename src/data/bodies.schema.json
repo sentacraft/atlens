@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "lineupCheckedAt": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$",
+      "description": "Date the discontinued flags were checked against lineupSource."
+    },
+    "lineupSource": {
+      "type": "string",
+      "format": "uri",
+      "description": "Fujifilm's current camera lineup page."
+    },
+    "bodies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^fujifilm-[a-z0-9]+(-[a-z0-9]+)*$",
+            "description": "Stable slug, \"fujifilm-\" plus the lowercased model name, e.g. \"fujifilm-x-t30-ii\"."
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Model name as Fujifilm writes it, e.g. \"X-T30 II\"."
+          },
+          "aliases": {
+            "description": "Other names users search by. Spacing, hyphen and case variants are matched without listing them.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "series": {
+            "type": "string",
+            "enum": [
+              "X-H",
+              "X-Pro",
+              "X-T",
+              "X-S",
+              "X-E",
+              "X-M",
+              "X-A",
+              "GFX"
+            ],
+            "description": "Product line."
+          },
+          "mount": {
+            "type": "string",
+            "enum": [
+              "X",
+              "G"
+            ],
+            "description": "\"X\" for APS-C X mount, \"G\" for GFX medium format."
+          },
+          "releaseYear": {
+            "type": "integer",
+            "minimum": 2012,
+            "maximum": 2100,
+            "description": "Year the body first went on sale."
+          },
+          "megapixels": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Effective megapixels, one decimal place."
+          },
+          "sensor": {
+            "type": "string",
+            "enum": [
+              "X-Trans CMOS",
+              "X-Trans CMOS II",
+              "X-Trans CMOS III",
+              "X-Trans CMOS 4",
+              "X-Trans CMOS 5 HR",
+              "X-Trans CMOS 5 HS",
+              "APS-C Bayer CMOS",
+              "GFX 51.4MP CMOS",
+              "GFX 102MP BSI CMOS",
+              "GFX 102MP CMOS II",
+              "GFX 102MP CMOS II HS"
+            ],
+            "description": "Sensor generation as Fujifilm names it."
+          },
+          "ibis": {
+            "type": "boolean",
+            "description": "Has in-body image stabilization. Electronic-only stabilization is false."
+          },
+          "weatherSealed": {
+            "description": "Marketed as weather resistant. Omit when the sources do not say.",
+            "type": "boolean"
+          },
+          "weightGrams": {
+            "description": "Shooting weight including battery and memory card. Omit when no source publishes it on that basis.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "discontinued": {
+            "type": "boolean",
+            "description": "Missing from Fujifilm's current camera lineup as of the file's lineupCheckedAt date."
+          },
+          "sources": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Where the values above were taken from."
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "series",
+          "mount",
+          "releaseYear",
+          "megapixels",
+          "sensor",
+          "ibis",
+          "discontinued",
+          "sources"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "lineupCheckedAt",
+    "lineupSource",
+    "bodies"
+  ],
+  "additionalProperties": false
+}
