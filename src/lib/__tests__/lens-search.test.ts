@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Lens } from "@/lib/types";
-import { normalizeLensSearchText, searchLenses } from "@/lib/lens/search";
+import { normalizeBrand, normalizeLensSearchText, searchLenses } from "@/lib/lens/search";
 
 // ---------------------------------------------------------------------------
 // Shared test fixtures
@@ -376,5 +376,23 @@ describe("searchLenses — relevance threshold", () => {
     const ids = results.map((l) => l.id);
     expect(ids).not.toContain("fuji-xf23-f2");
     expect(ids).not.toContain("fuji-xf40-28");
+  });
+});
+
+describe("normalizeBrand", () => {
+  it.each([
+    ["TTArtisan", "ttartisan"],
+    ["tt artisan", "ttartisan"],
+    ["铭匠", "ttartisan"],
+    ["Voigtlander", "voigtlander"],
+    ["voigtländer", "voigtlander"],
+    ["SG-Image", "sgimage"],
+    ["  富士 ", "fujifilm"],
+  ])("maps %s to the catalog brand %s", (input, slug) => {
+    expect(normalizeBrand(input)).toBe(slug);
+  });
+
+  it("keeps an unknown brand as typed, trimmed", () => {
+    expect(normalizeBrand(" Pentax ")).toBe("Pentax");
   });
 });

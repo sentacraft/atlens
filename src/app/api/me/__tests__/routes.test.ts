@@ -6,7 +6,7 @@ const mocks = vi.hoisted(() => ({ userId: undefined as string | undefined, db: u
 vi.mock("@opennextjs/cloudflare", () => ({
   getCloudflareContext: () => ({ env: { APP_DB: mocks.db } }),
 }));
-vi.mock("@/lib/me/account-auth", () => ({
+vi.mock("@/lib/auth-session", () => ({
   getAccountUserId: async () => mocks.userId,
 }));
 

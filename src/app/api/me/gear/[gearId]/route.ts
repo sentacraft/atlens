@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { getAccountUserId } from "@/lib/me/account-auth";
+import { getAccountUserId } from "@/lib/auth-session";
 import { deleteUserGear } from "@/lib/me/gear-repository";
-import { unauthorized } from "@/lib/me/route-helpers";
 
 export async function DELETE(
   request: Request,
@@ -10,7 +9,7 @@ export async function DELETE(
 ): Promise<NextResponse> {
   const userId = await getAccountUserId(request);
   if (!userId) {
-    return unauthorized();
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   const { gearId } = await params;
   const deleted = await deleteUserGear(getCloudflareContext().env.APP_DB, { userId, gearId });

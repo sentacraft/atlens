@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { getAccountUserId } from "@/lib/me/account-auth";
+import { getAccountUserId } from "@/lib/auth-session";
 import { resolveGearInput } from "@/lib/me/gear";
 import { addUserGear, GearLimitError, listUserGear } from "@/lib/me/gear-repository";
 import { gearInputSchema } from "@/lib/me/gear-schema";
-import { invalidRequest, readJson, unauthorized } from "@/lib/me/route-helpers";
 
 export async function GET(request: Request): Promise<NextResponse> {
   const userId = await getAccountUserId(request);
   if (!userId) {
-    return unauthorized();
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   const gear = await listUserGear(getCloudflareContext().env.APP_DB, userId);
   return NextResponse.json({ gear });
@@ -18,11 +17,11 @@ export async function GET(request: Request): Promise<NextResponse> {
 export async function POST(request: Request): Promise<NextResponse> {
   const userId = await getAccountUserId(request);
   if (!userId) {
-    return unauthorized();
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
-  const parsed = gearInputSchema.safeParse(await readJson(request));
+  const parsed = gearInputSchema.safeParse(await request.json().catch(() => undefined));
   if (!parsed.success) {
-    return invalidRequest();
+    return NextResponse.json({ error: "invalid_request" }, { status: 400 });
   }
   const item = resolveGearInput(parsed.data);
   if (!item) {

@@ -6,12 +6,20 @@ vi.mock("@/lib/auth", () => ({
   createAuth: () => ({ api: { getSession } }),
 }));
 
-const { getAccountUserId } = await import("../account-auth");
+const { getAccountUserId, getSessionUserId } = await import("../auth-session");
 
 const request = new Request("http://localhost/api/me/gear");
 
 beforeEach(() => {
   getSession.mockReset();
+});
+
+describe("getSessionUserId", () => {
+  it("returns the id of a guest session too", async () => {
+    getSession.mockResolvedValue({ user: { id: "guest", isAnonymous: true } });
+
+    await expect(getSessionUserId(request)).resolves.toBe("guest");
+  });
 });
 
 describe("getAccountUserId", () => {

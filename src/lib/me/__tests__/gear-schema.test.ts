@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { normalizeBrand } from "../brand";
 import { gearInputSchema, manualLensSchema } from "../gear-schema";
 import { userSettingsPatchSchema } from "../settings-schema";
 
@@ -55,24 +54,6 @@ describe("gearInputSchema", () => {
 
   it("rejects a manual body", () => {
     expect(gearInputSchema.safeParse({ kind: "body", manual: prime }).success).toBe(false);
-  });
-});
-
-describe("normalizeBrand", () => {
-  it.each([
-    ["TTArtisan", "ttartisan"],
-    ["tt artisan", "ttartisan"],
-    ["铭匠", "ttartisan"],
-    ["Voigtlander", "voigtlander"],
-    ["voigtländer", "voigtlander"],
-    ["SG-Image", "sgimage"],
-    ["  富士 ", "fujifilm"],
-  ])("maps %s to the catalog brand %s", (input, slug) => {
-    expect(normalizeBrand(input)).toBe(slug);
-  });
-
-  it("keeps an unknown brand as typed, trimmed", () => {
-    expect(normalizeBrand(" Pentax ")).toBe("Pentax");
   });
 });
 

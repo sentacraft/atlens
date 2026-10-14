@@ -1,21 +1,20 @@
 import { NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { z } from "zod";
-import { getAccountUserId } from "@/lib/me/account-auth";
+import { getAccountUserId } from "@/lib/auth-session";
 import {
   addUserFavorite,
   FavoritesLimitError,
   listUserFavorites,
 } from "@/lib/me/favorites-repository";
-import { findCatalogLens } from "@/lib/me/gear";
-import { invalidRequest, readJson, unauthorized } from "@/lib/me/route-helpers";
+import { getLensById } from "@/lib/lens/data";
 
 const favoriteInputSchema = z.strictObject({ lensId: z.string().trim().min(1).max(200) });
 
 export async function GET(request: Request): Promise<NextResponse> {
   const userId = await getAccountUserId(request);
   if (!userId) {
-    return unauthorized();
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   const favorites = await listUserFavorites(getCloudflareContext().env.APP_DB, userId);
   return NextResponse.json({ favorites });
@@ -24,13 +23,13 @@ export async function GET(request: Request): Promise<NextResponse> {
 export async function POST(request: Request): Promise<NextResponse> {
   const userId = await getAccountUserId(request);
   if (!userId) {
-    return unauthorized();
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
-  const parsed = favoriteInputSchema.safeParse(await readJson(request));
+  const parsed = favoriteInputSchema.safeParse(await request.json().catch(() => undefined));
   if (!parsed.success) {
-    return invalidRequest();
+    return NextResponse.json({ error: "invalid_request" }, { status: 400 });
   }
-  if (!findCatalogLens(parsed.data.lensId)) {
+  if (!getLensById(parsed.data.lensId)) {
     return NextResponse.json({ error: "unknown_catalog_id" }, { status: 400 });
   }
   try {

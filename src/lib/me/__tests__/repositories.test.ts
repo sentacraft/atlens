@@ -99,11 +99,15 @@ describe("user gear", () => {
     await expect(addUserGear(db, { userId: "owner", item: manualLens })).rejects.toBeInstanceOf(GearLimitError);
   });
 
-  it("refuses a body without a catalog id at the database level", () => {
+  it.each([
+    ["a body without a catalog id", "'body', NULL, '{}'"],
+    ["a row with both a catalog id and a manual entry", "'lens', 'fujifilm-x-t5', '{}'"],
+    ["a row with neither", "'lens', NULL, NULL"],
+  ])("refuses %s at the database level", (_, values) => {
     expect(() =>
       sqlite
         .prepare(
-          "INSERT INTO user_gear (id, user_id, kind, name, brand, mount, model, focal_min_mm, focal_max_mm, created_at) VALUES ('x', 'owner', 'body', 'X', 'fujifilm', 'X', 'X', 1, 1, 0)",
+          `INSERT INTO user_gear (id, user_id, kind, catalog_id, manual_json, name, brand, mount, created_at) VALUES ('x', 'owner', ${values}, 'X', 'fujifilm', 'X', 0)`,
         )
         .run(),
     ).toThrow(/CHECK/);
