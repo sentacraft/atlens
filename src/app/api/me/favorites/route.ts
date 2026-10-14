@@ -11,6 +11,7 @@ import { getLensById } from "@/lib/lens/data";
 
 const favoriteInputSchema = z.strictObject({ lensId: z.string().trim().min(1).max(200) });
 
+/** Lists the caller's favorite lenses, newest first. Accounts only; 401 for guests. */
 export async function GET(request: Request): Promise<NextResponse> {
   const userId = await getAccountUserId(request);
   if (!userId) {
@@ -20,6 +21,7 @@ export async function GET(request: Request): Promise<NextResponse> {
   return NextResponse.json({ favorites });
 }
 
+/** Adds a catalog lens to the caller's favorites; repeating it is a no-op. Accounts only; 400 for an unknown lens, 409 past 500 favorites. */
 export async function POST(request: Request): Promise<NextResponse> {
   const userId = await getAccountUserId(request);
   if (!userId) {

@@ -1,51 +1,9 @@
 import { NextResponse } from "next/server";
+import { telemetryPayloadSchema } from "@/lib/analytics/telemetry-contract";
 
 const MAX_BODY_BYTES = 2048;
 
-type AssetErrorPayload = {
-  evt: "asset-error";
-  tag: string;
-  url: string;
-  conn?: string;
-  ts: number;
-  page: string;
-};
-
-type SlowAssetPayload = {
-  evt: "slow-asset";
-  kind: string;
-  url: string;
-  duration: number;
-  ttfb: number;
-  transfer?: number;
-  encoded?: number;
-  ts: number;
-  page: string;
-};
-
-type Payload = AssetErrorPayload | SlowAssetPayload;
-
-function isAssetError(p: unknown): p is AssetErrorPayload {
-  if (!p || typeof p !== "object") {
-    return false;
-  }
-  const o = p as Record<string, unknown>;
-  return o.evt === "asset-error" && typeof o.tag === "string" && typeof o.url === "string";
-}
-
-function isSlowAsset(p: unknown): p is SlowAssetPayload {
-  if (!p || typeof p !== "object") {
-    return false;
-  }
-  const o = p as Record<string, unknown>;
-  return (
-    o.evt === "slow-asset" &&
-    typeof o.kind === "string" &&
-    typeof o.url === "string" &&
-    typeof o.duration === "number"
-  );
-}
-
+/** Logs a browser asset failure or slow asset load to Workers Logs. Public. */
 export async function POST(req: Request): Promise<NextResponse> {
   const raw = await req.text();
   if (raw.length > MAX_BODY_BYTES) {
@@ -57,14 +15,11 @@ export async function POST(req: Request): Promise<NextResponse> {
   } catch {
     return NextResponse.json({ ok: false }, { status: 400 });
   }
-  let payload: Payload;
-  if (isAssetError(parsed)) {
-    payload = parsed;
-  } else if (isSlowAsset(parsed)) {
-    payload = parsed;
-  } else {
+  const result = telemetryPayloadSchema.safeParse(parsed);
+  if (!result.success) {
     return NextResponse.json({ ok: false }, { status: 400 });
   }
+  const payload = result.data;
 
   const headers = req.headers;
   const country = headers.get("cf-ipcountry") ?? "??";
@@ -78,8 +33,4 @@ export async function POST(req: Request): Promise<NextResponse> {
   );
 
   return new NextResponse(null, { status: 204 });
-}
-
-export async function GET(): Promise<NextResponse> {
-  return NextResponse.json({ ok: false }, { status: 405 });
 }

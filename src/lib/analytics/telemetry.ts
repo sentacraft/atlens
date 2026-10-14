@@ -1,9 +1,11 @@
+import type { TelemetryPayload, TelemetryReport } from "@/lib/analytics/telemetry-contract";
+
 const ENDPOINT = "/api/telemetry";
 const DEDUPE_WINDOW_MS = 30_000;
 
 const recentlySent = new Map<string, number>();
 
-export function reportTelemetry(payload: Record<string, unknown>): void {
+export function reportTelemetry(payload: TelemetryReport): void {
   const key = JSON.stringify(payload);
   const now = Date.now();
   const last = recentlySent.get(key);
@@ -12,7 +14,8 @@ export function reportTelemetry(payload: Record<string, unknown>): void {
   }
   recentlySent.set(key, now);
   try {
-    const body = JSON.stringify({ ...payload, ts: now, page: location.pathname });
+    const full: TelemetryPayload = { ...payload, ts: now, page: location.pathname };
+    const body = JSON.stringify(full);
     if (typeof navigator.sendBeacon === "function") {
       navigator.sendBeacon(ENDPOINT, body);
     } else {

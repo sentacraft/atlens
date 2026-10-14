@@ -1,13 +1,15 @@
 import "server-only";
 
 import type { UIMessage } from "ai";
+import type { Locale } from "@/i18n/routing";
+import type { Mount } from "@/lib/types";
 
 // D1 caps a row at 2MB.
 export const MAX_MESSAGE_BYTES = 1.5 * 1024 * 1024;
 
 export interface AskIrisConversationContext {
-  mount: string;
-  locale: string;
+  mount: Mount;
+  locale: Locale;
 }
 
 export interface AskIrisConversationRecord {

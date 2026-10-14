@@ -18,6 +18,7 @@ function computeAvailableOpticalTraits(lenses: { isCine?: boolean; opticalTraits
   return OPTICAL_TRAITS.filter((trait) => present.has(trait));
 }
 
+/** Filters, sorts and pages one mount's lens catalog. No consumers: 404 in production. */
 export function GET(req: Request) {
   // No consumers yet; 404 in production so the full dataset is not a public surface.
   if (process.env.NODE_ENV === "production") {

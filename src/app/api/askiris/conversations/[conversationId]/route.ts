@@ -5,6 +5,7 @@ import { getSessionUserId } from "@/lib/auth-session";
 
 type Params = Promise<{ conversationId: string }>;
 
+/** Returns one conversation's stored messages. Any session, guests included; 401 without one, 404 when missing or not the caller's. */
 export async function GET(
   request: Request,
   { params }: { params: Params },
@@ -27,8 +28,4 @@ export async function GET(
   }
 
   return NextResponse.json({ conversationId, messages });
-}
-
-export function POST(): NextResponse {
-  return new NextResponse(null, { status: 405, headers: { Allow: "GET" } });
 }

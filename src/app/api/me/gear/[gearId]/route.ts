@@ -3,6 +3,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getAccountUserId } from "@/lib/auth-session";
 import { deleteUserGear } from "@/lib/me/gear-repository";
 
+/** Removes one of the caller's gear items. Accounts only; 404 when missing or not the caller's. */
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ gearId: string }> },

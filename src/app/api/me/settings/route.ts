@@ -4,6 +4,7 @@ import { getAccountUserId } from "@/lib/auth-session";
 import { getUserSettings, updateUserSettings } from "@/lib/me/settings-repository";
 import { userSettingsPatchSchema } from "@/lib/me/settings-schema";
 
+/** Returns the caller's settings, or the defaults when none are saved. Accounts only; 401 for guests. */
 export async function GET(request: Request): Promise<NextResponse> {
   const userId = await getAccountUserId(request);
   if (!userId) {
@@ -13,6 +14,7 @@ export async function GET(request: Request): Promise<NextResponse> {
   return NextResponse.json({ settings });
 }
 
+/** Updates the given settings and returns them all. Accounts only; 400 for an empty patch or a value outside the allowed set. */
 export async function PATCH(request: Request): Promise<NextResponse> {
   const userId = await getAccountUserId(request);
   if (!userId) {

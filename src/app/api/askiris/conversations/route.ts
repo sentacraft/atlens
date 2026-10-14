@@ -5,6 +5,7 @@ import {
 } from "@/lib/askiris/conversation-repository";
 import { getSessionUserId } from "@/lib/auth-session";
 
+/** Lists the caller's Ask Iris conversations, newest first. Any session, guests included; 401 without one. */
 export async function GET(request: Request): Promise<NextResponse> {
   const userId = await getSessionUserId(request);
   if (!userId) {
@@ -14,8 +15,4 @@ export async function GET(request: Request): Promise<NextResponse> {
   const { env } = getCloudflareContext();
   const conversations = await listAskIrisConversations(env.APP_DB, userId);
   return NextResponse.json({ conversations });
-}
-
-export function POST(): NextResponse {
-  return new NextResponse(null, { status: 405, headers: { Allow: "GET" } });
 }

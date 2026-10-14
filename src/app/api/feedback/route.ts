@@ -1,24 +1,7 @@
 import { NextResponse } from "next/server";
+import { feedbackSubmissionSchema, type FeedbackSubmission } from "@/lib/feedback/feedback-contract";
 import { isRateLimited, rateLimitedResponse } from "@/lib/rate-limit";
 
-type FeedbackType = "data_issue" | "general";
-
-interface FeedbackPayload {
-  type: FeedbackType;
-  description: string;
-  replyContact?: string;
-  context?: {
-    lensId?: string;
-    lensBrand?: string;
-    lensModel?: string;
-    searchQuery?: string;
-    field?: string;
-    currentValue?: string;
-    suggestedCorrection?: string;
-  };
-}
-
-const MAX_DESCRIPTION_LENGTH = 2000;
 
 const TITLE_SNIPPET_MAX = 60;
 
@@ -34,7 +17,7 @@ function titleSnippet(description: string): string {
   return `${trimmed.trimEnd()}…`;
 }
 
-function buildIssue(payload: FeedbackPayload): {
+function buildIssue(payload: FeedbackSubmission): {
   title: string;
   body: string;
   labels: string[];
@@ -105,6 +88,7 @@ function buildIssue(payload: FeedbackPayload): {
   };
 }
 
+/** Reports whether site feedback is configured (GitHub token and repository). Public. */
 export function GET() {
   const hasToken = Boolean(process.env.GITHUB_TOKEN);
   const hasRepo = Boolean(process.env.GITHUB_FEEDBACK_REPO);
@@ -119,40 +103,24 @@ export function GET() {
   });
 }
 
+/** Files site feedback as a GitHub issue. Public; 400 with the failing rule as the error code, 429 when rate limited. */
 export async function POST(req: Request) {
   if (await isRateLimited(req, "feedback")) {
     return rateLimitedResponse();
   }
 
-  let payload: FeedbackPayload;
+  let raw: unknown;
   try {
-    payload = (await req.json()) as FeedbackPayload;
+    raw = await req.json();
   } catch {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
-  const validTypes: FeedbackType[] = ["data_issue", "general"];
-  if (!payload?.type || !validTypes.includes(payload.type)) {
-    return NextResponse.json({ error: "invalid_type" }, { status: 400 });
+  const parsed = feedbackSubmissionSchema.safeParse(raw);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
   }
-  const descriptionPresent =
-    typeof payload.description === "string" &&
-    payload.description.trim().length > 0;
-  const correctionPresent =
-    typeof payload.context?.suggestedCorrection === "string" &&
-    payload.context.suggestedCorrection.trim().length > 0;
-  if (!descriptionPresent && !correctionPresent) {
-    return NextResponse.json({ error: "empty_description" }, { status: 400 });
-  }
-  if (
-    typeof payload.description === "string" &&
-    payload.description.length > MAX_DESCRIPTION_LENGTH
-  ) {
-    return NextResponse.json(
-      { error: "description_too_long" },
-      { status: 400 }
-    );
-  }
+  const payload = parsed.data;
 
   const token = process.env.GITHUB_TOKEN;
   const repo = process.env.GITHUB_FEEDBACK_REPO;

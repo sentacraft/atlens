@@ -12,6 +12,7 @@ function invalidFeedbackResponse(): NextResponse {
   return NextResponse.json({ error: "invalid_feedback" }, { status: 400 });
 }
 
+/** Saves or replaces the caller's rating of one Iris response. Any session, guests included; 401 without one, 404 when the response is not the caller's, 429 when rate limited. */
 export async function POST(req: Request): Promise<NextResponse> {
   if (await isRateLimited(req, "askirisFeedback")) {
     return rateLimitedResponse();
@@ -82,8 +83,4 @@ export async function POST(req: Request): Promise<NextResponse> {
   }
 
   return NextResponse.json({ ok: true });
-}
-
-export function GET(): NextResponse {
-  return new NextResponse(null, { status: 405, headers: { Allow: "POST" } });
 }

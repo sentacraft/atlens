@@ -1,24 +1,18 @@
 import { queryOptions } from "@tanstack/react-query";
+import type { AskIrisConversationRecord } from "@/lib/askiris/conversation-repository";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
-
-export interface ConversationSummary {
-  id: string;
-  title: string;
-  createdAt: number;
-  updatedAt: number;
-}
 
 // Keyed by user: the cache outlives a sign-out.
 export function conversationListQueryKey(userId: string) {
   return ["askiris", "conversations", userId] as const;
 }
 
-export async function fetchConversationList(): Promise<ConversationSummary[]> {
+export async function fetchConversationList(): Promise<AskIrisConversationRecord[]> {
   const response = await fetch("/api/askiris/conversations", { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`conversation_list_${response.status}`);
   }
-  const data = (await response.json()) as { conversations: ConversationSummary[] };
+  const data = (await response.json()) as { conversations: AskIrisConversationRecord[] };
   return data.conversations;
 }
 
