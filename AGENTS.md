@@ -54,6 +54,11 @@ Reusable visual language — interaction colors, button styles, selected states 
 exported from `src/config/ui-tokens.ts` and imported by components. Do not inline duplicate
 style strings across components. Inline only genuinely one-off local styles.
 
+The Atlens design system (https://claude.ai/artifact/4HmVRpfNHU5zsrhynoCceH) mirrors the theme,
+fonts, `ui-tokens.ts` and a set of components; `scripts/hooks/ui-token-review.mjs` lists those
+files. When a change alters how any of them looks, re-sync the affected parts of the design
+system, or say in the PR that it needs a re-sync.
+
 Device insets (iOS notch, home indicator, Window Controls Overlay) are consumed through the
 `--safe-inset-*` and `--titlebar-height` variables declared in `src/app/theme.css`. Never call
 `env(safe-area-inset-*)` directly in a component. Cover any new inset in
