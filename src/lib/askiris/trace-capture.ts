@@ -1,5 +1,5 @@
 import { isToolUIPart, type LanguageModelUsage, type UIMessage } from "ai";
-import type { AskIrisTraceStatus } from "./trace-repository";
+import type { AskIrisTraceRecord } from "./trace-repository";
 
 export interface AskIrisTraceMessageContext {
   userMessage: UIMessage;
@@ -7,12 +7,10 @@ export interface AskIrisTraceMessageContext {
   contextMessageIds: string[];
 }
 
-interface AskIrisTraceUsage {
-  inputTokens?: number;
-  outputTokens?: number;
-  cacheReadTokens?: number;
-  reasoningTokens?: number;
-}
+type AskIrisTraceUsage = Pick<
+  AskIrisTraceRecord,
+  "inputTokens" | "outputTokens" | "cacheReadTokens" | "reasoningTokens"
+>;
 
 interface GenerationSnapshot {
   usage: LanguageModelUsage;
@@ -20,15 +18,13 @@ interface GenerationSnapshot {
   finishReason: string;
 }
 
-export interface AskIrisTraceCompletion extends AskIrisTraceUsage {
-  status: AskIrisTraceStatus;
-  responseMessage?: UIMessage;
-  finishReason?: string;
-  errorCode?: string;
-  stepCount: number;
-  toolCallCount: number;
-  firstOutputMs?: number;
-}
+export type AskIrisTraceCompletion = AskIrisTraceUsage &
+  Pick<
+    AskIrisTraceRecord,
+    "status" | "finishReason" | "errorCode" | "stepCount" | "toolCallCount" | "firstOutputMs"
+  > & {
+    responseMessage?: UIMessage;
+  };
 
 function addOptionalCounts(left: number | undefined, right: number | undefined) {
   return left === undefined && right === undefined ? undefined : (left ?? 0) + (right ?? 0);

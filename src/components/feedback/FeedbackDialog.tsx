@@ -29,13 +29,13 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { track } from "@/lib/analytics/analytics";
-import {
-  submitFeedback,
-  type FeedbackContext,
-  type FeedbackSubmission,
-  type FeedbackSubmissionContext,
-  type FeedbackType,
-} from "@/lib/feedback/feedback-client";
+import { submitFeedback } from "@/lib/feedback/feedback-client";
+import type {
+  FeedbackContext,
+  FeedbackSubmission,
+  FeedbackSubmissionContext,
+  FeedbackType,
+} from "@/lib/feedback/feedback-contract";
 
 export interface FeedbackField {
   label: string;

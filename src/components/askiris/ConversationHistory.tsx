@@ -11,7 +11,7 @@ import {
   ICON_NAV_BTN_CLS,
   LIST_ITEM_ACTIVE_CLS,
 } from "@/config/ui-tokens";
-import type { ConversationSummary } from "@/lib/askiris/conversation-client";
+import type { AskIrisConversationRecord } from "@/lib/askiris/conversation-repository";
 import type { ConversationListState } from "@/components/askiris/useConversation";
 
 export default function ConversationHistory({
@@ -25,7 +25,7 @@ export default function ConversationHistory({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  conversations: ConversationSummary[];
+  conversations: AskIrisConversationRecord[];
   listState: ConversationListState;
   activeConversationId: string;
   onSelect: (conversationId: string) => void;

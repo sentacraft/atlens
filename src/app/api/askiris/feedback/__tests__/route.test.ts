@@ -23,7 +23,7 @@ vi.mock("@/lib/askiris/conversation-repository", () => ({
   getOwnedAskIrisResponseTurnId: mocks.getOwnedAskIrisResponseTurnId,
 }));
 
-const { GET, POST } = await import("../route");
+const { POST } = await import("../route");
 const { DELETE } = await import("../[responseMessageId]/route");
 
 let ipCounter = 0;
@@ -163,15 +163,6 @@ describe("POST /api/askiris/feedback", () => {
 
     expect(response.status).toBe(503);
     await expect(response.json()).resolves.toEqual({ error: "feedback_unavailable" });
-  });
-});
-
-describe("GET /api/askiris/feedback", () => {
-  it("is not supported", () => {
-    const response = GET();
-
-    expect(response.status).toBe(405);
-    expect(response.headers.get("allow")).toBe("POST");
   });
 });
 

@@ -3,6 +3,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getAccountUserId } from "@/lib/auth-session";
 import { removeUserFavorite } from "@/lib/me/favorites-repository";
 
+/** Removes a lens from the caller's favorites; always 204. Accounts only; 401 for guests. */
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ lensId: string }> },

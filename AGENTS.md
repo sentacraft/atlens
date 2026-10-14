@@ -37,6 +37,11 @@ params are named, parsed, and written in one module under `src/lib/url/`.
 
 Rate limits go through `src/lib/rate-limit.ts`, which lists every limit the app enforces.
 
+Each exported route handler under `src/app/api/` carries a one-line JSDoc: what it does, who may
+call it, and its main error statuses. `docs/api.md` is generated from them, and the build fails
+when it is stale. A request body or payload shared by a client module and its route is one Zod
+schema in `src/lib/`, imported by both.
+
 Pure helpers and UI state used by a single component stay in its file; extract when the code does
 I/O, carries testable logic, or gains a second consumer.
 

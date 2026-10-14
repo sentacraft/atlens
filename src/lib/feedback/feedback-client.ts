@@ -1,24 +1,4 @@
-export type FeedbackType = "data_issue" | "general";
-
-export interface FeedbackContext {
-  lensId?: string;
-  lensModel?: string;
-  lensBrand?: string;
-  searchQuery?: string;
-  field?: string;
-}
-
-export interface FeedbackSubmissionContext extends FeedbackContext {
-  currentValue?: string;
-  suggestedCorrection?: string;
-}
-
-export interface FeedbackSubmission {
-  type: FeedbackType;
-  description: string;
-  replyContact?: string;
-  context?: FeedbackSubmissionContext;
-}
+import type { FeedbackSubmission } from "@/lib/feedback/feedback-contract";
 
 export async function submitFeedback(payload: FeedbackSubmission): Promise<void> {
   const res = await fetch("/api/feedback", {

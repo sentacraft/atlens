@@ -13,7 +13,7 @@ import {
 } from "../conversation-repository";
 
 const CONVERSATION = "conversation-1";
-const context = { mount: "X", locale: "en" };
+const context = { mount: "X", locale: "en" } as const;
 
 function text(id: string, role: "user" | "assistant", body: string): UIMessage {
   return { id, role, parts: [{ type: "text", text: body }] };
