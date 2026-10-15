@@ -40,7 +40,7 @@ beforeEach(() => {
     new Response(JSON.stringify({ settings: { defaultMount: "G", locale: "en" } })),
   );
   mocks.urlMount = null;
-  document.cookie = "xg_locale=; Max-Age=0; Path=/";
+  document.cookie = "atlens_locale=; Max-Age=0; Path=/";
 });
 
 afterEach(() => {
@@ -55,7 +55,7 @@ describe("AccountPreferencesSync", () => {
 
     renderSync();
 
-    await waitFor(() => expect(document.cookie).toContain("xg_locale=en"));
+    await waitFor(() => expect(document.cookie).toContain("atlens_locale=en"));
     expect(mocks.setPreference).toHaveBeenCalledWith("G");
   });
 
@@ -65,17 +65,17 @@ describe("AccountPreferencesSync", () => {
 
     renderSync();
 
-    await waitFor(() => expect(document.cookie).toContain("xg_locale=en"));
+    await waitFor(() => expect(document.cookie).toContain("atlens_locale=en"));
     expect(mocks.setPreference).not.toHaveBeenCalled();
   });
 
   it("clears the cookie for a guest and never asks for settings", async () => {
-    document.cookie = "xg_locale=zh; Path=/";
+    document.cookie = "atlens_locale=zh; Path=/";
     signedIn(true);
 
     renderSync();
 
-    await waitFor(() => expect(document.cookie).not.toContain("xg_locale"));
+    await waitFor(() => expect(document.cookie).not.toContain("atlens_locale"));
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });

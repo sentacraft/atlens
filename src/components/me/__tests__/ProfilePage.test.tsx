@@ -70,7 +70,7 @@ beforeEach(() => {
   );
   mocks.testHook = true;
   mocks.session = { data: null, isPending: false };
-  document.cookie = "xg_locale=; Max-Age=0; Path=/";
+  document.cookie = "atlens_locale=; Max-Age=0; Path=/";
 });
 
 afterEach(() => {
@@ -112,7 +112,7 @@ describe("ProfilePage", () => {
       method: "PATCH",
       body: JSON.stringify({ locale: "en" }),
     }));
-    expect(document.cookie).toContain("xg_locale=en");
+    expect(document.cookie).toContain("atlens_locale=en");
   });
 
   it("applies a new default mount at once and rolls it back when saving fails", async () => {

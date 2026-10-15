@@ -8,7 +8,7 @@ function request(path: string, cookie?: string) {
 
 describe("savedLocaleRedirect", () => {
   it("sends the bare root to the saved language", () => {
-    const response = savedLocaleRedirect(request("/", "xg_locale=zh"));
+    const response = savedLocaleRedirect(request("/", "atlens_locale=zh"));
 
     expect(response?.status).toBe(307);
     expect(response?.headers.get("location")).toBe("http://localhost/zh");
@@ -16,10 +16,10 @@ describe("savedLocaleRedirect", () => {
 
   it("leaves the root to browser detection without a saved language", () => {
     expect(savedLocaleRedirect(request("/"))).toBeUndefined();
-    expect(savedLocaleRedirect(request("/", "xg_locale=ja"))).toBeUndefined();
+    expect(savedLocaleRedirect(request("/", "atlens_locale=ja"))).toBeUndefined();
   });
 
   it("lets a localized URL win over the saved language", () => {
-    expect(savedLocaleRedirect(request("/en/about", "xg_locale=zh"))).toBeUndefined();
+    expect(savedLocaleRedirect(request("/en/about", "atlens_locale=zh"))).toBeUndefined();
   });
 });

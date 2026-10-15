@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { routing, type Locale } from "@/i18n/routing";
 
 // Internal param: keep the Obsidian doc "Internal params & cookies" in sync.
-export const LOCALE_PREFERENCE_COOKIE = "xg_locale";
+export const LOCALE_PREFERENCE_COOKIE = "atlens_locale";
 
 const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 
