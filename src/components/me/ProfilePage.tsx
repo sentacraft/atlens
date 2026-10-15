@@ -340,7 +340,7 @@ function SettingsSection({ userId }: { userId: string }) {
             ]}
             onChange={(next) => save.mutate({ locale: next })}
             disabled={!settings}
-            equalWidth
+            layout="equal"
           />
         </SettingRow>
         <SettingRow label={t("mountLabel")}>
@@ -353,7 +353,7 @@ function SettingsSection({ userId }: { userId: string }) {
             ]}
             onChange={changeMount}
             disabled={!settings}
-            equalWidth
+            layout="equal"
           />
         </SettingRow>
       </div>

@@ -3,7 +3,14 @@ import { cn } from "@/lib/utils";
 export type SegmentedLabel = { default: string; mobile?: string };
 export type SegmentedOption<T> = { value: T; label: SegmentedLabel };
 
-type SegmentedVariant = "full" | "paired" | "wrap";
+/**
+ * - fill: full width on phones, as wide as its options from `sm` up.
+ * - paired: shares a phone-width row with another control.
+ * - wrap: options wrap onto more lines when they don't fit.
+ * - equal: like fill, but every option as wide as the widest and at least 5rem, so stacked
+ *   controls line up.
+ */
+export type SegmentedLayout = "fill" | "paired" | "wrap" | "equal";
 
 interface SegmentedControlProps<T> {
   ariaLabel: string;
@@ -11,10 +18,8 @@ interface SegmentedControlProps<T> {
   /** Undefined leaves every option unchecked. */
   value: T | undefined;
   onChange: (value: T) => void;
-  variant?: SegmentedVariant;
+  layout: SegmentedLayout;
   disabled?: boolean;
-  /** Every option as wide as the widest, and at least 5rem, so stacked controls line up. */
-  equalWidth?: boolean;
 }
 
 export default function SegmentedControl<T>({
@@ -22,9 +27,8 @@ export default function SegmentedControl<T>({
   options,
   value,
   onChange,
-  variant = "full",
+  layout,
   disabled,
-  equalWidth,
 }: SegmentedControlProps<T>) {
   return (
     <div
@@ -32,10 +36,10 @@ export default function SegmentedControl<T>({
       aria-label={ariaLabel}
       className={cn(
         "rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1",
-        variant === "paired" && "flex min-w-0 flex-1 sm:inline-flex sm:w-fit sm:flex-none",
-        variant === "full" && "w-full sm:w-fit flex sm:inline-flex",
-        variant === "wrap" && "w-full sm:w-fit flex flex-wrap",
-        equalWidth && "sm:inline-grid sm:grid-flow-col sm:auto-cols-[minmax(5rem,1fr)]",
+        layout === "paired" && "flex min-w-0 flex-1 sm:inline-flex sm:w-fit sm:flex-none",
+        layout === "fill" && "w-full sm:w-fit flex sm:inline-flex",
+        layout === "wrap" && "w-full sm:w-fit flex flex-wrap",
+        layout === "equal" && "flex w-full sm:inline-grid sm:w-fit sm:grid-flow-col sm:auto-cols-[minmax(5rem,1fr)]",
       )}
     >
       {options.map((option) => {
@@ -49,7 +53,7 @@ export default function SegmentedControl<T>({
             disabled={disabled}
             className={cn(
               "h-8 rounded-lg text-[12px] font-medium transition-colors sm:h-7 disabled:cursor-not-allowed disabled:opacity-60",
-              variant === "paired" ? "flex-1 px-2.5 sm:flex-none sm:px-4" : "flex-1 px-4 sm:flex-none",
+              layout === "paired" ? "flex-1 px-2.5 sm:flex-none sm:px-4" : "flex-1 px-4 sm:flex-none",
               selected
                 ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50 dark:shadow-none"
                 : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",

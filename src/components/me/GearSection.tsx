@@ -21,6 +21,7 @@ import LensSearchDialog from "@/components/browse/LensSearchDialog";
 import AddBodyDialog from "@/components/me/AddBodyDialog";
 import CoverageChart from "@/components/me/CoverageChart";
 import ManualLensDialog from "@/components/me/ManualLensDialog";
+import { LensSilhouette } from "@/components/ui/lens-silhouette";
 import { BodySpecs } from "@/components/me/gear-specs";
 
 const ADD_BUTTON_CLS = cn(ACTION_OUTLINE_CLS, "h-9 gap-1 px-3 text-[13px] md:h-8");
@@ -278,23 +279,9 @@ function Thumbnail({ src }: { src?: string }) {
         // eslint-disable-next-line @next/next/no-img-element -- catalog webp; images are unoptimized on Workers
         <img src={src} alt="" onError={() => setFailed(true)} className="h-full w-full object-contain p-1" />
       ) : (
-        <LensSilhouette />
+        <LensSilhouette className="h-[34px] w-[34px]" />
       )}
     </div>
-  );
-}
-
-/** A generic side view of a lens, matching the angle of the catalog's product photos. */
-function LensSilhouette() {
-  return (
-    <svg viewBox="0 0 44 44" aria-hidden="true" className="h-[34px] w-[34px] fill-zinc-300 dark:fill-zinc-700">
-      <rect x="5" y="16" width="4" height="12" rx="1" />
-      <rect x="9" y="12" width="21" height="20" rx="2.5" />
-      <rect x="30" y="10" width="9" height="24" rx="2.5" />
-      <rect x="14" y="12" width="1.5" height="20" className="fill-zinc-200 dark:fill-zinc-800" />
-      <rect x="18" y="12" width="1.5" height="20" className="fill-zinc-200 dark:fill-zinc-800" />
-      <rect x="22" y="12" width="1.5" height="20" className="fill-zinc-200 dark:fill-zinc-800" />
-    </svg>
   );
 }
 

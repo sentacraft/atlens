@@ -115,7 +115,7 @@ function BodyPicker({
             { value: "G", label: { default: m("gfxCaption") } },
           ]}
           onChange={setMount}
-          equalWidth
+          layout="equal"
         />
         {seriesGroups(mount).map((group) => (
           <section key={group.series} className="flex flex-col gap-2">

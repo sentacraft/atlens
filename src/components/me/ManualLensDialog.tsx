@@ -28,7 +28,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import FeatureToggleGroup from "@/components/ui/feature-toggle-group";
+import ToggleChipGroup from "@/components/ui/toggle-chip-group";
 import SegmentedControl from "@/components/ui/segmented-control";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -199,7 +199,7 @@ function ManualLensForm({
                 { value: "zoom", label: { default: l("zooms") } },
               ]}
               onChange={(value) => set("zoom", value === "zoom")}
-              equalWidth
+              layout="equal"
             />
             <span className="flex items-center gap-2">
               {textInput("focalMin", { ...numeric, "aria-label": draft.zoom ? t("focalMin") : t("focalLength") })}
@@ -227,7 +227,7 @@ function ManualLensForm({
                 { value: "G", label: { default: m("gfx") } },
               ]}
               onChange={(value) => set("mount", value)}
-              equalWidth
+              layout="equal"
             />
           </div>
         </div>
@@ -265,7 +265,7 @@ function ManualLensForm({
                   { value: "manual", label: { default: l("focusManual") } },
                 ]}
                 onChange={(value) => set("autofocus", value === "auto")}
-                equalWidth
+                layout="equal"
               />
             </div>
             <div className={LABEL_CLS}>
@@ -278,7 +278,7 @@ function ManualLensForm({
                   { value: "no", label: { default: t("no") } },
                 ]}
                 onChange={(value) => set("ois", value === "yes")}
-                equalWidth
+                layout="equal"
               />
             </div>
           </div>
@@ -317,7 +317,7 @@ function ManualLensForm({
 
             <div className={LABEL_CLS}>
               {l("features")}
-              <FeatureToggleGroup<LensFeature>
+              <ToggleChipGroup<LensFeature>
                 options={LENS_FEATURES.map((feature) => ({
                   key: feature,
                   label: l(FEATURE_LABEL_KEY[feature]),
@@ -331,7 +331,7 @@ function ManualLensForm({
 
             <div className={LABEL_CLS}>
               {l("opticalTraitFilter")}
-              <FeatureToggleGroup<OpticalTrait>
+              <ToggleChipGroup<OpticalTrait>
                 options={OPTICAL_TRAITS.map((trait) => ({ key: trait, label: badge(trait) }))}
                 selectedKeys={draft.opticalTraits}
                 onToggle={(key) => set("opticalTraits", toggle(draft.opticalTraits, key))}
@@ -349,7 +349,7 @@ function ManualLensForm({
                     { value: "cine", label: { default: l("usageCine") } },
                   ]}
                   onChange={(value) => set("usage", value)}
-                  equalWidth
+                  layout="equal"
                 />
               </div>
               <div className={LABEL_CLS}>

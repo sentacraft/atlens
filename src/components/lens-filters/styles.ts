@@ -9,11 +9,3 @@ export const rowClass =
 
 export const rowLabelClass = `${inlineLabelClass} sm:flex sm:h-8 sm:w-24 sm:shrink-0 sm:items-center sm:whitespace-nowrap`;
 
-export const filterGroupClass =
-  "flex min-w-0 flex-wrap gap-1.5";
-
-export const filterAllPillClass = "justify-center";
-
-export const filterPillDefaultActiveClass =
-  "inline-flex h-9 items-center rounded-full border border-transparent bg-zinc-200 px-3.5 text-[12px] font-semibold text-zinc-900 shadow-sm shadow-zinc-950/[0.02] transition-all duration-200 hover:border-zinc-200 hover:bg-zinc-200 dark:border-transparent dark:bg-zinc-600 dark:text-zinc-100 dark:hover:bg-zinc-500";
-
