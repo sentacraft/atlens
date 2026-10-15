@@ -72,6 +72,9 @@ Device insets (iOS notch, home indicator, Window Controls Overlay) are consumed 
 `env(safe-area-inset-*)` directly in a component. Cover any new inset in
 `e2e/pwa-safe-area.spec.ts`.
 
+Chinese text belongs only in the files `scripts/hooks/cjk-guard.mjs` allows: UI copy in `zh.json`,
+model-facing wording in `system-prompt.ts`, data, tests, and a few listed exceptions.
+
 Write all code comments in English. Default to no comment. Write one only where a reader would
 otherwise "fix" the code back — it looks wrong or roundabout but is required — and say in a line
 or two what breaks without it, linking the upstream issue or spec when there is one.

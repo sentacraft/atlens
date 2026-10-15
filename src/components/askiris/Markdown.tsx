@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
-// CommonMark's flanking rules leave ** literal around CJK punctuation (**「…」**); this relaxes them.
+// CommonMark's flanking rules leave ** literal around CJK punctuation such as corner brackets; this relaxes them.
 import remarkCjkFriendly from "remark-cjk-friendly";
 import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";

@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import type { Locale } from "@/i18n/routing";
+import { routing, type Locale } from "@/i18n/routing";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { linkedProvidersQuery, updateDisplayName } from "@/lib/me/account-client";
 import { userFavoritesQuery } from "@/lib/me/favorites-client";
@@ -361,10 +361,10 @@ function SettingsSection({ userId }: { userId: string }) {
           <SegmentedControl<Locale>
             ariaLabel={t("languageLabel")}
             value={settings?.locale ?? locale}
-            options={[
-              { value: "zh", label: { default: "中文" } },
-              { value: "en", label: { default: "English" } },
-            ]}
+            options={routing.locales.map((code) => ({
+              value: code,
+              label: { default: new Intl.DisplayNames([code], { type: "language" }).of(code) ?? code },
+            }))}
             onChange={(next) => save.mutate({ locale: next })}
             disabled={!settings}
             layout="equal"
