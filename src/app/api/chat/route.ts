@@ -18,6 +18,8 @@ import {
   AGENT_TEMPERATURE,
 } from "@/lib/ai/model";
 import { systemPrompt } from "@/lib/ai/system-prompt";
+import { EVAL_GEAR_HEADER, evalGear, gearContext, type GearStatus } from "@/lib/ai/gear-context";
+import { listUserGear } from "@/lib/me/gear-repository";
 import { buildLensTools } from "@/lib/ai/tools";
 import { isOverTokenBudget, recordTokens } from "@/lib/ai/token-budget";
 import { clientIp, isBypassed, isRateLimited } from "@/lib/rate-limit";
@@ -91,6 +93,7 @@ export async function POST(req: Request) {
   let releaseId: string | undefined;
   let ctx: ExecutionContext | undefined;
   let userId: string | undefined;
+  let isAccount = false;
   try {
     const cf = getCloudflareContext();
     rateKv = cf.env.RATE_KV;
@@ -112,6 +115,7 @@ export async function POST(req: Request) {
   try {
     const session = await createAuth().api.getSession({ headers: req.headers });
     userId = session?.user.id;
+    isAccount = Boolean(session?.user && !session.user.isAnonymous);
   } catch (error) {
     console.error("[askiris] failed to resolve authenticated user", {
       errorType: error instanceof Error ? error.name : "unknown",
@@ -123,6 +127,7 @@ export async function POST(req: Request) {
   }
 
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
+  const gearStatus = await loadGearStatus(req, appDb, userId, isAccount);
   const tools = buildLensTools(mount, locale, tBrand);
   const validate = (messages: unknown) =>
     safeValidateUIMessages<AskIrisUIMessage>({
@@ -220,7 +225,12 @@ export async function POST(req: Request) {
     model: getAgentModel(),
     providerOptions: agentProviderOptions,
     temperature: AGENT_TEMPERATURE,
-    system: systemPrompt(mount, locale),
+    // The gear note is its own message after the fixed prompt, so that prompt stays identical
+    // across users for prompt caching.
+    instructions: [
+      { role: "system", content: systemPrompt(mount, locale) },
+      { role: "system", content: gearContext(gearStatus, (slug) => (tBrand.has(slug) ? tBrand(slug) : slug)) },
+    ],
     messages: modelMessages,
     tools,
     stopWhen: stepCountIs(STEP_BUDGET),
@@ -332,4 +342,25 @@ export async function POST(req: Request) {
       },
     }),
   });
+}
+
+async function loadGearStatus(
+  req: Request,
+  appDb: D1Database,
+  userId: string,
+  isAccount: boolean,
+): Promise<GearStatus> {
+  const testGear = process.env.NODE_ENV === "production" ? undefined : evalGear(req.headers.get(EVAL_GEAR_HEADER));
+  if (testGear) {
+    return { kind: "account", gear: testGear };
+  }
+  if (!isAccount) {
+    return { kind: "guest" };
+  }
+  try {
+    return { kind: "account", gear: await listUserGear(appDb, userId) };
+  } catch (error) {
+    console.error("[askiris] failed to load gear", error);
+    return { kind: "unavailable" };
+  }
 }
