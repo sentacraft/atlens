@@ -19,6 +19,7 @@ import {
 } from "@/lib/ai/model";
 import { gearPrompt, systemPrompt } from "@/lib/ai/system-prompt";
 import { describeGear, EVAL_GEAR_HEADER, evalGear, type GearStatus } from "@/lib/ai/gear-context";
+import { ASK_FOR_GEAR, gearRequestDeclined } from "@/lib/ai/gear-request";
 import { listUserGear } from "@/lib/me/gear-repository";
 import { buildLensTools } from "@/lib/ai/tools";
 import { isOverTokenBudget, recordTokens } from "@/lib/ai/token-budget";
@@ -163,11 +164,13 @@ export async function POST(req: Request) {
     console.error("[askiris] failed to load conversation", error);
     return chatErrorResponse("unavailable", 500);
   }
-  const turn = resolveTurn(stored, incoming.data[0], previousMessageId);
+  const turn = resolveTurn(stored, incoming.data[0], previousMessageId, [ASK_FOR_GEAR]);
   if (turn.kind === "invalid") {
     return chatErrorResponse("unavailable", 400);
   }
   const { history, userMessage, historyChanged } = turn;
+  const offerGearCard =
+    !(gearStatus.kind === "account" && gearStatus.gear.length > 0) && !gearRequestDeclined(history);
   const messageContext = traceMessageContext(history);
   const analyticsConversationId = await anonymizeId(
     conversationId,
@@ -229,10 +232,16 @@ export async function POST(req: Request) {
     // across users for prompt caching.
     instructions: [
       { role: "system", content: systemPrompt(mount, locale) },
-      { role: "system", content: gearPrompt(describeGear(gearStatus, (slug) => (tBrand.has(slug) ? tBrand(slug) : slug))) },
+      {
+        role: "system",
+        content: gearPrompt(describeGear(gearStatus, (slug) => (tBrand.has(slug) ? tBrand(slug) : slug)), {
+          cardAvailable: offerGearCard,
+        }),
+      },
     ],
     messages: modelMessages,
     tools,
+    activeTools: offerGearCard ? undefined : toolNamesWithout(tools, ASK_FOR_GEAR),
     stopWhen: stepCountIs(STEP_BUDGET),
     // req.signal only fires on Workers with the enable_request_signal compatibility flag.
     abortSignal: AbortSignal.any([req.signal, AbortSignal.timeout(STREAM_TIMEOUT_MS)]),
@@ -319,7 +328,7 @@ export async function POST(req: Request) {
             userMessage.parts.find((part) => part.type === "text")?.text ?? "New conversation",
           ).slice(0, MAX_CONVERSATION_TITLE_LENGTH),
           userMessage: turn.kind === "new" ? userMessage : undefined,
-          replaceAfterMessageId: turn.kind === "regenerate" ? userMessage.id : undefined,
+          replaceAfterMessageId: turn.kind === "new" ? undefined : userMessage.id,
           responseMessage: result.responseMessage,
           context: { mount, locale },
           now: Date.now(),
@@ -363,4 +372,8 @@ async function loadGearStatus(
     console.error("[askiris] failed to load gear", error);
     return { kind: "unavailable" };
   }
+}
+
+function toolNamesWithout<TOOLS extends Record<string, unknown>>(tools: TOOLS, excluded: string): Array<keyof TOOLS & string> {
+  return (Object.keys(tools) as Array<keyof TOOLS & string>).filter((name) => name !== excluded);
 }

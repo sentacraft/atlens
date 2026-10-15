@@ -110,6 +110,9 @@ that covers the bug:
 | Layout, interaction, browser APIs — fixed positioning, scroll, ResizeObserver, viewport | Playwright (`e2e/`) |
 | Pure CSS — color, spacing, font size, no conditional logic | No test required; verify with a screenshot |
 
+The AskIris eval (`eval/promptfoo/`) calls paid models on every case. Follow the cost rules
+in its README before running it.
+
 Visual verification must cover desktop and mobile. Use a 375px viewport for mobile. A
 desktop-only screenshot is not evidence that a UI change works.
 

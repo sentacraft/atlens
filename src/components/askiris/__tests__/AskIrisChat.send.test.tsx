@@ -61,7 +61,7 @@ function openStream(onAbort: () => void, signal?: AbortSignal | null) {
 function renderChat() {
   return render(
     <QueryClientProvider client={new QueryClient()}>
-      <AskIrisChat entry={{ kind: "new" }} lensIndex={{}} />
+      <AskIrisChat entry={{ kind: "new" }} lensIndex={{}} lenses={[]} />
     </QueryClientProvider>,
   );
 }
