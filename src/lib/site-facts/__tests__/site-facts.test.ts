@@ -22,9 +22,18 @@ describe("siteFacts", () => {
     expect(siteFacts(["privacy", "privacy", "data"], "en").map((group) => group.topic)).toEqual(["privacy", "data"]);
   });
 
-  it("names the author as the user's locale writes it", () => {
+  it("fills UI names in the user's language, and every placeholder resolves", () => {
     expect(factsFor("project", "zh")).toContain(zh.About.authorName);
     expect(factsFor("project", "en")).not.toMatch(/[\u4e00-\u9fff]/);
+    expect(factsFor("account", "zh")).toContain(`"${zh.Auth.deleteAccount}"`);
+    for (const locale of ["en", "zh"]) {
+      expect(JSON.stringify(siteFacts([...SITE_TOPICS], locale))).not.toMatch(/\{\w+\.\w+\}/);
+    }
+  });
+
+  it("names the tipping channel each site uses", () => {
+    expect(factsFor("business", "zh")).toContain(zh.About.donationWechatLabel);
+    expect(factsFor("business", "en")).toMatch(/English site uses Ko-fi/);
   });
 
   it("describes coverage from the lens data and the coverage table", () => {

@@ -6,6 +6,7 @@ import { CATALOG_COVERAGE, type CoverageState } from "@/lib/lens/catalog-coverag
 import { getLensesByMount, lensCountsByBrand, meta } from "@/lib/lens/data";
 import { MAX_COMPARE } from "@/lib/lens/lens";
 import { isPurchaseLocale } from "@/lib/purchase/links";
+import { donationChannel } from "@/lib/support";
 import { MOUNTS, type Lens, type LensPriceEntry } from "@/lib/types";
 import { HANDWRITTEN_FACTS } from "@/lib/site-facts/handwritten";
 
@@ -15,6 +16,14 @@ export type SiteTopic = (typeof SITE_TOPICS)[number];
 type Messages = typeof en;
 const MESSAGES: Record<string, Messages> = { en, zh };
 const languageName = (code: string) => new Intl.DisplayNames(["en"], { type: "language" }).of(code) ?? code;
+
+/** Replaces each `{Namespace.key}` with that message, leaving an unknown key as written. */
+function uiStrings(text: string, messages: Messages): string {
+  return text.replace(/\{(\w+)\.(\w+)\}/g, (placeholder, namespace: string, key: string) => {
+    const value = (messages as Record<string, Record<string, unknown>>)[namespace]?.[key];
+    return typeof value === "string" ? value : placeholder;
+  });
+}
 
 function list(items: string[]): string {
   return items.join(", ");
@@ -62,11 +71,17 @@ function priceSources(): string[] {
   ];
 }
 
-function commercialTies(): string[] {
-  return routing.locales.map(
+function commercialTies(locale: string): string[] {
+  const m = MESSAGES[locale];
+  const channels = routing.locales.map((code) => {
+    const channel = donationChannel(code) === "wechat" ? m.About.donationWechatLabel : "Ko-fi";
+    return `the ${languageName(code)} site uses ${channel}`;
+  });
+  const support = `Visitors who want to support Atlens can tip from the "${m.About.supportTitle}" section of the "${m.Nav.about}" page: ${list(channels)}.`;
+  return [support, ...routing.locales.map(
     (code) =>
       `Store links on the ${languageName(code)} site: ${isPurchaseLocale(code) ? en.Purchase.disclosureDetail : en.Purchase.disclosureNoAffiliate}`,
-  );
+  )];
 }
 
 function accountFeatures(locale: string): string[] {
@@ -112,7 +127,7 @@ export function siteFacts(topics: SiteTopic[], locale: string): { topic: SiteTop
     topic,
     facts: [
       ...HANDWRITTEN_FACTS.filter((fact) => fact.topic === topic).map((fact) =>
-        fact.text.replace("{author}", MESSAGES[messagesLocale].About.authorName),
+        uiStrings(fact.text, MESSAGES[messagesLocale]),
       ),
       ...(GENERATED[topic]?.(messagesLocale) ?? []),
     ],

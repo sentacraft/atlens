@@ -10,6 +10,7 @@ import { lensCountsByBrand } from "@/lib/lens/data";
 import { CATALOG_COVERAGE, type BrandCoverage, type CoverageState } from "@/lib/lens/catalog-coverage";
 import AckCard from "@/components/about/AckCard";
 import { isPurchaseLocale } from "@/lib/purchase/links";
+import { donationChannel, KOFI_URL } from "@/lib/support";
 import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 
 function Check() {
@@ -420,7 +421,7 @@ export default async function AboutContent() {
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t(isPurchaseLocale(locale) ? "supportDonateAlt" : "supportDonate")}
         </p>
-        {locale === "zh" ? (
+        {donationChannel(locale) === "wechat" ? (
           <div className="mt-1">
             <Image
               src="/wechat-qr.jpg"
@@ -433,7 +434,7 @@ export default async function AboutContent() {
         ) : (
           <div className="mt-1">
             <a
-              href="https://ko-fi.com/sentacraft"
+              href={KOFI_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 text-sm font-semibold text-zinc-800 dark:text-zinc-200 transition-all duration-200 hover:scale-[1.02] hover:shadow-sm"

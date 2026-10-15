@@ -12,13 +12,13 @@ export interface SiteFact {
  * Facts only the author can decide: policies, commitments, and who runs the site. Iris tells any
  * visitor everything here, so an entry is what Atlens wants any visitor to know, stated as a fact
  * about Atlens; how Iris should answer belongs in system-prompt.ts. Facts that code or data already hold are
- * generated in index.ts instead. `{author}` becomes the author's name as the user's locale writes it.
+ * generated in index.ts instead. A `{Namespace.key}` placeholder becomes that UI string in the user's language, so names match what the site shows.
  */
 export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "author",
     topic: "project",
-    text: "Atlens is built and maintained by one independent developer, {author}, whose GitHub is linked at the top right of the site.",
+    text: "Atlens is built and maintained by one independent developer, {About.authorName}, whose GitHub is linked at the top right of the site.",
   },
   {
     id: "former-name",
@@ -29,7 +29,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "contact",
     topic: "project",
-    text: "Anyone can contact the author at me@atlens.app. For data problems or feature ideas, the site's Feedback form is the quickest route.",
+    text: "Anyone can contact the author at me@atlens.app. For data problems or feature ideas, the site's \"{Nav.feedback}\" form is the quickest route.",
   },
   {
     id: "open-source",
@@ -51,11 +51,6 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
     id: "costs",
     topic: "business",
     text: "The author pays the running costs personally: hosting, keeping the data up to date, and the AI model behind Ask Iris.",
-  },
-  {
-    id: "support",
-    topic: "business",
-    text: "People who want to support Atlens can tip through Ko-fi or WeChat, from the support section of the About page.",
   },
   { id: "ads", topic: "business", text: "Atlens currently has no ads." },
   {
@@ -82,7 +77,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "corrections",
     topic: "data",
-    text: "Data errors can be reported with Feedback or the report button on a lens page. Fixes usually take 2–4 weeks, because one person maintains the site part-time.",
+    text: "Data errors can be reported with \"{Nav.feedback}\" or the \"{LensDetail.reportIssue}\" button on a lens page. Fixes usually take 2–4 weeks, because one person maintains the site part-time.",
   },
   {
     id: "price-nature",
@@ -129,7 +124,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "delete-account",
     topic: "account",
-    text: "To delete an account: open the account menu, choose Delete account, and confirm with the link sent by email. Conversations, favorites, and gear are deleted with it.",
+    text: "To delete an account: open the account menu, choose \"{Auth.deleteAccount}\", and confirm with the link sent by email. Conversations, favorites, and gear are deleted with it.",
   },
   {
     id: "cookies",
@@ -146,11 +141,11 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "storage",
     topic: "privacy",
-    text: "Data is stored on Cloudflare. Conversations are linked to the account so they can be found again. The About page's privacy section describes what is stored.",
+    text: "Data is stored on Cloudflare. Conversations are linked to the account so they can be found again. The \"{About.privacyTitle}\" section of the \"{Nav.about}\" page describes what is stored.",
   },
   {
     id: "mounts",
     topic: "usage",
-    text: "X mount is Fujifilm's APS-C system and G mount is its GFX medium-format system. The mount is switched in the navigation bar. G mount coverage and features are still being filled in.",
+    text: "\"{MountSwitcher.x}\" is Fujifilm's APS-C system and \"{MountSwitcher.gfx}\" is its GFX medium-format system. The mount is switched in the navigation bar. \"{MountSwitcher.gfx}\" coverage and features are still being filled in.",
   },
 ];
