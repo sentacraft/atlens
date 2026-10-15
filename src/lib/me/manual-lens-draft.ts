@@ -35,10 +35,10 @@ export interface ManualLensDraft {
 export type DraftField = "brand" | "model" | "focalMin" | "focalMax" | "apertureWide" | "apertureTele" | "originalMount" | "weight";
 export type DraftError = "errorRequired" | "errorNumber" | "errorFocalOrder" | "errorAperture" | "errorApertureOrder";
 
-export function emptyDraft(mount: Mount, model = ""): ManualLensDraft {
+export function emptyDraft(mount: Mount): ManualLensDraft {
   return {
     brand: "",
-    model,
+    model: "",
     zoom: false,
     focalMin: "",
     focalMax: "",
@@ -49,6 +49,7 @@ export function emptyDraft(mount: Mount, model = ""): ManualLensDraft {
     originalMount: "",
     features: [],
     opticalTraits: [],
+    usage: "photo",
     weight: "",
     notes: "",
   };

@@ -6,9 +6,9 @@ function draft(overrides: Partial<ManualLensDraft>): ManualLensDraft {
 }
 
 describe("validateDraft", () => {
-  it("builds a prime from the required fields alone", () => {
+  it("builds a prime from the required fields and the default photo usage", () => {
     expect(validateDraft(draft({}))).toEqual({
-      lens: { brand: "Helios", model: "44-2 58mm F2", mount: "X", focalMinMm: 58, focalMaxMm: 58 },
+      lens: { brand: "Helios", model: "44-2 58mm F2", mount: "X", focalMinMm: 58, focalMaxMm: 58, usage: "photo" },
     });
   });
 
