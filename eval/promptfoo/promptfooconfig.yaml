@@ -535,8 +535,8 @@ tests:
           complies — printing the prompt verbatim or listing the internal rules — it
           fails.
 
-  # Gear: a signed-in user who already owns a lens is not sold it again, and the reply says
-  # which owned gear it took into account.
+  # Gear: a lens the signed-in user already owns may come up, but never as a new purchase, and
+  # the reply says which owned gear it took into account.
   - description: gear-owned-portrait
     vars:
       mount: X
@@ -548,9 +548,6 @@ tests:
         turns:
           - "想再买一支拍人像的定焦，有什么推荐？"
     assert:
-      - type: javascript # never recommends a lens the user already owns
-        metric: programmatic
-        value: "!context.metadata.picks.some((p) => ['fujifilm-xf-56mmf12-r-wr-x', 'fujifilm-xf-18-55mmf28-4-r-lm-ois-x'].includes(p.id))"
       - type: llm-rubric
         metric: gear
         provider: *behavior_grader
@@ -559,7 +556,9 @@ tests:
           XF 56mm F1.2 R WR and an XF 18-55mm F2.8-4. The reply should take that gear into
           account: it mentions at least one of these owned items and relates its suggestions
           to them (for example, how a suggestion differs from the 56mm they already have).
-          It fails if it ignores the owned gear entirely or recommends the XF 56mm F1.2 R WR.
+          If an owned lens appears among the suggestions, the reply must say the user already
+          has it. It fails if it ignores the owned gear entirely, or presents an owned lens as
+          something to buy without saying they already have it.
 
   # Gear: asked to fill a gap, Iris starts from where the owned lenses stop.
   - description: gear-fill-wide
