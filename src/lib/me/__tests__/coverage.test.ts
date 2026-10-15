@@ -32,7 +32,7 @@ describe("coverage", () => {
       max: 135,
       ticks: [15, 24, 35, 50, 85, 135],
     });
-    expect(coverageAxis(coverageRows([lens("tele", 70, 300)])).ticks.slice(-2)).toEqual([300, 450]);
+    expect(coverageAxis(coverageRows([lens("tele", 70, 300)])).ticks.slice(-2)).toEqual([200, 450]);
     expect(coverageAxis(coverageRows([lens("wide", 8, 16)])).min).toBe(12);
   });
 

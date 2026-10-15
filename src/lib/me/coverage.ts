@@ -44,8 +44,9 @@ export function coverageRows(lenses: CoverageInput[]): CoverageRow[] {
 export function coverageAxis(rows: CoverageRow[]): CoverageAxis {
   const min = Math.min(15, ...rows.map((row) => row.equivalentMin));
   const max = Math.max(135, ...rows.map((row) => row.equivalentMax));
-  // The axis end is always labelled; a stock tick just short of it would collide with that label.
-  const ticks = [...TICKS.filter((tick) => tick >= min && tick * 1.15 < max), max];
+  // The axis end is always labelled; a stock tick within 12% of the axis from it would collide.
+  const span = Math.log(max / min);
+  const ticks = [...TICKS.filter((tick) => tick >= min && Math.log(max / tick) / span >= 0.12), max];
   return { min, max, ticks };
 }
 

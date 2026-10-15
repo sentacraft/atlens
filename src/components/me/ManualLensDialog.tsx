@@ -199,6 +199,7 @@ function ManualLensForm({
                 { value: "zoom", label: { default: l("zooms") } },
               ]}
               onChange={(value) => set("zoom", value === "zoom")}
+              equalWidth
             />
             <span className="flex items-center gap-2">
               {textInput("focalMin", { ...numeric, "aria-label": draft.zoom ? t("focalMin") : t("focalLength") })}
@@ -226,6 +227,7 @@ function ManualLensForm({
                 { value: "G", label: { default: m("gfx") } },
               ]}
               onChange={(value) => set("mount", value)}
+              equalWidth
             />
           </div>
         </div>
@@ -263,6 +265,7 @@ function ManualLensForm({
                   { value: "manual", label: { default: l("focusManual") } },
                 ]}
                 onChange={(value) => set("autofocus", value === "auto")}
+                equalWidth
               />
             </div>
             <div className={LABEL_CLS}>
@@ -275,6 +278,7 @@ function ManualLensForm({
                   { value: "no", label: { default: t("no") } },
                 ]}
                 onChange={(value) => set("ois", value === "yes")}
+                equalWidth
               />
             </div>
           </div>
@@ -345,6 +349,7 @@ function ManualLensForm({
                     { value: "cine", label: { default: l("usageCine") } },
                   ]}
                   onChange={(value) => set("usage", value)}
+                  equalWidth
                 />
               </div>
               <div className={LABEL_CLS}>

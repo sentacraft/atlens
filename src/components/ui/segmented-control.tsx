@@ -13,6 +13,8 @@ interface SegmentedControlProps<T> {
   onChange: (value: T) => void;
   variant?: SegmentedVariant;
   disabled?: boolean;
+  /** Every option as wide as the widest, and at least 5rem, so stacked controls line up. */
+  equalWidth?: boolean;
 }
 
 export default function SegmentedControl<T>({
@@ -22,6 +24,7 @@ export default function SegmentedControl<T>({
   onChange,
   variant = "full",
   disabled,
+  equalWidth,
 }: SegmentedControlProps<T>) {
   return (
     <div
@@ -32,6 +35,7 @@ export default function SegmentedControl<T>({
         variant === "paired" && "flex min-w-0 flex-1 sm:inline-flex sm:w-fit sm:flex-none",
         variant === "full" && "w-full sm:w-fit flex sm:inline-flex",
         variant === "wrap" && "w-full sm:w-fit flex flex-wrap",
+        equalWidth && "sm:inline-grid sm:grid-flow-col sm:auto-cols-[minmax(5rem,1fr)]",
       )}
     >
       {options.map((option) => {

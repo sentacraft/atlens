@@ -4,7 +4,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Menu } from "@base-ui/react/menu";
-import { Camera, Ellipsis, Plus, Trash2 } from "lucide-react";
+import { Ellipsis, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { getBodyById } from "@/lib/body/data";
 import type { Body } from "@/lib/body/schema";
@@ -15,6 +15,8 @@ import { addGear, GearRequestError, removeGear, userGearQuery } from "@/lib/me/g
 import type { GearInput, GearItem, ManualLens } from "@/lib/me/gear-schema";
 import { ACTION_OUTLINE_CLS, ICON_NAV_BTN_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
+import { mountToUrlSegment } from "@/lib/mount";
+import { Link } from "@/i18n/navigation";
 import { useMountPreference } from "@/context/MountPreferenceProvider";
 import LensSearchDialog from "@/components/browse/LensSearchDialog";
 import AddBodyDialog from "@/components/me/AddBodyDialog";
@@ -128,7 +130,7 @@ export default function GearSection({
           return (
             <GearRow
               key={item.id}
-              thumbnail={<Thumbnail icon />}
+              thumbnail={null}
               brand={brandName(item.brand)}
               name={item.name}
               detail={body ? <BodySpecs body={body} /> : null}
@@ -197,6 +199,7 @@ export default function GearSection({
               name={item.name}
               badge={badges}
               detail={equivalent}
+              href={lens ? `/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}` : undefined}
               onRemove={() => remove.mutate(item.id)}
             />
           );
@@ -256,7 +259,7 @@ function GearGroup({
   );
 }
 
-function Thumbnail({ src, icon, dashed }: { src?: string; icon?: boolean; dashed?: boolean }) {
+function Thumbnail({ src, dashed }: { src?: string; dashed?: boolean }) {
   const [failed, setFailed] = useState(false);
   return (
     <div
@@ -268,8 +271,6 @@ function Thumbnail({ src, icon, dashed }: { src?: string; icon?: boolean; dashed
       {src && !failed ? (
         // eslint-disable-next-line @next/next/no-img-element -- catalog webp; images are unoptimized on Workers
         <img src={src} alt="" onError={() => setFailed(true)} className="h-full w-full object-contain p-1" />
-      ) : icon ? (
-        <Camera className="h-4 w-4 text-zinc-400" />
       ) : null}
     </div>
   );
@@ -281,6 +282,7 @@ function GearRow({
   name,
   badge,
   detail,
+  href,
   onRemove,
 }: {
   thumbnail: ReactNode;
@@ -288,11 +290,12 @@ function GearRow({
   name: string;
   badge?: string | null;
   detail: ReactNode;
+  href?: string;
   onRemove: () => void;
 }) {
   const t = useTranslations("Profile");
-  return (
-    <li className="flex items-center gap-3 border-b border-zinc-100 py-2.5 pr-1.5 pl-3.5 last:border-b-0 md:gap-3.5 md:py-3 md:pr-2 md:pl-4 dark:border-zinc-800">
+  const body = (
+    <>
       {thumbnail}
       <div className="min-w-0 flex-1">
         <div className="hidden text-[11px] uppercase tracking-[0.14em] text-zinc-500 md:block dark:text-zinc-400">{brand}</div>
@@ -307,7 +310,21 @@ function GearRow({
           </span>
         )}
       </div>
-      <span className="hidden max-w-[45%] shrink-0 truncate text-xs text-zinc-500 md:block dark:text-zinc-400">{detail}</span>
+      <span className="hidden shrink-0 whitespace-nowrap text-xs text-zinc-500 md:block dark:text-zinc-400">{detail}</span>
+    </>
+  );
+  return (
+    <li className="flex items-center gap-1 border-b border-zinc-100 pr-1.5 last:border-b-0 md:pr-2 dark:border-zinc-800">
+      {href ? (
+        <Link
+          href={href}
+          className="flex min-w-0 flex-1 items-center gap-3 py-2.5 pl-3.5 transition-colors hover:bg-zinc-50 md:gap-3.5 md:py-3 md:pl-4 dark:hover:bg-zinc-900"
+        >
+          {body}
+        </Link>
+      ) : (
+        <div className="flex min-w-0 flex-1 items-center gap-3 py-2.5 pl-3.5 md:gap-3.5 md:py-3 md:pl-4">{body}</div>
+      )}
       <Menu.Root>
         <Menu.Trigger aria-label={t("moreActions")} className={cn(ICON_NAV_BTN_CLS, "h-11 w-11 md:h-8 md:w-8")}>
           <Ellipsis className="h-4 w-4" />

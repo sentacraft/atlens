@@ -271,13 +271,10 @@ function SectionHeading({ id, subtitle }: { id: SectionId; subtitle?: string }) 
   );
 }
 
-function SettingRow({ label, hint, children }: { label: string; hint: string; children: ReactNode }) {
+function SettingRow({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between md:gap-6 md:border-b md:border-zinc-100 md:px-5 md:py-4 md:last:border-b-0 dark:md:border-zinc-800">
-      <div>
-        <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{label}</div>
-        <div className="hidden text-xs text-zinc-500 md:block dark:text-zinc-400">{hint}</div>
-      </div>
+      <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{label}</div>
       {children}
     </div>
   );
@@ -333,7 +330,7 @@ function SettingsSection({ userId }: { userId: string }) {
     <section id="settings" className={SECTION_CLS}>
       <SectionHeading id="settings" subtitle={t("settingsSubtitle")} />
       <div className="flex flex-col gap-4 md:gap-0 md:rounded-2xl md:border md:border-zinc-200 dark:md:border-zinc-800">
-        <SettingRow label={t("languageLabel")} hint={t("languageHint")}>
+        <SettingRow label={t("languageLabel")}>
           <SegmentedControl<Locale>
             ariaLabel={t("languageLabel")}
             value={settings?.locale ?? locale}
@@ -343,9 +340,10 @@ function SettingsSection({ userId }: { userId: string }) {
             ]}
             onChange={(next) => save.mutate({ locale: next })}
             disabled={!settings}
+            equalWidth
           />
         </SettingRow>
-        <SettingRow label={t("mountLabel")} hint={t("mountHint")}>
+        <SettingRow label={t("mountLabel")}>
           <SegmentedControl<Mount>
             ariaLabel={t("mountLabel")}
             value={settings?.defaultMount ?? DEFAULT_USER_SETTINGS.defaultMount}
@@ -355,6 +353,7 @@ function SettingsSection({ userId }: { userId: string }) {
             ]}
             onChange={changeMount}
             disabled={!settings}
+            equalWidth
           />
         </SettingRow>
       </div>

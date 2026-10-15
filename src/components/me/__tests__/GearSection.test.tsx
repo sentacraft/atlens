@@ -14,6 +14,9 @@ vi.mock("next-intl", () => {
 vi.mock("@/context/MountPreferenceProvider", () => ({
   useMountPreference: () => ({ preference: "X" }),
 }));
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({ href, ...props }: { href: string }) => <a href={href} {...props} />,
+}));
 vi.mock("@/components/browse/LensSearchDialog", () => ({ default: () => null }));
 vi.mock("@/components/me/ManualLensDialog", () => ({ default: () => null }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
@@ -69,6 +72,16 @@ describe("GearSection", () => {
     expect(screen.getAllByText("equivalent 87mm").length).toBeGreaterThan(0);
     expect(screen.getAllByText("manualBadge · adaptedBadge M42").length).toBeGreaterThan(0);
     expect(screen.getByText("coverageTitle")).toBeInTheDocument();
+  });
+
+  it("links catalog lenses to their detail page and leaves manual ones plain", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ gear })));
+
+    renderSection();
+
+    expect((await screen.findAllByText("XF 18-55mm"))[0].closest("a")).toHaveAttribute("href", "/lenses/x/xf-18-55");
+    expect(screen.getAllByText("44-2 58mm F2")[0].closest("a")).toBeNull();
+    expect(screen.getAllByText("X-T5")[0].closest("a")).toBeNull();
   });
 
   it("shows empty states and no chart without gear", async () => {
