@@ -59,7 +59,13 @@
     "deleteEmailSent": "确认链接已发送到 {email}。请在当前浏览器中打开它完成删除，链接 24 小时内有效。",
     "cancel": "取消",
     "close": "关闭",
-    "profile": "我的主页"
+    "profile": "我的主页",
+    "reasonFavoriteTitle": "登录后收藏这支镜头",
+    "reasonGearTitle": "登录后记录你的器材",
+    "benefitFavorites": "收藏感兴趣的镜头，随时回来比较",
+    "benefitGear": "记录你的机身和镜头，看清焦段覆盖了哪里、还缺哪里",
+    "benefitSync": "收藏、器材、设置和 Ask Iris 对话都存在账号里，换台设备也能接着用",
+    "freeNote": "用 Google 或邮箱登录，免费"
   },
   "AuthEmail": {
     "signInSubject": "你的 Atlens 登录验证码",
@@ -757,12 +763,10 @@
     "favorite": "收藏",
     "unfavorite": "取消收藏",
     "favorited": "已收藏",
-    "favoriteSignIn": "登录后可以收藏镜头，在任何设备上查看",
     "favoritesLimit": "收藏数量已达上限。",
     "own": "标记为已拥有",
     "owned": "已拥有",
     "removeOwned": "从我的器材中移除",
-    "ownSignIn": "登录后可以记录你的器材，Ask Iris 会参考它给建议",
     "favoriteAdded": "已加入收藏",
     "viewFavorites": "查看",
     "favoriteRemoved": "已取消收藏",

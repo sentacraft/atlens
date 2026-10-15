@@ -59,7 +59,13 @@
     "deleteEmailSent": "We sent a link to {email}. Open it in this browser to finish deleting your account. It expires in 24 hours.",
     "cancel": "Cancel",
     "close": "Close",
-    "profile": "My profile"
+    "profile": "My profile",
+    "reasonFavoriteTitle": "Sign in to favorite this lens",
+    "reasonGearTitle": "Sign in to record your gear",
+    "benefitFavorites": "Save lenses you're interested in and come back to compare them",
+    "benefitGear": "Record your bodies and lenses and see which focal lengths you cover and which you're missing",
+    "benefitSync": "Favorites, gear, settings and Ask Iris chats stay with your account on every device",
+    "freeNote": "Sign in with Google or email. It's free."
   },
   "AuthEmail": {
     "signInSubject": "Your Atlens sign-in code",
@@ -757,12 +763,10 @@
     "favorite": "Favorite",
     "unfavorite": "Remove from favorites",
     "favorited": "Favorited",
-    "favoriteSignIn": "Sign in to favorite lenses and see them on any device",
     "favoritesLimit": "You've reached the favorites limit.",
     "own": "Mark as owned",
     "owned": "Owned",
     "removeOwned": "Remove from my gear",
-    "ownSignIn": "Sign in to record your gear so Ask Iris can take it into account",
     "favoriteAdded": "Added to favorites",
     "viewFavorites": "View",
     "favoriteRemoved": "Removed from favorites",

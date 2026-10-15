@@ -7,7 +7,7 @@ import { useFavorites } from "../useFavorites";
 
 const mocks = vi.hoisted(() => ({
   session: { data: null as unknown },
-  promptSignIn: vi.fn(),
+  openSignIn: vi.fn(),
   toast: Object.assign(vi.fn(), { error: vi.fn() }),
 }));
 
@@ -19,7 +19,7 @@ vi.mock("@/lib/auth-client", async (importOriginal) => ({
   authClient: { useSession: () => mocks.session },
 }));
 vi.mock("@/context/TestHookProvider", () => ({ useTestHookEnabled: () => true }));
-vi.mock("@/context/SignInDialogProvider", () => ({ useSignInPrompt: () => mocks.promptSignIn }));
+vi.mock("@/context/SignInDialogProvider", () => ({ useSignInDialog: () => mocks.openSignIn }));
 
 let serverFavorites: string[];
 let failNextPost: boolean;
@@ -64,7 +64,7 @@ describe("useFavorites", () => {
 
     act(() => result.current.toggle("xf-23"));
 
-    expect(mocks.promptSignIn).toHaveBeenCalledWith("favoriteSignIn");
+    expect(mocks.openSignIn).toHaveBeenCalledWith("favorite");
     expect(fetch).not.toHaveBeenCalled();
   });
 

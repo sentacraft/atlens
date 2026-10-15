@@ -13,7 +13,7 @@ import {
 } from "@/lib/me/favorites-client";
 import { useRouter } from "@/i18n/navigation";
 import { useTestHookEnabled } from "@/context/TestHookProvider";
-import { useSignInPrompt } from "@/context/SignInDialogProvider";
+import { useSignInDialog } from "@/context/SignInDialogProvider";
 
 /** The signed-in user's favorite lens ids, newest first, and a toggle that asks guests to sign in. */
 export function useFavorites() {
@@ -22,7 +22,7 @@ export function useFavorites() {
   const enabled = useTestHookEnabled();
   const { data: session } = authClient.useSession();
   const user = accountUser(session);
-  const promptSignIn = useSignInPrompt();
+  const openSignIn = useSignInDialog();
   const router = useRouter();
   const queryClient = useQueryClient();
   const query = userFavoritesQuery(user?.id ?? "");
@@ -53,7 +53,7 @@ export function useFavorites() {
 
   function toggle(lensId: string) {
     if (!user) {
-      promptSignIn(t("favoriteSignIn"));
+      openSignIn("favorite");
       return;
     }
     const favorite = !ids.has(lensId);

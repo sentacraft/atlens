@@ -29,7 +29,7 @@ export default function AuthControl() {
     return (
       <button
         type="button"
-        onClick={openSignIn}
+        onClick={() => openSignIn()}
         aria-label={t("login")}
         className={cn(ICON_NAV_BTN_CLS, "h-8 gap-1.5 px-2 text-sm")}
       >

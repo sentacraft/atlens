@@ -7,7 +7,7 @@ import { accountUser, authClient } from "@/lib/auth-client";
 import { addGear, GearRequestError, removeGear, userGearQuery } from "@/lib/me/gear-client";
 import { useRouter } from "@/i18n/navigation";
 import { useTestHookEnabled } from "@/context/TestHookProvider";
-import { useSignInPrompt } from "@/context/SignInDialogProvider";
+import { useSignInDialog } from "@/context/SignInDialogProvider";
 
 /** Whether a catalog lens is in the signed-in user's gear, and a toggle that asks guests to sign in. */
 export function useOwnedLens(lensId: string) {
@@ -16,7 +16,7 @@ export function useOwnedLens(lensId: string) {
   const enabled = useTestHookEnabled();
   const { data: session } = authClient.useSession();
   const user = accountUser(session);
-  const promptSignIn = useSignInPrompt();
+  const openSignIn = useSignInDialog();
   const router = useRouter();
   const queryClient = useQueryClient();
   const query = userGearQuery(user?.id ?? "");
@@ -54,7 +54,7 @@ export function useOwnedLens(lensId: string) {
 
   function toggle() {
     if (!user) {
-      promptSignIn(t("ownSignIn"));
+      openSignIn("gear");
       return;
     }
     mutation.mutate(!item);

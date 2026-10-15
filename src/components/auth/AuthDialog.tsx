@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
@@ -45,12 +45,22 @@ function useCountdown(durationMs: number) {
   return [seconds, start] as const;
 }
 
+export type SignInReason = "favorite" | "gear";
+
+const REASON_TITLE_KEY = { favorite: "reasonFavoriteTitle", gear: "reasonGearTitle" } as const;
+const BENEFIT_KEYS = {
+  favorite: ["benefitFavorites", "benefitGear", "benefitSync"],
+  gear: ["benefitGear", "benefitFavorites", "benefitSync"],
+} as const;
+
 export default function AuthDialog({
   open,
   onOpenChange,
+  reason,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  reason?: SignInReason;
 }) {
   const t = useTranslations("Auth");
   const [email, setEmail] = useState("");
@@ -147,8 +157,22 @@ export default function AuthDialog({
           >
             <X className="h-4 w-4" />
           </DialogClose>
-          <DialogTitle>{t("title")}</DialogTitle>
-          <DialogDescription>{t("description")}</DialogDescription>
+          <DialogTitle>{reason ? t(REASON_TITLE_KEY[reason]) : t("title")}</DialogTitle>
+          {reason ? (
+            <DialogDescription render={<div />} className="flex flex-col gap-3 pt-2">
+              <ul className="flex flex-col gap-2">
+                {BENEFIT_KEYS[reason].map((key) => (
+                  <li key={key} className="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-900 dark:text-zinc-100" strokeWidth={2.5} />
+                    {t(key)}
+                  </li>
+                ))}
+              </ul>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">{t("freeNote")}</span>
+            </DialogDescription>
+          ) : (
+            <DialogDescription>{t("description")}</DialogDescription>
+          )}
         </DialogHeader>
         <div className="flex flex-col gap-4 px-5 pb-5">
           {step === "email" ? (

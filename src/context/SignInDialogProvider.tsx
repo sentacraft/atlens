@@ -1,33 +1,28 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
-import AuthDialog from "@/components/auth/AuthDialog";
+import { createContext, useContext, useMemo, useState } from "react";
+import AuthDialog, { type SignInReason } from "@/components/auth/AuthDialog";
 
-const SignInDialogContext = createContext<() => void>(() => {});
+type OpenSignIn = (reason?: SignInReason) => void;
+
+const SignInDialogContext = createContext<OpenSignIn>(() => {});
 
 export function SignInDialogProvider({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
-  const openSignIn = useMemo(() => () => setOpen(true), []);
+  const [state, setState] = useState<{ open: boolean; reason?: SignInReason }>({ open: false });
+  const openSignIn = useMemo<OpenSignIn>(() => (reason) => setState({ open: true, reason }), []);
   return (
     <SignInDialogContext value={openSignIn}>
       {children}
-      <AuthDialog open={open} onOpenChange={setOpen} />
+      <AuthDialog
+        open={state.open}
+        reason={state.reason}
+        onOpenChange={(open) => setState((prev) => ({ ...prev, open }))}
+      />
     </SignInDialogContext>
   );
 }
 
-export function useSignInDialog(): () => void {
+/** Opens the sign-in dialog; a reason adds a title and the benefits of an account for that action. */
+export function useSignInDialog(): OpenSignIn {
   return useContext(SignInDialogContext);
-}
-
-/** A toast explaining why an action needs an account, with a button that opens sign-in. */
-export function useSignInPrompt(): (message: string) => void {
-  const t = useTranslations("Auth");
-  const openSignIn = useSignInDialog();
-  return useCallback(
-    (message: string) => toast(message, { action: { label: t("login"), onClick: openSignIn } }),
-    [t, openSignIn],
-  );
 }
