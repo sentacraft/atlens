@@ -61,7 +61,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "independence",
     topic: "business",
-    text: "Atlens has no partnership or sponsorship with Fujifilm or any other manufacturer and is not endorsed by them. No commercial relationship, affiliate links included, affects what Iris recommends, how lenses are ranked, or the prices shown; manufacturers cannot pay to change rankings.",
+    text: "Affiliate links do not affect how lenses are ranked, the prices shown, or Iris's answers and recommendations, and no manufacturer can pay to change any of them.",
     source: "src/lib/purchase/channel-priority.ts",
   },
   {

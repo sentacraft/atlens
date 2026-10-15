@@ -62,11 +62,11 @@ function priceSources(): string[] {
   ];
 }
 
-function affiliates(): string[] {
-  return routing.locales.map(
+function commercialTies(): string[] {
+  return [en.About.disclaimerIndependent, ...routing.locales.map(
     (code) =>
       `Store links on the ${languageName(code)} site: ${isPurchaseLocale(code) ? en.Purchase.disclosureDetail : en.Purchase.disclosureNoAffiliate}`,
-  );
+  )];
 }
 
 function accountFeatures(locale: string): string[] {
@@ -97,7 +97,7 @@ function features(locale: string): string[] {
 }
 
 const GENERATED: Partial<Record<SiteTopic, (locale: string) => string[]>> = {
-  business: affiliates,
+  business: commercialTies,
   data: coverage,
   prices: priceSources,
   account: accountFeatures,
