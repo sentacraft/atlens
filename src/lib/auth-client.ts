@@ -2,13 +2,13 @@
 
 import { createAuthClient } from "better-auth/react";
 import { anonymousClient, emailOTPClient } from "better-auth/client/plugins";
-import { AUTH_LOCALE_HEADER } from "@/lib/auth-locale";
+import { LOCALE_HEADER } from "@/lib/locale-preference";
 
 export const authClient = createAuthClient({
   plugins: [anonymousClient(), emailOTPClient()],
   fetchOptions: {
     onRequest(context) {
-      context.headers.set(AUTH_LOCALE_HEADER, document.documentElement.lang);
+      context.headers.set(LOCALE_HEADER, document.documentElement.lang);
       return context;
     },
   },

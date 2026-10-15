@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { DatabaseSync } from "node:sqlite";
+import { createSqliteD1 } from "./support/sqlite-d1";
 
 const send = vi.fn();
+const appDb = vi.hoisted(() => ({ current: undefined as unknown }));
 const betterAuth = vi.fn((config: unknown) => config);
 
 vi.mock("better-auth", () => ({ betterAuth }));
@@ -10,7 +13,7 @@ vi.mock("better-auth/next-js", () => ({ nextCookies: vi.fn(() => ({})) }));
 vi.mock("kysely-d1", () => ({ D1Dialect: vi.fn() }));
 // `next dev` exposes only Wrangler bindings here; `.env.local` values reach process.env.
 vi.mock("@opennextjs/cloudflare", () => ({
-  getCloudflareContext: () => ({ env: { APP_DB: {}, EMAIL: { send } }, ctx: {} }),
+  getCloudflareContext: () => ({ env: { APP_DB: appDb.current, EMAIL: { send } }, ctx: {} }),
 }));
 
 const { createAuth } = await import("../auth");
@@ -22,7 +25,13 @@ type AuthConfig = {
 };
 
 describe("createAuth", () => {
+  let sqlite: DatabaseSync;
+
   beforeEach(() => {
+    const db = createSqliteD1("migrations/app");
+    appDb.current = db.d1;
+    sqlite = db.sqlite;
+    send.mockReset();
     vi.stubEnv("BETTER_AUTH_SECRET", "local-secret");
     vi.stubEnv("GOOGLE_CLIENT_ID", "client-id");
     vi.stubEnv("GOOGLE_CLIENT_SECRET", "client-secret");
@@ -70,25 +79,43 @@ describe("createAuth", () => {
     );
   });
 
-  // Regression: every auth email went out in English.
-  it("sends auth emails in the locale of the page that asked", async () => {
-    type SendOtp = (data: { email: string; otp: string }, ctx: { headers: Headers }) => Promise<void>;
-    type SendDelete = (data: { user: { email: string }; url: string }, request: Request) => Promise<void>;
+  type SendOtp = (data: { email: string; otp: string }, ctx: { headers: Headers }) => Promise<void>;
+  type SendDelete = (
+    data: { user: { id: string; email: string }; url: string },
+    request: Request,
+  ) => Promise<void>;
+  const zh = new Headers({ "x-atlens-locale": "zh" });
+
+  async function sendBoth(user: { id: string; email: string }) {
     const config = createAuth() as unknown as {
       user: { deleteUser: { sendDeleteAccountVerification: SendDelete } };
     };
-    const zh = new Headers({ "x-atlens-locale": "zh" });
-
     const otpOptions = emailOTP.mock.lastCall![0] as { sendVerificationOTP: SendOtp };
-    await otpOptions.sendVerificationOTP({ email: "a@example.test", otp: "123456" }, { headers: zh });
+    await otpOptions.sendVerificationOTP({ email: user.email, otp: "123456" }, { headers: zh });
     await config.user.deleteUser.sendDeleteAccountVerification(
-      { user: { email: "a@example.test" }, url: "https://atlens.app/x" },
+      { user, url: "https://atlens.app/x" },
       new Request("https://atlens.app/api/auth/delete-user", { headers: zh }),
     );
+    return send.mock.calls.map(([message]) => (message as { subject: string }).subject);
+  }
 
-    expect(send.mock.calls.map(([message]) => message.subject)).toEqual([
+  // Regression: every auth email went out in English.
+  it("sends auth emails in the locale of the page that asked", async () => {
+    await expect(sendBoth({ id: "nobody", email: "a@example.test" })).resolves.toEqual([
       "你的 Atlens 登录验证码",
       "确认删除你的 Atlens 账号",
+    ]);
+  });
+
+  it("prefers the language the account saved over the page's", async () => {
+    sqlite.exec(
+      "INSERT INTO user (id, name, email, createdAt, updatedAt) VALUES ('u1', 'u1', 'A@Example.test', 0, 0);" +
+        "INSERT INTO user_settings (user_id, locale, updated_at) VALUES ('u1', 'en', 0);",
+    );
+
+    await expect(sendBoth({ id: "u1", email: "a@example.test" })).resolves.toEqual([
+      "Your Atlens sign-in code",
+      "Confirm deleting your Atlens account",
     ]);
   });
 

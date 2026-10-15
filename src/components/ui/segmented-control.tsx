@@ -5,21 +5,23 @@ export type SegmentedOption<T> = { value: T; label: SegmentedLabel };
 
 type SegmentedVariant = "full" | "paired" | "wrap";
 
-interface TypeSegmentedControlProps<T> {
+interface SegmentedControlProps<T> {
   ariaLabel: string;
   options: SegmentedOption<T>[];
   value: T;
   onChange: (value: T) => void;
   variant?: SegmentedVariant;
+  disabled?: boolean;
 }
 
-export default function TypeSegmentedControl<T>({
+export default function SegmentedControl<T>({
   ariaLabel,
   options,
   value,
   onChange,
   variant = "full",
-}: TypeSegmentedControlProps<T>) {
+  disabled,
+}: SegmentedControlProps<T>) {
   return (
     <div
       role="radiogroup"
@@ -39,8 +41,9 @@ export default function TypeSegmentedControl<T>({
             type="button"
             role="radio"
             aria-checked={selected}
+            disabled={disabled}
             className={cn(
-              "h-8 rounded-lg text-[12px] font-medium transition-colors sm:h-7",
+              "h-8 rounded-lg text-[12px] font-medium transition-colors sm:h-7 disabled:cursor-not-allowed disabled:opacity-60",
               variant === "paired" ? "flex-1 px-2.5 sm:flex-none sm:px-4" : "flex-1 px-4 sm:flex-none",
               selected
                 ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50 dark:shadow-none"

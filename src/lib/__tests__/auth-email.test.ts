@@ -1,18 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { authEmailLocale, deleteAccountEmail, signInCodeEmail } from "../auth-email";
-import { AUTH_LOCALE_HEADER } from "../auth-locale";
-
-describe("authEmailLocale", () => {
-  it("uses the locale the page sent", () => {
-    expect(authEmailLocale(new Headers({ [AUTH_LOCALE_HEADER]: "zh" }))).toBe("zh");
-  });
-
-  it("falls back to the default locale for a missing or unknown value", () => {
-    expect(authEmailLocale(new Headers())).toBe("en");
-    expect(authEmailLocale(new Headers({ [AUTH_LOCALE_HEADER]: "fr" }))).toBe("en");
-    expect(authEmailLocale(undefined)).toBe("en");
-  });
-});
+import { deleteAccountEmail, signInCodeEmail } from "../auth-email";
 
 describe("signInCodeEmail", () => {
   it("writes the code in the requested language", () => {

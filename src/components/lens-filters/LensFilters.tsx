@@ -12,7 +12,7 @@ import BrandFilterMenu from "@/components/lens-filters/BrandFilterMenu";
 import FeatureToggleGroup, { type FeatureToggleOption } from "@/components/lens-filters/FeatureToggleGroup";
 import FilterRow from "@/components/lens-filters/FilterRow";
 import MultiSelectChipGroup, { type MultiSelectChipOption } from "@/components/lens-filters/MultiSelectChipGroup";
-import TypeSegmentedControl, { type SegmentedLabel, type SegmentedOption } from "@/components/lens-filters/TypeSegmentedControl";
+import SegmentedControl, { type SegmentedLabel, type SegmentedOption } from "@/components/ui/segmented-control";
 import { rowLabelClass } from "@/components/lens-filters/styles";
 import { useFiltersTelemetry } from "@/components/lens-filters/LensFilters.telemetry";
 
@@ -128,7 +128,7 @@ export default function LensFilters({
 
   const typeRow = (
     <FilterRow label={t("lensType")} className="min-w-0 flex-1 sm:flex-none">
-      <TypeSegmentedControl
+      <SegmentedControl
         ariaLabel={t("lensType")}
         options={buildSegmentedOptions(typeLabels, available.types)}
         value={filters.typeFilter}
@@ -145,7 +145,7 @@ export default function LensFilters({
 
   const focusRow = (
     <FilterRow label={t("focusFilter")} className="min-w-0 flex-1 sm:flex-none">
-      <TypeSegmentedControl
+      <SegmentedControl
         ariaLabel={t("focusFilter")}
         options={buildSegmentedOptions(focusLabels, available.focusModes)}
         value={filters.focusFilter}
@@ -215,7 +215,7 @@ export default function LensFilters({
   const opticalRow =
     available.opticalTraits.length > 0 ? (
       <FilterRow label={t("opticalTraitFilter")}>
-        <TypeSegmentedControl
+        <SegmentedControl
           ariaLabel={t("opticalTraitFilter")}
           options={buildSegmentedOptions(opticalLabels, available.opticalTraits)}
           value={filters.opticalTrait}
@@ -235,7 +235,7 @@ export default function LensFilters({
   const motorRow =
     available.focusMotorClasses.length > 0 ? (
       <FilterRow label={t("focusMotorFilter")}>
-        <TypeSegmentedControl
+        <SegmentedControl
           ariaLabel={t("focusMotorFilter")}
           options={buildSegmentedOptions(motorLabels, available.focusMotorClasses)}
           value={filters.focusMotorClass}
