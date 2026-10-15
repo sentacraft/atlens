@@ -104,6 +104,7 @@ function digest(msg) {
   const searches = [];
   const details = [];
   const recalledRefs = new Set();
+  const toolsCalled = [];
   let steps = 0;
   const parts = msg?.parts ?? [];
   const lastToolIndex = parts.findLastIndex(
@@ -132,6 +133,7 @@ function digest(msg) {
     if (!name) {
       continue;
     }
+    toolsCalled.push(name);
     if (name === "queryLenses") {
       const returned = Array.isArray(part.output?.matches) ? part.output.matches.length : 0;
       queries.push({
@@ -205,6 +207,7 @@ function digest(msg) {
     recalledRefs: [...recalledRefs],
     steps,
     preToolText,
+    toolsCalled,
   };
 }
 
@@ -260,6 +263,7 @@ export default class AskIrisProvider {
         recalledRefs: d.recalledRefs,
         steps: d.steps,
         preToolText: d.preToolText,
+        toolsCalled: d.toolsCalled,
         turnsRun: turns.length,
       },
     };

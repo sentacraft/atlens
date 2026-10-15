@@ -5,11 +5,12 @@ import { lensRef } from "../lens-ref";
 import type { GearItem } from "@/lib/me/gear-schema";
 
 const brandName = (slug: string) => (slug === "fujifilm" ? "富士" : slug);
-const gearContext = (status: GearStatus) => gearPrompt(describeGear(status, brandName));
+const gearContext = (status: GearStatus, cardAvailable = false) => gearPrompt(describeGear(status, brandName), { cardAvailable });
 
 describe("gearPrompt(describeGear(...))", () => {
-  it("tells Iris a guest's gear is unknown", () => {
-    expect(gearContext({ kind: "guest" })).toBe("【用户器材】\n用户未登录，不知道他有哪些器材。");
+  it("tells Iris a guest's gear is unknown, and how to ask for it", () => {
+    expect(gearContext({ kind: "guest" })).toBe("【用户器材】\n用户未登录，不知道他有哪些器材。只有当问题本身离不开他已有的器材、而他在对话里也没说过时，才用文字问他。");
+    expect(gearContext({ kind: "guest" }, true)).toContain("调用 askForGear");
   });
 
   it("tells Iris an empty profile leaves the gear unknown", () => {

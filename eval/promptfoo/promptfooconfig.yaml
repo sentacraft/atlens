@@ -584,7 +584,7 @@ tests:
           already cover (18mm, about 27mm equivalent) and suggest lenses wider than that.
           It fails if it does not acknowledge what they already have.
 
-  # Gear: a guest whose answer depends on what they own is asked, not assumed about.
+  # Gear: when the answer depends on unknown gear, Iris asks through the gear card.
   - description: gear-unknown-guest
     vars:
       mount: X
@@ -593,11 +593,14 @@ tests:
         turns:
           - "我下一支镜头该买什么？"
     assert:
+      - type: javascript # the gear card is how Iris asks about gear
+        metric: gear
+        value: "context.metadata.toolsCalled.includes('askForGear')"
       - type: llm-rubric
         metric: gear
         provider: *behavior_grader
         value: >-
-          Iris does not know what this user owns. The reply should ask which body and
-          lenses the user already has (it may ask other questions too). It fails if it
-          assumes a particular body or lens collection without asking.
+          Iris does not know what this user owns. The reply must not assume a particular
+          body or lens collection. (A form for entering their gear is shown separately and
+          is not part of this text.)
 
