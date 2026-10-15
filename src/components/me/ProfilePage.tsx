@@ -9,7 +9,7 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { linkedProvidersQuery, updateDisplayName } from "@/lib/me/account-client";
-import { writeLocalePreference } from "@/lib/me/locale-preference";
+import { writeLocalePreference } from "@/lib/locale-preference";
 import { patchUserSettings, userSettingsQuery } from "@/lib/me/settings-client";
 import { DEFAULT_USER_SETTINGS, type UserSettings, type UserSettingsPatch } from "@/lib/me/settings-schema";
 import type { Mount } from "@/lib/types";
@@ -25,6 +25,7 @@ import {
 import { useTestHookEnabled } from "@/context/TestHookProvider";
 import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { useNav } from "@/context/NavProvider";
+import { useScrollSpy } from "@/hooks/useScrollSpy";
 import NotFound from "@/app/[locale]/not-found";
 import AuthDialog from "@/components/auth/AuthDialog";
 import Avatar from "@/components/auth/Avatar";
@@ -42,29 +43,6 @@ const SECTION_TITLE_KEY = {
 const SECTION_CLS = "flex scroll-mt-[calc(var(--nav-height)+72px)] flex-col gap-4 md:scroll-mt-[calc(var(--nav-height)+24px)] md:gap-5";
 const SECTION_TITLE_CLS = "font-heading text-xl font-bold text-zinc-900 dark:text-zinc-100";
 const SECTION_SUB_CLS = "mt-0.5 text-[13px] leading-5 text-zinc-500 dark:text-zinc-400 md:mt-1";
-
-function useActiveSection(): SectionId {
-  const [active, setActive] = useState<SectionId>(SECTIONS[0]);
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.find((entry) => entry.isIntersecting);
-        if (visible) {
-          setActive(visible.target.id as SectionId);
-        }
-      },
-      { rootMargin: "-30% 0px -60% 0px" },
-    );
-    for (const id of SECTIONS) {
-      const element = document.getElementById(id);
-      if (element) {
-        observer.observe(element);
-      }
-    }
-    return () => observer.disconnect();
-  }, []);
-  return active;
-}
 
 export default function ProfilePage() {
   const testHookEnabled = useTestHookEnabled();
@@ -113,7 +91,7 @@ interface ProfileUser {
 
 function Profile({ user }: { user: ProfileUser }) {
   const t = useTranslations("Profile");
-  const active = useActiveSection();
+  const { activeId: active, scrollTo } = useScrollSpy(SECTIONS);
   const { navHidden } = useNav();
 
   return (
@@ -126,6 +104,10 @@ function Profile({ user }: { user: ProfileUser }) {
           <a
             key={id}
             href={`#${id}`}
+            onClick={(event) => {
+              event.preventDefault();
+              scrollTo(id);
+            }}
             aria-current={active === id ? "true" : undefined}
             className={cn(
               "rounded-lg px-3 py-2 text-sm transition-colors",
@@ -151,6 +133,10 @@ function Profile({ user }: { user: ProfileUser }) {
             <a
               key={id}
               href={`#${id}`}
+              onClick={(event) => {
+                event.preventDefault();
+                scrollTo(id);
+              }}
               aria-current={active === id ? "true" : undefined}
               className={cn(CHIP_BASE_CLS, "h-[34px] px-3.5 text-[13px]", active === id ? CHIP_ACTIVE_CLS : CHIP_IDLE_CLS)}
             >

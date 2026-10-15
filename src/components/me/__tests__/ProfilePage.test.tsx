@@ -61,13 +61,6 @@ function renderPage() {
 
 beforeEach(() => {
   vi.stubGlobal("fetch", fetchMock);
-  vi.stubGlobal(
-    "IntersectionObserver",
-    class {
-      observe() {}
-      disconnect() {}
-    },
-  );
   mocks.testHook = true;
   mocks.session = { data: null, isPending: false };
   document.cookie = "atlens_locale=; Max-Age=0; Path=/";
