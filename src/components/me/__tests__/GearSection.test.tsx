@@ -94,7 +94,7 @@ describe("GearSection", () => {
     expect(screen.queryByText("coverageTitle")).toBeNull();
   });
 
-  it("groups bodies by format and series, marks owned ones and adds on a tap", async () => {
+  it("adds the selected bodies in one go, with owned ones shown but not selectable", async () => {
     fetchMock.mockImplementation(async (_url: string, init?: RequestInit) =>
       init?.method === "POST"
         ? new Response(JSON.stringify({ gear: gear[0] }), { status: 201 })
@@ -106,18 +106,20 @@ describe("GearSection", () => {
     fireEvent.click(screen.getByRole("button", { name: /addBody/ }));
     const dialog = await screen.findByRole("dialog");
 
-    expect(within(dialog).getByRole("heading", { name: "X-T" })).toBeInTheDocument();
-    expect(within(dialog).getByRole("button", { name: "X-T5" })).toBeDisabled();
-    expect(within(dialog).queryByRole("button", { name: "GFX100 II" })).toBeNull();
+    expect(within(dialog).getByRole("button", { name: "X-T5 owned" })).toBeDisabled();
+    expect(within(dialog).getByRole("button", { name: "add" })).toBeDisabled();
 
+    fireEvent.click(within(dialog).getByRole("button", { name: "X-S20" }));
     fireEvent.click(within(dialog).getByRole("radio", { name: "gfxCaption" }));
     fireEvent.click(within(dialog).getByRole("button", { name: "GFX100 II" }));
+    fireEvent.click(within(dialog).getByRole("button", { name: "addCount 2" }));
 
-    await waitFor(() =>
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    for (const catalogId of ["fujifilm-x-s20", "fujifilm-gfx100-ii"]) {
       expect(fetchMock).toHaveBeenCalledWith(
         "/api/me/gear",
-        expect.objectContaining({ method: "POST", body: JSON.stringify({ kind: "body", catalogId: "fujifilm-gfx100-ii" }) }),
-      ),
-    );
+        expect.objectContaining({ method: "POST", body: JSON.stringify({ kind: "body", catalogId }) }),
+      );
+    }
   });
 });

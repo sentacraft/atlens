@@ -46,6 +46,8 @@ interface LensSearchDialogProps<T extends SearchableLens> {
   renderFooter?: (context: { query: string; close: () => void }) => ReactNode;
   title?: string;
   description?: string;
+  /** False keeps the dialog open after a pick, for adding several lenses in a row. */
+  closeOnSelect?: boolean;
   triggerClassName?: string;
   triggerLabel?: string;
   triggerVariant?: "icon" | "button" | "slot";
@@ -59,6 +61,7 @@ export default function LensSearchDialog<T extends SearchableLens>({
   renderFooter,
   title,
   description,
+  closeOnSelect = true,
   triggerClassName,
   triggerLabel,
   triggerVariant = "icon",
@@ -123,10 +126,12 @@ export default function LensSearchDialog<T extends SearchableLens>({
 
   const handleSelect = useCallback(
     (lens: T) => {
-      setOpen(false);
+      if (closeOnSelect) {
+        setOpen(false);
+      }
       onSelectLens(lens);
     },
-    [onSelectLens]
+    [onSelectLens, closeOnSelect]
   );
 
   function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {

@@ -7,7 +7,6 @@ import { Menu } from "@base-ui/react/menu";
 import { Ellipsis, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { getBodyById } from "@/lib/body/data";
-import type { Body } from "@/lib/body/schema";
 import type { LensSummary } from "@/lib/lens/data";
 import { getLensImageUrl } from "@/lib/lens/image";
 import { equivalentFocal, type CoverageInput } from "@/lib/me/coverage";
@@ -63,7 +62,7 @@ export default function GearSection({
   );
   const bodies = gear.filter((item) => item.kind === "body");
   const lensItems = gear.filter((item) => item.kind === "lens");
-  const ownedBodyIds = new Set(bodies.map((item) => item.catalogId).filter((value): value is string => Boolean(value)));
+  const ownedBodyIds = new Set(bodies.flatMap((item) => (item.catalogId ? [item.catalogId] : [])));
   const ownedLensIds = new Set(lensItems.map((item) => item.catalogId).filter((value): value is string => Boolean(value)));
 
   function brandName(slug: string) {
@@ -92,6 +91,13 @@ export default function GearSection({
       queryClient.setQueryData(query.queryKey, context?.previous);
       failed(error);
     },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: query.queryKey }),
+  });
+
+  const addBodies = useMutation({
+    mutationFn: (catalogIds: string[]) =>
+      Promise.all(catalogIds.map((catalogId) => addGear({ kind: "body", catalogId }))),
+    onError: failed,
     onSettled: () => queryClient.invalidateQueries({ queryKey: query.queryKey }),
   });
 
@@ -149,6 +155,7 @@ export default function GearSection({
             lenses={lenses}
             title={t("addLens")}
             description={t("addLensDescription")}
+            closeOnSelect={false}
             triggerVariant="button"
             triggerIcon={Plus}
             triggerLabel={t("addLens")}
@@ -212,8 +219,9 @@ export default function GearSection({
         open={bodyDialogOpen}
         onOpenChange={setBodyDialogOpen}
         defaultMount={mount}
-        ownedIds={ownedBodyIds}
-        onAdd={(body: Body) => add.mutate({ kind: "body", catalogId: body.id })}
+        owned={ownedBodyIds}
+        saving={addBodies.isPending}
+        onSave={(catalogIds) => addBodies.mutate(catalogIds, { onSuccess: () => setBodyDialogOpen(false) })}
       />
       <ManualLensDialog
         open={manual.open}
@@ -310,17 +318,19 @@ function GearRow({
     <>
       {thumbnail}
       <div className="min-w-0 flex-1">
-        <div className="hidden text-[11px] uppercase tracking-[0.14em] text-zinc-500 md:block dark:text-zinc-400">{brand}</div>
+        <div className="hidden items-center gap-2 md:flex">
+          <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">{brand}</span>
+          {badge && (
+            <span className="truncate rounded bg-zinc-100 px-1.5 text-[10px] leading-4 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+              {badge}
+            </span>
+          )}
+        </div>
         <div className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">{name}</div>
         <div className="truncate text-xs text-zinc-500 md:hidden dark:text-zinc-400">
           {[brand, badge].filter(Boolean).join(" · ")}
           {detail && <> · {detail}</>}
         </div>
-        {badge && (
-          <span className="mt-1 hidden rounded-md bg-zinc-100 px-1.5 py-0.5 text-[11px] text-zinc-600 md:inline-block dark:bg-zinc-800 dark:text-zinc-300">
-            {badge}
-          </span>
-        )}
       </div>
       <span className="hidden shrink-0 whitespace-nowrap text-xs text-zinc-500 md:block dark:text-zinc-400">{detail}</span>
     </>

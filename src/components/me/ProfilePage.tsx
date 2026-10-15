@@ -153,7 +153,7 @@ function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] })
           className={SECTION_CLS}
           userId={user.id}
           lenses={lenses}
-          heading={<SectionHeading id="gear" subtitle={t("gearSubtitle")} />}
+          heading={<SectionHeading id="gear" />}
         />
         <SettingsSection userId={user.id} />
         <AccountSection email={user.email} />
