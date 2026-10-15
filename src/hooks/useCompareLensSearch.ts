@@ -1,36 +1,37 @@
 "use client";
 
-import { useCallback } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useCompare } from "@/context/CompareProvider";
 import { MAX_COMPARE } from "@/lib/lens/lens";
 import type { Lens } from "@/lib/types";
+import { suggestLensFooter } from "@/components/browse/LensSearchDialog";
 
+/** The lens search dialog's props for adding lenses to compare, plus its open state. */
 export function useCompareLensSearch() {
   const { compareIds, add } = useCompare();
   const t = useTranslations("Compare");
-
-  const onSelectLens = (lens: Lens) => add(lens.id);
-
-  const getResultState = useCallback(
-    (candidate: Lens) => {
-      const alreadyIn = compareIds.includes(candidate.id);
-      const full = compareIds.length >= MAX_COMPARE;
-      return {
-        actionLabel: alreadyIn
-          ? t("alreadyAdded")
-          : full
-            ? t("compareFull")
-            : t("addToCompareAction"),
-        disabled: alreadyIn || full,
-      };
-    },
-    [compareIds, t],
-  );
+  const [open, setOpen] = useState(false);
+  const full = compareIds.length >= MAX_COMPARE;
 
   return {
-    onSelectLens,
-    getResultState,
-    canAddMore: compareIds.length < MAX_COMPARE,
+    canAddMore: !full,
+    openSearch: () => setOpen(true),
+    dialogProps: {
+      open,
+      onOpenChange: setOpen,
+      title: t("addLens"),
+      resultAction: (lens: Lens) =>
+        compareIds.includes(lens.id)
+          ? { label: t("alreadyAdded"), disabled: true }
+          : full
+            ? { label: t("compareFull"), disabled: true }
+            : { label: t("addToCompareAction") },
+      onSelect: (lens: Lens) => {
+        setOpen(false);
+        add(lens.id);
+      },
+      footer: suggestLensFooter,
+    },
   };
 }

@@ -45,6 +45,9 @@ schema in `src/lib/`, imported by both.
 Pure helpers and UI state used by a single component stay in its file; extract when the code does
 I/O, carries testable logic, or gains a second consumer.
 
+When a shared component or helper gains a caller, redesign its props around every caller as equals
+and update the existing call sites, rather than adding optional props so old calls stay unchanged.
+
 Demos, design explorations, and UX experiments belong under `src/app/[locale]/design-lab/`,
 never in production code. Pages and components there — and all Test Hook pages and components —
 hardcode English strings, do not use `next-intl`, and must not add keys to `en.json` or

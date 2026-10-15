@@ -35,6 +35,7 @@ vi.mock("@/context/NavProvider", () => ({ useNav: () => ({ navHidden: false }) }
 vi.mock("@/app/[locale]/not-found", () => ({ default: () => <p>not-found</p> }));
 vi.mock("@/components/auth/AuthDialog", () => ({ default: () => null }));
 vi.mock("@/components/auth/DeleteAccountDialog", () => ({ default: () => null }));
+vi.mock("@/components/me/GearSection", () => ({ default: () => null }));
 vi.mock("sonner", () => ({ toast: { error: mocks.toastError } }));
 
 const fetchMock = vi.fn();
@@ -54,7 +55,7 @@ function renderPage() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={client}>
-      <ProfilePage />
+      <ProfilePage lenses={[]} />
     </QueryClientProvider>,
   );
 }

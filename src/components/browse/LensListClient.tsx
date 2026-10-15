@@ -24,7 +24,10 @@ import LensFilters from "@/components/lens-filters/LensFilters";
 import LensIndexShell from "@/components/browse/LensIndexShell";
 import LensUsageSwitch from "@/components/browse/LensUsageSwitch";
 import LensSortControl from "@/components/browse/LensSortControl";
-import LensSearchDialog from "@/components/browse/LensSearchDialog";
+import LensSearchDialog, { suggestLensFooter } from "@/components/browse/LensSearchDialog";
+import { Search } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { SEARCH_TRIGGER_CLS } from "@/config/ui-tokens";
 import { mountToUrlSegment } from "@/lib/mount";
 
 interface LensListClientProps {
@@ -38,6 +41,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
+  const [searchOpen, setSearchOpen] = useState(false);
   const { compareIds, toggle } = useCompare();
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -64,6 +68,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   ].filter(Boolean).length;
 
   function handleSelectLens(lens: Lens) {
+    setSearchOpen(false);
     router.push(`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`);
   }
 
@@ -121,13 +126,21 @@ export default function LensListClient({ lenses }: LensListClientProps) {
             activeFilterCount={activeFilterCount}
             onReset={clearAllFilters}
             searchSlot={
-              <LensSearchDialog
-                lenses={lenses}
-                onSelectLens={handleSelectLens}
-                triggerVariant="button"
-                triggerLabel={tSearch("browseTrigger")}
-                triggerClassName="sm:h-10"
-              />
+              <>
+                <button type="button" onClick={() => setSearchOpen(true)} className={cn(SEARCH_TRIGGER_CLS, "sm:h-10")}>
+                  <Search className="h-4 w-4" />
+                  {tSearch("browseTrigger")}
+                </button>
+                <LensSearchDialog
+                  open={searchOpen}
+                  onOpenChange={setSearchOpen}
+                  lenses={lenses}
+                  title={tSearch("title")}
+                  resultAction={() => ({ label: tSearch("view") })}
+                  onSelect={handleSelectLens}
+                  footer={suggestLensFooter}
+                />
+              </>
             }
           />
         </div>

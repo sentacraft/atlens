@@ -5,6 +5,7 @@ import metaData from "@/data/meta.json";
 import { lensCatalogSchema } from "@/lib/lens/schema";
 import { resolveTranslations, type Lens, type LensCatalog, type Mount } from "@/lib/types";
 import { MAX_COMPARE } from "@/lib/lens/lens";
+import type { SearchableLens } from "@/lib/lens/search";
 
 const xLenses: Lens[] = lensCatalogSchema.parse(lensesData) as LensCatalog;
 const gfxLenses: Lens[] = lensCatalogSchema.parse(gfxLensesData) as LensCatalog;
@@ -51,4 +52,22 @@ const lensesById = new Map([...xLenses, ...gfxLenses].map((lens) => [lens.id, le
 /** The unresolved catalog record, so the name stays the same whatever the page locale. */
 export function getLensById(id: string): Lens | undefined {
   return lensesById.get(id);
+}
+
+/** Just what search and the gear list need, so a page can ship every lens without full records. */
+export type LensSummary = SearchableLens & Pick<Lens, "mount">;
+
+export function getLensSummaries(locale: string): LensSummary[] {
+  return getAllLenses(locale).map(
+    ({ id, brand, series, model, mount, focalLengthMin, focalLengthMax, maxAperture }) => ({
+      id,
+      brand,
+      series,
+      model,
+      mount,
+      focalLengthMin,
+      focalLengthMax,
+      maxAperture,
+    }),
+  );
 }

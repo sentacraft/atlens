@@ -9,9 +9,8 @@ import { OPTICAL_TRAITS, type OpticalTrait } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 import BrandFilterMenu from "@/components/lens-filters/BrandFilterMenu";
-import FeatureToggleGroup, { type FeatureToggleOption } from "@/components/lens-filters/FeatureToggleGroup";
 import FilterRow from "@/components/lens-filters/FilterRow";
-import MultiSelectChipGroup, { type MultiSelectChipOption } from "@/components/lens-filters/MultiSelectChipGroup";
+import ToggleChipGroup, { type ToggleChipOption } from "@/components/ui/toggle-chip-group";
 import SegmentedControl, { type SegmentedLabel, type SegmentedOption } from "@/components/ui/segmented-control";
 import { rowLabelClass } from "@/components/lens-filters/styles";
 import { useFiltersTelemetry } from "@/components/lens-filters/LensFilters.telemetry";
@@ -81,7 +80,7 @@ export default function LensFilters({
     selectedBrandNames.length === 0
       ? t("brand")
       : selectedBrandNames.slice(0, BRAND_PREVIEW_LIMIT).join(brandJoiner);
-  const brandOptions: MultiSelectChipOption<string>[] = available.brands.map((brand) => ({
+  const brandOptions: ToggleChipOption<string>[] = available.brands.map((brand) => ({
     key: brand,
     label: tBrand(brand),
   }));
@@ -105,9 +104,8 @@ export default function LensFilters({
         <div className="hidden sm:flex sm:items-start sm:gap-2.5">
           <span className={rowLabelClass}>{t("brand")}</span>
           <div className="min-w-0 flex-1">
-            <MultiSelectChipGroup
-              allLabel={allOptionLabel}
-              onSelectAll={() => updateFilters("brands", [])}
+            <ToggleChipGroup
+              allOption={{ label: allOptionLabel, onSelect: () => updateFilters("brands", []) }}
               options={brandOptions}
               selectedKeys={filters.brands}
               onToggle={(brand) =>
@@ -133,7 +131,7 @@ export default function LensFilters({
         options={buildSegmentedOptions(typeLabels, available.types)}
         value={filters.typeFilter}
         onChange={(v) => updateFilters("typeFilter", v)}
-        variant="paired"
+        layout="paired"
       />
     </FilterRow>
   );
@@ -150,12 +148,12 @@ export default function LensFilters({
         options={buildSegmentedOptions(focusLabels, available.focusModes)}
         value={filters.focusFilter}
         onChange={(v) => updateFilters("focusFilter", v)}
-        variant="paired"
+        layout="paired"
       />
     </FilterRow>
   );
 
-  const focalOptions: MultiSelectChipOption<FocalCategory>[] = available.focalCategories.map((key) => ({
+  const focalOptions: ToggleChipOption<FocalCategory>[] = available.focalCategories.map((key) => ({
     key,
     label: t(`category-${key}`),
     hint: t(`category-${key}Hint`),
@@ -164,9 +162,8 @@ export default function LensFilters({
   const focalRow =
     available.focalCategories.length > 0 ? (
       <FilterRow label={t("focalRange")}>
-        <MultiSelectChipGroup
-          allLabel={allOptionLabel}
-          onSelectAll={() => updateFilters("focalCategories", [])}
+        <ToggleChipGroup
+          allOption={{ label: allOptionLabel, onSelect: () => updateFilters("focalCategories", []) }}
           options={focalOptions}
           selectedKeys={filters.focalCategories}
           onToggle={(key) =>
@@ -187,7 +184,7 @@ export default function LensFilters({
     internalZoom: { label: t("featureInternalZoom"), icon: FEATURE_ICONS.internalZoom },
   };
 
-  const featureOptions: FeatureToggleOption<FilterFeatureKey>[] = available.features.map((key) => ({
+  const featureOptions: ToggleChipOption<FilterFeatureKey>[] = available.features.map((key) => ({
     key,
     label: featureMeta[key].label,
     icon: featureMeta[key].icon,
@@ -196,7 +193,7 @@ export default function LensFilters({
   const featuresRow =
     available.features.length > 0 ? (
       <FilterRow label={t("features")}>
-        <FeatureToggleGroup
+        <ToggleChipGroup
           options={featureOptions}
           selectedKeys={filters.features}
           onToggle={(key) => updateFilters("features", toggleValue(filters.features, key))}
@@ -220,7 +217,7 @@ export default function LensFilters({
           options={buildSegmentedOptions(opticalLabels, available.opticalTraits)}
           value={filters.opticalTrait}
           onChange={(v) => updateFilters("opticalTrait", v)}
-          variant="wrap"
+          layout="wrap"
         />
       </FilterRow>
     ) : null;
@@ -240,7 +237,7 @@ export default function LensFilters({
           options={buildSegmentedOptions(motorLabels, available.focusMotorClasses)}
           value={filters.focusMotorClass}
           onChange={(v) => updateFilters("focusMotorClass", v)}
-          variant="wrap"
+          layout="wrap"
         />
       </FilterRow>
     ) : null;
