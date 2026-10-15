@@ -40,23 +40,6 @@ export const viewport: Viewport = {
   ],
 };
 
-function resolveMetadataBase(): URL {
-  if (process.env.SITE_URL) {
-    return new URL(process.env.SITE_URL);
-  }
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return new URL(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`);
-  }
-  if (process.env.VERCEL_URL) {
-    return new URL(`https://${process.env.VERCEL_URL}`);
-  }
-  // Injected by Workers Builds at build time, despite the Pages name.
-  if (process.env.CF_PAGES_URL) {
-    return new URL(process.env.CF_PAGES_URL);
-  }
-  return new URL("http://localhost:3000");
-}
-
 export async function generateMetadata({
   params,
 }: {
@@ -66,7 +49,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Metadata" });
 
   return {
-    metadataBase: resolveMetadataBase(),
+    metadataBase: new URL(SITE.url),
     title: {
       default: t("seoTitle"),
       template: "%s | Atlens",

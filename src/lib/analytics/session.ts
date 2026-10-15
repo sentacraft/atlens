@@ -1,4 +1,4 @@
-export const SID_COOKIE = "xg_sid";
+export const SID_COOKIE = "atlens_sid";
 export const SID_TTL_SECONDS = 1800;
 
 export function parseSid(cookieHeader: string | null): string | null {
@@ -16,7 +16,7 @@ export function parseSid(cookieHeader: string | null): string | null {
 
 // Forgeable on purpose: it only excludes the sender from analytics, and must never grant the
 // rate-limit bypass.
-export const INTERNAL_COOKIE = "xg_internal";
+export const INTERNAL_COOKIE = "atlens_internal";
 
 export function parseInternal(cookieHeader: string | null): boolean {
   if (!cookieHeader) {

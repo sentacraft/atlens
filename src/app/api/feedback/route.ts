@@ -142,7 +142,7 @@ export async function POST(req: Request) {
       "X-GitHub-Api-Version": "2022-11-28",
       "Content-Type": "application/json",
       // GitHub returns 403 without a User-Agent, and Workers' fetch sends none.
-      "User-Agent": "x-glass-feedback",
+      "User-Agent": "atlens-feedback",
     },
     body: JSON.stringify(issue),
   });
