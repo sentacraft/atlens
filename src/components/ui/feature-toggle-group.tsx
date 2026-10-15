@@ -2,12 +2,13 @@ import type { LucideIcon } from "lucide-react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { featurePillClass, filterPillActiveClass } from "./styles";
+import { PILL_ACTIVE_CLS, PILL_CLS } from "@/config/ui-tokens";
 
 export type FeatureToggleOption<K extends string> = {
   key: K;
   label: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
+  disabled?: boolean;
 }
 
 interface FeatureToggleGroupProps<K extends string> {
@@ -32,20 +33,24 @@ export default function FeatureToggleGroup<K extends string>({
             size="sm"
             variant={selected ? "default" : "outline"}
             className={cn(
-              selected ? filterPillActiveClass : featurePillClass,
+              selected ? PILL_ACTIVE_CLS : PILL_CLS,
+              "disabled:cursor-not-allowed disabled:opacity-40",
               "whitespace-nowrap",
             )}
             onClick={() => onToggle(option.key)}
             aria-pressed={selected}
+            disabled={option.disabled}
           >
             <span className="inline-flex items-center gap-1.5">
               <span className="relative inline-flex h-3.5 w-3.5 shrink-0">
-                <Icon
-                  className={cn(
-                    "absolute inset-0 h-3.5 w-3.5 transition-all duration-200",
-                    selected ? "scale-75 opacity-0" : "scale-100 opacity-100",
-                  )}
-                />
+                {Icon && (
+                  <Icon
+                    className={cn(
+                      "absolute inset-0 h-3.5 w-3.5 transition-all duration-200",
+                      selected ? "scale-75 opacity-0" : "scale-100 opacity-100",
+                    )}
+                  />
+                )}
                 <Check
                   className={cn(
                     "absolute inset-0 h-3.5 w-3.5 transition-all duration-200",

@@ -9,7 +9,7 @@ import { OPTICAL_TRAITS, type OpticalTrait } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 import BrandFilterMenu from "@/components/lens-filters/BrandFilterMenu";
-import FeatureToggleGroup, { type FeatureToggleOption } from "@/components/lens-filters/FeatureToggleGroup";
+import FeatureToggleGroup, { type FeatureToggleOption } from "@/components/ui/feature-toggle-group";
 import FilterRow from "@/components/lens-filters/FilterRow";
 import MultiSelectChipGroup, { type MultiSelectChipOption } from "@/components/lens-filters/MultiSelectChipGroup";
 import SegmentedControl, { type SegmentedLabel, type SegmentedOption } from "@/components/ui/segmented-control";

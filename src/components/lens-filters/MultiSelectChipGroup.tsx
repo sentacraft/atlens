@@ -1,10 +1,9 @@
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PILL_ACTIVE_CLS, PILL_CLS } from "@/config/ui-tokens";
 import {
   filterAllPillClass,
   filterGroupClass,
-  filterPillActiveClass,
-  filterPillClass,
   filterPillDefaultActiveClass,
 } from "./styles";
 
@@ -36,7 +35,7 @@ export default function MultiSelectChipGroup<K extends string>({
       <button
         type="button"
         className={cn(
-          allSelected ? filterPillDefaultActiveClass : filterPillClass,
+          allSelected ? filterPillDefaultActiveClass : PILL_CLS,
           filterAllPillClass,
           "shrink-0 whitespace-nowrap",
         )}
@@ -52,7 +51,7 @@ export default function MultiSelectChipGroup<K extends string>({
             key={option.key}
             type="button"
             className={cn(
-              selected ? filterPillActiveClass : filterPillClass,
+              selected ? PILL_ACTIVE_CLS : PILL_CLS,
               "relative inline-flex shrink-0 whitespace-nowrap",
             )}
             onClick={() => onToggle(option.key)}

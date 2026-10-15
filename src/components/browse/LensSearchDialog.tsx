@@ -2,6 +2,7 @@
 
 import {
   type KeyboardEvent,
+  type ReactNode,
   useCallback,
   useDeferredValue,
   useEffect,
@@ -17,7 +18,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useKeyboardInset } from "@/hooks/useViewport";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
-import type { Lens } from "@/lib/types";
+import type { SearchableLens } from "@/lib/lens/search";
 import { cn } from "@/lib/utils";
 import { lensSubtitleLine } from "@/lib/lens/format";
 import { useSearchTelemetry } from "@/components/browse/LensSearchDialog.telemetry";
@@ -37,25 +38,32 @@ interface LensSearchResultState {
   disabled?: boolean;
 }
 
-interface LensSearchDialogProps {
-  lenses: Lens[];
-  onSelectLens: (lens: Lens) => void;
-  getResultState?: (lens: Lens) => LensSearchResultState | undefined;
+interface LensSearchDialogProps<T extends SearchableLens> {
+  lenses: T[];
+  onSelectLens: (lens: T) => void;
+  getResultState?: (lens: T) => LensSearchResultState | undefined;
+  /** Replaces the "suggest a lens" line under the results and the empty state. */
+  renderFooter?: (context: { query: string; close: () => void }) => ReactNode;
+  title?: string;
+  description?: string;
   triggerClassName?: string;
   triggerLabel?: string;
   triggerVariant?: "icon" | "button" | "slot";
   triggerIcon?: LucideIcon;
 }
 
-export default function LensSearchDialog({
+export default function LensSearchDialog<T extends SearchableLens>({
   lenses,
   onSelectLens,
   getResultState,
+  renderFooter,
+  title,
+  description,
   triggerClassName,
   triggerLabel,
   triggerVariant = "icon",
   triggerIcon: TriggerIcon = Search,
-}: LensSearchDialogProps) {
+}: LensSearchDialogProps<T>) {
   const t = useTranslations("Search");
   const tBrand = useTranslations("Brands");
   const [open, setOpen] = useState(false);
@@ -114,7 +122,7 @@ export default function LensSearchDialog({
   useSearchTelemetry({ query: deferredQuery, resultsCount: results.length, isOpen: open });
 
   const handleSelect = useCallback(
-    (lens: Lens) => {
+    (lens: T) => {
       setOpen(false);
       onSelectLens(lens);
     },
@@ -172,21 +180,27 @@ export default function LensSearchDialog({
         <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
           {t("noResultsHint")}
         </p>
-        <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-500">
-          {t("suggestLens")}{" "}
-          <FeedbackTrigger
-            type="general"
-            context={{ searchQuery: deferredQuery.trim() }}
-          >
-            {t("suggestLensLink")}
-          </FeedbackTrigger>
-        </p>
-        <Link
-          href="/about#coverage"
-          className="mt-2 inline-block text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-        >
-          {t("coverageLink")}
-        </Link>
+        {renderFooter ? (
+          <div className="mt-4">{renderFooter({ query: deferredQuery.trim(), close: () => setOpen(false) })}</div>
+        ) : (
+          <>
+            <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-500">
+              {t("suggestLens")}{" "}
+              <FeedbackTrigger
+                type="general"
+                context={{ searchQuery: deferredQuery.trim() }}
+              >
+                {t("suggestLensLink")}
+              </FeedbackTrigger>
+            </p>
+            <Link
+              href="/about#coverage"
+              className="mt-2 inline-block text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+            >
+              {t("coverageLink")}
+            </Link>
+          </>
+        )}
       </div>
     );
   }
@@ -241,15 +255,19 @@ export default function LensSearchDialog({
             </button>
           );
         })}
-        <p className="pt-1 text-center text-xs text-zinc-400 dark:text-zinc-500">
-          {t("suggestLensResults")}{" "}
-          <FeedbackTrigger
-            type="general"
-            context={{ searchQuery: deferredQuery.trim() }}
-          >
-            {t("suggestLensLink")}
-          </FeedbackTrigger>
-        </p>
+        {renderFooter ? (
+          <div className="pt-1">{renderFooter({ query: deferredQuery.trim(), close: () => setOpen(false) })}</div>
+        ) : (
+          <p className="pt-1 text-center text-xs text-zinc-400 dark:text-zinc-500">
+            {t("suggestLensResults")}{" "}
+            <FeedbackTrigger
+              type="general"
+              context={{ searchQuery: deferredQuery.trim() }}
+            >
+              {t("suggestLensLink")}
+            </FeedbackTrigger>
+          </p>
+        )}
       </div>
     );
   }
@@ -297,8 +315,10 @@ export default function LensSearchDialog({
           <DialogHeader className="border-b border-zinc-100 pr-5 dark:border-zinc-800">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <DialogTitle>{t("title")}</DialogTitle>
-                <DialogDescription className="sr-only">{t("description")}</DialogDescription>
+                <DialogTitle>{title ?? t("title")}</DialogTitle>
+                <DialogDescription className={description ? undefined : "sr-only"}>
+                  {description ?? t("description")}
+                </DialogDescription>
               </div>
               <DialogClose className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "hidden h-9 w-9 shrink-0 sm:inline-flex")}>
                 <X className="h-4 w-4" />

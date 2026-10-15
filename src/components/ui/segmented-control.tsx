@@ -8,7 +8,8 @@ type SegmentedVariant = "full" | "paired" | "wrap";
 interface SegmentedControlProps<T> {
   ariaLabel: string;
   options: SegmentedOption<T>[];
-  value: T;
+  /** Undefined leaves every option unchecked. */
+  value: T | undefined;
   onChange: (value: T) => void;
   variant?: SegmentedVariant;
   disabled?: boolean;
