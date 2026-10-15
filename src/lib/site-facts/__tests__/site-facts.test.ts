@@ -31,9 +31,13 @@ describe("siteFacts", () => {
     }
   });
 
-  it("names the tipping channel each site uses", () => {
+  it("gives only the user's own site's tipping channel, store links, and price sources", () => {
     expect(factsFor("business", "zh")).toContain(zh.About.donationWechatLabel);
-    expect(factsFor("business", "en")).toMatch(/English site uses Ko-fi/);
+    expect(factsFor("business", "zh")).not.toContain("Ko-fi");
+    expect(factsFor("business", "en")).toContain("tip with Ko-fi");
+    expect(factsFor("business", "en")).not.toContain(en.About.donationWechatLabel);
+    expect(factsFor("business", "en")).toContain(en.Purchase.disclosureDetail);
+    expect(factsFor("prices", "zh")).not.toContain("eBay");
   });
 
   it("describes coverage from the lens data and the coverage table", () => {
@@ -50,8 +54,7 @@ describe("siteFacts", () => {
     expect(factsFor("usage", "zh")).toContain(`"${zh.Nav.getApp}" page`);
   });
 
-  it("lists affiliate stores and price sources from code and data", () => {
-    expect(factsFor("business", "en")).toContain(`English site: ${en.Purchase.disclosureDetail}`);
+  it("lists price sources from the data", () => {
     expect(factsFor("prices", "en")).toMatch(/used from .*eBay/);
   });
 });

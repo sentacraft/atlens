@@ -5,6 +5,7 @@ import { routing } from "@/i18n/routing";
 import { CATALOG_COVERAGE, type CoverageState } from "@/lib/lens/catalog-coverage";
 import { getLensesByMount, lensCountsByBrand, meta } from "@/lib/lens/data";
 import { MAX_COMPARE } from "@/lib/lens/lens";
+import { priceMarket, type Market } from "@/lib/lens/pricing";
 import { isPurchaseLocale } from "@/lib/purchase/links";
 import { donationChannel } from "@/lib/support";
 import { MOUNTS, type Lens, type LensPriceEntry } from "@/lib/types";
@@ -52,7 +53,7 @@ function coverage(locale: string): string[] {
   return [en.About.coverageBody, ...perMount, `The lens data was last updated on ${meta.lastUpdated.slice(0, 10)}.`];
 }
 
-function sourcesOf(lenses: Lens[], market: "cn" | "global", condition: "new" | "used"): string[] {
+function sourcesOf(lenses: Lens[], market: Market, condition: "new" | "used"): string[] {
   const names = new Set<string>();
   for (const lens of lenses) {
     const entries = lens.pricing?.[market]?.[condition];
@@ -63,25 +64,19 @@ function sourcesOf(lenses: Lens[], market: "cn" | "global", condition: "new" | "
   return [...names];
 }
 
-function priceSources(): string[] {
-  const lenses = MOUNTS.flatMap((mount) => getLensesByMount(mount, "en"));
-  return [
-    `Chinese site prices: new from ${list(sourcesOf(lenses, "cn", "new"))}; used from ${list(sourcesOf(lenses, "cn", "used"))}.`,
-    `English site prices: new from ${list(sourcesOf(lenses, "global", "new"))}; used from ${list(sourcesOf(lenses, "global", "used"))}.`,
-  ];
+function priceSources(locale: string): string[] {
+  const lenses = MOUNTS.flatMap((mount) => getLensesByMount(mount, locale));
+  const market = priceMarket(locale);
+  return [`Prices on this site: new from ${list(sourcesOf(lenses, market, "new"))}; used from ${list(sourcesOf(lenses, market, "used"))}.`];
 }
 
 function commercialTies(locale: string): string[] {
   const m = MESSAGES[locale];
-  const channels = routing.locales.map((code) => {
-    const channel = donationChannel(code) === "wechat" ? m.About.donationWechatLabel : "Ko-fi";
-    return `the ${languageName(code)} site uses ${channel}`;
-  });
-  const support = `Visitors who want to support Atlens can tip from the "${m.About.supportTitle}" section of the "${m.Nav.about}" page: ${list(channels)}.`;
-  return [support, ...routing.locales.map(
-    (code) =>
-      `Store links on the ${languageName(code)} site: ${isPurchaseLocale(code) ? en.Purchase.disclosureDetail : en.Purchase.disclosureNoAffiliate}`,
-  )];
+  const channel = donationChannel(locale) === "wechat" ? m.About.donationWechatLabel : "Ko-fi";
+  return [
+    `Visitors who want to support Atlens can tip with ${channel}, from the "${m.About.supportTitle}" section of the "${m.Nav.about}" page.`,
+    `Store links on this site: ${isPurchaseLocale(locale) ? en.Purchase.disclosureDetail : en.Purchase.disclosureNoAffiliate}`,
+  ];
 }
 
 function accountFeatures(locale: string): string[] {
