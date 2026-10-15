@@ -7,7 +7,7 @@ function reply(part: Record<string, unknown>): UIMessage {
     id: "a1",
     role: "assistant",
     parts: [{ type: "tool-askForGear", toolCallId: "c1", input: {}, ...part }],
-  } as UIMessage;
+  } as unknown as UIMessage;
 }
 
 describe("gearRequestDeclined", () => {
