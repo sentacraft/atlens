@@ -24,7 +24,7 @@ import LensFilters from "@/components/lens-filters/LensFilters";
 import LensIndexShell from "@/components/browse/LensIndexShell";
 import LensUsageSwitch from "@/components/browse/LensUsageSwitch";
 import LensSortControl from "@/components/browse/LensSortControl";
-import LensSearchDialog, { SuggestLensFooter } from "@/components/browse/LensSearchDialog";
+import LensSearchDialog, { suggestLensFooter } from "@/components/browse/LensSearchDialog";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SEARCH_TRIGGER_CLS } from "@/config/ui-tokens";
@@ -138,7 +138,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
                   title={tSearch("title")}
                   resultAction={() => ({ label: tSearch("view") })}
                   onSelect={handleSelectLens}
-                  footer={(context) => <SuggestLensFooter {...context} />}
+                  footer={suggestLensFooter}
                 />
               </>
             }

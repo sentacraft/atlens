@@ -4,7 +4,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Menu } from "@base-ui/react/menu";
-import { Ellipsis, Plus, Trash2 } from "lucide-react";
+import { Ellipsis, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { getBodyById } from "@/lib/body/data";
 import type { LensSummary } from "@/lib/lens/data";
@@ -12,7 +12,14 @@ import { getLensImageUrl } from "@/lib/lens/image";
 import { equivalentFocal, type CoverageInput } from "@/lib/me/coverage";
 import { addGear, GearRequestError, removeGear, userGearQuery } from "@/lib/me/gear-client";
 import type { GearInput, GearItem, ManualLens } from "@/lib/me/gear-schema";
-import { ACTION_OUTLINE_CLS, ICON_NAV_BTN_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
+import {
+  ACTION_OUTLINE_CLS,
+  ACTION_PRIMARY_CLS,
+  CHIP_ACTIVE_CLS,
+  CHIP_BASE_CLS,
+  ICON_NAV_BTN_CLS,
+  MENU_POPUP_CLS,
+} from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { mountToUrlSegment } from "@/lib/mount";
 import { Link } from "@/i18n/navigation";
@@ -55,6 +62,20 @@ export default function GearSection({
   const { preference: mount } = useMountPreference();
   const [bodyDialogOpen, setBodyDialogOpen] = useState(false);
   const [lensSearchOpen, setLensSearchOpen] = useState(false);
+  const [pickedLenses, setPickedLenses] = useState<LensSummary[]>([]);
+
+  function closeLensSearch(open: boolean) {
+    setLensSearchOpen(open);
+    if (!open) {
+      setPickedLenses([]);
+    }
+  }
+
+  function togglePickedLens(lens: LensSummary) {
+    setPickedLenses((prev) =>
+      prev.some((picked) => picked.id === lens.id) ? prev.filter((picked) => picked.id !== lens.id) : [...prev, lens],
+    );
+  }
   const [manual, setManual] = useState<{ open: boolean; model: string }>({ open: false, model: "" });
 
   const lensById = useMemo(() => new Map(lenses.map((lens) => [lens.id, lens])), [lenses]);
@@ -93,6 +114,13 @@ export default function GearSection({
       queryClient.setQueryData(query.queryKey, context?.previous);
       failed(error);
     },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: query.queryKey }),
+  });
+
+  const addLenses = useMutation({
+    mutationFn: (catalogIds: string[]) =>
+      Promise.all(catalogIds.map((catalogId) => addGear({ kind: "lens", catalogId }))),
+    onError: failed,
     onSettled: () => queryClient.invalidateQueries({ queryKey: query.queryKey }),
   });
 
@@ -160,25 +188,75 @@ export default function GearSection({
             </button>
             <LensSearchDialog<LensSummary>
               open={lensSearchOpen}
-              onOpenChange={setLensSearchOpen}
+              onOpenChange={closeLensSearch}
               lenses={lenses}
               title={t("addLens")}
               description={t("addLensDescription")}
-              resultAction={(lens) => (ownedLensIds.has(lens.id) ? { label: t("owned"), disabled: true } : { label: t("add") })}
-              onSelect={(lens) => add.mutate({ kind: "lens", catalogId: lens.id })}
+              resultAction={(lens) =>
+                ownedLensIds.has(lens.id)
+                  ? { label: t("owned"), disabled: true }
+                  : { label: pickedLenses.some((picked) => picked.id === lens.id) ? t("selected") : t("select") }
+              }
+              onSelect={togglePickedLens}
               footer={({ query: search }) => (
-                <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs text-zinc-500 dark:text-zinc-400">
-                  {t("manualPrompt")}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLensSearchOpen(false);
-                      setManual({ open: true, model: search });
-                    }}
-                    className="font-medium text-zinc-900 underline underline-offset-4 dark:text-zinc-100"
-                  >
-                    {t("manualEntry")}
-                  </button>
+                <div className="flex flex-col gap-3">
+                  {pickedLenses.length > 0 && (
+                    <ul className="flex flex-wrap gap-1.5">
+                      {pickedLenses.map((lens) => (
+                        <li key={lens.id}>
+                          <button
+                            type="button"
+                            onClick={() => togglePickedLens(lens)}
+                            aria-label={t("unselect", { name: lens.model })}
+                            className={cn(CHIP_BASE_CLS, CHIP_ACTIVE_CLS, "h-8 px-3")}
+                          >
+                            {lens.model}
+                            <X className="h-3 w-3" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                      {search && (
+                        <>
+                          {t("manualPrompt")}{" "}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              closeLensSearch(false);
+                              setManual({ open: true, model: search });
+                            }}
+                            className="font-medium text-zinc-900 underline underline-offset-4 dark:text-zinc-100"
+                          >
+                            {t("manualEntry")}
+                          </button>
+                        </>
+                      )}
+                    </span>
+                    <div className="ml-auto flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => closeLensSearch(false)}
+                        className="h-9 rounded-lg px-3 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                      >
+                        {t("cancel")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => addLenses.mutate(pickedLenses.map((lens) => lens.id), { onSuccess: () => closeLensSearch(false) })}
+                        disabled={pickedLenses.length === 0 || addLenses.isPending}
+                        className={cn(ACTION_PRIMARY_CLS, "h-9 rounded-lg px-4 text-sm font-medium")}
+                      >
+                        {addLenses.isPending
+                          ? t("saving")
+                          : pickedLenses.length > 0
+                            ? t("addCount", { count: pickedLenses.length })
+                            : t("add")}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
             />

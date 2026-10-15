@@ -25,6 +25,7 @@ import {
   DialogClose,
   DialogPopup,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -61,7 +62,7 @@ export default function LensSearchDialog<T extends SearchableLens>({
   resultAction: (lens: T) => LensSearchResultAction;
   /** Close the dialog here to end the search, or leave it open to pick again. */
   onSelect: (lens: T) => void;
-  /** Shown under the results, and in the empty state when nothing matches. Render components here; never call them. */
+  /** A bar pinned under the results; return null to hide it. Render components here; never call them. */
   footer: (context: LensSearchFooterContext) => ReactNode;
 }) {
   const t = useTranslations("Search");
@@ -95,6 +96,7 @@ export default function LensSearchDialog<T extends SearchableLens>({
   );
 
   const hasInput = query.trim().length > 0;
+  const footerContent = footer({ query: deferredQuery.trim(), hasResults: results.length > 0 });
   const hasResults = results.length > 0;
 
   // Read activeRow, never activeIndex: an out-of-range index must not act as a row.
@@ -171,7 +173,6 @@ export default function LensSearchDialog<T extends SearchableLens>({
         <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
           {t("noResultsHint")}
         </p>
-        <div className="mt-4">{footer({ query: deferredQuery.trim(), hasResults: false })}</div>
       </div>
     );
   }
@@ -225,7 +226,6 @@ export default function LensSearchDialog<T extends SearchableLens>({
             </button>
           );
         })}
-        <div className="pt-1">{footer({ query: deferredQuery.trim(), hasResults: true })}</div>
       </div>
     );
   }
@@ -299,37 +299,37 @@ export default function LensSearchDialog<T extends SearchableLens>({
             <div aria-hidden style={{ height: keyboardInset }} />
           )}
         </div>
+        {footerContent && (
+          <DialogFooter className="block border-zinc-100 py-3 dark:border-zinc-800">{footerContent}</DialogFooter>
+        )}
       </DialogPopup>
     </Dialog>
   );
 }
 
-/** The "missing a lens? tell us" footer for searches over the catalog. */
-export function SuggestLensFooter({ query, hasResults }: LensSearchFooterContext) {
+/** The catalog footer for browse and compare: a "missing a lens? tell us" line once there is a query. */
+export function suggestLensFooter(context: LensSearchFooterContext) {
+  return context.query ? <SuggestLensFooter {...context} /> : null;
+}
+
+function SuggestLensFooter({ query, hasResults }: LensSearchFooterContext) {
   const t = useTranslations("Search");
-  const suggest = (
-    <FeedbackTrigger type="general" context={{ searchQuery: query }}>
-      {t("suggestLensLink")}
-    </FeedbackTrigger>
-  );
-  if (hasResults) {
-    return (
-      <p className="text-center text-xs text-zinc-400 dark:text-zinc-500">
-        {t("suggestLensResults")} {suggest}
-      </p>
-    );
-  }
   return (
-    <>
-      <p className="text-xs text-zinc-400 dark:text-zinc-500">
-        {t("suggestLens")} {suggest}
-      </p>
-      <Link
-        href="/about#coverage"
-        className="mt-2 inline-block text-xs text-zinc-400 transition-colors hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
-      >
-        {t("coverageLink")}
-      </Link>
-    </>
+    <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-zinc-400 dark:text-zinc-500">
+      <span>
+        {t(hasResults ? "suggestLensResults" : "suggestLens")}{" "}
+        <FeedbackTrigger type="general" context={{ searchQuery: query }}>
+          {t("suggestLensLink")}
+        </FeedbackTrigger>
+      </span>
+      {!hasResults && (
+        <Link
+          href="/about#coverage"
+          className="transition-colors hover:text-zinc-600 dark:hover:text-zinc-300"
+        >
+          {t("coverageLink")}
+        </Link>
+      )}
+    </p>
   );
 }

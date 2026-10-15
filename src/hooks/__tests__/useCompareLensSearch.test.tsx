@@ -19,7 +19,7 @@ vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
 }));
 
-vi.mock("@/components/browse/LensSearchDialog", () => ({ SuggestLensFooter: () => null }));
+vi.mock("@/components/browse/LensSearchDialog", () => ({ suggestLensFooter: () => null }));
 
 function wrapper({ children }: { children: ReactNode }) {
   return <CompareProvider>{children}</CompareProvider>;
