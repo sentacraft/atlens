@@ -12,6 +12,7 @@ import { linkedProvidersQuery, updateDisplayName } from "@/lib/me/account-client
 import { writeLocalePreference } from "@/lib/locale-preference";
 import { patchUserSettings, userSettingsQuery } from "@/lib/me/settings-client";
 import { DEFAULT_USER_SETTINGS, type UserSettings, type UserSettingsPatch } from "@/lib/me/settings-schema";
+import type { LensSummary } from "@/lib/lens/data";
 import type { Mount } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
@@ -30,12 +31,14 @@ import NotFound from "@/app/[locale]/not-found";
 import AuthDialog from "@/components/auth/AuthDialog";
 import Avatar from "@/components/auth/Avatar";
 import DeleteAccountDialog from "@/components/auth/DeleteAccountDialog";
+import GearSection from "@/components/me/GearSection";
 import SegmentedControl from "@/components/ui/segmented-control";
 
-const SECTIONS = ["settings", "account"] as const;
+const SECTIONS = ["gear", "settings", "account"] as const;
 type SectionId = (typeof SECTIONS)[number];
 
 const SECTION_TITLE_KEY = {
+  gear: "gearTitle",
   settings: "settingsTitle",
   account: "accountTitle",
 } as const satisfies Record<SectionId, string>;
@@ -44,7 +47,7 @@ const SECTION_CLS = "flex scroll-mt-[calc(var(--nav-height)+72px)] flex-col gap-
 const SECTION_TITLE_CLS = "font-heading text-xl font-bold text-zinc-900 dark:text-zinc-100";
 const SECTION_SUB_CLS = "mt-0.5 text-[13px] leading-5 text-zinc-500 dark:text-zinc-400 md:mt-1";
 
-export default function ProfilePage() {
+export default function ProfilePage({ lenses }: { lenses: LensSummary[] }) {
   const testHookEnabled = useTestHookEnabled();
   const { data: session, isPending } = authClient.useSession();
   const [hydrated, setHydrated] = useState(false);
@@ -60,7 +63,7 @@ export default function ProfilePage() {
   if (!user) {
     return <SignInPrompt />;
   }
-  return <Profile user={user} />;
+  return <Profile user={user} lenses={lenses} />;
 }
 
 function SignInPrompt() {
@@ -89,7 +92,7 @@ interface ProfileUser {
   image?: string | null;
 }
 
-function Profile({ user }: { user: ProfileUser }) {
+function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] }) {
   const t = useTranslations("Profile");
   const { activeId: active, scrollTo } = useScrollSpy(SECTIONS);
   const { navHidden } = useNav();
@@ -145,6 +148,13 @@ function Profile({ user }: { user: ProfileUser }) {
           ))}
         </nav>
 
+        <GearSection
+          id="gear"
+          className={SECTION_CLS}
+          userId={user.id}
+          lenses={lenses}
+          heading={<SectionHeading id="gear" subtitle={t("gearSubtitle")} />}
+        />
         <SettingsSection userId={user.id} />
         <AccountSection email={user.email} />
       </div>

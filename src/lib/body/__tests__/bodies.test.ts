@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import bodiesData from "@/data/bodies.json";
-import { bodies, getBodyById } from "../data";
+import { bodies, getBodyById, searchBodies } from "../data";
 import { bodyCatalogJsonSchema, bodyCatalogSchema } from "../schema";
 
 describe("bodies.json", () => {
@@ -40,5 +40,18 @@ describe("bodyCatalogSchema", () => {
 
   it("rejects a GFX series body on the X mount", () => {
     expect(bodyCatalogSchema.safeParse(catalog([{ ...valid, series: "GFX" }])).success).toBe(false);
+  });
+});
+
+describe("searchBodies", () => {
+  it("matches names ignoring case, spaces and hyphens, exact matches first", () => {
+    expect(searchBodies("xt5").map((body) => body.name)).toEqual(["X-T5", "X-T50"]);
+    expect(searchBodies("x-t50").map((body) => body.name)).toEqual(["X-T50"]);
+    expect(searchBodies("gfx 100s ii").map((body) => body.name)).toEqual(["GFX100S II"]);
+  });
+
+  it("matches aliases and returns every body for an empty query", () => {
+    expect(searchBodies("gfx eterna").map((body) => body.name)).toEqual(["GFX ETERNA 55"]);
+    expect(searchBodies("  ")).toHaveLength(bodies.length);
   });
 });
