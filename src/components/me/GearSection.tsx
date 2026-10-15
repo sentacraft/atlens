@@ -76,7 +76,7 @@ export default function GearSection({
       prev.some((picked) => picked.id === lens.id) ? prev.filter((picked) => picked.id !== lens.id) : [...prev, lens],
     );
   }
-  const [manual, setManual] = useState<{ open: boolean; model: string }>({ open: false, model: "" });
+  const [manualOpen, setManualOpen] = useState(false);
 
   const lensById = useMemo(() => new Map(lenses.map((lens) => [lens.id, lens])), [lenses]);
   const brandSuggestions = useMemo(
@@ -132,7 +132,7 @@ export default function GearSection({
   });
 
   function saveManual(lens: ManualLens) {
-    add.mutate({ kind: "lens", manual: lens }, { onSuccess: () => setManual({ open: false, model: "" }) });
+    add.mutate({ kind: "lens", manual: lens }, { onSuccess: () => setManualOpen(false) });
   }
 
   const coverage: CoverageInput[] = lensItems.flatMap((item) => {
@@ -226,7 +226,7 @@ export default function GearSection({
                             type="button"
                             onClick={() => {
                               closeLensSearch(false);
-                              setManual({ open: true, model: search });
+                              setManualOpen(true);
                             }}
                             className="font-medium text-zinc-900 underline underline-offset-4 dark:text-zinc-100"
                           >
@@ -305,10 +305,9 @@ export default function GearSection({
         onSave={(catalogIds) => addBodies.mutate(catalogIds, { onSuccess: () => setBodyDialogOpen(false) })}
       />
       <ManualLensDialog
-        open={manual.open}
-        onOpenChange={(open) => setManual((prev) => ({ ...prev, open }))}
+        open={manualOpen}
+        onOpenChange={setManualOpen}
         defaultMount={mount}
-        initialModel={manual.model}
         brandSuggestions={brandSuggestions}
         saving={add.isPending}
         onSave={saveManual}

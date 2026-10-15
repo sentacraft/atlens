@@ -78,6 +78,9 @@ export const UTILITY_BTN_CLS =
 export const POPUP_SURFACE_CLS =
   "rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-900";
 
+export const POPUP_SCROLL_CLS =
+  "overflow-x-hidden overflow-y-auto [scrollbar-width:thin] [scrollbar-color:rgb(212_212_216)_transparent] dark:[scrollbar-color:rgb(63_63_70)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300/70 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700/70";
+
 // overflow-hidden is required: it clips the edge rows' hover to the rounded corners. Rows must
 // carry no popup-level vertical padding, or the hover never reaches the edge.
 export const MENU_POPUP_CLS =

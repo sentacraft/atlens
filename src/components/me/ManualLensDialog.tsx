@@ -1,8 +1,8 @@
 "use client";
 
-import { useId, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { CircleHelp, X } from "lucide-react";
+import { ChevronDown, CircleHelp, X } from "lucide-react";
 import { OPTICAL_TRAITS, type Mount, type OpticalTrait } from "@/lib/types";
 import { FOCUS_MOTORS, type ManualLens } from "@/lib/me/gear-schema";
 import {
@@ -28,6 +28,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import Autocomplete from "@/components/ui/autocomplete";
 import ToggleChipGroup from "@/components/ui/toggle-chip-group";
 import SegmentedControl from "@/components/ui/segmented-control";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -64,7 +65,6 @@ export default function ManualLensDialog({
   open,
   onOpenChange,
   defaultMount,
-  initialModel,
   brandSuggestions,
   saving,
   onSave,
@@ -72,7 +72,6 @@ export default function ManualLensDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   defaultMount: Mount;
-  initialModel: string;
   brandSuggestions: string[];
   saving: boolean;
   onSave: (lens: ManualLens) => void;
@@ -94,9 +93,7 @@ export default function ManualLensDialog({
         </DialogHeader>
         {open && (
           <ManualLensForm
-            key={initialModel}
             defaultMount={defaultMount}
-            initialModel={initialModel}
             brandSuggestions={brandSuggestions}
             saving={saving}
             onCancel={() => onOpenChange(false)}
@@ -110,14 +107,12 @@ export default function ManualLensDialog({
 
 function ManualLensForm({
   defaultMount,
-  initialModel,
   brandSuggestions,
   saving,
   onCancel,
   onSave,
 }: {
   defaultMount: Mount;
-  initialModel: string;
   brandSuggestions: string[];
   saving: boolean;
   onCancel: () => void;
@@ -127,8 +122,7 @@ function ManualLensForm({
   const l = useTranslations("LensList");
   const badge = useTranslations("SpecialtyBadge");
   const m = useTranslations("MountSwitcher");
-  const brandListId = useId();
-  const [draft, setDraft] = useState<ManualLensDraft>(() => emptyDraft(defaultMount, initialModel));
+  const [draft, setDraft] = useState<ManualLensDraft>(() => emptyDraft(defaultMount));
   const [errors, setErrors] = useState<Partial<Record<DraftField, DraftError>>>({});
   const [helpOpen, setHelpOpen] = useState(false);
 
@@ -178,19 +172,24 @@ function ManualLensForm({
   return (
     <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
       <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-4">
-        <div className="grid gap-4 sm:grid-cols-2">
-          {field("brand", t("brand"), textInput("brand", { list: brandListId, autoComplete: "off" }))}
-          <datalist id={brandListId}>
-            {brandSuggestions.map((brand) => (
-              <option key={brand} value={brand} />
-            ))}
-          </datalist>
+        <div className="grid gap-4 sm:grid-cols-[2fr_3fr]">
+          {field(
+            "brand",
+            t("brand"),
+            <Autocomplete
+              value={draft.brand}
+              onValueChange={(value) => set("brand", value)}
+              suggestions={brandSuggestions}
+              aria-invalid={errors.brand ? true : undefined}
+              className={INPUT_CLS}
+            />,
+          )}
           {field("model", t("modelName"), textInput("model", { autoComplete: "off" }))}
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className={LABEL_CLS}>
-            {t("focalLength")}
+        <div className={LABEL_CLS}>
+          {t("focalLength")}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <SegmentedControl<"prime" | "zoom">
               ariaLabel={t("focalLength")}
               value={draft.zoom ? "zoom" : "prime"}
@@ -202,21 +201,26 @@ function ManualLensForm({
               layout="equal"
             />
             <span className="flex items-center gap-2">
-              {textInput("focalMin", { ...numeric, "aria-label": draft.zoom ? t("focalMin") : t("focalLength") })}
+              <span className="w-20">
+                {textInput("focalMin", { ...numeric, "aria-label": draft.zoom ? t("focalMin") : t("focalLength") })}
+              </span>
               {draft.zoom && (
                 <>
                   <span className="text-zinc-400">–</span>
-                  {textInput("focalMax", { ...numeric, "aria-label": t("focalMax") })}
+                  <span className="w-20">{textInput("focalMax", { ...numeric, "aria-label": t("focalMax") })}</span>
                 </>
               )}
               <span className="shrink-0 text-sm text-zinc-500">mm</span>
             </span>
-            {(errors.focalMin || errors.focalMax) && (
-              <span className="text-xs font-normal text-red-600 dark:text-red-400">
-                {t((errors.focalMin ?? errors.focalMax)!)}
-              </span>
-            )}
           </div>
+          {(errors.focalMin || errors.focalMax) && (
+            <span className="text-xs font-normal text-red-600 dark:text-red-400">
+              {t((errors.focalMin ?? errors.focalMax)!)}
+            </span>
+          )}
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
           <div className={LABEL_CLS}>
             {t("mount")}
             <SegmentedControl<Mount>
@@ -230,64 +234,88 @@ function ManualLensForm({
               layout="equal"
             />
           </div>
-        </div>
-
-        <div className="space-y-4 border-t border-zinc-100 pt-4 dark:border-zinc-800">
-          <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-400 dark:text-zinc-500">
-            {t("recommended")}
-          </span>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className={LABEL_CLS}>
-              {t("maxAperture")}
-              <span className="flex items-center gap-2">
-                <span className="text-sm text-zinc-500">F</span>
-                {textInput("apertureWide", { ...numeric, "aria-label": draft.zoom ? t("apertureWide") : t("maxAperture") })}
-                {draft.zoom && (
-                  <>
-                    <span className="text-zinc-400">–</span>
-                    {textInput("apertureTele", { ...numeric, "aria-label": t("apertureTele") })}
-                  </>
-                )}
-              </span>
-              {(errors.apertureWide || errors.apertureTele) && (
-                <span className="text-xs font-normal text-red-600 dark:text-red-400">
-                  {t((errors.apertureWide ?? errors.apertureTele)!)}
-                </span>
+          <div className={LABEL_CLS}>
+            {l("usage")}
+            <SegmentedControl<"photo" | "cine">
+              ariaLabel={l("usage")}
+              value={draft.usage}
+              options={[
+                { value: "photo", label: { default: l("usagePhoto") } },
+                { value: "cine", label: { default: l("usageCine") } },
+              ]}
+              onChange={(value) => set("usage", value)}
+              layout="equal"
+            />
+          </div>
+          <div className={LABEL_CLS}>
+            {t("maxAperture")}
+            <span className="flex items-center gap-2">
+              <span className="text-sm text-zinc-500">{draft.usage === "cine" ? "T" : "F"}</span>
+              {textInput("apertureWide", { ...numeric, "aria-label": draft.zoom ? t("apertureWide") : t("maxAperture") })}
+              {draft.zoom && (
+                <>
+                  <span className="text-zinc-400">–</span>
+                  {textInput("apertureTele", { ...numeric, "aria-label": t("apertureTele") })}
+                </>
               )}
-            </div>
-            <div className={LABEL_CLS}>
-              {l("focusFilter")}
-              <SegmentedControl<"auto" | "manual">
-                ariaLabel={l("focusFilter")}
-                value={draft.autofocus === undefined ? undefined : draft.autofocus ? "auto" : "manual"}
-                options={[
-                  { value: "auto", label: { default: l("focusAuto") } },
-                  { value: "manual", label: { default: l("focusManual") } },
-                ]}
-                onChange={(value) => set("autofocus", value === "auto")}
-                layout="equal"
-              />
-            </div>
-            <div className={LABEL_CLS}>
-              {l("featureOis")}
-              <SegmentedControl<"yes" | "no">
-                ariaLabel={l("featureOis")}
-                value={draft.ois === undefined ? undefined : draft.ois ? "yes" : "no"}
-                options={[
-                  { value: "yes", label: { default: t("yes") } },
-                  { value: "no", label: { default: t("no") } },
-                ]}
-                onChange={(value) => set("ois", value === "yes")}
-                layout="equal"
-              />
-            </div>
+            </span>
+            {(errors.apertureWide || errors.apertureTele) && (
+              <span className="text-xs font-normal text-red-600 dark:text-red-400">
+                {t((errors.apertureWide ?? errors.apertureTele)!)}
+              </span>
+            )}
+          </div>
+          <div className={LABEL_CLS}>
+            {l("featureOis")}
+            <SegmentedControl<"yes" | "no">
+              ariaLabel={l("featureOis")}
+              value={draft.ois === undefined ? undefined : draft.ois ? "yes" : "no"}
+              options={[
+                { value: "yes", label: { default: t("yes") } },
+                { value: "no", label: { default: t("no") } },
+              ]}
+              onChange={(value) => set("ois", value === "yes")}
+              layout="equal"
+            />
+          </div>
+          <div className={LABEL_CLS}>
+            {l("focusFilter")}
+            <SegmentedControl<"auto" | "manual">
+              ariaLabel={l("focusFilter")}
+              value={draft.autofocus === undefined ? undefined : draft.autofocus ? "auto" : "manual"}
+              options={[
+                { value: "auto", label: { default: l("focusAuto") } },
+                { value: "manual", label: { default: l("focusManual") } },
+              ]}
+              onChange={(value) => set("autofocus", value === "auto")}
+              layout="equal"
+            />
+          </div>
+          <div className={LABEL_CLS}>
+            {l("focusMotorFilter")}
+            <Select
+              value={draft.focusMotor ?? null}
+              onValueChange={(value) => set("focusMotor", (value ?? undefined) as ManualLensDraft["focusMotor"])}
+            >
+              <SelectTrigger className="h-10 w-full" aria-label={l("focusMotorFilter")}>
+                <SelectValue placeholder={t("optional")} />
+              </SelectTrigger>
+              <SelectContent>
+                {FOCUS_MOTORS.map((motor) => (
+                  <SelectItem key={motor} value={motor}>
+                    {motor === "unknown" ? t("motorUnknown") : l(MOTOR_LABEL_KEY[motor])}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
         <details className="group border-t border-zinc-100 pt-4 dark:border-zinc-800">
-          <summary className="flex cursor-pointer list-none flex-wrap items-baseline gap-x-2 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+          <summary className="flex cursor-pointer list-none items-center gap-x-2 text-sm font-medium text-zinc-900 dark:text-zinc-100">
             {t("moreFields")}
-            <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">{t("moreFieldsHint")}</span>
+            <span className="min-w-0 flex-1 truncate text-xs font-normal text-zinc-500 dark:text-zinc-400">{t("moreFieldsHint")}</span>
+            <ChevronDown className="h-4 w-4 shrink-0 text-zinc-500 transition-transform group-open:rotate-180 dark:text-zinc-400" />
           </summary>
           <div className="mt-4 space-y-5">
             <div className="space-y-3">
@@ -338,38 +366,7 @@ function ManualLensForm({
               />
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div className={LABEL_CLS}>
-                {l("usage")}
-                <SegmentedControl<"photo" | "cine">
-                  ariaLabel={l("usage")}
-                  value={draft.usage}
-                  options={[
-                    { value: "photo", label: { default: l("usagePhoto") } },
-                    { value: "cine", label: { default: l("usageCine") } },
-                  ]}
-                  onChange={(value) => set("usage", value)}
-                  layout="equal"
-                />
-              </div>
-              <div className={LABEL_CLS}>
-                {l("focusMotorFilter")}
-                <Select
-                  value={draft.focusMotor ?? null}
-                  onValueChange={(value) => set("focusMotor", (value ?? undefined) as ManualLensDraft["focusMotor"])}
-                >
-                  <SelectTrigger className="h-10" aria-label={l("focusMotorFilter")}>
-                    <SelectValue placeholder={t("optional")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {FOCUS_MOTORS.map((motor) => (
-                      <SelectItem key={motor} value={motor}>
-                        {motor === "unknown" ? t("motorUnknown") : l(MOTOR_LABEL_KEY[motor])}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="w-40">
               {field("weight", t("weight"), textInput("weight", { ...numeric, placeholder: t("optional") }), "g")}
             </div>
 
