@@ -9,7 +9,6 @@ import {
   formatSampledAt,
 } from "@/lib/lens/pricing";
 import type { Lens } from "@/lib/types";
-import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
 
 interface Props {
   lens: Lens;
@@ -30,7 +29,7 @@ export function PriceSection({ lens }: Props) {
   const sampledDisplay = formatSampledAt(t, entry.sampledAt);
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1.5">
       <span data-redact-hook="price" className="text-xl font-semibold tabular-nums text-zinc-700 dark:text-zinc-200">
         {t.rich("priceApprox", {
           price: priceDisplay,
@@ -48,8 +47,6 @@ export function PriceSection({ lens }: Props) {
           {sampledDisplay}
         </span>
       </div>
-
-      <PriceDisclaimer className="mt-1 pt-2 border-t border-zinc-100 dark:border-zinc-800" />
     </div>
   );
 }

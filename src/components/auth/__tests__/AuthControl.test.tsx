@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { SignInDialogProvider } from "@/context/SignInDialogProvider";
 import AuthControl from "../AuthControl";
 
 const session = vi.hoisted(() => ({ current: { data: null as unknown } }));
@@ -38,7 +39,7 @@ describe("AuthControl", () => {
   it("offers sign-in to an anonymous user", () => {
     session.current = { data: user(true) };
 
-    render(<AuthControl />);
+    render(<AuthControl />, { wrapper: SignInDialogProvider });
 
     expect(screen.getByRole("button", { name: "login" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "accountLabel" })).toBeNull();
@@ -47,7 +48,7 @@ describe("AuthControl", () => {
   it("shows the account menu to a signed-in user", () => {
     session.current = { data: user(false) };
 
-    render(<AuthControl />);
+    render(<AuthControl />, { wrapper: SignInDialogProvider });
 
     expect(screen.queryByRole("button", { name: "login" })).toBeNull();
   });
@@ -55,7 +56,7 @@ describe("AuthControl", () => {
   it("links the account menu to the profile page and no longer offers deletion", async () => {
     session.current = { data: user(false) };
 
-    render(<AuthControl />);
+    render(<AuthControl />, { wrapper: SignInDialogProvider });
     fireEvent.click(screen.getByRole("button", { name: "accountLabel" }));
 
     expect(await screen.findByRole("menuitem", { name: "profile" })).toHaveAttribute("href", "/me");
@@ -67,7 +68,7 @@ describe("AuthControl", () => {
     session.current = { data: user(true) };
     sendVerificationOtp.mockResolvedValue({ error: null });
 
-    render(<AuthControl />);
+    render(<AuthControl />, { wrapper: SignInDialogProvider });
     fireEvent.click(screen.getByRole("button", { name: "login" }));
     fireEvent.change(await screen.findByLabelText("emailLabel"), {
       target: { value: "iris@example.test" },
@@ -91,7 +92,7 @@ describe("AuthControl", () => {
       error: { status: 429, message: "Too many requests. Please try again later." },
     });
 
-    render(<AuthControl />);
+    render(<AuthControl />, { wrapper: SignInDialogProvider });
     fireEvent.click(screen.getByRole("button", { name: "login" }));
     fireEvent.change(await screen.findByLabelText("emailLabel"), {
       target: { value: "iris@example.test" },
@@ -104,7 +105,7 @@ describe("AuthControl", () => {
   it("shows the account's picture in the menu button", () => {
     session.current = { data: user(false, "https://lh3.googleusercontent.com/a/photo") };
 
-    const { container } = render(<AuthControl />);
+    const { container } = render(<AuthControl />, { wrapper: SignInDialogProvider });
 
     const img = container.querySelector("img");
     expect(img).toHaveAttribute("src", "https://lh3.googleusercontent.com/a/photo");
@@ -114,7 +115,7 @@ describe("AuthControl", () => {
   it("falls back to initials when the picture is missing or fails to load", () => {
     session.current = { data: user(false, "https://lh3.googleusercontent.com/a/broken") };
 
-    const { container } = render(<AuthControl />);
+    const { container } = render(<AuthControl />, { wrapper: SignInDialogProvider });
     fireEvent.error(container.querySelector("img")!);
 
     expect(container.querySelector("img")).toBeNull();

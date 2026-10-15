@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import LensCard from "@/components/lens/LensCard";
+import { LENS_GRID_CLS } from "@/config/ui-tokens";
 import LensSortControl from "@/components/browse/LensSortControl";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
@@ -41,7 +42,7 @@ export default function CollectionLensGrid({ lenses }: { lenses: Lens[] }) {
       )}
       <div
         {...hookAttr("grid")}
-        className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
+        className={LENS_GRID_CLS}
       >
         {displayed.map((lens, i) => (
           <LensCard

@@ -3,17 +3,18 @@
 import { memo } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Plus, Check } from "lucide-react";
+import { Plus, Check, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "@/i18n/navigation";
 import { mountToUrlSegment } from "@/lib/mount";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
-import { ACTION_PRIMARY_CLS, CARD_SELECTED_BORDER_CLS } from "@/config/ui-tokens";
+import { ACTION_PRIMARY_CLS, CARD_SELECTED_BORDER_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
+import { cn } from "@/lib/utils";
+import { useFavorites } from "@/hooks/useFavorites";
 import type { Lens } from "@/lib/types";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import * as fmt from "@/lib/lens/format";
-import { Button } from "@/components/ui/button";
 import LensCardPrice from "@/components/price/LensCardPrice";
 
 interface Props {
@@ -22,8 +23,11 @@ interface Props {
   selectionDisabled: boolean;
   onToggle: (id: string) => void;
   priority?: boolean;
-  hideCompare?: boolean;
 }
+
+// Mouse users see the star on hover; touch has no hover, so it stays visible there.
+const FAVORITE_REVEAL_CLS =
+  "pointer-fine:xs:opacity-0 pointer-fine:xs:group-hover:opacity-100 pointer-fine:xs:group-focus-within:opacity-100";
 
 export default memo(function LensCard({
   lens,
@@ -31,9 +35,11 @@ export default memo(function LensCard({
   selectionDisabled,
   onToggle,
   priority = false,
-  hideCompare = false,
 }: Props) {
   const t = useTranslations("LensList");
+  const tActions = useTranslations("LensActions");
+  const favorites = useFavorites();
+  const favorited = favorites.isFavorite(lens.id);
   const tBrand = useTranslations("Brands");
   const hookAttr = useUiHookAttr();
   const equivDisplay = fmt.focalRangeDisplay(fmt.focalEquiv(lens.focalLengthMin, lens.mount), fmt.focalEquiv(lens.focalLengthMax, lens.mount));
@@ -74,7 +80,7 @@ export default memo(function LensCard({
   return (
     <div
       {...hookAttr("card")}
-      className={`relative rounded-2xl border bg-white dark:bg-zinc-900 flex flex-col overflow-hidden transition-[border-color,box-shadow,background-color] hover:bg-zinc-50 dark:hover:bg-zinc-800/50 ${
+      className={`group relative rounded-2xl border bg-white dark:bg-zinc-900 flex flex-col overflow-hidden transition-[border-color,box-shadow,background-color] hover:bg-zinc-50 dark:hover:bg-zinc-800/50 ${
         isSelected
           ? CARD_SELECTED_BORDER_CLS
           : "border-zinc-200 dark:border-zinc-800"
@@ -87,18 +93,18 @@ export default memo(function LensCard({
       >
         <div
           {...hookAttr("cardMedia")}
-          className="relative aspect-[3/2] overflow-hidden border-b border-zinc-100/80 bg-zinc-50/40 sm:aspect-[5/4] dark:border-zinc-800 dark:bg-zinc-900/40 max-xs:aspect-auto max-xs:w-[132px] max-xs:shrink-0 max-xs:self-stretch max-xs:border-b-0 max-xs:border-r"
+          className="relative aspect-[3/2] overflow-hidden border-b border-zinc-100/80 bg-zinc-50/40 dark:border-zinc-800 dark:bg-zinc-900/40 max-xs:aspect-auto max-xs:w-[145px] max-xs:shrink-0 max-xs:self-stretch max-xs:border-b-0 max-xs:border-r"
         >
           <div
             {...hookAttr("cardMediaInner")}
-            className="absolute inset-0 p-3 sm:p-7 max-xs:p-2"
+            className="absolute inset-0 p-3 sm:p-5 max-xs:p-2"
           >
             <div className="relative h-full w-full overflow-hidden rounded-xl">
               <Image
                 src={getLensImageUrl(lens.id)}
                 alt={lens.model}
                 fill
-                sizes="(max-width: 499px) 112px, (max-width: 640px) 50vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                sizes="(max-width: 499px) 129px, (max-width: 640px) 50vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                 style={lensImageStyle}
                 className="object-contain"
                 // Next 16's `priority` only adds a preload link, so loading is set directly.
@@ -113,7 +119,7 @@ export default memo(function LensCard({
           className="flex flex-1 flex-col gap-2 p-3 sm:gap-2.5 sm:p-4 max-xs:min-w-0"
         >
           <div className="flex flex-col gap-1">
-            <div className="flex items-center justify-between gap-2 max-xs:pr-9">
+            <div className="flex items-center justify-between gap-2 max-xs:pr-7">
               <p className="min-w-0 truncate text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
                 {fmt.lensSubtitleLine(tBrand(lens.brand), lens.series)}
               </p>
@@ -136,26 +142,18 @@ export default memo(function LensCard({
             </h3>
           </div>
 
-          <div className="flex min-h-[20px] items-start justify-between gap-1">
-            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
-              {badges.map((badge) => (
-                <Badge
-                  key={badge.label}
-                  label={badge.label}
-                  description={badge.description}
-                  icon={<badge.icon className="h-3 w-3" />}
-                />
-              ))}
-            </div>
-            <div className="hidden shrink-0 xs:block">
-              <LensCardPrice lens={lens} />
-            </div>
+          <div className="flex min-h-[20px] flex-wrap items-center gap-1">
+            {badges.map((badge) => (
+              <Badge
+                key={badge.label}
+                label={badge.label}
+                description={badge.description}
+                icon={<badge.icon className="h-3 w-3" />}
+              />
+            ))}
           </div>
 
           <div className="mt-auto flex flex-col gap-2">
-            <div className="xs:hidden">
-              <LensCardPrice lens={lens} />
-            </div>
 
             <dl className="flex items-baseline justify-between gap-2 border-t border-zinc-100 pt-2 text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400 sm:hidden">
               <div className="min-w-0 truncate">
@@ -172,47 +170,50 @@ export default memo(function LensCard({
               </div>
               <div className="text-right">{weightDisplay}</div>
             </dl>
+
+            <div className="flex min-h-8 items-center pr-24">
+              <LensCardPrice lens={lens} />
+            </div>
           </div>
         </div>
       </Link>
 
-      {!hideCompare && (
+      {favorites.enabled && (
         <button
-          onClick={selectionDisabled ? () => toast(t("compareFullToast")) : () => onToggle(lens.id)}
-          aria-label={isSelected ? t("removeFromCompare") : selectionDisabled ? t("compareFull") : t("addToCompare")}
-          className={`hidden max-xs:flex absolute top-2 right-2 z-10 items-center justify-center h-8 w-8 rounded-full transition-colors ${
-            isSelected
-              ? ACTION_PRIMARY_CLS
-              : selectionDisabled
-                ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600"
-                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
-          }`}
+          type="button"
+          onClick={() => favorites.toggle(lens.id)}
+          aria-label={favorited ? tActions("unfavorite") : tActions("favorite")}
+          aria-pressed={favorited}
+          className={cn(
+            "absolute top-2.5 right-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full transition-[opacity,background-color,color]",
+            "max-xs:top-1.5 max-xs:right-1.5 max-xs:h-9 max-xs:w-9 max-xs:border-0 max-xs:bg-transparent max-xs:shadow-none max-xs:backdrop-blur-none dark:max-xs:bg-transparent",
+            FROSTED_OVERLAY_CHROME_CLS,
+            favorited
+              ? "text-zinc-900 dark:text-zinc-50"
+              : cn("text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-50 max-xs:text-zinc-500", FAVORITE_REVEAL_CLS),
+          )}
         >
-          {isSelected ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+          <Star className="h-4 w-4" fill={favorited ? "currentColor" : "none"} />
         </button>
       )}
 
-      {!hideCompare && (
-        <div
-          {...hookAttr("cardFooter")}
-          className="mt-auto px-3 pb-3 sm:px-4 sm:pb-4 max-xs:hidden"
-        >
-          <Button
-            size="sm"
-            onClick={() => onToggle(lens.id)}
-            disabled={selectionDisabled}
-            className={`relative z-10 w-full h-10 sm:h-9 font-medium ${
-              isSelected
-                ? `text-xs ${ACTION_PRIMARY_CLS}`
-                : selectionDisabled
-                  ? "text-[11px] bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed"
-                  : "text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
-            }`}
-          >
-            {isSelected ? t("removeFromCompare") : selectionDisabled ? t("compareFull") : t("addToCompare")}
-          </Button>
-        </div>
-      )}
+      <button
+        type="button"
+        onClick={selectionDisabled ? () => toast(t("compareFullToast")) : () => onToggle(lens.id)}
+        aria-label={isSelected ? t("removeFromCompare") : selectionDisabled ? t("compareFull") : t("addToCompare")}
+        aria-pressed={isSelected}
+        className={cn(
+          "absolute right-3 bottom-3 z-10 inline-flex h-8 items-center gap-1 rounded-full border pr-3 pl-2.5 text-xs font-medium transition-colors sm:right-4 sm:bottom-4",
+          isSelected
+            ? cn(ACTION_PRIMARY_CLS, "border-transparent")
+            : selectionDisabled
+              ? "border-zinc-200 bg-white text-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-500"
+              : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800",
+        )}
+      >
+        {isSelected ? <Check className="h-3.5 w-3.5" strokeWidth={2.5} /> : <Plus className="h-3.5 w-3.5" />}
+        {isSelected ? t("compared") : t("compareShort")}
+      </button>
     </div>
   );
 });

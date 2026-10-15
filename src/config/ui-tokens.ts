@@ -1,5 +1,7 @@
 export const LENS_INDEX_SHELL_CLS = "mx-auto w-full max-w-7xl px-5 sm:px-6";
 
+export const LENS_GRID_CLS = "grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-3 md:gap-5 xl:grid-cols-4";
+
 export const ACTION_PRIMARY_CLS =
   "bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors";
 
