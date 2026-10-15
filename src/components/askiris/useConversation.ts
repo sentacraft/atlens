@@ -1,16 +1,19 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
+import type { AskIrisConversationRecord } from "@/lib/askiris/conversation-repository";
 import {
   conversationListQueryKey,
   conversationMessagesQuery,
+  deleteConversation,
   fetchConversationList,
+  renameConversation,
 } from "@/lib/askiris/conversation-client";
 import { readConversationParam, writeConversationParam } from "@/lib/url/askiris";
 
-export type ConversationNotice = "unavailable" | "loadFailed";
+export type ConversationNotice = "unavailable" | "loadFailed" | "saveFailed";
 export type ConversationListState = "idle" | "loading" | "ready" | "error";
 
 interface ActiveConversation {
@@ -113,6 +116,50 @@ export function useConversation({
     enabled: Boolean(userId),
   });
   const conversations = userId ? (listQuery.data ?? []) : [];
+  const listKey = conversationListQueryKey(userId ?? "");
+
+  // Both edits update the list at once and roll it back if the server refuses.
+  function useListEdit<Input>(
+    request: (input: Input) => Promise<void>,
+    edit: (list: AskIrisConversationRecord[], input: Input) => AskIrisConversationRecord[],
+  ) {
+    return useMutation({
+      mutationFn: request,
+      onMutate: async (input: Input) => {
+        await queryClient.cancelQueries({ queryKey: listKey });
+        const previous = queryClient.getQueryData<AskIrisConversationRecord[]>(listKey);
+        queryClient.setQueryData<AskIrisConversationRecord[]>(listKey, (list = []) => edit(list, input));
+        return { previous };
+      },
+      onError: (_error, _input, context) => {
+        queryClient.setQueryData(listKey, context?.previous);
+        onNoticeRef.current("saveFailed");
+      },
+      onSettled: () => queryClient.invalidateQueries({ queryKey: listKey }),
+    });
+  }
+
+  const rename = useListEdit(
+    ({ id, title }: { id: string; title: string }) => renameConversation(id, { title }),
+    (list, { id, title }) => list.map((item) => (item.id === id ? { ...item, title } : item)),
+  );
+  const remove = useListEdit(
+    (id: string) => deleteConversation(id),
+    (list, id) => list.filter((item) => item.id !== id),
+  );
+
+  function renameConversationTitle(id: string, title: string) {
+    rename.mutate({ id, title });
+  }
+
+  // Deleting the open conversation leaves the user on a new, empty one.
+  function deleteConversationById(id: string) {
+    remove.mutate(id);
+    if (id === activeIdRef.current) {
+      resetToNew();
+      writeConversationParam(null, "replace");
+    }
+  }
   const listState: ConversationListState = !userId
     ? "idle"
     : listQuery.data
@@ -154,6 +201,8 @@ export function useConversation({
     listState,
     selectConversation,
     startNewConversation,
+    renameConversation: renameConversationTitle,
+    deleteConversation: deleteConversationById,
   };
 }
 

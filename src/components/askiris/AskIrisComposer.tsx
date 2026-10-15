@@ -1,7 +1,7 @@
 "use client";
 
 import { type Ref } from "react";
-import { ArrowUp, Plus, Square } from "lucide-react";
+import { ArrowUp, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function AskIrisComposer({
@@ -14,9 +14,6 @@ export default function AskIrisComposer({
   size = "md",
   autoFocus = false,
   inputRef,
-  onNewTopic,
-  newTopicLabel,
-  newTopicDisabled = false,
   streaming = false,
   onStop,
   stopLabel,
@@ -30,9 +27,6 @@ export default function AskIrisComposer({
   size?: "lg" | "md";
   autoFocus?: boolean;
   inputRef?: Ref<HTMLInputElement>;
-  onNewTopic?: () => void;
-  newTopicLabel?: string;
-  newTopicDisabled?: boolean;
   streaming?: boolean;
   onStop?: () => void;
   stopLabel?: string;
@@ -50,18 +44,6 @@ export default function AskIrisComposer({
         }
       }}
     >
-      {onNewTopic ? (
-        <button
-          type="button"
-          onClick={onNewTopic}
-          disabled={newTopicDisabled}
-          aria-label={newTopicLabel}
-          title={newTopicLabel}
-          className="border-input bg-background text-muted-foreground hover:text-foreground hover:bg-muted grid size-11 shrink-0 place-items-center rounded-2xl border shadow-sm transition disabled:pointer-events-none disabled:opacity-40"
-        >
-          <Plus className={lg ? "size-5" : "size-4"} />
-        </button>
-      ) : null}
       <div
         className={cn(
           "border-input bg-background flex flex-1 items-center rounded-2xl border shadow-sm",

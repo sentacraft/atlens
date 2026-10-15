@@ -5,14 +5,11 @@ import { Menu } from "@base-ui/react/menu";
 import { LogOut, UserRound } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { accountUser, authClient } from "@/lib/auth-client";
-import { ICON_NAV_BTN_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
+import { ICON_NAV_BTN_CLS, MENU_ITEM_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { useTestHookEnabled } from "@/context/TestHookProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import Avatar from "@/components/auth/Avatar";
-
-const MENU_ITEM_CLS =
-  "flex items-center gap-2.5 px-4 py-2.5 text-sm text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50";
 
 export default function AuthControl() {
   const t = useTranslations("Auth");

@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import ResponseFeedback from "../ResponseFeedback";
@@ -8,146 +8,83 @@ vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
 }));
 
-vi.mock("@/components/iris/Iris", () => ({
-  default: () => <div data-testid="iris" />,
-}));
+let fetchMock: ReturnType<typeof vi.fn>;
+
+beforeEach(() => {
+  fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 200 }));
+  vi.stubGlobal("fetch", fetchMock);
+});
 
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
 
+function renderResponseFeedback() {
+  const queryClient = new QueryClient({ defaultOptions: { mutations: { retry: false } } });
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <ResponseFeedback responseMessageId="assistant-1" />
+    </QueryClientProvider>,
+  );
+}
+
+function sentBodies() {
+  return fetchMock.mock.calls.map((call) => JSON.parse(call[1].body));
+}
+
 describe("ResponseFeedback", () => {
-  function renderResponseFeedback() {
-    const queryClient = new QueryClient({
-      defaultOptions: { mutations: { retry: false } },
-    });
-
-    return render(
-      <QueryClientProvider client={queryClient}>
-        <ResponseFeedback responseMessageId="assistant-1" />
-      </QueryClientProvider>,
-    );
-  }
-
-  it("submits a helpful rating immediately and highlights the button", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 200 }));
-    vi.stubGlobal("fetch", fetchMock);
-
+  it("saves a rating on the first tap and thanks the user in place", async () => {
     renderResponseFeedback();
-    const helpful = screen.getByRole("button", { name: "helpful" });
 
-    fireEvent.click(helpful);
+    fireEvent.click(screen.getByRole("button", { name: "helpful" }));
 
-    expect(helpful).toHaveAttribute("aria-pressed", "true");
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
-    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
-      responseMessageId: "assistant-1",
-      rating: "helpful",
-    });
+    expect(screen.getByRole("status")).toHaveTextContent("thanks");
+    expect(screen.queryByRole("button", { name: "helpful" })).toBeNull();
+    expect(screen.queryByRole("dialog")).toBeNull();
+    await waitFor(() => expect(sentBodies()).toEqual([{ responseMessageId: "assistant-1", rating: "helpful" }]));
   });
 
-  it("submits a thumbs-down immediately and opens the detail dialog", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 200 }));
-    vi.stubGlobal("fetch", fetchMock);
-
-    renderResponseFeedback();
-    const unhelpful = screen.getByRole("button", { name: "unhelpful" });
-    fireEvent.click(unhelpful);
-
-    expect(unhelpful).toHaveAttribute("aria-pressed", "true");
-    expect(await screen.findByRole("dialog")).toBeInTheDocument();
-    const submit = screen.getByRole("button", { name: "submit" });
-    expect(submit).toBeDisabled();
-    fireEvent.click(screen.getByRole("checkbox", { name: "reasons.incorrect_information" }));
-    expect(submit).toBeEnabled();
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
-    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
-      responseMessageId: "assistant-1",
-      rating: "unhelpful",
-    });
-  });
-
-  it("shows the shared success state even when the detail update fails", async () => {
-    const fetchMock = vi.fn().mockRejectedValue(new Error("offline"));
-    vi.stubGlobal("fetch", fetchMock);
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
-    renderResponseFeedback();
-    const unhelpful = screen.getByRole("button", { name: "unhelpful" });
-    fireEvent.click(unhelpful);
-    fireEvent.click(await screen.findByRole("checkbox", { name: "reasons.incorrect_information" }));
-    fireEvent.click(await screen.findByRole("button", { name: "submit" }));
-
-    expect(await screen.findByText("success")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "title" })).toHaveClass("sr-only");
-    expect(errorSpy).toHaveBeenCalled();
-    errorSpy.mockRestore();
-  });
-
-  it("serializes the immediate rating write before the detail update", async () => {
-    let resolveInitial!: (response: Response) => void;
-    const initialResponse = new Promise<Response>((resolve) => {
-      resolveInitial = resolve;
-    });
-    const fetchMock = vi
-      .fn()
-      .mockReturnValueOnce(initialResponse)
-      .mockResolvedValueOnce(new Response(null, { status: 200 }));
-    vi.stubGlobal("fetch", fetchMock);
-
+  it("opens reasons in place only when the user asks to tell more", async () => {
     renderResponseFeedback();
     fireEvent.click(screen.getByRole("button", { name: "unhelpful" }));
-    const dialog = await screen.findByRole("dialog");
-    fireEvent.click(screen.getByRole("checkbox", { name: "reasons.incorrect_information" }));
+    expect(screen.queryByRole("button", { name: "reasons.did_not_answer" })).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "tellMore" }));
+    fireEvent.click(screen.getByRole("button", { name: "reasons.did_not_answer" }));
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "  Needed a cheaper option  " } });
     fireEvent.click(screen.getByRole("button", { name: "submit" }));
 
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
-    resolveInitial(new Response(null, { status: 200 }));
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
-    expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({
-      responseMessageId: "assistant-1",
-      rating: "unhelpful",
-      reasonCodes: ["incorrect_information"],
-    });
-    expect(dialog).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("detailsThanks");
+    await waitFor(() =>
+      expect(sentBodies()).toEqual([
+        { responseMessageId: "assistant-1", rating: "unhelpful" },
+        {
+          responseMessageId: "assistant-1",
+          rating: "unhelpful",
+          reasonCodes: ["did_not_answer"],
+          comment: "Needed a cheaper option",
+        },
+      ]),
+    );
   });
 
-  it("deletes a helpful rating when the selected button is clicked again", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
-    vi.stubGlobal("fetch", fetchMock);
-
+  it("offers only a comment after a helpful rating", () => {
     renderResponseFeedback();
-    const helpful = screen.getByRole("button", { name: "helpful" });
+    fireEvent.click(screen.getByRole("button", { name: "helpful" }));
+    fireEvent.click(screen.getByRole("button", { name: "tellMore" }));
 
-    fireEvent.click(helpful);
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
-    fireEvent.click(helpful);
-
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
-    expect(helpful).toHaveAttribute("aria-pressed", "false");
-    expect(fetchMock.mock.calls[1][0]).toBe(
-      "/api/askiris/feedback/assistant-1",
-    );
-    expect(fetchMock.mock.calls[1][1]).toEqual({ method: "DELETE" });
+    expect(screen.queryByRole("button", { name: "reasons.did_not_answer" })).toBeNull();
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "submit" })).toBeDisabled();
   });
 
-  it("deletes an unhelpful rating after the detail dialog is skipped", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 200 }));
-    vi.stubGlobal("fetch", fetchMock);
+  it("hides the bar without rating when dismissed", () => {
+    const { container } = renderResponseFeedback();
 
-    renderResponseFeedback();
-    const unhelpful = screen.getByRole("button", { name: "unhelpful" });
-    fireEvent.click(unhelpful);
-    await screen.findByRole("dialog");
-    fireEvent.click(screen.getByRole("button", { name: "skip" }));
-    fireEvent.click(unhelpful);
+    fireEvent.click(screen.getByRole("button", { name: "dismiss" }));
 
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
-    expect(unhelpful).toHaveAttribute("aria-pressed", "false");
-    expect(fetchMock.mock.calls[1][0]).toBe(
-      "/api/askiris/feedback/assistant-1",
-    );
-    expect(fetchMock.mock.calls[1][1]).toEqual({ method: "DELETE" });
+    expect(container).toBeEmptyDOMElement();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

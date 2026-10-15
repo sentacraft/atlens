@@ -9,6 +9,8 @@ change the JSDoc, then run `node --experimental-strip-types scripts/api-docs.mts
 | `/api/askiris-fixtures` | POST | Saves or deletes an Ask Iris replay fixture for the Test Hook. Development only: 404 in production. |
 | `/api/askiris/conversations` | GET | Lists the caller's Ask Iris conversations, newest first. Any session, guests included; 401 without one. |
 | `/api/askiris/conversations/[conversationId]` | GET | Returns one conversation's stored messages. Any session, guests included; 401 without one, 404 when missing or not the caller's. |
+| `/api/askiris/conversations/[conversationId]` | PATCH | Renames one of the caller's conversations. Any session, guests included; 401 without one, 400 for an empty or overlong title, 404 when missing or not the caller's. |
+| `/api/askiris/conversations/[conversationId]` | DELETE | Deletes one of the caller's conversations and its messages. Any session, guests included; 401 without one, 404 when missing or not the caller's. |
 | `/api/askiris/feedback` | POST | Saves or replaces the caller's rating of one Iris response. Any session, guests included; 401 without one, 404 when the response is not the caller's, 429 when rate limited. |
 | `/api/askiris/feedback/[responseMessageId]` | DELETE | Withdraws the caller's rating of one Iris response. Any session, guests included; 401 without one, 404 when the response is not the caller's, 429 when rate limited. |
 | `/api/auth/[...all]` | GET, POST, PATCH, PUT, DELETE | Better Auth: sign-in, email codes, session, sign-out, account deletion. See https://www.better-auth.com/docs/concepts/api |

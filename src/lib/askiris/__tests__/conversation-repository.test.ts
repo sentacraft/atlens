@@ -4,11 +4,13 @@ import { createSqliteD1 } from "../../__tests__/support/sqlite-d1";
 import {
   appendAskIrisTurn,
   ConversationOwnershipError,
+  deleteAskIrisConversation,
   getAskIrisConversationMessages,
   getOwnedAskIrisResponseTurnId,
   listAskIrisConversations,
   loadAskIrisTurnHistory,
   MAX_MESSAGE_BYTES,
+  renameAskIrisConversation,
   serializeMessage,
 } from "../conversation-repository";
 
@@ -189,5 +191,41 @@ describe("serializeMessage", () => {
     expect(() => serializeMessage(text("a1", "assistant", "x".repeat(MAX_MESSAGE_BYTES)))).toThrow(
       "message_too_large",
     );
+  });
+});
+
+describe("renameAskIrisConversation", () => {
+  it("renames the owner's conversation and keeps the name across later turns", async () => {
+    await append({ userMessage: text("u1", "user", "a") });
+
+    expect(await renameAskIrisConversation(db, { conversationId: CONVERSATION, userId: "owner", title: "56mm or 33mm" })).toBe(true);
+    await append({ userMessage: text("u2", "user", "b"), now: 2 });
+
+    expect((await listAskIrisConversations(db, "owner")).map((row) => row.title)).toEqual(["56mm or 33mm"]);
+  });
+
+  it("refuses someone else's conversation", async () => {
+    await append({ userMessage: text("u1", "user", "a") });
+
+    expect(await renameAskIrisConversation(db, { conversationId: CONVERSATION, userId: "stranger", title: "x" })).toBe(false);
+    expect((await listAskIrisConversations(db, "owner"))[0].title).toBe("Which lens is lighter?");
+  });
+});
+
+describe("deleteAskIrisConversation", () => {
+  it("removes the owner's conversation with its messages", async () => {
+    await append({ userMessage: text("u1", "user", "a"), responseMessage: text("a1", "assistant", "b") });
+
+    expect(await deleteAskIrisConversation(db, { conversationId: CONVERSATION, userId: "owner" })).toBe(true);
+
+    expect(await listAskIrisConversations(db, "owner")).toEqual([]);
+    expect(await storedIds()).toEqual([]);
+  });
+
+  it("leaves someone else's conversation untouched", async () => {
+    await append({ userMessage: text("u1", "user", "a") });
+
+    expect(await deleteAskIrisConversation(db, { conversationId: CONVERSATION, userId: "stranger" })).toBe(false);
+    expect(await storedIds()).toEqual([[0, "u1"]]);
   });
 });

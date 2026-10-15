@@ -241,3 +241,34 @@ export async function getOwnedAskIrisResponseTurnId(
     .first<{ turn_id: string | null }>();
   return row?.turn_id ?? null;
 }
+
+/** Renames an owned conversation; false when it is missing or someone else's. */
+export async function renameAskIrisConversation(
+  db: D1Database,
+  input: { conversationId: string; userId: string; title: string },
+): Promise<boolean> {
+  const result = await db
+    .prepare("UPDATE askiris_conversations SET title = ? WHERE id = ? AND user_id = ?")
+    .bind(input.title, input.conversationId, input.userId)
+    .run();
+  return result.meta.changes > 0;
+}
+
+/** Deletes an owned conversation and its messages; false when it is missing or someone else's. */
+export async function deleteAskIrisConversation(
+  db: D1Database,
+  input: { conversationId: string; userId: string },
+): Promise<boolean> {
+  const [, conversation] = await db.batch([
+    db
+      .prepare(
+        `DELETE FROM askiris_messages
+         WHERE conversation_id = (SELECT id FROM askiris_conversations WHERE id = ? AND user_id = ?)`,
+      )
+      .bind(input.conversationId, input.userId),
+    db
+      .prepare("DELETE FROM askiris_conversations WHERE id = ? AND user_id = ?")
+      .bind(input.conversationId, input.userId),
+  ]);
+  return conversation.meta.changes > 0;
+}
