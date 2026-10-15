@@ -1,11 +1,18 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Search, X } from "lucide-react";
-import { searchBodies } from "@/lib/body/data";
-import type { Body } from "@/lib/body/schema";
-import { ACTION_OUTLINE_CLS, FROSTED_OVERLAY_CHROME_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
+import { Check, X } from "lucide-react";
+import { BODY_SERIES, type Body } from "@/lib/body/schema";
+import { bodies } from "@/lib/body/data";
+import type { Mount } from "@/lib/types";
+import {
+  CHIP_ACTIVE_CLS,
+  CHIP_BASE_CLS,
+  CHIP_IDLE_CLS,
+  FROSTED_OVERLAY_CHROME_CLS,
+  ICON_CLOSE_BTN_CLS,
+} from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -15,42 +22,48 @@ import {
   DialogPopup,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { BodySpecs } from "@/components/me/gear-specs";
+import SegmentedControl from "@/components/ui/segmented-control";
+
+/** Each series' bodies, newest first, for one mount. */
+function seriesGroups(mount: Mount) {
+  return BODY_SERIES.map((series) => ({
+    series,
+    bodies: bodies
+      .filter((body) => body.mount === mount && body.series === series)
+      .sort((a, b) => b.releaseYear - a.releaseYear),
+  })).filter((group) => group.bodies.length > 0);
+}
 
 export default function AddBodyDialog({
   open,
   onOpenChange,
+  defaultMount,
   ownedIds,
   onAdd,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  defaultMount: Mount;
   ownedIds: ReadonlySet<string>;
   onAdd: (body: Body) => void;
 }) {
   const t = useTranslations("Profile");
-  const [query, setQuery] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-  const matches = useMemo(
-    () => searchBodies(query).sort((a, b) => (query.trim() ? 0 : b.releaseYear - a.releaseYear)),
-    [query],
-  );
-  const groups = [
-    { label: t("currentBodies"), bodies: matches.filter((body) => !body.discontinued) },
-    { label: t("discontinuedBodies"), bodies: matches.filter((body) => body.discontinued) },
-  ].filter((group) => group.bodies.length > 0);
+  const m = useTranslations("MountSwitcher");
+  // Null until the viewer switches format, so each opening starts on the current mount.
+  const [picked, setPicked] = useState<Mount | null>(null);
+  const mount = picked ?? defaultMount;
 
   function handleOpenChange(next: boolean) {
     if (!next) {
-      setQuery("");
+      setPicked(null);
     }
     onOpenChange(next);
   }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogPopup initialFocus={inputRef} className="flex max-h-[85svh] w-full max-w-lg flex-col overflow-hidden">
-        <DialogHeader className="border-b border-zinc-100 pr-5 dark:border-zinc-800">
+      <DialogPopup className="flex max-h-[85svh] w-full max-w-xl flex-col overflow-hidden">
+        <DialogHeader className="pr-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <DialogTitle>{t("addBody")}</DialogTitle>
@@ -60,56 +73,47 @@ export default function AddBodyDialog({
               <X className="h-4 w-4" />
             </DialogClose>
           </div>
-          <label className="mt-3 flex items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 px-3 dark:border-zinc-800 dark:bg-zinc-900">
-            <Search className="h-4 w-4 shrink-0 text-zinc-400" />
-            <span className="sr-only">{t("searchBodies")}</span>
-            <input
-              ref={inputRef}
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder={t("searchBodies")}
-              className="h-10 min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-zinc-400 sm:text-sm"
-            />
-          </label>
         </DialogHeader>
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-3">
-          {groups.length === 0 ? (
-            <p className="py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">{t("noBodyMatches")}</p>
-          ) : (
-            groups.map((group) => (
-              <section key={group.label} className="py-2">
-                <h3 className="pb-1 text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-400 dark:text-zinc-500">
-                  {group.label}
-                </h3>
-                <ul>
-                  {group.bodies.map((body) => {
-                    const owned = ownedIds.has(body.id);
-                    return (
-                      <li key={body.id} className="flex items-center gap-3 border-b border-zinc-100 py-2.5 last:border-b-0 dark:border-zinc-800">
-                        <div className="min-w-0 flex-1">
-                          <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{body.name}</div>
-                          <div className="truncate text-xs text-zinc-500 dark:text-zinc-400">
-                            <BodySpecs body={body} />
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          disabled={owned}
-                          onClick={() => {
-                            onAdd(body);
-                            handleOpenChange(false);
-                          }}
-                          className={cn(ACTION_OUTLINE_CLS, "h-8 shrink-0 px-3 text-[13px] disabled:cursor-default disabled:opacity-60")}
-                        >
-                          {owned ? t("owned") : t("add")}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </section>
-            ))
-          )}
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 pb-5">
+          <SegmentedControl<Mount>
+            ariaLabel={t("sensorFormat")}
+            value={mount}
+            options={[
+              { value: "X", label: { default: m("xCaption") } },
+              { value: "G", label: { default: m("gfxCaption") } },
+            ]}
+            onChange={setPicked}
+            equalWidth
+          />
+          {seriesGroups(mount).map((group) => (
+            <section key={group.series} className="flex flex-col gap-2">
+              <h3 className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+                {group.series}
+              </h3>
+              <div className="flex flex-wrap gap-1.5">
+                {group.bodies.map((body) => {
+                  const owned = ownedIds.has(body.id);
+                  return (
+                    <button
+                      key={body.id}
+                      type="button"
+                      disabled={owned}
+                      aria-pressed={owned}
+                      onClick={() => onAdd(body)}
+                      className={cn(
+                        CHIP_BASE_CLS,
+                        "h-9 px-3 text-[13px]",
+                        owned ? cn(CHIP_ACTIVE_CLS, "cursor-default") : CHIP_IDLE_CLS,
+                      )}
+                    >
+                      {owned && <Check className="h-3.5 w-3.5" />}
+                      {body.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
         </div>
       </DialogPopup>
     </Dialog>

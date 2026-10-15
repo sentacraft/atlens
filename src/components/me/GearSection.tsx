@@ -211,6 +211,7 @@ export default function GearSection({
       <AddBodyDialog
         open={bodyDialogOpen}
         onOpenChange={setBodyDialogOpen}
+        defaultMount={mount}
         ownedIds={ownedBodyIds}
         onAdd={(body: Body) => add.mutate({ kind: "body", catalogId: body.id })}
       />

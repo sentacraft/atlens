@@ -94,7 +94,7 @@ describe("GearSection", () => {
     expect(screen.queryByText("coverageTitle")).toBeNull();
   });
 
-  it("marks owned bodies in the add dialog and adds a new one", async () => {
+  it("groups bodies by format and series, marks owned ones and adds on a tap", async () => {
     fetchMock.mockImplementation(async (_url: string, init?: RequestInit) =>
       init?.method === "POST"
         ? new Response(JSON.stringify({ gear: gear[0] }), { status: 201 })
@@ -102,21 +102,21 @@ describe("GearSection", () => {
     );
 
     renderSection();
-    await screen.findByText("X-T5");
+    await screen.findAllByText("X-T5");
     fireEvent.click(screen.getByRole("button", { name: /addBody/ }));
     const dialog = await screen.findByRole("dialog");
-    fireEvent.change(within(dialog).getByPlaceholderText("searchBodies"), { target: { value: "x-t5" } });
 
-    const ownedRow = within(dialog).getByText("X-T5").closest("li")!;
-    expect(within(ownedRow).getByRole("button", { name: "owned" })).toBeDisabled();
+    expect(within(dialog).getByRole("heading", { name: "X-T" })).toBeInTheDocument();
+    expect(within(dialog).getByRole("button", { name: "X-T5" })).toBeDisabled();
+    expect(within(dialog).queryByRole("button", { name: "GFX100 II" })).toBeNull();
 
-    fireEvent.change(within(dialog).getByPlaceholderText("searchBodies"), { target: { value: "x-h2s" } });
-    fireEvent.click(within(within(dialog).getByText("X-H2S").closest("li")!).getByRole("button", { name: "add" }));
+    fireEvent.click(within(dialog).getByRole("radio", { name: "gfxCaption" }));
+    fireEvent.click(within(dialog).getByRole("button", { name: "GFX100 II" }));
 
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(
         "/api/me/gear",
-        expect.objectContaining({ method: "POST", body: JSON.stringify({ kind: "body", catalogId: "fujifilm-x-h2s" }) }),
+        expect.objectContaining({ method: "POST", body: JSON.stringify({ kind: "body", catalogId: "fujifilm-gfx100-ii" }) }),
       ),
     );
   });
