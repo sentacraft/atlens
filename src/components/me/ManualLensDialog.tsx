@@ -188,9 +188,9 @@ function ManualLensForm({
           {field("model", t("modelName"), textInput("model", { autoComplete: "off" }))}
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className={LABEL_CLS}>
-            {t("focalLength")}
+        <div className={LABEL_CLS}>
+          {t("focalLength")}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <SegmentedControl<"prime" | "zoom">
               ariaLabel={t("focalLength")}
               value={draft.zoom ? "zoom" : "prime"}
@@ -202,21 +202,26 @@ function ManualLensForm({
               layout="equal"
             />
             <span className="flex items-center gap-2">
-              {textInput("focalMin", { ...numeric, "aria-label": draft.zoom ? t("focalMin") : t("focalLength") })}
+              <span className="w-20">
+                {textInput("focalMin", { ...numeric, "aria-label": draft.zoom ? t("focalMin") : t("focalLength") })}
+              </span>
               {draft.zoom && (
                 <>
                   <span className="text-zinc-400">–</span>
-                  {textInput("focalMax", { ...numeric, "aria-label": t("focalMax") })}
+                  <span className="w-20">{textInput("focalMax", { ...numeric, "aria-label": t("focalMax") })}</span>
                 </>
               )}
               <span className="shrink-0 text-sm text-zinc-500">mm</span>
             </span>
-            {(errors.focalMin || errors.focalMax) && (
-              <span className="text-xs font-normal text-red-600 dark:text-red-400">
-                {t((errors.focalMin ?? errors.focalMax)!)}
-              </span>
-            )}
           </div>
+          {(errors.focalMin || errors.focalMax) && (
+            <span className="text-xs font-normal text-red-600 dark:text-red-400">
+              {t((errors.focalMin ?? errors.focalMax)!)}
+            </span>
+          )}
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
           <div className={LABEL_CLS}>
             {t("mount")}
             <SegmentedControl<Mount>
@@ -230,57 +235,49 @@ function ManualLensForm({
               layout="equal"
             />
           </div>
-        </div>
-
-        <div className="space-y-4 border-t border-zinc-100 pt-4 dark:border-zinc-800">
-          <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-400 dark:text-zinc-500">
-            {t("recommended")}
-          </span>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className={LABEL_CLS}>
-              {t("maxAperture")}
-              <span className="flex items-center gap-2">
-                <span className="text-sm text-zinc-500">F</span>
-                {textInput("apertureWide", { ...numeric, "aria-label": draft.zoom ? t("apertureWide") : t("maxAperture") })}
-                {draft.zoom && (
-                  <>
-                    <span className="text-zinc-400">–</span>
-                    {textInput("apertureTele", { ...numeric, "aria-label": t("apertureTele") })}
-                  </>
-                )}
-              </span>
-              {(errors.apertureWide || errors.apertureTele) && (
-                <span className="text-xs font-normal text-red-600 dark:text-red-400">
-                  {t((errors.apertureWide ?? errors.apertureTele)!)}
-                </span>
+          <div className={LABEL_CLS}>
+            {t("maxAperture")}
+            <span className="flex items-center gap-2">
+              <span className="text-sm text-zinc-500">F</span>
+              {textInput("apertureWide", { ...numeric, "aria-label": draft.zoom ? t("apertureWide") : t("maxAperture") })}
+              {draft.zoom && (
+                <>
+                  <span className="text-zinc-400">–</span>
+                  {textInput("apertureTele", { ...numeric, "aria-label": t("apertureTele") })}
+                </>
               )}
-            </div>
-            <div className={LABEL_CLS}>
-              {l("focusFilter")}
-              <SegmentedControl<"auto" | "manual">
-                ariaLabel={l("focusFilter")}
-                value={draft.autofocus === undefined ? undefined : draft.autofocus ? "auto" : "manual"}
-                options={[
-                  { value: "auto", label: { default: l("focusAuto") } },
-                  { value: "manual", label: { default: l("focusManual") } },
-                ]}
-                onChange={(value) => set("autofocus", value === "auto")}
-                layout="equal"
-              />
-            </div>
-            <div className={LABEL_CLS}>
-              {l("featureOis")}
-              <SegmentedControl<"yes" | "no">
-                ariaLabel={l("featureOis")}
-                value={draft.ois === undefined ? undefined : draft.ois ? "yes" : "no"}
-                options={[
-                  { value: "yes", label: { default: t("yes") } },
-                  { value: "no", label: { default: t("no") } },
-                ]}
-                onChange={(value) => set("ois", value === "yes")}
-                layout="equal"
-              />
-            </div>
+            </span>
+            {(errors.apertureWide || errors.apertureTele) && (
+              <span className="text-xs font-normal text-red-600 dark:text-red-400">
+                {t((errors.apertureWide ?? errors.apertureTele)!)}
+              </span>
+            )}
+          </div>
+          <div className={LABEL_CLS}>
+            {l("focusFilter")}
+            <SegmentedControl<"auto" | "manual">
+              ariaLabel={l("focusFilter")}
+              value={draft.autofocus === undefined ? undefined : draft.autofocus ? "auto" : "manual"}
+              options={[
+                { value: "auto", label: { default: l("focusAuto") } },
+                { value: "manual", label: { default: l("focusManual") } },
+              ]}
+              onChange={(value) => set("autofocus", value === "auto")}
+              layout="equal"
+            />
+          </div>
+          <div className={LABEL_CLS}>
+            {l("featureOis")}
+            <SegmentedControl<"yes" | "no">
+              ariaLabel={l("featureOis")}
+              value={draft.ois === undefined ? undefined : draft.ois ? "yes" : "no"}
+              options={[
+                { value: "yes", label: { default: t("yes") } },
+                { value: "no", label: { default: t("no") } },
+              ]}
+              onChange={(value) => set("ois", value === "yes")}
+              layout="equal"
+            />
           </div>
         </div>
 
