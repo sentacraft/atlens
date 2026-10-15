@@ -17,8 +17,8 @@ import {
   missingAgentModelKey,
   AGENT_TEMPERATURE,
 } from "@/lib/ai/model";
-import { systemPrompt } from "@/lib/ai/system-prompt";
-import { EVAL_GEAR_HEADER, evalGear, gearContext, type GearStatus } from "@/lib/ai/gear-context";
+import { gearPrompt, systemPrompt } from "@/lib/ai/system-prompt";
+import { describeGear, EVAL_GEAR_HEADER, evalGear, type GearStatus } from "@/lib/ai/gear-context";
 import { listUserGear } from "@/lib/me/gear-repository";
 import { buildLensTools } from "@/lib/ai/tools";
 import { isOverTokenBudget, recordTokens } from "@/lib/ai/token-budget";
@@ -229,7 +229,7 @@ export async function POST(req: Request) {
     // across users for prompt caching.
     instructions: [
       { role: "system", content: systemPrompt(mount, locale) },
-      { role: "system", content: gearContext(gearStatus, (slug) => (tBrand.has(slug) ? tBrand(slug) : slug)) },
+      { role: "system", content: gearPrompt(describeGear(gearStatus, (slug) => (tBrand.has(slug) ? tBrand(slug) : slug))) },
     ],
     messages: modelMessages,
     tools,

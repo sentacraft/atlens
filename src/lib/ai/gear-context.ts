@@ -13,78 +13,86 @@ export type GearStatus =
   | { kind: "unavailable" }
   | { kind: "account"; gear: GearItem[] };
 
-const SENSOR_LABEL: Record<Mount, string> = { X: "APS-C", G: "中画幅" };
+export interface GearBody {
+  name: string;
+  /** Absent for a body that is no longer in the catalog. */
+  sensor?: Mount;
+  megapixels?: number;
+  ibis?: boolean;
+}
+
+export interface GearLens {
+  name: string;
+  /** The catalog ref Iris links with; absent for a manual entry. */
+  ref?: string;
+  focal?: string;
+  equivalent?: string;
+  aperture?: string;
+  manual: boolean;
+  adapted: boolean;
+  originalMount?: string;
+}
+
+/** The gear facts the prompt renders; language-free so all model-facing wording stays in system-prompt.ts. */
+export type GearSummary =
+  | { known: false; reason: "guest" | "empty" | "unavailable" }
+  | { known: true; bodies: GearBody[]; lenses: GearLens[] };
 
 function equivalentRange(min: number, max: number, mount: Mount): string {
   return focalRangeDisplay(equivalentFocal(min, mount), equivalentFocal(max, mount));
 }
 
-function bodyLine(item: GearItem, brandName: (slug: string) => string): string {
+function describeBody(item: GearItem, brandName: (slug: string) => string): GearBody {
   const body = item.catalogId ? getBodyById(item.catalogId) : undefined;
   if (!body) {
-    return `- ${brandName(item.brand)} ${item.name}`;
+    return { name: `${brandName(item.brand)} ${item.name}` };
   }
-  const traits = [
-    SENSOR_LABEL[body.mount],
-    `${body.megapixels} 百万像素`,
-    body.ibis ? "有机身防抖" : "无机身防抖",
-  ];
-  return `- ${brandName(item.brand)} ${body.name}（${traits.join("，")}）`;
+  return { name: `${brandName(item.brand)} ${body.name}`, sensor: body.mount, megapixels: body.megapixels, ibis: body.ibis };
 }
 
-function lensLine(item: GearItem, brandName: (slug: string) => string): string {
+function describeLens(item: GearItem, brandName: (slug: string) => string): GearLens {
   if (item.manual) {
     const lens = item.manual;
-    const traits = [
-      "手动录入",
-      `焦段 ${focalRangeDisplay(lens.focalMinMm, lens.focalMaxMm)}`,
-      `等效 ${equivalentRange(lens.focalMinMm, lens.focalMaxMm, lens.mount)}`,
-    ];
-    if (lens.maxApertureWide !== undefined) {
-      traits.push(
-        `最大光圈 f/${lens.maxApertureWide}${lens.maxApertureTele !== undefined ? `–${lens.maxApertureTele}` : ""}`,
-      );
-    }
-    if (lens.adapted) {
-      traits.push(lens.originalMount ? `转接使用，原卡口 ${lens.originalMount}` : "转接使用");
-    }
-    return `- ${lens.brand} ${lens.model}（${traits.join("，")}）`;
+    return {
+      name: `${lens.brand} ${lens.model}`,
+      focal: focalRangeDisplay(lens.focalMinMm, lens.focalMaxMm),
+      equivalent: equivalentRange(lens.focalMinMm, lens.focalMaxMm, lens.mount),
+      aperture:
+        lens.maxApertureWide === undefined
+          ? undefined
+          : `f/${lens.maxApertureWide}${lens.maxApertureTele === undefined ? "" : `–${lens.maxApertureTele}`}`,
+      manual: true,
+      adapted: lens.adapted === true,
+      originalMount: lens.originalMount,
+    };
   }
   const lens = item.catalogId ? getLensById(item.catalogId) : undefined;
   if (!lens) {
-    return `- ${brandName(item.brand)} ${item.name}`;
+    return { name: `${brandName(item.brand)} ${item.name}`, manual: false, adapted: false };
   }
-  const traits = [
-    `ref ${lensRef(lens.id)}`,
-    `焦段 ${focalRangeDisplay(lens.focalLengthMin, lens.focalLengthMax)}`,
-    `等效 ${equivalentRange(lens.focalLengthMin, lens.focalLengthMax, lens.mount)}`,
-  ];
-  const aperture = primaryApertureDisplay(lens);
-  if (aperture) {
-    traits.push(`最大光圈 ${aperture}`);
-  }
-  return `- ${brandName(lens.brand)} ${lens.model}（${traits.join("，")}）`;
+  return {
+    name: `${brandName(lens.brand)} ${lens.model}`,
+    ref: lensRef(lens.id),
+    focal: focalRangeDisplay(lens.focalLengthMin, lens.focalLengthMax),
+    equivalent: equivalentRange(lens.focalLengthMin, lens.focalLengthMax, lens.mount),
+    aperture: primaryApertureDisplay(lens),
+    manual: false,
+    adapted: false,
+  };
 }
 
-/** The per-turn context note on the user's gear; the system prompt says how to use it. */
-export function gearContext(status: GearStatus, brandName: (slug: string) => string): string {
-  const heading = "【用户器材】";
-  if (status.kind === "guest") {
-    return `${heading}\n用户未登录，不知道他有哪些器材。`;
+export function describeGear(status: GearStatus, brandName: (slug: string) => string): GearSummary {
+  if (status.kind === "guest" || status.kind === "unavailable") {
+    return { known: false, reason: status.kind };
   }
-  if (status.kind === "unavailable" || status.gear.length === 0) {
-    return `${heading}\n用户已登录，但不知道他有哪些器材${status.kind === "account" ? "（器材档案是空的）" : ""}。`;
+  if (status.gear.length === 0) {
+    return { known: false, reason: "empty" };
   }
-  const bodies = status.gear.filter((item) => item.kind === "body");
-  const lenses = status.gear.filter((item) => item.kind === "lens");
-  const lines = [heading, "用户已登录，器材档案里有："];
-  if (bodies.length > 0) {
-    lines.push("机身：", ...bodies.map((item) => bodyLine(item, brandName)));
-  }
-  if (lenses.length > 0) {
-    lines.push("镜头：", ...lenses.map((item) => lensLine(item, brandName)));
-  }
-  return lines.join("\n");
+  return {
+    known: true,
+    bodies: status.gear.filter((item) => item.kind === "body").map((item) => describeBody(item, brandName)),
+    lenses: status.gear.filter((item) => item.kind === "lens").map((item) => describeLens(item, brandName)),
+  };
 }
 
 /** Development-only request header the eval suite uses to give a turn a gear profile. */

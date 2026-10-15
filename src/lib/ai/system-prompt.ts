@@ -1,3 +1,4 @@
+import type { GearBody, GearLens, GearSummary } from "@/lib/ai/gear-context";
 import type { Mount } from "@/lib/types";
 
 // This prompt drifts, so edits follow these rules: say which section a new paragraph joins
@@ -43,4 +44,47 @@ export function systemPrompt(mount: Mount, locale: string): string {
 不要说出工具没返回的规格。价格是历史采样，不是实时报价；你可以引用某只镜头的价格或两只之间的差价，但要说明这是参考价，并引导用户前往镜头详情页确认最新的售价。
 
 用${language}回复；用户换用别的语言，就跟着换。`;
+}
+
+const SENSOR_LABEL: Record<Mount, string> = { X: "APS-C", G: "中画幅" };
+
+const UNKNOWN_GEAR = {
+  guest: "用户未登录，不知道他有哪些器材。",
+  empty: "用户已登录，但器材档案是空的，不知道他有哪些器材。",
+  unavailable: "暂时读不到用户的器材档案，不知道他有哪些器材。",
+} as const;
+
+function bodyLine(body: GearBody): string {
+  if (!body.sensor) {
+    return `- ${body.name}`;
+  }
+  const traits = [SENSOR_LABEL[body.sensor], `${body.megapixels} 百万像素`, body.ibis ? "有机身防抖" : "无机身防抖"];
+  return `- ${body.name}（${traits.join("，")}）`;
+}
+
+function lensLine(lens: GearLens): string {
+  const traits = [
+    lens.manual ? "手动录入" : undefined,
+    lens.ref ? `ref ${lens.ref}` : undefined,
+    lens.focal ? `焦段 ${lens.focal}` : undefined,
+    lens.equivalent ? `等效 ${lens.equivalent}` : undefined,
+    lens.aperture ? `最大光圈 ${lens.aperture}` : undefined,
+    lens.adapted ? (lens.originalMount ? `转接使用，原卡口 ${lens.originalMount}` : "转接使用") : undefined,
+  ].filter(Boolean);
+  return traits.length > 0 ? `- ${lens.name}（${traits.join("，")}）` : `- ${lens.name}`;
+}
+
+/** The per-turn 【用户器材】 note, sent after systemPrompt as its own system message. */
+export function gearPrompt(gear: GearSummary): string {
+  if (!gear.known) {
+    return `【用户器材】\n${UNKNOWN_GEAR[gear.reason]}`;
+  }
+  const lines = ["【用户器材】", "用户已登录，器材档案里有："];
+  if (gear.bodies.length > 0) {
+    lines.push("机身：", ...gear.bodies.map(bodyLine));
+  }
+  if (gear.lenses.length > 0) {
+    lines.push("镜头：", ...gear.lenses.map(lensLine));
+  }
+  return lines.join("\n");
 }

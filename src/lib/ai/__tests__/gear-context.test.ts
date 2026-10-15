@@ -1,17 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { evalGear, gearContext } from "../gear-context";
+import { describeGear, evalGear, type GearStatus } from "../gear-context";
+import { gearPrompt } from "../system-prompt";
 import { lensRef } from "../lens-ref";
 import type { GearItem } from "@/lib/me/gear-schema";
 
 const brandName = (slug: string) => (slug === "fujifilm" ? "富士" : slug);
+const gearContext = (status: GearStatus) => gearPrompt(describeGear(status, brandName));
 
-describe("gearContext", () => {
+describe("gearPrompt(describeGear(...))", () => {
   it("tells Iris a guest's gear is unknown", () => {
-    expect(gearContext({ kind: "guest" }, brandName)).toBe("【用户器材】\n用户未登录，不知道他有哪些器材。");
+    expect(gearContext({ kind: "guest" })).toBe("【用户器材】\n用户未登录，不知道他有哪些器材。");
   });
 
   it("tells Iris an empty profile leaves the gear unknown", () => {
-    expect(gearContext({ kind: "account", gear: [] }, brandName)).toContain("不知道他有哪些器材（器材档案是空的）");
+    expect(gearContext({ kind: "account", gear: [] })).toContain("器材档案是空的");
   });
 
   it("lists bodies with sensor and stabilisation, and lenses with refs and equivalent focal lengths", () => {
@@ -19,7 +21,7 @@ describe("gearContext", () => {
       JSON.stringify({ bodies: ["fujifilm-x-t5"], lenses: ["fujifilm-xf-18-55mmf28-4-r-lm-ois-x"] }),
     )!;
 
-    expect(gearContext({ kind: "account", gear }, brandName)).toBe(
+    expect(gearContext({ kind: "account", gear })).toBe(
       [
         "【用户器材】",
         "用户已登录，器材档案里有：",
@@ -42,7 +44,7 @@ describe("gearContext", () => {
       createdAt: 1,
     };
 
-    expect(gearContext({ kind: "account", gear: [manual] }, brandName)).toContain(
+    expect(gearContext({ kind: "account", gear: [manual] })).toContain(
       "- Helios 44-2 58mm F2（手动录入，焦段 58mm，等效 87mm，最大光圈 f/2，转接使用，原卡口 M42）",
     );
   });
