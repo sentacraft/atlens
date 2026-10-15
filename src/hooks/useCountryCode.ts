@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 
-const COOKIE_NAME = "xg_country";
+const COOKIE_NAME = "atlens_country";
 const DEFAULT_COUNTRY = "US";
 
 function getSnapshot(): string {

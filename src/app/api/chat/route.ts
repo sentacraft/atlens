@@ -80,7 +80,7 @@ export async function POST(req: Request) {
   const ip = clientIp(req);
   const cookieHeader = req.headers.get("cookie");
   const sid = parseSid(cookieHeader) ?? "";
-  // xg_internal marks a turn internal but must never grant the rate-limit bypass.
+  // atlens_internal marks a turn internal but must never grant the rate-limit bypass.
   const bypassed = isBypassed(req);
   const internal = parseInternal(cookieHeader) || bypassed;
   let rateKv: KVNamespace | undefined;
