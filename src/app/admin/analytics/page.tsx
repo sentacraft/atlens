@@ -771,7 +771,7 @@ export default async function AnalyticsDashboardPage() {
 
         <Card title="Detail · avg dwell seconds (top by views)">
           <p className="text-sm text-zinc-400 dark:text-zinc-500">
-            Not collected. SPA navigation within X-Glass doesn&rsquo;t fire{" "}
+            Not collected. SPA navigation within Atlens doesn&rsquo;t fire{" "}
             <code>visibilitychange</code> or <code>pagehide</code>, so the
             previous dwell timing was unreliable. Pending a redesign that
             also captures client-side route exits.

@@ -5,7 +5,7 @@ import { track } from "@/lib/analytics/analytics";
 
 const VALID_REFS = new Set(["pwa", "pwa-browse", "pwa-compare"]);
 
-const STORAGE_KEY = "xg_pwa_launch_fired";
+const STORAGE_KEY = "atlens_pwa_launch_fired";
 
 export default function PwaLaunchTelemetry() {
   useEffect(() => {

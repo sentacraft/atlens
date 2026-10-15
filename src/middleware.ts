@@ -6,7 +6,7 @@ import { INTERNAL_COOKIE } from "@/lib/analytics/session";
 import { LOCALE_PREFERENCE_COOKIE, savedLocaleRedirectPath } from "@/lib/locale-preference";
 
 // Internal param: keep the Obsidian doc "Internal params & cookies" in sync.
-const COUNTRY_COOKIE = "xg_country";
+const COUNTRY_COOKIE = "atlens_country";
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
 const i18nMiddleware = createMiddleware(routing);
