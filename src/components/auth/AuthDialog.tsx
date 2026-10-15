@@ -159,16 +159,13 @@ export default function AuthDialog({
           </DialogClose>
           <DialogTitle>{reason ? t(REASON_TITLE_KEY[reason]) : t("title")}</DialogTitle>
           {reason ? (
-            <DialogDescription render={<div />} className="flex flex-col gap-3 pt-2">
-              <ul className="flex flex-col gap-2">
-                {BENEFIT_KEYS[reason].map((key) => (
-                  <li key={key} className="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-900 dark:text-zinc-100" strokeWidth={2.5} />
-                    {t(key)}
-                  </li>
-                ))}
-              </ul>
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">{t("freeNote")}</span>
+            <DialogDescription render={<ul />} className="flex flex-col gap-2 pt-2">
+              {BENEFIT_KEYS[reason].map((key) => (
+                <li key={key} className="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-900 dark:text-zinc-100" strokeWidth={2.5} />
+                  {t(key)}
+                </li>
+              ))}
             </DialogDescription>
           ) : (
             <DialogDescription>{t("description")}</DialogDescription>

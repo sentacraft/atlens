@@ -64,8 +64,7 @@
     "reasonGearTitle": "Sign in to record your gear",
     "benefitFavorites": "Save lenses you're interested in and come back to compare them",
     "benefitGear": "Record your bodies and lenses and see which focal lengths you cover and which you're missing",
-    "benefitSync": "Favorites, gear, settings and Ask Iris chats stay with your account on every device",
-    "freeNote": "Sign in with Google or email. It's free."
+    "benefitSync": "Favorites, gear, settings and Ask Iris chats stay with your account on every device"
   },
   "AuthEmail": {
     "signInSubject": "Your Atlens sign-in code",

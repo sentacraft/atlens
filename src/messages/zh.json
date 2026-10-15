@@ -64,8 +64,7 @@
     "reasonGearTitle": "登录后记录你的器材",
     "benefitFavorites": "收藏感兴趣的镜头，随时回来比较",
     "benefitGear": "记录你的机身和镜头，看清焦段覆盖了哪里、还缺哪里",
-    "benefitSync": "收藏、器材、设置和 Ask Iris 对话都存在账号里，换台设备也能接着用",
-    "freeNote": "用 Google 或邮箱登录，免费"
+    "benefitSync": "收藏、器材、设置和 Ask Iris 对话都存在账号里，换台设备也能接着用"
   },
   "AuthEmail": {
     "signInSubject": "你的 Atlens 登录验证码",
