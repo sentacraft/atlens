@@ -9,7 +9,7 @@ const gearContext = (status: GearStatus, cardAvailable = false) => gearPrompt(de
 
 describe("gearPrompt(describeGear(...))", () => {
   it("tells Iris a guest's gear is unknown, and how to ask for it", () => {
-    expect(gearContext({ kind: "guest" }, true)).toContain("只有当问题本身离不开他已有的器材");
+    expect(gearContext({ kind: "guest" }, true)).toContain("只有当回答明显取决于他已有什么时");
     expect(gearContext({ kind: "account", gear: [] }, true)).toContain("要推荐镜头时");
     expect(gearContext({ kind: "guest" })).toContain("不要再问他的器材");
   });

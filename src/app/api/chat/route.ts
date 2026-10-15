@@ -169,8 +169,6 @@ export async function POST(req: Request) {
     return chatErrorResponse("unavailable", 400);
   }
   const { history, userMessage, historyChanged } = turn;
-  // The gear card is offered only while the gear is unknown and the user has not turned it
-  // down in this conversation.
   const offerGearCard =
     !(gearStatus.kind === "account" && gearStatus.gear.length > 0) && !gearRequestDeclined(history);
   const messageContext = traceMessageContext(history);

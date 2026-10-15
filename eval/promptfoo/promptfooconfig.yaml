@@ -602,7 +602,8 @@ tests:
         value: >-
           Iris does not know what this user owns; a form asked for their gear and the user
           declined to fill it in. The reply must not assume a particular body or lens
-          collection, and must not keep pressing the user for their gear.
+          collection, and must not keep pressing the user for their gear. Iris only covers
+          Fujifilm X mount, so taking an X-mount body for granted is not an assumption.
 
   # Gear: a recommendation request from a guest who named only some of their gear still
   # gets the card, so they can complete it.
@@ -661,3 +662,44 @@ tests:
         metric: gear
         value: "context.metadata.gearCardShown"
 
+  # Gear: a guest's budget-bound need has a good general answer, so it is answered directly.
+  - description: gear-guest-budget-travel
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "预算五千左右，想要一支出去旅行用的镜头，推荐一下？"
+    assert:
+      - type: javascript
+        metric: gear
+        value: "!context.metadata.gearCardShown && context.metadata.picks.length > 0"
+
+  # Gear: someone without a camera yet has no gear to ask about.
+  - description: gear-first-lens-guest
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "还没买相机，打算入富士，第一支镜头买什么好？"
+    assert:
+      - type: javascript
+        metric: gear
+        value: "!context.metadata.gearCardShown"
+
+  # Gear: a signed-in user with an empty profile is not asked for gear they say they don't have yet.
+  - description: gear-first-lens-empty-account
+    vars:
+      mount: X
+      locale: zh
+      gear:
+        bodies: []
+        lenses: []
+      dialog:
+        turns:
+          - "还没买相机，打算入富士，第一支镜头买什么好？"
+    assert:
+      - type: javascript
+        metric: gear
+        value: "!context.metadata.gearCardShown"

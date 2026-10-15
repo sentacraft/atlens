@@ -26,15 +26,17 @@ export const gearRequestOutputSchema = z.object({
 export type GearRequestInput = z.infer<typeof gearRequestInputSchema>;
 export type GearRequestOutput = z.infer<typeof gearRequestOutputSchema>;
 
-/** True once the user skipped the gear card or chose not to sign in during this conversation. */
+/**
+ * True once a gear card in this conversation ended without saving: skipped, not signed in, or
+ * typed past without an answer.
+ */
 export function gearRequestDeclined(messages: UIMessage[]): boolean {
   return messages.some((message) =>
     message.parts.some(
       (part) =>
         isToolUIPart(part) &&
         getToolName(part) === ASK_FOR_GEAR &&
-        part.state === "output-available" &&
-        (part.output as GearRequestOutput | undefined)?.outcome !== "saved",
+        !(part.state === "output-available" && (part.output as GearRequestOutput | undefined)?.outcome === "saved"),
     ),
   );
 }
