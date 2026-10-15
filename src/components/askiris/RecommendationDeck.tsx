@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Weight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
 import { mountToUrlSegment } from "@/lib/mount";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import { weightDisplay } from "@/lib/lens/format";
+import { formatPrice } from "@/lib/lens/pricing";
 import Markdown from "@/components/askiris/Markdown";
 import type { Recommendation } from "@/lib/ai/recall";
 
@@ -28,21 +29,12 @@ export default function RecommendationDeck({
 const REASON_CLS =
   "text-muted-foreground text-xs leading-relaxed [&_p]:m-0 [&_strong]:text-foreground [&_strong]:font-medium";
 
-function priceParts(
-  price: NonNullable<Recommendation["price"]>,
-  locale: string,
-): { symbol: string; value: string } {
-  const symbol = price.currency === "CNY" ? "¥" : "$";
-  const used = price.condition === "used" ? (locale === "zh" ? " 二手" : " used") : "";
-  return { symbol, value: `${price.amount.toLocaleString()}${used}` };
-}
-
 // EVAL MIRROR: `formatCard` in eval/promptfoo/provider.mjs hand-writes what the judges read
 // for a card.
 function RecommendationCard({ rec }: { rec: Recommendation }) {
-  const locale = useLocale();
+  const tPricing = useTranslations("Pricing");
   const weight = rec.weightG != null ? weightDisplay(rec.weightG, "g") : null;
-  const price = rec.price ? priceParts(rec.price, locale) : null;
+  const price = rec.price ? formatPrice(tPricing, rec.price.amount, rec.price.currency) : null;
 
   return (
     <Link
@@ -75,8 +67,10 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
             <div className="text-foreground flex flex-wrap items-center gap-x-2 text-xs font-medium">
               {price ? (
                 <span className="inline-flex items-baseline gap-1">
-                  <span className="text-muted-foreground">{price.symbol}</span>
-                  {price.value}
+                  {price}
+                  {rec.price?.condition === "used" && (
+                    <span className="text-muted-foreground">{tPricing("conditionUsed")}</span>
+                  )}
                 </span>
               ) : null}
               {price && weight ? <span className="text-muted-foreground">·</span> : null}

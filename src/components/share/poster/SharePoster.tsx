@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { TriangleAlert } from "lucide-react";
 import { classifyFocusMotor, leadingValue, type FocusMotorClass } from "@/lib/lens/lens";
 import { SPEC_NA } from "@/lib/types";
-import { pickPriceEntry, formatPrice, formatSampledAt } from "@/lib/lens/pricing";
+import { pickPriceEntry, formatPrice, sampledDate, type PricingTranslator } from "@/lib/lens/pricing";
 import { getLensImageUrl } from "@/lib/lens/image";
 import {
   filterSizeDisplay,
@@ -69,8 +69,7 @@ export interface PosterLabels {
   tagProbe: string;
   priceLabel: string;
   usedBadge: string;
-  cnyAmount: string;
-  sampledAt: string;
+  pricing: PricingTranslator;
   disclaimerWarn: string;
   na: string;
   locale: string;
@@ -559,13 +558,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                   </div>
                 );
               }
-              const priceDisplay = formatPrice(
-                sel.entry.price,
-                sel.entry.currency,
-                labels.locale,
-                labels.cnyAmount,
-              );
-              const sampledDisplay = formatSampledAt(sel.entry.sampledAt, labels.locale);
+              const priceDisplay = formatPrice(labels.pricing, sel.entry.price, sel.entry.currency);
               return (
                 <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
                   <span data-redact-hook="price" className={cn("font-semibold tabular-nums text-zinc-700 leading-none", statSize)}>
@@ -575,7 +568,7 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
                     {sel.entry.source}
                   </span>
                   <span className="tabular-nums text-zinc-400 leading-tight" style={{ fontSize: 9 }}>
-                    {labels.sampledAt.replace("{date}", sampledDisplay)}
+                    {labels.pricing("sampledAt", { date: sampledDate(sel.entry.sampledAt) })}
                   </span>
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d97706", fontSize: 9, fontWeight: 600 }}>
                     <TriangleAlert size={9} />

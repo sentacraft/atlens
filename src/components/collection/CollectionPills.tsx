@@ -1,4 +1,5 @@
 import { Link } from "@/i18n/navigation";
+import { localized } from "@/i18n/localized";
 import type { LensCollection } from "@/lib/collections";
 
 interface CollectionPillsProps {
@@ -44,7 +45,7 @@ export default function CollectionPills({
             className="group inline-flex items-center gap-2 rounded-full border border-zinc-200 px-3 py-1.5 text-sm transition-colors hover:border-zinc-900 hover:bg-zinc-900 hover:text-white dark:border-zinc-700 dark:hover:border-zinc-100 dark:hover:bg-zinc-100 dark:hover:text-zinc-900"
           >
             <span className="font-normal text-zinc-900 group-hover:text-white dark:text-zinc-100 dark:group-hover:text-zinc-900">
-              {locale === "zh" ? c.title.zh : c.title.en}
+              {localized(c.title, locale)}
             </span>
             <span className="text-xs text-zinc-400 group-hover:text-zinc-400 dark:text-zinc-500 dark:group-hover:text-zinc-500">
               {lensCounts[c.slug] ?? 0}

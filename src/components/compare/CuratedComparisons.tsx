@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { localized } from "@/i18n/localized";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -15,7 +16,6 @@ import { ScrollChevron } from "@/components/ui/scroll-chevron";
 export function PresetCard({ preset, allLenses, onSelect }: { preset: CuratedPreset; allLenses: Lens[]; onSelect?: () => void }) {
   const router = useRouter();
   const locale = useLocale();
-  const lang = locale === "zh" ? "zh" : "en";
   const mount = useEffectiveMount();
   const tBrand = useTranslations("Brands");
   const tCompare = useTranslations("Compare");
@@ -35,10 +35,10 @@ export function PresetCard({ preset, allLenses, onSelect }: { preset: CuratedPre
       className="group text-left w-full flex flex-col rounded-xl border border-zinc-200 bg-white px-4 py-3.5 transition-all hover:-translate-y-0.5 hover:border-zinc-400 hover:bg-zinc-50 hover:shadow-sm dark:border-zinc-700 dark:bg-zinc-950 dark:hover:border-zinc-500 dark:hover:bg-zinc-900"
     >
       <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
-        {preset.title[lang]}
+        {localized(preset.title, locale)}
       </p>
       <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 leading-snug">
-        {preset.subtitle[lang]}
+        {localized(preset.subtitle, locale)}
       </p>
 
       <div className="mt-2.5 flex flex-wrap gap-1">
