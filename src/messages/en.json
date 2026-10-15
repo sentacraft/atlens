@@ -570,6 +570,7 @@
     "usedBadge": "Used"
   },
   "About": {
+    "authorName": "SentaCraft",
     "pageTitle": "About",
     "rebrandNote": "Atlens was previously known as X-Glass — same project, same author, just a simpler, more readable name.",
     "metaDescription": "The story behind Atlens, who maintains it, and which Fujifilm lenses are covered — X-mount first, with G-mount also being added. Built and maintained solo by an independent engineer, with open-source web code.",

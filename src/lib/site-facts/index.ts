@@ -2,9 +2,9 @@ import "server-only";
 import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
 import { routing } from "@/i18n/routing";
-import { getLensesByMount, meta } from "@/lib/lens/data";
+import { getLensesByMount, lensCountsByBrand, meta } from "@/lib/lens/data";
 import { MAX_COMPARE } from "@/lib/lens/lens";
-import { AFFILIATE_HOSTS } from "@/lib/purchase/links";
+import { isPurchaseLocale } from "@/lib/purchase/links";
 import { MOUNTS, type Lens, type LensPriceEntry } from "@/lib/types";
 import { HANDWRITTEN_FACTS } from "@/lib/site-facts/handwritten";
 
@@ -13,7 +13,7 @@ export type SiteTopic = (typeof SITE_TOPICS)[number];
 
 type Messages = typeof en;
 const MESSAGES: Record<string, Messages> = { en, zh };
-const LANGUAGE_NAMES: Record<string, string> = { en: "English", zh: "Simplified Chinese" };
+const languageName = (code: string) => new Intl.DisplayNames(["en"], { type: "language" }).of(code) ?? code;
 
 function list(items: string[]): string {
   return items.join(", ");
@@ -22,13 +22,10 @@ function list(items: string[]): string {
 function coverage(locale: string): string[] {
   const brands = MESSAGES[locale].Brands as Record<string, string>;
   const perMount = MOUNTS.map((mount) => {
-    const lenses = getLensesByMount(mount, locale);
-    const counts = new Map<string, number>();
-    for (const lens of lenses) {
-      counts.set(lens.brand, (counts.get(lens.brand) ?? 0) + 1);
-    }
-    const byBrand = [...counts].sort((a, b) => b[1] - a[1]).map(([brand, n]) => `${brands[brand] ?? brand} ${n}`);
-    return `${mount} mount: ${lenses.length} lenses from ${counts.size} brands (${list(byBrand)}).`;
+    const counts = Object.entries(lensCountsByBrand(mount, locale)).sort((a, b) => b[1] - a[1]);
+    const total = counts.reduce((sum, [, n]) => sum + n, 0);
+    const byBrand = counts.map(([brand, n]) => `${brands[brand] ?? brand} ${n}`);
+    return `${mount} mount: ${total} lenses from ${counts.length} brands (${list(byBrand)}).`;
   });
   return [...perMount, `The lens data was last updated on ${meta.lastUpdated.slice(0, 10)}.`];
 }
@@ -53,12 +50,10 @@ function priceSources(): string[] {
 }
 
 function affiliates(): string[] {
-  const stores = new Set(
-    AFFILIATE_HOSTS.map((host) => (host.startsWith("amazon.") ? "Amazon" : host.startsWith("ebay.") ? "eBay" : host)),
+  return routing.locales.map(
+    (code) =>
+      `Store links on the ${languageName(code)} site: ${isPurchaseLocale(code) ? en.Purchase.disclosureDetail : en.Purchase.disclosureNoAffiliate}`,
   );
-  return [
-    `On the English site, links to these stores are affiliate links, so Atlens earns a commission when someone buys through them: ${list([...stores])}. The Chinese site has no affiliate links.`,
-  ];
 }
 
 function accountFeatures(locale: string): string[] {
@@ -84,7 +79,7 @@ function features(locale: string): string[] {
       named(m.Nav.feedback, "report a data problem or send an idea"),
       named(m.Nav.getApp, "install Atlens as a web app"),
     ])}.`,
-    `The site is available in ${list(routing.locales.map((code) => LANGUAGE_NAMES[code] ?? code))}.`,
+    `The site is available in ${list(routing.locales.map(languageName))}.`,
   ];
 }
 
@@ -102,7 +97,9 @@ export function siteFacts(topics: SiteTopic[], locale: string): { topic: SiteTop
   return [...new Set(topics)].map((topic) => ({
     topic,
     facts: [
-      ...HANDWRITTEN_FACTS.filter((fact) => fact.topic === topic).map((fact) => fact.text),
+      ...HANDWRITTEN_FACTS.filter((fact) => fact.topic === topic).map((fact) =>
+        fact.text.replace("{author}", MESSAGES[messagesLocale].About.authorName),
+      ),
       ...(GENERATED[topic]?.(messagesLocale) ?? []),
     ],
   }));

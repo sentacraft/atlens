@@ -83,12 +83,6 @@ const CHANNEL_LABELS: Record<PurchaseChannelType, string> = {
   taobao: "淘宝",
 };
 
-/** Every store whose links carry an affiliate tag. */
-export const AFFILIATE_HOSTS: string[] = [
-  ...Object.keys(AFFILIATE_PARAMS),
-  ...Object.values(EBAY_MARKETS).map((market) => market.domain),
-];
-
 export interface PurchaseLink {
   channel: PurchaseChannelType;
   label: string;

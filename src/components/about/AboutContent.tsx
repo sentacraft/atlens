@@ -6,7 +6,7 @@ import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import AnthropicLogo from "@/components/logos/AnthropicLogo";
 import GeminiLogo from "@/components/logos/GeminiLogo";
 import GitHubMark from "@/components/logos/GitHubMark";
-import { getLensesByMount } from "@/lib/lens/data";
+import { lensCountsByBrand } from "@/lib/lens/data";
 import coverageMeta from "@/data/coverage-meta.json";
 import AckCard from "@/components/about/AckCard";
 import { isPurchaseLocale } from "@/lib/purchase/links";
@@ -140,12 +140,8 @@ export default async function AboutContent() {
     getLocale(),
   ]);
 
-  const xCounts = getLensesByMount("X", locale).reduce<Record<string, number>>(
-    (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
-  );
-  const gCounts = getLensesByMount("G", locale).reduce<Record<string, number>>(
-    (acc, l) => { acc[l.brand] = (acc[l.brand] ?? 0) + 1; return acc; }, {}
-  );
+  const xCounts = lensCountsByBrand("X", locale);
+  const gCounts = lensCountsByBrand("G", locale);
   const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage","laowa","meike","sirui","voigtlander","thypoch","zeiss"];
   const G_BRANDS = ["fujifilm", "laowa"];
 

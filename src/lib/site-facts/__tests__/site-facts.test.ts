@@ -22,6 +22,11 @@ describe("siteFacts", () => {
     expect(siteFacts(["privacy", "privacy", "data"], "en").map((group) => group.topic)).toEqual(["privacy", "data"]);
   });
 
+  it("names the author as the user's locale writes it", () => {
+    expect(factsFor("project", "zh")).toContain(zh.About.authorName);
+    expect(factsFor("project", "en")).not.toMatch(/[\u4e00-\u9fff]/);
+  });
+
   it("counts coverage from the lens data", () => {
     expect(factsFor("data", "en")).toContain(`X mount: ${getLensesByMount("X", "en").length} lenses`);
   });
@@ -33,7 +38,7 @@ describe("siteFacts", () => {
   });
 
   it("lists affiliate stores and price sources from code and data", () => {
-    expect(factsFor("business", "en")).toMatch(/through them: Amazon, .*7artisans.store/);
+    expect(factsFor("business", "en")).toContain(`English site: ${en.Purchase.disclosureDetail}`);
     expect(factsFor("prices", "en")).toMatch(/used from .*eBay/);
   });
 });

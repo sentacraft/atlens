@@ -11,13 +11,13 @@ export interface SiteFact {
 /**
  * Facts only the author can decide: policies, commitments, and who runs the site. Iris tells any
  * visitor everything here, so only public facts belong. Facts that code or data already hold are
- * generated in index.ts instead.
+ * generated in index.ts instead. `{author}` becomes the author's name as the user's locale writes it.
  */
 export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "author",
     topic: "project",
-    text: "Atlens is built and maintained by one independent developer, SentaCraft (仙塔匠). Their location is not public and there is no personal homepage; the GitHub link is at the top right of the site.",
+    text: "Atlens is built and maintained by one independent developer, {author}. Their location is not public and there is no personal homepage; the GitHub link is at the top right of the site.",
   },
   {
     id: "former-name",
