@@ -3,7 +3,6 @@
 import { ChevronDown, Loader2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Dialog, DialogPortal, DialogBackdrop, DialogRawPopup } from "@/components/ui/dialog";
-import { Z } from "@/config/ui";
 import type { LightboxState } from "@/hooks/useLightbox";
 
 type LightboxDialogProps = Omit<LightboxState, "handleOpen" | "scrollRef"> & {
@@ -36,7 +35,7 @@ export function LightboxDialog({
       <DialogPortal>
         <DialogBackdrop className="bg-zinc-950/75 transition-[background-color] duration-150" />
         <DialogRawPopup
-          className={`fixed inset-0 ${Z.dialog} flex items-center justify-center border-0 bg-transparent p-0 shadow-none duration-100`}
+          className={`fixed inset-0 flex items-center justify-center border-0 bg-transparent p-0 shadow-none duration-100`}
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               handleClose();

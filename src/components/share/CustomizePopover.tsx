@@ -5,7 +5,6 @@ import { SlidersHorizontal } from "lucide-react";
 import { Popover } from "@base-ui/react/popover";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { Z } from "@/config/ui";
 
 interface CustomizePopoverProps {
   title: string;
@@ -42,7 +41,7 @@ export function CustomizePopover({
         <SlidersHorizontal className="size-4" />
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Positioner side="top" align="start" sideOffset={8} className={Z.overlay}>
+        <Popover.Positioner side="top" align="start" sideOffset={8}>
           <Popover.Popup className="w-72 origin-(--transform-origin) rounded-xl border border-zinc-200 bg-white p-3 shadow-lg duration-100 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:border-zinc-700 dark:bg-zinc-900">
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-1">

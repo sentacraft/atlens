@@ -180,3 +180,18 @@ test.describe("FeedbackDialog — validation", () => {
     expect(getLastBody()).toBeNull();
   });
 });
+
+// Regression: the field picker portals to <body>; with z-indexed dialogs it either sat under the
+// dialog or had to be portaled into it. Popups now stack by open order above an isolated page root.
+test("picks an issue type from the select inside the dialog", async ({ page }) => {
+  await page.goto(LENS_URL);
+  await page.getByRole("button", { name: "Report an issue" }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+
+  await dialog.getByRole("combobox").click();
+  await page.getByRole("option", { name: "Other", exact: true }).click();
+
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("combobox")).toContainText("Other");
+});

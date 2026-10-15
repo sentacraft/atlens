@@ -5,7 +5,6 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { Drawer as DrawerPrimitive } from "@base-ui/react/drawer";
 
 import { cn } from "@/lib/utils";
-import { Z } from "@/config/ui";
 import { useBreakpoint } from "@/hooks/useViewport";
 
 const DialogModeContext = React.createContext<"dialog" | "drawer">("dialog");
@@ -55,7 +54,7 @@ function DialogBackdrop({ className }: { className?: string }) {
     <DrawerPrimitive.Backdrop
       data-slot="dialog-backdrop"
       className={cn(
-        `fixed inset-0 ${Z.dialog} bg-zinc-950/55 backdrop-blur-sm transition-colors duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0`,
+        `fixed inset-0 bg-zinc-950/55 backdrop-blur-sm transition-colors duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0`,
         className
       )}
     />
@@ -66,7 +65,7 @@ function DialogBackdrop({ className }: { className?: string }) {
       nativeButton={false}
       data-slot="dialog-backdrop"
       className={cn(
-        `fixed inset-0 ${Z.dialog} bg-zinc-950/55 backdrop-blur-sm cursor-default outline-none`,
+        `fixed inset-0 bg-zinc-950/55 backdrop-blur-sm cursor-default outline-none`,
         className
       )}
       aria-label="Close"
@@ -107,7 +106,7 @@ function DialogPopup({ className, children, ...props }: DialogRawPopupProps) {
         <DialogRawPopup
           className={cn(
             `flex max-h-[85svh] flex-col border border-b-0 border-zinc-200 bg-white p-0 pb-[var(--safe-inset-bottom)] shadow-2xl duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:border-zinc-800 dark:bg-zinc-950`,
-            `fixed inset-x-0 bottom-0 ${Z.dialog}`,
+            "fixed inset-x-0 bottom-0",
             "transition-[transform,opacity] data-[swipe-dismiss]:!transition-none data-[nested-drawer-open]:scale-[0.94] data-[nested-drawer-open]:opacity-40",
             className,
             "rounded-t-2xl rounded-b-none"
@@ -122,7 +121,7 @@ function DialogPopup({ className, children, ...props }: DialogRawPopupProps) {
       ) : (
         <DialogRawPopup
           className={cn(
-            `fixed ${Z.dialog} rounded-2xl border border-zinc-200 bg-white p-0 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950`,
+            `fixed rounded-2xl border border-zinc-200 bg-white p-0 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950`,
             "left-1/2 top-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2",
             "origin-[var(--transform-origin)] duration-200 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-90 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-90",
             className
