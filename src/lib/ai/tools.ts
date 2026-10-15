@@ -270,12 +270,11 @@ export function buildLensTools(
     // A client tool: the browser shows the gear card and returns what the user did.
     [ASK_FOR_GEAR]: tool({
       description:
-        "Show the user a card to add the camera bodies and lenses they own. Call it only as the " +
-        "user-gear note describes: the question cannot be answered without their gear and they " +
-        "have not described it. If they mentioned a lens or body in passing, list it so the card " +
-        "can prefill it. The turn then waits for the result: saved " +
+        "Show the user a card to add the camera bodies and lenses they own, before recommending, " +
+        "as the user-gear note describes. List any lens or body they mentioned so the card can " +
+        "prefill it. The turn then waits for the result: saved " +
         "(their gear is now in the user-gear note), skipped, or not_signed_in. " +
-        "If skipped or not_signed_in, ask about their gear in plain text instead.",
+        "If skipped or not_signed_in, go on and recommend without their gear, and do not mention the card or that they skipped it.",
       inputSchema: gearRequestInputSchema,
       outputSchema: gearRequestOutputSchema,
     }),

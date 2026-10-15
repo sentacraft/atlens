@@ -595,12 +595,69 @@ tests:
     assert:
       - type: javascript # the gear card is how Iris asks about gear
         metric: gear
-        value: "context.metadata.toolsCalled.includes('askForGear')"
+        value: "context.metadata.gearCardShown"
       - type: llm-rubric
         metric: gear
         provider: *behavior_grader
         value: >-
-          Iris does not know what this user owns. The reply must not assume a particular
-          body or lens collection. (A form for entering their gear is shown separately and
-          is not part of this text.)
+          Iris does not know what this user owns; a form asked for their gear and the user
+          declined to fill it in. The reply must not assume a particular body or lens
+          collection, and must not keep pressing the user for their gear.
+
+  # Gear: a recommendation request from a guest who named only some of their gear still
+  # gets the card, so they can complete it.
+  - description: gear-partial-guest
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "我有一支 XF 18-55，想再买一支拍人像的，推荐一下？"
+    assert:
+      - type: javascript
+        metric: gear
+        value: "context.metadata.gearCardShown"
+
+  # Gear: a spec question never asks for gear.
+  - description: gear-not-for-specs
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "XF 56mm F1.2 R WR 的最近对焦距离是多少？"
+    assert:
+      - type: javascript
+        metric: gear
+        value: "!context.metadata.gearCardShown"
+
+  # Gear: a guest asking for recommendations by need is answered directly, not stopped at a card.
+  - description: gear-guest-plain-recommend
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "推荐几支适合拍人像的定焦镜头"
+    assert:
+      - type: javascript
+        metric: gear
+        value: "!context.metadata.gearCardShown && context.metadata.picks.length > 0"
+
+  # Gear: a signed-in user with an empty profile gets the card on any recommendation request.
+  - description: gear-empty-account-recommend
+    vars:
+      mount: X
+      locale: zh
+      gear:
+        bodies: []
+        lenses: []
+      dialog:
+        turns:
+          - "推荐几支适合拍人像的定焦镜头"
+    assert:
+      - type: javascript
+        metric: gear
+        value: "context.metadata.gearCardShown"
 
