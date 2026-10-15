@@ -275,7 +275,7 @@ export function buildLensTools(
         "business: pricing, costs, support, ads, affiliate links, independence from manufacturers. " +
         "data: where specs come from, which lenses are included, coverage counts, update cadence, corrections. " +
         "prices: where prices come from and how current they are. " +
-        "askIris: the AI behind Iris, training, usage limits, accuracy. " +
+        "askIris: what Iris can and cannot do, the AI behind it, training, usage limits, accuracy. " +
         "account: why and how to sign in, conversation storage, deleting an account. " +
         "privacy: cookies, analytics, where data is stored. " +
         "usage: main features and their names, languages, the app, mounts. " +

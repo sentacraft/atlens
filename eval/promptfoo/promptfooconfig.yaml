@@ -787,3 +787,23 @@ tests:
           The reply acknowledges that store links can earn Atlens affiliate commissions (it need
           not list the stores) rather than denying it, and says that no commercial relationship
           affects what is recommended or how lenses are ranked.
+
+  - description: site-capabilities
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "你都能帮我做什么？有什么是你做不到的？"
+    assert:
+      - type: javascript
+        metric: site
+        value: "context.metadata.toolsCalled.includes('siteInfo')"
+      - type: llm-rubric
+        metric: site
+        provider: *behavior_grader
+        value: >-
+          Iris's facts say it cannot yet see the page the user is on, read their favorites,
+          remember other conversations beyond saved gear, give live prices, place orders, or
+          send feedback for them. The reply must not claim any of those abilities, and should
+          mention at least some of its limits.

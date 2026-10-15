@@ -89,6 +89,11 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
     text: "Prices are sampled snapshots, not live quotes, and are re-sampled only every six months to a year. New prices come from brand-official stores; where a brand has no global store, its US store is used. Where no official listing exists, used prices are the median of several second-hand listings and vary a lot with condition. Always check the store for the current price.",
   },
   {
+    id: "capabilities",
+    topic: "askIris",
+    text: "What Iris can do: find and recommend lenses for a need, as cards with a reason for each; lay lenses side by side in a spec table; explain how lenses differ; look up any lens's specs; for signed-in users, take their saved gear into account and ask them to add it when missing; answer questions about Atlens itself. What Iris cannot do yet: see the page the user is on; read their favorites; remember other conversations, apart from saved gear; give live prices or buy anything; send feedback or change account settings for them; judge sharpness, bokeh, or other qualities that need reviews; answer about lenses Atlens has not collected or other mounts; give general photography advice unrelated to choosing lenses.",
+  },
+  {
     id: "model-provider",
     topic: "askIris",
     text: "Ask Iris runs on a third-party AI model. Which provider and model is not disclosed, and it may change.",
