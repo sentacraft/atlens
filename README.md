@@ -28,7 +28,7 @@ Browse, filter, and compare Fujifilm X-mount lenses — native Fujifilm glass pl
 - **Curated collections** — hand-picked themes (compact primes, budget autofocus, and more), each defined by filter criteria rather than a hand-picked lens list, so the lineup stays current as the catalog grows — for when you don't know exactly what to search for
 - **Side-by-side comparison** of up to 4 lenses
 - **Normalized data** — specs from different manufacturers use inconsistent formats and terminology; Atlens maps everything to a consistent schema so comparisons are fair and objective
-- **Pipeline-backed accuracy** — every spec originates from official manufacturer sources and goes through a staged pipeline with human review at every step
+- **Pipeline-backed accuracy** — specs come from official manufacturer sources and go through a staged pipeline, reviewed by the maintainer before publishing
 - **Shareable comparison posters**
 - **Progressive Web App (PWA)** — Atlens is a web app at its core, but installs and runs like a native app. Add it to your home screen (iOS / Android) or dock (macOS) for instant, full-screen access — no App Store required
 - **Deep localization** — English and Chinese (中文) editions go beyond UI translation: pricing sources, used-market listings, and manufacturer links are all tailored to each audience's local market
@@ -46,101 +46,133 @@ It also supports installation as a **Progressive Web App (PWA)**: add it to your
 | Layer | Choice |
 |-------|--------|
 | Framework | Next.js (App Router) + TypeScript |
-| Styling | Tailwind CSS |
-| Deployment | Cloudflare Workers (OpenNext) |
+| Runtime & hosting | Cloudflare Workers via OpenNext |
+| Data stores | Cloudflare D1 (Kysely), KV, Analytics Engine |
+| Auth | Better Auth — Google, email code, anonymous sessions |
+| AI | Vercel AI SDK |
+| Client data | TanStack Query |
+| UI | Tailwind CSS, Base UI, Motion |
 | i18n | next-intl |
-| Data Validation | Zod |
-| Testing | Vitest + Playwright |
+| Validation | Zod |
+| Testing | Vitest, Playwright, promptfoo (Ask Iris behavior) |
+
+## Architecture
+
+Lens data ships with the build, so browsing and comparing never touch a database; only accounts, Ask Iris, and telemetry go through the server at request time.
+
+```mermaid
+flowchart LR
+  subgraph browser["Browser · installable PWA"]
+    PAGES["Pre-rendered pages<br/>lens detail · collections · about"]
+    ISLANDS["Client islands<br/>filters · compare · Ask Iris · profile<br/>TanStack Query"]
+  end
+
+  subgraph worker["Cloudflare Worker · Next.js via OpenNext"]
+    RSC["Server components<br/>+ static lens data"]
+    CHAT["/api/chat<br/>Ask Iris agent loop"]
+    ME["/api/me/*<br/>gear · favorites · settings"]
+    AUTH["/api/auth<br/>Better Auth"]
+    FEEDBACK["/api/feedback"]
+    TRACK["/api/track"]
+  end
+
+  LENSDATA[("lenses.json · lenses-gfx.json<br/>bundled at build")]
+  APPDB[("D1 · app<br/>users · conversations · gear<br/>favorites · settings")]
+  TRACES[("D1 · Ask Iris traces")]
+  LIMITS[("KV + rate-limit bindings")]
+  EVENTS[("Analytics Engine")]
+  LLM["LLM provider"]
+  ISSUES["GitHub Issues<br/>in the pipeline repo"]
+
+  PAGES --> RSC --> LENSDATA
+  ISLANDS --> CHAT & ME & AUTH & FEEDBACK & TRACK
+  CHAT --> LLM
+  CHAT --> APPDB & TRACES & LIMITS
+  ME & AUTH --> APPDB
+  FEEDBACK --> ISSUES
+  TRACK --> EVENTS
+```
+
+**Code layout.** The split keeps logic out of components so it can later move into a shared package.
+
+| Path | Holds |
+|---|---|
+| `src/app/` | Routes: localized pages under `[locale]/`, route handlers under `api/` |
+| `src/components/` | Rendering only — no business logic, no `fetch` |
+| `src/lib/` | Business logic, types, data access, per-feature client modules, URL query params (`url/`) |
+| `src/config/ui-tokens.ts` | Shared visual language: interaction colors, buttons, selected states |
+| `src/messages/` | UI copy per locale |
+| `src/data/` | Lens catalog (written by the pipeline) and hand-authored collections |
+
+**Ask Iris** is an agent loop on the AI SDK with a fixed step budget. Its tools recall lenses by spec, look them up by name or ref, render recommendation cards and spec tables, answer questions about the site from a fact list, and — as a client-side tool — ask a signed-in user for their gear in an in-chat card. A signed-in user's saved gear is added to every turn's context. Conversations live in D1 so they follow the account; every turn leaves a trace for debugging and analytics, and a promptfoo suite grades its behavior against the live endpoint.
 
 ## Data Pipeline
 
-For a lens comparison tool, data accuracy isn't a nice-to-have — it's the product. Atlens normalizes specs from manufacturer sources, treats price data as point-in-time reference snapshots rather than real-time quotes, and is backed by a purpose-built, multi-stage data pipeline:
-
-Lens data and images are maintained in a private pipeline repo and written into `src/data/lenses.json` (X mount) and `src/data/lenses-gfx.json` (G mount).
+For a lens comparison tool, data accuracy isn't a nice-to-have — it's the product. Lens data and images are produced by a private pipeline repo (`atlens-pipeline`) and published into `src/data/lenses.json` (X mount) and `src/data/lenses-gfx.json` (G mount) through a pull request.
 
 ```mermaid
 flowchart TD
-  subgraph pipeline["atlens-pipeline (private)"]
-
-    subgraph spec["Spec Pipeline"]
-      SOURCES[("sources.yaml")]
-
-      S0["<b>Stage 0 · Index</b><br/>Discovers X Mount and G Mount lenses from brand listing pages"]
-
-      subgraph s1["Stage 1 · Collect"]
-        S1p1["<b>Phase 1 · Locate & Image</b><br/>Detail page URLs + main product image"]
-        S1p2["<b>Phase 2 · Fetch Raw Content</b><br/>Retrieves spec text, product descriptions, and feature images"]
-        S1r["<b>Maintainer · Review</b>"]
-        S1h["<b>Maintainer · Manual Fetch</b>"]
-        S1b["<b>AI Agent · Read & Merge</b><br/>Vision on spec images + text merge<br/>No field extraction"]
-        S1out(["High-recall product description"])
-      end
-
-      S2a["<b>Stage 2a · Derive</b><br/>AI extracts semantic fields from rawSpecs"]
-      S2b["<b>Stage 2b · Compute</b><br/>Script derives deterministic fields"]
-      S2c["<b>Stage 2c · Image Processing</b><br/>Normalizes product images"]
-      SR["<b>Stage R · Human Review</b><br/>Maintainer inspects and applies corrections"]
-    end
-
-    subgraph price["Price Pipeline"]
-      PRICING_SOURCES[("pricing-sources.yaml")]
-
-      subgraph spr["Stage Pr · Price Sample"]
-        SPrNew["<b>New Price</b><br/>AI Agent visits official storefronts"]
-        SPrUsed["<b>Used Price · Fallback</b><br/>Sampled only when no new price is found<br/>AI Agent samples secondary-market listings<br/>Median computed at publish time"]
-      end
-    end
-
-    subgraph sp["Stage P · Publish Gate"]
-      SP1["<b>Zod schema validation</b><br/>Intra-lens + cross-lens checks"]
-      SP_AUDIT["<b>Audit Agent · Independent Spec Audit</b><br/>Samples web blogs and community lens databases<br/>Cross-checks specs with zero pipeline context"]
-      SP2["<b>Normalization + version stamp</b>"]
-    end
+  subgraph intake["Intake"]
+    DISC["<b>Discover</b> · monthly GitHub Action<br/>Web search for registered brands with new X-mount releases<br/>opens a brand-level index issue"]
+    FEED["<b>Site feedback</b><br/>missing lens · data error<br/>becomes a GitHub issue"]
+    TRI["<b>Triage</b> · GitHub Action on every new issue<br/>Agent checks the report against the catalog and labels it"]
   end
 
-  SOURCES -->|"aliases + listing URLs"| S0
-  SOURCES -->|"listing URLs"| S1p1
-  SOURCES -->|"spec extraction sources"| S1p2
-  S0 -->|"discovered lens list"| S1p1
-  S1p1 --> S1p2
-  S1p2 --> S1r
-  S1r -->|"quality OK"| S1b
-  S1r -->|"insufficient"| S1h
-  S1h --> S1b
-  S1b --> S1out
-  S1out --> S2a & S2c
-  S2a --> S2b
-  S2b & S2c --> SR
-  SR --> SP1
-  PRICING_SOURCES -->|"storefront search URLs"| SPrNew
-  SPrNew -->|"no new price found"| SPrUsed
-  SPrNew & SPrUsed --> SP1
-  SP1 --> SP_AUDIT
-  SP_AUDIT --> SP2
-  subgraph xglass["atlens (this repo)"]
-    DBX[("lenses.json<br/>X Mount lens database")]
-    DBG[("lenses-gfx.json<br/>G Mount lens database")]
+  SOURCES[("sources.yaml<br/>brands · listing pages · spec sources")]
+  PSOURCES[("pricing-sources.yaml")]
+
+  IDX["<b>Index</b><br/>Walks each brand's official listing pages<br/>Dedupes by canonical lens ID"]
+
+  subgraph collect["Collect"]
+    C1["<b>Locate & image</b> · per brand<br/>Official detail page URLs + main product image"]
+    C2["<b>Fetch raw specs</b> · per lens<br/>Official spec text, no parsing"]
+    AUDIT["<b>Source audit</b> · independent model judge<br/>ok · thin · junk · wrong lens<br/>Derive waits while no source has a spec table"]
   end
-  SP2 -->|"writes"| DBX
-  SP2 -->|"writes"| DBG
+
+  DER["<b>Derive</b><br/>AI reads the raw text and fills semantic fields<br/>Conflicts and schema gaps become review notes"]
+  CMP["<b>Compute</b><br/>Script derives deterministic fields from the model name<br/>series · focal length · aperture · T-stop · traits"]
+  PRC["<b>Pricing</b><br/>New price from official storefronts<br/>Used-market median only when no new price exists"]
+  IMG["<b>Image processing</b><br/>Background removal + normalization"]
+  REV["<b>Review</b> · maintainer, AI-assisted<br/>Resolves notes and fills gaps"]
+  PUB["<b>Publish</b> · run by the maintainer<br/>Schema validation · full rebuild · PR to this repo"]
+  DB[("lenses.json · lenses-gfx.json")]
+
+  DISC --> IDX
+  FEED --> TRI
+  TRI -->|"lens missing"| IDX
+  TRI -->|"data error"| REV
+  SOURCES --> IDX & C1 & C2
+  PSOURCES --> PRC
+  IDX --> C1 --> C2 --> AUDIT --> DER --> CMP --> REV
+  IDX --> PRC --> REV
+  C1 --> IMG --> REV
+  REV --> PUB --> DB
 
   classDef script fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
   classDef agent fill:#fef9c3,stroke:#ca8a04,color:#713f12
   classDef human fill:#dcfce7,stroke:#16a34a,color:#14532d
-  classDef gate fill:#f3e8ff,stroke:#9333ea,color:#3b0764
   classDef config fill:#f1f5f9,stroke:#64748b,color:#1e293b
 
-  class S0,S2b,S2c script
-  class S1p1,S1p2,S1b,S2a,SPrNew,SPrUsed,SP_AUDIT agent
-  class S1r,S1h,SR human
-  class SP1,SP2 gate
-  class SOURCES,PRICING_SOURCES config
+  class IDX,CMP,IMG,PUB script
+  class DISC,TRI,C1,C2,AUDIT,DER,PRC agent
+  class FEED,REV human
+  class SOURCES,PSOURCES config
 ```
 
+Blue steps are scripts, yellow are AI agents, green involve a person.
+
+**How it runs.**
+
+- **State.** Each lens has one JSON state file, tracked in git, so the history doubles as an audit trail. A `queue` command recomputes every lens's next step from that state, so the agent never has to remember where it left off; lenses on hold are skipped everywhere.
+- **Controlled writes.** Every change goes through one `write` command, which limits each stage to its own fields, rejects empty placeholders for unknown values, re-validates the catalog schema, and records which model produced the data.
+- **Guardrails for the agent.** Hooks block direct edits to state files and reads of this repo's published data; after each write they report the lens's next step and run the source audit. Both directions — must block, must allow — have regression tests.
+- **Unattended and interactive work.** Discover, Triage, and the source audit run on their own; the main pipeline agent runs interactively under the maintainer, and only the maintainer publishes.
+- **Bounded self-improvement.** Verified process incidents go to an append-only, git-tracked log and move from open to resolved to promoted. A review turns an incident into one concrete change — a test, a hook, a CLI check, a source entry, or a stage rule — which takes effect only after it is reviewed and merged. The agent never rewrites its own rules silently.
+
 **Key principles:**
-- Every spec originates from official manufacturer sources, with human review at every stage
-- Deterministic fields are computed in code — never inferred by LLM
-- Stage isolation: each step may only build on facts confirmed in the prior step
+- Specs come from manufacturers' official pages; in rare cases a field missing there is filled at review from other published sources.
+- Deterministic fields are computed in code — never inferred by an LLM.
+- Nothing is published without the maintainer's review.
 
 **A note on accuracy.** Atlens covers hundreds of lenses across dozens of spec dimensions, and we kindly ask for your patience with the small errors and stale entries that slip through. Bug reports via the in-app feedback or GitHub issues are very welcome — for anything critical to a purchase, please confirm on the manufacturer's official page first.
 
