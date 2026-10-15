@@ -33,7 +33,7 @@ describe("siteFacts", () => {
   });
 
   it("lists affiliate stores and price sources from code and data", () => {
-    expect(factsFor("business", "en")).toMatch(/affiliate links: Amazon, .*7artisans.store/);
+    expect(factsFor("business", "en")).toMatch(/through them: Amazon, .*7artisans.store/);
     expect(factsFor("prices", "en")).toMatch(/used from .*eBay/);
   });
 });
