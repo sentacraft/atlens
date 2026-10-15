@@ -71,7 +71,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "inclusion",
     topic: "data",
-    text: "A lens is listed once its manufacturer's official site has a product page for it; announced lenses without one are not listed yet. Brands users ask for most are added first. Cinema lenses are included. Discontinued lenses are included only while the official site still has their page. Lenses for other mounts used with adapters are not included.",
+    text: "A lens is listed once its manufacturer's official site has a product page for it; announced lenses without one are not listed yet, and discontinued lenses only while the official site still has their page. Brands users ask for most are added first.",
   },
   {
     id: "update-cadence",

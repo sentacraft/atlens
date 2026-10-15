@@ -7,18 +7,10 @@ import AnthropicLogo from "@/components/logos/AnthropicLogo";
 import GeminiLogo from "@/components/logos/GeminiLogo";
 import GitHubMark from "@/components/logos/GitHubMark";
 import { lensCountsByBrand } from "@/lib/lens/data";
-import coverageMeta from "@/data/coverage-meta.json";
+import { CATALOG_COVERAGE, type BrandCoverage, type CoverageState } from "@/lib/lens/catalog-coverage";
 import AckCard from "@/components/about/AckCard";
 import { isPurchaseLocale } from "@/lib/purchase/links";
 import { TEXT_LINK_CLS } from "@/config/ui-tokens";
-
-type CoverageState = boolean | "planned" | "partial" | "n/a";
-type CoverageMeta = {
-  active: CoverageState;
-  discontinued: CoverageState;
-  cinema: CoverageState;
-  notes: string;
-};
 
 function Check() {
   return <span className="text-zinc-700 dark:text-zinc-300 text-sm">✓</span>;
@@ -53,16 +45,16 @@ function StateCell({ state }: { state: CoverageState }) {
 }
 
 function MountCoverageTable({
-  title, brands, counts, meta, brandNames, col, rowTotal,
+  title, counts, meta, brandNames, col, rowTotal,
 }: {
   title: string;
-  brands: string[];
   counts: Record<string, number>;
-  meta: Record<string, CoverageMeta>;
+  meta: Record<string, BrandCoverage>;
   brandNames: Record<string, string>;
   col: { brand: string; count: string; photoGroup: string; active: string; discontinued: string; cinema: string };
   rowTotal: string;
 }) {
+  const brands = Object.keys(meta);
   const total = brands.reduce((s, b) => s + (counts[b] ?? 0), 0);
   return (
     <div className="flex flex-col gap-2">
@@ -83,7 +75,7 @@ function MountCoverageTable({
           </thead>
           <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
             {brands.map((b) => {
-              const m: CoverageMeta = (meta as Record<string, CoverageMeta>)[b] ?? { active: false, discontinued: false, cinema: false, notes: "" };
+              const m = meta[b];
               return (
                 <tr key={b}>
                   <td className="px-2 sm:px-3 py-2 text-center font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap border-r border-zinc-200 dark:border-zinc-800">{brandNames[b] ?? b}</td>
@@ -142,8 +134,6 @@ export default async function AboutContent() {
 
   const xCounts = lensCountsByBrand("X", locale);
   const gCounts = lensCountsByBrand("G", locale);
-  const X_BRANDS = ["fujifilm","sigma","tamron","viltrox","7artisans","ttartisan","brightinstar","sgimage","laowa","meike","sirui","voigtlander","thypoch","zeiss"];
-  const G_BRANDS = ["fujifilm", "laowa"];
 
   const pipelineStages = [
     { badge: "0", label: t("pipeline0Label"), desc: t("pipeline0Desc") },
@@ -220,16 +210,15 @@ export default async function AboutContent() {
       <Section id="coverage" title={t("coverageTitle")}>
         <div className="flex flex-col gap-4">
           {([
-            { key: "coverageBrandsX", brands: X_BRANDS, counts: xCounts, meta: coverageMeta.x },
-            { key: "coverageBrandsG", brands: G_BRANDS, counts: gCounts, meta: coverageMeta.g },
-          ] as const).map(({ key, brands, counts, meta }) => (
+            { key: "coverageBrandsX", meta: CATALOG_COVERAGE.X, counts: xCounts },
+            { key: "coverageBrandsG", meta: CATALOG_COVERAGE.G, counts: gCounts },
+          ] as const).map(({ key, counts, meta }) => (
             <div key={key} className="flex flex-col gap-2">
               <MountCoverageTable
                 title={t(key)}
-                brands={[...brands]}
                 counts={counts}
-                meta={meta as Record<string, CoverageMeta>}
-                brandNames={Object.fromEntries(brands.map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
+                meta={meta}
+                brandNames={Object.fromEntries(Object.keys(meta).map((b) => [b, tBrand(b as Parameters<typeof tBrand>[0])]))}
                 col={{
                   brand: t("coverageColBrand"),
                   count: t("coverageColCount"),

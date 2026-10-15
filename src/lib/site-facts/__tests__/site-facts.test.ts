@@ -27,8 +27,11 @@ describe("siteFacts", () => {
     expect(factsFor("project", "en")).not.toMatch(/[\u4e00-\u9fff]/);
   });
 
-  it("counts coverage from the lens data", () => {
-    expect(factsFor("data", "en")).toContain(`X mount: ${getLensesByMount("X", "en").length} lenses`);
+  it("describes coverage from the lens data and the coverage table", () => {
+    const data = factsFor("data", "en");
+    expect(data).toContain(`X mount, ${getLensesByMount("X", "en").length} lenses in all`);
+    const fujifilm = getLensesByMount("X", "en").filter((lens) => lens.brand === "fujifilm").length;
+    expect(data).toContain(`Fujifilm: ${fujifilm} lenses; current lenses covered, discontinued covered, cinema covered`);
   });
 
   it("names features and account benefits as the site shows them in the user's language", () => {

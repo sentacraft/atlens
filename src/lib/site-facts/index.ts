@@ -2,6 +2,7 @@ import "server-only";
 import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
 import { routing } from "@/i18n/routing";
+import { CATALOG_COVERAGE, type CoverageState } from "@/lib/lens/catalog-coverage";
 import { getLensesByMount, lensCountsByBrand, meta } from "@/lib/lens/data";
 import { MAX_COMPARE } from "@/lib/lens/lens";
 import { isPurchaseLocale } from "@/lib/purchase/links";
@@ -19,15 +20,27 @@ function list(items: string[]): string {
   return items.join(", ");
 }
 
+const COVERAGE_STATE: Record<string, string> = {
+  true: "covered",
+  partial: "partly covered",
+  planned: "under evaluation",
+  false: "not planned",
+  "n/a": "not applicable",
+};
+
 function coverage(locale: string): string[] {
   const brands = MESSAGES[locale].Brands as Record<string, string>;
   const perMount = MOUNTS.map((mount) => {
-    const counts = Object.entries(lensCountsByBrand(mount, locale)).sort((a, b) => b[1] - a[1]);
-    const total = counts.reduce((sum, [, n]) => sum + n, 0);
-    const byBrand = counts.map(([brand, n]) => `${brands[brand] ?? brand} ${n}`);
-    return `${mount} mount: ${total} lenses from ${counts.length} brands (${list(byBrand)}).`;
+    const counts = lensCountsByBrand(mount, locale);
+    const total = Object.values(counts).reduce((sum, n) => sum + n, 0);
+    const state = (value: CoverageState) => COVERAGE_STATE[String(value)];
+    const byBrand = Object.entries(CATALOG_COVERAGE[mount]).map(
+      ([brand, c]) =>
+        `${brands[brand] ?? brand}: ${counts[brand] ?? 0} lenses; current lenses ${state(c.active)}, discontinued ${state(c.discontinued)}, cinema ${state(c.cinema)}`,
+    );
+    return `${mount} mount, ${total} lenses in all. ${byBrand.join(". ")}.`;
   });
-  return [...perMount, `The lens data was last updated on ${meta.lastUpdated.slice(0, 10)}.`];
+  return [en.About.coverageBody, ...perMount, `The lens data was last updated on ${meta.lastUpdated.slice(0, 10)}.`];
 }
 
 function sourcesOf(lenses: Lens[], market: "cn" | "global", condition: "new" | "used"): string[] {
