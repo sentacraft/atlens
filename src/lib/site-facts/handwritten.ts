@@ -149,11 +149,6 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
     text: "Data is stored on Cloudflare. Conversations are linked to the account so they can be found again. The About page's privacy section describes what is stored.",
   },
   {
-    id: "app",
-    topic: "usage",
-    text: "There is no app-store app. Atlens can be installed as a web app (PWA) on a phone or computer from its install page.",
-  },
-  {
     id: "mounts",
     topic: "usage",
     text: "X mount is Fujifilm's APS-C system and G mount is its GFX medium-format system. The mount is switched in the navigation bar. G mount coverage and features are still being filled in.",

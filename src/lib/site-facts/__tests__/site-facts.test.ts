@@ -38,6 +38,7 @@ describe("siteFacts", () => {
     expect(factsFor("usage", "zh")).toContain(`"${zh.Nav.collections}"`);
     expect(factsFor("usage", "en")).toContain(`"${en.Nav.collections}"`);
     expect(factsFor("account", "zh")).toContain(zh.Auth.benefitFavorites);
+    expect(factsFor("usage", "zh")).toContain(`"${zh.Nav.getApp}" page`);
   });
 
   it("lists affiliate stores and price sources from code and data", () => {

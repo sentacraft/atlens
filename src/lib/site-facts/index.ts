@@ -93,6 +93,7 @@ function features(locale: string): string[] {
       named(m.Nav.getApp, "install Atlens as a web app"),
     ])}.`,
     `The site is available in ${list(routing.locales.map(languageName))}.`,
+    `There is no app-store app. Atlens can be installed as a web app (PWA) on a phone or computer from the "${m.Nav.getApp}" page in the site's navigation.`,
   ];
 }
 
