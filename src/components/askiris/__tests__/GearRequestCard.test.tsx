@@ -74,7 +74,7 @@ describe("GearRequestCard", () => {
     fireEvent.click(screen.getByRole("button", { name: "save" }));
 
     expect(mocks.addCatalog).toHaveBeenCalledWith({ bodies: ["fujifilm-x-t5"], lenses: [] }, expect.anything());
-    expect(onAnswer).toHaveBeenCalledWith({ outcome: "saved" });
+    expect(onAnswer).toHaveBeenCalledWith({ outcome: "saved", saved: ["X-T5"] });
   });
 
   it("skips without saving", () => {
@@ -87,15 +87,13 @@ describe("GearRequestCard", () => {
     expect(onAnswer).toHaveBeenCalledWith({ outcome: "skipped" });
   });
 
-  it("shows only what happened once answered, and nothing once the chat has moved on", () => {
+  it("leaves a line saying what happened once answered or passed over", () => {
     mocks.session = { data: account };
-    renderCard({ output: { outcome: "skipped" } });
-    expect(screen.getByText("skipped")).toBeInTheDocument();
+    renderCard({ output: { outcome: "saved", saved: ["X-T5", "XF 18-55mm"] } });
+    expect(screen.getByText("savedItems X-T5、XF 18-55mm")).toBeInTheDocument();
     cleanup();
 
-    const { container } = render(
-      <GearRequestCard input={{}} active={false} lenses={lenses} onAnswer={() => {}} />,
-    );
-    expect(container).toBeEmptyDOMElement();
+    render(<GearRequestCard input={{}} active={false} lenses={lenses} onAnswer={() => {}} />);
+    expect(screen.getByText("unanswered")).toBeInTheDocument();
   });
 });

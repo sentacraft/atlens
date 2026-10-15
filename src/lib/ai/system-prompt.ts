@@ -54,11 +54,11 @@ const UNKNOWN_GEAR = {
   unavailable: "暂时读不到用户的器材档案，不知道他有哪些器材。",
 } as const;
 
-const ACCOUNT_GEAR_CARD =
+const GEAR_NOTE_WHEN_PROFILE_EMPTY =
   "要推荐镜头时（包括问下一支该买什么、要补哪个焦段、按需求选镜头），先调用 askForGear 请他在卡片里填写器材，等他填完再推荐；他在对话里提到的器材会预填进卡片，提到了也照样调用。调用的这条回复里，文字不要问他的机身和镜头，卡片会问。查规格、问事实、和镜头无关的问题不调用。";
-const GUEST_GEAR_CARD =
+const GEAR_NOTE_WHEN_GUEST =
   "只有当问题本身离不开他已有的器材（问下一支该买什么、要补哪个焦段、和自己的镜头比、要不要升级），或者他提到了自己已有的部分器材时，才调用 askForGear；他提到的器材会预填进卡片。调用的这条回复里，文字不要问他的机身和镜头，卡片会问。按需求推荐、查规格这类问题直接回答，不调用；按需求推荐时，整段对话里最多一次，在回复末尾用一句话提一下登录后你能记住他的器材。";
-const DECLINED_GEAR =
+const GEAR_NOTE_AFTER_CARD_DECLINED =
   "他这次不想补充器材：他在对话里说过的器材照样用，没说过的就按一般情况推荐。不要再问他的器材，也不要提起卡片或他没有填写这件事。";
 
 function bodyLine(body: GearBody): string {
@@ -85,10 +85,10 @@ function lensLine(lens: GearLens): string {
 export function gearPrompt(gear: GearSummary, { cardAvailable }: { cardAvailable: boolean }): string {
   if (!gear.known) {
     const howToAsk = !cardAvailable
-      ? DECLINED_GEAR
+      ? GEAR_NOTE_AFTER_CARD_DECLINED
       : gear.reason === "guest"
-        ? GUEST_GEAR_CARD
-        : ACCOUNT_GEAR_CARD;
+        ? GEAR_NOTE_WHEN_GUEST
+        : GEAR_NOTE_WHEN_PROFILE_EMPTY;
     return `【用户器材】\n${UNKNOWN_GEAR[gear.reason]}${howToAsk}`;
   }
   const lines = ["【用户器材】", "用户已登录，器材档案里有："];

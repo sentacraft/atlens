@@ -226,7 +226,9 @@
       "notSignedIn": "Continued without signing in",
       "signInTitle": "Sign in so Iris remembers your gear",
       "signIn": "Sign in",
-      "notNow": "Not now, I'll tell Iris"
+      "notNow": "Not now, I'll tell Iris",
+      "savedItems": "Saved to My gear: {items}",
+      "unanswered": "Gear not added"
     },
     "responseFeedback": {
       "prompt": "Was this answer helpful?",

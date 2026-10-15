@@ -19,6 +19,8 @@ export const gearRequestInputSchema = z.object({
 
 export const gearRequestOutputSchema = z.object({
   outcome: z.enum(["saved", "skipped", "not_signed_in"]),
+  /** Names of what the user's profile holds after saving, shown on the answered card. */
+  saved: z.array(z.string().max(160)).max(200).optional(),
 });
 
 export type GearRequestInput = z.infer<typeof gearRequestInputSchema>;

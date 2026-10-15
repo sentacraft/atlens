@@ -37,16 +37,32 @@ export default function GearRequestCard({
   const user = accountUser(session);
 
   if (output) {
-    const key = output.outcome === "saved" ? "saved" : output.outcome === "skipped" ? "skipped" : "notSignedIn";
-    return <p className="px-1 text-xs text-zinc-500 dark:text-zinc-400">{t(key)}</p>;
+    const text =
+      output.outcome === "saved"
+        ? output.saved?.length
+          ? t("savedItems", { items: output.saved.join("、") })
+          : t("saved")
+        : output.outcome === "skipped"
+          ? t("skipped")
+          : t("notSignedIn");
+    return <AnsweredLine done={output.outcome === "saved"}>{text}</AnsweredLine>;
   }
   if (!active) {
-    return null;
+    return <AnsweredLine done={false}>{t("unanswered")}</AnsweredLine>;
   }
   return user ? (
     <GearPicker userId={user.id} input={input} lenses={lenses} onAnswer={onAnswer} />
   ) : (
     <SignInPrompt onDecline={() => onAnswer({ outcome: "not_signed_in" })} />
+  );
+}
+
+function AnsweredLine({ done, children }: { done: boolean; children: ReactNode }) {
+  return (
+    <p className="flex items-start gap-1.5 px-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+      {done && <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-700 dark:text-zinc-300" strokeWidth={2.5} />}
+      {children}
+    </p>
   );
 }
 
@@ -112,7 +128,13 @@ function GearPicker({
   }
 
   function save() {
-    addCatalog({ bodies: pendingBodies, lenses: pendingLenses }, { onSuccess: () => onAnswer({ outcome: "saved" }) });
+    const names = [
+      ...savedBodies.map((item) => item.name),
+      ...pendingBodies.flatMap((id) => getBodyById(id)?.name ?? []),
+      ...savedLenses.map((item) => item.name),
+      ...pendingLenses.flatMap((id) => lensById.get(id)?.model ?? []),
+    ];
+    addCatalog({ bodies: pendingBodies, lenses: pendingLenses }, { onSuccess: () => onAnswer({ outcome: "saved", saved: names }) });
   }
 
   return (

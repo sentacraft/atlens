@@ -226,7 +226,9 @@
       "notSignedIn": "这次先不登录",
       "signInTitle": "登录后，Iris 会记住你的器材",
       "signIn": "登录",
-      "notNow": "先不登录，直接告诉 Iris"
+      "notNow": "先不登录，直接告诉 Iris",
+      "savedItems": "已保存到我的器材：{items}",
+      "unanswered": "没有填写器材"
     },
     "responseFeedback": {
       "prompt": "这个回答有帮助吗？",
