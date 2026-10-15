@@ -35,7 +35,7 @@ export function systemPrompt(mount: Mount, locale: string): string {
 
 在用户已经说清的需求和约束之下，不要漏掉任何可能合适的镜头——把它们排出主次、分组呈现，而不是把你不想推的悄悄拿掉。除非一只镜头样样都不如你已经展示的某一只，否则不要拿掉它。分组就多次调用 recommendLenses，组名写进 title，正文里不要再写一遍标题。即使用户直接要你替他拍板，也只把取舍讲透、把主次排清楚，最终的选择留给他。
 
-每轮对话开头的「用户器材」写着你对他已有器材的了解。知道他的器材时，推荐和比较都以此为前提：他已经有的镜头出现在推荐或比较里时，说明他已经有了；讲清新镜头和已有镜头在焦段上是重叠还是互补，把机身有没有防抖考虑进去，并说出你参考了哪几件器材。不知道他的器材、而回答又取决于他已有什么时，先问他用什么机身和镜头，不要自己假设。
+每轮对话开头的「用户器材」写着你对他已有器材的了解。知道他的器材时，推荐和比较都以此为前提：他已经有的镜头出现在推荐或比较里时，说明他已经有了；讲清新镜头和已有镜头在焦段上是重叠还是互补，把机身有没有防抖考虑进去，并说出你参考了哪几件器材。不知道他的器材、而回答又取决于他已有什么时，按「用户器材」里写的方式请他补充，不要自己假设。
 
 用户自己说了拿不准的取舍，你不要替他两边都占：这一轮只把这个取舍问清楚，不出任何镜头。你也可以按自己的理解替他定下来，但要说出这个理解让他能纠正，然后只推定下来的那一边。不要把一堆维度摊开让用户自己排优先级。
 
@@ -53,6 +53,13 @@ const UNKNOWN_GEAR = {
   empty: "用户已登录，但器材档案是空的，不知道他有哪些器材。",
   unavailable: "暂时读不到用户的器材档案，不知道他有哪些器材。",
 } as const;
+
+const GEAR_NOTE_WHEN_PROFILE_EMPTY =
+  "要推荐镜头时（包括问下一支该买什么、要补哪个焦段、按需求选镜头），先调用 askForGear 请他在卡片里填写器材，等他填完再推荐；他在对话里提到的器材会预填进卡片，提到了也照样调用。调用的这条回复里，文字不要问他的机身和镜头，卡片会问。他说这是第一支镜头或还没有相机时不调用，直接推荐。查规格、问事实、和镜头无关的问题不调用。";
+const GEAR_NOTE_WHEN_GUEST =
+  "只有当回答明显取决于他已有什么时，才调用 askForGear：问下一支该买什么、要补哪个焦段、和自己的镜头比、要不要升级；或者他提到了自己已有的部分器材，这时不管他问的是什么推荐都调用。他提到的器材会预填进卡片。调用的这条回复里，文字不要问他的机身和镜头，卡片会问。没提到自己器材的按需求推荐，直接回答，不调用。登录只在一种情况下提：他在按需求挑镜头、又没说自己还没有相机或这是第一支镜头时，整段对话里最多一次，在回复末尾用一句话说登录后你能记住他的器材；其他情况都不提登录。";
+const GEAR_NOTE_AFTER_CARD_DECLINED =
+  "他这次不想补充器材：他在对话里说过的器材照样用，没说过的就按一般情况推荐。不要再问他的器材，也不要提起卡片或他没有填写这件事。";
 
 function bodyLine(body: GearBody): string {
   if (!body.sensor) {
@@ -75,9 +82,14 @@ function lensLine(lens: GearLens): string {
 }
 
 /** The per-turn 【用户器材】 note, sent after systemPrompt as its own system message. */
-export function gearPrompt(gear: GearSummary): string {
+export function gearPrompt(gear: GearSummary, { cardAvailable }: { cardAvailable: boolean }): string {
   if (!gear.known) {
-    return `【用户器材】\n${UNKNOWN_GEAR[gear.reason]}`;
+    const howToAsk = !cardAvailable
+      ? GEAR_NOTE_AFTER_CARD_DECLINED
+      : gear.reason === "guest"
+        ? GEAR_NOTE_WHEN_GUEST
+        : GEAR_NOTE_WHEN_PROFILE_EMPTY;
+    return `【用户器材】\n${UNKNOWN_GEAR[gear.reason]}${howToAsk}`;
   }
   const lines = ["【用户器材】", "用户已登录，器材档案里有："];
   if (gear.bodies.length > 0) {

@@ -5,11 +5,13 @@ import { lensRef } from "../lens-ref";
 import type { GearItem } from "@/lib/me/gear-schema";
 
 const brandName = (slug: string) => (slug === "fujifilm" ? "富士" : slug);
-const gearContext = (status: GearStatus) => gearPrompt(describeGear(status, brandName));
+const gearContext = (status: GearStatus, cardAvailable = false) => gearPrompt(describeGear(status, brandName), { cardAvailable });
 
 describe("gearPrompt(describeGear(...))", () => {
-  it("tells Iris a guest's gear is unknown", () => {
-    expect(gearContext({ kind: "guest" })).toBe("【用户器材】\n用户未登录，不知道他有哪些器材。");
+  it("tells Iris a guest's gear is unknown, and how to ask for it", () => {
+    expect(gearContext({ kind: "guest" }, true)).toContain("只有当回答明显取决于他已有什么时");
+    expect(gearContext({ kind: "account", gear: [] }, true)).toContain("要推荐镜头时");
+    expect(gearContext({ kind: "guest" })).toContain("不要再问他的器材");
   });
 
   it("tells Iris an empty profile leaves the gear unknown", () => {

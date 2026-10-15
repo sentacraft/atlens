@@ -1,0 +1,237 @@
+"use client";
+
+import { useMemo, useState, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
+import { Check, Plus, X } from "lucide-react";
+import { getBodyById } from "@/lib/body/data";
+import type { LensSummary } from "@/lib/lens/data";
+import { accountUser, authClient } from "@/lib/auth-client";
+import type { GearRequestInput, GearRequestOutput } from "@/lib/ai/gear-request";
+import { resolveGearHints } from "@/lib/me/gear-hints";
+import { ACTION_OUTLINE_CLS, ACTION_PRIMARY_CLS, CHIP_ACTIVE_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS } from "@/config/ui-tokens";
+import { cn } from "@/lib/utils";
+import { useSignInDialog } from "@/context/SignInDialogProvider";
+import { useGearAdders } from "@/components/me/useGearAdders";
+
+const CARD_CLS = "w-full max-w-[560px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950";
+const QUIET_BTN_CLS =
+  "h-9 rounded-lg px-3 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800";
+
+/** The in-chat card Iris shows through the askForGear client tool. */
+export default function GearRequestCard({
+  input,
+  output,
+  active,
+  lenses,
+  onAnswer,
+}: {
+  input: GearRequestInput;
+  output?: GearRequestOutput;
+  /** False once the conversation has moved past this request. */
+  active: boolean;
+  lenses: LensSummary[];
+  onAnswer: (output: GearRequestOutput) => void;
+}) {
+  const t = useTranslations("AskIris.gearCard");
+  const { data: session } = authClient.useSession();
+  const user = accountUser(session);
+
+  if (output) {
+    const text =
+      output.outcome === "saved"
+        ? output.saved?.length
+          ? t("savedItems", { items: output.saved.join("、") })
+          : t("saved")
+        : output.outcome === "skipped"
+          ? t("skipped")
+          : t("notSignedIn");
+    return <AnsweredLine done={output.outcome === "saved"}>{text}</AnsweredLine>;
+  }
+  if (!active) {
+    return <AnsweredLine done={false}>{t("unanswered")}</AnsweredLine>;
+  }
+  return user ? (
+    <GearPicker userId={user.id} input={input} lenses={lenses} onAnswer={onAnswer} />
+  ) : (
+    <SignInPrompt onDecline={() => onAnswer({ outcome: "not_signed_in" })} />
+  );
+}
+
+function AnsweredLine({ done, children }: { done: boolean; children: ReactNode }) {
+  return (
+    <p className="flex items-start gap-1.5 px-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+      {done && <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-700 dark:text-zinc-300" strokeWidth={2.5} />}
+      {children}
+    </p>
+  );
+}
+
+function SignInPrompt({ onDecline }: { onDecline: () => void }) {
+  const t = useTranslations("AskIris.gearCard");
+  const tAuth = useTranslations("Auth");
+  const openSignIn = useSignInDialog();
+  return (
+    <section aria-label={t("signInTitle")} className={cn(CARD_CLS, "flex flex-col gap-3.5 p-4")}>
+      <h3 className="text-[15px] font-semibold text-zinc-900 dark:text-zinc-100">{t("signInTitle")}</h3>
+      <ul className="flex flex-col gap-2">
+        {(["benefitGear", "benefitFavorites", "benefitSync"] as const).map((key) => (
+          <li key={key} className="flex gap-2 text-[13px] leading-5 text-zinc-700 dark:text-zinc-300">
+            <Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-900 dark:text-zinc-100" strokeWidth={2.5} />
+            {tAuth(key)}
+          </li>
+        ))}
+      </ul>
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={() => openSignIn("gear")}
+          className={cn(ACTION_PRIMARY_CLS, "h-9 rounded-lg px-4 text-sm font-medium")}
+        >
+          {t("signIn")}
+        </button>
+        <button type="button" onClick={onDecline} className={QUIET_BTN_CLS}>
+          {t("notNow")}
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function GearPicker({
+  userId,
+  input,
+  lenses,
+  onAnswer,
+}: {
+  userId: string;
+  input: GearRequestInput;
+  lenses: LensSummary[];
+  onAnswer: (output: GearRequestOutput) => void;
+}) {
+  const t = useTranslations("AskIris.gearCard");
+  const tBrand = useTranslations("Brands");
+  const { gear, openBodyDialog, openLensSearch, addCatalog, adding, dialogs } = useGearAdders({ userId, lenses });
+  const hints = useMemo(() => resolveGearHints(input, lenses), [input, lenses]);
+  const [pending, setPending] = useState({ bodies: hints.bodies, lenses: hints.lenses });
+  const lensById = useMemo(() => new Map(lenses.map((lens) => [lens.id, lens])), [lenses]);
+
+  const brandName = (slug: string) => (tBrand.has(slug) ? tBrand(slug) : slug);
+  const savedBodies = gear.filter((item) => item.kind === "body");
+  const savedLenses = gear.filter((item) => item.kind === "lens");
+  const savedIds = new Set(gear.flatMap((item) => (item.catalogId ? [item.catalogId] : [])));
+  const pendingBodies = pending.bodies.filter((id) => !savedIds.has(id));
+  const pendingLenses = pending.lenses.filter((id) => !savedIds.has(id));
+  const canSave = gear.length > 0 || pendingBodies.length > 0 || pendingLenses.length > 0;
+
+  function drop(kind: "bodies" | "lenses", id: string) {
+    setPending((prev) => ({ ...prev, [kind]: prev[kind].filter((value) => value !== id) }));
+  }
+
+  function save() {
+    const names = [
+      ...savedBodies.map((item) => item.name),
+      ...pendingBodies.flatMap((id) => getBodyById(id)?.name ?? []),
+      ...savedLenses.map((item) => item.name),
+      ...pendingLenses.flatMap((id) => lensById.get(id)?.model ?? []),
+    ];
+    addCatalog({ bodies: pendingBodies, lenses: pendingLenses }, { onSuccess: () => onAnswer({ outcome: "saved", saved: names }) });
+  }
+
+  return (
+    <section aria-label={t("title")} className={CARD_CLS}>
+      <h3 className="px-4 pt-4 text-[15px] font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h3>
+      <GearRow label={t("bodies")} addLabel={t("addBody")} onAdd={openBodyDialog}>
+        {savedBodies.map((item) => (
+          <SavedChip key={item.id} label={`${brandName(item.brand)} ${item.name}`} />
+        ))}
+        {pendingBodies.map((id) => {
+          const body = getBodyById(id);
+          return body ? (
+            <PendingChip
+              key={id}
+              label={`${brandName("fujifilm")} ${body.name}`}
+              removeLabel={t("removePending", { name: body.name })}
+              onRemove={() => drop("bodies", id)}
+            />
+          ) : null;
+        })}
+      </GearRow>
+      <GearRow label={t("lenses")} addLabel={t("addLens")} onAdd={openLensSearch}>
+        {savedLenses.map((item) => (
+          <SavedChip key={item.id} label={item.name} />
+        ))}
+        {pendingLenses.map((id) => {
+          const lens = lensById.get(id);
+          return lens ? (
+            <PendingChip
+              key={id}
+              label={lens.model}
+              removeLabel={t("removePending", { name: lens.model })}
+              onRemove={() => drop("lenses", id)}
+            />
+          ) : null;
+        })}
+      </GearRow>
+      {hints.unresolved.length > 0 && (
+        <p className="px-4 pb-3 text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+          {t("unresolved", { names: hints.unresolved.join("、") })}
+        </p>
+      )}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <span className="text-xs text-zinc-500 dark:text-zinc-400">{t("footerHint")}</span>
+        <div className="ml-auto flex gap-2">
+          <button type="button" onClick={() => onAnswer({ outcome: "skipped" })} className={QUIET_BTN_CLS}>
+            {t("skip")}
+          </button>
+          <button
+            type="button"
+            onClick={save}
+            disabled={!canSave || adding}
+            className={cn(ACTION_PRIMARY_CLS, "h-9 rounded-lg px-4 text-sm font-medium")}
+          >
+            {adding ? t("saving") : t("save")}
+          </button>
+        </div>
+      </div>
+      {dialogs}
+    </section>
+  );
+}
+
+function GearRow({
+  label,
+  addLabel,
+  onAdd,
+  children,
+}: {
+  label: string;
+  addLabel: string;
+  onAdd: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-2 px-4 py-3">
+      <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">{label}</span>
+      <div className="flex flex-wrap items-center gap-1.5">
+        {children}
+        <button type="button" onClick={onAdd} className={cn(ACTION_OUTLINE_CLS, "h-8 gap-1 px-3 text-[13px]")}>
+          <Plus className="h-4 w-4" />
+          {addLabel}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function SavedChip({ label }: { label: string }) {
+  return <span className={cn(CHIP_BASE_CLS, CHIP_IDLE_CLS, "h-8 cursor-default px-3")}>{label}</span>;
+}
+
+function PendingChip({ label, removeLabel, onRemove }: { label: string; removeLabel: string; onRemove: () => void }) {
+  return (
+    <button type="button" onClick={onRemove} aria-label={removeLabel} className={cn(CHIP_BASE_CLS, CHIP_ACTIVE_CLS, "h-8 px-3")}>
+      {label}
+      <X className="h-3 w-3" />
+    </button>
+  );
+}

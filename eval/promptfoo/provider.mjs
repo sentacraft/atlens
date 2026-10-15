@@ -59,7 +59,7 @@ const transport = new DefaultChatTransport({
 // The dev server honors this header; production builds ignore it.
 const EVAL_GEAR_HEADER = "x-askiris-eval-gear";
 
-async function postTurn(messages, mount, locale, conversationId, gear) {
+async function postTurn(messages, mount, locale, conversationId, gear, continuing) {
   const stream = await transport.sendMessages({
     chatId: conversationId,
     messages,
@@ -68,10 +68,26 @@ async function postTurn(messages, mount, locale, conversationId, gear) {
     headers: gear ? { [EVAL_GEAR_HEADER]: JSON.stringify(gear) } : undefined,
   });
   let msg = null;
-  for await (const m of readUIMessageStream({ stream, onError: () => {} })) {
+  for await (const m of readUIMessageStream({ stream, message: continuing, onError: () => {} })) {
     msg = m;
   }
   return msg;
+}
+
+// The gear card stops a turn until the user answers it. The eval answers as a guest who
+// declines (or as the case's `gearCardAnswer`) and lets Iris carry on, so the rest of the
+// reply is still graded. A case with `stopAtGearCard` grades only whether the card showed,
+// so it ends the dialog there instead of paying for the recommendation that follows.
+function answerGearCard(message, outcome) {
+  let answered = false;
+  const parts = message.parts.map((part) => {
+    if (part.type === "tool-askForGear" && part.state === "input-available") {
+      answered = true;
+      return { ...part, state: "output-available", output: { outcome } };
+    }
+    return part;
+  });
+  return answered ? { ...message, parts } : null;
 }
 
 function refsFromOutput(output) {
@@ -104,6 +120,7 @@ function digest(msg) {
   const searches = [];
   const details = [];
   const recalledRefs = new Set();
+  const toolsCalled = [];
   let steps = 0;
   const parts = msg?.parts ?? [];
   const lastToolIndex = parts.findLastIndex(
@@ -132,6 +149,7 @@ function digest(msg) {
     if (!name) {
       continue;
     }
+    toolsCalled.push(name);
     if (name === "queryLenses") {
       const returned = Array.isArray(part.output?.matches) ? part.output.matches.length : 0;
       queries.push({
@@ -205,6 +223,7 @@ function digest(msg) {
     recalledRefs: [...recalledRefs],
     steps,
     preToolText,
+    toolsCalled,
   };
 }
 
@@ -226,11 +245,19 @@ export default class AskIrisProvider {
     const messages = [];
     const convo = [];
     const recalledEver = new Set();
+    let gearCardShown = false;
     let d = digest(null);
     for (let i = 0; i < turns.length; i++) {
       messages.push({ id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text: turns[i] }] });
       convo.push(`[User] ${turns[i]}`);
-      const assistant = await postTurn(messages, mount, locale, conversationId, context?.vars?.gear);
+      let assistant = await postTurn(messages, mount, locale, conversationId, context?.vars?.gear);
+      const answered = assistant && answerGearCard(assistant, context?.vars?.gearCardAnswer ?? "not_signed_in");
+      if (answered) {
+        gearCardShown = true;
+        if (!context?.vars?.stopAtGearCard) {
+          assistant = await postTurn([...messages, answered], mount, locale, conversationId, context?.vars?.gear, answered);
+        }
+      }
       if (assistant) {
         messages.push(assistant);
         d = digest(assistant);
@@ -238,6 +265,9 @@ export default class AskIrisProvider {
           recalledEver.add(ref);
         }
         convo.push(`[Iris]\n${d.output}`);
+      }
+      if (gearCardShown && context?.vars?.stopAtGearCard) {
+        break;
       }
     }
     const transcript = convo.join("\n\n") || "(empty)";
@@ -260,6 +290,8 @@ export default class AskIrisProvider {
         recalledRefs: d.recalledRefs,
         steps: d.steps,
         preToolText: d.preToolText,
+        toolsCalled: d.toolsCalled,
+        gearCardShown,
         turnsRun: turns.length,
       },
     };

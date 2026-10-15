@@ -42,3 +42,60 @@ describe("resolveTurn", () => {
     expect(resolveTurn(stored, { ...text("a1", "user") }, "u1")).toEqual({ kind: "invalid" });
   });
 });
+
+describe("resolveTurn with a client tool's output", () => {
+  const asking: UIMessage = {
+    id: "a3",
+    role: "assistant",
+    parts: [
+      { type: "text", text: "stored prose" },
+      { type: "tool-askForGear", toolCallId: "call-1", state: "input-available", input: { lenses: ["18-55"] } },
+    ],
+  };
+  const history = [...stored, text("u3", "user"), asking];
+
+  function answered(output: unknown, extra: Partial<UIMessage> = {}): UIMessage {
+    return {
+      ...asking,
+      parts: [
+        { type: "text", text: "rewritten on the client" },
+        { type: "tool-askForGear", toolCallId: "call-1", state: "output-available", input: {}, output },
+      ],
+      ...extra,
+    } as UIMessage;
+  }
+
+  it("fills in the pending call's output on the stored response and keeps everything else stored", () => {
+    const turn = resolveTurn(history, answered({ outcome: "skipped" }), "u3", ["askForGear"]);
+
+    expect(turn).toEqual({
+      kind: "tool-result",
+      history: [
+        ...history.slice(0, -1),
+        {
+          ...asking,
+          parts: [
+            { type: "text", text: "stored prose" },
+            {
+              type: "tool-askForGear",
+              toolCallId: "call-1",
+              state: "output-available",
+              input: { lenses: ["18-55"] },
+              output: { outcome: "skipped" },
+            },
+          ],
+        },
+      ],
+      userMessage: history.at(-2),
+      historyChanged: false,
+    });
+  });
+
+  it("rejects an output for a tool the client may not answer", () => {
+    expect(resolveTurn(history, answered({ outcome: "skipped" }), "u3", []).kind).toBe("invalid");
+  });
+
+  it("rejects an assistant message that is not the stored last response", () => {
+    expect(resolveTurn(history, answered({ outcome: "saved" }, { id: "a2" }), "u3", ["askForGear"]).kind).toBe("invalid");
+  });
+});

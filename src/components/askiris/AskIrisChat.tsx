@@ -1,7 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from "ai";
 import { toast } from "sonner";
 import { track } from "@/lib/analytics/analytics";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
@@ -15,6 +15,8 @@ import { askIrisChatRequestBody } from "@/lib/askiris/chat-request";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
 import { LensLinkProvider } from "@/components/askiris/LensLinkContext";
 import type { LensLinkIndex } from "@/lib/ai/lens-ref";
+import type { LensSummary } from "@/lib/lens/data";
+import { ASK_FOR_GEAR } from "@/lib/ai/gear-request";
 import { clearEntryParams, type AskIrisEntry } from "@/lib/url/askiris";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
@@ -54,9 +56,11 @@ const SHELL_CLS =
 export default function AskIrisChat({
   entry,
   lensIndex,
+  lenses,
 }: {
   entry: AskIrisEntry;
   lensIndex: LensLinkIndex;
+  lenses: LensSummary[];
 }) {
   const initialQuery = entry.kind === "handoff" ? entry.query : undefined;
   const t = useTranslations("AskIris");
@@ -85,13 +89,15 @@ export default function AskIrisChat({
   });
   const { conversationId } = conversation;
   // Unthrottled, per-chunk re-renders trip React's update-depth limit.
-  const { messages, sendMessage, status, setMessages, stop, regenerate, error } = useChat<AskIrisUIMessage>({
+  const { messages, sendMessage, status, setMessages, stop, regenerate, error, addToolOutput } = useChat<AskIrisUIMessage>({
     id: conversationId,
     messages: conversation.initialMessages,
     transport,
     generateId: () => crypto.randomUUID(),
     messageMetadataSchema: askIrisMessageMetadataSchema,
     experimental_throttle: 50,
+    // A gear card's answer goes straight back to Iris, which carries on with the reply.
+    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
   });
   const isBusy = signingIn || status === "submitted" || status === "streaming";
   useTurnSync({
@@ -273,7 +279,16 @@ export default function AskIrisChat({
             onScroll={handleScroll}
             className="h-full space-y-4 overflow-y-auto pt-4 pr-3 pb-6 [scrollbar-width:thin] [scrollbar-color:rgb(212_212_216)_transparent] dark:[scrollbar-color:rgb(63_63_70)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300/70 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700/70"
           >
-            <AskIrisThread messages={renderMessages} debug={debug} busy={isBusy} />
+            <AskIrisThread
+              messages={renderMessages}
+              debug={debug}
+              busy={isBusy}
+              gearCard={{
+                lenses,
+                onAnswer: (toolCallId, output) =>
+                  void addToolOutput({ tool: ASK_FOR_GEAR, toolCallId, output, options: { body: turnBody } }),
+              }}
+            />
             {errorKind && (
               <AskIrisError kind={errorKind} onRetry={() => regenerate({ body: turnBody })} />
             )}

@@ -15,6 +15,7 @@ import {
 } from "@/lib/ai/recall";
 import { lensRef, buildRefIndex } from "@/lib/ai/lens-ref";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
+import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
 
 const RECALL_LIMIT = 20;
 
@@ -264,6 +265,18 @@ export function buildLensTools(
           `Rendered a table of ${output.lenses.length} lens(es) to the user, for: ` +
           output.lenses.map((lens) => lensRef(lens.id)).join(", "),
       }),
+    }),
+
+    // A client tool: the browser shows the gear card and returns what the user did.
+    [ASK_FOR_GEAR]: tool({
+      description:
+        "Show the user a card to add the camera bodies and lenses they own, before recommending, " +
+        "as the user-gear note describes. List any lens or body they mentioned so the card can " +
+        "prefill it. The turn then waits for the result: saved " +
+        "(their gear is now in the user-gear note), skipped, or not_signed_in. " +
+        "If skipped or not_signed_in, go on and recommend without their gear, and do not mention the card or that they skipped it.",
+      inputSchema: gearRequestInputSchema,
+      outputSchema: gearRequestOutputSchema,
     }),
   };
 }

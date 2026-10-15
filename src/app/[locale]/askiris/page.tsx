@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import AskIrisChat from "@/components/askiris/AskIrisChat";
 import { getLensLinkIndex } from "@/lib/ai/lens-link-index";
+import { getLensSummaries } from "@/lib/lens/data";
 import { resolveAskIrisEntry } from "@/lib/url/askiris";
 
 type Params = Promise<{ locale: string }>;
@@ -22,6 +23,10 @@ export default async function AskIrisPage({
   const { locale } = await params;
   setRequestLocale(locale);
   return (
-    <AskIrisChat entry={resolveAskIrisEntry(await searchParams)} lensIndex={getLensLinkIndex(locale)} />
+    <AskIrisChat
+      entry={resolveAskIrisEntry(await searchParams)}
+      lensIndex={getLensLinkIndex(locale)}
+      lenses={getLensSummaries(locale)}
+    />
   );
 }

@@ -12,10 +12,24 @@ Needs the dev server up (`localhost:3000`) and, for the judge, an OpenAI key.
 ```bash
 # from the repo root
 OPENAI_API_KEY=$(grep '^OPENAI_API_KEY=' .env.local | cut -d= -f2-) \
-  npx promptfoo@latest eval -c eval/promptfoo/promptfooconfig.yaml
+  pnpm dlx promptfoo@latest eval -c eval/promptfoo/promptfooconfig.yaml
 
-npx promptfoo@latest view      # local web UI: browse results, compare runs
+pnpm dlx promptfoo@latest view      # local web UI: browse results, compare runs
 ```
+
+## Cost
+
+Every case is a paid agent conversation (several model steps, ~14k input tokens each), and
+every LLM-graded assertion is a paid judge call. Run as little as answers the question:
+
+- Batch prompt edits and evaluate them together, not after each tweak.
+- While iterating, run only the cases the change affects (`--filter-pattern`), once. Repeat
+  (`--repeat 2`) only to confirm a result before pushing, or to tell a regression from noise.
+- Run the full suite once per PR, when the prompt work is done.
+- Check in Vitest whatever code decides (which note or tools a turn gets); the eval is only
+  for what the model decides.
+- A case that grades only whether the gear card showed sets `stopAtGearCard`, so it does not
+  pay for the recommendation after the card.
 
 `provider.mjs` imports `src/lib/ai/lens-ref.ts` directly rather than restating the hash,
 so it needs the repo's pinned Node (see `.nvmrc`) for type stripping — a second copy of
