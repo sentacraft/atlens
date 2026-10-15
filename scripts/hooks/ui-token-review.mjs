@@ -1,59 +1,14 @@
 #!/usr/bin/env node
 
-import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { emitContext, readHookEvent, repoRoot, touchedFiles } from "./touched-files.mjs";
 
-const input = readFileSync(0, "utf8");
-
-let event;
-try {
-  event = JSON.parse(input);
-} catch {
+const event = readHookEvent();
+if (!event) {
   process.exit(0);
 }
-
-const root = execFileSync("git", ["rev-parse", "--show-toplevel"], {
-  cwd: event.cwd || process.cwd(),
-  encoding: "utf8",
-}).trim();
-
-const candidates = new Set();
-
-function collect(value, key = "") {
-  if (typeof value === "string") {
-    if (key === "file_path" || key === "filePath" || key === "path") {
-      candidates.add(value);
-    }
-
-    if (key === "patch") {
-      for (const match of value.matchAll(/^\*\*\* (?:Update|Add|Delete) File: (.+)$/gm)) {
-        candidates.add(match[1]);
-      }
-    }
-    return;
-  }
-
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      collect(item, key);
-    }
-    return;
-  }
-
-  if (value && typeof value === "object") {
-    for (const [childKey, childValue] of Object.entries(value)) {
-      collect(childValue, childKey);
-    }
-  }
-}
-
-collect(event);
-
-function relativePath(candidate) {
-  const absolute = path.isAbsolute(candidate) ? candidate : path.resolve(root, candidate);
-  return path.relative(root, absolute);
-}
+const root = repoRoot(event);
 
 function isUiFile(relative) {
   if (relative.startsWith("src/components/") && relative.endsWith(".tsx")) {
@@ -93,7 +48,7 @@ const DESIGN_SOURCES = new Set([
   "src/components/askiris/ConversationHistory.tsx",
 ]);
 
-const touched = [...candidates].map(relativePath);
+const touched = touchedFiles(event, root);
 const uiFiles = touched.filter(isUiFile);
 const designFiles = touched.filter((file) => DESIGN_SOURCES.has(file));
 if (uiFiles.length === 0 && designFiles.length === 0) {
@@ -118,11 +73,4 @@ if (designFiles.length > 0) {
 }
 const additionalContext = sections.join("\n");
 
-process.stdout.write(
-  JSON.stringify({
-    hookSpecificOutput: {
-      hookEventName: "PostToolUse",
-      additionalContext,
-    },
-  }),
-);
+emitContext(additionalContext);

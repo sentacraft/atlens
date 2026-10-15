@@ -19,6 +19,12 @@
             "command": "node \"$(git rev-parse --show-toplevel)/scripts/hooks/ui-token-review.mjs\"",
             "timeout": 10,
             "statusMessage": "Checking shared UI tokens"
+          },
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/scripts/hooks/site-facts-review.mjs\"",
+            "timeout": 10,
+            "statusMessage": "Checking site facts"
           }
         ]
       }

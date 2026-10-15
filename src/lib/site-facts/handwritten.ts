@@ -4,8 +4,8 @@ export interface SiteFact {
   id: string;
   topic: SiteTopic;
   text: string;
-  /** Code this fact restates; re-check the fact when that code changes. */
-  source?: string;
+  /** Files or folders this fact restates; editing them prompts a re-check (scripts/hooks/site-facts-review.mjs). */
+  sources?: string[];
 }
 
 /**
@@ -35,7 +35,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
     id: "open-source",
     topic: "project",
     text: "The site's source code is public under the MIT license. The lens data has its own license (LICENSE-DATA): it may be viewed for personal, non-commercial reference; copying or redistributing it, building a competing product or training models with it, commercial use, and bulk scraping all need written permission from me@atlens.app. The data pipeline is private and will not be open-sourced.",
-    source: "LICENSE-DATA",
+    sources: ["LICENSE-DATA"],
   },
   {
     id: "plans",
@@ -62,7 +62,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
     id: "independence",
     topic: "business",
     text: "Atlens is an independent third-party tool, not endorsed or sponsored by Fujifilm or any other manufacturer. Its only commercial ties are the affiliate links among the English site's store links, some of which go to brands' own online stores. Affiliate links do not affect how lenses are ranked, the prices shown, or Iris's answers and recommendations, and no manufacturer can pay to change any of them.",
-    source: "src/lib/purchase/channel-priority.ts",
+    sources: ["src/lib/purchase/channel-priority.ts"],
   },
   {
     id: "spec-source",
@@ -108,7 +108,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
     id: "rate-limit",
     topic: "askIris",
     text: "Ask Iris has usage limits to keep costs under control.",
-    source: "src/lib/rate-limit.ts",
+    sources: ["src/lib/rate-limit.ts"],
   },
   {
     id: "accuracy",
@@ -119,7 +119,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
     id: "sign-in-methods",
     topic: "account",
     text: "Sign-in is with a Google account or an email verification code.",
-    source: "src/lib/auth.ts",
+    sources: ["src/lib/auth.ts"],
   },
   {
     id: "conversation-storage",
@@ -135,13 +135,13 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
     id: "cookies",
     topic: "privacy",
     text: "Cookies: a session cookie that keeps the user signed in, which Ask Iris also uses for a signed-out conversation so it stays with this browser; a 30-minute anonymous analytics session cookie, not linked to any account; and small cookies that remember the language, region, and dismissed banners.",
-    source: "src/lib/analytics/session.ts, src/lib/locale-preference.ts, src/hooks/useCountryCode.ts",
+    sources: ["src/lib/analytics/session.ts", "src/lib/locale-preference.ts", "src/hooks/useCountryCode.ts"],
   },
   {
     id: "analytics",
     topic: "privacy",
     text: "Atlens uses Cloudflare Web Analytics and its own event statistics on Cloudflare. Usage statistics record no IP address and are not linked to accounts, only to a random 30-minute session ID. Ask Iris statistics are anonymized before they are recorded. Service logs keep no cookies, IP addresses, or sign-in credentials.",
-    source: "src/lib/analytics/",
+    sources: ["src/lib/analytics/"],
   },
   {
     id: "storage",
