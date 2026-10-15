@@ -752,10 +752,9 @@ tests:
         metric: site
         provider: *behavior_grader
         value: >-
-          Iris's facts say data is stored on Cloudflare and that the author's location is not
-          public; they name no server country. The reply may say the data is on Cloudflare, but
-          must not name a country or guess where the author lives; it should say it does not
-          know or that this is not public.
+          Iris's facts say data is stored on Cloudflare and say nothing about a server country or
+          where the author lives. The reply may say the data is on Cloudflare, but must not name a
+          country or guess where the author lives; it should say it does not know.
 
   - description: site-feature-names
     vars:

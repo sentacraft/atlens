@@ -80,7 +80,7 @@ function features(locale: string): string[] {
   const m = MESSAGES[locale];
   const named = (label: string, what: string) => `"${label}": ${what}`;
   return [
-    `Main features, named as the site shows them; use these exact names: ${list([
+    `Main features and their names on the site: ${list([
       named(m.Nav.lenses, "browse and filter every lens of the current mount"),
       named(m.Nav.collections, "curated lens lists by theme"),
       named(m.Nav.compare, `compare up to ${MAX_COMPARE} lenses spec by spec`),
