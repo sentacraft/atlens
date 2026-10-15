@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { localized } from "@/i18n/localized";
 import { cn } from "@/lib/utils";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
@@ -27,15 +28,14 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
   const search = useCompareLensSearch();
   const clearCompareWithUndo = useClearCompareWithUndo();
   const locale = useLocale();
-  const lang = locale === "zh" ? "zh" : "en";
 
   const activeLenses = compareIds
     .map((id) => allLenses.find((l) => l.id === id))
     .filter((l): l is Lens => l !== undefined);
 
   const matchedPreset = useMemo(() => findPresetByIds(compareIds), [compareIds]);
-  const presetTitle = matchedPreset?.title[lang];
-  const presetSubtitle = matchedPreset?.subtitle[lang];
+  const presetTitle = matchedPreset ? localized(matchedPreset.title, locale) : undefined;
+  const presetSubtitle = matchedPreset ? localized(matchedPreset.subtitle, locale) : undefined;
 
   const isEmpty = activeLenses.length === 0;
 

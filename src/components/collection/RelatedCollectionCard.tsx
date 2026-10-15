@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { localized } from "@/i18n/localized";
 import { Link } from "@/i18n/navigation";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import type { Lens } from "@/lib/types";
@@ -17,7 +18,7 @@ export default function RelatedCollectionCard({
   locale,
   statsLabel,
 }: Props) {
-  const title = locale === "zh" ? collection.title.zh : collection.title.en;
+  const title = localized(collection.title, locale);
 
   return (
     <Link

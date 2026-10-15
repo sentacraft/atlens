@@ -12,6 +12,7 @@ import {
   weightDisplay,
   wrDisplay,
 } from "@/lib/lens/format";
+import { formatPrice, type PricingTranslator } from "@/lib/lens/pricing";
 import type { LensTableColumn, ResolvedLens } from "@/lib/ai/recall";
 
 type Labels = {
@@ -22,6 +23,7 @@ type Labels = {
   manual: string;
   used: string;
   na: string;
+  pricing: PricingTranslator;
 };
 
 const DETAIL_HEADER_KEY: Record<
@@ -40,10 +42,9 @@ const DETAIL_HEADER_KEY: Record<
   releaseYear: "releaseYear",
 };
 
-function priceCell(price: NonNullable<ResolvedLens["price"]>, usedLabel: string): string {
-  const symbol = price.currency === "CNY" ? "¥" : "$";
-  const used = price.condition === "used" ? ` ${usedLabel}` : "";
-  return `${symbol}${price.amount.toLocaleString()}${used}`;
+function priceCell(price: NonNullable<ResolvedLens["price"]>, l: Labels): string {
+  const amount = formatPrice(l.pricing, price.amount, price.currency);
+  return price.condition === "used" ? `${amount} ${l.used}` : amount;
 }
 
 // EVAL MIRROR: eval/promptfoo/provider.mjs hand-writes what the judges read from this table.
@@ -52,7 +53,7 @@ const RENDERERS: Record<LensTableColumn, (lens: ResolvedLens, l: Labels) => stri
   focalNative: (lens) => focalRangeDisplay(lens.focalNativeMm[0], lens.focalNativeMm[1]),
   aperture: (lens) => (lens.maxAperture != null ? apertureDisplay(lens.maxAperture) : null),
   weight: (lens) => weightDisplay(lens.weightG ?? undefined, "g") ?? null,
-  price: (lens, l) => (lens.price ? priceCell(lens.price, l.used) : null),
+  price: (lens, l) => (lens.price ? priceCell(lens.price, l) : null),
   magnification: (lens) => (lens.magnification != null ? `${lens.magnification}×` : null),
   minFocusDistance: (lens) => mfdHeroValue(lens.minFocusDistance) ?? null,
   focus: (lens, l) => (lens.af ? l.auto : l.manual),
@@ -83,6 +84,7 @@ export default function LensTable({
     manual: t("manual"),
     used: t("used"),
     na: td("missing"),
+    pricing: tp,
   };
 
   const headerFor = (col: LensTableColumn): string => {

@@ -25,9 +25,9 @@ export function PriceSection({ lens }: Props) {
   }
 
   const { entry } = selection;
-  const priceDisplay = formatPrice(entry.price, entry.currency, locale, t.raw("cnyAmount"));
+  const priceDisplay = formatPrice(t, entry.price, entry.currency);
   const sourceDisplay = entry.source;
-  const sampledDisplay = formatSampledAt(entry.sampledAt, locale);
+  const sampledDisplay = formatSampledAt(t, entry.sampledAt);
 
   return (
     <div className="flex flex-col gap-1">

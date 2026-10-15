@@ -129,8 +129,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
     na: tImage("na"),
     priceLabel: tImage("priceLabel"),
     usedBadge: tImage("usedBadge"),
-    cnyAmount: tPricing.raw("cnyAmount"),
-    sampledAt: tPricing.raw("sampledAt"),
+    pricing: tPricing,
     disclaimerWarn: tPricing("disclaimerWarn"),
     locale,
   };
