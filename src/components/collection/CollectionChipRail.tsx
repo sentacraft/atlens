@@ -1,8 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { useScrollSpy } from "@/hooks/useScrollSpy";
 import { useNav } from "@/context/NavProvider";
 import { HorizontalScrollRail } from "@/components/ui/horizontal-scroll-rail";
+import { CHIP_ACTIVE_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS } from "@/config/ui-tokens";
 
 interface Section {
   id: string;
@@ -23,58 +25,10 @@ export default function CollectionChipRail({
   totalCount,
   allLabel,
 }: CollectionChipRailProps) {
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const ids = useMemo(() => sections.map((s) => s.id), [sections]);
+  const { activeId, scrollTo } = useScrollSpy(ids, { topSentinelId: TOP_SENTINEL });
   const { navHidden } = useNav();
   const railRef = useRef<HTMLDivElement>(null);
-  const isClickScrolling = useRef(false);
-
-  useEffect(() => {
-    const ids = sections.map((s) => s.id);
-
-    function pickActive() {
-      if (isClickScrolling.current) {
-        return;
-      }
-
-      const topEl = document.getElementById(TOP_SENTINEL);
-      if (topEl) {
-        const topRect = topEl.getBoundingClientRect();
-        if (topRect.bottom > 0) {
-          setActiveId(null);
-          return;
-        }
-      }
-
-      const atBottom =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 2;
-      if (atBottom && ids.length > 0) {
-        setActiveId(ids[ids.length - 1]);
-        return;
-      }
-
-      const threshold = window.innerHeight * 0.35;
-      let best: string | null = null;
-
-      for (const id of ids) {
-        const el = document.getElementById(id);
-        if (!el) {
-          continue;
-        }
-        if (el.getBoundingClientRect().top <= threshold) {
-          best = id;
-        }
-      }
-
-      if (best) {
-        setActiveId(best);
-      }
-    }
-
-    pickActive();
-    window.addEventListener("scroll", pickActive, { passive: true });
-    return () => window.removeEventListener("scroll", pickActive);
-  }, [sections]);
 
   useEffect(() => {
     const rail = railRef.current;
@@ -103,34 +57,6 @@ export default function CollectionChipRail({
     }
   }, [activeId, sections]);
 
-  const scrollTo = useCallback(
-    (id: string | null) => {
-      setActiveId(id);
-      isClickScrolling.current = true;
-
-      if (id === null) {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      } else {
-        const el = document.getElementById(id);
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth" });
-        }
-      }
-
-      setTimeout(() => {
-        isClickScrolling.current = false;
-      }, 800);
-    },
-    [],
-  );
-
-  const chipBase =
-    "flex-shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium cursor-pointer transition-all duration-150 select-none";
-  const chipIdle =
-    "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-900 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-100 dark:hover:text-zinc-100";
-  const chipActive =
-    "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900";
-
   return (
     <HorizontalScrollRail
       scrollRef={railRef}
@@ -143,7 +69,7 @@ export default function CollectionChipRail({
         type="button"
         data-active={activeId === null}
         onClick={() => scrollTo(null)}
-        className={`${chipBase} ${activeId === null ? chipActive : chipIdle}`}
+        className={`${CHIP_BASE_CLS} ${activeId === null ? CHIP_ACTIVE_CLS : CHIP_IDLE_CLS}`}
       >
         {allLabel}
         <span
@@ -161,7 +87,7 @@ export default function CollectionChipRail({
             type="button"
             data-active={isActive}
             onClick={() => scrollTo(s.id)}
-            className={`${chipBase} ${isActive ? chipActive : chipIdle}`}
+            className={`${CHIP_BASE_CLS} ${isActive ? CHIP_ACTIVE_CLS : CHIP_IDLE_CLS}`}
           >
             {s.label}
             <span

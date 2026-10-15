@@ -10,6 +10,7 @@ export const STATIC_LOCALIZED_SUBPATHS = [
   "about",
   "recently-added",
   "get",
+  "me",
   "lenses/x/browse",
   "lenses/gfx/browse",
 ] as const;

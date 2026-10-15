@@ -40,3 +40,17 @@ export async function updateUserSettings(
     .run();
   return next;
 }
+
+/** The language an account saved, looked up by email for mail sent before sign-in. */
+export async function getSavedLocaleByEmail(
+  db: D1Database,
+  email: string,
+): Promise<UserSettings["locale"]> {
+  const row = await db
+    .prepare(
+      "SELECT s.locale FROM user u JOIN user_settings s ON s.user_id = u.id WHERE u.email = ? COLLATE NOCASE",
+    )
+    .bind(email)
+    .first<{ locale: UserSettings["locale"] }>();
+  return row?.locale ?? null;
+}

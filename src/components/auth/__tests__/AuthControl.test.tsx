@@ -4,7 +4,6 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-libra
 import AuthControl from "../AuthControl";
 
 const session = vi.hoisted(() => ({ current: { data: null as unknown } }));
-const deleteUser = vi.hoisted(() => vi.fn());
 const sendVerificationOtp = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/auth-client", async (importOriginal) => ({
@@ -12,7 +11,6 @@ vi.mock("@/lib/auth-client", async (importOriginal) => ({
   authClient: {
     useSession: () => session.current,
     signOut: vi.fn(),
-    deleteUser,
     emailOtp: { sendVerificationOtp },
   },
 }));
@@ -22,6 +20,9 @@ vi.mock("next-intl", () => ({
   useLocale: () => "zh",
 }));
 vi.mock("@/context/TestHookProvider", () => ({ useTestHookEnabled: () => true }));
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({ href, ...props }: { href: string }) => <a href={href} {...props} />,
+}));
 
 afterEach(() => {
   cleanup();
@@ -51,18 +52,14 @@ describe("AuthControl", () => {
     expect(screen.queryByRole("button", { name: "login" })).toBeNull();
   });
 
-  it("emails a confirmation link instead of deleting at once", async () => {
+  it("links the account menu to the profile page and no longer offers deletion", async () => {
     session.current = { data: user(false) };
-    deleteUser.mockResolvedValue({ error: null });
 
     render(<AuthControl />);
     fireEvent.click(screen.getByRole("button", { name: "accountLabel" }));
-    fireEvent.click(await screen.findByRole("menuitem", { name: "deleteAccount" }));
-    fireEvent.click(await screen.findByRole("button", { name: "deleteEmailSend" }));
 
-    await waitFor(() => expect(screen.getByText(/^deleteEmailSent/)).toBeInTheDocument());
-    expect(deleteUser).toHaveBeenCalledWith({ callbackURL: "/zh" });
-    expect(screen.queryByRole("button", { name: "deleteEmailSend" })).toBeNull();
+    expect(await screen.findByRole("menuitem", { name: "profile" })).toHaveAttribute("href", "/me");
+    expect(screen.queryByRole("menuitem", { name: "deleteAccount" })).toBeNull();
   });
 
   it("lets the user resend the code once the cooldown ends", async () => {

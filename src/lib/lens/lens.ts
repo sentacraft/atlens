@@ -307,10 +307,6 @@ export function sortLenses(
   });
 }
 
-export function defaultMarketForLocale(locale: string): "cn" | "global" {
-  return locale === "zh" ? "cn" : "global";
-}
-
 export function leadingValue(value: number | [number, number] | undefined): number | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
