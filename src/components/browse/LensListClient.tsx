@@ -27,7 +27,7 @@ import LensSortControl from "@/components/browse/LensSortControl";
 import LensSearchDialog, { suggestLensFooter } from "@/components/browse/LensSearchDialog";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SEARCH_TRIGGER_CLS } from "@/config/ui-tokens";
+import { LENS_GRID_CLS, SEARCH_TRIGGER_CLS } from "@/config/ui-tokens";
 import { mountToUrlSegment } from "@/lib/mount";
 
 interface LensListClientProps {
@@ -193,7 +193,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
           <div
             ref={gridRef}
             {...hookAttr("grid")}
-            className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
+            className={LENS_GRID_CLS}
           >
             {displayed.map((lens, i) => (
               <LensCard
