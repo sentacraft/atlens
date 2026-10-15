@@ -46,9 +46,9 @@ for (const file of touchedFiles(event, root)) {
 if (offending.length > 0) {
   emitContext(
     [
-      "The latest edit put Chinese text in a file where it does not belong:",
+      "The latest edit left Chinese text in a file that should not contain any:",
       ...offending,
-      "Move UI copy to src/messages/zh.json and model-facing wording to src/lib/ai/system-prompt.ts; write comments in English. If this file genuinely needs Chinese, add it to ALLOWED in scripts/hooks/cjk-guard.mjs with the reason.",
+      "Decide which applies to each line: rewrite it in English (comments, identifiers, English strings); move it where Chinese belongs (UI copy to src/messages/zh.json, model-facing wording to src/lib/ai/system-prompt.ts); or, if this file genuinely needs Chinese, add it to ALLOWED in scripts/hooks/cjk-guard.mjs with the reason.",
     ].join("\n"),
   );
 }
