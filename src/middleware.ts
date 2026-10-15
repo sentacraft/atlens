@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 import { INTERNAL_COOKIE } from "@/lib/analytics/session";
+import { savedLocaleRedirect } from "@/lib/me/locale-preference";
 
 // Internal param: keep the Obsidian doc "Internal params & cookies" in sync.
 const COUNTRY_COOKIE = "xg_country";
@@ -26,7 +27,7 @@ export default function middleware(req: NextRequest) {
     return res;
   }
 
-  const res = i18nMiddleware(req);
+  const res = savedLocaleRedirect(req) ?? i18nMiddleware(req);
   const country = req.headers.get("cf-ipcountry");
   if (country) {
     res.cookies.set(COUNTRY_COOKIE, country, {

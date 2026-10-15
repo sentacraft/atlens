@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNav } from "@/context/NavProvider";
 import { HorizontalScrollRail } from "@/components/ui/horizontal-scroll-rail";
+import { CHIP_ACTIVE_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS } from "@/config/ui-tokens";
 
 interface Section {
   id: string;
@@ -124,13 +125,6 @@ export default function CollectionChipRail({
     [],
   );
 
-  const chipBase =
-    "flex-shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium cursor-pointer transition-all duration-150 select-none";
-  const chipIdle =
-    "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-900 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-100 dark:hover:text-zinc-100";
-  const chipActive =
-    "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900";
-
   return (
     <HorizontalScrollRail
       scrollRef={railRef}
@@ -143,7 +137,7 @@ export default function CollectionChipRail({
         type="button"
         data-active={activeId === null}
         onClick={() => scrollTo(null)}
-        className={`${chipBase} ${activeId === null ? chipActive : chipIdle}`}
+        className={`${CHIP_BASE_CLS} ${activeId === null ? CHIP_ACTIVE_CLS : CHIP_IDLE_CLS}`}
       >
         {allLabel}
         <span
@@ -161,7 +155,7 @@ export default function CollectionChipRail({
             type="button"
             data-active={isActive}
             onClick={() => scrollTo(s.id)}
-            className={`${chipBase} ${isActive ? chipActive : chipIdle}`}
+            className={`${CHIP_BASE_CLS} ${isActive ? CHIP_ACTIVE_CLS : CHIP_IDLE_CLS}`}
           >
             {s.label}
             <span

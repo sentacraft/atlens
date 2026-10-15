@@ -7,6 +7,7 @@ import { nextCookies } from "better-auth/next-js";
 import { D1Dialect } from "kysely-d1";
 import { linkAnonymousUser } from "@/lib/askiris/link-anonymous-user";
 import { authEmailLocale, deleteAccountEmail, signInCodeEmail } from "@/lib/auth-email";
+import { getSavedLocaleByEmail, getUserSettings } from "@/lib/me/settings-repository";
 
 function getAuthContext() {
   const context = getCloudflareContext();
@@ -63,10 +64,11 @@ export function createAuth() {
         // Without a confirmation email, deletion needs a session under a day old: these
         // accounts have no password to re-check instead.
         async sendDeleteAccountVerification({ user, url }, request) {
+          const { locale } = await getUserSettings(env.APP_DB, user.id);
           await env.EMAIL.send({
             from: env.AUTH_EMAIL_FROM,
             to: user.email,
-            ...deleteAccountEmail(authEmailLocale(request?.headers), url),
+            ...deleteAccountEmail(locale ?? authEmailLocale(request?.headers), url),
           });
         },
       },
@@ -94,10 +96,11 @@ export function createAuth() {
       emailOTP({
         storeOTP: "hashed",
         async sendVerificationOTP({ email, otp }, ctx) {
+          const locale = await getSavedLocaleByEmail(env.APP_DB, email);
           await env.EMAIL.send({
             from: env.AUTH_EMAIL_FROM,
             to: email,
-            ...signInCodeEmail(authEmailLocale(ctx?.headers), otp),
+            ...signInCodeEmail(locale ?? authEmailLocale(ctx?.headers), otp),
           });
         },
       }),

@@ -20,6 +20,13 @@ export const LIST_ITEM_ACTIVE_CLS =
 
 export const ACTIVE_DOT_CLS = "bg-zinc-900 dark:bg-zinc-100";
 
+export const CHIP_BASE_CLS =
+  "flex-shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium cursor-pointer transition-all duration-150 select-none";
+export const CHIP_IDLE_CLS =
+  "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-900 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-100 dark:hover:text-zinc-100";
+export const CHIP_ACTIVE_CLS =
+  "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900";
+
 export const ICON_NAV_BTN_CLS =
   "inline-flex shrink-0 items-center justify-center rounded-lg transition-colors " +
   "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 active:bg-zinc-100 active:text-zinc-900 " +
