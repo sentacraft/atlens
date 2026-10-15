@@ -4,7 +4,6 @@ import { Drawer } from "@base-ui/react/drawer";
 import { History, Plus, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { Z } from "@/config/ui";
 import {
   ACTION_OUTLINE_CLS,
   ICON_CLOSE_BTN_CLS,
@@ -48,7 +47,6 @@ export default function ConversationHistory({
         <Drawer.Backdrop
           className={cn(
             "fixed inset-0 bg-zinc-950/40 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0",
-            Z.dialog,
           )}
         />
         <Drawer.Viewport>
@@ -57,7 +55,6 @@ export default function ConversationHistory({
               "fixed inset-y-0 left-0 flex w-[min(20rem,85vw)] flex-col border-r border-zinc-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-950",
               "pt-[calc(var(--safe-inset-top)+var(--titlebar-height))] pb-[var(--safe-inset-bottom)]",
               "transition-transform duration-200 data-ending-style:-translate-x-full data-starting-style:-translate-x-full data-[swipe-dismiss]:!transition-none",
-              Z.dialog,
             )}
           >
             <div className="flex items-center justify-between gap-3 px-4 pt-4 pb-3">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { X } from "lucide-react";
@@ -72,7 +72,6 @@ export default function FeedbackDialog({
   const [wantsReply, setWantsReply] = useState(false);
   const wantsReplyCheckboxId = useId();
   const [submitAttempted, setSubmitAttempted] = useState(false);
-  const dialogLayerRef = useRef<HTMLDivElement | null>(null);
   const textareaId = useId();
   const correctionId = useId();
   const contactId = useId();
@@ -245,7 +244,7 @@ export default function FeedbackDialog({
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={t("fieldPickerPlaceholder")} />
                   </SelectTrigger>
-                  <SelectContent portalContainer={dialogLayerRef}>
+                  <SelectContent>
                     {groupedFields.map((group) => (
                       <SelectGroup key={group.label}>
                         {group.label && <SelectLabel>{group.label}</SelectLabel>}
@@ -375,8 +374,6 @@ export default function FeedbackDialog({
             </>
           </DialogFooter>
         ) : null}
-        {/* Portal anchor inside the dialog, so picking a field does not dismiss the dialog. */}
-        <div ref={dialogLayerRef} />
       </DialogPopup>
     </Dialog>
   );

@@ -53,7 +53,7 @@ export default function AuthControl() {
         />
       </Menu.Trigger>
       <Menu.Portal>
-        <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50">
+        <Menu.Positioner side="bottom" align="end" sideOffset={6}>
           <Menu.Popup className={cn(MENU_POPUP_CLS, "w-64")}>
             <div className="flex items-center gap-3 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
               <Avatar
