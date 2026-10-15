@@ -26,12 +26,12 @@ class SqliteStatement {
   }
 
   async run() {
-    this.db.prepare(this.sql).run(...this.params);
-    return { success: true };
+    return this.runSync();
   }
 
   runSync() {
-    this.db.prepare(this.sql).run(...this.params);
+    const { changes } = this.db.prepare(this.sql).run(...this.params);
+    return { success: true, meta: { changes: Number(changes) } };
   }
 }
 
@@ -50,15 +50,13 @@ export function createSqliteD1(migrationsDir: string) {
     batch: async (statements: SqliteStatement[]) => {
       db.exec("BEGIN");
       try {
-        for (const statement of statements) {
-          statement.runSync();
-        }
+        const results = statements.map((statement) => statement.runSync());
         db.exec("COMMIT");
+        return results;
       } catch (error) {
         db.exec("ROLLBACK");
         throw error;
       }
-      return [];
     },
   };
 

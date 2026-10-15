@@ -18,6 +18,7 @@ import {
   CHIP_ACTIVE_CLS,
   CHIP_BASE_CLS,
   ICON_NAV_BTN_CLS,
+  MENU_ITEM_DANGER_CLS,
   MENU_POPUP_CLS,
 } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
@@ -422,7 +423,7 @@ function GearRow({
             <Menu.Popup className={cn(MENU_POPUP_CLS, "w-36")}>
               <Menu.Item
                 onClick={onRemove}
-                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+                className={MENU_ITEM_DANGER_CLS}
               >
                 <Trash2 className="h-4 w-4 shrink-0" />
                 {t("remove")}

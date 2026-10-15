@@ -69,6 +69,10 @@ afterEach(() => {
   document.body.innerHTML = "";
 });
 
+function historyButton(container: HTMLElement) {
+  return [...container.querySelectorAll("button")].find((button) => button.textContent === "history") ?? null;
+}
+
 describe("AskIrisChat hydration", () => {
   // Streaming hydration can reach this page after Nav's AuthControl has already
   // resolved Better Auth's shared session store. Uses the real auth client, whose
@@ -78,7 +82,7 @@ describe("AskIrisChat hydration", () => {
     const container = document.createElement("div");
     container.innerHTML = renderToString(<Chat />);
     document.body.appendChild(container);
-    expect(container.querySelector('button[aria-label="openHistory"]')).toBeNull();
+    expect(historyButton(container)).toBeNull();
 
     authClient.hydrateSession(signedIn);
     const onRecoverableError = vi.fn();
@@ -89,7 +93,7 @@ describe("AskIrisChat hydration", () => {
     });
 
     expect(onRecoverableError).not.toHaveBeenCalled();
-    expect(container.querySelector('button[aria-label="openHistory"]')).not.toBeNull();
+    expect(historyButton(container)).not.toBeNull();
   });
 
   it("keeps the history entry behind test hooks", async () => {
@@ -103,6 +107,6 @@ describe("AskIrisChat hydration", () => {
       createRoot(container).render(<Chat />);
     });
 
-    expect(container.querySelector('button[aria-label="openHistory"]')).toBeNull();
+    expect(historyButton(container)).toBeNull();
   });
 });

@@ -88,3 +88,8 @@ export const MENU_POPUP_CLS =
   "overflow-hidden origin-(--transform-origin) duration-100 " +
   "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 " +
   "data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95";
+
+export const MENU_ITEM_CLS =
+  "flex cursor-default items-center gap-2.5 px-4 py-2.5 text-sm text-zinc-600 outline-none transition-colors hover:bg-zinc-50 hover:text-zinc-900 data-[highlighted]:bg-zinc-50 data-[highlighted]:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:data-[highlighted]:bg-zinc-800 dark:data-[highlighted]:text-zinc-50";
+export const MENU_ITEM_DANGER_CLS =
+  "flex cursor-default items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 outline-none transition-colors hover:bg-red-50 data-[highlighted]:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30 dark:data-[highlighted]:bg-red-950/30";

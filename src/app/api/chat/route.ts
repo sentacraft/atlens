@@ -36,6 +36,7 @@ import {
   ConversationOwnershipError,
   loadAskIrisTurnHistory,
 } from "@/lib/askiris/conversation-repository";
+import { MAX_CONVERSATION_TITLE_LENGTH } from "@/lib/askiris/conversation-contract";
 import { resolveTurn } from "@/lib/askiris/turn-history";
 import { createAuth } from "@/lib/auth";
 import {
@@ -306,7 +307,7 @@ export async function POST(req: Request) {
           userId,
           title: String(
             userMessage.parts.find((part) => part.type === "text")?.text ?? "New conversation",
-          ).slice(0, 120),
+          ).slice(0, MAX_CONVERSATION_TITLE_LENGTH),
           userMessage: turn.kind === "new" ? userMessage : undefined,
           replaceAfterMessageId: turn.kind === "regenerate" ? userMessage.id : undefined,
           responseMessage: result.responseMessage,
