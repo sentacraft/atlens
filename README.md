@@ -185,7 +185,7 @@ Rules the agents cannot talk their way around live in code, not in prompts:
 - **Tests in both directions.** Each guard has regression tests for what it must block and for what it must still allow.
 
 ```mermaid
-flowchart LR
+flowchart TD
   AGENT["Pipeline agent"] -->|"tool call"| GUARD{"Pre-tool guard"}
   GUARD -->|"blocked"| AGENT
   GUARD -->|"allowed"| WRITE["write command<br/>stage boundary · schema · provenance"]
