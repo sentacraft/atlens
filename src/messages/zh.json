@@ -130,7 +130,7 @@
     "yes": "有",
     "no": "没有",
     "moreFields": "更多参数（选填）",
-    "moreFieldsHint": "转接、特性、用途、备注等",
+    "moreFieldsHint": "转接、特性、重量、备注等",
     "adapted": "通过转接环使用",
     "adaptedHelp": "镜头原本是别的卡口（比如尼康、佳能单反镜头，或 M42 螺口老镜头），通过转接环装到富士机身上用，就勾选这里，并填写它原本的卡口。",
     "adaptedHelpLabel": "什么是转接环",

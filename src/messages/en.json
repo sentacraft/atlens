@@ -130,7 +130,7 @@
     "yes": "Yes",
     "no": "No",
     "moreFields": "More details (optional)",
-    "moreFieldsHint": "Adapter, features, use and notes",
+    "moreFieldsHint": "Adapter, features, weight and notes",
     "adapted": "Used with an adapter",
     "adaptedHelp": "Tick this when the lens was made for another mount (a Nikon or Canon SLR lens, or an M42 screw-mount lens) and goes on the Fujifilm body through an adapter, then give its original mount.",
     "adaptedHelpLabel": "What is an adapter",
