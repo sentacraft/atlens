@@ -49,6 +49,7 @@ export function emptyDraft(mount: Mount): ManualLensDraft {
     originalMount: "",
     features: [],
     opticalTraits: [],
+    usage: "photo",
     weight: "",
     notes: "",
   };

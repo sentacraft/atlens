@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { CircleHelp, X } from "lucide-react";
+import { ChevronDown, CircleHelp, X } from "lucide-react";
 import { OPTICAL_TRAITS, type Mount, type OpticalTrait } from "@/lib/types";
 import { FOCUS_MOTORS, type ManualLens } from "@/lib/me/gear-schema";
 import {
@@ -172,7 +172,7 @@ function ManualLensForm({
   return (
     <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
       <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-4">
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-[2fr_3fr]">
           {field(
             "brand",
             t("brand"),
@@ -312,9 +312,10 @@ function ManualLensForm({
         </div>
 
         <details className="group border-t border-zinc-100 pt-4 dark:border-zinc-800">
-          <summary className="flex cursor-pointer list-none flex-wrap items-baseline gap-x-2 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+          <summary className="flex cursor-pointer list-none items-center gap-x-2 text-sm font-medium text-zinc-900 dark:text-zinc-100">
             {t("moreFields")}
-            <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">{t("moreFieldsHint")}</span>
+            <span className="min-w-0 flex-1 truncate text-xs font-normal text-zinc-500 dark:text-zinc-400">{t("moreFieldsHint")}</span>
+            <ChevronDown className="h-4 w-4 shrink-0 text-zinc-500 transition-transform group-open:rotate-180 dark:text-zinc-400" />
           </summary>
           <div className="mt-4 space-y-5">
             <div className="space-y-3">
