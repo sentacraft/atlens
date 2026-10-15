@@ -419,7 +419,7 @@ function GearRow({
           <Ellipsis className="h-4 w-4" />
         </Menu.Trigger>
         <Menu.Portal>
-          <Menu.Positioner side="bottom" align="end" sideOffset={4} className="z-50">
+          <Menu.Positioner side="bottom" align="end" sideOffset={4}>
             <Menu.Popup className={cn(MENU_POPUP_CLS, "w-36")}>
               <Menu.Item
                 onClick={onRemove}

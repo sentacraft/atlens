@@ -188,7 +188,7 @@ export default function Nav() {
               <EllipsisVertical className="h-5 w-5" />
             </Menu.Trigger>
             <Menu.Portal>
-              <Menu.Positioner side="bottom" align="end" sideOffset={6} className="z-50 sm:hidden">
+              <Menu.Positioner side="bottom" align="end" sideOffset={6} className="sm:hidden">
                 <Menu.Popup className={cn(MENU_POPUP_CLS, "w-36")}>
                   <Menu.LinkItem
                     render={<Link href={compareHref} />}

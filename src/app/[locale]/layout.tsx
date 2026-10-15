@@ -142,21 +142,24 @@ export default async function LocaleLayout({
               <Suspense fallback={null}>
                 <Redaction />
               </Suspense>
-              {TESTHOOK_ALLOWED ? (
-                // Wraps Nav too: its AuthControl reads the persisted test hook state.
-                <TestHookProvider>
-                  <Nav />
-                  <PageFrame>
-                    {children}
-                    <TestHookPanel model={agentModelInfo()} />
-                  </PageFrame>
-                </TestHookProvider>
-              ) : (
-                <>
-                  <Nav />
-                  <PageFrame>{children}</PageFrame>
-                </>
-              )}
+              {/* Base UI portals popups to <body>; isolating the page keeps them above any z-index in it (https://base-ui.com/react/overview/quick-start). */}
+              <div className="isolate">
+                {TESTHOOK_ALLOWED ? (
+                  // Wraps Nav too: its AuthControl reads the persisted test hook state.
+                  <TestHookProvider>
+                    <Nav />
+                    <PageFrame>
+                      {children}
+                      <TestHookPanel model={agentModelInfo()} />
+                    </PageFrame>
+                  </TestHookProvider>
+                ) : (
+                  <>
+                    <Nav />
+                    <PageFrame>{children}</PageFrame>
+                  </>
+                )}
+              </div>
             </NavProvider>
           </SignInDialogProvider>
           </CompareProvider>

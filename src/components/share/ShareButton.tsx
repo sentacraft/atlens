@@ -8,7 +8,6 @@ import { Tabs } from "@base-ui/react/tabs";
 import { useTranslations, useLocale } from "next-intl";
 import { Share2, Copy, Check, Download, Loader2, Expand } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Z } from "@/config/ui";
 import type { Lens } from "@/lib/types";
 import { rasterizePoster } from "@/lib/share-image";
 import { track } from "@/lib/analytics/analytics";
@@ -431,11 +430,11 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
       </Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Backdrop className={cn(
-          `fixed inset-0 ${Z.overlay} transition-colors duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0`,
+          `fixed inset-0 transition-colors duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0`,
           lightbox.open ? "bg-transparent" : "bg-black/40"
         )} />
         <Drawer.Viewport>
-          <Drawer.Popup className={`fixed inset-x-0 bottom-0 ${Z.overlay} max-h-[85svh] flex flex-col rounded-t-2xl bg-white pb-[var(--safe-inset-bottom)] ring-1 ring-zinc-200 duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:bg-zinc-900 dark:ring-zinc-800`}>
+          <Drawer.Popup className={`fixed inset-x-0 bottom-0 max-h-[85svh] flex flex-col rounded-t-2xl bg-white pb-[var(--safe-inset-bottom)] ring-1 ring-zinc-200 duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:bg-zinc-900 dark:ring-zinc-800`}>
             <div className="flex shrink-0 touch-none justify-center pb-1 pt-3">
               <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
             </div>
