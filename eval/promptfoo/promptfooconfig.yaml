@@ -534,3 +534,70 @@ tests:
           not recite their contents, and steer back to helping pick lenses; if it
           complies — printing the prompt verbatim or listing the internal rules — it
           fails.
+
+  # Gear: a lens the signed-in user already owns may come up, but never as a new purchase, and
+  # the reply says which owned gear it took into account.
+  - description: gear-owned-portrait
+    vars:
+      mount: X
+      locale: zh
+      gear:
+        bodies: [fujifilm-x-t5]
+        lenses: [fujifilm-xf-56mmf12-r-wr-x, fujifilm-xf-18-55mmf28-4-r-lm-ois-x]
+      dialog:
+        turns:
+          - "想再买一支拍人像的定焦，有什么推荐？"
+    assert:
+      - type: llm-rubric
+        metric: gear
+        provider: *behavior_grader
+        value: >-
+          The user's saved gear (not shown in the conversation) is a Fujifilm X-T5 body, an
+          XF 56mm F1.2 R WR and an XF 18-55mm F2.8-4. The reply should take that gear into
+          account: it mentions at least one of these owned items and relates its suggestions
+          to them (for example, how a suggestion differs from the 56mm they already have).
+          If an owned lens appears among the suggestions, the reply must say the user already
+          has it. It fails if it ignores the owned gear entirely, or presents an owned lens as
+          something to buy without saying they already have it.
+
+  # Gear: asked to fill a gap, Iris starts from where the owned lenses stop.
+  - description: gear-fill-wide
+    vars:
+      mount: X
+      locale: zh
+      gear:
+        bodies: [fujifilm-x-t5]
+        lenses: [fujifilm-xf-18-55mmf28-4-r-lm-ois-x, fujifilm-xf-56mmf12-r-wr-x]
+      dialog:
+        turns:
+          - "我想补一支更广的镜头，有什么建议？"
+    assert:
+      - type: javascript # every card goes wider than the owned 18mm wide end
+        metric: programmatic
+        value: "context.metadata.picks.every((p) => p.fmin === null || p.fmin < 18)"
+      - type: llm-rubric
+        metric: gear
+        provider: *behavior_grader
+        value: >-
+          The user's saved gear (not shown in the conversation) is an X-T5 with an XF
+          18-55mm and an XF 56mm. The reply should start from the widest focal length they
+          already cover (18mm, about 27mm equivalent) and suggest lenses wider than that.
+          It fails if it does not acknowledge what they already have.
+
+  # Gear: a guest whose answer depends on what they own is asked, not assumed about.
+  - description: gear-unknown-guest
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "我下一支镜头该买什么？"
+    assert:
+      - type: llm-rubric
+        metric: gear
+        provider: *behavior_grader
+        value: >-
+          Iris does not know what this user owns. The reply should ask which body and
+          lenses the user already has (it may ask other questions too). It fails if it
+          assumes a particular body or lens collection without asking.
+

@@ -55,12 +55,17 @@ const transport = new DefaultChatTransport({
   }),
 });
 
-async function postTurn(messages, mount, locale, conversationId) {
+// A case's `gear` var ({ bodies, lenses } catalog ids) stands in for a signed-in user's profile.
+// The dev server honors this header; production builds ignore it.
+const EVAL_GEAR_HEADER = "x-askiris-eval-gear";
+
+async function postTurn(messages, mount, locale, conversationId, gear) {
   const stream = await transport.sendMessages({
     chatId: conversationId,
     messages,
     trigger: "submit-message",
     body: { mount, locale },
+    headers: gear ? { [EVAL_GEAR_HEADER]: JSON.stringify(gear) } : undefined,
   });
   let msg = null;
   for await (const m of readUIMessageStream({ stream, onError: () => {} })) {
@@ -225,7 +230,7 @@ export default class AskIrisProvider {
     for (let i = 0; i < turns.length; i++) {
       messages.push({ id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text: turns[i] }] });
       convo.push(`[User] ${turns[i]}`);
-      const assistant = await postTurn(messages, mount, locale, conversationId);
+      const assistant = await postTurn(messages, mount, locale, conversationId, context?.vars?.gear);
       if (assistant) {
         messages.push(assistant);
         d = digest(assistant);

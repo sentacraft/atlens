@@ -1,3 +1,4 @@
+import type { GearBody, GearLens, GearSummary } from "@/lib/ai/gear-context";
 import type { Mount } from "@/lib/types";
 
 // This prompt drifts, so edits follow these rules: say which section a new paragraph joins
@@ -34,6 +35,8 @@ export function systemPrompt(mount: Mount, locale: string): string {
 
 在用户已经说清的需求和约束之下，不要漏掉任何可能合适的镜头——把它们排出主次、分组呈现，而不是把你不想推的悄悄拿掉。除非一只镜头样样都不如你已经展示的某一只，否则不要拿掉它。分组就多次调用 recommendLenses，组名写进 title，正文里不要再写一遍标题。即使用户直接要你替他拍板，也只把取舍讲透、把主次排清楚，最终的选择留给他。
 
+每轮对话开头的「用户器材」写着你对他已有器材的了解。知道他的器材时，推荐和比较都以此为前提：他已经有的镜头出现在推荐或比较里时，说明他已经有了；讲清新镜头和已有镜头在焦段上是重叠还是互补，把机身有没有防抖考虑进去，并说出你参考了哪几件器材。不知道他的器材、而回答又取决于他已有什么时，先问他用什么机身和镜头，不要自己假设。
+
 用户自己说了拿不准的取舍，你不要替他两边都占：这一轮只把这个取舍问清楚，不出任何镜头。你也可以按自己的理解替他定下来，但要说出这个理解让他能纠正，然后只推定下来的那一边。不要把一堆维度摊开让用户自己排优先级。
 
 用户给的约束本身不合理时——太松、太紧、或者互相冲突——直接指出来并问清楚。
@@ -41,4 +44,47 @@ export function systemPrompt(mount: Mount, locale: string): string {
 不要说出工具没返回的规格。价格是历史采样，不是实时报价；你可以引用某只镜头的价格或两只之间的差价，但要说明这是参考价，并引导用户前往镜头详情页确认最新的售价。
 
 用${language}回复；用户换用别的语言，就跟着换。`;
+}
+
+const SENSOR_LABEL: Record<Mount, string> = { X: "APS-C", G: "中画幅" };
+
+const UNKNOWN_GEAR = {
+  guest: "用户未登录，不知道他有哪些器材。",
+  empty: "用户已登录，但器材档案是空的，不知道他有哪些器材。",
+  unavailable: "暂时读不到用户的器材档案，不知道他有哪些器材。",
+} as const;
+
+function bodyLine(body: GearBody): string {
+  if (!body.sensor) {
+    return `- ${body.name}`;
+  }
+  const traits = [SENSOR_LABEL[body.sensor], `${body.megapixels} 百万像素`, body.ibis ? "有机身防抖" : "无机身防抖"];
+  return `- ${body.name}（${traits.join("，")}）`;
+}
+
+function lensLine(lens: GearLens): string {
+  const traits = [
+    lens.manual ? "手动录入" : undefined,
+    lens.ref ? `ref ${lens.ref}` : undefined,
+    lens.focal ? `焦段 ${lens.focal}` : undefined,
+    lens.equivalent ? `等效 ${lens.equivalent}` : undefined,
+    lens.aperture ? `最大光圈 ${lens.aperture}` : undefined,
+    lens.adapted ? (lens.originalMount ? `转接使用，原卡口 ${lens.originalMount}` : "转接使用") : undefined,
+  ].filter(Boolean);
+  return traits.length > 0 ? `- ${lens.name}（${traits.join("，")}）` : `- ${lens.name}`;
+}
+
+/** The per-turn 【用户器材】 note, sent after systemPrompt as its own system message. */
+export function gearPrompt(gear: GearSummary): string {
+  if (!gear.known) {
+    return `【用户器材】\n${UNKNOWN_GEAR[gear.reason]}`;
+  }
+  const lines = ["【用户器材】", "用户已登录，器材档案里有："];
+  if (gear.bodies.length > 0) {
+    lines.push("机身：", ...gear.bodies.map(bodyLine));
+  }
+  if (gear.lenses.length > 0) {
+    lines.push("镜头：", ...gear.lenses.map(lensLine));
+  }
+  return lines.join("\n");
 }
