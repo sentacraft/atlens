@@ -25,6 +25,12 @@
             "command": "node \"$(git rev-parse --show-toplevel)/scripts/hooks/site-facts-review.mjs\"",
             "timeout": 10,
             "statusMessage": "Checking site facts"
+          },
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/scripts/hooks/cjk-guard.mjs\"",
+            "timeout": 10,
+            "statusMessage": "Checking for misplaced Chinese text"
           }
         ]
       }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Check, Plus, X } from "lucide-react";
 import { getBodyById } from "@/lib/body/data";
 import type { LensSummary } from "@/lib/lens/data";
@@ -33,6 +33,7 @@ export default function GearRequestCard({
   onAnswer: (output: GearRequestOutput) => void;
 }) {
   const t = useTranslations("AskIris.gearCard");
+  const locale = useLocale();
   const { data: session } = authClient.useSession();
   const user = accountUser(session);
 
@@ -40,7 +41,7 @@ export default function GearRequestCard({
     const text =
       output.outcome === "saved"
         ? output.saved?.length
-          ? t("savedItems", { items: output.saved.join("、") })
+          ? t("savedItems", { items: listNames(locale, output.saved) })
           : t("saved")
         : output.outcome === "skipped"
           ? t("skipped")
@@ -55,6 +56,10 @@ export default function GearRequestCard({
   ) : (
     <SignInPrompt onDecline={() => onAnswer({ outcome: "not_signed_in" })} />
   );
+}
+
+function listNames(locale: string, names: string[]): string {
+  return new Intl.ListFormat(locale, { type: "conjunction", style: "narrow" }).format(names);
 }
 
 function AnsweredLine({ done, children }: { done: boolean; children: ReactNode }) {
@@ -110,6 +115,7 @@ function GearPicker({
 }) {
   const t = useTranslations("AskIris.gearCard");
   const tBrand = useTranslations("Brands");
+  const locale = useLocale();
   const { gear, openBodyDialog, openLensSearch, addCatalog, adding, dialogs } = useGearAdders({ userId, lenses });
   const hints = useMemo(() => resolveGearHints(input, lenses), [input, lenses]);
   const [pending, setPending] = useState({ bodies: hints.bodies, lenses: hints.lenses });
@@ -174,7 +180,7 @@ function GearPicker({
       </GearRow>
       {hints.unresolved.length > 0 && (
         <p className="px-4 pb-3 text-xs leading-5 text-zinc-500 dark:text-zinc-400">
-          {t("unresolved", { names: hints.unresolved.join("、") })}
+          {t("unresolved", { names: listNames(locale, hints.unresolved) })}
         </p>
       )}
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
