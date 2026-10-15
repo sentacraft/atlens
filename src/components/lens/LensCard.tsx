@@ -93,11 +93,11 @@ export default memo(function LensCard({
       >
         <div
           {...hookAttr("cardMedia")}
-          className="relative aspect-[3/2] overflow-hidden border-b border-zinc-100/80 bg-zinc-50/40 sm:aspect-[5/4] dark:border-zinc-800 dark:bg-zinc-900/40 max-xs:aspect-auto max-xs:w-[132px] max-xs:shrink-0 max-xs:self-stretch max-xs:border-b-0 max-xs:border-r"
+          className="relative aspect-[3/2] overflow-hidden border-b border-zinc-100/80 bg-zinc-50/40 dark:border-zinc-800 dark:bg-zinc-900/40 max-xs:aspect-auto max-xs:w-[132px] max-xs:shrink-0 max-xs:self-stretch max-xs:border-b-0 max-xs:border-r"
         >
           <div
             {...hookAttr("cardMediaInner")}
-            className="absolute inset-0 p-3 sm:p-7 max-xs:p-2"
+            className="absolute inset-0 p-3 sm:p-5 max-xs:p-2"
           >
             <div className="relative h-full w-full overflow-hidden rounded-xl">
               <Image

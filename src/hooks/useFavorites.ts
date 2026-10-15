@@ -11,6 +11,7 @@ import {
   removeFavorite,
   userFavoritesQuery,
 } from "@/lib/me/favorites-client";
+import { useRouter } from "@/i18n/navigation";
 import { useTestHookEnabled } from "@/context/TestHookProvider";
 import { useSignInPrompt } from "@/context/SignInDialogProvider";
 
@@ -22,6 +23,7 @@ export function useFavorites() {
   const { data: session } = authClient.useSession();
   const user = accountUser(session);
   const promptSignIn = useSignInPrompt();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const query = userFavoritesQuery(user?.id ?? "");
   const { data: lensIds = [] } = useQuery({ ...query, enabled: enabled && Boolean(user) });
@@ -54,7 +56,20 @@ export function useFavorites() {
       promptSignIn(t("favoriteSignIn"));
       return;
     }
-    mutation.mutate({ lensId, favorite: !ids.has(lensId) });
+    const favorite = !ids.has(lensId);
+    mutation.mutate({ lensId, favorite });
+    const id = `favorite-${lensId}`;
+    if (favorite) {
+      toast(t("favoriteAdded"), {
+        id,
+        action: { label: t("viewFavorites"), onClick: () => router.push("/me#favorites") },
+      });
+    } else {
+      toast(t("favoriteRemoved"), {
+        id,
+        action: { label: t("undo"), onClick: () => mutation.mutate({ lensId, favorite: true }) },
+      });
+    }
   }
 
   return { enabled, lensIds, isFavorite: (lensId: string) => ids.has(lensId), toggle };

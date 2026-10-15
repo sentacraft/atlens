@@ -52,6 +52,18 @@ function settingsResponse(settings: unknown, status = 200) {
   return new Response(JSON.stringify({ settings }), { status });
 }
 
+function serveSettings(...responses: Response[]) {
+  fetchMock.mockImplementation(async (url: string) => {
+    if (url === "/api/me/gear") {
+      return Response.json({ gear: [] });
+    }
+    if (url === "/api/me/favorites") {
+      return Response.json({ favorites: [] });
+    }
+    return responses.shift() ?? new Response(null, { status: 500 });
+  });
+}
+
 function renderPage() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
@@ -92,9 +104,10 @@ describe("ProfilePage", () => {
 
   it("saves a new language, remembers it for the bare root, and moves to that language", async () => {
     signedIn();
-    fetchMock
-      .mockResolvedValueOnce(settingsResponse({ defaultMount: "X", locale: null }))
-      .mockResolvedValueOnce(settingsResponse({ defaultMount: "X", locale: "en" }));
+    serveSettings(
+      settingsResponse({ defaultMount: "X", locale: null }),
+      settingsResponse({ defaultMount: "X", locale: "en" }),
+    );
 
     renderPage();
     const english = await screen.findByRole("radio", { name: "English" });
@@ -112,9 +125,10 @@ describe("ProfilePage", () => {
 
   it("applies a new default mount at once and rolls it back when saving fails", async () => {
     signedIn();
-    fetchMock
-      .mockResolvedValueOnce(settingsResponse({ defaultMount: "X", locale: "zh" }))
-      .mockResolvedValueOnce(new Response(null, { status: 500 }));
+    serveSettings(
+      settingsResponse({ defaultMount: "X", locale: "zh" }),
+      new Response(null, { status: 500 }),
+    );
 
     renderPage();
     const g = await screen.findByRole("radio", { name: "gfx" });

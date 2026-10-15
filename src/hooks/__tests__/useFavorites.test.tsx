@@ -8,11 +8,12 @@ import { useFavorites } from "../useFavorites";
 const mocks = vi.hoisted(() => ({
   session: { data: null as unknown },
   promptSignIn: vi.fn(),
-  toastError: vi.fn(),
+  toast: Object.assign(vi.fn(), { error: vi.fn() }),
 }));
 
 vi.mock("next-intl", () => ({ useTranslations: () => (key: string) => key }));
-vi.mock("sonner", () => ({ toast: { error: mocks.toastError } }));
+vi.mock("sonner", () => ({ toast: mocks.toast }));
+vi.mock("@/i18n/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 vi.mock("@/lib/auth-client", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/auth-client")>()),
   authClient: { useSession: () => mocks.session },
@@ -76,6 +77,7 @@ describe("useFavorites", () => {
 
     await waitFor(() => expect(result.current.isFavorite("xf-23")).toBe(true));
     expect(result.current.lensIds[0]).toBe("xf-23");
+    expect(mocks.toast).toHaveBeenCalledWith("favoriteAdded", expect.objectContaining({ action: expect.anything() }));
   });
 
   it("rolls back and explains when the favorites limit is reached", async () => {
@@ -86,7 +88,7 @@ describe("useFavorites", () => {
 
     act(() => result.current.toggle("xf-23"));
 
-    await waitFor(() => expect(mocks.toastError).toHaveBeenCalledWith("favoritesLimit"));
+    await waitFor(() => expect(mocks.toast.error).toHaveBeenCalledWith("favoritesLimit"));
     await waitFor(() => expect(result.current.isFavorite("xf-23")).toBe(false));
   });
 });

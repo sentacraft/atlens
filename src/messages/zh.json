@@ -762,6 +762,10 @@
     "own": "我有这支",
     "owned": "已拥有",
     "removeOwned": "从我的器材中移除",
-    "ownSignIn": "登录后可以记录你的器材，Ask Iris 会参考它给建议"
+    "ownSignIn": "登录后可以记录你的器材，Ask Iris 会参考它给建议",
+    "favoriteAdded": "已加入收藏",
+    "viewFavorites": "查看",
+    "favoriteRemoved": "已取消收藏",
+    "undo": "撤销"
   }
 }

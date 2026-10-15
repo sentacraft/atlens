@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
@@ -9,6 +9,8 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { linkedProvidersQuery, updateDisplayName } from "@/lib/me/account-client";
+import { userFavoritesQuery } from "@/lib/me/favorites-client";
+import { userGearQuery } from "@/lib/me/gear-client";
 import { writeLocalePreference } from "@/lib/locale-preference";
 import { patchUserSettings, userSettingsQuery } from "@/lib/me/settings-client";
 import { DEFAULT_USER_SETTINGS, type UserSettings, type UserSettingsPatch } from "@/lib/me/settings-schema";
@@ -97,6 +99,22 @@ function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] })
   const t = useTranslations("Profile");
   const { activeId: active, scrollTo } = useScrollSpy(SECTIONS);
   const { navHidden } = useNav();
+  const gearFetched = useQuery(userGearQuery(user.id)).isFetched;
+  const favoritesFetched = useQuery(userFavoritesQuery(user.id)).isFetched;
+  const hashHandled = useRef(false);
+
+  // The sections render after the session and their data load, so the browser's own jump to
+  // the URL hash happens too early; scroll once the lists above the target have their height.
+  useEffect(() => {
+    if (hashHandled.current || !gearFetched || !favoritesFetched) {
+      return;
+    }
+    hashHandled.current = true;
+    const target = SECTIONS.find((id) => `#${id}` === window.location.hash);
+    if (target) {
+      scrollTo(target);
+    }
+  }, [gearFetched, favoritesFetched, scrollTo]);
 
   return (
     <div className="mx-auto flex w-full max-w-[1040px] gap-12 px-5 pt-6 pb-12 md:px-6 md:pt-10 md:pb-16">
