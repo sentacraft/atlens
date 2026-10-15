@@ -1,8 +1,7 @@
 import "server-only";
 
-import { createTranslator, hasLocale } from "next-intl";
-import { routing, type Locale } from "@/i18n/routing";
-import { AUTH_LOCALE_HEADER } from "@/lib/auth-locale";
+import { createTranslator } from "next-intl";
+import type { Locale } from "@/i18n/routing";
 import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
 
@@ -12,11 +11,6 @@ interface AuthEmail {
   subject: string;
   text: string;
   html: string;
-}
-
-export function authEmailLocale(headers: Headers | undefined): Locale {
-  const locale = headers?.get(AUTH_LOCALE_HEADER);
-  return hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
 }
 
 function translator(locale: Locale) {

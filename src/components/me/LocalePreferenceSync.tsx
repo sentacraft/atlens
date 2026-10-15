@@ -1,21 +1,16 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { accountUser, authClient } from "@/lib/auth-client";
-import { writeLocalePreference } from "@/lib/me/locale-preference";
+import { writeLocalePreference } from "@/lib/locale-preference";
 import { userSettingsQuery } from "@/lib/me/settings-client";
-import { useMountParam } from "@/hooks/useMountParam";
-import { useMountPreference } from "@/context/MountPreferenceProvider";
 
-/** Applies a signed-in account's settings where the URL leaves the choice open. */
-export default function AccountPreferencesSync() {
+/** Keeps the saved-language cookie in step with the signed-in account; guests have none. */
+export default function LocalePreferenceSync() {
   const { data: session, isPending } = authClient.useSession();
   const userId = accountUser(session)?.id;
   const { data: settings } = useQuery({ ...userSettingsQuery(userId ?? ""), enabled: Boolean(userId) });
-  const urlMount = useMountParam();
-  const { setPreference } = useMountPreference();
-  const mountAppliedFor = useRef<string | null>(null);
 
   useEffect(() => {
     if (isPending) {
@@ -27,16 +22,6 @@ export default function AccountPreferencesSync() {
       writeLocalePreference(settings.locale);
     }
   }, [isPending, userId, settings]);
-
-  useEffect(() => {
-    if (!userId || !settings || mountAppliedFor.current === userId) {
-      return;
-    }
-    mountAppliedFor.current = userId;
-    if (!urlMount) {
-      setPreference(settings.defaultMount);
-    }
-  }, [userId, settings, urlMount, setPreference]);
 
   return null;
 }

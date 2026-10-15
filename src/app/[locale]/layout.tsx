@@ -26,7 +26,7 @@ import { SPLASH_DEVICES, splashUrl, splashMedia } from "@/config/splash";
 import AppToaster from "@/components/AppToaster";
 import RenameToast from "@/components/RenameToast";
 import QueryProvider from "@/components/providers/QueryProvider";
-import AccountPreferencesSync from "@/components/me/AccountPreferencesSync";
+import LocalePreferenceSync from "@/components/me/LocalePreferenceSync";
 import { fontClassName } from "../fonts";
 import "../globals.css";
 
@@ -149,7 +149,7 @@ export default async function LocaleLayout({
         <QueryProvider>
         <NextIntlClientProvider messages={messages}>
           <MountPreferenceProvider>
-          <AccountPreferencesSync />
+          <LocalePreferenceSync />
           <CompareProvider>
             <NavProvider>
               <ConsoleEgg version={meta.version} lensCount={meta.lensCount} brandCount={brandCount} />

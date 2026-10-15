@@ -6,7 +6,8 @@ import { anonymous, emailOTP } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { D1Dialect } from "kysely-d1";
 import { linkAnonymousUser } from "@/lib/askiris/link-anonymous-user";
-import { authEmailLocale, deleteAccountEmail, signInCodeEmail } from "@/lib/auth-email";
+import { deleteAccountEmail, signInCodeEmail } from "@/lib/auth-email";
+import { emailLocale } from "@/lib/locale-preference";
 import { getSavedLocaleByEmail, getUserSettings } from "@/lib/me/settings-repository";
 
 function getAuthContext() {
@@ -68,7 +69,7 @@ export function createAuth() {
           await env.EMAIL.send({
             from: env.AUTH_EMAIL_FROM,
             to: user.email,
-            ...deleteAccountEmail(locale ?? authEmailLocale(request?.headers), url),
+            ...deleteAccountEmail(emailLocale(locale, request?.headers), url),
           });
         },
       },
@@ -100,7 +101,7 @@ export function createAuth() {
           await env.EMAIL.send({
             from: env.AUTH_EMAIL_FROM,
             to: email,
-            ...signInCodeEmail(locale ?? authEmailLocale(ctx?.headers), otp),
+            ...signInCodeEmail(emailLocale(locale, ctx?.headers), otp),
           });
         },
       }),
