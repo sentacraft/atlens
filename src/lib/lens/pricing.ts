@@ -22,19 +22,8 @@ export function pickNewEntry(entries: LensPriceEntry[] | undefined): PricedEntry
   return entries?.find(isPriced);
 }
 
-type Translator = ((key: string, values?: Record<string, string | number>) => string) & {
-  raw: (key: string) => string;
-};
-
-function intlLocaleFor(locale: string): string {
-  return locale === "zh" ? "zh-CN" : "en-US";
-}
-
-function formatNumber(value: number, locale: string): string {
-  return new Intl.NumberFormat(intlLocaleFor(locale), {
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+/** A translator for the Pricing messages, from useTranslations or getTranslations. */
+export type PricingTranslator = (key: string, values?: Record<string, string | number | Date>) => string;
 
 export function pickPriceEntry(
   pricing: PricingData | undefined,
@@ -52,39 +41,23 @@ export function pickPriceEntry(
   return null;
 }
 
-export function formatPrice(
-  price: number,
-  currency: "CNY" | "USD",
-  locale: string,
-  cnyTemplate: string
-): string {
-  if (currency === "CNY") {
-    return cnyTemplate.replace("{value}", formatNumber(price, locale));
-  }
-  return new Intl.NumberFormat(intlLocaleFor(locale), {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(price);
+export function formatPrice(t: PricingTranslator, price: number, currency: "CNY" | "USD"): string {
+  return t("amount", { amount: price, currency });
 }
 
-export function formatSampledAt(date: string, locale: string): string {
-  const [year, month, day] = date.split("-").map(Number);
-  const d = new Date(year, month - 1, day);
-  return d.toLocaleDateString(intlLocaleFor(locale), {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+/** A sampledAt calendar date ("2026-10-05") as UTC midnight, the time zone dates render in. */
+export function sampledDate(isoDate: string): Date {
+  const [year, month, day] = isoDate.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day));
 }
 
-export function formatPriceForReport(
-  selection: PriceSelection,
-  locale: string,
-  t: Translator
-): string {
+export function formatSampledAt(t: PricingTranslator, isoDate: string): string {
+  return t("sampledDate", { date: sampledDate(isoDate) });
+}
+
+export function formatPriceForReport(selection: PriceSelection, t: PricingTranslator): string {
   const { entry, condition } = selection;
-  const price = formatPrice(entry.price, entry.currency, locale, t.raw("cnyAmount"));
+  const price = formatPrice(t, entry.price, entry.currency);
   const conditionLabel = t(condition === "new" ? "conditionNew" : "conditionUsed");
   return `${price} · ${entry.source} · ${entry.sampledAt} · ${conditionLabel}`;
 }

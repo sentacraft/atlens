@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { localized } from "@/i18n/localized";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { parseLensIds, getLensesByMount } from "@/lib/lens/data";
 import { readCompareIds } from "@/lib/url/compare";
@@ -46,8 +47,7 @@ export async function generateMetadata({
 
   const matchedPreset = findPresetByIds(lenses.map((l) => l.id));
   if (matchedPreset) {
-    const lang = locale === "zh" ? "zh" : "en";
-    const title = matchedPreset.title[lang];
+    const title = localized(matchedPreset.title, locale);
     return {
       title,
       description: emptyDescription,

@@ -25,8 +25,8 @@ export function PriceCell({ lens, compact = false }: Props) {
   }
 
   const { entry } = selection;
-  const priceDisplay = formatPrice(entry.price, entry.currency, locale, t.raw("cnyAmount"));
-  const sampledDisplay = formatSampledAt(entry.sampledAt, locale);
+  const priceDisplay = formatPrice(t, entry.price, entry.currency);
+  const sampledDisplay = formatSampledAt(t, entry.sampledAt);
 
   return (
     <div className="flex flex-col items-center gap-1 text-center">

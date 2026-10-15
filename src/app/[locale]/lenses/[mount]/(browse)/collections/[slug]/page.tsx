@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { localized } from "@/i18n/localized";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight, Flag } from "lucide-react";
@@ -27,10 +28,6 @@ export function generateStaticParams() {
 }
 
 // Keep dynamicParams at its default: see the note in [id]/page.tsx.
-
-function localized(field: { en: string; zh: string }, locale: string): string {
-  return locale === "zh" ? field.zh : field.en;
-}
 
 export async function generateMetadata({
   params,
