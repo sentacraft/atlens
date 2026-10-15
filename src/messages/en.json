@@ -154,7 +154,10 @@
     "errorFocalOrder": "The shortest focal length can't exceed the longest",
     "errorAperture": "Use an aperture between F0.7 and F64",
     "errorApertureOrder": "The long-end aperture can't be wider than the wide end",
-    "gearLimit": "You've reached the gear limit."
+    "gearLimit": "You've reached the gear limit.",
+    "favoritesTitle": "Favorites",
+    "favoritesCount": "{count, plural, one {# lens} other {# lenses}}",
+    "noFavorites": "No favorites yet. Tap the star on a lens card or detail page."
   },
   "AskIris": {
     "heading": "Hi, I'm Iris<beta></beta>",
@@ -321,6 +324,8 @@
     "compareFullToast": "Compare list full — remove one first",
     "goCompare": "Compare ({count})",
     "clearCompare": "Clear",
+    "compareShort": "Compare",
+    "compared": "Added",
     "resultsCount": "<b>{count}</b> lenses",
     "noResults": "No lenses match your filters.",
     "coverageLink": "View lens coverage →",
@@ -747,5 +752,16 @@
     "mountLabel": "Fujifilm {mount}-Mount",
     "seoTitleYear": "{base} ({year})",
     "shareText": "Found a nice collection on Atlens: {title} ({mount})"
+  },
+  "LensActions": {
+    "favorite": "Favorite",
+    "unfavorite": "Remove from favorites",
+    "favorited": "Favorited",
+    "favoriteSignIn": "Sign in to favorite lenses and see them on any device",
+    "favoritesLimit": "You've reached the favorites limit.",
+    "own": "I own this",
+    "owned": "Owned",
+    "removeOwned": "Remove from my gear",
+    "ownSignIn": "Sign in to record your gear so Ask Iris can take it into account"
   }
 }

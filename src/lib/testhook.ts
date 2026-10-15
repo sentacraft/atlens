@@ -67,17 +67,6 @@ const CSS_CARD_DENSITY_COMPACT = `
 [data-ui-hook="cardBody"] dl {
   row-gap: 0.125rem !important;
 }
-
-[data-ui-hook="cardFooter"] {
-  padding-left: 0.75rem !important;
-  padding-right: 0.75rem !important;
-  padding-bottom: 0.75rem !important;
-}
-
-[data-ui-hook="cardFooter"] button {
-  padding-top: 0.375rem !important;
-  padding-bottom: 0.375rem !important;
-}
 `;
 
 const CSS_GRID_DENSITY_COMFORTABLE = `

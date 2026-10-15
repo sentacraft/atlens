@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Menu } from "@base-ui/react/menu";
 import { LogOut, UserRound } from "lucide-react";
@@ -9,7 +8,7 @@ import { accountUser, authClient } from "@/lib/auth-client";
 import { ICON_NAV_BTN_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { useTestHookEnabled } from "@/context/TestHookProvider";
-import AuthDialog from "@/components/auth/AuthDialog";
+import { useSignInDialog } from "@/context/SignInDialogProvider";
 import Avatar from "@/components/auth/Avatar";
 
 const MENU_ITEM_CLS =
@@ -19,7 +18,7 @@ export default function AuthControl() {
   const t = useTranslations("Auth");
   const { data: session } = authClient.useSession();
   const testHookEnabled = useTestHookEnabled();
-  const [loginOpen, setLoginOpen] = useState(false);
+  const openSignIn = useSignInDialog();
 
   const user = accountUser(session);
   if (!testHookEnabled) {
@@ -28,18 +27,15 @@ export default function AuthControl() {
 
   if (!user) {
     return (
-      <>
-        <button
-          type="button"
-          onClick={() => setLoginOpen(true)}
-          aria-label={t("login")}
-          className={cn(ICON_NAV_BTN_CLS, "h-8 gap-1.5 px-2 text-sm")}
-        >
-          <UserRound className="h-4 w-4" />
-          <span className="hidden sm:inline">{t("login")}</span>
-        </button>
-        <AuthDialog open={loginOpen} onOpenChange={setLoginOpen} />
-      </>
+      <button
+        type="button"
+        onClick={openSignIn}
+        aria-label={t("login")}
+        className={cn(ICON_NAV_BTN_CLS, "h-8 gap-1.5 px-2 text-sm")}
+      >
+        <UserRound className="h-4 w-4" />
+        <span className="hidden sm:inline">{t("login")}</span>
+      </button>
     );
   }
 

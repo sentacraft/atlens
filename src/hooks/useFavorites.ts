@@ -1,0 +1,61 @@
+"use client";
+
+import { useMemo } from "react";
+import { useTranslations } from "next-intl";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { accountUser, authClient } from "@/lib/auth-client";
+import {
+  addFavorite,
+  FavoritesRequestError,
+  removeFavorite,
+  userFavoritesQuery,
+} from "@/lib/me/favorites-client";
+import { useTestHookEnabled } from "@/context/TestHookProvider";
+import { useSignInPrompt } from "@/context/SignInDialogProvider";
+
+/** The signed-in user's favorite lens ids, newest first, and a toggle that asks guests to sign in. */
+export function useFavorites() {
+  const t = useTranslations("LensActions");
+  const tProfile = useTranslations("Profile");
+  const enabled = useTestHookEnabled();
+  const { data: session } = authClient.useSession();
+  const user = accountUser(session);
+  const promptSignIn = useSignInPrompt();
+  const queryClient = useQueryClient();
+  const query = userFavoritesQuery(user?.id ?? "");
+  const { data: lensIds = [] } = useQuery({ ...query, enabled: enabled && Boolean(user) });
+  const ids = useMemo(() => new Set(lensIds), [lensIds]);
+
+  const mutation = useMutation({
+    mutationFn: ({ lensId, favorite }: { lensId: string; favorite: boolean }) =>
+      favorite ? addFavorite(lensId) : removeFavorite(lensId),
+    onMutate: async ({ lensId, favorite }) => {
+      await queryClient.cancelQueries({ queryKey: query.queryKey });
+      const previous = queryClient.getQueryData<string[]>(query.queryKey);
+      queryClient.setQueryData<string[]>(query.queryKey, (list = []) =>
+        favorite ? [lensId, ...list.filter((id) => id !== lensId)] : list.filter((id) => id !== lensId),
+      );
+      return { previous };
+    },
+    onError: (error, _variables, context) => {
+      queryClient.setQueryData(query.queryKey, context?.previous);
+      toast.error(
+        error instanceof FavoritesRequestError && error.code === "favorites_limit_reached"
+          ? t("favoritesLimit")
+          : tProfile("saveError"),
+      );
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: query.queryKey }),
+  });
+
+  function toggle(lensId: string) {
+    if (!user) {
+      promptSignIn(t("favoriteSignIn"));
+      return;
+    }
+    mutation.mutate({ lensId, favorite: !ids.has(lensId) });
+  }
+
+  return { enabled, lensIds, isFavorite: (lensId: string) => ids.has(lensId), toggle };
+}

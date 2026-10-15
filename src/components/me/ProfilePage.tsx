@@ -26,19 +26,21 @@ import {
 import { useTestHookEnabled } from "@/context/TestHookProvider";
 import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { useNav } from "@/context/NavProvider";
+import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
 import NotFound from "@/app/[locale]/not-found";
-import AuthDialog from "@/components/auth/AuthDialog";
 import Avatar from "@/components/auth/Avatar";
 import DeleteAccountDialog from "@/components/auth/DeleteAccountDialog";
+import FavoritesSection from "@/components/me/FavoritesSection";
 import GearSection from "@/components/me/GearSection";
 import SegmentedControl from "@/components/ui/segmented-control";
 
-const SECTIONS = ["gear", "settings", "account"] as const;
+const SECTIONS = ["gear", "favorites", "settings", "account"] as const;
 type SectionId = (typeof SECTIONS)[number];
 
 const SECTION_TITLE_KEY = {
   gear: "gearTitle",
+  favorites: "favoritesTitle",
   settings: "settingsTitle",
   account: "accountTitle",
 } as const satisfies Record<SectionId, string>;
@@ -68,19 +70,18 @@ export default function ProfilePage({ lenses }: { lenses: LensSummary[] }) {
 
 function SignInPrompt() {
   const t = useTranslations("Profile");
-  const [open, setOpen] = useState(false);
+  const openSignIn = useSignInDialog();
   return (
     <div className="mx-auto flex max-w-md flex-col items-center gap-3 px-5 py-24 text-center">
       <h1 className="font-heading text-2xl font-bold text-zinc-900 dark:text-zinc-100">{t("signInTitle")}</h1>
       <p className="text-sm text-zinc-500 dark:text-zinc-400">{t("signInBody")}</p>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={openSignIn}
         className={cn(ACTION_PRIMARY_CLS, "mt-3 h-10 rounded-lg px-5 text-sm font-medium")}
       >
         {t("signIn")}
       </button>
-      <AuthDialog open={open} onOpenChange={setOpen} />
     </div>
   );
 }
@@ -154,6 +155,14 @@ function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] })
           userId={user.id}
           lenses={lenses}
           heading={<SectionHeading id="gear" />}
+        />
+        <FavoritesSection
+          id="favorites"
+          className={SECTION_CLS}
+          lenses={lenses}
+          heading={(count) => (
+            <SectionHeading id="favorites" subtitle={count > 0 ? t("favoritesCount", { count }) : undefined} />
+          )}
         />
         <SettingsSection userId={user.id} />
         <AccountSection email={user.email} />

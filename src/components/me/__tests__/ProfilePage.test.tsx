@@ -36,6 +36,7 @@ vi.mock("@/app/[locale]/not-found", () => ({ default: () => <p>not-found</p> }))
 vi.mock("@/components/auth/AuthDialog", () => ({ default: () => null }));
 vi.mock("@/components/auth/DeleteAccountDialog", () => ({ default: () => null }));
 vi.mock("@/components/me/GearSection", () => ({ default: () => null }));
+vi.mock("@/components/me/FavoritesSection", () => ({ default: () => null }));
 vi.mock("sonner", () => ({ toast: { error: mocks.toastError } }));
 
 const fetchMock = vi.fn();

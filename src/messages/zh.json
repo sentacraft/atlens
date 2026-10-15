@@ -154,7 +154,10 @@
     "errorFocalOrder": "最短焦距不能大于最长焦距",
     "errorAperture": "光圈要在 F0.7 到 F64 之间",
     "errorApertureOrder": "长端光圈不能比广端更大",
-    "gearLimit": "器材数量已达上限。"
+    "gearLimit": "器材数量已达上限。",
+    "favoritesTitle": "收藏",
+    "favoritesCount": "{count} 支镜头",
+    "noFavorites": "还没有收藏。在镜头卡片或详情页点星标就能收藏。"
   },
   "AskIris": {
     "heading": "Hi，我是 Iris<beta></beta>",
@@ -321,6 +324,8 @@
     "compareFullToast": "对比已满，先移除一款",
     "goCompare": "查看对比（{count}）",
     "clearCompare": "清空",
+    "compareShort": "对比",
+    "compared": "已对比",
     "resultsCount": "<b>{count}</b> 支镜头",
     "noResults": "没有符合筛选条件的镜头",
     "coverageLink": "查看收录范围 →",
@@ -747,5 +752,16 @@
     "mountLabel": "富士 {mount} 卡口",
     "seoTitleYear": "{base}（{year} 年）",
     "shareText": "在 Atlens 发现一份不错的合集：{title}（{mount}）"
+  },
+  "LensActions": {
+    "favorite": "收藏",
+    "unfavorite": "取消收藏",
+    "favorited": "已收藏",
+    "favoriteSignIn": "登录后可以收藏镜头，在任何设备上查看",
+    "favoritesLimit": "收藏数量已达上限。",
+    "own": "我有这支",
+    "owned": "已拥有",
+    "removeOwned": "从我的器材中移除",
+    "ownSignIn": "登录后可以记录你的器材，Ask Iris 会参考它给建议"
   }
 }
