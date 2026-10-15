@@ -20,6 +20,16 @@ export const LIST_ITEM_ACTIVE_CLS =
 
 export const ACTIVE_DOT_CLS = "bg-zinc-900 dark:bg-zinc-100";
 
+export const SEARCH_TRIGGER_CLS =
+  "inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:border-zinc-700 dark:hover:text-zinc-50";
+
+export const PILL_CLS =
+  "inline-flex h-9 items-center rounded-full border border-transparent bg-zinc-50 px-3.5 text-[12px] font-medium text-zinc-700 shadow-sm shadow-zinc-950/[0.02] transition-all duration-200 hover:border-zinc-200 hover:bg-zinc-100 hover:text-zinc-900 dark:border-transparent dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:border-zinc-600 dark:hover:bg-zinc-700 dark:hover:text-zinc-100";
+export const PILL_ALL_ACTIVE_CLS =
+  "inline-flex h-9 items-center rounded-full border border-transparent bg-zinc-200 px-3.5 text-[12px] font-semibold text-zinc-900 shadow-sm shadow-zinc-950/[0.02] transition-all duration-200 hover:border-zinc-200 hover:bg-zinc-200 dark:border-transparent dark:bg-zinc-600 dark:text-zinc-100 dark:hover:bg-zinc-500";
+export const PILL_ACTIVE_CLS =
+  "inline-flex h-9 items-center rounded-full border border-transparent bg-zinc-900 px-3.5 text-[12px] font-medium text-white shadow-sm transition-all duration-200 hover:border-zinc-800 hover:bg-zinc-800 dark:border-transparent dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200";
+
 export const CHIP_BASE_CLS =
   "flex-shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium cursor-pointer transition-all duration-150 select-none";
 export const CHIP_IDLE_CLS =

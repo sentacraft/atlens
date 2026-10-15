@@ -12,6 +12,7 @@ import { linkedProvidersQuery, updateDisplayName } from "@/lib/me/account-client
 import { writeLocalePreference } from "@/lib/locale-preference";
 import { patchUserSettings, userSettingsQuery } from "@/lib/me/settings-client";
 import { DEFAULT_USER_SETTINGS, type UserSettings, type UserSettingsPatch } from "@/lib/me/settings-schema";
+import type { LensSummary } from "@/lib/lens/data";
 import type { Mount } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
@@ -30,12 +31,14 @@ import NotFound from "@/app/[locale]/not-found";
 import AuthDialog from "@/components/auth/AuthDialog";
 import Avatar from "@/components/auth/Avatar";
 import DeleteAccountDialog from "@/components/auth/DeleteAccountDialog";
+import GearSection from "@/components/me/GearSection";
 import SegmentedControl from "@/components/ui/segmented-control";
 
-const SECTIONS = ["settings", "account"] as const;
+const SECTIONS = ["gear", "settings", "account"] as const;
 type SectionId = (typeof SECTIONS)[number];
 
 const SECTION_TITLE_KEY = {
+  gear: "gearTitle",
   settings: "settingsTitle",
   account: "accountTitle",
 } as const satisfies Record<SectionId, string>;
@@ -44,7 +47,7 @@ const SECTION_CLS = "flex scroll-mt-[calc(var(--nav-height)+72px)] flex-col gap-
 const SECTION_TITLE_CLS = "font-heading text-xl font-bold text-zinc-900 dark:text-zinc-100";
 const SECTION_SUB_CLS = "mt-0.5 text-[13px] leading-5 text-zinc-500 dark:text-zinc-400 md:mt-1";
 
-export default function ProfilePage() {
+export default function ProfilePage({ lenses }: { lenses: LensSummary[] }) {
   const testHookEnabled = useTestHookEnabled();
   const { data: session, isPending } = authClient.useSession();
   const [hydrated, setHydrated] = useState(false);
@@ -60,7 +63,7 @@ export default function ProfilePage() {
   if (!user) {
     return <SignInPrompt />;
   }
-  return <Profile user={user} />;
+  return <Profile user={user} lenses={lenses} />;
 }
 
 function SignInPrompt() {
@@ -89,7 +92,7 @@ interface ProfileUser {
   image?: string | null;
 }
 
-function Profile({ user }: { user: ProfileUser }) {
+function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] }) {
   const t = useTranslations("Profile");
   const { activeId: active, scrollTo } = useScrollSpy(SECTIONS);
   const { navHidden } = useNav();
@@ -145,6 +148,13 @@ function Profile({ user }: { user: ProfileUser }) {
           ))}
         </nav>
 
+        <GearSection
+          id="gear"
+          className={SECTION_CLS}
+          userId={user.id}
+          lenses={lenses}
+          heading={<SectionHeading id="gear" />}
+        />
         <SettingsSection userId={user.id} />
         <AccountSection email={user.email} />
       </div>
@@ -261,13 +271,10 @@ function SectionHeading({ id, subtitle }: { id: SectionId; subtitle?: string }) 
   );
 }
 
-function SettingRow({ label, hint, children }: { label: string; hint: string; children: ReactNode }) {
+function SettingRow({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between md:gap-6 md:border-b md:border-zinc-100 md:px-5 md:py-4 md:last:border-b-0 dark:md:border-zinc-800">
-      <div>
-        <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{label}</div>
-        <div className="hidden text-xs text-zinc-500 md:block dark:text-zinc-400">{hint}</div>
-      </div>
+      <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{label}</div>
       {children}
     </div>
   );
@@ -323,7 +330,7 @@ function SettingsSection({ userId }: { userId: string }) {
     <section id="settings" className={SECTION_CLS}>
       <SectionHeading id="settings" subtitle={t("settingsSubtitle")} />
       <div className="flex flex-col gap-4 md:gap-0 md:rounded-2xl md:border md:border-zinc-200 dark:md:border-zinc-800">
-        <SettingRow label={t("languageLabel")} hint={t("languageHint")}>
+        <SettingRow label={t("languageLabel")}>
           <SegmentedControl<Locale>
             ariaLabel={t("languageLabel")}
             value={settings?.locale ?? locale}
@@ -333,9 +340,10 @@ function SettingsSection({ userId }: { userId: string }) {
             ]}
             onChange={(next) => save.mutate({ locale: next })}
             disabled={!settings}
+            layout="equal"
           />
         </SettingRow>
-        <SettingRow label={t("mountLabel")} hint={t("mountHint")}>
+        <SettingRow label={t("mountLabel")}>
           <SegmentedControl<Mount>
             ariaLabel={t("mountLabel")}
             value={settings?.defaultMount ?? DEFAULT_USER_SETTINGS.defaultMount}
@@ -345,6 +353,7 @@ function SettingsSection({ userId }: { userId: string }) {
             ]}
             onChange={changeMount}
             disabled={!settings}
+            layout="equal"
           />
         </SettingRow>
       </div>

@@ -1,4 +1,10 @@
 import type { ApertureValue, Lens } from "@/lib/types";
+
+/** The fields search reads, so callers can pass a slim lens list instead of full records. */
+export type SearchableLens = Pick<
+  Lens,
+  "id" | "brand" | "series" | "model" | "focalLengthMin" | "focalLengthMax" | "maxAperture"
+>;
 import enMessages from "@/messages/en.json";
 import zhMessages from "@/messages/zh.json";
 
@@ -89,14 +95,14 @@ function formatApertureNum(n: number): string {
 }
 
 // Zoom ranges typed without the hyphen ("1850").
-function focalRangeTokens(lens: Lens): string[] {
+function focalRangeTokens(lens: SearchableLens): string[] {
   if (lens.focalLengthMin === lens.focalLengthMax) {
     return [];
   }
   return [`${lens.focalLengthMin}${lens.focalLengthMax}`];
 }
 
-function apertureTokens(lens: Lens): string[] {
+function apertureTokens(lens: SearchableLens): string[] {
   const tokens: string[] = [];
   if (lens.maxAperture === undefined) {
     return tokens;
@@ -119,18 +125,18 @@ interface TokenBucket {
   aperture: string[];
 }
 
-interface SearchableLensEntry {
-  lens: Lens;
+interface SearchableLensEntry<T extends SearchableLens> {
+  lens: T;
   buckets: TokenBucket;
 }
 
-export type LensSearchIndex = SearchableLensEntry[];
+export type LensSearchIndex<T extends SearchableLens = Lens> = SearchableLensEntry<T>[];
 
 function normTokens(text: string): string[] {
   return tokenize(normalizeLensSearchText(text));
 }
 
-function createSearchableLensEntry(lens: Lens): SearchableLensEntry {
+function createSearchableLensEntry<T extends SearchableLens>(lens: T): SearchableLensEntry<T> {
   const aliasTokens = getBrandSearchAliases(lens.brand).flatMap(normTokens);
 
   const buckets: TokenBucket = {
@@ -144,7 +150,7 @@ function createSearchableLensEntry(lens: Lens): SearchableLensEntry {
   return { lens, buckets };
 }
 
-export function buildLensSearchIndex(lenses: Lens[]): LensSearchIndex {
+export function buildLensSearchIndex<T extends SearchableLens>(lenses: T[]): LensSearchIndex<T> {
   return lenses.map(createSearchableLensEntry);
 }
 
@@ -214,7 +220,7 @@ function scoreToken(buckets: TokenBucket, queryToken: string): number {
   return best;
 }
 
-function scoreLens(entry: SearchableLensEntry, queryTokens: string[]): number {
+function scoreLens(entry: SearchableLensEntry<SearchableLens>, queryTokens: string[]): number {
   let total = 0;
   for (const qt of queryTokens) {
     const s = scoreToken(entry.buckets, qt);
@@ -229,11 +235,11 @@ function scoreLens(entry: SearchableLensEntry, queryTokens: string[]): number {
   return total;
 }
 
-export function searchLensIndex(
-  index: LensSearchIndex,
+export function searchLensIndex<T extends SearchableLens>(
+  index: LensSearchIndex<T>,
   query: string,
   limit = 8
-): Lens[] {
+): T[] {
   const queryTokens = tokenizeQuery(normalizeLensSearchText(query));
 
   if (queryTokens.length === 0) {
@@ -273,10 +279,10 @@ export function searchLensIndex(
     .map((item) => item.entry.lens);
 }
 
-export function searchLenses(
-  lenses: Lens[],
+export function searchLenses<T extends SearchableLens>(
+  lenses: T[],
   query: string,
   limit = 8
-): Lens[] {
+): T[] {
   return searchLensIndex(buildLensSearchIndex(lenses), query, limit);
 }

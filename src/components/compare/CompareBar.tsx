@@ -27,7 +27,7 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
   const router = useRouter();
   const mount = useEffectiveMount();
   const { compareIds, remove } = useCompare();
-  const { onSelectLens, getResultState } = useCompareLensSearch();
+  const search = useCompareLensSearch();
   const clearCompareWithUndo = useClearCompareWithUndo();
 
   const selectedLenses = compareIds
@@ -147,15 +147,15 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
               >
                 {t("clearCompare")}
               </button>
-              <LensSearchDialog
-                lenses={allLenses}
-                onSelectLens={onSelectLens}
-                getResultState={getResultState}
-                triggerVariant="icon"
-                triggerIcon={Plus}
-                triggerLabel={tCompare("addLens")}
-                triggerClassName="h-9 w-9 shrink-0 rounded-xl"
-              />
+              <button
+                type="button"
+                onClick={search.openSearch}
+                aria-label={tCompare("addLens")}
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-50"
+              >
+                <Plus className="h-4 w-4" />
+              </button>
+              <LensSearchDialog {...search.dialogProps} lenses={allLenses} />
               <button
                 onClick={handleCompare}
                 className={`shrink-0 inline-flex h-9 items-center text-sm font-medium px-4 rounded-xl ${ACTION_PRIMARY_CLS}`}

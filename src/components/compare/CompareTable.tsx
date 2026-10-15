@@ -10,7 +10,7 @@ import { useNav } from "@/context/NavProvider";
 import { usePwa } from "@/hooks/usePwa";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { ArrowUpRight, ChevronLeft, ChevronRight, Flag, TriangleAlert, X } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, Flag, Search, TriangleAlert, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ICON_CLOSE_BTN_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
@@ -147,25 +147,23 @@ function LensHeader({
 function EmptyLensHeader({
   lenses,
   addLensLabel,
-  onSelectLens,
-  getResultState,
 }: {
   lenses: Lens[];
   addLensLabel: string;
-  onSelectLens: (lens: Lens) => void;
-  getResultState: (lens: Lens) => { actionLabel: string; disabled: boolean };
 }) {
+  const search = useCompareLensSearch();
   return (
     // h-px lets children use h-full inside a table cell.
     <th className="h-px align-top border-l border-zinc-200 bg-zinc-50 p-2 dark:border-zinc-800 dark:bg-zinc-900">
-      <LensSearchDialog
-        lenses={lenses}
-        onSelectLens={onSelectLens}
-        getResultState={getResultState}
-        triggerVariant="slot"
-        triggerLabel={addLensLabel}
-        triggerClassName="h-full w-full min-h-[110px] rounded-2xl"
-      />
+      <button
+        type="button"
+        onClick={search.openSearch}
+        className="group flex h-full min-h-[110px] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-zinc-300 bg-zinc-50/60 text-center text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-100/70 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950/60 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
+      >
+        <Search className="h-6 w-6 opacity-40 transition-opacity group-hover:opacity-70" />
+        <span className="text-xs font-medium">{addLensLabel}</span>
+      </button>
+      <LensSearchDialog {...search.dialogProps} lenses={lenses} />
     </th>
   );
 }
@@ -188,7 +186,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
   const countryCode = useCountryCode();
   const isMobileDevice = useIsMobileDevice();
   const { compareIds, reorder, remove } = useCompare();
-  const { onSelectLens, getResultState } = useCompareLensSearch();
   const mount = useEffectiveMount();
   const mountSegment = mountToUrlSegment(mount);
   const orderedLenses = compareIds
@@ -412,8 +409,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                     ? i === 0 ? t("selectFirst") : t("addMore")
                     : t("addLens")
                 }
-                onSelectLens={onSelectLens}
-                getResultState={getResultState}
               />
             ))}
           </tr>

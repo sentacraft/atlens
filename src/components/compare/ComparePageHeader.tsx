@@ -1,10 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
+import { cn } from "@/lib/utils";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 import LensSearchDialog from "@/components/browse/LensSearchDialog";
-import { Flag } from "lucide-react";
+import { Flag, Search } from "lucide-react";
 import { ShareButton } from "@/components/share/ShareButton";
 import ShareFAB from "@/components/share/ShareFAB";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
@@ -14,7 +15,7 @@ import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
 import { findPresetByIds } from "@/lib/curated-presets";
 import type { Lens } from "@/lib/types";
-import { TEXT_LINK_CLS } from "@/config/ui-tokens";
+import { SEARCH_TRIGGER_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 
 const ADD_LENS_BTN_BASE =
   "h-9 whitespace-nowrap rounded-full border px-3.5 text-sm transition-colors";
@@ -23,7 +24,7 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
   const { compareIds } = useCompare();
-  const { onSelectLens, getResultState, canAddMore } = useCompareLensSearch();
+  const search = useCompareLensSearch();
   const clearCompareWithUndo = useClearCompareWithUndo();
   const locale = useLocale();
   const lang = locale === "zh" ? "zh" : "en";
@@ -45,15 +46,22 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
           {t("title")}
         </h1>
         {activeLenses.length >= 1 &&
-          (canAddMore ? (
-            <LensSearchDialog
-              lenses={allLenses}
-              onSelectLens={onSelectLens}
-              getResultState={getResultState}
-              triggerVariant="button"
-              triggerLabel={t("addLens")}
-              triggerClassName={`${ADD_LENS_BTN_BASE} border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900`}
-            />
+          (search.canAddMore ? (
+            <>
+              <button
+                type="button"
+                onClick={search.openSearch}
+                className={cn(
+                  SEARCH_TRIGGER_CLS,
+                  ADD_LENS_BTN_BASE,
+                  "border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900",
+                )}
+              >
+                <Search className="h-4 w-4" />
+                {t("addLens")}
+              </button>
+              <LensSearchDialog {...search.dialogProps} lenses={allLenses} />
+            </>
           ) : (
             <button
               onClick={() => toast(t("compareFullHint"))}
