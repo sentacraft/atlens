@@ -30,7 +30,8 @@ import {
   DialogPopup,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
+import { ACTION_PRIMARY_CLS, ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
+import { History, Plus } from "lucide-react";
 import ConversationHistory from "@/components/askiris/ConversationHistory";
 import {
   askIrisMessageMetadataSchema,
@@ -44,6 +45,8 @@ const transport = new DefaultChatTransport<AskIrisUIMessage>({
 });
 
 type ConversationSwitch = { kind: "select"; id: string } | { kind: "new" };
+
+const TOP_BAR_BTN_CLS = cn(ICON_NAV_BTN_CLS, "h-9 gap-1.5 px-2.5 text-sm");
 
 const SHELL_CLS =
   "mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4";
@@ -73,6 +76,8 @@ export default function AskIrisChat({
     onNotice: (notice) => {
       if (notice === "unavailable") {
         toast(t("conversationUnavailable"));
+      } else if (notice === "saveFailed") {
+        toast.error(t("conversationSaveFailed"));
       } else {
         toast.error(t("conversationLoadFailed"));
       }
@@ -199,24 +204,43 @@ export default function AskIrisChat({
     requestSwitch({ kind: "new" });
   }
 
-  const historyBar = userId && historyEnabled ? (
-    <div className="flex h-12 shrink-0 items-center">
-      <ConversationHistory
-        open={historyOpen}
-        onOpenChange={setHistoryOpen}
-        conversations={conversation.conversations}
-        listState={conversation.listState}
-        activeConversationId={conversationId}
-        onSelect={(id) => requestSwitch({ kind: "select", id })}
-        onNew={startNewConversation}
-      />
+  const showHistory = Boolean(userId && historyEnabled);
+  const topBar = (
+    <div className="flex h-12 shrink-0 items-center justify-between">
+      {showHistory ? (
+        <button type="button" onClick={() => setHistoryOpen(true)} className={TOP_BAR_BTN_CLS}>
+          <History className="size-4" />
+          {t("history")}
+        </button>
+      ) : (
+        <span />
+      )}
+      {messages.length > 0 && (
+        <button type="button" onClick={startNewConversation} className={TOP_BAR_BTN_CLS}>
+          <Plus className="size-4" />
+          {t("newChat")}
+        </button>
+      )}
+      {showHistory && (
+        <ConversationHistory
+          open={historyOpen}
+          onOpenChange={setHistoryOpen}
+          conversations={conversation.conversations}
+          listState={conversation.listState}
+          activeConversationId={conversationId}
+          onSelect={(id) => requestSwitch({ kind: "select", id })}
+          onNew={startNewConversation}
+          onRename={conversation.renameConversation}
+          onDelete={conversation.deleteConversation}
+        />
+      )}
     </div>
-  ) : null;
+  );
 
   if (conversation.loading) {
     return (
       <div className={SHELL_CLS}>
-        {historyBar}
+        {topBar}
         <div className="grid flex-1 place-items-center text-sm text-zinc-500 dark:text-zinc-400">
           {t("loadingConversation")}
         </div>
@@ -227,7 +251,7 @@ export default function AskIrisChat({
   if (renderMessages.length === 0 && !initialQuery) {
     return (
       <div className={SHELL_CLS}>
-        {historyBar}
+        {topBar}
         <AskIrisEmptyState
           input={input}
           onInputChange={setInput}
@@ -242,7 +266,7 @@ export default function AskIrisChat({
   return (
     <LensLinkProvider index={lensIndex}>
       <div className={SHELL_CLS}>
-        {historyBar}
+        {topBar}
         <div className="relative min-h-0 flex-1">
           <div
             ref={scrollRef}
@@ -282,9 +306,6 @@ export default function AskIrisChat({
             streaming={isBusy}
             onStop={stop}
             stopLabel={t("stop")}
-            onNewTopic={startNewConversation}
-            newTopicLabel={t("newChat")}
-            newTopicDisabled={messages.length === 0}
           />
         </div>
       </div>

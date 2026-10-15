@@ -29,14 +29,3 @@ export async function postResponseFeedback({
     throw new Error(`feedback_${res.status}`);
   }
 }
-
-export async function deleteResponseFeedback(responseMessageId: string): Promise<void> {
-  const res = await fetch(
-    `/api/askiris/feedback/${encodeURIComponent(responseMessageId)}`,
-    { method: "DELETE" },
-  );
-
-  if (!res.ok) {
-    throw new Error(`feedback_${res.status}`);
-  }
-}
