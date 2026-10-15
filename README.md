@@ -108,7 +108,9 @@ flowchart LR
 
 ## Data Pipeline
 
-For a lens comparison tool, data accuracy isn't a nice-to-have — it's the product. Lens data and images are produced by a private pipeline repo (`atlens-pipeline`) and published into `src/data/lenses.json` (X mount) and `src/data/lenses-gfx.json` (G mount) through a pull request.
+For a lens comparison tool, data accuracy isn't a nice-to-have — it's the product. The catalog is built and maintained by **an agentic data-operations system** in a private repo (`atlens-pipeline`): several AI agents with separate jobs find new lenses, take in user reports, collect and structure official specs, and check one another's work, inside guardrails enforced by code. The system records its own failures and turns them into reviewed rules, and the maintainer approves everything that ships. Output lands in `src/data/lenses.json` (X mount) and `src/data/lenses-gfx.json` (G mount) as a pull request to this repo.
+
+### Stages
 
 ```mermaid
 flowchart TD
@@ -161,18 +163,61 @@ flowchart TD
 
 Blue steps are scripts, yellow are AI agents, green involve a person.
 
-**How it runs.**
+### Agents and their boundaries
 
-- **State.** Each lens has one JSON state file, tracked in git, so the history doubles as an audit trail. A `queue` command recomputes every lens's next step from that state, so the agent never has to remember where it left off; lenses on hold are skipped everywhere.
-- **Controlled writes.** Every change goes through one `write` command, which limits each stage to its own fields, rejects empty placeholders for unknown values, re-validates the catalog schema, and records which model produced the data.
-- **Guardrails for the agent.** Hooks block direct edits to state files and reads of this repo's published data; after each write they report the lens's next step and run the source audit. Both directions — must block, must allow — have regression tests.
-- **Unattended and interactive work.** Discover, Triage, and the source audit run on their own; the main pipeline agent runs interactively under the maintainer, and only the maintainer publishes.
-- **Bounded self-improvement.** Verified process incidents go to an append-only, git-tracked log and move from open to resolved to promoted. A review turns an incident into one concrete change — a test, a hook, a CLI check, a source entry, or a stage rule — which takes effect only after it is reviewed and merged. The agent never rewrites its own rules silently.
+Each agent gets one job, its own runtime, and an explicit list of what it may not do.
 
-**Key principles:**
+| Agent | Runs | Does | May not |
+|---|---|---|---|
+| **Discover** | Monthly GitHub Actions cron; Responses API with web search | Finds registered brands with recent X-mount releases and opens a brand-level index issue | Identify individual lenses, read user issues, or touch the catalog |
+| **Triage** | GitHub Actions on every new issue; Codex | Verifies a user report against the published catalog, labels it (lens missing, data error, duplicate, …), and comments with what it found | Change data, open PRs, or close issues; issue text is treated as untrusted input and its instructions are never followed |
+| **Source auditor** | After every collect write, from a hook; an independent model with no tools | Judges each collected source as ok, thin, junk, or the wrong lens; holds Derive while no source has a spec table | Write anything |
+| **Pipeline agent** | Interactively under the maintainer; Claude Code | Runs Index → Collect → Derive → Compute → Pricing → Images and prepares review; given an issue number, works it through to review | Write state except through the `write` command, read this repo's published data, or publish |
+| **Maintainer** | — | Reviews, resolves notes, and publishes | — |
+
+### Guardrails
+
+Rules the agents cannot talk their way around live in code, not in prompts:
+
+- **Pre-tool guards** block direct edits to lens state files and incident logs — including through shell redirects, `sed -i`, or ad-hoc scripts — and any read of this repo's published data, so an agent can't copy answers from the output it is producing.
+- **One write path.** The `write` command limits each stage to its own fields, accepts only the fields an agent is allowed to derive, rejects empty placeholders for unknown values, checks that collected sources come from the brand's configured sites, re-validates the catalog schema before anything touches disk, and stamps which harness and model produced the data.
+- **Readiness gates.** A stage starts only when its inputs exist (Collect needs an index entry and a valid official page; Derive needs a complete collect with a real spec source). Lenses on hold are skipped by every queue and by publish.
+- **Tests in both directions.** Each guard has regression tests for what it must block and for what it must still allow.
+
+```mermaid
+flowchart LR
+  AGENT["Pipeline agent"] -->|"tool call"| GUARD{"Pre-tool guard"}
+  GUARD -->|"blocked"| AGENT
+  GUARD -->|"allowed"| WRITE["write command<br/>stage boundary · schema · provenance"]
+  WRITE -->|"rejected with reason"| AGENT
+  WRITE --> STATE[("Per-lens state<br/>tracked in git")]
+  STATE --> HOOK["Post-tool hook<br/>next step from queue · source audit"]
+  HOOK -->|"what to do next"| AGENT
+  INCIDENT[("Incident log<br/>append-only")] --> LEARN["Learn review"]
+  LEARN --> RULE["Reviewed change<br/>test · hook · CLI check<br/>source config · stage rule"]
+  RULE -.->|"merged"| GUARD & WRITE & HOOK
+```
+
+### Self-correction
+
+- **State, not memory.** Each lens has one JSON state file in git. `queue` recomputes every lens's next step from disk, so a run can stop anywhere and resume, and repeating a step is a no-op.
+- **Feedback after every write.** A post-tool hook tells the agent what the lens still needs, and runs the source audit after collect writes, so a thin or wrong source is caught before Derive builds on it.
+- **Uncertainty is surfaced, not guessed.** Derive writes only what the source supports; conflicts, schema gaps, and mismatches become notes that the maintainer resolves at review.
+- **Rollback.** `reset` returns a lens to an earlier stage and clears what came after it.
+
+### Self-improvement
+
+The pipeline keeps an append-only, git-tracked log of verified process incidents — a failed action, a recurring collection failure, a step the maintainer had to correct. Each incident moves from **open** to **resolved** to **promoted**. A review reads the open incidents and proposes one concrete change: a test, a hook, a CLI check, a source configuration, or a stage rule. It becomes a rule only after it is reviewed and merged, and only then is the incident marked promoted. No agent rewrites its own prompts, rules, or data silently.
+
+### Issue operations
+
+User reports and the pipeline share one queue. A data report or missing-lens request sent from the site becomes a GitHub issue; Triage verifies and labels it as soon as it opens; confirmed missing lenses are batched by brand into the next Index run, and confirmed data errors are corrected at review. Discover adds brand-level work items from the web on its own, so new releases enter the same flow without anyone filing them.
+
+### Principles
+
 - Specs come from manufacturers' official pages; in rare cases a field missing there is filled at review from other published sources.
 - Deterministic fields are computed in code — never inferred by an LLM.
-- Nothing is published without the maintainer's review.
+- Agents propose; code enforces; the maintainer approves what ships.
 
 **A note on accuracy.** Atlens covers hundreds of lenses across dozens of spec dimensions, and we kindly ask for your patience with the small errors and stale entries that slip through. Bug reports via the in-app feedback or GitHub issues are very welcome — for anything critical to a purchase, please confirm on the manufacturer's official page first.
 
