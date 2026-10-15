@@ -5,6 +5,7 @@ import { getLensSummaries } from "@/lib/lens/data";
 import GearRequestCard from "../GearRequestCard";
 
 const mocks = vi.hoisted(() => ({
+  locale: "zh",
   session: { data: null as unknown },
   openSignIn: vi.fn(),
   addCatalog: vi.fn((_ids: unknown, options?: { onSuccess?: () => void }) => options?.onSuccess?.()),
@@ -13,7 +14,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("next-intl", () => {
   const t = (key: string, values?: Record<string, unknown>) => (values ? `${key} ${Object.values(values).join(",")}` : key);
   t.has = () => false;
-  return { useTranslations: () => t };
+  return { useTranslations: () => t, useLocale: () => mocks.locale };
 });
 vi.mock("@/lib/auth-client", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/auth-client")>()),
@@ -34,6 +35,7 @@ vi.mock("@/components/me/useGearAdders", () => ({
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
+  mocks.locale = "zh";
 });
 
 const lenses = getLensSummaries("zh");
@@ -91,6 +93,11 @@ describe("GearRequestCard", () => {
     mocks.session = { data: account };
     renderCard({ output: { outcome: "saved", saved: ["X-T5", "XF 18-55mm"] } });
     expect(screen.getByText("savedItems X-T5、XF 18-55mm")).toBeInTheDocument();
+    cleanup();
+
+    mocks.locale = "en";
+    renderCard({ output: { outcome: "saved", saved: ["X-T5", "XF 18-55mm"] } });
+    expect(screen.getByText("savedItems X-T5, XF 18-55mm")).toBeInTheDocument();
     cleanup();
 
     render(<GearRequestCard input={{}} active={false} lenses={lenses} onAnswer={() => {}} />);
