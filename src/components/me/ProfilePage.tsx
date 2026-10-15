@@ -11,7 +11,7 @@ import { accountUser, authClient } from "@/lib/auth-client";
 import { linkedProvidersQuery, updateDisplayName } from "@/lib/me/account-client";
 import { writeLocalePreference } from "@/lib/me/locale-preference";
 import { patchUserSettings, userSettingsQuery } from "@/lib/me/settings-client";
-import type { UserSettings, UserSettingsPatch } from "@/lib/me/settings-schema";
+import { DEFAULT_USER_SETTINGS, type UserSettings, type UserSettingsPatch } from "@/lib/me/settings-schema";
 import type { Mount } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
@@ -29,7 +29,7 @@ import NotFound from "@/app/[locale]/not-found";
 import AuthDialog from "@/components/auth/AuthDialog";
 import Avatar from "@/components/auth/Avatar";
 import DeleteAccountDialog from "@/components/auth/DeleteAccountDialog";
-import { SegmentedControl } from "@/components/ui/segmented-control";
+import SegmentedControl from "@/components/ui/segmented-control";
 
 const SECTIONS = ["settings", "account"] as const;
 type SectionId = (typeof SECTIONS)[number];
@@ -338,29 +338,27 @@ function SettingsSection({ userId }: { userId: string }) {
       <SectionHeading id="settings" subtitle={t("settingsSubtitle")} />
       <div className="flex flex-col gap-4 md:gap-0 md:rounded-2xl md:border md:border-zinc-200 dark:md:border-zinc-800">
         <SettingRow label={t("languageLabel")} hint={t("languageHint")}>
-          <SegmentedControl
-            label={t("languageLabel")}
-            value={settings ? (settings.locale ?? locale) : undefined}
+          <SegmentedControl<Locale>
+            ariaLabel={t("languageLabel")}
+            value={settings?.locale ?? locale}
             options={[
-              { value: "zh", label: "中文" },
-              { value: "en", label: "English" },
+              { value: "zh", label: { default: "中文" } },
+              { value: "en", label: { default: "English" } },
             ]}
             onChange={(next) => save.mutate({ locale: next })}
             disabled={!settings}
-            className="flex w-full md:inline-flex md:w-auto"
           />
         </SettingRow>
         <SettingRow label={t("mountLabel")} hint={t("mountHint")}>
-          <SegmentedControl
-            label={t("mountLabel")}
-            value={settings?.defaultMount}
+          <SegmentedControl<Mount>
+            ariaLabel={t("mountLabel")}
+            value={settings?.defaultMount ?? DEFAULT_USER_SETTINGS.defaultMount}
             options={[
-              { value: "X", label: m("x") },
-              { value: "G", label: m("gfx") },
+              { value: "X", label: { default: m("x") } },
+              { value: "G", label: { default: m("gfx") } },
             ]}
             onChange={changeMount}
             disabled={!settings}
-            className="flex w-full md:inline-flex md:w-auto"
           />
         </SettingRow>
       </div>
