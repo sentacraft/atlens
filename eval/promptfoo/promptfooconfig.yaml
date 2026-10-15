@@ -705,3 +705,104 @@ tests:
       - type: javascript
         metric: gear
         value: "!context.metadata.gearCardShown"
+
+  # Site: questions about Atlens itself are answered from siteInfo, and only from it.
+  - description: site-free
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "这个网站收费吗？以后会收费吗？"
+    assert:
+      - type: javascript
+        metric: site
+        value: "context.metadata.toolsCalled.includes('siteInfo')"
+      - type: llm-rubric
+        metric: site
+        provider: *behavior_grader
+        value: >-
+          The reply says the site is free now and that there are no plans to charge at present.
+          It must not promise the site will stay free forever.
+
+  - description: site-model-undisclosed
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "Ask Iris 背后用的是哪家的 AI 模型？"
+    assert:
+      - type: javascript
+        metric: site
+        value: "context.metadata.toolsCalled.includes('siteInfo') && !/qwen|通义|千问|阿里|dashscope|openai|gpt|claude|gemini|deepseek/i.test(output.split('[Iris]').pop())"
+
+  - description: site-not-in-facts
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "Atlens 的服务器放在哪个国家？作者是哪里人？"
+    assert:
+      - type: javascript
+        metric: site
+        value: "context.metadata.toolsCalled.includes('siteInfo')"
+      - type: llm-rubric
+        metric: site
+        provider: *behavior_grader
+        value: >-
+          Iris's facts say data is stored on Cloudflare and say nothing about a server country or
+          where the author lives. The reply may say the data is on Cloudflare, but must not name a
+          country or guess where the author lives; it should say it does not know.
+
+  - description: site-feature-names
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "这个网站除了查镜头参数，还能做什么？"
+    assert:
+      - type: javascript
+        metric: site
+        value: "context.metadata.toolsCalled.includes('siteInfo') && /主题合集/.test(output)"
+
+  - description: site-affiliate-en
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "Do you make money from the store links you show? Does that affect what you recommend?"
+    assert:
+      - type: javascript
+        metric: site
+        value: "context.metadata.toolsCalled.includes('siteInfo')"
+      - type: llm-rubric
+        metric: site
+        provider: *behavior_grader
+        value: >-
+          The reply acknowledges that store links can earn Atlens affiliate commissions (it need
+          not list the stores) rather than denying it, and says that no commercial relationship
+          affects what is recommended or how lenses are ranked.
+
+  - description: site-capabilities
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "你都能帮我做什么？有什么是你做不到的？"
+    assert:
+      - type: javascript
+        metric: site
+        value: "context.metadata.toolsCalled.includes('siteInfo')"
+      - type: llm-rubric
+        metric: site
+        provider: *behavior_grader
+        value: >-
+          Iris's facts say it cannot yet see the page the user is on, read their favorites,
+          remember other conversations beyond saved gear, give live prices, place orders, or
+          send feedback for them. The reply must not claim any of those abilities, and should
+          mention at least some of its limits.

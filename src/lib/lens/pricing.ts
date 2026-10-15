@@ -1,7 +1,12 @@
 import type { LensPriceEntry } from "@/lib/types";
 
 type Condition = "new" | "used";
-type Market = "cn" | "global";
+export type Market = "cn" | "global";
+
+/** The price market a locale's site shows. */
+export function priceMarket(locale: string): Market {
+  return locale === "zh" ? "cn" : "global";
+}
 
 export type PricedEntry = LensPriceEntry & { price: number; currency: "CNY" | "USD" };
 
@@ -29,7 +34,7 @@ export function pickPriceEntry(
   pricing: PricingData | undefined,
   locale: string
 ): PriceSelection | null {
-  const market: Market = locale === "zh" ? "cn" : "global";
+  const market = priceMarket(locale);
   const bucket = pricing?.[market];
   const newEntry = pickNewEntry(bucket?.new);
   if (newEntry) {

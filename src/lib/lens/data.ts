@@ -35,6 +35,15 @@ export function getLensesByMount(mount: Mount, locale: string): Lens[] {
   throw new Error(`getLensesByMount: unsupported mount ${JSON.stringify(mount)}`);
 }
 
+/** How many lenses each brand has on a mount, keyed by brand slug. */
+export function lensCountsByBrand(mount: Mount, locale: string): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const lens of getLensesByMount(mount, locale)) {
+    counts[lens.brand] = (counts[lens.brand] ?? 0) + 1;
+  }
+  return counts;
+}
+
 export function getAllLenses(locale: string): Lens[] {
   return [...getLensesByMount("X", locale), ...getLensesByMount("G", locale)];
 }
