@@ -92,7 +92,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "capabilities",
     topic: "askIris",
-    text: "What Iris can do: find and recommend lenses for a need, as cards with a reason for each; lay lenses side by side in a spec table; explain how lenses differ; look up any lens's specs; for signed-in users, take their saved gear into account and ask them to add it when missing; answer questions about Atlens itself. What Iris cannot do yet: see the page the user is on; read their favorites; remember other conversations, apart from saved gear; give live prices or buy anything; send feedback or change account settings for them; judge sharpness, bokeh, or other qualities that need reviews; answer about lenses Atlens has not collected or other mounts; give general photography advice unrelated to choosing lenses.",
+    text: "What Iris can do: find and recommend lenses for a need, as cards with a reason for each; lay lenses side by side in a spec table; explain how lenses differ; look up any lens's specs; for signed-in users, take their saved gear into account and ask them to add it when missing; answer questions about Atlens itself.",
   },
   {
     id: "model-provider",
