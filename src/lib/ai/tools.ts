@@ -16,6 +16,7 @@ import {
 import { lensRef, buildRefIndex } from "@/lib/ai/lens-ref";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
+import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
 
 const RECALL_LIMIT = 20;
 
@@ -265,6 +266,22 @@ export function buildLensTools(
           `Rendered a table of ${output.lenses.length} lens(es) to the user, for: ` +
           output.lenses.map((lens) => lensRef(lens.id)).join(", "),
       }),
+    }),
+
+    siteInfo: tool({
+      description:
+        "Facts about the Atlens website itself, the only source for answering questions about it. " +
+        "project: author, history, contact, open source and data license, plans. " +
+        "business: pricing, costs, support, ads, affiliate links, independence from manufacturers. " +
+        "data: where specs come from, which lenses are included, coverage counts, update cadence, corrections. " +
+        "prices: where prices come from and how current they are. " +
+        "askIris: the AI behind Iris, training, usage limits, accuracy. " +
+        "account: why and how to sign in, conversation storage, deleting an account. " +
+        "privacy: cookies, analytics, where data is stored. " +
+        "usage: main features and their names, languages, the app, mounts. " +
+        "Ask for every topic the question touches in one call.",
+      inputSchema: z.object({ topics: z.array(z.enum(SITE_TOPICS)).min(1) }),
+      execute: ({ topics }) => ({ topics: siteFacts(topics, locale) }),
     }),
 
     // A client tool: the browser shows the gear card and returns what the user did.
