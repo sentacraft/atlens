@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import {
   axisPosition,
   coverageAxis,
@@ -17,8 +17,6 @@ const MOBILE_TICKS = new Set([24, 50, 135]);
 
 export default function CoverageChart({ lenses }: { lenses: CoverageInput[] }) {
   const t = useTranslations("Profile");
-  // Chinese sentences end in "。" and run on without a space.
-  const sentenceGap = useLocale() === "zh" ? "" : " ";
   const rows = coverageRows(lenses);
   const axis = coverageAxis(rows);
   const gap = wideGap(rows, axis);
@@ -95,9 +93,7 @@ export default function CoverageChart({ lenses }: { lenses: CoverageInput[] }) {
 
       {(gap !== undefined || hasManual) && (
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          {[gap !== undefined ? t("coverageGapBelow", { mm: gap }) : null, hasManual ? t("coverageManualNote") : null]
-            .filter(Boolean)
-            .join(sentenceGap)}
+          {t("coverageNote", { gap: gap ?? "none", manual: hasManual ? "yes" : "no" })}
         </p>
       )}
     </div>

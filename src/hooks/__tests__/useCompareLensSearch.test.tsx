@@ -19,70 +19,64 @@ vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
 }));
 
+vi.mock("@/components/browse/LensSearchDialog", () => ({ SuggestLensFooter: () => null }));
+
 function wrapper({ children }: { children: ReactNode }) {
   return <CompareProvider>{children}</CompareProvider>;
 }
 
 const fakeLens = (id: string): Lens => ({ id } as Lens);
 
+function renderWithCompare() {
+  return renderHook(() => ({ search: useCompareLensSearch(), compare: useCompare() }), { wrapper });
+}
+
 describe("useCompareLensSearch", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("getResultState returns addToCompareAction for a new lens", () => {
-    const { result } = renderHook(() => useCompareLensSearch(), { wrapper });
-    const state = result.current.getResultState(fakeLens("new-lens"));
-    expect(state.actionLabel).toBe("addToCompareAction");
-    expect(state.disabled).toBe(false);
+  it("offers to add a lens that is not in compare yet", () => {
+    const { result } = renderWithCompare();
+    expect(result.current.search.dialogProps.resultAction(fakeLens("new-lens"))).toEqual({
+      label: "addToCompareAction",
+    });
   });
 
-  it("getResultState returns alreadyAdded for a lens already in compare", () => {
-    const { result } = renderHook(
-      () => ({ search: useCompareLensSearch(), compare: useCompare() }),
-      { wrapper },
-    );
+  it("disables a lens already in compare", () => {
+    const { result } = renderWithCompare();
     act(() => result.current.compare.add("lens-a"));
-    const state = result.current.search.getResultState(fakeLens("lens-a"));
-    expect(state.actionLabel).toBe("alreadyAdded");
-    expect(state.disabled).toBe(true);
+    expect(result.current.search.dialogProps.resultAction(fakeLens("lens-a"))).toEqual({
+      label: "alreadyAdded",
+      disabled: true,
+    });
   });
 
-  it("getResultState returns compareFull when at MAX_COMPARE", () => {
-    const { result } = renderHook(
-      () => ({ search: useCompareLensSearch(), compare: useCompare() }),
-      { wrapper },
-    );
+  it("disables every new lens once compare is full", () => {
+    const { result } = renderWithCompare();
     for (let i = 0; i < MAX_COMPARE; i++) {
       act(() => result.current.compare.add(`lens-${i}`));
     }
-    const state = result.current.search.getResultState(fakeLens("new-lens"));
-    expect(state.actionLabel).toBe("compareFull");
-    expect(state.disabled).toBe(true);
-  });
-
-  it("canAddMore is true when under limit", () => {
-    const { result } = renderHook(() => useCompareLensSearch(), { wrapper });
-    expect(result.current.canAddMore).toBe(true);
-  });
-
-  it("canAddMore is false when at limit", () => {
-    const { result } = renderHook(
-      () => ({ search: useCompareLensSearch(), compare: useCompare() }),
-      { wrapper },
-    );
-    for (let i = 0; i < MAX_COMPARE; i++) {
-      act(() => result.current.compare.add(`lens-${i}`));
-    }
+    expect(result.current.search.dialogProps.resultAction(fakeLens("new-lens"))).toEqual({
+      label: "compareFull",
+      disabled: true,
+    });
     expect(result.current.search.canAddMore).toBe(false);
   });
 
-  it("onSelectLens adds the lens to compare", () => {
-    const { result } = renderHook(
-      () => ({ search: useCompareLensSearch(), compare: useCompare() }),
-      { wrapper },
-    );
-    act(() => result.current.search.onSelectLens(fakeLens("lens-x")));
+  it("is under the limit with an empty compare", () => {
+    const { result } = renderWithCompare();
+    expect(result.current.search.canAddMore).toBe(true);
+  });
+
+  it("adds the picked lens and closes the dialog", () => {
+    const { result } = renderWithCompare();
+    act(() => result.current.search.openSearch());
+    expect(result.current.search.dialogProps.open).toBe(true);
+
+    act(() => result.current.search.dialogProps.onSelect(fakeLens("lens-x")));
+
     expect(result.current.compare.compareIds).toContain("lens-x");
+    expect(result.current.search.dialogProps.open).toBe(false);
   });
 });

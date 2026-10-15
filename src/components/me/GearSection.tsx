@@ -53,6 +53,7 @@ export default function GearSection({
   const { data: gear = [] } = useQuery(query);
   const { preference: mount } = useMountPreference();
   const [bodyDialogOpen, setBodyDialogOpen] = useState(false);
+  const [lensSearchOpen, setLensSearchOpen] = useState(false);
   const [manual, setManual] = useState<{ open: boolean; model: string }>({ open: false, model: "" });
 
   const lensById = useMemo(() => new Map(lenses.map((lens) => [lens.id, lens])), [lenses]);
@@ -151,35 +152,36 @@ export default function GearSection({
         count={lensItems.length}
         empty={t("noLenses")}
         action={
-          <LensSearchDialog<LensSummary>
-            lenses={lenses}
-            title={t("addLens")}
-            description={t("addLensDescription")}
-            closeOnSelect={false}
-            triggerVariant="button"
-            triggerIcon={Plus}
-            triggerLabel={t("addLens")}
-            triggerClassName={cn(ADD_BUTTON_CLS, "rounded-lg")}
-            getResultState={(lens) =>
-              ownedLensIds.has(lens.id) ? { actionLabel: t("owned"), disabled: true } : { actionLabel: t("add") }
-            }
-            onSelectLens={(lens) => add.mutate({ kind: "lens", catalogId: lens.id })}
-            renderFooter={({ query: search, close }) => (
-              <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs text-zinc-500 dark:text-zinc-400">
-                {t("manualPrompt")}
-                <button
-                  type="button"
-                  onClick={() => {
-                    close();
-                    setManual({ open: true, model: search });
-                  }}
-                  className="font-medium text-zinc-900 underline underline-offset-4 dark:text-zinc-100"
-                >
-                  {t("manualEntry")}
-                </button>
-              </div>
-            )}
-          />
+          <>
+            <button type="button" onClick={() => setLensSearchOpen(true)} className={ADD_BUTTON_CLS}>
+              <Plus className="h-4 w-4" />
+              {t("addLens")}
+            </button>
+            <LensSearchDialog<LensSummary>
+              open={lensSearchOpen}
+              onOpenChange={setLensSearchOpen}
+              lenses={lenses}
+              title={t("addLens")}
+              description={t("addLensDescription")}
+              resultAction={(lens) => (ownedLensIds.has(lens.id) ? { label: t("owned"), disabled: true } : { label: t("add") })}
+              onSelect={(lens) => add.mutate({ kind: "lens", catalogId: lens.id })}
+              footer={({ query: search }) => (
+                <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs text-zinc-500 dark:text-zinc-400">
+                  {t("manualPrompt")}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLensSearchOpen(false);
+                      setManual({ open: true, model: search });
+                    }}
+                    className="font-medium text-zinc-900 underline underline-offset-4 dark:text-zinc-100"
+                  >
+                    {t("manualEntry")}
+                  </button>
+                </div>
+              )}
+            />
+          </>
         }
       >
         {lensItems.map((item) => {
