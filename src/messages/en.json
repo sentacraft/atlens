@@ -759,13 +759,16 @@
     "favorited": "Favorited",
     "favoriteSignIn": "Sign in to favorite lenses and see them on any device",
     "favoritesLimit": "You've reached the favorites limit.",
-    "own": "I own this",
+    "own": "Mark as owned",
     "owned": "Owned",
     "removeOwned": "Remove from my gear",
     "ownSignIn": "Sign in to record your gear so Ask Iris can take it into account",
     "favoriteAdded": "Added to favorites",
     "viewFavorites": "View",
     "favoriteRemoved": "Removed from favorites",
-    "undo": "Undo"
+    "undo": "Undo",
+    "ownedAdded": "Added to my gear",
+    "viewGear": "View",
+    "ownedRemoved": "Removed from my gear"
   }
 }

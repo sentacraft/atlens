@@ -759,13 +759,16 @@
     "favorited": "已收藏",
     "favoriteSignIn": "登录后可以收藏镜头，在任何设备上查看",
     "favoritesLimit": "收藏数量已达上限。",
-    "own": "我有这支",
+    "own": "标记为已拥有",
     "owned": "已拥有",
     "removeOwned": "从我的器材中移除",
     "ownSignIn": "登录后可以记录你的器材，Ask Iris 会参考它给建议",
     "favoriteAdded": "已加入收藏",
     "viewFavorites": "查看",
     "favoriteRemoved": "已取消收藏",
-    "undo": "撤销"
+    "undo": "撤销",
+    "ownedAdded": "已加入我的器材",
+    "viewGear": "查看",
+    "ownedRemoved": "已从我的器材移除"
   }
 }

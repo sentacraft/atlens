@@ -64,7 +64,7 @@ function findCatalogGear(db: D1Database, userId: string, item: NewGearItem) {
 
 /**
  * Adds one item and returns it. Adding a catalog item the user already owns returns
- * the existing row, so "I own this" is safe to repeat.
+ * the existing row, so "Mark as owned" is safe to repeat.
  */
 export async function addUserGear(
   db: D1Database,
