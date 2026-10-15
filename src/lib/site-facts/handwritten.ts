@@ -61,13 +61,13 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "independence",
     topic: "business",
-    text: "Affiliate links do not affect how lenses are ranked, the prices shown, or Iris's answers and recommendations, and no manufacturer can pay to change any of them.",
+    text: "Atlens is an independent third-party tool, not endorsed or sponsored by Fujifilm or any other manufacturer. Its only commercial ties are the affiliate links among the English site's store links, some of which go to brands' own online stores. Affiliate links do not affect how lenses are ranked, the prices shown, or Iris's answers and recommendations, and no manufacturer can pay to change any of them.",
     source: "src/lib/purchase/channel-priority.ts",
   },
   {
     id: "spec-source",
     topic: "data",
-    text: "Specs come only from manufacturers' official websites. Fields that follow strictly from the model name, such as focal length and aperture, are computed in code; other fields are extracted by AI from the official text and stay traceable to it. Before publishing, a separate AI cross-checks samples against published reviews to catch source or extraction errors; those reviews are never used as data.",
+    text: "Specs come only from manufacturers' official websites. Fields that follow strictly from the model name, such as focal length and aperture, are computed in code; other fields are extracted by AI from the official text and stay traceable to it. The author reviews every lens before it is published.",
   },
   {
     id: "inclusion",

@@ -63,10 +63,10 @@ function priceSources(): string[] {
 }
 
 function commercialTies(): string[] {
-  return [en.About.disclaimerIndependent, ...routing.locales.map(
+  return routing.locales.map(
     (code) =>
       `Store links on the ${languageName(code)} site: ${isPurchaseLocale(code) ? en.Purchase.disclosureDetail : en.Purchase.disclosureNoAffiliate}`,
-  )];
+  );
 }
 
 function accountFeatures(locale: string): string[] {
