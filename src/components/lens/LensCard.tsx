@@ -93,7 +93,7 @@ export default memo(function LensCard({
       >
         <div
           {...hookAttr("cardMedia")}
-          className="relative aspect-[3/2] overflow-hidden border-b border-zinc-100/80 bg-zinc-50/40 dark:border-zinc-800 dark:bg-zinc-900/40 max-xs:aspect-auto max-xs:w-[132px] max-xs:shrink-0 max-xs:self-stretch max-xs:border-b-0 max-xs:border-r"
+          className="relative aspect-[3/2] overflow-hidden border-b border-zinc-100/80 bg-zinc-50/40 dark:border-zinc-800 dark:bg-zinc-900/40 max-xs:aspect-auto max-xs:w-[145px] max-xs:shrink-0 max-xs:self-stretch max-xs:border-b-0 max-xs:border-r"
         >
           <div
             {...hookAttr("cardMediaInner")}
@@ -104,7 +104,7 @@ export default memo(function LensCard({
                 src={getLensImageUrl(lens.id)}
                 alt={lens.model}
                 fill
-                sizes="(max-width: 499px) 112px, (max-width: 640px) 50vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                sizes="(max-width: 499px) 129px, (max-width: 640px) 50vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                 style={lensImageStyle}
                 className="object-contain"
                 // Next 16's `priority` only adds a preload link, so loading is set directly.
