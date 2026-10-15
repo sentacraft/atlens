@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
@@ -9,6 +9,8 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { linkedProvidersQuery, updateDisplayName } from "@/lib/me/account-client";
+import { userFavoritesQuery } from "@/lib/me/favorites-client";
+import { userGearQuery } from "@/lib/me/gear-client";
 import { writeLocalePreference } from "@/lib/locale-preference";
 import { patchUserSettings, userSettingsQuery } from "@/lib/me/settings-client";
 import { DEFAULT_USER_SETTINGS, type UserSettings, type UserSettingsPatch } from "@/lib/me/settings-schema";
@@ -26,19 +28,21 @@ import {
 import { useTestHookEnabled } from "@/context/TestHookProvider";
 import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { useNav } from "@/context/NavProvider";
+import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
 import NotFound from "@/app/[locale]/not-found";
-import AuthDialog from "@/components/auth/AuthDialog";
 import Avatar from "@/components/auth/Avatar";
 import DeleteAccountDialog from "@/components/auth/DeleteAccountDialog";
+import FavoritesSection from "@/components/me/FavoritesSection";
 import GearSection from "@/components/me/GearSection";
 import SegmentedControl from "@/components/ui/segmented-control";
 
-const SECTIONS = ["gear", "settings", "account"] as const;
+const SECTIONS = ["gear", "favorites", "settings", "account"] as const;
 type SectionId = (typeof SECTIONS)[number];
 
 const SECTION_TITLE_KEY = {
   gear: "gearTitle",
+  favorites: "favoritesTitle",
   settings: "settingsTitle",
   account: "accountTitle",
 } as const satisfies Record<SectionId, string>;
@@ -68,19 +72,18 @@ export default function ProfilePage({ lenses }: { lenses: LensSummary[] }) {
 
 function SignInPrompt() {
   const t = useTranslations("Profile");
-  const [open, setOpen] = useState(false);
+  const openSignIn = useSignInDialog();
   return (
     <div className="mx-auto flex max-w-md flex-col items-center gap-3 px-5 py-24 text-center">
       <h1 className="font-heading text-2xl font-bold text-zinc-900 dark:text-zinc-100">{t("signInTitle")}</h1>
       <p className="text-sm text-zinc-500 dark:text-zinc-400">{t("signInBody")}</p>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => openSignIn()}
         className={cn(ACTION_PRIMARY_CLS, "mt-3 h-10 rounded-lg px-5 text-sm font-medium")}
       >
         {t("signIn")}
       </button>
-      <AuthDialog open={open} onOpenChange={setOpen} />
     </div>
   );
 }
@@ -96,6 +99,22 @@ function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] })
   const t = useTranslations("Profile");
   const { activeId: active, scrollTo } = useScrollSpy(SECTIONS);
   const { navHidden } = useNav();
+  const gearFetched = useQuery(userGearQuery(user.id)).isFetched;
+  const favoritesFetched = useQuery(userFavoritesQuery(user.id)).isFetched;
+  const hashHandled = useRef(false);
+
+  // The sections render after the session and their data load, so the browser's own jump to
+  // the URL hash happens too early; scroll once the lists above the target have their height.
+  useEffect(() => {
+    if (hashHandled.current || !gearFetched || !favoritesFetched) {
+      return;
+    }
+    hashHandled.current = true;
+    const target = SECTIONS.find((id) => `#${id}` === window.location.hash);
+    if (target) {
+      scrollTo(target);
+    }
+  }, [gearFetched, favoritesFetched, scrollTo]);
 
   return (
     <div className="mx-auto flex w-full max-w-[1040px] gap-12 px-5 pt-6 pb-12 md:px-6 md:pt-10 md:pb-16">
@@ -154,6 +173,14 @@ function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] })
           userId={user.id}
           lenses={lenses}
           heading={<SectionHeading id="gear" />}
+        />
+        <FavoritesSection
+          id="favorites"
+          className={SECTION_CLS}
+          lenses={lenses}
+          heading={(count) => (
+            <SectionHeading id="favorites" subtitle={count > 0 ? t("favoritesCount", { count }) : undefined} />
+          )}
         />
         <SettingsSection userId={user.id} />
         <AccountSection email={user.email} />

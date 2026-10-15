@@ -11,6 +11,7 @@ import { buildSpecGroups, buildSpecGroupLabels, resolveSpecGroups, rowPlainText 
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens/spec-groups";
 import { ExternalLink } from "@/components/ui/external-link";
 import LensDetailCompareToggle from "@/components/compare/LensDetailCompareToggle";
+import LensDetailSaveActions from "@/components/lens/LensDetailSaveActions";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import LensDetailTelemetry from "@/components/lens/LensDetailTelemetry";
 import ShareFAB from "@/components/share/ShareFAB";
@@ -33,6 +34,7 @@ import { pickPriceEntry, formatPriceForReport } from "@/lib/lens/pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
 import { buildLensDescription, buildLensProductSchema } from "@/lib/lens/seo";
 import { PriceSection } from "@/components/price/PriceSection";
+import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
 
@@ -273,9 +275,14 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           <div className="mt-auto flex flex-wrap items-center gap-2">
             <LensDetailCompareToggle lensId={lens.id} />
             <RetailersDropdown lens={lens} customId="detail" />
+            <LensDetailSaveActions lensId={lens.id} />
           </div>
         </div>
       </div>
+
+      {priceSelection && (
+        <PriceDisclaimer className="-mt-3 border-t border-zinc-100 pt-3 dark:border-zinc-800" />
+      )}
 
       <div>
         <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">

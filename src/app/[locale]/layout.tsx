@@ -19,6 +19,7 @@ import { agentModelInfo } from "@/lib/ai/model";
 import { CompareProvider } from "@/context/CompareProvider";
 import { MountPreferenceProvider } from "@/context/MountPreferenceProvider";
 import { NavProvider } from "@/context/NavProvider";
+import { SignInDialogProvider } from "@/context/SignInDialogProvider";
 import { TestHookProvider } from "@/context/TestHookProvider";
 import { TESTHOOK_ALLOWED } from "@/lib/testhook";
 import { SITE } from "@/config/site";
@@ -134,6 +135,7 @@ export default async function LocaleLayout({
           <MountPreferenceProvider>
           <LocalePreferenceSync />
           <CompareProvider>
+          <SignInDialogProvider>
             <NavProvider>
               <ConsoleEgg version={meta.version} lensCount={meta.lensCount} brandCount={brandCount} />
               {/* Redaction uses useSearchParams, which would force a CSR bailout on prerendered pages. */}
@@ -156,6 +158,7 @@ export default async function LocaleLayout({
                 </>
               )}
             </NavProvider>
+          </SignInDialogProvider>
           </CompareProvider>
           </MountPreferenceProvider>
           <AppToaster />
