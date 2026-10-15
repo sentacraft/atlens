@@ -609,6 +609,7 @@ tests:
   # gets the card, so they can complete it.
   - description: gear-partial-guest
     vars:
+      stopAtGearCard: true
       mount: X
       locale: zh
       dialog:
@@ -649,6 +650,7 @@ tests:
   # Gear: a signed-in user with an empty profile gets the card on any recommendation request.
   - description: gear-empty-account-recommend
     vars:
+      stopAtGearCard: true
       mount: X
       locale: zh
       gear:

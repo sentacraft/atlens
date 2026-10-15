@@ -76,7 +76,8 @@ async function postTurn(messages, mount, locale, conversationId, gear, continuin
 
 // The gear card stops a turn until the user answers it. The eval answers as a guest who
 // declines (or as the case's `gearCardAnswer`) and lets Iris carry on, so the rest of the
-// reply is still graded.
+// reply is still graded. A case with `stopAtGearCard` grades only whether the card showed,
+// so it ends the dialog there instead of paying for the recommendation that follows.
 function answerGearCard(message, outcome) {
   let answered = false;
   const parts = message.parts.map((part) => {
@@ -253,7 +254,9 @@ export default class AskIrisProvider {
       const answered = assistant && answerGearCard(assistant, context?.vars?.gearCardAnswer ?? "not_signed_in");
       if (answered) {
         gearCardShown = true;
-        assistant = await postTurn([...messages, answered], mount, locale, conversationId, context?.vars?.gear, answered);
+        if (!context?.vars?.stopAtGearCard) {
+          assistant = await postTurn([...messages, answered], mount, locale, conversationId, context?.vars?.gear, answered);
+        }
       }
       if (assistant) {
         messages.push(assistant);
@@ -262,6 +265,9 @@ export default class AskIrisProvider {
           recalledEver.add(ref);
         }
         convo.push(`[Iris]\n${d.output}`);
+      }
+      if (gearCardShown && context?.vars?.stopAtGearCard) {
+        break;
       }
     }
     const transcript = convo.join("\n\n") || "(empty)";
