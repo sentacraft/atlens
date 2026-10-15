@@ -32,6 +32,14 @@ const STORAGE_KEY = "testhook-state";
 
 export const TestHookContext = createContext<TestHookContextValue | null>(null);
 
+function saveState(state: TestHookState) {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // Private mode or a full quota — persistence is a convenience, not a feature.
+  }
+}
+
 export function TestHookProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -46,6 +54,7 @@ export function TestHookProvider({ children }: { children: ReactNode }) {
   // wins when it carries anything, so a shared link opens as its author left it.
   useEffect(() => {
     if (searchParams.has(TESTHOOK_QUERY_KEYS.testHook)) {
+      saveState(state);
       return;
     }
     try {
@@ -59,13 +68,15 @@ export function TestHookProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- cold-start restore, once
   }, []);
 
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch {
-      // Private mode or a full quota — persistence is a convenience, not a feature.
-    }
-  }, [state]);
+  // Saves on change, not in an effect on `state`: such an effect would write the initial
+  // state over the stored one before the restore above lands (StrictMode runs effects twice).
+  function update(next: (prev: TestHookState) => TestHookState) {
+    setState((prev) => {
+      const value = next(prev);
+      saveState(value);
+      return value;
+    });
+  }
 
   // Strip testhook params from URL after cold-start init
   useEffect(() => {
@@ -97,14 +108,14 @@ export function TestHookProvider({ children }: { children: ReactNode }) {
     () => ({
       state,
       setTestHook: (enabled) =>
-        setState((prev) => ({ ...prev, testHook: enabled })),
+        update((prev) => ({ ...prev, testHook: enabled })),
       setOption: (key, val) =>
-        setState((prev) => ({
+        update((prev) => ({
           ...prev,
           options: { ...prev.options, [key]: val },
         })),
       reset: () =>
-        setState((prev) => ({
+        update((prev) => ({
           ...getDefaultTestHookState(),
           testHook: prev.testHook,
         })),
