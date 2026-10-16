@@ -172,6 +172,7 @@ export default async function CollectionPage({
                   previewLens={previewLens}
                   locale={locale}
                   statsLabel={t("stats", { count: lc, brandCount: bc })}
+                  density="comfortable"
                 />
               </li>
             ))}

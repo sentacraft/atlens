@@ -5,12 +5,15 @@ import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import type { Lens } from "@/lib/types";
 import type { LensCollection } from "@/lib/collections";
 import { collectionPath } from "@/lib/url/routes";
+import { cn } from "@/lib/utils";
 
 interface Props {
   collection: LensCollection;
   previewLens: Lens;
   locale: string;
   statsLabel: string;
+  /** compact shows only the title on phones, for a light half-width grid. */
+  density: "comfortable" | "compact";
 }
 
 export default function RelatedCollectionCard({
@@ -18,15 +21,25 @@ export default function RelatedCollectionCard({
   previewLens,
   locale,
   statsLabel,
+  density,
 }: Props) {
+  const compact = density === "compact";
   const title = localized(collection.title, locale);
 
   return (
     <Link
       href={collectionPath(previewLens.mount, collection.slug)}
-      className="flex min-h-[88px] items-stretch overflow-hidden rounded-2xl border border-zinc-200 bg-white transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800/50"
+      className={cn(
+        "flex min-h-[88px] items-stretch overflow-hidden rounded-2xl border border-zinc-200 bg-white transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800/50",
+        compact && "max-sm:min-h-0 max-sm:rounded-xl",
+      )}
     >
-      <div className="relative w-16 shrink-0 border-r border-zinc-100 bg-zinc-50/40 dark:border-zinc-800 dark:bg-zinc-900/40">
+      <div
+        className={cn(
+          "relative w-16 shrink-0 border-r border-zinc-100 bg-zinc-50/40 dark:border-zinc-800 dark:bg-zinc-900/40",
+          compact && "max-sm:hidden",
+        )}
+      >
         <Image
           src={getLensImageUrl(previewLens.id)}
           alt=""
@@ -38,10 +51,15 @@ export default function RelatedCollectionCard({
         />
       </div>
       <div className="flex min-w-0 flex-1 flex-col justify-center px-3 py-2">
-        <h3 className="text-sm font-semibold leading-snug text-zinc-900 dark:text-zinc-50">
+        <h3
+          className={cn(
+            "text-sm font-semibold leading-snug text-zinc-900 dark:text-zinc-50",
+            compact && "line-clamp-2 max-sm:text-[13px] max-sm:font-medium",
+          )}
+        >
           {title}
         </h3>
-        <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+        <p className={cn("mt-0.5 text-xs text-zinc-500 dark:text-zinc-400", compact && "max-sm:hidden")}>
           {statsLabel}
         </p>
       </div>

@@ -65,7 +65,7 @@ export default function NavMenu({
                   <UserRound className="h-4 w-4 shrink-0" />
                   {t("profile")}
                 </Menu.Item>
-                <div className={SEPARATOR_CLS} />
+                <Menu.Separator className={SEPARATOR_CLS} />
               </>
             ) : accountsEnabled ? (
               <>
@@ -76,7 +76,7 @@ export default function NavMenu({
                     <span className="text-xs text-zinc-500 dark:text-zinc-400">{tNav("signInHint")}</span>
                   </span>
                 </Menu.Item>
-                <div className={SEPARATOR_CLS} />
+                <Menu.Separator className={SEPARATOR_CLS} />
               </>
             ) : null}
             <Menu.Item render={<Link href={compareHref} />} onClick={onCompareClick} className={cn(MENU_ITEM_CLS, "sm:hidden")}>
@@ -106,7 +106,7 @@ export default function NavMenu({
             </Menu.Item>
             {user && (
               <>
-                <div className={SEPARATOR_CLS} />
+                <Menu.Separator className={SEPARATOR_CLS} />
                 <Menu.Item onClick={() => authClient.signOut()} className={MENU_ITEM_CLS}>
                   <LogOut className="h-4 w-4 shrink-0" />
                   {t("logout")}

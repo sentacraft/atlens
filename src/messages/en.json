@@ -280,11 +280,23 @@
     "gfxBetaNotice": "G Mount coverage is still growing — some lenses and features may be missing."
   },
   "Home": {
-    "cta": "Browse Lenses",
-    "ctaCompare": "Compare",
+    "cta": "Browse all lenses",
     "dataSnapshot": "lens.json loaded ✓",
     "dataSnapshotCount": "{count} lenses · {brands} brands · 0 hallucination",
-    "dataTooltip": "Specs are normalized from manufacturer sources. No AI-generated content."
+    "dataTooltip": "Specs are normalized from manufacturer sources. No AI-generated content.",
+    "irisIntro": "Atlens's built-in AI assistant, answering from the lenses collected here",
+    "irisPlaceholder": "Tell me what you shoot",
+    "irisSend": "Send",
+    "irisClose": "Close",
+    "orBrowse": "Or browse all lenses",
+    "irisExamples": [
+      "A pancake lens that fits in a pocket",
+      "One lens to take on every trip",
+      "How do Fujifilm and Chinese-brand 23mm primes differ?",
+      "What do R, LM, and WR mean in a lens name?"
+    ],
+    "collectionsIntro": "Lens lists sorted by use, focal length, and budget, already filtered for you",
+    "allCollections": "See all {count} collections"
   },
   "LensList": {
     "title": "Lenses",
