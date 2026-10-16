@@ -107,25 +107,6 @@ token budgets`")]
   class frontend,backend,services group
 ```
 
-**Ask Iris**, the built-in AI assistant, is a tool-calling agent loop on the AI SDK, grounded in the lens catalog through its tools and given the signed-in user's saved gear on every turn. Conversations persist in SQLite (D1), every turn leaves a trace, and a promptfoo suite runs LLM evals against the live endpoint.
-
-<details>
-<summary>Ask Iris tools</summary>
-
-| Tool | Does |
-|---|---|
-| `queryLenses` | Recalls lenses by spec constraints |
-| `searchLensByName` | Looks up a model the user named |
-| `lensDetails` | Returns the full spec record for lenses already recalled |
-| `recommendLenses` | Renders recommendation cards, each with a reason; only lenses recalled in the same turn are accepted |
-| `listLenses` | Renders a spec table |
-| `siteInfo` | Returns facts about Atlens itself, by topic |
-| `askForGear` | Client-side tool: shows an in-chat card asking for the user's gear, and the turn resumes when they answer |
-
-Each turn has a fixed step budget, and the last step may not call tools. Requests are rate-limited per IP, and token use has a daily budget per IP and overall.
-
-</details>
-
 <details>
 <summary>Code layout</summary>
 
@@ -141,6 +122,28 @@ The split keeps logic out of components so it can later move into a shared packa
 | `src/data/` | Lens catalog (written by the pipeline) and hand-authored collections |
 
 </details>
+
+## Ask Iris
+
+Ask Iris, the built-in AI assistant, is a **tool-calling agent loop** on the Vercel AI SDK. It answers from the lens catalog rather than from model memory: every lens it recommends or tabulates has to come from a tool call in the same turn.
+
+**Tools.**
+
+| Tool | Does |
+|---|---|
+| `queryLenses` | Recalls lenses by spec constraints |
+| `searchLensByName` | Looks up a model the user named |
+| `lensDetails` | Returns the full spec record for lenses already recalled |
+| `recommendLenses` | Renders recommendation cards, each with a reason; only lenses recalled in the same turn are accepted |
+| `listLenses` | Renders a spec table |
+| `siteInfo` | Returns facts about Atlens itself, by topic |
+| `askForGear` | Client-side tool: shows an in-chat card asking for the user's gear, and the turn resumes when they answer |
+
+**Context.** The system prompt stays fixed so it caches well; per-user context — the signed-in user's saved gear, or what is known when it is missing — goes in a separate system message each turn. Questions about the site are answered from a fact list through `siteInfo`, not from instructions in the prompt.
+
+**Guardrails.** Each turn has a fixed step budget and the last step may not call tools. `recommendLenses` and `listLenses` reject any lens that was not recalled in the turn. Requests are rate-limited per IP, and token use has daily budgets per IP and overall. Conversations persist in SQLite (D1), and every turn leaves a trace.
+
+**Evals.** A promptfoo suite drives the live endpoint the way the browser does and grades each reply two ways: deterministic checks on the tool-call trajectory (did it sort by reach when asked, do the picks stay in the requested focal range and budget, did the gear card appear when it should) and LLM-as-a-judge rubrics, including a judge that uses web search to flag obvious omissions.
 
 ## Data Pipeline
 
