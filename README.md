@@ -151,7 +151,6 @@ Seven tools in three groups: retrieval (`queryLenses`, `searchLensByName`, `lens
 - **Two-tier retrieval.** `queryLenses` returns a compact record per lens — under twenty comparison fields — capped at 20 results in the sort order the model asks for, plus the total count it didn't see. The full spec record, with the long tail of optics and mechanics, comes only from `lensDetails`, for at most six lenses at a time.
 - **Opaque refs.** Lenses are identified by short hashed refs, never by catalog IDs: fewer tokens, and the model can't extend a patterned ID into a lens it never retrieved.
 - **Rendered output isn't echoed back.** Cards and tables carry full data to the user, but the model sees a one-line acknowledgement, both in that turn and in later turns' history.
-- **Unknown data stays visible.** Lenses with no data on a constrained field come back in a separate `maybe` list with the missing fields named, instead of being silently dropped.
 - **Cache-friendly prompt.** The system prompt is fixed; per-user context — saved gear, or a note that it is unknown — goes in a separate system message each turn, and site facts are fetched only when asked about.
 
 ### Guardrails
