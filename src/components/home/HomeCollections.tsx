@@ -31,10 +31,7 @@ export default function HomeCollections({
   return (
     <WhenMountHasCollections>
       <section className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-        <div className="mb-2 flex items-baseline justify-between gap-3">
-          <h2 className="text-xs font-semibold text-zinc-600 dark:text-zinc-300">{tNav("collections")}</h2>
-          <p className="hidden text-[11px] text-zinc-400 sm:block dark:text-zinc-500">{t("collectionsIntro")}</p>
-        </div>
+        <h2 className="mb-2 text-xs font-semibold text-zinc-600 dark:text-zinc-300">{tNav("collections")}</h2>
         <ul className="grid auto-rows-fr grid-cols-2 gap-2 sm:grid-cols-5 sm:gap-3">
           {featured.map(({ collection, previewLens, statsLabel }, index) => (
             <li key={collection.slug} className={index === 3 ? "hidden sm:grid" : "grid"}>
