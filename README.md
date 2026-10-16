@@ -108,16 +108,20 @@ flowchart LR
 
 ## Data Pipeline
 
-For a lens comparison tool, data accuracy isn't a nice-to-have — it's the product. The catalog is built and maintained by **an agentic data-operations system** in a private repo (`atlens-pipeline`): several AI agents with separate jobs find new lenses, take in user reports, collect and structure official specs, and check one another's work, inside guardrails enforced by code. The system records its own failures and turns them into reviewed rules, and the maintainer approves everything that ships. Output lands in `src/data/lenses.json` (X mount) and `src/data/lenses-gfx.json` (G mount) as a pull request to this repo.
+For a lens comparison tool, data accuracy isn't a nice-to-have — it's the product.
+
+The catalog is maintained by an **agentic data-operations pipeline** in a private repo (`atlens-pipeline`). A **tool-calling agent** (Claude Code) drives a multi-stage workflow — index, collect, derive, compute, pricing, images — under **`PreToolUse` / `PostToolUse` hooks** and a single validated write path, so guardrails live in code rather than in the prompt. Around it, a **triage bot** (a Codex agent in GitHub Actions) screens every incoming user issue, a scheduled **LLM worker with web search** discovers new releases, and an independent **LLM-as-a-judge** audits every collected source before anything is derived from it. Verified incidents feed a **self-improvement loop** that turns them into reviewed tests, hooks, and rules. The maintainer stays **in the loop** for review and publishing. Output lands in `src/data/lenses.json` (X mount) and `src/data/lenses-gfx.json` (G mount) as a pull request to this repo.
+
+The pipeline currently manages 248 lenses and has grown through 900+ commits since March 2026.
 
 ### Stages
 
 ```mermaid
 flowchart TD
   subgraph intake["Intake"]
-    DISC["<b>Discover</b> · monthly GitHub Action<br/>Web search for registered brands with new X-mount releases<br/>opens a brand-level index issue"]
+    DISC["<b>Discover</b> · monthly LLM worker<br/>Web search for registered brands with new X-mount releases<br/>opens a brand-level index issue"]
     FEED["<b>Site feedback</b><br/>missing lens · data error<br/>becomes a GitHub issue"]
-    TRI["<b>Triage</b> · GitHub Action on every new issue<br/>Agent checks the report against the catalog and labels it"]
+    TRI["<b>Triage bot</b> · GitHub Action on every new issue<br/>Checks the report against the catalog and labels it"]
   end
 
   SOURCES[("sources.yaml<br/>brands · listing pages · spec sources")]
@@ -128,7 +132,7 @@ flowchart TD
   subgraph collect["Collect"]
     C1["<b>Locate & image</b> · per brand<br/>Official detail page URLs + main product image"]
     C2["<b>Fetch raw specs</b> · per lens<br/>Official spec text, no parsing"]
-    AUDIT["<b>Source audit</b> · independent model judge<br/>ok · thin · junk · wrong lens<br/>Derive waits while no source has a spec table"]
+    AUDIT["<b>Source audit</b> · LLM-as-a-judge<br/>ok · thin · junk · wrong lens<br/>Derive waits while no source has a spec table"]
   end
 
   DER["<b>Derive</b><br/>AI reads the raw text and fills semantic fields<br/>Conflicts and schema gaps become review notes"]
@@ -161,37 +165,37 @@ flowchart TD
   class SOURCES,PSOURCES config
 ```
 
-Blue steps are scripts, yellow are AI agents, green involve a person.
+Blue steps are scripts, yellow are LLM-driven, green involve a person.
 
-### Agents and their boundaries
+### Agents, bots, and judges
 
-Each agent gets one job, its own runtime, and an explicit list of what it may not do.
+Each component has one job, its own runtime, and an explicit list of what it may not do.
 
-| Agent | Runs | Does | May not |
+| Component | Runs | Does | May not |
 |---|---|---|---|
-| **Discover** | Monthly GitHub Actions cron; Responses API with web search | Finds registered brands with recent X-mount releases and opens a brand-level index issue | Identify individual lenses, read user issues, or touch the catalog |
-| **Triage** | GitHub Actions on every new issue; Codex | Verifies a user report against the published catalog, labels it (lens missing, data error, duplicate, …), and comments with what it found | Change data, open PRs, or close issues; issue text is treated as untrusted input and its instructions are never followed |
-| **Source auditor** | After every collect write, from a hook; an independent model with no tools | Judges each collected source as ok, thin, junk, or the wrong lens; holds Derive while no source has a spec table | Write anything |
+| **Discover** · LLM worker | Monthly GitHub Actions cron; Responses API with web search | Finds registered brands with recent X-mount releases and opens a brand-level index issue | Identify individual lenses, read user issues, or touch the catalog |
+| **Triage bot** | GitHub Actions on every new issue; Codex agent | Verifies a user report against the published catalog, labels it (lens missing, data error, duplicate, …), and comments with what it found | Change data, open PRs, or close issues; issue text is treated as untrusted input and its instructions are never followed |
+| **Source audit** · LLM-as-a-judge | After every collect write, from a `PostToolUse` hook; an independent model with no tools | Judges each collected source as ok, thin, junk, or the wrong lens; holds Derive while no source has a spec table | Write anything |
 | **Pipeline agent** | Interactively under the maintainer; Claude Code | Runs Index → Collect → Derive → Compute → Pricing → Images and prepares review; given an issue number, works it through to review | Write state except through the `write` command, read this repo's published data, or publish |
-| **Maintainer** | — | Reviews, resolves notes, and publishes | — |
+| **Maintainer** · human in the loop | — | Reviews, resolves notes, and publishes | — |
 
 ### Guardrails
 
 Rules the agents cannot talk their way around live in code, not in prompts:
 
-- **Pre-tool guards** block direct edits to lens state files and incident logs — including through shell redirects, `sed -i`, or ad-hoc scripts — and any read of this repo's published data, so an agent can't copy answers from the output it is producing.
+- **`PreToolUse` hooks** block direct edits to lens state files and incident logs — including through shell redirects, `sed -i`, or ad-hoc scripts — and any read of this repo's published data, so an agent can't copy answers from the output it is producing.
 - **One write path.** The `write` command limits each stage to its own fields, accepts only the fields an agent is allowed to derive, rejects empty placeholders for unknown values, checks that collected sources come from the brand's configured sites, re-validates the catalog schema before anything touches disk, and stamps which harness and model produced the data.
 - **Readiness gates.** A stage starts only when its inputs exist (Collect needs an index entry and a valid official page; Derive needs a complete collect with a real spec source). Lenses on hold are skipped by every queue and by publish.
-- **Tests in both directions.** Each guard has regression tests for what it must block and for what it must still allow.
+- **Tests in both directions.** The hooks have 24 regression cases: 11 tool calls they must block and 13 they must still allow.
 
 ```mermaid
 flowchart TD
-  AGENT["Pipeline agent"] -->|"tool call"| GUARD{"Pre-tool guard"}
+  AGENT["Pipeline agent"] -->|"tool call"| GUARD{"PreToolUse hook"}
   GUARD -->|"blocked"| AGENT
   GUARD -->|"allowed"| WRITE["write command<br/>stage boundary · schema · provenance"]
   WRITE -->|"rejected with reason"| AGENT
   WRITE --> STATE[("Per-lens state<br/>tracked in git")]
-  STATE --> HOOK["Post-tool hook<br/>next step from queue · source audit"]
+  STATE --> HOOK["PostToolUse hook<br/>next step from queue · source audit"]
   HOOK -->|"what to do next"| AGENT
   INCIDENT[("Incident log<br/>append-only")] --> LEARN["Learn review"]
   LEARN --> RULE["Reviewed change<br/>test · hook · CLI check<br/>source config · stage rule"]
@@ -201,7 +205,7 @@ flowchart TD
 ### Self-correction
 
 - **State, not memory.** Each lens has one JSON state file in git. `queue` recomputes every lens's next step from disk, so a run can stop anywhere and resume, and repeating a step is a no-op.
-- **Feedback after every write.** A post-tool hook tells the agent what the lens still needs, and runs the source audit after collect writes, so a thin or wrong source is caught before Derive builds on it.
+- **Feedback after every write.** A `PostToolUse` hook tells the agent what the lens still needs, and runs the source audit after collect writes, so a thin or wrong source is caught before Derive builds on it.
 - **Uncertainty is surfaced, not guessed.** Derive writes only what the source supports; conflicts, schema gaps, and mismatches become notes that the maintainer resolves at review.
 - **Rollback.** `reset` returns a lens to an earlier stage and clears what came after it.
 
@@ -211,7 +215,7 @@ The pipeline keeps an append-only, git-tracked log of verified process incidents
 
 ### Issue operations
 
-User reports and the pipeline share one queue. A data report or missing-lens request sent from the site becomes a GitHub issue; Triage verifies and labels it as soon as it opens; confirmed missing lenses are batched by brand into the next Index run, and confirmed data errors are corrected at review. Discover adds brand-level work items from the web on its own, so new releases enter the same flow without anyone filing them.
+User reports and the pipeline share one queue. A data report or missing-lens request sent from the site becomes a GitHub issue; the triage bot verifies it against the catalog, labels it, and comments with what it found as soon as it opens; confirmed missing lenses are batched by brand into the next Index run, and confirmed data errors are corrected at review. The Discover worker adds brand-level work items from the web on its own, so new releases enter the same flow without anyone filing them.
 
 ### Principles
 
