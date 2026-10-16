@@ -31,16 +31,8 @@ Atlens is a lens database and comparison tool for Fujifilm shooters — X mount 
 - **Accounts** — save favorite lenses and the gear you own, and keep Ask Iris conversations across devices
 - **Normalized data** — specs from different manufacturers use inconsistent formats and terminology; Atlens maps everything to a consistent schema so comparisons are fair and objective
 - **Pipeline-backed accuracy** — specs come from official manufacturer sources and go through a staged pipeline, reviewed by the maintainer before publishing
-- **Progressive Web App (PWA)** — Atlens is a web app at its core, but installs and runs like a native app. Add it to your home screen (iOS / Android) or dock (macOS) for instant, full-screen access — no App Store required
+- **Progressive Web App (PWA)** — runs in any browser, and installs like a native app on a phone's home screen or a computer's dock for full-screen access — no App Store required ([get the app](https://atlens.app/en/get))
 - **Deep localization** — English and Chinese (中文) editions go beyond UI translation: pricing sources, used-market listings, and manufacturer links are all tailored to each audience's local market
-
-## Install
-
-Atlens is a web app — open it in any browser and start using it right away.
-
-It also supports installation as a **Progressive Web App (PWA)**: add it to your home screen (iOS / Android) or dock (macOS) for full-screen access and a more native feel — no App Store required.
-
-**[Get the app →](https://atlens.app/en/get)**
 
 ## Tech Stack
 
