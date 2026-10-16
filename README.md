@@ -51,14 +51,14 @@ Atlens is a lens database and comparison tool for Fujifilm shooters — X mount 
 
 ## Architecture
 
-Lens data ships with the build, so nearly every page is generated once at build time (SSG) and its interactive parts hydrate as client islands. The lens library goes further: the whole catalog is sent to the browser, which filters and sorts it locally (CSR). Only compare and Ask Iris read per-request URL state and render on the server (SSR). Server components and the backend's route handlers deploy together as one Next.js app on a Cloudflare Worker.
+Lens data ships with the build, so nearly every page is generated once at build time (SSG) from Server Components, and its interactive parts hydrate as Client Components. The lens library goes further: the whole catalog is sent to the browser, which filters and sorts it locally (CSR). Only compare and Ask Iris read per-request URL state and render on the server (SSR). Server components and the backend's route handlers deploy together as one Next.js app on a Cloudflare Worker.
 
 ```mermaid
 flowchart LR
   subgraph frontend["Frontend"]
-    SSG["<b>SSG + client islands</b><br/>lens detail · collections · home · about"]
+    SSG["<b>SSG + Client Components</b><br/>lens detail · collections · home · about"]
     CSR["<b>SSG shell + CSR</b><br/>lens library filtered in the browser<br/>profile data via TanStack Query"]
-    SSR["<b>SSR + client islands</b><br/>compare · Ask Iris"]
+    SSR["<b>SSR + Client Components</b><br/>compare · Ask Iris"]
   end
 
   subgraph backend["Backend · route handlers"]
@@ -83,7 +83,7 @@ flowchart LR
   end
 
   frontend -->|"rendered from"| LENSDATA
-  frontend -->|"client islands call"| backend
+  frontend -->|"Client Components call"| backend
   ME & AUTH & CHAT --> APPDB
   CHAT --> agent
   CHAT & FEEDBACK --> LIMITS
