@@ -270,7 +270,7 @@ export function buildLensTools(
 
     siteInfo: tool({
       description:
-        "Facts about Atlens itself — the site, its story, data and prices, Ask Iris, accounts, privacy — and the only source " +
+        "Facts about Atlens and about you — the site, its story, data and prices, what you can do, accounts, privacy — and the only source " +
         "for answering questions about them. Ask for every topic the question touches in one call.",
       inputSchema: z.object({ topics: z.array(z.enum(SITE_TOPICS)).min(1) }),
       execute: ({ topics }) => ({ topics: siteFacts(topics, locale) }),
@@ -279,9 +279,9 @@ export function buildLensTools(
     // A client tool: the browser shows the gear card and returns what the user did.
     [ASK_FOR_GEAR]: tool({
       description:
-        "Show a card asking for the user's camera bodies and lenses, when the user-gear note says to. Pass any gear " +
-        "they mentioned so the card is prefilled. The turn waits for the result — saved (now in the note), skipped, or " +
-        "not_signed_in — then recommend, with or without their gear.",
+        "Show the user a card to add the camera bodies and lenses they own, before recommending, as the user-gear " +
+        "note describes. List any lens or body they mentioned so the card can prefill it. The turn waits for the " +
+        "result: saved (gear now in the note), skipped, or not_signed_in; if not saved, recommend without their gear.",
       inputSchema: gearRequestInputSchema,
       outputSchema: gearRequestOutputSchema,
     }),
