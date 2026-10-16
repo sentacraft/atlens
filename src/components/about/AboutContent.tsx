@@ -12,8 +12,7 @@ import AckCard from "@/components/about/AckCard";
 import { isPurchaseLocale } from "@/lib/purchase/links";
 import { donationChannel, KOFI_URL } from "@/lib/support";
 import { TEXT_LINK_CLS } from "@/config/ui-tokens";
-
-const PIPELINE_README_URL = "https://github.com/sentacraft/atlens#data-pipeline";
+import { SITE } from "@/config/site";
 
 function Check() {
   return <span className="text-zinc-700 dark:text-zinc-300 text-sm">✓</span>;
@@ -264,7 +263,7 @@ export default async function AboutContent() {
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
           {t.rich("dataAccuracyIntro", {
             github: (chunks) => (
-              <a href={PIPELINE_README_URL} target="_blank" rel="noopener noreferrer" className={TEXT_LINK_CLS}>
+              <a href={SITE.pipelineDocUrl} target="_blank" rel="noopener noreferrer" className={TEXT_LINK_CLS}>
                 {chunks}
               </a>
             ),
@@ -312,7 +311,7 @@ export default async function AboutContent() {
         </div>
 
         <a
-          href={PIPELINE_README_URL}
+          href={SITE.pipelineDocUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="group flex items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/40 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"

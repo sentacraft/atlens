@@ -21,6 +21,7 @@ import MountSwitcher from "@/components/mount/MountSwitcher";
 import FeedbackDialog from "@/components/feedback/FeedbackDialog";
 import GitHubMark from "@/components/logos/GitHubMark";
 import AuthControl from "@/components/auth/AuthControl";
+import { SITE } from "@/config/site";
 
 export default function Nav() {
   const t = useTranslations("Nav");
@@ -170,7 +171,7 @@ export default function Nav() {
             {t("feedback")}
           </button>
           <a
-            href="https://github.com/sentacraft/atlens"
+            href={SITE.repoUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="hidden sm:inline text-zinc-900 dark:text-zinc-50 px-1"
@@ -222,7 +223,7 @@ export default function Nav() {
                     {t("feedback")}
                   </Menu.Item>
                   <Menu.LinkItem
-                    href="https://github.com/sentacraft/atlens"
+                    href={SITE.repoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={mobileLinkCls(false)}
