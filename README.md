@@ -2,7 +2,7 @@
 
 > Formerly X-Glass.
 
-Browse, filter, and compare Fujifilm X-mount lenses — native Fujifilm glass plus a growing set of third-party brands. G-mount (medium format) is also being added.
+Atlens is a lens database and comparison tool for Fujifilm shooters — X mount (APS-C) and G mount (GFX medium format), first-party and third-party. It turns specs scattered across manufacturers' sites into one normalized catalog of 200+ lenses, sourced from official pages by an agentic data pipeline, with an AI assistant, Ask Iris, built on top.
 
 **English**：[atlens.app/en](https://atlens.app/en)
 
@@ -22,143 +22,290 @@ Browse, filter, and compare Fujifilm X-mount lenses — native Fujifilm glass pl
 
 ## Features
 
-- **Growing lens database** — focused on X-mount: full coverage of Fujifilm's first-party lineup plus a curated set of third-party brands (Sigma, Tamron, Viltrox, TTArtisan, 7Artisans, Brightin Star, SG Image), with more brands under evaluation. G-mount (medium format) coverage is also under way for Fujifilm's first-party GF lineup.
+- **Growing lens database** — Fujifilm's first-party lineup plus a dozen third-party brands across X and G mount; which brands and lens types are covered is kept in one place and shown live on the [coverage table](https://atlens.app/en/about#coverage)
 - **Clean, focused UI** — distraction-free interface designed around the comparison workflow
 - **Filter and sort** — multi-axis filtering (focal length, aperture, AF, OIS, weather resistance, specialty tags) combined with flexible sorting
 - **Curated collections** — hand-picked themes (compact primes, budget autofocus, and more), each defined by filter criteria rather than a hand-picked lens list, so the lineup stays current as the catalog grows — for when you don't know exactly what to search for
-- **Side-by-side comparison** of up to 4 lenses
+- **Side-by-side comparison** of up to 4 lenses, shareable as a link or a poster image — a single lens can be shared the same way
+- **Ask Iris** — a built-in AI assistant grounded in the catalog: describe what you shoot and it recommends and compares lenses with a reason for each, takes the gear you own into account when you're signed in, and answers questions about the site
+- **Accounts** — save favorite lenses and the gear you own, and keep Ask Iris conversations across devices
 - **Normalized data** — specs from different manufacturers use inconsistent formats and terminology; Atlens maps everything to a consistent schema so comparisons are fair and objective
-- **Pipeline-backed accuracy** — every spec originates from official manufacturer sources and goes through a staged pipeline with human review at every step
-- **Shareable comparison posters**
-- **Progressive Web App (PWA)** — Atlens is a web app at its core, but installs and runs like a native app. Add it to your home screen (iOS / Android) or dock (macOS) for instant, full-screen access — no App Store required
+- **Pipeline-backed accuracy** — specs come from official manufacturer sources and go through a staged pipeline, reviewed by the maintainer before publishing
+- **Progressive Web App (PWA)** — runs in any browser, and installs like a native app on a phone's home screen or a computer's dock for full-screen access — no App Store required ([get the app](https://atlens.app/en/get))
 - **Deep localization** — English and Chinese (中文) editions go beyond UI translation: pricing sources, used-market listings, and manufacturer links are all tailored to each audience's local market
-
-## Install
-
-Atlens is a web app — open it in any browser and start using it right away.
-
-It also supports installation as a **Progressive Web App (PWA)**: add it to your home screen (iOS / Android) or dock (macOS) for full-screen access and a more native feel — no App Store required.
-
-**[Get the app →](https://atlens.app/en/get)**
 
 ## Tech Stack
 
 | Layer | Choice |
 |-------|--------|
-| Framework | Next.js (App Router) + TypeScript |
-| Styling | Tailwind CSS |
-| Deployment | Cloudflare Workers (OpenNext) |
+| Framework | React 19, Next.js (App Router), TypeScript |
+| Runtime & hosting | Cloudflare Workers via OpenNext |
+| Data stores | SQLite (Cloudflare D1), KV, Analytics Engine |
+| Auth | Better Auth — Google, email code, anonymous sessions |
+| AI | Vercel AI SDK |
+| Client data | TanStack Query |
+| UI | Tailwind CSS, Base UI, Motion |
 | i18n | next-intl |
-| Data Validation | Zod |
-| Testing | Vitest + Playwright |
+| Validation | Zod |
+| Testing | Vitest, Playwright, promptfoo (LLM evals for the Ask Iris assistant) |
+
+## Architecture
+
+Lens data ships with the build, so nearly every page is generated once at build time (SSG) from Server Components, and its interactive parts hydrate as Client Components. The lens library goes further: the whole catalog is sent to the browser, which filters and sorts it locally (CSR). Only compare and Ask Iris read per-request URL state and render on the server (SSR). Server components and the backend's route handlers deploy together as one Next.js app on a Cloudflare Worker.
+
+```mermaid
+flowchart LR
+  subgraph frontend["`**Frontend**`"]
+    SSG["`**SSG + Client Components**
+lens detail · collections · home · about`"]
+    CSR["`**SSG shell + CSR**
+lens library filtered in the browser
+profile data via TanStack Query`"]
+    SSR["`**SSR + Client Components**
+compare · Ask Iris`"]
+  end
+
+  subgraph backend["`**Backend**
+route handlers`"]
+    ME["`**/api/me/…**
+gear · favorites · settings`"]
+    AUTH["`**/api/auth**
+Better Auth`"]
+    CHAT["`**/api/chat**
+Ask Iris agent loop`"]
+    FEEDBACK["`**/api/feedback**`"]
+    TRACK["`**/api/track**`"]
+    LIMITS["`**Rate limits**
+per-IP bindings on chat and feedback`"]
+  end
+
+  subgraph services["`**Data and services**`"]
+    LENSDATA[("`**Lens catalog**
+JSON bundled at build`")]
+    APPDB[("`**SQLite (D1)**
+users · conversations
+gear · favorites · settings`")]
+    subgraph agent["`**Agent runtime**`"]
+      LLM["`**LLM provider**`"]
+      TRACES[("`**SQLite (D1)**
+agent traces`")]
+      BUDGET[("`**KV**
+token budgets`")]
+    end
+    ISSUES["`**GitHub Issues**`"]
+    EVENTS[("`**Analytics Engine**`")]
+  end
+
+  frontend -->|"rendered from"| LENSDATA
+  frontend -->|"Client Components call"| backend
+  ME & AUTH & CHAT --> APPDB
+  CHAT --> agent
+  FEEDBACK --> ISSUES
+  TRACK --> EVENTS
+
+  classDef group font-size:18px
+  class frontend,backend,services group
+```
+
+<details>
+<summary>Code layout</summary>
+
+The split keeps logic out of components so it can later move into a shared package.
+
+| Path | Holds |
+|---|---|
+| `src/app/` | Routes: localized pages under `[locale]/`, route handlers under `api/` |
+| `src/components/` | Rendering only — no business logic, no `fetch` |
+| `src/lib/` | Business logic, types, data access, per-feature client modules, URL query params (`url/`) |
+| `src/config/ui-tokens.ts` | Shared visual language: interaction colors, buttons, selected states |
+| `src/messages/` | UI copy per locale |
+| `src/data/` | Lens catalog (written by the pipeline) and hand-authored collections |
+
+</details>
+
+## Ask Iris — Built-in AI Assistant
+
+Ask Iris, the built-in AI assistant, is a **tool-calling agent loop** on the Vercel AI SDK. It answers from the lens catalog rather than from model memory: every lens it recommends or tabulates has to come from a tool call in the same turn.
+
+### Tools
+
+Seven tools in three groups: retrieval (`queryLenses`, `searchLensByName`, `lensDetails`), rendering (`recommendLenses` for cards, `listLenses` for spec tables), and context (`siteInfo` for facts about the site, `askForGear` as a client-side tool that pauses the turn for an in-chat card).
+
+<details>
+<summary>What each tool does</summary>
+
+| Tool | Does |
+|---|---|
+| `queryLenses` | Recalls lenses by spec constraints |
+| `searchLensByName` | Looks up a model the user named |
+| `lensDetails` | Returns the full spec record for lenses already recalled |
+| `recommendLenses` | Renders recommendation cards, each with a reason |
+| `listLenses` | Renders a spec table |
+| `siteInfo` | Returns facts about Atlens itself, by topic |
+| `askForGear` | Client-side tool: shows an in-chat card asking for the user's gear, and the turn resumes when they answer |
+
+</details>
+
+### Context management
+
+- **Two-tier retrieval.** `queryLenses` returns a compact record per lens — under twenty comparison fields — capped at 20 results in the sort order the model asks for, plus the total count it didn't see. The full spec record, with the long tail of optics and mechanics, comes only from `lensDetails`, for at most six lenses at a time.
+- **Opaque refs.** Lenses are identified by short hashed refs, never by catalog IDs: fewer tokens, and the model can't extend a patterned ID into a lens it never retrieved.
+- **Rendered output isn't echoed back.** Cards and tables carry full data to the user, but the model sees a one-line acknowledgement, both in that turn and in later turns' history.
+- **Cache-friendly prompt.** The system prompt is fixed; per-user context — saved gear, or a note that it is unknown — goes in a separate system message each turn, and site facts are fetched only when asked about.
+
+### Guardrails
+
+- Each turn has a fixed step budget, and the last step cannot call tools.
+- `lensDetails`, `recommendLenses`, and `listLenses` reject any lens not retrieved in the same turn, with an error that tells the model to look it up first.
+- Requests are rate-limited per IP, and token use has daily budgets per IP and overall.
+- Conversations persist in SQLite (D1), and every turn leaves a trace for debugging and analytics.
+
+### Evals
+
+A promptfoo suite drives the live endpoint the way the browser does and grades each reply two ways: deterministic checks on the tool-call trajectory (did it sort by reach when asked, do the picks stay in the requested focal range and budget, did the gear card appear when it should) and LLM-as-a-judge rubrics, including a judge that uses web search to flag obvious omissions.
 
 ## Data Pipeline
 
-For a lens comparison tool, data accuracy isn't a nice-to-have — it's the product. Atlens normalizes specs from manufacturer sources, treats price data as point-in-time reference snapshots rather than real-time quotes, and is backed by a purpose-built, multi-stage data pipeline:
+For a lens comparison tool, data accuracy isn't a nice-to-have — it's the product.
 
-Lens data and images are maintained in a private pipeline repo and written into `src/data/lenses.json` (X mount) and `src/data/lenses-gfx.json` (G mount).
+The catalog is maintained by an **agentic data-operations pipeline** in a private repo (`atlens-pipeline`). A **tool-calling agent** (Claude Code) drives a multi-stage workflow — index, collect, derive, compute, pricing, images — under **`PreToolUse` / `PostToolUse` hooks** and a single validated write path, so guardrails live in code rather than in the prompt. Around it, a **triage bot** (a Codex agent in GitHub Actions) screens every incoming user issue, a scheduled **LLM worker with web search** discovers new releases, and an independent **LLM-as-a-judge** audits every collected source before anything is derived from it. Verified incidents feed a **self-improvement loop** that turns them into reviewed tests, hooks, and rules. The maintainer stays **in the loop** for review and publishing. Output lands in `src/data/lenses.json` (X mount) and `src/data/lenses-gfx.json` (G mount) as a pull request to this repo.
+
+The pipeline currently manages 248 lenses and has grown through 900+ commits since March 2026.
+
+### Stages
 
 ```mermaid
 flowchart TD
-  subgraph pipeline["atlens-pipeline (private)"]
-
-    subgraph spec["Spec Pipeline"]
-      SOURCES[("sources.yaml")]
-
-      S0["<b>Stage 0 · Index</b><br/>Discovers X Mount and G Mount lenses from brand listing pages"]
-
-      subgraph s1["Stage 1 · Collect"]
-        S1p1["<b>Phase 1 · Locate & Image</b><br/>Detail page URLs + main product image"]
-        S1p2["<b>Phase 2 · Fetch Raw Content</b><br/>Retrieves spec text, product descriptions, and feature images"]
-        S1r["<b>Maintainer · Review</b>"]
-        S1h["<b>Maintainer · Manual Fetch</b>"]
-        S1b["<b>AI Agent · Read & Merge</b><br/>Vision on spec images + text merge<br/>No field extraction"]
-        S1out(["High-recall product description"])
-      end
-
-      S2a["<b>Stage 2a · Derive</b><br/>AI extracts semantic fields from rawSpecs"]
-      S2b["<b>Stage 2b · Compute</b><br/>Script derives deterministic fields"]
-      S2c["<b>Stage 2c · Image Processing</b><br/>Normalizes product images"]
-      SR["<b>Stage R · Human Review</b><br/>Maintainer inspects and applies corrections"]
-    end
-
-    subgraph price["Price Pipeline"]
-      PRICING_SOURCES[("pricing-sources.yaml")]
-
-      subgraph spr["Stage Pr · Price Sample"]
-        SPrNew["<b>New Price</b><br/>AI Agent visits official storefronts"]
-        SPrUsed["<b>Used Price · Fallback</b><br/>Sampled only when no new price is found<br/>AI Agent samples secondary-market listings<br/>Median computed at publish time"]
-      end
-    end
-
-    subgraph sp["Stage P · Publish Gate"]
-      SP1["<b>Zod schema validation</b><br/>Intra-lens + cross-lens checks"]
-      SP_AUDIT["<b>Audit Agent · Independent Spec Audit</b><br/>Samples web blogs and community lens databases<br/>Cross-checks specs with zero pipeline context"]
-      SP2["<b>Normalization + version stamp</b>"]
-    end
+  subgraph intake["`**Intake**`"]
+    FEED["`**Site feedback**
+missing lens · data error`"]
+    DISC["`**Discover**
+monthly web search`"]
+    ISSUES[("`**GitHub Issues**
+one work queue`")]
+    TRI["`**Triage bot**
+verifies and labels`"]
   end
 
-  SOURCES -->|"aliases + listing URLs"| S0
-  SOURCES -->|"listing URLs"| S1p1
-  SOURCES -->|"spec extraction sources"| S1p2
-  S0 -->|"discovered lens list"| S1p1
-  S1p1 --> S1p2
-  S1p2 --> S1r
-  S1r -->|"quality OK"| S1b
-  S1r -->|"insufficient"| S1h
-  S1h --> S1b
-  S1b --> S1out
-  S1out --> S2a & S2c
-  S2a --> S2b
-  S2b & S2c --> SR
-  SR --> SP1
-  PRICING_SOURCES -->|"storefront search URLs"| SPrNew
-  SPrNew -->|"no new price found"| SPrUsed
-  SPrNew & SPrUsed --> SP1
-  SP1 --> SP_AUDIT
-  SP_AUDIT --> SP2
-  subgraph xglass["atlens (this repo)"]
-    DBX[("lenses.json<br/>X Mount lens database")]
-    DBG[("lenses-gfx.json<br/>G Mount lens database")]
+  IDX["`**Index**
+each brand's official lens list
+deduped by lens ID`"]
+  subgraph collect["`**Collect**`"]
+    C1["`**Locate**
+official product page
+and product photo`"]
+    C2["`**Fetch rawSpecs**
+official product text
+unstructured, one string`"]
+    AUDIT["`**rawSpecs quality audit**`"]
   end
-  SP2 -->|"writes"| DBX
-  SP2 -->|"writes"| DBG
+  DER["`**Derive**
+LLM turns rawSpecs into
+schema-typed fields`"]
+  CMP["`**Compute**
+fields from the model name
+in code`"]
+  PRC["`**Pricing**
+official stores
+used-market median fallback`"]
+  IMG["`**Image processing**
+rotation · background removal
+size normalization`"]
+  REV["`**Review**
+maintainer, AI-assisted`"]
+  PUB["`**Publish**
+PR to this repo`"]
+  DB[("`**Lens catalog**`")]
+
+  FEED --> ISSUES
+  DISC --> ISSUES
+  ISSUES <--> TRI
+  ISSUES -->|"lens missing"| IDX
+  ISSUES -->|"data error"| REV
+  IDX --> C1 --> C2 --> AUDIT --> DER --> CMP --> REV
+  IDX --> PRC --> REV
+  C1 --> IMG --> REV
+  REV --> PUB --> DB
 
   classDef script fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
   classDef agent fill:#fef9c3,stroke:#ca8a04,color:#713f12
   classDef human fill:#dcfce7,stroke:#16a34a,color:#14532d
-  classDef gate fill:#f3e8ff,stroke:#9333ea,color:#3b0764
-  classDef config fill:#f1f5f9,stroke:#64748b,color:#1e293b
+  classDef store fill:#f1f5f9,stroke:#64748b,color:#1e293b
 
-  class S0,S2b,S2c script
-  class S1p1,S1p2,S1b,S2a,SPrNew,SPrUsed,SP_AUDIT agent
-  class S1r,S1h,SR human
-  class SP1,SP2 gate
-  class SOURCES,PRICING_SOURCES config
+  class IDX,CMP,IMG,PUB script
+  class DISC,TRI,C1,C2,AUDIT,DER,PRC agent
+  class FEED,REV human
+  class ISSUES,DB store
 ```
 
-**Key principles:**
-- Every spec originates from official manufacturer sources, with human review at every stage
-- Deterministic fields are computed in code — never inferred by LLM
-- Stage isolation: each step may only build on facts confirmed in the prior step
+Blue steps are scripts, yellow are LLM-driven, green involve a person.
+
+GitHub Issues is the single work queue: site reports and Discover's findings land there, the triage bot labels each one and comments with what it found, confirmed missing lenses are batched by brand into the next Index run, and confirmed data errors are fixed at review.
+
+### Agents, bots, and judges
+
+Each component has one job, its own runtime, and an explicit list of what it must not do.
+
+| Component | Runs | Does | Must not |
+|---|---|---|---|
+| **Discover** · LLM worker | Monthly GitHub Actions cron; Responses API with web search | Finds registered brands with recent X-mount releases and opens a brand-level index issue | Identify individual lenses, read user issues, or touch the catalog |
+| **Triage bot** | GitHub Actions on every new issue; Codex agent | Verifies a user report against the published catalog, labels it (lens missing, data error, duplicate, …), and comments with what it found | Change data, open PRs, or close issues; issue text is treated as untrusted input and its instructions are never followed |
+| **rawSpecs quality audit** · LLM-as-a-judge | After every collect write, from a `PostToolUse` hook; an independent model with no tools | Judges each collected source as ok, thin, junk, or the wrong lens; holds Derive while no source has a spec table | Write anything |
+| **Pipeline agent** | Interactively under the maintainer; Claude Code | Runs Index → Collect → Derive → Compute → Pricing → Images and prepares review; given an issue number, works it through to review | Write state except through the `write` command, read this repo's published data, or publish |
+| **Maintainer** · human in the loop | — | Reviews, resolves notes, and publishes | — |
+
+### Guardrails
+
+Rules the agents cannot talk their way around live in code, not in prompts:
+
+- **`PreToolUse` hooks** block direct edits to lens state files and incident logs — including through shell redirects, `sed -i`, or ad-hoc scripts — and any read of this repo's published data, so an agent can't copy answers from the output it is producing.
+- **One write path.** The `write` command limits each stage to its own fields, accepts only the fields an agent is allowed to derive, rejects empty placeholders for unknown values, checks that collected sources come from the brand's configured sites, re-validates the catalog schema before anything touches disk, and stamps which harness and model produced the data.
+- **Readiness gates.** A stage starts only when its inputs exist (Collect needs an index entry and a valid official page; Derive needs a complete collect with a real spec source). Lenses on hold are skipped by every queue and by publish.
+- **Tests in both directions.** The hooks have 24 regression cases: 11 tool calls they must block and 13 they must still allow.
+
+### Self-correction
+
+- **State, not memory.** Each lens has one JSON state file in git. `queue` recomputes every lens's next step from disk, so a run can stop anywhere and resume, and repeating a step is a no-op.
+- **Feedback after every write.** A `PostToolUse` hook tells the agent what the lens still needs, and runs the rawSpecs quality audit after collect writes, so a thin or wrong source is caught before Derive builds on it.
+- **Uncertainty is surfaced, not guessed.** Derive writes only what the source supports; conflicts, schema gaps, and mismatches become notes that the maintainer resolves at review.
+- **Rollback.** `reset` returns a lens to an earlier stage and clears what came after it.
+
+### Self-improvement
+
+The pipeline keeps an append-only, git-tracked log of verified process incidents — a failed action, a recurring collection failure, a step the maintainer had to correct. Each incident moves from **open** to **resolved** to **promoted**. A review reads the open incidents and proposes one concrete change: a test, a hook, a CLI check, a source configuration, or a stage rule. It becomes a rule only after it is reviewed and merged, and only then is the incident marked promoted. No agent rewrites its own prompts, rules, or data silently.
+
+### Principles
+
+- Specs come from manufacturers' official pages; in rare cases a field missing there is filled at review from other published sources.
+- Deterministic fields are computed in code — never inferred by an LLM.
+- Agents propose; code enforces; the maintainer approves what ships.
 
 **A note on accuracy.** Atlens covers hundreds of lenses across dozens of spec dimensions, and we kindly ask for your patience with the small errors and stale entries that slip through. Bug reports via the in-app feedback or GitHub issues are very welcome — for anything critical to a purchase, please confirm on the manufacturer's official page first.
 
 ## Local Development
 
+Requires Node 25 (see `.nvmrc`) and pnpm.
+
 ```bash
-# Install dependencies
 pnpm install
-
-# Copy environment variables
 cp .env.example .env.local
-# Fill in GITHUB_TOKEN and GITHUB_FEEDBACK_REPO
 
-# Start dev server
+# Create the local D1 databases
+pnpm exec wrangler d1 migrations apply atlens-app --local
+pnpm exec wrangler d1 migrations apply atlens-askiris-traces --local
+
 pnpm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). Browsing, filtering, and comparing need no configuration. Other features need values in `.env.local` (each is described in `.env.example`):
+
+| Feature | Needs |
+|---|---|
+| Sign-in and accounts | `BETTER_AUTH_SECRET` (any random string locally); Google sign-in also needs `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` and works only on port 3000 or 8787. Email codes aren't sent locally — the local email binding writes them to disk. |
+| Ask Iris | `BETTER_AUTH_SECRET`, `ANALYTICS_ID_SECRET`, and the model key named in `.env.example` |
+| Feedback form | `GITHUB_TOKEN` and `GITHUB_FEEDBACK_REPO` |
+
+`pnpm run preview` builds and serves the app on the real Cloudflare Workers runtime (workerd), which catches issues `next dev` can't.
 
 ## Contributing
 
@@ -174,32 +321,7 @@ Building Atlens involves curating and cross-checking specs from dozens of manufa
 
 ## Forking for Other Mounts
 
-Atlens covers both the Fujifilm X mount (APS-C) and the Fujifilm G mount (GFX medium format). Beyond Fujifilm, there are no plans to cover other systems — so if you'd like to build something similar for Sony E, Nikon Z, Canon RF, L-mount, or any other system, I'd genuinely love to see it happen. The code is MIT-licensed and you're very welcome to fork it; no permission needed. The notes below are meant to save you time, not to gatekeep.
-
-**What's in the box, and what isn't.**
-- ✅ **Source code** is MIT-licensed. Fork, modify, deploy, ship commercially — all fine. Just keep the `LICENSE` file and copyright notice intact.
-- ✅ **Schema and field design** (`src/lib/types.ts`, Zod schemas, UI taxonomy) are part of the MIT code and free to reuse.
-- ❌ **Lens data** (`src/data/lenses.json` and `src/data/lenses-gfx.json`) is under a separate proprietary license and isn't transferable — please don't copy it or use it as seed data, even for a different mount. See [`LICENSE-DATA`](LICENSE-DATA).
-- ❌ **The data pipeline** (`atlens-pipeline`) is a separate private repository and isn't part of this fork. You'll need to build your own collection and review workflow.
-
-**Why the pipeline isn't open source (yet).** I get asked this a lot, so to be upfront about it:
-
-1. **It is not a reusable general extractor yet.** The prompts, review steps, and edge cases are tuned to the brands currently covered.
-2. **The intermediate inputs are not meant to be redistributed.** The published data is curated, but the collection layer touches manufacturer text and images that should not be republished as raw material.
-3. **The workflow is still evolving.** The diagram above shows the shape of the system without presenting it as a stable reference implementation.
-
-If the pipeline matures and those concerns ease over time, I'm open to revisiting. Until then, building your own collection layer is genuinely the right call — your mount, your source sites, your edge cases.
-
-**Expect some refactoring.** The codebase has Fujifilm-specific assumptions baked in: per-mount crop factor math (APS-C ×1.5 for X, medium format for GFX), mount flange distances, generation-versioning conventions, and a few mount-specific field shapes. Supporting a non-Fujifilm system means abstracting these, not just swapping constants. It's not a huge lift, but worth planning for.
-
-**A few small asks around branding.**
-- Please pick a distinct project name — something other than "Atlens" or a close variant. I'd like to keep that name scoped to the Fujifilm project, and a fresh name will also help your project build its own identity.
-- A short note in your README saying your project is an independent fork, not affiliated with or endorsed by Atlens or SentaCraft, would be appreciated.
-- Mount names (X, E, Z, RF, L) and manufacturer names are trademarks of their respective owners. Nominative use like "a tool for Sony E-mount lenses" is totally fine; just avoid using brand logos as your own project logo.
-
-**Staying in sync is optional.** I'm not committing to ongoing coordination, but if you make improvements that aren't mount-specific — better schema abstractions, shared UI primitives, accessibility fixes, performance wins — PRs back upstream are very welcome. A quick issue first to align on scope helps both of us avoid wasted effort.
-
-Questions about licensing, collaboration, or anything else: [me@atlens.app](mailto:me@atlens.app). Good luck — really hope to see your project out in the wild.
+Atlens covers Fujifilm only, and forks for other systems are welcome. [docs/FORKING.md](docs/FORKING.md) covers what the MIT license includes, what it doesn't (the lens data and the pipeline), what to expect when adapting it, and a few asks around naming.
 
 ## Acknowledgments
 
