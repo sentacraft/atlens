@@ -4,14 +4,12 @@ import { gearPrompt } from "../system-prompt";
 import { lensRef } from "../lens-ref";
 import type { GearItem } from "@/lib/me/gear-schema";
 
-const SIGN_IN = "[登录](action:signIn)";
 const brandName = (slug: string) => (slug === "fujifilm" ? "富士" : slug);
-const gearContext = (status: GearStatus, cardAvailable = false) => gearPrompt(describeGear(status, brandName), { cardAvailable, signInLink: SIGN_IN });
+const gearContext = (status: GearStatus, cardAvailable = false) => gearPrompt(describeGear(status, brandName), { cardAvailable });
 
 describe("gearPrompt(describeGear(...))", () => {
   it("tells Iris a guest's gear is unknown, and how to ask for it", () => {
     expect(gearContext({ kind: "guest" }, true)).toContain("只有当回答明显取决于他已有什么时");
-    expect(gearContext({ kind: "guest" }, true)).toContain(`登录写成 ${SIGN_IN}`);
     expect(gearContext({ kind: "account", gear: [] }, true)).toContain("要推荐镜头时");
     expect(gearContext({ kind: "guest" })).toContain("不要再问他的器材");
   });

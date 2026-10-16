@@ -16,7 +16,7 @@ import {
 import { lensRef, buildRefIndex } from "@/lib/ai/lens-ref";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
-import { SITE_TOPICS, siteFacts, uncoveredQuestionFact } from "@/lib/site-facts";
+import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
 import { SKILL_NAMES, readSkill } from "@/lib/ai/skills";
 
 const RECALL_LIMIT = 20;
@@ -284,7 +284,7 @@ export function buildLensTools(
         "Facts about Atlens and about you — the site, its story, data and prices, collections, what you can do, accounts, privacy — and the only source " +
         "for answering questions about them. Ask for every topic the question touches in one call.",
       inputSchema: z.object({ topics: z.array(z.enum(SITE_TOPICS)).min(1) }),
-      execute: ({ topics }) => ({ topics: siteFacts(topics, locale, mount), uncovered: uncoveredQuestionFact(locale) }),
+      execute: ({ topics }) => ({ topics: siteFacts(topics, locale, mount) }),
     }),
 
     // A client tool: the browser shows the gear card and returns what the user did.

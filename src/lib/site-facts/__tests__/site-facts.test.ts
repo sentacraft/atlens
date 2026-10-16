@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
 import { getLensesByMount } from "@/lib/lens/data";
-import { SITE_TOPICS, siteFacts, uncoveredQuestionFact } from "@/lib/site-facts";
+import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
 import { HANDWRITTEN_FACTS } from "@/lib/site-facts/handwritten";
 import { COLLECTIONS } from "@/lib/collections";
 
@@ -71,10 +71,5 @@ describe("siteFacts", () => {
   it("hands Iris each fact's links", () => {
     expect(factsFor("business", "zh")).toContain(`(links: [${zh.About.supportTitle}](page:aboutSupport))`);
     expect(factsFor("project", "en")).toContain(`(links: [GitHub](page:repo), [${en.AskIris.linkDataLicense}](page:dataLicense))`);
-  });
-
-  it("points questions the facts don't cover to the feedback form, labelled in the user's language", () => {
-    expect(uncoveredQuestionFact("zh")).toContain(`[${zh.Nav.feedback}](action:feedback)`);
-    expect(uncoveredQuestionFact("en")).toContain(`[${en.Nav.feedback}](action:feedback)`);
   });
 });
