@@ -261,20 +261,6 @@ Rules the agents cannot talk their way around live in code, not in prompts:
 - **Readiness gates.** A stage starts only when its inputs exist (Collect needs an index entry and a valid official page; Derive needs a complete collect with a real spec source). Lenses on hold are skipped by every queue and by publish.
 - **Tests in both directions.** The hooks have 24 regression cases: 11 tool calls they must block and 13 they must still allow.
 
-```mermaid
-flowchart TD
-  AGENT["Pipeline agent"] -->|"tool call"| GUARD{"PreToolUse hook"}
-  GUARD -->|"blocked"| AGENT
-  GUARD -->|"allowed"| WRITE["write command<br/>stage boundary · schema · provenance"]
-  WRITE -->|"rejected with reason"| AGENT
-  WRITE --> STATE[("Per-lens state<br/>tracked in git")]
-  STATE --> HOOK["PostToolUse hook<br/>next step from queue · rawSpecs audit"]
-  HOOK -->|"what to do next"| AGENT
-  INCIDENT[("Incident log<br/>append-only")] --> LEARN["Learn review"]
-  LEARN --> RULE["Reviewed change<br/>test · hook · CLI check<br/>source config · stage rule"]
-  RULE -.->|"merged"| GUARD & WRITE & HOOK
-```
-
 ### Self-correction
 
 - **State, not memory.** Each lens has one JSON state file in git. `queue` recomputes every lens's next step from disk, so a run can stop anywhere and resume, and repeating a step is a no-op.
