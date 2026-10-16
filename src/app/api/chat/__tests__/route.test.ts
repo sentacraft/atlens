@@ -104,7 +104,7 @@ describe("POST /api/chat trace status", () => {
                 type: "tool-call",
                 toolCallId: "call-1",
                 toolName: "recommendLenses",
-                input: JSON.stringify({ picks: [{ ref: "zzzzz", reason: "Sharp." }] }),
+                input: JSON.stringify({ groups: [{ picks: [{ ref: "zzzzz", reason: "Sharp." }] }] }),
               },
             ],
             "tool-calls",

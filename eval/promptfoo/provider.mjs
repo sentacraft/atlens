@@ -181,9 +181,9 @@ function digest(msg) {
     for (const ref of refsFromOutput(part.output)) {
       recalledRefs.add(ref);
     }
-    if (name === "recommendLenses" && Array.isArray(part.output?.recommendations)) {
+    for (const deck of name === "recommendLenses" && Array.isArray(part.output?.groups) ? part.output.groups : []) {
       const group = [];
-      for (const rec of part.output.recommendations) {
+      for (const rec of deck.recommendations) {
         const f = rec.focalNativeMm;
         const a = rec.maxAperture;
         picks.push({
@@ -211,7 +211,8 @@ function digest(msg) {
         group.push(rec.id);
       }
       pickGroups.push(group);
-      transcript.push(`[cards]\n${part.output.recommendations.map(formatCard).join("\n")}`);
+      const heading = deck.title ? ` ${deck.title}` : "";
+      transcript.push(`[cards]${heading}\n${deck.recommendations.map(formatCard).join("\n")}`);
     }
     if (name === "listLenses" && Array.isArray(part.output?.lenses)) {
       const ids = part.output.lenses.map((l) => l.id);

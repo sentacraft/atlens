@@ -204,6 +204,11 @@ export function toDetailed(lens: ResolvedLens): DetailedLens {
 
 export type Recommendation = ResolvedLens & { reason: string };
 
+export interface RecommendationGroup {
+  title: string | null;
+  recommendations: Recommendation[];
+}
+
 // A "56" request still catches a 55mm lens.
 const FOCAL_MATCH_TOLERANCE = 0.1;
 
@@ -506,10 +511,10 @@ export function recallLenses(
 export function recommendLenses(
   mount: Mount,
   locale: string,
-  picks: { ref: string; reason: string }[],
+  groups: { title?: string; picks: { ref: string; reason: string }[] }[],
   tBrand: (brand: string) => string,
   recalledRefs: Set<string>,
-): { recommendations: Recommendation[] } {
+): { groups: RecommendationGroup[] } {
   const byRef = buildRefIndex(getLensesByMount(mount, locale));
   // The SDK returns a throw to the model as a tool error, so it recalls the lens and retries.
   const resolve = (picks: { ref: string; reason: string }[]) =>
@@ -527,7 +532,12 @@ export function recommendLenses(
       }
       return { ...resolveLens(lens, locale, tBrand), reason: pick.reason };
     });
-  return { recommendations: resolve(picks) };
+  return {
+    groups: groups.map((group) => ({
+      title: group.title?.trim() || null,
+      recommendations: resolve(group.picks),
+    })),
+  };
 }
 
 export function listLenses(

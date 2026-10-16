@@ -263,33 +263,54 @@ export function buildLensTools(
 
     recommendLenses: tool({
       description:
-        "Present picks as a grid of recommendation cards (up to 6, ordered best-first). Pass each " +
-        "lens's ref from a prior queryLenses/searchLensByName/myFavorites result and its reason, which is " +
-        "shown on the lens's card. Call it once per group.",
+        "Present picks as recommendation cards, ordered best-first. Pass each lens's ref from a " +
+        "prior queryLenses/searchLensByName/myFavorites result and its reason, which is shown on " +
+        "the lens's card. To offer alternatives (several kits, budgets, or directions), put them " +
+        "all in one call, one titled group each.",
       inputSchema: z.object({
-        picks: z
+        groups: z
           .array(
             z.object({
-              ref: z.string().describe("The lens ref from a prior tool result."),
-              reason: z
+              title: z
                 .string()
+                .optional()
                 .describe(
-                  "The lens's case, shown on its card, in the user's language: one to three natural " +
-                    "sentences on what it's good for and its main trade-off.",
+                  "A short heading above the group's cards, in the user's language. Omit it when " +
+                    "there is only one group.",
                 ),
+              picks: z
+                .array(
+                  z.object({
+                    ref: z.string().describe("The lens ref from a prior tool result."),
+                    reason: z
+                      .string()
+                      .describe(
+                        "The lens's case, shown on its card, in the user's language: one to three " +
+                          "natural sentences on what it's good for and its main trade-off.",
+                      ),
+                  }),
+                )
+                .min(1)
+                .max(6),
             }),
           )
           .min(1)
-          .max(6),
+          .max(4),
       }),
-      execute: ({ picks }) => recommendLenses(mount, locale, picks, tBrand, recalledRefs),
+      execute: ({ groups }) => recommendLenses(mount, locale, groups, tBrand, recalledRefs),
       // The model already has these specs; it gets the refs back so its prose can link them.
       // Requires passing this same ToolSet to convertToModelMessages.
       toModelOutput: ({ output }) => ({
         type: "text",
         value:
-          `Rendered ${output.recommendations.length} recommendation card(s) to the user, for: ` +
-          output.recommendations.map((rec) => lensRef(rec.id)).join(", "),
+          "Rendered recommendation cards to the user:\n" +
+          output.groups
+            .map(
+              (group) =>
+                `${group.title ?? "(untitled)"}: ` +
+                group.recommendations.map((rec) => lensRef(rec.id)).join(", "),
+            )
+            .join("\n"),
       }),
     }),
 

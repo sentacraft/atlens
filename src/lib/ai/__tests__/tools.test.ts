@@ -147,10 +147,31 @@ describe("refs recalled earlier in the conversation", () => {
 
     const details = await run(tools.lensDetails, { refs: recalled });
     expect(details.lenses.map((lens: { ref: string }) => lens.ref)).toEqual(recalled);
-    const cards = await run(tools.recommendLenses, { picks: [{ ref: recalled[0], reason: "r" }] });
-    expect(cards.recommendations).toHaveLength(1);
+    const cards = await run(tools.recommendLenses, {
+      groups: [{ picks: [{ ref: recalled[0], reason: "r" }] }],
+    });
+    expect(cards.groups[0].recommendations).toHaveLength(1);
     const table = await run(tools.listLenses, { refs: recalled });
     expect(table.lenses).toHaveLength(recalled.length);
+  });
+
+  it("renders several titled groups from one call and links each ref back to the model", async () => {
+    const { history, recalled } = await priorTurn();
+    const tools = toolsSeededFrom(history);
+    const input = {
+      groups: [
+        { title: "Kit A", picks: [{ ref: recalled[0], reason: "r" }] },
+        { title: "  ", picks: [{ ref: recalled[1], reason: "r" }] },
+      ],
+    };
+
+    const cards = await run(tools.recommendLenses, input);
+
+    expect(cards.groups.map((g: { title: string | null }) => g.title)).toEqual(["Kit A", null]);
+    expect(tools.recommendLenses.toModelOutput!({ toolCallId: "c", input, output: cards })).toEqual({
+      type: "text",
+      value: `Rendered recommendation cards to the user:\nKit A: ${recalled[0]}\n(untitled): ${recalled[1]}`,
+    });
   });
 
   it("still rejects a catalogue slug or a real lens no recall returned", async () => {
@@ -163,7 +184,9 @@ describe("refs recalled earlier in the conversation", () => {
 
     for (const ref of [slug, unrecalled!]) {
       expect(() => run(tools.lensDetails, { refs: [ref] })).toThrow(/was not returned/);
-      expect(() => run(tools.recommendLenses, { picks: [{ ref, reason: "r" }] })).toThrow(/was not returned/);
+      expect(() =>
+        run(tools.recommendLenses, { groups: [{ picks: [{ ref, reason: "r" }] }] }),
+      ).toThrow(/was not returned/);
       expect(() => run(tools.listLenses, { refs: [ref] })).toThrow(/was not returned/);
     }
   });

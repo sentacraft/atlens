@@ -10,18 +10,23 @@ import { weightDisplay } from "@/lib/lens/format";
 import { formatPrice } from "@/lib/lens/pricing";
 import Markdown from "@/components/askiris/Markdown";
 import FavoriteStarButton from "@/components/lens/FavoriteStarButton";
-import type { Recommendation } from "@/lib/ai/recall";
+import type { Recommendation, RecommendationGroup } from "@/lib/ai/recall";
 import { lensPath } from "@/lib/url/routes";
 
-export default function RecommendationDeck({
-  recommendations,
-}: {
-  recommendations: Recommendation[];
-}) {
+export default function RecommendationDeck({ groups }: { groups: RecommendationGroup[] }) {
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-      {recommendations.map((rec) => (
-        <RecommendationCard key={rec.id} rec={rec} />
+    <div className="flex flex-col gap-4">
+      {groups.map((group, index) => (
+        <section key={index} className="flex flex-col gap-2">
+          {group.title ? (
+            <h3 className="text-foreground px-0.5 text-sm font-semibold">{group.title}</h3>
+          ) : null}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {group.recommendations.map((rec) => (
+              <RecommendationCard key={rec.id} rec={rec} />
+            ))}
+          </div>
+        </section>
       ))}
     </div>
   );

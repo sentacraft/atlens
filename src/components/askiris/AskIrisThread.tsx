@@ -17,7 +17,7 @@ import ResponseFeedback from "@/components/askiris/ResponseFeedback";
 import GearRequestCard from "@/components/askiris/GearRequestCard";
 import { ASK_FOR_GEAR, type GearRequestInput, type GearRequestOutput } from "@/lib/ai/gear-request";
 import type { LensSummary } from "@/lib/lens/data";
-import type { LensTableColumn, Recommendation, ResolvedLens } from "@/lib/ai/recall";
+import type { LensTableColumn, RecommendationGroup, ResolvedLens } from "@/lib/ai/recall";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 
 function traceSummary(output: unknown): string {
@@ -92,10 +92,10 @@ function ToolPart({
   if (part.state === "output-available") {
     switch (getToolName(part)) {
       case "recommendLenses": {
-        const { recommendations } = part.output as { recommendations: Recommendation[] };
+        const { groups } = part.output as { groups: RecommendationGroup[] };
         return (
           <div className="mb-4 w-full">
-            <RecommendationDeck recommendations={recommendations} />
+            <RecommendationDeck groups={groups} />
           </div>
         );
       }
