@@ -58,15 +58,7 @@ for (const slug of Object.keys(FILTERS)) {
   }
 }
 
-export const FEATURED_COLLECTION_SLUGS = [
-  "pancake",
-  "under-200g",
-  "fast-aperture-primes",
-  "travel-zoom",
-  "chinese-af",
-  "chinese-mf-095",
-  "23mm",
-] as const;
+export const FEATURED_COLLECTION_SLUGS = ["pancake", "under-200g", "fast-aperture-primes", "travel-zoom"] as const;
 
 for (const slug of FEATURED_COLLECTION_SLUGS) {
   if (!(slug in COLLECTIONS)) {

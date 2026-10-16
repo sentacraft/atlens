@@ -1,6 +1,6 @@
 import "server-only";
 import { FILTERS, type CollectionSlug } from "@/lib/collection-filters";
-import { COLLECTIONS, type LensCollection } from "@/lib/collections";
+import { COLLECTIONS, FEATURED_COLLECTION_SLUGS, type LensCollection } from "@/lib/collections";
 import { getAllLenses } from "@/lib/lens/data";
 import { routing } from "@/i18n/routing";
 import type { Lens } from "@/lib/types";
@@ -78,13 +78,19 @@ export function getCollectionLensCounts(locale: string): Record<string, number> 
   );
 }
 
+function withPreview(collection: LensCollection, locale: string): RelatedCollectionStats {
+  const { lenses, lensCount, brandCount } = statsFor(collection, locale);
+  return { collection, previewLens: lenses[0], lensCount, brandCount };
+}
+
 export function getRelatedCollectionsWithStats(
   slug: string,
   locale: string,
   limit = 4,
 ): RelatedCollectionStats[] {
-  return getRelatedCollections(slug, locale, limit).map((collection) => {
-    const { lenses, lensCount, brandCount } = statsFor(collection, locale);
-    return { collection, previewLens: lenses[0], lensCount, brandCount };
-  });
+  return getRelatedCollections(slug, locale, limit).map((collection) => withPreview(collection, locale));
+}
+
+export function getFeaturedCollectionsWithStats(locale: string): RelatedCollectionStats[] {
+  return FEATURED_COLLECTION_SLUGS.map((slug) => withPreview(COLLECTIONS[slug], locale));
 }
