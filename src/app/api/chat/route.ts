@@ -23,7 +23,7 @@ import { EVAL_FAVORITES_HEADER, evalFavorites } from "@/lib/ai/favorites";
 import { listUserFavorites } from "@/lib/me/favorites-repository";
 import { ASK_FOR_GEAR, gearRequestDeclined } from "@/lib/ai/gear-request";
 import { listUserGear } from "@/lib/me/gear-repository";
-import { buildLensTools } from "@/lib/ai/tools";
+import { buildLensTools, seedRecalledRefs } from "@/lib/ai/tools";
 import { isOverTokenBudget, recordTokens } from "@/lib/ai/token-budget";
 import { clientIp, isBypassed, isRateLimited } from "@/lib/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
@@ -131,7 +131,15 @@ export async function POST(req: Request) {
 
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const gearStatus = await loadGearStatus(req, appDb, userId, isAccount);
-  const tools = buildLensTools(mount, locale, tBrand, () => loadFavorites(req, appDb, userId, isAccount));
+  // Filled once the history is resolved below; validate needs the tools before that.
+  const recalledRefs = new Set<string>();
+  const tools = buildLensTools(
+    mount,
+    locale,
+    tBrand,
+    () => loadFavorites(req, appDb, userId, isAccount),
+    recalledRefs,
+  );
   const validate = (messages: unknown) =>
     safeValidateUIMessages<AskIrisUIMessage>({
       messages,
@@ -171,6 +179,7 @@ export async function POST(req: Request) {
     return chatErrorResponse("unavailable", 400);
   }
   const { history, userMessage, historyChanged } = turn;
+  seedRecalledRefs(recalledRefs, history);
   const offerGearCard =
     !(gearStatus.kind === "account" && gearStatus.gear.length > 0) && !gearRequestDeclined(history);
   const messageContext = traceMessageContext(history);

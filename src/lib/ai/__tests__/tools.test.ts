@@ -1,7 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { buildLensTools } from "../tools";
+import type { UIMessage } from "ai";
+import { buildLensTools, seedRecalledRefs } from "../tools";
+import { getLensesByMount } from "@/lib/lens/data";
+import { lensRef } from "../lens-ref";
 
-const tools = buildLensTools("X", "zh", (brand) => brand, async () => null);
+const tools = buildLensTools("X", "zh", (brand) => brand, async () => null, new Set());
 
 // The AI SDK types `execute` as optional and passes call options every tool here ignores.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,7 +38,7 @@ describe("a recall tool's gate accepts exactly what it returned", () => {
     ["queryLenses", { type: "prime" }, (out: { matches: { ref: string }[] }) => out.matches],
     ["searchLensByName", { query: "35" }, (out: { results: { ref: string }[] }) => out.results],
   ])("%s", async (name, input, pick) => {
-    const tools = buildLensTools("X", "zh", (brand) => brand, async () => null);
+    const tools = buildLensTools("X", "zh", (brand) => brand, async () => null, new Set());
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const refs = pick(await run((tools as any)[name], input)).map((lens) => lens.ref);
     expect(refs.length).toBeGreaterThan(0);
@@ -95,7 +98,7 @@ describe("myFavorites", () => {
       ...X_FAVORITES,
       G_FAVORITE,
       "no-such-lens",
-    ]);
+    ], new Set());
     const out = await run(withFavorites.myFavorites, {});
     expect(out.status).toBe("ok");
     expect(out.total).toBe(2);
@@ -109,5 +112,71 @@ describe("myFavorites", () => {
     const found: string[] = [];
     idsIn(out, "out", found);
     expect(found).toEqual([]);
+  });
+});
+
+describe("refs recalled earlier in the conversation", () => {
+  async function priorTurn(): Promise<{ history: UIMessage[]; recalled: string[] }> {
+    const earlier = buildLensTools("X", "zh", (brand) => brand, async () => null, new Set());
+    const output = await run(earlier.queryLenses, { type: "prime" });
+    const recalled = output.matches.slice(0, 3).map((lens: { ref: string }) => lens.ref);
+    const history: UIMessage[] = [
+      { id: "u1", role: "user", parts: [{ type: "text", text: "primes" }] },
+      {
+        id: "a1",
+        role: "assistant",
+        parts: [
+          { type: "tool-queryLenses", toolCallId: "c1", state: "output-available", input: { type: "prime" }, output },
+          { type: "text", text: "Here are some primes." },
+        ],
+      },
+      { id: "u2", role: "user", parts: [{ type: "text", text: "tell me more" }] },
+    ];
+    return { history, recalled };
+  }
+
+  function toolsSeededFrom(history: UIMessage[]) {
+    const recalledRefs = new Set<string>();
+    seedRecalledRefs(recalledRefs, history);
+    return buildLensTools("X", "zh", (brand) => brand, async () => null, recalledRefs);
+  }
+
+  it("accepts a ref a recall tool returned in an earlier turn", async () => {
+    const { history, recalled } = await priorTurn();
+    const tools = toolsSeededFrom(history);
+
+    const details = await run(tools.lensDetails, { refs: recalled });
+    expect(details.lenses.map((lens: { ref: string }) => lens.ref)).toEqual(recalled);
+    const cards = await run(tools.recommendLenses, { picks: [{ ref: recalled[0], reason: "r" }] });
+    expect(cards.recommendations).toHaveLength(1);
+    const table = await run(tools.listLenses, { refs: recalled });
+    expect(table.lenses).toHaveLength(recalled.length);
+  });
+
+  it("still rejects a catalogue slug or a real lens no recall returned", async () => {
+    const { history, recalled } = await priorTurn();
+    const tools = toolsSeededFrom(history);
+    const unrecalled = getLensesByMount("X", "zh")
+      .map((lens) => lensRef(lens.id))
+      .find((ref) => !recalled.includes(ref) && !history.some((m) => JSON.stringify(m).includes(ref)));
+    const slug = getLensesByMount("X", "zh")[0].id;
+
+    for (const ref of [slug, unrecalled!]) {
+      expect(() => run(tools.lensDetails, { refs: [ref] })).toThrow(/was not returned/);
+      expect(() => run(tools.recommendLenses, { picks: [{ ref, reason: "r" }] })).toThrow(/was not returned/);
+      expect(() => run(tools.listLenses, { refs: [ref] })).toThrow(/was not returned/);
+    }
+  });
+
+  it("ignores refs in a call that has no output yet", async () => {
+    const { history, recalled } = await priorTurn();
+    const pending = history.map((message) =>
+      message === history[1]
+        ? { ...message, parts: [{ type: "tool-queryLenses", toolCallId: "c1", state: "input-available", input: {} }] }
+        : message,
+    ) as UIMessage[];
+    const tools = toolsSeededFrom(pending);
+
+    expect(() => run(tools.lensDetails, { refs: [recalled[0]] })).toThrow(/was not returned/);
   });
 });
