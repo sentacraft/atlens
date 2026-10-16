@@ -1,17 +1,26 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, Suspense, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import IrisPanel from "@/components/iris-panel/IrisPanel";
-import type { IrisPanelRequest } from "@/components/askiris/AskIrisChat";
 import { useBreakpoint } from "@/hooks/useViewport";
-import { askIrisHandoffPath } from "@/lib/url/askiris";
+import { currentPagePath } from "@/lib/askiris/page-path";
+import { askIrisPagePath, type IrisRequest } from "@/lib/url/askiris";
 import { ASK_IRIS_PATH } from "@/lib/url/routes";
 
 export const IRIS_PANEL_WIDTH = 400;
 
-/** Opens the side panel on wide screens, and the Ask Iris page elsewhere; `question` is sent at once. */
-export type OpenIris = (options: { question?: string }) => void;
+/** What opening the panel asks of it; `resume` comes from the Ask Iris page, on its way back to `from`. */
+export type PanelRequest = IrisRequest | { kind: "resume"; conversationId: string; from: string };
+
+/** A request as the panel receives it; a new `id` hands it in again. */
+export type IrisPanelRequest = PanelRequest & { id: number };
+
+/**
+ * Opens the side panel on wide screens, and the Ask Iris page elsewhere. Without a request it
+ * returns to the open conversation; with one it is about the page it is called from.
+ */
+export type OpenIris = (request?: PanelRequest) => void;
 
 // Only the action is shared: entry points need to open the panel, not to watch it.
 const IrisPanelContext = createContext<OpenIris | null>(null);
@@ -32,17 +41,28 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
     routeRef.current = { wide, onAskIrisPage, router };
   }, [wide, onAskIrisPage, router]);
 
-  const openIris = useCallback<OpenIris>(({ question }) => {
+  const openIris = useCallback<OpenIris>((next) => {
     const route = routeRef.current;
-    if (!route.wide || route.onAskIrisPage) {
-      route.router.push(question ? askIrisHandoffPath(question) : ASK_IRIS_PATH);
+    if (!route.wide) {
+      if (next?.kind !== "resume") {
+        route.router.push(
+          next
+            ? askIrisPagePath({ question: next.kind === "question" ? next.text : undefined, from: currentPagePath() })
+            : ASK_IRIS_PATH,
+        );
+      }
+      return;
+    }
+    // A resume is sent while leaving the Ask Iris page, so the page check does not apply.
+    if (route.onAskIrisPage && next?.kind !== "resume") {
+      route.router.push(askIrisPagePath({ question: next?.kind === "question" ? next.text : undefined }));
       return;
     }
     setMounted(true);
     setOpen(true);
-    if (question) {
+    if (next) {
       nextRequestId.current += 1;
-      setRequest({ id: nextRequestId.current, question });
+      setRequest({ ...next, id: nextRequestId.current });
     }
   }, []);
   const close = useCallback(() => setOpen(false), []);
@@ -54,8 +74,13 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
   return (
     <IrisPanelContext value={openIris}>
       {children}
-      {/* Stays mounted while closed, so reopening continues the conversation. */}
-      {mounted && <IrisPanel shown={shown} request={request} onClose={close} />}
+      {/* Stays mounted while closed, so reopening continues the conversation. Suspense, as the
+          panel reads useSearchParams, which would otherwise bail static pages out to client rendering. */}
+      {mounted && (
+        <Suspense fallback={null}>
+          <IrisPanel shown={shown} request={request} onClose={close} />
+        </Suspense>
+      )}
     </IrisPanelContext>
   );
 }

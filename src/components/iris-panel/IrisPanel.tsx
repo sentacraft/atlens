@@ -2,7 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
-import AskIrisChat, { type IrisPanelRequest } from "@/components/askiris/AskIrisChat";
+import AskIrisChat from "@/components/askiris/AskIrisChat";
+import type { IrisPanelRequest } from "@/context/IrisPanelProvider";
+import { useCurrentPagePath } from "@/hooks/useCurrentPagePath";
 import { Z } from "@/config/ui";
 import { askIrisChatDataQuery } from "@/lib/askiris/chat-data";
 import { cn } from "@/lib/utils";
@@ -20,6 +22,7 @@ export default function IrisPanel({
   const t = useTranslations("AskIris");
   const locale = useLocale();
   const data = useQuery(askIrisChatDataQuery(locale));
+  const pagePath = useCurrentPagePath();
 
   return (
     <aside
@@ -27,13 +30,14 @@ export default function IrisPanel({
       hidden={!shown}
       className={cn(
         "fixed right-0 bottom-0 flex w-[var(--iris-panel-width)] flex-col border-l border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950",
-        "top-[var(--nav-height)] pb-[var(--safe-inset-bottom)]",
+        // --nav-height leaves out the nav's 1px bottom border, which the panel would cover: it stacks above the nav.
+        "top-[calc(var(--nav-height)+1px)] pb-[var(--safe-inset-bottom)]",
         Z.fixed,
       )}
     >
       {data.data ? (
         <AskIrisChat
-          shell={{ variant: "panel", request, onClose }}
+          shell={{ variant: "panel", pagePath, request, onClose }}
           linkTargets={data.data.linkTargets}
           lenses={data.data.lenses}
         />

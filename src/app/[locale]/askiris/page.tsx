@@ -7,7 +7,7 @@ import { getLensSummaries } from "@/lib/lens/data";
 import { resolveAskIrisEntry } from "@/lib/url/askiris";
 
 type Params = Promise<{ locale: string }>;
-type SearchParams = Promise<{ q?: string | string[]; conversation?: string | string[] }>;
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
