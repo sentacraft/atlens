@@ -240,6 +240,8 @@ PR to this repo`"]
 
 Blue steps are scripts, yellow are LLM-driven, green involve a person.
 
+GitHub Issues is the single work queue: site reports and Discover's findings land there, the triage bot labels each one and comments with what it found, confirmed missing lenses are batched by brand into the next Index run, and confirmed data errors are fixed at review.
+
 ### Agents, bots, and judges
 
 Each component has one job, its own runtime, and an explicit list of what it must not do.
@@ -271,10 +273,6 @@ Rules the agents cannot talk their way around live in code, not in prompts:
 ### Self-improvement
 
 The pipeline keeps an append-only, git-tracked log of verified process incidents — a failed action, a recurring collection failure, a step the maintainer had to correct. Each incident moves from **open** to **resolved** to **promoted**. A review reads the open incidents and proposes one concrete change: a test, a hook, a CLI check, a source configuration, or a stage rule. It becomes a rule only after it is reviewed and merged, and only then is the incident marked promoted. No agent rewrites its own prompts, rules, or data silently.
-
-### Issue operations
-
-User reports and the pipeline share one queue. A data report or missing-lens request sent from the site becomes a GitHub issue; the triage bot verifies it against the catalog, labels it, and comments with what it found as soon as it opens; confirmed missing lenses are batched by brand into the next Index run, and confirmed data errors are corrected at review. The Discover worker adds brand-level work items from the web on its own, so new releases enter the same flow without anyone filing them.
 
 ### Principles
 
