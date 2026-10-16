@@ -2,7 +2,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render } from "@testing-library/react";
 import Markdown from "../Markdown";
-import { LensLinkProvider } from "../LensLinkContext";
+import { ChatLinkProvider } from "../ChatLinkContext";
 import { lensRef, type LensLinkIndex } from "@/lib/ai/lens-ref";
 import { getAllLenses } from "@/lib/lens/data";
 import { lensDisplayName } from "@/lib/lens/format";
@@ -29,6 +29,17 @@ vi.mock("@/lib/analytics/analytics", () => ({
   track: vi.fn(),
 }));
 
+const openSignIn = vi.fn();
+vi.mock("@/context/SignInDialogProvider", () => ({ useSignInDialog: () => openSignIn }));
+vi.mock("@/hooks/useMountParam", () => ({ useEffectiveMount: () => "X" }));
+vi.mock("@/components/feedback/FeedbackTrigger", () => ({
+  default: ({ children }: { children: React.ReactNode }) => (
+    <button type="button" data-feedback>
+      {children}
+    </button>
+  ),
+}));
+
 // Iris writes the opaque ref; the index maps it back to the real lens.
 const REF = "9q0ih";
 const INDEX: LensLinkIndex = {
@@ -38,11 +49,11 @@ const INDEX: LensLinkIndex = {
 describe("Markdown lens: links", () => {
   it("renders a known lens ref as a link to its lens page", () => {
     const { container } = render(
-      <LensLinkProvider index={INDEX}>
+      <ChatLinkProvider targets={{ lenses: INDEX, collections: [] }}>
         <Markdown>
           {`See [Viltrox AF 35mm F1.7 Air](lens:${REF}) here.`}
         </Markdown>
-      </LensLinkProvider>,
+      </ChatLinkProvider>,
     );
     const link = container.querySelector("a");
     expect(link).not.toBeNull();
@@ -55,9 +66,9 @@ describe("Markdown lens: links", () => {
 
   it("degrades an unknown lens ref to plain text, not a link", () => {
     const { container } = render(
-      <LensLinkProvider index={INDEX}>
+      <ChatLinkProvider targets={{ lenses: INDEX, collections: [] }}>
         <Markdown>{"This [made-up lens](lens:zzzzz) does not exist."}</Markdown>
-      </LensLinkProvider>,
+      </ChatLinkProvider>,
     );
     expect(container.querySelector("a")).toBeNull();
     expect(container.textContent).toContain("made-up lens");
@@ -73,9 +84,9 @@ describe("Markdown lens: links", () => {
 
   it("leaves non-lens links as ordinary anchors", () => {
     const { container } = render(
-      <LensLinkProvider index={INDEX}>
+      <ChatLinkProvider targets={{ lenses: INDEX, collections: [] }}>
         <Markdown>{"[Official site](https://example.com)"}</Markdown>
-      </LensLinkProvider>,
+      </ChatLinkProvider>,
     );
     const link = container.querySelector("a");
     expect(link!.getAttribute("href")).toBe("https://example.com");
@@ -94,9 +105,9 @@ describe("Markdown lens: links in tables", () => {
       `| [Sigma 12mm F1.4 DC | Contemporary](lens:${ref}) | 235g | $579 |`,
     ].join("\n");
     const { container } = render(
-      <LensLinkProvider index={index}>
+      <ChatLinkProvider targets={{ lenses: index, collections: [] }}>
         <Markdown>{table}</Markdown>
-      </LensLinkProvider>,
+      </ChatLinkProvider>,
     );
     const cells = [...container.querySelectorAll("tbody td")].map((td) => td.textContent);
     expect(cells).toEqual(["Sigma 12mm F1.4 DC | Contemporary", "235g", "$579"]);
@@ -127,14 +138,72 @@ describe("Markdown lens: links across the catalogue", () => {
       ...lenses.map((lens, i) => `| [${names[i]}](lens:${lensRef(lens.id)}) | ok |`),
     ].join("\n");
     const { container } = render(
-      <LensLinkProvider index={index}>
+      <ChatLinkProvider targets={{ lenses: index, collections: [] }}>
         <Markdown>{table}</Markdown>
-      </LensLinkProvider>,
+      </ChatLinkProvider>,
     );
     const rows = [...container.querySelectorAll("tbody tr")].map((tr) =>
       [...tr.querySelectorAll("td")].map((td) => td.textContent),
     );
     expect(rows).toEqual(names.map((name) => [name, "ok"]));
     expect(container.querySelectorAll("tbody a")).toHaveLength(lenses.length);
+  });
+});
+
+describe("Markdown chat links", () => {
+  const OTHER = "c01n5";
+  const TARGETS = {
+    lenses: { ...INDEX, [OTHER]: { id: "sigma-contemporary-12mm-f14-dc-x", mount: "X" as const } },
+    collections: ["pancake"],
+  };
+  const renderLinks = (markdown: string) =>
+    render(
+      <ChatLinkProvider targets={TARGETS}>
+        <Markdown>{markdown}</Markdown>
+      </ChatLinkProvider>,
+    ).container;
+
+  it("links a page key to its path in a new tab", () => {
+    const link = renderLinks("[support](page:aboutSupport)").querySelector("a");
+    expect(link!.getAttribute("href")).toBe("/about#support");
+    expect(link!.getAttribute("target")).toBe("_blank");
+  });
+
+  it("links an external page key to its URL", () => {
+    const link = renderLinks("[pipeline](page:readmePipeline)").querySelector("a");
+    expect(link!.getAttribute("href")).toBe("https://github.com/sentacraft/atlens#data-pipeline");
+  });
+
+  it("builds a compare link from known refs", () => {
+    const link = renderLinks(`[compare](compare:${REF},${OTHER})`).querySelector("a");
+    expect(link!.getAttribute("href")).toBe(
+      "/lenses/x/compare?ids=viltrox-af-35mm-f17-air-x,sigma-contemporary-12mm-f14-dc-x",
+    );
+  });
+
+  it("links a known collection on the current mount", () => {
+    const link = renderLinks("[pancakes](collection:pancake)").querySelector("a");
+    expect(link!.getAttribute("href")).toBe("/lenses/x/collections/pancake");
+  });
+
+  it("opens the sign-in dialog from a sign-in action", () => {
+    renderLinks("[sign in](action:signIn)").querySelector("button")!.click();
+    expect(openSignIn).toHaveBeenCalled();
+  });
+
+  it("opens feedback from a feedback action", () => {
+    expect(renderLinks("[tell us](action:feedback)").querySelector("[data-feedback]")).not.toBeNull();
+  });
+
+  it.each([
+    ["an unknown page key", "[x](page:nowhere)"],
+    ["an unknown action", "[x](action:delete)"],
+    ["a compare link with an unknown ref", `[x](compare:${REF},zzzzz)`],
+    ["a compare link with one lens", `[x](compare:${REF})`],
+    ["an unknown collection", "[x](collection:nope)"],
+  ])("renders %s as plain text", (_, markdown) => {
+    const container = renderLinks(markdown);
+    expect(container.querySelector("a, button")).toBeNull();
+    expect(container.textContent).toBe("x");
   });
 });

@@ -819,6 +819,43 @@ tests:
         metric: site
         value: "context.metadata.toolsCalled.includes('siteInfo') && /光圈/.test(output.split('[Iris]').pop())"
 
+  # Links: Iris copies fact links and writes compare links by key or ref, never a raw URL.
+  - description: link-support
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "我想支持一下作者，怎么赞赏？"
+    assert:
+      - type: javascript
+        metric: links
+        value: "context.metadata.toolsCalled.includes('siteInfo') && /\\]\\(page:aboutSupport\\)/.test(output) && !/https?:\\/\\/(www\\.)?atlens/.test(output)"
+
+  - description: link-collections
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "网站上有没有饼干头这类镜头的合集？"
+    assert:
+      - type: javascript
+        metric: links
+        value: "context.metadata.toolsCalled.includes('siteInfo') && /\\]\\(collection:pancake\\)/.test(output)"
+
+  - description: link-compare
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "XF 23mm F1.4 R LM WR 和 XF 33mm F1.4 R LM WR，我想把完整参数放一起逐项看。"
+    assert:
+      - type: javascript
+        metric: links
+        value: "context.metadata.compareLinks.some((refs) => refs.length === 2) && !/https?:\\/\\//.test(output)"
+
   # Terms: spec conventions and model codes come from the terms skill; general concepts from the model.
   - description: term-min-focus-distance
     vars:

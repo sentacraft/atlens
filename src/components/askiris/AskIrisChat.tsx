@@ -13,8 +13,8 @@ import { useTestHookEnabled, useTestHookOption } from "@/context/TestHookProvide
 import { accountUser, authClient, ensureSession } from "@/lib/auth-client";
 import { askIrisChatRequestBody } from "@/lib/askiris/chat-request";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
-import { LensLinkProvider } from "@/components/askiris/LensLinkContext";
-import type { LensLinkIndex } from "@/lib/ai/lens-ref";
+import { ChatLinkProvider } from "@/components/askiris/ChatLinkContext";
+import type { ChatLinkTargets } from "@/lib/askiris/inline-links";
 import type { LensSummary } from "@/lib/lens/data";
 import { ASK_FOR_GEAR } from "@/lib/ai/gear-request";
 import { clearEntryParams, type AskIrisEntry } from "@/lib/url/askiris";
@@ -55,11 +55,11 @@ const SHELL_CLS =
 
 export default function AskIrisChat({
   entry,
-  lensIndex,
+  linkTargets,
   lenses,
 }: {
   entry: AskIrisEntry;
-  lensIndex: LensLinkIndex;
+  linkTargets: ChatLinkTargets;
   lenses: LensSummary[];
 }) {
   const initialQuery = entry.kind === "handoff" ? entry.query : undefined;
@@ -270,7 +270,7 @@ export default function AskIrisChat({
   }
 
   return (
-    <LensLinkProvider index={lensIndex}>
+    <ChatLinkProvider targets={linkTargets}>
       <div className={SHELL_CLS}>
         {topBar}
         <div className="relative min-h-0 flex-1">
@@ -347,6 +347,6 @@ export default function AskIrisChat({
           </DialogFooter>
         </DialogPopup>
       </Dialog>
-    </LensLinkProvider>
+    </ChatLinkProvider>
   );
 }

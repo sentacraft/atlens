@@ -2,17 +2,31 @@ import "server-only";
 import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
 import { routing } from "@/i18n/routing";
+import { collectionLink, type FactLink } from "@/lib/askiris/inline-links";
+import { COLLECTIONS } from "@/lib/collections";
 import { CATALOG_COVERAGE, type CoverageState } from "@/lib/lens/catalog-coverage";
 import { getLensesByMount, lensCountsByBrand, meta } from "@/lib/lens/data";
 import { MAX_COMPARE } from "@/lib/lens/lens";
+import { mountHasCollections } from "@/lib/mount";
 import { priceMarket, type Market } from "@/lib/lens/pricing";
 import { isPurchaseLocale } from "@/lib/purchase/links";
 import { donationChannel } from "@/lib/support";
-import { MOUNTS, type Lens, type LensPriceEntry } from "@/lib/types";
+import { MOUNTS, type Lens, type LensPriceEntry, type Mount } from "@/lib/types";
 import { HANDWRITTEN_FACTS } from "@/lib/site-facts/handwritten";
 import { fillUiStrings } from "@/lib/ui-strings";
 
-export const SITE_TOPICS = ["project", "story", "business", "data", "prices", "askIris", "account", "privacy", "usage"] as const;
+export const SITE_TOPICS = [
+  "project",
+  "story",
+  "business",
+  "data",
+  "prices",
+  "askIris",
+  "account",
+  "privacy",
+  "usage",
+  "collections",
+] as const;
 export type SiteTopic = (typeof SITE_TOPICS)[number];
 
 type Messages = typeof en;
@@ -22,6 +36,12 @@ const languageName = (code: string) => new Intl.DisplayNames(["en"], { type: "la
 function list(items: string[]): string {
   return items.join(", ");
 }
+
+function withLinks(text: string, links: string[] = []): string {
+  return links.length > 0 ? `${text} (links: ${links.join(", ")})` : text;
+}
+
+const link = (text: string, ...links: FactLink[]) => withLinks(text, links);
 
 const COVERAGE_STATE: Record<string, string> = {
   true: "covered",
@@ -43,7 +63,7 @@ function coverage(locale: string): string[] {
     );
     return `${mount} mount, ${total} lenses in all. ${byBrand.join(". ")}.`;
   });
-  return [en.About.coverageBody, ...perMount, `The lens data was last updated on ${meta.lastUpdated.slice(0, 10)}.`];
+  return [link(en.About.coverageBody, "page:aboutCoverage"), ...perMount, `The lens data was last updated on ${meta.lastUpdated.slice(0, 10)}.`];
 }
 
 function sourcesOf(lenses: Lens[], market: Market, condition: "new" | "used"): string[] {
@@ -67,7 +87,10 @@ function commercialTies(locale: string): string[] {
   const m = MESSAGES[locale];
   const channel = donationChannel(locale) === "wechat" ? m.About.donationWechatLabel : "Ko-fi";
   return [
-    `Visitors who want to support Atlens can tip with ${channel}, from the "${m.About.supportTitle}" section of the "${m.Nav.about}" page.`,
+    link(
+      `Visitors who want to support Atlens can tip with ${channel}, from the "${m.About.supportTitle}" section of the "${m.Nav.about}" page.`,
+      "page:aboutSupport",
+    ),
     `Store links on this site: ${isPurchaseLocale(locale) ? en.Purchase.disclosureDetail : en.Purchase.disclosureNoAffiliate}`,
   ];
 }
@@ -75,7 +98,12 @@ function commercialTies(locale: string): string[] {
 function accountFeatures(locale: string): string[] {
   const auth = MESSAGES[locale].Auth;
   return [
-    `Browsing, comparing, and Ask Iris all work without an account. Signing in adds: ${[auth.benefitGear, auth.benefitFavorites, auth.benefitSync].join("; ")}`,
+    link(
+      `Browsing, comparing, and Ask Iris all work without an account. Signing in adds: ${[auth.benefitGear, auth.benefitFavorites, auth.benefitSync].join("; ")}`,
+      "action:signIn",
+      "page:profileFavorites",
+      "page:profileGear",
+    ),
   ];
 }
 
@@ -96,26 +124,46 @@ function features(locale: string): string[] {
       named(m.Nav.getApp, "install Atlens as a web app"),
     ])}.`,
     `The site is available in ${list(routing.locales.map(languageName))}.`,
-    `There is no app-store app. Atlens can be installed as a web app (PWA) on a phone or computer from the "${m.Nav.getApp}" page in the site's navigation.`,
+    link(
+      `There is no app-store app. Atlens can be installed as a web app (PWA) on a phone or computer from the "${m.Nav.getApp}" page in the site's navigation.`,
+      "page:getApp",
+    ),
   ];
 }
 
-const GENERATED: Partial<Record<SiteTopic, (locale: string) => string[]>> = {
+function collections(locale: string, mount: Mount): string[] {
+  const m = MESSAGES[locale];
+  if (!mountHasCollections(mount)) {
+    return [`"${m.Nav.collections}" are not available for the current mount yet.`];
+  }
+  const lang = locale === "zh" ? "zh" : "en";
+  return [
+    `"${m.Nav.collections}" are curated lens lists by theme, for the current mount. Each line: name, summary, link.`,
+    ...Object.values(COLLECTIONS).map(
+      (c) => `"${c.title[lang]}": ${c.shortDescription[lang]} (link: ${collectionLink(c.slug)})`,
+    ),
+  ];
+}
+
+const GENERATED: Partial<Record<SiteTopic, (locale: string, mount: Mount) => string[]>> = {
   business: commercialTies,
   data: coverage,
   prices: priceSources,
   account: accountFeatures,
   usage: features,
+  collections,
 };
 
 /** What Iris may tell anyone about Atlens itself, for the given topics. */
-export function siteFacts(topics: SiteTopic[], locale: string): { topic: SiteTopic; facts: string[] }[] {
+export function siteFacts(topics: SiteTopic[], locale: string, mount: Mount): { topic: SiteTopic; facts: string[] }[] {
   const messagesLocale = locale in MESSAGES ? locale : routing.defaultLocale;
   return [...new Set(topics)].map((topic) => ({
     topic,
     facts: [
-      ...HANDWRITTEN_FACTS.filter((fact) => fact.topic === topic).map((fact) => fillUiStrings(fact.text, messagesLocale)),
-      ...(GENERATED[topic]?.(messagesLocale) ?? []),
+      ...HANDWRITTEN_FACTS.filter((fact) => fact.topic === topic).map((fact) =>
+        withLinks(fillUiStrings(fact.text, messagesLocale), fact.links),
+      ),
+      ...(GENERATED[topic]?.(messagesLocale, mount) ?? []),
     ],
   }));
 }

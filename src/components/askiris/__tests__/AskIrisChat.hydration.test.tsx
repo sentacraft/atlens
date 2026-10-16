@@ -47,7 +47,7 @@ const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false 
 function Chat() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AskIrisChat entry={{ kind: "new" }} lensIndex={{}} lenses={[]} />
+      <AskIrisChat entry={{ kind: "new" }} linkTargets={{ lenses: {}, collections: [] }} lenses={[]} />
     </QueryClientProvider>
   );
 }

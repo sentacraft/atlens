@@ -10,6 +10,8 @@ export interface SiteConfig {
   repoUrl: string;
   /** The README section that documents the data pipeline. */
   pipelineDocUrl: string;
+  /** The license that governs the lens data. */
+  dataLicenseUrl: string;
   name: string;
   shortName: string;
   pwaDescription: string;
@@ -27,6 +29,7 @@ export const SITE: SiteConfig = {
   contactEmail: `me@${HOST}`,
   repoUrl: REPO_URL,
   pipelineDocUrl: `${REPO_URL}#data-pipeline`,
+  dataLicenseUrl: `${REPO_URL}/blob/main/LICENSE-DATA`,
   name: "Atlens",
   shortName: "Atlens",
   pwaDescription:

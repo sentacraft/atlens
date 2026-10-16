@@ -9,7 +9,17 @@ export const RECENTLY_ADDED_PATH = "/recently-added";
 export const ABOUT_PATH = "/about";
 export const PROFILE_PATH = "/me";
 
-export function aboutPath(section?: "coverage"): string {
+export type AboutSection =
+  | "background"
+  | "ask-iris"
+  | "data-accuracy"
+  | "coverage"
+  | "support"
+  | "privacy"
+  | "disclaimer"
+  | "ack";
+
+export function aboutPath(section?: AboutSection): string {
   return section ? `${ABOUT_PATH}#${section}` : ABOUT_PATH;
 }
 
