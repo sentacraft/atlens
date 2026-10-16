@@ -41,7 +41,7 @@ const DESIGN_SOURCES = new Set([
   "src/components/ui/dialog.tsx",
   "src/components/ui/select.tsx",
   "src/components/ui/textarea.tsx",
-  "src/components/auth/AuthControl.tsx",
+  "src/components/nav/NavMenu.tsx",
   "src/components/lens/LensCard.tsx",
   "src/components/askiris/AskIrisComposer.tsx",
   "src/components/askiris/AskIrisThread.tsx",

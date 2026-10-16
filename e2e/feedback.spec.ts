@@ -1,9 +1,9 @@
 import { test, expect, type Page } from "@playwright/test";
 
-// Desktop dialog only; mobile uses the overflow menu and a drawer.
+// Desktop dialog only; below 640px the dialog is a drawer.
 test.beforeEach(({ page }, testInfo) => {
   const viewport = page.viewportSize();
-  // Width ≥ 640 for the nav trigger, and enough height for the centered dialog.
+  // Enough room for the centered dialog.
   testInfo.skip(
     !viewport || viewport.width < 640 || viewport.height < 600,
     "Desktop-only feedback dialog spec"
@@ -26,10 +26,15 @@ async function mockFeedbackApi(page: Page): Promise<{ getLastBody: () => Record<
 
 const LENS_URL = "/en/lenses/x/7artisans-af-27mm-f28-x";
 
+async function openNavFeedback(page: Page): Promise<void> {
+  await page.getByRole("button", { name: "Menu" }).click();
+  await page.getByRole("menuitem", { name: "Feedback" }).click();
+}
+
 test.describe("FeedbackDialog — open and close", () => {
-  test("Nav Feedback button opens general dialog (desktop)", async ({ page }) => {
+  test("Nav menu Feedback opens general dialog (desktop)", async ({ page }) => {
     await page.goto("/en");
-    await page.getByRole("button", { name: /feedback/i }).click();
+    await openNavFeedback(page);
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole("heading")).toContainText(/send feedback/i);
@@ -38,7 +43,7 @@ test.describe("FeedbackDialog — open and close", () => {
   // Regression: useBreakpoint read an empty sm breakpoint variable, so desktop got the mobile drawer.
   test("opens centered, not as the mobile drawer", async ({ page }) => {
     await page.goto("/en");
-    await page.getByRole("button", { name: /feedback/i }).click();
+    await openNavFeedback(page);
     const box = await page.getByRole("dialog").boundingBox();
     const viewport = page.viewportSize()!;
     // The drawer sits flush with the bottom edge; the dialog is centered with room below.
@@ -48,7 +53,7 @@ test.describe("FeedbackDialog — open and close", () => {
 
   test("Escape closes the dialog", async ({ page }) => {
     await page.goto("/en");
-    await page.getByRole("button", { name: /feedback/i }).click();
+    await openNavFeedback(page);
     await expect(page.getByRole("dialog")).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).not.toBeVisible();
@@ -56,7 +61,7 @@ test.describe("FeedbackDialog — open and close", () => {
 
   test("Cancel button closes the dialog", async ({ page }) => {
     await page.goto("/en");
-    await page.getByRole("button", { name: /feedback/i }).click();
+    await openNavFeedback(page);
     const dialog = page.getByRole("dialog");
     await dialog.getByRole("button", { name: /cancel/i }).click();
     await expect(dialog).not.toBeVisible();
@@ -76,7 +81,7 @@ test.describe("FeedbackDialog — payload sent to API", () => {
   test("general feedback sends type and description", async ({ page }) => {
     const { getLastBody } = await mockFeedbackApi(page);
     await page.goto("/en");
-    await page.getByRole("button", { name: /feedback/i }).click();
+    await openNavFeedback(page);
     const dialog = page.getByRole("dialog");
     await dialog.locator("textarea").fill("This is a test suggestion");
     await dialog.getByRole("button", { name: /submit/i }).click();
@@ -91,7 +96,7 @@ test.describe("FeedbackDialog — payload sent to API", () => {
   test("replyContact is included in the payload when provided", async ({ page }) => {
     const { getLastBody } = await mockFeedbackApi(page);
     await page.goto("/en");
-    await page.getByRole("button", { name: /feedback/i }).click();
+    await openNavFeedback(page);
     const dialog = page.getByRole("dialog");
     await dialog.locator("textarea").fill("Please reply to me");
     await dialog.getByRole("checkbox", { name: /want a reply/i }).check();
@@ -106,7 +111,7 @@ test.describe("FeedbackDialog — payload sent to API", () => {
   test("replyContact is omitted from the payload when left empty", async ({ page }) => {
     const { getLastBody } = await mockFeedbackApi(page);
     await page.goto("/en");
-    await page.getByRole("button", { name: /feedback/i }).click();
+    await openNavFeedback(page);
     const dialog = page.getByRole("dialog");
     await dialog.locator("textarea").fill("No contact provided");
     await dialog.getByRole("button", { name: /submit/i }).click();
@@ -173,7 +178,7 @@ test.describe("FeedbackDialog — validation", () => {
   test("submit is disabled / no request sent when description is empty", async ({ page }) => {
     const { getLastBody } = await mockFeedbackApi(page);
     await page.goto("/en");
-    await page.getByRole("button", { name: /feedback/i }).click();
+    await openNavFeedback(page);
     const dialog = page.getByRole("dialog");
     await dialog.getByRole("button", { name: /submit/i }).click();
     await expect(dialog.getByText(/thanks/i)).not.toBeVisible();
