@@ -1,5 +1,5 @@
 import { isToolUIPart, type LanguageModelUsage, type UIMessage } from "ai";
-import type { AskIrisTraceRecord } from "./trace-repository";
+import type { AskIrisToolError, AskIrisTraceRecord } from "./trace-repository";
 
 export interface AskIrisTraceMessageContext {
   userMessage: UIMessage;
@@ -18,10 +18,22 @@ interface GenerationSnapshot {
   finishReason: string;
 }
 
+interface StepSnapshot extends GenerationSnapshot {
+  content: ReadonlyArray<{ type: string; toolName?: string; error?: unknown }>;
+}
+
+const TOOL_ERROR_MAX_CHARS = 300;
+
 export type AskIrisTraceCompletion = AskIrisTraceUsage &
   Pick<
     AskIrisTraceRecord,
-    "status" | "finishReason" | "errorCode" | "stepCount" | "toolCallCount" | "firstOutputMs"
+    | "status"
+    | "finishReason"
+    | "errorCode"
+    | "stepCount"
+    | "toolCallCount"
+    | "firstOutputMs"
+    | "toolErrors"
   > & {
     responseMessage?: UIMessage;
   };
@@ -53,6 +65,11 @@ function addTraceUsage(
 
 function countTraceToolCalls(message: UIMessage | undefined): number {
   return message?.parts.filter(isToolUIPart).length ?? 0;
+}
+
+function describeToolError(error: unknown): string {
+  const text = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+  return text.slice(0, TOOL_ERROR_MAX_CHARS);
 }
 
 function isTraceOutputChunk(type: string): boolean {
@@ -90,6 +107,7 @@ export class AskIrisTraceCollector {
   private stepCount = 0;
   private finishReason: string | undefined;
   private firstOutputMs: number | undefined;
+  private toolErrors: AskIrisToolError[] = [];
   private aborted = false;
   private errored = false;
   private finalized = false;
@@ -105,7 +123,16 @@ export class AskIrisTraceCollector {
     }
   }
 
-  recordStep(step: GenerationSnapshot) {
+  recordStep(step: StepSnapshot) {
+    for (const part of step.content) {
+      if (part.type === "tool-error") {
+        this.toolErrors.push({
+          step: step.stepNumber,
+          tool: part.toolName ?? "unknown",
+          error: describeToolError(part.error),
+        });
+      }
+    }
     this.usage = addTraceUsage(this.usage, traceUsage(step.usage));
     this.stepCount = Math.max(this.stepCount, step.stepNumber + 1);
     this.finishReason = step.finishReason;
@@ -164,6 +191,7 @@ export class AskIrisTraceCollector {
       stepCount: this.stepCount,
       toolCallCount: countTraceToolCalls(completion.responseMessage),
       firstOutputMs: this.firstOutputMs,
+      toolErrors: this.toolErrors.length > 0 ? this.toolErrors : undefined,
     };
   }
 }

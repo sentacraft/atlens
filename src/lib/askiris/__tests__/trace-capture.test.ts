@@ -111,11 +111,13 @@ describe("AskIrisTraceCollector", () => {
       usage: usage({ inputTokens: 100, outputTokens: 10 }),
       stepNumber: 0,
       finishReason: "tool-calls",
+      content: [],
     });
     collector.recordStep({
       usage: usage({ inputTokens: 120, outputTokens: 20 }),
       stepNumber: 1,
       finishReason: "stop",
+      content: [],
     });
     collector.recordAbort();
 
@@ -145,6 +147,59 @@ describe("AskIrisTraceCollector", () => {
         finishReason: "tool-calls",
       }),
     ).toMatchObject({ status: "aborted" });
+  });
+
+  it("keeps the real tool errors that the UI stream masks", () => {
+    const collector = new AskIrisTraceCollector(1_000);
+    collector.recordStep({
+      usage: usage(),
+      stepNumber: 0,
+      finishReason: "tool-calls",
+      content: [
+        { type: "text" },
+        {
+          type: "tool-error",
+          toolName: "recommendLenses",
+          error: new Error('Unknown lens ref "fujifilm-xf-23mm-f2-r-wr".'),
+        },
+        { type: "tool-result", toolName: "queryLenses" },
+      ],
+    });
+    collector.recordStep({
+      usage: usage(),
+      stepNumber: 1,
+      finishReason: "tool-calls",
+      content: [
+        { type: "tool-error", toolName: "lensDetails", error: "x".repeat(1_000) },
+      ],
+    });
+
+    const completion = collector.finalizeStream({
+      responseMessage: { id: "assistant-1", role: "assistant", parts: [] },
+      isAborted: false,
+      finishReason: "stop",
+    });
+
+    expect(completion?.toolErrors).toEqual([
+      {
+        step: 0,
+        tool: "recommendLenses",
+        error: 'Error: Unknown lens ref "fujifilm-xf-23mm-f2-r-wr".',
+      },
+      { step: 1, tool: "lensDetails", error: "x".repeat(300) },
+    ]);
+  });
+
+  it("records no tool errors when every tool call succeeds", () => {
+    const collector = new AskIrisTraceCollector(1_000);
+    collector.recordStep({ usage: usage(), stepNumber: 0, finishReason: "stop", content: [] });
+
+    expect(
+      collector.finalizeStream({
+        responseMessage: { id: "assistant-1", role: "assistant", parts: [] },
+        isAborted: false,
+      })?.toolErrors,
+    ).toBeUndefined();
   });
 
   it("logs an error once and finalizes once", () => {

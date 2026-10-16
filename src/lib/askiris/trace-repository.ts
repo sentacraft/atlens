@@ -5,6 +5,12 @@ export const ASKIRIS_TRACE_MAX_RESPONSE_MESSAGE_BYTES = 512 * 1024;
 
 export type AskIrisTraceStatus = "completed" | "aborted" | "error";
 
+export interface AskIrisToolError {
+  step: number;
+  tool: string;
+  error: string;
+}
+
 export interface AskIrisTraceRecord {
   traceId: string;
   // Stable across retries of the same user turn.
@@ -35,6 +41,8 @@ export interface AskIrisTraceRecord {
   stepCount: number;
   toolCallCount: number;
   firstOutputMs?: number;
+  // Thrown by our own tools or by input validation; the UI stream shows only "Stream error".
+  toolErrors?: AskIrisToolError[];
   // Developer traffic, excluded from product analysis.
   internal: boolean;
 }
@@ -133,8 +141,9 @@ export async function writeAskIrisTrace(
         step_count,
         tool_call_count,
         first_output_ms,
-        internal
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        internal,
+        tool_errors_json
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       record.traceId,
@@ -163,6 +172,7 @@ export async function writeAskIrisTrace(
       record.toolCallCount,
       record.firstOutputMs ?? null,
       record.internal ? 1 : 0,
+      record.toolErrors ? JSON.stringify(record.toolErrors) : null,
     )
     .run();
 }
