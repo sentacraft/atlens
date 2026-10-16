@@ -12,8 +12,14 @@ export default function Tagline() {
     setTagline(taglines[Math.floor(Math.random() * taglines.length)]);
   }, [t]);
 
+  // The tagline is picked on the client, so the server renders a blank line of the same height:
+  // without it the line appears after hydration and shifts the centered home hero.
   if (!tagline) {
-    return null;
+    return (
+      <span aria-hidden className="text-[11px] select-none">
+        {"\u00a0"}
+      </span>
+    );
   }
 
   return (
