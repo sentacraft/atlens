@@ -27,6 +27,8 @@ Browse, filter, and compare Fujifilm X-mount lenses — native Fujifilm glass pl
 - **Filter and sort** — multi-axis filtering (focal length, aperture, AF, OIS, weather resistance, specialty tags) combined with flexible sorting
 - **Curated collections** — hand-picked themes (compact primes, budget autofocus, and more), each defined by filter criteria rather than a hand-picked lens list, so the lineup stays current as the catalog grows — for when you don't know exactly what to search for
 - **Side-by-side comparison** of up to 4 lenses
+- **Ask Iris** — an AI lens advisor: describe what you shoot and it searches the catalog, recommends lenses with a reason for each, and lays out specs side by side; signed in, it takes the gear you own into account
+- **Accounts** — save favorite lenses and the gear you own, and keep Ask Iris conversations across devices
 - **Normalized data** — specs from different manufacturers use inconsistent formats and terminology; Atlens maps everything to a consistent schema so comparisons are fair and objective
 - **Pipeline-backed accuracy** — specs come from official manufacturer sources and go through a staged pipeline, reviewed by the maintainer before publishing
 - **Shareable comparison posters**
@@ -45,16 +47,16 @@ It also supports installation as a **Progressive Web App (PWA)**: add it to your
 
 | Layer | Choice |
 |-------|--------|
-| Framework | Next.js (App Router) + TypeScript |
+| Framework | React 19, Next.js (App Router), TypeScript |
 | Runtime & hosting | Cloudflare Workers via OpenNext |
-| Data stores | Cloudflare D1 (Kysely), KV, Analytics Engine |
+| Data stores | Cloudflare D1 (SQLite) via Kysely, KV, Analytics Engine |
 | Auth | Better Auth — Google, email code, anonymous sessions |
 | AI | Vercel AI SDK |
 | Client data | TanStack Query |
 | UI | Tailwind CSS, Base UI, Motion |
 | i18n | next-intl |
 | Validation | Zod |
-| Testing | Vitest, Playwright, promptfoo (Ask Iris behavior) |
+| Testing | Vitest, Playwright, promptfoo (LLM evals for the Ask Iris assistant) |
 
 ## Architecture
 
@@ -104,7 +106,7 @@ flowchart LR
 | `src/messages/` | UI copy per locale |
 | `src/data/` | Lens catalog (written by the pipeline) and hand-authored collections |
 
-**Ask Iris** is an agent loop on the AI SDK with a fixed step budget. Its tools recall lenses by spec, look them up by name or ref, render recommendation cards and spec tables, answer questions about the site from a fact list, and — as a client-side tool — ask a signed-in user for their gear in an in-chat card. A signed-in user's saved gear is added to every turn's context. Conversations live in D1 so they follow the account; every turn leaves a trace for debugging and analytics, and a promptfoo suite grades its behavior against the live endpoint.
+**Ask Iris**, the in-app AI lens advisor, is an agent loop on the AI SDK with a fixed step budget. Its tools recall lenses by spec, look them up by name or ref, render recommendation cards and spec tables, answer questions about the site from a fact list, and — as a client-side tool — ask a signed-in user for their gear in an in-chat card. A signed-in user's saved gear is added to every turn's context. Conversations live in D1 so they follow the account; every turn leaves a trace for debugging and analytics, and a promptfoo suite grades its behavior against the live endpoint.
 
 ## Data Pipeline
 
