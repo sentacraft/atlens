@@ -3,13 +3,13 @@
 import { memo } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Plus, Check, Star } from "lucide-react";
+import { Plus, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "@/i18n/navigation";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
-import { ACTION_PRIMARY_CLS, CARD_SELECTED_BORDER_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
+import { ACTION_PRIMARY_CLS, CARD_SELECTED_BORDER_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
-import { useFavorites } from "@/hooks/useFavorites";
+import FavoriteStarButton from "@/components/lens/FavoriteStarButton";
 import type { Lens } from "@/lib/types";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
 import { useUiHookAttr } from "@/context/TestHookProvider";
@@ -25,10 +25,6 @@ interface Props {
   priority?: boolean;
 }
 
-// Mouse users see the star on hover; touch has no hover, so it stays visible there.
-const FAVORITE_REVEAL_CLS =
-  "pointer-fine:xs:opacity-0 pointer-fine:xs:group-hover:opacity-100 pointer-fine:xs:group-focus-within:opacity-100";
-
 export default memo(function LensCard({
   lens,
   isSelected,
@@ -37,9 +33,6 @@ export default memo(function LensCard({
   priority = false,
 }: Props) {
   const t = useTranslations("LensList");
-  const tActions = useTranslations("LensActions");
-  const favorites = useFavorites();
-  const favorited = favorites.isFavorite(lens.id);
   const tBrand = useTranslations("Brands");
   const hookAttr = useUiHookAttr();
   const equivDisplay = fmt.focalRangeDisplay(fmt.focalEquiv(lens.focalLengthMin, lens.mount), fmt.focalEquiv(lens.focalLengthMax, lens.mount));
@@ -178,24 +171,10 @@ export default memo(function LensCard({
         </div>
       </Link>
 
-      {favorites.enabled && (
-        <button
-          type="button"
-          onClick={() => favorites.toggle(lens.id)}
-          aria-label={favorited ? tActions("unfavorite") : tActions("favorite")}
-          aria-pressed={favorited}
-          className={cn(
-            "absolute top-2.5 right-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full transition-[opacity,background-color,color]",
-            "max-xs:top-1.5 max-xs:right-1.5 max-xs:h-9 max-xs:w-9 max-xs:border-0 max-xs:bg-transparent max-xs:shadow-none max-xs:backdrop-blur-none dark:max-xs:bg-transparent",
-            FROSTED_OVERLAY_CHROME_CLS,
-            favorited
-              ? "text-zinc-900 dark:text-zinc-50"
-              : cn("text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-50 max-xs:text-zinc-500", FAVORITE_REVEAL_CLS),
-          )}
-        >
-          <Star className="h-4 w-4" fill={favorited ? "currentColor" : "none"} />
-        </button>
-      )}
+      <FavoriteStarButton
+        lensId={lens.id}
+        className="absolute top-2.5 right-2.5 max-xs:top-1.5 max-xs:right-1.5 max-xs:h-9 max-xs:w-9 max-xs:border-0 max-xs:bg-transparent max-xs:shadow-none max-xs:backdrop-blur-none dark:max-xs:bg-transparent"
+      />
 
       <button
         type="button"
