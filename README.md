@@ -56,35 +56,38 @@ Lens data ships with the build, so nearly every page is generated once at build 
 ```mermaid
 flowchart LR
   subgraph frontend["Frontend"]
-    SSG["<b>SSG + client islands</b><br/>lens detail · collections · home · about<br/>islands: compare, favorite, share, retailers"]
-    CSR["<b>SSG shell + CSR</b><br/>lens library: full catalog filtered in the browser<br/>profile: account data via TanStack Query"]
-    SSR["<b>SSR + client islands</b><br/>compare (lens IDs in the URL)<br/>Ask Iris (streamed replies)"]
+    SSG["<b>SSG + client islands</b><br/>lens detail · collections · home · about"]
+    CSR["<b>SSG shell + CSR</b><br/>lens library filtered in the browser<br/>profile data via TanStack Query"]
+    SSR["<b>SSR + client islands</b><br/>compare · Ask Iris"]
   end
 
   subgraph backend["Backend · route handlers"]
-    CHAT["/api/chat<br/>Ask Iris agent loop"]
-    ME["/api/me/*<br/>gear · favorites · settings"]
-    AUTH["/api/auth<br/>Better Auth"]
-    FEEDBACK["/api/feedback"]
-    TRACK["/api/track"]
+    ME["<b>/api/me/*</b><br/>gear · favorites · settings"]
+    AUTH["<b>/api/auth</b><br/>Better Auth"]
+    CHAT["<b>/api/chat</b><br/>Ask Iris agent loop"]
+    FEEDBACK["<b>/api/feedback</b>"]
+    TRACK["<b>/api/track</b>"]
   end
 
   subgraph services["Data and services"]
-    LENSDATA[("lenses.json · lenses-gfx.json<br/>bundled at build")]
-    APPDB[("D1 · app<br/>users · conversations · gear<br/>favorites · settings")]
-    TRACES[("D1 · Ask Iris traces")]
-    BUDGET[("KV · Ask Iris token budgets")]
-    LIMITS["Rate-limit bindings"]
-    EVENTS[("Analytics Engine")]
-    LLM["LLM provider"]
-    ISSUES["GitHub Issues<br/>in the pipeline repo"]
+    LENSDATA[("<b>Lens catalog</b><br/>JSON bundled at build")]
+    APPDB[("<b>D1 (SQLite)</b><br/>users · conversations<br/>gear · favorites · settings")]
+    subgraph agent["Agent runtime"]
+      LLM["<b>LLM provider</b>"]
+      TRACES[("<b>D1 (SQLite)</b><br/>agent traces")]
+      BUDGET[("<b>KV</b><br/>token budgets")]
+    end
+    LIMITS["<b>Rate-limit bindings</b>"]
+    ISSUES["<b>GitHub Issues</b>"]
+    EVENTS[("<b>Analytics Engine</b>")]
   end
 
   frontend -->|"rendered from"| LENSDATA
   frontend -->|"client islands call"| backend
-  CHAT --> LLM & APPDB & TRACES & BUDGET & LIMITS
-  FEEDBACK --> LIMITS & ISSUES
-  ME & AUTH --> APPDB
+  ME & AUTH & CHAT --> APPDB
+  CHAT --> agent
+  CHAT & FEEDBACK --> LIMITS
+  FEEDBACK --> ISSUES
   TRACK --> EVENTS
 ```
 
