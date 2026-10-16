@@ -12,7 +12,7 @@ export interface FeaturedCollection {
   statsLabel: string;
 }
 
-/** Featured collections along the bottom of the home hero: four on wide screens, three on phones. */
+/** Featured collections along the bottom of the home hero: four on desktop widths, three below. */
 export default function HomeCollections({
   featured,
   total,
@@ -32,9 +32,9 @@ export default function HomeCollections({
     <WhenMountHasCollections>
       <section className="mx-auto w-full max-w-6xl px-4 sm:px-6">
         <h2 className="mb-2 text-xs font-semibold text-zinc-600 dark:text-zinc-300">{tNav("collections")}</h2>
-        <ul className="grid auto-rows-fr grid-cols-2 gap-2 sm:grid-cols-5 sm:gap-3">
+        <ul className="grid auto-rows-fr grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-5">
           {featured.map(({ collection, previewLens, statsLabel }, index) => (
-            <li key={collection.slug} className={index === 3 ? "hidden sm:grid" : "grid"}>
+            <li key={collection.slug} className={index === 3 ? "hidden lg:grid" : "grid"}>
               <RelatedCollectionCard collection={collection} previewLens={previewLens} locale={locale} statsLabel={statsLabel} density="compact" />
             </li>
           ))}
