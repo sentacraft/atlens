@@ -74,7 +74,7 @@ function historyButton(container: HTMLElement) {
 }
 
 describe("AskIrisChat hydration", () => {
-  // Streaming hydration can reach this page after Nav's AuthControl has already
+  // Streaming hydration can reach this page after Nav's NavMenu has already
   // resolved Better Auth's shared session store. Uses the real auth client, whose
   // React binding must hydrate with the pending session (better-auth#11316, >= 1.7.6).
   it("hydrates cleanly when the session resolves before the page hydrates", async () => {

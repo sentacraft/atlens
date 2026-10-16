@@ -75,6 +75,13 @@ export const UTILITY_BTN_CLS =
   "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 " +
   "dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100 transition-colors";
 
+export const AI_TAG_CLS =
+  "rounded px-1 text-[10px] leading-[14px] font-semibold tracking-wide bg-zinc-900/[0.08] text-zinc-900 dark:bg-zinc-50/10 dark:text-zinc-50";
+
+export const NAV_CAPSULE_CLS =
+  "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-zinc-200 bg-white pr-1 pl-2.5 transition-colors sm:gap-2 sm:pl-3 " +
+  "hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800";
+
 export const POPUP_SURFACE_CLS =
   "rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-900";
 

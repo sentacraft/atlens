@@ -20,13 +20,15 @@
   },
   "Nav": {
     "lenses": "镜头库",
-    "askIris": "AI 选镜头",
+    "askIris": "问 Iris",
     "allLenses": "全部镜头",
     "collections": "主题合集",
     "compare": "对比",
     "about": "关于",
     "getApp": "获取应用",
-    "feedback": "反馈"
+    "feedback": "反馈",
+    "menu": "菜单",
+    "signInHint": "收藏镜头、保存器材、同步对话"
   },
   "Auth": {
     "login": "登录",
@@ -49,7 +51,6 @@
     "useDifferentEmail": "换一个邮箱",
     "genericError": "出了点问题，请稍后再试。",
     "account": "账户",
-    "accountLabel": "打开账户菜单",
     "logout": "退出登录",
     "deleteAccount": "删除账户",
     "deleteTitle": "删除账户？",

@@ -4,11 +4,14 @@ test.describe("account access", () => {
   test("opens the sign-in dialog from the navigation", async ({ page }) => {
     await page.goto("/en/about");
 
-    const login = page.getByRole("button", { name: "Log in", exact: true });
+    const menu = page.getByRole("button", { name: "Menu" });
+    const login = page.getByRole("menuitem", { name: /^Log in/ });
+    await menu.click();
+    await expect(page.getByRole("menuitem", { name: "About" })).toBeVisible();
     await expect(login).toHaveCount(0);
 
     await page.goto("/en/about?testhook=1");
-    await expect(login).toBeVisible();
+    await menu.click();
     await login.click();
 
     const dialog = page.getByRole("dialog", { name: "Sign in to Atlens" });
