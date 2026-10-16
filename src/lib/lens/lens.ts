@@ -279,10 +279,8 @@ export function getAvailableFilterOptions(lenses: Lens[]): AvailableFilterOption
 
 // No fallback to the other locale's link.
 export function getLensUrl(lens: Lens, locale?: string): string | undefined {
-  if (locale === "zh") {
-    return lens.officialLinks?.cn;
-  }
-  return lens.officialLinks?.global;
+  const { cn, global } = lens.officialLinks ?? {};
+  return locale === "zh" ? cn ?? global : global ?? cn;
 }
 
 export const SORT_KEYS = ["focalLength", "maxAperture", "weightG", "length"] as const;

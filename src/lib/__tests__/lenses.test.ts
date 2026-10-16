@@ -723,14 +723,14 @@ describe("getLensUrl", () => {
     expect(getLensUrl(lens, "zh")).toBe("https://example.com/cn-lens");
   });
 
-  it("returns undefined for zh locale when only global link is present (no fallback)", () => {
+  it("falls back to the global link for zh locale when only global link is present", () => {
     const lens = makeLens({ focalLengthMin: 35, focalLengthMax: 35, officialLinks: { global: "https://example.com/global-lens" } });
-    expect(getLensUrl(lens, "zh")).toBeUndefined();
+    expect(getLensUrl(lens, "zh")).toBe("https://example.com/global-lens");
   });
 
-  it("returns undefined for en locale when only cn link is present (no fallback)", () => {
+  it("falls back to the cn link for en locale when only cn link is present", () => {
     const lens = makeLens({ focalLengthMin: 35, focalLengthMax: 35, officialLinks: { cn: "https://example.com/cn-lens" } });
-    expect(getLensUrl(lens, "en")).toBeUndefined();
+    expect(getLensUrl(lens, "en")).toBe("https://example.com/cn-lens");
   });
 
   it("defaults to global when no locale is provided", () => {

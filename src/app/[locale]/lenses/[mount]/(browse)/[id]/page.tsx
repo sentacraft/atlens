@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { FileCheck, Flag } from "lucide-react";
+import { Flag } from "lucide-react";
 import { getLensUrl } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount } from "@/lib/mount";
@@ -34,8 +34,8 @@ import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
 import { buildLensDescription, buildLensProductSchema } from "@/lib/lens/seo";
 import { PriceSection } from "@/components/price/PriceSection";
 import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
-import { aboutPath, browsePath, lensPath } from "@/lib/url/routes";
-import { Link } from "@/i18n/navigation";
+import { browsePath, lensPath } from "@/lib/url/routes";
+import DataSourceBar from "@/components/lens/DataSourceBar";
 import { TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
@@ -280,31 +280,18 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
       <div>
         <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-zinc-200 px-4 py-2.5 text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
-              <span className="inline-flex items-center gap-1.5">
-                <FileCheck className="size-3.5 shrink-0" aria-hidden="true" />
-                {t("sourceLabel")}
-                {url ? (
+            <DataSourceBar
+              className="border-b border-zinc-200 dark:border-zinc-800"
+              source={
+                url ? (
                   <ExternalLink href={url} className={`inline-flex items-center gap-0.5 font-medium ${TEXT_LINK_CLS}`}>
                     {t("sourceSite", { brand: brandName })}
                   </ExternalLink>
                 ) : (
                   <span className="font-medium text-zinc-700 dark:text-zinc-300">{t("sourceSite", { brand: brandName })}</span>
-                )}
-              </span>
-              <span className="inline-flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
-                {t("sourceTrust")}
-                <FieldNotePopover
-                  note={t.rich("sourceNote", {
-                    link: (chunks) => (
-                      <Link href={aboutPath("data-accuracy")} className={TEXT_LINK_CLS}>
-                        {chunks}
-                      </Link>
-                    ),
-                  })}
-                />
-              </span>
-            </div>
+                )
+              }
+            />
             {resolvedGroups.map((group, groupIdx) => (
               <div
                 key={group.label}

@@ -392,6 +392,11 @@
     "tiltMobile": "Tilt",
     "shiftMobile": "Shift"
   },
+  "DataSource": {
+    "label": "参数来源",
+    "trust": "非 AI 生成 · 作者已审核",
+    "note": "这里的参数不是 AI 生成的，取自厂商官网正式发布的资料。AI 只帮忙把官网文字归档成统一格式，不编造数值；每支镜头上线前由作者审核。<link>数据怎么来</link>"
+  },
   "LensDetail": {
     "metaDescPrefix": "{name} 富士 {mount} 卡口{type}镜头规格、参数与横向对比。",
     "metaJoinSpace": "",
@@ -466,10 +471,7 @@
     "addToCompare": "对比",
     "removeFromCompare": "移除",
     "compareFull": "对比列表已满",
-    "sourceLabel": "参数来源",
     "sourceSite": "{brand}官网",
-    "sourceTrust": "非 AI 生成 · 作者已审核",
-    "sourceNote": "这里的参数不是 AI 生成的，取自厂商官网正式发布的资料。AI 只帮忙把官网文字归档成统一格式，不编造数值；每支镜头上线前由作者审核。<link>数据怎么来</link>",
     "reportIssue": "反馈问题",
     "nudgeText": "发现数据有误？",
     "feedbackLink": "告诉我",
@@ -509,7 +511,7 @@
     "scrollChipsRight": "向右滚动",
     "presetCardCta": "立即对比",
     "officialSite": "官方介绍",
-    "sourceCaption": "表中参数均取自各厂商官网，不是 AI 生成的，每支镜头上线前经作者审核。<link>数据怎么来</link>",
+    "sourceAll": "各厂商官网",
     "addLens": "添加镜头",
     "selectFirst": "先添加镜头",
     "addMore": "再添加一支",
