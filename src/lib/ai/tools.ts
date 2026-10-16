@@ -270,16 +270,8 @@ export function buildLensTools(
 
     siteInfo: tool({
       description:
-        "Facts about the Atlens website itself, the only source for answering questions about it. " +
-        "project: author, history, contact, open source and data license, plans. " +
-        "business: pricing, costs, support, ads, affiliate links, independence from manufacturers. " +
-        "data: where specs come from, which lenses are included, coverage counts, update cadence, corrections. " +
-        "prices: where prices come from and how current they are. " +
-        "askIris: what Iris can and cannot do, the AI behind it, training, usage limits, accuracy. " +
-        "account: why and how to sign in, conversation storage, deleting an account. " +
-        "privacy: cookies, analytics, where data is stored. " +
-        "usage: main features and their names, languages, the app, mounts. " +
-        "Ask for every topic the question touches in one call.",
+        "Facts about Atlens and about you — the site, its story, data and prices, what you can do, accounts, privacy — and the only source " +
+        "for answering questions about them. Ask for every topic the question touches in one call.",
       inputSchema: z.object({ topics: z.array(z.enum(SITE_TOPICS)).min(1) }),
       execute: ({ topics }) => ({ topics: siteFacts(topics, locale) }),
     }),
@@ -287,11 +279,9 @@ export function buildLensTools(
     // A client tool: the browser shows the gear card and returns what the user did.
     [ASK_FOR_GEAR]: tool({
       description:
-        "Show the user a card to add the camera bodies and lenses they own, before recommending, " +
-        "as the user-gear note describes. List any lens or body they mentioned so the card can " +
-        "prefill it. The turn then waits for the result: saved " +
-        "(their gear is now in the user-gear note), skipped, or not_signed_in. " +
-        "If skipped or not_signed_in, go on and recommend without their gear, and do not mention the card or that they skipped it.",
+        "Show the user a card to add the camera bodies and lenses they own, before recommending, as the user-gear " +
+        "note describes. List any lens or body they mentioned so the card can prefill it. The turn waits for the " +
+        "result: saved (gear now in the note), skipped, or not_signed_in; if not saved, recommend without their gear.",
       inputSchema: gearRequestInputSchema,
       outputSchema: gearRequestOutputSchema,
     }),
