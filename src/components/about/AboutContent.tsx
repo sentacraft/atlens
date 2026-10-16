@@ -13,6 +13,8 @@ import { isPurchaseLocale } from "@/lib/purchase/links";
 import { donationChannel, KOFI_URL } from "@/lib/support";
 import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 
+const PIPELINE_README_URL = "https://github.com/sentacraft/atlens#data-pipeline";
+
 function Check() {
   return <span className="text-zinc-700 dark:text-zinc-300 text-sm">✓</span>;
 }
@@ -135,14 +137,6 @@ export default async function AboutContent() {
 
   const xCounts = lensCountsByBrand("X", locale);
   const gCounts = lensCountsByBrand("G", locale);
-
-  const pipelineStages = [
-    { badge: "0", label: t("pipeline0Label"), desc: t("pipeline0Desc") },
-    { badge: "1", label: t("pipeline1Label"), desc: t("pipeline1Desc") },
-    { badge: "2", label: t("pipeline2Label"), desc: t("pipeline2Desc") },
-    { badge: "R", label: t("pipelineRLabel"), desc: t("pipelineRDesc") },
-    { badge: "P", label: t("pipelinePLabel"), desc: t("pipelinePDesc") },
-  ];
 
   const ackCredits = [
     {
@@ -268,7 +262,13 @@ export default async function AboutContent() {
         </div>
 
         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-          {t("dataAccuracyIntro")}
+          {t.rich("dataAccuracyIntro", {
+            github: (chunks) => (
+              <a href={PIPELINE_README_URL} target="_blank" rel="noopener noreferrer" className={TEXT_LINK_CLS}>
+                {chunks}
+              </a>
+            ),
+          })}
         </p>
 
         <div className="flex flex-col gap-3 mt-1">
@@ -287,29 +287,6 @@ export default async function AboutContent() {
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3 flex flex-col gap-3">
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-            {t("dataPipelineIntro")}
-          </p>
-          <ol className="flex flex-col gap-2.5">
-            {pipelineStages.map((stage) => (
-              <li key={stage.badge} className="flex items-start gap-3">
-                <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center font-mono text-[10px] font-semibold text-zinc-600 dark:text-zinc-300">
-                  {stage.badge}
-                </span>
-                <div className="min-w-0">
-                  <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
-                    {stage.label}
-                  </span>
-                  <span className="text-xs text-zinc-500 dark:text-zinc-500 ml-2">
-                    {stage.desc}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ol>
         </div>
 
         <p className="text-xs text-zinc-500 dark:text-zinc-500">
@@ -335,7 +312,7 @@ export default async function AboutContent() {
         </div>
 
         <a
-          href="https://github.com/sentacraft/atlens#data-pipeline"
+          href={PIPELINE_README_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="group flex items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/40 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
