@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 import { Drawer } from "@base-ui/react/drawer";
@@ -10,8 +9,6 @@ import { useCurrentPagePath } from "@/hooks/useCurrentPagePath";
 import { Z } from "@/config/ui";
 import { askIrisChatDataQuery } from "@/lib/askiris/chat-data";
 import { cn } from "@/lib/utils";
-
-const SHEET_SNAP_POINTS = [0.75, 1];
 
 /**
  * Ask Iris beside the page: a side panel below the nav on wide screens, which the page makes
@@ -32,7 +29,6 @@ export default function IrisPanel({
   const locale = useLocale();
   const data = useQuery(askIrisChatDataQuery(locale));
   const pagePath = useCurrentPagePath();
-  const [snapPoint, setSnapPoint] = useState<number | string | null>(SHEET_SNAP_POINTS[0]);
 
   const chat = data.data ? (
     <AskIrisChat
@@ -64,21 +60,7 @@ export default function IrisPanel({
   }
 
   return (
-    <Drawer.Root
-      open={shown}
-      onOpenChange={(open) => {
-        if (open) {
-          setSnapPoint(SHEET_SNAP_POINTS[0]);
-        } else {
-          onClose();
-        }
-      }}
-      onOpenChangeComplete={(open) => !open && setSnapPoint(SHEET_SNAP_POINTS[0])}
-      swipeDirection="down"
-      snapPoints={SHEET_SNAP_POINTS}
-      snapPoint={snapPoint}
-      onSnapPointChange={setSnapPoint}
-    >
+    <Drawer.Root open={shown} onOpenChange={(open) => !open && onClose()} swipeDirection="down">
       <Drawer.Portal keepMounted>
         <Drawer.Backdrop
           className={cn(
@@ -86,16 +68,12 @@ export default function IrisPanel({
             Z.fixed,
           )}
         />
-        {/* Snap points are measured against the viewport element, so it has to fill the screen. */}
         <Drawer.Viewport className={cn("fixed inset-0", Z.fixed)}>
           <Drawer.Popup
             aria-label="Iris"
             className={cn(
-              "fixed inset-x-0 bottom-0 flex h-[calc(100svh-var(--safe-inset-top))] flex-col rounded-t-3xl bg-white shadow-2xl ring-1 ring-zinc-200 dark:bg-zinc-950 dark:ring-zinc-800",
-              // The popup is full height and slides down to the snap point; this padding keeps the chat,
-              // composer included, inside the part that is on screen.
-              "pb-[calc(var(--safe-inset-bottom)_+_var(--drawer-snap-point-offset,0px))]",
-              "[transform:translateY(calc(var(--drawer-snap-point-offset,0px)_+_var(--drawer-swipe-movement-y,0px)))] transition-[transform,translate] duration-300 ease-out data-[swiping]:transition-none",
+              "fixed inset-x-0 bottom-0 flex h-[85svh] flex-col rounded-t-3xl bg-white pb-[var(--safe-inset-bottom)] shadow-2xl ring-1 ring-zinc-200 dark:bg-zinc-950 dark:ring-zinc-800",
+              "[transform:translateY(var(--drawer-swipe-movement-y,0px))] transition-[transform,translate] duration-300 ease-out data-[swiping]:transition-none",
               "data-ending-style:translate-y-full data-starting-style:translate-y-full",
             )}
           >
