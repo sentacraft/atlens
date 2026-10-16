@@ -2,7 +2,7 @@
 
 > Formerly X-Glass.
 
-Browse, filter, and compare Fujifilm X-mount lenses — native Fujifilm glass plus a growing set of third-party brands. G-mount (medium format) is also being added.
+Atlens is a lens database and comparison tool for Fujifilm shooters — X mount (APS-C) and G mount (GFX medium format), first-party and third-party. It turns specs scattered across manufacturers' sites into one normalized catalog of 200+ lenses, sourced from official pages by an agentic data pipeline, with an AI assistant, Ask Iris, built on top.
 
 **English**：[atlens.app/en](https://atlens.app/en)
 
@@ -27,7 +27,7 @@ Browse, filter, and compare Fujifilm X-mount lenses — native Fujifilm glass pl
 - **Filter and sort** — multi-axis filtering (focal length, aperture, AF, OIS, weather resistance, specialty tags) combined with flexible sorting
 - **Curated collections** — hand-picked themes (compact primes, budget autofocus, and more), each defined by filter criteria rather than a hand-picked lens list, so the lineup stays current as the catalog grows — for when you don't know exactly what to search for
 - **Side-by-side comparison** of up to 4 lenses
-- **Ask Iris** — an AI lens advisor: describe what you shoot and it searches the catalog, recommends lenses with a reason for each, and lays out specs side by side; signed in, it takes the gear you own into account
+- **Ask Iris** — a built-in AI assistant grounded in the catalog: describe what you shoot and it recommends and compares lenses with a reason for each, takes the gear you own into account when you're signed in, and answers questions about the site
 - **Accounts** — save favorite lenses and the gear you own, and keep Ask Iris conversations across devices
 - **Normalized data** — specs from different manufacturers use inconsistent formats and terminology; Atlens maps everything to a consistent schema so comparisons are fair and objective
 - **Pipeline-backed accuracy** — specs come from official manufacturer sources and go through a staged pipeline, reviewed by the maintainer before publishing
@@ -106,7 +106,7 @@ flowchart LR
 | `src/messages/` | UI copy per locale |
 | `src/data/` | Lens catalog (written by the pipeline) and hand-authored collections |
 
-**Ask Iris**, the in-app AI lens advisor, is an agent loop on the AI SDK with a fixed step budget. Its tools recall lenses by spec, look them up by name or ref, render recommendation cards and spec tables, answer questions about the site from a fact list, and — as a client-side tool — ask a signed-in user for their gear in an in-chat card. A signed-in user's saved gear is added to every turn's context. Conversations live in D1 so they follow the account; every turn leaves a trace for debugging and analytics, and a promptfoo suite grades its behavior against the live endpoint.
+**Ask Iris**, the built-in AI assistant, is an agent loop on the AI SDK with a fixed step budget. Its tools recall lenses by spec, look them up by name or ref, render recommendation cards and spec tables, answer questions about the site from a fact list, and — as a client-side tool — ask a signed-in user for their gear in an in-chat card. A signed-in user's saved gear is added to every turn's context. Conversations live in D1 so they follow the account; every turn leaves a trace for debugging and analytics, and a promptfoo suite grades its behavior against the live endpoint.
 
 ## Data Pipeline
 
