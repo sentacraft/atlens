@@ -5,7 +5,7 @@ Atlens covers both the Fujifilm X mount (APS-C) and the Fujifilm G mount (GFX me
 **What's in the box, and what isn't.**
 - ✅ **Source code** is MIT-licensed. Fork, modify, deploy, ship commercially — all fine. Just keep the `LICENSE` file and copyright notice intact.
 - ✅ **Schema and field design** (`src/lib/types.ts`, Zod schemas, UI taxonomy) are part of the MIT code and free to reuse.
-- ❌ **Lens data** (`src/data/lenses.json` and `src/data/lenses-gfx.json`) is under a separate proprietary license and isn't transferable — please don't copy it or use it as seed data, even for a different mount. See [`LICENSE-DATA`](LICENSE-DATA).
+- ❌ **Lens data** (`src/data/lenses.json` and `src/data/lenses-gfx.json`) is under a separate proprietary license and isn't transferable — please don't copy it or use it as seed data, even for a different mount. See [`LICENSE-DATA`](../LICENSE-DATA).
 - ❌ **The data pipeline** (`atlens-pipeline`) is a separate private repository and isn't part of this fork. You'll need to build your own collection and review workflow.
 
 **Why the pipeline isn't open source (yet).** I get asked this a lot, so to be upfront about it:
