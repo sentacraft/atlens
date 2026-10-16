@@ -117,8 +117,22 @@ describe("writeAskIrisTrace", () => {
       1,
       250,
       0,
+      null,
     );
     expect(run).toHaveBeenCalledOnce();
+  });
+
+  it("stores tool errors as a JSON array", async () => {
+    const run = vi.fn().mockResolvedValue({ success: true });
+    const bind = vi.fn().mockReturnValue({ run });
+    const prepare = vi.fn().mockReturnValue({ bind });
+    const db = { prepare } as unknown as D1Database;
+    const toolErrors = [{ step: 0, tool: "recommendLenses", error: "Error: Unknown lens ref" }];
+
+    await writeAskIrisTrace(db, traceRecord({ toolErrors }));
+
+    expect(prepare).toHaveBeenCalledWith(expect.stringContaining("tool_errors_json"));
+    expect(bind.mock.calls[0].at(-1)).toBe(JSON.stringify(toolErrors));
   });
 
   it("allows an error trace without a response message", async () => {
@@ -164,6 +178,7 @@ describe("writeAskIrisTrace", () => {
       expect.anything(),
       expect.anything(),
       expect.anything(),
+      null,
     );
   });
 });
