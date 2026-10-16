@@ -71,10 +71,10 @@ flowchart LR
 
   subgraph services["Data and services"]
     LENSDATA[("<b>Lens catalog</b><br/>JSON bundled at build")]
-    APPDB[("<b>D1 (SQLite)</b><br/>users · conversations<br/>gear · favorites · settings")]
+    APPDB[("<b>SQLite (D1)</b><br/>users · conversations<br/>gear · favorites · settings")]
     subgraph agent["Agent runtime"]
       LLM["<b>LLM provider</b>"]
-      TRACES[("<b>D1 (SQLite)</b><br/>agent traces")]
+      TRACES[("<b>SQLite (D1)</b><br/>agent traces")]
       BUDGET[("<b>KV</b><br/>token budgets")]
     end
     LIMITS["<b>Rate-limit bindings</b>"]
