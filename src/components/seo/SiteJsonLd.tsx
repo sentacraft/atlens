@@ -26,9 +26,7 @@ export default function SiteJsonLd({ locale }: { locale: string }) {
       name: SITE.name,
       alternateName: BRAND_ALTERNATE_NAMES,
       url: SITE.url,
-      sameAs: [
-        "https://github.com/sentacraft/atlens",
-      ],
+      sameAs: [SITE.repoUrl],
       logo: {
         "@type": "ImageObject",
         url: `${SITE.url}/icons/icon-512.png`,

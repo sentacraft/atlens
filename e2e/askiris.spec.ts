@@ -5,13 +5,13 @@ test.describe("About content", () => {
     await page.goto("/en/about");
 
     const askIrisSection = page.locator("#ask-iris");
-    await expect(askIrisSection).toContainText("conversational lens assistant");
+    await expect(askIrisSection).toContainText("built-in AI assistant");
     await expect(askIrisSection.getByRole("link", { name: "Ask Iris" })).toHaveAttribute(
       "href",
       "/en/askiris",
     );
     await expect(page.locator("#privacy")).toContainText("your messages are sent to an AI provider");
-    await expect(page.locator("#privacy")).toContainText("This site uses Cloudflare Analytics");
+    await expect(page.locator("#privacy")).toContainText("This site uses Cloudflare Web Analytics");
 
     const sectionIds = await page.locator("section").evaluateAll((sections) =>
       sections.map((section) => section.id),
