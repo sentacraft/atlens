@@ -12,7 +12,7 @@ interface Props {
   previewLens: Lens;
   locale: string;
   statsLabel: string;
-  /** compact drops the preview image on phones and keeps the title to two lines, for a half-width grid. */
+  /** compact shows only the title on phones, for a light half-width grid. */
   density: "comfortable" | "compact";
 }
 
@@ -29,7 +29,10 @@ export default function RelatedCollectionCard({
   return (
     <Link
       href={collectionPath(previewLens.mount, collection.slug)}
-      className="flex min-h-[88px] items-stretch overflow-hidden rounded-2xl border border-zinc-200 bg-white transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800/50"
+      className={cn(
+        "flex min-h-[88px] items-stretch overflow-hidden rounded-2xl border border-zinc-200 bg-white transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800/50",
+        compact && "max-sm:min-h-0 max-sm:rounded-xl",
+      )}
     >
       <div
         className={cn(
@@ -48,10 +51,15 @@ export default function RelatedCollectionCard({
         />
       </div>
       <div className="flex min-w-0 flex-1 flex-col justify-center px-3 py-2">
-        <h3 className={cn("text-sm font-semibold leading-snug text-zinc-900 dark:text-zinc-50", compact && "line-clamp-2")}>
+        <h3
+          className={cn(
+            "text-sm font-semibold leading-snug text-zinc-900 dark:text-zinc-50",
+            compact && "line-clamp-2 max-sm:text-[13px] max-sm:font-medium",
+          )}
+        >
           {title}
         </h3>
-        <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+        <p className={cn("mt-0.5 text-xs text-zinc-500 dark:text-zinc-400", compact && "max-sm:hidden")}>
           {statsLabel}
         </p>
       </div>

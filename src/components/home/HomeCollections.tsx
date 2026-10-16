@@ -44,7 +44,7 @@ export default function HomeCollections({
           <li className="grid">
             <Link
               href={collectionsPath(featured[0].previewLens.mount)}
-              className="flex h-full min-h-[88px] items-center justify-center rounded-2xl border border-zinc-200 bg-zinc-50 px-3 text-center text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+              className="flex h-full min-h-[88px] items-center justify-center rounded-2xl max-sm:min-h-0 max-sm:rounded-xl max-sm:py-2 max-sm:text-[13px] border border-zinc-200 bg-zinc-50 px-3 text-center text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
             >
               {t("allCollections", { count: total })} →
             </Link>
