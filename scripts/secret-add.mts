@@ -162,12 +162,25 @@ if (values.local) {
   }
 }
 
-if (values.production) {
-  const result = spawnSync("pnpm", ["exec", "wrangler", "secret", "put", name], {
+function wranglerPut(command: string[]) {
+  const result = spawnSync("pnpm", ["exec", "wrangler", ...command, name!], {
     cwd: repoRoot,
     input: values.production,
-    stdio: ["pipe", "inherit", "inherit"],
+    stdio: ["pipe", "inherit", "pipe"],
+    encoding: "utf8",
   });
+  process.stderr.write(result.stderr);
+  return result;
+}
+
+if (values.production) {
+  let result = wranglerPut(["secret", "put"]);
+  // `secret put` deploys a clone of the latest version, so the API refuses it while that version
+  // is undeployed (e.g. a Workers Builds preview); wrangler's error then names this command.
+  if (result.status !== 0 && result.stderr.includes("wrangler versions secret put")) {
+    console.log("Retrying as `wrangler versions secret put` (new version, not deployed).");
+    result = wranglerPut(["versions", "secret", "put"]);
+  }
   process.exit(result.status ?? 1);
 }
 console.log(`Production not touched. Run \`pnpm run secret:add ${name} --prod --skip-local\` to upload it.`);
