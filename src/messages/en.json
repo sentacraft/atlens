@@ -20,13 +20,15 @@
   },
   "Nav": {
     "lenses": "Browse",
-    "askIris": "Ask AI",
+    "askIris": "Ask Iris",
     "allLenses": "All Lenses",
     "collections": "Collections",
     "compare": "Compare",
     "about": "About",
     "getApp": "Get App",
-    "feedback": "Feedback"
+    "feedback": "Feedback",
+    "menu": "Menu",
+    "signInHint": "Save lenses, gear, and chats"
   },
   "Auth": {
     "login": "Log in",
@@ -49,7 +51,6 @@
     "useDifferentEmail": "Use a different email",
     "genericError": "Something went wrong. Please try again.",
     "account": "Account",
-    "accountLabel": "Open account menu",
     "logout": "Log out",
     "deleteAccount": "Delete account",
     "deleteTitle": "Delete your account?",

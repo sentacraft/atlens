@@ -145,7 +145,7 @@ export default async function LocaleLayout({
               {/* Base UI portals popups to <body>; isolating the page keeps them above any z-index in it (https://base-ui.com/react/overview/quick-start). */}
               <div className="isolate">
                 {TESTHOOK_ALLOWED ? (
-                  // Wraps Nav too: its AuthControl reads the persisted test hook state.
+                  // Wraps Nav too: its NavMenu reads the persisted test hook state.
                   <TestHookProvider>
                     <Nav />
                     <PageFrame>

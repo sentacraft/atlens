@@ -2,7 +2,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { SignInDialogProvider } from "@/context/SignInDialogProvider";
-import AuthControl from "../AuthControl";
+import NavMenu from "../NavMenu";
 
 const session = vi.hoisted(() => ({ current: { data: null as unknown } }));
 const sendVerificationOtp = vi.hoisted(() => vi.fn());
@@ -20,44 +20,68 @@ vi.mock("next-intl", () => ({
     values ? `${key} ${JSON.stringify(values)}` : key,
   useLocale: () => "zh",
 }));
-vi.mock("@/context/TestHookProvider", () => ({ useTestHookEnabled: () => true }));
+const accounts = vi.hoisted(() => ({ enabled: true }));
+vi.mock("@/context/TestHookProvider", () => ({ useTestHookEnabled: () => accounts.enabled }));
 vi.mock("@/i18n/navigation", () => ({
   Link: ({ href, ...props }: { href: string }) => <a href={href} {...props} />,
 }));
 
 afterEach(() => {
+  accounts.enabled = true;
   cleanup();
   vi.useRealTimers();
   vi.clearAllMocks();
 });
 
+const menu = <NavMenu compareHref="/lenses/x/compare" onCompareClick={vi.fn()} showGetApp onFeedback={vi.fn()} />;
+
+async function openMenu() {
+  fireEvent.click(screen.getByRole("button", { name: "menu" }));
+  await screen.findByRole("menu");
+}
+
 function user(isAnonymous: boolean, image: string | null = null) {
   return { user: { id: "u1", name: "Iris", email: "iris@example.test", isAnonymous, image } };
 }
 
-describe("AuthControl", () => {
-  it("offers sign-in to an anonymous user", () => {
+describe("NavMenu", () => {
+  it("offers sign-in first to an anonymous user", async () => {
     session.current = { data: user(true) };
 
-    render(<AuthControl />, { wrapper: SignInDialogProvider });
+    render(menu, { wrapper: SignInDialogProvider });
+    await openMenu();
 
-    expect(screen.getByRole("button", { name: "login" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "accountLabel" })).toBeNull();
+    const items = screen.getAllByRole("menuitem");
+    expect(items[0]).toHaveTextContent("login");
+    expect(screen.queryByRole("menuitem", { name: "profile" })).toBeNull();
   });
 
-  it("shows the account menu to a signed-in user", () => {
+  it("shows the account to a signed-in user, with sign-out last", async () => {
     session.current = { data: user(false) };
 
-    render(<AuthControl />, { wrapper: SignInDialogProvider });
+    render(menu, { wrapper: SignInDialogProvider });
+    await openMenu();
 
-    expect(screen.queryByRole("button", { name: "login" })).toBeNull();
+    expect(screen.queryByText("login")).toBeNull();
+    expect(screen.getAllByRole("menuitem").at(-1)).toHaveTextContent("logout");
+  });
+
+  it("keeps the site pages and feedback, and no account, while accounts are off", async () => {
+    accounts.enabled = false;
+    session.current = { data: user(false) };
+
+    render(menu, { wrapper: SignInDialogProvider });
+    await openMenu();
+
+    const names = screen.getAllByRole("menuitem").map((item) => item.textContent);
+    expect(names).toEqual(["compare", "about", "getApp", "feedback", "GitHub"]);
   });
 
   it("links the account menu to the profile page and no longer offers deletion", async () => {
     session.current = { data: user(false) };
 
-    render(<AuthControl />, { wrapper: SignInDialogProvider });
-    fireEvent.click(screen.getByRole("button", { name: "accountLabel" }));
+    render(menu, { wrapper: SignInDialogProvider });
+    await openMenu();
 
     expect(await screen.findByRole("menuitem", { name: "profile" })).toHaveAttribute("href", "/me");
     expect(screen.queryByRole("menuitem", { name: "deleteAccount" })).toBeNull();
@@ -68,8 +92,9 @@ describe("AuthControl", () => {
     session.current = { data: user(true) };
     sendVerificationOtp.mockResolvedValue({ error: null });
 
-    render(<AuthControl />, { wrapper: SignInDialogProvider });
-    fireEvent.click(screen.getByRole("button", { name: "login" }));
+    render(menu, { wrapper: SignInDialogProvider });
+    await openMenu();
+    fireEvent.click(screen.getByText("login"));
     fireEvent.change(await screen.findByLabelText("emailLabel"), {
       target: { value: "iris@example.test" },
     });
@@ -92,8 +117,9 @@ describe("AuthControl", () => {
       error: { status: 429, message: "Too many requests. Please try again later." },
     });
 
-    render(<AuthControl />, { wrapper: SignInDialogProvider });
-    fireEvent.click(screen.getByRole("button", { name: "login" }));
+    render(menu, { wrapper: SignInDialogProvider });
+    await openMenu();
+    fireEvent.click(screen.getByText("login"));
     fireEvent.change(await screen.findByLabelText("emailLabel"), {
       target: { value: "iris@example.test" },
     });
@@ -105,7 +131,7 @@ describe("AuthControl", () => {
   it("shows the account's picture in the menu button", () => {
     session.current = { data: user(false, "https://lh3.googleusercontent.com/a/photo") };
 
-    const { container } = render(<AuthControl />, { wrapper: SignInDialogProvider });
+    const { container } = render(menu, { wrapper: SignInDialogProvider });
 
     const img = container.querySelector("img");
     expect(img).toHaveAttribute("src", "https://lh3.googleusercontent.com/a/photo");
@@ -115,10 +141,10 @@ describe("AuthControl", () => {
   it("falls back to initials when the picture is missing or fails to load", () => {
     session.current = { data: user(false, "https://lh3.googleusercontent.com/a/broken") };
 
-    const { container } = render(<AuthControl />, { wrapper: SignInDialogProvider });
+    const { container } = render(menu, { wrapper: SignInDialogProvider });
     fireEvent.error(container.querySelector("img")!);
 
     expect(container.querySelector("img")).toBeNull();
-    expect(screen.getByRole("button", { name: "accountLabel" })).toHaveTextContent("I");
+    expect(screen.getByRole("button", { name: "menu" })).toHaveTextContent("I");
   });
 });

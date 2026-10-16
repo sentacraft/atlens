@@ -57,7 +57,14 @@ export default function MountSwitcher() {
         aria-label={t("label")}
         className="group flex items-center gap-0.5 -ml-1 sm:-ml-1.5 px-1 py-0.5 sm:px-1.5 rounded-md font-heading font-medium text-sm sm:text-base tracking-tight whitespace-nowrap text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-all outline-none"
       >
-        <SelectPrimitive.Value />
+        <SelectPrimitive.Value>
+          {(value: Mount) => (
+            <>
+              <span className="sm:hidden">{value}</span>
+              <span className="hidden sm:inline">{options.find((opt) => opt.value === value)?.label}</span>
+            </>
+          )}
+        </SelectPrimitive.Value>
         <SelectPrimitive.Icon
           render={
             <ChevronDown className="h-3 w-3 sm:h-3.5 sm:w-3.5 opacity-60 group-hover:opacity-100 transition-opacity" />

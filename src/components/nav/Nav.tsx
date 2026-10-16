@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Menu } from "@base-ui/react/menu";
-import { EllipsisVertical, Flag, Info, Download, Columns2 } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import Iris from "@/components/iris/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
@@ -15,13 +13,13 @@ import { useNav } from "@/context/NavProvider";
 import { usePwa } from "@/hooks/usePwa";
 import { track } from "@/lib/analytics/analytics";
 import { cn } from "@/lib/utils";
-import { MENU_POPUP_CLS } from "@/config/ui-tokens";
 import MountSwitcher from "@/components/mount/MountSwitcher";
 import FeedbackDialog from "@/components/feedback/FeedbackDialog";
 import GitHubMark from "@/components/logos/GitHubMark";
-import AuthControl from "@/components/auth/AuthControl";
+import NavMenu from "@/components/nav/NavMenu";
+import AiTag from "@/components/iris/AiTag";
 import { SITE } from "@/config/site";
-import { ABOUT_PATH, ASK_IRIS_PATH, GET_APP_PATH, browsePath } from "@/lib/url/routes";
+import { ASK_IRIS_PATH, browsePath } from "@/lib/url/routes";
 import { buildComparePath } from "@/lib/url/compare";
 
 export default function Nav() {
@@ -78,17 +76,10 @@ export default function Nav() {
   const compareHref = buildComparePath(effectiveMount, compareIds);
 
   const linkCls = (active: boolean) =>
-    `text-sm transition-colors px-2 ${
+    `text-sm transition-colors px-1.5 sm:px-2 ${
       active
         ? "text-zinc-900 dark:text-zinc-50 font-medium"
         : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
-    }`;
-
-  const mobileLinkCls = (active: boolean) =>
-    `flex items-center gap-2.5 px-4 py-2.5 text-sm transition-colors ${
-      active
-        ? "text-zinc-900 dark:text-zinc-50 font-medium"
-        : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-900"
     }`;
 
   const isBrowseActive = pathname.startsWith("/lenses") && !pathname.includes("/compare");
@@ -136,103 +127,36 @@ export default function Nav() {
         </div>
 
         <div className="flex items-center gap-1 sm:gap-2">
-          <Link href={browseHref} className={linkCls(isBrowseActive)}>
+          <Link href={browseHref} className={cn(linkCls(isBrowseActive), "whitespace-nowrap")}>
             {t("lenses")}
-          </Link>
-          <Link href={ASK_IRIS_PATH} className={linkCls(isAskIrisActive)}>
-            {t("askIris")}
-            <sup className="relative -top-1.5 ml-0.5 text-[8px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
-              Beta
-            </sup>
           </Link>
           <Link
             href={compareHref}
             onClick={handleCompareLinkClick}
-            className={cn(linkCls(isCompareActive), "hidden sm:inline")}
+            className={cn(linkCls(isCompareActive), "hidden whitespace-nowrap sm:inline")}
           >
             {t("compare")}
           </Link>
-
-          <Link href={ABOUT_PATH} className={cn(linkCls(pathname === ABOUT_PATH), "hidden sm:inline")}>
-            {t("about")}
+          <Link href={ASK_IRIS_PATH} className={cn(linkCls(isAskIrisActive), "inline-flex items-center gap-1.5 whitespace-nowrap")}>
+            {t("askIris")}
+            <AiTag />
           </Link>
-          {!isPwa && (
-            <Link href={GET_APP_PATH} className={cn(linkCls(pathname === GET_APP_PATH), "hidden sm:inline")}>
-              <span className="text-sm">{t("getApp")}</span>
-            </Link>
-          )}
-          <button
-            type="button"
-            onClick={openFeedback}
-            className={cn(linkCls(false), "hidden sm:inline")}
-          >
-            {t("feedback")}
-          </button>
+          <span aria-hidden="true" className="mx-1 hidden h-5 w-px bg-zinc-200 sm:block dark:bg-zinc-800" />
           <a
             href={SITE.repoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:inline text-zinc-900 dark:text-zinc-50 px-1"
-            aria-label="GitHub"
+            className="hidden h-8 items-center gap-1.5 rounded-lg border border-zinc-200 px-2.5 text-[13px] text-zinc-700 transition-colors hover:bg-zinc-50 hover:text-zinc-900 sm:inline-flex dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
           >
-            <GitHubMark />
+            <GitHubMark size={15} />
+            GitHub
           </a>
-          <AuthControl />
-
-          <Menu.Root>
-            <Menu.Trigger
-              aria-label="Menu"
-              className="pl-1 pr-2 py-2 -mr-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors sm:hidden"
-            >
-              <EllipsisVertical className="h-5 w-5" />
-            </Menu.Trigger>
-            <Menu.Portal>
-              <Menu.Positioner side="bottom" align="end" sideOffset={6} className="sm:hidden">
-                <Menu.Popup className={cn(MENU_POPUP_CLS, "w-36")}>
-                  <Menu.LinkItem
-                    render={<Link href={compareHref} />}
-                    onClick={handleCompareLinkClick}
-                    className={mobileLinkCls(isCompareActive)}
-                  >
-                    <Columns2 className="h-4 w-4 shrink-0" />
-                    {t("compare")}
-                  </Menu.LinkItem>
-                  <Menu.LinkItem
-                    render={<Link href={ABOUT_PATH} />}
-                    className={mobileLinkCls(pathname === ABOUT_PATH)}
-                  >
-                    <Info className="h-4 w-4 shrink-0" />
-                    {t("about")}
-                  </Menu.LinkItem>
-                  {!isPwa && (
-                    <Menu.LinkItem
-                      render={<Link href={GET_APP_PATH} />}
-                      className={mobileLinkCls(pathname === GET_APP_PATH)}
-                    >
-                      <Download className="h-4 w-4 shrink-0" />
-                      {t("getApp")}
-                    </Menu.LinkItem>
-                  )}
-                  <Menu.Item
-                    onClick={openFeedback}
-                    className={mobileLinkCls(false)}
-                  >
-                    <Flag className="h-4 w-4 shrink-0" />
-                    {t("feedback")}
-                  </Menu.Item>
-                  <Menu.LinkItem
-                    href={SITE.repoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={mobileLinkCls(false)}
-                  >
-                    <GitHubMark size={16} className="shrink-0" />
-                    GitHub
-                  </Menu.LinkItem>
-                </Menu.Popup>
-              </Menu.Positioner>
-            </Menu.Portal>
-          </Menu.Root>
+          <NavMenu
+            compareHref={compareHref}
+            onCompareClick={handleCompareLinkClick}
+            showGetApp={!isPwa}
+            onFeedback={openFeedback}
+          />
         </div>
       </nav>
     </header>
