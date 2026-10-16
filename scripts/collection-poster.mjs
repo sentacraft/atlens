@@ -10,6 +10,7 @@ import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "playwright";
 import sharp from "sharp";
+import { SITE } from "../src/config/site.ts";
 
 function arg(name, fallback) {
   const i = process.argv.indexOf(`--${name}`);
@@ -19,7 +20,7 @@ function arg(name, fallback) {
 const SLUG = arg("slug", "pancake");
 const LOCALE = arg("locale", "zh");
 const MOUNT = arg("mount", "x");
-const BASE = arg("base", "https://atlens.app");
+const BASE = arg("base", SITE.url);
 const WIDTH = Number(arg("width", "390"));
 const DPR = Number(arg("dpr", "3"));
 const MAX_SEG = Number(arg("max", "1100"));

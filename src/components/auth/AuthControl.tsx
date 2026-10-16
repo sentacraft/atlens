@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { useTestHookEnabled } from "@/context/TestHookProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import Avatar from "@/components/auth/Avatar";
+import { PROFILE_PATH } from "@/lib/url/routes";
 
 export default function AuthControl() {
   const t = useTranslations("Auth");
@@ -69,7 +70,7 @@ export default function AuthControl() {
               </div>
             </div>
             <Menu.Item
-              render={<Link href="/me" />}
+              render={<Link href={PROFILE_PATH} />}
               className={MENU_ITEM_CLS}
             >
               <UserRound className="h-4 w-4 shrink-0" />

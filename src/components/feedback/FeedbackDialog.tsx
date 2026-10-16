@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { SITE } from "@/config/site";
 import { track } from "@/lib/analytics/analytics";
 import { submitFeedback } from "@/lib/feedback/feedback-client";
 import type {
@@ -193,10 +194,10 @@ export default function FeedbackDialog({
               <p className="text-xs text-zinc-400 dark:text-zinc-500">
                 {t("emailLabel")}{" "}
                 <a
-                  href="mailto:me@atlens.app"
+                  href={`mailto:${SITE.contactEmail}`}
                   className="underline underline-offset-2 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
                 >
-                  me@atlens.app
+                  {SITE.contactEmail}
                 </a>
               </p>
             )}

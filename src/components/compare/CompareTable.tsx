@@ -22,8 +22,6 @@ import { deriveSpecialty } from "@/lib/lens/specialty";
 import { useCompare } from "@/context/CompareProvider";
 import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
 import { MAX_COMPARE } from "@/lib/lens/lens";
-import { useEffectiveMount } from "@/hooks/useMountParam";
-import { mountToUrlSegment } from "@/lib/mount";
 import { Link } from "@/i18n/navigation";
 import LensSearchDialog from "@/components/browse/LensSearchDialog";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
@@ -37,19 +35,14 @@ import { useCountryCode } from "@/hooks/useCountryCode";
 import { useIsMobileDevice } from "@/hooks/useViewport";
 import { pickPriceEntry } from "@/lib/lens/pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
+import { lensPath } from "@/lib/url/routes";
 
-function LensHeaderContent({
-  lens,
-  mountSegment,
-}: {
-  lens: Lens;
-  mountSegment: string;
-}) {
+function LensHeaderContent({ lens }: { lens: Lens }) {
   const tBrand = useTranslations("Brands");
 
   return (
     <Link
-      href={`/lenses/${mountSegment}/${lens.id}`}
+      href={lensPath(lens)}
       className="group/link flex flex-1 flex-col items-center"
     >
       <div className="mb-1 flex w-full max-w-[80px] items-center justify-center overflow-hidden rounded-xl bg-zinc-50/70 p-1.5 sm:mb-2 sm:max-w-[160px] sm:p-3 dark:bg-zinc-900/50">
@@ -81,7 +74,6 @@ function LensHeaderContent({
 
 function LensHeader({
   lens,
-  mountSegment,
   removeLabel,
   shiftLeftLabel,
   shiftRightLabel,
@@ -92,7 +84,6 @@ function LensHeader({
   onShiftRight,
 }: {
   lens: Lens;
-  mountSegment: string;
   removeLabel: string;
   shiftLeftLabel: string;
   shiftRightLabel: string;
@@ -136,7 +127,7 @@ function LensHeader({
           </div>
         </div>
         <div className="mt-1 flex flex-1 flex-col text-center sm:mt-0">
-          <LensHeaderContent lens={lens} mountSegment={mountSegment} />
+          <LensHeaderContent lens={lens} />
         </div>
 
       </div>
@@ -186,8 +177,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
   const countryCode = useCountryCode();
   const isMobileDevice = useIsMobileDevice();
   const { compareIds, reorder, remove } = useCompare();
-  const mount = useEffectiveMount();
-  const mountSegment = mountToUrlSegment(mount);
   const orderedLenses = compareIds
     .map((id) => allLenses.find((lens) => lens.id === id))
     .filter((lens): lens is Lens => lens !== undefined);
@@ -344,7 +333,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                   {lensSubtitleLine(tBrand(lens.brand), lens.series)}
                 </p>
                 <Link
-                  href={`/lenses/${mountSegment}/${lens.id}`}
+                  href={lensPath(lens)}
                   className="block truncate text-xs font-semibold text-zinc-900 hover:text-zinc-600 dark:text-zinc-50 dark:hover:text-zinc-300"
                 >
                   {lens.model}
@@ -389,7 +378,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
               <LensHeader
                 key={lens.id}
                 lens={lens}
-                mountSegment={mountSegment}
                 removeLabel={t("removeLens", { model: lensDisplayName(tBrand(lens.brand), lens.series, lens.model) })}
                 shiftLeftLabel={t("shiftLeft")}
                 shiftRightLabel={t("shiftRight")}

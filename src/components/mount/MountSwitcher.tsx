@@ -6,11 +6,11 @@ import { Select as SelectPrimitive } from "@base-ui/react/select";
 import { useRouter } from "@/i18n/navigation";
 import { useMountParam, useEffectiveMount } from "@/hooks/useMountParam";
 import { useMountPreference } from "@/context/MountPreferenceProvider";
-import { mountToUrlSegment } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
 import { track } from "@/lib/analytics/analytics";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem } from "@/components/ui/select";
+import { browsePath } from "@/lib/url/routes";
 
 const GFX_BETA_NOTICED_KEY = "gfx-beta-noticed";
 
@@ -43,7 +43,7 @@ export default function MountSwitcher() {
     }
     setPreference(value);
     if (urlMount !== null) {
-      router.push(`/lenses/${mountToUrlSegment(value)}/browse`);
+      router.push(browsePath(value));
     }
   };
 

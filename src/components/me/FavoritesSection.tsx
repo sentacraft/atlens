@@ -7,11 +7,11 @@ import { Link } from "@/i18n/navigation";
 import type { LensSummary } from "@/lib/lens/data";
 import { getLensImageUrl } from "@/lib/lens/image";
 import { equivalentFocal } from "@/lib/me/coverage";
-import { mountToUrlSegment } from "@/lib/mount";
 import { ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { useFavorites } from "@/hooks/useFavorites";
 import { LensSilhouette } from "@/components/ui/lens-silhouette";
+import { lensPath } from "@/lib/url/routes";
 
 function equivalentRange(lens: LensSummary): string {
   const min = equivalentFocal(lens.focalLengthMin, lens.mount);
@@ -60,7 +60,7 @@ export default function FavoritesSection({
                   {tBrand(lens.brand)}
                 </div>
                 <Link
-                  href={`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`}
+                  href={lensPath(lens)}
                   className="block truncate text-sm font-semibold text-zinc-900 after:absolute after:inset-0 after:content-[''] dark:text-zinc-100"
                 >
                   {lens.model}

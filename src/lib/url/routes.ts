@@ -1,0 +1,34 @@
+import type { Mount } from "@/lib/types";
+import { mountToUrlSegment } from "@/lib/mount";
+
+// Locale-free paths: next-intl's <Link> and router add the locale prefix.
+
+export const ASK_IRIS_PATH = "/askiris";
+export const GET_APP_PATH = "/get";
+export const RECENTLY_ADDED_PATH = "/recently-added";
+export const ABOUT_PATH = "/about";
+export const PROFILE_PATH = "/me";
+
+export function aboutPath(section?: "coverage"): string {
+  return section ? `${ABOUT_PATH}#${section}` : ABOUT_PATH;
+}
+
+export function profilePath(section?: "favorites" | "gear"): string {
+  return section ? `${PROFILE_PATH}#${section}` : PROFILE_PATH;
+}
+
+export function browsePath(mount: Mount): string {
+  return `/lenses/${mountToUrlSegment(mount)}/browse`;
+}
+
+export function collectionsPath(mount: Mount): string {
+  return `/lenses/${mountToUrlSegment(mount)}/collections`;
+}
+
+export function collectionPath(mount: Mount, slug: string): string {
+  return `${collectionsPath(mount)}/${slug}`;
+}
+
+export function lensPath(lens: { mount: Mount; id: string }): string {
+  return `/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`;
+}

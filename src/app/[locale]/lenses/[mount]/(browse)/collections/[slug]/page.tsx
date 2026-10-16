@@ -20,6 +20,7 @@ import BackToTopButton from "@/components/nav/BackToTopButton";
 import { ShareButton } from "@/components/share/ShareButton";
 import Breadcrumb from "@/components/nav/Breadcrumb";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
+import { browsePath, collectionPath, collectionsPath, lensPath } from "@/lib/url/routes";
 
 type Params = Promise<{ locale: string; mount: string; slug: string }>;
 
@@ -99,10 +100,10 @@ export default async function CollectionPage({
   const itemListSchema = buildCollectionItemListSchema({
     name: title,
     description,
-    url: `${SITE.url}/${locale}/lenses/${mount}/collections/${slug}`,
+    url: `${SITE.url}/${locale}${collectionPath(resolvedMount, slug)}`,
     items: lenses.map((lens) => ({
       name: lensDisplayName(tBrand(lens.brand), lens.series, lens.model),
-      url: `${SITE.url}/${locale}/lenses/${mount}/${lens.id}`,
+      url: `${SITE.url}/${locale}${lensPath(lens)}`,
     })),
   });
 
@@ -114,8 +115,8 @@ export default async function CollectionPage({
           <div className="mb-4 flex items-center justify-between gap-3">
             <Breadcrumb
               segments={[
-                { label: tNav("lenses"), href: `/lenses/${mount}/browse` },
-                { label: t("breadcrumbCollections"), href: `/lenses/${mount}/collections` },
+                { label: tNav("lenses"), href: browsePath(resolvedMount) },
+                { label: t("breadcrumbCollections"), href: collectionsPath(resolvedMount) },
               ]}
               current={title}
             />
@@ -157,7 +158,7 @@ export default async function CollectionPage({
               {t("relatedCollections")}
             </h2>
             <Link
-              href={`/lenses/${mount}/collections`}
+              href={collectionsPath(resolvedMount)}
               className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
             >
               {t("viewAllCollections")} →
@@ -177,7 +178,7 @@ export default async function CollectionPage({
           </ul>
           <div className="mt-6 flex justify-center border-t border-zinc-100 pt-5 dark:border-zinc-800">
             <Link
-              href={`/lenses/${mount}/browse`}
+              href={browsePath(resolvedMount)}
               className={`rounded-xl ${ACTION_ESCAPE_CLS}`}
             >
               <span>{t("browseAllPill", { count: mountLenses.length })}</span>

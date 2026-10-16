@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import type { Lens } from "@/lib/types";
 import type { LensCollection } from "@/lib/collections";
+import { collectionPath } from "@/lib/url/routes";
 
 interface Props {
   collection: LensCollection;
@@ -22,7 +23,7 @@ export default function RelatedCollectionCard({
 
   return (
     <Link
-      href={`/lenses/x/collections/${collection.slug}`}
+      href={collectionPath(previewLens.mount, collection.slug)}
       className="flex min-h-[88px] items-stretch overflow-hidden rounded-2xl border border-zinc-200 bg-white transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800/50"
     >
       <div className="relative w-16 shrink-0 border-r border-zinc-100 bg-zinc-50/40 dark:border-zinc-800 dark:bg-zinc-900/40">

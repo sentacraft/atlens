@@ -4,6 +4,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { useEffectiveMount } from "@/hooks/useMountParam";
+import { RECENTLY_ADDED_PATH } from "@/lib/url/routes";
 
 interface MountStats {
   lensCount: number;
@@ -40,7 +41,7 @@ export default function DataInfo({ mountStats, lastAddedAt }: DataInfoProps) {
         {h("dataSnapshotCount", { count: lensCount, brands: brandCount })}
       </p>
       <Link
-        href="/recently-added"
+        href={RECENTLY_ADDED_PATH}
         className="inline-flex items-center gap-1 text-[11px] tracking-wider font-mono text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
       >
         <Sparkles className="size-3" />

@@ -1,7 +1,11 @@
 // No Next.js imports: scripts consume this file.
 
 export interface SiteConfig {
+  /** The production domain, without scheme. */
+  host: string;
   url: string;
+  /** The public contact address. */
+  contactEmail: string;
   /** The public source repository. */
   repoUrl: string;
   /** The README section that documents the data pipeline. */
@@ -14,10 +18,13 @@ export interface SiteConfig {
   display: "standalone" | "minimal-ui" | "fullscreen" | "browser";
 }
 
+const HOST = "atlens.app";
 const REPO_URL = "https://github.com/sentacraft/atlens";
 
 export const SITE: SiteConfig = {
-  url: "https://atlens.app",
+  host: HOST,
+  url: `https://${HOST}`,
+  contactEmail: `me@${HOST}`,
   repoUrl: REPO_URL,
   pipelineDocUrl: `${REPO_URL}#data-pipeline`,
   name: "Atlens",

@@ -37,6 +37,8 @@ params are named, parsed, and written in one module under `src/lib/url/`.
 
 Rate limits go through `src/lib/rate-limit.ts`, which lists every limit the app enforces.
 
+Internal page paths come from `src/lib/url/routes.ts` (and `buildComparePath` in `src/lib/url/compare.ts`); the site's domain, repository, and contact address come from `SITE` in `src/config/site.ts`. Don't spell them out in components.
+
 Each exported route handler under `src/app/api/` carries a one-line JSDoc: what it does, who may
 call it, and its main error statuses. `docs/api.md` is generated from them, and the build fails
 when it is stale. A request body or payload shared by a client module and its route is one Zod
