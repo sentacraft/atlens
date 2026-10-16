@@ -19,6 +19,7 @@ import { agentModelInfo } from "@/lib/ai/model";
 import { CompareProvider } from "@/context/CompareProvider";
 import { MountPreferenceProvider } from "@/context/MountPreferenceProvider";
 import { NavProvider } from "@/context/NavProvider";
+import { IrisPanelProvider } from "@/context/IrisPanelProvider";
 import { SignInDialogProvider } from "@/context/SignInDialogProvider";
 import { TestHookProvider } from "@/context/TestHookProvider";
 import { TESTHOOK_ALLOWED } from "@/lib/testhook";
@@ -101,7 +102,7 @@ export function generateStaticParams() {
 
 function PageFrame({ children }: { children: ReactNode }) {
   return (
-    <div className="pt-[var(--nav-height)] pb-[var(--safe-inset-bottom)] min-h-svh">
+    <div className="pt-[var(--nav-height)] pb-[var(--safe-inset-bottom)] pr-[var(--iris-panel-width,0px)] min-h-svh">
       {children}
     </div>
   );
@@ -137,6 +138,7 @@ export default async function LocaleLayout({
           <CompareProvider>
           <SignInDialogProvider>
             <NavProvider>
+            <IrisPanelProvider>
               <ConsoleEgg version={meta.version} lensCount={meta.lensCount} brandCount={brandCount} />
               {/* Redaction uses useSearchParams, which would force a CSR bailout on prerendered pages. */}
               <Suspense fallback={null}>
@@ -160,6 +162,7 @@ export default async function LocaleLayout({
                   </>
                 )}
               </div>
+            </IrisPanelProvider>
             </NavProvider>
           </SignInDialogProvider>
           </CompareProvider>

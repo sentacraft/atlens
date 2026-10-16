@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
+import { useOpenIris } from "@/context/IrisPanelProvider";
 import AiTag from "@/components/iris/AiTag";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import ExampleQuestion from "@/components/askiris/ExampleQuestion";
@@ -13,7 +14,6 @@ import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useBreakpoint } from "@/hooks/useViewport";
 import { cn } from "@/lib/utils";
-import { askIrisHandoffPath } from "@/lib/url/askiris";
 import { ASK_IRIS_PATH, browsePath } from "@/lib/url/routes";
 
 const PRIMARY_CLS = `inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-medium ${ACTION_PRIMARY_CLS}`;
@@ -27,7 +27,7 @@ export default function HomeHeroActions() {
   const t = useTranslations("Home");
   const tNav = useTranslations("Nav");
   const mount = useEffectiveMount();
-  const router = useRouter();
+  const openIris = useOpenIris();
   const wide = useBreakpoint("sm");
   const { focused: expanded, setFocused: setExpanded } = useHomeIrisFocus();
   const [draft, setDraft] = useState("");
@@ -66,7 +66,7 @@ export default function HomeHeroActions() {
     const trimmed = question.trim();
     if (trimmed) {
       setExpanded(false);
-      router.push(askIrisHandoffPath(trimmed));
+      openIris({ question: trimmed });
     }
   }
 

@@ -6,6 +6,11 @@ export const ASKIRIS_PARAMS = {
   conversation: "conversation",
 } as const;
 
+/** Opens a conversation on the Ask Iris page. */
+export function askIrisConversationPath(conversationId: string): string {
+  return `${ASK_IRIS_PATH}?${new URLSearchParams({ [ASKIRIS_PARAMS.conversation]: conversationId })}`;
+}
+
 /** Opens Ask Iris and sends `query` as the first message. */
 export function askIrisHandoffPath(query: string): string {
   return `${ASK_IRIS_PATH}?${new URLSearchParams({ [ASKIRIS_PARAMS.query]: query })}`;
@@ -53,6 +58,25 @@ export function writeConversationParam(
     window.history.replaceState(null, "", url.toString());
   }
 }
+
+/** Where a chat keeps the open conversation: the address bar on the Ask Iris page, nowhere in the panel. */
+export interface ConversationLocation {
+  read(): string | null;
+  write(conversationId: string | null, mode: "push" | "replace"): void;
+  followsHistory: boolean;
+}
+
+export const URL_CONVERSATION_LOCATION: ConversationLocation = {
+  read: readConversationParam,
+  write: writeConversationParam,
+  followsHistory: true,
+};
+
+export const DETACHED_CONVERSATION_LOCATION: ConversationLocation = {
+  read: () => null,
+  write: () => {},
+  followsHistory: false,
+};
 
 export function clearEntryParams(): void {
   const url = new URL(window.location.href);
