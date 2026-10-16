@@ -6,7 +6,7 @@ import { buildLensTools } from "../tools";
 // reject the request outright rather than degrading — a `z.tuple()` in one parameter took
 // every Gemini model off the table until it was found. These are the constructs Zod emits
 // that that subset has no room for, checked on the shape actually sent to the provider.
-const tools = buildLensTools("X", "zh", (brand) => brand);
+const tools = buildLensTools("X", "zh", (brand) => brand, async () => null);
 
 function findUnportable(node: unknown, path: string, found: string[]): void {
   if (!node || typeof node !== "object") {

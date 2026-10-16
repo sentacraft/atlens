@@ -18,13 +18,16 @@ import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
 import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
 import { SKILL_NAMES, readSkill } from "@/lib/ai/skills";
+import { favoritesOnMount } from "@/lib/ai/favorites";
 
 const RECALL_LIMIT = 20;
 
+/** `readFavorites` resolves to the user's favorite lens ids, newest first, or null for a guest. */
 export function buildLensTools(
   mount: Mount,
   locale: string,
   tBrand: (brand: string) => string,
+  readFavorites: () => Promise<string[] | null>,
 ) {
   // Turn-scoped: a lens recalled only in an earlier turn must be looked up again.
   const recalledRefs = new Set<string>();
@@ -173,6 +176,25 @@ export function buildLensTools(
       },
     }),
 
+    myFavorites: tool({
+      description:
+        "The lenses the user saved as favorites, newest first, on the current mount. Call it when the user " +
+        "refers to lenses they favorited or saved. The refs work with every other tool, like a recall result.",
+      inputSchema: z.object({}),
+      execute: async () => {
+        const ids = await readFavorites();
+        if (ids === null) {
+          return { status: "not_signed_in" as const };
+        }
+        const { lenses, otherMounts } = favoritesOnMount(ids, mount, locale);
+        const results = lenses.slice(0, RECALL_LIMIT).map((lens) => toRecalled(resolveLens(lens, locale, tBrand)));
+        for (const lens of results) {
+          recalledRefs.add(lens.ref);
+        }
+        return { status: "ok" as const, results, total: lenses.length, otherMounts };
+      },
+    }),
+
     lensDetails: tool({
       description:
         "Return the full spec record for lenses already in hand, by ref — every field the " +
@@ -185,7 +207,7 @@ export function buildLensTools(
           .array(z.string())
           .min(1)
           .max(6)
-          .describe("Lens refs, each from a prior queryLenses/searchLensByName result."),
+          .describe("Lens refs, each from a prior queryLenses/searchLensByName/myFavorites result."),
       }),
       execute: ({ refs }) => {
         const byRef = buildRefIndex(getLensesByMount(mount, locale));
@@ -193,7 +215,7 @@ export function buildLensTools(
           lenses: refs.map((ref) => {
             if (!recalledRefs.has(ref)) {
               throw new Error(
-                `Lens ref "${ref}" was not returned by any queryLenses/searchLensByName call ` +
+                `Lens ref "${ref}" was not returned by any queryLenses/searchLensByName/myFavorites call ` +
                   `this turn. Look it up first, and pass the ref exactly as it appears.`,
               );
             }
@@ -210,7 +232,7 @@ export function buildLensTools(
     recommendLenses: tool({
       description:
         "Present picks as a grid of recommendation cards (up to 6, ordered best-first). Pass each " +
-        "lens's ref from a prior queryLenses/searchLensByName result and its reason, which is " +
+        "lens's ref from a prior queryLenses/searchLensByName/myFavorites result and its reason, which is " +
         "shown on the lens's card. Call it once per group.",
       inputSchema: z.object({
         picks: z
@@ -242,7 +264,7 @@ export function buildLensTools(
     listLenses: tool({
       description:
         "Lay out already-recalled lenses as a spec table; their names link to each lens's " +
-        "page. Pass refs from a prior queryLenses/searchLensByName result.",
+        "page. Pass refs from a prior queryLenses/searchLensByName/myFavorites result.",
       inputSchema: z.object({
         refs: z
           .array(z.string())

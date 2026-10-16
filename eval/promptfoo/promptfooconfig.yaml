@@ -802,7 +802,7 @@ tests:
         metric: site
         provider: *behavior_grader
         value: >-
-          Iris's facts say it cannot yet see the page the user is on, read their favorites,
+          Iris's facts say it cannot yet see the page the user is on,
           remember other conversations beyond saved gear, give live prices, place orders, or
           send feedback for them. The reply must not claim any of those abilities, and should
           mention at least some of its limits.
@@ -855,6 +855,32 @@ tests:
       - type: javascript
         metric: links
         value: "context.metadata.compareLinks.some((refs) => refs.length === 2) && !/https?:\\/\\//.test(output)"
+
+  # Favorites: Iris reads a signed-in user's favorites through myFavorites.
+  - description: favorites-compare
+    vars:
+      mount: X
+      locale: zh
+      favorites: [fujifilm-xf-23mmf14-r-lm-wr-x, fujifilm-xf-33mmf14-r-lm-wr-x, viltrox-af-27mm-f12-pro-x]
+      dialog:
+        turns:
+          - "帮我比较一下我收藏的那几支镜头，哪支更适合扫街？"
+    assert:
+      - type: javascript
+        metric: favorites
+        value: "context.metadata.toolsCalled.includes('myFavorites') && context.metadata.linkIds.length + context.metadata.picks.length + context.metadata.tables.length > 0"
+
+  - description: favorites-guest
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "我收藏的镜头里哪支最轻？"
+    assert:
+      - type: javascript
+        metric: favorites
+        value: "context.metadata.toolsCalled.includes('myFavorites') && /\\]\\(action:signIn\\)/.test(output)"
 
   # Terms: spec conventions and model codes come from the terms skill; general concepts from the model.
   - description: term-min-focus-distance

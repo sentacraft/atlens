@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { buildLensTools } from "../tools";
 
-const tools = buildLensTools("X", "zh", (brand) => brand);
+const tools = buildLensTools("X", "zh", (brand) => brand, async () => null);
 
 // The AI SDK types `execute` as optional and passes call options every tool here ignores.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,7 +35,7 @@ describe("a recall tool's gate accepts exactly what it returned", () => {
     ["queryLenses", { type: "prime" }, (out: { matches: { ref: string }[] }) => out.matches],
     ["searchLensByName", { query: "35" }, (out: { results: { ref: string }[] }) => out.results],
   ])("%s", async (name, input, pick) => {
-    const tools = buildLensTools("X", "zh", (brand) => brand);
+    const tools = buildLensTools("X", "zh", (brand) => brand, async () => null);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const refs = pick(await run((tools as any)[name], input)).map((lens) => lens.ref);
     expect(refs.length).toBeGreaterThan(0);
@@ -79,5 +79,35 @@ describe("lensDetails hands the model refs, never ids", () => {
         "internalFocusing",
       ]),
     );
+  });
+});
+
+describe("myFavorites", () => {
+  const X_FAVORITES = ["fujifilm-xf-23mmf14-r-lm-wr-x", "fujifilm-xf-33mmf14-r-lm-wr-x"];
+  const G_FAVORITE = "fujifilm-gf-45mmf28-r-wr-g";
+
+  it("tells a guest to sign in", async () => {
+    expect(await run(tools.myFavorites, {})).toEqual({ status: "not_signed_in" });
+  });
+
+  it("returns the current mount's favorites in order, counts the rest, and opens the gate for their refs", async () => {
+    const withFavorites = buildLensTools("X", "zh", (brand) => brand, async () => [
+      ...X_FAVORITES,
+      G_FAVORITE,
+      "no-such-lens",
+    ]);
+    const out = await run(withFavorites.myFavorites, {});
+    expect(out.status).toBe("ok");
+    expect(out.total).toBe(2);
+    expect(out.otherMounts).toEqual([{ mount: "G", count: 1 }]);
+    const refs = out.results.map((lens: { ref: string }) => lens.ref);
+    const details = await run(withFavorites.lensDetails, { refs });
+    expect(details.lenses.map((lens: { name: string }) => lens.name)).toEqual([
+      expect.stringContaining("23mm"),
+      expect.stringContaining("33mm"),
+    ]);
+    const found: string[] = [];
+    idsIn(out, "out", found);
+    expect(found).toEqual([]);
   });
 });
