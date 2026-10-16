@@ -4,7 +4,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import HomeHeroActions from "../HomeHeroActions";
 import { HomeIrisStage } from "../HomeIrisStage";
 
-const push = vi.fn();
+const openIris = vi.fn();
 const wide = vi.hoisted(() => ({ value: true }));
 
 vi.mock("next-intl", () => ({
@@ -17,14 +17,14 @@ vi.mock("@/i18n/navigation", () => ({
       {children}
     </a>
   ),
-  useRouter: () => ({ push }),
 }));
+vi.mock("@/context/IrisPanelProvider", () => ({ useOpenIris: () => openIris }));
 vi.mock("@/hooks/useMountParam", () => ({ useEffectiveMount: () => "X" }));
 vi.mock("@/hooks/useViewport", () => ({ useBreakpoint: () => wide.value }));
 
 afterEach(() => {
   cleanup();
-  push.mockClear();
+  openIris.mockClear();
   wide.value = true;
 });
 
@@ -46,12 +46,12 @@ describe("HomeHeroActions", () => {
     expect(screen.getByRole("button", { name: /askIris/ })).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("hands an example over to Ask Iris as the first message", () => {
+  it("hands an example to Ask Iris as a question to send", () => {
     renderActions();
     fireEvent.click(screen.getByRole("button", { name: /askIris/ }));
     fireEvent.click(screen.getByRole("button", { name: "A pancake lens that fits in a pocket" }));
 
-    expect(push).toHaveBeenCalledWith("/askiris?q=A+pancake+lens+that+fits+in+a+pocket");
+    expect(openIris).toHaveBeenCalledWith({ question: "A pancake lens that fits in a pocket" });
   });
 
   it("links straight to Ask Iris on a phone", () => {

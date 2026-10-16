@@ -165,6 +165,8 @@
     "noFavorites": "No favorites yet. Tap the star on a lens card or detail page."
   },
   "AskIris": {
+    "fullScreen": "Open full screen",
+    "closePanel": "Close",
     "linkDataLicense": "Data license",
     "heading": "Hi, I'm Iris<beta></beta>",
     "subtitle": "Your personal lens advisor — describe your shoot in plain words, and I'll match it precisely.",

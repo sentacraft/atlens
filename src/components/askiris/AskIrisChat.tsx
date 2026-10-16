@@ -17,7 +17,14 @@ import { ChatLinkProvider } from "@/components/askiris/ChatLinkContext";
 import type { ChatLinkTargets } from "@/lib/askiris/inline-links";
 import type { LensSummary } from "@/lib/lens/data";
 import { ASK_FOR_GEAR } from "@/lib/ai/gear-request";
-import { clearEntryParams, type AskIrisEntry } from "@/lib/url/askiris";
+import { ASK_IRIS_PATH as ASK_IRIS_FULL_PATH } from "@/lib/url/routes";
+import {
+  askIrisConversationPath,
+  clearEntryParams,
+  DETACHED_CONVERSATION_LOCATION,
+  URL_CONVERSATION_LOCATION,
+  type AskIrisEntry,
+} from "@/lib/url/askiris";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
@@ -32,8 +39,10 @@ import {
   DialogPopup,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ACTION_PRIMARY_CLS, ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
-import { History, Plus } from "lucide-react";
+import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
+import { History, Maximize2, Plus, X } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import AiTag from "@/components/iris/AiTag";
 import ConversationHistory from "@/components/askiris/ConversationHistory";
 import {
   askIrisMessageMetadataSchema,
@@ -50,18 +59,34 @@ type ConversationSwitch = { kind: "select"; id: string } | { kind: "new" };
 
 const TOP_BAR_BTN_CLS = cn(ICON_NAV_BTN_CLS, "h-9 gap-1.5 px-2.5 text-sm");
 
-const SHELL_CLS =
-  "mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4";
+const SHELL_CLS = {
+  page: "mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4",
+  panel: "flex h-full w-full flex-col px-4",
+};
+
+/** A question sent in from outside the panel; a new `id` sends it again. */
+export interface IrisPanelRequest {
+  id: number;
+  question: string;
+}
+
+/** Where the chat lives: the Ask Iris page, or the side panel that follows the user across pages. */
+export type AskIrisShell =
+  | { variant: "page"; entry: AskIrisEntry }
+  | { variant: "panel"; request: IrisPanelRequest | null; onClose: () => void };
+
+const NEW_ENTRY: AskIrisEntry = { kind: "new" };
 
 export default function AskIrisChat({
-  entry,
+  shell,
   linkTargets,
   lenses,
 }: {
-  entry: AskIrisEntry;
+  shell: AskIrisShell;
   linkTargets: ChatLinkTargets;
   lenses: LensSummary[];
 }) {
+  const entry = shell.variant === "page" ? shell.entry : NEW_ENTRY;
   const initialQuery = entry.kind === "handoff" ? entry.query : undefined;
   const t = useTranslations("AskIris");
   const locale = useLocale();
@@ -86,6 +111,7 @@ export default function AskIrisChat({
         toast.error(t("conversationLoadFailed"));
       }
     },
+    location: shell.variant === "page" ? URL_CONVERSATION_LOCATION : DETACHED_CONVERSATION_LOCATION,
   });
   const { conversationId } = conversation;
   // Unthrottled, per-chunk re-renders trip React's update-depth limit.
@@ -107,6 +133,7 @@ export default function AskIrisChat({
     turnFailed: status === "error",
     historyChanged: messages.at(-1)?.metadata?.historyChanged === true,
     setMessages,
+    location: shell.variant === "page" ? URL_CONVERSATION_LOCATION : DETACHED_CONVERSATION_LOCATION,
   });
   const errorKind = status === "error" ? classifyError(error) : null;
   const turnBody = { mount, locale };
@@ -154,6 +181,24 @@ export default function AskIrisChat({
     clearEntryParams();
     submitInitialQuery(initialQuery);
   }, [initialQuery]);
+
+  // While a reply is being written, an incoming question waits in the input instead.
+  const receiveRequest = useEffectEvent((question: string) => {
+    if (isBusy) {
+      setInput(question);
+    } else {
+      void send(question, "handoff");
+    }
+  });
+  const panelRequest = shell.variant === "panel" ? shell.request : null;
+  const handledRequestId = useRef(0);
+  useEffect(() => {
+    if (!panelRequest || panelRequest.id === handledRequestId.current) {
+      return;
+    }
+    handledRequestId.current = panelRequest.id;
+    receiveRequest(panelRequest.question);
+  }, [panelRequest]);
 
   const renderMessages = useFixtureMessages(messages);
 
@@ -210,8 +255,34 @@ export default function AskIrisChat({
     requestSwitch({ kind: "new" });
   }
 
-  const showHistory = Boolean(userId && historyEnabled);
-  const topBar = (
+  const showHistory = shell.variant === "page" && Boolean(userId && historyEnabled);
+  const topBar = shell.variant === "panel" ? (
+    <div className="-mx-1 flex h-12 shrink-0 items-center justify-between">
+      <span className="inline-flex items-center gap-1.5 px-1 text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+        Iris
+        <AiTag />
+      </span>
+      <div className="flex items-center gap-0.5">
+        {messages.length > 0 && (
+          <button type="button" onClick={startNewConversation} aria-label={t("newChat")} title={t("newChat")} className={cn(ICON_NAV_BTN_CLS, "h-8 w-8")}>
+            <Plus className="size-4" />
+          </button>
+        )}
+        <Link
+          href={messages.length > 0 ? askIrisConversationPath(conversationId) : ASK_IRIS_FULL_PATH}
+          aria-label={t("fullScreen")}
+          title={t("fullScreen")}
+          onClick={shell.onClose}
+          className={cn(ICON_NAV_BTN_CLS, "h-8 w-8")}
+        >
+          <Maximize2 className="size-4" />
+        </Link>
+        <button type="button" onClick={shell.onClose} aria-label={t("closePanel")} className={cn(ICON_CLOSE_BTN_CLS, "h-8 w-8")}>
+          <X className="size-4" />
+        </button>
+      </div>
+    </div>
+  ) : (
     <div className="flex h-12 shrink-0 items-center justify-between">
       {showHistory ? (
         <button type="button" onClick={() => setHistoryOpen(true)} className={TOP_BAR_BTN_CLS}>
@@ -245,7 +316,7 @@ export default function AskIrisChat({
 
   if (conversation.loading) {
     return (
-      <div className={SHELL_CLS}>
+      <div className={SHELL_CLS[shell.variant]}>
         {topBar}
         <div className="grid flex-1 place-items-center text-sm text-zinc-500 dark:text-zinc-400">
           {t("loadingConversation")}
@@ -256,9 +327,10 @@ export default function AskIrisChat({
 
   if (renderMessages.length === 0 && !initialQuery) {
     return (
-      <div className={SHELL_CLS}>
+      <div className={SHELL_CLS[shell.variant]}>
         {topBar}
         <AskIrisEmptyState
+          variant={shell.variant}
           input={input}
           onInputChange={setInput}
           onSubmit={() => void submitText(input)}
@@ -271,7 +343,7 @@ export default function AskIrisChat({
 
   return (
     <ChatLinkProvider targets={linkTargets}>
-      <div className={SHELL_CLS}>
+      <div className={SHELL_CLS[shell.variant]}>
         {topBar}
         <div className="relative min-h-0 flex-1">
           <div

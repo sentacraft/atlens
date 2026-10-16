@@ -11,7 +11,7 @@ import {
   fetchConversationList,
   renameConversation,
 } from "@/lib/askiris/conversation-client";
-import { readConversationParam, writeConversationParam } from "@/lib/url/askiris";
+import type { ConversationLocation } from "@/lib/url/askiris";
 
 export type ConversationNotice = "unavailable" | "loadFailed" | "saveFailed";
 export type ConversationListState = "idle" | "loading" | "ready" | "error";
@@ -35,10 +35,12 @@ export function useConversation({
   initialConversationId,
   userId,
   onNotice,
+  location,
 }: {
   initialConversationId?: string;
   userId: string | undefined;
   onNotice: (notice: ConversationNotice) => void;
+  location: ConversationLocation;
 }) {
   const queryClient = useQueryClient();
   const [active, setActive] = useState(newConversation);
@@ -71,20 +73,20 @@ export function useConversation({
         }
         if (result === "unavailable") {
           resetToNew();
-          writeConversationParam(null, "replace");
+          location.write(null, "replace");
           onNoticeRef.current("unavailable");
           return;
         }
         setActive({ id: targetId, messages: result });
         if (history === "push") {
-          writeConversationParam(targetId, "push");
+          location.write(targetId, "push");
         }
       } catch {
         if (token !== requestRef.current) {
           return;
         }
-        if (readConversationParam() === targetId) {
-          writeConversationParam(null, "replace");
+        if (location.read() === targetId) {
+          location.write(null, "replace");
         }
         onNoticeRef.current("loadFailed");
       } finally {
@@ -93,7 +95,7 @@ export function useConversation({
         }
       }
     },
-    [queryClient, resetToNew],
+    [queryClient, resetToNew, location],
   );
 
   const selectConversation = useCallback(
@@ -107,8 +109,8 @@ export function useConversation({
 
   const startNewConversation = useCallback(() => {
     resetToNew();
-    writeConversationParam(null, "push");
-  }, [resetToNew]);
+    location.write(null, "push");
+  }, [resetToNew, location]);
 
   const listQuery = useQuery({
     queryKey: conversationListQueryKey(userId ?? ""),
@@ -157,7 +159,7 @@ export function useConversation({
     remove.mutate(id);
     if (id === activeIdRef.current) {
       resetToNew();
-      writeConversationParam(null, "replace");
+      location.write(null, "replace");
     }
   }
   const listState: ConversationListState = !userId
@@ -178,8 +180,11 @@ export function useConversation({
   }, [initialConversationId, load]);
 
   useEffect(() => {
+    if (!location.followsHistory) {
+      return;
+    }
     function onPopState() {
-      const target = readConversationParam();
+      const target = location.read();
       if (target === activeIdRef.current) {
         return;
       }
@@ -191,7 +196,7 @@ export function useConversation({
     }
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, [load, resetToNew]);
+  }, [load, resetToNew, location]);
 
   return {
     conversationId: active.id,
@@ -214,6 +219,7 @@ export function useTurnSync({
   turnFailed,
   historyChanged,
   setMessages,
+  location,
 }: {
   conversationId: string;
   userId: string | undefined;
@@ -223,6 +229,7 @@ export function useTurnSync({
   historyChanged: boolean;
   // Bound to the chat that ran the turn, so a reload landing after a switch changes nothing on screen.
   setMessages: (messages: AskIrisUIMessage[]) => void;
+  location: ConversationLocation;
 }) {
   const queryClient = useQueryClient();
 
@@ -244,8 +251,8 @@ export function useTurnSync({
     if (!wasBusy || busy) {
       return;
     }
-    if (!turnFailed && readConversationParam() !== conversationId) {
-      writeConversationParam(conversationId, "replace");
+    if (!turnFailed && location.read() !== conversationId) {
+      location.write(conversationId, "replace");
     }
     if (historyChanged) {
       queryClient
@@ -261,5 +268,5 @@ export function useTurnSync({
     if (userId) {
       void queryClient.invalidateQueries({ queryKey: conversationListQueryKey(userId) });
     }
-  }, [busy, turnFailed, historyChanged, conversationId, setMessages, queryClient, userId]);
+  }, [busy, turnFailed, historyChanged, conversationId, setMessages, queryClient, userId, location]);
 }
