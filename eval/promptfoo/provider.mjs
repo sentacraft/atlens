@@ -110,6 +110,10 @@ function refsFromOutput(output) {
     for (const v of Object.values(output)) {
       if (Array.isArray(v)) {
         for (const item of v) {
+          if (item && typeof item === "object" && Array.isArray(item.matches)) {
+            refs.push(...refsFromOutput(item));
+            continue;
+          }
           const lens = item && typeof item === "object" && "lens" in item ? item.lens : item;
           if (lens && typeof lens === "object") {
             if (typeof lens.ref === "string") {
@@ -165,11 +169,15 @@ function digest(msg) {
     }
     toolsCalled.push(name);
     if (name === "queryLenses") {
-      const returned = Array.isArray(part.output?.matches) ? part.output.matches.length : 0;
-      queries.push({
-        input: part.input ?? {},
-        totalMatched: typeof part.output?.totalMatched === "number" ? part.output.totalMatched : returned,
-        returned,
+      const inputs = Array.isArray(part.input?.queries) ? part.input.queries : [];
+      inputs.forEach((input, i) => {
+        const result = part.output?.results?.[i];
+        const returned = Array.isArray(result?.matches) ? result.matches.length : 0;
+        queries.push({
+          input: input ?? {},
+          totalMatched: typeof result?.totalMatched === "number" ? result.totalMatched : returned,
+          returned,
+        });
       });
     }
     if (name === "lensDetails") {
