@@ -4,7 +4,6 @@ import { createContext, Suspense, useCallback, useContext, useEffect, useRef, us
 import { usePathname, useRouter } from "@/i18n/navigation";
 import IrisPanel from "@/components/iris-panel/IrisPanel";
 import { useBreakpoint } from "@/hooks/useViewport";
-import { currentPagePath } from "@/lib/askiris/page-path";
 import { askIrisPagePath, type IrisRequest } from "@/lib/url/askiris";
 import { ASK_IRIS_PATH } from "@/lib/url/routes";
 
@@ -17,8 +16,9 @@ export type PanelRequest = IrisRequest | { kind: "resume"; conversationId: strin
 export type IrisPanelRequest = PanelRequest & { id: number };
 
 /**
- * Opens the side panel on wide screens, and the Ask Iris page elsewhere. Without a request it
- * returns to the open conversation; with one it is about the page it is called from.
+ * Opens Iris beside the page: a side panel on wide screens, a bottom sheet on narrow ones.
+ * With a request it is about the page it is called from; without one (the nav) it returns to
+ * the open conversation in the panel, or goes to the Ask Iris page on narrow screens.
  */
 export type OpenIris = (request?: PanelRequest) => void;
 
@@ -34,7 +34,7 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const [request, setRequest] = useState<IrisPanelRequest | null>(null);
   const nextRequestId = useRef(0);
-  const shown = open && wide && !onAskIrisPage;
+  const shown = open && !onAskIrisPage;
 
   const routeRef = useRef({ wide, onAskIrisPage, router });
   useEffect(() => {
@@ -43,14 +43,8 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
 
   const openIris = useCallback<OpenIris>((next) => {
     const route = routeRef.current;
-    if (!route.wide) {
-      if (next?.kind !== "resume") {
-        route.router.push(
-          next
-            ? askIrisPagePath({ question: next.kind === "question" ? next.text : undefined, from: currentPagePath() })
-            : ASK_IRIS_PATH,
-        );
-      }
+    if (!next && !route.wide) {
+      route.router.push(ASK_IRIS_PATH);
       return;
     }
     // A resume is sent while leaving the Ask Iris page, so the page check does not apply.
@@ -68,8 +62,8 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
   const close = useCallback(() => setOpen(false), []);
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--iris-panel-width", shown ? `${IRIS_PANEL_WIDTH}px` : "0px");
-  }, [shown]);
+    document.documentElement.style.setProperty("--iris-panel-width", shown && wide ? `${IRIS_PANEL_WIDTH}px` : "0px");
+  }, [shown, wide]);
 
   return (
     <IrisPanelContext value={openIris}>
@@ -78,7 +72,7 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
           panel reads useSearchParams, which would otherwise bail static pages out to client rendering. */}
       {mounted && (
         <Suspense fallback={null}>
-          <IrisPanel shown={shown} request={request} onClose={close} />
+          <IrisPanel layout={wide ? "side" : "sheet"} shown={shown} request={request} onClose={close} />
         </Suspense>
       )}
     </IrisPanelContext>

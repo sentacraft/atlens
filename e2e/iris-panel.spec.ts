@@ -55,15 +55,22 @@ test.describe("Ask Iris context entries", () => {
     expect(chatRequests).toEqual([]);
   });
 
-  test("takes the page it came from to Ask Iris on a phone", async ({ page }, testInfo) => {
+  test("opens a bottom sheet about the page on a phone, while the nav still goes to Ask Iris", async ({ page }, testInfo) => {
     const viewport = page.viewportSize();
-    testInfo.skip(!viewport || viewport.width >= 1024, "Phones go to the Ask Iris page");
+    testInfo.skip(!viewport || viewport.width >= 1024, "Narrow screens use the bottom sheet");
+    const lensUrl = "/en/lenses/x/fujifilm-xf-33mmf14-r-lm-wr-x";
 
-    await page.goto("/en/lenses/x/fujifilm-xf-33mmf14-r-lm-wr-x");
+    await page.goto(lensUrl);
     await page.getByRole("button", { name: /Ask Iris about this lens/ }).click();
 
+    const sheet = page.getByRole("dialog", { name: "Iris" });
+    await expect(sheet.getByText("Looking at")).toBeVisible();
+    await expect(sheet.getByRole("textbox")).toBeInViewport();
+    await expect(page).toHaveURL(new RegExp(`${lensUrl}$`));
+
+    await page.keyboard.press("Escape");
+    await expect(sheet).toBeHidden();
+    await page.getByRole("banner").getByRole("link", { name: /^Ask Iris/ }).click();
     await expect(page).toHaveURL(/\/en\/askiris$/);
-    await expect(page.getByText("Looking at")).toBeVisible();
-    await expect(page.getByRole("button", { name: /Back to/ })).toBeVisible();
   });
 });
