@@ -13,6 +13,7 @@ import { isPurchaseLocale } from "@/lib/purchase/links";
 import { donationChannel, KOFI_URL } from "@/lib/support";
 import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { SITE } from "@/config/site";
+import { ASK_IRIS_PATH, RECENTLY_ADDED_PATH } from "@/lib/url/routes";
 
 function Check() {
   return <span className="text-zinc-700 dark:text-zinc-300 text-sm">✓</span>;
@@ -239,7 +240,7 @@ export default async function AboutContent() {
           })}
         </p>
         <Link
-          href="/recently-added"
+          href={RECENTLY_ADDED_PATH}
           className="inline-flex items-center gap-0.5 self-start text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
         >
           {t("recentlyAddedLink")}
@@ -336,7 +337,7 @@ export default async function AboutContent() {
         <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
           {t.rich("askIrisBody", {
             askIris: (chunks) => (
-              <Link href="/askiris" className={TEXT_LINK_CLS}>
+              <Link href={ASK_IRIS_PATH} className={TEXT_LINK_CLS}>
                 {chunks}
               </Link>
             ),
@@ -356,7 +357,7 @@ export default async function AboutContent() {
             {t("disclaimerIndependent")}
           </p>
           <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1">
-            {t("disclaimerCopyright")}
+            {t("disclaimerCopyright", { email: SITE.contactEmail })}
           </p>
         </div>
       </Section>

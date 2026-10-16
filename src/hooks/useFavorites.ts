@@ -14,6 +14,7 @@ import {
 import { useRouter } from "@/i18n/navigation";
 import { useTestHookEnabled } from "@/context/TestHookProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
+import { profilePath } from "@/lib/url/routes";
 
 /** The signed-in user's favorite lens ids, newest first, and a toggle that asks guests to sign in. */
 export function useFavorites() {
@@ -62,7 +63,7 @@ export function useFavorites() {
     if (favorite) {
       toast(t("favoriteAdded"), {
         id,
-        action: { label: t("viewFavorites"), onClick: () => router.push("/me#favorites") },
+        action: { label: t("viewFavorites"), onClick: () => router.push(profilePath("favorites")) },
       });
     } else {
       toast(t("favoriteRemoved"), {

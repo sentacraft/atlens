@@ -2,6 +2,7 @@ import "server-only";
 import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
 import { routing } from "@/i18n/routing";
+import { SITE } from "@/config/site";
 import { CATALOG_COVERAGE, type CoverageState } from "@/lib/lens/catalog-coverage";
 import { getLensesByMount, lensCountsByBrand, meta } from "@/lib/lens/data";
 import { MAX_COMPARE } from "@/lib/lens/lens";
@@ -18,10 +19,13 @@ type Messages = typeof en;
 const MESSAGES: Record<string, Messages> = { en, zh };
 const languageName = (code: string) => new Intl.DisplayNames(["en"], { type: "language" }).of(code) ?? code;
 
-/** Replaces each `{Namespace.key}` with that message, leaving an unknown key as written. */
+/** Replaces each `{Namespace.key}` with that message (or `{site.key}` with the site config), leaving an unknown key as written. */
 function uiStrings(text: string, messages: Messages): string {
   return text.replace(/\{(\w+)\.(\w+)\}/g, (placeholder, namespace: string, key: string) => {
-    const value = (messages as Record<string, Record<string, unknown>>)[namespace]?.[key];
+    const value =
+      namespace === "site"
+        ? (SITE as unknown as Record<string, unknown>)[key]
+        : (messages as Record<string, Record<string, unknown>>)[namespace]?.[key];
     return typeof value === "string" ? value : placeholder;
   });
 }

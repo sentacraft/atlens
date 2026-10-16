@@ -12,7 +12,7 @@ export interface SiteFact {
  * Facts only the author can decide: policies, commitments, and who runs the site. Iris tells any
  * visitor everything here, so an entry is what Atlens wants any visitor to know, stated as a fact
  * about Atlens; how Iris should answer belongs in system-prompt.ts. Facts that code or data already hold are
- * generated in index.ts instead. A `{Namespace.key}` placeholder becomes that UI string in the user's language, so names match what the site shows.
+ * generated in index.ts instead. A `{Namespace.key}` placeholder becomes that UI string in the user's language, so names match what the site shows; `{site.key}` reads the site config.
  */
 export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
@@ -33,12 +33,12 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "contact",
     topic: "project",
-    text: "Anyone can contact the author at me@atlens.app. For data problems, missing lenses, or feature ideas, the site's \"{Nav.feedback}\" form is the quickest route.",
+    text: "Anyone can contact the author at {site.contactEmail}. For data problems, missing lenses, or feature ideas, the site's \"{Nav.feedback}\" form is the quickest route.",
   },
   {
     id: "open-source",
     topic: "project",
-    text: "The site's source code is public under the MIT license. The lens data has its own license (LICENSE-DATA): it may be viewed for personal, non-commercial reference; copying or redistributing it, building a competing product or training models with it, commercial use, and bulk scraping all need written permission from me@atlens.app. The data pipeline is private and will not be open-sourced.",
+    text: "The site's source code is public under the MIT license. The lens data has its own license (LICENSE-DATA): it may be viewed for personal, non-commercial reference; copying or redistributing it, building a competing product or training models with it, commercial use, and bulk scraping all need written permission from {site.contactEmail}. The data pipeline is private and will not be open-sourced.",
     sources: ["LICENSE-DATA"],
   },
   {
@@ -54,7 +54,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "copyright",
     topic: "project",
-    text: "Product images and brand trademarks shown on the site belong to their respective owners. Rights holders who believe something infringes their rights can contact me@atlens.app.",
+    text: "Product images and brand trademarks shown on the site belong to their respective owners. Rights holders who believe something infringes their rights can contact {site.contactEmail}.",
   },
   {
     id: "origin",

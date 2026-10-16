@@ -12,6 +12,7 @@ import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
 import LensIndexShell from "@/components/browse/LensIndexShell";
 import CollectionChipRail from "@/components/collection/CollectionChipRail";
+import { aboutPath, browsePath, collectionPath } from "@/lib/url/routes";
 
 type Params = Promise<{ locale: string; mount: string }>;
 
@@ -92,7 +93,7 @@ export default async function CollectionsIndexPage({
             {t("indexStats", { count: totalCollections, lensCount: totalLenses })}
           </p>
           <Link
-            href="/about#coverage"
+            href={aboutPath("coverage")}
             className="whitespace-nowrap text-xs text-zinc-400 underline-offset-2 transition-colors hover:text-zinc-600 hover:underline dark:text-zinc-500 dark:hover:text-zinc-300"
           >
             {t("coverageLink")}
@@ -144,7 +145,7 @@ export default async function CollectionsIndexPage({
               return (
                 <Link
                   key={collection.slug}
-                  href={`/lenses/${mount}/collections/${collection.slug}`}
+                  href={collectionPath(resolvedMount, collection.slug)}
                   className="group grid grid-cols-[1fr_auto] items-start gap-4 border-b border-zinc-100 py-2.5 transition-colors dark:border-zinc-800"
                 >
                   <div>
@@ -167,7 +168,7 @@ export default async function CollectionsIndexPage({
 
       <footer className="mt-8 flex justify-center">
         <Link
-          href={`/lenses/${mount}/browse`}
+          href={browsePath(resolvedMount)}
           className={`inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold ${ACTION_PRIMARY_CLS}`}
         >
           {t("browseAllPill", { count: totalLenses })}

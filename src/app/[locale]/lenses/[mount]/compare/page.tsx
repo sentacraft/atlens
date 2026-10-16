@@ -15,9 +15,9 @@ import CuratedComparisons from "@/components/compare/CuratedComparisons";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import Breadcrumb from "@/components/nav/Breadcrumb";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
-import { mountToUrlSegment } from "@/lib/mount";
 import { lensDisplayName } from "@/lib/lens/format";
 import { notFound } from "next/navigation";
+import { browsePath } from "@/lib/url/routes";
 
 // Dynamic: metadata needs ?ids=, and the route cache keys on pathname only.
 
@@ -105,14 +105,13 @@ export default async function ComparePage({
   }
 
   const tNav = await getTranslations("Nav");
-  const seg = mountToUrlSegment(resolvedMount);
   const lenses = parseLensIds(readCompareIds(ids), resolvedMount, locale);
   const allLenses = getLensesByMount(resolvedMount, locale);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-4 sm:pt-8 pb-40 flex flex-col gap-3 sm:gap-4">
       <Breadcrumb
-        segments={[{ label: tNav("lenses"), href: `/lenses/${seg}/browse` }]}
+        segments={[{ label: tNav("lenses"), href: browsePath(resolvedMount) }]}
         current={tNav("compare")}
       />
       <ComparePageHeader allLenses={allLenses} />

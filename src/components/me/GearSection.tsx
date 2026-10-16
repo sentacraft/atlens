@@ -19,12 +19,12 @@ import {
   MENU_POPUP_CLS,
 } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
-import { mountToUrlSegment } from "@/lib/mount";
 import { Link } from "@/i18n/navigation";
 import CoverageChart from "@/components/me/CoverageChart";
 import { useGearAdders } from "@/components/me/useGearAdders";
 import { LensSilhouette } from "@/components/ui/lens-silhouette";
 import { BodySpecs } from "@/components/me/gear-specs";
+import { lensPath } from "@/lib/url/routes";
 
 const ADD_BUTTON_CLS = cn(ACTION_OUTLINE_CLS, "h-9 gap-1 px-3 text-[13px] md:h-8");
 const GROUP_LABEL_CLS = "text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400";
@@ -158,7 +158,7 @@ export default function GearSection({
               name={item.name}
               badge={badges}
               detail={equivalent}
-              href={lens ? `/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}` : undefined}
+              href={lens ? lensPath(lens) : undefined}
               onRemove={() => remove.mutate(item.id)}
             />
           );

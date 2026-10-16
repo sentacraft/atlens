@@ -4,20 +4,20 @@ import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useEffectiveMount } from "@/hooks/useMountParam";
-import { mountToUrlSegment, mountHasCollections } from "@/lib/mount";
+import { mountHasCollections } from "@/lib/mount";
 import { cn } from "@/lib/utils";
+import { browsePath, collectionsPath } from "@/lib/url/routes";
 
 export default function LensSectionNav({ rightSlot }: { rightSlot?: ReactNode }) {
   const t = useTranslations("Nav");
   const pathname = usePathname();
   const mount = useEffectiveMount();
-  const seg = mountToUrlSegment(mount);
   const active = pathname.includes("/collections") ? "collections" : "browse";
 
   const tabs = [
-    { key: "browse", label: t("allLenses"), href: `/lenses/${seg}/browse` },
+    { key: "browse", label: t("allLenses"), href: browsePath(mount) },
     ...(mountHasCollections(mount)
-      ? [{ key: "collections", label: t("collections"), href: `/lenses/${seg}/collections` }]
+      ? [{ key: "collections", label: t("collections"), href: collectionsPath(mount) }]
       : []),
   ];
 

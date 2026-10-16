@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/dialog";
 import { ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
+import { aboutPath } from "@/lib/url/routes";
 
 export interface LensSearchResultAction {
   label: string;
@@ -324,7 +325,7 @@ function SuggestLensFooter({ query, hasResults }: LensSearchFooterContext) {
       </span>
       {!hasResults && (
         <Link
-          href="/about#coverage"
+          href={aboutPath("coverage")}
           className="transition-colors hover:text-zinc-600 dark:hover:text-zinc-300"
         >
           {t("coverageLink")}

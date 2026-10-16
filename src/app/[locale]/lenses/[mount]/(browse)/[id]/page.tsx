@@ -5,7 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Flag } from "lucide-react";
 import { getLensUrl } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
-import { urlSegmentToMount, mountToUrlSegment } from "@/lib/mount";
+import { urlSegmentToMount } from "@/lib/mount";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
 import { buildSpecGroups, buildSpecGroupLabels, resolveSpecGroups, rowPlainText } from "@/lib/lens/spec-groups";
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens/spec-groups";
@@ -35,6 +35,7 @@ import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
 import { buildLensDescription, buildLensProductSchema } from "@/lib/lens/seo";
 import { PriceSection } from "@/components/price/PriceSection";
 import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
+import { browsePath, lensPath } from "@/lib/url/routes";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
 
@@ -167,11 +168,10 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const tNav = await getTranslations("Nav");
   const url = getLensUrl(lens, locale);
 
-  const seg = mountToUrlSegment(resolvedMount);
   const brandName = tBrand(lens.brand);
   const displayName = lensDisplayName(brandName, lens.series, lens.model);
   const description = buildLensDescription({ lens, mount: resolvedMount, brandName, t });
-  const canonicalUrl = `${SITE.url}/${locale}/lenses/${mount}/${id}`;
+  const canonicalUrl = `${SITE.url}/${locale}${lensPath(lens)}`;
   const productSchema = buildLensProductSchema({
     lens,
     mount: resolvedMount,
@@ -214,7 +214,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] flex flex-col gap-8">
       <div className="flex items-center justify-between">
         <Breadcrumb
-              segments={[{ label: tNav("lenses"), href: `/lenses/${seg}/browse` }]}
+              segments={[{ label: tNav("lenses"), href: browsePath(resolvedMount) }]}
               current={displayName}
             />
         <div className="flex items-center gap-1">
@@ -338,7 +338,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
       <CollectionPills
         collections={memberCollections}
         lensCounts={getCollectionLensCounts(locale)}
-        mountSegment={seg}
+        mount={resolvedMount}
         locale={locale}
         title={t("collectionsTitle")}
         viewAllLabel={t("viewAllCollections")}

@@ -8,7 +8,6 @@ import { useCompareLensSearch } from "@/hooks/useCompareLensSearch";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { HorizontalScrollRail } from "@/components/ui/horizontal-scroll-rail";
-import { mountToUrlSegment } from "@/lib/mount";
 import { motion, AnimatePresence } from "motion/react";
 import { spring } from "@/lib/animation";
 import { Plus, X } from "lucide-react";
@@ -19,6 +18,7 @@ import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { Z } from "@/config/ui";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
 import type { Lens } from "@/lib/types";
+import { buildComparePath } from "@/lib/url/compare";
 
 export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
   const t = useTranslations("LensList");
@@ -57,9 +57,7 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
   }, []);
 
   function handleCompare() {
-    const ids = selectedLenses.map((l) => l.id).join(",");
-    const seg = mountToUrlSegment(mount);
-    router.push(`/lenses/${seg}/compare?ids=${ids}`);
+    router.push(buildComparePath(mount, selectedLenses.map((l) => l.id)));
   }
 
   return (

@@ -8,6 +8,7 @@ import { addGear, GearRequestError, removeGear, userGearQuery } from "@/lib/me/g
 import { useRouter } from "@/i18n/navigation";
 import { useTestHookEnabled } from "@/context/TestHookProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
+import { profilePath } from "@/lib/url/routes";
 
 /** Whether a catalog lens is in the signed-in user's gear, and a toggle that asks guests to sign in. */
 export function useOwnedLens(lensId: string) {
@@ -36,7 +37,7 @@ export function useOwnedLens(lensId: string) {
       if (own) {
         toast(t("ownedAdded"), {
           id,
-          action: { label: t("viewGear"), onClick: () => router.push("/me#gear") },
+          action: { label: t("viewGear"), onClick: () => router.push(profilePath("gear")) },
         });
       } else {
         toast(t("ownedRemoved"), {

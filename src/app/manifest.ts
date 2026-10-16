@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/config/site";
+import { buildComparePath } from "@/lib/url/compare";
+import { browsePath } from "@/lib/url/routes";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -20,14 +22,14 @@ export default function manifest(): MetadataRoute.Manifest {
         name: "Browse Lenses",
         short_name: "Browse",
         description: "Browse and filter all X Mount and G Mount lenses",
-        url: "/lenses/x/browse?ref=pwa-browse",
+        url: `${browsePath("X")}?ref=pwa-browse`,
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],
       },
       {
         name: "Compare Lenses",
         short_name: "Compare",
         description: "Compare lenses side by side",
-        url: "/lenses/x/compare?ref=pwa-compare",
+        url: `${buildComparePath("X", [])}?ref=pwa-compare`,
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],
       },
     ],

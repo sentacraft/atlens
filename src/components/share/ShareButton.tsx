@@ -17,6 +17,7 @@ import { useLightbox } from "@/hooks/useLightbox";
 import { LightboxDialog } from "./LightboxDialog";
 import { CustomizePopover } from "./CustomizePopover";
 import { lensDisplayName } from "@/lib/lens/format";
+import { SITE } from "@/config/site";
 
 const POSTER_W = 750;
 const PREVIEW_SCALE = 352 / POSTER_W; // ≈ 0.469
@@ -87,7 +88,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
 
   const posterLabels: PosterLabels = {
     appName: "Atlens",
-    siteUrl: `atlens.app/${locale}`,
+    siteUrl: `${SITE.host}/${locale}`,
     brandTagline: tImage("brandTagline"),
     cta: lenses.length === 1 ? tImage("ctaSingle") : tImage("cta"),
     comparison: computedPosterTitle,

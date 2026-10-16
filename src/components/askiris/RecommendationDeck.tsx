@@ -5,12 +5,12 @@ import { useTranslations } from "next-intl";
 import { Weight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
-import { mountToUrlSegment } from "@/lib/mount";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import { weightDisplay } from "@/lib/lens/format";
 import { formatPrice } from "@/lib/lens/pricing";
 import Markdown from "@/components/askiris/Markdown";
 import type { Recommendation } from "@/lib/ai/recall";
+import { lensPath } from "@/lib/url/routes";
 
 export default function RecommendationDeck({
   recommendations,
@@ -38,7 +38,7 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
 
   return (
     <Link
-      href={`/lenses/${mountToUrlSegment(rec.mount)}/${rec.id}`}
+      href={lensPath(rec)}
       prefetch={false}
       onClick={() => track("askiris_rec_click", { lens_id: rec.id, source: "askiris" })}
       // New tab: a same-tab navigation would discard the conversation.

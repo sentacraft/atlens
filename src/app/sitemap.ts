@@ -2,10 +2,12 @@ import type { MetadataRoute } from "next";
 import { SITE } from "@/config/site";
 import { routing } from "@/i18n/routing";
 import { COLLECTIONS } from "@/lib/collections";
-import { MOUNTS, mountToUrlSegment, mountHasCollections } from "@/lib/mount";
+import { MOUNTS, mountHasCollections } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
 import xLensesData from "@/data/lenses.json";
 import gfxLensesData from "@/data/lenses-gfx.json";
+import { buildComparePath } from "@/lib/url/compare";
+import { ABOUT_PATH, GET_APP_PATH, RECENTLY_ADDED_PATH, browsePath, collectionPath, collectionsPath, lensPath } from "@/lib/url/routes";
 
 const LOCALES = routing.locales;
 
@@ -20,14 +22,13 @@ function url(path: string): string {
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const mountPaths = MOUNTS.flatMap((mount) => {
-    const seg = mountToUrlSegment(mount);
-    const paths = [`/lenses/${seg}/browse`, `/lenses/${seg}/compare`];
+    const paths = [browsePath(mount), buildComparePath(mount, [])];
     if (mountHasCollections(mount)) {
-      paths.push(`/lenses/${seg}/collections`);
+      paths.push(collectionsPath(mount));
     }
     return paths;
   });
-  const staticPaths = [...mountPaths, "/about", "/recently-added", "/get"];
+  const staticPaths = [...mountPaths, ABOUT_PATH, RECENTLY_ADDED_PATH, GET_APP_PATH];
 
   const staticEntries: MetadataRoute.Sitemap = LOCALES.flatMap((locale) => [
     {
@@ -43,10 +44,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ]);
 
   const lensEntries: MetadataRoute.Sitemap = MOUNTS.flatMap((mount) => {
-    const seg = mountToUrlSegment(mount);
     return LENS_DATA[mount].flatMap((lens) =>
       LOCALES.map((locale) => ({
-        url: url(`/${locale}/lenses/${seg}/${lens.id}`),
+        url: url(`/${locale}${lensPath({ mount, id: lens.id })}`),
         changeFrequency: "monthly" as const,
         priority: 0.6,
       }))
@@ -55,10 +55,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const collectionEntries: MetadataRoute.Sitemap = MOUNTS.filter(mountHasCollections).flatMap(
     (mount) => {
-      const seg = mountToUrlSegment(mount);
       return Object.keys(COLLECTIONS).flatMap((slug) =>
         LOCALES.map((locale) => ({
-          url: url(`/${locale}/lenses/${seg}/collections/${slug}`),
+          url: url(`/${locale}${collectionPath(mount, slug)}`),
           changeFrequency: "weekly" as const,
           priority: 0.7,
         }))
