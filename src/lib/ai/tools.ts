@@ -148,7 +148,9 @@ export function buildLensTools(
     }),
 
     searchLensByName: tool({
-      description: "Look up lenses by model or brand name (e.g. '18-55', 'XF35', 'Viltrox 27').",
+      description:
+        "Look up a lens the user named, by model or brand (e.g. '18-55', 'XF35', 'Viltrox 27'). " +
+        "Only for names the user gave, not for lenses you thought of yourself; recall those with queryLenses.",
       inputSchema: z.object({
         query: z
           .string()
@@ -270,7 +272,9 @@ export function buildLensTools(
     }),
 
     skill: tool({
-      description: "Read a reference document by name. terms: how to read Atlens spec fields and lens model names.",
+      description:
+        "Read a reference document by name. terms: how to read Atlens spec fields and lens model names; " +
+        "read it before explaining what a spec value means or what a code in a lens name stands for.",
       inputSchema: z.object({ name: z.enum(SKILL_NAMES) }),
       execute: ({ name }) => ({ text: readSkill(name, locale) }),
     }),
