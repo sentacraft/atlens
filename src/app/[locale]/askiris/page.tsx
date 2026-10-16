@@ -25,7 +25,7 @@ export default async function AskIrisPage({
   setRequestLocale(locale);
   return (
     <AskIrisChat
-      entry={resolveAskIrisEntry(await searchParams)}
+      shell={{ variant: "page", entry: resolveAskIrisEntry(await searchParams) }}
       linkTargets={{ lenses: getLensLinkIndex(locale), collections: Object.keys(COLLECTIONS) }}
       lenses={getLensSummaries(locale)}
     />

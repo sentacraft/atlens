@@ -165,6 +165,8 @@
     "noFavorites": "还没有收藏。在镜头卡片或详情页点星标就能收藏。"
   },
   "AskIris": {
+    "fullScreen": "全屏打开",
+    "closePanel": "关闭",
     "linkDataLicense": "数据许可",
     "heading": "Hi，我是 Iris<beta></beta>",
     "subtitle": "你的专属镜头顾问 —— 用大白话说需求，我帮你精准匹配",

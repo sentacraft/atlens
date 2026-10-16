@@ -5,6 +5,7 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { useConversation, useTurnSync } from "../useConversation";
+import { DETACHED_CONVERSATION_LOCATION, URL_CONVERSATION_LOCATION } from "@/lib/url/askiris";
 
 const client = vi.hoisted(() => ({
   fetchConversationList: vi.fn(),
@@ -46,7 +47,7 @@ function queryWrapper() {
 }
 
 function setup(overrides: Partial<Props> = {}) {
-  const props: Props = { userId: "user-1", onNotice: vi.fn(), ...overrides };
+  const props: Props = { userId: "user-1", onNotice: vi.fn(), location: URL_CONVERSATION_LOCATION, ...overrides };
   const hook = renderHook((p: Props) => useConversation(p), {
     initialProps: props,
     wrapper: queryWrapper(),
@@ -56,10 +57,16 @@ function setup(overrides: Partial<Props> = {}) {
 
 // Both hooks over one query cache, as AskIrisChat uses them.
 function setupWithTurns(userId: string | undefined = "user-1") {
-  const turn: TurnProps = { busy: false, turnFailed: false, historyChanged: false, setMessages: vi.fn() };
+  const turn: TurnProps = {
+    busy: false,
+    turnFailed: false,
+    historyChanged: false,
+    setMessages: vi.fn(),
+    location: URL_CONVERSATION_LOCATION,
+  };
   const hook = renderHook(
     (t: TurnProps) => {
-      const conversation = useConversation({ userId, onNotice: vi.fn() });
+      const conversation = useConversation({ userId, onNotice: vi.fn(), location: t.location });
       useTurnSync({ conversationId: conversation.conversationId, userId, ...t });
       return conversation;
     },
@@ -235,6 +242,15 @@ describe("useConversation", () => {
     expect(result.current.conversations).toEqual([]);
     expect(result.current.listState).toBe("loading");
     await act(async () => pending.resolve([]));
+  });
+});
+
+describe("useConversation in a panel", () => {
+  it("never writes the conversation into the host page's URL", async () => {
+    const before = window.location.href;
+    const { result } = setup({ location: DETACHED_CONVERSATION_LOCATION });
+    act(() => result.current.startNewConversation());
+    expect(window.location.href).toBe(before);
   });
 });
 

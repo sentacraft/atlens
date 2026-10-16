@@ -17,6 +17,7 @@ import MountSwitcher from "@/components/mount/MountSwitcher";
 import FeedbackDialog from "@/components/feedback/FeedbackDialog";
 import GitHubMark from "@/components/logos/GitHubMark";
 import NavMenu from "@/components/nav/NavMenu";
+import { useOpenIris } from "@/context/IrisPanelProvider";
 import AiTag from "@/components/iris/AiTag";
 import { SITE } from "@/config/site";
 import { ASK_IRIS_PATH, browsePath } from "@/lib/url/routes";
@@ -29,6 +30,7 @@ export default function Nav() {
   const clearCompareWithUndo = useClearCompareWithUndo();
   const effectiveMount = useEffectiveMount();
   const { navLocked, lockNav, setNavHidden } = useNav();
+  const openIris = useOpenIris();
   const isPwa = usePwa();
   const [scrolledDown, setScrolledDown] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -137,7 +139,17 @@ export default function Nav() {
           >
             {t("compare")}
           </Link>
-          <Link href={ASK_IRIS_PATH} className={cn(linkCls(isAskIrisActive), "inline-flex items-center gap-1.5 whitespace-nowrap")}>
+          <Link
+            href={ASK_IRIS_PATH}
+            onClick={(event) => {
+              if (event.metaKey || event.ctrlKey || event.shiftKey) {
+                return;
+              }
+              event.preventDefault();
+              openIris({});
+            }}
+            className={cn(linkCls(isAskIrisActive), "inline-flex items-center gap-1.5 whitespace-nowrap")}
+          >
             {t("askIris")}
             <AiTag />
           </Link>
