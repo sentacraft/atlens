@@ -19,6 +19,8 @@ import {
 } from "@/lib/ai/model";
 import { gearPrompt, systemPrompt } from "@/lib/ai/system-prompt";
 import { describeGear, EVAL_GEAR_HEADER, evalGear, type GearStatus } from "@/lib/ai/gear-context";
+import { EVAL_FAVORITES_HEADER, evalFavorites } from "@/lib/ai/favorites";
+import { listUserFavorites } from "@/lib/me/favorites-repository";
 import { ASK_FOR_GEAR, gearRequestDeclined } from "@/lib/ai/gear-request";
 import { listUserGear } from "@/lib/me/gear-repository";
 import { buildLensTools } from "@/lib/ai/tools";
@@ -129,7 +131,7 @@ export async function POST(req: Request) {
 
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const gearStatus = await loadGearStatus(req, appDb, userId, isAccount);
-  const tools = buildLensTools(mount, locale, tBrand);
+  const tools = buildLensTools(mount, locale, tBrand, () => loadFavorites(req, appDb, userId, isAccount));
   const validate = (messages: unknown) =>
     safeValidateUIMessages<AskIrisUIMessage>({
       messages,
@@ -372,6 +374,23 @@ async function loadGearStatus(
     console.error("[askiris] failed to load gear", error);
     return { kind: "unavailable" };
   }
+}
+
+async function loadFavorites(
+  req: Request,
+  appDb: D1Database,
+  userId: string,
+  isAccount: boolean,
+): Promise<string[] | null> {
+  const testFavorites =
+    process.env.NODE_ENV === "production" ? undefined : evalFavorites(req.headers.get(EVAL_FAVORITES_HEADER));
+  if (testFavorites) {
+    return testFavorites;
+  }
+  if (!isAccount) {
+    return null;
+  }
+  return (await listUserFavorites(appDb, userId)).map((favorite) => favorite.lensId);
 }
 
 function toolNamesWithout<TOOLS extends Record<string, unknown>>(tools: TOOLS, excluded: string): Array<keyof TOOLS & string> {
