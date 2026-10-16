@@ -1,5 +1,6 @@
 // Adds a secret to wrangler.toml `[secrets] required`, .env.example, every checkout's
-// .env.local, and production with --prod.
+// .env.local, and production with --prod. When the latest Worker version is not the one deployed,
+// the production value goes into a new undeployed version instead.
 //
 // Usage:
 //   pnpm run secret:add NAME                 prompt for the local value
@@ -12,6 +13,8 @@ import { execFileSync, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+
+import { planSecretPut, type SecretPutPlan } from "./secret-put-command.mts";
 
 const args = process.argv.slice(2);
 const name = args.find((arg) => !arg.startsWith("--"));
@@ -143,9 +146,20 @@ async function collectValues(): Promise<{ local?: string; production?: string }>
   return { local, production };
 }
 
+function wranglerJson(wranglerArgs: string[]): unknown {
+  const stdout = execFileSync("pnpm", ["exec", "wrangler", ...wranglerArgs], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "inherit"],
+  });
+  return JSON.parse(stdout);
+}
+
 let values: { local?: string; production?: string };
+let plan: SecretPutPlan | undefined;
 try {
   values = await collectValues();
+  plan = values.production ? planSecretPut(name, wranglerJson) : undefined;
 } catch (error) {
   console.error(error instanceof Error ? error.message : error);
   process.exit(1);
@@ -162,12 +176,18 @@ if (values.local) {
   }
 }
 
-if (values.production) {
-  const result = spawnSync("pnpm", ["exec", "wrangler", "secret", "put", name], {
+if (plan) {
+  const result = spawnSync("pnpm", ["exec", "wrangler", ...plan.args], {
     cwd: repoRoot,
     input: values.production,
     stdio: ["pipe", "inherit", "inherit"],
   });
+  if (result.status === 0 && plan.kind === "version-only") {
+    console.log(
+      `Used \`versions secret put\`: the latest version ${plan.latestVersionId} is not fully deployed, ` +
+        "so `secret put` would be refused. The new version also carries that version's code.",
+    );
+  }
   process.exit(result.status ?? 1);
 }
 console.log(`Production not touched. Run \`pnpm run secret:add ${name} --prod --skip-local\` to upload it.`);
