@@ -318,6 +318,9 @@ export async function POST(req: Request) {
         };
       },
       onEnd: async (result) => {
+        if (result.outcome.status === "failed") {
+          markStreamError(result.outcome.error);
+        }
         persistTrace(traceCollector.finalizeStream(result));
         // A failed turn stores nothing; its retry arrives as a new turn or a regenerate.
         if (result.outcome.status === "failed" || !appDb || !userId) {
@@ -346,11 +349,9 @@ export async function POST(req: Request) {
         ctx?.waitUntil(save);
         await save;
       },
-      // Public endpoint: raw provider errors stay in the server log.
-      onError: (error) => {
-        markStreamError(error);
-        return "Stream error";
-      },
+      // Public endpoint: raw provider errors stay in the server log. Tool errors also pass
+      // through here; the model sees them and usually recovers, so they must not fail the turn.
+      onError: () => "Stream error",
     }),
   });
 }
