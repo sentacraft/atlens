@@ -29,7 +29,6 @@ import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LENS_GRID_CLS, SEARCH_TRIGGER_CLS } from "@/config/ui-tokens";
 import { aboutPath, lensPath } from "@/lib/url/routes";
-import { DataSourceInline } from "@/components/lens/DataSource";
 
 interface LensListClientProps {
   lenses: Lens[];
@@ -165,7 +164,6 @@ export default function LensListClient({ lenses }: LensListClientProps) {
               >
                 {t("coverageLink")}
               </Link>
-              <DataSourceInline />
             </div>
 
             <LensSortControl
