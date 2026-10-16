@@ -27,7 +27,8 @@ export default function IrisPanel({
       hidden={!shown}
       className={cn(
         "fixed right-0 bottom-0 flex w-[var(--iris-panel-width)] flex-col border-l border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950",
-        "top-[var(--nav-height)] pb-[var(--safe-inset-bottom)]",
+        // --nav-height leaves out the nav's 1px bottom border, which the panel would cover: it stacks above the nav.
+        "top-[calc(var(--nav-height)+1px)] pb-[var(--safe-inset-bottom)]",
         Z.fixed,
       )}
     >

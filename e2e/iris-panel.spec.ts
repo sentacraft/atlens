@@ -17,6 +17,10 @@ test.describe("Ask Iris side panel", () => {
       () => getComputedStyle(document.documentElement).getPropertyValue("--iris-panel-width"),
     );
     expect(pagePadding).toBe("400px");
+    // The panel starts below the nav's bottom border instead of covering it.
+    const navBottom = await page.getByRole("banner").evaluate((nav) => nav.getBoundingClientRect().bottom);
+    const panelTop = await panel.evaluate((aside) => aside.getBoundingClientRect().top);
+    expect(panelTop).toBeGreaterThanOrEqual(navBottom);
 
     // A client-side navigation keeps the panel and its conversation.
     await page.locator('a[href^="/en/lenses/x/"]:not([href$="/browse"]):not([href*="/collections"])').first().click();
