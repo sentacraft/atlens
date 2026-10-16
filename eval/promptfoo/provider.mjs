@@ -11,6 +11,7 @@ const LENS_LINK_RE = new RegExp(`\\]\\(${LENS_LINK_PREFIX}([^)\\s]+)\\)`, "g");
 
 // Judges see rendered links: shown raw, they fail replies for leaking refs.
 const LENS_LINK_DISPLAY_RE = new RegExp(`\\[([^\\]]+)\\]\\(${LENS_LINK_PREFIX}[^)\\s]+\\)`, "g");
+const COMPARE_LINK_RE = /\[([^\]]+)\]\(compare:([^)\s]+)\)/g;
 
 const REF_TO_ID = new Map(
   ["lenses.json", "lenses-gfx.json"]
@@ -272,7 +273,8 @@ export default class AskIrisProvider {
     }
     const transcript = convo.join("\n\n") || "(empty)";
     const linkRefs = [...transcript.matchAll(LENS_LINK_RE)].map((m) => m[1]);
-    const readable = transcript.replace(LENS_LINK_DISPLAY_RE, "$1");
+    const compareLinks = [...transcript.matchAll(COMPARE_LINK_RE)].map((m) => m[2].split(","));
+    const readable = transcript.replace(LENS_LINK_DISPLAY_RE, "$1").replace(COMPARE_LINK_RE, "$1 (compare page link)");
     // Recalled refs only: five base36 chars collide with ordinary words.
     const bareRefs = [...recalledEver].filter((ref) => new RegExp(`\\b${ref}\\b`).test(readable));
     return {
@@ -281,6 +283,7 @@ export default class AskIrisProvider {
         bareRefs,
         linkIds: linkRefs.map((ref) => REF_TO_ID.get(ref) ?? ref),
         unknownLinkIds: [...new Set(linkRefs.filter((ref) => !REF_TO_ID.has(ref)))],
+        compareLinks,
         picks: d.picks,
         pickGroups: d.pickGroups,
         tables: d.tables,

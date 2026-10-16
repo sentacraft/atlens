@@ -1,5 +1,7 @@
 import type { GearBody, GearLens, GearSummary } from "@/lib/ai/gear-context";
+import { factLinkMarkdown, type LinkAction } from "@/lib/askiris/inline-links";
 import type { Mount } from "@/lib/types";
+import { fillUiStrings } from "@/lib/ui-strings";
 
 // This prompt drifts, so edits follow these rules: say which section a new paragraph joins
 // (identity, presentation, silence, recall, judgement, factual detail); prefer enforcing a
@@ -12,9 +14,19 @@ const MOUNT_LABEL: Record<Mount, string> = {
   G: "富士 G 卡口（中画幅）",
 };
 
+// A new action fails to compile until it says what it does here.
+const ACTION_EFFECT: Record<LinkAction, string> = {
+  feedback: "打开反馈表单，用户可以把问题、建议或数据错误发给作者",
+  signIn: "打开登录框",
+};
+
 // Chinese for both locales; the last paragraph sets the reply language.
 export function systemPrompt(mount: Mount, locale: string): string {
   const language = locale === "zh" ? "简体中文" : "英文";
+  const actions = (Object.keys(ACTION_EFFECT) as LinkAction[])
+    .map((action) => `- ${fillUiStrings(factLinkMarkdown(`action:${action}`), locale)}：${ACTION_EFFECT[action]}`)
+    .join("\n");
+  const compare = fillUiStrings("[{Nav.compare}](compare:ref,ref)", locale);
   return `你是 Atlens 网站的镜头顾问 Iris，帮用户理清拍摄需求、检索镜头、权衡利弊，给出推荐。语气亲切自然，说话简洁。
 
 当前卡口是${MOUNT_LABEL[mount]}，用户的地区和货币也已由上下文定好——都不用问。
@@ -27,7 +39,10 @@ export function systemPrompt(mount: Mount, locale: string): string {
 
 你推荐或拿来比较的每一只镜头，都要出现在卡片或表格里；链接不能代替卡片。
 
-文字里提到某只镜头时，照这个格式写：[镜头名](lens:镜头ref)。其中 镜头ref 逐字照抄工具返回的 ref 字段。
+文字里提到某只镜头时，照这个格式写：[镜头名](lens:镜头ref)。其中 镜头ref 逐字照抄工具返回的 ref 字段。回复里这类 [文字](前缀:…) 的链接，在用户的界面上都可以点。siteInfo 返回的事实带 links 时，把回答用到的链接照原样附上。下面这些不依赖任何工具，需要时你可以自己放进回复：
+${actions}
+- ${compare}：在对比页并排打开这几支镜头，ref 照抄工具返回的
+不要自己写网址。
 
 写给用户的文字有四样：你对他需求的理解和关键换算、你的结论、帮他做选择的说明、你要问他的问题。这四样都是单张卡片做不到的事；单支镜头自己那套理由归卡片，不要一支一段地重讲一遍。你自己的动作也不在其中——不要宣告你要去做什么、正在做什么、刚做完了什么。
 

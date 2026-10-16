@@ -11,7 +11,7 @@ export const ABOUT_FACT_SOURCES: Record<string, { facts: string[]; hash: string 
   backgroundBody1: { facts: ["origin"], hash: "84cf88f1af5b" },
   backgroundBody2: { facts: ["what-it-is"], hash: "79ae52e52c60" },
   backgroundBody3: { facts: ["author", "author-values"], hash: "67a1d25aca36" },
-  askIrisBody: { facts: ["capabilities", "iris-growing", "accuracy"], hash: "5153571743ad" },
+  askIrisBody: { facts: ["capabilities", "iris-growing", "accuracy"], hash: "0bc3a697fb97" },
   dataAccuracyCaveat: { facts: ["data-accuracy", "corrections"], hash: "656a7b395b5d" },
   dataAccuracyIntro: { facts: ["spec-source", "pipeline"], hash: "cf6cbe9fd289" },
   dataSpecPoint1Body: { facts: ["spec-source"], hash: "018ebb4141cd" },
