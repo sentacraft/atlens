@@ -347,6 +347,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
       </div>
       </div>
     </div>
+    <div>
     {orderedLenses.length > 0 && (
       <DataSourceBar
         className="rounded-t-xl border border-b-0 border-zinc-200 dark:border-zinc-800"
@@ -768,6 +769,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
         )}
 
       </table>
+    </div>
     </div>
 
     {showDisclosure && <PurchaseDisclosureCaption />}
