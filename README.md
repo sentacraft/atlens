@@ -51,17 +51,19 @@ Atlens is a lens database and comparison tool for Fujifilm shooters — X mount 
 
 ## Architecture
 
-Lens data ships with the build, so browsing and comparing never touch a database; only accounts, Ask Iris, and telemetry go through the server at request time.
+Lens data ships with the build, so browsing and comparing never touch a database; only accounts, Ask Iris, and telemetry reach the backend at request time. The frontend's server components and the backend's route handlers deploy together as one Next.js app on a Cloudflare Worker.
 
 ```mermaid
 flowchart LR
-  subgraph browser["Browser · installable PWA"]
-    PAGES["Pre-rendered pages<br/>lens detail · collections · about"]
-    ISLANDS["Client islands<br/>filters · compare · Ask Iris · profile<br/>TanStack Query"]
+  subgraph frontend["Frontend"]
+    subgraph client["Client"]
+      PAGES["Pre-rendered pages<br/>lens detail · collections · about"]
+      ISLANDS["Client islands<br/>filters · compare · Ask Iris · profile<br/>TanStack Query"]
+    end
+    RSC["Server components<br/>render pages from the bundled lens data"]
   end
 
-  subgraph worker["Cloudflare Worker · Next.js via OpenNext"]
-    RSC["Server components<br/>+ static lens data"]
+  subgraph backend["Backend · route handlers"]
     CHAT["/api/chat<br/>Ask Iris agent loop"]
     ME["/api/me/*<br/>gear · favorites · settings"]
     AUTH["/api/auth<br/>Better Auth"]
@@ -69,20 +71,22 @@ flowchart LR
     TRACK["/api/track"]
   end
 
-  LENSDATA[("lenses.json · lenses-gfx.json<br/>bundled at build")]
-  APPDB[("D1 · app<br/>users · conversations · gear<br/>favorites · settings")]
-  TRACES[("D1 · Ask Iris traces")]
-  LIMITS[("KV + rate-limit bindings")]
-  EVENTS[("Analytics Engine")]
-  LLM["LLM provider"]
-  ISSUES["GitHub Issues<br/>in the pipeline repo"]
+  subgraph services["Data and services"]
+    LENSDATA[("lenses.json · lenses-gfx.json<br/>bundled at build")]
+    APPDB[("D1 · app<br/>users · conversations · gear<br/>favorites · settings")]
+    TRACES[("D1 · Ask Iris traces")]
+    BUDGET[("KV · Ask Iris token budgets")]
+    LIMITS["Rate-limit bindings"]
+    EVENTS[("Analytics Engine")]
+    LLM["LLM provider"]
+    ISSUES["GitHub Issues<br/>in the pipeline repo"]
+  end
 
   PAGES --> RSC --> LENSDATA
   ISLANDS --> CHAT & ME & AUTH & FEEDBACK & TRACK
-  CHAT --> LLM
-  CHAT --> APPDB & TRACES & LIMITS
+  CHAT --> LLM & APPDB & TRACES & BUDGET & LIMITS
+  FEEDBACK --> LIMITS & ISSUES
   ME & AUTH --> APPDB
-  FEEDBACK --> ISSUES
   TRACK --> EVENTS
 ```
 
