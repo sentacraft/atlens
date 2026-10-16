@@ -1,12 +1,14 @@
 import { Link } from "@/i18n/navigation";
 import { localized } from "@/i18n/localized";
 import type { LensCollection } from "@/lib/collections";
+import type { Mount } from "@/lib/types";
+import { collectionPath, collectionsPath } from "@/lib/url/routes";
 
 interface CollectionPillsProps {
   collections: LensCollection[];
   // Passed in: counting needs the catalogue, and one caller is a client component.
   lensCounts: Record<string, number>;
-  mountSegment: string;
+  mount: Mount;
   locale: string;
   title: string;
   viewAllLabel: string;
@@ -15,7 +17,7 @@ interface CollectionPillsProps {
 export default function CollectionPills({
   collections,
   lensCounts,
-  mountSegment,
+  mount,
   locale,
   title,
   viewAllLabel,
@@ -31,7 +33,7 @@ export default function CollectionPills({
           {title}
         </h2>
         <Link
-          href={`/lenses/${mountSegment}/collections`}
+          href={collectionsPath(mount)}
           className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
         >
           {viewAllLabel} →
@@ -41,7 +43,7 @@ export default function CollectionPills({
         {collections.map((c) => (
           <Link
             key={c.slug}
-            href={`/lenses/${mountSegment}/collections/${c.slug}`}
+            href={collectionPath(mount, c.slug)}
             className="group inline-flex items-center gap-2 rounded-full border border-zinc-200 px-3 py-1.5 text-sm transition-colors hover:border-zinc-900 hover:bg-zinc-900 hover:text-white dark:border-zinc-700 dark:hover:border-zinc-100 dark:hover:bg-zinc-100 dark:hover:text-zinc-900"
           >
             <span className="font-normal text-zinc-900 group-hover:text-white dark:text-zinc-100 dark:group-hover:text-zinc-900">

@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
-import { mountToUrlSegment } from "@/lib/mount";
 import {
   apertureDisplay,
   filterSizeDisplay,
@@ -14,6 +13,7 @@ import {
 } from "@/lib/lens/format";
 import { formatPrice, type PricingTranslator } from "@/lib/lens/pricing";
 import type { LensTableColumn, ResolvedLens } from "@/lib/ai/recall";
+import { lensPath } from "@/lib/url/routes";
 
 type Labels = {
   yes: string;
@@ -127,7 +127,7 @@ export default function LensTable({
               >
                 <th scope="row" className="px-3.5 py-2 text-left font-normal">
                   <Link
-                    href={`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`}
+                    href={lensPath(lens)}
                     prefetch={false}
                     onClick={(e) => {
                       e.stopPropagation();

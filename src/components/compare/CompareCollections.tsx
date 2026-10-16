@@ -5,7 +5,6 @@ import { useTranslations, useLocale } from "next-intl";
 import { useCompare } from "@/context/CompareProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { getSharedCollections } from "@/lib/collections";
-import { mountToUrlSegment } from "@/lib/mount";
 import CollectionPills from "@/components/collection/CollectionPills";
 import type { Lens } from "@/lib/types";
 
@@ -20,7 +19,6 @@ export default function CompareCollections({
   const locale = useLocale();
   const { compareIds } = useCompare();
   const mount = useEffectiveMount();
-  const seg = mountToUrlSegment(mount);
 
   const activeLenses = useMemo(
     () =>
@@ -39,7 +37,7 @@ export default function CompareCollections({
     <CollectionPills
       collections={sharedCollections}
       lensCounts={lensCounts}
-      mountSegment={seg}
+      mount={mount}
       locale={locale}
       title={t("collectionsTitle")}
       viewAllLabel={t("viewAllCollections")}

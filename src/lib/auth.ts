@@ -9,6 +9,7 @@ import { linkAnonymousUser } from "@/lib/askiris/link-anonymous-user";
 import { deleteAccountEmail, signInCodeEmail } from "@/lib/auth-email";
 import { emailLocale } from "@/lib/locale-preference";
 import { getSavedLocaleByEmail, getUserSettings } from "@/lib/me/settings-repository";
+import { SITE } from "@/config/site";
 
 function getAuthContext() {
   const context = getCloudflareContext();
@@ -47,8 +48,8 @@ export function createAuth() {
         "localhost:*",
         "127.0.0.1",
         "127.0.0.1:*",
-        "atlens.app",
-        "*.atlens.app",
+        SITE.host,
+        `*.${SITE.host}`,
         "*.sentacraft.com",
       ],
       fallback: siteURL,

@@ -28,7 +28,7 @@ import LensSearchDialog, { suggestLensFooter } from "@/components/browse/LensSea
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LENS_GRID_CLS, SEARCH_TRIGGER_CLS } from "@/config/ui-tokens";
-import { mountToUrlSegment } from "@/lib/mount";
+import { aboutPath, lensPath } from "@/lib/url/routes";
 
 interface LensListClientProps {
   lenses: Lens[];
@@ -69,7 +69,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
 
   function handleSelectLens(lens: Lens) {
     setSearchOpen(false);
-    router.push(`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`);
+    router.push(lensPath(lens));
   }
 
   function clearAllFilters() {
@@ -159,7 +159,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
                 })}
               </p>
               <Link
-                href="/about#coverage"
+                href={aboutPath("coverage")}
                 className="whitespace-nowrap text-xs text-zinc-400 underline-offset-2 transition-colors hover:text-zinc-600 hover:underline dark:text-zinc-500 dark:hover:text-zinc-300"
               >
                 {t("coverageLink")}

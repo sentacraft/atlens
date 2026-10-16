@@ -3,8 +3,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { getAllLenses } from "@/lib/lens/data";
-import { mountToUrlSegment } from "@/lib/mount";
 import type { Lens } from "@/lib/types";
+import { lensPath } from "@/lib/url/routes";
 
 type Params = Promise<{ locale: string }>;
 
@@ -101,7 +101,7 @@ export default async function RecentlyAddedPage({ params }: { params: Params }) 
                     {group.lenses.map((lens) => (
                       <li key={lens.id}>
                         <Link
-                          href={`/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`}
+                          href={lensPath(lens)}
                           className="group inline-flex items-baseline gap-1.5 text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
                         >
                           <span className="text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-400 dark:group-hover:text-zinc-500">

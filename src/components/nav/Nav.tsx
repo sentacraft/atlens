@@ -11,7 +11,6 @@ import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useBreakpoint } from "@/hooks/useViewport";
-import { mountToUrlSegment } from "@/lib/mount";
 import { useNav } from "@/context/NavProvider";
 import { usePwa } from "@/hooks/usePwa";
 import { track } from "@/lib/analytics/analytics";
@@ -22,6 +21,8 @@ import FeedbackDialog from "@/components/feedback/FeedbackDialog";
 import GitHubMark from "@/components/logos/GitHubMark";
 import AuthControl from "@/components/auth/AuthControl";
 import { SITE } from "@/config/site";
+import { ABOUT_PATH, ASK_IRIS_PATH, GET_APP_PATH, browsePath } from "@/lib/url/routes";
+import { buildComparePath } from "@/lib/url/compare";
 
 export default function Nav() {
   const t = useTranslations("Nav");
@@ -73,11 +74,8 @@ export default function Nav() {
     setNavHidden(hidden);
   }, [hidden, setNavHidden]);
 
-  const seg = mountToUrlSegment(effectiveMount);
-  const browseHref = `/lenses/${seg}/browse`;
-  const compareHref = compareIds.length > 0
-    ? `/lenses/${seg}/compare?ids=${compareIds.join(",")}`
-    : `/lenses/${seg}/compare`;
+  const browseHref = browsePath(effectiveMount);
+  const compareHref = buildComparePath(effectiveMount, compareIds);
 
   const linkCls = (active: boolean) =>
     `text-sm transition-colors px-2 ${
@@ -95,7 +93,7 @@ export default function Nav() {
 
   const isBrowseActive = pathname.startsWith("/lenses") && !pathname.includes("/compare");
   const isCompareActive = pathname.includes("/compare");
-  const isAskIrisActive = pathname.startsWith("/askiris");
+  const isAskIrisActive = pathname.startsWith(ASK_IRIS_PATH);
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
 
   function handleCompareLinkClick(e: React.MouseEvent) {
@@ -141,7 +139,7 @@ export default function Nav() {
           <Link href={browseHref} className={linkCls(isBrowseActive)}>
             {t("lenses")}
           </Link>
-          <Link href="/askiris" className={linkCls(isAskIrisActive)}>
+          <Link href={ASK_IRIS_PATH} className={linkCls(isAskIrisActive)}>
             {t("askIris")}
             <sup className="relative -top-1.5 ml-0.5 text-[8px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
               Beta
@@ -155,11 +153,11 @@ export default function Nav() {
             {t("compare")}
           </Link>
 
-          <Link href="/about" className={cn(linkCls(pathname === "/about"), "hidden sm:inline")}>
+          <Link href={ABOUT_PATH} className={cn(linkCls(pathname === ABOUT_PATH), "hidden sm:inline")}>
             {t("about")}
           </Link>
           {!isPwa && (
-            <Link href="/get" className={cn(linkCls(pathname === "/get"), "hidden sm:inline")}>
+            <Link href={GET_APP_PATH} className={cn(linkCls(pathname === GET_APP_PATH), "hidden sm:inline")}>
               <span className="text-sm">{t("getApp")}</span>
             </Link>
           )}
@@ -200,16 +198,16 @@ export default function Nav() {
                     {t("compare")}
                   </Menu.LinkItem>
                   <Menu.LinkItem
-                    render={<Link href="/about" />}
-                    className={mobileLinkCls(pathname === "/about")}
+                    render={<Link href={ABOUT_PATH} />}
+                    className={mobileLinkCls(pathname === ABOUT_PATH)}
                   >
                     <Info className="h-4 w-4 shrink-0" />
                     {t("about")}
                   </Menu.LinkItem>
                   {!isPwa && (
                     <Menu.LinkItem
-                      render={<Link href="/get" />}
-                      className={mobileLinkCls(pathname === "/get")}
+                      render={<Link href={GET_APP_PATH} />}
+                      className={mobileLinkCls(pathname === GET_APP_PATH)}
                     >
                       <Download className="h-4 w-4 shrink-0" />
                       {t("getApp")}
