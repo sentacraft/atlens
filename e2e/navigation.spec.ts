@@ -7,8 +7,8 @@ test.describe("Navigation", () => {
     testInfo.skip(!viewport || viewport.height < 500, "Home hero CTA needs portrait/desktop height");
 
     await page.goto("/en");
-    await expect(page.getByRole("link", { name: "Browse Lenses" })).toBeVisible();
-    await page.getByRole("link", { name: "Browse Lenses" }).click();
+    await expect(page.getByRole("link", { name: /^Browse all lenses/ })).toBeVisible();
+    await page.getByRole("link", { name: /^Browse all lenses/ }).click();
     await expect(page).toHaveURL(/\/en\/lenses/);
   });
 

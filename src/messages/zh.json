@@ -280,11 +280,23 @@
     "gfxBetaNotice": "G 卡口数据仍在完善中，部分镜头和功能暂未覆盖。"
   },
   "Home": {
-    "cta": "浏览镜头",
-    "ctaCompare": "对比",
+    "cta": "浏览全部镜头",
     "dataSnapshot": "lens.json loaded ✓",
     "dataSnapshotCount": "{count} 支镜头 · {brands} 个品牌 · 0 hallucination",
-    "dataTooltip": "参数来自厂商官方数据，经过规范化整理。任何内容都不靠 AI 生成。"
+    "dataTooltip": "参数来自厂商官方数据，经过规范化整理。任何内容都不靠 AI 生成。",
+    "irisIntro": "Atlens 内置的 AI 助手，回答基于这里收录的镜头数据",
+    "irisPlaceholder": "说说你想拍什么",
+    "irisSend": "发送",
+    "irisClose": "收起",
+    "orBrowse": "或者浏览全部镜头",
+    "irisExamples": [
+      "想要一支能放进口袋的饼干头",
+      "旅行只想带一支镜头走天下",
+      "原厂和国产的 23mm 定焦差在哪？",
+      "镜头型号里的 R、LM、WR 是什么意思？"
+    ],
+    "collectionsIntro": "按用途、焦段、预算整理好的镜头清单，点开就是筛好的结果",
+    "allCollections": "查看全部 {count} 个合集"
   },
   "LensList": {
     "title": "镜头库",

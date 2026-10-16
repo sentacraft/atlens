@@ -1,9 +1,15 @@
 import { firstSearchParam } from "@/lib/url/search-params";
+import { ASK_IRIS_PATH } from "@/lib/url/routes";
 
 export const ASKIRIS_PARAMS = {
   query: "q",
   conversation: "conversation",
 } as const;
+
+/** Opens Ask Iris and sends `query` as the first message. */
+export function askIrisHandoffPath(query: string): string {
+  return `${ASK_IRIS_PATH}?${new URLSearchParams({ [ASKIRIS_PARAMS.query]: query })}`;
+}
 
 export type AskIrisEntry =
   | { kind: "new" }

@@ -58,6 +58,22 @@ for (const slug of Object.keys(FILTERS)) {
   }
 }
 
+export const FEATURED_COLLECTION_SLUGS = [
+  "pancake",
+  "under-200g",
+  "fast-aperture-primes",
+  "travel-zoom",
+  "chinese-af",
+  "chinese-mf-095",
+  "23mm",
+] as const;
+
+for (const slug of FEATURED_COLLECTION_SLUGS) {
+  if (!(slug in COLLECTIONS)) {
+    throw new Error(`FEATURED_COLLECTION_SLUGS: "${slug}" has no entry in collections.json`);
+  }
+}
+
 export function getMemberCollections(lens: Lens, locale: string): LensCollection[] {
   return Object.values(COLLECTIONS).filter((collection) => collection.filter(lens, locale));
 }
