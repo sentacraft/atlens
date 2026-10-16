@@ -131,29 +131,49 @@ The pipeline currently manages 248 lenses and has grown through 900+ commits sin
 
 ```mermaid
 flowchart TD
-  subgraph intake["Intake"]
-    DISC["<b>Discover</b> · monthly LLM worker<br/>Web search for registered brands with new X-mount releases<br/>opens a brand-level index issue"]
-    FEED["<b>Site feedback</b><br/>missing lens · data error<br/>becomes a GitHub issue"]
-    TRI["<b>Triage bot</b> · GitHub Action on every new issue<br/>Checks the report against the catalog and labels it"]
+  subgraph intake["`**Intake**`"]
+    DISC["`**Discover** · monthly LLM worker
+Web search for registered brands with new X-mount releases
+opens a brand-level index issue`"]
+    FEED["`**Site feedback**
+missing lens · data error
+becomes a GitHub issue`"]
+    TRI["`**Triage bot** · GitHub Action on every new issue
+Checks the report against the catalog and labels it`"]
   end
 
   SOURCES[("sources.yaml<br/>brands · listing pages · spec sources")]
   PSOURCES[("pricing-sources.yaml")]
 
-  IDX["<b>Index</b><br/>Walks each brand's official listing pages<br/>Dedupes by canonical lens ID"]
+  IDX["`**Index**
+Walks each brand's official listing pages
+Dedupes by canonical lens ID`"]
 
-  subgraph collect["Collect"]
-    C1["<b>Locate & image</b> · per brand<br/>Official detail page URLs + main product image"]
-    C2["<b>Fetch raw specs</b> · per lens<br/>Official spec text, no parsing"]
-    AUDIT["<b>Source audit</b> · LLM-as-a-judge<br/>ok · thin · junk · wrong lens<br/>Derive waits while no source has a spec table"]
+  subgraph collect["`**Collect**`"]
+    C1["`**Locate & image** · per brand
+Official detail page URLs + main product image`"]
+    C2["`**Fetch raw specs** · per lens
+Official spec text, no parsing`"]
+    AUDIT["`**Source audit** · LLM-as-a-judge
+ok · thin · junk · wrong lens
+Derive waits while no source has a spec table`"]
   end
 
-  DER["<b>Derive</b><br/>AI reads the raw text and fills semantic fields<br/>Conflicts and schema gaps become review notes"]
-  CMP["<b>Compute</b><br/>Script derives deterministic fields from the model name<br/>series · focal length · aperture · T-stop · traits"]
-  PRC["<b>Pricing</b><br/>New price from official storefronts<br/>Used-market median only when no new price exists"]
-  IMG["<b>Image processing</b><br/>Background removal + normalization"]
-  REV["<b>Review</b> · maintainer, AI-assisted<br/>Resolves notes and fills gaps"]
-  PUB["<b>Publish</b> · run by the maintainer<br/>Schema validation · full rebuild · PR to this repo"]
+  DER["`**Derive**
+AI reads the raw text and fills semantic fields
+Conflicts and schema gaps become review notes`"]
+  CMP["`**Compute**
+Script derives deterministic fields from the model name
+series · focal length · aperture · T-stop · traits`"]
+  PRC["`**Pricing**
+New price from official storefronts
+Used-market median only when no new price exists`"]
+  IMG["`**Image processing**
+Background removal + normalization`"]
+  REV["`**Review** · maintainer, AI-assisted
+Resolves notes and fills gaps`"]
+  PUB["`**Publish** · run by the maintainer
+Schema validation · full rebuild · PR to this repo`"]
   DB[("lenses.json · lenses-gfx.json")]
 
   DISC --> IDX
