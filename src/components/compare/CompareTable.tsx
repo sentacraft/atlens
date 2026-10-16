@@ -10,7 +10,7 @@ import { useNav } from "@/context/NavProvider";
 import { usePwa } from "@/hooks/usePwa";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { ArrowUpRight, ChevronLeft, ChevronRight, Flag, Search, TriangleAlert, X } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, FileCheck, Flag, Search, TriangleAlert, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ICON_CLOSE_BTN_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
@@ -35,7 +35,7 @@ import { useCountryCode } from "@/hooks/useCountryCode";
 import { useIsMobileDevice } from "@/hooks/useViewport";
 import { pickPriceEntry } from "@/lib/lens/pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
-import { lensPath } from "@/lib/url/routes";
+import { aboutPath, lensPath } from "@/lib/url/routes";
 
 function LensHeaderContent({ lens }: { lens: Lens }) {
   const tBrand = useTranslations("Brands");
@@ -757,6 +757,18 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
       </table>
     </div>
 
+    {orderedLenses.length > 0 && (
+      <p className="px-3 pt-2 text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400">
+        <FileCheck className="inline size-3 -mt-px mr-1 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
+        {t.rich("sourceCaption", {
+          link: (chunks) => (
+            <Link href={aboutPath("data-accuracy")} className={TEXT_LINK_CLS}>
+              {chunks}
+            </Link>
+          ),
+        })}
+      </p>
+    )}
     {showDisclosure && <PurchaseDisclosureCaption />}
     </>
   );

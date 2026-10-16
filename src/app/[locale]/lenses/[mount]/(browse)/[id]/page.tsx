@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Flag } from "lucide-react";
+import { FileCheck, Flag } from "lucide-react";
 import { getLensUrl } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount } from "@/lib/mount";
@@ -22,7 +22,6 @@ import Breadcrumb from "@/components/nav/Breadcrumb";
 import SpecialtyBadges from "@/components/lens/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens/specialty";
 import { RetailersDropdown } from "@/components/price/RetailersDropdown";
-import { UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { getMemberCollections } from "@/lib/collections";
 import { getCollectionLensCounts } from "@/lib/collection-stats";
 import CollectionPills from "@/components/collection/CollectionPills";
@@ -35,7 +34,9 @@ import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
 import { buildLensDescription, buildLensProductSchema } from "@/lib/lens/seo";
 import { PriceSection } from "@/components/price/PriceSection";
 import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
-import { browsePath, lensPath } from "@/lib/url/routes";
+import { aboutPath, browsePath, lensPath } from "@/lib/url/routes";
+import { Link } from "@/i18n/navigation";
+import { TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
 
@@ -252,18 +253,11 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
         <div className="flex-1 flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex flex-wrap items-center gap-1.5">
-                <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">
-                  {lensSubtitleLine(brandName, lens.series)}
-                </span>
-                <SpecialtyBadges {...deriveSpecialty(lens)} />
-              </div>
-              {url && (
-                <ExternalLink href={url} className="shrink-0 inline-flex items-center gap-0.5 text-xs text-zinc-400 transition-colors hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300">
-                  {t("officialSite")}
-                </ExternalLink>
-              )}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">
+                {lensSubtitleLine(brandName, lens.series)}
+              </span>
+              <SpecialtyBadges {...deriveSpecialty(lens)} />
             </div>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 font-heading leading-[1.1]">
               {displayName}
@@ -286,6 +280,31 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
       <div>
         <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-zinc-200 px-4 py-2.5 text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
+              <span className="inline-flex items-center gap-1.5">
+                <FileCheck className="size-3.5 shrink-0" aria-hidden="true" />
+                {t("sourceLabel")}
+                {url ? (
+                  <ExternalLink href={url} className={`inline-flex items-center gap-0.5 font-medium ${TEXT_LINK_CLS}`}>
+                    {t("sourceSite", { brand: brandName })}
+                  </ExternalLink>
+                ) : (
+                  <span className="font-medium text-zinc-700 dark:text-zinc-300">{t("sourceSite", { brand: brandName })}</span>
+                )}
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
+                {t("sourceTrust")}
+                <FieldNotePopover
+                  note={t.rich("sourceNote", {
+                    link: (chunks) => (
+                      <Link href={aboutPath("data-accuracy")} className={TEXT_LINK_CLS}>
+                        {chunks}
+                      </Link>
+                    ),
+                  })}
+                />
+              </span>
+            </div>
             {resolvedGroups.map((group, groupIdx) => (
               <div
                 key={group.label}
