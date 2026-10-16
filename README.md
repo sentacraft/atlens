@@ -22,16 +22,15 @@ Atlens is a lens database and comparison tool for Fujifilm shooters — X mount 
 
 ## Features
 
-- **Growing lens database** — focused on X-mount: full coverage of Fujifilm's first-party lineup plus a curated set of third-party brands (Sigma, Tamron, Viltrox, TTArtisan, 7Artisans, Brightin Star, SG Image), with more brands under evaluation. G-mount (medium format) coverage is also under way for Fujifilm's first-party GF lineup.
+- **Growing lens database** — Fujifilm's first-party lineup plus a dozen third-party brands across X and G mount; which brands and lens types are covered is kept in one place and shown live on the [coverage table](https://atlens.app/en/about#coverage)
 - **Clean, focused UI** — distraction-free interface designed around the comparison workflow
 - **Filter and sort** — multi-axis filtering (focal length, aperture, AF, OIS, weather resistance, specialty tags) combined with flexible sorting
 - **Curated collections** — hand-picked themes (compact primes, budget autofocus, and more), each defined by filter criteria rather than a hand-picked lens list, so the lineup stays current as the catalog grows — for when you don't know exactly what to search for
-- **Side-by-side comparison** of up to 4 lenses
+- **Side-by-side comparison** of up to 4 lenses, shareable as a link or a poster image — a single lens can be shared the same way
 - **Ask Iris** — a built-in AI assistant grounded in the catalog: describe what you shoot and it recommends and compares lenses with a reason for each, takes the gear you own into account when you're signed in, and answers questions about the site
 - **Accounts** — save favorite lenses and the gear you own, and keep Ask Iris conversations across devices
 - **Normalized data** — specs from different manufacturers use inconsistent formats and terminology; Atlens maps everything to a consistent schema so comparisons are fair and objective
 - **Pipeline-backed accuracy** — specs come from official manufacturer sources and go through a staged pipeline, reviewed by the maintainer before publishing
-- **Shareable comparison posters**
 - **Progressive Web App (PWA)** — Atlens is a web app at its core, but installs and runs like a native app. Add it to your home screen (iOS / Android) or dock (macOS) for instant, full-screen access — no App Store required
 - **Deep localization** — English and Chinese (中文) editions go beyond UI translation: pricing sources, used-market listings, and manufacturer links are all tailored to each audience's local market
 
