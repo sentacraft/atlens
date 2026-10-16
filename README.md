@@ -284,19 +284,28 @@ The pipeline keeps an append-only, git-tracked log of verified process incidents
 
 ## Local Development
 
+Requires Node 25 (see `.nvmrc`) and pnpm.
+
 ```bash
-# Install dependencies
 pnpm install
-
-# Copy environment variables
 cp .env.example .env.local
-# Fill in GITHUB_TOKEN and GITHUB_FEEDBACK_REPO
 
-# Start dev server
+# Create the local D1 databases
+pnpm exec wrangler d1 migrations apply atlens-app --local
+pnpm exec wrangler d1 migrations apply atlens-askiris-traces --local
+
 pnpm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). Browsing, filtering, and comparing need no configuration. Other features need values in `.env.local` (each is described in `.env.example`):
+
+| Feature | Needs |
+|---|---|
+| Sign-in and accounts | `BETTER_AUTH_SECRET` (any random string locally); Google sign-in also needs `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` and works only on port 3000 or 8787. Email codes aren't sent locally — the local email binding writes them to disk. |
+| Ask Iris | `BETTER_AUTH_SECRET`, `ANALYTICS_ID_SECRET`, and the model key named in `.env.example` |
+| Feedback form | `GITHUB_TOKEN` and `GITHUB_FEEDBACK_REPO` |
+
+`pnpm run preview` builds and serves the app on the real Cloudflare Workers runtime (workerd), which catches issues `next dev` can't.
 
 ## Contributing
 
