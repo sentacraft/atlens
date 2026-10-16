@@ -2,7 +2,7 @@ import "server-only";
 import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
 import { routing } from "@/i18n/routing";
-import { collectionLink, type FactLink } from "@/lib/askiris/inline-links";
+import { collectionLink, factLinkMarkdown, type FactLink } from "@/lib/askiris/inline-links";
 import { COLLECTIONS } from "@/lib/collections";
 import { CATALOG_COVERAGE, type CoverageState } from "@/lib/lens/catalog-coverage";
 import { getLensesByMount, lensCountsByBrand, meta } from "@/lib/lens/data";
@@ -37,11 +37,12 @@ function list(items: string[]): string {
   return items.join(", ");
 }
 
-function withLinks(text: string, links: string[] = []): string {
-  return links.length > 0 ? `${text} (links: ${links.join(", ")})` : text;
+function withLinks(locale: string, text: string, links: FactLink[] = []): string {
+  if (links.length === 0) {
+    return text;
+  }
+  return `${text} (links: ${links.map((l) => fillUiStrings(factLinkMarkdown(l), locale)).join(", ")})`;
 }
-
-const link = (text: string, ...links: FactLink[]) => withLinks(text, links);
 
 const COVERAGE_STATE: Record<string, string> = {
   true: "covered",
@@ -63,7 +64,7 @@ function coverage(locale: string): string[] {
     );
     return `${mount} mount, ${total} lenses in all. ${byBrand.join(". ")}.`;
   });
-  return [link(en.About.coverageBody, "page:aboutCoverage"), ...perMount, `The lens data was last updated on ${meta.lastUpdated.slice(0, 10)}.`];
+  return [withLinks(locale, en.About.coverageBody, ["page:aboutCoverage"]), ...perMount, `The lens data was last updated on ${meta.lastUpdated.slice(0, 10)}.`];
 }
 
 function sourcesOf(lenses: Lens[], market: Market, condition: "new" | "used"): string[] {
@@ -87,9 +88,10 @@ function commercialTies(locale: string): string[] {
   const m = MESSAGES[locale];
   const channel = donationChannel(locale) === "wechat" ? m.About.donationWechatLabel : "Ko-fi";
   return [
-    link(
+    withLinks(
+      locale,
       `Visitors who want to support Atlens can tip with ${channel}, from the "${m.About.supportTitle}" section of the "${m.Nav.about}" page.`,
-      "page:aboutSupport",
+      ["page:aboutSupport"],
     ),
     `Store links on this site: ${isPurchaseLocale(locale) ? en.Purchase.disclosureDetail : en.Purchase.disclosureNoAffiliate}`,
   ];
@@ -98,11 +100,10 @@ function commercialTies(locale: string): string[] {
 function accountFeatures(locale: string): string[] {
   const auth = MESSAGES[locale].Auth;
   return [
-    link(
+    withLinks(
+      locale,
       `Browsing, comparing, and Ask Iris all work without an account. Signing in adds: ${[auth.benefitGear, auth.benefitFavorites, auth.benefitSync].join("; ")}`,
-      "action:signIn",
-      "page:profileFavorites",
-      "page:profileGear",
+      ["action:signIn", "page:profileFavorites", "page:profileGear"],
     ),
   ];
 }
@@ -124,9 +125,10 @@ function features(locale: string): string[] {
       named(m.Nav.getApp, "install Atlens as a web app"),
     ])}.`,
     `The site is available in ${list(routing.locales.map(languageName))}.`,
-    link(
+    withLinks(
+      locale,
       `There is no app-store app. Atlens can be installed as a web app (PWA) on a phone or computer from the "${m.Nav.getApp}" page in the site's navigation.`,
-      "page:getApp",
+      ["page:getApp"],
     ),
   ];
 }
@@ -138,9 +140,9 @@ function collections(locale: string, mount: Mount): string[] {
   }
   const lang = locale === "zh" ? "zh" : "en";
   return [
-    `"${m.Nav.collections}" are curated lens lists by theme, for the current mount. Each line: name, summary, link.`,
+    `"${m.Nav.collections}" are curated lens lists by theme, for the current mount. Each line: a link to the collection, then its summary.`,
     ...Object.values(COLLECTIONS).map(
-      (c) => `"${c.title[lang]}": ${c.shortDescription[lang]} (link: ${collectionLink(c.slug)})`,
+      (c) => `[${c.title[lang]}](${collectionLink(c.slug)}): ${c.shortDescription[lang]}`,
     ),
   ];
 }
@@ -161,7 +163,7 @@ export function siteFacts(topics: SiteTopic[], locale: string, mount: Mount): { 
     topic,
     facts: [
       ...HANDWRITTEN_FACTS.filter((fact) => fact.topic === topic).map((fact) =>
-        withLinks(fillUiStrings(fact.text, messagesLocale), fact.links),
+        withLinks(messagesLocale, fillUiStrings(fact.text, messagesLocale), fact.links),
       ),
       ...(GENERATED[topic]?.(messagesLocale, mount) ?? []),
     ],

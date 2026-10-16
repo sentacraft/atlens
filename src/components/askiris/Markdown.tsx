@@ -21,6 +21,8 @@ import { collectionPath, lensPath } from "@/lib/url/routes";
 const PROSE_CLS =
   "prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-headings:mb-1 prose-hr:hidden";
 
+// The icon trails the label: an inline-flex box takes its baseline from its first child, so a
+// leading icon drops the chip below the line's text.
 const CHIP_CLS =
   "not-prose bg-muted text-foreground hover:bg-muted/70 mx-0.5 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 align-baseline text-[0.95em] font-medium no-underline transition-colors";
 const CHIP_ICON_CLS = "text-muted-foreground size-3.5 shrink-0";
@@ -48,8 +50,8 @@ function SignInChip({ children }: { children?: ReactNode }) {
   const openSignIn = useSignInDialog();
   return (
     <button type="button" onClick={() => openSignIn()} className={CHIP_CLS}>
-      <LogIn className={CHIP_ICON_CLS} aria-hidden />
       {children}
+      <LogIn className={CHIP_ICON_CLS} aria-hidden />
     </button>
   );
 }
@@ -87,8 +89,8 @@ function ChatLinkAnchor({ link, children }: { link: ChatLink; children?: ReactNo
     case "action":
       return link.action === "feedback" ? (
         <FeedbackTrigger type="general" className={CHIP_CLS}>
-          <MessageSquare className={CHIP_ICON_CLS} aria-hidden />
           {children}
+          <MessageSquare className={CHIP_ICON_CLS} aria-hidden />
         </FeedbackTrigger>
       ) : (
         <SignInChip>{children}</SignInChip>

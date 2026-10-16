@@ -8,32 +8,43 @@ import { ABOUT_PATH, GET_APP_PATH, RECENTLY_ADDED_PATH, aboutPath, profilePath }
  * slug; the chat resolves it to a URL, and anything it can't resolve renders as plain text.
  */
 
+// Labels are `{Namespace.key}` UI strings, so a link reads as the site names that page.
 export const PAGE_LINKS = {
-  about: { href: ABOUT_PATH },
-  aboutBackground: { href: aboutPath("background") },
-  aboutAskIris: { href: aboutPath("ask-iris") },
-  aboutDataAccuracy: { href: aboutPath("data-accuracy") },
-  aboutCoverage: { href: aboutPath("coverage") },
-  aboutSupport: { href: aboutPath("support") },
-  aboutPrivacy: { href: aboutPath("privacy") },
-  aboutDisclaimer: { href: aboutPath("disclaimer") },
-  aboutAck: { href: aboutPath("ack") },
-  getApp: { href: GET_APP_PATH },
-  recentlyAdded: { href: RECENTLY_ADDED_PATH },
-  profileFavorites: { href: profilePath("favorites") },
-  profileGear: { href: profilePath("gear") },
-  repo: { href: SITE.repoUrl, external: true },
-  readmePipeline: { href: SITE.pipelineDocUrl, external: true },
-  dataLicense: { href: SITE.dataLicenseUrl, external: true },
-} as const satisfies Record<string, { href: string; external?: boolean }>;
+  about: { href: ABOUT_PATH, label: "{About.pageTitle}" },
+  aboutBackground: { href: aboutPath("background"), label: "{About.backgroundTitle}" },
+  aboutAskIris: { href: aboutPath("ask-iris"), label: "{About.askIrisTitle}" },
+  aboutDataAccuracy: { href: aboutPath("data-accuracy"), label: "{About.dataAccuracyTitle}" },
+  aboutCoverage: { href: aboutPath("coverage"), label: "{About.coverageTitle}" },
+  aboutSupport: { href: aboutPath("support"), label: "{About.supportTitle}" },
+  aboutPrivacy: { href: aboutPath("privacy"), label: "{About.privacyTitle}" },
+  aboutDisclaimer: { href: aboutPath("disclaimer"), label: "{About.disclaimerTitle}" },
+  aboutAck: { href: aboutPath("ack"), label: "{About.ackTitle}" },
+  getApp: { href: GET_APP_PATH, label: "{Nav.getApp}" },
+  recentlyAdded: { href: RECENTLY_ADDED_PATH, label: "{RecentlyAdded.pageTitle}" },
+  profileFavorites: { href: profilePath("favorites"), label: "{Profile.favoritesTitle}" },
+  profileGear: { href: profilePath("gear"), label: "{Profile.gearTitle}" },
+  repo: { href: SITE.repoUrl, label: "GitHub", external: true },
+  readmePipeline: { href: SITE.pipelineDocUrl, label: "{About.dataGitHubCardTitle}", external: true },
+  dataLicense: { href: SITE.dataLicenseUrl, label: "{AskIris.linkDataLicense}", external: true },
+} as const satisfies Record<string, { href: string; label: string; external?: boolean }>;
 
 export type PageLinkKey = keyof typeof PAGE_LINKS;
 
-export const LINK_ACTIONS = ["feedback", "signIn"] as const;
-export type LinkAction = (typeof LINK_ACTIONS)[number];
+export const ACTION_LINKS = {
+  feedback: { label: "{Nav.feedback}" },
+  signIn: { label: "{Auth.signIn}" },
+} as const;
+export type LinkAction = keyof typeof ACTION_LINKS;
 
 /** A link a site fact points to; siteInfo hands it to Iris to copy into its reply. */
 export type FactLink = `page:${PageLinkKey}` | `action:${LinkAction}`;
+
+/** A fact link as markdown, its label still a `{Namespace.key}` placeholder. */
+export function factLinkMarkdown(link: FactLink): string {
+  const [scheme, key] = link.split(":") as ["page", PageLinkKey] | ["action", LinkAction];
+  const { label } = scheme === "page" ? PAGE_LINKS[key] : ACTION_LINKS[key];
+  return `[${label}](${link})`;
+}
 
 export function collectionLink(slug: string): string {
   return `collection:${slug}`;
@@ -71,7 +82,7 @@ export function parseChatLink(href: string | undefined): ChatLink | null {
     case "page":
       return isKeyOf(value, PAGE_LINKS) ? { kind: "page", key: value } : null;
     case "action":
-      return (LINK_ACTIONS as readonly string[]).includes(value) ? { kind: "action", action: value as LinkAction } : null;
+      return isKeyOf(value, ACTION_LINKS) ? { kind: "action", action: value } : null;
     case "compare": {
       const refs = [...new Set(value.split(",").map((part) => part.trim()).filter(Boolean))];
       return refs.length >= 2 && refs.length <= MAX_COMPARE ? { kind: "compare", refs } : null;

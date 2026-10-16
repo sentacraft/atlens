@@ -62,15 +62,14 @@ describe("siteFacts", () => {
   it("lists every collection from collections.json with its link, on mounts that have them", () => {
     const zhFacts = factsFor("collections", "zh");
     for (const c of Object.values(COLLECTIONS)) {
-      expect(zhFacts).toContain(`"${c.title.zh}"`);
-      expect(zhFacts).toContain(`collection:${c.slug}`);
+      expect(zhFacts).toContain(`[${c.title.zh}](collection:${c.slug})`);
     }
     expect(factsFor("collections", "en")).not.toMatch(/[\u4e00-\u9fff]/);
     expect(siteFacts(["collections"], "en", "G")[0].facts.join("\n")).not.toContain("collection:");
   });
 
   it("hands Iris each fact's links", () => {
-    expect(factsFor("business", "en")).toContain("(links: page:aboutSupport)");
-    expect(factsFor("project", "en")).toContain("(links: page:repo, page:dataLicense)");
+    expect(factsFor("business", "zh")).toContain(`(links: [${zh.About.supportTitle}](page:aboutSupport))`);
+    expect(factsFor("project", "en")).toContain(`(links: [GitHub](page:repo), [${en.AskIris.linkDataLicense}](page:dataLicense))`);
   });
 });
