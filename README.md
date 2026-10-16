@@ -155,7 +155,7 @@ Seven tools in three groups: retrieval (`queryLenses`, `searchLensByName`, `lens
 
 ### Guardrails
 
-- Each turn has a fixed step budget, and the last step may not call tools.
+- Each turn has a fixed step budget, and the last step cannot call tools.
 - `lensDetails`, `recommendLenses`, and `listLenses` reject any lens not retrieved in the same turn, with an error that tells the model to look it up first.
 - Requests are rate-limited per IP, and token use has daily budgets per IP and overall.
 - Conversations persist in SQLite (D1), and every turn leaves a trace for debugging and analytics.
@@ -242,9 +242,9 @@ Blue steps are scripts, yellow are LLM-driven, green involve a person.
 
 ### Agents, bots, and judges
 
-Each component has one job, its own runtime, and an explicit list of what it may not do.
+Each component has one job, its own runtime, and an explicit list of what it must not do.
 
-| Component | Runs | Does | May not |
+| Component | Runs | Does | Must not |
 |---|---|---|---|
 | **Discover** · LLM worker | Monthly GitHub Actions cron; Responses API with web search | Finds registered brands with recent X-mount releases and opens a brand-level index issue | Identify individual lenses, read user issues, or touch the catalog |
 | **Triage bot** | GitHub Actions on every new issue; Codex agent | Verifies a user report against the published catalog, labels it (lens missing, data error, duplicate, …), and comments with what it found | Change data, open PRs, or close issues; issue text is treated as untrusted input and its instructions are never followed |
