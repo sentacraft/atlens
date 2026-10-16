@@ -51,16 +51,14 @@ Atlens is a lens database and comparison tool for Fujifilm shooters — X mount 
 
 ## Architecture
 
-Lens data ships with the build, so browsing and comparing never touch a database; only accounts, Ask Iris, and telemetry reach the backend at request time. The frontend's server components and the backend's route handlers deploy together as one Next.js app on a Cloudflare Worker.
+Lens data ships with the build, so nearly every page is generated once at build time (SSG) and its interactive parts hydrate as client islands. The lens library goes further: the whole catalog is sent to the browser, which filters and sorts it locally (CSR). Only compare and Ask Iris read per-request URL state and render on the server (SSR). Server components and the backend's route handlers deploy together as one Next.js app on a Cloudflare Worker.
 
 ```mermaid
 flowchart LR
   subgraph frontend["Frontend"]
-    subgraph client["Client"]
-      PAGES["Pre-rendered pages<br/>lens detail · collections · about"]
-      ISLANDS["Client islands<br/>filters · compare · Ask Iris · profile<br/>TanStack Query"]
-    end
-    RSC["Server components<br/>render pages from the bundled lens data"]
+    SSG["<b>SSG + client islands</b><br/>lens detail · collections · home · about<br/>islands: compare, favorite, share, retailers"]
+    CSR["<b>SSG shell + CSR</b><br/>lens library: full catalog filtered in the browser<br/>profile: account data via TanStack Query"]
+    SSR["<b>SSR + client islands</b><br/>compare (lens IDs in the URL)<br/>Ask Iris (streamed replies)"]
   end
 
   subgraph backend["Backend · route handlers"]
@@ -82,8 +80,8 @@ flowchart LR
     ISSUES["GitHub Issues<br/>in the pipeline repo"]
   end
 
-  PAGES --> RSC --> LENSDATA
-  ISLANDS --> CHAT & ME & AUTH & FEEDBACK & TRACK
+  frontend -->|"rendered from"| LENSDATA
+  frontend -->|"client islands call"| backend
   CHAT --> LLM & APPDB & TRACES & BUDGET & LIMITS
   FEEDBACK --> LIMITS & ISSUES
   ME & AUTH --> APPDB
