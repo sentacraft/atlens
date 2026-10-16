@@ -49,7 +49,7 @@ It also supports installation as a **Progressive Web App (PWA)**: add it to your
 |-------|--------|
 | Framework | React 19, Next.js (App Router), TypeScript |
 | Runtime & hosting | Cloudflare Workers via OpenNext |
-| Data stores | Cloudflare D1 (SQLite) via Kysely, KV, Analytics Engine |
+| Data stores | Cloudflare D1 (SQLite) with plain SQL, KV, Analytics Engine |
 | Auth | Better Auth — Google, email code, anonymous sessions |
 | AI | Vercel AI SDK |
 | Client data | TanStack Query |
