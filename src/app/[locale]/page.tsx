@@ -65,7 +65,7 @@ function HomeContent({
   const t = useTranslations("Common");
 
   return (
-    <div data-testid="home-hero" className="flex min-h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] flex-col overflow-x-clip">
+    <div className="flex min-h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] flex-col overflow-x-clip">
       <section className="flex flex-1 flex-col items-center justify-center px-4 py-8 text-center">
         <HeroIris />
         <h1 className="mt-8 text-5xl sm:text-6xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50 font-heading">
