@@ -36,7 +36,7 @@ import { useIsMobileDevice } from "@/hooks/useViewport";
 import { pickPriceEntry } from "@/lib/lens/pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
 import { lensPath } from "@/lib/url/routes";
-import DataSourceBar from "@/components/lens/DataSourceBar";
+import { DataSourceBar } from "@/components/lens/DataSource";
 
 function LensHeaderContent({ lens }: { lens: Lens }) {
   const tBrand = useTranslations("Brands");

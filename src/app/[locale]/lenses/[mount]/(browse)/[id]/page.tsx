@@ -35,7 +35,7 @@ import { buildLensDescription, buildLensProductSchema } from "@/lib/lens/seo";
 import { PriceSection } from "@/components/price/PriceSection";
 import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
 import { browsePath, lensPath } from "@/lib/url/routes";
-import DataSourceBar from "@/components/lens/DataSourceBar";
+import { DataSourceBar } from "@/components/lens/DataSource";
 import { TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
