@@ -40,7 +40,7 @@ Atlens is a lens database and comparison tool for Fujifilm shooters — X mount 
 |-------|--------|
 | Framework | React 19, Next.js (App Router), TypeScript |
 | Runtime & hosting | Cloudflare Workers via OpenNext |
-| Data stores | Cloudflare D1 (SQLite) with plain SQL, KV, Analytics Engine |
+| Data stores | Cloudflare D1 (SQLite), KV, Analytics Engine |
 | Auth | Better Auth — Google, email code, anonymous sessions |
 | AI | Vercel AI SDK |
 | Client data | TanStack Query |
