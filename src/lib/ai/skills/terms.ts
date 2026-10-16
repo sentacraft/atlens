@@ -26,7 +26,7 @@ Optics
 Focus
 - "{LensDetail.focusMotor}": Atlens's class first, then the manufacturer's own label. "{LensDetail.motorLinear}" covers LM, HLA, VXD, VCM (voice coil), HyperVCM, and anything called linear; "{LensDetail.motorStepping}" covers STM, RXD, and stepping/stepper motors; "{LensDetail.motorDc}" covers DC and coreless DC motors and Fujifilm's older "High-Precision Motor"; "{LensDetail.motorOther}" is anything else. Note that voice coil motors count as linear here. The field is empty when the manufacturer names no motor, which is normal for older Fujifilm XF and XC lenses.
 - "{LensDetail.internalFocusing}": shown only when the manufacturer states it; its absence does not mean the lens extends to focus.
-- "{LensDetail.minFocusDist}": measured from the sensor (focal) plane, not the front of the lens, so the gap between the front element and the subject is shorter. For zooms it is the closest across the range, with per-focal-length values listed; a dedicated macro mode is listed separately.
+- "{LensDetail.minFocusDist}": measured from the sensor (focal) plane — not the front of the lens, and not the mount flange — so the gap between the front element and the subject is shorter. For zooms it is the closest across the range, with per-focal-length values listed; a dedicated macro mode is listed separately.
 - "{LensDetail.maxMagnification}": for zooms, the highest across the range, with per-focal-length values listed.
 - "{SpecialtyBadge.macro}" badge: lenses the manufacturer markets as macro, usually 0.5× or more. There is no separate badge above 1×; the magnification field shows it.
 
