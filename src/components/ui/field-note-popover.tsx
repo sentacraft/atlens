@@ -3,9 +3,10 @@
 import { Popover } from "@base-ui/react/popover";
 import { Info, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 
 interface Props {
-  note: string;
+  note: ReactNode;
   variant?: "info" | "warning";
 }
 

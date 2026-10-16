@@ -36,6 +36,7 @@ import { useIsMobileDevice } from "@/hooks/useViewport";
 import { pickPriceEntry } from "@/lib/lens/pricing";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
 import { lensPath } from "@/lib/url/routes";
+import { DataSourceBar } from "@/components/lens/DataSource";
 
 function LensHeaderContent({ lens }: { lens: Lens }) {
   const tBrand = useTranslations("Brands");
@@ -346,7 +347,20 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
       </div>
       </div>
     </div>
-    <div ref={containerRef} className="isolate overflow-x-auto overflow-y-clip rounded-xl border border-zinc-200 dark:border-zinc-800">
+    <div>
+    {orderedLenses.length > 0 && (
+      <DataSourceBar
+        className="rounded-t-xl border border-b-0 border-zinc-200 dark:border-zinc-800"
+        source={<span className="font-medium text-zinc-700 dark:text-zinc-300">{t("sourceAll")}</span>}
+      />
+    )}
+    <div
+      ref={containerRef}
+      className={cn(
+        "isolate overflow-x-auto overflow-y-clip border border-zinc-200 dark:border-zinc-800",
+        orderedLenses.length > 0 ? "rounded-b-xl" : "rounded-xl",
+      )}
+    >
       <table
         className={cn("w-full table-fixed text-sm border-collapse", orderedLenses.length > 0 && "min-w-max")}
         style={
@@ -755,6 +769,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
         )}
 
       </table>
+    </div>
     </div>
 
     {showDisclosure && <PurchaseDisclosureCaption />}
