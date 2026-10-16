@@ -152,8 +152,13 @@ describe("Markdown lens: links across the catalogue", () => {
 
 describe("Markdown chat links", () => {
   const OTHER = "c01n5";
+  const GFX = "g0000";
   const TARGETS = {
-    lenses: { ...INDEX, [OTHER]: { id: "sigma-contemporary-12mm-f14-dc-x", mount: "X" as const } },
+    lenses: {
+      ...INDEX,
+      [OTHER]: { id: "sigma-contemporary-12mm-f14-dc-x", mount: "X" as const },
+      [GFX]: { id: "fujifilm-gf-45mm-f28-r-wr-g", mount: "G" as const },
+    },
     collections: ["pancake"],
   };
   const renderLinks = (markdown: string) =>
@@ -200,6 +205,7 @@ describe("Markdown chat links", () => {
     ["an unknown action", "[x](action:delete)"],
     ["a compare link with an unknown ref", `[x](compare:${REF},zzzzz)`],
     ["a compare link with one lens", `[x](compare:${REF})`],
+    ["a compare link across mounts", `[x](compare:${REF},${GFX})`],
     ["an unknown collection", "[x](collection:nope)"],
   ])("renders %s as plain text", (_, markdown) => {
     const container = renderLinks(markdown);
