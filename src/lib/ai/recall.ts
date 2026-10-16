@@ -517,7 +517,7 @@ export function recommendLenses(
       if (!recalledRefs.has(pick.ref)) {
         throw new Error(
           `Lens ref "${pick.ref}" was not returned by any queryLenses/searchLensByName/myFavorites ` +
-            `call this turn. Recommend only lenses you've recalled — look it up first, ` +
+            `call in this conversation. Recommend only lenses you've recalled — look it up first, ` +
             `and pass the ref exactly as it appears.`,
         );
       }
@@ -550,7 +550,7 @@ export function listLenses(
     if (!recalledRefs.has(ref)) {
       throw new Error(
         `Lens ref "${ref}" was not returned by any queryLenses/searchLensByName/myFavorites call ` +
-          `this turn. Table only lenses you've recalled — look it up first, and pass ` +
+          `in this conversation. Table only lenses you've recalled — look it up first, and pass ` +
           `the ref exactly as it appears.`,
       );
     }

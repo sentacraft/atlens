@@ -1,4 +1,4 @@
-import { tool } from "ai";
+import { getToolName, isToolUIPart, tool, type UIMessage } from "ai";
 import { z } from "zod";
 import { FILTER_FEATURE_KEYS } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
@@ -22,15 +22,47 @@ import { favoritesOnMount } from "@/lib/ai/favorites";
 
 const RECALL_LIMIT = 20;
 
-/** `readFavorites` resolves to the user's favorite lens ids, newest first, or null for a guest. */
+type RefList = { ref?: unknown }[] | undefined;
+
+// Read loosely: stored turns are replayed even when they no longer match the tool schemas.
+const RECALL_OUTPUT_REFS: Record<string, (output: never) => unknown[]> = {
+  queryLenses: (output: { matches?: RefList; maybe?: { lens?: { ref?: unknown } }[] }) => [
+    ...(output.matches ?? []).map((lens) => lens.ref),
+    ...(output.maybe ?? []).map((entry) => entry.lens?.ref),
+  ],
+  searchLensByName: (output: { results?: RefList }) => (output.results ?? []).map((lens) => lens.ref),
+  myFavorites: (output: { results?: RefList }) => (output.results ?? []).map((lens) => lens.ref),
+};
+
+/** Adds every ref a recall tool returned in `messages` to `recalledRefs`. */
+export function seedRecalledRefs(recalledRefs: Set<string>, messages: UIMessage[]): void {
+  for (const message of messages) {
+    for (const part of message.parts) {
+      if (!isToolUIPart(part) || part.state !== "output-available" || !part.output) {
+        continue;
+      }
+      const refsOf = RECALL_OUTPUT_REFS[getToolName(part)];
+      for (const ref of refsOf?.(part.output as never) ?? []) {
+        if (typeof ref === "string") {
+          recalledRefs.add(ref);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * `readFavorites` resolves to the user's favorite lens ids, newest first, or null for a guest.
+ * `recalledRefs` gates every tool that takes a ref; the recall tools add to it, and
+ * `seedRecalledRefs` adds the refs they returned earlier in the conversation.
+ */
 export function buildLensTools(
   mount: Mount,
   locale: string,
   tBrand: (brand: string) => string,
   readFavorites: () => Promise<string[] | null>,
+  recalledRefs: Set<string>,
 ) {
-  // Turn-scoped: a lens recalled only in an earlier turn must be looked up again.
-  const recalledRefs = new Set<string>();
 
   return {
     queryLenses: tool({
@@ -216,7 +248,7 @@ export function buildLensTools(
             if (!recalledRefs.has(ref)) {
               throw new Error(
                 `Lens ref "${ref}" was not returned by any queryLenses/searchLensByName/myFavorites call ` +
-                  `this turn. Look it up first, and pass the ref exactly as it appears.`,
+                  `in this conversation. Look it up first, and pass the ref exactly as it appears.`,
               );
             }
             const lens = byRef.get(ref);
