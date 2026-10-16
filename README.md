@@ -188,27 +188,28 @@ verifies and labels`"]
   end
 
   IDX["`**Index**
-list every lens on each brand's official site
-one canonical ID per lens`"]
+each brand's official lens list
+deduped by lens ID`"]
   subgraph collect["`**Collect**`"]
     C1["`**Locate**
-official product page and product photo`"]
+official product page
+and product photo`"]
     C2["`**Fetch rawSpecs**
-all product text from the official pages
+official product text
 unstructured, one string`"]
     AUDIT["`**rawSpecs quality audit**
-LLM-as-a-judge: does the text really
-hold this lens's specs?`"]
+LLM-as-a-judge
+real spec text for this lens?`"]
   end
   DER["`**Derive**
 LLM turns rawSpecs into
 schema-typed fields`"]
   CMP["`**Compute**
-fields that follow from the
-model name, in code`"]
+fields from the model name
+in code`"]
   PRC["`**Pricing**
-new price from official stores
-used-market median as fallback`"]
+official stores
+used-market median fallback`"]
   IMG["`**Image processing**
 rotation · background removal
 size normalization`"]
