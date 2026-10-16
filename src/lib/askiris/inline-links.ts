@@ -1,6 +1,6 @@
 import { SITE } from "@/config/site";
 import { MAX_COMPARE } from "@/lib/lens/lens";
-import { parseLensLink, type LensLinkIndex } from "@/lib/ai/lens-ref";
+import type { LensLinkIndex } from "@/lib/ai/lens-ref";
 import { ABOUT_PATH, GET_APP_PATH, RECENTLY_ADDED_PATH, aboutPath, profilePath } from "@/lib/url/routes";
 
 /**
@@ -56,43 +56,39 @@ export interface ChatLinkTargets {
   collections: string[];
 }
 
-export type ChatLink =
-  | { kind: "lens"; ref: string }
-  | { kind: "page"; key: PageLinkKey }
-  | { kind: "action"; action: LinkAction }
-  | { kind: "compare"; refs: string[] }
-  | { kind: "collection"; slug: string };
-
 function isKeyOf<T extends object>(value: string, record: T): value is Extract<keyof T, string> {
   return Object.hasOwn(record, value);
 }
 
+function compareRefs(value: string): string[] | null {
+  const refs = [...new Set(value.split(",").map((part) => part.trim()).filter(Boolean))];
+  return refs.length >= 2 && refs.length <= MAX_COMPARE ? refs : null;
+}
+
+// One parser per scheme: the scheme list, the matcher, and the ChatLink type all derive from it.
+const PARSERS = {
+  lens: (value: string) => ({ kind: "lens", ref: value }) as const,
+  page: (value: string) => (isKeyOf(value, PAGE_LINKS) ? ({ kind: "page", key: value }) as const : null),
+  action: (value: string) => (isKeyOf(value, ACTION_LINKS) ? ({ kind: "action", action: value }) as const : null),
+  compare: (value: string) => {
+    const refs = compareRefs(value);
+    return refs ? ({ kind: "compare", refs }) as const : null;
+  },
+  collection: (value: string) => ({ kind: "collection", slug: value }) as const,
+};
+
+type ChatLinkScheme = keyof typeof PARSERS;
+export type ChatLink = NonNullable<ReturnType<(typeof PARSERS)[ChatLinkScheme]>>;
+
+const CHAT_LINK_RE = new RegExp(`^(${Object.keys(PARSERS).join("|")}):(.*)$`);
+
 /** Null for an ordinary URL, or a chat link whose value is malformed. */
 export function parseChatLink(href: string | undefined): ChatLink | null {
-  const ref = parseLensLink(href);
-  if (ref !== null) {
-    return { kind: "lens", ref };
-  }
-  const match = href?.match(/^(page|action|compare|collection):(.+)$/);
-  if (!match) {
-    return null;
-  }
-  const [, scheme, value] = match;
-  switch (scheme) {
-    case "page":
-      return isKeyOf(value, PAGE_LINKS) ? { kind: "page", key: value } : null;
-    case "action":
-      return isKeyOf(value, ACTION_LINKS) ? { kind: "action", action: value } : null;
-    case "compare": {
-      const refs = [...new Set(value.split(",").map((part) => part.trim()).filter(Boolean))];
-      return refs.length >= 2 && refs.length <= MAX_COMPARE ? { kind: "compare", refs } : null;
-    }
-    default:
-      return { kind: "collection", slug: value };
-  }
+  const match = href?.match(CHAT_LINK_RE);
+  return match ? PARSERS[match[1] as ChatLinkScheme](match[2]) : null;
 }
 
 /** Schemes the markdown renderer must keep instead of stripping as unknown protocols. */
 export function isChatLinkHref(url: string): boolean {
-  return /^(lens|page|action|compare|collection):/.test(url);
+  return CHAT_LINK_RE.test(url);
 }
