@@ -211,7 +211,7 @@ new price from official stores
 used-market median as fallback`"]
   IMG["`**Image processing**
 rotation · background removal
-normalization`"]
+size normalization`"]
   REV["`**Review**
 maintainer, AI-assisted`"]
   PUB["`**Publish**
@@ -249,7 +249,7 @@ Each component has one job, its own runtime, and an explicit list of what it may
 |---|---|---|---|
 | **Discover** · LLM worker | Monthly GitHub Actions cron; Responses API with web search | Finds registered brands with recent X-mount releases and opens a brand-level index issue | Identify individual lenses, read user issues, or touch the catalog |
 | **Triage bot** | GitHub Actions on every new issue; Codex agent | Verifies a user report against the published catalog, labels it (lens missing, data error, duplicate, …), and comments with what it found | Change data, open PRs, or close issues; issue text is treated as untrusted input and its instructions are never followed |
-| **Source audit** · LLM-as-a-judge | After every collect write, from a `PostToolUse` hook; an independent model with no tools | Judges each collected source as ok, thin, junk, or the wrong lens; holds Derive while no source has a spec table | Write anything |
+| **rawSpecs quality audit** · LLM-as-a-judge | After every collect write, from a `PostToolUse` hook; an independent model with no tools | Judges each collected source as ok, thin, junk, or the wrong lens; holds Derive while no source has a spec table | Write anything |
 | **Pipeline agent** | Interactively under the maintainer; Claude Code | Runs Index → Collect → Derive → Compute → Pricing → Images and prepares review; given an issue number, works it through to review | Write state except through the `write` command, read this repo's published data, or publish |
 | **Maintainer** · human in the loop | — | Reviews, resolves notes, and publishes | — |
 
@@ -269,7 +269,7 @@ flowchart TD
   GUARD -->|"allowed"| WRITE["write command<br/>stage boundary · schema · provenance"]
   WRITE -->|"rejected with reason"| AGENT
   WRITE --> STATE[("Per-lens state<br/>tracked in git")]
-  STATE --> HOOK["PostToolUse hook<br/>next step from queue · source audit"]
+  STATE --> HOOK["PostToolUse hook<br/>next step from queue · rawSpecs audit"]
   HOOK -->|"what to do next"| AGENT
   INCIDENT[("Incident log<br/>append-only")] --> LEARN["Learn review"]
   LEARN --> RULE["Reviewed change<br/>test · hook · CLI check<br/>source config · stage rule"]
@@ -279,7 +279,7 @@ flowchart TD
 ### Self-correction
 
 - **State, not memory.** Each lens has one JSON state file in git. `queue` recomputes every lens's next step from disk, so a run can stop anywhere and resume, and repeating a step is a no-op.
-- **Feedback after every write.** A `PostToolUse` hook tells the agent what the lens still needs, and runs the source audit after collect writes, so a thin or wrong source is caught before Derive builds on it.
+- **Feedback after every write.** A `PostToolUse` hook tells the agent what the lens still needs, and runs the rawSpecs quality audit after collect writes, so a thin or wrong source is caught before Derive builds on it.
 - **Uncertainty is surfaced, not guessed.** Derive writes only what the source supports; conflicts, schema gaps, and mismatches become notes that the maintainer resolves at review.
 - **Rollback.** `reset` returns a lens to an earlier stage and clears what came after it.
 
