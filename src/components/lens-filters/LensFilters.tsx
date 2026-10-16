@@ -22,6 +22,8 @@ interface Props {
   activeFilterCount: number;
   onReset: () => void;
   searchSlot?: ReactNode;
+  /** Sits at the end of the more-filters row. */
+  assistSlot: ReactNode;
 }
 
 export default function LensFilters({
@@ -31,6 +33,7 @@ export default function LensFilters({
   activeFilterCount,
   onReset,
   searchSlot,
+  assistSlot,
 }: Props) {
   const t = useTranslations("LensList");
   const tBadge = useTranslations("SpecialtyBadge");
@@ -310,7 +313,10 @@ export default function LensFilters({
           {typeRow}
           {focusRow}
         </div>
-        <div className="sm:my-1.5">{filtersMetaRow}</div>
+        <div className="flex items-center justify-between gap-3 sm:my-1.5">
+          {filtersMetaRow}
+          {assistSlot}
+        </div>
       </div>
 
       <div

@@ -808,5 +808,33 @@
     "ownedAdded": "Added to my gear",
     "viewGear": "View",
     "ownedRemoved": "Removed from my gear"
+  },
+  "IrisEntry": {
+    "browseLabel": "Not sure which? Ask Iris",
+    "emptyHint": "Clear a few filters, or just tell Iris what you're after.",
+    "emptyClear": "Clear filters",
+    "emptyLabel": "Let Iris find one",
+    "emptyQuestion": "Nothing matched these filters. Help me find something.",
+    "compareLabel": "Ask Iris how they differ",
+    "lensLabel": "Ask Iris about this lens",
+    "lookingAt": "Looking at",
+    "comparing": "Comparing {count}",
+    "browsing": "Browsing lenses",
+    "noFilters": "All lenses",
+    "detach": "Don't include this page",
+    "lensHeading": "About this lens, you could ask:",
+    "compareHeading": "About these lenses, you could ask:",
+    "browseHeading": "With these filters, you could ask:",
+    "lensSuggestions": ["What is it good for?", "How does it compare with others at this focal length?", "What does the focus motor row mean?"],
+    "compareSuggestions": ["What are the main differences?", "Which one is better for everyday carry?"],
+    "browseSuggestions": ["Given my filters, how should I choose?", "Which of these are the lightest?"],
+    "lensPlaceholder": "Ask anything about this lens",
+    "comparePlaceholder": "Ask anything about these lenses",
+    "browsePlaceholder": "What kind of lens are you after?",
+    "newConversation": "New conversation. The previous one is in your history.",
+    "newConversationGuest": "New conversation. The previous one is in your history, kept for 7 days without an account. <signIn>Sign in</signIn> to keep it for good.",
+    "browseName": "lenses",
+    "compareName": "comparison",
+    "backTo": "Back to {page}"
   }
 }

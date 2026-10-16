@@ -74,38 +74,37 @@ export default function ResponseFeedback({ responseMessageId }: { responseMessag
   return (
     <div className="flex flex-col gap-2 px-1 pt-1 text-sm">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        {rating === null ? (
-          <>
-            <span className="text-zinc-600 dark:text-zinc-300">{t("prompt")}</span>
-            <span className="flex items-center gap-1">
+        <span role={rating === null ? undefined : "status"} className="text-zinc-600 dark:text-zinc-300">
+          {rating === null ? t("prompt") : detailsSent ? t("detailsThanks") : t("thanks")}
+        </span>
+        {/* One group, so the × wraps together with the options instead of alone. */}
+        <span className="flex items-center gap-1">
+          {rating === null ? (
+            <>
               <button type="button" onClick={() => rate("helpful")} className={OPTION_CLS}>
                 {t("helpful")}
               </button>
               <button type="button" onClick={() => rate("unhelpful")} className={OPTION_CLS}>
                 {t("unhelpful")}
               </button>
-            </span>
-          </>
-        ) : (
-          <>
-            <span role="status" className="text-zinc-600 dark:text-zinc-300">
-              {detailsSent ? t("detailsThanks") : t("thanks")}
-            </span>
-            {!detailsSent && !detailsOpen && (
+            </>
+          ) : (
+            !detailsSent &&
+            !detailsOpen && (
               <button type="button" onClick={() => setDetailsOpen(true)} className={OPTION_CLS}>
                 {t("tellMore")}
               </button>
-            )}
-          </>
-        )}
-        <button
-          type="button"
-          onClick={() => setDismissed(true)}
-          aria-label={t("dismiss")}
-          className={cn(OPTION_CLS, "inline-flex items-center")}
-        >
-          <X className="size-4" />
-        </button>
+            )
+          )}
+          <button
+            type="button"
+            onClick={() => setDismissed(true)}
+            aria-label={t("dismiss")}
+            className={cn(OPTION_CLS, "inline-flex items-center")}
+          >
+            <X className="size-4" />
+          </button>
+        </span>
       </div>
 
       {detailsOpen && (

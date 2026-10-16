@@ -66,7 +66,7 @@ export default function HomeHeroActions() {
     const trimmed = question.trim();
     if (trimmed) {
       setExpanded(false);
-      openIris({ question: trimmed });
+      openIris({ kind: "question", text: trimmed });
     }
   }
 
