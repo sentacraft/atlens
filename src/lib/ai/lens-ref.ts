@@ -27,10 +27,6 @@ export function lensRef(id: string): string {
 
 export const LENS_LINK_PREFIX = "lens:";
 
-export function parseLensLink(href: string | undefined): string | null {
-  return href?.startsWith(LENS_LINK_PREFIX) ? href.slice(LENS_LINK_PREFIX.length) : null;
-}
-
 // GFM splits table cells on `|` before parsing links, and Sigma names contain one.
 // https://github.github.com/gfm/#tables-extension-
 const LENS_LINK_LABEL = /\[([^[\]\n]*)\]\(lens:/g;

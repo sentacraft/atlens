@@ -4,14 +4,15 @@ import zh from "@/messages/zh.json";
 import { getLensesByMount } from "@/lib/lens/data";
 import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
 import { HANDWRITTEN_FACTS } from "@/lib/site-facts/handwritten";
+import { COLLECTIONS } from "@/lib/collections";
 
 function factsFor(topic: (typeof SITE_TOPICS)[number], locale: string): string {
-  return siteFacts([topic], locale)[0].facts.join("\n");
+  return siteFacts([topic], locale, "X")[0].facts.join("\n");
 }
 
 describe("siteFacts", () => {
   it("has facts for every topic, and fact ids are unique", () => {
-    for (const { topic, facts } of siteFacts([...SITE_TOPICS], "en")) {
+    for (const { topic, facts } of siteFacts([...SITE_TOPICS], "en", "X")) {
       expect(facts.length, topic).toBeGreaterThan(0);
     }
     const ids = HANDWRITTEN_FACTS.map((fact) => fact.id);
@@ -19,7 +20,7 @@ describe("siteFacts", () => {
   });
 
   it("returns each requested topic once", () => {
-    expect(siteFacts(["privacy", "privacy", "data"], "en").map((group) => group.topic)).toEqual(["privacy", "data"]);
+    expect(siteFacts(["privacy", "privacy", "data"], "en", "X").map((group) => group.topic)).toEqual(["privacy", "data"]);
   });
 
   it("fills UI names in the user's language, and every placeholder resolves", () => {
@@ -27,7 +28,7 @@ describe("siteFacts", () => {
     expect(factsFor("project", "en")).not.toMatch(/[\u4e00-\u9fff]/);
     expect(factsFor("account", "zh")).toContain(`"${zh.Auth.deleteAccount}"`);
     for (const locale of ["en", "zh"]) {
-      expect(JSON.stringify(siteFacts([...SITE_TOPICS], locale))).not.toMatch(/\{\w+\.\w+\}/);
+      expect(JSON.stringify(siteFacts([...SITE_TOPICS], locale, "X"))).not.toMatch(/\{\w+\.\w+\}/);
     }
   });
 
@@ -56,5 +57,19 @@ describe("siteFacts", () => {
 
   it("lists price sources from the data", () => {
     expect(factsFor("prices", "en")).toMatch(/used from .*eBay/);
+  });
+
+  it("lists every collection from collections.json with its link, on mounts that have them", () => {
+    const zhFacts = factsFor("collections", "zh");
+    for (const c of Object.values(COLLECTIONS)) {
+      expect(zhFacts).toContain(`[${c.title.zh}](collection:${c.slug})`);
+    }
+    expect(factsFor("collections", "en")).not.toMatch(/[\u4e00-\u9fff]/);
+    expect(siteFacts(["collections"], "en", "G")[0].facts.join("\n")).not.toContain("collection:");
+  });
+
+  it("hands Iris each fact's links", () => {
+    expect(factsFor("business", "zh")).toContain(`(links: [${zh.About.supportTitle}](page:aboutSupport))`);
+    expect(factsFor("project", "en")).toContain(`(links: [GitHub](page:repo), [${en.AskIris.linkDataLicense}](page:dataLicense))`);
   });
 });
