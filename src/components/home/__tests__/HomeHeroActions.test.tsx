@@ -2,6 +2,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import HomeHeroActions from "../HomeHeroActions";
+import { HomeIrisStage } from "../HomeIrisStage";
 
 const push = vi.fn();
 const wide = vi.hoisted(() => ({ value: true }));
@@ -27,18 +28,26 @@ afterEach(() => {
   wide.value = true;
 });
 
+function renderActions() {
+  render(
+    <HomeIrisStage>
+      <HomeHeroActions />
+    </HomeIrisStage>,
+  );
+}
+
 describe("HomeHeroActions", () => {
   it("opens Ask Iris in place, and Escape closes it", () => {
-    render(<HomeHeroActions />);
+    renderActions();
     fireEvent.click(screen.getByRole("button", { name: /askIris/ }));
     expect(screen.getByPlaceholderText("irisPlaceholder")).toHaveFocus();
 
     fireEvent.keyDown(document, { key: "Escape" });
-    expect(screen.queryByPlaceholderText("irisPlaceholder")).toBeNull();
+    expect(screen.getByRole("button", { name: /askIris/ })).toHaveAttribute("aria-expanded", "false");
   });
 
   it("hands an example over to Ask Iris as the first message", () => {
-    render(<HomeHeroActions />);
+    renderActions();
     fireEvent.click(screen.getByRole("button", { name: /askIris/ }));
     fireEvent.click(screen.getByRole("button", { name: "A pancake lens that fits in a pocket" }));
 
@@ -47,7 +56,7 @@ describe("HomeHeroActions", () => {
 
   it("links straight to Ask Iris on a phone", () => {
     wide.value = false;
-    render(<HomeHeroActions />);
+    renderActions();
 
     expect(screen.getByRole("link", { name: /askIris/ })).toHaveAttribute("href", "/askiris");
   });

@@ -11,6 +11,7 @@ import HeroIris from "@/components/iris/HeroIris";
 import Tagline from "@/components/Tagline";
 import HomeHeroActions from "@/components/home/HomeHeroActions";
 import HomeCollections, { type FeaturedCollection } from "@/components/home/HomeCollections";
+import { HomeFold, HomeIrisStage } from "@/components/home/HomeIrisStage";
 
 type Params = Promise<{ locale: string }>;
 
@@ -65,25 +66,37 @@ function HomeContent({
   const t = useTranslations("Common");
 
   return (
-    <div className="flex min-h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] flex-col overflow-x-clip">
-      <section className="flex flex-1 flex-col items-center justify-center px-4 py-8 text-center">
-        <HeroIris />
-        <h1 className="mt-8 text-5xl sm:text-6xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50 font-heading">
-          <HeroBrand />
-        </h1>
-        <p className="mt-4 text-lg text-zinc-500 dark:text-zinc-400 max-w-sm">
-          {t("appDesc")}
-        </p>
-        <div className="mt-8 flex w-full flex-col items-center gap-3">
-          <HomeHeroActions />
-          <DataInfo mountStats={mountStats} lastAddedAt={lastAddedAt} />
-        </div>
-      </section>
+    <HomeIrisStage>
+      <div className="flex min-h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] flex-col overflow-x-clip">
+        <section className="relative flex flex-1 flex-col items-center justify-center px-4 py-8 text-center">
+          <HomeFold mode="hide" className="mb-8">
+            <HeroIris />
+          </HomeFold>
+          <HomeFold mode="shrink">
+            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50 font-heading group-data-[folded]:text-3xl sm:group-data-[folded]:text-4xl">
+              <HeroBrand />
+            </h1>
+          </HomeFold>
+          <HomeFold mode="hide" className="mt-4">
+            <p className="text-lg text-zinc-500 dark:text-zinc-400 max-w-sm">
+              {t("appDesc")}
+            </p>
+          </HomeFold>
+          <HomeFold mode="move" className="relative mt-8 flex w-full flex-col items-center">
+            <HomeHeroActions />
+          </HomeFold>
+          <HomeFold mode="hide" className="mt-3">
+            <DataInfo mountStats={mountStats} lastAddedAt={lastAddedAt} />
+          </HomeFold>
+        </section>
 
-      <HomeCollections featured={featured} total={Object.keys(COLLECTIONS).length} locale={locale} />
-      <div className="flex justify-center pt-5 pb-6">
-        <Tagline />
+        <HomeFold mode="move">
+          <HomeCollections featured={featured} total={Object.keys(COLLECTIONS).length} locale={locale} />
+          <div className="flex justify-center pt-5 pb-6">
+            <Tagline />
+          </div>
+        </HomeFold>
       </div>
-    </div>
+    </HomeIrisStage>
   );
 }
