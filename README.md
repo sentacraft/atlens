@@ -197,9 +197,7 @@ and product photo`"]
     C2["`**Fetch rawSpecs**
 official product text
 unstructured, one string`"]
-    AUDIT["`**rawSpecs quality audit**
-LLM-as-a-judge
-real spec text for this lens?`"]
+    AUDIT["`**rawSpecs quality audit**`"]
   end
   DER["`**Derive**
 LLM turns rawSpecs into
