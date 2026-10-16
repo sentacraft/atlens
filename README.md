@@ -40,7 +40,7 @@ Atlens is a lens database and comparison tool for Fujifilm shooters — X mount 
 |-------|--------|
 | Framework | React 19, Next.js (App Router), TypeScript |
 | Runtime & hosting | Cloudflare Workers via OpenNext |
-| Data stores | Cloudflare D1 (SQLite), KV, Analytics Engine |
+| Data stores | SQLite (Cloudflare D1), KV, Analytics Engine |
 | Auth | Better Auth — Google, email code, anonymous sessions |
 | AI | Vercel AI SDK |
 | Client data | TanStack Query |
@@ -67,6 +67,7 @@ flowchart LR
     CHAT["<b>/api/chat</b><br/>Ask Iris agent loop"]
     FEEDBACK["<b>/api/feedback</b>"]
     TRACK["<b>/api/track</b>"]
+    LIMITS["<b>Rate limits</b><br/>per-IP bindings on chat and feedback"]
   end
 
   subgraph services["Data and services"]
@@ -77,7 +78,6 @@ flowchart LR
       TRACES[("<b>SQLite (D1)</b><br/>agent traces")]
       BUDGET[("<b>KV</b><br/>token budgets")]
     end
-    LIMITS["<b>Rate-limit bindings</b>"]
     ISSUES["<b>GitHub Issues</b>"]
     EVENTS[("<b>Analytics Engine</b>")]
   end
@@ -86,7 +86,6 @@ flowchart LR
   frontend -->|"Client Components call"| backend
   ME & AUTH & CHAT --> APPDB
   CHAT --> agent
-  CHAT & FEEDBACK --> LIMITS
   FEEDBACK --> ISSUES
   TRACK --> EVENTS
 ```
