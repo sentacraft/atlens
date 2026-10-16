@@ -4,8 +4,9 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { emitContext, readHookEvent, repoRoot, touchedFiles } from "./touched-files.mjs";
 
-// The README and code restate how things work; the site facts restate those for visitors; the
-// About page is written from the facts. An edit at any link names what downstream to re-check.
+// The README and code restate how things work; the site facts and Iris's skill documents restate
+// those for visitors; the About page is written from the facts. An edit at any link names what
+// downstream to re-check.
 
 const event = readHookEvent();
 if (!event) {
@@ -20,6 +21,7 @@ if (touched.length === 0) {
 // Node strips the types; these modules import only types and each other by relative path.
 const { HANDWRITTEN_FACTS } = await import(`${root}/src/lib/site-facts/handwritten.ts`);
 const { ABOUT_FACT_SOURCES, staleAboutCopy } = await import(`${root}/src/lib/site-facts/about-sources.ts`);
+const { SKILLS } = await import(`${root}/src/lib/ai/skills/registry.ts`);
 
 const sections = [];
 
@@ -33,6 +35,15 @@ if (factsToRecheck.length > 0) {
     "The latest edit touched code or docs that these site facts restate (src/lib/site-facts/handwritten.ts):",
     ...factsToRecheck.map((fact) => `- ${fact.id}: ${fact.text}`),
     "Check that each is still true; if not, update it and mention the change in the PR, since Iris tells these to any visitor.",
+  );
+}
+
+const skillsToRecheck = Object.entries(SKILLS).filter(([, skill]) => skill.sources.some((source) => touched.includes(source)));
+if (skillsToRecheck.length > 0) {
+  sections.push(
+    "The latest edit touched code that these Iris skill documents describe:",
+    ...skillsToRecheck.map(([name]) => `- ${name} (src/lib/ai/skills/${name}.ts)`),
+    "Check that the document still matches; Iris reads it to explain the site's specs to users.",
   );
 }
 
