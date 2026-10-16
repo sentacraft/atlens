@@ -56,17 +56,30 @@ const transport = new DefaultChatTransport({
   }),
 });
 
-// A case's `gear` var ({ bodies, lenses } catalog ids) stands in for a signed-in user's profile.
-// The dev server honors this header; production builds ignore it.
+// A case's `gear` var ({ bodies, lenses } catalog ids) and `favorites` var (catalog ids, newest
+// first) stand in for a signed-in user's profile. The dev server honors these headers; production
+// builds ignore them.
 const EVAL_GEAR_HEADER = "x-askiris-eval-gear";
+const EVAL_FAVORITES_HEADER = "x-askiris-eval-favorites";
 
-async function postTurn(messages, mount, locale, conversationId, gear, continuing) {
+function profileHeaders(vars) {
+  const headers = {};
+  if (vars?.gear) {
+    headers[EVAL_GEAR_HEADER] = JSON.stringify(vars.gear);
+  }
+  if (vars?.favorites) {
+    headers[EVAL_FAVORITES_HEADER] = JSON.stringify(vars.favorites);
+  }
+  return headers;
+}
+
+async function postTurn(messages, mount, locale, conversationId, vars, continuing) {
   const stream = await transport.sendMessages({
     chatId: conversationId,
     messages,
     trigger: "submit-message",
     body: { mount, locale },
-    headers: gear ? { [EVAL_GEAR_HEADER]: JSON.stringify(gear) } : undefined,
+    headers: profileHeaders(vars),
   });
   let msg = null;
   for await (const m of readUIMessageStream({ stream, message: continuing, onError: () => {} })) {
@@ -251,12 +264,12 @@ export default class AskIrisProvider {
     for (let i = 0; i < turns.length; i++) {
       messages.push({ id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text: turns[i] }] });
       convo.push(`[User] ${turns[i]}`);
-      let assistant = await postTurn(messages, mount, locale, conversationId, context?.vars?.gear);
+      let assistant = await postTurn(messages, mount, locale, conversationId, context?.vars);
       const answered = assistant && answerGearCard(assistant, context?.vars?.gearCardAnswer ?? "not_signed_in");
       if (answered) {
         gearCardShown = true;
         if (!context?.vars?.stopAtGearCard) {
-          assistant = await postTurn([...messages, answered], mount, locale, conversationId, context?.vars?.gear, answered);
+          assistant = await postTurn([...messages, answered], mount, locale, conversationId, context?.vars, answered);
         }
       }
       if (assistant) {
