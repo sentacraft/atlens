@@ -177,56 +177,41 @@ The pipeline currently manages 248 lenses and has grown through 900+ commits sin
 ```mermaid
 flowchart TD
   subgraph intake["`**Intake**`"]
-    DISC["`**Discover** · monthly LLM worker
-Web search for registered brands with new X-mount releases
-opens a brand-level index issue`"]
     FEED["`**Site feedback**
-missing lens · data error
-becomes a GitHub issue`"]
-    TRI["`**Triage bot** · GitHub Action on every new issue
-Checks the report against the catalog and labels it`"]
+missing lens · data error`"]
+    DISC["`**Discover**
+monthly web search`"]
+    ISSUES[("`**GitHub Issues**
+one work queue`")]
+    TRI["`**Triage bot**
+verifies and labels`"]
   end
-
-  SOURCES[("sources.yaml<br/>brands · listing pages · spec sources")]
-  PSOURCES[("pricing-sources.yaml")]
 
   IDX["`**Index**
-Walks each brand's official listing pages
-Dedupes by canonical lens ID`"]
-
+official listings`"]
   subgraph collect["`**Collect**`"]
-    C1["`**Locate & image** · per brand
-Official detail page URLs + main product image`"]
-    C2["`**Fetch raw specs** · per lens
-Official spec text, no parsing`"]
-    AUDIT["`**Source audit** · LLM-as-a-judge
-ok · thin · junk · wrong lens
-Derive waits while no source has a spec table`"]
+    C1["`**Locate & image**`"]
+    C2["`**Fetch raw specs**`"]
+    AUDIT["`**Source audit**
+LLM-as-a-judge`"]
   end
-
   DER["`**Derive**
-AI reads the raw text and fills semantic fields
-Conflicts and schema gaps become review notes`"]
+AI extracts fields`"]
   CMP["`**Compute**
-Script derives deterministic fields from the model name
-series · focal length · aperture · T-stop · traits`"]
-  PRC["`**Pricing**
-New price from official storefronts
-Used-market median only when no new price exists`"]
-  IMG["`**Image processing**
-Background removal + normalization`"]
-  REV["`**Review** · maintainer, AI-assisted
-Resolves notes and fills gaps`"]
-  PUB["`**Publish** · run by the maintainer
-Schema validation · full rebuild · PR to this repo`"]
-  DB[("lenses.json · lenses-gfx.json")]
+deterministic fields`"]
+  PRC["`**Pricing**`"]
+  IMG["`**Image processing**`"]
+  REV["`**Review**
+maintainer, AI-assisted`"]
+  PUB["`**Publish**
+PR to this repo`"]
+  DB[("`**Lens catalog**`")]
 
-  DISC --> IDX
-  FEED --> TRI
-  TRI -->|"lens missing"| IDX
-  TRI -->|"data error"| REV
-  SOURCES --> IDX & C1 & C2
-  PSOURCES --> PRC
+  FEED --> ISSUES
+  DISC --> ISSUES
+  ISSUES <--> TRI
+  ISSUES -->|"lens missing"| IDX
+  ISSUES -->|"data error"| REV
   IDX --> C1 --> C2 --> AUDIT --> DER --> CMP --> REV
   IDX --> PRC --> REV
   C1 --> IMG --> REV
@@ -235,12 +220,12 @@ Schema validation · full rebuild · PR to this repo`"]
   classDef script fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
   classDef agent fill:#fef9c3,stroke:#ca8a04,color:#713f12
   classDef human fill:#dcfce7,stroke:#16a34a,color:#14532d
-  classDef config fill:#f1f5f9,stroke:#64748b,color:#1e293b
+  classDef store fill:#f1f5f9,stroke:#64748b,color:#1e293b
 
   class IDX,CMP,IMG,PUB script
   class DISC,TRI,C1,C2,AUDIT,DER,PRC agent
   class FEED,REV human
-  class SOURCES,PSOURCES config
+  class ISSUES,DB store
 ```
 
 Blue steps are scripts, yellow are LLM-driven, green involve a person.
