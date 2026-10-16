@@ -65,7 +65,8 @@ profile data via TanStack Query`"]
 compare · Ask Iris`"]
   end
 
-  subgraph backend["`**Backend** · route handlers`"]
+  subgraph backend["`**Backend**
+route handlers`"]
     ME["`**/api/me/…**
 gear · favorites · settings`"]
     AUTH["`**/api/auth**
