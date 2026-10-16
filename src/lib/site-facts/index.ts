@@ -156,6 +156,14 @@ const GENERATED: Partial<Record<SiteTopic, (locale: string, mount: Mount) => str
   collections,
 };
 
+/** Where siteInfo sends a question its facts don't answer. */
+export function uncoveredQuestionFact(locale: string): string {
+  return fillUiStrings(
+    `Anything these facts do not cover can be asked of the author through ${factLinkMarkdown("action:feedback")}.`,
+    locale in MESSAGES ? locale : routing.defaultLocale,
+  );
+}
+
 /** What Iris may tell anyone about Atlens itself, for the given topics. */
 export function siteFacts(topics: SiteTopic[], locale: string, mount: Mount): { topic: SiteTopic; facts: string[] }[] {
   const messagesLocale = locale in MESSAGES ? locale : routing.defaultLocale;

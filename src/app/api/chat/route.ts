@@ -48,6 +48,8 @@ import {
 } from "@/lib/askiris/message-metadata";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
+import { factLinkMarkdown } from "@/lib/askiris/inline-links";
+import { fillUiStrings } from "@/lib/ui-strings";
 
 const chatRequestSchema = z.object({
   // The rest of the message is checked by validateUIMessages, against the tools.
@@ -236,6 +238,7 @@ export async function POST(req: Request) {
         role: "system",
         content: gearPrompt(describeGear(gearStatus, (slug) => (tBrand.has(slug) ? tBrand(slug) : slug)), {
           cardAvailable: offerGearCard,
+          signInLink: fillUiStrings(factLinkMarkdown("action:signIn"), locale),
         }),
       },
     ],

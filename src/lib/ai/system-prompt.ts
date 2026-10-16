@@ -54,8 +54,8 @@ const UNKNOWN_GEAR = {
 
 const GEAR_NOTE_WHEN_PROFILE_EMPTY =
   "要推荐镜头时（包括问下一支该买什么、要补哪个焦段、按需求选镜头），先调用 askForGear 请他在卡片里填写器材，等他填完再推荐；他在对话里提到的器材会预填进卡片，提到了也照样调用。调用的这条回复里，文字不要问他的机身和镜头，卡片会问。他说这是第一支镜头或还没有相机时不调用，直接推荐。查规格、问事实、和镜头无关的问题不调用。";
-const GEAR_NOTE_WHEN_GUEST =
-  "只有当回答明显取决于他已有什么时，才调用 askForGear：问下一支该买什么、要补哪个焦段、和自己的镜头比、要不要升级；或者他提到了自己已有的部分器材，这时不管他问的是什么推荐都调用。他提到的器材会预填进卡片。调用的这条回复里，文字不要问他的机身和镜头，卡片会问。没提到自己器材的按需求推荐，直接回答，不调用。登录只在一种情况下提：他在按需求挑镜头、又没说自己还没有相机或这是第一支镜头时，整段对话里最多一次，在回复末尾用一句话说登录后你能记住他的器材；其他情况都不提登录。";
+const gearNoteWhenGuest = (signInLink: string) =>
+  `只有当回答明显取决于他已有什么时，才调用 askForGear：问下一支该买什么、要补哪个焦段、和自己的镜头比、要不要升级；或者他提到了自己已有的部分器材，这时不管他问的是什么推荐都调用。他提到的器材会预填进卡片。调用的这条回复里，文字不要问他的机身和镜头，卡片会问。没提到自己器材的按需求推荐，直接回答，不调用。登录只在一种情况下提：他在按需求挑镜头、又没说自己还没有相机或这是第一支镜头时，整段对话里最多一次，在回复末尾用一句话说登录后你能记住他的器材，登录写成 ${signInLink}；其他情况都不提登录。`;
 const GEAR_NOTE_AFTER_CARD_DECLINED =
   "他这次不想补充器材：他在对话里说过的器材照样用，没说过的就按一般情况推荐。不要再问他的器材，也不要提起卡片或他没有填写这件事。";
 
@@ -80,12 +80,16 @@ function lensLine(lens: GearLens): string {
 }
 
 /** The per-turn 【用户器材】 note, sent after systemPrompt as its own system message. */
-export function gearPrompt(gear: GearSummary, { cardAvailable }: { cardAvailable: boolean }): string {
+/** `signInLink` is the chat link, already labelled in the user's language, that opens sign-in. */
+export function gearPrompt(
+  gear: GearSummary,
+  { cardAvailable, signInLink }: { cardAvailable: boolean; signInLink: string },
+): string {
   if (!gear.known) {
     const howToAsk = !cardAvailable
       ? GEAR_NOTE_AFTER_CARD_DECLINED
       : gear.reason === "guest"
-        ? GEAR_NOTE_WHEN_GUEST
+        ? gearNoteWhenGuest(signInLink)
         : GEAR_NOTE_WHEN_PROFILE_EMPTY;
     return `【用户器材】\n${UNKNOWN_GEAR[gear.reason]}${howToAsk}`;
   }
