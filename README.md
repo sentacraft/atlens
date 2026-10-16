@@ -134,12 +134,12 @@ Ask Iris, the built-in AI assistant, is a **tool-calling agent loop** on the Ver
 | `queryLenses` | Recalls lenses by spec constraints |
 | `searchLensByName` | Looks up a model the user named |
 | `lensDetails` | Returns the full spec record for lenses already recalled |
-| `recommendLenses` | Renders recommendation cards, each with a reason; only lenses recalled in the same turn are accepted |
+| `recommendLenses` | Renders recommendation cards, each with a reason |
 | `listLenses` | Renders a spec table |
 | `siteInfo` | Returns facts about Atlens itself, by topic |
 | `askForGear` | Client-side tool: shows an in-chat card asking for the user's gear, and the turn resumes when they answer |
 
-**Context.** The system prompt stays fixed so it caches well; per-user context — the signed-in user's saved gear, or what is known when it is missing — goes in a separate system message each turn. Questions about the site are answered from a fact list through `siteInfo`, not from instructions in the prompt.
+**Context.** The system prompt stays fixed so it caches well; per-user context — the signed-in user's saved gear, or a note that it is unknown — goes in a separate system message each turn. Questions about the site are answered from a fact list through `siteInfo`, not from instructions in the prompt.
 
 **Guardrails.** Each turn has a fixed step budget and the last step may not call tools. `recommendLenses` and `listLenses` reject any lens that was not recalled in the turn. Requests are rate-limited per IP, and token use has daily budgets per IP and overall. Conversations persist in SQLite (D1), and every turn leaves a trace.
 
