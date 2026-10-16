@@ -806,3 +806,15 @@ tests:
           remember other conversations beyond saved gear, give live prices, place orders, or
           send feedback for them. The reply must not claim any of those abilities, and should
           mention at least some of its limits.
+
+  - description: site-iris-name
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "Iris 这个名字是怎么来的？首页那个会动的东西是什么？"
+    assert:
+      - type: javascript
+        metric: site
+        value: "context.metadata.toolsCalled.includes('siteInfo') && /光圈/.test(output.split('[Iris]').pop())"

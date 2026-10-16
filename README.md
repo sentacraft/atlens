@@ -325,7 +325,7 @@ Atlens covers Fujifilm only, and forks for other systems are welcome. [docs/FORK
 
 ## Acknowledgments
 
-Developed solo, with heavy use of AI tooling: [Claude Code](https://claude.ai/code) as an engineering/coding partner; [Google Gemini](https://gemini.google.com) and [Claude Design](https://claude.ai/design) as design advisors.
+Developed solo, with heavy use of AI tooling: [Claude Code](https://claude.ai/code) as an engineering/coding partner; Claude Design and [Google Gemini](https://gemini.google.com) as design advisors.
 
 Built on the shoulders of great open source work: [Base UI](https://base-ui.com), [Motion](https://motion.dev), [Lucide](https://lucide.dev), [next-intl](https://next-intl.dev), [Zod](https://zod.dev), [Tailwind CSS](https://tailwindcss.com), [modern-screenshot](https://github.com/qq15725/modern-screenshot), [qrcode.react](https://github.com/zpao/qrcode.react), [Geist](https://vercel.com/font).
 

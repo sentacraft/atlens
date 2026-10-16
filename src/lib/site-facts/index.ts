@@ -11,7 +11,7 @@ import { donationChannel } from "@/lib/support";
 import { MOUNTS, type Lens, type LensPriceEntry } from "@/lib/types";
 import { HANDWRITTEN_FACTS } from "@/lib/site-facts/handwritten";
 
-export const SITE_TOPICS = ["project", "business", "data", "prices", "askIris", "account", "privacy", "usage"] as const;
+export const SITE_TOPICS = ["project", "story", "business", "data", "prices", "askIris", "account", "privacy", "usage"] as const;
 export type SiteTopic = (typeof SITE_TOPICS)[number];
 
 type Messages = typeof en;
