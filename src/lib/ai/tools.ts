@@ -17,6 +17,7 @@ import { lensRef, buildRefIndex } from "@/lib/ai/lens-ref";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
 import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
+import { SKILL_NAMES, readSkill } from "@/lib/ai/skills";
 
 const RECALL_LIMIT = 20;
 
@@ -266,6 +267,12 @@ export function buildLensTools(
           `Rendered a table of ${output.lenses.length} lens(es) to the user, for: ` +
           output.lenses.map((lens) => lensRef(lens.id)).join(", "),
       }),
+    }),
+
+    skill: tool({
+      description: "Read a reference document by name. terms: how to read Atlens spec fields and lens model names.",
+      inputSchema: z.object({ name: z.enum(SKILL_NAMES) }),
+      execute: ({ name }) => ({ text: readSkill(name, locale) }),
     }),
 
     siteInfo: tool({

@@ -2,7 +2,6 @@ import "server-only";
 import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
 import { routing } from "@/i18n/routing";
-import { SITE } from "@/config/site";
 import { CATALOG_COVERAGE, type CoverageState } from "@/lib/lens/catalog-coverage";
 import { getLensesByMount, lensCountsByBrand, meta } from "@/lib/lens/data";
 import { MAX_COMPARE } from "@/lib/lens/lens";
@@ -11,6 +10,7 @@ import { isPurchaseLocale } from "@/lib/purchase/links";
 import { donationChannel } from "@/lib/support";
 import { MOUNTS, type Lens, type LensPriceEntry } from "@/lib/types";
 import { HANDWRITTEN_FACTS } from "@/lib/site-facts/handwritten";
+import { fillUiStrings } from "@/lib/ui-strings";
 
 export const SITE_TOPICS = ["project", "story", "business", "data", "prices", "askIris", "account", "privacy", "usage"] as const;
 export type SiteTopic = (typeof SITE_TOPICS)[number];
@@ -18,17 +18,6 @@ export type SiteTopic = (typeof SITE_TOPICS)[number];
 type Messages = typeof en;
 const MESSAGES: Record<string, Messages> = { en, zh };
 const languageName = (code: string) => new Intl.DisplayNames(["en"], { type: "language" }).of(code) ?? code;
-
-/** Replaces each `{Namespace.key}` with that message (or `{site.key}` with the site config), leaving an unknown key as written. */
-function uiStrings(text: string, messages: Messages): string {
-  return text.replace(/\{(\w+)\.(\w+)\}/g, (placeholder, namespace: string, key: string) => {
-    const value =
-      namespace === "site"
-        ? (SITE as unknown as Record<string, unknown>)[key]
-        : (messages as Record<string, Record<string, unknown>>)[namespace]?.[key];
-    return typeof value === "string" ? value : placeholder;
-  });
-}
 
 function list(items: string[]): string {
   return items.join(", ");
@@ -125,9 +114,7 @@ export function siteFacts(topics: SiteTopic[], locale: string): { topic: SiteTop
   return [...new Set(topics)].map((topic) => ({
     topic,
     facts: [
-      ...HANDWRITTEN_FACTS.filter((fact) => fact.topic === topic).map((fact) =>
-        uiStrings(fact.text, MESSAGES[messagesLocale]),
-      ),
+      ...HANDWRITTEN_FACTS.filter((fact) => fact.topic === topic).map((fact) => fillUiStrings(fact.text, messagesLocale)),
       ...(GENERATED[topic]?.(messagesLocale) ?? []),
     ],
   }));

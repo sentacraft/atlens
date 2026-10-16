@@ -818,3 +818,57 @@ tests:
       - type: javascript
         metric: site
         value: "context.metadata.toolsCalled.includes('siteInfo') && /光圈/.test(output.split('[Iris]').pop())"
+
+  # Terms: spec conventions and model codes come from the terms skill; general concepts from the model.
+  - description: term-min-focus-distance
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "规格页上写最近对焦距离 0.3m，我拿尺子从镜头前端量，只有二十来厘米就能对上焦，为什么？"
+    assert:
+      - type: javascript
+        metric: terms
+        value: "context.metadata.toolsCalled.includes('skill') && /感光元件|焦平面|传感器/.test(output.split('[Iris]').pop())"
+
+  - description: term-empty-motor
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "为什么有些富士镜头的规格页上，对焦马达那一栏是空的？"
+    assert:
+      - type: javascript
+        metric: terms
+        value: "context.metadata.toolsCalled.includes('skill') && /没有公布|未公布|没写|没有写|未标注|没有标注/.test(output.split('[Iris]').pop())"
+
+  - description: term-model-codes
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "XF 23mm F1.4 R LM WR 这个型号里，R、LM、WR 分别是什么意思？"
+    assert:
+      - type: javascript
+        metric: terms
+        value: "/光圈环/.test(output) && /线性马达/.test(output) && /防滴防尘/.test(output)"
+
+  - description: term-general-concept
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "T 值和 f 值有什么区别？"
+    assert:
+      - type: llm-rubric
+        metric: terms
+        provider: *behavior_grader
+        value: >-
+          The reply explains correctly that an f-number is a geometric ratio while a T-stop
+          accounts for the light actually transmitted, so equal T-stops give equal exposure
+          across lenses. It must not state specific specs for a particular lens unless the
+          conversation shows a tool returned them.
