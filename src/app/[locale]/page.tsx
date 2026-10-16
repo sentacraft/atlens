@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
 import { buildAlternates } from "@/lib/seo";
 import { getLensesByMount } from "@/lib/lens/data";
+import { COLLECTIONS } from "@/lib/collections";
+import { getFeaturedCollectionsWithStats } from "@/lib/collection-stats";
 import DataInfo from "@/components/DataFooter";
-import HomeCta from "@/components/HomeCta";
 import HeroBrand from "@/components/mount/MountTag";
 import HeroIris from "@/components/iris/HeroIris";
 import Tagline from "@/components/Tagline";
+import HomeHeroActions from "@/components/home/HomeHeroActions";
+import HomeCollections, { type FeaturedCollection } from "@/components/home/HomeCollections";
 
 type Params = Promise<{ locale: string }>;
 
@@ -38,15 +41,32 @@ export default async function HomePage({ params }: { params: Params }) {
       .sort()
       .at(-1) ?? null;
 
-  return <HomeContent mountStats={mountStats} lastAddedAt={lastAddedAt} />;
+  const tCollection = await getTranslations({ locale, namespace: "Collection" });
+  const featured = getFeaturedCollectionsWithStats(locale).map(({ collection, previewLens, lensCount, brandCount }) => ({
+    collection,
+    previewLens,
+    statsLabel: tCollection("stats", { count: lensCount, brandCount }),
+  }));
+
+  return <HomeContent mountStats={mountStats} lastAddedAt={lastAddedAt} featured={featured} locale={locale} />;
 }
 
-function HomeContent({ mountStats, lastAddedAt }: { mountStats: { X: { lensCount: number; brandCount: number }; G: { lensCount: number; brandCount: number } }; lastAddedAt: string | null }) {
+function HomeContent({
+  mountStats,
+  lastAddedAt,
+  featured,
+  locale,
+}: {
+  mountStats: { X: { lensCount: number; brandCount: number }; G: { lensCount: number; brandCount: number } };
+  lastAddedAt: string | null;
+  featured: FeaturedCollection[];
+  locale: string;
+}) {
   const t = useTranslations("Common");
 
   return (
-    <div className="relative h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] overflow-clip grid place-items-center">
-      <section className="flex flex-col items-center text-center px-4">
+    <div className="flex min-h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] flex-col overflow-x-clip">
+      <section className="flex flex-1 flex-col items-center justify-center px-4 py-8 text-center">
         <HeroIris />
         <h1 className="mt-8 text-5xl sm:text-6xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50 font-heading">
           <HeroBrand />
@@ -54,15 +74,14 @@ function HomeContent({ mountStats, lastAddedAt }: { mountStats: { X: { lensCount
         <p className="mt-4 text-lg text-zinc-500 dark:text-zinc-400 max-w-sm">
           {t("appDesc")}
         </p>
-        <div className="mt-8 flex flex-col items-center gap-3">
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <HomeCta />
-          </div>
+        <div className="mt-8 flex w-full flex-col items-center gap-3">
+          <HomeHeroActions />
           <DataInfo mountStats={mountStats} lastAddedAt={lastAddedAt} />
         </div>
       </section>
 
-      <div className="absolute inset-x-0 bottom-6 flex justify-center">
+      <HomeCollections featured={featured} total={Object.keys(COLLECTIONS).length} locale={locale} />
+      <div className="flex justify-center pt-5 pb-6">
         <Tagline />
       </div>
     </div>

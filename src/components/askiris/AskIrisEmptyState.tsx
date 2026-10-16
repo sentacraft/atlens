@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import Iris from "@/components/iris/Iris";
 import { IRIS_ASSISTANT } from "@/config/iris-config";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
+import ExampleQuestion from "@/components/askiris/ExampleQuestion";
 
 export default function AskIrisEmptyState({
   input,
@@ -67,16 +68,10 @@ export default function AskIrisEmptyState({
 
       <div className="flex flex-wrap items-center justify-center gap-2.5">
         {chips.map((chip) => (
-          <button
-            key={chip.label}
-            type="button"
-            disabled={disabled}
-            onClick={() => fillFromChip(chip.prompt)}
-            className="border-border hover:bg-muted flex items-center gap-1.5 rounded-full border bg-background px-4 py-2 text-sm transition-colors disabled:opacity-50"
-          >
+          <ExampleQuestion key={chip.label} disabled={disabled} onClick={() => fillFromChip(chip.prompt)}>
             <span aria-hidden>{chip.emoji}</span>
             {chip.label}
-          </button>
+          </ExampleQuestion>
         ))}
       </div>
     </div>
