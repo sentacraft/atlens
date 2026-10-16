@@ -55,31 +55,44 @@ Lens data ships with the build, so nearly every page is generated once at build 
 
 ```mermaid
 flowchart LR
-  subgraph frontend["Frontend"]
-    SSG["<b>SSG + Client Components</b><br/>lens detail · collections · home · about"]
-    CSR["<b>SSG shell + CSR</b><br/>lens library filtered in the browser<br/>profile data via TanStack Query"]
-    SSR["<b>SSR + Client Components</b><br/>compare · Ask Iris"]
+  subgraph frontend["`**Frontend**`"]
+    SSG["`**SSG + Client Components**
+lens detail · collections · home · about`"]
+    CSR["`**SSG shell + CSR**
+lens library filtered in the browser
+profile data via TanStack Query`"]
+    SSR["`**SSR + Client Components**
+compare · Ask Iris`"]
   end
 
-  subgraph backend["Backend · route handlers"]
-    ME["<b>/api/me/*</b><br/>gear · favorites · settings"]
-    AUTH["<b>/api/auth</b><br/>Better Auth"]
-    CHAT["<b>/api/chat</b><br/>Ask Iris agent loop"]
-    FEEDBACK["<b>/api/feedback</b>"]
-    TRACK["<b>/api/track</b>"]
-    LIMITS["<b>Rate limits</b><br/>per-IP bindings on chat and feedback"]
+  subgraph backend["`**Backend** · route handlers`"]
+    ME["`**/api/me/…**
+gear · favorites · settings`"]
+    AUTH["`**/api/auth**
+Better Auth`"]
+    CHAT["`**/api/chat**
+Ask Iris agent loop`"]
+    FEEDBACK["`**/api/feedback**`"]
+    TRACK["`**/api/track**`"]
+    LIMITS["`**Rate limits**
+per-IP bindings on chat and feedback`"]
   end
 
-  subgraph services["Data and services"]
-    LENSDATA[("<b>Lens catalog</b><br/>JSON bundled at build")]
-    APPDB[("<b>SQLite (D1)</b><br/>users · conversations<br/>gear · favorites · settings")]
-    subgraph agent["Agent runtime"]
-      LLM["<b>LLM provider</b>"]
-      TRACES[("<b>SQLite (D1)</b><br/>agent traces")]
-      BUDGET[("<b>KV</b><br/>token budgets")]
+  subgraph services["`**Data and services**`"]
+    LENSDATA[("`**Lens catalog**
+JSON bundled at build`")]
+    APPDB[("`**SQLite (D1)**
+users · conversations
+gear · favorites · settings`")]
+    subgraph agent["`**Agent runtime**`"]
+      LLM["`**LLM provider**`"]
+      TRACES[("`**SQLite (D1)**
+agent traces`")]
+      BUDGET[("`**KV**
+token budgets`")]
     end
-    ISSUES["<b>GitHub Issues</b>"]
-    EVENTS[("<b>Analytics Engine</b>")]
+    ISSUES["`**GitHub Issues**`"]
+    EVENTS[("`**Analytics Engine**`")]
   end
 
   frontend -->|"rendered from"| LENSDATA
@@ -88,6 +101,9 @@ flowchart LR
   CHAT --> agent
   FEEDBACK --> ISSUES
   TRACK --> EVENTS
+
+  classDef group font-size:18px
+  class frontend,backend,services group
 ```
 
 **Code layout.** The split keeps logic out of components so it can later move into a shared package.
