@@ -15,11 +15,9 @@ vi.mock("@/i18n/navigation", () => ({ Link: (props: object) => <a {...props} /> 
 vi.mock("@/components/iris/Iris", () => ({ default: () => <div data-testid="iris" /> }));
 vi.mock("@/hooks/useMountParam", () => ({ useEffectiveMount: () => "X" }));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
-const testHook = vi.hoisted(() => ({ enabled: true }));
-vi.mock("@/context/TestHookProvider", () => ({
-  useTestHookEnabled: () => testHook.enabled,
-  useTestHookOption: () => undefined,
-}));
+vi.mock("@/context/TestHookProvider", () => ({ useTestHookOption: () => undefined }));
+vi.mock("@/context/IrisPanelProvider", () => ({ useOpenIris: () => vi.fn() }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
 const signedIn = {
   user: {
@@ -47,7 +45,7 @@ const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false 
 function Chat() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AskIrisChat shell={{ variant: "page", entry: { kind: "new" } }} linkTargets={{ lenses: {}, collections: [] }} lenses={[]} />
+      <AskIrisChat shell={{ variant: "page", entry: {} }} linkTargets={{ lenses: {}, collections: [] }} lenses={[]} />
     </QueryClientProvider>
   );
 }
@@ -64,7 +62,6 @@ function stubFetch() {
 }
 
 afterEach(() => {
-  testHook.enabled = true;
   vi.unstubAllGlobals();
   document.body.innerHTML = "";
 });
@@ -96,10 +93,9 @@ describe("AskIrisChat hydration", () => {
     expect(historyButton(container)).not.toBeNull();
   });
 
-  it("keeps the history entry behind test hooks", async () => {
-    testHook.enabled = false;
+  it("shows the history entry to a guest, whose conversations are stored too", async () => {
     stubFetch();
-    authClient.hydrateSession(signedIn);
+    authClient.hydrateSession({ ...signedIn, user: { ...signedIn.user, isAnonymous: true } });
     const container = document.createElement("div");
     document.body.appendChild(container);
 
@@ -107,6 +103,6 @@ describe("AskIrisChat hydration", () => {
       createRoot(container).render(<Chat />);
     });
 
-    expect(historyButton(container)).toBeNull();
+    expect(historyButton(container)).not.toBeNull();
   });
 });

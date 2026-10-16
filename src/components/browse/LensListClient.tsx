@@ -133,7 +133,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
                   id="browse"
                   label={tIris("browseLabel")}
                   phoneLabel="short"
-                  question={{ text: tIris("browseQuestion"), mode: "draft" }}
+                  request={{ kind: "page" }}
                   className="h-8 px-3 text-[13px]"
                 />
               )
@@ -209,7 +209,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
                 id="empty"
                 label={tIris("emptyLabel")}
                 phoneLabel="full"
-                question={{ text: tIris("emptyQuestion"), mode: "send" }}
+                request={{ kind: "question", text: tIris("emptyQuestion") }}
               />
             </div>
           </div>

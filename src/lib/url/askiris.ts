@@ -2,58 +2,52 @@ import { firstSearchParam } from "@/lib/url/search-params";
 import { ASK_IRIS_PATH } from "@/lib/url/routes";
 
 export const ASKIRIS_PARAMS = {
-  query: "q",
+  question: "q",
   draft: "draft",
   from: "from",
   conversation: "conversation",
 } as const;
 
-/** A question handed to Iris from elsewhere: sent at once, or left in the input to edit. */
-export interface IrisQuestion {
-  text: string;
-  mode: "send" | "draft";
+/** What an entry hands Iris: a question to send at once, or just the page the entry sits on. */
+export type IrisRequest = { kind: "question"; text: string } | { kind: "page" };
+
+/**
+ * How the Ask Iris page opens: a stored conversation, a question to send, text left in the
+ * input, and the page path the conversation is about. A question starts a new conversation.
+ */
+export interface AskIrisEntry {
+  conversationId?: string;
+  question?: string;
+  draft?: string;
+  from?: string;
 }
 
-/** Opens a conversation on the Ask Iris page. */
-export function askIrisConversationPath(conversationId: string): string {
-  return `${ASK_IRIS_PATH}?${new URLSearchParams({ [ASKIRIS_PARAMS.conversation]: conversationId })}`;
-}
-
-/** Opens Ask Iris with `question`; `from` is the page path the conversation is about. */
-export function askIrisHandoffPath(question: IrisQuestion, from?: string): string {
-  const params = new URLSearchParams({
-    [question.mode === "send" ? ASKIRIS_PARAMS.query : ASKIRIS_PARAMS.draft]: question.text,
-  });
-  if (from) {
-    params.set(ASKIRIS_PARAMS.from, from);
+export function askIrisPagePath(entry: AskIrisEntry): string {
+  const params = new URLSearchParams();
+  for (const key of ["question", "draft", "from", "conversation"] as const) {
+    const value = key === "conversation" ? entry.conversationId : entry[key];
+    if (value) {
+      params.set(ASKIRIS_PARAMS[key], value);
+    }
   }
-  return `${ASK_IRIS_PATH}?${params}`;
+  const query = params.toString();
+  return query ? `${ASK_IRIS_PATH}?${query}` : ASK_IRIS_PATH;
 }
-
-export type AskIrisEntry =
-  | { kind: "new" }
-  | { kind: "handoff"; question: IrisQuestion; from?: string }
-  | { kind: "resume"; conversationId: string };
 
 type SearchParamValue = string | string[] | undefined;
 
 export function resolveAskIrisEntry(params: Record<string, SearchParamValue>): AskIrisEntry {
-  const query = firstSearchParam(params[ASKIRIS_PARAMS.query])?.trim();
-  const draft = firstSearchParam(params[ASKIRIS_PARAMS.draft])?.trim();
-  const question: IrisQuestion | undefined = query
-    ? { text: query, mode: "send" }
-    : draft
-      ? { text: draft, mode: "draft" }
-      : undefined;
-  if (question) {
-    const from = firstSearchParam(params[ASKIRIS_PARAMS.from]);
-    return { kind: "handoff", question, ...(from?.startsWith("/") ? { from } : {}) };
-  }
-  const conversationId = firstSearchParam(params[ASKIRIS_PARAMS.conversation])?.trim();
-  if (conversationId) {
-    return { kind: "resume", conversationId };
-  }
-  return { kind: "new" };
+  const read = (key: string) => firstSearchParam(params[key])?.trim() || undefined;
+  const question = read(ASKIRIS_PARAMS.question);
+  const conversationId = question ? undefined : read(ASKIRIS_PARAMS.conversation);
+  const draft = read(ASKIRIS_PARAMS.draft);
+  const from = read(ASKIRIS_PARAMS.from);
+  return {
+    ...(conversationId ? { conversationId } : {}),
+    ...(question ? { question } : {}),
+    ...(draft ? { draft } : {}),
+    ...(from?.startsWith("/") ? { from } : {}),
+  };
 }
 
 export function readConversationParam(): string | null {
@@ -99,9 +93,10 @@ export const DETACHED_CONVERSATION_LOCATION: ConversationLocation = {
   followsHistory: false,
 };
 
+/** Drops the one-off hand-off params; `conversation` stays, as it names the open conversation. */
 export function clearEntryParams(): void {
   const url = new URL(window.location.href);
-  for (const param of Object.values(ASKIRIS_PARAMS)) {
+  for (const param of [ASKIRIS_PARAMS.question, ASKIRIS_PARAMS.draft, ASKIRIS_PARAMS.from]) {
     url.searchParams.delete(param);
   }
   window.history.replaceState(null, "", url.toString());

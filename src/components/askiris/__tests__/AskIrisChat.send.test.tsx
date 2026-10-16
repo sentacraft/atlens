@@ -4,11 +4,20 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ensureSession } from "@/lib/auth-client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AskIrisChat, { type AskIrisShell } from "../AskIrisChat";
+import type { LensSummary } from "@/lib/lens/data";
 
 vi.mock("next-intl", () => {
-  const t = Object.assign((key: string) => key, { raw: () => [], rich: (key: string) => key });
+  const t = Object.assign((key: string) => key, {
+    raw: (key: string) => (key.endsWith("Suggestions") ? [`${key}-1`] : []),
+    rich: (key: string) => key,
+    has: () => false,
+  });
   return { useTranslations: () => t, useLocale: () => "en" };
 });
+const openIris = vi.hoisted(() => vi.fn());
+vi.mock("@/context/IrisPanelProvider", () => ({ useOpenIris: () => openIris }));
+const push = vi.hoisted(() => vi.fn());
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 vi.mock("@/i18n/navigation", () => ({ Link: (props: object) => <a {...props} /> }));
 vi.mock("@/components/iris/Iris", () => ({ default: () => <div data-testid="iris" /> }));
 vi.mock("@/hooks/useMountParam", () => ({ useEffectiveMount: () => "X" }));
@@ -58,13 +67,23 @@ function openStream(onAbort: () => void, signal?: AbortSignal | null) {
   );
 }
 
-function renderChat(shell: AskIrisShell = { variant: "page", entry: { kind: "new" } }) {
-  return render(
-    <QueryClientProvider client={new QueryClient()}>
-      <AskIrisChat shell={shell} linkTargets={{ lenses: {}, collections: [] }} lenses={[]} />
-    </QueryClientProvider>,
+const LENSES: LensSummary[] = [
+  { id: "xf-56", brand: "fujifilm", series: "XF", model: "XF56mmF1.2 R WR", mount: "X", focalLengthMin: 56, focalLengthMax: 56, maxAperture: 1.2 },
+];
+
+function renderChat(shell: AskIrisShell = { variant: "page", entry: {} }) {
+  const client = new QueryClient();
+  const view = (next: AskIrisShell) => (
+    <QueryClientProvider client={client}>
+      <AskIrisChat shell={next} linkTargets={{ lenses: {}, collections: [] }} lenses={LENSES} />
+    </QueryClientProvider>
   );
+  const result = render(view(shell));
+  return { ...result, rerenderChat: (next: AskIrisShell) => result.rerender(view(next)) };
 }
+
+const panel = (pagePath: string, request: AskIrisShell & { variant: "panel" } extends { request: infer R } ? R : never = null) =>
+  ({ variant: "panel", pagePath, request, onClose: () => {} }) as const;
 
 function captureChatBodies() {
   const bodies: Record<string, unknown>[] = [];
@@ -164,39 +183,91 @@ describe("AskIrisChat send", () => {
     await waitFor(() => expect(screen.queryByText("Which lens?")).toBeNull());
   });
 
-  it("sends the page the panel is open beside, read when the message is sent", async () => {
+  it("sends the page the panel is open beside, and stops once the card's × is pressed", async () => {
     const bodies = captureChatBodies();
-    window.history.replaceState(null, "", "/en/lenses/x/browse");
-    const { container } = renderChat({ variant: "panel", request: null, onClose: () => {} });
-    window.history.replaceState(null, "", "/en/lenses/x/compare?ids=a,b");
-    submit(container, "How do these differ?");
+    const { container } = renderChat(panel("/en/lenses/x/browse?t=zoom"));
 
+    expect(screen.getByText("browsing")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "browseSuggestions-1" }));
     await waitFor(() => expect(bodies).toHaveLength(1));
-    expect(bodies[0]).toMatchObject({ page: "/en/lenses/x/compare?ids=a,b" });
+    expect(bodies[0]).toMatchObject({ page: "/en/lenses/x/browse?t=zoom" });
+
+    fireEvent.click(screen.getByRole("button", { name: "detach" }));
+    submit(container, "Lighter, please");
+    await waitFor(() => expect(bodies).toHaveLength(2));
+    expect(bodies[1]).not.toHaveProperty("page");
   });
 
-  it("leaves a drafted question in the input without sending it", async () => {
+  it("starts a new conversation when an entry on another page opens the panel, and tells a guest how long the old one is kept", async () => {
     const bodies = captureChatBodies();
-    renderChat({
-      variant: "panel",
-      request: { id: 1, question: { text: "What is this lens for?", mode: "draft" } },
-      onClose: () => {},
-    });
+    const { container, rerenderChat } = renderChat(panel("/en/lenses/x/browse"));
+    submit(container, "Which lens?");
+    await waitFor(() => expect(bodies).toHaveLength(1));
 
-    expect(await screen.findByDisplayValue("What is this lens for?")).toBeInTheDocument();
-    expect(bodies).toHaveLength(0);
+    rerenderChat(panel("/en/lenses/x/xf-56", { id: 1, kind: "page" }));
+
+    expect(await screen.findByText("newConversationGuest")).toBeInTheDocument();
+    expect(screen.queryByText("Which lens?")).toBeNull();
+    expect(screen.getByText("lookingAt")).toBeInTheDocument();
   });
 
-  it("keeps sending the page a phone handoff came from, on the Ask Iris page", async () => {
+  it("keeps the conversation when an entry on the same page opens the panel again", async () => {
+    const bodies = captureChatBodies();
+    const { container, rerenderChat } = renderChat(panel("/en/lenses/x/browse"));
+    submit(container, "Which lens?");
+    await waitFor(() => expect(bodies).toHaveLength(1));
+
+    rerenderChat(panel("/en/lenses/x/browse?t=prime", { id: 1, kind: "page" }));
+
+    expect(screen.getByText("Which lens?")).toBeInTheDocument();
+    expect(screen.queryByText("newConversationGuest")).toBeNull();
+  });
+
+  it("sends a question from another page in a new conversation", async () => {
+    const bodies = captureChatBodies();
+    const { container, rerenderChat } = renderChat(panel("/en/lenses/x/browse"));
+    submit(container, "Which lens?");
+    await waitFor(() => expect(bodies).toHaveLength(1));
+
+    rerenderChat(panel("/en/lenses/x/xf-56", { id: 1, kind: "question", text: "What is it for?" }));
+
+    await waitFor(() => expect(bodies).toHaveLength(2));
+    expect(bodies[1]).toMatchObject({ page: "/en/lenses/x/xf-56", previousMessageId: null });
+    expect(bodies[1].id).not.toBe(bodies[0].id);
+  });
+
+  it("takes the unsent input and the page along to the full-screen page", () => {
+    captureChatBodies();
+    const { container } = renderChat(panel("/en/lenses/x/xf-56"));
+    fireEvent.change(container.querySelector("form input")!, { target: { value: "And the 50mm?" } });
+
+    const href = screen.getByRole("link", { name: "fullScreen" }).getAttribute("href")!;
+    const params = new URL(href, "https://atlens.test").searchParams;
+    expect(params.get("draft")).toBe("And the 50mm?");
+    expect(params.get("from")).toBe("/en/lenses/x/xf-56");
+  });
+
+  it("keeps sending the page a phone entry came from, on the Ask Iris page", async () => {
     const bodies = captureChatBodies();
     const { container } = renderChat({
       variant: "page",
-      entry: { kind: "handoff", question: { text: "Help me find one", mode: "send" }, from: "/en/lenses/x/browse?t=zoom" },
+      entry: { question: "Help me find one", from: "/en/lenses/x/browse?t=zoom" },
     });
 
     await waitFor(() => expect(bodies).toHaveLength(1));
     submit(container, "Lighter, please");
     await waitFor(() => expect(bodies).toHaveLength(2));
     expect(bodies.map((body) => body.page)).toEqual(["/en/lenses/x/browse?t=zoom", "/en/lenses/x/browse?t=zoom"]);
+  });
+
+  it("goes back to the page it came from and reopens the conversation in the panel", async () => {
+    captureChatBodies();
+    renderChat({ variant: "page", entry: { question: "What is it for?", from: "/en/lenses/x/xf-56" } });
+    await screen.findByText("What is it for?");
+
+    fireEvent.click(screen.getByRole("button", { name: "backTo" }));
+
+    expect(push).toHaveBeenCalledWith("/en/lenses/x/xf-56");
+    expect(openIris).toHaveBeenCalledWith(expect.objectContaining({ kind: "resume", from: "/en/lenses/x/xf-56" }));
   });
 });

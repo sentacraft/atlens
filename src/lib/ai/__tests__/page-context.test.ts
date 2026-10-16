@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { pageLensRefs, resolvePageContext, type PageContextLabels } from "../page-context";
+import { pageLensRefs, resolvePageContext } from "../page-context";
+import type { FilterLabels } from "@/lib/askiris/page-ref";
 import { pagePrompt } from "../system-prompt";
 import { lensRef } from "../lens-ref";
 import { defaultFilters, filterLenses } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
 import { serializeFilters } from "@/lib/url/filter-params";
 
-const labels: PageContextLabels = {
+const labels: FilterLabels = {
   brand: (slug) => `brand:${slug}`,
   list: (key) => `list:${key}`,
   badge: (key) => `badge:${key}`,

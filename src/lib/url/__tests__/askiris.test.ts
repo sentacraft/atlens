@@ -1,69 +1,55 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
-import { askIrisHandoffPath, clearEntryParams, resolveAskIrisEntry } from "../askiris";
+import { askIrisPagePath, clearEntryParams, resolveAskIrisEntry } from "../askiris";
 
 describe("resolveAskIrisEntry", () => {
   it("starts a new conversation by default", () => {
-    expect(resolveAskIrisEntry({})).toEqual({ kind: "new" });
-    expect(resolveAskIrisEntry({ q: "  ", conversation: "" })).toEqual({ kind: "new" });
+    expect(resolveAskIrisEntry({})).toEqual({});
+    expect(resolveAskIrisEntry({ q: "  ", conversation: "" })).toEqual({});
   });
 
-  it("hands off a question to send", () => {
-    expect(resolveAskIrisEntry({ q: " Which 23mm? " })).toEqual({
-      kind: "handoff",
-      question: { text: "Which 23mm?", mode: "send" },
-    });
-  });
-
-  it("hands off a draft with the page it came from", () => {
-    expect(resolveAskIrisEntry({ draft: "How do these differ?", from: "/en/lenses/x/compare?ids=a,b" })).toEqual({
-      kind: "handoff",
-      question: { text: "How do these differ?", mode: "draft" },
+  it("hands off a question to send, with the page it came from", () => {
+    expect(resolveAskIrisEntry({ q: " Which 23mm? ", from: "/en/lenses/x/compare?ids=a,b" })).toEqual({
+      question: "Which 23mm?",
       from: "/en/lenses/x/compare?ids=a,b",
     });
   });
 
-  it("ignores a from that is not a site path", () => {
-    expect(resolveAskIrisEntry({ q: "Hi", from: "https://example.com/" })).toEqual({
-      kind: "handoff",
-      question: { text: "Hi", mode: "send" },
-    });
-  });
-
-  it("resumes a linked conversation", () => {
-    expect(resolveAskIrisEntry({ conversation: ["conv-a", "conv-b"] })).toEqual({
-      kind: "resume",
+  it("resumes a linked conversation with its unsent input", () => {
+    expect(resolveAskIrisEntry({ conversation: ["conv-a", "conv-b"], draft: "And the 50mm?" })).toEqual({
       conversationId: "conv-a",
+      draft: "And the 50mm?",
     });
   });
 
-  it("lets a hand-off query win over a linked conversation", () => {
-    expect(resolveAskIrisEntry({ q: "Which 23mm?", conversation: "conv-a" })).toEqual({
-      kind: "handoff",
-      question: { text: "Which 23mm?", mode: "send" },
-    });
+  it("lets a hand-off question win over a linked conversation", () => {
+    expect(resolveAskIrisEntry({ q: "Which 23mm?", conversation: "conv-a" })).toEqual({ question: "Which 23mm?" });
+  });
+
+  it("ignores a from that is not a site path", () => {
+    expect(resolveAskIrisEntry({ q: "Hi", from: "https://example.com/" })).toEqual({ question: "Hi" });
   });
 });
 
-describe("askIrisHandoffPath", () => {
+describe("askIrisPagePath", () => {
   it("round-trips through resolveAskIrisEntry", () => {
-    const path = askIrisHandoffPath({ text: "What is this lens for?", mode: "draft" }, "/zh/lenses/x/xf-56");
-    const params = Object.fromEntries(new URL(path, "https://atlens.test").searchParams);
+    const entry = { conversationId: "conv-a", draft: "And the 50mm?", from: "/zh/lenses/x/xf-56" };
+    const params = Object.fromEntries(new URL(askIrisPagePath(entry), "https://atlens.test").searchParams);
 
-    expect(resolveAskIrisEntry(params)).toEqual({
-      kind: "handoff",
-      question: { text: "What is this lens for?", mode: "draft" },
-      from: "/zh/lenses/x/xf-56",
-    });
+    expect(resolveAskIrisEntry(params)).toEqual(entry);
+  });
+
+  it("is the bare page for an empty entry", () => {
+    expect(askIrisPagePath({})).toBe("/askiris");
   });
 });
 
 describe("clearEntryParams", () => {
-  it("removes the entry params and keeps foreign ones", () => {
+  it("removes the hand-off params and keeps the conversation and foreign ones", () => {
     window.history.replaceState(null, "", "/en/askiris?q=hi&draft=d&from=%2Fen&conversation=c1&utm_source=x");
 
     clearEntryParams();
 
-    expect(window.location.search).toBe("?utm_source=x");
+    expect(window.location.search).toBe("?conversation=c1&utm_source=x");
   });
 });

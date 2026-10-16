@@ -9,7 +9,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
-import { useTestHookEnabled, useTestHookOption } from "@/context/TestHookProvider";
+import { useTestHookOption } from "@/context/TestHookProvider";
+import { useOpenIris, type IrisPanelRequest } from "@/context/IrisPanelProvider";
+import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { accountUser, authClient, ensureSession } from "@/lib/auth-client";
 import { askIrisChatRequestBody } from "@/lib/askiris/chat-request";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
@@ -17,16 +19,15 @@ import { ChatLinkProvider } from "@/components/askiris/ChatLinkContext";
 import type { ChatLinkTargets } from "@/lib/askiris/inline-links";
 import type { LensSummary } from "@/lib/lens/data";
 import { ASK_FOR_GEAR } from "@/lib/ai/gear-request";
-import { ASK_IRIS_PATH as ASK_IRIS_FULL_PATH } from "@/lib/url/routes";
 import {
-  askIrisConversationPath,
+  askIrisPagePath,
   clearEntryParams,
   DETACHED_CONVERSATION_LOCATION,
   URL_CONVERSATION_LOCATION,
   type AskIrisEntry,
-  type IrisQuestion,
 } from "@/lib/url/askiris";
-import { currentPagePath } from "@/lib/askiris/page-path";
+import { pageKey, parsePagePath } from "@/lib/askiris/page-ref";
+import { PageContextCard, PageContextStart, usePageContextView } from "@/components/askiris/PageContext";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
@@ -42,7 +43,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
-import { History, Maximize2, Plus, X } from "lucide-react";
+import { ArrowLeft, History, Maximize2, Plus, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import AiTag from "@/components/iris/AiTag";
 import ConversationHistory from "@/components/askiris/ConversationHistory";
@@ -66,18 +68,15 @@ const SHELL_CLS = {
   panel: "flex h-full w-full flex-col px-4",
 };
 
-/** A question handed in from outside the panel; a new `id` hands it in again. */
-export interface IrisPanelRequest {
-  id: number;
-  question: IrisQuestion;
-}
-
-/** Where the chat lives: the Ask Iris page, or the side panel that follows the user across pages. */
+/**
+ * Where the chat lives: the Ask Iris page, or the side panel that follows the user across
+ * pages; `pagePath` is the page beside the panel.
+ */
 export type AskIrisShell =
   | { variant: "page"; entry: AskIrisEntry }
-  | { variant: "panel"; request: IrisPanelRequest | null; onClose: () => void };
+  | { variant: "panel"; pagePath: string; request: IrisPanelRequest | null; onClose: () => void };
 
-const NEW_ENTRY: AskIrisEntry = { kind: "new" };
+const NO_ENTRY: AskIrisEntry = {};
 
 export default function AskIrisChat({
   shell,
@@ -88,23 +87,39 @@ export default function AskIrisChat({
   linkTargets: ChatLinkTargets;
   lenses: LensSummary[];
 }) {
-  const entry = shell.variant === "page" ? shell.entry : NEW_ENTRY;
-  const initialQuestion = entry.kind === "handoff" ? entry.question : undefined;
+  const entry = shell.variant === "page" ? shell.entry : NO_ENTRY;
   const t = useTranslations("AskIris");
+  const tEntry = useTranslations("IrisEntry");
+  const router = useRouter();
+  const openIris = useOpenIris();
+  const openSignIn = useSignInDialog();
   const locale = useLocale();
   const mount = useEffectiveMount();
   const debug = useTestHookOption("askIrisTrace") === "on";
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(entry.draft ?? "");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
   const [pendingSwitch, setPendingSwitch] = useState<ConversationSwitch | null>(null);
-  // The page a phone handoff came from: the conversation is about it until the user moves on.
-  const [originPage, setOriginPage] = useState(entry.kind === "handoff" ? entry.from : undefined);
+  // On the Ask Iris page, the page the conversation came from; the panel reads the page beside it.
+  const [originPage, setOriginPage] = useState(entry.from);
+  // Whether the page goes along with each turn; the context card's × turns it off.
+  const [attached, setAttached] = useState(true);
+  // The page key this conversation is about, set by its first turn; undefined when not known.
+  const [conversationPage, setConversationPage] = useState<string | null | undefined>(() =>
+    entry.from ? pageKey(parsePagePath(entry.from)) : undefined,
+  );
+  const [freshNotice, setFreshNotice] = useState(false);
+  const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
+  const pagePath = shell.variant === "panel" ? shell.pagePath : (originPage ?? null);
+  const pageView = usePageContextView(pagePath, lenses);
+  const contextView = attached ? pageView : null;
+  const contextPath = contextView ? pagePath : null;
   const { data: session } = authClient.useSession();
-  const userId = accountUser(session)?.id;
-  const historyEnabled = useTestHookEnabled();
+  // Guests have a session too, and their own stored conversations.
+  const userId = session?.user.id;
+  const isAccount = Boolean(accountUser(session));
   const conversation = useConversation({
-    initialConversationId: entry.kind === "resume" ? entry.conversationId : undefined,
+    initialConversationId: entry.conversationId,
     userId,
     onNotice: (notice) => {
       if (notice === "unavailable") {
@@ -140,11 +155,7 @@ export default function AskIrisChat({
     location: shell.variant === "page" ? URL_CONVERSATION_LOCATION : DETACHED_CONVERSATION_LOCATION,
   });
   const errorKind = status === "error" ? classifyError(error) : null;
-  // Read at send time: the panel follows the user across pages.
-  const turnBody = () => {
-    const page = shell.variant === "panel" ? currentPagePath() : originPage;
-    return { mount, locale, ...(page ? { page } : {}) };
-  };
+  const turnBody = () => ({ mount, locale, ...(contextPath ? { page: contextPath } : {}) });
 
   useEffect(() => {
     track("askiris_view");
@@ -161,6 +172,9 @@ export default function AskIrisChat({
         return false;
       }
     }
+    if (messages.length === 0) {
+      setConversationPage(pageKey(contextPath ? parsePagePath(contextPath) : null));
+    }
     void sendMessage({ text }, { body: turnBody() });
     track("askiris_message", { method });
     return true;
@@ -176,25 +190,54 @@ export default function AskIrisChat({
     }
   }
 
-  // A draft, or a question that arrives while a reply is being written, waits in the input.
-  const receiveQuestion = useEffectEvent((question: IrisQuestion) => {
-    if (question.mode === "draft" || isBusy) {
-      setInput(question.text);
-    } else {
-      void send(question.text, "handoff");
+  // A ref, not a module flag: returning with a new question must hand it in again.
+  const entryHandled = useRef(false);
+  const handleEntry = useEffectEvent(() => {
+    clearEntryParams();
+    if (entry.question) {
+      void send(entry.question, "handoff");
     }
   });
-
-  // A ref, not a module flag: returning with a new question must hand it in again.
-  const initialQuestionReceived = useRef(false);
   useEffect(() => {
-    if (initialQuestionReceived.current || !initialQuestion) {
+    if (entryHandled.current || !(entry.question || entry.draft || entry.from)) {
       return;
     }
-    initialQuestionReceived.current = true;
-    clearEntryParams();
-    receiveQuestion(initialQuestion);
-  }, [initialQuestion]);
+    entryHandled.current = true;
+    handleEntry();
+  }, [entry.question, entry.draft, entry.from]);
+
+  // An entry on another page than the conversation's starts a new conversation about this one.
+  const receiveRequest = useEffectEvent((request: IrisPanelRequest) => {
+    if (request.kind === "resume") {
+      if (request.conversationId !== conversationId) {
+        conversation.selectConversation(request.conversationId);
+      }
+      setAttached(true);
+      setConversationPage(pageKey(parsePagePath(request.from)));
+      setFreshNotice(false);
+      return;
+    }
+    if (isBusy) {
+      if (request.kind === "question") {
+        setInput(request.text);
+      }
+      return;
+    }
+    const here = shell.variant === "panel" ? pageKey(parsePagePath(shell.pagePath)) : null;
+    const fresh = messages.length > 0 && conversationPage !== here;
+    if (fresh) {
+      switchConversation({ kind: "new" });
+      setFreshNotice(true);
+    }
+    setAttached(true);
+    if (request.kind === "question") {
+      if (fresh) {
+        setPendingQuestion(request.text);
+      } else {
+        void send(request.text, "handoff");
+      }
+    }
+  });
   const panelRequest = shell.variant === "panel" ? shell.request : null;
   const handledRequestId = useRef(0);
   useEffect(() => {
@@ -202,8 +245,19 @@ export default function AskIrisChat({
       return;
     }
     handledRequestId.current = panelRequest.id;
-    receiveQuestion(panelRequest.question);
+    receiveRequest(panelRequest);
   }, [panelRequest]);
+
+  // Sent once the new conversation it waited for is the active chat.
+  const sendPending = useEffectEvent((text: string) => {
+    setPendingQuestion(null);
+    void send(text, "handoff");
+  });
+  useEffect(() => {
+    if (pendingQuestion) {
+      sendPending(pendingQuestion);
+    }
+  }, [pendingQuestion, conversationId]);
 
   const renderMessages = useFixtureMessages(messages);
 
@@ -232,6 +286,9 @@ export default function AskIrisChat({
   function switchConversation(target: ConversationSwitch) {
     setHistoryOpen(false);
     setOriginPage(undefined);
+    setAttached(true);
+    setConversationPage(undefined);
+    setFreshNotice(false);
     if (target.kind === "new") {
       conversation.startNewConversation();
     } else {
@@ -261,7 +318,31 @@ export default function AskIrisChat({
     requestSwitch({ kind: "new" });
   }
 
-  const showHistory = shell.variant === "page" && Boolean(userId && historyEnabled);
+  function backToPage(page: string) {
+    router.push(page);
+    if (messages.length > 0) {
+      openIris({ kind: "resume", conversationId, from: page });
+    }
+  }
+
+  const showHistory = shell.variant === "page" && Boolean(userId);
+  const notice = freshNotice ? (
+    <p className="rounded-xl bg-zinc-100 px-3 py-2 text-xs leading-relaxed text-zinc-600 dark:bg-zinc-800/70 dark:text-zinc-300">
+      {isAccount
+        ? tEntry("newConversation")
+        : tEntry.rich("newConversationGuest", {
+            signIn: (chunks) => (
+              <button
+                type="button"
+                onClick={() => openSignIn()}
+                className="font-semibold text-zinc-900 underline underline-offset-2 dark:text-zinc-50"
+              >
+                {chunks}
+              </button>
+            ),
+          })}
+    </p>
+  ) : null;
   const topBar = shell.variant === "panel" ? (
     <div className="-mx-1 flex h-12 shrink-0 items-center justify-between">
       <span className="inline-flex items-center gap-1.5 px-1 text-sm font-semibold text-zinc-900 dark:text-zinc-50">
@@ -275,7 +356,11 @@ export default function AskIrisChat({
           </button>
         )}
         <Link
-          href={messages.length > 0 ? askIrisConversationPath(conversationId) : ASK_IRIS_FULL_PATH}
+          href={askIrisPagePath({
+            conversationId: messages.length > 0 ? conversationId : undefined,
+            draft: input.trim() || undefined,
+            from: contextPath ?? undefined,
+          })}
           aria-label={t("fullScreen")}
           title={t("fullScreen")}
           onClick={shell.onClose}
@@ -290,14 +375,20 @@ export default function AskIrisChat({
     </div>
   ) : (
     <div className="flex h-12 shrink-0 items-center justify-between">
-      {showHistory ? (
-        <button type="button" onClick={() => setHistoryOpen(true)} className={TOP_BAR_BTN_CLS}>
-          <History className="size-4" />
-          {t("history")}
-        </button>
-      ) : (
-        <span />
-      )}
+      <div className="flex min-w-0 items-center gap-1">
+        {originPage && pageView && (
+          <button type="button" onClick={() => backToPage(originPage)} className={cn(TOP_BAR_BTN_CLS, "min-w-0")}>
+            <ArrowLeft className="size-4 shrink-0" />
+            <span className="truncate">{tEntry("backTo", { page: pageView.pageName })}</span>
+          </button>
+        )}
+        {showHistory && (
+          <button type="button" onClick={() => setHistoryOpen(true)} className={TOP_BAR_BTN_CLS}>
+            <History className="size-4" />
+            {t("history")}
+          </button>
+        )}
+      </div>
       {messages.length > 0 && (
         <button type="button" onClick={startNewConversation} className={TOP_BAR_BTN_CLS}>
           <Plus className="size-4" />
@@ -331,10 +422,38 @@ export default function AskIrisChat({
     );
   }
 
-  if (renderMessages.length === 0 && initialQuestion?.mode !== "send") {
+  if (renderMessages.length === 0 && contextView && !entry.question && !pendingQuestion) {
     return (
       <div className={SHELL_CLS[shell.variant]}>
         {topBar}
+        <PageContextStart
+          view={contextView}
+          notice={notice}
+          onDetach={() => setAttached(false)}
+          onSuggestion={(text) => void submitText(text)}
+          disabled={isBusy}
+          composer={
+            <AskIrisComposer
+              size="md"
+              value={input}
+              onChange={setInput}
+              onSubmit={() => void submitText(input)}
+              disabled={isBusy}
+              placeholder={contextView.placeholder}
+              sendLabel={t("send")}
+              autoFocus
+            />
+          }
+        />
+      </div>
+    );
+  }
+
+  if (renderMessages.length === 0 && !entry.question && !pendingQuestion) {
+    return (
+      <div className={SHELL_CLS[shell.variant]}>
+        {topBar}
+        {notice}
         <AskIrisEmptyState
           variant={shell.variant}
           input={input}
@@ -351,6 +470,12 @@ export default function AskIrisChat({
     <ChatLinkProvider targets={linkTargets}>
       <div className={SHELL_CLS[shell.variant]}>
         {topBar}
+        {notice}
+        {contextView && (
+          <div className="flex pt-1">
+            <PageContextCard view={contextView} variant="chip" onDetach={() => setAttached(false)} />
+          </div>
+        )}
         <div className="relative min-h-0 flex-1">
           <div
             ref={scrollRef}

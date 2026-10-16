@@ -86,7 +86,7 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
               id="compare"
               label={tIris("compareLabel")}
               phoneLabel="short"
-              question={{ text: tIris("compareQuestion"), mode: "draft" }}
+              request={{ kind: "page" }}
               className="mr-1 h-9 max-sm:px-3"
             />
           )}

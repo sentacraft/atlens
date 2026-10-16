@@ -35,7 +35,7 @@ test.describe("Ask Iris side panel", () => {
 test.describe("Ask Iris context entries", () => {
   const compareUrl = "/en/lenses/x/compare?ids=fujifilm-xf-23mmf14-r-lm-wr-x,fujifilm-xf-33mmf14-r-lm-wr-x";
 
-  test("drafts the question in the side panel without sending it", async ({ page }, testInfo) => {
+  test("opens the side panel about the page, with questions for it, without sending anything", async ({ page }, testInfo) => {
     const viewport = page.viewportSize();
     testInfo.skip(!viewport || viewport.width < 1024, "The side panel is for screens 1024px and wider");
     const chatRequests: string[] = [];
@@ -49,11 +49,13 @@ test.describe("Ask Iris context entries", () => {
     await page.getByRole("button", { name: /Ask Iris how they differ/ }).click();
 
     const panel = page.getByRole("complementary", { name: "Iris" });
-    await expect(panel.getByRole("textbox")).toHaveValue("What are the main differences between these?");
+    await expect(panel.getByText("Comparing 2")).toBeVisible();
+    await expect(panel.getByRole("button", { name: /What are the main differences/ })).toBeVisible();
+    await expect(panel.getByRole("textbox")).toHaveValue("");
     expect(chatRequests).toEqual([]);
   });
 
-  test("takes the question and the page it came from to Ask Iris on a phone", async ({ page }, testInfo) => {
+  test("takes the page it came from to Ask Iris on a phone", async ({ page }, testInfo) => {
     const viewport = page.viewportSize();
     testInfo.skip(!viewport || viewport.width >= 1024, "Phones go to the Ask Iris page");
 
@@ -61,6 +63,7 @@ test.describe("Ask Iris context entries", () => {
     await page.getByRole("button", { name: /Ask Iris about this lens/ }).click();
 
     await expect(page).toHaveURL(/\/en\/askiris$/);
-    await expect(page.getByRole("textbox")).toHaveValue("What is this lens good for?");
+    await expect(page.getByText("Looking at")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Back to/ })).toBeVisible();
   });
 });

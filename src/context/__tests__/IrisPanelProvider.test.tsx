@@ -12,9 +12,9 @@ vi.mock("@/i18n/navigation", () => ({
 }));
 vi.mock("@/hooks/useViewport", () => ({ useBreakpoint: () => env.wide }));
 vi.mock("@/components/iris-panel/IrisPanel", () => ({
-  default: ({ shown, request }: { shown: boolean; request: { question: { text: string } } | null }) => (
+  default: ({ shown, request }: { shown: boolean; request: { kind: string; text?: string } | null }) => (
     <div data-testid="panel" data-shown={String(shown)}>
-      {request?.question.text}
+      {request?.text}
     </div>
   ),
 }));
@@ -30,7 +30,7 @@ afterEach(() => {
 function Ask() {
   const openIris = useOpenIris();
   return (
-    <button type="button" onClick={() => openIris({ text: "Which 23mm?", mode: "draft" })}>
+    <button type="button" onClick={() => openIris({ kind: "question", text: "Which 23mm?" })}>
       ask
     </button>
   );
@@ -62,7 +62,7 @@ describe("IrisPanelProvider", () => {
     fireEvent.click(screen.getByRole("button", { name: "ask" }));
 
     expect(push).toHaveBeenCalledWith(
-      "/askiris?draft=Which+23mm%3F&from=%2Fen%2Flenses%2Fx%2Fcompare%3Fids%3Da%2Cb",
+      "/askiris?q=Which+23mm%3F&from=%2Fen%2Flenses%2Fx%2Fcompare%3Fids%3Da%2Cb",
     );
     expect(screen.queryByTestId("panel")).toBeNull();
   });

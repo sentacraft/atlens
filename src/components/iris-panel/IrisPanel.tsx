@@ -2,7 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
-import AskIrisChat, { type IrisPanelRequest } from "@/components/askiris/AskIrisChat";
+import AskIrisChat from "@/components/askiris/AskIrisChat";
+import type { IrisPanelRequest } from "@/context/IrisPanelProvider";
+import { useCurrentPagePath } from "@/hooks/useCurrentPagePath";
 import { Z } from "@/config/ui";
 import { askIrisChatDataQuery } from "@/lib/askiris/chat-data";
 import { cn } from "@/lib/utils";
@@ -20,6 +22,7 @@ export default function IrisPanel({
   const t = useTranslations("AskIris");
   const locale = useLocale();
   const data = useQuery(askIrisChatDataQuery(locale));
+  const pagePath = useCurrentPagePath();
 
   return (
     <aside
@@ -34,7 +37,7 @@ export default function IrisPanel({
     >
       {data.data ? (
         <AskIrisChat
-          shell={{ variant: "panel", request, onClose }}
+          shell={{ variant: "panel", pagePath, request, onClose }}
           linkTargets={data.data.linkTargets}
           lenses={data.data.lenses}
         />

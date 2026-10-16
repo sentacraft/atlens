@@ -277,7 +277,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           <div className="mt-auto flex flex-wrap items-center gap-2">
             <LensDetailCompareToggle lensId={lens.id} />
             <RetailersDropdown lens={lens} customId="detail" />
-            <AskIrisEntry id="lens" label={tIris("lensLabel")} phoneLabel="full" question={{ text: tIris("lensQuestion"), mode: "draft" }} />
+            <AskIrisEntry id="lens" label={tIris("lensLabel")} phoneLabel="full" request={{ kind: "page" }} />
             <LensDetailSaveActions lensId={lens.id} />
           </div>
         </div>
