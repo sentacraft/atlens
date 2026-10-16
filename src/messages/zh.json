@@ -808,5 +808,17 @@
     "ownedAdded": "已加入我的器材",
     "viewGear": "查看",
     "ownedRemoved": "已从我的器材移除"
+  },
+  "IrisEntry": {
+    "browseLabel": "不知道怎么选？问 Iris",
+    "browseQuestion": "按我现在的筛选，该怎么选？",
+    "emptyHint": "可以清除几个筛选，或者直接告诉 Iris 你想要什么。",
+    "emptyClear": "清除筛选",
+    "emptyLabel": "让 Iris 帮你找",
+    "emptyQuestion": "我按这些条件没找到镜头，帮我找找",
+    "compareLabel": "让 Iris 解释差异",
+    "compareQuestion": "这几支主要差在哪？",
+    "lensLabel": "问问 Iris 这支镜头",
+    "lensQuestion": "这支镜头适合拍什么？"
   }
 }

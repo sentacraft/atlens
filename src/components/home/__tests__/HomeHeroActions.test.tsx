@@ -51,7 +51,7 @@ describe("HomeHeroActions", () => {
     fireEvent.click(screen.getByRole("button", { name: /askIris/ }));
     fireEvent.click(screen.getByRole("button", { name: "A pancake lens that fits in a pocket" }));
 
-    expect(openIris).toHaveBeenCalledWith({ question: "A pancake lens that fits in a pocket" });
+    expect(openIris).toHaveBeenCalledWith({ text: "A pancake lens that fits in a pocket", mode: "send" });
   });
 
   it("links straight to Ask Iris on a phone", () => {

@@ -808,5 +808,17 @@
     "ownedAdded": "Added to my gear",
     "viewGear": "View",
     "ownedRemoved": "Removed from my gear"
+  },
+  "IrisEntry": {
+    "browseLabel": "Not sure which? Ask Iris",
+    "browseQuestion": "Given my current filters, how should I choose?",
+    "emptyHint": "Clear a few filters, or just tell Iris what you're after.",
+    "emptyClear": "Clear filters",
+    "emptyLabel": "Let Iris find one",
+    "emptyQuestion": "Nothing matched these filters. Help me find something.",
+    "compareLabel": "Ask Iris how they differ",
+    "compareQuestion": "What are the main differences between these?",
+    "lensLabel": "Ask Iris about this lens",
+    "lensQuestion": "What is this lens good for?"
   }
 }

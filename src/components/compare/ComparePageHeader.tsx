@@ -10,6 +10,7 @@ import { Flag, Search } from "lucide-react";
 import { ShareButton } from "@/components/share/ShareButton";
 import ShareFAB from "@/components/share/ShareFAB";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
+import AskIrisEntry from "@/components/iris/AskIrisEntry";
 import { UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
@@ -24,6 +25,7 @@ const ADD_LENS_BTN_BASE =
 export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) {
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
+  const tIris = useTranslations("IrisEntry");
   const { compareIds } = useCompare();
   const search = useCompareLensSearch();
   const clearCompareWithUndo = useClearCompareWithUndo();
@@ -79,6 +81,15 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
           </button>
         )}
         <div className="ml-auto flex items-center gap-1">
+          {activeLenses.length >= 2 && (
+            <AskIrisEntry
+              id="compare"
+              label={tIris("compareLabel")}
+              phoneLabel="short"
+              question={{ text: tIris("compareQuestion"), mode: "draft" }}
+              className="mr-1 h-9 max-sm:px-3"
+            />
+          )}
           {activeLenses.length >= 1 && (
             <ShareButton lenses={activeLenses} presetTitle={presetTitle} presetSubtitle={presetSubtitle} triggerClassName={UTILITY_BTN_CLS} />
           )}

@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ensureSession } from "@/lib/auth-client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import AskIrisChat from "../AskIrisChat";
+import AskIrisChat, { type AskIrisShell } from "../AskIrisChat";
 
 vi.mock("next-intl", () => {
   const t = Object.assign((key: string) => key, { raw: () => [], rich: (key: string) => key });
@@ -58,12 +58,27 @@ function openStream(onAbort: () => void, signal?: AbortSignal | null) {
   );
 }
 
-function renderChat() {
+function renderChat(shell: AskIrisShell = { variant: "page", entry: { kind: "new" } }) {
   return render(
     <QueryClientProvider client={new QueryClient()}>
-      <AskIrisChat shell={{ variant: "page", entry: { kind: "new" } }} linkTargets={{ lenses: {}, collections: [] }} lenses={[]} />
+      <AskIrisChat shell={shell} linkTargets={{ lenses: {}, collections: [] }} lenses={[]} />
     </QueryClientProvider>,
   );
+}
+
+function captureChatBodies() {
+  const bodies: Record<string, unknown>[] = [];
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      if (String(input).includes("/api/chat")) {
+        bodies.push(JSON.parse(String(init?.body)));
+        return emptyStream();
+      }
+      return Response.json({});
+    }),
+  );
+  return bodies;
 }
 
 function submit(container: HTMLElement, text: string) {
@@ -147,5 +162,41 @@ describe("AskIrisChat send", () => {
 
     await waitFor(() => expect(aborted).toBe(true));
     await waitFor(() => expect(screen.queryByText("Which lens?")).toBeNull());
+  });
+
+  it("sends the page the panel is open beside, read when the message is sent", async () => {
+    const bodies = captureChatBodies();
+    window.history.replaceState(null, "", "/en/lenses/x/browse");
+    const { container } = renderChat({ variant: "panel", request: null, onClose: () => {} });
+    window.history.replaceState(null, "", "/en/lenses/x/compare?ids=a,b");
+    submit(container, "How do these differ?");
+
+    await waitFor(() => expect(bodies).toHaveLength(1));
+    expect(bodies[0]).toMatchObject({ page: "/en/lenses/x/compare?ids=a,b" });
+  });
+
+  it("leaves a drafted question in the input without sending it", async () => {
+    const bodies = captureChatBodies();
+    renderChat({
+      variant: "panel",
+      request: { id: 1, question: { text: "What is this lens for?", mode: "draft" } },
+      onClose: () => {},
+    });
+
+    expect(await screen.findByDisplayValue("What is this lens for?")).toBeInTheDocument();
+    expect(bodies).toHaveLength(0);
+  });
+
+  it("keeps sending the page a phone handoff came from, on the Ask Iris page", async () => {
+    const bodies = captureChatBodies();
+    const { container } = renderChat({
+      variant: "page",
+      entry: { kind: "handoff", question: { text: "Help me find one", mode: "send" }, from: "/en/lenses/x/browse?t=zoom" },
+    });
+
+    await waitFor(() => expect(bodies).toHaveLength(1));
+    submit(container, "Lighter, please");
+    await waitFor(() => expect(bodies).toHaveLength(2));
+    expect(bodies.map((body) => body.page)).toEqual(["/en/lenses/x/browse?t=zoom", "/en/lenses/x/browse?t=zoom"]);
   });
 });

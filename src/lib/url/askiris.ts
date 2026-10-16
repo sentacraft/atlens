@@ -3,30 +3,51 @@ import { ASK_IRIS_PATH } from "@/lib/url/routes";
 
 export const ASKIRIS_PARAMS = {
   query: "q",
+  draft: "draft",
+  from: "from",
   conversation: "conversation",
 } as const;
+
+/** A question handed to Iris from elsewhere: sent at once, or left in the input to edit. */
+export interface IrisQuestion {
+  text: string;
+  mode: "send" | "draft";
+}
 
 /** Opens a conversation on the Ask Iris page. */
 export function askIrisConversationPath(conversationId: string): string {
   return `${ASK_IRIS_PATH}?${new URLSearchParams({ [ASKIRIS_PARAMS.conversation]: conversationId })}`;
 }
 
-/** Opens Ask Iris and sends `query` as the first message. */
-export function askIrisHandoffPath(query: string): string {
-  return `${ASK_IRIS_PATH}?${new URLSearchParams({ [ASKIRIS_PARAMS.query]: query })}`;
+/** Opens Ask Iris with `question`; `from` is the page path the conversation is about. */
+export function askIrisHandoffPath(question: IrisQuestion, from?: string): string {
+  const params = new URLSearchParams({
+    [question.mode === "send" ? ASKIRIS_PARAMS.query : ASKIRIS_PARAMS.draft]: question.text,
+  });
+  if (from) {
+    params.set(ASKIRIS_PARAMS.from, from);
+  }
+  return `${ASK_IRIS_PATH}?${params}`;
 }
 
 export type AskIrisEntry =
   | { kind: "new" }
-  | { kind: "handoff"; query: string }
+  | { kind: "handoff"; question: IrisQuestion; from?: string }
   | { kind: "resume"; conversationId: string };
 
 type SearchParamValue = string | string[] | undefined;
 
 export function resolveAskIrisEntry(params: Record<string, SearchParamValue>): AskIrisEntry {
   const query = firstSearchParam(params[ASKIRIS_PARAMS.query])?.trim();
-  if (query) {
-    return { kind: "handoff", query };
+  const draft = firstSearchParam(params[ASKIRIS_PARAMS.draft])?.trim();
+  const question: IrisQuestion | undefined = query
+    ? { text: query, mode: "send" }
+    : draft
+      ? { text: draft, mode: "draft" }
+      : undefined;
+  if (question) {
+    const from = firstSearchParam(params[ASKIRIS_PARAMS.from]);
+    return { kind: "handoff", question, ...(from?.startsWith("/") ? { from } : {}) };
   }
   const conversationId = firstSearchParam(params[ASKIRIS_PARAMS.conversation])?.trim();
   if (conversationId) {
@@ -80,7 +101,8 @@ export const DETACHED_CONVERSATION_LOCATION: ConversationLocation = {
 
 export function clearEntryParams(): void {
   const url = new URL(window.location.href);
-  url.searchParams.delete(ASKIRIS_PARAMS.query);
-  url.searchParams.delete(ASKIRIS_PARAMS.conversation);
+  for (const param of Object.values(ASKIRIS_PARAMS)) {
+    url.searchParams.delete(param);
+  }
   window.history.replaceState(null, "", url.toString());
 }

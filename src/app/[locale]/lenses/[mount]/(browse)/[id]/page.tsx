@@ -12,6 +12,7 @@ import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens/spec-groups";
 import { ExternalLink } from "@/components/ui/external-link";
 import LensDetailCompareToggle from "@/components/compare/LensDetailCompareToggle";
 import LensDetailSaveActions from "@/components/lens/LensDetailSaveActions";
+import AskIrisEntry from "@/components/iris/AskIrisEntry";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import LensDetailTelemetry from "@/components/lens/LensDetailTelemetry";
 import ShareFAB from "@/components/share/ShareFAB";
@@ -166,6 +167,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const tBrand = await getTranslations("Brands");
   const tPricing = await getTranslations("Pricing");
   const tNav = await getTranslations("Nav");
+  const tIris = await getTranslations("IrisEntry");
   const url = getLensUrl(lens, locale);
 
   const brandName = tBrand(lens.brand);
@@ -275,6 +277,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           <div className="mt-auto flex flex-wrap items-center gap-2">
             <LensDetailCompareToggle lensId={lens.id} />
             <RetailersDropdown lens={lens} customId="detail" />
+            <AskIrisEntry id="lens" label={tIris("lensLabel")} phoneLabel="full" question={{ text: tIris("lensQuestion"), mode: "draft" }} />
             <LensDetailSaveActions lensId={lens.id} />
           </div>
         </div>

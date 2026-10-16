@@ -12,9 +12,9 @@ vi.mock("@/i18n/navigation", () => ({
 }));
 vi.mock("@/hooks/useViewport", () => ({ useBreakpoint: () => env.wide }));
 vi.mock("@/components/iris-panel/IrisPanel", () => ({
-  default: ({ shown, request }: { shown: boolean; request: { question: string } | null }) => (
+  default: ({ shown, request }: { shown: boolean; request: { question: { text: string } } | null }) => (
     <div data-testid="panel" data-shown={String(shown)}>
-      {request?.question}
+      {request?.question.text}
     </div>
   ),
 }));
@@ -30,7 +30,7 @@ afterEach(() => {
 function Ask() {
   const openIris = useOpenIris();
   return (
-    <button type="button" onClick={() => openIris({ question: "Which 23mm?" })}>
+    <button type="button" onClick={() => openIris({ text: "Which 23mm?", mode: "draft" })}>
       ask
     </button>
   );
@@ -51,8 +51,9 @@ describe("IrisPanelProvider", () => {
     expect(push).not.toHaveBeenCalled();
   });
 
-  it("goes to the Ask Iris page on a narrow screen", () => {
+  it("goes to the Ask Iris page on a narrow screen, carrying the page the question is about", () => {
     env.wide = false;
+    window.history.replaceState(null, "", "/en/lenses/x/compare?ids=a,b");
     render(
       <IrisPanelProvider>
         <Ask />
@@ -60,7 +61,9 @@ describe("IrisPanelProvider", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: "ask" }));
 
-    expect(push).toHaveBeenCalledWith("/askiris?q=Which+23mm%3F");
+    expect(push).toHaveBeenCalledWith(
+      "/askiris?draft=Which+23mm%3F&from=%2Fen%2Flenses%2Fx%2Fcompare%3Fids%3Da%2Cb",
+    );
     expect(screen.queryByTestId("panel")).toBeNull();
   });
 });

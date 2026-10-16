@@ -25,9 +25,10 @@ import LensIndexShell from "@/components/browse/LensIndexShell";
 import LensUsageSwitch from "@/components/browse/LensUsageSwitch";
 import LensSortControl from "@/components/browse/LensSortControl";
 import LensSearchDialog, { suggestLensFooter } from "@/components/browse/LensSearchDialog";
+import AskIrisEntry from "@/components/iris/AskIrisEntry";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { LENS_GRID_CLS, SEARCH_TRIGGER_CLS } from "@/config/ui-tokens";
+import { ACTION_OUTLINE_CLS, LENS_GRID_CLS, SEARCH_TRIGGER_CLS } from "@/config/ui-tokens";
 import { aboutPath, lensPath } from "@/lib/url/routes";
 
 interface LensListClientProps {
@@ -37,6 +38,7 @@ interface LensListClientProps {
 export default function LensListClient({ lenses }: LensListClientProps) {
   const t = useTranslations("LensList");
   const tSearch = useTranslations("Search");
+  const tIris = useTranslations("IrisEntry");
   const hookAttr = useUiHookAttr();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -125,6 +127,17 @@ export default function LensListClient({ lenses }: LensListClientProps) {
             onFiltersChange={setFilters}
             activeFilterCount={activeFilterCount}
             onReset={clearAllFilters}
+            assistSlot={
+              displayed.length > 0 && (
+                <AskIrisEntry
+                  id="browse"
+                  label={tIris("browseLabel")}
+                  phoneLabel="short"
+                  question={{ text: tIris("browseQuestion"), mode: "draft" }}
+                  className="h-8 px-3 text-[13px]"
+                />
+              )
+            }
             searchSlot={
               <>
                 <button type="button" onClick={() => setSearchOpen(true)} className={cn(SEARCH_TRIGGER_CLS, "sm:h-10")}>
@@ -183,10 +196,22 @@ export default function LensListClient({ lenses }: LensListClientProps) {
         </div>
 
         {displayed.length === 0 ? (
-          <div className="flex flex-col gap-2 animate-in fade-in duration-200">
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              {t("noResults")}
-            </p>
+          <div className="flex flex-col items-start gap-3 py-6 animate-in fade-in duration-200">
+            <div className="flex flex-col gap-1">
+              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{t("noResults")}</p>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">{tIris("emptyHint")}</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button type="button" onClick={clearAllFilters} className={ACTION_OUTLINE_CLS}>
+                {tIris("emptyClear")}
+              </button>
+              <AskIrisEntry
+                id="empty"
+                label={tIris("emptyLabel")}
+                phoneLabel="full"
+                question={{ text: tIris("emptyQuestion"), mode: "send" }}
+              />
+            </div>
           </div>
         ) : (
           // No content key: remounting would defeat memo(LensCard); the fade is replayed imperatively.

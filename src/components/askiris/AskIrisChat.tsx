@@ -24,7 +24,9 @@ import {
   DETACHED_CONVERSATION_LOCATION,
   URL_CONVERSATION_LOCATION,
   type AskIrisEntry,
+  type IrisQuestion,
 } from "@/lib/url/askiris";
+import { currentPagePath } from "@/lib/askiris/page-path";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
@@ -64,10 +66,10 @@ const SHELL_CLS = {
   panel: "flex h-full w-full flex-col px-4",
 };
 
-/** A question sent in from outside the panel; a new `id` sends it again. */
+/** A question handed in from outside the panel; a new `id` hands it in again. */
 export interface IrisPanelRequest {
   id: number;
-  question: string;
+  question: IrisQuestion;
 }
 
 /** Where the chat lives: the Ask Iris page, or the side panel that follows the user across pages. */
@@ -87,7 +89,7 @@ export default function AskIrisChat({
   lenses: LensSummary[];
 }) {
   const entry = shell.variant === "page" ? shell.entry : NEW_ENTRY;
-  const initialQuery = entry.kind === "handoff" ? entry.query : undefined;
+  const initialQuestion = entry.kind === "handoff" ? entry.question : undefined;
   const t = useTranslations("AskIris");
   const locale = useLocale();
   const mount = useEffectiveMount();
@@ -96,6 +98,8 @@ export default function AskIrisChat({
   const [historyOpen, setHistoryOpen] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
   const [pendingSwitch, setPendingSwitch] = useState<ConversationSwitch | null>(null);
+  // The page a phone handoff came from: the conversation is about it until the user moves on.
+  const [originPage, setOriginPage] = useState(entry.kind === "handoff" ? entry.from : undefined);
   const { data: session } = authClient.useSession();
   const userId = accountUser(session)?.id;
   const historyEnabled = useTestHookEnabled();
@@ -136,7 +140,11 @@ export default function AskIrisChat({
     location: shell.variant === "page" ? URL_CONVERSATION_LOCATION : DETACHED_CONVERSATION_LOCATION,
   });
   const errorKind = status === "error" ? classifyError(error) : null;
-  const turnBody = { mount, locale };
+  // Read at send time: the panel follows the user across pages.
+  const turnBody = () => {
+    const page = shell.variant === "panel" ? currentPagePath() : originPage;
+    return { mount, locale, ...(page ? { page } : {}) };
+  };
 
   useEffect(() => {
     track("askiris_view");
@@ -153,7 +161,7 @@ export default function AskIrisChat({
         return false;
       }
     }
-    void sendMessage({ text }, { body: turnBody });
+    void sendMessage({ text }, { body: turnBody() });
     track("askiris_message", { method });
     return true;
   }
@@ -168,28 +176,25 @@ export default function AskIrisChat({
     }
   }
 
-  // A ref, not a module flag: returning with a new query must send again.
-  const submitInitialQuery = useEffectEvent((query: string) => {
-    void send(query, "handoff");
+  // A draft, or a question that arrives while a reply is being written, waits in the input.
+  const receiveQuestion = useEffectEvent((question: IrisQuestion) => {
+    if (question.mode === "draft" || isBusy) {
+      setInput(question.text);
+    } else {
+      void send(question.text, "handoff");
+    }
   });
-  const initialQuerySent = useRef(false);
+
+  // A ref, not a module flag: returning with a new question must hand it in again.
+  const initialQuestionReceived = useRef(false);
   useEffect(() => {
-    if (initialQuerySent.current || !initialQuery) {
+    if (initialQuestionReceived.current || !initialQuestion) {
       return;
     }
-    initialQuerySent.current = true;
+    initialQuestionReceived.current = true;
     clearEntryParams();
-    submitInitialQuery(initialQuery);
-  }, [initialQuery]);
-
-  // While a reply is being written, an incoming question waits in the input instead.
-  const receiveRequest = useEffectEvent((question: string) => {
-    if (isBusy) {
-      setInput(question);
-    } else {
-      void send(question, "handoff");
-    }
-  });
+    receiveQuestion(initialQuestion);
+  }, [initialQuestion]);
   const panelRequest = shell.variant === "panel" ? shell.request : null;
   const handledRequestId = useRef(0);
   useEffect(() => {
@@ -197,7 +202,7 @@ export default function AskIrisChat({
       return;
     }
     handledRequestId.current = panelRequest.id;
-    receiveRequest(panelRequest.question);
+    receiveQuestion(panelRequest.question);
   }, [panelRequest]);
 
   const renderMessages = useFixtureMessages(messages);
@@ -226,6 +231,7 @@ export default function AskIrisChat({
 
   function switchConversation(target: ConversationSwitch) {
     setHistoryOpen(false);
+    setOriginPage(undefined);
     if (target.kind === "new") {
       conversation.startNewConversation();
     } else {
@@ -325,7 +331,7 @@ export default function AskIrisChat({
     );
   }
 
-  if (renderMessages.length === 0 && !initialQuery) {
+  if (renderMessages.length === 0 && initialQuestion?.mode !== "send") {
     return (
       <div className={SHELL_CLS[shell.variant]}>
         {topBar}
@@ -358,11 +364,11 @@ export default function AskIrisChat({
               gearCard={{
                 lenses,
                 onAnswer: (toolCallId, output) =>
-                  void addToolOutput({ tool: ASK_FOR_GEAR, toolCallId, output, options: { body: turnBody } }),
+                  void addToolOutput({ tool: ASK_FOR_GEAR, toolCallId, output, options: { body: turnBody() } }),
               }}
             />
             {errorKind && (
-              <AskIrisError kind={errorKind} onRetry={() => regenerate({ body: turnBody })} />
+              <AskIrisError kind={errorKind} onRetry={() => regenerate({ body: turnBody() })} />
             )}
           </div>
           <div

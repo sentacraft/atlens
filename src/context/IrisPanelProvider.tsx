@@ -5,13 +5,14 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import IrisPanel from "@/components/iris-panel/IrisPanel";
 import type { IrisPanelRequest } from "@/components/askiris/AskIrisChat";
 import { useBreakpoint } from "@/hooks/useViewport";
-import { askIrisHandoffPath } from "@/lib/url/askiris";
+import { askIrisHandoffPath, type IrisQuestion } from "@/lib/url/askiris";
+import { currentPagePath } from "@/lib/askiris/page-path";
 import { ASK_IRIS_PATH } from "@/lib/url/routes";
 
 export const IRIS_PANEL_WIDTH = 400;
 
-/** Opens the side panel on wide screens, and the Ask Iris page elsewhere; `question` is sent at once. */
-export type OpenIris = (options: { question?: string }) => void;
+/** Opens the side panel on wide screens, and the Ask Iris page elsewhere, about the page it is called from. */
+export type OpenIris = (question?: IrisQuestion) => void;
 
 // Only the action is shared: entry points need to open the panel, not to watch it.
 const IrisPanelContext = createContext<OpenIris | null>(null);
@@ -32,10 +33,10 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
     routeRef.current = { wide, onAskIrisPage, router };
   }, [wide, onAskIrisPage, router]);
 
-  const openIris = useCallback<OpenIris>(({ question }) => {
+  const openIris = useCallback<OpenIris>((question) => {
     const route = routeRef.current;
     if (!route.wide || route.onAskIrisPage) {
-      route.router.push(question ? askIrisHandoffPath(question) : ASK_IRIS_PATH);
+      route.router.push(question ? askIrisHandoffPath(question, currentPagePath()) : ASK_IRIS_PATH);
       return;
     }
     setMounted(true);
