@@ -26,7 +26,7 @@ import { listUserFavorites } from "@/lib/me/favorites-repository";
 import { ASK_FOR_GEAR, gearRequestDeclined } from "@/lib/ai/gear-request";
 import { listUserGear } from "@/lib/me/gear-repository";
 import { buildLensTools, seedRecalledRefs } from "@/lib/ai/tools";
-import { hasRepeatedToolFailure } from "@/lib/ai/repeated-tool-failure";
+import { hasRepeatedToolFailure, withRepeatedFailureNotice } from "@/lib/ai/repeated-tool-failure";
 import { isOverTokenBudget, recordTokens } from "@/lib/ai/token-budget";
 import { clientIp, isBypassed, isRateLimited } from "@/lib/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
@@ -145,12 +145,14 @@ export async function POST(req: Request) {
   const gearStatus = await loadGearStatus(req, appDb, userId, isAccount);
   // Filled once the history is resolved below; validate needs the tools before that.
   const recalledRefs = new Set<string>();
-  const tools = buildLensTools(
-    mount,
-    locale,
-    tBrand,
-    () => loadFavorites(req, appDb, userId, isAccount),
-    recalledRefs,
+  const tools = withRepeatedFailureNotice(
+    buildLensTools(
+      mount,
+      locale,
+      tBrand,
+      () => loadFavorites(req, appDb, userId, isAccount),
+      recalledRefs,
+    ),
   );
   const validate = (messages: unknown) =>
     safeValidateUIMessages<AskIrisUIMessage>({

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { hasRepeatedToolFailure } from "../repeated-tool-failure";
+import { tool } from "ai";
+import { z } from "zod";
+import { hasRepeatedToolFailure, withRepeatedFailureNotice } from "../repeated-tool-failure";
 
 const failure = (toolName: string, input: unknown) => ({
   type: "tool-error",
@@ -53,5 +55,46 @@ describe("hasRepeatedToolFailure", () => {
         { content: [{ type: "tool-result", toolName: "searchLensByName", input }] },
       ]),
     ).toBe(false);
+  });
+});
+
+describe("withRepeatedFailureNotice", () => {
+  const options = { toolCallId: "call", messages: [] } as unknown as Parameters<
+    NonNullable<ReturnType<typeof flaky>["execute"]>
+  >[1];
+
+  function flaky() {
+    return tool({
+      inputSchema: z.object({ ref: z.string() }),
+      execute: ({ ref }) => {
+        if (ref !== "good") {
+          throw new Error(`Unknown lens ref "${ref}".`);
+        }
+        return { ok: true };
+      },
+    });
+  }
+
+  it("tells the model on the second identical failure that tools are now off", async () => {
+    const { lookup } = withRepeatedFailureNotice({ lookup: flaky() });
+
+    await expect(lookup.execute!({ ref: "bad" }, options)).rejects.toThrow(/^Unknown lens ref "bad"\.$/);
+    await expect(lookup.execute!({ ref: "bad" }, options)).rejects.toThrow(
+      /^Unknown lens ref "bad"\. This exact call has now failed twice/,
+    );
+  });
+
+  it("does not add the notice when the input changes or the call succeeds", async () => {
+    const { lookup } = withRepeatedFailureNotice({ lookup: flaky() });
+
+    await expect(lookup.execute!({ ref: "bad" }, options)).rejects.toThrow(/^Unknown lens ref "bad"\.$/);
+    await expect(lookup.execute!({ ref: "worse" }, options)).rejects.toThrow(/^Unknown lens ref "worse"\.$/);
+    await expect(lookup.execute!({ ref: "good" }, options)).resolves.toEqual({ ok: true });
+  });
+
+  it("leaves a tool without execute as it is", () => {
+    const clientSide = tool({ inputSchema: z.object({}) });
+
+    expect(withRepeatedFailureNotice({ clientSide }).clientSide).toBe(clientSide);
   });
 });
