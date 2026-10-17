@@ -44,14 +44,14 @@ export function useConversation({
   location: ConversationLocation;
 }) {
   const queryClient = useQueryClient();
-  // A conversation still replying in this tab (the panel going full screen) shows at once.
-  const [replyingAtStart] = useState(() => (initialConversationId ? replyingChat(initialConversationId) : undefined));
-  const [active, setActive] = useState<ActiveConversation>(() =>
-    replyingAtStart && initialConversationId
-      ? { id: initialConversationId, messages: replyingAtStart.messages }
-      : newConversation(),
-  );
-  const [loading, setLoading] = useState(() => Boolean(initialConversationId) && !replyingAtStart);
+  // A linked conversation still replying in this tab (the panel going full screen) shows at once.
+  const [active, setActive] = useState<ActiveConversation>(() => {
+    const replying = initialConversationId ? replyingChat(initialConversationId) : undefined;
+    return replying && initialConversationId
+      ? { id: initialConversationId, messages: replying.messages }
+      : newConversation();
+  });
+  const [loading, setLoading] = useState(() => Boolean(initialConversationId) && active.id !== initialConversationId);
 
   const requestRef = useRef(0);
   const onNoticeRef = useRef(onNotice);
@@ -186,14 +186,14 @@ export function useConversation({
         ? "error"
         : "loading";
 
-  const initialHandledRef = useRef(false);
+  const initialHandledRef = useRef(active.id === initialConversationId);
   useEffect(() => {
-    if (initialHandledRef.current || !initialConversationId || replyingAtStart) {
+    if (initialHandledRef.current || !initialConversationId) {
       return;
     }
     initialHandledRef.current = true;
     void load(initialConversationId, "none");
-  }, [initialConversationId, replyingAtStart, load]);
+  }, [initialConversationId, load]);
 
   useEffect(() => {
     if (!location.followsHistory) {
