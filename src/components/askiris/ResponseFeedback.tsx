@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
-import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
 import ToggleChipGroup from "@/components/ui/toggle-chip-group";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogFooter, DialogHeader, DialogPopup, DialogTitle } from "@/components/ui/dialog";
 import type { AskIrisResponseFeedbackInput } from "@/lib/askiris/response-feedback-contract";
 import { postResponseFeedback } from "@/lib/askiris/response-feedback-client";
 import { cn } from "@/lib/utils";
@@ -34,7 +35,7 @@ function logFeedbackFailure(responseMessageId: string, error: unknown): void {
   });
 }
 
-/** A one-line rating under a response: a tap saves it, and details open in place only on request. */
+/** A one-line rating under a response: a tap saves it, and details open in a dialog only on request. */
 export default function ResponseFeedback({ responseMessageId }: { responseMessageId: string }) {
   const t = useTranslations("AskIris.responseFeedback");
   const [rating, setRating] = useState<Rating | null>(null);
@@ -107,49 +108,49 @@ export default function ResponseFeedback({ responseMessageId }: { responseMessag
         </span>
       </div>
 
-      {detailsOpen && (
-        <form onSubmit={sendDetails} className="flex flex-col gap-3 rounded-xl border border-zinc-200 p-3 dark:border-zinc-800">
-          {rating === "unhelpful" && (
-            <fieldset className="flex flex-col gap-2">
-              <legend className="mb-2 text-[13px] font-medium text-zinc-700 dark:text-zinc-300">{t("title")}</legend>
-              <ToggleChipGroup<ReasonCode>
-                options={REASONS.map((reason) => ({ key: reason, label: t(`reasons.${reason}`) }))}
-                selectedKeys={reasons}
-                onToggle={(reason) =>
-                  setReasons((prev) => (prev.includes(reason) ? prev.filter((r) => r !== reason) : [...prev, reason]))
-                }
+      <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
+        <DialogPopup className="max-w-md">
+          <form onSubmit={sendDetails} className="flex min-h-0 flex-col">
+            <DialogHeader>
+              <DialogTitle>{t("dialogTitle")}</DialogTitle>
+            </DialogHeader>
+            <div className="flex min-h-0 flex-col gap-3 overflow-y-auto px-5 pb-4">
+              {rating === "unhelpful" && (
+                <fieldset className="flex flex-col gap-2">
+                  <legend className="sr-only">{t("title")}</legend>
+                  <ToggleChipGroup<ReasonCode>
+                    options={REASONS.map((reason) => ({ key: reason, label: t(`reasons.${reason}`) }))}
+                    selectedKeys={reasons}
+                    onToggle={(reason) =>
+                      setReasons((prev) => (prev.includes(reason) ? prev.filter((r) => r !== reason) : [...prev, reason]))
+                    }
+                  />
+                </fieldset>
+              )}
+              <label className="sr-only" htmlFor={`askiris-feedback-comment-${responseMessageId}`}>
+                {t("commentLabel")}
+              </label>
+              <Textarea
+                id={`askiris-feedback-comment-${responseMessageId}`}
+                value={comment}
+                onChange={(event) => setComment(event.target.value)}
+                placeholder={rating === "unhelpful" ? t("commentPlaceholder") : t("commentPlaceholderHelpful")}
+                rows={5}
+                maxLength={2000}
               />
-            </fieldset>
-          )}
-          <label className="sr-only" htmlFor={`askiris-feedback-comment-${responseMessageId}`}>
-            {t("commentLabel")}
-          </label>
-          <Textarea
-            id={`askiris-feedback-comment-${responseMessageId}`}
-            value={comment}
-            onChange={(event) => setComment(event.target.value)}
-            placeholder={t("commentPlaceholder")}
-            rows={3}
-            maxLength={2000}
-          />
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => setDetailsOpen(false)}
-              className="h-9 rounded-lg px-3 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
-            >
-              {t("cancel")}
-            </button>
-            <button
-              type="submit"
-              disabled={!canSendDetails}
-              className={cn(ACTION_PRIMARY_CLS, "h-9 rounded-lg px-4 text-sm font-medium")}
-            >
-              {t("submit")}
-            </button>
-          </div>
-        </form>
-      )}
+              <p className="text-[13px] leading-relaxed text-zinc-500 dark:text-zinc-400">{t("notice")}</p>
+            </div>
+            <DialogFooter className="border-t-0 pt-0">
+              <Button type="button" variant="outline" size="lg" onClick={() => setDetailsOpen(false)}>
+                {t("cancel")}
+              </Button>
+              <Button type="submit" size="lg" disabled={!canSendDetails}>
+                {t("submit")}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogPopup>
+      </Dialog>
     </div>
   );
 }
