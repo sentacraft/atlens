@@ -14,7 +14,7 @@ import { Plus, X } from "lucide-react";
 import LensSearchDialog from "@/components/browse/LensSearchDialog";
 import { ScrollChevron } from "@/components/ui/scroll-chevron";
 import { cn } from "@/lib/utils";
-import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
+import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, PAGE_GUTTER_CLS } from "@/config/ui-tokens";
 import { Z } from "@/config/ui";
 import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
 import type { Lens } from "@/lib/types";
@@ -73,7 +73,7 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
           data-testid="compare-bar"
           className={`fixed bottom-0 left-0 right-[var(--iris-panel-width,0px)] ${Z.fixed} border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-black/95 backdrop-blur-sm pb-[var(--safe-inset-bottom)]`}
         >
-          <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-6">
+          <div className={`mx-auto flex max-w-7xl flex-col gap-3 py-3 sm:flex-row sm:items-center sm:gap-4 ${PAGE_GUTTER_CLS}`}>
             <HorizontalScrollRail
               scrollRef={chipsRef}
               className="min-w-0 flex-1 px-5 sm:px-0 gap-2 pb-1 sm:pb-0"

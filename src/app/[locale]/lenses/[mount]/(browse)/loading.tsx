@@ -1,3 +1,5 @@
+import { PAGE_GUTTER_CLS } from "@/config/ui-tokens";
+
 function SkeletonCard() {
   return (
     <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex flex-col overflow-hidden max-xs:flex-row">
@@ -34,7 +36,7 @@ function SkeletonCard() {
 
 export default function LensesLoading() {
   return (
-    <div className="w-full max-w-7xl mx-auto px-5 sm:px-6 pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col gap-6">
+    <div className={`w-full max-w-7xl mx-auto pt-8 pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))] flex flex-col gap-6 ${PAGE_GUTTER_CLS}`}>
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="h-8 w-32 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />

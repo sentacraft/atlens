@@ -37,7 +37,7 @@ import { PriceSection } from "@/components/price/PriceSection";
 import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
 import { browsePath, lensPath } from "@/lib/url/routes";
 import { DataSourceBar } from "@/components/lens/DataSource";
-import { TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
+import { PAGE_GUTTER_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
 
@@ -214,7 +214,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   return (
     <>
     <JsonLd data={productSchema} />
-    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] flex flex-col gap-8">
+    <div className={`w-full max-w-4xl mx-auto pt-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] flex flex-col gap-8 ${PAGE_GUTTER_CLS}`}>
       <div className="flex items-center justify-between">
         <Breadcrumb
               segments={[{ label: tNav("lenses"), href: browsePath(resolvedMount) }]}

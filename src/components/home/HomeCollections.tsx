@@ -5,6 +5,7 @@ import WhenMountHasCollections from "@/components/mount/WhenMountHasCollections"
 import type { LensCollection } from "@/lib/collections";
 import type { Lens } from "@/lib/types";
 import { collectionsPath } from "@/lib/url/routes";
+import { PAGE_GUTTER_CLS } from "@/config/ui-tokens";
 
 export interface FeaturedCollection {
   collection: LensCollection;
@@ -30,7 +31,7 @@ export default function HomeCollections({
 
   return (
     <WhenMountHasCollections>
-      <section className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+      <section className={`mx-auto w-full max-w-6xl ${PAGE_GUTTER_CLS}`}>
         <h2 className="mb-2 text-xs font-semibold text-zinc-600 dark:text-zinc-300">{tNav("collections")}</h2>
         <ul className="grid auto-rows-fr grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-5">
           {featured.map(({ collection, previewLens, statsLabel }, index) => (

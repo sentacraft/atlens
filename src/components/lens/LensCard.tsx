@@ -73,7 +73,7 @@ export default memo(function LensCard({
   return (
     <div
       {...hookAttr("card")}
-      className={`group relative rounded-2xl border bg-white dark:bg-zinc-900 flex flex-col overflow-hidden transition-[border-color,box-shadow,background-color] hover:bg-zinc-50 dark:hover:bg-zinc-800/50 ${
+      className={`@container group relative rounded-2xl border bg-white dark:bg-zinc-900 flex flex-col overflow-hidden transition-[border-color,box-shadow,background-color] hover:bg-zinc-50 dark:hover:bg-zinc-800/50 ${
         isSelected
           ? CARD_SELECTED_BORDER_CLS
           : "border-zinc-200 dark:border-zinc-800"
@@ -97,7 +97,7 @@ export default memo(function LensCard({
                 src={getLensImageUrl(lens.id)}
                 alt={lens.model}
                 fill
-                sizes="(max-width: 499px) 129px, (max-width: 640px) 50vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                sizes="(max-width: 499px) 129px, (max-width: 767px) 50vw, 284px"
                 style={lensImageStyle}
                 className="object-contain"
                 // Next 16's `priority` only adds a preload link, so loading is set directly.
@@ -164,7 +164,7 @@ export default memo(function LensCard({
               <div className="text-right">{weightDisplay}</div>
             </dl>
 
-            <div className="flex min-h-8 items-center pr-24">
+            <div className="flex min-h-8 items-center pr-12 @min-[15rem]:pr-24">
               <LensCardPrice lens={lens} />
             </div>
           </div>
@@ -182,7 +182,7 @@ export default memo(function LensCard({
         aria-label={isSelected ? t("removeFromCompare") : selectionDisabled ? t("compareFull") : t("addToCompare")}
         aria-pressed={isSelected}
         className={cn(
-          "absolute right-3 bottom-3 z-10 inline-flex h-8 items-center gap-1 rounded-full border pr-3 pl-2.5 text-xs font-medium transition-colors sm:right-4 sm:bottom-4",
+          "absolute right-3 bottom-3 z-10 inline-flex h-8 items-center gap-1 rounded-full border px-2 text-xs @min-[15rem]:pr-3 @min-[15rem]:pl-2.5 font-medium transition-colors sm:right-4 sm:bottom-4",
           isSelected
             ? cn(ACTION_PRIMARY_CLS, "border-transparent")
             : selectionDisabled
@@ -191,7 +191,7 @@ export default memo(function LensCard({
         )}
       >
         {isSelected ? <Check className="h-3.5 w-3.5" strokeWidth={2.5} /> : <Plus className="h-3.5 w-3.5" />}
-        {isSelected ? t("compared") : t("compareShort")}
+        <span className="hidden @min-[15rem]:inline">{isSelected ? t("compared") : t("compareShort")}</span>
       </button>
     </div>
   );
