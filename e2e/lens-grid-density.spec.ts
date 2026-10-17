@@ -29,8 +29,9 @@ test.describe("Lens library grid density", () => {
   for (const [width, columns] of [
     [768, 3],
     [1000, 4],
-    [1279, 5],
-    [1600, 5],
+    [1279, 4],
+    [1600, 4],
+    [1920, 4],
   ] as const) {
     test(`${width}px shows ${columns} columns of cards no wider than 290px`, async ({ page }) => {
       const layout = await layoutAt(page, width);
@@ -38,6 +39,13 @@ test.describe("Lens library grid density", () => {
       expect(layout.cardWidth).toBeLessThanOrEqual(290);
     });
   }
+
+  test("cards at 1280px and wider keep the compare button's label", async ({ page }) => {
+    for (const width of [1280, 1920]) {
+      await layoutAt(page, width);
+      await expect(page.locator("span", { hasText: /^Compare$/ }).first()).toBeVisible();
+    }
+  });
 
   test("the grid lines up with the nav bar's content edge", async ({ page }) => {
     for (const width of [640, 1024, 1600]) {
