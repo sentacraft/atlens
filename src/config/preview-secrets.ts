@@ -6,7 +6,7 @@
  */
 export const SECRETS_NOT_ON_PREVIEWS: readonly string[] = [
   // Credentials for the admin analytics API.
-  "CF_ACCOUNT_ID",
+  "CF_ANALYTICS_ACCOUNT_ID",
   "CF_ANALYTICS_TOKEN",
   // Google accepts only the production callback, so previews have no Google sign-in.
   "GOOGLE_CLIENT_SECRET",
