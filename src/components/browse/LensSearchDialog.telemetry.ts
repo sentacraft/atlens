@@ -7,13 +7,15 @@ export function useSearchTelemetry({
   query,
   resultsCount,
   isOpen,
+  isComposing,
 }: {
   query: string;
   resultsCount: number;
   isOpen: boolean;
+  isComposing: boolean;
 }) {
   useEffect(() => {
-    if (!isOpen) {
+    if (!isOpen || isComposing) {
       return;
     }
     const trimmed = query.trim();
@@ -24,5 +26,5 @@ export function useSearchTelemetry({
       track("search", { query: trimmed, results_count: resultsCount });
     }, 500);
     return () => clearTimeout(timer);
-  }, [query, resultsCount, isOpen]);
+  }, [query, resultsCount, isOpen, isComposing]);
 }
