@@ -45,16 +45,12 @@ dataset = "xglass_events"
 binding = "ASKIRIS_DB"
 database_name = "atlens-askiris-traces"
 database_id = "6e45555d-ee19-4a77-af3c-b7fdebd11a61"
-# The Worker Previews copy, so `d1 migrations apply ASKIRIS_DB --remote --preview` reaches it.
-preview_database_id = "085245b9-fcdb-4948-904f-f51d357f7ccc"
 migrations_dir = "migrations/askiris-internal"
 
 [[d1_databases]]
 binding = "APP_DB"
 database_name = "atlens-app"
 database_id = "6a75a5c7-643e-414b-9cd2-51cf3826a2f2"
-# The Worker Previews copy, so `d1 migrations apply APP_DB --remote --preview` reaches it.
-preview_database_id = "14670bb5-ad46-4aec-a872-703443f4bed2"
 migrations_dir = "migrations/app"
 
 [[send_email]]
