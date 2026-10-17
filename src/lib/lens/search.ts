@@ -79,8 +79,17 @@ export function tokenize(normalised: string): string[] {
   return tokens;
 }
 
-// "xf35" splits like "xf 35"; single-letter prefixes such as "f1.4" stay whole.
+const BRAND_KEYS_LONGEST_FIRST = [...catalogBrandByKey.keys()].sort((a, b) => b.length - a.length);
+
+// "xf35" splits like "xf 35", and so does a brand typed before digits ("7artisans12");
+// single-letter prefixes such as "f1.4" stay whole.
 function expandCompoundToken(token: string): string[] {
+  const brand = BRAND_KEYS_LONGEST_FIRST.find(
+    (key) => token.startsWith(key) && /\d/.test(token.charAt(key.length)),
+  );
+  if (brand) {
+    return [brand, token.slice(brand.length)];
+  }
   const match = token.match(/^([a-z]{2,})(\d.*)$/);
   return match ? [match[1], match[2]] : [token];
 }

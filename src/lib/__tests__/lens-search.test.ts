@@ -343,6 +343,7 @@ describe("searchLenses — Chinese brand queries", () => {
     ["星曜MF12", "星曜 MF12"],
     ["富士23", "富士 23"],
     ["七工匠25", "七工匠 25"],
+    ["7artisans25", "7artisans 25"],
   ])("'%s' returns the same lenses as '%s'", (joined, spaced) => {
     const expected = searchLenses(withBrightinStar, spaced).map((l) => l.id);
     expect(expected.length).toBeGreaterThan(0);
