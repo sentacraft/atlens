@@ -112,7 +112,7 @@ export default function ResponseFeedback({ responseMessageId }: { responseMessag
         <DialogPopup className="max-w-md">
           <form onSubmit={sendDetails} className="flex min-h-0 flex-col">
             <DialogHeader>
-              <DialogTitle>{rating === "unhelpful" ? t("title") : t("tellMore")}</DialogTitle>
+              <DialogTitle>{t("dialogTitle")}</DialogTitle>
             </DialogHeader>
             <div className="flex min-h-0 flex-col gap-3 overflow-y-auto px-5 pb-4">
               {rating === "unhelpful" && (
@@ -134,16 +134,17 @@ export default function ResponseFeedback({ responseMessageId }: { responseMessag
                 id={`askiris-feedback-comment-${responseMessageId}`}
                 value={comment}
                 onChange={(event) => setComment(event.target.value)}
-                placeholder={t("commentPlaceholder")}
-                rows={4}
+                placeholder={rating === "unhelpful" ? t("commentPlaceholder") : t("commentPlaceholderHelpful")}
+                rows={5}
                 maxLength={2000}
               />
+              <p className="text-[13px] leading-relaxed text-zinc-500 dark:text-zinc-400">{t("notice")}</p>
             </div>
-            <DialogFooter>
-              <Button type="button" variant="ghost" onClick={() => setDetailsOpen(false)}>
+            <DialogFooter className="border-t-0 pt-0">
+              <Button type="button" variant="outline" size="lg" onClick={() => setDetailsOpen(false)}>
                 {t("cancel")}
               </Button>
-              <Button type="submit" disabled={!canSendDetails}>
+              <Button type="submit" size="lg" disabled={!canSendDetails}>
                 {t("submit")}
               </Button>
             </DialogFooter>

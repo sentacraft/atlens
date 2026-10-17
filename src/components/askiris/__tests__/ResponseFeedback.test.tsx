@@ -52,7 +52,7 @@ describe("ResponseFeedback", () => {
 
     expect(screen.queryByRole("dialog")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "tellMore" }));
-    expect(await screen.findByRole("dialog", { name: "title" })).toBeInTheDocument();
+    expect(await screen.findByRole("dialog", { name: "dialogTitle" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "reasons.did_not_answer" }));
     fireEvent.change(screen.getByRole("textbox"), { target: { value: "  Needed a cheaper option  " } });
     fireEvent.click(screen.getByRole("button", { name: "submit" }));
