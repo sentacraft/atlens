@@ -12,7 +12,7 @@ interface SqlApiResponse<T> {
 export async function queryAE<T = Record<string, unknown>>(
   sql: string,
 ): Promise<QueryResult<T>> {
-  const accountId = process.env.CF_ACCOUNT_ID;
+  const accountId = process.env.CF_ANALYTICS_ACCOUNT_ID;
   const token = process.env.CF_ANALYTICS_TOKEN;
   if (!accountId || !token) {
     return { ok: false, data: [], error: "missing_credentials" };
