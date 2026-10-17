@@ -8,9 +8,9 @@ export const SECRETS_NOT_ON_PREVIEWS: readonly string[] = [
   // Credentials for the admin analytics API.
   "CF_ANALYTICS_ACCOUNT_ID",
   "CF_ANALYTICS_TOKEN",
-  // Google accepts only the production callback, so previews have no Google sign-in.
+  // A `[previews.vars]` placeholder instead: the code exchange runs on production.
   "GOOGLE_CLIENT_SECRET",
 ];
 
 /** Secrets whose preview value must equal production's; others get their own value. */
-export const SECRETS_SHARED_WITH_PREVIEWS: readonly string[] = [];
+export const SECRETS_SHARED_WITH_PREVIEWS: readonly string[] = ["OAUTH_PROXY_SECRET"];
