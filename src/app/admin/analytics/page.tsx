@@ -475,7 +475,7 @@ export default async function AnalyticsDashboardPage() {
       <main className="mx-auto max-w-2xl px-6 py-16">
         <h1 className="font-heading text-2xl font-bold">Analytics not configured</h1>
         <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
-          Set <code className="rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-800">CF_ACCOUNT_ID</code> and{" "}
+          Set <code className="rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-800">CF_ANALYTICS_ACCOUNT_ID</code> and{" "}
           <code className="rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-800">CF_ANALYTICS_TOKEN</code>{" "}
           on the Worker to enable this dashboard. The token must have{" "}
           <code className="rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-800">Account · Analytics · Read</code>{" "}
