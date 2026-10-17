@@ -22,14 +22,115 @@ import { favoritesOnMount } from "@/lib/ai/favorites";
 
 const RECALL_LIMIT = 20;
 
+const recallConstraintsSchema = z.object({
+  brands: z
+    .array(z.string())
+    .optional()
+    .describe("Brand whitelist, lowercase (e.g. 'fujifilm', 'sigma', 'viltrox')."),
+  type: z.enum(["prime", "zoom"]).optional(),
+  focus: z
+    .enum(["auto", "manual"])
+    .optional()
+    .describe("auto = autofocus, manual = manual-focus only."),
+  usage: z
+    .enum(["photo", "cine"])
+    .optional()
+    .describe(
+      "Defaults to photo; cine lenses appear only when set to cine.",
+    ),
+  features: z
+    .array(z.enum(FILTER_FEATURE_KEYS))
+    .optional()
+    .describe(
+      "Lens must have ALL of these. ois = stabilization, wr = weather-resistant.",
+    ),
+  opticalTraits: z
+    .array(z.enum(OPTICAL_TRAITS))
+    .optional()
+    .describe(
+      "Restrict to lenses having any of these. fisheye/tilt/shift/anamorphic/probe " +
+        "appear only when named here; macro always appears.",
+    ),
+  coversFocals: z
+    .array(z.number())
+    .optional()
+    .describe(
+      "Native focal lengths in mm (the number printed on the lens, not the full-frame " +
+        "equivalent) the lens must reach, matched within a small tolerance. Each value is " +
+        "required independently, so the lens's range must include every one — two or more " +
+        "values exclude every prime.",
+    ),
+  // Not a [min, max] tuple: it compiles to prefixItems, which Google's function
+  // declarations reject.
+  focalWithin: z
+    .object({ min: z.number().optional(), max: z.number().optional() })
+    .optional()
+    .describe(
+      "Native focal window in mm (the number printed on the lens, not the full-frame " +
+        "equivalent); an omitted end is open. The lens's ENTIRE focal range must lie inside it.",
+    ),
+  minReach: z
+    .number()
+    .optional()
+    .describe("Native mm; a hard lower bound on the lens's longest focal length (its tele end)."),
+  maxWide: z
+    .number()
+    .optional()
+    .describe("Native mm; a hard upper bound on the lens's shortest focal length (its wide end)."),
+  maxWeightG: z
+    .number()
+    .optional()
+    .describe("Grams; a hard upper bound on lens weight."),
+  maxLengthMm: z
+    .number()
+    .optional()
+    .describe("Barrel length ceiling in mm; a hard upper bound."),
+  maxApertureF: z
+    .object({ wide: z.number().optional(), tele: z.number().optional() })
+    .optional()
+    .describe(
+      "f-number ceiling at each zoom end (smaller = wider); a hard bound.",
+    ),
+  maxPrice: z
+    .number()
+    .optional()
+    .describe("Price ceiling in the user's currency (CNY for zh, USD for en)."),
+  minMagnification: z
+    .number()
+    .optional()
+    .describe(
+      "Minimum magnification ratio (1 = life-size); a hard lower bound.",
+    ),
+  minApertureBladeCount: z
+    .number()
+    .optional()
+    .describe(
+      "Minimum aperture blade count; a hard lower bound.",
+    ),
+  minReleaseYear: z
+    .number()
+    .optional()
+    .describe("Only lenses released in or after this year; a hard lower bound."),
+  sortBy: z
+    .enum(RECALL_SORT_NAMES)
+    .optional()
+    .describe(
+      "Which lenses lead the results. It orders them, it never excludes any, so the " +
+        "cap keeps the ones this names. fastest = widest maximum aperture; " +
+        "widestZoomRange = highest ratio of longest to shortest focal.",
+    ),
+});
+
+
 type RefList = { ref?: unknown }[] | undefined;
 
 // Read loosely: stored turns are replayed even when they no longer match the tool schemas.
 const RECALL_OUTPUT_REFS: Record<string, (output: never) => unknown[]> = {
-  queryLenses: (output: { matches?: RefList; maybe?: { lens?: { ref?: unknown } }[] }) => [
-    ...(output.matches ?? []).map((lens) => lens.ref),
-    ...(output.maybe ?? []).map((entry) => entry.lens?.ref),
-  ],
+  queryLenses: (output: { results?: { matches?: RefList; maybe?: { lens?: { ref?: unknown } }[] }[] }) =>
+    (output.results ?? []).flatMap((result) => [
+      ...(result.matches ?? []).map((lens) => lens.ref),
+      ...(result.maybe ?? []).map((entry) => entry.lens?.ref),
+    ]),
   searchLensByName: (output: { results?: RefList }) => (output.results ?? []).map((lens) => lens.ref),
   myFavorites: (output: { results?: RefList }) => (output.results ?? []).map((lens) => lens.ref),
 };
@@ -70,116 +171,28 @@ export function buildLensTools(
         "Recall lenses by spec. Every parameter is a hard constraint, so set one only for a " +
         "requirement the request makes; an unset one leaves that axis unrestricted. `maybe` " +
         "holds lenses with no data on a constrained field — surface them, never drop them. " +
-        `Results are capped at ${RECALL_LIMIT} by your sort, totalMatched is the count beyond the ` +
-        "cap, and there is no paging.",
+        `Results are capped at ${RECALL_LIMIT} per query by your sort, totalMatched is the count ` +
+        "beyond the cap, and there is no paging. Independent recalls — say a standard zoom and a " +
+        "telephoto for a two-lens kit — go together in one call, one query each.",
       inputSchema: z.object({
-        brands: z
-          .array(z.string())
-          .optional()
-          .describe("Brand whitelist, lowercase (e.g. 'fujifilm', 'sigma', 'viltrox')."),
-        type: z.enum(["prime", "zoom"]).optional(),
-        focus: z
-          .enum(["auto", "manual"])
-          .optional()
-          .describe("auto = autofocus, manual = manual-focus only."),
-        usage: z
-          .enum(["photo", "cine"])
-          .optional()
-          .describe(
-            "Defaults to photo; cine lenses appear only when set to cine.",
-          ),
-        features: z
-          .array(z.enum(FILTER_FEATURE_KEYS))
-          .optional()
-          .describe(
-            "Lens must have ALL of these. ois = stabilization, wr = weather-resistant.",
-          ),
-        opticalTraits: z
-          .array(z.enum(OPTICAL_TRAITS))
-          .optional()
-          .describe(
-            "Restrict to lenses having any of these. fisheye/tilt/shift/anamorphic/probe " +
-              "appear only when named here; macro always appears.",
-          ),
-        coversFocals: z
-          .array(z.number())
-          .optional()
-          .describe(
-            "Native focal lengths in mm (the number printed on the lens, not the full-frame " +
-              "equivalent) the lens must reach, matched within a small tolerance. Each value is " +
-              "required independently, so the lens's range must include every one — two or more " +
-              "values exclude every prime.",
-          ),
-        // Not a [min, max] tuple: it compiles to prefixItems, which Google's function
-        // declarations reject.
-        focalWithin: z
-          .object({ min: z.number().optional(), max: z.number().optional() })
-          .optional()
-          .describe(
-            "Native focal window in mm (the number printed on the lens, not the full-frame " +
-              "equivalent); an omitted end is open. The lens's ENTIRE focal range must lie inside it.",
-          ),
-        minReach: z
-          .number()
-          .optional()
-          .describe("Native mm; a hard lower bound on the lens's longest focal length (its tele end)."),
-        maxWide: z
-          .number()
-          .optional()
-          .describe("Native mm; a hard upper bound on the lens's shortest focal length (its wide end)."),
-        maxWeightG: z
-          .number()
-          .optional()
-          .describe("Grams; a hard upper bound on lens weight."),
-        maxLengthMm: z
-          .number()
-          .optional()
-          .describe("Barrel length ceiling in mm; a hard upper bound."),
-        maxApertureF: z
-          .object({ wide: z.number().optional(), tele: z.number().optional() })
-          .optional()
-          .describe(
-            "f-number ceiling at each zoom end (smaller = wider); a hard bound.",
-          ),
-        maxPrice: z
-          .number()
-          .optional()
-          .describe("Price ceiling in the user's currency (CNY for zh, USD for en)."),
-        minMagnification: z
-          .number()
-          .optional()
-          .describe(
-            "Minimum magnification ratio (1 = life-size); a hard lower bound.",
-          ),
-        minApertureBladeCount: z
-          .number()
-          .optional()
-          .describe(
-            "Minimum aperture blade count; a hard lower bound.",
-          ),
-        minReleaseYear: z
-          .number()
-          .optional()
-          .describe("Only lenses released in or after this year; a hard lower bound."),
-        sortBy: z
-          .enum(RECALL_SORT_NAMES)
-          .optional()
-          .describe(
-            "Which lenses lead the results. It orders them, it never excludes any, so the " +
-              "cap keeps the ones this names. fastest = widest maximum aperture; " +
-              "widestZoomRange = highest ratio of longest to shortest focal.",
-          ),
+        queries: z
+          .array(recallConstraintsSchema)
+          .min(1)
+          .max(4)
+          .describe("Constraint sets, each recalled separately; results come back in the same order."),
       }),
-      execute: (constraints) => {
-        const result = recallLenses(mount, locale, constraints, tBrand, RECALL_LIMIT);
-        for (const lens of result.matches) {
-          recalledRefs.add(lens.ref);
-        }
-        for (const { lens } of result.maybe) {
-          recalledRefs.add(lens.ref);
-        }
-        return result;
-      },
+      execute: ({ queries }) => ({
+        results: queries.map((constraints) => {
+          const result = recallLenses(mount, locale, constraints, tBrand, RECALL_LIMIT);
+          for (const lens of result.matches) {
+            recalledRefs.add(lens.ref);
+          }
+          for (const { lens } of result.maybe) {
+            recalledRefs.add(lens.ref);
+          }
+          return result;
+        }),
+      }),
     }),
 
     searchLensByName: tool({

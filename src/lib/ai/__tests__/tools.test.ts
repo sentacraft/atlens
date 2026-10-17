@@ -35,7 +35,11 @@ function idsIn(node: unknown, path: string, found: string[]): void {
 // twice, hashing the id for the gate and again inside the projection for the payload.
 describe("a recall tool's gate accepts exactly what it returned", () => {
   it.each([
-    ["queryLenses", { type: "prime" }, (out: { matches: { ref: string }[] }) => out.matches],
+    [
+      "queryLenses",
+      { queries: [{ type: "prime" }] },
+      (out: { results: { matches: { ref: string }[] }[] }) => out.results[0].matches,
+    ],
     ["searchLensByName", { query: "35" }, (out: { results: { ref: string }[] }) => out.results],
   ])("%s", async (name, input, pick) => {
     const tools = buildLensTools("X", "zh", (brand) => brand, async () => null, new Set());
@@ -53,8 +57,8 @@ describe("a recall tool's gate accepts exactly what it returned", () => {
 describe("lensDetails hands the model refs, never ids", () => {
   it("returns a ref per lens and no id anywhere in the payload", async () => {
     // lensDetails only resolves refs the same turn already recalled, so seed the gate.
-    const recall = await run(tools.queryLenses, { type: "prime" });
-    const refs = recall.matches.slice(0, 3).map((lens: { ref: string }) => lens.ref);
+    const recall = await run(tools.queryLenses, { queries: [{ type: "prime" }] });
+    const refs = recall.results[0].matches.slice(0, 3).map((lens: { ref: string }) => lens.ref);
     expect(refs.length).toBeGreaterThan(0);
 
     const details = await run(tools.lensDetails, { refs });
@@ -67,8 +71,8 @@ describe("lensDetails hands the model refs, never ids", () => {
   });
 
   it("still carries the long-tail specs a recall result leaves out", async () => {
-    const recall = await run(tools.queryLenses, { type: "prime" });
-    const [ref] = recall.matches.map((lens: { ref: string }) => lens.ref);
+    const recall = await run(tools.queryLenses, { queries: [{ type: "prime" }] });
+    const [ref] = recall.results[0].matches.map((lens: { ref: string }) => lens.ref);
     const details = await run(tools.lensDetails, { refs: [ref] });
 
     // Dropping the id must not turn into dropping the payload: these are exactly what
@@ -115,18 +119,40 @@ describe("myFavorites", () => {
   });
 });
 
+describe("queryLenses with several constraint sets", () => {
+  it("recalls each set separately, in order, and gates every ref it returned", async () => {
+    const tools = buildLensTools("X", "zh", (brand) => brand, async () => null, new Set());
+
+    const out = await run(tools.queryLenses, {
+      queries: [{ type: "zoom", minReach: 200 }, { type: "prime", maxWeightG: 200 }],
+    });
+
+    expect(out.results).toHaveLength(2);
+    type Recalled = { ref: string; focalNativeMm: [number, number] };
+    const [zooms, primes] = out.results as { matches: Recalled[] }[];
+    expect(zooms.matches.length).toBeGreaterThan(0);
+    expect(primes.matches.length).toBeGreaterThan(0);
+    expect(zooms.matches.every(({ focalNativeMm: [wide, tele] }) => wide < tele && tele >= 200)).toBe(true);
+    expect(primes.matches.every(({ focalNativeMm: [wide, tele] }) => wide === tele)).toBe(true);
+    const refs = [zooms.matches[0].ref, primes.matches[0].ref];
+    const details = await run(tools.lensDetails, { refs });
+    expect(details.lenses.map((lens: { ref: string }) => lens.ref)).toEqual(refs);
+  });
+});
+
 describe("refs recalled earlier in the conversation", () => {
   async function priorTurn(): Promise<{ history: UIMessage[]; recalled: string[] }> {
     const earlier = buildLensTools("X", "zh", (brand) => brand, async () => null, new Set());
-    const output = await run(earlier.queryLenses, { type: "prime" });
-    const recalled = output.matches.slice(0, 3).map((lens: { ref: string }) => lens.ref);
+    const input = { queries: [{ type: "prime" as const }] };
+    const output = await run(earlier.queryLenses, input);
+    const recalled = output.results[0].matches.slice(0, 3).map((lens: { ref: string }) => lens.ref);
     const history: UIMessage[] = [
       { id: "u1", role: "user", parts: [{ type: "text", text: "primes" }] },
       {
         id: "a1",
         role: "assistant",
         parts: [
-          { type: "tool-queryLenses", toolCallId: "c1", state: "output-available", input: { type: "prime" }, output },
+          { type: "tool-queryLenses", toolCallId: "c1", state: "output-available", input, output },
           { type: "text", text: "Here are some primes." },
         ],
       },
