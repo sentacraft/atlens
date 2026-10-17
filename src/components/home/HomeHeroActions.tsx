@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useOpenIris } from "@/context/IrisPanelProvider";
 import AiTag from "@/components/iris/AiTag";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
@@ -14,6 +14,7 @@ import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useBreakpoint } from "@/hooks/useViewport";
 import { cn } from "@/lib/utils";
+import { askIrisPagePath } from "@/lib/url/askiris";
 import { ASK_IRIS_PATH, browsePath } from "@/lib/url/routes";
 
 const PRIMARY_CLS = `inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-medium ${ACTION_PRIMARY_CLS}`;
@@ -29,6 +30,8 @@ export default function HomeHeroActions() {
   const mount = useEffectiveMount();
   const openIris = useOpenIris();
   const wide = useBreakpoint("sm");
+  const sidePanel = useBreakpoint("lg");
+  const router = useRouter();
   const { focused: expanded, setFocused: setExpanded } = useHomeIrisFocus();
   const [draft, setDraft] = useState("");
   const panelRef = useRef<HTMLDivElement>(null);
@@ -66,7 +69,12 @@ export default function HomeHeroActions() {
     const trimmed = question.trim();
     if (trimmed) {
       setExpanded(false);
-      openIris({ question: trimmed });
+      // Home has no page to talk about, so below the side panel's width it goes to the Ask Iris page.
+      if (sidePanel) {
+        openIris({ kind: "question", text: trimmed });
+      } else {
+        router.push(askIrisPagePath({ question: trimmed }));
+      }
     }
   }
 

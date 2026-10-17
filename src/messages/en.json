@@ -392,6 +392,12 @@
     "tiltMobile": "Tilt",
     "shiftMobile": "Shift"
   },
+  "DataSource": {
+    "label": "Source",
+    "trust": "Not AI-generated",
+    "inline": "From makers' official sites · Not AI-generated",
+    "note": "These specs are not AI-generated. They come from what the manufacturer officially publishes; AI only files that text into one format and never makes up a value. The author reviews every lens before it goes live. <link>How the data is made</link>"
+  },
   "LensDetail": {
     "metaDescPrefix": "{name}, {mount}-mount {type} lens for Fujifilm. Specs, parameters, and side-by-side comparison",
     "metaJoinSpace": ": ",
@@ -466,7 +472,7 @@
     "addToCompare": "Compare",
     "removeFromCompare": "Remove",
     "compareFull": "Compare List Full",
-    "officialSite": "Official Page",
+    "sourceSite": "{brand} official site",
     "reportIssue": "Report an issue",
     "nudgeText": "Spotted an error in the data?",
     "feedbackLink": "Tell me",
@@ -506,6 +512,7 @@
     "scrollChipsRight": "Scroll chips right",
     "presetCardCta": "Compare Now",
     "officialSite": "Official Page",
+    "sourceAll": "Each maker's official site",
     "addLens": "Add lens",
     "selectFirst": "Add lens",
     "addMore": "Add lens",
@@ -808,5 +815,33 @@
     "ownedAdded": "Added to my gear",
     "viewGear": "View",
     "ownedRemoved": "Removed from my gear"
+  },
+  "IrisEntry": {
+    "browseLabel": "Not sure which? Ask Iris",
+    "emptyHint": "Clear a few filters, or just tell Iris what you're after.",
+    "emptyClear": "Clear filters",
+    "emptyLabel": "Let Iris find one",
+    "emptyQuestion": "Nothing matched these filters. Help me find something.",
+    "compareLabel": "Ask Iris how they differ",
+    "lensLabel": "Ask Iris about this lens",
+    "lookingAt": "Looking at",
+    "comparing": "Comparing {count}",
+    "browsing": "Browsing lenses",
+    "noFilters": "All lenses",
+    "detach": "Don't include this page",
+    "lensHeading": "About this lens, you could ask:",
+    "compareHeading": "About these lenses, you could ask:",
+    "browseHeading": "With these filters, you could ask:",
+    "lensSuggestions": ["What is it good for?", "How does it compare with others at this focal length?", "What does the focus motor row mean?"],
+    "compareSuggestions": ["What are the main differences?", "Which one is better for everyday carry?"],
+    "browseSuggestions": ["Given my filters, how should I choose?", "Which of these are the lightest?"],
+    "lensPlaceholder": "Ask anything about this lens",
+    "comparePlaceholder": "Ask anything about these lenses",
+    "browsePlaceholder": "What kind of lens are you after?",
+    "newConversation": "New conversation. The previous one is in your history.",
+    "newConversationGuest": "New conversation. The previous one is in your history, kept for 7 days without an account. <signIn>Sign in</signIn> to keep it for good.",
+    "browseName": "lenses",
+    "compareName": "comparison",
+    "backTo": "Back to {page}"
   }
 }

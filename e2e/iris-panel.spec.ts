@@ -17,6 +17,10 @@ test.describe("Ask Iris side panel", () => {
       () => getComputedStyle(document.documentElement).getPropertyValue("--iris-panel-width"),
     );
     expect(pagePadding).toBe("400px");
+    // The panel starts below the nav's bottom border instead of covering it.
+    const navBottom = await page.getByRole("banner").evaluate((nav) => nav.getBoundingClientRect().bottom);
+    const panelTop = await panel.evaluate((aside) => aside.getBoundingClientRect().top);
+    expect(panelTop).toBeGreaterThanOrEqual(navBottom);
 
     // A client-side navigation keeps the panel and its conversation.
     await page.locator('a[href^="/en/lenses/x/"]:not([href$="/browse"]):not([href*="/collections"])').first().click();
@@ -25,5 +29,48 @@ test.describe("Ask Iris side panel", () => {
 
     await panel.getByRole("button", { name: "Close" }).click();
     await expect(panel).toBeHidden();
+  });
+});
+
+test.describe("Ask Iris context entries", () => {
+  const compareUrl = "/en/lenses/x/compare?ids=fujifilm-xf-23mmf14-r-lm-wr-x,fujifilm-xf-33mmf14-r-lm-wr-x";
+
+  test("opens the side panel about the page, with questions for it, without sending anything", async ({ page }, testInfo) => {
+    const viewport = page.viewportSize();
+    testInfo.skip(!viewport || viewport.width < 1024, "The side panel is for screens 1024px and wider");
+    const chatRequests: string[] = [];
+    page.on("request", (request) => {
+      if (request.url().includes("/api/chat")) {
+        chatRequests.push(request.url());
+      }
+    });
+
+    await page.goto(compareUrl);
+    await page.getByRole("button", { name: /Ask Iris how they differ/ }).click();
+
+    const panel = page.getByRole("complementary", { name: "Iris" });
+    await expect(panel.getByText("Comparing 2")).toBeVisible();
+    await expect(panel.getByRole("button", { name: /What are the main differences/ })).toBeVisible();
+    await expect(panel.getByRole("textbox")).toHaveValue("");
+    expect(chatRequests).toEqual([]);
+  });
+
+  test("opens a bottom sheet about the page on a phone, while the nav still goes to Ask Iris", async ({ page }, testInfo) => {
+    const viewport = page.viewportSize();
+    testInfo.skip(!viewport || viewport.width >= 1024, "Narrow screens use the bottom sheet");
+    const lensUrl = "/en/lenses/x/fujifilm-xf-33mmf14-r-lm-wr-x";
+
+    await page.goto(lensUrl);
+    await page.getByRole("button", { name: /Ask Iris about this lens/ }).click();
+
+    const sheet = page.getByRole("dialog", { name: "Iris" });
+    await expect(sheet.getByText("Looking at")).toBeVisible();
+    await expect(sheet.getByRole("textbox")).toBeInViewport();
+    await expect(page).toHaveURL(new RegExp(`${lensUrl}$`));
+
+    await page.keyboard.press("Escape");
+    await expect(sheet).toBeHidden();
+    await page.getByRole("banner").getByRole("link", { name: /^Ask Iris/ }).click();
+    await expect(page).toHaveURL(/\/en\/askiris$/);
   });
 });

@@ -12,6 +12,7 @@ import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens/spec-groups";
 import { ExternalLink } from "@/components/ui/external-link";
 import LensDetailCompareToggle from "@/components/compare/LensDetailCompareToggle";
 import LensDetailSaveActions from "@/components/lens/LensDetailSaveActions";
+import AskIrisEntry from "@/components/iris/AskIrisEntry";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import LensDetailTelemetry from "@/components/lens/LensDetailTelemetry";
 import ShareFAB from "@/components/share/ShareFAB";
@@ -22,7 +23,6 @@ import Breadcrumb from "@/components/nav/Breadcrumb";
 import SpecialtyBadges from "@/components/lens/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens/specialty";
 import { RetailersDropdown } from "@/components/price/RetailersDropdown";
-import { UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { getMemberCollections } from "@/lib/collections";
 import { getCollectionLensCounts } from "@/lib/collection-stats";
 import CollectionPills from "@/components/collection/CollectionPills";
@@ -36,6 +36,8 @@ import { buildLensDescription, buildLensProductSchema } from "@/lib/lens/seo";
 import { PriceSection } from "@/components/price/PriceSection";
 import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
 import { browsePath, lensPath } from "@/lib/url/routes";
+import { DataSourceBar } from "@/components/lens/DataSource";
+import { TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
 
@@ -166,6 +168,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const tBrand = await getTranslations("Brands");
   const tPricing = await getTranslations("Pricing");
   const tNav = await getTranslations("Nav");
+  const tIris = await getTranslations("IrisEntry");
   const url = getLensUrl(lens, locale);
 
   const brandName = tBrand(lens.brand);
@@ -252,18 +255,11 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
         <div className="flex-1 flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex flex-wrap items-center gap-1.5">
-                <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">
-                  {lensSubtitleLine(brandName, lens.series)}
-                </span>
-                <SpecialtyBadges {...deriveSpecialty(lens)} />
-              </div>
-              {url && (
-                <ExternalLink href={url} className="shrink-0 inline-flex items-center gap-0.5 text-xs text-zinc-400 transition-colors hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300">
-                  {t("officialSite")}
-                </ExternalLink>
-              )}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">
+                {lensSubtitleLine(brandName, lens.series)}
+              </span>
+              <SpecialtyBadges {...deriveSpecialty(lens)} />
             </div>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 font-heading leading-[1.1]">
               {displayName}
@@ -275,6 +271,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           <div className="mt-auto flex flex-wrap items-center gap-2">
             <LensDetailCompareToggle lensId={lens.id} />
             <RetailersDropdown lens={lens} customId="detail" />
+            <AskIrisEntry id="lens" label={tIris("lensLabel")} phoneLabel="full" request={{ kind: "page" }} />
             <LensDetailSaveActions lensId={lens.id} />
           </div>
         </div>
@@ -286,6 +283,18 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
       <div>
         <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+            <DataSourceBar
+              className="border-b border-zinc-200 dark:border-zinc-800"
+              source={
+                url ? (
+                  <ExternalLink href={url} className={`inline-flex items-center gap-0.5 font-medium ${TEXT_LINK_CLS}`}>
+                    {t("sourceSite", { brand: brandName })}
+                  </ExternalLink>
+                ) : (
+                  <span className="font-medium text-zinc-700 dark:text-zinc-300">{t("sourceSite", { brand: brandName })}</span>
+                )
+              }
+            />
             {resolvedGroups.map((group, groupIdx) => (
               <div
                 key={group.label}

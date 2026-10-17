@@ -392,6 +392,12 @@
     "tiltMobile": "Tilt",
     "shiftMobile": "Shift"
   },
+  "DataSource": {
+    "label": "参数来源",
+    "trust": "非 AI 生成",
+    "inline": "参数取自厂商官网 · 非 AI 生成",
+    "note": "这里的参数不是 AI 生成的，取自厂商官网正式发布的资料。AI 只帮忙把官网文字归档成统一格式，不编造数值；每支镜头上线前由作者审核。<link>数据怎么来</link>"
+  },
   "LensDetail": {
     "metaDescPrefix": "{name} 富士 {mount} 卡口{type}镜头规格、参数与横向对比。",
     "metaJoinSpace": "",
@@ -466,7 +472,7 @@
     "addToCompare": "对比",
     "removeFromCompare": "移除",
     "compareFull": "对比列表已满",
-    "officialSite": "官方介绍",
+    "sourceSite": "{brand}官网",
     "reportIssue": "反馈问题",
     "nudgeText": "发现数据有误？",
     "feedbackLink": "告诉我",
@@ -506,6 +512,7 @@
     "scrollChipsRight": "向右滚动",
     "presetCardCta": "立即对比",
     "officialSite": "官方介绍",
+    "sourceAll": "各厂商官网",
     "addLens": "添加镜头",
     "selectFirst": "先添加镜头",
     "addMore": "再添加一支",
@@ -808,5 +815,33 @@
     "ownedAdded": "已加入我的器材",
     "viewGear": "查看",
     "ownedRemoved": "已从我的器材移除"
+  },
+  "IrisEntry": {
+    "browseLabel": "不知道怎么选？问 Iris",
+    "emptyHint": "可以清除几个筛选，或者直接告诉 Iris 你想要什么。",
+    "emptyClear": "清除筛选",
+    "emptyLabel": "让 Iris 帮你找",
+    "emptyQuestion": "我按这些条件没找到镜头，帮我找找",
+    "compareLabel": "让 Iris 解释差异",
+    "lensLabel": "问问 Iris 这支镜头",
+    "lookingAt": "正在看",
+    "comparing": "正在对比 {count} 支",
+    "browsing": "正在浏览镜头库",
+    "noFilters": "全部镜头",
+    "detach": "不带上这个页面",
+    "lensHeading": "关于这支镜头，可以问：",
+    "compareHeading": "关于这几支镜头，可以问：",
+    "browseHeading": "按现在的筛选，可以问：",
+    "lensSuggestions": ["适合拍什么？", "和同焦段的其他镜头比怎么样？", "对焦马达那一栏是什么意思？"],
+    "compareSuggestions": ["主要差在哪？", "日常带出门选哪支？"],
+    "browseSuggestions": ["按我现在的筛选，该怎么选？", "这里面最轻的几支是哪些？"],
+    "lensPlaceholder": "关于这支镜头，想问什么？",
+    "comparePlaceholder": "关于这几支镜头，想问什么？",
+    "browsePlaceholder": "想找什么样的镜头？",
+    "newConversation": "新对话。上一段对话已存进历史记录。",
+    "newConversationGuest": "新对话。上一段对话已存进历史记录，未登录时保留 7 天。<signIn>登录</signIn>后可以长期保存。",
+    "browseName": "镜头库",
+    "compareName": "对比页",
+    "backTo": "回到{page}"
   }
 }

@@ -5,7 +5,8 @@ import HomeHeroActions from "../HomeHeroActions";
 import { HomeIrisStage } from "../HomeIrisStage";
 
 const openIris = vi.fn();
-const wide = vi.hoisted(() => ({ value: true }));
+const push = vi.fn();
+const screenSize = vi.hoisted(() => ({ sm: true, lg: true }));
 
 vi.mock("next-intl", () => ({
   useTranslations: () =>
@@ -17,15 +18,18 @@ vi.mock("@/i18n/navigation", () => ({
       {children}
     </a>
   ),
+  useRouter: () => ({ push }),
 }));
 vi.mock("@/context/IrisPanelProvider", () => ({ useOpenIris: () => openIris }));
 vi.mock("@/hooks/useMountParam", () => ({ useEffectiveMount: () => "X" }));
-vi.mock("@/hooks/useViewport", () => ({ useBreakpoint: () => wide.value }));
+vi.mock("@/hooks/useViewport", () => ({ useBreakpoint: (breakpoint: "sm" | "lg") => screenSize[breakpoint] }));
 
 afterEach(() => {
   cleanup();
   openIris.mockClear();
-  wide.value = true;
+  push.mockClear();
+  screenSize.sm = true;
+  screenSize.lg = true;
 });
 
 function renderActions() {
@@ -51,13 +55,24 @@ describe("HomeHeroActions", () => {
     fireEvent.click(screen.getByRole("button", { name: /askIris/ }));
     fireEvent.click(screen.getByRole("button", { name: "A pancake lens that fits in a pocket" }));
 
-    expect(openIris).toHaveBeenCalledWith({ question: "A pancake lens that fits in a pocket" });
+    expect(openIris).toHaveBeenCalledWith({ kind: "question", text: "A pancake lens that fits in a pocket" });
   });
 
   it("links straight to Ask Iris on a phone", () => {
-    wide.value = false;
+    screenSize.sm = false;
+    screenSize.lg = false;
     renderActions();
 
     expect(screen.getByRole("link", { name: /askIris/ })).toHaveAttribute("href", "/askiris");
+  });
+
+  it("goes to the Ask Iris page below the side panel's width, as home has no page to talk about", () => {
+    screenSize.lg = false;
+    renderActions();
+    fireEvent.click(screen.getByRole("button", { name: /askIris/ }));
+    fireEvent.click(screen.getByRole("button", { name: "A pancake lens that fits in a pocket" }));
+
+    expect(push).toHaveBeenCalledWith("/askiris?q=A+pancake+lens+that+fits+in+a+pocket");
+    expect(openIris).not.toHaveBeenCalled();
   });
 });
