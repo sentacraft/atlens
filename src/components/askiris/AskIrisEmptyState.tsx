@@ -43,7 +43,9 @@ export default function AskIrisEmptyState({
   return (
     <div
       className={cn(
-        "flex min-h-0 flex-1 flex-col items-center justify-center text-center",
+        // Safe centering: when the content is taller than the room left (a short screen, the
+        // keyboard), it starts at the top and scrolls instead of spilling over the top bar.
+        "flex min-h-0 flex-1 flex-col items-center justify-center-safe overflow-y-auto text-center",
         panel ? "gap-4 pb-6" : "gap-6 px-2 pb-10",
       )}
     >

@@ -30,7 +30,7 @@ function Dialog({
     <DialogModeContext value={mode}>
       {mode === "drawer" ? (
         <DrawerPrimitive.Root open={open} onOpenChange={onOpenChange} swipeDirection="down">
-          {children}
+          <DrawerPrimitive.VirtualKeyboardProvider>{children}</DrawerPrimitive.VirtualKeyboardProvider>
         </DrawerPrimitive.Root>
       ) : (
         <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
@@ -40,6 +40,11 @@ function Dialog({
     </DialogModeContext>
   );
 }
+
+// iOS keeps fixed elements on the layout viewport, under the keyboard; VirtualKeyboardProvider
+// reports the keyboard's height, and the drawer sits on top of it and shrinks to fit above.
+const DRAWER_KEYBOARD_CLS =
+  "fixed inset-x-0 bottom-[var(--drawer-keyboard-inset,0px)] max-h-[min(85svh,calc(100svh_-_var(--drawer-keyboard-inset,0px)_-_var(--safe-inset-top)_-_1rem))]";
 
 function DialogPortal({ children }: { children: React.ReactNode }) {
   const mode = useDialogMode();
@@ -105,8 +110,8 @@ function DialogPopup({ className, children, ...props }: DialogRawPopupProps) {
       {mode === "drawer" ? (
         <DialogRawPopup
           className={cn(
-            `flex max-h-[85svh] flex-col border border-b-0 border-zinc-200 bg-white p-0 pb-[var(--safe-inset-bottom)] shadow-2xl duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:border-zinc-800 dark:bg-zinc-950`,
-            "fixed inset-x-0 bottom-0",
+            `flex flex-col border border-b-0 border-zinc-200 bg-white p-0 pb-[var(--safe-inset-bottom)] shadow-2xl duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:border-zinc-800 dark:bg-zinc-950`,
+            DRAWER_KEYBOARD_CLS,
             "transition-[transform,opacity] data-[swipe-dismiss]:!transition-none data-[nested-drawer-open]:scale-[0.94] data-[nested-drawer-open]:opacity-40",
             className,
             "rounded-t-2xl rounded-b-none"
