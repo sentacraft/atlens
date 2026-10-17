@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import LensSearchDialog from "../LensSearchDialog";
+import { track } from "@/lib/analytics/analytics";
 import type { SearchableLens } from "@/lib/lens/search";
 
 vi.mock("next-intl", () => ({ useTranslations: () => (key: string) => key }));
@@ -58,5 +59,25 @@ describe("LensSearchDialog", () => {
     fireEvent.click(screen.getByRole("option", { name: /pick xf-33/ }));
 
     expect(onSelect).toHaveBeenCalledWith(lenses[0]);
+  });
+
+  it("records a search only once IME composition commits the text", () => {
+    vi.useFakeTimers();
+    try {
+      const { input } = renderDialog();
+
+      fireEvent.compositionStart(input);
+      fireEvent.change(input, { target: { value: "xing yao" } });
+      act(() => vi.advanceTimersByTime(1000));
+      expect(track).not.toHaveBeenCalled();
+
+      fireEvent.change(input, { target: { value: "星曜" } });
+      fireEvent.compositionEnd(input);
+      act(() => vi.advanceTimersByTime(1000));
+      expect(track).toHaveBeenCalledTimes(1);
+      expect(track).toHaveBeenCalledWith("search", { query: "星曜", results_count: 0 });
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
