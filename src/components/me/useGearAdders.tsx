@@ -81,6 +81,43 @@ export function useGearAdders({ userId, lenses }: { userId: string; lenses: Lens
     add.mutate(inputs, { onSuccess: () => options?.onSuccess?.() });
   }
 
+  function manualEntryButton() {
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          closeLensSearch(false);
+          setManualOpen(true);
+        }}
+        className="font-medium text-zinc-900 underline underline-offset-4 dark:text-zinc-100"
+      >
+        {t("manualEntry")}
+      </button>
+    );
+  }
+
+  function addPickedButton(className: string) {
+    return (
+      <button
+        type="button"
+        onClick={() =>
+          addCatalog(
+            { bodies: [], lenses: pickedLenses.map((lens) => lens.id) },
+            { onSuccess: () => closeLensSearch(false) },
+          )
+        }
+        disabled={pickedLenses.length === 0 || add.isPending}
+        className={cn(ACTION_PRIMARY_CLS, "font-medium", className)}
+      >
+        {add.isPending
+          ? t("saving")
+          : pickedLenses.length > 0
+            ? t("addCount", { count: pickedLenses.length })
+            : t("add")}
+      </button>
+    );
+  }
+
   const dialogs: ReactNode = (
     <>
       <AddBodyDialog
@@ -103,6 +140,12 @@ export function useGearAdders({ userId, lenses }: { userId: string; lenses: Lens
             : { label: pickedLenses.some((picked) => picked.id === lens.id) ? t("selected") : t("select") }
         }
         onSelect={togglePickedLens}
+        actions={({ query: search }) => (
+          <>
+            {search && <span className="text-xs">{manualEntryButton()}</span>}
+            {addPickedButton("h-8 rounded-full px-3.5 text-[13px]")}
+          </>
+        )}
         footer={({ query: search }) => (
           <div className="flex flex-col gap-3">
             {pickedLenses.length > 0 && (
@@ -126,17 +169,7 @@ export function useGearAdders({ userId, lenses }: { userId: string; lenses: Lens
               <span className="text-xs text-zinc-500 dark:text-zinc-400">
                 {search && (
                   <>
-                    {t("manualPrompt")}{" "}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        closeLensSearch(false);
-                        setManualOpen(true);
-                      }}
-                      className="font-medium text-zinc-900 underline underline-offset-4 dark:text-zinc-100"
-                    >
-                      {t("manualEntry")}
-                    </button>
+                    {t("manualPrompt")} {manualEntryButton()}
                   </>
                 )}
               </span>
@@ -148,23 +181,7 @@ export function useGearAdders({ userId, lenses }: { userId: string; lenses: Lens
                 >
                   {t("cancel")}
                 </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    addCatalog(
-                      { bodies: [], lenses: pickedLenses.map((lens) => lens.id) },
-                      { onSuccess: () => closeLensSearch(false) },
-                    )
-                  }
-                  disabled={pickedLenses.length === 0 || add.isPending}
-                  className={cn(ACTION_PRIMARY_CLS, "h-9 rounded-lg px-4 text-sm font-medium")}
-                >
-                  {add.isPending
-                    ? t("saving")
-                    : pickedLenses.length > 0
-                      ? t("addCount", { count: pickedLenses.length })
-                      : t("add")}
-                </button>
+                {addPickedButton("h-9 rounded-lg px-4 text-sm")}
               </div>
             </div>
           </div>
