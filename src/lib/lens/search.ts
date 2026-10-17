@@ -5,18 +5,26 @@ export type SearchableLens = Pick<
   Lens,
   "id" | "brand" | "series" | "model" | "focalLengthMin" | "focalLengthMax" | "maxAperture"
 >;
+import brandSearchVariants from "@/data/brand-search-variants.json";
 import enMessages from "@/messages/en.json";
 import zhMessages from "@/messages/zh.json";
 
 const EN_BRAND_NAMES = enMessages.Brands as Record<string, string>;
 const ZH_BRAND_NAMES = zhMessages.Brands as Record<string, string>;
+const BRAND_SEARCH_VARIANTS = brandSearchVariants as Record<string, string[]>;
 
-// Variant spellings ("Fuji", "Fujinon") are deliberately not aliases.
 function getBrandSearchAliases(brandKey: string): string[] {
-  return [EN_BRAND_NAMES[brandKey], ZH_BRAND_NAMES[brandKey]].filter(Boolean);
+  return [
+    EN_BRAND_NAMES[brandKey],
+    ZH_BRAND_NAMES[brandKey],
+    ...(BRAND_SEARCH_VARIANTS[brandKey] ?? []),
+  ].filter(Boolean);
 }
 
 const CJK_RANGE = "\u4e00-\u9fff\u3400-\u4dbf\u3040-\u309f\u30a0-\u30ff";
+
+const CJK_RUN = new RegExp(`[${CJK_RANGE}]+|[^${CJK_RANGE}]+`, "gu");
+const CJK_CHAR = new RegExp(`[${CJK_RANGE}]`, "u");
 
 const DOT_SENTINEL = "\u0001";
 
@@ -56,11 +64,8 @@ export function tokenize(normalised: string): string[] {
     return [];
   }
   const tokens: string[] = [];
-  for (const part of normalised.split(" ")) {
-    if (!part) {
-      continue;
-    }
-    if (/[\u4e00-\u9fff\u3400-\u4dbf\u3040-\u309f\u30a0-\u30ff]/.test(part)) {
+  for (const part of normalised.split(" ").flatMap((word) => word.match(CJK_RUN) ?? [])) {
+    if (CJK_CHAR.test(part)) {
       for (const ch of part) {
         tokens.push(ch);
       }
