@@ -48,7 +48,7 @@ export default function HomeCollections({
           </Link>
         </div>
         <HorizontalScrollRail
-          className="gap-2 px-5"
+          className="gap-2 px-5 py-0.5"
           wrapperClassName="-mx-5 sm:hidden"
           fadeBg="from-white dark:from-black"
         >
