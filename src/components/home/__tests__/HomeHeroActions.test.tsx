@@ -8,10 +8,8 @@ const openIris = vi.fn();
 const push = vi.fn();
 const screenSize = vi.hoisted(() => ({ sm: true, lg: true }));
 
-vi.mock("next-intl", () => ({
-  useTranslations: () =>
-    Object.assign((key: string) => key, { raw: () => ["A pancake lens that fits in a pocket"] }),
-}));
+vi.mock("next-intl", () => ({ useTranslations: () => (key: string) => key }));
+vi.mock("@/components/askiris/useStarters", () => ({ useStarters: () => ["A pancake lens that fits in a pocket"] }));
 vi.mock("@/i18n/navigation", () => ({
   Link: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => (
     <a href={href} {...props}>
