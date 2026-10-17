@@ -45,12 +45,14 @@ describe("ResponseFeedback", () => {
     await waitFor(() => expect(sentBodies()).toEqual([{ responseMessageId: "assistant-1", rating: "helpful" }]));
   });
 
-  it("opens reasons in place only when the user asks to tell more", async () => {
+  it("opens reasons in a dialog only when the user asks to tell more", async () => {
     renderResponseFeedback();
     fireEvent.click(screen.getByRole("button", { name: "unhelpful" }));
     expect(screen.queryByRole("button", { name: "reasons.did_not_answer" })).toBeNull();
 
+    expect(screen.queryByRole("dialog")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "tellMore" }));
+    expect(await screen.findByRole("dialog", { name: "title" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "reasons.did_not_answer" }));
     fireEvent.change(screen.getByRole("textbox"), { target: { value: "  Needed a cheaper option  " } });
     fireEvent.click(screen.getByRole("button", { name: "submit" }));
