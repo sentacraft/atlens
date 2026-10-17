@@ -7,7 +7,6 @@ import { Link } from "@/i18n/navigation";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { MENU_ITEM_CLS, MENU_POPUP_CLS, NAV_CAPSULE_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
-import { useTestHookEnabled } from "@/context/TestHookProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import Avatar from "@/components/auth/Avatar";
 import GitHubMark from "@/components/logos/GitHubMark";
@@ -31,21 +30,20 @@ export default function NavMenu({
   const tNav = useTranslations("Nav");
   const t = useTranslations("Auth");
   const { data: session } = authClient.useSession();
-  const accountsEnabled = useTestHookEnabled();
   const openSignIn = useSignInDialog();
-  const user = accountsEnabled ? accountUser(session) : null;
+  const user = accountUser(session);
 
   return (
     <Menu.Root>
-      <Menu.Trigger aria-label={tNav("menu")} className={cn(NAV_CAPSULE_CLS, !accountsEnabled && "pr-3")}>
+      <Menu.Trigger aria-label={tNav("menu")} className={NAV_CAPSULE_CLS}>
         <MenuIcon className="h-4 w-4 text-zinc-600 dark:text-zinc-300" />
         {user ? (
           <Avatar name={user.name} email={user.email} image={user.image} className="h-7 w-7 text-[11px]" />
-        ) : accountsEnabled ? (
+        ) : (
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
             <UserRound className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
           </span>
-        ) : null}
+        )}
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner side="bottom" align="end" sideOffset={6}>
@@ -67,7 +65,7 @@ export default function NavMenu({
                 </Menu.Item>
                 <Menu.Separator className={SEPARATOR_CLS} />
               </>
-            ) : accountsEnabled ? (
+            ) : (
               <>
                 <Menu.Item onClick={() => openSignIn()} className={cn(MENU_ITEM_CLS, "items-start")}>
                   <LogIn className="mt-0.5 h-4 w-4 shrink-0" />
@@ -78,7 +76,7 @@ export default function NavMenu({
                 </Menu.Item>
                 <Menu.Separator className={SEPARATOR_CLS} />
               </>
-            ) : null}
+            )}
             <Menu.Item render={<Link href={compareHref} />} onClick={onCompareClick} className={cn(MENU_ITEM_CLS, "sm:hidden")}>
               <Columns2 className="h-4 w-4 shrink-0" />
               {tNav("compare")}

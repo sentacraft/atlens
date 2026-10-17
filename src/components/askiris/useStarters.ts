@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { accountUser, authClient } from "@/lib/auth-client";
-import { useTestHookEnabled } from "@/context/TestHookProvider";
 import { userFavoritesQuery } from "@/lib/me/favorites-client";
 import { userGearQuery } from "@/lib/me/gear-client";
 import { pickStarters, seededRandom, type StarterPools } from "@/lib/askiris/starter-questions";
@@ -18,8 +17,7 @@ export function useStarters({ compact, seed }: { compact: boolean; seed: number 
   const pools = t.raw("starters") as StarterPools;
   const { data: session } = authClient.useSession();
   const user = accountUser(session);
-  const accountsEnabled = useTestHookEnabled();
-  const enabled = accountsEnabled && Boolean(user);
+  const enabled = Boolean(user);
   const { data: gear = [] } = useQuery({ ...userGearQuery(user?.id ?? ""), enabled });
   const { data: favorites = [] } = useQuery({ ...userFavoritesQuery(user?.id ?? ""), enabled });
   const [drawSeed] = useState(() => seed ?? Math.floor(Math.random() * 2 ** 32));

@@ -18,7 +18,6 @@ vi.mock("@/lib/auth-client", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/auth-client")>()),
   authClient: { useSession: () => mocks.session },
 }));
-vi.mock("@/context/TestHookProvider", () => ({ useTestHookEnabled: () => true }));
 vi.mock("@/context/SignInDialogProvider", () => ({ useSignInDialog: () => mocks.openSignIn }));
 
 let serverFavorites: string[];

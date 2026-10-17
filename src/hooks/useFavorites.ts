@@ -12,7 +12,6 @@ import {
   userFavoritesQuery,
 } from "@/lib/me/favorites-client";
 import { useRouter } from "@/i18n/navigation";
-import { useTestHookEnabled } from "@/context/TestHookProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { profilePath } from "@/lib/url/routes";
 
@@ -20,14 +19,13 @@ import { profilePath } from "@/lib/url/routes";
 export function useFavorites() {
   const t = useTranslations("LensActions");
   const tProfile = useTranslations("Profile");
-  const enabled = useTestHookEnabled();
   const { data: session } = authClient.useSession();
   const user = accountUser(session);
   const openSignIn = useSignInDialog();
   const router = useRouter();
   const queryClient = useQueryClient();
   const query = userFavoritesQuery(user?.id ?? "");
-  const { data: lensIds = [] } = useQuery({ ...query, enabled: enabled && Boolean(user) });
+  const { data: lensIds = [] } = useQuery({ ...query, enabled: Boolean(user) });
   const ids = useMemo(() => new Set(lensIds), [lensIds]);
 
   const mutation = useMutation({
@@ -73,5 +71,5 @@ export function useFavorites() {
     }
   }
 
-  return { enabled, lensIds, isFavorite: (lensId: string) => ids.has(lensId), toggle };
+  return { lensIds, isFavorite: (lensId: string) => ids.has(lensId), toggle };
 }

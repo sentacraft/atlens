@@ -14,9 +14,6 @@ const REVEAL_CLS =
 export default function FavoriteStarButton({ lensId, className }: { lensId: string; className: string }) {
   const t = useTranslations("LensActions");
   const favorites = useFavorites();
-  if (!favorites.enabled) {
-    return null;
-  }
   const favorited = favorites.isFavorite(lensId);
 
   return (

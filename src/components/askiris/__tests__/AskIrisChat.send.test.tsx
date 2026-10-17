@@ -24,7 +24,6 @@ vi.mock("@/components/askiris/useStarters", () => ({ useStarters: () => ["Starte
 vi.mock("@/hooks/useMountParam", () => ({ useEffectiveMount: () => "X" }));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
 vi.mock("@/context/TestHookProvider", () => ({
-  useTestHookEnabled: () => false,
   useTestHookOption: () => undefined,
 }));
 
