@@ -72,11 +72,16 @@ export default function AskIrisEmptyState({
         />
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-2.5">
+      {/* Phones: a full-width column that may shrink and wraps the questions that no longer fit
+          into a second column clipped off to the side, so only whole questions show and the
+          page does not scroll. */}
+      <div className="flex flex-wrap items-center justify-center gap-2.5 max-sm:min-h-0 max-sm:w-full max-sm:flex-col max-sm:content-start max-sm:overflow-hidden">
         {starters.map((question) => (
-          <ExampleQuestion key={question} disabled={disabled} onClick={() => onStarter(question)}>
-            {question}
-          </ExampleQuestion>
+          <div key={question} className="max-sm:flex max-sm:w-full max-sm:justify-center">
+            <ExampleQuestion disabled={disabled} onClick={() => onStarter(question)}>
+              {question}
+            </ExampleQuestion>
+          </div>
         ))}
       </div>
     </div>
