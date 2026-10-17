@@ -2,7 +2,8 @@ name = "atlens"
 main = ".open-next/worker.js"
 compatibility_date = "2025-05-01"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public", "enable_request_signal"]
-# Previews are served on <branch>.preview.atlens.app, a custom domain added in the dashboard.
+# Production is served only on its custom domains, previews on <branch>.preview.atlens.app.
+workers_dev = false
 preview_urls = false
 
 [assets]
