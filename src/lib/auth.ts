@@ -2,7 +2,7 @@ import "server-only";
 
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { betterAuth } from "better-auth";
-import { anonymous, emailOTP } from "better-auth/plugins";
+import { anonymous, emailOTP, oAuthProxy } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { D1Dialect } from "kysely-d1";
 import { linkAnonymousUser } from "@/lib/askiris/link-anonymous-user";
@@ -106,6 +106,9 @@ export function createAuth() {
           });
         },
       }),
+      // Google accepts only the production callback, so previews sign in through it; the
+      // proxy secret is the one secret previews share with production.
+      oAuthProxy({ productionURL: siteURL, secret: process.env.OAUTH_PROXY_SECRET }),
       nextCookies(),
     ],
     advanced: {
