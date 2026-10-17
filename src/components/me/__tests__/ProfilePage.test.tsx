@@ -6,7 +6,6 @@ import ProfilePage from "../ProfilePage";
 
 const mocks = vi.hoisted(() => ({
   session: { data: null as unknown, isPending: false },
-  testHook: true,
   replace: vi.fn(),
   setPreference: vi.fn(),
   toastError: vi.fn(),
@@ -27,7 +26,6 @@ vi.mock("@/lib/auth-client", async (importOriginal) => ({
     listAccounts: async () => ({ data: [{ providerId: "google" }], error: null }),
   },
 }));
-vi.mock("@/context/TestHookProvider", () => ({ useTestHookEnabled: () => mocks.testHook }));
 vi.mock("@/context/MountPreferenceProvider", () => ({
   useMountPreference: () => ({ setPreference: mocks.setPreference }),
 }));
@@ -75,7 +73,6 @@ function renderPage() {
 
 beforeEach(() => {
   vi.stubGlobal("fetch", fetchMock);
-  mocks.testHook = true;
   mocks.session = { data: null, isPending: false };
   document.cookie = "atlens_locale=; Max-Age=0; Path=/";
 });
@@ -87,15 +84,6 @@ afterEach(() => {
 });
 
 describe("ProfilePage", () => {
-  it("is a 404 while accounts are behind the test hook", () => {
-    mocks.testHook = false;
-    signedIn();
-
-    renderPage();
-
-    expect(screen.getByText("not-found")).toBeInTheDocument();
-  });
-
   it("asks a signed-out visitor to sign in", () => {
     renderPage();
 

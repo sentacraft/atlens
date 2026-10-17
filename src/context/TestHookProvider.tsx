@@ -130,34 +130,19 @@ export function TestHookProvider({ children }: { children: ReactNode }) {
   return <TestHookContext value={value}>{children}</TestHookContext>;
 }
 
-export function useUiHookAttr(): (value: string) => Record<string, string> {
-  const context = useContext(TestHookContext);
-  const enabled = context?.state.testHook ?? false;
-  return enabled ? (value) => ({ "data-ui-hook": value }) : () => ({});
+/** Whether test-hook mode is on; every test-hook feature asks this one hook. */
+export function useTestHookEnabled(): boolean {
+  return useContext(TestHookContext)?.state.testHook ?? false;
 }
 
-// Boolean read of test-hook mode, for components that gate whole subtrees on it
-// (e.g. an inline agent trace) rather than tagging elements with data-ui-hook.
-export function useTestHookEnabled(): boolean {
-  const context = useContext(TestHookContext);
-  const [queryEnabled, setQueryEnabled] = useState(false);
-
-  useEffect(() => {
-    setQueryEnabled(
-      new URLSearchParams(window.location.search).get(TESTHOOK_QUERY_KEYS.testHook) ===
-        "1"
-    );
-  }, []);
-
-  return context?.state.testHook ?? queryEnabled;
+export function useUiHookAttr(): (value: string) => Record<string, string> {
+  return useTestHookEnabled() ? (value) => ({ "data-ui-hook": value }) : () => ({});
 }
 
 // Current value of a test-hook option, or undefined when test hooks are off.
 // Used by behaviour toggles (AskIris trace / fixture) rather than CSS injection.
 export function useTestHookOption(key: string): string | undefined {
   const context = useContext(TestHookContext);
-  if (!context?.state.testHook) {
-    return undefined;
-  }
-  return context.state.options[key];
+  const enabled = useTestHookEnabled();
+  return enabled ? context?.state.options[key] : undefined;
 }

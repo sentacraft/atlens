@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { addGear, GearRequestError, removeGear, userGearQuery } from "@/lib/me/gear-client";
 import { useRouter } from "@/i18n/navigation";
-import { useTestHookEnabled } from "@/context/TestHookProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { profilePath } from "@/lib/url/routes";
 
@@ -14,14 +13,13 @@ import { profilePath } from "@/lib/url/routes";
 export function useOwnedLens(lensId: string) {
   const t = useTranslations("LensActions");
   const tProfile = useTranslations("Profile");
-  const enabled = useTestHookEnabled();
   const { data: session } = authClient.useSession();
   const user = accountUser(session);
   const openSignIn = useSignInDialog();
   const router = useRouter();
   const queryClient = useQueryClient();
   const query = userGearQuery(user?.id ?? "");
-  const { data: gear = [] } = useQuery({ ...query, enabled: enabled && Boolean(user) });
+  const { data: gear = [] } = useQuery({ ...query, enabled: Boolean(user) });
   const item = gear.find((entry) => entry.kind === "lens" && entry.catalogId === lensId);
 
   const mutation = useMutation({
@@ -61,5 +59,5 @@ export function useOwnedLens(lensId: string) {
     mutation.mutate(!item);
   }
 
-  return { enabled, owned: Boolean(item), pending: mutation.isPending, toggle };
+  return { owned: Boolean(item), pending: mutation.isPending, toggle };
 }
