@@ -73,7 +73,7 @@ const SHELL_CLS = {
  * pages; `pagePath` is the page beside the panel.
  */
 export type AskIrisShell =
-  | { variant: "page"; entry: AskIrisEntry }
+  | { variant: "page"; entry: AskIrisEntry; starterSeed: number }
   | { variant: "panel"; pagePath: string; request: IrisPanelRequest | null; onClose: () => void };
 
 const NO_ENTRY: AskIrisEntry = {};
@@ -459,7 +459,8 @@ export default function AskIrisChat({
           input={input}
           onInputChange={setInput}
           onSubmit={() => void submitText(input)}
-          onChip={setInput}
+          onStarter={(question) => void submitText(question)}
+          starterSeed={shell.variant === "page" ? shell.starterSeed : null}
           disabled={isBusy}
         />
       </div>

@@ -1,19 +1,21 @@
 "use client";
 
-import { useRef } from "react";
 import { useTranslations } from "next-intl";
 import Iris from "@/components/iris/Iris";
+import AiTag from "@/components/iris/AiTag";
 import { IRIS_ASSISTANT } from "@/config/iris-config";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import { cn } from "@/lib/utils";
 import ExampleQuestion from "@/components/askiris/ExampleQuestion";
+import { useStarters } from "@/components/askiris/useStarters";
 
 export default function AskIrisEmptyState({
   variant,
   input,
   onInputChange,
   onSubmit,
-  onChip,
+  onStarter,
+  starterSeed,
   disabled,
 }: {
   /** panel: the narrow side panel, without the hero animation. */
@@ -21,24 +23,15 @@ export default function AskIrisEmptyState({
   input: string;
   onInputChange: (value: string) => void;
   onSubmit: () => void;
-  onChip: (text: string) => void;
+  /** Sends an example question as it is. */
+  onStarter: (text: string) => void;
+  /** From the server where this renders there, so hydration shows the same questions. */
+  starterSeed: number | null;
   disabled: boolean;
 }) {
   const t = useTranslations("AskIris");
-  const chips = t.raw("chips") as { emoji: string; label: string; prompt: string }[];
-  const inputRef = useRef<HTMLInputElement>(null);
   const panel = variant === "panel";
-
-  function fillFromChip(prompt: string) {
-    onChip(prompt);
-    requestAnimationFrame(() => {
-      const el = inputRef.current;
-      if (el) {
-        el.focus();
-        el.setSelectionRange(el.value.length, el.value.length);
-      }
-    });
-  }
+  const starters = useStarters({ compact: panel, seed: starterSeed });
 
   return (
     <div
@@ -58,13 +51,10 @@ export default function AskIrisEmptyState({
             panel ? "text-xl" : "text-3xl sm:text-4xl",
           )}
         >
-          {t.rich("heading", {
-            beta: () => (
-              <span className="bg-primary/10 text-primary ml-1.5 rounded px-1.5 py-0.5 align-middle font-sans text-[11px] font-semibold tracking-wide uppercase">
-                {t("beta")}
-              </span>
-            ),
-          })}
+          {t("heading")}
+          <span className="ml-2 inline-flex align-middle font-sans">
+            <AiTag />
+          </span>
         </h1>
         <p className={cn("text-muted-foreground text-sm", !panel && "sm:text-base")}>{t("subtitle")}</p>
       </div>
@@ -72,7 +62,6 @@ export default function AskIrisEmptyState({
       <div className="w-full max-w-2xl">
         <AskIrisComposer
           size={panel ? "md" : "lg"}
-          inputRef={inputRef}
           value={input}
           onChange={onInputChange}
           onSubmit={onSubmit}
@@ -84,10 +73,9 @@ export default function AskIrisEmptyState({
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-2.5">
-        {chips.map((chip) => (
-          <ExampleQuestion key={chip.label} disabled={disabled} onClick={() => fillFromChip(chip.prompt)}>
-            <span aria-hidden>{chip.emoji}</span>
-            {chip.label}
+        {starters.map((question) => (
+          <ExampleQuestion key={question} disabled={disabled} onClick={() => onStarter(question)}>
+            {question}
           </ExampleQuestion>
         ))}
       </div>

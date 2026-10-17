@@ -168,8 +168,8 @@
     "fullScreen": "Open full screen",
     "closePanel": "Close",
     "linkDataLicense": "Data license",
-    "heading": "Hi, I'm Iris<beta></beta>",
-    "subtitle": "Your personal lens advisor — describe your shoot in plain words, and I'll match it precisely.",
+    "heading": "Hi, I'm Iris",
+    "subtitle": "Atlens's built-in AI assistant, answering from the lenses collected here",
     "placeholder": "Ask Iris",
     "send": "Send",
     "stop": "Stop",
@@ -183,13 +183,16 @@
       "used": "used"
     },
     "thinking": "Thinking…",
-    "chips": [
-      { "emoji": "🌌", "label": "Astro / Milky Way", "prompt": "First time shooting the Milky Way — I need a wide angle with a fast aperture, body is an X-T5." },
-      { "emoji": "✈️", "label": "Travel light", "prompt": "Swapping two or three primes on trips is a hassle — I want one lens that can do it all." },
-      { "emoji": "📷", "label": "Street photography", "prompt": "I want to get into street photography — not sure whether a prime or a zoom suits it better, budget around $350." },
-      { "emoji": "🌸", "label": "Outdoor portraits", "prompt": "Mostly outdoor half-body portraits — I'm torn between 33mm and 56mm, body is an X-T4." }
-    ],
-    "beta": "Beta",
+    "starters": {
+      "need": ["A pancake lens that fits in a pocket", "One lens to take on every trip", "Shooting the Milky Way: I need a fast wide angle", "Just starting street photography: prime or zoom?", "A portrait lens with beautiful background blur", "Fast autofocus for kids and pets"],
+      "compare": ["How do Fujifilm and third-party 23mm primes differ?", "How different are the XF 18-55mm and the XF 16-50mm?", "Viltrox AF 27mm F1.2 Pro or Fujifilm XF 23mm F1.4 R LM WR?"],
+      "favorites": ["Compare my favorite lenses", "Which of my favorites is the lightest?"],
+      "gearUnknown": ["What should my next lens be?"],
+      "gearKnown": ["Which focal length is missing from my lenses?", "Would a new lens overlap with the ones I have?"],
+      "table": ["A table of autofocus primes under $150, sorted by weight", "List weather-sealed zooms and compare their weight and price", "Primes around 35mm equivalent, in a table by maximum aperture"],
+      "terms": ["What do R, LM, and WR mean in a lens name?", "What do DC and DN mean in Sigma lens names?", "How is the equivalent focal length on spec pages worked out?", "Why is the minimum focus distance longer than what I measure with a ruler?"],
+      "about": ["Where does Atlens get its data?", "Which brands are covered?", "What collections are there?", "How do I install Atlens on my phone?"]
+    },
     "newChat": "New chat",
     "history": "Conversations",
     "closeHistory": "Close conversations",
@@ -294,12 +297,6 @@
     "irisSend": "Send",
     "irisClose": "Close",
     "orBrowse": "Or browse all lenses",
-    "irisExamples": [
-      "A pancake lens that fits in a pocket",
-      "One lens to take on every trip",
-      "How do Fujifilm and Chinese-brand 23mm primes differ?",
-      "What do R, LM, and WR mean in a lens name?"
-    ],
     "allCollections": "See all {count} collections"
   },
   "LensList": {
