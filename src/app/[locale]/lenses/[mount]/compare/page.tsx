@@ -18,6 +18,7 @@ import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { lensDisplayName } from "@/lib/lens/format";
 import { notFound } from "next/navigation";
 import { browsePath } from "@/lib/url/routes";
+import { PAGE_GUTTER_CLS } from "@/config/ui-tokens";
 
 // Dynamic: metadata needs ?ids=, and the route cache keys on pathname only.
 
@@ -109,7 +110,7 @@ export default async function ComparePage({
   const allLenses = getLensesByMount(resolvedMount, locale);
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-4 sm:pt-8 pb-40 flex flex-col gap-3 sm:gap-4">
+    <div className={`w-full max-w-7xl mx-auto pt-4 sm:pt-8 pb-40 flex flex-col gap-3 sm:gap-4 ${PAGE_GUTTER_CLS}`}>
       <Breadcrumb
         segments={[{ label: tNav("lenses"), href: browsePath(resolvedMount) }]}
         current={tNav("compare")}

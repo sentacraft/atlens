@@ -11,7 +11,7 @@ import { CATALOG_COVERAGE, type BrandCoverage, type CoverageState } from "@/lib/
 import AckCard from "@/components/about/AckCard";
 import { isPurchaseLocale } from "@/lib/purchase/links";
 import { donationChannel, KOFI_URL } from "@/lib/support";
-import { TEXT_LINK_CLS } from "@/config/ui-tokens";
+import { PAGE_GUTTER_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { SITE } from "@/config/site";
 import { ASK_IRIS_PATH, RECENTLY_ADDED_PATH } from "@/lib/url/routes";
 
@@ -156,7 +156,7 @@ export default async function AboutContent() {
   ];
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 pt-4 sm:pt-12 pb-40 flex flex-col gap-6">
+    <div className={`w-full max-w-3xl mx-auto pt-4 sm:pt-12 pb-40 flex flex-col gap-6 ${PAGE_GUTTER_CLS}`}>
       <div className="flex items-center gap-3">
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 font-heading">
           {t("pageTitle")}

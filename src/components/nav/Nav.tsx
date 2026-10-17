@@ -22,6 +22,7 @@ import AiTag from "@/components/iris/AiTag";
 import { SITE } from "@/config/site";
 import { ASK_IRIS_PATH, browsePath } from "@/lib/url/routes";
 import { buildComparePath } from "@/lib/url/compare";
+import { PAGE_GUTTER_CLS } from "@/config/ui-tokens";
 
 export default function Nav() {
   const t = useTranslations("Nav");
@@ -110,7 +111,7 @@ export default function Nav() {
       )}
       style={{ paddingTop: "calc(var(--safe-inset-top) + var(--titlebar-height))" }}
     >
-      <nav className="wco-no-drag max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <nav className={`wco-no-drag max-w-7xl mx-auto h-14 flex items-center justify-between ${PAGE_GUTTER_CLS}`}>
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           <Link
             href="/"
