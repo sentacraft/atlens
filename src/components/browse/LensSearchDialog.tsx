@@ -14,7 +14,6 @@ import {
 import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { useKeyboardInset } from "@/hooks/useViewport";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
 import type { SearchableLens } from "@/lib/lens/search";
 import { cn } from "@/lib/utils";
@@ -32,6 +31,11 @@ import {
 import { ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import { aboutPath } from "@/lib/url/routes";
+
+// On a touch screen a focused search field means the keyboard is up, so results get the room.
+// Read from focus: the viewport reports the iOS keyboard too inconsistently to act on.
+const TYPING_HIDDEN_CLS = "pointer-coarse:group-has-[input:focus]/search:hidden";
+const TYPING_SHOWN_CLS = "hidden pointer-coarse:group-has-[input:focus]/search:flex";
 
 export interface LensSearchResultAction {
   label: string;
@@ -53,6 +57,7 @@ export default function LensSearchDialog<T extends SearchableLens>({
   resultAction,
   onSelect,
   footer,
+  actions,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -65,6 +70,8 @@ export default function LensSearchDialog<T extends SearchableLens>({
   onSelect: (lens: T) => void;
   /** A bar pinned under the results; return null to hide it. Render components here; never call them. */
   footer: (context: LensSearchFooterContext) => ReactNode;
+  /** Shown beside the title while typing on a touch screen, when the footer is hidden to leave room for results. */
+  actions?: (context: LensSearchFooterContext) => ReactNode;
 }) {
   const t = useTranslations("Search");
   const tBrand = useTranslations("Brands");
@@ -77,7 +84,6 @@ export default function LensSearchDialog<T extends SearchableLens>({
   const inputId = useId();
   const resultsId = useId();
   const deferredQuery = useDeferredValue(query);
-  const keyboardInset = useKeyboardInset();
 
   useEffect(() => {
     if (!open) {
@@ -99,8 +105,10 @@ export default function LensSearchDialog<T extends SearchableLens>({
   );
 
   const hasInput = query.trim().length > 0;
-  const footerContent = footer({ query: deferredQuery.trim(), hasResults: results.length > 0 });
   const hasResults = results.length > 0;
+  const context = { query: deferredQuery.trim(), hasResults };
+  const footerContent = footer(context);
+  const actionsContent = actions?.(context);
 
   // Read activeRow, never activeIndex: an out-of-range index must not act as a row.
   const activeRow =
@@ -243,14 +251,15 @@ export default function LensSearchDialog<T extends SearchableLens>({
       {/* Base UI focuses the popup, not the input, on touch-open; hand it the input so the keyboard opens. */}
       <DialogPopup
         initialFocus={inputRef}
-        className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-2xl shadow-zinc-950/20 dark:border-zinc-800 dark:bg-zinc-950"
+        className="group/search w-full max-w-2xl overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-2xl shadow-zinc-950/20 dark:border-zinc-800 dark:bg-zinc-950"
       >
         <DialogHeader className="border-b border-zinc-100 pr-5 dark:border-zinc-800">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <DialogTitle>{title}</DialogTitle>
-              {description && <DialogDescription>{description}</DialogDescription>}
+              {description && <DialogDescription className={TYPING_HIDDEN_CLS}>{description}</DialogDescription>}
             </div>
+            {actionsContent && <div className={cn("shrink-0 items-center gap-3", TYPING_SHOWN_CLS)}>{actionsContent}</div>}
             <DialogClose className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "hidden h-9 w-9 shrink-0 sm:inline-flex")}>
               <X className="h-4 w-4" />
             </DialogClose>
@@ -301,16 +310,12 @@ export default function LensSearchDialog<T extends SearchableLens>({
           // Stops a result tap from starting Base UI's swipe tracking, which flashes the drawer on iOS.
           // Only on this natively scrollable region: the attribute also disables the background-scroll guard.
           data-base-ui-swipe-ignore=""
-          style={{ scrollPaddingBottom: keyboardInset || undefined }}
           className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
         >
           {renderResults()}
-          {keyboardInset > 0 && (
-            <div aria-hidden style={{ height: keyboardInset }} />
-          )}
         </div>
         {footerContent && (
-          <DialogFooter className="block border-zinc-100 py-3 dark:border-zinc-800">{footerContent}</DialogFooter>
+          <DialogFooter className={cn("block border-zinc-100 py-3 dark:border-zinc-800", TYPING_HIDDEN_CLS)}>{footerContent}</DialogFooter>
         )}
       </DialogPopup>
     </Dialog>

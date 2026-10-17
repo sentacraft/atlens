@@ -33,9 +33,11 @@ function renderDialog(onSelect = vi.fn()) {
       onOpenChange={() => {}}
       lenses={lenses}
       title="Search"
+      description="Find your lens"
       resultAction={(lens) => ({ label: `pick ${lens.id}` })}
       onSelect={onSelect}
       footer={(context) => <HookFooter key={String(context.hasResults)} {...context} />}
+      actions={() => <button type="button">add</button>}
     />,
   );
   return { input: screen.getByRole("textbox"), onSelect };
@@ -79,5 +81,14 @@ describe("LensSearchDialog", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  // The footer and the actions both render; CSS shows one or the other on touch screens.
+  it("renders the caller's actions beside the title as well as the footer", () => {
+    const { input } = renderDialog();
+    fireEvent.change(input, { target: { value: "xf 33" } });
+
+    expect(screen.getByRole("button", { name: "add" })).toBeInTheDocument();
+    expect(screen.getByText("with-results")).toBeInTheDocument();
   });
 });
