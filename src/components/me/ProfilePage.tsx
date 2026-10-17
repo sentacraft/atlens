@@ -24,6 +24,7 @@ import {
   CHIP_BASE_CLS,
   CHIP_IDLE_CLS,
   ICON_NAV_BTN_CLS,
+  PAGE_GUTTER_CLS,
 } from "@/config/ui-tokens";
 import { useTestHookEnabled } from "@/context/TestHookProvider";
 import { useMountPreference } from "@/context/MountPreferenceProvider";
@@ -117,7 +118,7 @@ function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] })
   }, [gearFetched, favoritesFetched, scrollTo]);
 
   return (
-    <div className="mx-auto flex w-full max-w-[1040px] gap-12 px-5 pt-6 pb-12 md:px-6 md:pt-10 md:pb-16">
+    <div className={`mx-auto flex w-full max-w-[1040px] gap-12 pt-6 pb-12 md:pt-10 md:pb-16 ${PAGE_GUTTER_CLS}`}>
       <nav
         aria-label={t("sectionsLabel")}
         className="sticky top-[calc(var(--nav-height)+40px)] mt-[104px] hidden w-[168px] shrink-0 flex-col gap-0.5 self-start md:flex"

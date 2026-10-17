@@ -1,6 +1,8 @@
+import { PAGE_GUTTER_CLS } from "@/config/ui-tokens";
+
 export default function LensDetailLoading() {
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-8">
+    <div className={`w-full max-w-4xl mx-auto py-8 flex flex-col gap-8 ${PAGE_GUTTER_CLS}`}>
       <div className="flex flex-col sm:flex-row gap-8">
         <div className="w-full max-w-56 mx-auto sm:mx-0 shrink-0 sm:w-56">
           <div className="aspect-square rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 animate-pulse" />

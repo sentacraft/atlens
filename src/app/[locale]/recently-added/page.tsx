@@ -5,6 +5,7 @@ import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { getAllLenses } from "@/lib/lens/data";
 import type { Lens } from "@/lib/types";
 import { lensPath } from "@/lib/url/routes";
+import { PAGE_GUTTER_CLS } from "@/config/ui-tokens";
 
 type Params = Promise<{ locale: string }>;
 
@@ -65,7 +66,7 @@ export default async function RecentlyAddedPage({ params }: { params: Params }) 
   const entryDates = sortedDates.slice(1).reverse();
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 pt-4 sm:pt-12 pb-32 flex flex-col gap-6">
+    <div className={`w-full max-w-3xl mx-auto pt-4 sm:pt-12 pb-32 flex flex-col gap-6 ${PAGE_GUTTER_CLS}`}>
       <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 font-heading">
         {t("pageTitle")}
       </h1>

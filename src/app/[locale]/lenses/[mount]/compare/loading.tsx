@@ -1,3 +1,5 @@
+import { PAGE_GUTTER_CLS } from "@/config/ui-tokens";
+
 function SkeletonLensColumn() {
   return (
     <div className="flex flex-col items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 border-l border-zinc-200 dark:border-zinc-800">
@@ -13,7 +15,7 @@ const SPEC_ROW_COUNTS = [3, 4, 3, 5, 3];
 
 export default function CompareLoading() {
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 flex flex-col gap-3 sm:gap-4">
+    <div className={`w-full max-w-7xl mx-auto py-4 sm:py-8 flex flex-col gap-3 sm:gap-4 ${PAGE_GUTTER_CLS}`}>
       <div className="flex items-center gap-3">
         <div className="hidden sm:block h-8 w-28 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
         <div className="ml-auto h-9 w-20 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
