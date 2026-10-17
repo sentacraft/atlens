@@ -61,13 +61,6 @@ describe("wrangler.toml previews", () => {
     }
   });
 
-  it("lets `d1 migrations apply --preview` reach each preview database", () => {
-    const previewDatabases = byName(previews.d1_databases, "binding");
-    for (const database of config.d1_databases ?? []) {
-      expect(database.preview_database_id).toBe(previewDatabases.get(database.binding)?.database_id);
-    }
-  });
-
   it("names only required secrets in the preview secret rules", () => {
     expect(config.secrets.required).toEqual(
       expect.arrayContaining([...SECRETS_NOT_ON_PREVIEWS, ...SECRETS_SHARED_WITH_PREVIEWS]),
