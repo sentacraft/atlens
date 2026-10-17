@@ -9,6 +9,7 @@ import { useOpenIris } from "@/context/IrisPanelProvider";
 import AiTag from "@/components/iris/AiTag";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import ExampleQuestion from "@/components/askiris/ExampleQuestion";
+import { useStarters } from "@/components/askiris/useStarters";
 import { useHomeIrisFocus } from "@/components/home/HomeIrisStage";
 import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -36,7 +37,7 @@ export default function HomeHeroActions() {
   const [draft, setDraft] = useState("");
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const examples = t.raw("irisExamples") as string[];
+  const examples = useStarters({ compact: true, seed: null });
 
   const close = useCallback(() => {
     setExpanded(false);

@@ -23,9 +23,13 @@ export default async function AskIrisPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  // Drawn on the server so the example questions match after hydration. A dynamic server
+  // component renders once per request, so the purity rule's re-render concern does not apply.
+  // eslint-disable-next-line react-hooks/purity
+  const starterSeed = Math.floor(Math.random() * 2 ** 32);
   return (
     <AskIrisChat
-      shell={{ variant: "page", entry: resolveAskIrisEntry(await searchParams) }}
+      shell={{ variant: "page", entry: resolveAskIrisEntry(await searchParams), starterSeed }}
       linkTargets={{ lenses: getLensLinkIndex(locale), collections: Object.keys(COLLECTIONS) }}
       lenses={getLensSummaries(locale)}
     />

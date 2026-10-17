@@ -9,6 +9,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Iris from "@/components/iris/Iris";
+import AiTag from "@/components/iris/AiTag";
 import { IRIS_NAV } from "@/config/iris-config";
 import Markdown from "@/components/askiris/Markdown";
 import RecommendationDeck from "@/components/askiris/RecommendationDeck";
@@ -181,9 +182,7 @@ export default function AskIrisThread({
                   <Iris config={IRIS_NAV} uid={`iris-${message.id}`} size={14} />
                 </span>
                 <span className="text-xs font-medium">Iris</span>
-                <span className="bg-primary/10 text-primary rounded px-1.5 py-px text-[10px] font-semibold tracking-wide uppercase">
-                  Beta
-                </span>
+                <AiTag />
               </div>
             )}
             {message.parts.map((part, i) => {

@@ -20,6 +20,7 @@ const push = vi.hoisted(() => vi.fn());
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 vi.mock("@/i18n/navigation", () => ({ Link: (props: object) => <a {...props} /> }));
 vi.mock("@/components/iris/Iris", () => ({ default: () => <div data-testid="iris" /> }));
+vi.mock("@/components/askiris/useStarters", () => ({ useStarters: () => ["Starter question"] }));
 vi.mock("@/hooks/useMountParam", () => ({ useEffectiveMount: () => "X" }));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
 vi.mock("@/context/TestHookProvider", () => ({
@@ -71,7 +72,7 @@ const LENSES: LensSummary[] = [
   { id: "xf-56", brand: "fujifilm", series: "XF", model: "XF56mmF1.2 R WR", mount: "X", focalLengthMin: 56, focalLengthMax: 56, maxAperture: 1.2 },
 ];
 
-function renderChat(shell: AskIrisShell = { variant: "page", entry: {} }) {
+function renderChat(shell: AskIrisShell = { variant: "page", entry: {}, starterSeed: 1 }) {
   const client = new QueryClient();
   const view = (next: AskIrisShell) => (
     <QueryClientProvider client={client}>
@@ -252,6 +253,7 @@ describe("AskIrisChat send", () => {
     const { container } = renderChat({
       variant: "page",
       entry: { question: "Help me find one", from: "/en/lenses/x/browse?t=zoom" },
+      starterSeed: 1,
     });
 
     await waitFor(() => expect(bodies).toHaveLength(1));
@@ -262,7 +264,7 @@ describe("AskIrisChat send", () => {
 
   it("goes back to the page it came from and reopens the conversation in the panel", async () => {
     captureChatBodies();
-    renderChat({ variant: "page", entry: { question: "What is it for?", from: "/en/lenses/x/xf-56" } });
+    renderChat({ variant: "page", entry: { question: "What is it for?", from: "/en/lenses/x/xf-56" }, starterSeed: 1 });
     await screen.findByText("What is it for?");
 
     fireEvent.click(screen.getByRole("button", { name: "backTo" }));

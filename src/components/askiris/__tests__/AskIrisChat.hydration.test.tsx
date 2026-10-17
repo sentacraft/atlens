@@ -13,6 +13,7 @@ vi.mock("next-intl", () => {
 });
 vi.mock("@/i18n/navigation", () => ({ Link: (props: object) => <a {...props} /> }));
 vi.mock("@/components/iris/Iris", () => ({ default: () => <div data-testid="iris" /> }));
+vi.mock("@/components/askiris/useStarters", () => ({ useStarters: () => ["Starter question"] }));
 vi.mock("@/hooks/useMountParam", () => ({ useEffectiveMount: () => "X" }));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
 vi.mock("@/context/TestHookProvider", () => ({ useTestHookOption: () => undefined }));
@@ -45,7 +46,7 @@ const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false 
 function Chat() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AskIrisChat shell={{ variant: "page", entry: {} }} linkTargets={{ lenses: {}, collections: [] }} lenses={[]} />
+      <AskIrisChat shell={{ variant: "page", entry: {}, starterSeed: 1 }} linkTargets={{ lenses: {}, collections: [] }} lenses={[]} />
     </QueryClientProvider>
   );
 }
