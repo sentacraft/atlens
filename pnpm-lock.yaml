@@ -147,6 +147,9 @@ importers:
       jsdom:
         specifier: ^29.1.1
         version: 29.1.1(@noble/hashes@2.4.0)
+      smol-toml:
+        specifier: ^1.9.0
+        version: 1.9.0
       tailwindcss:
         specifier: ^4
         version: 4.3.0
@@ -5648,6 +5651,10 @@ packages:
 
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
+
+  smol-toml@1.9.0:
+    resolution: {integrity: sha512-hpd+HLON7HdZXqYchMM/+LaTTbdK0AU3NngIJ4KVyWbY9bfQqdL9cD+4yf6dUoU2Ap4VsU0JkQi6FxAI1B2mXQ==}
+    engines: {node: '>= 18'}
 
   sonner@2.0.7:
     resolution: {integrity: sha512-W6ZN4p58k8aDKA4XPcx2hpIQXBRAgyiWVkYhT7CvK6D3iAu7xjvVyhQHg2/iaKJZ1XVJ4r7XuwGL+WGEK37i9w==}
@@ -12481,6 +12488,8 @@ snapshots:
   signal-exit@4.1.0: {}
 
   sisteransi@1.0.5: {}
+
+  smol-toml@1.9.0: {}
 
   sonner@2.0.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:

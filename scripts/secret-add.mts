@@ -1,28 +1,43 @@
 // Adds a secret to wrangler.toml `[secrets] required`, .env.example, every checkout's
-// .env.local, and production with --prod.
+// .env.local, and with --prod to production and the Worker Previews base config (unless
+// src/config/preview-secrets.ts keeps it off previews).
 //
 // Usage:
 //   pnpm run secret:add NAME                 prompt for the local value
 //   pnpm run secret:add NAME --generate      random local value (self-owned secrets)
-//   pnpm run secret:add NAME --prod          also prompt for and upload the production value
+//   pnpm run secret:add NAME --prod          also prompt for the production value; previews get it too
 //   pnpm run secret:add NAME --generate --prod   independent random values for each
-//   pnpm run secret:add NAME --prod --skip-local  production only, local already set
+//   pnpm run secret:add NAME --prod --skip-local  production and previews only, local already set
+//   pnpm run secret:add NAME --preview --skip-local  previews only, for a secret production has
 
 import { execFileSync, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { SECRETS_NOT_ON_PREVIEWS, SECRETS_SHARED_WITH_PREVIEWS } from "../src/config/preview-secrets.ts";
 
 const args = process.argv.slice(2);
 const name = args.find((arg) => !arg.startsWith("--"));
 const generate = args.includes("--generate");
 const prod = args.includes("--prod");
+const previewOnly = args.includes("--preview");
 const skipLocal = args.includes("--skip-local");
 
-if (!name || !/^[A-Z][A-Z0-9_]*$/.test(name)) {
+if (!name || !/^[A-Z][A-Z0-9_]*$/.test(name) || (prod && previewOnly)) {
   console.error(
-    "Usage: pnpm run secret:add NAME [--generate] [--prod] [--skip-local]  (NAME in UPPER_SNAKE_CASE)",
+    "Usage: pnpm run secret:add NAME [--generate] [--prod | --preview] [--skip-local]  (NAME in UPPER_SNAKE_CASE)",
   );
+  process.exit(1);
+}
+
+const onPreviews = (prod || previewOnly) && !SECRETS_NOT_ON_PREVIEWS.includes(name);
+const sharedWithProduction = SECRETS_SHARED_WITH_PREVIEWS.includes(name);
+if (previewOnly && !onPreviews) {
+  console.error(`${name} is kept off previews by src/config/preview-secrets.ts`);
+  process.exit(1);
+}
+if (previewOnly && sharedWithProduction && generate) {
+  console.error(`${name} must equal production's value: enter it instead of --generate`);
   process.exit(1);
 }
 
@@ -126,7 +141,7 @@ function upsertEnvLocal(dir: string, value: string): "added" | "updated" | "unch
 }
 
 // Collected before any write, so a cancelled prompt leaves nothing half-registered.
-async function collectValues(): Promise<{ local?: string; production?: string }> {
+async function collectValues(): Promise<{ local?: string; production?: string; preview?: string }> {
   const local = skipLocal
     ? undefined
     : generate
@@ -137,13 +152,21 @@ async function collectValues(): Promise<{ local?: string; production?: string }>
     : generate
       ? generateSecret()
       : await promptHidden(`Production value for ${name}`);
-  if (local === "" || production === "") {
+  // A key entered by hand is the same key on previews; generated ones differ unless shared.
+  const preview = !onPreviews
+    ? undefined
+    : production !== undefined && (sharedWithProduction || !generate)
+      ? production
+      : generate
+        ? generateSecret()
+        : await promptHidden(`Preview value for ${name}`);
+  if (local === "" || production === "" || preview === "") {
     throw new Error("Empty value; nothing written");
   }
-  return { local, production };
+  return { local, production, preview };
 }
 
-let values: { local?: string; production?: string };
+let values: { local?: string; production?: string; preview?: string };
 try {
   values = await collectValues();
 } catch (error) {
@@ -162,10 +185,10 @@ if (values.local) {
   }
 }
 
-function wranglerPut(command: string[]) {
+function wranglerPut(command: string[], value: string) {
   const result = spawnSync("pnpm", ["exec", "wrangler", ...command, name!], {
     cwd: repoRoot,
-    input: values.production,
+    input: value,
     stdio: ["pipe", "inherit", "pipe"],
     encoding: "utf8",
   });
@@ -174,13 +197,22 @@ function wranglerPut(command: string[]) {
 }
 
 if (values.production) {
-  let result = wranglerPut(["secret", "put"]);
+  let result = wranglerPut(["secret", "put"], values.production);
   // `secret put` deploys a clone of the latest version, so the API refuses it while that version
-  // is undeployed (e.g. a Workers Builds preview); wrangler's error then names this command.
+  // is undeployed; wrangler's error then names this command.
   if (result.status !== 0 && result.stderr.includes("wrangler versions secret put")) {
     console.log("Retrying as `wrangler versions secret put` (new version, not deployed).");
-    result = wranglerPut(["versions", "secret", "put"]);
+    result = wranglerPut(["versions", "secret", "put"], values.production);
   }
+  if (result.status !== 0) {
+    process.exit(result.status ?? 1);
+  }
+}
+if (values.preview) {
+  // Applies to Previews created from now on; existing ones keep their secrets.
+  const result = wranglerPut(["preview", "base-config", "secret", "put"], values.preview);
   process.exit(result.status ?? 1);
 }
-console.log(`Production not touched. Run \`pnpm run secret:add ${name} --prod --skip-local\` to upload it.`);
+if (!values.production) {
+  console.log(`Production not touched. Run \`pnpm run secret:add ${name} --prod --skip-local\` to upload it.`);
+}

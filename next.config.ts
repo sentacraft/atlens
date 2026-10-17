@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
+import { SITE } from './src/config/site';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
@@ -16,6 +17,17 @@ const nextConfig: NextConfig = {
   // are already optimized webp.
   images: {
     unoptimized: true,
+  },
+  // Cloudflare adds noindex to workers.dev Previews only, not to custom-domain ones.
+  // https://developers.cloudflare.com/workers/previews/custom-domains/
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: `.+\\.preview\\.${SITE.host.replaceAll(".", "\\.")}` }],
+        headers: [{ key: "X-Robots-Tag", value: "noindex" }],
+      },
+    ];
   },
   async redirects() {
     return [

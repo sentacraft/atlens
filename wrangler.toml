@@ -2,6 +2,8 @@ name = "atlens"
 main = ".open-next/worker.js"
 compatibility_date = "2025-05-01"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public", "enable_request_signal"]
+# Previews are served on <branch>.preview.atlens.app, a custom domain added in the dashboard.
+preview_urls = false
 
 [assets]
 directory = ".open-next/assets"
@@ -41,12 +43,16 @@ dataset = "xglass_events"
 binding = "ASKIRIS_DB"
 database_name = "atlens-askiris-traces"
 database_id = "6e45555d-ee19-4a77-af3c-b7fdebd11a61"
+# The Worker Previews copy, so `d1 migrations apply ASKIRIS_DB --remote --preview` reaches it.
+preview_database_id = "085245b9-fcdb-4948-904f-f51d357f7ccc"
 migrations_dir = "migrations/askiris-internal"
 
 [[d1_databases]]
 binding = "APP_DB"
 database_name = "atlens-app"
 database_id = "6a75a5c7-643e-414b-9cd2-51cf3826a2f2"
+# The Worker Previews copy, so `d1 migrations apply APP_DB --remote --preview` reaches it.
+preview_database_id = "14670bb5-ad46-4aec-a872-703443f4bed2"
 migrations_dir = "migrations/app"
 
 [[send_email]]
@@ -89,4 +95,54 @@ simple = { limit = 30, period = 60 }
 [[ratelimits]]
 name = "RL_CHAT"
 namespace_id = "4803"
+simple = { limit = 6, period = 60 }
+
+# Worker Previews inherit no vars, secrets or bindings from production: each one is
+# declared again here, pointing storage at preview copies. wrangler-config.test.ts checks
+# that every production binding and var has a preview entry.
+[previews.vars]
+SITE_URL = "https://atlens.app"
+GITHUB_FEEDBACK_REPO = "sentacraft/x-glass-pipeline"
+GITHUB_FEEDBACK_ASSIGNEES = "sentacraft"
+AUTH_EMAIL_FROM = "login@atlens.app"
+
+[[previews.analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "xglass_events_preview"
+
+[[previews.d1_databases]]
+binding = "ASKIRIS_DB"
+database_name = "atlens-askiris-traces-preview"
+database_id = "085245b9-fcdb-4948-904f-f51d357f7ccc"
+migrations_dir = "migrations/askiris-internal"
+
+[[previews.d1_databases]]
+binding = "APP_DB"
+database_name = "atlens-app-preview"
+database_id = "14670bb5-ad46-4aec-a872-703443f4bed2"
+migrations_dir = "migrations/app"
+
+[[previews.send_email]]
+name = "EMAIL"
+
+[previews.version_metadata]
+binding = "CF_VERSION_METADATA"
+
+[[previews.kv_namespaces]]
+binding = "RATE_KV"
+id = "ccb5edd4d5514e3c9d083c1d3fdc91af"
+
+[[previews.ratelimits]]
+name = "RL_FEEDBACK"
+namespace_id = "4811"
+simple = { limit = 5, period = 60 }
+
+[[previews.ratelimits]]
+name = "RL_ASKIRIS_FEEDBACK"
+namespace_id = "4812"
+simple = { limit = 30, period = 60 }
+
+[[previews.ratelimits]]
+name = "RL_CHAT"
+namespace_id = "4813"
 simple = { limit = 6, period = 60 }

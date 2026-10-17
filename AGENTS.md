@@ -92,6 +92,9 @@ message or PR description, not in the source.
   local value must differ.
 - Add secrets with `pnpm run secret:add`. Setting a production value changes production, so ask
   first, and third-party key values never pass through the chat.
+- Branch previews (`<branch>.preview.atlens.app`) inherit nothing from production. Declare every
+  new var or binding again under `[previews]` in `wrangler.toml`, pointing storage at a preview
+  copy; `--prod` on `secret:add` also sets the preview secret.
 - Google sign-in works locally only on ports 3000 (`dev`) and 8787 (`preview`).
 
 ## Data
