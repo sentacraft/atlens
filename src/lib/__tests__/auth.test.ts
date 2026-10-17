@@ -8,7 +8,8 @@ const betterAuth = vi.fn((config: unknown) => config);
 
 vi.mock("better-auth", () => ({ betterAuth }));
 const emailOTP = vi.fn((options: unknown) => options);
-vi.mock("better-auth/plugins", () => ({ anonymous: vi.fn(() => ({})), emailOTP }));
+const oAuthProxy = vi.fn((options: unknown) => options);
+vi.mock("better-auth/plugins", () => ({ anonymous: vi.fn(() => ({})), emailOTP, oAuthProxy }));
 vi.mock("better-auth/next-js", () => ({ nextCookies: vi.fn(() => ({})) }));
 vi.mock("kysely-d1", () => ({ D1Dialect: vi.fn() }));
 // `next dev` exposes only Wrangler bindings here; `.env.local` values reach process.env.
@@ -66,7 +67,9 @@ describe("createAuth", () => {
     ["localhost:8787", "http://localhost:8787/api/auth"],
     ["127.0.0.1:8787", "http://127.0.0.1:8787/api/auth"],
     ["atlens.app", "https://atlens.app/api/auth"],
+    ["fix-x.preview.atlens.app", "https://fix-x.preview.atlens.app/api/auth"],
     ["evil.example", "http://localhost:3000/api/auth"],
+    ["fix-x.preview.atlens.app.evil.example", "http://localhost:3000/api/auth"],
   ])("resolves the auth base URL for host %s", async (host, expected) => {
     const { resolveDynamicBaseURL } =
       await vi.importActual<typeof import("better-auth")>("better-auth");
@@ -77,6 +80,17 @@ describe("createAuth", () => {
     expect(resolveDynamicBaseURL(config.baseURL, new Headers({ host }), "/api/auth")).toBe(
       expected,
     );
+  });
+
+  it("signs other hosts in to Google through the production callback", () => {
+    vi.stubEnv("SITE_URL", "https://atlens.app");
+    vi.stubEnv("OAUTH_PROXY_SECRET", "proxy-secret");
+    createAuth();
+
+    expect(oAuthProxy).toHaveBeenLastCalledWith({
+      productionURL: "https://atlens.app",
+      secret: "proxy-secret",
+    });
   });
 
   type SendOtp = (data: { email: string; otp: string }, ctx: { headers: Headers }) => Promise<void>;

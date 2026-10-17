@@ -21,8 +21,14 @@ class SqliteStatement {
     return (this.db.prepare(this.sql).get(...this.params) as T | undefined) ?? null;
   }
 
-  async all<T>(): Promise<{ results: T[] }> {
-    return { results: this.db.prepare(this.sql).all(...this.params) as T[] };
+  // kysely-d1 sends every query, writes included, through `all()` and reads `meta`.
+  async all<T>(): Promise<{ results: T[]; meta: { changes: number } }> {
+    const statement = this.db.prepare(this.sql);
+    if (statement.columns().length > 0) {
+      return { results: statement.all(...this.params) as T[], meta: { changes: 0 } };
+    }
+    const { changes } = statement.run(...this.params);
+    return { results: [], meta: { changes: Number(changes) } };
   }
 
   async run() {
