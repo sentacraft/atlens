@@ -61,29 +61,34 @@ export default function IrisPanel({
 
   return (
     <Drawer.Root open={shown} onOpenChange={(open) => !open && onClose()} swipeDirection="down">
-      <Drawer.Portal keepMounted>
-        <Drawer.Backdrop
-          className={cn(
-            "fixed inset-0 bg-zinc-950/40 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0",
-            Z.fixed,
-          )}
-        />
-        <Drawer.Viewport className={cn("fixed inset-0", Z.fixed)}>
-          <Drawer.Popup
-            aria-label="Iris"
+      <Drawer.VirtualKeyboardProvider>
+        <Drawer.Portal keepMounted>
+          <Drawer.Backdrop
             className={cn(
-              "fixed inset-x-0 bottom-0 flex h-[85svh] flex-col rounded-t-3xl bg-white pb-[var(--safe-inset-bottom)] shadow-2xl ring-1 ring-zinc-200 dark:bg-zinc-950 dark:ring-zinc-800",
-              "[transform:translateY(var(--drawer-swipe-movement-y,0px))] transition-[transform,translate] duration-300 ease-out data-[swiping]:transition-none",
-              "data-ending-style:translate-y-full data-starting-style:translate-y-full",
+              "fixed inset-0 bg-zinc-950/40 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0",
+              Z.fixed,
             )}
-          >
-            <div className="flex shrink-0 touch-none justify-center pt-2.5 pb-0.5">
-              <div className="h-1.5 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
-            </div>
-            <div className="flex min-h-0 flex-1 flex-col">{chat}</div>
-          </Drawer.Popup>
-        </Drawer.Viewport>
-      </Drawer.Portal>
+          />
+          <Drawer.Viewport className={cn("fixed inset-0", Z.fixed)}>
+            <Drawer.Popup
+              aria-label="Iris"
+              className={cn(
+                "fixed inset-x-0 flex flex-col rounded-t-3xl bg-white pb-[var(--safe-inset-bottom)] shadow-2xl ring-1 ring-zinc-200 dark:bg-zinc-950 dark:ring-zinc-800",
+                // iOS leaves fixed elements under the keyboard; the provider reports its height, and the
+                // sheet sits on top of it, shrinking so the composer stays above.
+                "bottom-[var(--drawer-keyboard-inset,0px)] h-[min(85svh,calc(100svh_-_var(--drawer-keyboard-inset,0px)_-_var(--safe-inset-top)_-_1rem))]",
+                "[transform:translateY(var(--drawer-swipe-movement-y,0px))] transition-[transform,translate] duration-300 ease-out data-[swiping]:transition-none",
+                "data-ending-style:translate-y-full data-starting-style:translate-y-full",
+              )}
+            >
+              <div className="flex shrink-0 touch-none justify-center pt-2.5 pb-0.5">
+                <div className="h-1.5 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+              </div>
+              <div className="flex min-h-0 flex-1 flex-col">{chat}</div>
+            </Drawer.Popup>
+          </Drawer.Viewport>
+        </Drawer.Portal>
+      </Drawer.VirtualKeyboardProvider>
     </Drawer.Root>
   );
 }

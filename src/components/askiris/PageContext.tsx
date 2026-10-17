@@ -164,7 +164,7 @@ export function PageContextStart({
     <div className="flex min-h-0 flex-1 flex-col gap-3 pb-4">
       {notice}
       <PageContextCard view={view} variant="card" onDetach={onDetach} />
-      <div className="flex flex-1 flex-col justify-end gap-2">
+      <div className="flex min-h-0 flex-1 flex-col justify-end-safe gap-2 overflow-y-auto">
         <p className="mb-0.5 text-[13px] text-zinc-500 dark:text-zinc-400">{view.heading}</p>
         {view.suggestions.map((suggestion) => (
           <button
