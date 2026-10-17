@@ -10,3 +10,9 @@ test("tells iOS not to turn emails, numbers or addresses into links", async ({ p
     expect(content).toContain(kind);
   }
 });
+
+test("keeps the contact email a link where people are meant to write to it", async ({ page }) => {
+  await page.goto("/en/about");
+
+  await expect(page.locator('a[href^="mailto:"]').first()).toBeVisible();
+});

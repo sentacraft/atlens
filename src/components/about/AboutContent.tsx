@@ -357,7 +357,14 @@ export default async function AboutContent() {
             {t("disclaimerIndependent")}
           </p>
           <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1">
-            {t("disclaimerCopyright", { email: SITE.contactEmail })}
+            {t.rich("disclaimerCopyright", {
+              address: SITE.contactEmail,
+              email: (chunks) => (
+                <a href={`mailto:${SITE.contactEmail}`} className="underline underline-offset-2">
+                  {chunks}
+                </a>
+              ),
+            })}
           </p>
         </div>
       </Section>
