@@ -11,6 +11,7 @@ import {
   fetchConversationList,
   renameConversation,
 } from "@/lib/askiris/conversation-client";
+import { replyingChat } from "@/components/askiris/live-chats";
 import type { ConversationLocation } from "@/lib/url/askiris";
 
 export type ConversationNotice = "unavailable" | "loadFailed" | "saveFailed";
@@ -43,8 +44,14 @@ export function useConversation({
   location: ConversationLocation;
 }) {
   const queryClient = useQueryClient();
-  const [active, setActive] = useState(newConversation);
-  const [loading, setLoading] = useState(() => Boolean(initialConversationId));
+  // A linked conversation still replying in this tab (the panel going full screen) shows at once.
+  const [active, setActive] = useState<ActiveConversation>(() => {
+    const replying = initialConversationId ? replyingChat(initialConversationId) : undefined;
+    return replying && initialConversationId
+      ? { id: initialConversationId, messages: replying.messages }
+      : newConversation();
+  });
+  const [loading, setLoading] = useState(() => Boolean(initialConversationId) && active.id !== initialConversationId);
 
   const requestRef = useRef(0);
   const onNoticeRef = useRef(onNotice);
@@ -65,6 +72,15 @@ export function useConversation({
   const load = useCallback(
     async (targetId: string, history: "push" | "none") => {
       const token = ++requestRef.current;
+      const replying = replyingChat(targetId);
+      if (replying) {
+        setActive({ id: targetId, messages: replying.messages });
+        setLoading(false);
+        if (history === "push") {
+          location.write(targetId, "push");
+        }
+        return;
+      }
       setLoading(true);
       try {
         const result = await queryClient.fetchQuery(conversationMessagesQuery(targetId));
@@ -170,7 +186,7 @@ export function useConversation({
         ? "error"
         : "loading";
 
-  const initialHandledRef = useRef(false);
+  const initialHandledRef = useRef(active.id === initialConversationId);
   useEffect(() => {
     if (initialHandledRef.current || !initialConversationId) {
       return;
