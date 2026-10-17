@@ -68,8 +68,10 @@ function HomeContent({
   return (
     <HomeIrisStage>
       <div className="flex min-h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] flex-col overflow-x-clip">
-        <section className="relative flex flex-1 flex-col items-center justify-center px-4 py-8 text-center">
-          <HomeFold mode="hide" className="mb-5 sm:mb-8">
+        {/* sm:pt-18 adds back the 40px the tighter gaps below take out, so the centered hero moves
+            down by half of it and the data line stays where it was. */}
+        <section className="relative flex flex-1 flex-col items-center justify-center px-4 py-8 text-center sm:pt-18">
+          <HomeFold mode="hide" className="mb-5">
             <HeroIris />
           </HomeFold>
           <HomeFold mode="shrink">
@@ -77,15 +79,15 @@ function HomeContent({
               <HeroBrand />
             </h1>
           </HomeFold>
-          <HomeFold mode="hide" className="mt-2 sm:mt-4">
+          <HomeFold mode="hide" className="mt-2">
             <p className="text-[15px] text-zinc-500 dark:text-zinc-400 max-w-sm sm:text-lg">
               {t("appDesc")}
             </p>
           </HomeFold>
-          <HomeFold mode="move" className="relative mt-5 flex w-full flex-col items-center sm:mt-8">
+          <HomeFold mode="move" className="relative mt-5 flex w-full flex-col items-center">
             <HomeHeroActions />
           </HomeFold>
-          <HomeFold mode="hide" className="mt-0.5 sm:mt-3">
+          <HomeFold mode="hide" className="mt-0.5 sm:mt-1">
             <DataInfo mountStats={mountStats} lastAddedAt={lastAddedAt} />
           </HomeFold>
         </section>
