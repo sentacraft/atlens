@@ -71,6 +71,9 @@ export async function generateMetadata({
         { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
       ],
     },
+    // iOS Safari turns emails, phone-like numbers and addresses into links on its own, so the
+    // profile's email and figures such as prices and lens counts became tappable.
+    formatDetection: { email: false, telephone: false, address: false },
     appleWebApp: {
       capable: true,
       title: SITE.shortName,
