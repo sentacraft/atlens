@@ -14,6 +14,7 @@ import {
 import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { useIsMobileDevice } from "@/hooks/useViewport";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
 import type { SearchableLens } from "@/lib/lens/search";
 import { cn } from "@/lib/utils";
@@ -31,11 +32,6 @@ import {
 import { ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import { aboutPath } from "@/lib/url/routes";
-
-// On a touch screen a focused search field means the keyboard is up, so results get the room.
-// Read from focus: the viewport reports the iOS keyboard too inconsistently to act on.
-const TYPING_HIDDEN_CLS = "pointer-coarse:group-has-[input:focus]/search:hidden";
-const TYPING_SHOWN_CLS = "hidden pointer-coarse:group-has-[input:focus]/search:flex";
 
 export interface LensSearchResultAction {
   label: string;
@@ -68,9 +64,13 @@ export default function LensSearchDialog<T extends SearchableLens>({
   resultAction: (lens: T) => LensSearchResultAction;
   /** Close the dialog here to end the search, or leave it open to pick again. */
   onSelect: (lens: T) => void;
-  /** A bar pinned under the results; return null to hide it. Render components here; never call them. */
+  /**
+   * A bar pinned under the results; return null to hide it. On phones, where the keyboard leaves
+   * little room, it follows the results instead, or gives way to `actions`. Render components
+   * here; never call them.
+   */
   footer: (context: LensSearchFooterContext) => ReactNode;
-  /** Shown beside the title while typing on a touch screen, when the footer is hidden to leave room for results. */
+  /** On phones, shown beside the title in place of the footer. */
   actions?: (context: LensSearchFooterContext) => ReactNode;
 }) {
   const t = useTranslations("Search");
@@ -107,8 +107,10 @@ export default function LensSearchDialog<T extends SearchableLens>({
   const hasInput = query.trim().length > 0;
   const hasResults = results.length > 0;
   const context = { query: deferredQuery.trim(), hasResults };
-  const footerContent = footer(context);
-  const actionsContent = actions?.(context);
+  // One layout per device: hiding parts of it on focus moved what a tap was about to land on.
+  const compact = useIsMobileDevice();
+  const footerContent = compact && actions ? null : footer(context);
+  const actionsContent = compact ? actions?.(context) : null;
 
   // Read activeRow, never activeIndex: an out-of-range index must not act as a row.
   const activeRow =
@@ -251,15 +253,15 @@ export default function LensSearchDialog<T extends SearchableLens>({
       {/* Base UI focuses the popup, not the input, on touch-open; hand it the input so the keyboard opens. */}
       <DialogPopup
         initialFocus={inputRef}
-        className="group/search w-full max-w-2xl overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-2xl shadow-zinc-950/20 dark:border-zinc-800 dark:bg-zinc-950"
+        className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-2xl shadow-zinc-950/20 dark:border-zinc-800 dark:bg-zinc-950"
       >
         <DialogHeader className="border-b border-zinc-100 pr-5 dark:border-zinc-800">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <DialogTitle>{title}</DialogTitle>
-              {description && <DialogDescription className={TYPING_HIDDEN_CLS}>{description}</DialogDescription>}
+              {description && !compact && <DialogDescription>{description}</DialogDescription>}
             </div>
-            {actionsContent && <div className={cn("shrink-0 items-center gap-3", TYPING_SHOWN_CLS)}>{actionsContent}</div>}
+            {actionsContent && <div className="flex shrink-0 items-center gap-3">{actionsContent}</div>}
             <DialogClose className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "hidden h-9 w-9 shrink-0 sm:inline-flex")}>
               <X className="h-4 w-4" />
             </DialogClose>
@@ -313,9 +315,10 @@ export default function LensSearchDialog<T extends SearchableLens>({
           className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
         >
           {renderResults()}
+          {compact && footerContent && <div className="pt-3">{footerContent}</div>}
         </div>
-        {footerContent && (
-          <DialogFooter className={cn("block border-zinc-100 py-3 dark:border-zinc-800", TYPING_HIDDEN_CLS)}>{footerContent}</DialogFooter>
+        {!compact && footerContent && (
+          <DialogFooter className="block border-zinc-100 py-3 dark:border-zinc-800">{footerContent}</DialogFooter>
         )}
       </DialogPopup>
     </Dialog>
