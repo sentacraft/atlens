@@ -26,12 +26,10 @@ import {
   ICON_NAV_BTN_CLS,
   PAGE_GUTTER_CLS,
 } from "@/config/ui-tokens";
-import { useTestHookEnabled } from "@/context/TestHookProvider";
 import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { useNav } from "@/context/NavProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
-import NotFound from "@/app/[locale]/not-found";
 import Avatar from "@/components/auth/Avatar";
 import DeleteAccountDialog from "@/components/auth/DeleteAccountDialog";
 import FavoritesSection from "@/components/me/FavoritesSection";
@@ -53,16 +51,12 @@ const SECTION_TITLE_CLS = "font-heading text-xl font-bold text-zinc-900 dark:tex
 const SECTION_SUB_CLS = "mt-0.5 text-[13px] leading-5 text-zinc-500 dark:text-zinc-400 md:mt-1";
 
 export default function ProfilePage({ lenses }: { lenses: LensSummary[] }) {
-  const testHookEnabled = useTestHookEnabled();
   const { data: session, isPending } = authClient.useSession();
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
 
   if (!hydrated || isPending) {
     return <div className="min-h-[60svh]" aria-busy="true" />;
-  }
-  if (!testHookEnabled) {
-    return <NotFound />;
   }
   const user = accountUser(session);
   if (!user) {

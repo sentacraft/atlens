@@ -20,14 +20,11 @@ vi.mock("next-intl", () => ({
     values ? `${key} ${JSON.stringify(values)}` : key,
   useLocale: () => "zh",
 }));
-const accounts = vi.hoisted(() => ({ enabled: true }));
-vi.mock("@/context/TestHookProvider", () => ({ useTestHookEnabled: () => accounts.enabled }));
 vi.mock("@/i18n/navigation", () => ({
   Link: ({ href, ...props }: { href: string }) => <a href={href} {...props} />,
 }));
 
 afterEach(() => {
-  accounts.enabled = true;
   cleanup();
   vi.useRealTimers();
   vi.clearAllMocks();
@@ -65,18 +62,6 @@ describe("NavMenu", () => {
     expect(screen.queryByText("login")).toBeNull();
     expect(screen.getAllByRole("menuitem").at(-1)).toHaveTextContent("logout");
   });
-
-  it("keeps the site pages and feedback, and no account, while accounts are off", async () => {
-    accounts.enabled = false;
-    session.current = { data: user(false) };
-
-    render(menu, { wrapper: SignInDialogProvider });
-    await openMenu();
-
-    const names = screen.getAllByRole("menuitem").map((item) => item.textContent);
-    expect(names).toEqual(["compare", "about", "getApp", "feedback", "GitHub"]);
-  });
-
   it("links the account menu to the profile page and no longer offers deletion", async () => {
     session.current = { data: user(false) };
 

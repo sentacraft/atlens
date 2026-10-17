@@ -15,9 +15,6 @@ export default function LensDetailSaveActions({ lensId }: { lensId: string }) {
   const t = useTranslations("LensActions");
   const favorites = useFavorites();
   const ownership = useOwnedLens(lensId);
-  if (!favorites.enabled) {
-    return null;
-  }
   const favorited = favorites.isFavorite(lensId);
 
   return (

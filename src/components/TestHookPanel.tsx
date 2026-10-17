@@ -21,7 +21,7 @@ import {
   renameFixture,
   deleteFixture,
 } from "@/components/askiris/fixtureStore";
-import { TestHookContext } from "@/context/TestHookProvider";
+import { TestHookContext, useTestHookEnabled } from "@/context/TestHookProvider";
 import { TESTHOOK_OPTION_DEFINITIONS } from "@/lib/testhook";
 import type { AgentModelInfo } from "@/lib/ai/model";
 import {
@@ -142,6 +142,7 @@ function FixtureControl() {
 
 export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
   const context = useContext(TestHookContext);
+  const enabled = useTestHookEnabled();
   const [copied, setCopied] = useState(false);
   const [tab, setTab] = useState<TabId>("routes");
   useEffect(() => {
@@ -155,7 +156,7 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
     sessionStorage.setItem("testhook-tab", id);
   };
 
-  if (!context || !context.state.testHook) {
+  if (!context || !enabled) {
     return null;
   }
 
