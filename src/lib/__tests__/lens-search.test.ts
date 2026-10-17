@@ -321,6 +321,40 @@ describe("searchLenses — brand aliases", () => {
   });
 });
 
+describe("searchLenses — Chinese brand queries", () => {
+  const withBrightinStar = [
+    ...lenses,
+    {
+      id: "brightinstar-12-2",
+      brand: "brightinstar",
+      series: "MF",
+      model: "MF 12mm F2.0 III",
+      focalLengthMin: 12,
+      focalLengthMax: 12,
+      maxAperture: 2,
+      minAperture: 16,
+    },
+  ] as Lens[];
+
+  it.each([
+    ["星曜12", "星曜 12"],
+    ["星曜12mm", "星曜 12mm"],
+    ["星曜12mm f2", "星曜 12mm f2"],
+    ["星曜MF12", "星曜 MF12"],
+    ["富士23", "富士 23"],
+    ["七工匠25", "七工匠 25"],
+    ["7artisans25", "7artisans 25"],
+  ])("'%s' returns the same lenses as '%s'", (joined, spaced) => {
+    const expected = searchLenses(withBrightinStar, spaced).map((l) => l.id);
+    expect(expected.length).toBeGreaterThan(0);
+    expect(searchLenses(withBrightinStar, joined).map((l) => l.id)).toEqual(expected);
+  });
+
+  it.each(["星耀", "星耀 12", "星耀12"])("'%s' (variant spelling) finds Brightin Star", (query) => {
+    expect(searchLenses(withBrightinStar, query)[0]?.id).toBe("brightinstar-12-2");
+  });
+});
+
 // ---------------------------------------------------------------------------
 // First-party (Fujifilm) ranking bonus
 // ---------------------------------------------------------------------------
@@ -388,6 +422,7 @@ describe("normalizeBrand", () => {
     ["voigtländer", "voigtlander"],
     ["SG-Image", "sgimage"],
     ["  富士 ", "fujifilm"],
+    ["星耀", "brightinstar"],
   ])("maps %s to the catalog brand %s", (input, slug) => {
     expect(normalizeBrand(input)).toBe(slug);
   });
