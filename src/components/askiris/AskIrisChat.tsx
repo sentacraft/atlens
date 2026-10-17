@@ -1,10 +1,9 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from "ai";
 import { toast } from "sonner";
 import { track } from "@/lib/analytics/analytics";
-import { useEffect, useEffectEvent, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -13,7 +12,6 @@ import { useTestHookOption } from "@/context/TestHookProvider";
 import { useOpenIris, type IrisPanelRequest } from "@/context/IrisPanelProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { accountUser, authClient, ensureSession } from "@/lib/auth-client";
-import { askIrisChatRequestBody } from "@/lib/askiris/chat-request";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
 import { ChatLinkProvider } from "@/components/askiris/ChatLinkContext";
 import type { ChatLinkTargets } from "@/lib/askiris/inline-links";
@@ -48,16 +46,8 @@ import { useRouter } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import AiTag from "@/components/iris/AiTag";
 import ConversationHistory from "@/components/askiris/ConversationHistory";
-import {
-  askIrisMessageMetadataSchema,
-  type AskIrisUIMessage,
-} from "@/lib/askiris/message-metadata";
-
-const transport = new DefaultChatTransport<AskIrisUIMessage>({
-  prepareSendMessagesRequest: ({ id, messages, body }) => ({
-    body: askIrisChatRequestBody({ id, messages, body }),
-  }),
-});
+import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
+import { openChat } from "@/components/askiris/live-chats";
 
 type ConversationSwitch = { kind: "select"; id: string } | { kind: "new" };
 
@@ -134,16 +124,23 @@ export default function AskIrisChat({
   });
   const { conversationId } = conversation;
   // Unthrottled, per-chunk re-renders trip React's update-depth limit.
+  const chat = useMemo(
+    () => openChat(conversationId, conversation.initialMessages),
+    [conversationId, conversation.initialMessages],
+  );
   const { messages, sendMessage, status, setMessages, stop, regenerate, error, addToolOutput } = useChat<AskIrisUIMessage>({
-    id: conversationId,
-    messages: conversation.initialMessages,
-    transport,
-    generateId: () => crypto.randomUUID(),
-    messageMetadataSchema: askIrisMessageMetadataSchema,
+    chat,
     experimental_throttle: 50,
-    // A gear card's answer goes straight back to Iris, which carries on with the reply.
-    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
   });
+  // useChat leaves a chat it was handed running; switching conversations still stops the old reply.
+  const previousChat = useRef(chat);
+  useEffect(() => {
+    const previous = previousChat.current;
+    previousChat.current = chat;
+    if (previous !== chat) {
+      void previous.stop();
+    }
+  }, [chat]);
   const isBusy = signingIn || status === "submitted" || status === "streaming";
   useTurnSync({
     conversationId,

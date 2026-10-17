@@ -11,6 +11,7 @@ import {
   fetchConversationList,
   renameConversation,
 } from "@/lib/askiris/conversation-client";
+import { replyingChat } from "@/components/askiris/live-chats";
 import type { ConversationLocation } from "@/lib/url/askiris";
 
 export type ConversationNotice = "unavailable" | "loadFailed" | "saveFailed";
@@ -43,8 +44,14 @@ export function useConversation({
   location: ConversationLocation;
 }) {
   const queryClient = useQueryClient();
-  const [active, setActive] = useState(newConversation);
-  const [loading, setLoading] = useState(() => Boolean(initialConversationId));
+  // A conversation still replying in this tab (the panel going full screen) shows at once.
+  const [replyingAtStart] = useState(() => (initialConversationId ? replyingChat(initialConversationId) : undefined));
+  const [active, setActive] = useState<ActiveConversation>(() =>
+    replyingAtStart && initialConversationId
+      ? { id: initialConversationId, messages: replyingAtStart.messages }
+      : newConversation(),
+  );
+  const [loading, setLoading] = useState(() => Boolean(initialConversationId) && !replyingAtStart);
 
   const requestRef = useRef(0);
   const onNoticeRef = useRef(onNotice);
@@ -65,6 +72,15 @@ export function useConversation({
   const load = useCallback(
     async (targetId: string, history: "push" | "none") => {
       const token = ++requestRef.current;
+      const replying = replyingChat(targetId);
+      if (replying) {
+        setActive({ id: targetId, messages: replying.messages });
+        setLoading(false);
+        if (history === "push") {
+          location.write(targetId, "push");
+        }
+        return;
+      }
       setLoading(true);
       try {
         const result = await queryClient.fetchQuery(conversationMessagesQuery(targetId));
@@ -172,12 +188,12 @@ export function useConversation({
 
   const initialHandledRef = useRef(false);
   useEffect(() => {
-    if (initialHandledRef.current || !initialConversationId) {
+    if (initialHandledRef.current || !initialConversationId || replyingAtStart) {
       return;
     }
     initialHandledRef.current = true;
     void load(initialConversationId, "none");
-  }, [initialConversationId, load]);
+  }, [initialConversationId, replyingAtStart, load]);
 
   useEffect(() => {
     if (!location.followsHistory) {
