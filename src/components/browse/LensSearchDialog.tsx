@@ -70,6 +70,7 @@ export default function LensSearchDialog<T extends SearchableLens>({
   const tBrand = useTranslations("Brands");
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [composing, setComposing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollActiveRef = useRef(false);
@@ -82,6 +83,7 @@ export default function LensSearchDialog<T extends SearchableLens>({
     if (!open) {
       setQuery("");
       setActiveIndex(null);
+      setComposing(false);
     }
   }, [open]);
 
@@ -121,7 +123,12 @@ export default function LensSearchDialog<T extends SearchableLens>({
     }
   }, [activeRow]);
 
-  useSearchTelemetry({ query: deferredQuery, resultsCount: results.length, isOpen: open });
+  useSearchTelemetry({
+    query: deferredQuery,
+    resultsCount: results.length,
+    isOpen: open,
+    isComposing: composing,
+  });
 
   function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "ArrowDown") {
@@ -265,6 +272,8 @@ export default function LensSearchDialog<T extends SearchableLens>({
                 setActiveIndex(value.trim() ? 0 : null);
               }}
               onKeyDown={handleInputKeyDown}
+              onCompositionStart={() => setComposing(true)}
+              onCompositionEnd={() => setComposing(false)}
               placeholder={t("placeholder")}
               aria-controls={resultsId}
               aria-autocomplete="list"
