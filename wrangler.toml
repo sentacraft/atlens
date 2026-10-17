@@ -102,7 +102,7 @@ simple = { limit = 6, period = 60 }
 # that every production binding and var has a preview entry.
 [previews.vars]
 SITE_URL = "https://atlens.app"
-GITHUB_FEEDBACK_REPO = "sentacraft/x-glass-pipeline"
+GITHUB_FEEDBACK_REPO = "sentacraft/atlens-pipeline"
 GITHUB_FEEDBACK_ASSIGNEES = "sentacraft"
 AUTH_EMAIL_FROM = "login@atlens.app"
 
