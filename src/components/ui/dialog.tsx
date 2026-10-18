@@ -5,7 +5,7 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { Drawer as DrawerPrimitive } from "@base-ui/react/drawer";
 
 import { cn } from "@/lib/utils";
-import { ACTION_CANCEL_CLS } from "@/config/ui-tokens";
+import { ACTION_QUIET_CLS } from "@/config/ui-tokens";
 import { useBreakpoint } from "@/hooks/useViewport";
 
 const DialogModeContext = React.createContext<"dialog" | "drawer">("dialog");
@@ -198,12 +198,12 @@ function DialogClose({ className, ...props }: Omit<DialogPrimitive.Close.Props, 
  * The Cancel beside a form's main action. A drawer leaves it out: it closes by swipe or the
  * backdrop, and a Cancel beside the main action gets tapped to put the keyboard away.
  */
-function DialogCancel({ className, ...props }: React.ComponentProps<typeof DialogClose>) {
+function DialogCancel({ className, render, ...props }: React.ComponentProps<typeof DialogClose>) {
   const mode = useDialogMode();
   if (mode === "drawer") {
     return null;
   }
-  return <DialogClose className={cn(ACTION_CANCEL_CLS, className)} {...props} />;
+  return <DialogClose render={render} className={render ? className : cn(ACTION_QUIET_CLS, className)} {...props} />;
 }
 
 export {

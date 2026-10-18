@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import {
   Dialog,
+  DialogCancel,
   DialogClose,
   DialogDescription,
   DialogFooter,
@@ -72,7 +73,6 @@ export default function AddBodyDialog({
             defaultMount={defaultMount}
             owned={owned}
             saving={saving}
-            onCancel={() => onOpenChange(false)}
             onSave={onSave}
           />
         )}
@@ -86,13 +86,11 @@ function BodyPicker({
   defaultMount,
   owned,
   saving,
-  onCancel,
   onSave,
 }: {
   defaultMount: Mount;
   owned: ReadonlySet<string>;
   saving: boolean;
-  onCancel: () => void;
   onSave: (catalogIds: string[]) => void;
 }) {
   const t = useTranslations("Profile");
@@ -154,13 +152,7 @@ function BodyPicker({
         ))}
       </div>
       <DialogFooter>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="h-9 rounded-lg px-3 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
-        >
-          {t("cancel")}
-        </button>
+        <DialogCancel>{t("cancel")}</DialogCancel>
         <button
           type="button"
           onClick={() => onSave([...selected])}

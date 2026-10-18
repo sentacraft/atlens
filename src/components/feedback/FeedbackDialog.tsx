@@ -9,6 +9,7 @@ import FeedbackSuccessState from "@/components/feedback/FeedbackSuccessState";
 import { ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
 import {
   Dialog,
+  DialogCancel,
   DialogClose,
   DialogPopup,
   DialogFooter,
@@ -358,13 +359,7 @@ export default function FeedbackDialog({
         {!isSuccess ? (
           <DialogFooter>
             <>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => onOpenChange(false)}
-              >
-                {t("cancel")}
-              </Button>
+              <DialogCancel render={<Button type="button" variant="ghost" />}>{t("cancel")}</DialogCancel>
               <Button
                 type="button"
                 onClick={handleSubmit}

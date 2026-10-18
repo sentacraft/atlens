@@ -7,7 +7,7 @@ import { X } from "lucide-react";
 import ToggleChipGroup from "@/components/ui/toggle-chip-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogFooter, DialogHeader, DialogPopup, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogCancel, DialogFooter, DialogHeader, DialogPopup, DialogTitle } from "@/components/ui/dialog";
 import type { AskIrisResponseFeedbackInput } from "@/lib/askiris/response-feedback-contract";
 import { postResponseFeedback } from "@/lib/askiris/response-feedback-client";
 import { cn } from "@/lib/utils";
@@ -141,9 +141,7 @@ export default function ResponseFeedback({ responseMessageId }: { responseMessag
               <p className="text-[13px] leading-relaxed text-zinc-500 dark:text-zinc-400">{t("notice")}</p>
             </div>
             <DialogFooter className="border-t-0 pt-0">
-              <Button type="button" variant="outline" size="lg" onClick={() => setDetailsOpen(false)}>
-                {t("cancel")}
-              </Button>
+              <DialogCancel render={<Button type="button" variant="outline" size="lg" />}>{t("cancel")}</DialogCancel>
               <Button type="submit" size="lg" disabled={!canSendDetails}>
                 {t("submit")}
               </Button>
