@@ -1,13 +1,14 @@
-export const SID_COOKIE = "atlens_sid";
-export const SID_TTL_SECONDS = 1800;
+export const VID_COOKIE = "atlens_vid";
+export const VID_TTL_SECONDS = 30 * 24 * 60 * 60;
 
-export function parseSid(cookieHeader: string | null): string | null {
+/** The anonymous visitor id, or null when the cookie is missing or malformed. */
+export function parseVid(cookieHeader: string | null): string | null {
   if (!cookieHeader) {
     return null;
   }
   for (const part of cookieHeader.split(";")) {
     const [k, v] = part.trim().split("=");
-    if (k === SID_COOKIE && v && /^[0-9a-f-]{36}$/i.test(v)) {
+    if (k === VID_COOKIE && v && /^[0-9a-f-]{36}$/i.test(v)) {
       return v;
     }
   }

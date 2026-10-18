@@ -28,7 +28,7 @@ export const ABOUT_FACT_SOURCES: Record<string, { facts: string[]; hash: string 
   disclaimerIndependent: { facts: ["independence"], hash: "f33be3a7db11" },
   disclaimerCopyright: { facts: ["copyright"], hash: "a9413c262762" },
   privacyBody: { facts: ["conversation-storage", "training"], hash: "799eda3b98c6" },
-  privacyAnalytics: { facts: ["analytics"], hash: "86c4dae8eb0d" },
+  privacyAnalytics: { facts: ["analytics"], hash: "e877ca3a021e" },
   supportCost: { facts: ["costs"], hash: "39c24a54686a" },
   supportIntegrity: { facts: ["independence", "open-source", "store-links"], hash: "96e5b757879a" },
   ackBody: { facts: ["built-with-ai", "launch"], hash: "e232ef01c031" },

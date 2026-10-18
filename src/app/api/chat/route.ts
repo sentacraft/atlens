@@ -31,8 +31,9 @@ import { isOverTokenBudget, recordTokens } from "@/lib/ai/token-budget";
 import { clientIp, isBypassed, isRateLimited } from "@/lib/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
 import { anonymizeId } from "@/lib/analytics/anonymize";
-import { askirisTurnDataPoint } from "@/lib/analytics/events";
-import { parseSid, parseInternal } from "@/lib/analytics/session";
+import { ASKIRIS_TURN_EVENT, type AskIrisTurnProps } from "@/lib/analytics/events";
+import { parseInternal, parseVid } from "@/lib/analytics/session";
+import { insertEvent } from "@/lib/analytics/store";
 import {
   AskIrisTraceCollector,
   traceMessageContext,
@@ -89,12 +90,12 @@ export async function POST(req: Request) {
 
   const ip = clientIp(req);
   const cookieHeader = req.headers.get("cookie");
-  const sid = parseSid(cookieHeader) ?? "";
+  const vid = parseVid(cookieHeader);
   // atlens_internal marks a turn internal but must never grant the rate-limit bypass.
   const bypassed = isBypassed(req);
   const internal = parseInternal(cookieHeader) || bypassed;
   let rateKv: KVNamespace | undefined;
-  let ae: AnalyticsEngineDataset | undefined;
+  let analyticsDb: D1Database | undefined;
   let traceDb: D1Database | undefined;
   let appDb: D1Database | undefined;
   let releaseId: string | undefined;
@@ -104,7 +105,7 @@ export async function POST(req: Request) {
   try {
     const cf = getCloudflareContext();
     rateKv = cf.env.RATE_KV;
-    ae = cf.env.ANALYTICS;
+    analyticsDb = cf.env.ANALYTICS_DB;
     traceDb = cf.env.ASKIRIS_DB;
     appDb = cf.env.APP_DB;
     releaseId = workerReleaseId(cf.env.CF_VERSION_METADATA);
@@ -288,27 +289,28 @@ export async function POST(req: Request) {
         0,
       );
       // The last step is forced to text, so finishReason is "stop" even when the budget ran out.
-      if (ae) {
-        try {
-          ae.writeDataPoint(
-            askirisTurnDataPoint({
-              mount,
-              locale,
-              sid,
-              conversationId: analyticsConversationId,
-              internal,
-              totalTokens: usage.totalTokens ?? 0,
-              inputTokens: usage.inputTokens ?? 0,
-              outputTokens: usage.outputTokens ?? 0,
-              cacheReadTokens: usage.inputTokenDetails?.cacheReadTokens ?? 0,
-              stepCount: stepNumber + 1,
-              budgetHit: stepNumber >= STEP_BUDGET - 1,
-              maxContextTokens,
-            }),
-          );
-        } catch (error) {
-          console.error("[askiris] failed to write turn metrics", error);
-        }
+      if (analyticsDb) {
+        const write = insertEvent(analyticsDb, {
+          event: ASKIRIS_TURN_EVENT,
+          ts: Date.now(),
+          vid,
+          locale,
+          path: null,
+          signedIn: isAccount,
+          internal,
+          props: {
+            mount,
+            conversation_id: analyticsConversationId,
+            total_tokens: usage.totalTokens ?? 0,
+            input_tokens: usage.inputTokens ?? 0,
+            output_tokens: usage.outputTokens ?? 0,
+            cache_read_tokens: usage.inputTokenDetails?.cacheReadTokens ?? 0,
+            step_count: stepNumber + 1,
+            budget_hit: stepNumber >= STEP_BUDGET - 1,
+            max_context_tokens: maxContextTokens,
+          } satisfies AskIrisTurnProps,
+        }).catch((error: unknown) => console.error("[askiris] failed to write turn metrics", error));
+        ctx?.waitUntil(write);
       }
       if (process.env.NODE_ENV !== "production") {
         const input = usage.inputTokens ?? 0;

@@ -1,167 +1,90 @@
 import { z } from "zod";
 
-// AE layout is positional; the dashboard SQL depends on it.
-//   indexes: [event_name]
-//   blobs:   [sid, locale, path, primary_string, secondary_string, tertiary_string, internal]
-//   doubles: [primary_number]
+type FieldKind = "string" | "number" | "boolean";
+type FieldValue = { string: string; number: number; boolean: boolean };
 
-export const EVENT_NAMES = [
-  "search",
-  "filter_apply",
-  "filter_reset",
-  "compare_add",
-  "compare_view",
-  "compare_scroll",
-  "lens_view",
-  "lens_scroll",
-  "feedback_open",
-  "feedback_submit",
-  "install_action",
-  "share_action",
-  "outbound_click",
-  "mount_switch",
-  "purchase_click",
-  "pwa_launch",
-  "askiris_view",
-  "askiris_message",
-  "askiris_rec_click",
-] as const;
+/** The props each event may carry; anything else is dropped before it is stored. */
+const EVENT_FIELDS = {
+  search: { query: "string", results_count: "number" },
+  filter_apply: { filters_json: "string" },
+  filter_reset: {},
+  compare_add: { lens_slug: "string" },
+  compare_view: { lens_slugs: "string", lens_count: "number" },
+  compare_scroll: { lens_slugs: "string" },
+  lens_view: { lens_slug: "string", referrer: "string" },
+  lens_scroll: { lens_slug: "string", depth_pct: "number" },
+  feedback_open: { feedback_type: "string" },
+  feedback_submit: { feedback_type: "string" },
+  install_action: {},
+  share_action: { method: "string" },
+  outbound_click: { href: "string" },
+  mount_switch: { from_mount: "string", to_mount: "string" },
+  purchase_click: { channel: "string", lens_id: "string", source: "string", is_affiliate: "boolean" },
+  pwa_launch: { source: "string" },
+  askiris_view: {},
+  askiris_message: { method: "string" },
+  askiris_rec_click: { lens_id: "string", source: "string" },
+} as const satisfies Record<string, Record<string, FieldKind>>;
 
-export type EventName = (typeof EVENT_NAMES)[number];
+export type EventName = keyof typeof EVENT_FIELDS;
+
+export const EVENT_NAMES = Object.keys(EVENT_FIELDS) as [EventName, ...EventName[]];
+
+export type EventProps<E extends EventName> = {
+  -readonly [K in keyof (typeof EVENT_FIELDS)[E]]?: FieldValue[(typeof EVENT_FIELDS)[E][K] & FieldKind];
+};
 
 const MAX_PROP_STRING_LENGTH = 256;
 
 // Props are best-effort: a malformed prop is dropped, not a reason to lose the event.
-const propString = z
-  .string()
-  .transform((value) => value.slice(0, MAX_PROP_STRING_LENGTH))
-  .optional()
-  .catch(undefined);
-const propNumber = z.number().optional().catch(undefined);
-const propBoolean = z.boolean().optional().catch(undefined);
+const FIELD_SCHEMAS: Record<FieldKind, z.ZodType> = {
+  string: z
+    .string()
+    .transform((value) => value.slice(0, MAX_PROP_STRING_LENGTH))
+    .optional()
+    .catch(undefined),
+  number: z.number().optional().catch(undefined),
+  boolean: z.boolean().optional().catch(undefined),
+};
 
-export const eventPropsSchema = z.object({
-  path: propString,
+const PROPS_SCHEMAS = Object.fromEntries(
+  Object.entries(EVENT_FIELDS).map(([event, fields]) => [
+    event,
+    z.object(
+      Object.fromEntries(
+        Object.entries(fields as Record<string, FieldKind>).map(([key, kind]) => [key, FIELD_SCHEMAS[kind]]),
+      ),
+    ),
+  ]),
+) as Record<EventName, z.ZodObject>;
 
-  query: propString,
-  results_count: propNumber,
-
-  filters_json: propString,
-
-  lens_slug: propString,
-  lens_slugs: propString,
-  lens_count: propNumber,
-  depth_pct: propNumber,
-
-  feedback_type: propString,
-  method: propString,
-
-  href: propString,
-  from_mount: propString,
-  to_mount: propString,
-
-  channel: propString,
-  lens_id: propString,
-  source: propString,
-  is_affiliate: propBoolean,
-
-  referrer: propString,
-});
-
-export type EventProps = z.input<typeof eventPropsSchema>;
+/** The event's declared props, with malformed values and undeclared keys dropped. */
+export function parseEventProps(event: EventName, props: Record<string, unknown> = {}): Record<string, unknown> {
+  const parsed = PROPS_SCHEMAS[event].parse(props);
+  return Object.fromEntries(Object.entries(parsed).filter(([, value]) => value !== undefined));
+}
 
 export const trackPayloadSchema = z.object({
   event: z.enum(EVENT_NAMES),
   locale: z.string().optional(),
-  props: eventPropsSchema.optional(),
+  path: z.string().optional(),
+  signed_in: z.boolean().optional(),
+  props: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type TrackPayload = z.input<typeof trackPayloadSchema>;
 
-interface AnalyticsEnginePoint {
-  indexes: [string];
-  blobs: [string, string, string, string, string, string, string];
-  doubles: [number];
-}
-
-export function toDataPoint(
-  event: EventName,
-  sid: string,
-  locale: string,
-  props: EventProps,
-  internal: boolean,
-): AnalyticsEnginePoint {
-  const primaryString =
-    props.query ??
-    props.filters_json ??
-    props.lens_slug ??
-    props.href ??
-    props.to_mount ??
-    props.feedback_type ??
-    props.channel ??
-    "";
-  const secondaryString =
-    props.lens_slugs ??
-    props.method ??
-    props.from_mount ??
-    props.referrer ??
-    props.lens_id ??
-    "";
-  const tertiaryString =
-    props.source ??
-    "";
-  const primaryNumber =
-    props.results_count ??
-    props.depth_pct ??
-    props.lens_count ??
-    (props.is_affiliate ? 1 : 0);
-
-  return {
-    indexes: [event],
-    blobs: [sid, locale, props.path ?? "", primaryString, secondaryString, tertiaryString, internal ? "1" : ""],
-    doubles: [primaryNumber],
-  };
-}
-
-// Written directly by the chat route, in its own positional layout. Missing token counts are 0.
-//   indexes: [askiris_turn]
-//   blobs:   [mount, locale, sid, conversation_id, internal]
-//   doubles: [total, input, output, cacheRead tokens, step_count, budget_hit, max_context]
+/** Written by the chat route once per Ask Iris turn; never accepted from the client. */
 export const ASKIRIS_TURN_EVENT = "askiris_turn";
 
-export interface AskIrisTurnMetrics {
+export interface AskIrisTurnProps {
   mount: string;
-  locale: string;
-  // "" when unknown; the queries filter it out.
-  sid: string;
-  conversationId: string;
-  // Still written; the Ask Iris queries filter it out.
-  internal: boolean;
-  totalTokens: number;
-  inputTokens: number;
-  outputTokens: number;
-  cacheReadTokens: number;
-  stepCount: number;
-  budgetHit: boolean;
-  maxContextTokens: number;
-}
-
-export function askirisTurnDataPoint(m: AskIrisTurnMetrics): {
-  indexes: [string];
-  blobs: [string, string, string, string, string];
-  doubles: [number, number, number, number, number, number, number];
-} {
-  return {
-    indexes: [ASKIRIS_TURN_EVENT],
-    blobs: [m.mount, m.locale, m.sid, m.conversationId, m.internal ? "1" : ""],
-    doubles: [
-      m.totalTokens,
-      m.inputTokens,
-      m.outputTokens,
-      m.cacheReadTokens,
-      m.stepCount,
-      m.budgetHit ? 1 : 0,
-      m.maxContextTokens,
-    ],
-  };
+  conversation_id: string;
+  total_tokens: number;
+  input_tokens: number;
+  output_tokens: number;
+  cache_read_tokens: number;
+  step_count: number;
+  budget_hit: boolean;
+  max_context_tokens: number;
 }

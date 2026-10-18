@@ -29,4 +29,4 @@ change the JSDoc, then run `node --experimental-strip-types scripts/api-docs.mts
 | `/api/me/settings` | GET | Returns the caller's settings, or the defaults when none are saved. Accounts only; 401 for guests. |
 | `/api/me/settings` | PATCH | Updates the given settings and returns them all. Accounts only; 400 for an empty patch or a value outside the allowed set. |
 | `/api/telemetry` | POST | Logs a browser asset failure or slow asset load to Workers Logs. Public. |
-| `/api/track` | POST | Writes one product analytics event to Analytics Engine and sets the analytics session cookie. Public. |
+| `/api/track` | POST | Records one product analytics event and sets the anonymous visitor cookie. Public; 400 on a malformed event, 413 on an oversized body. |
