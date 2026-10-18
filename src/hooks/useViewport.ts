@@ -49,35 +49,3 @@ function subscribeMobile(): () => void {
 export function useIsMobileDevice(): boolean {
   return useSyncExternalStore(subscribeMobile, getMobileSnapshot, getMobileServerSnapshot);
 }
-
-// Only for sizing a bottom spacer. Positioning a fixed overlay off visualViewport is a dead end
-// on iOS: [[reference_ios_keyboard_fixed_overlay]].
-
-function subscribeKeyboard(onChange: () => void): () => void {
-  const vv = window.visualViewport;
-  if (!vv) {
-    return () => {};
-  }
-  vv.addEventListener("resize", onChange);
-  vv.addEventListener("scroll", onChange);
-  return () => {
-    vv.removeEventListener("resize", onChange);
-    vv.removeEventListener("scroll", onChange);
-  };
-}
-
-function getKeyboardSnapshot(): number {
-  const vv = window.visualViewport;
-  if (!vv) {
-    return 0;
-  }
-  return Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-}
-
-function getKeyboardServerSnapshot(): number {
-  return 0;
-}
-
-export function useKeyboardInset(): number {
-  return useSyncExternalStore(subscribeKeyboard, getKeyboardSnapshot, getKeyboardServerSnapshot);
-}
