@@ -9,6 +9,10 @@ export const LENS_GRID_CLS =
 export const ACTION_PRIMARY_CLS =
   "bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors";
 
+/** The quiet Cancel beside a dialog's main action. */
+export const ACTION_CANCEL_CLS =
+  "h-9 rounded-lg px-3 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800";
+
 export const ACTION_OUTLINE_CLS =
   "inline-flex h-10 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800";
 

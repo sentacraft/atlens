@@ -24,7 +24,7 @@ import LensFilters from "@/components/lens-filters/LensFilters";
 import LensIndexShell from "@/components/browse/LensIndexShell";
 import LensUsageSwitch from "@/components/browse/LensUsageSwitch";
 import LensSortControl from "@/components/browse/LensSortControl";
-import LensSearchDialog, { suggestLensFooter } from "@/components/browse/LensSearchDialog";
+import LensSearchDialog, { suggestMissingLens } from "@/components/browse/LensSearchDialog";
 import AskIrisEntry from "@/components/iris/AskIrisEntry";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -151,7 +151,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
                   title={tSearch("title")}
                   resultAction={() => ({ label: tSearch("view") })}
                   onSelect={handleSelectLens}
-                  footer={suggestLensFooter}
+                  afterResults={suggestMissingLens}
                 />
               </>
             }

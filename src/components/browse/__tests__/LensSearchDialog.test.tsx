@@ -15,8 +15,8 @@ const lenses: SearchableLens[] = [
   { id: "xf-33", brand: "fujifilm", series: "XF", model: "XF 33mm F1.4", focalLengthMin: 33, focalLengthMax: 33, maxAperture: 1.4 },
 ];
 
-// A footer with its own hook: the dialog must render it as a component, never call it.
-function HookFooter({ hasResults }: { hasResults: boolean }) {
+// A line with its own hook: the dialog must render it as a component, never call it.
+function HookLine({ hasResults }: { hasResults: boolean }) {
   const [label] = useState(hasResults ? "with-results" : "no-results");
   return <p>{label}</p>;
 }
@@ -35,14 +35,15 @@ function renderDialog(onSelect = vi.fn()) {
       title="Search"
       resultAction={(lens) => ({ label: `pick ${lens.id}` })}
       onSelect={onSelect}
-      footer={(context) => <HookFooter key={String(context.hasResults)} {...context} />}
+      afterResults={(context) => <HookLine key={String(context.hasResults)} {...context} />}
+      footer={() => <button type="button">add</button>}
     />,
   );
   return { input: screen.getByRole("textbox"), onSelect };
 }
 
 describe("LensSearchDialog", () => {
-  it("switches between no results and results with a footer that uses hooks", () => {
+  it("switches between no results and results with a line that uses hooks", () => {
     const { input } = renderDialog();
 
     fireEvent.change(input, { target: { value: "zenitar" } });
@@ -79,5 +80,17 @@ describe("LensSearchDialog", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it("puts the line after the results and the footer's actions in a bar below them", () => {
+    const { input } = renderDialog();
+    fireEvent.change(input, { target: { value: "xf 33" } });
+
+    const listbox = screen.getByRole("listbox");
+    const line = screen.getByText("with-results");
+    const footer = screen.getByRole("button", { name: "add" });
+    expect(listbox.parentElement!.contains(line)).toBe(true);
+    expect(listbox.parentElement!.contains(footer)).toBe(false);
+    expect(listbox.compareDocumentPosition(line) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });
