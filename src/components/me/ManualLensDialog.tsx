@@ -121,7 +121,6 @@ function ManualLensForm({
   const t = useTranslations("Profile");
   const l = useTranslations("LensList");
   const badge = useTranslations("SpecialtyBadge");
-  const m = useTranslations("MountSwitcher");
   const [draft, setDraft] = useState<ManualLensDraft>(() => emptyDraft(defaultMount));
   const [errors, setErrors] = useState<Partial<Record<DraftField, DraftError>>>({});
   const [helpOpen, setHelpOpen] = useState(false);
@@ -202,9 +201,9 @@ function ManualLensForm({
         <div className={LABEL_CLS}>
           {t("focalLength")}
           <span className="flex items-center gap-2">
-            <span className="w-24">{textInput("focalMin", { ...numeric, "aria-label": zoom ? t("focalMin") : t("focalLength") })}</span>
+            <span className="min-w-0 flex-1 sm:max-w-40">{textInput("focalMin", { ...numeric, "aria-label": zoom ? t("focalMin") : t("focalLength") })}</span>
             <span className="text-zinc-400">–</span>
-            <span className="w-24">
+            <span className="min-w-0 flex-1 sm:max-w-40">
               {textInput("focalMax", { ...numeric, placeholder: t("zoomOnly"), "aria-label": t("focalMax") })}
             </span>
             <span className="shrink-0 text-sm text-zinc-500">mm</span>
@@ -216,11 +215,11 @@ function ManualLensForm({
           {t("maxAperture")}
           <span className="flex items-center gap-2">
             <span className="text-sm text-zinc-500">{draft.usage === "cine" ? "T" : "F"}</span>
-            <span className="w-24">
+            <span className="min-w-0 flex-1 sm:max-w-40">
               {textInput("apertureWide", { ...numeric, "aria-label": zoom ? t("apertureWide") : t("maxAperture") })}
             </span>
             <span className="text-zinc-400">–</span>
-            <span className="w-24">
+            <span className="min-w-0 flex-1 sm:max-w-40">
               {textInput("apertureTele", { ...numeric, placeholder: t("variableOnly"), "aria-label": t("apertureTele") })}
             </span>
           </span>
@@ -245,8 +244,8 @@ function ManualLensForm({
               ariaLabel={t("mount")}
               value={draft.mount}
               options={[
-                { value: "X", label: { default: m("x") } },
-                { value: "G", label: { default: m("gfx") } },
+                { value: "X", label: { default: "X" } },
+                { value: "G", label: { default: "G" } },
               ]}
               onChange={(value) => set("mount", value)}
               layout="equal"
