@@ -20,6 +20,7 @@ import { FEATURE_ICONS } from "@/lib/feature-icons";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
+  DialogCancel,
   DialogClose,
   DialogDescription,
   DialogFooter,
@@ -96,7 +97,6 @@ export default function ManualLensDialog({
             defaultMount={defaultMount}
             brandSuggestions={brandSuggestions}
             saving={saving}
-            onCancel={() => onOpenChange(false)}
             onSave={onSave}
           />
         )}
@@ -109,13 +109,11 @@ function ManualLensForm({
   defaultMount,
   brandSuggestions,
   saving,
-  onCancel,
   onSave,
 }: {
   defaultMount: Mount;
   brandSuggestions: string[];
   saving: boolean;
-  onCancel: () => void;
   onSave: (lens: ManualLens) => void;
 }) {
   const t = useTranslations("Profile");
@@ -385,13 +383,7 @@ function ManualLensForm({
         </details>
       </div>
       <DialogFooter>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="h-9 rounded-lg px-3 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
-        >
-          {t("cancel")}
-        </button>
+        <DialogCancel>{t("cancel")}</DialogCancel>
         <button type="submit" disabled={saving} className={cn(ACTION_PRIMARY_CLS, "h-9 rounded-lg px-4 text-sm font-medium")}>
           {saving ? t("saving") : t("save")}
         </button>

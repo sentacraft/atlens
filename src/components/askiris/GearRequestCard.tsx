@@ -8,14 +8,12 @@ import type { LensSummary } from "@/lib/lens/data";
 import { accountUser, authClient } from "@/lib/auth-client";
 import type { GearRequestInput, GearRequestOutput } from "@/lib/ai/gear-request";
 import { resolveGearHints } from "@/lib/me/gear-hints";
-import { ACTION_OUTLINE_CLS, ACTION_PRIMARY_CLS, CHIP_ACTIVE_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS } from "@/config/ui-tokens";
+import { ACTION_OUTLINE_CLS, ACTION_PRIMARY_CLS, ACTION_QUIET_CLS, CHIP_ACTIVE_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { useGearAdders } from "@/components/me/useGearAdders";
 
 const CARD_CLS = "w-full max-w-[560px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950";
-const QUIET_BTN_CLS =
-  "h-9 rounded-lg px-3 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800";
 
 /** The in-chat card Iris shows through the askForGear client tool. */
 export default function GearRequestCard({
@@ -94,7 +92,7 @@ function SignInPrompt({ onDecline }: { onDecline: () => void }) {
         >
           {t("signIn")}
         </button>
-        <button type="button" onClick={onDecline} className={QUIET_BTN_CLS}>
+        <button type="button" onClick={onDecline} className={ACTION_QUIET_CLS}>
           {t("notNow")}
         </button>
       </div>
@@ -186,7 +184,7 @@ function GearPicker({
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
         <span className="text-xs text-zinc-500 dark:text-zinc-400">{t("footerHint")}</span>
         <div className="ml-auto flex gap-2">
-          <button type="button" onClick={() => onAnswer({ outcome: "skipped" })} className={QUIET_BTN_CLS}>
+          <button type="button" onClick={() => onAnswer({ outcome: "skipped" })} className={ACTION_QUIET_CLS}>
             {t("skip")}
           </button>
           <button

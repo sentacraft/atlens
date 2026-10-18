@@ -40,7 +40,7 @@ import {
   DialogPopup,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
+import { ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
 import { ArrowLeft, History, Maximize2, Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Link } from "@/i18n/navigation";
@@ -534,7 +534,7 @@ export default function AskIrisChat({
           <DialogFooter>
             <DialogClose
               type="button"
-              className="h-9 rounded-lg px-3 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              className={ACTION_QUIET_CLS}
             >
               {t("switchWhileBusyCancel")}
             </DialogClose>
