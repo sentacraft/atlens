@@ -14,7 +14,6 @@ import {
 import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { useIsMobileDevice } from "@/hooks/useViewport";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
 import type { SearchableLens } from "@/lib/lens/search";
 import { cn } from "@/lib/utils";
@@ -24,7 +23,6 @@ import {
   Dialog,
   DialogClose,
   DialogPopup,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -38,7 +36,7 @@ export interface LensSearchResultAction {
   disabled?: boolean;
 }
 
-export interface LensSearchFooterContext {
+export interface LensSearchContext {
   query: string;
   hasResults: boolean;
 }
@@ -49,29 +47,23 @@ export default function LensSearchDialog<T extends SearchableLens>({
   onOpenChange,
   lenses,
   title,
-  description,
   resultAction,
   onSelect,
+  afterResults,
   footer,
-  actions,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   lenses: T[];
   title: string;
-  description?: string;
   /** The label beside each result; a disabled result can't be picked. */
   resultAction: (lens: T) => LensSearchResultAction;
   /** Close the dialog here to end the search, or leave it open to pick again. */
   onSelect: (lens: T) => void;
-  /**
-   * A bar pinned under the results; return null to hide it. On phones, where the keyboard leaves
-   * little room, it follows the results instead, or gives way to `actions`. Render components
-   * here; never call them.
-   */
-  footer: (context: LensSearchFooterContext) => ReactNode;
-  /** On phones, shown beside the title in place of the footer. */
-  actions?: (context: LensSearchFooterContext) => ReactNode;
+  /** A line after the results, scrolling with them. Render components here; never call them. */
+  afterResults?: (context: LensSearchContext) => ReactNode;
+  /** A one-line bar pinned under the results, for the dialog's actions. */
+  footer?: (context: LensSearchContext) => ReactNode;
 }) {
   const t = useTranslations("Search");
   const tBrand = useTranslations("Brands");
@@ -107,10 +99,8 @@ export default function LensSearchDialog<T extends SearchableLens>({
   const hasInput = query.trim().length > 0;
   const hasResults = results.length > 0;
   const context = { query: deferredQuery.trim(), hasResults };
-  // One layout per device: hiding parts of it on focus moved what a tap was about to land on.
-  const compact = useIsMobileDevice();
-  const footerContent = compact && actions ? null : footer(context);
-  const actionsContent = compact ? actions?.(context) : null;
+  const afterResultsContent = afterResults?.(context);
+  const footerContent = footer?.(context);
 
   // Read activeRow, never activeIndex: an out-of-range index must not act as a row.
   const activeRow =
@@ -257,11 +247,7 @@ export default function LensSearchDialog<T extends SearchableLens>({
       >
         <DialogHeader className="border-b border-zinc-100 pr-5 dark:border-zinc-800">
           <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <DialogTitle>{title}</DialogTitle>
-              {description && !compact && <DialogDescription>{description}</DialogDescription>}
-            </div>
-            {actionsContent && <div className="flex shrink-0 items-center gap-3">{actionsContent}</div>}
+            <DialogTitle className="min-w-0">{title}</DialogTitle>
             <DialogClose className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "hidden h-9 w-9 shrink-0 sm:inline-flex")}>
               <X className="h-4 w-4" />
             </DialogClose>
@@ -315,22 +301,22 @@ export default function LensSearchDialog<T extends SearchableLens>({
           className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
         >
           {renderResults()}
-          {compact && footerContent && <div className="pt-3">{footerContent}</div>}
+          {afterResultsContent && <div className="pt-3">{afterResultsContent}</div>}
         </div>
-        {!compact && footerContent && (
-          <DialogFooter className="block border-zinc-100 py-3 dark:border-zinc-800">{footerContent}</DialogFooter>
+        {footerContent && (
+          <DialogFooter className="justify-between border-zinc-100 py-3 dark:border-zinc-800">{footerContent}</DialogFooter>
         )}
       </DialogPopup>
     </Dialog>
   );
 }
 
-/** The catalog footer for browse and compare: a "missing a lens? tell us" line once there is a query. */
-export function suggestLensFooter(context: LensSearchFooterContext) {
-  return context.query ? <SuggestLensFooter {...context} /> : null;
+/** The catalog search's line after the results: "missing a lens? tell us", once there is a query. */
+export function suggestMissingLens(context: LensSearchContext) {
+  return context.query ? <SuggestMissingLens {...context} /> : null;
 }
 
-function SuggestLensFooter({ query, hasResults }: LensSearchFooterContext) {
+function SuggestMissingLens({ query, hasResults }: LensSearchContext) {
   const t = useTranslations("Search");
   return (
     <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-zinc-400 dark:text-zinc-500">

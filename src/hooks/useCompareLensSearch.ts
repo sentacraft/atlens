@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useCompare } from "@/context/CompareProvider";
 import { MAX_COMPARE } from "@/lib/lens/lens";
 import type { Lens } from "@/lib/types";
-import { suggestLensFooter } from "@/components/browse/LensSearchDialog";
+import { suggestMissingLens } from "@/components/browse/LensSearchDialog";
 
 /** The lens search dialog's props for adding lenses to compare, plus its open state. */
 export function useCompareLensSearch() {
@@ -31,7 +31,7 @@ export function useCompareLensSearch() {
         setOpen(false);
         add(lens.id);
       },
-      footer: suggestLensFooter,
+      afterResults: suggestMissingLens,
     },
   };
 }
