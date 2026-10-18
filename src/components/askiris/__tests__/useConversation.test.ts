@@ -12,6 +12,11 @@ const client = vi.hoisted(() => ({
   fetchConversationMessages: vi.fn(),
 }));
 
+const live = vi.hoisted(() => ({ replying: new Map<string, { messages: unknown[] }>() }));
+vi.mock("@/components/askiris/live-chats", () => ({
+  replyingChat: (id: string) => live.replying.get(id),
+}));
+
 vi.mock("@/lib/askiris/conversation-client", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/askiris/conversation-client")>();
   return {
@@ -86,6 +91,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.clearAllMocks();
+  live.replying.clear();
 });
 
 describe("useConversation", () => {
@@ -216,6 +222,19 @@ describe("useConversation", () => {
     expect(client.fetchConversationMessages).toHaveBeenCalledWith("conv-a");
     expect(param()).toBeNull();
     expect(result.current.loading).toBe(false);
+  });
+
+  // Regression: going full screen while Iris was replying opened a conversation the server had
+  // not saved yet, and the page said it was unavailable.
+  it("joins a linked conversation still replying in this tab instead of loading it", () => {
+    live.replying.set("conv-live", { messages: [message("live1")] });
+    const { result, props } = setup({ initialConversationId: "conv-live" });
+
+    expect(result.current.conversationId).toBe("conv-live");
+    expect(result.current.initialMessages).toEqual([message("live1")]);
+    expect(result.current.loading).toBe(false);
+    expect(client.fetchConversationMessages).not.toHaveBeenCalled();
+    expect(props.onNotice).not.toHaveBeenCalled();
   });
 
   it("starts in the loading state for a linked conversation", async () => {
