@@ -6,16 +6,7 @@ import { Menu } from "@base-ui/react/menu";
 import { Ellipsis, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import {
-  ACTION_OUTLINE_CLS,
-  ACTION_PRIMARY_CLS,
-  ICON_CLOSE_BTN_CLS,
-  ICON_NAV_BTN_CLS,
-  LIST_ITEM_ACTIVE_CLS,
-  MENU_ITEM_CLS,
-  MENU_ITEM_DANGER_CLS,
-  MENU_POPUP_CLS,
-} from "@/config/ui-tokens";
+import { ACTION_QUIET_CLS, ACTION_OUTLINE_CLS, ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS, LIST_ITEM_ACTIVE_CLS, MENU_ITEM_CLS, MENU_ITEM_DANGER_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
 import { MAX_CONVERSATION_TITLE_LENGTH } from "@/lib/askiris/conversation-contract";
 import type { AskIrisConversationRecord } from "@/lib/askiris/conversation-repository";
 import type { ConversationListState } from "@/components/askiris/useConversation";
@@ -176,7 +167,7 @@ export default function ConversationHistory({
           <DialogFooter>
             <DialogClose
               type="button"
-              className="h-9 rounded-lg px-3 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              className={ACTION_QUIET_CLS}
             >
               {t("cancel")}
             </DialogClose>

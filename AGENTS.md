@@ -64,6 +64,9 @@ Reusable visual language — interaction colors, button styles, selected states 
 exported from `src/config/ui-tokens.ts` and imported by components. Do not inline duplicate
 style strings across components. Inline only genuinely one-off local styles.
 
+A dialog with something to fill in or pick puts its Cancel in `DialogCancel`, which phone drawers
+leave out (they close by swipe or the backdrop); a yes-or-no confirmation keeps its Cancel.
+
 The Atlens design system (https://claude.ai/artifact/4HmVRpfNHU5zsrhynoCceH) mirrors the theme,
 fonts, `ui-tokens.ts` and a set of components; `scripts/hooks/ui-token-review.mjs` lists those
 files. When a change alters how any of them looks, re-sync the affected parts of the design

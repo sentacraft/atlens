@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
+import { ACTION_QUIET_CLS, ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -68,7 +68,7 @@ export default function DeleteAccountDialog({
         <DialogFooter>
           <DialogClose
             type="button"
-            className="h-9 rounded-lg px-3 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            className={ACTION_QUIET_CLS}
           >
             {deleteEmailSent ? t("close") : t("cancel")}
           </DialogClose>
