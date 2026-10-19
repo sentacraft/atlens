@@ -15,7 +15,7 @@ export default async function AnalyticsAccountsPage({
   const events = env.ANALYTICS_DB;
   const { current } = await dashboardWindows(events, range);
 
-  const [accounts, signedIn, feedbackOpens, feedbackSubmits, pwaLaunches, installs, mountSwitches, locales] = await Promise.all([
+  const [accounts, signedIn, feedbackOpens, feedbackSubmits, pwaLaunches, installs, mountSwitches, locales, signInOpens, signInSubmits] = await Promise.all([
     loadAccounts(env.APP_DB, current),
     loadSignedInShare(events, current),
     countBy(events, current, "feedback_open", ["feedback_type"]),
@@ -24,6 +24,8 @@ export default async function AnalyticsAccountsPage({
     countBy(events, current, "install_action", []),
     countBy(events, current, "mount_switch", ["from_mount", "to_mount"]),
     countBy(events, current, null, ["locale"]),
+    countBy(events, current, "sign_in_open", ["reason"]),
+    countBy(events, current, "sign_in_submit", ["method"]),
   ]);
 
   const feedbackTypes = new Map<string, { feedback_type: string; opens: number; submits: number }>();
@@ -50,6 +52,16 @@ export default async function AnalyticsAccountsPage({
             ["Gear added", fmtNum(accounts.gearAdded)],
           ]}
         />
+      </Card>
+      <Card title="Sign-in · dialog opens and submits">
+        <Table
+          rows={[
+            ...signInOpens.map((r) => ({ what: `Opened · ${r.reason ?? ""}`, n: r.n })),
+            ...signInSubmits.map((r) => ({ what: `Submitted · ${r.method ?? ""}`, n: r.n })),
+          ]}
+          columns={[{ key: "what", label: "Step" }, { key: "n", label: "Count", align: "right", widthClass: COUNT_WIDTH }]}
+        />
+        <p className="mt-2 text-xs text-zinc-400">New accounts in the card beside count the sign-ups that went through.</p>
       </Card>
       <Card title={`Signed-in sessions (since ${D1_CUTOVER_DAY})`}>
         <Facts

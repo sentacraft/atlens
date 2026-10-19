@@ -7,11 +7,11 @@ import { IRIS_NAV } from "@/config/iris-config";
 import { ACTION_OUTLINE_CLS } from "@/config/ui-tokens";
 import { useOpenIris } from "@/context/IrisPanelProvider";
 import { cn } from "@/lib/utils";
-import type { IrisRequest } from "@/lib/url/askiris";
+import type { IrisEntryPoint, IrisRequest } from "@/lib/url/askiris";
 
 /**
- * Opens Iris about the page it sits on, handing it `request`. `id` names the entry and must be
- * unique on a page; `phoneLabel: "short"` says just "Ask Iris" below sm, where a row has no room.
+ * Opens Iris about the page it sits on, handing it `request`. `id` names the entry, in analytics
+ * too, and must be unique on a page; `phoneLabel: "short"` says just "Ask Iris" below sm, where a row has no room.
  */
 export default function AskIrisEntry({
   id,
@@ -20,7 +20,7 @@ export default function AskIrisEntry({
   request,
   className,
 }: {
-  id: string;
+  id: Extract<IrisEntryPoint, "lens" | "browse" | "empty" | "compare">;
   label: string;
   phoneLabel: "full" | "short";
   request: IrisRequest;
@@ -29,7 +29,7 @@ export default function AskIrisEntry({
   const tNav = useTranslations("Nav");
   const openIris = useOpenIris();
   return (
-    <button type="button" onClick={() => openIris(request)} className={cn(ACTION_OUTLINE_CLS, "shrink-0 gap-2 whitespace-nowrap", className)}>
+    <button type="button" onClick={() => openIris({ from: id, request })} className={cn(ACTION_OUTLINE_CLS, "shrink-0 gap-2 whitespace-nowrap", className)}>
       <Iris config={IRIS_NAV} uid={`entry-${id}`} size={16} />
       {phoneLabel === "short" ? (
         <>

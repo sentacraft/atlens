@@ -22,8 +22,15 @@ const EVENT_FIELDS = {
   purchase_click: { channel: "string", lens_id: "string", source: "string", is_affiliate: "boolean" },
   pwa_launch: { source: "string" },
   askiris_view: {},
-  askiris_message: { method: "string" },
+  askiris_open: { entry: "string", surface: "string", pool: "string" },
+  askiris_message: { method: "string", pool: "string" },
   askiris_rec_click: { lens_id: "string", source: "string" },
+  askiris_context_remove: { page_kind: "string" },
+  askiris_new_conversation: { reason: "string" },
+  page_view: { referrer: "string", from_path: "string" },
+  search_select: { query: "string", lens_id: "string", rank: "number" },
+  sign_in_open: { reason: "string" },
+  sign_in_submit: { method: "string" },
 } as const satisfies Record<string, Record<string, FieldKind>>;
 
 export type EventName = keyof typeof EVENT_FIELDS;

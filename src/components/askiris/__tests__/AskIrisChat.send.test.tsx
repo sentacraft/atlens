@@ -2,6 +2,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ensureSession } from "@/lib/auth-client";
+import { track } from "@/lib/analytics/analytics";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AskIrisChat, { type AskIrisShell } from "../AskIrisChat";
 import type { LensSummary } from "@/lib/lens/data";
@@ -20,7 +21,7 @@ const push = vi.hoisted(() => vi.fn());
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 vi.mock("@/i18n/navigation", () => ({ Link: (props: object) => <a {...props} /> }));
 vi.mock("@/components/iris/Iris", () => ({ default: () => <div data-testid="iris" /> }));
-vi.mock("@/components/askiris/useStarters", () => ({ useStarters: () => ["Starter question"] }));
+vi.mock("@/components/askiris/useStarters", () => ({ useStarters: () => [{ text: "Starter question", pool: "terms" }] }));
 vi.mock("@/hooks/useMountParam", () => ({ useEffectiveMount: () => "X" }));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
 vi.mock("@/context/TestHookProvider", () => ({
@@ -196,6 +197,19 @@ describe("AskIrisChat send", () => {
     submit(container, "Lighter, please");
     await waitFor(() => expect(bodies).toHaveLength(2));
     expect(bodies[1]).not.toHaveProperty("page");
+    expect(track).toHaveBeenCalledWith("askiris_message", { method: "suggestion" });
+    expect(track).toHaveBeenCalledWith("askiris_context_remove", { page_kind: "browse" });
+    expect(track).toHaveBeenCalledWith("askiris_message", { method: "typed" });
+  });
+
+  it("records an example question with the pool it came from", async () => {
+    const bodies = captureChatBodies();
+    renderChat();
+
+    fireEvent.click(screen.getByRole("button", { name: "Starter question" }));
+
+    await waitFor(() => expect(bodies).toHaveLength(1));
+    expect(track).toHaveBeenCalledWith("askiris_message", { method: "starter", pool: "terms" });
   });
 
   it("starts a new conversation when an entry on another page opens the panel, and tells a guest how long the old one is kept", async () => {
@@ -209,6 +223,7 @@ describe("AskIrisChat send", () => {
     expect(await screen.findByText("newConversationGuest")).toBeInTheDocument();
     expect(screen.queryByText("Which lens?")).toBeNull();
     expect(screen.getByText("lookingAt")).toBeInTheDocument();
+    expect(track).toHaveBeenCalledWith("askiris_new_conversation", { reason: "page_change" });
   });
 
   it("keeps the conversation when an entry on the same page opens the panel again", async () => {
@@ -269,6 +284,9 @@ describe("AskIrisChat send", () => {
     fireEvent.click(screen.getByRole("button", { name: "backTo" }));
 
     expect(push).toHaveBeenCalledWith("/en/lenses/x/xf-56");
-    expect(openIris).toHaveBeenCalledWith(expect.objectContaining({ kind: "resume", from: "/en/lenses/x/xf-56" }));
+    expect(openIris).toHaveBeenCalledWith({
+      from: "resume",
+      request: expect.objectContaining({ kind: "resume", from: "/en/lenses/x/xf-56" }),
+    });
   });
 });

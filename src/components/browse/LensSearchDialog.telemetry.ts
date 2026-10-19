@@ -28,3 +28,8 @@ export function useSearchTelemetry({
     return () => clearTimeout(timer);
   }, [query, resultsCount, isOpen, isComposing]);
 }
+
+/** Records which result was picked, with its 1-based position in the list. */
+export function trackSearchSelect({ query, lensId, rank }: { query: string; lensId: string; rank: number }) {
+  track("search_select", { query: query.trim(), lens_id: lensId, rank });
+}

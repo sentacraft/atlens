@@ -1,6 +1,6 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { COUNT_WIDTH, Card, Facts, Table, fmtNum, pct } from "@/components/admin/AnalyticsUi";
-import { dashboardWindows, loadIris, loadIrisFeedback } from "@/lib/analytics/dashboard";
+import { countBy, dashboardWindows, loadIris, loadIrisFeedback } from "@/lib/analytics/dashboard";
 import { resolveAnalyticsRange } from "@/lib/url/admin-analytics";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +13,26 @@ export default async function AnalyticsIrisPage({
   const range = resolveAnalyticsRange(await searchParams);
   const { env } = getCloudflareContext();
   const { current } = await dashboardWindows(env.ANALYTICS_DB, range);
-  const [iris, feedback] = await Promise.all([loadIris(env.ANALYTICS_DB, current), loadIrisFeedback(env.ASKIRIS_DB, current)]);
+  const events = env.ANALYTICS_DB;
+  const [iris, feedback, opens, messages, starterMessages, homeExamples, contextRemovals, newConversations] = await Promise.all([
+    loadIris(events, current),
+    loadIrisFeedback(env.ASKIRIS_DB, current),
+    countBy(events, current, "askiris_open", ["entry", "surface"]),
+    countBy(events, current, "askiris_message", ["method"]),
+    countBy(events, current, "askiris_message", ["pool"], { where: { method: "starter" } }),
+    countBy(events, current, "askiris_open", ["pool"], { where: { entry: "home" } }),
+    countBy(events, current, "askiris_context_remove", ["page_kind"]),
+    countBy(events, current, "askiris_new_conversation", ["reason"]),
+  ]);
+  const examplesByPool = new Map<string, { pool: string; n: number }>();
+  for (const row of [...starterMessages, ...homeExamples]) {
+    if (row.pool) {
+      const pool = String(row.pool);
+      const entry = examplesByPool.get(pool) ?? { pool, n: 0 };
+      entry.n += row.n;
+      examplesByPool.set(pool, entry);
+    }
+  }
   const ratings = feedback.helpful + feedback.unhelpful;
 
   return (
@@ -53,6 +72,34 @@ export default async function AnalyticsIrisPage({
               [iris.contextP50, iris.contextP75, iris.contextMax].map((v) => (v === null ? "—" : fmtNum(v))).join(" / "),
             ],
           ]}
+        />
+      </Card>
+      <Card title="Opened from">
+        <Table
+          rows={opens}
+          columns={[
+            { key: "entry", label: "Entry" },
+            { key: "surface", label: "Opened as" },
+            { key: "n", label: "Opens", align: "right", widthClass: COUNT_WIDTH },
+          ]}
+        />
+      </Card>
+      <Card title="Messages by source">
+        <Table rows={messages} columns={[{ key: "method", label: "Source" }, { key: "n", label: "Messages", align: "right", widthClass: COUNT_WIDTH }]} />
+      </Card>
+      <Card title="Example questions by pool">
+        <Table
+          rows={[...examplesByPool.values()].sort((a, b) => b.n - a.n)}
+          columns={[{ key: "pool", label: "Pool" }, { key: "n", label: "Clicks", align: "right", widthClass: COUNT_WIDTH }]}
+        />
+      </Card>
+      <Card title="Page context and new conversations">
+        <Table
+          rows={[
+            ...contextRemovals.map((r) => ({ what: `Context removed · ${r.page_kind ?? ""}`, n: r.n })),
+            ...newConversations.map((r) => ({ what: `New conversation · ${r.reason ?? ""}`, n: r.n })),
+          ]}
+          columns={[{ key: "what", label: "Event" }, { key: "n", label: "Count", align: "right", widthClass: COUNT_WIDTH }]}
         />
       </Card>
       <Card title="Steps per turn">

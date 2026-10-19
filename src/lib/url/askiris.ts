@@ -11,6 +11,9 @@ export const ASKIRIS_PARAMS = {
 /** What an entry hands Iris: a question to send at once, or just the page the entry sits on. */
 export type IrisRequest = { kind: "question"; text: string } | { kind: "page" };
 
+/** Where Iris was opened from: the nav, the home hero, a page's entry, or the way back from the Ask Iris page. */
+export type IrisEntryPoint = "nav" | "home" | "lens" | "browse" | "empty" | "compare" | "resume";
+
 /**
  * How the Ask Iris page opens: a stored conversation, a question to send, text left in the
  * input, and the page path the conversation is about. A question starts a new conversation.

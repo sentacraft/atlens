@@ -60,6 +60,7 @@ describe("LensSearchDialog", () => {
     fireEvent.click(screen.getByRole("option", { name: /pick xf-33/ }));
 
     expect(onSelect).toHaveBeenCalledWith(lenses[0]);
+    expect(track).toHaveBeenCalledWith("search_select", { query: "xf 33", lens_id: "xf-33", rank: 1 });
   });
 
   it("records a search only once IME composition commits the text", () => {

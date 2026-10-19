@@ -147,7 +147,7 @@ export default function Nav() {
                 return;
               }
               event.preventDefault();
-              openIris();
+              openIris({ from: "nav" });
             }}
             className={cn(linkCls(isAskIrisActive), "inline-flex items-center gap-1.5 whitespace-nowrap")}
           >

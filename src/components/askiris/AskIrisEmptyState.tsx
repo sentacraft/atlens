@@ -8,6 +8,7 @@ import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import { cn } from "@/lib/utils";
 import ExampleQuestion from "@/components/askiris/ExampleQuestion";
 import { useStarters } from "@/components/askiris/useStarters";
+import type { Starter } from "@/lib/askiris/starter-questions";
 
 export default function AskIrisEmptyState({
   variant,
@@ -24,7 +25,7 @@ export default function AskIrisEmptyState({
   onInputChange: (value: string) => void;
   onSubmit: () => void;
   /** Sends an example question as it is. */
-  onStarter: (text: string) => void;
+  onStarter: (starter: Starter) => void;
   /** From the server where this renders there, so hydration shows the same questions. */
   starterSeed: number | null;
   disabled: boolean;
@@ -76,10 +77,10 @@ export default function AskIrisEmptyState({
           into a second column clipped off to the side, so only whole questions show and the
           page does not scroll. */}
       <div className="flex flex-wrap items-center justify-center gap-2.5 max-sm:min-h-0 max-sm:w-full max-sm:flex-col max-sm:content-start max-sm:overflow-hidden">
-        {starters.map((question) => (
-          <div key={question} className="max-sm:flex max-sm:w-full max-sm:justify-center">
-            <ExampleQuestion disabled={disabled} onClick={() => onStarter(question)}>
-              {question}
+        {starters.map((starter) => (
+          <div key={starter.text} className="max-sm:flex max-sm:w-full max-sm:justify-center">
+            <ExampleQuestion disabled={disabled} onClick={() => onStarter(starter)}>
+              {starter.text}
             </ExampleQuestion>
           </div>
         ))}
