@@ -33,6 +33,20 @@ export async function loadFirstEventTs(db: D1Database): Promise<number | null> {
   return row?.first ?? null;
 }
 
+/**
+ * The range's window and the one to compare it with, which is dropped when it starts before the
+ * first stored event: a partial period would show a misleading change.
+ */
+export async function dashboardWindows(
+  db: D1Database,
+  range: AnalyticsRange,
+  now = Date.now(),
+): Promise<{ current: TimeWindow; previous: TimeWindow | null }> {
+  const { current, previous } = rangeWindows(range, now);
+  const first = previous ? await loadFirstEventTs(db) : null;
+  return { current, previous: previous && first !== null && previous.from >= first ? previous : null };
+}
+
 /** The calendar day (China time) an epoch-millisecond timestamp falls on, as YYYY-MM-DD. */
 export function dayOf(ts: number): string {
   return new Date(ts + DAY_OFFSET_SECONDS * 1000).toISOString().slice(0, 10);
