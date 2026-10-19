@@ -3,6 +3,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { parseEventProps, trackPayloadSchema } from "@/lib/analytics/events";
 import { VID_COOKIE, VID_TTL_SECONDS, isInternalBrowser, readVid } from "@/lib/analytics/session";
 import { insertEvent } from "@/lib/analytics/store";
+import { hasAccountSession } from "@/lib/auth-session";
 import { isBypassed } from "@/lib/rate-limit";
 
 const MAX_BODY_BYTES = 4096;
@@ -25,19 +26,20 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return new NextResponse(null, { status: 400 });
   }
 
-  const { event, locale, path, signed_in: signedIn, props } = parsed.data;
+  const { event, locale, path, props } = parsed.data;
   const existingVid = readVid(req.cookies);
   const vid = existingVid ?? crypto.randomUUID();
 
   try {
     const { env, ctx } = getCloudflareContext();
+    const signedIn = await hasAccountSession(req).catch(() => false);
     const write = insertEvent(env.ANALYTICS_DB, {
       event,
       ts: Date.now(),
       vid,
       locale: locale?.slice(0, 8) ?? null,
       path: path?.slice(0, MAX_PATH_LENGTH) ?? null,
-      signedIn: signedIn ?? false,
+      signedIn,
       internal: isInternalBrowser(req.cookies) || isBypassed(req),
       props: parseEventProps(event, props),
     }).catch((error: unknown) => console.error("[track] failed to write event", error));

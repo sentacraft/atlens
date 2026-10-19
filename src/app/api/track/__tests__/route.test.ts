@@ -5,9 +5,11 @@ import { createSqliteD1 } from "@/lib/__tests__/support/sqlite-d1";
 const state = vi.hoisted(() => ({
   db: null as unknown as D1Database,
   pending: [] as Promise<unknown>[],
+  hasAccountSession: vi.fn(async () => false),
 }));
 
 vi.mock("server-only", () => ({}));
+vi.mock("@/lib/auth-session", () => ({ hasAccountSession: state.hasAccountSession }));
 vi.mock("@opennextjs/cloudflare", () => ({
   getCloudflareContext: () => ({
     env: { ANALYTICS_DB: state.db },
@@ -38,16 +40,17 @@ beforeEach(() => {
   const created = createSqliteD1("migrations/analytics");
   state.db = created.d1;
   state.pending = [];
+  state.hasAccountSession.mockResolvedValue(false);
   sqlite = created.sqlite;
 });
 
 describe("POST /api/track", () => {
   it("stores a known event and gives a new visitor a 30-day cookie", async () => {
+    state.hasAccountSession.mockResolvedValue(true);
     const response = await post({
       event: "search",
       locale: "en",
       path: "/en/lenses/x/browse",
-      signed_in: true,
       props: { query: "56mm", results_count: 3 },
     });
 
@@ -96,5 +99,18 @@ describe("POST /api/track", () => {
     await post({ event: "askiris_view" }, `atlens_vid=${VID}; atlens_internal=1`);
 
     expect(rows()[0]).toMatchObject({ internal: 1 });
+  });
+
+  it("takes signed_in from the session, not from the request body", async () => {
+    await post({ event: "askiris_view", signed_in: true });
+
+    expect(rows()[0]).toMatchObject({ signed_in: 0 });
+  });
+
+  it("still stores the event when the session lookup fails", async () => {
+    state.hasAccountSession.mockRejectedValue(new Error("db down"));
+    await post({ event: "askiris_view" });
+
+    expect(rows()[0]).toMatchObject({ event: "askiris_view", signed_in: 0 });
   });
 });

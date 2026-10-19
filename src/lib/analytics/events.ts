@@ -68,7 +68,6 @@ export const trackPayloadSchema = z.object({
   event: z.enum(EVENT_NAMES),
   locale: z.string().optional(),
   path: z.string().optional(),
-  signed_in: z.boolean().optional(),
   props: z.record(z.string(), z.unknown()).optional(),
 });
 
