@@ -93,7 +93,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "iris-character",
     topic: "story",
-    text: "Iris is Atlens's resident character: the aperture animation on the home page that opens and closes with a tap, which also appears in Ask Iris conversations and when feedback is sent. Like Clippy once lived in the corner of Microsoft Office, Iris keeps every visitor company in a quiet way, with a personality of its own. The site's built-in AI assistant takes its name: Ask Iris.",
+    text: "Iris is Atlens's logo and resident character: the aperture mark at the top left of every page and in the app icon, and the aperture animation on the home page that opens and closes with a tap. Iris came first, as the logo. When the site gained an AI assistant, the assistant took the same name, so Iris is both the mascot and the assistant, much as Clippy was once both in Microsoft Office. Iris is the assistant's name; Ask Iris is the feature where you talk to it.",
     links: ["page:aboutAck"],
   },
   {
