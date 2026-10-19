@@ -1,3 +1,4 @@
+import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createSqliteD1 } from "@/lib/__tests__/support/sqlite-d1";
 
@@ -21,7 +22,7 @@ let sqlite: ReturnType<typeof createSqliteD1>["sqlite"];
 async function post(body: unknown, cookie?: string) {
   const headers = cookie ? { cookie } : undefined;
   const response = await POST(
-    new Request("http://localhost/api/track", { method: "POST", body: JSON.stringify(body), headers }),
+    new NextRequest("http://localhost/api/track", { method: "POST", body: JSON.stringify(body), headers }),
   );
   await Promise.all(state.pending);
   return response;

@@ -1,3 +1,4 @@
+import type { NextRequest } from "next/server";
 import {
   convertToModelMessages,
   createUIMessageStreamResponse,
@@ -32,7 +33,7 @@ import { clientIp, isBypassed, isRateLimited } from "@/lib/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
 import { anonymizeId } from "@/lib/analytics/anonymize";
 import { ASKIRIS_TURN_EVENT, type AskIrisTurnProps } from "@/lib/analytics/events";
-import { parseInternal, parseVid } from "@/lib/analytics/session";
+import { isInternalBrowser, readVid } from "@/lib/analytics/session";
 import { insertEvent } from "@/lib/analytics/store";
 import {
   AskIrisTraceCollector,
@@ -70,7 +71,7 @@ const STEP_BUDGET = 8;
 const STREAM_TIMEOUT_MS = 120_000;
 
 /** Runs one Ask Iris turn and streams the reply, saving it to the conversation. Any session, guests included; 401 without one, 429 when over the rate limit or token budget. */
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const missingKey = missingAgentModelKey();
   if (missingKey) {
     console.error(`[askiris] ${missingKey} is not set`);
@@ -89,11 +90,10 @@ export async function POST(req: Request) {
   const traceCollector = new AskIrisTraceCollector(startedAt);
 
   const ip = clientIp(req);
-  const cookieHeader = req.headers.get("cookie");
-  const vid = parseVid(cookieHeader);
+  const vid = readVid(req.cookies);
   // atlens_internal marks a turn internal but must never grant the rate-limit bypass.
   const bypassed = isBypassed(req);
-  const internal = parseInternal(cookieHeader) || bypassed;
+  const internal = isInternalBrowser(req.cookies) || bypassed;
   let rateKv: KVNamespace | undefined;
   let analyticsDb: D1Database | undefined;
   let traceDb: D1Database | undefined;

@@ -1,3 +1,4 @@
+import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MockLanguageModelV4 } from "ai/test";
 import { simulateReadableStream } from "ai";
@@ -66,7 +67,7 @@ function modelStep(parts: LanguageModelV4StreamPart[], finishReason: "tool-calls
 }
 
 function chatRequest() {
-  return new Request("http://localhost/api/chat", {
+  return new NextRequest("http://localhost/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
