@@ -14,6 +14,14 @@ export interface StarterPools {
   about: string[];
 }
 
+export type StarterPool = keyof StarterPools;
+
+/** An example question and the pool it was drawn from. */
+export interface Starter {
+  text: string;
+  pool: StarterPool;
+}
+
 export interface StarterAudience {
   hasGear: boolean;
   hasFavorites: boolean;
@@ -49,16 +57,18 @@ export function pickStarters(
   audience: StarterAudience,
   random: () => number,
   { compact }: { compact: boolean },
-): string[] {
+): Starter[] {
+  const from = (pool: StarterPool, count: number) =>
+    draw(pools[pool], count, random).map((text) => ({ text, pool }));
   const others = [
-    draw(audience.hasFavorites ? pools.favorites : pools.compare, 1, random),
-    draw(audience.hasGear ? pools.gearKnown : pools.gearUnknown, 1, random),
-    draw(pools.table, 1, random),
-    draw(pools.terms, 1, random),
-    draw(pools.about, 1, random),
+    from(audience.hasFavorites ? "favorites" : "compare", 1),
+    from(audience.hasGear ? "gearKnown" : "gearUnknown", 1),
+    from("table", 1),
+    from("terms", 1),
+    from("about", 1),
   ];
   if (compact) {
-    return [...draw(pools.need, 1, random), ...draw(others, 2, random).flat()];
+    return [...from("need", 1), ...draw(others, 2, random).flat()];
   }
-  return [...draw(pools.need, 2, random), ...others.flat()];
+  return [...from("need", 2), ...others.flat()];
 }

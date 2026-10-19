@@ -18,7 +18,7 @@ import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
 import type { SearchableLens } from "@/lib/lens/search";
 import { cn } from "@/lib/utils";
 import { lensSubtitleLine } from "@/lib/lens/format";
-import { useSearchTelemetry } from "@/components/browse/LensSearchDialog.telemetry";
+import { trackSearchSelect, useSearchTelemetry } from "@/components/browse/LensSearchDialog.telemetry";
 import {
   Dialog,
   DialogClose,
@@ -130,6 +130,12 @@ export default function LensSearchDialog<T extends SearchableLens>({
     isComposing: composing,
   });
 
+  function pick(index: number) {
+    const lens = results[index];
+    trackSearchSelect({ query: deferredQuery, lensId: lens.id, rank: index + 1 });
+    onSelect(lens);
+  }
+
   function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "ArrowDown") {
       event.preventDefault();
@@ -157,7 +163,7 @@ export default function LensSearchDialog<T extends SearchableLens>({
 
     if (event.key === "Enter" && activeRow !== null) {
       event.preventDefault();
-      onSelect(results[activeRow]);
+      pick(activeRow);
       return;
     }
   }
@@ -209,7 +215,7 @@ export default function LensSearchDialog<T extends SearchableLens>({
               disabled={isDisabled}
               // onMouseMove, not onMouseEnter: scrolling a row under a still pointer fires enter.
               onMouseMove={() => setActiveIndex(index)}
-              onClick={() => onSelect(lens)}
+              onClick={() => pick(index)}
               className={cn(
                 "flex w-full scroll-my-2 items-center justify-between gap-4 rounded-2xl border px-4 py-3 text-left",
                 isDisabled

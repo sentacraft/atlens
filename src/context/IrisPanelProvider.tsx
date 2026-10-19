@@ -4,7 +4,9 @@ import { createContext, Suspense, useCallback, useContext, useEffect, useRef, us
 import { usePathname, useRouter } from "@/i18n/navigation";
 import IrisPanel from "@/components/iris-panel/IrisPanel";
 import { useBreakpoint } from "@/hooks/useViewport";
-import { askIrisPagePath, type IrisRequest } from "@/lib/url/askiris";
+import { track } from "@/lib/analytics/analytics";
+import type { StarterPool } from "@/lib/askiris/starter-questions";
+import { askIrisPagePath, type IrisEntryPoint, type IrisRequest } from "@/lib/url/askiris";
 import { ASK_IRIS_PATH } from "@/lib/url/routes";
 
 export const IRIS_PANEL_WIDTH = 400;
@@ -20,7 +22,7 @@ export type IrisPanelRequest = PanelRequest & { id: number };
  * With a request it is about the page it is called from; without one (the nav) it returns to
  * the open conversation in the panel, or goes to the Ask Iris page on narrow screens.
  */
-export type OpenIris = (request?: PanelRequest) => void;
+export type OpenIris = (open: { from: IrisEntryPoint; request?: PanelRequest; pool?: StarterPool }) => void;
 
 // Only the action is shared: entry points need to open the panel, not to watch it.
 const IrisPanelContext = createContext<OpenIris | null>(null);
@@ -41,17 +43,21 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
     routeRef.current = { wide, onAskIrisPage, router };
   }, [wide, onAskIrisPage, router]);
 
-  const openIris = useCallback<OpenIris>((next) => {
+  const openIris = useCallback<OpenIris>(({ from, request: next, pool }) => {
     const route = routeRef.current;
+    const opened = (surface: "page" | "panel" | "sheet") => track("askiris_open", { entry: from, surface, pool });
     if (!next && !route.wide) {
+      opened("page");
       route.router.push(ASK_IRIS_PATH);
       return;
     }
     // A resume is sent while leaving the Ask Iris page, so the page check does not apply.
     if (route.onAskIrisPage && next?.kind !== "resume") {
+      opened("page");
       route.router.push(askIrisPagePath({ question: next?.kind === "question" ? next.text : undefined }));
       return;
     }
+    opened(route.wide ? "panel" : "sheet");
     setMounted(true);
     setOpen(true);
     if (next) {

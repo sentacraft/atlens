@@ -6,13 +6,13 @@ import { useTranslations } from "next-intl";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { userFavoritesQuery } from "@/lib/me/favorites-client";
 import { userGearQuery } from "@/lib/me/gear-client";
-import { pickStarters, seededRandom, type StarterPools } from "@/lib/askiris/starter-questions";
+import { pickStarters, seededRandom, type Starter, type StarterPools } from "@/lib/askiris/starter-questions";
 
 /**
  * Example questions to start a chat with. `seed` comes from the server where the questions are
  * server-rendered, so hydration draws the same ones; elsewhere each mount draws its own.
  */
-export function useStarters({ compact, seed }: { compact: boolean; seed: number | null }): string[] {
+export function useStarters({ compact, seed }: { compact: boolean; seed: number | null }): Starter[] {
   const t = useTranslations("AskIris");
   const pools = t.raw("starters") as StarterPools;
   const { data: session } = authClient.useSession();

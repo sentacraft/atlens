@@ -3,6 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import { toast } from "sonner";
 import { track } from "@/lib/analytics/analytics";
+import type { StarterPool } from "@/lib/askiris/starter-questions";
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
@@ -49,7 +50,10 @@ import ConversationHistory from "@/components/askiris/ConversationHistory";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { openChat } from "@/components/askiris/live-chats";
 
-type ConversationSwitch = { kind: "select"; id: string } | { kind: "new" };
+type ConversationSwitch = { kind: "select"; id: string } | { kind: "new"; reason: "manual" | "page_change" };
+
+/** How a message came to be sent, for analytics. */
+type MessageSource = { method: "typed" | "handoff" | "suggestion" } | { method: "starter"; pool: StarterPool };
 
 const TOP_BAR_BTN_CLS = cn(ICON_NAV_BTN_CLS, "h-9 gap-1.5 px-2.5 text-sm");
 
@@ -159,7 +163,7 @@ export default function AskIrisChat({
   }, []);
 
   // Conversations are stored per user, so a visitor's first turn creates an anonymous one.
-  async function send(text: string, method: "typed" | "handoff"): Promise<boolean> {
+  async function send(text: string, source: MessageSource): Promise<boolean> {
     if (!session) {
       setSigningIn(true);
       const ready = await ensureSession();
@@ -173,16 +177,16 @@ export default function AskIrisChat({
       setConversationPage(pageKey(contextPath ? parsePagePath(contextPath) : null));
     }
     void sendMessage({ text }, { body: turnBody() });
-    track("askiris_message", { method });
+    track("askiris_message", source);
     return true;
   }
 
-  async function submitText(text: string) {
+  async function submitText(text: string, source: MessageSource = { method: "typed" }) {
     const trimmed = text.trim();
     if (!trimmed || isBusy) {
       return;
     }
-    if (await send(trimmed, "typed")) {
+    if (await send(trimmed, source)) {
       setInput("");
     }
   }
@@ -192,7 +196,7 @@ export default function AskIrisChat({
   const handleEntry = useEffectEvent(() => {
     clearEntryParams();
     if (entry.question) {
-      void send(entry.question, "handoff");
+      void send(entry.question, { method: "handoff" });
     }
   });
   useEffect(() => {
@@ -223,7 +227,7 @@ export default function AskIrisChat({
     const here = shell.variant === "panel" ? pageKey(parsePagePath(shell.pagePath)) : null;
     const fresh = messages.length > 0 && conversationPage !== here;
     if (fresh) {
-      switchConversation({ kind: "new" });
+      switchConversation({ kind: "new", reason: "page_change" });
       setFreshNotice(true);
     }
     setAttached(true);
@@ -231,7 +235,7 @@ export default function AskIrisChat({
       if (fresh) {
         setPendingQuestion(request.text);
       } else {
-        void send(request.text, "handoff");
+        void send(request.text, { method: "handoff" });
       }
     }
   });
@@ -248,7 +252,7 @@ export default function AskIrisChat({
   // Sent once the new conversation it waited for is the active chat.
   const sendPending = useEffectEvent((text: string) => {
     setPendingQuestion(null);
-    void send(text, "handoff");
+    void send(text, { method: "handoff" });
   });
   useEffect(() => {
     if (pendingQuestion) {
@@ -287,6 +291,7 @@ export default function AskIrisChat({
     setConversationPage(undefined);
     setFreshNotice(false);
     if (target.kind === "new") {
+      track("askiris_new_conversation", { reason: target.reason });
       conversation.startNewConversation();
     } else {
       conversation.selectConversation(target.id);
@@ -312,13 +317,20 @@ export default function AskIrisChat({
   }
 
   function startNewConversation() {
-    requestSwitch({ kind: "new" });
+    requestSwitch({ kind: "new", reason: "manual" });
+  }
+
+  function detachContext() {
+    if (contextView) {
+      track("askiris_context_remove", { page_kind: contextView.kind });
+    }
+    setAttached(false);
   }
 
   function backToPage(page: string) {
     router.push(page);
     if (messages.length > 0) {
-      openIris({ kind: "resume", conversationId, from: page });
+      openIris({ from: "resume", request: { kind: "resume", conversationId, from: page } });
     }
   }
 
@@ -426,8 +438,8 @@ export default function AskIrisChat({
         <PageContextStart
           view={contextView}
           notice={notice}
-          onDetach={() => setAttached(false)}
-          onSuggestion={(text) => void submitText(text)}
+          onDetach={detachContext}
+          onSuggestion={(text) => void submitText(text, { method: "suggestion" })}
           disabled={isBusy}
           composer={
             <AskIrisComposer
@@ -456,7 +468,7 @@ export default function AskIrisChat({
           input={input}
           onInputChange={setInput}
           onSubmit={() => void submitText(input)}
-          onStarter={(question) => void submitText(question)}
+          onStarter={(starter) => void submitText(starter.text, { method: "starter", pool: starter.pool })}
           starterSeed={shell.variant === "page" ? shell.starterSeed : null}
           disabled={isBusy}
         />
@@ -471,7 +483,7 @@ export default function AskIrisChat({
         {notice}
         {contextView && (
           <div className="flex pt-1">
-            <PageContextCard view={contextView} variant="chip" onDetach={() => setAttached(false)} />
+            <PageContextCard view={contextView} variant="chip" onDetach={detachContext} />
           </div>
         )}
         <div className="relative min-h-0 flex-1">

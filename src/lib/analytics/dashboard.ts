@@ -27,9 +27,11 @@ export function rangeWindows(range: AnalyticsRange, now: number): { current: Tim
   };
 }
 
-/** When the earliest stored event happened; null for an empty table. */
-export async function loadFirstEventTs(db: D1Database): Promise<number | null> {
-  const [row] = await rows<{ first: number | null }>(db, "SELECT MIN(ts) AS first FROM events");
+/** When the earliest stored event (of one kind, if given) happened; null when there is none. */
+export async function loadFirstEventTs(db: D1Database, event?: string): Promise<number | null> {
+  const [row] = event
+    ? await rows<{ first: number | null }>(db, "SELECT MIN(ts) AS first FROM events WHERE event = ?1", event)
+    : await rows<{ first: number | null }>(db, "SELECT MIN(ts) AS first FROM events");
   return row?.first ?? null;
 }
 

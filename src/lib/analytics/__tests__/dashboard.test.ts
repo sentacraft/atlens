@@ -261,6 +261,8 @@ describe("loadFirstEventTs", () => {
     expect(await loadFirstEventTs(analytics.d1)).toBeNull();
     seed([{ ts: T0 + DAY, event: "lens_view" }, { ts: T0, event: "search" }]);
     expect(await loadFirstEventTs(analytics.d1)).toBe(T0);
+    expect(await loadFirstEventTs(analytics.d1, "lens_view")).toBe(T0 + DAY);
+    expect(await loadFirstEventTs(analytics.d1, "search_select")).toBeNull();
   });
 });
 

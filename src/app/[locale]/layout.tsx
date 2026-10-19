@@ -8,6 +8,7 @@ import RegisterSW from "@/components/pwa/RegisterSW";
 import AssetTelemetry from "@/components/telemetry/AssetTelemetry";
 import OutboundLinkTelemetry from "@/components/telemetry/OutboundLinkTelemetry";
 import PwaLaunchTelemetry from "@/components/telemetry/PwaLaunchTelemetry";
+import PageViewTelemetry from "@/components/telemetry/PageViewTelemetry";
 import SiteJsonLd from "@/components/seo/SiteJsonLd";
 import { routing } from "@/i18n/routing";
 import Nav from "@/components/nav/Nav";
@@ -173,6 +174,7 @@ export default async function LocaleLayout({
         <AssetTelemetry />
         <OutboundLinkTelemetry />
         <PwaLaunchTelemetry />
+        <PageViewTelemetry />
       </body>
     </html>
   );
