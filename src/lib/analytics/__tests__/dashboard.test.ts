@@ -5,6 +5,7 @@ vi.mock("server-only", () => ({}));
 
 const {
   countBy,
+  dashboardWindows,
   dayOf,
   loadAccounts,
   loadDaily,
@@ -260,5 +261,14 @@ describe("loadFirstEventTs", () => {
     expect(await loadFirstEventTs(analytics.d1)).toBeNull();
     seed([{ ts: T0 + DAY, event: "lens_view" }, { ts: T0, event: "search" }]);
     expect(await loadFirstEventTs(analytics.d1)).toBe(T0);
+  });
+});
+
+describe("dashboardWindows", () => {
+  it("drops the comparison when it would start before the first event", async () => {
+    seed([{ ts: T0, event: "lens_view" }]);
+
+    expect((await dashboardWindows(analytics.d1, "7d", T0 + 20 * DAY)).previous).toEqual({ from: T0 + 6 * DAY, to: T0 + 13 * DAY });
+    expect((await dashboardWindows(analytics.d1, "7d", T0 + 10 * DAY)).previous).toBeNull();
   });
 });
