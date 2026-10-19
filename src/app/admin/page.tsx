@@ -5,7 +5,7 @@ const MODULES = [
   {
     href: ADMIN_ANALYTICS_PATH,
     title: "Analytics",
-    description: "Product events and Ask Iris turn metrics for the last 30 days.",
+    description: "Visitors, funnel, Ask Iris and accounts, with trends over a chosen range.",
   },
 ];
 
