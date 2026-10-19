@@ -50,7 +50,6 @@ export function createAuth() {
         "127.0.0.1:*",
         SITE.host,
         `*.${SITE.host}`,
-        "*.sentacraft.com",
       ],
       fallback: siteURL,
     },
