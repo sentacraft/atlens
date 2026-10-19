@@ -12,6 +12,12 @@ test.describe("Navigation", () => {
     await expect(page).toHaveURL(/\/en\/lenses/);
   });
 
+  test("/admin sends the visitor to the analytics dashboard", async ({ request }) => {
+    const res = await request.get("/admin", { maxRedirects: 0 });
+    expect(res.status()).toBe(307);
+    expect(res.headers().location).toMatch(/\/admin\/analytics$/);
+  });
+
   test("navbar Browse link goes to lens list", async ({ page }) => {
     await page.goto("/en");
     await page.getByRole("link", { name: "Browse", exact: true }).click();
