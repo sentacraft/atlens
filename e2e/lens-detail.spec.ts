@@ -28,12 +28,15 @@ test.describe("Lens detail page", () => {
 
   test("back navigation returns to lens list", async ({ page }) => {
     await page.goto("/en/lenses");
+    await page.waitForURL(/\/en\/lenses\/x\/browse/);
     const firstCard = page
-      .locator('a[href*="/en/lenses/"]:not([href="/en/lenses"])')
+      .locator(
+        'a[href^="/en/lenses/x/"]:not([href$="/browse"]):not([href$="/compare"])'
+      )
       .first();
     await firstCard.click();
+    await page.waitForURL(/\/en\/lenses\/x\/(?!browse)[^/?]+$/);
     await page.goBack();
-    await page.waitForURL(/\/en\/lenses/);
-    await expect(page).toHaveURL(/\/en\/lenses/);
+    await expect(page).toHaveURL(/\/en\/lenses\/x\/browse/);
   });
 });
