@@ -14,6 +14,8 @@ import { useHomeIrisFocus } from "@/components/home/HomeIrisStage";
 import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useBreakpoint } from "@/hooks/useViewport";
+import { track } from "@/lib/analytics/analytics";
+import type { StarterPool } from "@/lib/askiris/starter-questions";
 import { cn } from "@/lib/utils";
 import { askIrisPagePath } from "@/lib/url/askiris";
 import { ASK_IRIS_PATH, browsePath } from "@/lib/url/routes";
@@ -66,14 +68,15 @@ export default function HomeHeroActions() {
     };
   }, [expanded, close]);
 
-  function ask(question: string) {
+  function ask(question: string, pool?: StarterPool) {
     const trimmed = question.trim();
     if (trimmed) {
       setExpanded(false);
       // Home has no page to talk about, so below the side panel's width it goes to the Ask Iris page.
       if (sidePanel) {
-        openIris({ kind: "question", text: trimmed });
+        openIris({ from: "home", request: { kind: "question", text: trimmed }, pool });
       } else {
+        track("askiris_open", { entry: "home", surface: "page", pool });
         router.push(askIrisPagePath({ question: trimmed }));
       }
     }
@@ -144,12 +147,12 @@ export default function HomeHeroActions() {
               <div className="mt-3 flex flex-wrap gap-2">
                 {examples.map((example, index) => (
                   <motion.div
-                    key={example}
+                    key={example.text}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0, transition: { delay: 0.2 + index * 0.035, duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
                   >
-                    <ExampleQuestion disabled={false} onClick={() => ask(example)}>
-                      {example}
+                    <ExampleQuestion disabled={false} onClick={() => ask(example.text, example.pool)}>
+                      {example.text}
                     </ExampleQuestion>
                   </motion.div>
                 ))}

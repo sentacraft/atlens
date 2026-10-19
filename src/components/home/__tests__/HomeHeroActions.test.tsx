@@ -9,7 +9,7 @@ const push = vi.fn();
 const screenSize = vi.hoisted(() => ({ sm: true, lg: true }));
 
 vi.mock("next-intl", () => ({ useTranslations: () => (key: string) => key }));
-vi.mock("@/components/askiris/useStarters", () => ({ useStarters: () => ["A pancake lens that fits in a pocket"] }));
+vi.mock("@/components/askiris/useStarters", () => ({ useStarters: () => [{ text: "A pancake lens that fits in a pocket", pool: "need" }] }));
 vi.mock("@/i18n/navigation", () => ({
   Link: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => (
     <a href={href} {...props}>
@@ -53,7 +53,11 @@ describe("HomeHeroActions", () => {
     fireEvent.click(screen.getByRole("button", { name: /askIris/ }));
     fireEvent.click(screen.getByRole("button", { name: "A pancake lens that fits in a pocket" }));
 
-    expect(openIris).toHaveBeenCalledWith({ kind: "question", text: "A pancake lens that fits in a pocket" });
+    expect(openIris).toHaveBeenCalledWith({
+      from: "home",
+      request: { kind: "question", text: "A pancake lens that fits in a pocket" },
+      pool: "need",
+    });
   });
 
   it("links straight to Ask Iris on a phone", () => {

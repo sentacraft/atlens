@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Check, X } from "lucide-react";
+import { track } from "@/lib/analytics/analytics";
 import { authClient } from "@/lib/auth-client";
 import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
@@ -90,6 +91,7 @@ export default function AuthDialog({
   }
 
   async function signInWithGoogle() {
+    track("sign_in_submit", { method: "google" });
     setPending(true);
     setError(null);
     try {
@@ -131,6 +133,7 @@ export default function AuthDialog({
 
   async function verifyOtp(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    track("sign_in_submit", { method: "email" });
     setPending(true);
     setError(null);
     try {

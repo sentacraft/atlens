@@ -13,7 +13,7 @@ vi.mock("next-intl", () => {
 });
 vi.mock("@/i18n/navigation", () => ({ Link: (props: object) => <a {...props} /> }));
 vi.mock("@/components/iris/Iris", () => ({ default: () => <div data-testid="iris" /> }));
-vi.mock("@/components/askiris/useStarters", () => ({ useStarters: () => ["Starter question"] }));
+vi.mock("@/components/askiris/useStarters", () => ({ useStarters: () => [{ text: "Starter question", pool: "need" }] }));
 vi.mock("@/hooks/useMountParam", () => ({ useEffectiveMount: () => "X" }));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
 vi.mock("@/context/TestHookProvider", () => ({ useTestHookOption: () => undefined }));
