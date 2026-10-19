@@ -34,7 +34,7 @@ export default function LensSortControl({
   ] as const satisfies readonly { value: SortKey; label: string }[];
 
   return (
-    <div className="inline-flex h-9 items-stretch overflow-hidden rounded-xl border border-zinc-200/70 bg-white/80 shadow-sm shadow-zinc-950/[0.02] dark:border-zinc-800 dark:bg-zinc-900/30">
+    <div className="inline-flex h-9 items-stretch overflow-hidden rounded-xl border border-zinc-200/70 bg-white/80 shadow-sm shadow-zinc-950/[0.02]">
       <Select
         value={sort}
         onValueChange={(value) => onSortChange((value ?? "focalLength") as SortKey)}
@@ -42,9 +42,9 @@ export default function LensSortControl({
       >
         <SelectTrigger
           id="results-sort"
-          className="h-full data-[size=default]:h-full gap-2 rounded-none border-0 bg-transparent py-0 px-3 text-[12px] shadow-none hover:bg-zinc-50/50 data-[popup-open]:bg-zinc-100 dark:hover:bg-zinc-800/30 dark:data-[popup-open]:bg-zinc-800/50 sm:text-[13px]"
+          className="h-full data-[size=default]:h-full gap-2 rounded-none border-0 bg-transparent py-0 px-3 text-[12px] shadow-none hover:bg-zinc-50/50 data-[popup-open]:bg-zinc-100 sm:text-[13px]"
         >
-          <ArrowDownWideNarrow className="size-3.5 shrink-0 text-zinc-900 dark:text-zinc-100" />
+          <ArrowDownWideNarrow className="size-3.5 shrink-0 text-zinc-900" />
           <SelectValue placeholder={t("sortFocalLength")} />
         </SelectTrigger>
         <SelectContent
@@ -57,17 +57,17 @@ export default function LensSortControl({
             <SelectItem
               key={option.value}
               value={option.value}
-              className="rounded-none py-2 sm:py-2 text-[12px] text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
+              className="rounded-none py-2 sm:py-2 text-[12px] text-zinc-500 data-[selected]:text-zinc-900"
             >
               {option.label}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-      <div className="w-px self-stretch bg-zinc-200 dark:bg-zinc-800" />
+      <div className="w-px self-stretch bg-zinc-200" />
       <button
         type="button"
-        className="inline-flex items-center px-3 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
+        className="inline-flex items-center px-3 hover:bg-zinc-50/50"
         onClick={onToggleDir}
         aria-label={sortDir === "asc" ? t("sortAsc") : t("sortDesc")}
       >

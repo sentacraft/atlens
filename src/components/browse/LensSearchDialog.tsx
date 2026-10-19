@@ -174,11 +174,11 @@ export default function LensSearchDialog<T extends SearchableLens>({
 
   function renderNoMatches() {
     return (
-      <div className="rounded-2xl border border-dashed border-zinc-200 px-5 py-10 text-center dark:border-zinc-800">
-        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+      <div className="rounded-2xl border border-dashed border-zinc-200 px-5 py-10 text-center">
+        <p className="text-sm font-medium text-zinc-700">
           {t("noResults")}
         </p>
-        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-2 text-sm text-zinc-500">
           {t("noResultsHint")}
         </p>
       </div>
@@ -213,22 +213,22 @@ export default function LensSearchDialog<T extends SearchableLens>({
               className={cn(
                 "flex w-full scroll-my-2 items-center justify-between gap-4 rounded-2xl border px-4 py-3 text-left",
                 isDisabled
-                  ? "cursor-not-allowed border-transparent bg-zinc-50/80 opacity-60 dark:bg-zinc-900/60"
+                  ? "cursor-not-allowed border-transparent bg-zinc-50/80 opacity-60"
                   // No :hover background: it would linger on the row under the pointer after a keyboard move.
                   : isActive
-                    ? "border-zinc-200 bg-zinc-50/80 dark:border-zinc-700 dark:bg-zinc-800/50"
-                    : "border-transparent bg-white dark:bg-zinc-950"
+                    ? "border-zinc-200 bg-zinc-50/80"
+                    : "border-transparent bg-white"
               )}
             >
               <div className="min-w-0">
-                <p className="truncate text-xs uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+                <p className="truncate text-xs uppercase tracking-[0.14em] text-zinc-500">
                   {lensSubtitleLine(tBrand(lens.brand), lens.series)}
                 </p>
-                <p className="mt-0.5 truncate text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                <p className="mt-0.5 truncate text-sm font-medium text-zinc-900">
                   {lens.model}
                 </p>
               </div>
-              <span className="shrink-0 text-xs font-medium text-zinc-400 dark:text-zinc-500">
+              <span className="shrink-0 text-xs font-medium text-zinc-400">
                 {action.label}
               </span>
             </button>
@@ -243,9 +243,9 @@ export default function LensSearchDialog<T extends SearchableLens>({
       {/* Base UI focuses the popup, not the input, on touch-open; hand it the input so the keyboard opens. */}
       <DialogPopup
         initialFocus={inputRef}
-        className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-2xl shadow-zinc-950/20 dark:border-zinc-800 dark:bg-zinc-950"
+        className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-2xl shadow-zinc-950/20"
       >
-        <DialogHeader className="border-b border-zinc-100 pr-5 dark:border-zinc-800">
+        <DialogHeader className="border-b border-zinc-100 pr-5">
           <div className="flex items-center justify-between gap-3">
             <DialogTitle className="min-w-0">{title}</DialogTitle>
             <DialogClose className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "hidden h-9 w-9 shrink-0 sm:inline-flex")}>
@@ -253,7 +253,7 @@ export default function LensSearchDialog<T extends SearchableLens>({
             </DialogClose>
           </div>
 
-          <div className="mt-3 flex items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 shadow-inner shadow-zinc-200/30 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/20">
+          <div className="mt-3 flex items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 shadow-inner shadow-zinc-200/30">
             <label htmlFor={inputId} className="sr-only">
               {t("placeholder")}
             </label>
@@ -274,7 +274,7 @@ export default function LensSearchDialog<T extends SearchableLens>({
               placeholder={t("placeholder")}
               aria-controls={resultsId}
               aria-autocomplete="list"
-              className="w-full border-0 bg-transparent text-base sm:text-sm text-zinc-950 outline-none placeholder:text-zinc-400 dark:text-zinc-50"
+              className="w-full border-0 bg-transparent text-base sm:text-sm text-zinc-950 outline-none placeholder:text-zinc-400"
             />
             {query && (
               <button
@@ -285,7 +285,7 @@ export default function LensSearchDialog<T extends SearchableLens>({
                   setActiveIndex(null);
                   inputRef.current?.focus();
                 }}
-                className="shrink-0 text-zinc-400 transition-colors hover:text-zinc-600 dark:hover:text-zinc-300"
+                className="shrink-0 text-zinc-400 transition-colors hover:text-zinc-600"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -298,13 +298,13 @@ export default function LensSearchDialog<T extends SearchableLens>({
           // Stops a result tap from starting Base UI's swipe tracking, which flashes the drawer on iOS.
           // Only on this natively scrollable region: the attribute also disables the background-scroll guard.
           data-base-ui-swipe-ignore=""
-          className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
+          className="h-[300px] overflow-y-auto px-3 py-3 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200"
         >
           {renderResults()}
           {afterResultsContent && <div className="pt-3">{afterResultsContent}</div>}
         </div>
         {footerContent && (
-          <DialogFooter className="justify-between border-zinc-100 py-3 dark:border-zinc-800">{footerContent}</DialogFooter>
+          <DialogFooter className="justify-between border-zinc-100 py-3">{footerContent}</DialogFooter>
         )}
       </DialogPopup>
     </Dialog>
@@ -319,7 +319,7 @@ export function suggestMissingLens(context: LensSearchContext) {
 function SuggestMissingLens({ query, hasResults }: LensSearchContext) {
   const t = useTranslations("Search");
   return (
-    <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-zinc-400 dark:text-zinc-500">
+    <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-zinc-400">
       <span>
         {t(hasResults ? "suggestLensResults" : "suggestLens")}{" "}
         <FeedbackTrigger type="general" context={{ searchQuery: query }}>
@@ -329,7 +329,7 @@ function SuggestMissingLens({ query, hasResults }: LensSearchContext) {
       {!hasResults && (
         <Link
           href={aboutPath("coverage")}
-          className="transition-colors hover:text-zinc-600 dark:hover:text-zinc-300"
+          className="transition-colors hover:text-zinc-600"
         >
           {t("coverageLink")}
         </Link>

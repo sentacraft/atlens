@@ -16,19 +16,19 @@ import { SITE } from "@/config/site";
 import { ASK_IRIS_PATH, RECENTLY_ADDED_PATH } from "@/lib/url/routes";
 
 function Check() {
-  return <span className="text-zinc-700 dark:text-zinc-300 text-sm">✓</span>;
+  return <span className="text-zinc-700 text-sm">✓</span>;
 }
 function Partial() {
-  return <span className="text-zinc-600 dark:text-zinc-400 text-sm">◐</span>;
+  return <span className="text-zinc-600 text-sm">◐</span>;
 }
 function Pending() {
-  return <span className="text-zinc-400 dark:text-zinc-500 text-sm">○</span>;
+  return <span className="text-zinc-400 text-sm">○</span>;
 }
 function Dash() {
-  return <span className="text-zinc-300 dark:text-zinc-600 text-sm">—</span>;
+  return <span className="text-zinc-300 text-sm">—</span>;
 }
 function NotApplicable() {
-  return <span className="text-zinc-400 dark:text-zinc-500 text-sm tracking-wider uppercase">N/A</span>;
+  return <span className="text-zinc-400 text-sm tracking-wider uppercase">N/A</span>;
 }
 
 function StateCell({ state }: { state: CoverageState }) {
@@ -61,31 +61,31 @@ function MountCoverageTable({
   const total = brands.reduce((s, b) => s + (counts[b] ?? 0), 0);
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">{title}</p>
-      <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-x-auto self-start max-w-full">
+      <p className="text-sm font-medium text-zinc-600">{title}</p>
+      <div className="rounded-lg border border-zinc-200 overflow-x-auto self-start max-w-full">
         <table className="text-sm">
           <thead>
-            <tr className="bg-zinc-50 dark:bg-zinc-900/50">
-              <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-sm font-semibold text-zinc-500 dark:text-zinc-400 align-middle border-b border-r border-zinc-200 dark:border-zinc-800 w-24 sm:w-28">{col.brand}</th>
-              <th colSpan={2} className="px-2 sm:px-3 pt-2 pb-1 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 whitespace-nowrap border-b border-zinc-200 dark:border-zinc-800/70">{col.photoGroup}</th>
-              <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 whitespace-nowrap align-middle border-b border-zinc-200 dark:border-zinc-800 w-16 sm:w-20 border-l border-zinc-200 dark:border-zinc-800">{col.cinema}</th>
-              <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 whitespace-nowrap align-middle border-b border-zinc-200 dark:border-zinc-800 border-l border-zinc-200 dark:border-zinc-800 w-16 sm:w-20">{col.count}</th>
+            <tr className="bg-zinc-50">
+              <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-sm font-semibold text-zinc-500 align-middle border-b border-r border-zinc-200 w-24 sm:w-28">{col.brand}</th>
+              <th colSpan={2} className="px-2 sm:px-3 pt-2 pb-1 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400 whitespace-nowrap border-b border-zinc-200">{col.photoGroup}</th>
+              <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400 whitespace-nowrap align-middle border-b border-zinc-200 w-16 sm:w-20 border-l border-zinc-200">{col.cinema}</th>
+              <th rowSpan={2} className="px-2 sm:px-3 py-2 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400 whitespace-nowrap align-middle border-b border-zinc-200 border-l border-zinc-200 w-16 sm:w-20">{col.count}</th>
             </tr>
-            <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
-              <th className="px-2 sm:px-3 py-2 text-center text-xs font-medium text-zinc-400 dark:text-zinc-500 align-middle w-20 sm:w-28">{col.active}</th>
-              <th className="px-2 sm:px-3 py-2 text-center text-xs font-medium text-zinc-400 dark:text-zinc-500 align-middle w-20 sm:w-28">{col.discontinued}</th>
+            <tr className="border-b border-zinc-200 bg-zinc-50">
+              <th className="px-2 sm:px-3 py-2 text-center text-xs font-medium text-zinc-400 align-middle w-20 sm:w-28">{col.active}</th>
+              <th className="px-2 sm:px-3 py-2 text-center text-xs font-medium text-zinc-400 align-middle w-20 sm:w-28">{col.discontinued}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+          <tbody className="divide-y divide-zinc-100">
             {brands.map((b) => {
               const m = meta[b];
               return (
                 <tr key={b}>
-                  <td className="px-2 sm:px-3 py-2 text-center font-medium text-zinc-800 dark:text-zinc-200 whitespace-nowrap border-r border-zinc-200 dark:border-zinc-800">{brandNames[b] ?? b}</td>
+                  <td className="px-2 sm:px-3 py-2 text-center font-medium text-zinc-800 whitespace-nowrap border-r border-zinc-200">{brandNames[b] ?? b}</td>
                   <td className="px-2 sm:px-3 py-2 text-center"><StateCell state={m.active} /></td>
                   <td className="px-2 sm:px-3 py-2 text-center"><StateCell state={m.discontinued} /></td>
-                  <td className="px-2 sm:px-3 py-2 text-center border-l border-zinc-200 dark:border-zinc-800"><StateCell state={m.cinema} /></td>
-                  <td className="px-2 sm:px-3 py-2 text-center tabular-nums text-zinc-700 dark:text-zinc-300 border-l border-zinc-200 dark:border-zinc-800">
+                  <td className="px-2 sm:px-3 py-2 text-center border-l border-zinc-200"><StateCell state={m.cinema} /></td>
+                  <td className="px-2 sm:px-3 py-2 text-center tabular-nums text-zinc-700 border-l border-zinc-200">
                     {m.active === true || m.active === "partial"
                       ? (counts[b] ?? 0)
                       : m.active === "planned" || m.discontinued === "planned" || m.cinema === "planned"
@@ -97,10 +97,10 @@ function MountCoverageTable({
             })}
           </tbody>
           <tfoot>
-            <tr className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
-              <td className="px-2 sm:px-3 py-2 text-xs font-medium text-zinc-500 dark:text-zinc-400 border-r border-zinc-200 dark:border-zinc-800">{rowTotal}</td>
+            <tr className="border-t border-zinc-200 bg-zinc-50">
+              <td className="px-2 sm:px-3 py-2 text-xs font-medium text-zinc-500 border-r border-zinc-200">{rowTotal}</td>
               <td colSpan={3} />
-              <td className="px-2 sm:px-3 py-2 text-center tabular-nums text-xs font-semibold text-zinc-700 dark:text-zinc-300 border-l border-zinc-200 dark:border-zinc-800">{total}</td>
+              <td className="px-2 sm:px-3 py-2 text-center tabular-nums text-xs font-semibold text-zinc-700 border-l border-zinc-200">{total}</td>
             </tr>
           </tfoot>
         </table>
@@ -120,7 +120,7 @@ function Section({
 }) {
   return (
     <section id={id} className="flex flex-col gap-3 scroll-mt-20">
-      <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+      <h2 className="text-base font-semibold text-zinc-900">
         {title}
       </h2>
       {children}
@@ -158,11 +158,11 @@ export default async function AboutContent() {
   return (
     <div className={`w-full max-w-3xl mx-auto pt-4 sm:pt-12 pb-40 flex flex-col gap-6 ${PAGE_GUTTER_CLS}`}>
       <div className="flex items-center gap-3">
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 font-heading">
+        <h1 className="text-2xl font-bold text-zinc-900 font-heading">
           {t("pageTitle")}
         </h1>
       </div>
-      <p className="-mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="-mt-3 text-sm text-zinc-500">
         {t("rebrandNote")}
       </p>
 
@@ -180,9 +180,9 @@ export default async function AboutContent() {
           <a
             key={id}
             href={`#${id}`}
-            className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+            className="flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
           >
-            <span className="text-[10px] text-zinc-300 dark:text-zinc-600 w-4 text-right tabular-nums">
+            <span className="text-[10px] text-zinc-300 w-4 text-right tabular-nums">
               {String(i + 1).padStart(2, "0")}
             </span>
             {label}
@@ -191,13 +191,13 @@ export default async function AboutContent() {
       </nav>
 
       <Section id="background" title={t("backgroundTitle")}>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+        <p className="text-sm text-zinc-600 leading-relaxed">
           {t("backgroundBody1")}
         </p>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+        <p className="text-sm text-zinc-600 leading-relaxed">
           {t("backgroundBody2")}
         </p>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+        <p className="text-sm text-zinc-600 leading-relaxed">
           {t("backgroundBody3")}
         </p>
       </Section>
@@ -224,13 +224,13 @@ export default async function AboutContent() {
                 }}
                 rowTotal={t("coverageRowTotal")}
               />
-              <p className="text-xs text-zinc-400 dark:text-zinc-600">
+              <p className="text-xs text-zinc-400">
                 {t("coverageLegend")}
               </p>
             </div>
           ))}
         </div>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="text-sm text-zinc-600">
           {t.rich("coverageSuggest", {
             feedback: (chunks) => (
               <FeedbackTrigger type="general">
@@ -241,7 +241,7 @@ export default async function AboutContent() {
         </p>
         <Link
           href={RECENTLY_ADDED_PATH}
-          className="inline-flex items-center gap-0.5 self-start text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
+          className="inline-flex items-center gap-0.5 self-start text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors"
         >
           {t("recentlyAddedLink")}
           <ArrowRight className="size-3" />
@@ -249,8 +249,8 @@ export default async function AboutContent() {
       </Section>
 
       <Section id="data-accuracy" title={t("dataAccuracyTitle")}>
-        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3">
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+        <div className="rounded-lg bg-zinc-50 border border-zinc-200 px-4 py-3">
+          <p className="text-sm text-zinc-600 leading-relaxed">
             {t.rich("dataAccuracyCaveat", {
               feedback: (chunks) => (
                 <FeedbackTrigger type="data_issue">
@@ -261,7 +261,7 @@ export default async function AboutContent() {
           </p>
         </div>
 
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+        <p className="text-sm text-zinc-600 leading-relaxed">
           {t.rich("dataAccuracyIntro", {
             github: (chunks) => (
               <a href={SITE.pipelineDocUrl} target="_blank" rel="noopener noreferrer" className={TEXT_LINK_CLS}>
@@ -272,16 +272,16 @@ export default async function AboutContent() {
         </p>
 
         <div className="flex flex-col gap-3 mt-1">
-          <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+          <p className="text-sm font-medium text-zinc-800">
             {t("dataSpecTitle")}
           </p>
-          <div className="flex flex-col gap-2.5 pl-3 border-l-2 border-zinc-200 dark:border-zinc-700">
+          <div className="flex flex-col gap-2.5 pl-3 border-l-2 border-zinc-200">
             {[1, 2, 3, 4].map((i) => (
               <div key={i}>
-                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                <p className="text-sm font-medium text-zinc-700">
                   {t(`dataSpecPoint${i}Title`)}
                 </p>
-                <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+                <p className="text-xs text-zinc-500 leading-relaxed">
                   {t(`dataSpecPoint${i}Body`)}
                 </p>
               </div>
@@ -289,21 +289,21 @@ export default async function AboutContent() {
           </div>
         </div>
 
-        <p className="text-xs text-zinc-500 dark:text-zinc-500">
+        <p className="text-xs text-zinc-500">
           {t("dataUpdateNote")}
         </p>
 
         <div className="flex flex-col gap-3 mt-1">
-          <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+          <p className="text-sm font-medium text-zinc-800">
             {t("dataPricingTitle")}
           </p>
-          <div className="flex flex-col gap-2.5 pl-3 border-l-2 border-zinc-200 dark:border-zinc-700">
+          <div className="flex flex-col gap-2.5 pl-3 border-l-2 border-zinc-200">
             {[1, 2, 3, 4].map((i) => (
               <div key={i}>
-                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                <p className="text-sm font-medium text-zinc-700">
                   {t(`dataPricingPoint${i}Title`)}
                 </p>
-                <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+                <p className="text-xs text-zinc-500 leading-relaxed">
                   {t(`dataPricingPoint${i}Body`)}
                 </p>
               </div>
@@ -315,17 +315,17 @@ export default async function AboutContent() {
           href={SITE.pipelineDocUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="group flex items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/40 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
+          className="group flex items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
         >
-          <GitHubMark size={24} className="mt-0.5 shrink-0 text-zinc-700 dark:text-zinc-300" />
+          <GitHubMark size={24} className="mt-0.5 shrink-0 text-zinc-700" />
           <div className="flex flex-col gap-1 min-w-0 flex-1">
-            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+            <p className="text-sm font-medium text-zinc-800">
               {t("dataGitHubCardTitle")}
             </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+            <p className="text-xs text-zinc-500 leading-relaxed">
               {t("dataGitHubCardBody")}
             </p>
-            <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-zinc-700 group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-zinc-100 transition-colors">
+            <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-zinc-700 group-hover:text-zinc-900 transition-colors">
               {t("dataGitHubCardButton")}
               <ArrowUpRight className="size-3" />
             </span>
@@ -334,7 +334,7 @@ export default async function AboutContent() {
       </Section>
 
       <Section id="ask-iris" title={t("askIrisTitle")}>
-        <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+        <p className="text-sm leading-relaxed text-zinc-600">
           {t.rich("askIrisBody", {
             askIris: (chunks) => (
               <Link href={ASK_IRIS_PATH} className={TEXT_LINK_CLS}>
@@ -346,17 +346,17 @@ export default async function AboutContent() {
       </Section>
 
       <Section id="disclaimer" title={t("disclaimerTitle")}>
-        <div className="rounded-lg bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/70 dark:border-amber-800/40 px-4 py-3 flex flex-col gap-2">
-          <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+        <div className="rounded-lg bg-amber-50/70 border border-amber-200/70 px-4 py-3 flex flex-col gap-2">
+          <p className="text-sm text-zinc-700 leading-relaxed">
             {t("disclaimerAccuracy")}
           </p>
-          <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1">
+          <p className="text-xs text-zinc-500 mt-1">
             {t("disclaimerLiability")}
           </p>
-          <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1">
+          <p className="text-xs text-zinc-500 mt-1">
             {t("disclaimerIndependent")}
           </p>
-          <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1">
+          <p className="text-xs text-zinc-500 mt-1">
             {t.rich("disclaimerCopyright", {
               address: SITE.contactEmail,
               email: (chunks) => (
@@ -370,24 +370,24 @@ export default async function AboutContent() {
       </Section>
 
       <Section id="privacy" title={t("privacyTitle")}>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+        <p className="text-sm text-zinc-600 leading-relaxed">
           {t("privacyBody")}
         </p>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+        <p className="text-sm text-zinc-600 leading-relaxed">
           {t("privacyAnalytics")}
         </p>
       </Section>
 
       <Section id="support" title={t("supportTitle")}>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+        <p className="text-sm text-zinc-600 leading-relaxed">
           {t("supportCost")}
         </p>
         {isPurchaseLocale(locale) ? (
           <>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            <p className="text-sm text-zinc-600 leading-relaxed">
               {t("supportAffiliate")}
             </p>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            <p className="text-sm text-zinc-600 leading-relaxed">
               {t.rich("supportIntegrity", {
                 feedback: (chunks) => (
                   <FeedbackTrigger type="general">
@@ -398,11 +398,11 @@ export default async function AboutContent() {
             </p>
           </>
         ) : (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+          <p className="text-sm text-zinc-600 leading-relaxed">
             {t("supportNoAffiliate")}
           </p>
         )}
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+        <p className="text-sm text-zinc-600 leading-relaxed">
           {t(isPurchaseLocale(locale) ? "supportDonateAlt" : "supportDonate")}
         </p>
         {donationChannel(locale) === "wechat" ? (
@@ -421,7 +421,7 @@ export default async function AboutContent() {
               href={KOFI_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 text-sm font-semibold text-zinc-800 dark:text-zinc-200 transition-all duration-200 hover:scale-[1.02] hover:shadow-sm"
+              className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-zinc-200 bg-white text-sm font-semibold text-zinc-800 transition-all duration-200 hover:scale-[1.02] hover:shadow-sm"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z" fill="#FF5E5B"/>
@@ -433,11 +433,11 @@ export default async function AboutContent() {
       </Section>
 
       <Section id="ack" title={t("ackTitle")}>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+        <p className="text-sm text-zinc-600 leading-relaxed">
           {t("ackBody")}
         </p>
 
-        <div className="flex flex-col divide-y divide-zinc-100 dark:divide-zinc-800">
+        <div className="flex flex-col divide-y divide-zinc-100">
           {ackCredits.map(({ roles, company, product, logoComponent, glowColor }, i) => {
             const storyKey = i === 0 ? "1" : "2";
             const body = t(`ackStory${storyKey}Body` as "ackStory1Body");
@@ -456,8 +456,8 @@ export default async function AboutContent() {
           })}
         </div>
 
-        <div className="pt-6 border-t border-zinc-100 dark:border-zinc-800 text-center">
-          <p className="text-xs text-zinc-400 dark:text-zinc-500 leading-relaxed">
+        <div className="pt-6 border-t border-zinc-100 text-center">
+          <p className="text-xs text-zinc-400 leading-relaxed">
             {t("ackClosing")}
           </p>
         </div>

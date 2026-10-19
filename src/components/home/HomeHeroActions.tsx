@@ -20,7 +20,7 @@ import { ASK_IRIS_PATH, browsePath } from "@/lib/url/routes";
 
 const PRIMARY_CLS = `inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-medium ${ACTION_PRIMARY_CLS}`;
 const SECONDARY_CLS =
-  "inline-flex items-center gap-1.5 px-5 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 font-medium text-sm hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors";
+  "inline-flex items-center gap-1.5 px-5 py-3 rounded-xl border border-zinc-300 text-zinc-800 font-medium text-sm hover:bg-zinc-50 transition-colors";
 
 const MORPH_ID = "home-ask-iris";
 
@@ -115,7 +115,7 @@ export default function HomeHeroActions() {
             exit={{ opacity: 0, transition: { duration: 0.08 } }}
             role="dialog"
             aria-label={tNav("askIris")}
-            className="w-full max-w-[760px] overflow-hidden border border-zinc-200 bg-white p-4 text-left shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
+            className="w-full max-w-[760px] overflow-hidden border border-zinc-200 bg-white p-4 text-left shadow-lg"
           >
             <motion.div
               layout="position"
@@ -124,8 +124,8 @@ export default function HomeHeroActions() {
             >
               <div className="flex items-start justify-between gap-3">
                 <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-                  <span className="inline-flex items-center gap-1.5 font-semibold text-zinc-900 dark:text-zinc-50">{irisLabel}</span>
-                  <span className="text-[13px] text-zinc-500 dark:text-zinc-400">{t("irisIntro")}</span>
+                  <span className="inline-flex items-center gap-1.5 font-semibold text-zinc-900">{irisLabel}</span>
+                  <span className="text-[13px] text-zinc-500">{t("irisIntro")}</span>
                 </p>
                 <button type="button" onClick={close} aria-label={t("irisClose")} className={cn(ICON_CLOSE_BTN_CLS, "h-7 w-7")}>
                   <X className="h-4 w-4" />
@@ -156,7 +156,7 @@ export default function HomeHeroActions() {
               </div>
               <Link
                 href={browsePath(mount)}
-                className="mt-3 inline-block text-[13px] text-zinc-500 underline-offset-4 hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-zinc-50"
+                className="mt-3 inline-block text-[13px] text-zinc-500 underline-offset-4 hover:text-zinc-900 hover:underline"
               >
                 {t("orBrowse")} →
               </Link>

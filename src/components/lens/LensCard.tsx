@@ -73,10 +73,10 @@ export default memo(function LensCard({
   return (
     <div
       {...hookAttr("card")}
-      className={`@container group relative rounded-2xl border bg-white dark:bg-zinc-900 flex flex-col overflow-hidden transition-[border-color,box-shadow,background-color] hover:bg-zinc-50 dark:hover:bg-zinc-800/50 ${
+      className={`@container group relative rounded-2xl border bg-white flex flex-col overflow-hidden transition-[border-color,box-shadow,background-color] hover:bg-zinc-50 ${
         isSelected
           ? CARD_SELECTED_BORDER_CLS
-          : "border-zinc-200 dark:border-zinc-800"
+          : "border-zinc-200"
       }`}
     >
       <Link
@@ -86,7 +86,7 @@ export default memo(function LensCard({
       >
         <div
           {...hookAttr("cardMedia")}
-          className="relative aspect-[3/2] overflow-hidden border-b border-zinc-100/80 bg-zinc-50/40 dark:border-zinc-800 dark:bg-zinc-900/40 max-xs:aspect-auto max-xs:w-[145px] max-xs:shrink-0 max-xs:self-stretch max-xs:border-b-0 max-xs:border-r"
+          className="relative aspect-[3/2] overflow-hidden border-b border-zinc-100/80 bg-zinc-50/40 max-xs:aspect-auto max-xs:w-[145px] max-xs:shrink-0 max-xs:self-stretch max-xs:border-b-0 max-xs:border-r"
         >
           <div
             {...hookAttr("cardMediaInner")}
@@ -113,22 +113,22 @@ export default memo(function LensCard({
         >
           <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between gap-2 max-xs:pr-7">
-              <p className="min-w-0 truncate text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+              <p className="min-w-0 truncate text-[11px] uppercase tracking-[0.14em] text-zinc-500">
                 {fmt.lensSubtitleLine(tBrand(lens.brand), lens.series)}
               </p>
               {lens.releaseYear ? (
-                <p className="hidden sm:block shrink-0 text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+                <p className="hidden sm:block shrink-0 text-[11px] uppercase tracking-[0.14em] text-zinc-500">
                   {lens.releaseYear}
                 </p>
               ) : null}
             </div>
             {lens.releaseYear ? (
-              <p className="sm:hidden text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+              <p className="sm:hidden text-[11px] uppercase tracking-[0.14em] text-zinc-500">
                 {lens.releaseYear}
               </p>
             ) : null}
             <h3
-              className="font-semibold text-sm text-zinc-900 dark:text-zinc-50 leading-snug line-clamp-2 min-h-[2.5rem]"
+              className="font-semibold text-sm text-zinc-900 leading-snug line-clamp-2 min-h-[2.5rem]"
               title={lens.model}
             >
               {lens.model}
@@ -148,14 +148,14 @@ export default memo(function LensCard({
 
           <div className="mt-auto flex flex-col gap-2">
 
-            <dl className="flex items-baseline justify-between gap-2 border-t border-zinc-100 pt-2 text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400 sm:hidden">
+            <dl className="flex items-baseline justify-between gap-2 border-t border-zinc-100 pt-2 text-xs text-zinc-600 sm:hidden">
               <div className="min-w-0 truncate">
                 {equivDisplay} {t("equivSuffix")}
               </div>
               <div className="shrink-0">{weightDisplay}</div>
             </dl>
 
-            <dl className="hidden border-t border-zinc-100 pt-2.5 text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400 sm:grid sm:grid-cols-2 sm:gap-x-3">
+            <dl className="hidden border-t border-zinc-100 pt-2.5 text-xs text-zinc-600 sm:grid sm:grid-cols-2 sm:gap-x-3">
               <div className="truncate">MFD {mfdDisplay}</div>
               <div className="text-right">⌀{filterDisplay}</div>
               <div className="min-w-0 truncate">
@@ -173,7 +173,7 @@ export default memo(function LensCard({
 
       <FavoriteStarButton
         lensId={lens.id}
-        className="absolute top-2.5 right-2.5 max-xs:top-1.5 max-xs:right-1.5 max-xs:h-9 max-xs:w-9 max-xs:border-0 max-xs:bg-transparent max-xs:shadow-none max-xs:backdrop-blur-none dark:max-xs:bg-transparent"
+        className="absolute top-2.5 right-2.5 max-xs:top-1.5 max-xs:right-1.5 max-xs:h-9 max-xs:w-9 max-xs:border-0 max-xs:bg-transparent max-xs:shadow-none max-xs:backdrop-blur-none"
       />
 
       <button
@@ -186,8 +186,8 @@ export default memo(function LensCard({
           isSelected
             ? cn(ACTION_PRIMARY_CLS, "border-transparent")
             : selectionDisabled
-              ? "border-zinc-200 bg-white text-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-500"
-              : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800",
+              ? "border-zinc-200 bg-white text-zinc-400"
+              : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50",
         )}
       >
         {isSelected ? <Check className="h-3.5 w-3.5" strokeWidth={2.5} /> : <Plus className="h-3.5 w-3.5" />}
@@ -210,7 +210,7 @@ function Badge({
     <span
       title={description}
       aria-label={description}
-      className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400"
+      className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-zinc-100 text-zinc-500"
     >
       {icon}
       {label}

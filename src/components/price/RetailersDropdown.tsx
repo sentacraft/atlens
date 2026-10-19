@@ -39,7 +39,7 @@ export function RetailersDropdown({ lens, customId }: Props) {
       <Popover.Trigger className={`${ACTION_OUTLINE_CLS} cursor-pointer`}>
         <span className="inline-flex items-baseline gap-1.5">
           {t("buyAt")}
-          <span data-redact-hook="priceSource" className="text-xs text-zinc-400 dark:text-zinc-500">
+          <span data-redact-hook="priceSource" className="text-xs text-zinc-400">
             {preview}{extra}
           </span>
         </span>
@@ -52,8 +52,8 @@ export function RetailersDropdown({ lens, customId }: Props) {
               <DropdownItem key={link.channel} link={link} lensId={lens.id} customId={customId} />
             ))}
             {showDisclosure && (
-              <p className="border-t border-zinc-100 px-3 py-2 text-[10px] leading-relaxed text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-                <Info size={11} className="inline -mt-px mr-1 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
+              <p className="border-t border-zinc-100 px-3 py-2 text-[10px] leading-relaxed text-zinc-500">
+                <Info size={11} className="inline -mt-px mr-1 text-zinc-400" aria-hidden="true" />
                 {t(purchaseDisclosureKey(locale))}
               </p>
             )}
@@ -76,7 +76,7 @@ function DropdownItem({ link, lensId, customId }: { link: PurchaseLink; lensId: 
         source: customId ?? "unknown",
         is_affiliate: link.isAffiliate,
       })}
-      className="flex items-center justify-between px-3 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
+      className="flex items-center justify-between px-3 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
     >
       <span data-redact-hook="priceSource">{link.label}</span>
       <ArrowUpRight size={12} className="text-zinc-400" />

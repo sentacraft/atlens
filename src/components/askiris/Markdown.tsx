@@ -19,7 +19,7 @@ import { buildComparePath } from "@/lib/url/compare";
 import { collectionPath, lensPath } from "@/lib/url/routes";
 
 const PROSE_CLS =
-  "prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-headings:mb-1 prose-hr:hidden";
+  "prose prose-sm max-w-none prose-p:my-2 prose-headings:mb-1 prose-hr:hidden";
 
 // The icon trails the label: an inline-flex box takes its baseline from its first child, so a
 // leading icon drops the chip below the line's text.

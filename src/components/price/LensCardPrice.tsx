@@ -11,7 +11,7 @@ export default function LensCardPrice({ lens }: { lens: Lens }) {
 
   if (!selection) {
     return (
-      <p className="text-sm font-semibold text-zinc-400 dark:text-zinc-500">
+      <p className="text-sm font-semibold text-zinc-400">
         {t("priceUnavailable")}
       </p>
     );
@@ -22,18 +22,18 @@ export default function LensCardPrice({ lens }: { lens: Lens }) {
 
   return (
     <p className="flex items-baseline gap-1 text-sm">
-      <span data-redact-hook="price" className="font-semibold whitespace-nowrap tabular-nums text-zinc-700 dark:text-zinc-200">
+      <span data-redact-hook="price" className="font-semibold whitespace-nowrap tabular-nums text-zinc-700">
         {t.rich("priceApprox", {
           price: priceDisplay,
           approx: (chunks) => (
-            <span className="font-normal text-zinc-400 dark:text-zinc-500">
+            <span className="font-normal text-zinc-400">
               {chunks}
             </span>
           ),
         })}
       </span>
       {condition === "used" && (
-        <span className="shrink-0 rounded bg-zinc-100 px-1 py-px text-[9px] font-medium leading-tight text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+        <span className="shrink-0 rounded bg-zinc-100 px-1 py-px text-[9px] font-medium leading-tight text-zinc-500">
           {t("usedBadge")}
         </span>
       )}

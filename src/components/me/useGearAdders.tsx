@@ -104,7 +104,7 @@ export function useGearAdders({ userId, lenses }: { userId: string; lenses: Lens
         onSelect={togglePickedLens}
         afterResults={({ query: search }) =>
           search && (
-            <p className="text-center text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="text-center text-xs text-zinc-500">
               {t("manualPrompt")}{" "}
               <button
                 type="button"
@@ -112,7 +112,7 @@ export function useGearAdders({ userId, lenses }: { userId: string; lenses: Lens
                   closeLensSearch(false);
                   setManualOpen(true);
                 }}
-                className="font-medium text-zinc-900 underline underline-offset-4 dark:text-zinc-100"
+                className="font-medium text-zinc-900 underline underline-offset-4"
               >
                 {t("manualEntry")}
               </button>
@@ -121,7 +121,7 @@ export function useGearAdders({ userId, lenses }: { userId: string; lenses: Lens
         }
         footer={() => (
           <>
-            <span className="text-[13px] text-zinc-600 dark:text-zinc-400">
+            <span className="text-[13px] text-zinc-600">
               {pickedLenses.length > 0 && t("pickedCount", { count: pickedLenses.length })}
             </span>
             <div className="flex items-center gap-2">

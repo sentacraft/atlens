@@ -55,7 +55,7 @@ export default function MountSwitcher() {
     >
       <SelectPrimitive.Trigger
         aria-label={t("label")}
-        className="group flex items-center gap-0.5 -ml-1 sm:-ml-1.5 px-1 py-0.5 sm:px-1.5 rounded-md font-heading font-medium text-sm sm:text-base tracking-tight whitespace-nowrap text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-all outline-none"
+        className="group flex items-center gap-0.5 -ml-1 sm:-ml-1.5 px-1 py-0.5 sm:px-1.5 rounded-md font-heading font-medium text-sm sm:text-base tracking-tight whitespace-nowrap text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 transition-all outline-none"
       >
         <SelectPrimitive.Value>
           {(value: Mount) => (
@@ -79,11 +79,11 @@ export default function MountSwitcher() {
           <SelectItem
             key={opt.value}
             value={opt.value}
-            className="rounded-none py-2 sm:py-2 text-sm sm:text-base text-zinc-500 dark:text-zinc-400 data-[selected]:text-zinc-900 dark:data-[selected]:text-zinc-50"
+            className="rounded-none py-2 sm:py-2 text-sm sm:text-base text-zinc-500 data-[selected]:text-zinc-900"
           >
             <span className="flex flex-col leading-tight">
               <span className="font-medium">{opt.label}</span>
-              <span className="text-xs font-normal text-zinc-400 dark:text-zinc-500 mt-0.5">
+              <span className="text-xs font-normal text-zinc-400 mt-0.5">
                 {opt.caption}
               </span>
             </span>

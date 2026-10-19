@@ -338,8 +338,8 @@ function fmtMaybe(v: unknown): string {
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-      <h2 className="font-heading text-base font-semibold text-zinc-800 dark:text-zinc-100">
+    <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+      <h2 className="font-heading text-base font-semibold text-zinc-800">
         {title}
       </h2>
       <div className="mt-3">{children}</div>
@@ -375,7 +375,7 @@ function Table({ rows, columns }: { rows: Array<Record<string, unknown>>; column
       </thead>
       <tbody>
         {rows.map((r, i) => (
-          <tr key={i} className="border-t border-zinc-100 dark:border-zinc-800">
+          <tr key={i} className="border-t border-zinc-100">
             {columns.map((c) => {
               const raw = r[c.key];
               const title = c.titleKey ? String(r[c.titleKey] ?? "") : undefined;
@@ -398,11 +398,11 @@ function Table({ rows, columns }: { rows: Array<Record<string, unknown>>; column
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-1 rounded-2xl border border-zinc-200 bg-white px-5 py-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-      <span className="text-xs uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+    <div className="flex flex-col gap-1 rounded-2xl border border-zinc-200 bg-white px-5 py-4 shadow-sm">
+      <span className="text-xs uppercase tracking-wider text-zinc-500">
         {label}
       </span>
-      <span className="font-heading text-3xl font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
+      <span className="font-heading text-3xl font-semibold tabular-nums text-zinc-900">
         {value}
       </span>
     </div>
@@ -474,11 +474,11 @@ export default async function AnalyticsDashboardPage() {
     return (
       <main className="mx-auto max-w-2xl px-6 py-16">
         <h1 className="font-heading text-2xl font-bold">Analytics not configured</h1>
-        <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
-          Set <code className="rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-800">CF_ANALYTICS_ACCOUNT_ID</code> and{" "}
-          <code className="rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-800">CF_ANALYTICS_TOKEN</code>{" "}
+        <p className="mt-4 text-sm text-zinc-600">
+          Set <code className="rounded bg-zinc-100 px-1.5 py-0.5">CF_ANALYTICS_ACCOUNT_ID</code> and{" "}
+          <code className="rounded bg-zinc-100 px-1.5 py-0.5">CF_ANALYTICS_TOKEN</code>{" "}
           on the Worker to enable this dashboard. The token must have{" "}
-          <code className="rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-800">Account · Analytics · Read</code>{" "}
+          <code className="rounded bg-zinc-100 px-1.5 py-0.5">Account · Analytics · Read</code>{" "}
           permission.
         </p>
       </main>
@@ -624,16 +624,16 @@ export default async function AnalyticsDashboardPage() {
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
       <header className="mb-6">
-        <h1 className="font-heading text-3xl font-bold text-zinc-900 dark:text-zinc-50">
+        <h1 className="font-heading text-3xl font-bold text-zinc-900">
           Analytics
         </h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 text-sm text-zinc-500">
           Last 30 days · numbers adjusted for sampling
         </p>
       </header>
 
       {queryErrors.length > 0 && (
-        <div className="mb-6 rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-900 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
+        <div className="mb-6 rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-900">
           <p className="font-medium">
             {queryErrors.length} {queryErrors.length === 1 ? "query" : "queries"} failed
           </p>
@@ -707,19 +707,19 @@ export default async function AnalyticsDashboardPage() {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-t border-zinc-100 dark:border-zinc-800">
+              <tr className="border-t border-zinc-100">
                 <td className="py-1.5">compare_add</td>
                 <td className="py-1.5 text-right tabular-nums">{fmtNum(adds)}</td>
                 <td className="py-1.5 text-right tabular-nums">{fmtNum(sidsAdd)}</td>
                 <td className="py-1.5 text-right tabular-nums">100%</td>
               </tr>
-              <tr className="border-t border-zinc-100 dark:border-zinc-800">
+              <tr className="border-t border-zinc-100">
                 <td className="py-1.5">compare_view</td>
                 <td className="py-1.5 text-right tabular-nums">{fmtNum(views)}</td>
                 <td className="py-1.5 text-right tabular-nums">{fmtNum(sidsView)}</td>
                 <td className="py-1.5 text-right tabular-nums">{pct(sidsView, sidsAdd)}</td>
               </tr>
-              <tr className="border-t border-zinc-100 dark:border-zinc-800">
+              <tr className="border-t border-zinc-100">
                 <td className="py-1.5">compare_scroll</td>
                 <td className="py-1.5 text-right tabular-nums">{fmtNum(scrolls)}</td>
                 <td className="py-1.5 text-right tabular-nums">{fmtNum(sidsScroll)}</td>
@@ -770,7 +770,7 @@ export default async function AnalyticsDashboardPage() {
         </Card>
 
         <Card title="Detail · avg dwell seconds (top by views)">
-          <p className="text-sm text-zinc-400 dark:text-zinc-500">
+          <p className="text-sm text-zinc-400">
             Not collected. SPA navigation within Atlens doesn&rsquo;t fire{" "}
             <code>visibilitychange</code> or <code>pagehide</code>, so the
             previous dwell timing was unreliable. Pending a redesign that
@@ -811,7 +811,7 @@ export default async function AnalyticsDashboardPage() {
         </Card>
 
         <Card title="Install · PWA accepts">
-          <p className="font-heading text-3xl font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
+          <p className="font-heading text-3xl font-semibold tabular-nums text-zinc-900">
             {fmtNum(installCount)}
           </p>
           <p className="mt-1 text-xs text-zinc-500">Accepted install prompts</p>
@@ -882,10 +882,10 @@ export default async function AnalyticsDashboardPage() {
       </div>
 
       <section className="mt-10">
-        <h2 className="font-heading text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+        <h2 className="font-heading text-2xl font-bold text-zinc-900">
           AskIris
         </h2>
-        <p className="mt-1 mb-4 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 mb-4 text-sm text-zinc-500">
           One row per completed turn
         </p>
 
@@ -898,19 +898,19 @@ export default async function AnalyticsDashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Card title="AskIris · audience & sessions">
             <dl className="grid grid-cols-[1fr_auto] gap-y-2 text-sm">
-              <dt className="text-zinc-500 dark:text-zinc-400">Page views (PV)</dt>
+              <dt className="text-zinc-500">Page views (PV)</dt>
               <dd className="text-right tabular-nums">{fmtMaybe(aiViewsRow?.pv)}</dd>
-              <dt className="text-zinc-500 dark:text-zinc-400">Visitors (UV)</dt>
+              <dt className="text-zinc-500">Visitors (UV)</dt>
               <dd className="text-right tabular-nums">{fmtMaybe(aiViewsRow?.uv)}</dd>
-              <dt className="text-zinc-500 dark:text-zinc-400">Interacted visitors</dt>
+              <dt className="text-zinc-500">Interacted visitors</dt>
               <dd className="text-right tabular-nums">{fmtMaybe(aiSessionsRow?.interacted_uv)}</dd>
-              <dt className="text-zinc-500 dark:text-zinc-400">Activation (interacted / visited)</dt>
+              <dt className="text-zinc-500">Activation (interacted / visited)</dt>
               <dd className="text-right tabular-nums">{pct(aiInteractedUv, aiUv)}</dd>
-              <dt className="text-zinc-500 dark:text-zinc-400">Avg turns / session</dt>
+              <dt className="text-zinc-500">Avg turns / session</dt>
               <dd className="text-right tabular-nums">
                 {aiSessions > 0 ? (aiSessionTurns / aiSessions).toFixed(1) : "—"}
               </dd>
-              <dt className="text-zinc-500 dark:text-zinc-400">Avg sessions / active visitor</dt>
+              <dt className="text-zinc-500">Avg sessions / active visitor</dt>
               <dd className="text-right tabular-nums">
                 {aiInteractedUv > 0 ? (aiSessions / aiInteractedUv).toFixed(1) : "—"}
               </dd>
@@ -919,32 +919,32 @@ export default async function AnalyticsDashboardPage() {
 
           <Card title="AskIris · efficiency">
             <dl className="grid grid-cols-[1fr_auto] gap-y-2 text-sm">
-              <dt className="text-zinc-500 dark:text-zinc-400">Avg tokens / turn</dt>
+              <dt className="text-zinc-500">Avg tokens / turn</dt>
               <dd className="text-right tabular-nums">
                 {aiTurns > 0 ? fmtNum(Math.round(aiTotalTokens / aiTurns)) : "—"}
               </dd>
-              <dt className="text-zinc-500 dark:text-zinc-400">Avg steps / turn</dt>
+              <dt className="text-zinc-500">Avg steps / turn</dt>
               <dd className="text-right tabular-nums">
                 {aiTurns > 0 ? (aiTotalSteps / aiTurns).toFixed(1) : "—"}
               </dd>
-              <dt className="text-zinc-500 dark:text-zinc-400">Cache-hit rate (input)</dt>
+              <dt className="text-zinc-500">Cache-hit rate (input)</dt>
               <dd className="text-right tabular-nums">{pct(aiCacheReadTokens, aiInputTokens)}</dd>
             </dl>
           </Card>
 
           <Card title="AskIris · context per conversation">
             <dl className="grid grid-cols-[1fr_auto] gap-y-2 text-sm">
-              <dt className="text-zinc-500 dark:text-zinc-400">Measured conversations</dt>
+              <dt className="text-zinc-500">Measured conversations</dt>
               <dd className="text-right tabular-nums">{fmtMaybe(aiContextRow?.conversations)}</dd>
-              <dt className="text-zinc-500 dark:text-zinc-400">Max context (input tokens)</dt>
+              <dt className="text-zinc-500">Max context (input tokens)</dt>
               <dd className="text-right tabular-nums">
                 {fmtMaybe(aiContextRow?.max_context_tokens)}
               </dd>
-              <dt className="text-zinc-500 dark:text-zinc-400">P75 context (input tokens)</dt>
+              <dt className="text-zinc-500">P75 context (input tokens)</dt>
               <dd className="text-right tabular-nums">
                 {fmtMaybe(aiContextRow?.p75_context_tokens)}
               </dd>
-              <dt className="text-zinc-500 dark:text-zinc-400">P50 context (input tokens)</dt>
+              <dt className="text-zinc-500">P50 context (input tokens)</dt>
               <dd className="text-right tabular-nums">
                 {fmtMaybe(aiContextRow?.p50_context_tokens)}
               </dd>

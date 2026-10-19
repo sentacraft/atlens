@@ -324,7 +324,7 @@ export default function AskIrisChat({
 
   const showHistory = shell.variant === "page" && Boolean(userId);
   const notice = freshNotice ? (
-    <p className="rounded-xl bg-zinc-100 px-3 py-2 text-xs leading-relaxed text-zinc-600 dark:bg-zinc-800/70 dark:text-zinc-300">
+    <p className="rounded-xl bg-zinc-100 px-3 py-2 text-xs leading-relaxed text-zinc-600">
       {isAccount
         ? tEntry("newConversation")
         : tEntry.rich("newConversationGuest", {
@@ -332,7 +332,7 @@ export default function AskIrisChat({
               <button
                 type="button"
                 onClick={() => openSignIn()}
-                className="font-semibold text-zinc-900 underline underline-offset-2 dark:text-zinc-50"
+                className="font-semibold text-zinc-900 underline underline-offset-2"
               >
                 {chunks}
               </button>
@@ -342,7 +342,7 @@ export default function AskIrisChat({
   ) : null;
   const topBar = shell.variant === "panel" ? (
     <div className="-mx-1 flex h-12 shrink-0 items-center justify-between">
-      <span className="inline-flex items-center gap-1.5 px-1 text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+      <span className="inline-flex items-center gap-1.5 px-1 text-sm font-semibold text-zinc-900">
         Iris
         <AiTag />
       </span>
@@ -412,7 +412,7 @@ export default function AskIrisChat({
     return (
       <div className={SHELL_CLS[shell.variant]}>
         {topBar}
-        <div className="grid flex-1 place-items-center text-sm text-zinc-500 dark:text-zinc-400">
+        <div className="grid flex-1 place-items-center text-sm text-zinc-500">
           {t("loadingConversation")}
         </div>
       </div>
@@ -478,7 +478,7 @@ export default function AskIrisChat({
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="h-full space-y-4 overflow-y-auto pt-4 pr-3 pb-6 [scrollbar-width:thin] [scrollbar-color:rgb(212_212_216)_transparent] dark:[scrollbar-color:rgb(63_63_70)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300/70 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700/70"
+            className="h-full space-y-4 overflow-y-auto pt-4 pr-3 pb-6 [scrollbar-width:thin] [scrollbar-color:rgb(212_212_216)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300/70"
           >
             <AskIrisThread
               messages={renderMessages}

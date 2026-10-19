@@ -257,7 +257,6 @@ export default function LensFilters({
       className={cn(
         "inline-flex min-h-11 items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em] sm:min-h-0",
         "text-zinc-700 transition-colors hover:text-zinc-900",
-        "dark:text-zinc-300 dark:hover:text-zinc-100",
       )}
       onClick={() => setSecondaryOpen((v) => !v)}
       aria-expanded={secondaryOpen}
@@ -273,7 +272,7 @@ export default function LensFilters({
         )}
       />
       {moreFiltersCount > 0 && !secondaryOpen && (
-        <span aria-hidden="true" className="inline-flex size-4 items-center justify-center rounded-full bg-zinc-900 font-mono text-[9px] font-bold leading-none text-white dark:bg-zinc-100 dark:text-zinc-900">
+        <span aria-hidden="true" className="inline-flex size-4 items-center justify-center rounded-full bg-zinc-900 font-mono text-[9px] font-bold leading-none text-white">
           {moreFiltersCount}
         </span>
       )}
@@ -285,18 +284,18 @@ export default function LensFilters({
       {filtersToggle}
       {activeFilterCount > 0 && (
         <>
-          <span className="text-[12px] text-zinc-300 dark:text-zinc-600">·</span>
+          <span className="text-[12px] text-zinc-300">·</span>
           <button
             type="button"
             onClick={onReset}
             aria-label={t("reset")}
-            className="inline-flex cursor-pointer items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-rose-800 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300"
+            className="inline-flex cursor-pointer items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-rose-800 hover:text-rose-900"
           >
-            <span className="inline-flex items-center gap-1.5 underline underline-offset-4 decoration-rose-200 dark:decoration-rose-800">
+            <span className="inline-flex items-center gap-1.5 underline underline-offset-4 decoration-rose-200">
               <RotateCcw size={11} />
               {t("reset")}
             </span>
-            <span aria-hidden="true" className="inline-flex size-4 items-center justify-center rounded-full bg-rose-800 font-mono text-[9px] font-bold leading-none text-white dark:bg-rose-700">
+            <span aria-hidden="true" className="inline-flex size-4 items-center justify-center rounded-full bg-rose-800 font-mono text-[9px] font-bold leading-none text-white">
               {activeFilterCount}
             </span>
           </button>

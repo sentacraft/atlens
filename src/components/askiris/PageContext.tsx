@@ -98,7 +98,7 @@ export function PageContextCard({
       onClick={onDetach}
       aria-label={t("detach")}
       title={t("detach")}
-      className="flex size-7 shrink-0 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-zinc-200/60 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+      className="flex size-7 shrink-0 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-zinc-200/60 hover:text-zinc-700"
     >
       <X className={variant === "chip" ? "size-3" : "size-3.5"} />
     </button>
@@ -106,7 +106,7 @@ export function PageContextCard({
 
   if (variant === "chip") {
     return (
-      <div className="flex min-w-0 items-center gap-1 self-start rounded-full bg-zinc-100 py-0.5 pr-0.5 pl-3 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+      <div className="flex min-w-0 items-center gap-1 self-start rounded-full bg-zinc-100 py-0.5 pr-0.5 pl-3 text-xs text-zinc-600">
         <span className="truncate">
           {view.label} · {view.title}
         </span>
@@ -116,11 +116,11 @@ export function PageContextCard({
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 py-2.5 pr-1.5 pl-2.5 text-left dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 py-2.5 pr-1.5 pl-2.5 text-left">
       <PageThumb view={view} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <span className="text-[11px] text-zinc-500 dark:text-zinc-400">{view.label}</span>
-        <span className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-50">{view.title}</span>
+        <span className="text-[11px] text-zinc-500">{view.label}</span>
+        <span className="truncate text-sm font-semibold text-zinc-900">{view.title}</span>
       </div>
       {detach}
     </div>
@@ -131,7 +131,7 @@ function PageThumb({ view }: { view: PageContextView }) {
   const [failed, setFailed] = useState(false);
   const Icon = view.kind === "compare" ? Columns2 : LayoutGrid;
   return (
-    <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+    <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white text-zinc-500">
       {!view.lensId ? (
         <Icon className="size-4" />
       ) : failed ? (
@@ -165,7 +165,7 @@ export function PageContextStart({
       {notice}
       <PageContextCard view={view} variant="card" onDetach={onDetach} />
       <div className="flex min-h-0 flex-1 flex-col justify-end-safe gap-2 overflow-y-auto">
-        <p className="mb-0.5 text-[13px] text-zinc-500 dark:text-zinc-400">{view.heading}</p>
+        <p className="mb-0.5 text-[13px] text-zinc-500">{view.heading}</p>
         {view.suggestions.map((suggestion) => (
           <button
             key={suggestion}
@@ -174,7 +174,7 @@ export function PageContextStart({
             onClick={() => onSuggestion(suggestion)}
             className={cn(
               "flex items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-left text-sm text-zinc-800 transition-colors",
-              "hover:border-zinc-300 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900",
+              "hover:border-zinc-300 hover:bg-zinc-50 disabled:opacity-50",
             )}
           >
             {suggestion}

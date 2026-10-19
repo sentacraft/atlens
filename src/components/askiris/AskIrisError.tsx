@@ -33,14 +33,14 @@ export default function AskIrisError({
 }) {
   const t = useTranslations("AskIris");
   return (
-    <div role="alert" className="px-1 text-sm text-zinc-500 dark:text-zinc-400">
+    <div role="alert" className="px-1 text-sm text-zinc-500">
       {kind === "transient" ? (
         t.rich("errorRetry", {
           retry: (chunks) => (
             <button
               type="button"
               onClick={onRetry}
-              className="font-medium text-zinc-700 underline underline-offset-2 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+              className="font-medium text-zinc-700 underline underline-offset-2 hover:text-zinc-900"
             >
               {chunks}
             </button>

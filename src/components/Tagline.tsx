@@ -23,7 +23,7 @@ export default function Tagline() {
   }
 
   return (
-    <span className="text-[11px] text-zinc-400 dark:text-zinc-600 tracking-wide select-none animate-in fade-in duration-400">
+    <span className="text-[11px] text-zinc-400 tracking-wide select-none animate-in fade-in duration-400">
       {tagline}
     </span>
   );

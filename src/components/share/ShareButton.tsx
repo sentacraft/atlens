@@ -239,11 +239,11 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
   };
 
   const tabClass =
-    "flex-1 rounded-md px-3 py-1.5 text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900 data-[active]:bg-white data-[active]:text-zinc-900 data-[active]:shadow-xs dark:text-zinc-400 dark:hover:text-zinc-50 dark:data-[active]:bg-zinc-700 dark:data-[active]:text-zinc-50 outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 cursor-pointer";
+    "flex-1 rounded-md px-3 py-1.5 text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900 data-[active]:bg-white data-[active]:text-zinc-900 data-[active]:shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 cursor-pointer";
 
   const linkSection = (
     <div className="flex flex-col gap-3">
-      <div className="select-all break-all rounded-md bg-zinc-100 px-3 py-2.5 font-mono text-xs leading-relaxed text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+      <div className="select-all break-all rounded-md bg-zinc-100 px-3 py-2.5 font-mono text-xs leading-relaxed text-zinc-500">
         {truncatedUrl}
       </div>
       <div className="flex gap-2">
@@ -255,7 +255,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
               ? "bg-green-600 text-white hover:bg-green-700"
               : copyFailed
                 ? "bg-red-600 text-white hover:bg-red-700"
-                : "bg-zinc-900 text-zinc-50 hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+                : "bg-zinc-900 text-zinc-50 hover:bg-zinc-700"
           )}
         >
           {copied ? (
@@ -270,7 +270,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
           <button
             onClick={handleNativeShare}
             title={t("nativeShare")}
-            className="flex items-center justify-center rounded-lg border border-zinc-200 px-3 py-2.5 text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="flex items-center justify-center rounded-lg border border-zinc-200 px-3 py-2.5 text-zinc-700 transition-colors hover:bg-zinc-100"
           >
             <Share2 className="size-4" />
           </button>
@@ -281,7 +281,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
 
   const linkOnlyContent = (
     <div className="flex flex-col gap-4 p-4">
-      <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+      <h2 className="text-base font-semibold text-zinc-900">
         {t("button")}
       </h2>
       {linkSection}
@@ -291,14 +291,14 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
   const panelContent = (
     <div className="flex flex-col gap-4 p-4">
       <div className="flex flex-col gap-0.5">
-        <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+        <h2 className="text-base font-semibold text-zinc-900">
           {lenses.length === 1 ? t("titleSingle") : t("title")}
         </h2>
-        <p className="text-xs leading-relaxed text-zinc-400 dark:text-zinc-500">{lensCaption}</p>
+        <p className="text-xs leading-relaxed text-zinc-400">{lensCaption}</p>
       </div>
 
       <Tabs.Root defaultValue="image" className="flex flex-col gap-4">
-        <Tabs.List className="flex gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800">
+        <Tabs.List className="flex gap-1 rounded-lg bg-zinc-100 p-1">
           <Tabs.Tab value="image" className={tabClass}>{t("tabImage")}</Tabs.Tab>
           <Tabs.Tab value="link" className={tabClass}>{t("tabLink")}</Tabs.Tab>
         </Tabs.List>
@@ -333,7 +333,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
                 shareUrl={shareUrl}
               />
             </div>
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white to-transparent dark:from-zinc-900" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white to-transparent" />
             <div className="absolute right-2 top-2 rounded-md bg-black/30 p-1 opacity-0 transition-opacity group-hover:opacity-100">
               <Expand className="size-3.5 text-white" />
             </div>
@@ -357,7 +357,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
                 <button
                   onClick={handleShareImage}
                   disabled={posterGenerating}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-700 disabled:opacity-40 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-700 disabled:opacity-40"
                 >
                   {posterGenerating ? <Loader2 className="size-4 animate-spin" /> : <Share2 className="size-4" />}
                   {t("posterShare")}
@@ -366,7 +366,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
                   onClick={handleDownload}
                   disabled={posterGenerating}
                   title={t("posterDownload")}
-                  className="flex items-center justify-center rounded-lg border border-zinc-200 px-3 py-2.5 text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                  className="flex items-center justify-center rounded-lg border border-zinc-200 px-3 py-2.5 text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-40"
                 >
                   <Download className="size-4" />
                 </button>
@@ -375,7 +375,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
               <button
                 onClick={handleDownload}
                 disabled={posterGenerating}
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-700 disabled:opacity-40 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-700 disabled:opacity-40"
               >
                 {posterGenerating ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
                 {t("posterDownload")}
@@ -392,10 +392,10 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
 
   const defaultTriggerClass =
     triggerClassName ??
-    "flex cursor-pointer items-center gap-1.5 rounded-md p-1 text-sm text-zinc-500 outline-none transition-colors hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:text-zinc-400 dark:hover:text-zinc-50";
+    "flex cursor-pointer items-center gap-1.5 rounded-md p-1 text-sm text-zinc-500 outline-none transition-colors hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-400";
 
   const fabTriggerClass =
-    "flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-zinc-900 text-white shadow-lg outline-none transition-colors hover:bg-zinc-700 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200";
+    "flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-zinc-900 text-white shadow-lg outline-none transition-colors hover:bg-zinc-700 focus-visible:ring-2 focus-visible:ring-zinc-400";
 
   const triggerContent = isFab ? <Share2 className="size-5" /> : iconOnly ? (
     <Share2 className="size-4" />
@@ -418,7 +418,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner side={isFab ? "top" : "bottom"} align="end" sideOffset={8}>
-          <Popover.Popup className="w-96 max-h-[calc(100svh-80px)] overflow-y-auto origin-(--transform-origin) rounded-xl bg-white shadow-lg ring-1 ring-zinc-200 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 dark:bg-zinc-900 dark:ring-zinc-800">
+          <Popover.Popup className="w-96 max-h-[calc(100svh-80px)] overflow-y-auto origin-(--transform-origin) rounded-xl bg-white shadow-lg ring-1 ring-zinc-200 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
             {activePanel}
           </Popover.Popup>
         </Popover.Positioner>
@@ -435,9 +435,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
           lightbox.open ? "bg-transparent" : "bg-black/40"
         )} />
         <Drawer.Viewport>
-          <Drawer.Popup className={`fixed inset-x-0 bottom-0 max-h-[85svh] flex flex-col rounded-t-2xl bg-white pb-[var(--safe-inset-bottom)] ring-1 ring-zinc-200 duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:bg-zinc-900 dark:ring-zinc-800`}>
+          <Drawer.Popup className={`fixed inset-x-0 bottom-0 max-h-[85svh] flex flex-col rounded-t-2xl bg-white pb-[var(--safe-inset-bottom)] ring-1 ring-zinc-200 duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom`}>
             <div className="flex shrink-0 touch-none justify-center pb-1 pt-3">
-              <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+              <div className="h-1 w-10 rounded-full bg-zinc-300" />
             </div>
             <div className="overflow-y-auto pb-8">
               {activePanel}

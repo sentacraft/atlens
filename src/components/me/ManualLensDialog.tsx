@@ -38,8 +38,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 
 const INPUT_CLS =
-  "h-10 w-full min-w-0 rounded-lg border border-zinc-200 bg-white px-3 text-base text-zinc-900 outline-none transition-colors placeholder:text-zinc-400 focus:border-zinc-500 aria-invalid:border-red-500 sm:text-sm dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100";
-const LABEL_CLS = "flex flex-col gap-1.5 text-[13px] font-medium text-zinc-700 dark:text-zinc-300";
+  "h-10 w-full min-w-0 rounded-lg border border-zinc-200 bg-white px-3 text-base text-zinc-900 outline-none transition-colors placeholder:text-zinc-400 focus:border-zinc-500 aria-invalid:border-red-500 sm:text-sm";
+const LABEL_CLS = "flex flex-col gap-1.5 text-[13px] font-medium text-zinc-700";
 
 const FEATURE_LABEL_KEY: Record<LensFeature, string> = {
   weatherResistant: "featureWr",
@@ -83,7 +83,7 @@ export default function ManualLensDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPopup className="flex max-h-[90svh] w-full max-w-xl flex-col overflow-hidden">
-        <DialogHeader className="border-b border-zinc-100 pr-5 dark:border-zinc-800">
+        <DialogHeader className="border-b border-zinc-100 pr-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <DialogTitle>{t("manualTitle")}</DialogTitle>
@@ -159,7 +159,7 @@ function ManualLensForm({
           {input}
           {suffix && <span className="shrink-0 text-sm text-zinc-500">{suffix}</span>}
         </span>
-        {error && <span className="text-xs font-normal text-red-600 dark:text-red-400">{t(error)}</span>}
+        {error && <span className="text-xs font-normal text-red-600">{t(error)}</span>}
       </label>
     );
   }
@@ -180,7 +180,7 @@ function ManualLensForm({
   const zoom = isZoomDraft(draft);
   const generatedName = defaultLensName(draft);
   const errorText = (error: DraftError | undefined) =>
-    error && <span className="text-xs font-normal text-red-600 dark:text-red-400">{t(error)}</span>;
+    error && <span className="text-xs font-normal text-red-600">{t(error)}</span>;
 
   return (
     <form onSubmit={submit} onKeyDown={focusNextOnEnter} className="flex min-h-0 flex-1 flex-col">
@@ -230,7 +230,7 @@ function ManualLensForm({
           {t("lensName")}
           {textInput("model", { autoComplete: "off", enterKeyHint: "done", placeholder: generatedName })}
           {generatedName && !draft.model.trim() && (
-            <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">
+            <span className="text-xs font-normal text-zinc-500">
               {t("lensNameHint", { name: [draft.brand.trim(), generatedName].filter(Boolean).join(" ") })}
             </span>
           )}
@@ -311,16 +311,16 @@ function ManualLensForm({
           </Select>
         </div>
 
-        <details className="group border-t border-zinc-100 pt-4 dark:border-zinc-800">
-          <summary className="flex cursor-pointer list-none items-center gap-x-2 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+        <details className="group border-t border-zinc-100 pt-4">
+          <summary className="flex cursor-pointer list-none items-center gap-x-2 text-sm font-medium text-zinc-900">
             {t("moreFields")}
-            <span className="min-w-0 flex-1 truncate text-xs font-normal text-zinc-500 dark:text-zinc-400">{t("moreFieldsHint")}</span>
-            <ChevronDown className="h-4 w-4 shrink-0 text-zinc-500 transition-transform group-open:rotate-180 dark:text-zinc-400" />
+            <span className="min-w-0 flex-1 truncate text-xs font-normal text-zinc-500">{t("moreFieldsHint")}</span>
+            <ChevronDown className="h-4 w-4 shrink-0 text-zinc-500 transition-transform group-open:rotate-180" />
           </summary>
           <div className="mt-4 space-y-5">
             <div className="space-y-3">
               <div className="flex items-center gap-1.5">
-                <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                <label className="flex items-center gap-2 text-sm text-zinc-700">
                   <Checkbox checked={draft.adapted} onCheckedChange={(checked) => set("adapted", checked)} />
                   {t("adapted")}
                 </label>
@@ -329,13 +329,13 @@ function ManualLensForm({
                   onClick={() => setHelpOpen((value) => !value)}
                   aria-label={t("adaptedHelpLabel")}
                   aria-expanded={helpOpen}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-full text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full text-zinc-400 hover:text-zinc-700"
                 >
                   <CircleHelp className="h-4 w-4" />
                 </button>
               </div>
               {helpOpen && (
-                <p className="rounded-lg bg-zinc-50 px-3 py-2 text-xs leading-5 text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400">
+                <p className="rounded-lg bg-zinc-50 px-3 py-2 text-xs leading-5 text-zinc-600">
                   {t("adaptedHelp")}
                 </p>
               )}
@@ -372,7 +372,7 @@ function ManualLensForm({
 
             <label className={LABEL_CLS}>
               {t("notes")}
-              <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">{t("notesHint")}</span>
+              <span className="text-xs font-normal text-zinc-500">{t("notesHint")}</span>
               <Textarea
                 value={draft.notes}
                 onChange={(event) => set("notes", event.target.value)}

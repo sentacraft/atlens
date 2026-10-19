@@ -11,7 +11,7 @@ export default function IrisTooltip({ children }: { children: React.ReactNode })
   return (
     <>
       <span
-        className="cursor-default underline decoration-dotted decoration-zinc-400 dark:decoration-zinc-500 underline-offset-2"
+        className="cursor-default underline decoration-dotted decoration-zinc-400 underline-offset-2"
         onMouseEnter={() => setVisible(true)}
         onMouseLeave={() => setVisible(false)}
         onMouseMove={(e) => setPos({ x: e.clientX, y: e.clientY })}
@@ -23,7 +23,7 @@ export default function IrisTooltip({ children }: { children: React.ReactNode })
           className="fixed z-50 pointer-events-none"
           style={{ left: pos.x + 18, top: pos.y + 18 }}
         >
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 shadow-xl">
+          <div className="rounded-2xl border border-zinc-200 bg-white p-3 shadow-xl">
             <Iris config={IRIS_HERO} uid="iris-tooltip" size={90} />
           </div>
         </div>

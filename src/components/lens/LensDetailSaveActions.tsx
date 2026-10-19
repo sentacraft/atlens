@@ -7,9 +7,9 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { useOwnedLens } from "@/hooks/useOwnedLens";
 
 const TOGGLE_CLS =
-  "inline-flex h-10 items-center gap-1.5 rounded-lg px-2 text-sm font-medium transition-colors hover:bg-zinc-100 disabled:opacity-60 dark:hover:bg-zinc-800";
-const TOGGLE_IDLE_CLS = "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100";
-const TOGGLE_ON_CLS = "text-zinc-900 dark:text-zinc-100";
+  "inline-flex h-10 items-center gap-1.5 rounded-lg px-2 text-sm font-medium transition-colors hover:bg-zinc-100 disabled:opacity-60";
+const TOGGLE_IDLE_CLS = "text-zinc-600 hover:text-zinc-900";
+const TOGGLE_ON_CLS = "text-zinc-900";
 
 export default function LensDetailSaveActions({ lensId }: { lensId: string }) {
   const t = useTranslations("LensActions");
@@ -19,7 +19,7 @@ export default function LensDetailSaveActions({ lensId }: { lensId: string }) {
 
   return (
     <div className="flex items-center gap-0.5">
-      <span aria-hidden="true" className="mr-1.5 ml-0.5 h-4 w-px bg-zinc-200 max-sm:hidden dark:bg-zinc-700" />
+      <span aria-hidden="true" className="mr-1.5 ml-0.5 h-4 w-px bg-zinc-200 max-sm:hidden" />
       <button
         type="button"
         onClick={() => favorites.toggle(lensId)}

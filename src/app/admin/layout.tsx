@@ -11,7 +11,7 @@ export const metadata = {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={fontClassName}>
-      <body className="bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
+      <body className="bg-zinc-50 text-zinc-900">
         {children}
       </body>
     </html>

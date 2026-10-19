@@ -47,8 +47,8 @@ const SECTION_TITLE_KEY = {
 } as const satisfies Record<SectionId, string>;
 
 const SECTION_CLS = "flex scroll-mt-[calc(var(--nav-height)+72px)] flex-col gap-4 md:scroll-mt-[calc(var(--nav-height)+24px)] md:gap-5";
-const SECTION_TITLE_CLS = "font-heading text-xl font-bold text-zinc-900 dark:text-zinc-100";
-const SECTION_SUB_CLS = "mt-0.5 text-[13px] leading-5 text-zinc-500 dark:text-zinc-400 md:mt-1";
+const SECTION_TITLE_CLS = "font-heading text-xl font-bold text-zinc-900";
+const SECTION_SUB_CLS = "mt-0.5 text-[13px] leading-5 text-zinc-500 md:mt-1";
 
 export default function ProfilePage({ lenses }: { lenses: LensSummary[] }) {
   const { data: session, isPending } = authClient.useSession();
@@ -70,8 +70,8 @@ function SignInPrompt() {
   const openSignIn = useSignInDialog();
   return (
     <div className="mx-auto flex max-w-md flex-col items-center gap-3 px-5 py-24 text-center">
-      <h1 className="font-heading text-2xl font-bold text-zinc-900 dark:text-zinc-100">{t("signInTitle")}</h1>
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">{t("signInBody")}</p>
+      <h1 className="font-heading text-2xl font-bold text-zinc-900">{t("signInTitle")}</h1>
+      <p className="text-sm text-zinc-500">{t("signInBody")}</p>
       <button
         type="button"
         onClick={() => openSignIn()}
@@ -129,8 +129,8 @@ function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] })
             className={cn(
               "rounded-lg px-3 py-2 text-sm transition-colors",
               active === id
-                ? "bg-zinc-100 font-medium text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
-                : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100",
+                ? "bg-zinc-100 font-medium text-zinc-900"
+                : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900",
             )}
           >
             {t(SECTION_TITLE_KEY[id])}
@@ -143,7 +143,7 @@ function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] })
 
         <nav
           aria-label={t("sectionsLabel")}
-          className="sticky z-20 -mx-5 -mt-4 flex gap-2 overflow-x-auto border-b border-zinc-100 bg-white/90 px-5 py-2.5 backdrop-blur-sm transition-[top] duration-300 ease-in-out md:hidden dark:border-zinc-800 dark:bg-zinc-950/90"
+          className="sticky z-20 -mx-5 -mt-4 flex gap-2 overflow-x-auto border-b border-zinc-100 bg-white/90 px-5 py-2.5 backdrop-blur-sm transition-[top] duration-300 ease-in-out md:hidden"
           style={{ top: navHidden ? 0 : "var(--nav-height)" }}
         >
           {SECTIONS.map((id) => (
@@ -206,7 +206,7 @@ function ProfileHeader({ user }: { user: ProfileUser }) {
             <h1
               className={cn(
                 "truncate font-heading text-2xl font-bold md:text-[28px] md:leading-9",
-                user.name ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-400 dark:text-zinc-500",
+                user.name ? "text-zinc-900" : "text-zinc-400",
               )}
             >
               {user.name || t("nameUnset")}
@@ -221,7 +221,7 @@ function ProfileHeader({ user }: { user: ProfileUser }) {
             </button>
           </div>
         )}
-        <p className="truncate text-[13px] text-zinc-500 md:text-sm dark:text-zinc-400">
+        <p className="truncate text-[13px] text-zinc-500 md:text-sm">
           {user.email}
           {providers && ` · ${signedInWith}`}
         </p>
@@ -263,7 +263,7 @@ function NameForm({ initialName, onDone }: { initialName: string; onDone: () => 
         placeholder={t("namePlaceholder")}
         maxLength={60}
         autoFocus
-        className="h-10 min-w-0 flex-1 rounded-lg border border-zinc-300 bg-white px-3 text-base text-zinc-900 outline-none focus:border-zinc-500 md:max-w-xs dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100"
+        className="h-10 min-w-0 flex-1 rounded-lg border border-zinc-300 bg-white px-3 text-base text-zinc-900 outline-none focus:border-zinc-500 md:max-w-xs"
       />
       <button
         type="submit"
@@ -275,7 +275,7 @@ function NameForm({ initialName, onDone }: { initialName: string; onDone: () => 
       <button
         type="button"
         onClick={onDone}
-        className="h-10 rounded-lg px-3 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+        className="h-10 rounded-lg px-3 text-sm text-zinc-600 transition-colors hover:bg-zinc-100"
       >
         {t("cancel")}
       </button>
@@ -295,8 +295,8 @@ function SectionHeading({ id, subtitle }: { id: SectionId; subtitle?: string }) 
 
 function SettingRow({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between md:gap-6 md:border-b md:border-zinc-100 md:px-5 md:py-4 md:last:border-b-0 dark:md:border-zinc-800">
-      <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{label}</div>
+    <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between md:gap-6 md:border-b md:border-zinc-100 md:px-5 md:py-4 md:last:border-b-0">
+      <div className="text-sm font-medium text-zinc-900">{label}</div>
       {children}
     </div>
   );
@@ -351,7 +351,7 @@ function SettingsSection({ userId }: { userId: string }) {
   return (
     <section id="settings" className={SECTION_CLS}>
       <SectionHeading id="settings" subtitle={t("settingsSubtitle")} />
-      <div className="flex flex-col gap-4 md:gap-0 md:rounded-2xl md:border md:border-zinc-200 dark:md:border-zinc-800">
+      <div className="flex flex-col gap-4 md:gap-0 md:rounded-2xl md:border md:border-zinc-200">
         <SettingRow label={t("languageLabel")}>
           <SegmentedControl<Locale>
             ariaLabel={t("languageLabel")}
@@ -389,17 +389,17 @@ function AccountSection({ email }: { email: string }) {
   return (
     <section id="account" className={SECTION_CLS}>
       <SectionHeading id="account" />
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6 md:rounded-2xl md:border md:border-zinc-200 md:px-5 md:py-4 dark:md:border-zinc-800">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6 md:rounded-2xl md:border md:border-zinc-200 md:px-5 md:py-4">
         <div>
-          <div className="hidden text-sm font-medium text-zinc-900 md:block dark:text-zinc-100">{t("deleteLabel")}</div>
-          <p className="text-[13px] leading-5 text-zinc-500 md:text-xs dark:text-zinc-400">{t("deleteHint")}</p>
+          <div className="hidden text-sm font-medium text-zinc-900 md:block">{t("deleteLabel")}</div>
+          <p className="text-[13px] leading-5 text-zinc-500 md:text-xs">{t("deleteHint")}</p>
         </div>
         <button
           type="button"
           onClick={() => setDeleteOpen(true)}
           className={cn(
             ACTION_OUTLINE_CLS,
-            "h-11 shrink-0 justify-center text-red-600 md:h-9 dark:text-red-400",
+            "h-11 shrink-0 justify-center text-red-600 md:h-9",
           )}
         >
           {t("deleteLabel")}

@@ -53,7 +53,7 @@ export default function DeleteAccountDialog({
         <DialogHeader>
           <DialogClose
             aria-label={t("close")}
-            className="absolute top-4 right-4 inline-flex h-8 w-8 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+            className="absolute top-4 right-4 inline-flex h-8 w-8 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
           >
             <X className="h-4 w-4" />
           </DialogClose>
@@ -63,7 +63,7 @@ export default function DeleteAccountDialog({
           </DialogDescription>
         </DialogHeader>
         {deleteError && (
-          <p className="px-5 pb-2 text-sm text-red-600 dark:text-red-400">{deleteError}</p>
+          <p className="px-5 pb-2 text-sm text-red-600">{deleteError}</p>
         )}
         <DialogFooter>
           <DialogClose
@@ -79,7 +79,7 @@ export default function DeleteAccountDialog({
               disabled={deleting}
               className={cn(
                 ACTION_PRIMARY_CLS,
-                "h-9 rounded-lg bg-red-600 px-3 text-sm hover:bg-red-700 dark:bg-red-500 dark:text-white dark:hover:bg-red-600",
+                "h-9 rounded-lg bg-red-600 px-3 text-sm hover:bg-red-700",
               )}
             >
               {deleting ? t("deleteEmailSending") : t("deleteEmailSend")}

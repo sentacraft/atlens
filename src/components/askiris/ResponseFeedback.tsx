@@ -26,7 +26,7 @@ const REASONS = [
 type ReasonCode = (typeof REASONS)[number];
 
 const OPTION_CLS =
-  "rounded-md px-1.5 py-1 text-zinc-400 transition-colors hover:text-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/50 dark:text-zinc-500 dark:hover:text-zinc-200";
+  "rounded-md px-1.5 py-1 text-zinc-400 transition-colors hover:text-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/50";
 
 function logFeedbackFailure(responseMessageId: string, error: unknown): void {
   console.error("[askiris] response feedback request failed", {
@@ -75,7 +75,7 @@ export default function ResponseFeedback({ responseMessageId }: { responseMessag
   return (
     <div className="flex flex-col gap-2 px-1 pt-1 text-sm">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <span role={rating === null ? undefined : "status"} className="text-zinc-600 dark:text-zinc-300">
+        <span role={rating === null ? undefined : "status"} className="text-zinc-600">
           {rating === null ? t("prompt") : detailsSent ? t("detailsThanks") : t("thanks")}
         </span>
         {/* One group, so the × wraps together with the options instead of alone. */}
@@ -138,7 +138,7 @@ export default function ResponseFeedback({ responseMessageId }: { responseMessag
                 rows={5}
                 maxLength={2000}
               />
-              <p className="text-[13px] leading-relaxed text-zinc-500 dark:text-zinc-400">{t("notice")}</p>
+              <p className="text-[13px] leading-relaxed text-zinc-500">{t("notice")}</p>
             </div>
             <DialogFooter className="border-t-0 pt-0">
               <DialogCancel render={<Button type="button" variant="outline" size="lg" />}>{t("cancel")}</DialogCancel>

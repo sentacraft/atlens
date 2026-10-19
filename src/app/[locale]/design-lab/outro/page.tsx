@@ -82,11 +82,11 @@ export default function OutroPage() {
       </div>
 
       {controls && (
-        <div className="fixed bottom-5 left-1/2 flex max-w-[min(94vw,920px)] -translate-x-1/2 flex-wrap items-center justify-center gap-x-4 gap-y-2 rounded-2xl border border-zinc-200 bg-white/95 px-5 py-3 text-sm text-zinc-700 shadow-lg backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/95 dark:text-zinc-200">
+        <div className="fixed bottom-5 left-1/2 flex max-w-[min(94vw,920px)] -translate-x-1/2 flex-wrap items-center justify-center gap-x-4 gap-y-2 rounded-2xl border border-zinc-200 bg-white/95 px-5 py-3 text-sm text-zinc-700 shadow-lg backdrop-blur">
           <button
             type="button"
             onClick={triggerReplay}
-            className="rounded-md px-2 py-1 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            className="rounded-md px-2 py-1 font-medium hover:bg-zinc-100"
           >
             ↻ Replay
           </button>
@@ -141,7 +141,7 @@ export default function OutroPage() {
             />
             <span className="w-9 text-right tabular-nums text-xs text-zinc-400">{gap}</span>
           </label>
-          <span className="text-xs text-zinc-400 dark:text-zinc-500">h: hide · space: replay</span>
+          <span className="text-xs text-zinc-400">h: hide · space: replay</span>
         </div>
       )}
     </div>
