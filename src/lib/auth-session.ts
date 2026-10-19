@@ -17,3 +17,12 @@ export async function getAccountUserId(request: Request): Promise<string | undef
   const user = await getSessionUser(request);
   return user && !user.isAnonymous ? user.id : undefined;
 }
+
+/** Whether the request's session belongs to an account, not a guest; never extends the session. */
+export async function hasAccountSession(request: Request): Promise<boolean> {
+  const session = await createAuth().api.getSession({
+    headers: request.headers,
+    query: { disableRefresh: true },
+  });
+  return Boolean(session?.user && !session.user.isAnonymous);
+}

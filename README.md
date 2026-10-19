@@ -293,6 +293,7 @@ cp .env.example .env.local
 # Create the local D1 databases
 pnpm exec wrangler d1 migrations apply atlens-app --local
 pnpm exec wrangler d1 migrations apply atlens-askiris-traces --local
+pnpm exec wrangler d1 migrations apply atlens-analytics --local
 
 pnpm run dev
 ```

@@ -1,13 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { toDataPoint, trackPayloadSchema } from "@/lib/analytics/events";
-import { SID_COOKIE, SID_TTL_SECONDS, parseSid, parseInternal } from "@/lib/analytics/session";
+import { parseEventProps, trackPayloadSchema } from "@/lib/analytics/events";
+import { VID_COOKIE, VID_TTL_SECONDS, isInternalBrowser, readVid } from "@/lib/analytics/session";
+import { insertEvent } from "@/lib/analytics/store";
+import { hasAccountSession } from "@/lib/auth-session";
 import { isBypassed } from "@/lib/rate-limit";
 
 const MAX_BODY_BYTES = 4096;
+const MAX_PATH_LENGTH = 256;
 
-/** Writes one product analytics event to Analytics Engine and sets the analytics session cookie. Public. */
-export async function POST(req: Request): Promise<NextResponse> {
+/** Records one product analytics event and sets the anonymous visitor cookie. Public; 400 on a malformed event, 413 on an oversized body. */
+export async function POST(req: NextRequest): Promise<NextResponse> {
   const raw = await req.text();
   if (raw.length > MAX_BODY_BYTES) {
     return new NextResponse(null, { status: 413 });
@@ -23,38 +26,37 @@ export async function POST(req: Request): Promise<NextResponse> {
     return new NextResponse(null, { status: 400 });
   }
 
-  const { event } = parsed.data;
-  const locale = (parsed.data.locale ?? "").slice(0, 8);
-  const props = parsed.data.props ?? {};
-
-  const cookieHeader = req.headers.get("cookie");
-  const sid = parseSid(cookieHeader) ?? crypto.randomUUID();
-  const internal =
-    parseInternal(cookieHeader) || isBypassed(req);
+  const { event, locale, path, props } = parsed.data;
+  const existingVid = readVid(req.cookies);
+  const vid = existingVid ?? crypto.randomUUID();
 
   try {
-    const { env } = getCloudflareContext();
-    const ae = env.ANALYTICS;
-    if (ae) {
-      ae.writeDataPoint(toDataPoint(event, sid, locale, props, internal));
-    }
+    const { env, ctx } = getCloudflareContext();
+    const signedIn = await hasAccountSession(req).catch(() => false);
+    const write = insertEvent(env.ANALYTICS_DB, {
+      event,
+      ts: Date.now(),
+      vid,
+      locale: locale?.slice(0, 8) ?? null,
+      path: path?.slice(0, MAX_PATH_LENGTH) ?? null,
+      signedIn,
+      internal: isInternalBrowser(req.cookies) || isBypassed(req),
+      props: parseEventProps(event, props),
+    }).catch((error: unknown) => console.error("[track] failed to write event", error));
+    ctx.waitUntil(write);
   } catch {
   }
 
-  const isSecure =
-    req.url.startsWith("https://") || process.env.NODE_ENV === "production";
-  const cookie = [
-    `${SID_COOKIE}=${sid}`,
-    "Path=/",
-    `Max-Age=${SID_TTL_SECONDS}`,
-    "SameSite=Lax",
-    "HttpOnly",
-    isSecure ? "Secure" : null,
-  ]
-    .filter(Boolean)
-    .join("; ");
-
   const res = new NextResponse(null, { status: 204 });
-  res.headers.append("Set-Cookie", cookie);
+  // Set once and never refreshed, so a browser is recognised for at most 30 days.
+  if (!existingVid) {
+    res.cookies.set(VID_COOKIE, vid, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: VID_TTL_SECONDS,
+    });
+  }
   return res;
 }

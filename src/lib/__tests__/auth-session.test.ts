@@ -6,7 +6,7 @@ vi.mock("@/lib/auth", () => ({
   createAuth: () => ({ api: { getSession } }),
 }));
 
-const { getAccountUserId, getSessionUserId } = await import("../auth-session");
+const { getAccountUserId, getSessionUserId, hasAccountSession } = await import("../auth-session");
 
 const request = new Request("http://localhost/api/me/gear");
 
@@ -39,5 +39,25 @@ describe("getAccountUserId", () => {
     getSession.mockResolvedValue(null);
 
     await expect(getAccountUserId(request)).resolves.toBeUndefined();
+  });
+});
+
+describe("hasAccountSession", () => {
+  it("is true for an account and false for a guest or no session", async () => {
+    getSession.mockResolvedValueOnce({ user: { id: "u1", isAnonymous: false } });
+    getSession.mockResolvedValueOnce({ user: { id: "guest", isAnonymous: true } });
+    getSession.mockResolvedValueOnce(null);
+
+    await expect(hasAccountSession(request)).resolves.toBe(true);
+    await expect(hasAccountSession(request)).resolves.toBe(false);
+    await expect(hasAccountSession(request)).resolves.toBe(false);
+  });
+
+  it("never extends the session", async () => {
+    getSession.mockResolvedValue(null);
+
+    await hasAccountSession(request);
+
+    expect(getSession).toHaveBeenCalledWith(expect.objectContaining({ query: { disableRefresh: true } }));
   });
 });

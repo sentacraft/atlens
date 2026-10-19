@@ -228,14 +228,14 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "cookies",
     topic: "privacy",
-    text: "Cookies: a session cookie that keeps the user signed in, which Ask Iris also uses for a signed-out conversation so it stays with this browser; a 30-minute anonymous analytics session cookie, not linked to any account; and small cookies that remember the language, region, and dismissed banners.",
+    text: "Cookies: a session cookie that keeps the user signed in, which Ask Iris also uses for a signed-out conversation so it stays with this browser; an anonymous analytics cookie holding a random browser identifier that expires 30 days after it is set, not linked to any account; and small cookies that remember the language, region, and dismissed banners.",
     sources: ["src/lib/analytics/session.ts", "src/lib/locale-preference.ts", "src/hooks/useCountryCode.ts"],
     links: ["page:aboutPrivacy"],
   },
   {
     id: "analytics",
     topic: "privacy",
-    text: "Atlens uses Cloudflare Web Analytics and its own event statistics on Cloudflare. Usage statistics record no IP address and are not linked to accounts, only to a random 30-minute session ID. Ask Iris statistics are anonymized before they are recorded. Service logs keep no cookies, IP addresses, or sign-in credentials.",
+    text: "Atlens uses Cloudflare Web Analytics and its own event statistics on Cloudflare. Usage statistics record no IP address and are not linked to accounts: they record only whether someone is signed in and a random browser identifier that expires 30 days after it is set. Ask Iris statistics are anonymized before they are recorded. Service logs keep no cookies, IP addresses, or sign-in credentials.",
     sources: ["src/lib/analytics/"],
     links: ["page:aboutPrivacy"],
   },
