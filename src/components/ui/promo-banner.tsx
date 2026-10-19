@@ -41,13 +41,13 @@ export default function PromoBanner({
   };
 
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50/60 px-3 py-2 text-[12px] text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900/30 dark:text-zinc-400">
+    <div className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50/60 px-3 py-2 text-[12px] text-zinc-600">
       <span className="min-w-0 truncate">{message}</span>
       <Link
         href={ctaHref}
         prefetch={false}
         aria-label={ctaLabel}
-        className="inline-flex shrink-0 items-center gap-1 font-medium text-zinc-700 underline-offset-2 hover:text-zinc-900 hover:underline dark:text-zinc-300 dark:hover:text-zinc-50"
+        className="inline-flex shrink-0 items-center gap-1 font-medium text-zinc-700 underline-offset-2 hover:text-zinc-900 hover:underline"
       >
         <span className="hidden sm:inline">{ctaLabel}</span>
         <ArrowRight className="size-3" />
@@ -56,7 +56,7 @@ export default function PromoBanner({
         type="button"
         onClick={dismiss}
         aria-label={dismissLabel}
-        className="ml-auto inline-flex size-5 shrink-0 items-center justify-center rounded text-zinc-400 hover:bg-zinc-200/60 hover:text-zinc-700 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+        className="ml-auto inline-flex size-5 shrink-0 items-center justify-center rounded text-zinc-400 hover:bg-zinc-200/60 hover:text-zinc-700"
       >
         <X className="size-3.5" />
       </button>

@@ -38,23 +38,23 @@ export function CompareMobileBuyPanel({ lenses }: Props) {
   const showDisclosure = shouldShowDisclosure(lensLinks.length > 0, hasAffiliate, locale);
 
   return (
-    <div className="mt-3 mb-44 overflow-hidden rounded-xl border border-zinc-200 bg-white sm:hidden dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="border-b border-zinc-100 bg-zinc-50/60 px-3 py-2 dark:border-zinc-800/60 dark:bg-zinc-900">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+    <div className="mt-3 mb-44 overflow-hidden rounded-xl border border-zinc-200 bg-white sm:hidden">
+      <div className="border-b border-zinc-100 bg-zinc-50/60 px-3 py-2">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
           {t("whereToBuy")}
         </span>
       </div>
-      <ul className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+      <ul className="divide-y divide-zinc-100">
         {lensLinks.map(({ lens }) => {
           const sel = pickPriceEntry(lens.pricing, locale);
           return (
             <li key={lens.id} className="flex flex-col gap-2 px-3 py-2.5">
               <div className="flex items-baseline justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
-                  <span className="shrink-0 text-[10px] text-zinc-400 dark:text-zinc-500">
+                  <span className="shrink-0 text-[10px] text-zinc-400">
                     {lensSubtitleLine(tBrand(lens.brand), lens.series)}
                   </span>
-                  <span className="truncate text-[12px] font-semibold text-zinc-900 dark:text-zinc-50">
+                  <span className="truncate text-[12px] font-semibold text-zinc-900">
                     {lens.model}
                   </span>
                 </div>
@@ -70,7 +70,7 @@ export function CompareMobileBuyPanel({ lenses }: Props) {
         })}
       </ul>
       {showDisclosure && (
-        <PurchaseDisclosureCaption className="border-t border-zinc-100 dark:border-zinc-800/60" />
+        <PurchaseDisclosureCaption className="border-t border-zinc-100" />
       )}
     </div>
   );

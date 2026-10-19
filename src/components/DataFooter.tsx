@@ -35,14 +35,14 @@ export default function DataInfo({ mountStats, lastAddedAt }: DataInfoProps) {
   return (
     <div className="flex flex-col items-center gap-0.5 mt-3">
       <p
-        className="text-[11px] tracking-wider text-zinc-400 dark:text-zinc-500 font-mono"
+        className="text-[11px] tracking-wider text-zinc-400 font-mono"
         title={h("dataTooltip")}
       >
         {h("dataSnapshotCount", { count: lensCount, brands: brandCount })}
       </p>
       <Link
         href={RECENTLY_ADDED_PATH}
-        className="inline-flex items-center gap-1 text-[11px] tracking-wider font-mono text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+        className="inline-flex items-center gap-1 text-[11px] tracking-wider font-mono text-zinc-400 hover:text-zinc-600 transition-colors"
       >
         <Sparkles className="size-3" />
         <span>{t("recentlyAdded")}</span>

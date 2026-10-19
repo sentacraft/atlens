@@ -39,10 +39,10 @@ export default function HomeCollections({
     <WhenMountHasCollections>
       <section className={`mx-auto w-full max-w-6xl ${PAGE_GUTTER_CLS}`}>
         <div className="mb-2 flex items-baseline justify-between gap-3">
-          <h2 className="text-xs font-semibold text-zinc-600 dark:text-zinc-300">{tNav("collections")}</h2>
+          <h2 className="text-xs font-semibold text-zinc-600">{tNav("collections")}</h2>
           <Link
             href={collectionsPath(mount)}
-            className="text-[13px] font-medium text-zinc-900 underline-offset-4 hover:underline sm:hidden dark:text-zinc-100"
+            className="text-[13px] font-medium text-zinc-900 underline-offset-4 hover:underline sm:hidden"
           >
             {t("allCollections", { count: total })} →
           </Link>
@@ -50,7 +50,7 @@ export default function HomeCollections({
         <HorizontalScrollRail
           className="gap-2 px-5 py-0.5"
           wrapperClassName="-mx-5 sm:hidden"
-          fadeBg="from-white dark:from-black"
+          fadeBg="from-white"
         >
           {featured.map(({ collection }) => (
             <Link
@@ -71,7 +71,7 @@ export default function HomeCollections({
           <li className="grid">
             <Link
               href={collectionsPath(mount)}
-              className="flex h-full min-h-[88px] items-center justify-center rounded-2xl max-sm:min-h-0 max-sm:rounded-xl max-sm:py-2 max-sm:text-[13px] border border-zinc-200 bg-zinc-50 px-3 text-center text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+              className="flex h-full min-h-[88px] items-center justify-center rounded-2xl max-sm:min-h-0 max-sm:rounded-xl max-sm:py-2 max-sm:text-[13px] border border-zinc-200 bg-zinc-50 px-3 text-center text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-900"
             >
               {t("allCollections", { count: total })} →
             </Link>

@@ -24,7 +24,7 @@ export default function LensSectionNav({ rightSlot }: { rightSlot?: ReactNode })
   return (
     <nav
       aria-label={t("lenses")}
-      className="flex w-full items-center border-b border-zinc-200 dark:border-zinc-800"
+      className="flex w-full items-center border-b border-zinc-200"
     >
       <div className="flex items-center gap-6">
         {tabs.map((tab) => {
@@ -37,8 +37,8 @@ export default function LensSectionNav({ rightSlot }: { rightSlot?: ReactNode })
               className={cn(
                 "relative -mb-px flex items-center border-b-2 pb-3 pt-0.5 text-[15px] font-semibold transition-colors",
                 selected
-                  ? "border-zinc-900 text-zinc-900 dark:border-zinc-100 dark:text-zinc-50"
-                  : "border-transparent text-zinc-400 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-200",
+                  ? "border-zinc-900 text-zinc-900"
+                  : "border-transparent text-zinc-400 hover:text-zinc-700",
               )}
             >
               {tab.label}

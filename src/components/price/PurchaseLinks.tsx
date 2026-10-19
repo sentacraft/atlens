@@ -16,7 +16,7 @@ interface Props {
   className?: string;
 }
 
-const LINK_CLS = "inline-flex whitespace-nowrap items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200";
+const LINK_CLS = "inline-flex whitespace-nowrap items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900";
 
 function PurchaseLinkList({ links, lensId, customId, className }: { links: PurchaseLink[]; lensId: string; customId?: string; className?: string }) {
   return (
@@ -64,11 +64,11 @@ export function PurchaseDisclosureCaption({ className }: { className?: string })
   return (
     <p
       className={cn(
-        "px-3 py-2 text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400",
+        "px-3 py-2 text-[11px] leading-relaxed text-zinc-500",
         className,
       )}
     >
-      <Info className="inline size-3 -mt-px mr-1 text-zinc-400 dark:text-zinc-500" aria-hidden="true" />
+      <Info className="inline size-3 -mt-px mr-1 text-zinc-400" aria-hidden="true" />
       {t(purchaseDisclosureKey(locale))}
     </p>
   );

@@ -71,14 +71,14 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
           transition={spring.snappy}
           ref={barRef}
           data-testid="compare-bar"
-          className={`fixed bottom-0 left-0 right-[var(--iris-panel-width,0px)] ${Z.fixed} border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-black/95 backdrop-blur-sm pb-[var(--safe-inset-bottom)]`}
+          className={`fixed bottom-0 left-0 right-[var(--iris-panel-width,0px)] ${Z.fixed} border-t border-zinc-200 bg-white/95 backdrop-blur-sm pb-[var(--safe-inset-bottom)]`}
         >
           <div className={`mx-auto flex max-w-7xl flex-col gap-3 py-3 sm:flex-row sm:items-center sm:gap-4 ${PAGE_GUTTER_CLS}`}>
             <HorizontalScrollRail
               scrollRef={chipsRef}
               className="min-w-0 flex-1 px-5 sm:px-0 gap-2 pb-1 sm:pb-0"
               wrapperClassName="flex min-w-0 flex-1 -mx-5 sm:mx-0"
-              fadeBg="from-white dark:from-black"
+              fadeBg="from-white"
               deps={[compareIds.length]}
               renderOverlay={({ canScrollLeft, canScrollRight }) => (
                 <>
@@ -112,13 +112,13 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
                       transition={spring.snappy}
-                      className="flex items-start gap-1.5 shrink-0 rounded-lg bg-zinc-100 px-2.5 py-1.5 dark:bg-zinc-800"
+                      className="flex items-start gap-1.5 shrink-0 rounded-lg bg-zinc-100 px-2.5 py-1.5"
                     >
                       <span className="flex max-w-[132px] min-w-0 flex-col leading-tight sm:max-w-[168px]">
-                        <span className="truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500 dark:text-zinc-400">
+                        <span className="truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
                           {lensSubtitleLine(brandName, lens.series)}
                         </span>
-                        <span className="truncate text-xs font-medium text-zinc-900 dark:text-zinc-100">
+                        <span className="truncate text-xs font-medium text-zinc-900">
                           {lens.model}
                         </span>
                       </span>
@@ -141,7 +141,7 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
             <div className="flex items-center justify-end gap-3 sm:shrink-0">
               <button
                 onClick={clearCompareWithUndo}
-                className="shrink-0 inline-flex h-9 items-center text-sm font-medium px-3 rounded-xl text-zinc-500 hover:bg-zinc-100/70 hover:text-zinc-800 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200 transition-colors"
+                className="shrink-0 inline-flex h-9 items-center text-sm font-medium px-3 rounded-xl text-zinc-500 hover:bg-zinc-100/70 hover:text-zinc-800 transition-colors"
               >
                 {t("clearCompare")}
               </button>
@@ -149,7 +149,7 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
                 type="button"
                 onClick={search.openSearch}
                 aria-label={tCompare("addLens")}
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-50"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-900"
               >
                 <Plus className="h-4 w-4" />
               </button>

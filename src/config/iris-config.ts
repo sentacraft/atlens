@@ -31,9 +31,9 @@ export type IrisInteractiveMode = IrisHoverMode | IrisTapMode;
 export interface IrisConfig extends StoredIrisParams {
   size: number;
 
-  // Undefined: Tailwind light/dark classes.
+  // Undefined: Tailwind classes.
   bladeColor?: string;
-  // Undefined: Tailwind light/dark classes.
+  // Undefined: Tailwind classes.
   strokeColor?: string;
   strokeWidth?: number;
 

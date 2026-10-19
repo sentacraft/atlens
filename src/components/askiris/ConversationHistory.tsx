@@ -55,13 +55,13 @@ export default function ConversationHistory({
           <Drawer.Viewport>
             <Drawer.Popup
               className={cn(
-                "fixed inset-y-0 left-0 flex w-[min(20rem,85vw)] flex-col border-r border-zinc-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-950",
+                "fixed inset-y-0 left-0 flex w-[min(20rem,85vw)] flex-col border-r border-zinc-200 bg-white shadow-2xl",
                 "pt-[calc(var(--safe-inset-top)+var(--titlebar-height))] pb-[var(--safe-inset-bottom)]",
                 "transition-transform duration-200 data-ending-style:-translate-x-full data-starting-style:-translate-x-full data-[swipe-dismiss]:!transition-none",
               )}
             >
               <div className="flex items-center justify-between gap-3 px-4 pt-4 pb-3">
-                <Drawer.Title className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                <Drawer.Title className="text-sm font-semibold text-zinc-900">
                   {t("history")}
                 </Drawer.Title>
                 <Drawer.Close aria-label={t("closeHistory")} className={cn(ICON_CLOSE_BTN_CLS, "size-8")}>
@@ -78,13 +78,13 @@ export default function ConversationHistory({
                 {listState === "loading" ? (
                   <div className="space-y-2 px-2" aria-busy="true">
                     {[0, 1, 2].map((key) => (
-                      <div key={key} className="h-12 animate-pulse rounded-lg bg-zinc-100 dark:bg-zinc-900" />
+                      <div key={key} className="h-12 animate-pulse rounded-lg bg-zinc-100" />
                     ))}
                   </div>
                 ) : listState === "error" ? (
-                  <p className="px-2 py-3 text-xs text-zinc-500 dark:text-zinc-400">{t("historyError")}</p>
+                  <p className="px-2 py-3 text-xs text-zinc-500">{t("historyError")}</p>
                 ) : conversations.length === 0 ? (
-                  <p className="px-2 py-3 text-xs text-zinc-500 dark:text-zinc-400">{t("historyEmpty")}</p>
+                  <p className="px-2 py-3 text-xs text-zinc-500">{t("historyEmpty")}</p>
                 ) : (
                   <ul className="space-y-1">
                     {conversations.map((conversation) => {
@@ -109,7 +109,7 @@ export default function ConversationHistory({
                           key={conversation.id}
                           className={cn(
                             "group flex items-start rounded-lg border transition-colors",
-                            active ? LIST_ITEM_ACTIVE_CLS : "border-transparent hover:bg-zinc-50 dark:hover:bg-zinc-900",
+                            active ? LIST_ITEM_ACTIVE_CLS : "border-transparent hover:bg-zinc-50",
                           )}
                         >
                           <button
@@ -118,10 +118,10 @@ export default function ConversationHistory({
                             aria-current={active ? "true" : undefined}
                             className="flex min-w-0 flex-1 flex-col gap-0.5 py-2.5 pl-3 text-left"
                           >
-                            <span className="line-clamp-2 text-sm leading-5 text-zinc-800 dark:text-zinc-200">
+                            <span className="line-clamp-2 text-sm leading-5 text-zinc-800">
                               {conversation.title}
                             </span>
-                            <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                            <span className="text-[11px] text-zinc-500">
                               {dateFormat.format(conversation.updatedAt)}
                             </span>
                           </button>
@@ -225,7 +225,7 @@ function RenameForm({ title, onDone }: { title: string; onDone: (title: string |
         maxLength={MAX_CONVERSATION_TITLE_LENGTH}
         autoFocus
         onFocus={(event) => event.currentTarget.select()}
-        className="h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-base text-zinc-900 outline-none focus:border-zinc-500 sm:text-sm dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100"
+        className="h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-base text-zinc-900 outline-none focus:border-zinc-500 sm:text-sm"
       />
     </form>
   );

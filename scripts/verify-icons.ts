@@ -4,7 +4,7 @@ import { readFileSync, existsSync, statSync } from "node:fs";
 import { inflateSync } from "node:zlib";
 import { resolve } from "node:path";
 
-import { SPLASH_DEVICES, SPLASH_BG, splashUrl, type SplashScheme } from "../src/config/splash.ts";
+import { SPLASH_DEVICES, SPLASH_BG, splashUrl } from "../src/config/splash.ts";
 
 interface Png {
   width: number;
@@ -128,15 +128,13 @@ const ICON_EXPECTATIONS: Expectation[] = [
   { path: "src/app/icon.png", width: 32, height: 32, bg: "transparent", mark: true },
 ];
 
-const SPLASH_EXPECTATIONS: Expectation[] = SPLASH_DEVICES.flatMap((device) =>
-  (["light", "dark"] as const).map<Expectation>((scheme: SplashScheme) => ({
-    path: "public" + splashUrl(device.label, scheme),
-    width: device.w,
-    height: device.h,
-    bg: hexToRgba(SPLASH_BG[scheme]),
-    mark: true,
-  }))
-);
+const SPLASH_EXPECTATIONS: Expectation[] = SPLASH_DEVICES.map((device) => ({
+  path: "public" + splashUrl(device.label),
+  width: device.w,
+  height: device.h,
+  bg: hexToRgba(SPLASH_BG),
+  mark: true,
+}));
 
 const EXISTENCE_ONLY: Array<{ path: string; minBytes: number }> = [
   { path: "public/favicon.ico", minBytes: 500 },

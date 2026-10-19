@@ -46,7 +46,7 @@ function LensHeaderContent({ lens }: { lens: Lens }) {
       href={lensPath(lens)}
       className="group/link flex flex-1 flex-col items-center"
     >
-      <div className="mb-1 flex w-full max-w-[80px] items-center justify-center overflow-hidden rounded-xl bg-zinc-50/70 p-1.5 sm:mb-2 sm:max-w-[160px] sm:p-3 dark:bg-zinc-900/50">
+      <div className="mb-1 flex w-full max-w-[80px] items-center justify-center overflow-hidden rounded-xl bg-zinc-50/70 p-1.5 sm:mb-2 sm:max-w-[160px] sm:p-3">
         <div className="relative aspect-square w-full overflow-hidden">
           <Image
             src={getLensImageUrl(lens.id)}
@@ -61,12 +61,12 @@ function LensHeaderContent({ lens }: { lens: Lens }) {
       </div>
 
       <div className="my-1.5 flex min-h-[1.5rem] flex-wrap items-center justify-center gap-1.5">
-        <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">
+        <span className="text-xs font-normal text-zinc-500">
           {lensSubtitleLine(tBrand(lens.brand), lens.series)}
         </span>
         <SpecialtyBadges {...deriveSpecialty(lens)} />
       </div>
-      <p className="mt-auto line-clamp-3 text-center font-semibold leading-snug text-zinc-900 transition-colors group-hover/link:text-zinc-600 dark:text-zinc-50 dark:group-hover/link:text-zinc-300">
+      <p className="mt-auto line-clamp-3 text-center font-semibold leading-snug text-zinc-900 transition-colors group-hover/link:text-zinc-600">
         {lens.model}
       </p>
     </Link>
@@ -95,7 +95,7 @@ function LensHeader({
   onShiftRight: () => void;
 }) {
   return (
-    <th className="group relative z-20 h-px align-top border-l border-zinc-200 bg-zinc-50 px-3 py-1 text-left transition-colors sm:py-1.5 sm:group-hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:sm:group-hover:bg-zinc-800">
+    <th className="group relative z-20 h-px align-top border-l border-zinc-200 bg-zinc-50 px-3 py-1 text-left transition-colors sm:py-1.5 sm:group-hover:bg-zinc-100">
       <div className="flex h-full flex-col">
         <div className="flex items-start justify-between gap-1 transition-opacity sm:absolute sm:inset-x-3 sm:top-1.5 sm:z-10 sm:opacity-0 sm:group-hover:opacity-100">
           <button
@@ -112,7 +112,7 @@ function LensHeader({
               onClick={onShiftLeft}
               disabled={!canShiftLeft}
               aria-label={shiftLeftLabel}
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-600 transition-colors active:bg-zinc-200 active:text-zinc-800 hover:bg-zinc-200 hover:text-zinc-700 disabled:cursor-default disabled:opacity-30 disabled:active:bg-transparent disabled:hover:bg-transparent sm:text-zinc-500 dark:text-zinc-300 dark:active:bg-zinc-700 dark:active:text-zinc-100 dark:hover:bg-zinc-700 dark:hover:text-zinc-200 dark:sm:text-zinc-400"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-600 transition-colors active:bg-zinc-200 active:text-zinc-800 hover:bg-zinc-200 hover:text-zinc-700 disabled:cursor-default disabled:opacity-30 disabled:active:bg-transparent disabled:hover:bg-transparent sm:text-zinc-500"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
             </button>
@@ -121,7 +121,7 @@ function LensHeader({
               onClick={onShiftRight}
               disabled={!canShiftRight}
               aria-label={shiftRightLabel}
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-600 transition-colors active:bg-zinc-200 active:text-zinc-800 hover:bg-zinc-200 hover:text-zinc-700 disabled:cursor-default disabled:opacity-30 disabled:active:bg-transparent disabled:hover:bg-transparent sm:text-zinc-500 dark:text-zinc-300 dark:active:bg-zinc-700 dark:active:text-zinc-100 dark:hover:bg-zinc-700 dark:hover:text-zinc-200 dark:sm:text-zinc-400"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-600 transition-colors active:bg-zinc-200 active:text-zinc-800 hover:bg-zinc-200 hover:text-zinc-700 disabled:cursor-default disabled:opacity-30 disabled:active:bg-transparent disabled:hover:bg-transparent sm:text-zinc-500"
             >
               <ChevronRight className="h-3.5 w-3.5" />
             </button>
@@ -146,11 +146,11 @@ function EmptyLensHeader({
   const search = useCompareLensSearch();
   return (
     // h-px lets children use h-full inside a table cell.
-    <th className="h-px align-top border-l border-zinc-200 bg-zinc-50 p-2 dark:border-zinc-800 dark:bg-zinc-900">
+    <th className="h-px align-top border-l border-zinc-200 bg-zinc-50 p-2">
       <button
         type="button"
         onClick={search.openSearch}
-        className="group flex h-full min-h-[110px] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-zinc-300 bg-zinc-50/60 text-center text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-100/70 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950/60 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
+        className="group flex h-full min-h-[110px] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-zinc-300 bg-zinc-50/60 text-center text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-100/70 hover:text-zinc-900"
       >
         <Search className="h-6 w-6 opacity-40 transition-opacity group-hover:opacity-70" />
         <span className="text-xs font-medium">{addLensLabel}</span>
@@ -317,7 +317,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
             : "opacity-0 -translate-y-1 pointer-events-none"
         }`}
       >
-      <div className="overflow-hidden border-b border-zinc-200 bg-white/95 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-950/95">
+      <div className="overflow-hidden border-b border-zinc-200 bg-white/95 backdrop-blur-sm">
       <div className="flex">
         {colWidths[0] != null && (
           <div style={{ width: colWidths[0], flexShrink: 0 }} />
@@ -330,12 +330,12 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                 style={{ width: colWidths[i + 1], flexShrink: 0 }}
                 className="px-2 py-1.5 text-center"
               >
-                <p className="truncate text-[10px] text-zinc-400 dark:text-zinc-500">
+                <p className="truncate text-[10px] text-zinc-400">
                   {lensSubtitleLine(tBrand(lens.brand), lens.series)}
                 </p>
                 <Link
                   href={lensPath(lens)}
-                  className="block truncate text-xs font-semibold text-zinc-900 hover:text-zinc-600 dark:text-zinc-50 dark:hover:text-zinc-300"
+                  className="block truncate text-xs font-semibold text-zinc-900 hover:text-zinc-600"
                 >
                   {lens.model}
                 </Link>
@@ -350,14 +350,14 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
     <div>
     {orderedLenses.length > 0 && (
       <DataSourceBar
-        className="rounded-t-xl border border-b-0 border-zinc-200 dark:border-zinc-800"
-        source={<span className="font-medium text-zinc-700 dark:text-zinc-300">{t("sourceAll")}</span>}
+        className="rounded-t-xl border border-b-0 border-zinc-200"
+        source={<span className="font-medium text-zinc-700">{t("sourceAll")}</span>}
       />
     )}
     <div
       ref={containerRef}
       className={cn(
-        "isolate overflow-x-auto overflow-y-clip border border-zinc-200 dark:border-zinc-800",
+        "isolate overflow-x-auto overflow-y-clip border border-zinc-200",
         orderedLenses.length > 0 ? "rounded-b-xl" : "rounded-xl",
       )}
     >
@@ -380,10 +380,10 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
         </colgroup>
 
         <thead ref={theadRef}>
-          <tr className="border-b border-zinc-200 dark:border-zinc-800">
-            <th className="sticky left-0 z-30 bg-zinc-50 px-3 py-3 dark:bg-zinc-900">
+          <tr className="border-b border-zinc-200">
+            <th className="sticky left-0 z-30 bg-zinc-50 px-3 py-3">
               {orderedLenses.length === 0 && (
-                <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                <span className="text-xs text-zinc-400">
                   {t("emptyHint", { count: MAX_COMPARE })}
                 </span>
               )}
@@ -420,15 +420,15 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
           {/* Disclaimers render outside the scrolling table so they wrap instead of being clipped. */}
           {orderedLenses.length > 0 && orderedLenses.some((l) => pickPriceEntry(l.pricing, locale) !== null) && (
             <React.Fragment>
-              <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
-                <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 break-words align-middle">
+              <tr className="border-b border-zinc-100 last:border-0">
+                <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 break-words align-middle">
                   <div className="flex flex-col items-end gap-0.5 text-right">
-                    <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                    <span className="text-xs font-medium text-zinc-500">
                       {tPricing("rowLabel")}
                     </span>
                     {/* Only when no retailer link renders: the Check price CTA otherwise carries the caveat. */}
                     {!hasAnyPurchaseLinks && (
-                      <span className="text-[11px] leading-tight text-amber-600 dark:text-amber-400">
+                      <span className="text-[11px] leading-tight text-amber-600">
                         <TriangleAlert className="inline-block align-[-0.125em] size-3 mr-0.5" aria-hidden="true" />
                         {tPricing("rowWarn")}
                       </span>
@@ -439,7 +439,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                   const sel = pickPriceEntry(lens.pricing, locale);
                   if (!sel) {
                     return (
-                      <td key={lens.id} className="px-3 py-3 text-center text-zinc-400 dark:text-zinc-600">
+                      <td key={lens.id} className="px-3 py-3 text-center text-zinc-400">
                         {valueCellLabels.missing}
                       </td>
                     );
@@ -451,16 +451,16 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                   );
                 })}
                 {Array.from({ length: emptySlotCount }).map((_, i) => (
-                  <td key={`empty-price-${i}`} className="border-l border-zinc-100 bg-white dark:border-zinc-800/60 dark:bg-zinc-950" />
+                  <td key={`empty-price-${i}`} className="border-l border-zinc-100 bg-white" />
                 ))}
               </tr>
 
               {hasAnyPurchaseLinks && (
-                <tr className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0">
-                  <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 dark:bg-zinc-900 align-middle">
+                <tr className="border-b border-zinc-100 last:border-0">
+                  <td className="sticky left-0 z-10 px-3 py-3 bg-zinc-50 align-middle">
                     <div className="flex items-center justify-end gap-1">
                       {showDisclosure && <FieldNotePopover note={tPurchase(purchaseDisclosureKey(locale))} />}
-                      <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                      <span className="text-xs font-medium text-zinc-500">
                         {tPurchase("whereToBuy")}
                       </span>
                     </div>
@@ -471,7 +471,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                     </td>
                   ))}
                   {Array.from({ length: emptySlotCount }).map((_, i) => (
-                    <td key={`empty-buy-${i}`} className="border-l border-zinc-100 bg-white dark:border-zinc-800/60 dark:bg-zinc-950" />
+                    <td key={`empty-buy-${i}`} className="border-l border-zinc-100 bg-white" />
                   ))}
                 </tr>
               )}
@@ -481,9 +481,9 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
           {orderedLenses.length > 0 && visibleGroups.map((group) => {
             return (
               <React.Fragment key={group.label}>
-                <tr className="border-b border-zinc-100 bg-zinc-100/80 dark:border-zinc-800/60 dark:bg-zinc-800/60">
+                <tr className="border-b border-zinc-100 bg-zinc-100/80">
                   <td colSpan={totalColSpan} className="h-8 text-center">
-                    <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
                       {group.label}
                     </span>
                   </td>
@@ -509,9 +509,9 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                   return (
                     <tr
                       key={row.label}
-                      className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
+                      className="border-b border-zinc-100 last:border-0"
                     >
-                      <td className="sticky left-0 z-10 px-3 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900 break-words">
+                      <td className="sticky left-0 z-10 px-3 py-3 text-right text-xs font-medium text-zinc-500 bg-zinc-50 break-words">
                         <div className="flex items-center justify-end gap-1">
                           {row.labelNote && <FieldNotePopover note={row.labelNote} variant={row.labelNoteVariant} />}
                           <span>{row.label}</span>
@@ -525,7 +525,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                           return (
                             <td
                               key={lens.id}
-                              className="px-3 py-3 text-center text-zinc-400 dark:text-zinc-600"
+                              className="px-3 py-3 text-center text-zinc-400"
                             >
                               {valueCellLabels.missing}
                             </td>
@@ -536,7 +536,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                           return (
                             <td
                               key={lens.id}
-                              className="px-3 py-3 text-center text-zinc-700 dark:text-zinc-300"
+                              className="px-3 py-3 text-center text-zinc-700"
                             >
                               <div className="flex items-center justify-center gap-1">
                                 <div>
@@ -548,7 +548,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                                     unknown={valueCellLabels.missing}
                                   />
                                   {resolved.subValue && (
-                                    <p className="mt-0.5 text-[11px] leading-relaxed font-normal text-zinc-400 dark:text-zinc-500">
+                                    <p className="mt-0.5 text-[11px] leading-relaxed font-normal text-zinc-400">
                                       {resolved.subValue}
                                     </p>
                                   )}
@@ -568,7 +568,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                             return (
                               <td
                                 key={lens.id}
-                                className="px-3 py-3 text-center font-medium tabular-nums text-zinc-700 dark:text-zinc-300 break-words"
+                                className="px-3 py-3 text-center font-medium tabular-nums text-zinc-700 break-words"
                               >
                                 <div className="flex items-center justify-center gap-1">
                                   <div className="flex flex-col items-center gap-0.5">
@@ -579,17 +579,17 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                                         return (
                                           <div
                                             key={i}
-                                            className={`flex items-baseline gap-1 ${lineHighlighted ? "text-blue-600 dark:text-blue-400" : ""}`}
+                                            className={`flex items-baseline gap-1 ${lineHighlighted ? "text-blue-600" : ""}`}
                                           >
                                             <span>{line.value}</span>
                                             {lineHighlighted && (
-                                              <span className="text-[10px] font-semibold text-blue-500 dark:text-blue-400 uppercase tracking-wide">
+                                              <span className="text-[10px] font-semibold text-blue-500 uppercase tracking-wide">
                                                 ★
                                               </span>
                                             )}
                                             {line.label && (
                                               <span
-                                                className={`text-[11px] ${lineHighlighted ? "text-blue-400/70 dark:text-blue-400/60" : "text-zinc-400 dark:text-zinc-500"}`}
+                                                className={`text-[11px] ${lineHighlighted ? "text-blue-400/70" : "text-zinc-400"}`}
                                               >
                                                 ({line.label})
                                               </span>
@@ -599,7 +599,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                                       }
                                     )}
                                     {resolved.subValue && (
-                                      <p className="mt-0.5 whitespace-pre-line text-[11px] leading-relaxed font-normal text-zinc-400 dark:text-zinc-500">
+                                      <p className="mt-0.5 whitespace-pre-line text-[11px] leading-relaxed font-normal text-zinc-400">
                                         {resolved.subValue}
                                       </p>
                                     )}
@@ -630,10 +630,10 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                             primaryNode = (
                               <>
                                 {before}
-                                <span className="text-blue-600 dark:text-blue-400">
+                                <span className="text-blue-600">
                                   {fragment}
                                 </span>
-                                <span className="ml-0.5 text-[10px] font-semibold text-blue-500 dark:text-blue-400 uppercase tracking-wide">
+                                <span className="ml-0.5 text-[10px] font-semibold text-blue-500 uppercase tracking-wide">
                                   ★
                                 </span>
                                 {after}
@@ -644,7 +644,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                               <>
                                 {displayVal}
                                 {isBest && (
-                                  <span className="ml-1.5 text-[10px] font-semibold text-blue-500 dark:text-blue-400 uppercase tracking-wide">
+                                  <span className="ml-1.5 text-[10px] font-semibold text-blue-500 uppercase tracking-wide">
                                     ★
                                   </span>
                                 )}
@@ -657,8 +657,8 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                               key={lens.id}
                               className={`px-3 py-3 text-center font-medium tabular-nums break-words ${
                                 isBest && !usePartialHighlight
-                                  ? "text-blue-600 dark:text-blue-400"
-                                  : "text-zinc-700 dark:text-zinc-300"
+                                  ? "text-blue-600"
+                                  : "text-zinc-700"
                               }`}
                             >
                               <div className="flex items-center justify-center gap-1">
@@ -667,7 +667,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                                     {primaryNode}
                                   </span>
                                   {resolved.subValue && (
-                                    <p className="mt-0.5 whitespace-pre-line text-[11px] leading-relaxed font-normal text-zinc-400 dark:text-zinc-500">
+                                    <p className="mt-0.5 whitespace-pre-line text-[11px] leading-relaxed font-normal text-zinc-400">
                                       {resolved.subValue}
                                     </p>
                                   )}
@@ -681,7 +681,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                         return (
                           <td
                             key={lens.id}
-                            className="px-3 py-3 text-center text-zinc-700 dark:text-zinc-300 break-words"
+                            className="px-3 py-3 text-center text-zinc-700 break-words"
                           >
                             <div className="flex items-center justify-center gap-1">
                               <div>
@@ -689,7 +689,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                                   {resolved.displayValue ?? valueCellLabels.missing}
                                 </span>
                                 {resolved.subValue && (
-                                  <p className="mt-0.5 whitespace-pre-line text-[11px] leading-relaxed text-zinc-400 dark:text-zinc-500">
+                                  <p className="mt-0.5 whitespace-pre-line text-[11px] leading-relaxed text-zinc-400">
                                     {resolved.subValue}
                                   </p>
                                 )}
@@ -702,7 +702,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                       {Array.from({ length: emptySlotCount }).map((_, i) => (
                         <td
                           key={`empty-cell-${i}`}
-                          className="border-l border-zinc-100 bg-white dark:border-zinc-800/60 dark:bg-zinc-950"
+                          className="border-l border-zinc-100 bg-white"
                         />
                       ))}
                     </tr>
@@ -715,8 +715,8 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
 
         {orderedLenses.length > 0 && (
           <tfoot>
-            <tr className="border-t border-zinc-200 bg-zinc-100/80 dark:border-zinc-800 dark:bg-zinc-800/60">
-              <td className="sticky left-0 z-10 bg-zinc-100 px-3 py-2 dark:bg-zinc-800" />
+            <tr className="border-t border-zinc-200 bg-zinc-100/80">
+              <td className="sticky left-0 z-10 bg-zinc-100 px-3 py-2" />
               {orderedLenses.map((lens) => {
                 const url = getLensUrl(lens, locale);
                 const fields = visibleGroups.flatMap((group) =>
@@ -743,7 +743,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                           {t("officialSite")}
                         </a>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 text-zinc-300 dark:text-zinc-600 cursor-not-allowed">
+                        <span className="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 text-zinc-300 cursor-not-allowed">
                           <ArrowUpRight className="h-3 w-3 shrink-0" />
                           {t("officialSite")}
                         </span>
@@ -762,7 +762,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                 );
               })}
               {Array.from({ length: emptySlotCount }).map((_, i) => (
-                <td key={`empty-links-${i}`} className="border-l border-zinc-200 dark:border-zinc-800" />
+                <td key={`empty-links-${i}`} className="border-l border-zinc-200" />
               ))}
             </tr>
           </tfoot>

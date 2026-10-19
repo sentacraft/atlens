@@ -23,7 +23,7 @@ export default function BackToTopButton() {
       tabIndex={show ? 0 : -1}
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       style={{ bottom: `calc(5rem + var(--compare-bar-height, 0px))` }}
-      className={`fixed right-6 ${Z.fixed} w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 opacity-0 scale-[0.8] pointer-events-none transition-[opacity,transform,background-color] duration-200 ease-out motion-reduce:transition-none data-[visible=true]:opacity-100 data-[visible=true]:scale-100 data-[visible=true]:pointer-events-auto`}
+      className={`fixed right-6 ${Z.fixed} w-12 h-12 flex items-center justify-center rounded-full bg-white border border-zinc-200 shadow-lg text-zinc-600 hover:bg-zinc-50 opacity-0 scale-[0.8] pointer-events-none transition-[opacity,transform,background-color] duration-200 ease-out motion-reduce:transition-none data-[visible=true]:opacity-100 data-[visible=true]:scale-100 data-[visible=true]:pointer-events-auto`}
       aria-label={tc("backToTop")}
     >
       <ChevronUp size={20} />

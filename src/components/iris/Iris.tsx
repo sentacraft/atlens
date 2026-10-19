@@ -342,7 +342,7 @@ export default function Iris({
                 <g transform={b0Transform}>
                   <path
                     d={shape}
-                    className={bladeColor ? undefined : "fill-zinc-900 dark:fill-zinc-100"}
+                    className={bladeColor ? undefined : "fill-zinc-900"}
                     fill={bladeColor}
                     stroke="none"
                   />

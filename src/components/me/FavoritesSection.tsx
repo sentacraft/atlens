@@ -44,7 +44,7 @@ export default function FavoritesSection({
     <section id={id} className={className}>
       {heading(favoriteLenses.length)}
       {favoriteLenses.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-zinc-200 px-4 py-5 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+        <p className="rounded-2xl border border-dashed border-zinc-200 px-4 py-5 text-center text-sm text-zinc-500">
           {t("noFavorites")}
         </p>
       ) : (
@@ -52,20 +52,20 @@ export default function FavoritesSection({
           {favoriteLenses.map((lens) => (
             <li
               key={lens.id}
-              className="relative flex items-center gap-3 rounded-2xl border border-zinc-200 py-2.5 pr-1.5 pl-2.5 transition-colors hover:bg-zinc-50 md:flex-col md:items-stretch md:gap-0 md:overflow-hidden md:p-0 dark:border-zinc-800 dark:hover:bg-zinc-900"
+              className="relative flex items-center gap-3 rounded-2xl border border-zinc-200 py-2.5 pr-1.5 pl-2.5 transition-colors hover:bg-zinc-50 md:flex-col md:items-stretch md:gap-0 md:overflow-hidden md:p-0"
             >
               <FavoriteImage lensId={lens.id} />
               <div className="min-w-0 flex-1 md:px-3.5 md:pt-3 md:pb-3.5">
-                <div className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+                <div className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">
                   {tBrand(lens.brand)}
                 </div>
                 <Link
                   href={lensPath(lens)}
-                  className="block truncate text-sm font-semibold text-zinc-900 after:absolute after:inset-0 after:content-[''] dark:text-zinc-100"
+                  className="block truncate text-sm font-semibold text-zinc-900 after:absolute after:inset-0 after:content-['']"
                 >
                   {lens.model}
                 </Link>
-                <div className="truncate text-xs text-zinc-500 dark:text-zinc-400">
+                <div className="truncate text-xs text-zinc-500">
                   {t("equivalent", { range: equivalentRange(lens) })}
                 </div>
               </div>
@@ -75,7 +75,7 @@ export default function FavoritesSection({
                 aria-label={tActions("unfavorite")}
                 className={cn(
                   ICON_NAV_BTN_CLS,
-                  "relative z-10 h-11 w-11 text-zinc-900 md:absolute md:top-2 md:right-2 md:h-8 md:w-8 dark:text-zinc-100",
+                  "relative z-10 h-11 w-11 text-zinc-900 md:absolute md:top-2 md:right-2 md:h-8 md:w-8",
                 )}
               >
                 <Star className="h-4 w-4" fill="currentColor" />
@@ -91,7 +91,7 @@ export default function FavoritesSection({
 function FavoriteImage({ lensId }: { lensId: string }) {
   const [failed, setFailed] = useState(false);
   return (
-    <div className="flex h-[52px] w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-zinc-100 md:aspect-[3/2] md:h-auto md:w-full md:rounded-none md:border-b md:border-zinc-100 md:bg-zinc-50/40 md:p-4 dark:bg-zinc-900 md:dark:border-zinc-800 md:dark:bg-zinc-900/40">
+    <div className="flex h-[52px] w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-zinc-100 md:aspect-[3/2] md:h-auto md:w-full md:rounded-none md:border-b md:border-zinc-100 md:bg-zinc-50/40 md:p-4">
       {failed ? (
         <LensSilhouette className="h-9 w-9" />
       ) : (

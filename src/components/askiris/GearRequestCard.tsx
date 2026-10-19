@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { useGearAdders } from "@/components/me/useGearAdders";
 
-const CARD_CLS = "w-full max-w-[560px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950";
+const CARD_CLS = "w-full max-w-[560px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm";
 
 /** The in-chat card Iris shows through the askForGear client tool. */
 export default function GearRequestCard({
@@ -62,8 +62,8 @@ function listNames(locale: string, names: string[]): string {
 
 function AnsweredLine({ done, children }: { done: boolean; children: ReactNode }) {
   return (
-    <p className="flex items-start gap-1.5 px-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400">
-      {done && <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-700 dark:text-zinc-300" strokeWidth={2.5} />}
+    <p className="flex items-start gap-1.5 px-1 text-xs leading-5 text-zinc-500">
+      {done && <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-700" strokeWidth={2.5} />}
       {children}
     </p>
   );
@@ -75,11 +75,11 @@ function SignInPrompt({ onDecline }: { onDecline: () => void }) {
   const openSignIn = useSignInDialog();
   return (
     <section aria-label={t("signInTitle")} className={cn(CARD_CLS, "flex flex-col gap-3.5 p-4")}>
-      <h3 className="text-[15px] font-semibold text-zinc-900 dark:text-zinc-100">{t("signInTitle")}</h3>
+      <h3 className="text-[15px] font-semibold text-zinc-900">{t("signInTitle")}</h3>
       <ul className="flex flex-col gap-2">
         {(["benefitGear", "benefitFavorites", "benefitSync"] as const).map((key) => (
-          <li key={key} className="flex gap-2 text-[13px] leading-5 text-zinc-700 dark:text-zinc-300">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-900 dark:text-zinc-100" strokeWidth={2.5} />
+          <li key={key} className="flex gap-2 text-[13px] leading-5 text-zinc-700">
+            <Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-900" strokeWidth={2.5} />
             {tAuth(key)}
           </li>
         ))}
@@ -143,7 +143,7 @@ function GearPicker({
 
   return (
     <section aria-label={t("title")} className={CARD_CLS}>
-      <h3 className="px-4 pt-4 text-[15px] font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h3>
+      <h3 className="px-4 pt-4 text-[15px] font-semibold text-zinc-900">{t("title")}</h3>
       <GearRow label={t("bodies")} addLabel={t("addBody")} onAdd={openBodyDialog}>
         {savedBodies.map((item) => (
           <SavedChip key={item.id} label={`${brandName(item.brand)} ${item.name}`} />
@@ -177,12 +177,12 @@ function GearPicker({
         })}
       </GearRow>
       {hints.unresolved.length > 0 && (
-        <p className="px-4 pb-3 text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+        <p className="px-4 pb-3 text-xs leading-5 text-zinc-500">
           {t("unresolved", { names: listNames(locale, hints.unresolved) })}
         </p>
       )}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
-        <span className="text-xs text-zinc-500 dark:text-zinc-400">{t("footerHint")}</span>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 bg-zinc-50 px-4 py-3">
+        <span className="text-xs text-zinc-500">{t("footerHint")}</span>
         <div className="ml-auto flex gap-2">
           <button type="button" onClick={() => onAnswer({ outcome: "skipped" })} className={ACTION_QUIET_CLS}>
             {t("skip")}
@@ -215,7 +215,7 @@ function GearRow({
 }) {
   return (
     <div className="flex flex-col gap-2 px-4 py-3">
-      <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">{label}</span>
+      <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500">{label}</span>
       <div className="flex flex-wrap items-center gap-1.5">
         {children}
         <button type="button" onClick={onAdd} className={cn(ACTION_OUTLINE_CLS, "h-8 gap-1 px-3 text-[13px]")}>

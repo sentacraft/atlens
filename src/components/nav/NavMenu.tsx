@@ -13,7 +13,7 @@ import GitHubMark from "@/components/logos/GitHubMark";
 import { SITE } from "@/config/site";
 import { ABOUT_PATH, GET_APP_PATH, PROFILE_PATH } from "@/lib/url/routes";
 
-const SEPARATOR_CLS = "my-1 h-px bg-zinc-200 dark:bg-zinc-800";
+const SEPARATOR_CLS = "my-1 h-px bg-zinc-200";
 
 /** The nav's one menu: the account, the pages the bar has no room for, and feedback. */
 export default function NavMenu({
@@ -36,12 +36,12 @@ export default function NavMenu({
   return (
     <Menu.Root>
       <Menu.Trigger aria-label={tNav("menu")} className={NAV_CAPSULE_CLS}>
-        <MenuIcon className="h-4 w-4 text-zinc-600 dark:text-zinc-300" />
+        <MenuIcon className="h-4 w-4 text-zinc-600" />
         {user ? (
           <Avatar name={user.name} email={user.email} image={user.image} className="h-7 w-7 text-[11px]" />
         ) : (
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
-            <UserRound className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-100">
+            <UserRound className="h-4 w-4 text-zinc-500" />
           </span>
         )}
       </Menu.Trigger>
@@ -53,10 +53,10 @@ export default function NavMenu({
                 <div className="flex items-center gap-3 px-4 py-3">
                   <Avatar name={user.name} email={user.email} image={user.image} className="h-9 w-9 text-sm" />
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                    <p className="truncate text-sm font-medium text-zinc-900">
                       {user.name || t("account")}
                     </p>
-                    <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">{user.email}</p>
+                    <p className="truncate text-xs text-zinc-500">{user.email}</p>
                   </div>
                 </div>
                 <Menu.Item render={<Link href={PROFILE_PATH} />} className={MENU_ITEM_CLS}>
@@ -70,8 +70,8 @@ export default function NavMenu({
                 <Menu.Item onClick={() => openSignIn()} className={cn(MENU_ITEM_CLS, "items-start")}>
                   <LogIn className="mt-0.5 h-4 w-4 shrink-0" />
                   <span className="flex flex-col gap-0.5">
-                    <span className="font-medium text-zinc-900 dark:text-zinc-100">{t("login")}</span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">{tNav("signInHint")}</span>
+                    <span className="font-medium text-zinc-900">{t("login")}</span>
+                    <span className="text-xs text-zinc-500">{tNav("signInHint")}</span>
                   </span>
                 </Menu.Item>
                 <Menu.Separator className={SEPARATOR_CLS} />

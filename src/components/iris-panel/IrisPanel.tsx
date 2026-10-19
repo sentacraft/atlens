@@ -37,7 +37,7 @@ export default function IrisPanel({
       lenses={data.data.lenses}
     />
   ) : (
-    <p className="grid flex-1 place-items-center text-sm text-zinc-500 dark:text-zinc-400">
+    <p className="grid flex-1 place-items-center text-sm text-zinc-500">
       {data.isError ? t("errorUnavailable") : t("loadingConversation")}
     </p>
   );
@@ -48,7 +48,7 @@ export default function IrisPanel({
         aria-label="Iris"
         hidden={!shown}
         className={cn(
-          "fixed right-0 bottom-0 flex w-[var(--iris-panel-width)] flex-col border-l border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950",
+          "fixed right-0 bottom-0 flex w-[var(--iris-panel-width)] flex-col border-l border-zinc-200 bg-white",
           // --nav-height leaves out the nav's 1px bottom border, which the panel would cover: it stacks above the nav.
           "top-[calc(var(--nav-height)+1px)] pb-[var(--safe-inset-bottom)]",
           Z.fixed,
@@ -73,7 +73,7 @@ export default function IrisPanel({
             <Drawer.Popup
               aria-label="Iris"
               className={cn(
-                "fixed inset-x-0 flex flex-col rounded-t-3xl bg-white pb-[var(--safe-inset-bottom)] shadow-2xl ring-1 ring-zinc-200 dark:bg-zinc-950 dark:ring-zinc-800",
+                "fixed inset-x-0 flex flex-col rounded-t-3xl bg-white pb-[var(--safe-inset-bottom)] shadow-2xl ring-1 ring-zinc-200",
                 // iOS leaves fixed elements under the keyboard; the provider reports its height, and the
                 // sheet sits on top of it, shrinking so the composer stays above.
                 "bottom-[var(--drawer-keyboard-inset,0px)] h-[min(85svh,calc(100svh_-_var(--drawer-keyboard-inset,0px)_-_var(--safe-inset-top)_-_1rem))]",
@@ -82,7 +82,7 @@ export default function IrisPanel({
               )}
             >
               <div className="flex shrink-0 touch-none justify-center pt-2.5 pb-0.5">
-                <div className="h-1.5 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+                <div className="h-1.5 w-10 rounded-full bg-zinc-300" />
               </div>
               <div className="flex min-h-0 flex-1 flex-col">{chat}</div>
             </Drawer.Popup>

@@ -23,28 +23,21 @@ export const SPLASH_DEVICES: readonly SplashDevice[] = [
   { label: "15max",  w: 1290, h: 2796, cssW: 430, cssH:  932, dpr: 3, devices: "iPhone 14 Pro Max / 15 Plus / 15 Pro Max" },
 ] as const;
 
-export type SplashScheme = "light" | "dark";
+export const SPLASH_BG = "#ffffff";
 
-export const SPLASH_BG: Record<SplashScheme, string> = {
-  light: "#ffffff",
-  dark:  "#0a0a0a",
-};
-
-export function splashUrl(label: string, scheme: SplashScheme): string {
-  return `/splash/splash-${label}-${scheme}.png`;
+export function splashUrl(label: string): string {
+  return `/splash/splash-${label}.png`;
 }
 
 /**
- * CSS media query that selects the correct startup image for a device and
- * color scheme. iOS Safari matches on device-width + device-height + DPR +
- * orientation + prefers-color-scheme.
+ * CSS media query that selects the correct startup image for a device.
+ * iOS Safari matches on device-width + device-height + DPR + orientation.
  */
-export function splashMedia(device: SplashDevice, scheme: SplashScheme): string {
+export function splashMedia(device: SplashDevice): string {
   return (
     `(device-width: ${device.cssW}px)` +
     ` and (device-height: ${device.cssH}px)` +
     ` and (-webkit-device-pixel-ratio: ${device.dpr})` +
-    ` and (orientation: portrait)` +
-    ` and (prefers-color-scheme: ${scheme})`
+    ` and (orientation: portrait)`
   );
 }

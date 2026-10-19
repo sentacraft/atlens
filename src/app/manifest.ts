@@ -15,7 +15,7 @@ export default function manifest(): MetadataRoute.Manifest {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- display_override not yet in Next.js MetadataRoute.Manifest typings
     display_override: ["window-controls-overlay", "standalone"] as any,
     background_color: SITE.backgroundColor,
-    theme_color: SITE.themeColor.light,
+    theme_color: SITE.themeColor,
     // Un-prefixed paths: the i18n middleware adds the locale.
     shortcuts: [
       {

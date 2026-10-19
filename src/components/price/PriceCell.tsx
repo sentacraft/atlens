@@ -33,14 +33,14 @@ export function PriceCell({ lens, compact = false }: Props) {
       <span
         data-redact-hook="price"
         className={cn(
-          "font-semibold tabular-nums text-zinc-700 dark:text-zinc-200",
+          "font-semibold tabular-nums text-zinc-700",
           compact ? "text-sm" : "text-base",
         )}
       >
         {t.rich("priceApprox", {
           price: priceDisplay,
           approx: (chunks) => (
-            <span className={cn("font-normal text-zinc-400 dark:text-zinc-500", compact ? "text-[10px]" : "text-xs")}>
+            <span className={cn("font-normal text-zinc-400", compact ? "text-[10px]" : "text-xs")}>
               {chunks}
             </span>
           ),
@@ -51,11 +51,11 @@ export function PriceCell({ lens, compact = false }: Props) {
         <>
           <span
             data-redact-hook="priceSource"
-            className="text-[10px] leading-tight text-zinc-400 dark:text-zinc-500 break-words"
+            className="text-[10px] leading-tight text-zinc-400 break-words"
           >
             {entry.source}
           </span>
-          <span className="inline-flex items-center gap-1 text-[10px] leading-tight text-zinc-400 dark:text-zinc-500 tabular-nums">
+          <span className="inline-flex items-center gap-1 text-[10px] leading-tight text-zinc-400 tabular-nums">
             <Calendar className="size-2.5" aria-hidden="true" />
             {sampledDisplay}
           </span>
