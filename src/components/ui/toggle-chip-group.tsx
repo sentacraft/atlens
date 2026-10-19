@@ -103,7 +103,7 @@ function Label<K extends string>({ option, selected }: { option: ToggleChipOptio
         <span
           className={cn(
             "text-[10px] font-normal",
-            selected ? "text-zinc-300 dark:text-zinc-500" : "text-zinc-400 dark:text-zinc-500",
+            selected ? "text-zinc-300" : "text-zinc-400",
           )}
         >
           {option.hint}

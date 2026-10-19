@@ -75,12 +75,12 @@ function HomeContent({
             <HeroIris />
           </HomeFold>
           <HomeFold mode="shrink">
-            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50 font-heading group-data-[folded]:text-3xl sm:group-data-[folded]:text-4xl">
+            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight text-zinc-800 font-heading group-data-[folded]:text-3xl sm:group-data-[folded]:text-4xl">
               <HeroBrand />
             </h1>
           </HomeFold>
           <HomeFold mode="hide" className="mt-2">
-            <p className="text-[15px] text-zinc-500 dark:text-zinc-400 max-w-sm sm:text-lg">
+            <p className="text-[15px] text-zinc-500 max-w-sm sm:text-lg">
               {t("appDesc")}
             </p>
           </HomeFold>

@@ -153,7 +153,7 @@ export default function AuthDialog({
         <DialogHeader>
           <DialogClose
             aria-label={t("close")}
-            className="absolute top-4 right-4 inline-flex h-8 w-8 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+            className="absolute top-4 right-4 inline-flex h-8 w-8 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
           >
             <X className="h-4 w-4" />
           </DialogClose>
@@ -161,8 +161,8 @@ export default function AuthDialog({
           {reason ? (
             <DialogDescription render={<ul />} className="flex flex-col gap-2 pt-2">
               {BENEFIT_KEYS[reason].map((key) => (
-                <li key={key} className="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-900 dark:text-zinc-100" strokeWidth={2.5} />
+                <li key={key} className="flex gap-2 text-sm text-zinc-700">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-900" strokeWidth={2.5} />
                   {t(key)}
                 </li>
               ))}
@@ -178,14 +178,14 @@ export default function AuthDialog({
                 type="button"
                 onClick={signInWithGoogle}
                 disabled={pending}
-                className="h-10 rounded-lg border border-zinc-200 bg-white text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:bg-zinc-900"
+                className="h-10 rounded-lg border border-zinc-200 bg-white text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {t("continueWithGoogle")}
               </button>
-              <div className="flex items-center gap-3 text-xs text-zinc-400 dark:text-zinc-500">
-                <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+              <div className="flex items-center gap-3 text-xs text-zinc-400">
+                <span className="h-px flex-1 bg-zinc-200" />
                 {t("or")}
-                <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+                <span className="h-px flex-1 bg-zinc-200" />
               </div>
               <form
                 onSubmit={(event) => {
@@ -194,7 +194,7 @@ export default function AuthDialog({
                 }}
                 className="flex flex-col gap-3"
               >
-                <label className="flex flex-col gap-1.5 text-sm text-zinc-700 dark:text-zinc-300">
+                <label className="flex flex-col gap-1.5 text-sm text-zinc-700">
                   {t("emailLabel")}
                   <input
                     type="email"
@@ -203,7 +203,7 @@ export default function AuthDialog({
                     placeholder={t("emailPlaceholder")}
                     required
                     autoComplete="email"
-                    className="h-10 rounded-lg border border-zinc-200 bg-white px-3 outline-none transition-colors placeholder:text-zinc-400 focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-950 dark:placeholder:text-zinc-600"
+                    className="h-10 rounded-lg border border-zinc-200 bg-white px-3 outline-none transition-colors placeholder:text-zinc-400 focus:border-zinc-500"
                   />
                 </label>
                 <button
@@ -217,10 +217,10 @@ export default function AuthDialog({
             </>
           ) : (
             <form onSubmit={verifyOtp} className="flex flex-col gap-3">
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              <p className="text-sm text-zinc-600">
                 {t("codeSent", { email })}
               </p>
-              <label className="flex flex-col gap-1.5 text-sm text-zinc-700 dark:text-zinc-300">
+              <label className="flex flex-col gap-1.5 text-sm text-zinc-700">
                 {t("codeLabel")}
                 <input
                   type="text"
@@ -230,7 +230,7 @@ export default function AuthDialog({
                   required
                   inputMode="numeric"
                   autoComplete="one-time-code"
-                  className="h-10 rounded-lg border border-zinc-200 bg-white px-3 tracking-[0.3em] outline-none transition-colors placeholder:tracking-normal placeholder:text-zinc-400 focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-950 dark:placeholder:text-zinc-600"
+                  className="h-10 rounded-lg border border-zinc-200 bg-white px-3 tracking-[0.3em] outline-none transition-colors placeholder:tracking-normal placeholder:text-zinc-400 focus:border-zinc-500"
                 />
               </label>
               <button
@@ -244,7 +244,7 @@ export default function AuthDialog({
                 type="button"
                 onClick={() => void sendOtp()}
                 disabled={pending || resendSeconds > 0}
-                className="text-sm text-zinc-500 underline underline-offset-4 transition-colors hover:text-zinc-900 disabled:cursor-not-allowed disabled:no-underline disabled:hover:text-zinc-500 dark:text-zinc-400 dark:hover:text-zinc-100 dark:disabled:hover:text-zinc-400"
+                className="text-sm text-zinc-500 underline underline-offset-4 transition-colors hover:text-zinc-900 disabled:cursor-not-allowed disabled:no-underline disabled:hover:text-zinc-500"
               >
                 {resendSeconds > 0 ? t("resendIn", { seconds: resendSeconds }) : t("resendCode")}
               </button>
@@ -255,13 +255,13 @@ export default function AuthDialog({
                   setOtp("");
                   setError(null);
                 }}
-                className="text-sm text-zinc-500 underline underline-offset-4 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                className="text-sm text-zinc-500 underline underline-offset-4 transition-colors hover:text-zinc-900"
               >
                 {t("useDifferentEmail")}
               </button>
             </form>
           )}
-          {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+          {error && <p className="text-sm text-red-600">{error}</p>}
         </div>
       </DialogPopup>
     </Dialog>

@@ -34,10 +34,10 @@ export default function FeedbackSuccessState({
       <div className="flex flex-col items-center gap-3 px-5 py-6">
         <Iris config={IRIS_FEEDBACK} uid={uid} />
         <div className="flex flex-col items-center gap-1">
-          <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+          <p className="text-sm font-medium text-zinc-800">
             {t("success")}
           </p>
-          <p className="text-center text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+          <p className="text-center text-xs leading-relaxed text-zinc-500">
             {t("successBody")}
           </p>
         </div>

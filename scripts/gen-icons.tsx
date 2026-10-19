@@ -10,7 +10,7 @@ import { Resvg, type ResvgRenderOptions } from "@resvg/resvg-js";
 
 import Iris from "../src/components/iris/Iris.tsx";
 import { IRIS_NAV, R_HOUSING, type IrisConfig } from "../src/config/iris-config.ts";
-import { SPLASH_DEVICES, SPLASH_BG, splashUrl, type SplashScheme } from "../src/config/splash.ts";
+import { SPLASH_DEVICES, SPLASH_BG, splashUrl } from "../src/config/splash.ts";
 import { buildDerivedConfig } from "../src/lib/iris/kinematics.ts";
 
 const INPUT_FILES = [
@@ -130,12 +130,6 @@ function irisEmbedSvg(
     .replace(tightViewBox, paddedViewBox(padding));
 }
 
-const IRIS_NAV_DARK: IrisConfig = {
-  ...IRIS_NAV,
-  bladeColor:  "#e8e8e8",
-  strokeColor: "#0a0a0a",
-};
-
 function generateOgSvg(): string {
   const canvasW = 1200, canvasH = 630;
   const irisSize = 380;
@@ -247,16 +241,14 @@ const ogFontOpts: ResvgRenderOptions = {
 writeFileSync(resolve("public/opengraph-image.png"), svgToPng(generateOgSvg(), 1200, ogFontOpts));
 console.log(`✓ public/opengraph-image.png (1200×630)`);
 
-function generateSplashSvg(canvasW: number, canvasH: number, scheme: SplashScheme): string {
-  const bg     = SPLASH_BG[scheme];
-  const config = scheme === "dark" ? IRIS_NAV_DARK : IRIS_NAV;
+function generateSplashSvg(canvasW: number, canvasH: number): string {
   const iconSize = Math.round(Math.min(canvasW, canvasH) * 0.28);
   const x = Math.round((canvasW - iconSize) / 2);
   const y = Math.round(canvasH * 0.40 - iconSize / 2);
-  const iris = irisEmbedSvg(x, y, iconSize, PADDING.standard, config, "splash");
+  const iris = irisEmbedSvg(x, y, iconSize, PADDING.standard, IRIS_NAV, "splash");
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${canvasW}" height="${canvasH}" viewBox="0 0 ${canvasW} ${canvasH}">`,
-    `  <rect width="${canvasW}" height="${canvasH}" fill="${bg}"/>`,
+    `  <rect width="${canvasW}" height="${canvasH}" fill="${SPLASH_BG}"/>`,
     `  ${iris}`,
     `</svg>`,
   ].join("\n");
@@ -265,11 +257,8 @@ function generateSplashSvg(canvasW: number, canvasH: number, scheme: SplashSchem
 mkdirSync(splashDir, { recursive: true });
 
 for (const device of SPLASH_DEVICES) {
-  for (const scheme of ["light", "dark"] as const) {
-    const outPath = resolve(splashDir, `splash-${device.label}-${scheme}.png`);
-    writeFileSync(outPath, svgToPng(generateSplashSvg(device.w, device.h, scheme), device.w));
-    console.log(`✓ public${splashUrl(device.label, scheme)} (${device.w}×${device.h}) — ${device.devices}`);
-  }
+  writeFileSync(resolve("public" + splashUrl(device.label)), svgToPng(generateSplashSvg(device.w, device.h), device.w));
+  console.log(`✓ public${splashUrl(device.label)} (${device.w}×${device.h}) — ${device.devices}`);
 }
 
 writeFileSync(HASH_PATH, inputHash + "\n");

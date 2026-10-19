@@ -3,7 +3,7 @@
 export default function OfflineContent() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 px-6 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full border border-zinc-200">
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -21,17 +21,17 @@ export default function OfflineContent() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <h1 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+        <h1 className="text-base font-semibold text-zinc-900">
           You&rsquo;re offline
         </h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-xs">
+        <p className="text-sm text-zinc-500 max-w-xs">
           No network connection. Check your connection and try again.
         </p>
       </div>
 
       <button
         onClick={() => window.location.reload()}
-        className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors underline underline-offset-4"
+        className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors underline underline-offset-4"
       >
         Try again
       </button>

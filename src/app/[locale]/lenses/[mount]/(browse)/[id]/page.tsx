@@ -94,7 +94,7 @@ function StructuredLines({ lines }: { lines: StructuredLine[] }) {
         <div key={i} className="flex items-baseline gap-1">
           <span>{line.value}</span>
           {line.label && (
-            <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
+            <span className="text-[11px] text-zinc-400">
               ({line.label})
             </span>
           )}
@@ -119,7 +119,7 @@ function renderRowValue(
           unknown={labels.unknown}
         />
         {resolved.subValue && (
-          <p className="mt-0.5 text-[11px] leading-relaxed text-zinc-400 dark:text-zinc-500">
+          <p className="mt-0.5 text-[11px] leading-relaxed text-zinc-400">
             {resolved.subValue}
           </p>
         )}
@@ -131,7 +131,7 @@ function renderRowValue(
       <div>
         <StructuredLines lines={resolved.structuredLines} />
         {resolved.subValue && (
-          <p className="mt-0.5 whitespace-pre-line text-[11px] leading-relaxed text-zinc-400 dark:text-zinc-500">
+          <p className="mt-0.5 whitespace-pre-line text-[11px] leading-relaxed text-zinc-400">
             {resolved.subValue}
           </p>
         )}
@@ -142,7 +142,7 @@ function renderRowValue(
     <div>
       <span className="whitespace-pre-line">{resolved.displayValue ?? labels.missing}</span>
       {resolved.subValue && (
-        <p className="mt-0.5 whitespace-pre-line text-[11px] leading-relaxed text-zinc-400 dark:text-zinc-500">
+        <p className="mt-0.5 whitespace-pre-line text-[11px] leading-relaxed text-zinc-400">
           {resolved.subValue}
         </p>
       )}
@@ -236,7 +236,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
       <div className="flex flex-col sm:flex-row gap-8">
         <div className="w-full max-w-64 mx-auto sm:mx-0 shrink-0 sm:w-64">
-          <div className="flex aspect-square items-center justify-center overflow-hidden rounded-2xl border border-zinc-100 bg-zinc-50/70 p-5 dark:border-zinc-800 dark:bg-zinc-900/50">
+          <div className="flex aspect-square items-center justify-center overflow-hidden rounded-2xl border border-zinc-100 bg-zinc-50/70 p-5">
             <div className="relative aspect-square w-full overflow-hidden">
               <Image
                 src={getLensImageUrl(lens.id)}
@@ -256,12 +256,12 @@ export default async function LensDetailPage({ params }: { params: Params }) {
         <div className="flex-1 flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">
+              <span className="text-xs font-normal text-zinc-500">
                 {lensSubtitleLine(brandName, lens.series)}
               </span>
               <SpecialtyBadges {...deriveSpecialty(lens)} />
             </div>
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 font-heading leading-[1.1]">
+            <h1 className="text-2xl font-bold text-zinc-900 font-heading leading-[1.1]">
               {displayName}
             </h1>
           </div>
@@ -278,30 +278,30 @@ export default async function LensDetailPage({ params }: { params: Params }) {
       </div>
 
       {priceSelection && (
-        <PriceDisclaimer className="-mt-3 border-t border-zinc-100 pt-3 dark:border-zinc-800" />
+        <PriceDisclaimer className="-mt-3 border-t border-zinc-100 pt-3" />
       )}
 
       <div>
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+        <div className="rounded-xl border border-zinc-200 overflow-hidden">
             <DataSourceBar
-              className="border-b border-zinc-200 dark:border-zinc-800"
+              className="border-b border-zinc-200"
               source={
                 url ? (
                   <ExternalLink href={url} className={`inline-flex items-center gap-0.5 font-medium ${TEXT_LINK_CLS}`}>
                     {t("sourceSite", { brand: brandName })}
                   </ExternalLink>
                 ) : (
-                  <span className="font-medium text-zinc-700 dark:text-zinc-300">{t("sourceSite", { brand: brandName })}</span>
+                  <span className="font-medium text-zinc-700">{t("sourceSite", { brand: brandName })}</span>
                 )
               }
             />
             {resolvedGroups.map((group, groupIdx) => (
               <div
                 key={group.label}
-                className={groupIdx > 0 ? "border-t border-zinc-200 dark:border-zinc-800" : ""}
+                className={groupIdx > 0 ? "border-t border-zinc-200" : ""}
               >
-                <div className="px-4 py-2 bg-zinc-100/80 dark:bg-zinc-800/60">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                <div className="px-4 py-2 bg-zinc-100/80">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
                     {group.label}
                   </span>
                 </div>
@@ -311,15 +311,15 @@ export default async function LensDetailPage({ params }: { params: Params }) {
                     {group.rows.map((resolved) => (
                       <tr
                         key={resolved.label}
-                        className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0"
+                        className="border-b border-zinc-100 last:border-0"
                       >
-                        <td className="px-4 py-2.5 text-xs font-medium text-zinc-500 dark:text-zinc-400 bg-zinc-50/60 dark:bg-zinc-900/30 w-40 align-top">
+                        <td className="px-4 py-2.5 text-xs font-medium text-zinc-500 bg-zinc-50/60 w-40 align-top">
                           <div className="flex items-center gap-1">
                             <span className="whitespace-nowrap">{resolved.label}</span>
                             {resolved.labelNote && <FieldNotePopover note={resolved.labelNote} variant={resolved.labelNoteVariant} />}
                           </div>
                         </td>
-                        <td className="px-4 py-2.5 text-zinc-700 dark:text-zinc-300">
+                        <td className="px-4 py-2.5 text-zinc-700">
                           <div className="flex items-center gap-1.5">
                             {renderRowValue(resolved, valueCellLabels)}
                             {resolved.note && <FieldNotePopover note={resolved.note} />}
@@ -332,7 +332,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               </div>
             ))}
           </div>
-          <p className="px-2 pt-4 text-xs text-zinc-400 dark:text-zinc-500">
+          <p className="px-2 pt-4 text-xs text-zinc-400">
             {t("nudgeText")}{" "}
             <FeedbackTrigger
               type="data_issue"

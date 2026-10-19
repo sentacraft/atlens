@@ -15,7 +15,7 @@ export interface SiteConfig {
   name: string;
   shortName: string;
   pwaDescription: string;
-  themeColor: { light: string; dark: string };
+  themeColor: string;
   backgroundColor: string;
   display: "standalone" | "minimal-ui" | "fullscreen" | "browser";
 }
@@ -34,10 +34,7 @@ export const SITE: SiteConfig = {
   shortName: "Atlens",
   pwaDescription:
     "Your pocket lens database for Fujifilm cameras — specs normalized, zero noise.",
-  themeColor: {
-    light: "#ffffff",
-    dark: "#0a0a0a",
-  },
+  themeColor: "#ffffff",
   backgroundColor: "#ffffff",
   display: "standalone",
 };

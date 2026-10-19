@@ -44,7 +44,7 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
   return (
     <>
       <div className={`flex items-center gap-3 ${isEmpty ? "hidden sm:flex" : ""}`}>
-        <h1 className="hidden sm:block text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+        <h1 className="hidden sm:block text-2xl font-bold text-zinc-900">
           {t("title")}
         </h1>
         {activeLenses.length >= 1 &&
@@ -56,7 +56,7 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
                 className={cn(
                   SEARCH_TRIGGER_CLS,
                   ADD_LENS_BTN_BASE,
-                  "border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900",
+                  "border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-100",
                 )}
               >
                 <Search className="h-4 w-4" />
@@ -67,7 +67,7 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
           ) : (
             <button
               onClick={() => toast(t("compareFullHint"))}
-              className={`${ADD_LENS_BTN_BASE} border-zinc-200 bg-white text-zinc-400 cursor-not-allowed dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-600`}
+              className={`${ADD_LENS_BTN_BASE} border-zinc-200 bg-white text-zinc-400 cursor-not-allowed`}
             >
               {t("addLens")}
             </button>

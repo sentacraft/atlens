@@ -35,7 +35,7 @@ export default function LensUsageSwitch({
             {index > 0 && (
               <span
                 aria-hidden="true"
-                className="mx-2 h-3 w-px bg-zinc-200 dark:bg-zinc-700"
+                className="mx-2 h-3 w-px bg-zinc-200"
               />
             )}
             <button
@@ -46,8 +46,8 @@ export default function LensUsageSwitch({
               className={cn(
                 "inline-flex items-center gap-1 font-medium transition-colors",
                 selected
-                  ? "text-zinc-900 dark:text-zinc-100"
-                  : "text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300",
+                  ? "text-zinc-900"
+                  : "text-zinc-400 hover:text-zinc-600",
               )}
             >
               <opt.Icon className="size-3.5" aria-hidden="true" />

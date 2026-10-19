@@ -53,14 +53,14 @@ const FIXTURE_INPUT_CLS =
 function ModelReadout({ model }: { model: AgentModelInfo }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+      <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500">
         Model
       </span>
       <div className="flex flex-col gap-0.5 rounded-md border border-input px-2 py-1.5 font-mono text-[11px] leading-5">
-        <div className="text-zinc-900 dark:text-zinc-100">
+        <div className="text-zinc-900">
           {model.provider}:{model.modelId}
         </div>
-        <div className="text-zinc-500 dark:text-zinc-400">
+        <div className="text-zinc-500">
           temperature {model.temperature} ·{" "}
           {model.overridden ? "AGENT_MODEL override" : "deployed default"}
         </div>
@@ -82,7 +82,7 @@ function FixtureControl() {
 
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+      <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500">
         Fixture
       </span>
       <Select value={selected} onValueChange={(v) => setSelected(v ?? "off")}>
@@ -98,7 +98,7 @@ function FixtureControl() {
           ))}
         </SelectContent>
       </Select>
-      <span className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+      <span className="text-xs leading-5 text-zinc-500">
         Replay a saved thread instead of the live chat. Saves write to a
         gitignored .askiris-fixtures/ dir.
       </span>
@@ -178,11 +178,11 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
               checked={current === "on"}
               onCheckedChange={(checked) => setOption(option.key, checked ? "on" : "off")}
             />
-            <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+            <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500">
               {option.label}
             </span>
           </label>
-          <span className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+          <span className="text-xs leading-5 text-zinc-500">
             {option.description}
           </span>
         </div>
@@ -191,7 +191,7 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
 
     return (
       <label key={option.key} className="flex flex-col gap-1.5">
-        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500">
           {option.label}
         </span>
         <Select
@@ -209,7 +209,7 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
             ))}
           </SelectContent>
         </Select>
-        <span className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+        <span className="text-xs leading-5 text-zinc-500">
           {option.description}
         </span>
       </label>
@@ -217,15 +217,15 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
   };
 
   return (
-    <aside className="fixed bottom-4 right-4 z-50 max-h-[calc(100dvh-2rem)] w-[min(24rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl border border-zinc-200/80 bg-white/95 p-4 shadow-xl backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90">
+    <aside className="fixed bottom-4 right-4 z-50 max-h-[calc(100dvh-2rem)] w-[min(24rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl border border-zinc-200/80 bg-white/95 p-4 shadow-xl backdrop-blur">
       <div className="flex items-center justify-between gap-4">
-        <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Test hooks</p>
+        <p className="text-sm font-semibold text-zinc-900">Test hooks</p>
         <Button size="sm" variant="ghost" onClick={() => setTestHook(false)}>
           Hide
         </Button>
       </div>
 
-      <div className="mt-3 flex gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-900">
+      <div className="mt-3 flex gap-1 rounded-lg bg-zinc-100 p-1">
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -234,8 +234,8 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
             className={cn(
               "flex-1 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium transition-colors",
               tab === t.id
-                ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50"
-                : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200",
+                ? "bg-white text-zinc-900 shadow-sm"
+                : "text-zinc-500 hover:text-zinc-800",
             )}
           >
             {t.label}
@@ -250,7 +250,7 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
               <li key={route.href}>
                 <Link
                   href={route.href}
-                  className="block rounded-md px-2 py-1 text-xs text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                  className="block rounded-md px-2 py-1 text-xs text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
                 >
                   {route.label}
                 </Link>
@@ -270,7 +270,7 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
         )}
 
         {tab === "redaction" && (
-          <div className="space-y-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400 [&_code]:rounded [&_code]:bg-zinc-100 [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[11px] [&_code]:text-zinc-700 dark:[&_code]:bg-zinc-800 dark:[&_code]:text-zinc-300">
+          <div className="space-y-1 text-xs leading-5 text-zinc-500 [&_code]:rounded [&_code]:bg-zinc-100 [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[11px] [&_code]:text-zinc-700">
             <p>
               <code>?{REDACTION_QUERY_KEY}={REDACTION_KEYS.join(",")}</code> — blur surfaces
             </p>
@@ -287,7 +287,7 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
         )}
       </div>
 
-      <div className="mt-4 flex justify-end gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+      <div className="mt-4 flex justify-end gap-2 border-t border-zinc-200 pt-4">
         <Button
           size="sm"
           variant="outline"

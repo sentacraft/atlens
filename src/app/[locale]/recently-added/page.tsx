@@ -67,10 +67,10 @@ export default async function RecentlyAddedPage({ params }: { params: Params }) 
 
   return (
     <div className={`w-full max-w-3xl mx-auto pt-4 sm:pt-12 pb-32 flex flex-col gap-6 ${PAGE_GUTTER_CLS}`}>
-      <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 font-heading">
+      <h1 className="text-2xl font-bold text-zinc-900 font-heading">
         {t("pageTitle")}
       </h1>
-      <p className="-mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="-mt-3 text-sm text-zinc-500">
         {t("intro")}
       </p>
 
@@ -84,18 +84,18 @@ export default async function RecentlyAddedPage({ params }: { params: Params }) 
 
           return (
             <section key={date} className="flex flex-col gap-4">
-              <div className="flex items-baseline justify-between gap-3 border-b border-zinc-200 dark:border-zinc-800 pb-2">
-                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+              <div className="flex items-baseline justify-between gap-3 border-b border-zinc-200 pb-2">
+                <h2 className="text-base font-semibold text-zinc-900">
                   {formatDay(date, locale)}
                 </h2>
-                <span className="shrink-0 rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-xs font-medium tabular-nums text-zinc-600 dark:text-zinc-300">
+                <span className="shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium tabular-nums text-zinc-600">
                   {t("added", { count: lenses.length })}
                 </span>
               </div>
 
               {mountGroups.map((group) => (
                 <div key={group.key} className="flex flex-col gap-1.5">
-                  <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                  <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
                     {group.label}
                   </p>
                   <ul className="flex flex-col gap-1">
@@ -103,9 +103,9 @@ export default async function RecentlyAddedPage({ params }: { params: Params }) 
                       <li key={lens.id}>
                         <Link
                           href={lensPath(lens)}
-                          className="group inline-flex items-baseline gap-1.5 text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
+                          className="group inline-flex items-baseline gap-1.5 text-sm text-zinc-600 hover:text-zinc-900 transition-colors"
                         >
-                          <span className="text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-400 dark:group-hover:text-zinc-500">
+                          <span className="text-zinc-300 group-hover:text-zinc-400">
                             ·
                           </span>
                           <span>
@@ -122,7 +122,7 @@ export default async function RecentlyAddedPage({ params }: { params: Params }) 
         })}
 
         {seedDate ? (
-          <div className="flex items-baseline justify-between gap-3 border-t border-zinc-200 dark:border-zinc-800 pt-4 text-sm text-zinc-500 dark:text-zinc-500">
+          <div className="flex items-baseline justify-between gap-3 border-t border-zinc-200 pt-4 text-sm text-zinc-500">
             <span>
               {formatDay(seedDate, locale)} · {t("initialBatchLabel")}
             </span>

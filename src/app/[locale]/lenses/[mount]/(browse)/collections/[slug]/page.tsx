@@ -137,17 +137,17 @@ export default async function CollectionPage({
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             {title}
           </h1>
-          <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
             {statsLabel}
             <DataSourceInline />
           </p>
-          <p className="mt-3 text-sm leading-relaxed text-zinc-700 sm:text-base dark:text-zinc-300">
+          <p className="mt-3 text-sm leading-relaxed text-zinc-700 sm:text-base">
             {description}
           </p>
         </header>
         <CollectionLensGrid lenses={lenses} />
 
-        <p className="mt-8 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-8 text-sm text-zinc-500">
           {t("feedbackPrompt")}{" "}
           <FeedbackTrigger type="general">
             {t("feedbackLink")}
@@ -156,12 +156,12 @@ export default async function CollectionPage({
 
         <footer className="mt-12">
           <div className="mb-4 flex items-baseline justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
               {t("relatedCollections")}
             </h2>
             <Link
               href={collectionsPath(resolvedMount)}
-              className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+              className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900"
             >
               {t("viewAllCollections")} →
             </Link>
@@ -179,13 +179,13 @@ export default async function CollectionPage({
               </li>
             ))}
           </ul>
-          <div className="mt-6 flex justify-center border-t border-zinc-100 pt-5 dark:border-zinc-800">
+          <div className="mt-6 flex justify-center border-t border-zinc-100 pt-5">
             <Link
               href={browsePath(resolvedMount)}
               className={`rounded-xl ${ACTION_ESCAPE_CLS}`}
             >
               <span>{t("browseAllPill", { count: mountLenses.length })}</span>
-              <ArrowRight size={15} className="text-zinc-400 transition-colors group-hover:text-white dark:text-zinc-500 dark:group-hover:text-zinc-900" aria-hidden="true" />
+              <ArrowRight size={15} className="text-zinc-400 transition-colors group-hover:text-white" aria-hidden="true" />
             </Link>
           </div>
         </footer>

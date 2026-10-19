@@ -158,14 +158,14 @@ export default function LensListClient({ lenses }: LensListClientProps) {
           />
         </div>
 
-        <div className="border-t border-zinc-100 dark:border-zinc-800/50 mt-4 pt-4 mb-2 sm:mb-3">
+        <div className="border-t border-zinc-100 mt-4 pt-4 mb-2 sm:mb-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2.5">
-              <p className="whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+              <p className="whitespace-nowrap text-sm text-zinc-500">
                 {t.rich("resultsCount", {
                   count: displayed.length,
                   b: (chunks) => (
-                    <strong className="font-medium text-zinc-700 dark:text-zinc-300">
+                    <strong className="font-medium text-zinc-700">
                       {chunks}
                     </strong>
                   ),
@@ -173,7 +173,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
               </p>
               <Link
                 href={aboutPath("coverage")}
-                className="whitespace-nowrap text-xs text-zinc-400 underline-offset-2 transition-colors hover:text-zinc-600 hover:underline dark:text-zinc-500 dark:hover:text-zinc-300"
+                className="whitespace-nowrap text-xs text-zinc-400 underline-offset-2 transition-colors hover:text-zinc-600 hover:underline"
               >
                 {t("coverageLink")}
               </Link>
@@ -198,8 +198,8 @@ export default function LensListClient({ lenses }: LensListClientProps) {
         {displayed.length === 0 ? (
           <div className="flex flex-col items-start gap-3 py-6 animate-in fade-in duration-200">
             <div className="flex flex-col gap-1">
-              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{t("noResults")}</p>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">{tIris("emptyHint")}</p>
+              <p className="text-sm font-medium text-zinc-700">{t("noResults")}</p>
+              <p className="text-sm text-zinc-500">{tIris("emptyHint")}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <button type="button" onClick={clearAllFilters} className={ACTION_OUTLINE_CLS}>

@@ -192,11 +192,11 @@ export default function FeedbackDialog({
               {t(titleKey)}
             </DialogTitle>
             {!isSuccess && (
-              <p className="text-xs text-zinc-400 dark:text-zinc-500">
+              <p className="text-xs text-zinc-400">
                 {t("emailLabel")}{" "}
                 <a
                   href={`mailto:${SITE.contactEmail}`}
-                  className="underline underline-offset-2 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                  className="underline underline-offset-2 hover:text-zinc-600 transition-colors"
                 >
                   {SITE.contactEmail}
                 </a>
@@ -213,17 +213,17 @@ export default function FeedbackDialog({
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-3 px-5 pb-4">
             {lensHeader && (
-              <div className="flex flex-col gap-0.5 border-b border-zinc-200 dark:border-zinc-800 pb-3">
-                <span className="text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+              <div className="flex flex-col gap-0.5 border-b border-zinc-200 pb-3">
+                <span className="text-[11px] font-medium uppercase tracking-wide text-zinc-400">
                   {t("affectedLensLabel")}
                 </span>
                 <div className="flex items-baseline gap-1.5">
                   {lensHeader.brand && (
-                    <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                    <span className="text-sm text-zinc-500">
                       {lensHeader.brand}
                     </span>
                   )}
-                  <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+                  <span className="text-sm font-semibold text-zinc-900">
                     {lensHeader.model}
                   </span>
                 </div>
@@ -232,7 +232,7 @@ export default function FeedbackDialog({
 
             {showFieldPicker && (
               <div className="flex flex-col gap-1.5">
-                <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                <span className="text-xs font-medium text-zinc-600">
                   {t("fieldPickerLabel")}
                 </span>
                 <Select
@@ -265,13 +265,13 @@ export default function FeedbackDialog({
                   selectedField && selectedField !== otherField ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
                 )}>
                   <div className="overflow-hidden min-h-0">
-                    <div className="flex flex-col gap-2 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-3 py-2.5 mt-1.5">
+                    <div className="flex flex-col gap-2 rounded-lg bg-zinc-50 border border-zinc-200 px-3 py-2.5 mt-1.5">
                       {selectedField?.currentValue && !selectedField.hideCurrentValue && (
                         <div className="flex items-baseline gap-2">
-                          <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">
+                          <span className="shrink-0 text-xs text-zinc-400">
                             {t("currentValueLabel")}
                           </span>
-                          <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                          <span className="text-xs font-medium text-zinc-700">
                             {selectedField.currentValue}
                           </span>
                         </div>
@@ -279,7 +279,7 @@ export default function FeedbackDialog({
                       <div className="flex flex-col gap-1">
                         <label
                           htmlFor={correctionId}
-                          className="text-xs text-zinc-400 dark:text-zinc-500"
+                          className="text-xs text-zinc-400"
                         >
                           {t("suggestedCorrectionLabel")}
                         </label>
@@ -290,7 +290,7 @@ export default function FeedbackDialog({
                           onChange={(e) => setSuggestedCorrection(e.target.value)}
                           placeholder={t("suggestedCorrectionPlaceholder")}
                           maxLength={200}
-                          className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-base sm:text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600"
+                          className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-base sm:text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400"
                         />
                       </div>
                     </div>
@@ -302,10 +302,10 @@ export default function FeedbackDialog({
             {showFieldPicker && (
               <label
                 htmlFor={textareaId}
-                className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                className="text-xs font-medium text-zinc-600"
               >
                 {t("descriptionLabel")}
-                <span className="ml-1 font-normal text-zinc-400 dark:text-zinc-500">
+                <span className="ml-1 font-normal text-zinc-400">
                   ({t("descriptionOptional")})
                 </span>
               </label>
@@ -321,7 +321,7 @@ export default function FeedbackDialog({
             <div className="flex flex-col gap-2">
               <label
                 htmlFor={wantsReplyCheckboxId}
-                className="flex items-center gap-2 text-xs font-medium text-zinc-600 dark:text-zinc-400 cursor-pointer select-none"
+                className="flex items-center gap-2 text-xs font-medium text-zinc-600 cursor-pointer select-none"
               >
                 <Checkbox
                   id={wantsReplyCheckboxId}
@@ -344,12 +344,12 @@ export default function FeedbackDialog({
                 placeholder={t("replyContactPlaceholder")}
                 aria-label={t("replyContactLabel")}
                 disabled={!wantsReply}
-                className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-base sm:text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-zinc-400 disabled:placeholder:text-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600 dark:disabled:bg-zinc-900 dark:disabled:text-zinc-600 dark:disabled:placeholder:text-zinc-700"
+                className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-base sm:text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-zinc-400 disabled:placeholder:text-zinc-300"
               />
             </div>
 
             {showFieldPicker && submitAttempted && !hasContent && (
-              <p className="text-xs text-amber-600 dark:text-amber-400">
+              <p className="text-xs text-amber-600">
                 {t("contentRequired")}
               </p>
             )}

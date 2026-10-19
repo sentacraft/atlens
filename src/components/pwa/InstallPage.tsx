@@ -100,13 +100,13 @@ export default function InstallPage() {
 
       {platform === "installed" && (
         <div className="max-w-xs">
-          <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-800">
             {t("installedTitle")}
           </h2>
-          <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">{t("installedBody")}</p>
+          <p className="mt-3 text-zinc-500 text-sm">{t("installedBody")}</p>
           <Link
             href={browsePath("X")}
-            className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-zinc-800 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 font-medium text-sm hover:opacity-90 transition-opacity"
+            className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-zinc-800 text-zinc-50 font-medium text-sm hover:opacity-90 transition-opacity"
           >
             {t("openApp")} →
           </Link>
@@ -115,13 +115,13 @@ export default function InstallPage() {
 
       {platform === "prompt" && (
         <div className="max-w-xs">
-          <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-800">
             {t("promptTitle")}
           </h2>
-          <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">{t("promptBody")}</p>
+          <p className="mt-3 text-zinc-500 text-sm">{t("promptBody")}</p>
           <button
             onClick={handleInstall}
-            className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-zinc-800 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 font-medium text-sm hover:opacity-90 transition-opacity"
+            className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-zinc-800 text-zinc-50 font-medium text-sm hover:opacity-90 transition-opacity"
           >
             {t("installButton")}
           </button>
@@ -130,23 +130,23 @@ export default function InstallPage() {
 
       {platform === "ios" && (
         <div className="max-w-xs w-full">
-          <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-800">
             {t("iosTitle")}
           </h2>
           <ol className="mt-6 space-y-3 text-left">
             {IOS_STEPS.map((key, i) => (
               <li
                 key={key}
-                className="flex items-start gap-4 bg-white dark:bg-zinc-900 rounded-xl px-4 py-3"
+                className="flex items-start gap-4 bg-white rounded-xl px-4 py-3"
               >
-                <span className="shrink-0 w-6 h-6 rounded-full bg-zinc-800 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 text-xs font-bold flex items-center justify-center">
+                <span className="shrink-0 w-6 h-6 rounded-full bg-zinc-800 text-zinc-50 text-xs font-bold flex items-center justify-center">
                   {i + 1}
                 </span>
-                <span className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+                <span className="text-sm leading-6 text-zinc-700">
                   {t(key)}
                   {i === 0 && (
                     <Share
-                      className="inline-block w-4 h-4 ml-1.5 align-middle text-zinc-500 dark:text-zinc-400"
+                      className="inline-block w-4 h-4 ml-1.5 align-middle text-zinc-500"
                       aria-hidden
                     />
                   )}
@@ -159,23 +159,23 @@ export default function InstallPage() {
 
       {platform === "macos-safari" && (
         <div className="max-w-xs w-full">
-          <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-800">
             {t("macosTitle")}
           </h2>
           <ol className="mt-6 space-y-3 text-left">
             {MACOS_STEPS.map((key, i) => (
               <li
                 key={key}
-                className="flex items-start gap-4 bg-white dark:bg-zinc-900 rounded-xl px-4 py-3"
+                className="flex items-start gap-4 bg-white rounded-xl px-4 py-3"
               >
-                <span className="shrink-0 w-6 h-6 rounded-full bg-zinc-800 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 text-xs font-bold flex items-center justify-center">
+                <span className="shrink-0 w-6 h-6 rounded-full bg-zinc-800 text-zinc-50 text-xs font-bold flex items-center justify-center">
                   {i + 1}
                 </span>
-                <span className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+                <span className="text-sm leading-6 text-zinc-700">
                   {t(key)}
                   {i === 0 && (
                     <Share
-                      className="inline-block w-4 h-4 ml-1.5 align-middle text-zinc-500 dark:text-zinc-400"
+                      className="inline-block w-4 h-4 ml-1.5 align-middle text-zinc-500"
                       aria-hidden
                     />
                   )}
@@ -188,10 +188,10 @@ export default function InstallPage() {
 
       {platform === "generic" && (
         <div className="max-w-xs">
-          <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-50">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-800">
             {t("genericTitle")}
           </h2>
-          <p className="mt-3 text-zinc-500 dark:text-zinc-400 text-sm">{t("genericBody")}</p>
+          <p className="mt-3 text-zinc-500 text-sm">{t("genericBody")}</p>
         </div>
       )}
     </div>

@@ -30,7 +30,6 @@ export function ScrollChevron({
         "h-10 w-10 sm:h-7 sm:w-7",
         FROSTED_OVERLAY_CHROME_CLS,
         "text-zinc-500 hover:text-zinc-900 hover:bg-white transition-opacity",
-        "dark:text-zinc-400 dark:hover:text-zinc-50",
         direction === "left" ? "left-1" : "right-1",
         visible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
         className

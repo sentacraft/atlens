@@ -35,7 +35,7 @@ export default function SegmentedControl<T>({
       role="radiogroup"
       aria-label={ariaLabel}
       className={cn(
-        "rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1",
+        "rounded-xl bg-zinc-100 p-1",
         layout === "paired" && "flex min-w-0 flex-1 sm:inline-flex sm:w-fit sm:flex-none",
         layout === "fill" && "w-full sm:w-fit flex sm:inline-flex",
         layout === "wrap" && "w-full sm:w-fit flex flex-wrap",
@@ -55,8 +55,8 @@ export default function SegmentedControl<T>({
               "h-8 rounded-lg text-[12px] font-medium transition-colors sm:h-7 disabled:cursor-not-allowed disabled:opacity-60",
               layout === "paired" ? "flex-1 px-2.5 sm:flex-none sm:px-4" : "flex-1 px-4 sm:flex-none",
               selected
-                ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50 dark:shadow-none"
-                : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
+                ? "bg-white text-zinc-900 shadow-sm"
+                : "text-zinc-600 hover:text-zinc-900",
             )}
             onClick={() => onChange(option.value)}
           >

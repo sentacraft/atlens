@@ -111,7 +111,7 @@ function DialogPopup({ className, children, ...props }: DialogRawPopupProps) {
       {mode === "drawer" ? (
         <DialogRawPopup
           className={cn(
-            `flex flex-col border border-b-0 border-zinc-200 bg-white p-0 pb-[var(--safe-inset-bottom)] shadow-2xl duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom dark:border-zinc-800 dark:bg-zinc-950`,
+            `flex flex-col border border-b-0 border-zinc-200 bg-white p-0 pb-[var(--safe-inset-bottom)] shadow-2xl duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom`,
             DRAWER_KEYBOARD_CLS,
             "transition-[transform,opacity] data-[swipe-dismiss]:!transition-none data-[nested-drawer-open]:scale-[0.94] data-[nested-drawer-open]:opacity-40",
             className,
@@ -120,14 +120,14 @@ function DialogPopup({ className, children, ...props }: DialogRawPopupProps) {
           {...props}
         >
           <div className="flex shrink-0 touch-none justify-center pb-1 pt-3">
-            <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+            <div className="h-1 w-10 rounded-full bg-zinc-300" />
           </div>
           {children}
         </DialogRawPopup>
       ) : (
         <DialogRawPopup
           className={cn(
-            `fixed rounded-2xl border border-zinc-200 bg-white p-0 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950`,
+            `fixed rounded-2xl border border-zinc-200 bg-white p-0 shadow-2xl`,
             "left-1/2 top-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2",
             "origin-[var(--transform-origin)] duration-200 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-90 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-90",
             className
@@ -158,7 +158,7 @@ function DialogFooter({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
     <div
       data-slot="dialog-footer"
       data-base-ui-swipe-ignore=""
-      className={cn("flex items-center justify-end gap-3 px-5 py-4 border-t border-zinc-200 dark:border-zinc-800", className)}
+      className={cn("flex items-center justify-end gap-3 px-5 py-4 border-t border-zinc-200", className)}
       {...props}
     />
   );
@@ -168,7 +168,7 @@ function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("text-lg font-semibold tracking-tight text-zinc-950 dark:text-zinc-50", className)}
+      className={cn("text-lg font-semibold tracking-tight text-zinc-950", className)}
       {...props}
     />
   );
@@ -178,7 +178,7 @@ function DialogDescription({ className, ...props }: DialogPrimitive.Description.
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("text-sm text-zinc-500 dark:text-zinc-400", className)}
+      className={cn("text-sm text-zinc-500", className)}
       {...props}
     />
   );

@@ -61,9 +61,9 @@ export default function CollectionChipRail({
     <HorizontalScrollRail
       scrollRef={railRef}
       className="gap-1.5 px-5 py-3 sm:px-6"
-      wrapperClassName="sticky z-20 -mx-5 sm:-mx-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm transition-[top] duration-300 ease-in-out"
+      wrapperClassName="sticky z-20 -mx-5 sm:-mx-6 border-b border-zinc-200 bg-white/90 backdrop-blur-sm transition-[top] duration-300 ease-in-out"
       wrapperStyle={{ top: navHidden ? 0 : "var(--nav-height)" }}
-      fadeBg="from-white dark:from-zinc-950"
+      fadeBg="from-white"
     >
       <button
         type="button"
@@ -73,7 +73,7 @@ export default function CollectionChipRail({
       >
         {allLabel}
         <span
-          className={`font-mono text-[10px] ${activeId === null ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
+          className={`font-mono text-[10px] ${activeId === null ? "text-white/65" : "text-zinc-400"}`}
         >
           {totalCount}
         </span>
@@ -91,7 +91,7 @@ export default function CollectionChipRail({
           >
             {s.label}
             <span
-              className={`font-mono text-[10px] ${isActive ? "text-white/65 dark:text-zinc-900/65" : "text-zinc-400 dark:text-zinc-500"}`}
+              className={`font-mono text-[10px] ${isActive ? "text-white/65" : "text-zinc-400"}`}
             >
               {s.count}
             </span>

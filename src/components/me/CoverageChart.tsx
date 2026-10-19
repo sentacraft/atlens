@@ -23,16 +23,16 @@ export default function CoverageChart({ lenses }: { lenses: CoverageInput[] }) {
   const hasManual = rows.some((row) => row.manual);
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-zinc-200 px-4 pt-4 pb-5 md:px-6 md:pt-5 md:pb-6 dark:border-zinc-800">
+    <div className="flex flex-col gap-4 rounded-2xl border border-zinc-200 px-4 pt-4 pb-5 md:px-6 md:pt-5 md:pb-6">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t("coverageTitle")}</span>
-        <span className="text-xs text-zinc-500 dark:text-zinc-400">{t("coverageAxis")}</span>
+        <span className="text-sm font-semibold text-zinc-900">{t("coverageTitle")}</span>
+        <span className="text-xs text-zinc-500">{t("coverageAxis")}</span>
       </div>
 
       <div className="md:grid md:grid-cols-[128px_1fr] md:gap-x-3">
         <div className="hidden md:flex md:flex-col">
           {rows.map((row) => (
-            <span key={row.id} className="h-7 truncate text-right text-xs leading-7 text-zinc-600 dark:text-zinc-400">
+            <span key={row.id} className="h-7 truncate text-right text-xs leading-7 text-zinc-600">
               {row.label}
             </span>
           ))}
@@ -51,7 +51,7 @@ export default function CoverageChart({ lenses }: { lenses: CoverageInput[] }) {
             const isPrime = row.equivalentMin === row.equivalentMax;
             return (
               <div key={row.id} className="relative flex flex-col justify-center md:h-7">
-                <span className="truncate text-[11px] text-zinc-600 md:hidden dark:text-zinc-400" style={{ paddingLeft: percent(Math.min(start, 0.6)) }}>
+                <span className="truncate text-[11px] text-zinc-600 md:hidden" style={{ paddingLeft: percent(Math.min(start, 0.6)) }}>
                   {row.label}
                 </span>
                 <div className="relative h-3">
@@ -60,8 +60,8 @@ export default function CoverageChart({ lenses }: { lenses: CoverageInput[] }) {
                     className={cn(
                       "absolute top-0 h-3 rounded-full",
                       row.manual
-                        ? "border-2 border-zinc-900 bg-white dark:border-zinc-100 dark:bg-zinc-950"
-                        : "bg-zinc-900 dark:bg-zinc-100",
+                        ? "border-2 border-zinc-900 bg-white"
+                        : "bg-zinc-900",
                     )}
                     style={
                       isPrime
@@ -73,12 +73,12 @@ export default function CoverageChart({ lenses }: { lenses: CoverageInput[] }) {
               </div>
             );
           })}
-          <div className="relative mt-2 h-5 border-t border-zinc-200 dark:border-zinc-800">
+          <div className="relative mt-2 h-5 border-t border-zinc-200">
             {axis.ticks.map((tick, index) => (
               <span
                 key={tick}
                 className={cn(
-                  "absolute top-1.5 text-[10px] text-zinc-500 md:text-[11px] dark:text-zinc-400",
+                  "absolute top-1.5 text-[10px] text-zinc-500 md:text-[11px]",
                   index === 0 ? "" : index === axis.ticks.length - 1 ? "-translate-x-full" : "-translate-x-1/2",
                   index > 0 && index < axis.ticks.length - 1 && !MOBILE_TICKS.has(tick) && "hidden md:block",
                 )}
@@ -92,7 +92,7 @@ export default function CoverageChart({ lenses }: { lenses: CoverageInput[] }) {
       </div>
 
       {(gap !== undefined || hasManual) && (
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="text-xs text-zinc-500">
           {t("coverageNote", { gap: gap ?? "none", manual: hasManual ? "yes" : "no" })}
         </p>
       )}

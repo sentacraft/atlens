@@ -26,8 +26,8 @@ export default function FavoriteStarButton({ lensId, className }: { lensId: stri
         "z-10 flex h-8 w-8 items-center justify-center rounded-full transition-[opacity,background-color,color]",
         FROSTED_OVERLAY_CHROME_CLS,
         favorited
-          ? "text-zinc-900 dark:text-zinc-50"
-          : cn("text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-50", REVEAL_CLS),
+          ? "text-zinc-900"
+          : cn("text-zinc-600 hover:text-zinc-900", REVEAL_CLS),
         className,
       )}
     >

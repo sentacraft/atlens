@@ -89,17 +89,17 @@ export default async function CollectionsIndexPage({
       <header id="collections-top" className="pb-3">
         <h1 className="sr-only">{t("indexTitle")}</h1>
         <div className="flex min-w-0 flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
-          <p className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100">
+          <p className="text-[15px] font-medium text-zinc-900">
             {t("indexStats", { count: totalCollections, lensCount: totalLenses })}
           </p>
           <Link
             href={aboutPath("coverage")}
-            className="whitespace-nowrap text-xs text-zinc-400 underline-offset-2 transition-colors hover:text-zinc-600 hover:underline dark:text-zinc-500 dark:hover:text-zinc-300"
+            className="whitespace-nowrap text-xs text-zinc-400 underline-offset-2 transition-colors hover:text-zinc-600 hover:underline"
           >
             {t("coverageLink")}
           </Link>
         </div>
-        <p className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 text-sm leading-relaxed text-zinc-500">
           {t("indexSubtitle")}
         </p>
       </header>
@@ -125,16 +125,16 @@ export default async function CollectionsIndexPage({
               {cat.marker.map((label) => (
                 <span
                   key={label}
-                  className={`inline-flex items-center justify-center rounded-[3px] border border-zinc-900 px-1.5 py-0.5 font-mono text-[10px] font-semibold leading-none tracking-[0.04em] text-zinc-900 dark:border-zinc-400 dark:text-zinc-400 ${"markerItalic" in cat && cat.markerItalic ? "italic" : ""}`}
+                  className={`inline-flex items-center justify-center rounded-[3px] border border-zinc-900 px-1.5 py-0.5 font-mono text-[10px] font-semibold leading-none tracking-[0.04em] text-zinc-900 ${"markerItalic" in cat && cat.markerItalic ? "italic" : ""}`}
                 >
                   {label}
                 </span>
               ))}
             </span>
-            <h2 className="font-heading text-[17px] font-bold leading-tight text-zinc-900 dark:text-zinc-100">
+            <h2 className="font-heading text-[17px] font-bold leading-tight text-zinc-900">
               {cat.label}
             </h2>
-            <span className="font-mono text-[11px] text-zinc-500 dark:text-zinc-400">
+            <span className="font-mono text-[11px] text-zinc-500">
               {t("sectionCount", { count: cat.count })}
             </span>
           </div>
@@ -146,17 +146,17 @@ export default async function CollectionsIndexPage({
                 <Link
                   key={collection.slug}
                   href={collectionPath(resolvedMount, collection.slug)}
-                  className="group grid grid-cols-[1fr_auto] items-start gap-4 border-b border-zinc-100 py-2.5 transition-colors dark:border-zinc-800"
+                  className="group grid grid-cols-[1fr_auto] items-start gap-4 border-b border-zinc-100 py-2.5 transition-colors"
                 >
                   <div>
-                    <p className="text-sm font-medium leading-snug text-zinc-900 group-hover:underline dark:text-zinc-100">
+                    <p className="text-sm font-medium leading-snug text-zinc-900 group-hover:underline">
                       {localized(collection.title, locale)}
                     </p>
-                    <p className="mt-0.5 text-xs leading-[1.45] text-zinc-500 dark:text-zinc-400">
+                    <p className="mt-0.5 text-xs leading-[1.45] text-zinc-500">
                       {localized(collection.shortDescription, locale)}
                     </p>
                   </div>
-                  <span className="pt-0.5 font-mono text-[11px] whitespace-nowrap text-zinc-400 dark:text-zinc-500">
+                  <span className="pt-0.5 font-mono text-[11px] whitespace-nowrap text-zinc-400">
                     {t("lensCountShort", { count: lensCount })}
                   </span>
                 </Link>

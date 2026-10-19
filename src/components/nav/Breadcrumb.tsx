@@ -14,7 +14,7 @@ interface BreadcrumbProps {
 }
 
 const linkCls =
-  "text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50";
+  "text-zinc-500 transition-colors hover:text-zinc-900";
 
 export default function Breadcrumb({ segments, current }: BreadcrumbProps) {
   const parent = segments[segments.length - 1];
@@ -40,10 +40,10 @@ export default function Breadcrumb({ segments, current }: BreadcrumbProps) {
             <Link href={seg.href} className={linkCls}>
               {seg.label}
             </Link>
-            <ChevronRight className="size-3 text-zinc-300 dark:text-zinc-600" />
+            <ChevronRight className="size-3 text-zinc-300" />
           </span>
         ))}
-        <span className="text-zinc-900 dark:text-zinc-100">{current}</span>
+        <span className="text-zinc-900">{current}</span>
       </nav>
     </>
   );

@@ -27,7 +27,7 @@ import { BodySpecs } from "@/components/me/gear-specs";
 import { lensPath } from "@/lib/url/routes";
 
 const ADD_BUTTON_CLS = cn(ACTION_OUTLINE_CLS, "h-9 gap-1 px-3 text-[13px] md:h-8");
-const GROUP_LABEL_CLS = "text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400";
+const GROUP_LABEL_CLS = "text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500";
 
 function focalRange(item: GearItem, lens: LensSummary | undefined): [number, number] | undefined {
   if (item.manual) {
@@ -194,11 +194,11 @@ function GearGroup({
         {action}
       </div>
       {count === 0 ? (
-        <p className="rounded-2xl border border-dashed border-zinc-200 px-4 py-5 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+        <p className="rounded-2xl border border-dashed border-zinc-200 px-4 py-5 text-center text-sm text-zinc-500">
           {empty}
         </p>
       ) : (
-        <ul className="overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800">{children}</ul>
+        <ul className="overflow-hidden rounded-2xl border border-zinc-200">{children}</ul>
       )}
     </div>
   );
@@ -207,7 +207,7 @@ function GearGroup({
 function Thumbnail({ src }: { src?: string }) {
   const [failed, setFailed] = useState(false);
   return (
-    <div className="hidden h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-zinc-100 md:flex dark:bg-zinc-900">
+    <div className="hidden h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-zinc-100 md:flex">
       {src && !failed ? (
         // eslint-disable-next-line @next/next/no-img-element -- catalog webp; images are unoptimized on Workers
         <img src={src} alt="" onError={() => setFailed(true)} className="h-full w-full object-contain p-1" />
@@ -241,28 +241,28 @@ function GearRow({
       {thumbnail}
       <div className="min-w-0 flex-1">
         <div className="hidden items-center gap-2 md:flex">
-          <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">{brand}</span>
+          <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">{brand}</span>
           {badge && (
-            <span className="truncate rounded bg-zinc-100 px-1.5 text-[10px] leading-4 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+            <span className="truncate rounded bg-zinc-100 px-1.5 text-[10px] leading-4 text-zinc-600">
               {badge}
             </span>
           )}
         </div>
-        <div className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">{name}</div>
-        <div className="truncate text-xs text-zinc-500 md:hidden dark:text-zinc-400">
+        <div className="truncate text-sm font-semibold text-zinc-900">{name}</div>
+        <div className="truncate text-xs text-zinc-500 md:hidden">
           {[brand, badge].filter(Boolean).join(" · ")}
           {detail && <> · {detail}</>}
         </div>
       </div>
-      <span className="hidden shrink-0 whitespace-nowrap text-xs text-zinc-500 md:block dark:text-zinc-400">{detail}</span>
+      <span className="hidden shrink-0 whitespace-nowrap text-xs text-zinc-500 md:block">{detail}</span>
     </>
   );
   return (
-    <li className="flex items-center gap-1 border-b border-zinc-100 pr-1.5 last:border-b-0 md:pr-2 dark:border-zinc-800">
+    <li className="flex items-center gap-1 border-b border-zinc-100 pr-1.5 last:border-b-0 md:pr-2">
       {href ? (
         <Link
           href={href}
-          className="flex min-w-0 flex-1 items-center gap-3 py-2.5 pl-3.5 transition-colors hover:bg-zinc-50 md:gap-3.5 md:py-3 md:pl-4 dark:hover:bg-zinc-900"
+          className="flex min-w-0 flex-1 items-center gap-3 py-2.5 pl-3.5 transition-colors hover:bg-zinc-50 md:gap-3.5 md:py-3 md:pl-4"
         >
           {body}
         </Link>

@@ -27,14 +27,14 @@ export default function CollectionPills({
   }
 
   return (
-    <section className="border-t border-zinc-200 pt-6 dark:border-zinc-800">
+    <section className="border-t border-zinc-200 pt-6">
       <div className="mb-4 flex items-baseline justify-between">
-        <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+        <h2 className="text-sm font-semibold text-zinc-900">
           {title}
         </h2>
         <Link
           href={collectionsPath(mount)}
-          className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+          className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900"
         >
           {viewAllLabel} →
         </Link>
@@ -44,15 +44,15 @@ export default function CollectionPills({
           <Link
             key={c.slug}
             href={collectionPath(mount, c.slug)}
-            className="group inline-flex items-center gap-2 rounded-full border border-zinc-200 px-3 py-1.5 text-sm transition-colors hover:border-zinc-900 hover:bg-zinc-900 hover:text-white dark:border-zinc-700 dark:hover:border-zinc-100 dark:hover:bg-zinc-100 dark:hover:text-zinc-900"
+            className="group inline-flex items-center gap-2 rounded-full border border-zinc-200 px-3 py-1.5 text-sm transition-colors hover:border-zinc-900 hover:bg-zinc-900 hover:text-white"
           >
-            <span className="font-normal text-zinc-900 group-hover:text-white dark:text-zinc-100 dark:group-hover:text-zinc-900">
+            <span className="font-normal text-zinc-900 group-hover:text-white">
               {localized(c.title, locale)}
             </span>
-            <span className="text-xs text-zinc-400 group-hover:text-zinc-400 dark:text-zinc-500 dark:group-hover:text-zinc-500">
+            <span className="text-xs text-zinc-400 group-hover:text-zinc-400">
               {lensCounts[c.slug] ?? 0}
             </span>
-            <span className="text-zinc-300 group-hover:text-zinc-500 dark:text-zinc-600 dark:group-hover:text-zinc-400" aria-hidden="true">→</span>
+            <span className="text-zinc-300 group-hover:text-zinc-500" aria-hidden="true">→</span>
           </Link>
         ))}
       </div>

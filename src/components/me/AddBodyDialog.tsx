@@ -117,7 +117,7 @@ function BodyPicker({
         />
         {seriesGroups(mount).map((group) => (
           <section key={group.series} className="flex flex-col gap-2">
-            <h3 className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+            <h3 className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500">
               {group.series}
             </h3>
             <div className="flex flex-wrap gap-1.5">
@@ -136,7 +136,7 @@ function BodyPicker({
                       CHIP_BASE_CLS,
                       "h-9 px-3 text-[13px]",
                       isOwned
-                        ? "cursor-default border-transparent bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500"
+                        ? "cursor-default border-transparent bg-zinc-100 text-zinc-400"
                         : isSelected
                           ? CHIP_ACTIVE_CLS
                           : CHIP_IDLE_CLS,

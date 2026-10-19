@@ -36,10 +36,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: SITE.themeColor.light },
-    { media: "(prefers-color-scheme: dark)",  color: SITE.themeColor.dark  },
-  ],
+  themeColor: SITE.themeColor,
 };
 
 export async function generateMetadata({
@@ -78,12 +75,10 @@ export async function generateMetadata({
       capable: true,
       title: SITE.shortName,
       statusBarStyle: "black-translucent",
-      startupImage: SPLASH_DEVICES.flatMap((device) =>
-        (["light", "dark"] as const).map((scheme) => ({
-          url:   splashUrl(device.label, scheme),
-          media: splashMedia(device, scheme),
-        }))
-      ),
+      startupImage: SPLASH_DEVICES.map((device) => ({
+        url: splashUrl(device.label),
+        media: splashMedia(device),
+      })),
     },
     openGraph: {
       siteName: SITE.name,

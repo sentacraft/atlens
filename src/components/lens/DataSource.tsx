@@ -30,7 +30,7 @@ export function DataSourceBar({ source, className }: { source: ReactNode; classN
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-2.5 text-xs text-zinc-600 dark:text-zinc-400",
+        "flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-2.5 text-xs text-zinc-600",
         className,
       )}
     >
@@ -38,8 +38,8 @@ export function DataSourceBar({ source, className }: { source: ReactNode; classN
         {t("label")}
         {source}
       </span>
-      <span className="inline-flex items-center gap-1.5 font-medium text-zinc-700 dark:text-zinc-300">
-        <BadgeCheck className="size-4 shrink-0 text-zinc-900 dark:text-zinc-100" aria-hidden="true" />
+      <span className="inline-flex items-center gap-1.5 font-medium text-zinc-700">
+        <BadgeCheck className="size-4 shrink-0 text-zinc-900" aria-hidden="true" />
         {t("trust")}
         <DataSourcePopover />
       </span>
@@ -55,8 +55,8 @@ export function DataSourceInline({ className }: { className?: string }) {
   const tail = text.slice(split);
 
   return (
-    <span className={cn("text-xs text-zinc-500 dark:text-zinc-400", className)}>
-      <BadgeCheck className="mr-1 inline size-3.5 -mt-0.5 text-zinc-900 dark:text-zinc-100" aria-hidden="true" />
+    <span className={cn("text-xs text-zinc-500", className)}>
+      <BadgeCheck className="mr-1 inline size-3.5 -mt-0.5 text-zinc-900" aria-hidden="true" />
       {head}
       {/* The last word rides with the info icon; otherwise the icon wraps onto a line of its own on phones. */}
       <span className="whitespace-nowrap">

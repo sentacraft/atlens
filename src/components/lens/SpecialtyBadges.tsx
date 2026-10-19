@@ -8,13 +8,13 @@ interface SpecialtyBadgesProps {
 }
 
 const cinePillCls =
-  "inline-flex shrink-0 items-center whitespace-nowrap rounded-md bg-zinc-100 px-2 py-0.5 text-[11px] font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200";
+  "inline-flex shrink-0 items-center whitespace-nowrap rounded-md bg-zinc-100 px-2 py-0.5 text-[11px] font-semibold text-zinc-700";
 
 const traitPillCls =
-  "inline-flex shrink-0 items-center whitespace-nowrap rounded-md bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300";
+  "inline-flex shrink-0 items-center whitespace-nowrap rounded-md bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-700";
 
 const overflowPillCls =
-  "inline-flex shrink-0 items-center whitespace-nowrap rounded-md px-1.5 py-0.5 text-[11px] font-medium text-zinc-500 dark:text-zinc-400";
+  "inline-flex shrink-0 items-center whitespace-nowrap rounded-md px-1.5 py-0.5 text-[11px] font-medium text-zinc-500";
 
 // No wrapper element: the caller places the pills in its own flex row.
 export default function SpecialtyBadges({

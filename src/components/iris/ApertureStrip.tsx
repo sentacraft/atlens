@@ -181,11 +181,11 @@ export default function ApertureStrip({
     >
       <div
         aria-hidden="true"
-        className="absolute left-1/2 -top-0.5 -translate-x-1/2 w-px h-1.5 bg-current opacity-70 text-zinc-400 dark:text-zinc-300"
+        className="absolute left-1/2 -top-0.5 -translate-x-1/2 w-px h-1.5 bg-current opacity-70 text-zinc-400"
       />
 
       <div
-        className="mt-2.5 h-[25px] overflow-hidden cursor-grab active:cursor-grabbing touch-none select-none text-zinc-500 dark:text-zinc-400"
+        className="mt-2.5 h-[25px] overflow-hidden cursor-grab active:cursor-grabbing touch-none select-none text-zinc-500"
         style={{
           maskImage:       "linear-gradient(to right, transparent 0%, black 22%, black 78%, transparent 100%)",
           WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 22%, black 78%, transparent 100%)",
