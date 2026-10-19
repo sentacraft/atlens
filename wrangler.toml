@@ -37,10 +37,6 @@ required = [
   "RATE_LIMIT_BYPASS",
 ]
 
-[[analytics_engine_datasets]]
-binding = "ANALYTICS"
-dataset = "xglass_events"
-
 [[d1_databases]]
 binding = "ASKIRIS_DB"
 database_name = "atlens-askiris-traces"
@@ -52,6 +48,12 @@ binding = "APP_DB"
 database_name = "atlens-app"
 database_id = "6a75a5c7-643e-414b-9cd2-51cf3826a2f2"
 migrations_dir = "migrations/app"
+
+[[d1_databases]]
+binding = "ANALYTICS_DB"
+database_name = "atlens-analytics"
+database_id = "b4606596-b605-49ff-9697-c6d0da11ab94"
+migrations_dir = "migrations/analytics"
 
 [[send_email]]
 name = "EMAIL"
@@ -107,10 +109,6 @@ AUTH_EMAIL_FROM = "login@atlens.app"
 # uses the real secret runs on production through oAuthProxy.
 GOOGLE_CLIENT_SECRET = "unused-on-previews"
 
-[[previews.analytics_engine_datasets]]
-binding = "ANALYTICS"
-dataset = "xglass_events_preview"
-
 [[previews.d1_databases]]
 binding = "ASKIRIS_DB"
 database_name = "atlens-askiris-traces-preview"
@@ -122,6 +120,12 @@ binding = "APP_DB"
 database_name = "atlens-app-preview"
 database_id = "14670bb5-ad46-4aec-a872-703443f4bed2"
 migrations_dir = "migrations/app"
+
+[[previews.d1_databases]]
+binding = "ANALYTICS_DB"
+database_name = "atlens-analytics-preview"
+database_id = "bd85e0af-3947-4dcf-8416-a2e56b248516"
+migrations_dir = "migrations/analytics"
 
 [[previews.send_email]]
 name = "EMAIL"

@@ -4,19 +4,16 @@ import type { EventName, EventProps, TrackPayload } from "@/lib/analytics/events
 
 const ENDPOINT = "/api/track";
 
-export function track(event: EventName, props?: EventProps): void {
+export function track<E extends EventName>(event: E, props?: EventProps<E>): void {
   if (typeof window === "undefined") {
     return;
   }
 
-  const locale = document.documentElement.lang || undefined;
   const payload: TrackPayload = {
     event,
-    locale,
-    props: {
-      ...props,
-      path: props?.path ?? window.location.pathname,
-    },
+    locale: document.documentElement.lang || undefined,
+    path: window.location.pathname,
+    props,
   };
   const body = JSON.stringify(payload);
 
