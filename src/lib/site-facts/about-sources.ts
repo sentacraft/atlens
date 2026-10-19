@@ -32,7 +32,7 @@ export const ABOUT_FACT_SOURCES: Record<string, { facts: string[]; hash: string 
   supportCost: { facts: ["costs"], hash: "39c24a54686a" },
   supportIntegrity: { facts: ["independence", "open-source", "store-links"], hash: "96e5b757879a" },
   ackBody: { facts: ["built-with-ai", "launch"], hash: "e232ef01c031" },
-  ackStory1Body: { facts: ["iris-character", "iris-mechanics"], hash: "4965f89c49d0" },
+  ackStory1Body: { facts: ["iris-character", "iris-mechanics"], hash: "b1e34b71168c" },
   ackStory2Body: { facts: ["built-with-ai"], hash: "710d74f8bf27" },
 };
 
