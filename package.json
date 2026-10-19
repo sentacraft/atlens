@@ -33,7 +33,7 @@
     "@ai-sdk/openai": "^4.0.92",
     "@ai-sdk/openai-compatible": "^3.0.68",
     "@ai-sdk/react": "^4.0.141",
-    "@base-ui/react": "^1.9.0",
+    "@base-ui/react": "https://pkg.pr.new/mui/base-ui/@base-ui/react@5897",
     "@fontsource-variable/source-serif-4": "^5.2.9",
     "@tanstack/react-query": "^5.103.1",
     "ai": "^7.0.138",
