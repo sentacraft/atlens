@@ -5,9 +5,6 @@
  * preview secrets, so previews take every other required name.
  */
 export const SECRETS_NOT_ON_PREVIEWS: readonly string[] = [
-  // Credentials for the admin analytics API.
-  "CF_ANALYTICS_ACCOUNT_ID",
-  "CF_ANALYTICS_TOKEN",
   // A `[previews.vars]` placeholder instead: the code exchange runs on production.
   "GOOGLE_CLIENT_SECRET",
 ];

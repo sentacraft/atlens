@@ -1,5 +1,21 @@
-import { queryAE } from "@/lib/analytics/query";
-import { ASKIRIS_TURN_EVENT } from "@/lib/analytics/events";
+import Link from "next/link";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+import TrendChart from "@/components/admin/TrendChart";
+import {
+  DAY_MS,
+  countBy,
+  loadAccounts,
+  loadFirstEventTs,
+  loadDaily,
+  loadFunnel,
+  loadIris,
+  loadIrisFeedback,
+  loadOverview,
+  loadSignedInShare,
+  rangeWindows,
+  type FunnelStep,
+  type Overview,
+} from "@/lib/analytics/dashboard";
 import {
   aggregateFilterDimensions,
   formatFilterSnapshot,
@@ -8,340 +24,55 @@ import {
   formatLensSlugList,
   formatShareMethod,
 } from "@/lib/analytics/format";
+import { movingAverage, percentChange } from "@/lib/analytics/series";
+import {
+  ANALYTICS_RANGES,
+  adminAnalyticsPath,
+  resolveAnalyticsRange,
+  type AnalyticsRange,
+} from "@/lib/url/admin-analytics";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const WINDOW = "INTERVAL '30' DAY";
-const DASHBOARD_FILTER = `timestamp > NOW() - ${WINDOW} AND blob7 != '1'`;
+const RANGE_LABELS: Record<AnalyticsRange, string> = {
+  "7d": "7 days",
+  "30d": "30 days",
+  "90d": "90 days",
+  all: "All time",
+};
 
-// AE SQL allows only a bare column inside count(DISTINCT …), so per-event counts group by index1.
-const Q_OVERVIEW_TOTALS = `
-  SELECT
-    SUM(_sample_interval) AS events,
-    count(DISTINCT blob1) AS sessions
-  FROM xglass_events
-  WHERE ${DASHBOARD_FILTER}
-`;
+// Events before this moved from Analytics Engine, whose 30-minute session id stands in for the visitor.
+const D1_CUTOVER_DAY = "2026-10-19";
 
-const Q_OVERVIEW_UNIQUES = `
-  SELECT
-    index1 AS event,
-    count(DISTINCT blob4) AS uniques
-  FROM xglass_events
-  WHERE index1 IN ('search', 'lens_view')
-    AND ${DASHBOARD_FILTER}
-  GROUP BY event
-`;
+const AVERAGE_DAYS = 7;
+const SPARK = "#2a78d6";
+const GOOD = "#0ca30c";
+const CRITICAL = "#d03b3b";
+const COUNT_WIDTH = "w-20";
 
-const Q_LOCALE_SPLIT = `
-  SELECT
-    blob2 AS locale,
-    SUM(_sample_interval) AS events,
-    count(DISTINCT blob1) AS sessions
-  FROM xglass_events
-  WHERE ${DASHBOARD_FILTER} AND blob2 != ''
-  GROUP BY locale
-  ORDER BY events DESC
-`;
+type Row = Record<string, unknown>;
 
-const Q_REFERRER = `
-  SELECT blob5 AS referrer, SUM(_sample_interval) AS n
-  FROM xglass_events
-  WHERE index1 = 'lens_view' AND blob5 != ''
-    AND ${DASHBOARD_FILTER}
-  GROUP BY referrer
-  ORDER BY n DESC
-  LIMIT 15
-`;
-
-const Q_SEARCH_ZERO = `
-  SELECT blob4 AS query, SUM(_sample_interval) AS n
-  FROM xglass_events
-  WHERE index1 = 'search' AND double1 = 0
-    AND ${DASHBOARD_FILTER}
-  GROUP BY query
-  ORDER BY n DESC
-  LIMIT 20
-`;
-
-const Q_SEARCH_ALL = `
-  SELECT blob4 AS query, SUM(_sample_interval) AS n
-  FROM xglass_events
-  WHERE index1 = 'search'
-    AND ${DASHBOARD_FILTER}
-  GROUP BY query
-  ORDER BY n DESC
-  LIMIT 20
-`;
-
-const Q_FILTER_USAGE = `
-  SELECT blob4 AS filters, SUM(_sample_interval) AS n
-  FROM xglass_events
-  WHERE index1 = 'filter_apply'
-    AND ${DASHBOARD_FILTER}
-  GROUP BY filters
-  ORDER BY n DESC
-  LIMIT 10
-`;
-
-const Q_FILTER_DIMENSIONS = `
-  SELECT blob4 AS filters, SUM(_sample_interval) AS n
-  FROM xglass_events
-  WHERE index1 = 'filter_apply'
-    AND ${DASHBOARD_FILTER}
-  GROUP BY filters
-  ORDER BY n DESC
-  LIMIT 1000
-`;
-
-const Q_COMPARE_FUNNEL = `
-  SELECT
-    index1 AS step,
-    SUM(_sample_interval) AS n,
-    count(DISTINCT blob1) AS sids
-  FROM xglass_events
-  WHERE index1 IN ('compare_add', 'compare_view', 'compare_scroll')
-    AND ${DASHBOARD_FILTER}
-  GROUP BY step
-`;
-
-const Q_COMPARE_COMBOS = `
-  SELECT blob5 AS slugs, SUM(_sample_interval) AS n
-  FROM xglass_events
-  WHERE index1 = 'compare_view' AND blob5 != ''
-    AND ${DASHBOARD_FILTER}
-  GROUP BY slugs
-  ORDER BY n DESC
-  LIMIT 20
-`;
-
-const Q_LENS_VIEW_TOP = `
-  SELECT blob4 AS lens_slug, SUM(_sample_interval) AS n
-  FROM xglass_events
-  WHERE index1 = 'lens_view'
-    AND ${DASHBOARD_FILTER}
-  GROUP BY lens_slug
-  ORDER BY n DESC
-  LIMIT 20
-`;
-
-const Q_FEEDBACK = `
-  SELECT
-    blob4 AS feedback_type,
-    sumIf(_sample_interval, index1 = 'feedback_open') AS opens,
-    sumIf(_sample_interval, index1 = 'feedback_submit') AS submits
-  FROM xglass_events
-  WHERE index1 IN ('feedback_open', 'feedback_submit')
-    AND ${DASHBOARD_FILTER}
-  GROUP BY feedback_type
-`;
-
-const Q_SHARE = `
-  SELECT blob5 AS method, SUM(_sample_interval) AS n
-  FROM xglass_events
-  WHERE index1 = 'share_action'
-    AND ${DASHBOARD_FILTER}
-  GROUP BY method
-  ORDER BY n DESC
-`;
-
-const Q_INSTALL = `
-  SELECT SUM(_sample_interval) AS n
-  FROM xglass_events
-  WHERE index1 = 'install_action'
-    AND ${DASHBOARD_FILTER}
-`;
-
-const Q_MOUNT_SWITCH = `
-  SELECT
-    blob5 AS from_mount,
-    blob4 AS to_mount,
-    SUM(_sample_interval) AS n
-  FROM xglass_events
-  WHERE index1 = 'mount_switch'
-    AND ${DASHBOARD_FILTER}
-  GROUP BY from_mount, to_mount
-  ORDER BY n DESC
-`;
-
-const Q_OUTBOUND = `
-  SELECT blob4 AS href, SUM(_sample_interval) AS n
-  FROM xglass_events
-  WHERE index1 = 'outbound_click'
-    AND ${DASHBOARD_FILTER}
-  GROUP BY href
-  ORDER BY n DESC
-  LIMIT 20
-`;
-
-const Q_OUTBOUND_BY_SOURCE = `
-  SELECT
-    blob3 AS source_path,
-    blob4 AS href,
-    SUM(_sample_interval) AS n
-  FROM xglass_events
-  WHERE index1 = 'outbound_click'
-    AND ${DASHBOARD_FILTER}
-  GROUP BY source_path, href
-  ORDER BY n DESC
-  LIMIT 30
-`;
-
-const Q_SHARE_BY_SOURCE = `
-  SELECT
-    blob3 AS source_path,
-    blob5 AS method,
-    SUM(_sample_interval) AS n
-  FROM xglass_events
-  WHERE index1 = 'share_action'
-    AND ${DASHBOARD_FILTER}
-  GROUP BY source_path, method
-  ORDER BY n DESC
-  LIMIT 30
-`;
-
-const Q_PURCHASE_BY_CHANNEL = `
-  SELECT
-    blob4 AS channel,
-    SUM(_sample_interval) AS clicks,
-    sumIf(_sample_interval, double1 = 1) AS affiliate_clicks
-  FROM xglass_events
-  WHERE index1 = 'purchase_click'
-    AND ${DASHBOARD_FILTER}
-  GROUP BY channel
-  ORDER BY clicks DESC
-`;
-
-const Q_PURCHASE_BY_LENS = `
-  SELECT blob5 AS lens_id, SUM(_sample_interval) AS n
-  FROM xglass_events
-  WHERE index1 = 'purchase_click'
-    AND ${DASHBOARD_FILTER}
-  GROUP BY lens_id
-  ORDER BY n DESC
-  LIMIT 20
-`;
-
-const Q_PWA_LAUNCH = `
-  SELECT blob6 AS source, SUM(_sample_interval) AS launches
-  FROM xglass_events
-  WHERE index1 = 'pwa_launch'
-    AND ${DASHBOARD_FILTER}
-  GROUP BY source
-  ORDER BY launches DESC
-`;
-
-// Turn rows have their own layout: blob1=mount, blob2=locale, blob3=sid, blob4=conversation_id,
-// blob5=internal; double1..7 = total/input/output/cacheRead tokens, step_count, budget_hit,
-// max_context. Sums weight by _sample_interval in case AE ever samples. The internal flag is
-// blob5 here and blob7 on askiris_view.
-const ASKIRIS_FILTER = `index1 = '${ASKIRIS_TURN_EVENT}' AND timestamp > NOW() - ${WINDOW} AND blob5 != '1'`;
-const ASKIRIS_VIEW_FILTER = `index1 = 'askiris_view' AND timestamp > NOW() - ${WINDOW} AND blob7 != '1'`;
-
-const Q_ASKIRIS_OVERVIEW = `
-  SELECT
-    SUM(_sample_interval) AS turns,
-    SUM(double1 * _sample_interval) AS total_tokens,
-    SUM(double2 * _sample_interval) AS input_tokens,
-    SUM(double3 * _sample_interval) AS output_tokens,
-    SUM(double4 * _sample_interval) AS cache_read_tokens,
-    SUM(double5 * _sample_interval) AS total_steps,
-    SUM(double6 * _sample_interval) AS budget_hits
-  FROM xglass_events
-  WHERE ${ASKIRIS_FILTER}
-`;
-
-const Q_ASKIRIS_BY_STEP = `
-  SELECT double5 AS steps, SUM(_sample_interval) AS turns
-  FROM xglass_events
-  WHERE ${ASKIRIS_FILTER}
-  GROUP BY steps
-  ORDER BY steps
-`;
-
-const Q_ASKIRIS_BY_MOUNT = `
-  SELECT
-    blob1 AS mount,
-    SUM(_sample_interval) AS turns,
-    SUM(double1 * _sample_interval) AS total_tokens
-  FROM xglass_events
-  WHERE ${ASKIRIS_FILTER} AND blob1 != ''
-  GROUP BY mount
-  ORDER BY turns DESC
-`;
-
-const Q_ASKIRIS_VIEWS = `
-  SELECT
-    SUM(_sample_interval) AS pv,
-    count(DISTINCT blob1) AS uv
-  FROM xglass_events
-  WHERE ${ASKIRIS_VIEW_FILTER}
-`;
-
-const Q_ASKIRIS_SESSIONS = `
-  SELECT
-    count(DISTINCT blob3) AS interacted_uv,
-    count(DISTINCT blob4) AS sessions,
-    SUM(_sample_interval) AS turns
-  FROM xglass_events
-  WHERE ${ASKIRIS_FILTER} AND blob4 != ''
-`;
-
-const Q_ASKIRIS_CONTEXT_BY_CONVERSATION = `
-  SELECT
-    count() AS conversations,
-    max(conversation_context_tokens) AS max_context_tokens,
-    quantileExactWeighted(0.75)(conversation_context_tokens, conversation_weight) AS p75_context_tokens,
-    quantileExactWeighted(0.5)(conversation_context_tokens, conversation_weight) AS p50_context_tokens
-  FROM (
-    SELECT
-      blob3 AS sid,
-      blob4 AS conversation_id,
-      max(double7) AS conversation_context_tokens,
-      1 AS conversation_weight
-    FROM xglass_events
-    WHERE ${ASKIRIS_FILTER}
-      AND blob3 != ''
-      AND blob4 != ''
-      AND double7 > 0
-    GROUP BY sid, conversation_id
-  )
-`;
-
-function pct(num: number, denom: number): string {
-  if (denom <= 0) {
-    return "—";
-  }
-  return `${Math.round((num / denom) * 100)}%`;
+function fmtNum(value: number): string {
+  return value.toLocaleString("en-US");
 }
 
-function num(v: unknown): number {
-  const n = typeof v === "number" ? v : Number(v);
-  return Number.isFinite(n) ? n : 0;
+function fmtCompact(value: number): string {
+  return value >= 10_000 ? `${(value / 1000).toFixed(1)}K` : fmtNum(Math.round(value));
 }
 
-function fmtNum(n: number): string {
-  return n.toLocaleString("en-US");
+function pct(part: number, whole: number): string {
+  return whole > 0 ? `${Math.round((part / whole) * 100)}%` : "—";
 }
 
-function fmtMaybe(v: unknown): string {
-  if (v === null || v === undefined) {
-    return "—";
-  }
-  const n = typeof v === "number" ? v : Number(v);
-  if (!Number.isFinite(n)) {
-    return "—";
-  }
-  return n.toLocaleString("en-US");
+function ratio(part: number, whole: number): number | null {
+  return whole > 0 ? part / whole : null;
 }
 
-function Card({ title, children }: { title: string; children: React.ReactNode }) {
+function Card({ title, children, className }: { title: string; children: React.ReactNode; className?: string }) {
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-      <h2 className="font-heading text-base font-semibold text-zinc-800">
-        {title}
-      </h2>
+    <section className={`min-w-0 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm ${className ?? ""}`}>
+      <h2 className="font-heading text-base font-semibold text-zinc-800">{title}</h2>
       <div className="mt-3">{children}</div>
     </section>
   );
@@ -355,19 +86,16 @@ interface Column {
   widthClass?: string;
 }
 
-function Table({ rows, columns }: { rows: Array<Record<string, unknown>>; columns: Column[] }) {
+function Table({ rows, columns }: { rows: Row[]; columns: Column[] }) {
   if (rows.length === 0) {
-    return <p className="text-sm text-zinc-400">No data yet.</p>;
+    return <p className="text-sm text-zinc-400">No data in this range.</p>;
   }
   return (
     <table className="w-full table-fixed text-sm">
       <thead>
         <tr className="text-xs uppercase tracking-wider text-zinc-400">
           {columns.map((c) => (
-            <th
-              key={c.key}
-              className={`pb-2 font-medium ${c.align === "right" ? "text-right" : "text-left"} ${c.widthClass ?? ""}`}
-            >
+            <th key={c.key} className={`pb-2 font-medium ${c.align === "right" ? "text-right" : "text-left"} ${c.widthClass ?? ""}`}>
               {c.label}
             </th>
           ))}
@@ -376,19 +104,15 @@ function Table({ rows, columns }: { rows: Array<Record<string, unknown>>; column
       <tbody>
         {rows.map((r, i) => (
           <tr key={i} className="border-t border-zinc-100">
-            {columns.map((c) => {
-              const raw = r[c.key];
-              const title = c.titleKey ? String(r[c.titleKey] ?? "") : undefined;
-              return (
-                <td
-                  key={c.key}
-                  title={title}
-                  className={`py-1.5 ${c.align === "right" ? "text-right tabular-nums" : "truncate text-left"}`}
-                >
-                  {String(raw ?? "")}
-                </td>
-              );
-            })}
+            {columns.map((c) => (
+              <td
+                key={c.key}
+                title={c.titleKey ? String(r[c.titleKey] ?? "") : undefined}
+                className={`py-1.5 ${c.align === "right" ? "text-right tabular-nums" : "truncate text-left"}`}
+              >
+                {typeof r[c.key] === "number" ? fmtNum(r[c.key] as number) : String(r[c.key] ?? "")}
+              </td>
+            ))}
           </tr>
         ))}
       </tbody>
@@ -396,580 +120,490 @@ function Table({ rows, columns }: { rows: Array<Record<string, unknown>>; column
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Facts({ items }: { items: Array<[string, string]> }) {
   return (
-    <div className="flex flex-col gap-1 rounded-2xl border border-zinc-200 bg-white px-5 py-4 shadow-sm">
-      <span className="text-xs uppercase tracking-wider text-zinc-500">
-        {label}
-      </span>
-      <span className="font-heading text-3xl font-semibold tabular-nums text-zinc-900">
-        {value}
-      </span>
+    <dl className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-2 text-sm">
+      {items.map(([label, value]) => (
+        <div key={label} className="contents">
+          <dt className="text-zinc-500">{label}</dt>
+          <dd className="text-right tabular-nums">{value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function Sparkline({ values }: { values: Array<number | null> }) {
+  const present = values.filter((v): v is number => v !== null);
+  if (present.length < 2) {
+    return null;
+  }
+  const max = Math.max(...present) || 1;
+  const step = 100 / (values.length - 1);
+  const path = values
+    .map((v, i) => (v === null ? null : `${i * step},${28 - (v / max) * 26}`))
+    .reduce<string[]>((parts, point, i, all) => {
+      if (point) {
+        parts.push(`${i > 0 && all[i - 1] ? "L" : "M"}${point}`);
+      }
+      return parts;
+    }, [])
+    .join(" ");
+  return (
+    <svg viewBox="0 0 100 30" preserveAspectRatio="none" className="mt-2 h-7 w-full" aria-hidden>
+      <path d={path} fill="none" stroke={SPARK} strokeWidth={2} vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function Delta({ change, upIsGood, periodLabel }: { change: number | null; upIsGood: boolean; periodLabel: string }) {
+  if (change === null) {
+    return <span className="text-xs text-zinc-400">Not enough earlier data to compare</span>;
+  }
+  const up = change > 0;
+  const flat = Math.abs(change) < 0.005;
+  const good = up === upIsGood;
+  return (
+    <span className="text-xs text-zinc-500">
+      <span style={{ color: flat ? undefined : good ? GOOD : CRITICAL }} aria-hidden>
+        {flat ? "→" : up ? "▲" : "▼"}
+      </span>{" "}
+      <span className="tabular-nums">{`${up ? "+" : ""}${Math.round(change * 100)}%`}</span> vs previous {periodLabel}
+    </span>
+  );
+}
+
+function StatTile({
+  label,
+  value,
+  change,
+  upIsGood = true,
+  periodLabel,
+  spark,
+}: {
+  label: string;
+  value: string;
+  change: number | null;
+  upIsGood?: boolean;
+  periodLabel: string;
+  spark: Array<number | null>;
+}) {
+  return (
+    <div className="flex min-w-0 flex-col gap-1 rounded-2xl border border-zinc-200 bg-white px-4 py-4 shadow-sm">
+      <span className="text-sm text-zinc-500">{label}</span>
+      <span className="font-heading text-3xl font-semibold text-zinc-900">{value}</span>
+      <Delta change={change} upIsGood={upIsGood} periodLabel={periodLabel} />
+      <Sparkline values={spark} />
     </div>
   );
 }
 
-const COUNT_WIDTH = "w-20";
+const FUNNEL_LABELS: Record<FunnelStep["key"], string> = {
+  sessions: "All sessions",
+  explored: "Searched or filtered",
+  viewed: "Viewed a lens",
+  compared: "Opened a comparison",
+  toStore: "Clicked through to a store",
+};
 
-export default async function AnalyticsDashboardPage() {
+function Funnel({ steps, previous }: { steps: FunnelStep[]; previous: FunnelStep[] | null }) {
+  const total = steps[0]?.sessions ?? 0;
+  const previousTotal = previous?.[0]?.sessions ?? 0;
+  return (
+    <ul className="space-y-3">
+      {steps.map((step, i) => {
+        const share = ratio(step.sessions, total);
+        const previousShare = previous ? ratio(previous[i].sessions, previousTotal) : null;
+        return (
+          <li key={step.key}>
+            <div className="flex items-baseline justify-between gap-3 text-sm">
+              <span className="truncate text-zinc-700">{FUNNEL_LABELS[step.key]}</span>
+              <span className="shrink-0 tabular-nums text-zinc-900">
+                {fmtNum(step.sessions)} <span className="text-zinc-500">· {pct(step.sessions, total)}</span>
+              </span>
+            </div>
+            <div className="mt-1 h-3 rounded-full bg-zinc-100">
+              <div className="h-3 rounded-full" style={{ width: `${(share ?? 0) * 100}%`, background: SPARK }} />
+            </div>
+            {i > 0 && previousShare !== null && (
+              <p className="mt-0.5 text-xs text-zinc-400">Previous period {Math.round(previousShare * 100)}%</p>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+export default async function AnalyticsDashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const range = resolveAnalyticsRange(await searchParams);
+  // A dynamic server component renders once per request, so the purity rule's re-render concern does not apply.
+  // eslint-disable-next-line react-hooks/purity
+  const windows = rangeWindows(range, Date.now());
+  const { current } = windows;
+  const { env } = getCloudflareContext();
+  const events = env.ANALYTICS_DB;
+  // A previous period that starts before the first event would compare against a partial period.
+  const firstEventTs = await loadFirstEventTs(events);
+  const previous = windows.previous && firstEventTs !== null && windows.previous.from >= firstEventTs ? windows.previous : null;
+
   const [
-    overviewTotals,
-    overviewUniques,
-    localeSplit,
-    referrers,
+    overview,
+    previousOverview,
+    paddedDaily,
+    funnel,
+    previousFunnel,
+    iris,
+    irisFeedback,
+    accounts,
+    signedIn,
     searchZero,
-    searchAll,
-    filterUsage,
-    filterDimensions,
-    compareFunnel,
-    compareCombos,
+    searchTop,
     lensViews,
-    feedback,
-    share,
-    shareBySource,
-    install,
-    mountSwitch,
-    outbound,
-    outboundBySource,
+    referrers,
+    compareCombos,
+    filterSnapshots,
+    filterAll,
     purchaseByChannel,
     purchaseByLens,
-    pwaLaunch,
-    askirisOverview,
-    askirisByStep,
-    askirisByMount,
-    askirisViews,
-    askirisSessions,
-    askirisContextByConversation,
+    outbound,
+    outboundBySource,
+    share,
+    shareBySource,
+    feedbackOpens,
+    feedbackSubmits,
+    pwaLaunches,
+    installs,
+    mountSwitches,
+    locales,
   ] = await Promise.all([
-    queryAE(Q_OVERVIEW_TOTALS),
-    queryAE(Q_OVERVIEW_UNIQUES),
-    queryAE(Q_LOCALE_SPLIT),
-    queryAE(Q_REFERRER),
-    queryAE(Q_SEARCH_ZERO),
-    queryAE(Q_SEARCH_ALL),
-    queryAE(Q_FILTER_USAGE),
-    queryAE(Q_FILTER_DIMENSIONS),
-    queryAE(Q_COMPARE_FUNNEL),
-    queryAE(Q_COMPARE_COMBOS),
-    queryAE(Q_LENS_VIEW_TOP),
-    queryAE(Q_FEEDBACK),
-    queryAE(Q_SHARE),
-    queryAE(Q_SHARE_BY_SOURCE),
-    queryAE(Q_INSTALL),
-    queryAE(Q_MOUNT_SWITCH),
-    queryAE(Q_OUTBOUND),
-    queryAE(Q_OUTBOUND_BY_SOURCE),
-    queryAE(Q_PURCHASE_BY_CHANNEL),
-    queryAE(Q_PURCHASE_BY_LENS),
-    queryAE(Q_PWA_LAUNCH),
-    queryAE(Q_ASKIRIS_OVERVIEW),
-    queryAE(Q_ASKIRIS_BY_STEP),
-    queryAE(Q_ASKIRIS_BY_MOUNT),
-    queryAE(Q_ASKIRIS_VIEWS),
-    queryAE(Q_ASKIRIS_SESSIONS),
-    queryAE(Q_ASKIRIS_CONTEXT_BY_CONVERSATION),
+    loadOverview(events, current),
+    previous ? loadOverview(events, previous) : null,
+    // The days before the range warm up the trailing average, so it starts on the range's first day.
+    loadDaily(events, { from: Math.max(0, current.from - (AVERAGE_DAYS - 1) * DAY_MS), to: current.to }),
+    loadFunnel(events, current),
+    previous ? loadFunnel(events, previous) : null,
+    loadIris(events, current),
+    loadIrisFeedback(env.ASKIRIS_DB, current),
+    loadAccounts(env.APP_DB, current),
+    loadSignedInShare(events, current),
+    countBy(events, current, "search", ["query"], { where: { results_count: 0 } }),
+    countBy(events, current, "search", ["query"]),
+    countBy(events, current, "lens_view", ["lens_slug"]),
+    countBy(events, current, "lens_view", ["referrer"], { limit: 15 }),
+    countBy(events, current, "compare_view", ["lens_slugs"]),
+    countBy(events, current, "filter_apply", ["filters_json"], { limit: 10 }),
+    countBy(events, current, "filter_apply", ["filters_json"], { limit: 1000 }),
+    countBy(events, current, "purchase_click", ["channel", "is_affiliate"], { limit: 100 }),
+    countBy(events, current, "purchase_click", ["lens_id"]),
+    countBy(events, current, "outbound_click", ["href"]),
+    countBy(events, current, "outbound_click", ["path", "href"], { limit: 30 }),
+    countBy(events, current, "share_action", ["method"]),
+    countBy(events, current, "share_action", ["path", "method"], { limit: 30 }),
+    countBy(events, current, "feedback_open", ["feedback_type"]),
+    countBy(events, current, "feedback_submit", ["feedback_type"]),
+    countBy(events, current, "pwa_launch", ["source"]),
+    countBy(events, current, "install_action", []),
+    countBy(events, current, "mount_switch", ["from_mount", "to_mount"]),
+    countBy(events, current, null, ["locale"]),
   ]);
 
-  if (overviewTotals.error === "missing_credentials") {
-    return (
-      <main className="mx-auto max-w-2xl px-6 py-16">
-        <h1 className="font-heading text-2xl font-bold">Analytics not configured</h1>
-        <p className="mt-4 text-sm text-zinc-600">
-          Set <code className="rounded bg-zinc-100 px-1.5 py-0.5">CF_ANALYTICS_ACCOUNT_ID</code> and{" "}
-          <code className="rounded bg-zinc-100 px-1.5 py-0.5">CF_ANALYTICS_TOKEN</code>{" "}
-          on the Worker to enable this dashboard. The token must have{" "}
-          <code className="rounded bg-zinc-100 px-1.5 py-0.5">Account · Analytics · Read</code>{" "}
-          permission.
-        </p>
-      </main>
-    );
+  const smooth = range !== "7d";
+  const warmup = current.from > 0 ? AVERAGE_DAYS - 1 : 0;
+  const daily = paddedDaily.slice(warmup);
+  const series = (pick: (d: (typeof paddedDaily)[number]) => number) => {
+    const values = paddedDaily.map(pick);
+    return (smooth ? movingAverage(values, AVERAGE_DAYS) : values).slice(warmup);
+  };
+  const periodLabel = RANGE_LABELS[range].toLowerCase();
+  const change = (pick: (o: Overview) => number) => percentChange(pick(overview), previousOverview ? pick(previousOverview) : null);
+  const zeroRate = (o: Overview) => (o.searches > 0 ? o.zeroResultSearches / o.searches : 0);
+  const zeroRateChange =
+    previousOverview && previousOverview.searches > 0 ? percentChange(zeroRate(overview), zeroRate(previousOverview)) : null;
+
+  const sessionAverages = series((d) => d.sessions);
+  const trendPoints = daily.map((d, i) => ({
+    day: d.day,
+    value: d.sessions,
+    average: smooth ? sessionAverages[i] : undefined,
+  }));
+
+  const channels = new Map<string, { channel: string; clicks: number; affiliate: number }>();
+  for (const row of purchaseByChannel) {
+    const channel = String(row.channel ?? "");
+    const entry = channels.get(channel) ?? { channel, clicks: 0, affiliate: 0 };
+    entry.clicks += row.n;
+    if (row.is_affiliate) {
+      entry.affiliate += row.n;
+    }
+    channels.set(channel, entry);
   }
-
-  const overviewTotalsRow = overviewTotals.data[0] as
-    | { events?: number; sessions?: number }
-    | undefined;
-
-  const uniquesByEvent = new Map<string, unknown>();
-  for (const r of overviewUniques.data as Array<{ event?: string; uniques?: number }>) {
-    if (r.event) {
-      uniquesByEvent.set(r.event, r.uniques);
+  const feedbackTypes = new Map<string, { feedback_type: string; opens: number; submits: number }>();
+  for (const [rowsOf, field] of [
+    [feedbackOpens, "opens"],
+    [feedbackSubmits, "submits"],
+  ] as const) {
+    for (const row of rowsOf) {
+      const type = String(row.feedback_type ?? "");
+      const entry = feedbackTypes.get(type) ?? { feedback_type: type, opens: 0, submits: 0 };
+      entry[field] += row.n;
+      feedbackTypes.set(type, entry);
     }
   }
-
-  const funnelByStep = new Map<string, { n: number; sids: number }>();
-  for (const r of compareFunnel.data as Array<{ step?: string; n?: number; sids?: number }>) {
-    if (r.step) {
-      funnelByStep.set(r.step, { n: num(r.n), sids: num(r.sids) });
-    }
-  }
-  const adds = funnelByStep.get("compare_add")?.n ?? 0;
-  const views = funnelByStep.get("compare_view")?.n ?? 0;
-  const scrolls = funnelByStep.get("compare_scroll")?.n ?? 0;
-  const sidsAdd = funnelByStep.get("compare_add")?.sids ?? 0;
-  const sidsView = funnelByStep.get("compare_view")?.sids ?? 0;
-  const sidsScroll = funnelByStep.get("compare_scroll")?.sids ?? 0;
-
-  const installCount = num((install.data[0] as { n?: number } | undefined)?.n);
-
-  const queryErrors = (
-    [
-      ["overviewTotals", overviewTotals],
-      ["overviewUniques", overviewUniques],
-      ["localeSplit", localeSplit],
-      ["referrers", referrers],
-      ["searchZero", searchZero],
-      ["searchAll", searchAll],
-      ["filterUsage", filterUsage],
-      ["filterDimensions", filterDimensions],
-      ["compareFunnel", compareFunnel],
-      ["compareCombos", compareCombos],
-      ["lensViews", lensViews],
-      ["feedback", feedback],
-      ["share", share],
-      ["shareBySource", shareBySource],
-      ["install", install],
-      ["mountSwitch", mountSwitch],
-      ["outbound", outbound],
-      ["outboundBySource", outboundBySource],
-      ["purchaseByChannel", purchaseByChannel],
-      ["purchaseByLens", purchaseByLens],
-      ["pwaLaunch", pwaLaunch],
-      ["askirisOverview", askirisOverview],
-      ["askirisByStep", askirisByStep],
-      ["askirisByMount", askirisByMount],
-      ["askirisViews", askirisViews],
-      ["askirisSessions", askirisSessions],
-      ["askirisContextByConversation", askirisContextByConversation],
-    ] as const
-  ).flatMap(([name, r]) =>
-    r.error && r.error !== "missing_credentials" ? [{ name, code: r.error }] : [],
-  );
-
-  const compareCombosRows = compareCombos.data.map((r) => ({
-    ...r,
-    display: formatLensSlugList(String(r.slugs ?? "")),
-  }));
-  const lensViewsRows = lensViews.data.map((r) => ({
-    ...r,
-    display: formatLensSlug(String(r.lens_slug ?? "")),
-  }));
-  const filterUsageRows = filterUsage.data.map((r) => ({
-    ...r,
-    display: formatFilterSnapshot(String(r.filters ?? "")),
-  }));
-  const filterDimensionRows = aggregateFilterDimensions(filterDimensions.data);
-  const shareRows = share.data.map((r) => ({
-    ...r,
-    display: formatShareMethod(String(r.method ?? "")),
-  }));
-  const shareBySourceRows = shareBySource.data.map((r) => ({
-    ...r,
-    method_display: formatShareMethod(String(r.method ?? "")),
-  }));
-  const outboundRows = outbound.data.map((r) => ({
-    ...r,
-    display: formatHref(String(r.href ?? "")),
-  }));
-  const outboundBySourceRows = outboundBySource.data.map((r) => ({
-    ...r,
-    href_display: formatHref(String(r.href ?? "")),
-  }));
-  const referrerRows = referrers.data.map((r) => ({
-    ...r,
-    display: formatHref(String(r.referrer ?? "")),
-  }));
-  const purchaseByLensRows = purchaseByLens.data.map((r) => ({
-    ...r,
-    display: formatLensSlug(String(r.lens_id ?? "")),
-  }));
-
-  const askirisRow = askirisOverview.data[0] as
-    | {
-        turns?: number;
-        total_tokens?: number;
-        input_tokens?: number;
-        output_tokens?: number;
-        cache_read_tokens?: number;
-        total_steps?: number;
-        budget_hits?: number;
-      }
-    | undefined;
-  const aiTurns = num(askirisRow?.turns);
-  const aiTotalTokens = num(askirisRow?.total_tokens);
-  const aiInputTokens = num(askirisRow?.input_tokens);
-  const aiCacheReadTokens = num(askirisRow?.cache_read_tokens);
-  const aiTotalSteps = num(askirisRow?.total_steps);
-  const aiBudgetHits = num(askirisRow?.budget_hits);
-  const aiViewsRow = askirisViews.data[0] as { pv?: number; uv?: number } | undefined;
-  const aiSessionsRow = askirisSessions.data[0] as
-    | { interacted_uv?: number; sessions?: number; turns?: number }
-    | undefined;
-  const aiUv = num(aiViewsRow?.uv);
-  const aiInteractedUv = num(aiSessionsRow?.interacted_uv);
-  const aiSessions = num(aiSessionsRow?.sessions);
-  const aiSessionTurns = num(aiSessionsRow?.turns);
-  const aiContextRow = askirisContextByConversation.data[0] as
-    | {
-        conversations?: number;
-        max_context_tokens?: number;
-        p75_context_tokens?: number;
-        p50_context_tokens?: number;
-      }
-    | undefined;
-  const askirisByMountRows = askirisByMount.data.map((r) => ({
-    ...r,
-    total_tokens: fmtNum(num(r.total_tokens)),
-  }));
+  const ratings = irisFeedback.helpful + irisFeedback.unhelpful;
 
   return (
-    <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
+    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <header className="mb-6">
-        <h1 className="font-heading text-3xl font-bold text-zinc-900">
-          Analytics
-        </h1>
-        <p className="mt-1 text-sm text-zinc-500">
-          Last 30 days · numbers adjusted for sampling
+        <h1 className="font-heading text-3xl font-bold text-zinc-900">Analytics</h1>
+        <nav aria-label="Time range" className="mt-4 flex flex-wrap gap-2">
+          {ANALYTICS_RANGES.map((option) => (
+            <Link
+              key={option}
+              href={adminAnalyticsPath(option)}
+              aria-current={option === range ? "page" : undefined}
+              className={`rounded-full border px-3 py-1 text-sm transition-colors ${
+                option === range
+                  ? "border-zinc-900 bg-zinc-900 text-white"
+                  : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-100"
+              }`}
+            >
+              {RANGE_LABELS[option]}
+            </Link>
+          ))}
+        </nav>
+        <p className="mt-3 text-sm text-zinc-500">
+          Days in China time (UTC+8); internal traffic excluded. Before {D1_CUTOVER_DAY}, each 30-minute
+          session counted as its own visitor, so visitor counts from that period run high.
         </p>
       </header>
 
-      {queryErrors.length > 0 && (
-        <div className="mb-6 rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-900">
-          <p className="font-medium">
-            {queryErrors.length} {queryErrors.length === 1 ? "query" : "queries"} failed
-          </p>
-          <ul className="mt-2 list-disc pl-5">
-            {queryErrors.map((e) => (
-              <li key={e.name}>
-                <code>{e.name}</code> → {e.code}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <Stat label="Events" value={fmtMaybe(overviewTotalsRow?.events)} />
-        <Stat label="Sessions" value={fmtMaybe(overviewTotalsRow?.sessions)} />
-        <Stat label="Unique queries" value={fmtMaybe(uniquesByEvent.get("search"))} />
-        <Stat label="Unique lenses viewed" value={fmtMaybe(uniquesByEvent.get("lens_view"))} />
+      <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+        <StatTile label="Visitors" value={fmtCompact(overview.visitors)} change={change((o) => o.visitors)} periodLabel={periodLabel} spark={series((d) => d.visitors)} />
+        <StatTile label="Sessions" value={fmtCompact(overview.sessions)} change={change((o) => o.sessions)} periodLabel={periodLabel} spark={series((d) => d.sessions)} />
+        <StatTile label="Lens views" value={fmtCompact(overview.lensViews)} change={change((o) => o.lensViews)} periodLabel={periodLabel} spark={series((d) => d.lensViews)} />
+        <StatTile label="Store clicks" value={fmtCompact(overview.purchaseClicks)} change={change((o) => o.purchaseClicks)} periodLabel={periodLabel} spark={series((d) => d.purchaseClicks)} />
+        <StatTile label="Iris turns" value={fmtCompact(overview.irisTurns)} change={change((o) => o.irisTurns)} periodLabel={periodLabel} spark={series((d) => d.irisTurns)} />
+        <StatTile
+          label="Zero-result searches"
+          value={pct(overview.zeroResultSearches, overview.searches)}
+          change={zeroRateChange}
+          upIsGood={false}
+          periodLabel={periodLabel}
+          spark={series((d) => d.zeroResultSearches)}
+        />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card title="Locale · split">
-          <Table
-            rows={localeSplit.data}
-            columns={[
-              { key: "locale", label: "Locale" },
-              { key: "events", label: "Events", align: "right", widthClass: COUNT_WIDTH },
-              { key: "sessions", label: "Sessions", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
+      <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <Card title="Sessions per day" className="lg:col-span-2">
+          {trendPoints.length > 0 ? (
+            <TrendChart points={trendPoints} valueLabel="Sessions" averageLabel={smooth ? `${AVERAGE_DAYS}-day average` : undefined} />
+          ) : (
+            <p className="text-sm text-zinc-400">No data in this range.</p>
+          )}
         </Card>
-
-        <Card title="Detail · referrer sources">
-          <Table
-            rows={referrerRows}
-            columns={[
-              { key: "display", label: "Referrer", titleKey: "referrer" },
-              { key: "n", label: "Views", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
-        </Card>
-
-        <Card title="Search · zero-result queries">
-          <Table
-            rows={searchZero.data}
-            columns={[
-              { key: "query", label: "Query" },
-              { key: "n", label: "Count", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
-        </Card>
-
-        <Card title="Search · top queries (any result)">
-          <Table
-            rows={searchAll.data}
-            columns={[
-              { key: "query", label: "Query" },
-              { key: "n", label: "Count", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
-        </Card>
-
-        <Card title="Compare · funnel">
-          <table className="w-full table-fixed text-sm">
-            <thead>
-              <tr className="text-xs uppercase tracking-wider text-zinc-400">
-                <th className="pb-2 text-left font-medium">Step</th>
-                <th className={`pb-2 text-right font-medium ${COUNT_WIDTH}`}>Events</th>
-                <th className={`pb-2 text-right font-medium ${COUNT_WIDTH}`}>Sessions</th>
-                <th className={`pb-2 text-right font-medium ${COUNT_WIDTH}`}>vs. add</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-t border-zinc-100">
-                <td className="py-1.5">compare_add</td>
-                <td className="py-1.5 text-right tabular-nums">{fmtNum(adds)}</td>
-                <td className="py-1.5 text-right tabular-nums">{fmtNum(sidsAdd)}</td>
-                <td className="py-1.5 text-right tabular-nums">100%</td>
-              </tr>
-              <tr className="border-t border-zinc-100">
-                <td className="py-1.5">compare_view</td>
-                <td className="py-1.5 text-right tabular-nums">{fmtNum(views)}</td>
-                <td className="py-1.5 text-right tabular-nums">{fmtNum(sidsView)}</td>
-                <td className="py-1.5 text-right tabular-nums">{pct(sidsView, sidsAdd)}</td>
-              </tr>
-              <tr className="border-t border-zinc-100">
-                <td className="py-1.5">compare_scroll</td>
-                <td className="py-1.5 text-right tabular-nums">{fmtNum(scrolls)}</td>
-                <td className="py-1.5 text-right tabular-nums">{fmtNum(sidsScroll)}</td>
-                <td className="py-1.5 text-right tabular-nums">{pct(sidsScroll, sidsAdd)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </Card>
-
-        <Card title="Compare · hot lens combinations">
-          <Table
-            rows={compareCombosRows}
-            columns={[
-              { key: "display", label: "Lenses", titleKey: "slugs" },
-              { key: "n", label: "Views", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
-        </Card>
-
-        <Card title="Filters · most-used snapshots">
-          <Table
-            rows={filterUsageRows}
-            columns={[
-              { key: "display", label: "Filters", titleKey: "filters" },
-              { key: "n", label: "Applies", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
-        </Card>
-
-        <Card title="Filters · per-dimension usage">
-          <Table
-            rows={filterDimensionRows}
-            columns={[
-              { key: "dimension", label: "Filter" },
-              { key: "n", label: "Applies", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
-        </Card>
-
-        <Card title="Detail · most-viewed lenses">
-          <Table
-            rows={lensViewsRows}
-            columns={[
-              { key: "display", label: "Lens", titleKey: "lens_slug" },
-              { key: "n", label: "Views", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
-        </Card>
-
-        <Card title="Detail · avg dwell seconds (top by views)">
-          <p className="text-sm text-zinc-400">
-            Not collected. SPA navigation within Atlens doesn&rsquo;t fire{" "}
-            <code>visibilitychange</code> or <code>pagehide</code>, so the
-            previous dwell timing was unreliable. Pending a redesign that
-            also captures client-side route exits.
-          </p>
-        </Card>
-
-        <Card title="Feedback · funnel by type">
-          <Table
-            rows={feedback.data}
-            columns={[
-              { key: "feedback_type", label: "Type" },
-              { key: "opens", label: "Opens", align: "right", widthClass: COUNT_WIDTH },
-              { key: "submits", label: "Submits", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
-        </Card>
-
-        <Card title="Share · method breakdown">
-          <Table
-            rows={shareRows}
-            columns={[
-              { key: "display", label: "Method", titleKey: "method" },
-              { key: "n", label: "Count", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
-        </Card>
-
-        <Card title="Share · by source page × method">
-          <Table
-            rows={shareBySourceRows}
-            columns={[
-              { key: "source_path", label: "Source path" },
-              { key: "method_display", label: "Method", titleKey: "method" },
-              { key: "n", label: "Count", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
-        </Card>
-
-        <Card title="Install · PWA accepts">
-          <p className="font-heading text-3xl font-semibold tabular-nums text-zinc-900">
-            {fmtNum(installCount)}
-          </p>
-          <p className="mt-1 text-xs text-zinc-500">Accepted install prompts</p>
-        </Card>
-
-        <Card title="PWA · launches by entry">
-          <Table
-            rows={pwaLaunch.data}
-            columns={[
-              { key: "source", label: "Entry" },
-              { key: "launches", label: "Launches", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
-        </Card>
-
-        <Card title="Mount switch · direction">
-          <Table
-            rows={mountSwitch.data}
-            columns={[
-              { key: "from_mount", label: "From" },
-              { key: "to_mount", label: "To" },
-              { key: "n", label: "Switches", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
-        </Card>
-
-        <Card title="Purchase · clicks by channel">
-          <Table
-            rows={purchaseByChannel.data}
-            columns={[
-              { key: "channel", label: "Channel" },
-              { key: "clicks", label: "Clicks", align: "right", widthClass: COUNT_WIDTH },
-              { key: "affiliate_clicks", label: "Affiliate", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
-        </Card>
-
-        <Card title="Purchase · top lenses">
-          <Table
-            rows={purchaseByLensRows}
-            columns={[
-              { key: "display", label: "Lens", titleKey: "lens_id" },
-              { key: "n", label: "Clicks", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
-        </Card>
-
-        <Card title="Outbound · top destinations">
-          <Table
-            rows={outboundRows}
-            columns={[
-              { key: "display", label: "Destination", titleKey: "href" },
-              { key: "n", label: "Clicks", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
-        </Card>
-
-        <Card title="Outbound · by source page × destination">
-          <Table
-            rows={outboundBySourceRows}
-            columns={[
-              { key: "source_path", label: "Source path" },
-              { key: "href_display", label: "Destination", titleKey: "href" },
-              { key: "n", label: "Clicks", align: "right", widthClass: COUNT_WIDTH },
-            ]}
-          />
+        <Card title="Funnel · sessions that reached each step">
+          <Funnel steps={funnel} previous={previousFunnel} />
         </Card>
       </div>
 
       <section className="mt-10">
-        <h2 className="font-heading text-2xl font-bold text-zinc-900">
-          AskIris
-        </h2>
-        <p className="mt-1 mb-4 text-sm text-zinc-500">
-          One row per completed turn
-        </p>
-
-        <div className="mb-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-          <Stat label="Turns" value={fmtMaybe(askirisRow?.turns)} />
-          <Stat label="Tokens" value={fmtMaybe(askirisRow?.total_tokens)} />
-          <Stat label="Budget-hit rate" value={pct(aiBudgetHits, aiTurns)} />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <Card title="AskIris · audience & sessions">
-            <dl className="grid grid-cols-[1fr_auto] gap-y-2 text-sm">
-              <dt className="text-zinc-500">Page views (PV)</dt>
-              <dd className="text-right tabular-nums">{fmtMaybe(aiViewsRow?.pv)}</dd>
-              <dt className="text-zinc-500">Visitors (UV)</dt>
-              <dd className="text-right tabular-nums">{fmtMaybe(aiViewsRow?.uv)}</dd>
-              <dt className="text-zinc-500">Interacted visitors</dt>
-              <dd className="text-right tabular-nums">{fmtMaybe(aiSessionsRow?.interacted_uv)}</dd>
-              <dt className="text-zinc-500">Activation (interacted / visited)</dt>
-              <dd className="text-right tabular-nums">{pct(aiInteractedUv, aiUv)}</dd>
-              <dt className="text-zinc-500">Avg turns / session</dt>
-              <dd className="text-right tabular-nums">
-                {aiSessions > 0 ? (aiSessionTurns / aiSessions).toFixed(1) : "—"}
-              </dd>
-              <dt className="text-zinc-500">Avg sessions / active visitor</dt>
-              <dd className="text-right tabular-nums">
-                {aiInteractedUv > 0 ? (aiSessions / aiInteractedUv).toFixed(1) : "—"}
-              </dd>
-            </dl>
-          </Card>
-
-          <Card title="AskIris · efficiency">
-            <dl className="grid grid-cols-[1fr_auto] gap-y-2 text-sm">
-              <dt className="text-zinc-500">Avg tokens / turn</dt>
-              <dd className="text-right tabular-nums">
-                {aiTurns > 0 ? fmtNum(Math.round(aiTotalTokens / aiTurns)) : "—"}
-              </dd>
-              <dt className="text-zinc-500">Avg steps / turn</dt>
-              <dd className="text-right tabular-nums">
-                {aiTurns > 0 ? (aiTotalSteps / aiTurns).toFixed(1) : "—"}
-              </dd>
-              <dt className="text-zinc-500">Cache-hit rate (input)</dt>
-              <dd className="text-right tabular-nums">{pct(aiCacheReadTokens, aiInputTokens)}</dd>
-            </dl>
-          </Card>
-
-          <Card title="AskIris · context per conversation">
-            <dl className="grid grid-cols-[1fr_auto] gap-y-2 text-sm">
-              <dt className="text-zinc-500">Measured conversations</dt>
-              <dd className="text-right tabular-nums">{fmtMaybe(aiContextRow?.conversations)}</dd>
-              <dt className="text-zinc-500">Max context (input tokens)</dt>
-              <dd className="text-right tabular-nums">
-                {fmtMaybe(aiContextRow?.max_context_tokens)}
-              </dd>
-              <dt className="text-zinc-500">P75 context (input tokens)</dt>
-              <dd className="text-right tabular-nums">
-                {fmtMaybe(aiContextRow?.p75_context_tokens)}
-              </dd>
-              <dt className="text-zinc-500">P50 context (input tokens)</dt>
-              <dd className="text-right tabular-nums">
-                {fmtMaybe(aiContextRow?.p50_context_tokens)}
-              </dd>
-            </dl>
-          </Card>
-
-          <Card title="AskIris · steps per turn">
-            <Table
-              rows={askirisByStep.data}
-              columns={[
-                { key: "steps", label: "Steps" },
-                { key: "turns", label: "Turns", align: "right", widthClass: COUNT_WIDTH },
+        <h2 className="font-heading text-2xl font-bold text-zinc-900">Ask Iris</h2>
+        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <Card title="Use">
+            <Facts
+              items={[
+                ["Turns", fmtNum(iris.turns)],
+                ["Conversations", fmtNum(iris.conversations)],
+                ["Turns per conversation", iris.conversations > 0 ? (iris.turns / iris.conversations).toFixed(1) : "—"],
+                ["Visitors who opened Iris", fmtNum(iris.viewers)],
+                ["Visitors who asked", fmtNum(iris.askers)],
+                ["Recommendation clicks", fmtNum(iris.recClicks)],
               ]}
             />
           </Card>
-
-          <Card title="AskIris · by mount">
+          <Card title="Reply ratings">
+            <Facts
+              items={[
+                ["Helpful", fmtNum(irisFeedback.helpful)],
+                ["Not helpful", fmtNum(irisFeedback.unhelpful)],
+                ["Helpful share", pct(irisFeedback.helpful, ratings)],
+                ["Rated turns", pct(ratings, iris.turns)],
+              ]}
+            />
+          </Card>
+          <Card title="Cost and limits">
+            <Facts
+              items={[
+                ["Tokens", fmtNum(iris.totalTokens)],
+                ["Tokens per turn", iris.turns > 0 ? fmtNum(Math.round(iris.totalTokens / iris.turns)) : "—"],
+                ["Steps per turn", iris.turns > 0 ? (iris.steps / iris.turns).toFixed(1) : "—"],
+                ["Cache-hit rate (input)", pct(iris.cacheReadTokens, iris.inputTokens)],
+                ["Step-budget hits", pct(iris.budgetHits, iris.turns)],
+                ["Context p50 / p75 / max", [iris.contextP50, iris.contextP75, iris.contextMax].map((v) => (v === null ? "—" : fmtNum(v))).join(" / ")],
+              ]}
+            />
+          </Card>
+          <Card title="Steps per turn">
+            <Table rows={iris.stepsHistogram} columns={[{ key: "steps", label: "Steps" }, { key: "turns", label: "Turns", align: "right", widthClass: COUNT_WIDTH }]} />
+          </Card>
+          <Card title="By mount">
             <Table
-              rows={askirisByMountRows}
+              rows={iris.byMount}
               columns={[
                 { key: "mount", label: "Mount" },
                 { key: "turns", label: "Turns", align: "right", widthClass: COUNT_WIDTH },
-                { key: "total_tokens", label: "Tokens", align: "right", widthClass: COUNT_WIDTH },
+                { key: "tokens", label: "Tokens", align: "right", widthClass: "w-24" },
               ]}
             />
+          </Card>
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="font-heading text-2xl font-bold text-zinc-900">Accounts</h2>
+        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <Card title="Sign-ups and saves">
+            <Facts
+              items={[
+                ["New accounts", fmtNum(accounts.newAccounts)],
+                ["Accounts in total", fmtNum(accounts.totalAccounts)],
+                ["Favorites added", fmtNum(accounts.favoritesAdded)],
+                ["Gear added", fmtNum(accounts.gearAdded)],
+              ]}
+            />
+          </Card>
+          <Card title={`Signed-in sessions (since ${D1_CUTOVER_DAY})`}>
+            <Facts
+              items={[
+                ["Sessions", fmtNum(signedIn.sessions)],
+                ["With an account signed in", fmtNum(signedIn.signedIn)],
+                ["Share", pct(signedIn.signedIn, signedIn.sessions)],
+              ]}
+            />
+          </Card>
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="font-heading text-2xl font-bold text-zinc-900">Details</h2>
+        <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <Card title="Search · zero-result queries">
+            <Table rows={searchZero} columns={[{ key: "query", label: "Query" }, { key: "n", label: "Count", align: "right", widthClass: COUNT_WIDTH }]} />
+          </Card>
+          <Card title="Search · top queries">
+            <Table rows={searchTop} columns={[{ key: "query", label: "Query" }, { key: "n", label: "Count", align: "right", widthClass: COUNT_WIDTH }]} />
+          </Card>
+          <Card title="Lens pages · most viewed">
+            <Table
+              rows={lensViews.map((r) => ({ ...r, display: formatLensSlug(String(r.lens_slug ?? "")) }))}
+              columns={[{ key: "display", label: "Lens", titleKey: "lens_slug" }, { key: "n", label: "Views", align: "right", widthClass: COUNT_WIDTH }]}
+            />
+          </Card>
+          <Card title="Lens pages · referrers">
+            <Table
+              rows={referrers.filter((r) => r.referrer).map((r) => ({ ...r, display: formatHref(String(r.referrer)) }))}
+              columns={[{ key: "display", label: "Referrer", titleKey: "referrer" }, { key: "n", label: "Views", align: "right", widthClass: COUNT_WIDTH }]}
+            />
+          </Card>
+          <Card title="Compare · lens combinations">
+            <Table
+              rows={compareCombos.map((r) => ({ ...r, display: formatLensSlugList(String(r.lens_slugs ?? "")) }))}
+              columns={[{ key: "display", label: "Lenses", titleKey: "lens_slugs" }, { key: "n", label: "Views", align: "right", widthClass: COUNT_WIDTH }]}
+            />
+          </Card>
+          <Card title="Filters · per dimension">
+            <Table
+              rows={aggregateFilterDimensions(filterAll.map((r) => ({ filters: r.filters_json, n: r.n })))}
+              columns={[{ key: "dimension", label: "Filter" }, { key: "n", label: "Applies", align: "right", widthClass: COUNT_WIDTH }]}
+            />
+          </Card>
+          <Card title="Filters · most-used combinations">
+            <Table
+              rows={filterSnapshots.map((r) => ({ ...r, display: formatFilterSnapshot(String(r.filters_json ?? "")) }))}
+              columns={[{ key: "display", label: "Filters", titleKey: "filters_json" }, { key: "n", label: "Applies", align: "right", widthClass: COUNT_WIDTH }]}
+            />
+          </Card>
+          <Card title="Store clicks · by channel">
+            <Table
+              rows={[...channels.values()].sort((a, b) => b.clicks - a.clicks)}
+              columns={[
+                { key: "channel", label: "Channel" },
+                { key: "clicks", label: "Clicks", align: "right", widthClass: COUNT_WIDTH },
+                { key: "affiliate", label: "Affiliate", align: "right", widthClass: COUNT_WIDTH },
+              ]}
+            />
+          </Card>
+          <Card title="Store clicks · top lenses">
+            <Table
+              rows={purchaseByLens.map((r) => ({ ...r, display: formatLensSlug(String(r.lens_id ?? "")) }))}
+              columns={[{ key: "display", label: "Lens", titleKey: "lens_id" }, { key: "n", label: "Clicks", align: "right", widthClass: COUNT_WIDTH }]}
+            />
+          </Card>
+          <Card title="Outbound · destinations">
+            <Table
+              rows={outbound.map((r) => ({ ...r, display: formatHref(String(r.href ?? "")) }))}
+              columns={[{ key: "display", label: "Destination", titleKey: "href" }, { key: "n", label: "Clicks", align: "right", widthClass: COUNT_WIDTH }]}
+            />
+          </Card>
+          <Card title="Outbound · by source page">
+            <Table
+              rows={outboundBySource.map((r) => ({ ...r, display: formatHref(String(r.href ?? "")) }))}
+              columns={[
+                { key: "path", label: "Source page" },
+                { key: "display", label: "Destination", titleKey: "href" },
+                { key: "n", label: "Clicks", align: "right", widthClass: COUNT_WIDTH },
+              ]}
+            />
+          </Card>
+          <Card title="Share · by method">
+            <Table
+              rows={share.map((r) => ({ ...r, display: formatShareMethod(String(r.method ?? "")) }))}
+              columns={[{ key: "display", label: "Method", titleKey: "method" }, { key: "n", label: "Count", align: "right", widthClass: COUNT_WIDTH }]}
+            />
+          </Card>
+          <Card title="Share · by source page">
+            <Table
+              rows={shareBySource.map((r) => ({ ...r, display: formatShareMethod(String(r.method ?? "")) }))}
+              columns={[
+                { key: "path", label: "Source page" },
+                { key: "display", label: "Method", titleKey: "method" },
+                { key: "n", label: "Count", align: "right", widthClass: COUNT_WIDTH },
+              ]}
+            />
+          </Card>
+          <Card title="Feedback · opens and submits">
+            <Table
+              rows={[...feedbackTypes.values()]}
+              columns={[
+                { key: "feedback_type", label: "Type" },
+                { key: "opens", label: "Opens", align: "right", widthClass: COUNT_WIDTH },
+                { key: "submits", label: "Submits", align: "right", widthClass: COUNT_WIDTH },
+              ]}
+            />
+          </Card>
+          <Card title="App · launches and installs">
+            <Facts items={[["Accepted install prompts", fmtNum(installs[0]?.n ?? 0)]]} />
+            <div className="mt-3">
+              <Table rows={pwaLaunches} columns={[{ key: "source", label: "Launched from" }, { key: "n", label: "Launches", align: "right", widthClass: COUNT_WIDTH }]} />
+            </div>
+          </Card>
+          <Card title="Mount switches">
+            <Table
+              rows={mountSwitches}
+              columns={[
+                { key: "from_mount", label: "From" },
+                { key: "to_mount", label: "To" },
+                { key: "n", label: "Switches", align: "right", widthClass: COUNT_WIDTH },
+              ]}
+            />
+          </Card>
+          <Card title="Language">
+            <Table rows={locales} columns={[{ key: "locale", label: "Locale" }, { key: "n", label: "Events", align: "right", widthClass: COUNT_WIDTH }]} />
           </Card>
         </div>
       </section>
