@@ -10,11 +10,10 @@ export const LENS_FEATURES = ["weatherResistant", "apertureRing", "powerZoom", "
 export type LensFeature = (typeof LENS_FEATURES)[number];
 const ZOOM_ONLY_FEATURES: readonly LensFeature[] = ["powerZoom", "internalZoom"];
 
-/** The manual-entry form as typed: numbers stay strings until submit. */
+/** The manual-entry form as typed: numbers stay strings until submit. A filled longest focal length makes it a zoom. */
 export interface ManualLensDraft {
   brand: string;
   model: string;
-  zoom: boolean;
   focalMin: string;
   focalMax: string;
   mount: Mount;
@@ -39,7 +38,6 @@ export function emptyDraft(mount: Mount): ManualLensDraft {
   return {
     brand: "",
     model: "",
-    zoom: false,
     focalMin: "",
     focalMax: "",
     mount,
@@ -72,15 +70,42 @@ function parseNumber(text: string): number | undefined {
   return trimmed === "" ? undefined : Number(trimmed);
 }
 
+/** True once a longest focal length other than the shortest has been typed. */
+export function isZoomDraft(draft: ManualLensDraft): boolean {
+  const min = parseNumber(draft.focalMin);
+  const max = parseNumber(draft.focalMax);
+  return max !== undefined && max !== min;
+}
+
+function range(from: number | undefined, to: number | undefined): string | undefined {
+  if (from === undefined || Number.isNaN(from)) {
+    return undefined;
+  }
+  return to === undefined || Number.isNaN(to) || to === from ? String(from) : `${from}-${to}`;
+}
+
+/** The name a lens saved with a blank name gets, such as "18-50mm F2.8"; undefined until a focal length is typed. */
+export function defaultLensName(draft: ManualLensDraft): string | undefined {
+  const zoom = isZoomDraft(draft);
+  const focal = range(parseNumber(draft.focalMin), zoom ? parseNumber(draft.focalMax) : undefined);
+  if (focal === undefined) {
+    return undefined;
+  }
+  const aperture = range(parseNumber(draft.apertureWide), zoom ? parseNumber(draft.apertureTele) : undefined);
+  const stop = draft.usage === "cine" ? "T" : "F";
+  return aperture === undefined ? `${focal}mm` : `${focal}mm ${stop}${aperture}`;
+}
+
 /** Turns the form into a ManualLens, or field errors keyed for the Profile messages. */
 export function validateDraft(
   draft: ManualLensDraft,
 ): { lens: ManualLens; errors?: undefined } | { lens?: undefined; errors: Partial<Record<DraftField, DraftError>> } {
   const errors: Partial<Record<DraftField, DraftError>> = {};
   const numbers: Partial<Record<DraftField, number>> = {};
-  const numberFields: DraftField[] = ["focalMin", "apertureWide", "weight"];
-  if (draft.zoom) {
-    numberFields.push("focalMax", "apertureTele");
+  const zoom = isZoomDraft(draft);
+  const numberFields: DraftField[] = ["focalMin", "focalMax", "apertureWide", "weight"];
+  if (zoom) {
+    numberFields.push("apertureTele");
   }
   for (const field of numberFields) {
     const value = parseNumber(draft[field as keyof ManualLensDraft] as string);
@@ -93,34 +118,28 @@ export function validateDraft(
   if (numbers.focalMin === undefined && !errors.focalMin) {
     errors.focalMin = "errorRequired";
   }
-  if (draft.zoom && numbers.focalMax === undefined && !errors.focalMax) {
-    errors.focalMax = "errorRequired";
-  }
-  for (const field of ["brand", "model"] as const) {
-    if (!draft[field].trim()) {
-      errors[field] = "errorRequired";
-    }
+  if (!draft.brand.trim()) {
+    errors.brand = "errorRequired";
   }
   if (Object.keys(errors).length > 0) {
     return { errors };
   }
 
-  const isZoom = draft.zoom && numbers.focalMax !== numbers.focalMin;
   const candidate = {
     brand: draft.brand,
-    model: draft.model,
+    model: draft.model.trim() || defaultLensName(draft),
     mount: draft.mount,
     focalMinMm: numbers.focalMin,
-    focalMaxMm: draft.zoom ? numbers.focalMax : numbers.focalMin,
+    focalMaxMm: zoom ? numbers.focalMax : numbers.focalMin,
     maxApertureWide: numbers.apertureWide,
-    maxApertureTele: isZoom ? numbers.apertureTele : undefined,
+    maxApertureTele: zoom ? numbers.apertureTele : undefined,
     autofocus: draft.autofocus,
     ois: draft.ois,
     adapted: draft.adapted || undefined,
     originalMount: draft.adapted && draft.originalMount.trim() ? draft.originalMount : undefined,
     ...Object.fromEntries(
       draft.features
-        .filter((feature) => isZoom || !ZOOM_ONLY_FEATURES.includes(feature))
+        .filter((feature) => zoom || !ZOOM_ONLY_FEATURES.includes(feature))
         .map((feature) => [feature, true]),
     ),
     opticalTraits: draft.opticalTraits.length > 0 ? draft.opticalTraits : undefined,
