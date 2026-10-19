@@ -9,6 +9,10 @@ export const RECENTLY_ADDED_PATH = "/recently-added";
 export const ABOUT_PATH = "/about";
 export const PROFILE_PATH = "/me";
 
+// Admin pages sit outside [locale]; link to them with next/link, not next-intl.
+export const ADMIN_PATH = "/admin";
+export const ADMIN_ANALYTICS_PATH = "/admin/analytics";
+
 export type AboutSection =
   | "background"
   | "ask-iris"

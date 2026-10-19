@@ -12,6 +12,12 @@ test.describe("Navigation", () => {
     await expect(page).toHaveURL(/\/en\/lenses/);
   });
 
+  test("/admin lists the admin modules", async ({ page }) => {
+    const res = await page.goto("/admin");
+    expect(res?.status()).toBe(200);
+    await expect(page.getByRole("link", { name: /Analytics/ })).toHaveAttribute("href", "/admin/analytics");
+  });
+
   test("navbar Browse link goes to lens list", async ({ page }) => {
     await page.goto("/en");
     await page.getByRole("link", { name: "Browse", exact: true }).click();
