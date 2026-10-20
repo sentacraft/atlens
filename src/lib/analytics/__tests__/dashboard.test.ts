@@ -11,6 +11,7 @@ const {
   loadDaily,
   loadFirstEventTs,
   loadBreakdown,
+  loadConversationsPerVisitor,
   loadIris,
   loadIrisFunnel,
   loadSearchFunnel,
@@ -312,6 +313,33 @@ describe("loadIrisFunnel", () => {
     expect(opened.breakdown[0].children.map((node) => node.label)).toEqual(["Find a lens"]);
     expect(asked.breakdown[0]).toMatchObject({ label: "Example question", count: 1 });
     expect(clicked.breakdown.map((node) => node.label)).toEqual(["Card"]);
+  });
+});
+
+describe("loadConversationsPerVisitor", () => {
+  it("counts each asking visitor's conversations, grouping four and more", async () => {
+    const turn = (vid: string, conversation: string) => ({
+      ts: T0,
+      event: "askiris_turn",
+      vid,
+      props: { conversation_id: conversation },
+    });
+    seed([
+      turn("a", "a1"),
+      turn("a", "a1"),
+      turn("b", "b1"),
+      turn("b", "b2"),
+      ...["c1", "c2", "c3", "c4", "c5"].map((conversation) => turn("c", conversation)),
+      { ts: T0, event: "askiris_view", vid: "d" },
+    ]);
+
+    const result = await loadConversationsPerVisitor(analytics.d1, WINDOW);
+    expect(result).toMatchObject({ askers: 3, conversations: 8, returning: 2 });
+    expect(result.distribution.map((node) => [node.label, node.count])).toEqual([
+      ["1 conversation", 1],
+      ["2 conversations", 1],
+      ["4 or more", 1],
+    ]);
   });
 });
 
