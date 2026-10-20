@@ -58,6 +58,31 @@ test.describe("Ask Iris side panel", () => {
     expect(hit.x).toBeGreaterThan(panelLeft);
     expect(hit.onItem).toBe(true);
   });
+
+  test("expands over the page in place, and Back or the button collapses it", async ({ page }) => {
+    const browse = /\/en\/lenses\/x\/browse$/;
+    await page.goto("/en/lenses/x/browse");
+    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    const panel = page.getByRole("complementary", { name: "Iris" });
+    const panelLeft = () => panel.evaluate((aside) => aside.getBoundingClientRect().left);
+    await panel.getByRole("textbox").fill("Which one for travel?");
+
+    await panel.getByRole("button", { name: "Open full screen" }).click();
+    await expect.poll(panelLeft).toBe(0);
+    await expect(page).toHaveURL(browse);
+    await expect(panel.getByRole("textbox")).toHaveValue("Which one for travel?");
+
+    await page.goBack();
+    await expect.poll(panelLeft).toBeGreaterThan(0);
+    await expect(panel).toBeVisible();
+    await expect(page).toHaveURL(browse);
+
+    await panel.getByRole("button", { name: "Open full screen" }).click();
+    await expect.poll(panelLeft).toBe(0);
+    await panel.getByRole("button", { name: "Exit full screen" }).click();
+    await expect.poll(panelLeft).toBeGreaterThan(0);
+    await expect(page).toHaveURL(browse);
+  });
 });
 
 test.describe("Ask Iris context entries", () => {
@@ -105,5 +130,22 @@ test.describe("Ask Iris context entries", () => {
     // The open sheet hides the rest of the page from assistive tech, the nav included, so the
     // button is found by its markup here rather than by role.
     await expect(page.locator('header button[aria-pressed="true"]')).toBeVisible();
+  });
+
+  test("pulls the phone sheet up to the full screen and back", async ({ page }, testInfo) => {
+    const viewport = page.viewportSize();
+    testInfo.skip(!viewport || viewport.width >= 1024, "Narrow screens use the bottom sheet");
+
+    await page.goto("/en/lenses/x/browse");
+    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    const sheet = page.getByRole("dialog", { name: "Iris" });
+    const sheetTop = () => sheet.evaluate((popup) => popup.getBoundingClientRect().top);
+    await expect.poll(sheetTop).toBeGreaterThan(40);
+
+    await sheet.getByRole("button", { name: "Open full screen" }).click();
+    await expect.poll(sheetTop).toBeLessThan(1);
+    await sheet.getByRole("button", { name: "Exit full screen" }).click();
+    await expect.poll(sheetTop).toBeGreaterThan(40);
+    await expect(sheet).toBeVisible();
   });
 });

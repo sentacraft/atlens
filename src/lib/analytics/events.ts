@@ -272,7 +272,7 @@ export const EVENT_DOCS: EventDocs = {
           browse: { label: "Browse list", description: "\"Ask Iris\" in the lens list toolbar" },
           empty: { label: "No-results prompt", description: "The prompt shown when the filters match no lens" },
           compare: { label: "Compare page", description: "\"Ask Iris\" in the comparison header" },
-          resume: { label: "Past chat", description: "A conversation reopened from history while on another page" },
+          resume: { label: "Past chat", description: "The Ask Iris page's way back to the page it came from, which reopened its conversation in the panel. Removed in October 2026; kept to label earlier events" },
         },
       },
       surface: {

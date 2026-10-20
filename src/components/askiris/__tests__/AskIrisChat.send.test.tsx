@@ -83,8 +83,9 @@ function renderChat(shell: AskIrisShell = { variant: "page", entry: {}, starterS
   return { ...result, rerenderChat: (next: AskIrisShell) => result.rerender(view(next)) };
 }
 
+const expandedChange = vi.hoisted(() => vi.fn());
 const panel = (pagePath: string, request: AskIrisShell & { variant: "panel" } extends { request: infer R } ? R : never = null) =>
-  ({ variant: "panel", pagePath, request, onClose: () => {} }) as const;
+  ({ variant: "panel", pagePath, request, onClose: () => {}, expanded: false, onExpandedChange: expandedChange }) as const;
 
 function captureChatBodies() {
   const bodies: Record<string, unknown>[] = [];
@@ -251,42 +252,17 @@ describe("AskIrisChat send", () => {
     expect(bodies[1].id).not.toBe(bodies[0].id);
   });
 
-  it("takes the unsent input and the page along to the full-screen page", () => {
+  it("expands in place from the full-screen button, keeping the unsent input", () => {
     captureChatBodies();
-    const { container } = renderChat(panel("/en/lenses/x/xf-56"));
+    const { container, rerenderChat } = renderChat(panel("/en/lenses/x/xf-56"));
     fireEvent.change(container.querySelector("form input")!, { target: { value: "And the 50mm?" } });
 
-    const href = screen.getByRole("link", { name: "fullScreen" }).getAttribute("href")!;
-    const params = new URL(href, "https://atlens.test").searchParams;
-    expect(params.get("draft")).toBe("And the 50mm?");
-    expect(params.get("from")).toBe("/en/lenses/x/xf-56");
-  });
+    fireEvent.click(screen.getByRole("button", { name: "fullScreen" }));
+    expect(expandedChange).toHaveBeenLastCalledWith(true);
 
-  it("keeps sending the page a phone entry came from, on the Ask Iris page", async () => {
-    const bodies = captureChatBodies();
-    const { container } = renderChat({
-      variant: "page",
-      entry: { question: "Help me find one", from: "/en/lenses/x/browse?t=zoom" },
-      starterSeed: 1,
-    });
-
-    await waitFor(() => expect(bodies).toHaveLength(1));
-    submit(container, "Lighter, please");
-    await waitFor(() => expect(bodies).toHaveLength(2));
-    expect(bodies.map((body) => body.page)).toEqual(["/en/lenses/x/browse?t=zoom", "/en/lenses/x/browse?t=zoom"]);
-  });
-
-  it("goes back to the page it came from and reopens the conversation in the panel", async () => {
-    captureChatBodies();
-    renderChat({ variant: "page", entry: { question: "What is it for?", from: "/en/lenses/x/xf-56" }, starterSeed: 1 });
-    await screen.findByText("What is it for?");
-
-    fireEvent.click(screen.getByRole("button", { name: "backTo" }));
-
-    expect(push).toHaveBeenCalledWith("/en/lenses/x/xf-56");
-    expect(openIris).toHaveBeenCalledWith({
-      from: "resume",
-      request: expect.objectContaining({ kind: "resume", from: "/en/lenses/x/xf-56" }),
-    });
+    rerenderChat({ ...panel("/en/lenses/x/xf-56"), expanded: true });
+    expect(container.querySelector("form input")).toHaveValue("And the 50mm?");
+    fireEvent.click(screen.getByRole("button", { name: "exitFullScreen" }));
+    expect(expandedChange).toHaveBeenLastCalledWith(false);
   });
 });

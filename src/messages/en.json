@@ -170,6 +170,7 @@
   },
   "AskIris": {
     "fullScreen": "Open full screen",
+    "exitFullScreen": "Exit full screen",
     "closePanel": "Close",
     "linkDataLicense": "Data license",
     "heading": "Hi, I'm Iris",
@@ -845,7 +846,6 @@
     "newConversation": "New conversation. The previous one is in your history.",
     "newConversationGuest": "New conversation. The previous one is in your history, kept for 7 days without an account. <signIn>Sign in</signIn> to keep it for good.",
     "browseName": "lenses",
-    "compareName": "comparison",
-    "backTo": "Back to {page}"
+    "compareName": "comparison"
   }
 }
