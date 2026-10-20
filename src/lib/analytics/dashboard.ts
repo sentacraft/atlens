@@ -483,6 +483,45 @@ export async function loadIris(db: D1Database, window: TimeWindow): Promise<Iris
   };
 }
 
+export interface ConversationsPerVisitor {
+  /** Visitors with at least one answered turn. */
+  askers: number;
+  /** Their conversations, counted per visitor. */
+  conversations: number;
+  /** Askers who had a second conversation. */
+  returning: number;
+  /** Askers by how many conversations they had: 1, 2, 3, 4 or more. */
+  distribution: BreakdownNode[];
+}
+
+const CONVERSATION_BUCKETS = ["1", "2", "3", "4+"];
+
+/** How many conversations each visitor who asked Iris something had in the window. */
+export async function loadConversationsPerVisitor(db: D1Database, window: TimeWindow): Promise<ConversationsPerVisitor> {
+  const counted = await rows<{ bucket: string; n: number; conversations: number }>(
+    db,
+    `SELECT CASE WHEN c >= 4 THEN '4+' ELSE CAST(c AS TEXT) END AS bucket, COUNT(*) AS n, SUM(c) AS conversations
+     FROM (
+       SELECT vid, COUNT(DISTINCT ${TURN("conversation_id")}) AS c
+       FROM events WHERE ${IN_WINDOW} AND event = '${ASKIRIS_TURN_EVENT}' AND vid IS NOT NULL
+       GROUP BY vid
+     )
+     GROUP BY bucket`,
+    window.from,
+    window.to,
+  );
+  const askers = counted.reduce((sum, row) => sum + n(row.n), 0);
+  const label = (bucket: string | null) => (bucket === "1" ? "1 conversation" : bucket === "4+" ? "4 or more" : `${bucket} conversations`);
+  return {
+    askers,
+    conversations: counted.reduce((sum, row) => sum + n(row.conversations), 0),
+    returning: counted.filter((row) => row.bucket !== "1").reduce((sum, row) => sum + n(row.n), 0),
+    distribution: buildBreakdown(counted, ["bucket"], (_, value) => label(value)).sort(
+      (a, b) => CONVERSATION_BUCKETS.indexOf(a.value ?? "") - CONVERSATION_BUCKETS.indexOf(b.value ?? ""),
+    ),
+  };
+}
+
 /** Ratings on Iris replies, from the traces database. */
 export async function loadIrisFeedback(db: D1Database, window: TimeWindow): Promise<{ helpful: number; unhelpful: number }> {
   const [row] = await rows<Record<string, number>>(

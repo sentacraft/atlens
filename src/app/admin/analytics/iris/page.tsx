@@ -3,7 +3,14 @@ import Card from "@/components/admin/AnalyticsCard";
 import { COUNT_WIDTH, Definitions, EventDefinitions, Facts, Table, fmtNum, pct } from "@/components/admin/AnalyticsUi";
 import { BreakdownTree, Funnel } from "@/components/admin/Breakdown";
 import { groupNode } from "@/lib/analytics/breakdown";
-import { dashboardWindows, loadBreakdown, loadIris, loadIrisFeedback, loadIrisFunnel } from "@/lib/analytics/dashboard";
+import {
+  dashboardWindows,
+  loadBreakdown,
+  loadConversationsPerVisitor,
+  loadIris,
+  loadIrisFeedback,
+  loadIrisFunnel,
+} from "@/lib/analytics/dashboard";
 import { valueLabel } from "@/lib/analytics/events";
 import { resolveAnalyticsRange } from "@/lib/url/admin-analytics";
 
@@ -20,10 +27,11 @@ export default async function AnalyticsIrisPage({
   const { env } = getCloudflareContext();
   const events = env.ANALYTICS_DB;
   const { current } = await dashboardWindows(events, range);
-  const [iris, feedback, funnel, opens, messages, newConversations, contextRemovals] = await Promise.all([
+  const [iris, feedback, funnel, perVisitor, opens, messages, newConversations, contextRemovals] = await Promise.all([
     loadIris(events, current),
     loadIrisFeedback(env.ASKIRIS_DB, current),
     loadIrisFunnel(events, current),
+    loadConversationsPerVisitor(events, current),
     loadBreakdown(events, current, "askiris_open", ["entry", "surface"]),
     loadBreakdown(events, current, "askiris_message", ["method", "pool"]),
     loadBreakdown(events, current, "askiris_new_conversation", ["reason"]),
@@ -68,13 +76,18 @@ export default async function AnalyticsIrisPage({
       </Card>
       <Card
         title="Conversations"
-        subtitle="How long they run, and why new ones start"
+        subtitle="How many each visitor has, how long they run, and why new ones start"
         info={
           <div className="space-y-3">
             <Definitions
               items={[
                 { term: "Turn", description: "One question to Iris and its answer" },
                 { term: "Conversation", description: "Turns that share one chat thread" },
+                {
+                  term: "Asking visitor",
+                  description: "A browser with at least one answered turn, told apart by a random id kept for 30 days; not an account",
+                },
+                { term: "Came back", description: "Asking visitors with a second conversation in the range" },
               ]}
             />
             <EventDefinitions event="askiris_new_conversation" fields={["reason"]} />
@@ -87,9 +100,16 @@ export default async function AnalyticsIrisPage({
             ["Conversations", fmtNum(iris.conversations)],
             ["Turns", fmtNum(iris.turns)],
             ["Turns per conversation", iris.conversations > 0 ? (iris.turns / iris.conversations).toFixed(1) : "—"],
+            ["Asking visitors", fmtNum(perVisitor.askers)],
+            [
+              "Conversations per asking visitor",
+              perVisitor.askers > 0 ? (perVisitor.conversations / perVisitor.askers).toFixed(1) : "—",
+            ],
+            ["Came back", `${fmtNum(perVisitor.returning)} visitors · ${pct(perVisitor.returning, perVisitor.askers)}`],
           ]}
         />
         <div className="mt-4 space-y-4">
+          <BreakdownTree nodes={[groupNode("Asking visitors", perVisitor.distribution)]} unit="Visitors" />
           <BreakdownTree nodes={[groupNode("New conversations", newConversations)]} unit="Events" />
           <BreakdownTree nodes={[groupNode("Page context removed", contextRemovals)]} unit="Events" />
         </div>
