@@ -17,6 +17,8 @@ vi.mock("next-intl", () => {
 });
 const openIris = vi.hoisted(() => vi.fn());
 vi.mock("@/context/IrisPanelProvider", () => ({ useIris: () => ({ openIris, closeIris: vi.fn(), irisShown: false }) }));
+const openSignIn = vi.hoisted(() => vi.fn());
+vi.mock("@/context/SignInDialogProvider", () => ({ useSignInDialog: () => openSignIn }));
 const push = vi.hoisted(() => vi.fn());
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 vi.mock("@/i18n/navigation", () => ({ Link: (props: object) => <a {...props} /> }));
@@ -250,6 +252,16 @@ describe("AskIrisChat send", () => {
     await waitFor(() => expect(bodies).toHaveLength(2));
     expect(bodies[1]).toMatchObject({ page: "/en/lenses/x/xf-56", previousMessageId: null });
     expect(bodies[1].id).not.toBe(bodies[0].id);
+  });
+
+  it("asks a visitor without an account to sign in beside History, only in the full view", () => {
+    captureChatBodies();
+    const { rerenderChat } = renderChat(panel("/en/lenses/x/xf-56"));
+    expect(screen.queryByRole("button", { name: "signInToKeepChats" })).toBeNull();
+
+    rerenderChat({ ...panel("/en/lenses/x/xf-56"), expanded: true });
+    fireEvent.click(screen.getByRole("button", { name: "signInToKeepChats" }));
+    expect(openSignIn).toHaveBeenCalledWith("iris_history");
   });
 
   it("expands in place from the full-screen button, keeping the unsent input", () => {

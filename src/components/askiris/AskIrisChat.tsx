@@ -40,7 +40,7 @@ import {
   DialogPopup,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
+import { ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { History, Maximize2, Minimize2, Plus, X } from "lucide-react";
 import AiTag from "@/components/iris/AiTag";
 import ConversationHistory from "@/components/askiris/ConversationHistory";
@@ -107,7 +107,7 @@ export default function AskIrisChat({
   const pageView = usePageContextView(pagePath, lenses);
   const contextView = attached ? pageView : null;
   const contextPath = contextView ? pagePath : null;
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending: sessionPending } = authClient.useSession();
   // Guests have a session too, and their own stored conversations.
   const userId = session?.user.id;
   const isAccount = Boolean(accountUser(session));
@@ -316,9 +316,26 @@ export default function AskIrisChat({
     setAttached(false);
   }
 
-  const showHistory = Boolean(userId);
+  // The panel answers about the page beside it; managing past conversations needs the full view.
+  const fullView = shell.variant === "page" || shell.expanded;
+  const showHistory = fullView && Boolean(userId);
   const shellCls =
     shell.variant === "page" ? SHELL_CLS.page : shell.expanded ? SHELL_CLS.expandedPanel : SHELL_CLS.panel;
+  const historyControls = fullView && (
+    <>
+      {showHistory && (
+        <button type="button" onClick={() => setHistoryOpen(true)} title={t("history")} className={TOP_BAR_BTN_CLS}>
+          <History className="size-4" />
+          <span className="max-sm:sr-only">{t("history")}</span>
+        </button>
+      )}
+      {!sessionPending && !isAccount && (
+        <button type="button" onClick={() => openSignIn("iris_history")} className={cn(TEXT_LINK_CLS, "min-w-0 truncate px-1.5 text-xs")}>
+          {t("signInToKeepChats")}
+        </button>
+      )}
+    </>
+  );
   const history = showHistory && (
     <ConversationHistory
       open={historyOpen}
@@ -351,16 +368,14 @@ export default function AskIrisChat({
   ) : null;
   const topBar = shell.variant === "panel" ? (
     <div className="-mx-1 flex h-12 shrink-0 items-center justify-between">
-      <span className="inline-flex items-center gap-1.5 px-1 text-sm font-semibold text-zinc-900">
-        Iris
-        <AiTag />
-      </span>
+      <div className="flex min-w-0 items-center gap-1">
+        <span className="inline-flex items-center gap-1.5 px-1 text-sm font-semibold text-zinc-900">
+          Iris
+          <AiTag />
+        </span>
+        {historyControls}
+      </div>
       <div className="flex items-center gap-0.5">
-        {showHistory && (
-          <button type="button" onClick={() => setHistoryOpen(true)} aria-label={t("history")} title={t("history")} className={cn(ICON_NAV_BTN_CLS, "h-8 w-8")}>
-            <History className="size-4" />
-          </button>
-        )}
         {messages.length > 0 && (
           <button type="button" onClick={startNewConversation} aria-label={t("newChat")} title={t("newChat")} className={cn(ICON_NAV_BTN_CLS, "h-8 w-8")}>
             <Plus className="size-4" />
@@ -384,12 +399,7 @@ export default function AskIrisChat({
   ) : (
     <div className="flex h-12 shrink-0 items-center justify-between">
       <div className="flex min-w-0 items-center gap-1">
-        {showHistory && (
-          <button type="button" onClick={() => setHistoryOpen(true)} className={TOP_BAR_BTN_CLS}>
-            <History className="size-4" />
-            {t("history")}
-          </button>
-        )}
+        {historyControls}
       </div>
       {messages.length > 0 && (
         <button type="button" onClick={startNewConversation} className={TOP_BAR_BTN_CLS}>

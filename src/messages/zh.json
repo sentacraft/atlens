@@ -200,6 +200,7 @@
     },
     "newChat": "新对话",
     "history": "历史对话",
+    "signInToKeepChats": "登录以长期保存对话",
     "closeHistory": "关闭历史对话",
     "historyEmpty": "和 Iris 的对话会出现在这里。",
     "historyError": "暂时无法加载历史对话。",

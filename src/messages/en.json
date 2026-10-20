@@ -200,6 +200,7 @@
     },
     "newChat": "New chat",
     "history": "Conversations",
+    "signInToKeepChats": "Sign in to keep your chats",
     "closeHistory": "Close conversations",
     "historyEmpty": "Conversations you have with Iris will appear here.",
     "historyError": "Couldn’t load your conversations.",
