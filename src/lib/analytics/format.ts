@@ -128,14 +128,3 @@ export function formatHref(href: string): string {
     .replace(/^https?:\/\//, "")
     .replace(/\/$/, "");
 }
-
-const SHARE_METHOD_LABELS: Record<string, string> = {
-  copy_link: "Copy link",
-  native: "Native share",
-  poster_download: "Poster download",
-  poster_share: "Poster share",
-};
-
-export function formatShareMethod(method: string): string {
-  return SHARE_METHOD_LABELS[method] ?? method;
-}
