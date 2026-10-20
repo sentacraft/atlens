@@ -360,8 +360,8 @@ export const EVENT_DOCS: EventDocs = {
         values: {
           account_menu: { label: "Account menu", description: "Sign in in the account menu of the site header" },
           profile: { label: "Profile page", description: "The sign-in button on the profile page" },
-          iris_chat: { label: "Iris chat notice", description: "The sign-in link in a new Iris chat, for guests" },
-          iris_history: { label: "Iris history prompt", description: "The sign-in prompt beside History in full-screen Iris, for visitors without an account" },
+          iris_chat: { label: "Iris chat notice", description: "The sign-in link in a new Iris chat's notice, for guests. Replaced by the Iris top bar prompt in October 2026; kept to label earlier events" },
+          iris_history: { label: "Iris top bar prompt", description: "The sign-in prompt in Iris's top bar, for visitors without an account" },
           iris_reply: { label: "Link in an Iris reply", description: "A sign-in chip inside one of Iris's replies" },
         },
       },

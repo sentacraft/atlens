@@ -215,7 +215,7 @@ describe("AskIrisChat send", () => {
     expect(track).toHaveBeenCalledWith("askiris_message", { method: "starter", pool: "terms" });
   });
 
-  it("starts a new conversation when an entry on another page opens the panel, and tells a guest how long the old one is kept", async () => {
+  it("starts a new conversation when an entry on another page opens the panel, and says where the old one went", async () => {
     const bodies = captureChatBodies();
     const { container, rerenderChat } = renderChat(panel("/en/lenses/x/browse"));
     submit(container, "Which lens?");
@@ -223,7 +223,7 @@ describe("AskIrisChat send", () => {
 
     rerenderChat(panel("/en/lenses/x/xf-56", { id: 1, kind: "page" }));
 
-    expect(await screen.findByText("newConversationGuest")).toBeInTheDocument();
+    expect(await screen.findByText("newConversation")).toBeInTheDocument();
     expect(screen.queryByText("Which lens?")).toBeNull();
     expect(screen.getByText("lookingAt")).toBeInTheDocument();
     expect(track).toHaveBeenCalledWith("askiris_new_conversation", { reason: "page_change" });
@@ -238,7 +238,7 @@ describe("AskIrisChat send", () => {
     rerenderChat(panel("/en/lenses/x/browse?t=prime", { id: 1, kind: "page" }));
 
     expect(screen.getByText("Which lens?")).toBeInTheDocument();
-    expect(screen.queryByText("newConversationGuest")).toBeNull();
+    expect(screen.queryByText("newConversation")).toBeNull();
   });
 
   it("sends a question from another page in a new conversation", async () => {
@@ -254,12 +254,10 @@ describe("AskIrisChat send", () => {
     expect(bodies[1].id).not.toBe(bodies[0].id);
   });
 
-  it("asks a visitor without an account to sign in beside History, only in the full view", () => {
+  it("asks a visitor without an account to sign in from the top bar", () => {
     captureChatBodies();
-    const { rerenderChat } = renderChat(panel("/en/lenses/x/xf-56"));
-    expect(screen.queryByRole("button", { name: "signInToKeepChats" })).toBeNull();
+    renderChat(panel("/en/lenses/x/xf-56"));
 
-    rerenderChat({ ...panel("/en/lenses/x/xf-56"), expanded: true });
     fireEvent.click(screen.getByRole("button", { name: "signInToKeepChats" }));
     expect(openSignIn).toHaveBeenCalledWith("iris_history");
   });

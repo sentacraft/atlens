@@ -321,7 +321,7 @@ export default function AskIrisChat({
   const showHistory = fullView && Boolean(userId);
   const shellCls =
     shell.variant === "page" ? SHELL_CLS.page : shell.expanded ? SHELL_CLS.expandedPanel : SHELL_CLS.panel;
-  const historyControls = fullView && (
+  const historyControls = (
     <>
       {showHistory && (
         <button type="button" onClick={() => setHistoryOpen(true)} title={t("history")} className={TOP_BAR_BTN_CLS}>
@@ -330,7 +330,12 @@ export default function AskIrisChat({
         </button>
       )}
       {!sessionPending && !isAccount && (
-        <button type="button" onClick={() => openSignIn("iris_history")} className={cn(TEXT_LINK_CLS, "min-w-0 truncate px-1.5 text-xs")}>
+        <button
+          type="button"
+          onClick={() => openSignIn("iris_history")}
+          title={t("guestChatsKept")}
+          className={cn(TEXT_LINK_CLS, "min-w-0 truncate px-1.5 text-xs")}
+        >
           {t("signInToKeepChats")}
         </button>
       )}
@@ -350,21 +355,7 @@ export default function AskIrisChat({
     />
   );
   const notice = freshNotice ? (
-    <p className="rounded-xl bg-zinc-100 px-3 py-2 text-xs leading-relaxed text-zinc-600">
-      {isAccount
-        ? tEntry("newConversation")
-        : tEntry.rich("newConversationGuest", {
-            signIn: (chunks) => (
-              <button
-                type="button"
-                onClick={() => openSignIn("iris_chat")}
-                className="font-semibold text-zinc-900 underline underline-offset-2"
-              >
-                {chunks}
-              </button>
-            ),
-          })}
-    </p>
+    <p className="rounded-xl bg-zinc-100 px-3 py-2 text-xs leading-relaxed text-zinc-600">{tEntry("newConversation")}</p>
   ) : null;
   const topBar = shell.variant === "panel" ? (
     <div className="-mx-1 flex h-12 shrink-0 items-center justify-between">
