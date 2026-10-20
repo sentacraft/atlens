@@ -400,6 +400,12 @@
     "inline": "From makers' official sites · Not AI-generated",
     "note": "These specs are not AI-generated. They come from what the manufacturer officially publishes; AI only files that text into one format and never makes up a value. The author reviews every lens before it goes live. <link>How the data is made</link>"
   },
+  "LensPreview": {
+    "loading": "Loading lens…",
+    "openFullPage": "Open full page",
+    "close": "Close",
+    "unavailable": "This lens could not be loaded."
+  },
   "LensDetail": {
     "metaDescPrefix": "{name}, {mount}-mount {type} lens for Fujifilm. Specs, parameters, and side-by-side comparison",
     "metaJoinSpace": ": ",

@@ -19,6 +19,7 @@ change the JSDoc, then run `node --experimental-strip-types scripts/api-docs.mts
 | `/api/feedback` | GET | Reports whether site feedback is configured (GitHub token and repository). Public. |
 | `/api/feedback` | POST | Files site feedback as a GitHub issue. Public; 400 with the failing rule as the error code, 429 when rate limited. |
 | `/api/lenses` | GET | Filters, sorts and pages one mount's lens catalog. No consumers: 404 in production. |
+| `/api/lenses/[id]` | GET | Returns one lens's catalog record in the requested locale, for the lens preview. Public; 404 for an unknown lens. |
 | `/api/lenses/search` | GET | Ranks one mount's lenses against a search query. No consumers (search runs in the browser): 404 in production. |
 | `/api/me/favorites` | GET | Lists the caller's favorite lenses, newest first. Accounts only; 401 for guests. |
 | `/api/me/favorites` | POST | Adds a catalog lens to the caller's favorites; repeating it is a no-op. Accounts only; 400 for an unknown lens, 409 past 500 favorites. |

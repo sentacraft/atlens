@@ -14,6 +14,7 @@ import {
 import { formatPrice, type PricingTranslator } from "@/lib/lens/pricing";
 import type { LensTableColumn, ResolvedLens } from "@/lib/ai/recall";
 import { lensPath } from "@/lib/url/routes";
+import { previewOnPlainClick, useLensPreview } from "@/hooks/useLensPreview";
 
 type Labels = {
   yes: string;
@@ -75,6 +76,7 @@ export default function LensTable({
   const t = useTranslations("AskIris.table");
   const td = useTranslations("LensDetail");
   const tp = useTranslations("Pricing");
+  const { openLensPreview } = useLensPreview();
 
   const labels: Labels = {
     yes: td("yes"),
@@ -132,8 +134,9 @@ export default function LensTable({
                     onClick={(e) => {
                       e.stopPropagation();
                       track("askiris_rec_click", { lens_id: lens.id, source: "askiris_table" });
+                      previewOnPlainClick(e, () => openLensPreview(lens.id));
                     }}
-                    // New tab: a same-tab navigation would discard the conversation.
+                    // A modified click opens the full page in a new tab: a same-tab navigation would discard the conversation.
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-foreground hover:text-primary font-medium underline-offset-2 hover:underline"

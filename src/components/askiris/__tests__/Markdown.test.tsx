@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi } from "vitest";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import Markdown from "../Markdown";
 import { ChatLinkProvider } from "../ChatLinkContext";
 import { lensRef, type LensLinkIndex } from "@/lib/ai/lens-ref";
@@ -30,6 +30,11 @@ vi.mock("@/lib/analytics/analytics", () => ({
 }));
 
 const openSignIn = vi.fn();
+const openLensPreview = vi.fn();
+vi.mock("@/hooks/useLensPreview", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/hooks/useLensPreview")>()),
+  useLensPreview: () => ({ lensId: null, openLensPreview, closeLensPreview: vi.fn() }),
+}));
 vi.mock("@/context/SignInDialogProvider", () => ({ useSignInDialog: () => openSignIn }));
 vi.mock("@/hooks/useMountParam", () => ({ useEffectiveMount: () => "X" }));
 vi.mock("@/components/feedback/FeedbackTrigger", () => ({
@@ -62,6 +67,21 @@ describe("Markdown lens: links", () => {
     );
     expect(link!.textContent).toBe("Viltrox AF 35mm F1.7 Air");
     expect(link!.getAttribute("target")).toBe("_blank");
+  });
+
+  it("previews the lens on a plain click and leaves a modified click to open the full page", () => {
+    const { container } = render(
+      <ChatLinkProvider targets={{ lenses: INDEX, collections: [] }}>
+        <Markdown>{`See [Viltrox AF 35mm F1.7 Air](lens:${REF}) here.`}</Markdown>
+      </ChatLinkProvider>,
+    );
+    const link = container.querySelector("a")!;
+
+    expect(fireEvent.click(link, { metaKey: true })).toBe(true);
+    expect(openLensPreview).not.toHaveBeenCalled();
+
+    expect(fireEvent.click(link)).toBe(false);
+    expect(openLensPreview).toHaveBeenCalledWith("viltrox-af-35mm-f17-air-x");
   });
 
   it("degrades an unknown lens ref to plain text, not a link", () => {

@@ -17,6 +17,7 @@ import { PAGE_LINKS, isChatLinkHref, parseChatLink, type ChatLink } from "@/lib/
 import { mountHasCollections } from "@/lib/mount";
 import { buildComparePath } from "@/lib/url/compare";
 import { collectionPath, lensPath } from "@/lib/url/routes";
+import { previewOnPlainClick, useLensPreview } from "@/hooks/useLensPreview";
 
 const PROSE_CLS =
   "prose prose-sm max-w-none prose-p:my-2 prose-headings:mb-1 prose-hr:hidden";
@@ -60,6 +61,7 @@ function SignInChip({ children }: { children?: ReactNode }) {
 function ChatLinkAnchor({ link, children }: { link: ChatLink; children?: ReactNode }) {
   const targets = useChatLinkTargets();
   const mount = useEffectiveMount();
+  const { openLensPreview } = useLensPreview();
   switch (link.kind) {
     case "lens": {
       const entry = targets?.lenses[link.ref];
@@ -70,7 +72,10 @@ function ChatLinkAnchor({ link, children }: { link: ChatLink; children?: ReactNo
         <Link
           href={lensPath(entry)}
           prefetch={false}
-          onClick={() => track("askiris_rec_click", { lens_id: entry.id, source: "askiris_prose" })}
+          onClick={(event) => {
+            track("askiris_rec_click", { lens_id: entry.id, source: "askiris_prose" });
+            previewOnPlainClick(event, () => openLensPreview(entry.id));
+          }}
           target="_blank"
           rel="noopener noreferrer"
         >
