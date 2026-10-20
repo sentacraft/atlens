@@ -72,9 +72,11 @@ export default function NavProgress() {
       arm();
     }
 
-    document.addEventListener("click", onClick, true);
+    // Bubble phase, after React's handlers: a link whose onClick calls preventDefault (opening a
+    // panel instead) must not start the bar, which would then run until the failsafe.
+    document.addEventListener("click", onClick);
     return () => {
-      document.removeEventListener("click", onClick, true);
+      document.removeEventListener("click", onClick);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
