@@ -5,6 +5,8 @@ import { betterAuth } from "better-auth";
 import { anonymous, emailOTP, oAuthProxy } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { D1Dialect } from "kysely-d1";
+import { cookieReader } from "@/lib/analytics/session";
+import { recordSignIn } from "@/lib/analytics/sign-in-event";
 import { linkAnonymousUser } from "@/lib/askiris/link-anonymous-user";
 import { deleteAccountEmail, signInCodeEmail } from "@/lib/auth-email";
 import { emailLocale } from "@/lib/locale-preference";
@@ -71,6 +73,27 @@ export function createAuth() {
             to: user.email,
             ...deleteAccountEmail(emailLocale(locale, request?.headers), url),
           });
+        },
+      },
+    },
+    databaseHooks: {
+      session: {
+        create: {
+          async after(session, ctx) {
+            if (!ctx) {
+              return;
+            }
+            const user = await ctx.context.internalAdapter.findUserById(session.userId);
+            if (!user) {
+              return;
+            }
+            const write = recordSignIn(
+              env.ANALYTICS_DB,
+              { path: ctx.path, user, sessionCreatedAt: session.createdAt },
+              { cookies: cookieReader(ctx.headers?.get("cookie")), raw: ctx.request },
+            ).catch((error: unknown) => console.error("[auth] failed to record sign-in", error));
+            context.ctx.waitUntil(write);
+          },
         },
       },
     },

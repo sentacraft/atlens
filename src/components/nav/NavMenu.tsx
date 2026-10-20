@@ -67,7 +67,7 @@ export default function NavMenu({
               </>
             ) : (
               <>
-                <Menu.Item onClick={() => openSignIn()} className={cn(MENU_ITEM_CLS, "items-start")}>
+                <Menu.Item onClick={() => openSignIn("account_menu")} className={cn(MENU_ITEM_CLS, "items-start")}>
                   <LogIn className="mt-0.5 h-4 w-4 shrink-0" />
                   <span className="flex flex-col gap-0.5">
                     <span className="font-medium text-zinc-900">{t("login")}</span>

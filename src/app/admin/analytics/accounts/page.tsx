@@ -64,9 +64,10 @@ export default async function AnalyticsAccountsPage({
         subtitle="Unique visitors · each step keeps only visitors from the step above"
         className="lg:col-span-2"
         info={
-          <div className="grid gap-4 md:grid-cols-2">
-            <EventDefinitions title="Opened sign-in · split by what first opened it" event="sign_in_open" fields={["reason"]} />
+          <div className="grid gap-4 md:grid-cols-3">
+            <EventDefinitions title="Opened sign-in · split by what first opened it" event="sign_in_open" fields={["reason", "entry"]} />
             <EventDefinitions title="Sent sign-in · split by their first method" event="sign_in_submit" fields={["method"]} />
+            <EventDefinitions title="Signed in · split by their first sign-in" event="sign_in_complete" fields={["new_account", "method"]} />
           </div>
         }
       >

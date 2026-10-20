@@ -4,6 +4,8 @@ import { createSqliteD1 } from "./support/sqlite-d1";
 
 const send = vi.fn();
 const appDb = vi.hoisted(() => ({ current: undefined as unknown }));
+const analyticsDb = vi.hoisted(() => ({ current: undefined as unknown }));
+const waitUntil = vi.hoisted(() => vi.fn());
 const betterAuth = vi.fn((config: unknown) => config);
 
 vi.mock("better-auth", () => ({ betterAuth }));
@@ -14,7 +16,10 @@ vi.mock("better-auth/next-js", () => ({ nextCookies: vi.fn(() => ({})) }));
 vi.mock("kysely-d1", () => ({ D1Dialect: vi.fn() }));
 // `next dev` exposes only Wrangler bindings here; `.env.local` values reach process.env.
 vi.mock("@opennextjs/cloudflare", () => ({
-  getCloudflareContext: () => ({ env: { APP_DB: appDb.current, EMAIL: { send } }, ctx: {} }),
+  getCloudflareContext: () => ({
+    env: { APP_DB: appDb.current, ANALYTICS_DB: analyticsDb.current, EMAIL: { send } },
+    ctx: { waitUntil },
+  }),
 }));
 
 const { createAuth } = await import("../auth");
@@ -33,6 +38,7 @@ describe("createAuth", () => {
     appDb.current = db.d1;
     sqlite = db.sqlite;
     send.mockReset();
+    waitUntil.mockReset();
     vi.stubEnv("BETTER_AUTH_SECRET", "local-secret");
     vi.stubEnv("GOOGLE_CLIENT_ID", "client-id");
     vi.stubEnv("GOOGLE_CLIENT_SECRET", "client-secret");
@@ -130,6 +136,43 @@ describe("createAuth", () => {
     await expect(sendBoth({ id: "u1", email: "a@example.test" })).resolves.toEqual([
       "Your Atlens sign-in code",
       "Confirm deleting your Atlens account",
+    ]);
+  });
+
+  type SessionHook = (
+    session: { userId: string; createdAt: Date },
+    ctx: { path: string; headers: Headers; context: { internalAdapter: { findUserById: (id: string) => Promise<unknown> } } },
+  ) => Promise<void>;
+
+  it("records a completed sign-in against the visitor's cookie, skipping guests", async () => {
+    const analytics = createSqliteD1("migrations/analytics");
+    analyticsDb.current = analytics.d1;
+    const config = createAuth() as unknown as { databaseHooks: { session: { create: { after: SessionHook } } } };
+    const createdAt = new Date("2026-10-20T10:00:00Z");
+    const users: Record<string, unknown> = {
+      account: { id: "account", createdAt, isAnonymous: false },
+      guest: { id: "guest", createdAt, isAnonymous: true },
+    };
+    const vid = "0f8fad5b-d9cb-469f-a165-70867728950e";
+    const ctx = {
+      path: "/sign-in/email-otp",
+      headers: new Headers({ cookie: `atlens_vid=${vid}; atlens_internal=1` }),
+      context: { internalAdapter: { findUserById: async (id: string) => users[id] } },
+    };
+
+    await config.databaseHooks.session.create.after({ userId: "account", createdAt }, ctx);
+    await config.databaseHooks.session.create.after({ userId: "guest", createdAt }, ctx);
+    await Promise.all(waitUntil.mock.calls.map(([promise]) => promise));
+
+    const rows = analytics.sqlite.prepare("SELECT event, vid, signed_in, internal, props FROM events").all();
+    expect(rows).toEqual([
+      {
+        event: "sign_in_complete",
+        vid,
+        signed_in: 1,
+        internal: 1,
+        props: JSON.stringify({ method: "email", new_account: true }),
+      },
     ]);
   });
 

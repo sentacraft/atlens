@@ -1,9 +1,9 @@
 import "server-only";
 
-import type { ASKIRIS_TURN_EVENT, EventName } from "@/lib/analytics/events";
+import type { ASKIRIS_TURN_EVENT, EventName, SIGN_IN_COMPLETE_EVENT } from "@/lib/analytics/events";
 
 export interface EventRow {
-  event: EventName | typeof ASKIRIS_TURN_EVENT;
+  event: EventName | typeof ASKIRIS_TURN_EVENT | typeof SIGN_IN_COMPLETE_EVENT;
   ts: number;
   vid: string | null;
   locale: string | null;
