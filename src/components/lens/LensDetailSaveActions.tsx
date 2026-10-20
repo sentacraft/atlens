@@ -19,7 +19,6 @@ export default function LensDetailSaveActions({ lensId }: { lensId: string }) {
 
   return (
     <div className="flex items-center gap-0.5">
-      <span aria-hidden="true" className="mr-1.5 ml-0.5 h-4 w-px bg-zinc-200 max-sm:hidden" />
       <button
         type="button"
         onClick={() => favorites.toggle(lensId)}
