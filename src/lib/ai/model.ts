@@ -51,6 +51,13 @@ export function activeAgentModel(preset?: AgentModelPreset): AgentModelChoice {
   return { provider, modelId: override.slice(sep + 1), reasoning: provider === "deepseek" ? "on" : "off" };
 }
 
+/** A preset's label, or the bare model name when AGENT_MODEL picked it. */
+export function agentModelLabel(choice: AgentModelChoice): string {
+  return "label" in choice && typeof choice.label === "string"
+    ? choice.label
+    : `${choice.provider}:${choice.modelId} · reasoning ${choice.reasoning}`;
+}
+
 const OPENAI_EFFORT = { off: "none", low: "low", on: "medium" } as const;
 
 /** The model plus the per-call settings `streamText` needs for it. */

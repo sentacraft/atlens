@@ -14,6 +14,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import {
   activeAgentModel,
   agentCallSettings,
+  agentModelLabel,
   missingAgentModelKey,
 } from "@/lib/ai/model";
 import { gearPrompt, pagePrompt, systemPrompt } from "@/lib/ai/system-prompt";
@@ -343,6 +344,7 @@ export async function POST(req: NextRequest) {
           turnId: messageContext.turnId,
           traceId,
           ...(historyChanged ? { historyChanged: true as const } : {}),
+          ...(process.env.NODE_ENV === "production" ? {} : { model: agentModelLabel(model) }),
         };
       },
       onEnd: async (result) => {

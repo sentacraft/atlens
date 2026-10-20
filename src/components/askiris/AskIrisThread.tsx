@@ -183,6 +183,9 @@ export default function AskIrisThread({
                 </span>
                 <span className="text-xs font-medium">Iris</span>
                 <AiTag />
+                {message.metadata?.model ? (
+                  <span className="font-mono text-[10px] text-zinc-400">{message.metadata.model}</span>
+                ) : null}
               </div>
             )}
             {message.parts.map((part, i) => {

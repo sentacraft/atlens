@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { activeAgentModel, agentCallSettings, missingAgentModelKey, getAgentModel } from "../model";
+import { activeAgentModel, agentCallSettings, agentModelLabel, missingAgentModelKey, getAgentModel } from "../model";
 import { findAgentModelPreset } from "../model-presets";
 
 // The chat route refuses a turn when the model it is about to call has no key. The
@@ -94,5 +94,13 @@ describe("agentCallSettings", () => {
     expect(agentCallSettings(activeAgentModel(findAgentModelPreset("deepseek-flash-on"))).providerOptions.deepseek).toEqual({
       thinking: { type: "enabled" },
     });
+  });
+});
+
+describe("agentModelLabel", () => {
+  it("names a preset by its label and an AGENT_MODEL pick by provider and model", () => {
+    expect(agentModelLabel(activeAgentModel(findAgentModelPreset("qwen3.8-flash")))).toBe("qwen3.8-flash · no reasoning");
+    process.env.AGENT_MODEL = "deepseek:deepseek-flash";
+    expect(agentModelLabel(activeAgentModel())).toBe("deepseek:deepseek-flash · reasoning on");
   });
 });

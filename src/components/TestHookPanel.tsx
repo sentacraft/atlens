@@ -237,7 +237,7 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
           onValueChange={(value) => setOption(option.key, value ?? "")}
           items={option.values.map((value) => ({ value: value.id, label: value.label }))}
         >
-          <SelectTrigger className="h-10">
+          <SelectTrigger className="h-10 w-full">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
