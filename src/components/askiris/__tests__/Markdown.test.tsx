@@ -193,7 +193,7 @@ describe("Markdown chat links", () => {
 
   it("opens the sign-in dialog from a sign-in action", () => {
     renderLinks("[sign in](action:signIn)").querySelector("button")!.click();
-    expect(openSignIn).toHaveBeenCalled();
+    expect(openSignIn).toHaveBeenCalledWith("iris_reply");
   });
 
   it("opens feedback from a feedback action", () => {

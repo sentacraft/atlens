@@ -343,7 +343,7 @@ export default function AskIrisChat({
             signIn: (chunks) => (
               <button
                 type="button"
-                onClick={() => openSignIn()}
+                onClick={() => openSignIn("iris_chat")}
                 className="font-semibold text-zinc-900 underline underline-offset-2"
               >
                 {chunks}

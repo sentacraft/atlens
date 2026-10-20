@@ -49,7 +49,7 @@ function ChipLink({ href, external, children }: { href: string; external?: boole
 function SignInChip({ children }: { children?: ReactNode }) {
   const openSignIn = useSignInDialog();
   return (
-    <button type="button" onClick={() => openSignIn()} className={CHIP_CLS}>
+    <button type="button" onClick={() => openSignIn("iris_reply")} className={CHIP_CLS}>
       {children}
       <LogIn className={CHIP_ICON_CLS} aria-hidden />
     </button>

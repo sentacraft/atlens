@@ -344,20 +344,24 @@ describe("loadConversationsPerVisitor", () => {
 });
 
 describe("loadSignInFunnel", () => {
-  it("counts visitors who opened sign-in, then sent it", async () => {
+  it("counts visitors who opened sign-in, sent it and came out signed in", async () => {
     seed([
       { ts: T0, event: "sign_in_open", vid: "a", props: { reason: "favorite" } },
       { ts: T0 + 1, event: "sign_in_submit", vid: "a", props: { method: "google" } },
-      { ts: T0, event: "sign_in_open", vid: "b", props: { reason: "general" } },
+      { ts: T0 + 2, event: "sign_in_complete", vid: "a", props: { method: "google", new_account: true } },
+      { ts: T0, event: "sign_in_open", vid: "b", props: { reason: "general", entry: "account_menu" } },
       { ts: T0 + 1, event: "sign_in_open", vid: "b", props: { reason: "favorite" } },
+      { ts: T0, event: "sign_in_open", vid: "c", props: { reason: "general" } },
     ]);
 
-    const [opened, sent] = await loadSignInFunnel(analytics.d1, WINDOW);
+    const [opened, sent, signedIn] = await loadSignInFunnel(analytics.d1, WINDOW);
     expect(opened.breakdown.map((node) => [node.label, node.count])).toEqual([
+      ["General", 2],
       ["Favorite", 1],
-      ["General", 1],
     ]);
+    expect(opened.breakdown[0].children.map((node) => node.label).sort()).toEqual(["Account menu", "Before entries were recorded"]);
     expect(sent).toMatchObject({ count: 1, breakdown: [{ label: "Google", count: 1 }] });
+    expect(signedIn).toMatchObject({ count: 1, breakdown: [{ label: "New account", count: 1 }] });
   });
 });
 
