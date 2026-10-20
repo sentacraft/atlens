@@ -1,6 +1,7 @@
 "use client";
 
 import { useContext, useEffect, useState, useSyncExternalStore } from "react";
+import { FlaskConical } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -183,15 +184,21 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
   const enabled = useTestHookEnabled();
   const [copied, setCopied] = useState(false);
   const [tab, setTab] = useState<TabId>("routes");
+  const [collapsed, setCollapsed] = useState(false);
   useEffect(() => {
     const saved = sessionStorage.getItem("testhook-tab");
     if (saved && TABS.some((t) => t.id === saved)) {
       setTab(saved as TabId);
     }
+    setCollapsed(sessionStorage.getItem("testhook-collapsed") === "1");
   }, []);
   const selectTab = (id: TabId) => {
     setTab(id);
     sessionStorage.setItem("testhook-tab", id);
+  };
+  const collapse = (next: boolean) => {
+    setCollapsed(next);
+    sessionStorage.setItem("testhook-collapsed", next ? "1" : "0");
   };
 
   if (!context || !enabled) {
@@ -199,6 +206,20 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
   }
 
   const { state, setOption, setTestHook, reset, buildShareableLink } = context;
+
+  if (collapsed) {
+    return (
+      <button
+        type="button"
+        onClick={() => collapse(false)}
+        aria-label="Show test hooks"
+        title="Show test hooks"
+        className="fixed bottom-4 right-4 z-50 inline-flex size-10 items-center justify-center rounded-full border border-zinc-200/80 bg-white/95 text-zinc-600 shadow-lg backdrop-blur transition-colors hover:text-zinc-900"
+      >
+        <FlaskConical className="size-4" />
+      </button>
+    );
+  }
 
   const uiTweaks = TESTHOOK_OPTION_DEFINITIONS.filter((o) => o.section !== "askiris");
   const askIrisOptions = TESTHOOK_OPTION_DEFINITIONS.filter((o) => o.section === "askiris");
@@ -259,9 +280,14 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
     <aside className="fixed bottom-4 right-4 z-50 max-h-[calc(100dvh-2rem)] w-[min(24rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl border border-zinc-200/80 bg-white/95 p-4 shadow-xl backdrop-blur">
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm font-semibold text-zinc-900">Test hooks</p>
-        <Button size="sm" variant="ghost" onClick={() => setTestHook(false)}>
-          Hide
-        </Button>
+        <div className="flex gap-1">
+          <Button size="sm" variant="ghost" onClick={() => setTestHook(false)}>
+            Turn off
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => collapse(true)}>
+            Hide
+          </Button>
+        </div>
       </div>
 
       <div className="mt-3 flex gap-1 rounded-lg bg-zinc-100 p-1">
