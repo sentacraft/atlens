@@ -7,11 +7,12 @@ replay cannot.
 
 ## Run
 
-Needs the dev server up (`localhost:3000`) and, for the judge, an OpenAI key.
+Needs the dev server up (`localhost:3000`) and, for the judge, `EVAL_OPENAI_API_KEY` in `.env.local` —
+its own OpenAI key, separate from the `OPENAI_API_KEY` Iris uses for GPT models.
 
 ```bash
 # from the repo root
-OPENAI_API_KEY=$(grep '^OPENAI_API_KEY=' .env.local | cut -d= -f2-) \
+OPENAI_API_KEY=$(grep '^EVAL_OPENAI_API_KEY=' .env.local | cut -d= -f2-) \
   pnpm dlx promptfoo@latest eval -c eval/promptfoo/promptfooconfig.yaml
 
 pnpm dlx promptfoo@latest view      # local web UI: browse results, compare runs
@@ -39,9 +40,10 @@ This is a **manual** eval, deliberately not wired into per-PR CI: it needs the a
 plus a key for whichever provider `AGENT_MODEL` selects, and the judge needs an OpenAI key
 that must never reach public CI.
 
-Whichever model the dev server booted with is the one under test — `AGENT_MODEL` is read
-server-side at startup, so switching candidates means editing `.env.local` **and restarting
-the dev server**. The test-hook panel's AskIris tab shows what is actually live.
+By default the dev server's model is under test (`AGENT_MODEL` if set, read at startup). To
+run the suite on another candidate without restarting, prefix the command with
+`ASKIRIS_MODEL=<preset id>` from `src/lib/ai/model-presets.ts`; the provider sends it as the
+development-only `x-askiris-model` header, so a run per preset compares models side by side.
 
 ## How it's built
 

@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { DefaultChatTransport, readUIMessageStream } from "ai";
 // The real implementation: a copy of the hash would drift silently.
 import { lensRef, LENS_LINK_PREFIX } from "../../src/lib/ai/lens-ref.ts";
+import { MODEL_PRESET_HEADER } from "../../src/lib/ai/model-presets.ts";
 import { askIrisChatRequestBody } from "../../src/lib/askiris/chat-request.ts";
 
 const ORIGIN = "http://localhost:3000";
@@ -62,8 +63,12 @@ const transport = new DefaultChatTransport({
 const EVAL_GEAR_HEADER = "x-askiris-eval-gear";
 const EVAL_FAVORITES_HEADER = "x-askiris-eval-favorites";
 
+// ASKIRIS_MODEL names a Test Hook model preset (src/lib/ai/model-presets.ts) for the whole run;
+// unset, the dev server's default model answers.
+const MODEL_PRESET = process.env.ASKIRIS_MODEL;
+
 function profileHeaders(vars) {
-  const headers = {};
+  const headers = MODEL_PRESET ? { [MODEL_PRESET_HEADER]: MODEL_PRESET } : {};
   if (vars?.gear) {
     headers[EVAL_GEAR_HEADER] = JSON.stringify(vars.gear);
   }
