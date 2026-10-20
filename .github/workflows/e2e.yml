@@ -26,7 +26,10 @@ concurrency:
 jobs:
   e2e:
     name: Playwright (next start)
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04, whose ICU 78 lacks the libicudata.so.74 that
+    # Playwright's WebKit build loads, so every WebKit project fails to launch. Unpin once
+    # Playwright supports 26.04: https://github.com/microsoft/playwright/issues/36364
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
