@@ -15,6 +15,7 @@ import Nav from "@/components/nav/Nav";
 import ConsoleEgg from "@/components/ConsoleEgg";
 import { meta, brandCount } from "@/lib/lens/data";
 import Redaction from "@/components/Redaction";
+import LensPreview from "@/components/lens-preview/LensPreview";
 import TestHookPanel from "@/components/TestHookPanel";
 import { agentModelInfo } from "@/lib/ai/model";
 import { CompareProvider } from "@/context/CompareProvider";
@@ -142,6 +143,10 @@ export default async function LocaleLayout({
               {/* Redaction uses useSearchParams, which would force a CSR bailout on prerendered pages. */}
               <Suspense fallback={null}>
                 <Redaction />
+              </Suspense>
+              {/* Reads the `lens` param with useSearchParams, so it needs its own Suspense boundary too. */}
+              <Suspense fallback={null}>
+                <LensPreview />
               </Suspense>
               {/* Base UI portals popups to <body>; isolating the page keeps them above any z-index in it (https://base-ui.com/react/overview/quick-start). */}
               <div className="isolate">

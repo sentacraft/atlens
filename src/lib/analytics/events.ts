@@ -234,6 +234,7 @@ export const EVENT_DOCS: EventDocs = {
           detail: { label: "Lens page", description: "The store menu on a lens page" },
           compare: { label: "Compare table", description: "The store row of the comparison table" },
           "compare-mobile": { label: "Compare, phone", description: "The store panel of the comparison on a phone" },
+          preview: { label: "Lens preview", description: "The store menu in a lens preview opened from Iris" },
           unknown: { label: "Other", description: "A store link without a recorded place" },
         },
       },

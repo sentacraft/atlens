@@ -66,10 +66,10 @@ export default function IrisPanel({
           <Drawer.Backdrop
             className={cn(
               "fixed inset-0 bg-zinc-950/40 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0",
-              Z.fixed,
             )}
           />
-          <Drawer.Viewport className={cn("fixed inset-0", Z.fixed)}>
+          {/* No z-index, like every portaled popup (see Z): a lens preview opened from the sheet stacks above it. */}
+          <Drawer.Viewport className="fixed inset-0">
             <Drawer.Popup
               aria-label="Iris"
               className={cn(
