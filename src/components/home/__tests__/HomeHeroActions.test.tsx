@@ -18,7 +18,7 @@ vi.mock("@/i18n/navigation", () => ({
   ),
   useRouter: () => ({ push }),
 }));
-vi.mock("@/context/IrisPanelProvider", () => ({ useOpenIris: () => openIris }));
+vi.mock("@/context/IrisPanelProvider", () => ({ useIris: () => ({ openIris, closeIris: vi.fn(), irisShown: false }) }));
 vi.mock("@/hooks/useMountParam", () => ({ useEffectiveMount: () => "X" }));
 vi.mock("@/hooks/useViewport", () => ({ useBreakpoint: (breakpoint: "sm" | "lg") => screenSize[breakpoint] }));
 
@@ -60,21 +60,26 @@ describe("HomeHeroActions", () => {
     });
   });
 
-  it("links straight to Ask Iris on a phone", () => {
+  it("opens Iris on a phone", () => {
     screenSize.sm = false;
     screenSize.lg = false;
     renderActions();
+    fireEvent.click(screen.getByRole("button", { name: /askIris/ }));
 
-    expect(screen.getByRole("link", { name: /askIris/ })).toHaveAttribute("href", "/askiris");
+    expect(openIris).toHaveBeenCalledWith({ from: "home" });
   });
 
-  it("goes to the Ask Iris page below the side panel's width, as home has no page to talk about", () => {
+  it("opens Iris with the question below the side panel's width too", () => {
     screenSize.lg = false;
     renderActions();
     fireEvent.click(screen.getByRole("button", { name: /askIris/ }));
     fireEvent.click(screen.getByRole("button", { name: "A pancake lens that fits in a pocket" }));
 
-    expect(push).toHaveBeenCalledWith("/askiris?q=A+pancake+lens+that+fits+in+a+pocket");
-    expect(openIris).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
+    expect(openIris).toHaveBeenCalledWith({
+      from: "home",
+      request: { kind: "question", text: "A pancake lens that fits in a pocket" },
+      pool: "need",
+    });
   });
 });

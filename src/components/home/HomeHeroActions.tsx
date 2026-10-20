@@ -4,8 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
-import { Link, useRouter } from "@/i18n/navigation";
-import { useOpenIris } from "@/context/IrisPanelProvider";
+import { Link } from "@/i18n/navigation";
+import { useIris } from "@/context/IrisPanelProvider";
 import AiTag from "@/components/iris/AiTag";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import ExampleQuestion from "@/components/askiris/ExampleQuestion";
@@ -14,11 +14,9 @@ import { useHomeIrisFocus } from "@/components/home/HomeIrisStage";
 import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useBreakpoint } from "@/hooks/useViewport";
-import { track } from "@/lib/analytics/analytics";
 import type { StarterPool } from "@/lib/askiris/starter-questions";
 import { cn } from "@/lib/utils";
-import { askIrisPagePath } from "@/lib/url/askiris";
-import { ASK_IRIS_PATH, browsePath } from "@/lib/url/routes";
+import { browsePath } from "@/lib/url/routes";
 
 const PRIMARY_CLS = `inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-medium ${ACTION_PRIMARY_CLS}`;
 const SECONDARY_CLS =
@@ -31,10 +29,8 @@ export default function HomeHeroActions() {
   const t = useTranslations("Home");
   const tNav = useTranslations("Nav");
   const mount = useEffectiveMount();
-  const openIris = useOpenIris();
+  const { openIris } = useIris();
   const wide = useBreakpoint("sm");
-  const sidePanel = useBreakpoint("lg");
-  const router = useRouter();
   const { focused: expanded, setFocused: setExpanded } = useHomeIrisFocus();
   const [draft, setDraft] = useState("");
   const panelRef = useRef<HTMLDivElement>(null);
@@ -72,13 +68,7 @@ export default function HomeHeroActions() {
     const trimmed = question.trim();
     if (trimmed) {
       setExpanded(false);
-      // Home has no page to talk about, so below the side panel's width it goes to the Ask Iris page.
-      if (sidePanel) {
-        openIris({ from: "home", request: { kind: "question", text: trimmed }, pool });
-      } else {
-        track("askiris_open", { entry: "home", surface: "page", pool });
-        router.push(askIrisPagePath({ question: trimmed }));
-      }
+      openIris({ from: "home", request: { kind: "question", text: trimmed }, pool });
     }
   }
 
@@ -106,9 +96,9 @@ export default function HomeHeroActions() {
           </motion.div>
         )}
         {!wide ? (
-          <Link key="link" href={ASK_IRIS_PATH} className={SECONDARY_CLS}>
+          <button key="open" type="button" onClick={() => openIris({ from: "home" })} className={SECONDARY_CLS}>
             {irisLabel}
-          </Link>
+          </button>
         ) : expanded ? (
           <motion.div
             key="panel"

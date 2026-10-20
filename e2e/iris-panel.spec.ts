@@ -8,10 +8,12 @@ test.describe("Ask Iris side panel", () => {
 
   test("opens from the nav beside the page, follows navigation, and closes", async ({ page }) => {
     await page.goto("/en/lenses/x/browse");
-    await page.getByRole("banner").getByRole("link", { name: /^Ask Iris/ }).click();
+    const toggle = page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ });
+    await toggle.click();
 
     const panel = page.getByRole("complementary", { name: "Iris" });
     await expect(panel).toBeVisible();
+    await expect(toggle).toHaveAttribute("aria-pressed", "true");
     await expect(page).toHaveURL(/\/en\/lenses\/x\/browse$/);
     const pagePadding = await page.evaluate(
       () => getComputedStyle(document.documentElement).getPropertyValue("--iris-panel-width"),
@@ -28,6 +30,13 @@ test.describe("Ask Iris side panel", () => {
     await expect(panel).toBeVisible();
 
     await panel.getByRole("button", { name: "Close" }).click();
+    await expect(panel).toBeHidden();
+    await expect(toggle).toHaveAttribute("aria-pressed", "false");
+
+    // The nav button is a toggle: it opens the panel and closes it again.
+    await toggle.click();
+    await expect(panel).toBeVisible();
+    await toggle.click();
     await expect(panel).toBeHidden();
   });
 });
@@ -55,7 +64,7 @@ test.describe("Ask Iris context entries", () => {
     expect(chatRequests).toEqual([]);
   });
 
-  test("opens a bottom sheet about the page on a phone, while the nav still goes to Ask Iris", async ({ page }, testInfo) => {
+  test("opens a bottom sheet about the page on a phone, and the nav opens the same sheet", async ({ page }, testInfo) => {
     const viewport = page.viewportSize();
     testInfo.skip(!viewport || viewport.width >= 1024, "Narrow screens use the bottom sheet");
     const lensUrl = "/en/lenses/x/fujifilm-xf-33mmf14-r-lm-wr-x";
@@ -70,7 +79,12 @@ test.describe("Ask Iris context entries", () => {
 
     await page.keyboard.press("Escape");
     await expect(sheet).toBeHidden();
-    await page.getByRole("banner").getByRole("link", { name: /^Ask Iris/ }).click();
-    await expect(page).toHaveURL(/\/en\/askiris$/);
+    const toggle = page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ });
+    await toggle.click();
+    await expect(sheet).toBeVisible();
+    await expect(page).toHaveURL(new RegExp(`${lensUrl}$`));
+    // The open sheet hides the rest of the page from assistive tech, the nav included, so the
+    // button is found by its markup here rather than by role.
+    await expect(page.locator('header button[aria-pressed="true"]')).toBeVisible();
   });
 });

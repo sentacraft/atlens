@@ -39,8 +39,9 @@ export default function AskIrisEmptyState({
       className={cn(
         // Safe centering: when the content is taller than the room left (a short screen, the
         // keyboard), it starts at the top and scrolls instead of spilling over the top bar.
-        "flex min-h-0 flex-1 flex-col items-center justify-center-safe overflow-y-auto text-center",
-        panel ? "gap-4 pb-6" : "gap-6 px-2 pb-10",
+        // -mx-2 px-2: the scroll box clips sideways too, and would cut off the composer's shadow.
+        "-mx-2 flex min-h-0 flex-1 flex-col items-center justify-center-safe overflow-y-auto px-2 text-center",
+        panel ? "gap-4 pb-6" : "gap-6 pb-10",
       )}
     >
       {!panel && <Iris config={IRIS_ASSISTANT} uid="askiris-hero" />}
