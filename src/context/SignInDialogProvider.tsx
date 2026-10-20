@@ -5,7 +5,7 @@ import AuthDialog, { type SignInReason } from "@/components/auth/AuthDialog";
 import { track } from "@/lib/analytics/analytics";
 
 /** What opened the dialog: an action that needs an account, or a plain sign-in button by where it sits. */
-export type SignInSource = SignInReason | "account_menu" | "profile" | "iris_history" | "iris_reply";
+export type SignInSource = SignInReason | "account_menu" | "profile" | "iris_history" | "iris_reply" | "iris_top_bar";
 
 type OpenSignIn = (source: SignInSource) => void;
 

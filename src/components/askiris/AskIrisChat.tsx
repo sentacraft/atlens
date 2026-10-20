@@ -316,23 +316,26 @@ export default function AskIrisChat({
     setAttached(false);
   }
 
-  // The panel answers about the page beside it; managing past conversations needs the full view.
-  const fullView = shell.variant === "page" || shell.expanded;
-  const showHistory = fullView && Boolean(userId);
+  const collapsedPanel = shell.variant === "panel" && !shell.expanded;
+  // History needs the room of the full view: the panel expands to show it.
+  function openHistory() {
+    if (collapsedPanel) {
+      shell.onExpandedChange(true);
+    }
+    setHistoryOpen(true);
+  }
   const shellCls =
     shell.variant === "page" ? SHELL_CLS.page : shell.expanded ? SHELL_CLS.expandedPanel : SHELL_CLS.panel;
   const historyControls = (
     <>
-      {showHistory && (
-        <button type="button" onClick={() => setHistoryOpen(true)} title={t("history")} className={TOP_BAR_BTN_CLS}>
-          <History className="size-4" />
-          <span className="max-sm:sr-only">{t("history")}</span>
-        </button>
-      )}
+      <button type="button" onClick={openHistory} title={t("history")} className={TOP_BAR_BTN_CLS}>
+        <History className="size-4" />
+        <span className={collapsedPanel ? "sr-only" : "max-sm:sr-only"}>{t("history")}</span>
+      </button>
       {!sessionPending && !isAccount && (
         <button
           type="button"
-          onClick={() => openSignIn("iris_history")}
+          onClick={() => openSignIn("iris_top_bar")}
           title={t("guestChatsKept")}
           className={cn(TEXT_LINK_CLS, "min-w-0 truncate px-1.5 text-xs")}
         >
@@ -341,7 +344,7 @@ export default function AskIrisChat({
       )}
     </>
   );
-  const history = showHistory && (
+  const history = (
     <ConversationHistory
       open={historyOpen}
       onOpenChange={setHistoryOpen}
@@ -352,6 +355,7 @@ export default function AskIrisChat({
       onNew={startNewConversation}
       onRename={conversation.renameConversation}
       onDelete={conversation.deleteConversation}
+      onSignIn={isAccount ? null : () => openSignIn("iris_history")}
     />
   );
   const notice = freshNotice ? (

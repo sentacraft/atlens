@@ -59,6 +59,17 @@ test.describe("Ask Iris side panel", () => {
     expect(hit.onItem).toBe(true);
   });
 
+  test("opens History from the panel by expanding it, with a sign-in card for a visitor without an account", async ({ page }) => {
+    await page.goto("/en/lenses/x/browse");
+    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    const panel = page.getByRole("complementary", { name: "Iris" });
+
+    await panel.getByRole("button", { name: "Conversations" }).click();
+    await expect.poll(() => panel.evaluate((aside) => aside.getBoundingClientRect().left)).toBe(0);
+    const history = page.getByRole("dialog", { name: "Conversations" });
+    await expect(history.getByRole("button", { name: "Sign in", exact: true })).toBeVisible();
+  });
+
   test("expands over the page in place, and Back or the button collapses it", async ({ page }) => {
     const browse = /\/en\/lenses\/x\/browse$/;
     await page.goto("/en/lenses/x/browse");

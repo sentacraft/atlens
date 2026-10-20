@@ -203,8 +203,12 @@
     "signInToKeepChats": "登录以长期保存对话",
     "guestChatsKept": "未登录时，对话保留 7 天",
     "closeHistory": "关闭历史对话",
-    "historyEmpty": "和 Iris 的对话会出现在这里。",
+    "historyEmpty": "还没有对话。问 Iris 的问题会自动存到这里。",
     "historyError": "暂时无法加载历史对话。",
+    "historySignInTitle": "登录，长期保存对话",
+    "historySignInBody": "未登录时，对话只保留 7 天。登录后，下面这些对话会一起留下，换台设备也能接着聊。",
+    "historySignInBodyEmpty": "登录后，你和 Iris 的对话会长期保存，换台设备也能接着聊。",
+    "historySignIn": "登录",
     "conversationActions": "「{title}」的更多操作",
     "renameConversation": "重命名",
     "deleteConversation": "删除",
@@ -845,7 +849,7 @@
     "lensPlaceholder": "关于这支镜头，想问什么？",
     "comparePlaceholder": "关于这几支镜头，想问什么？",
     "browsePlaceholder": "想找什么样的镜头？",
-    "newConversation": "新对话。上一段对话已存进历史记录，放大 Iris 就能查看。",
+    "newConversation": "新对话。上一段对话已存进历史记录。",
     "browseName": "镜头库",
     "compareName": "对比页"
   }

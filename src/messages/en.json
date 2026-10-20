@@ -203,8 +203,12 @@
     "signInToKeepChats": "Sign in to keep your chats",
     "guestChatsKept": "Without an account, chats are kept for 7 days",
     "closeHistory": "Close conversations",
-    "historyEmpty": "Conversations you have with Iris will appear here.",
+    "historyEmpty": "No conversations yet. Questions you ask Iris are saved here.",
     "historyError": "Couldn’t load your conversations.",
+    "historySignInTitle": "Sign in to keep your chats",
+    "historySignInBody": "Without an account, chats are kept for 7 days. Sign in and these come with you, on any device.",
+    "historySignInBodyEmpty": "Sign in and your chats with Iris are kept for good, on any device.",
+    "historySignIn": "Sign in",
     "conversationActions": "More actions for “{title}”",
     "renameConversation": "Rename",
     "deleteConversation": "Delete",
@@ -845,7 +849,7 @@
     "lensPlaceholder": "Ask anything about this lens",
     "comparePlaceholder": "Ask anything about these lenses",
     "browsePlaceholder": "What kind of lens are you after?",
-    "newConversation": "New conversation. The previous one is in your history; expand Iris to see it.",
+    "newConversation": "New conversation. The previous one is in your history.",
     "browseName": "lenses",
     "compareName": "comparison"
   }

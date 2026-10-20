@@ -30,10 +30,10 @@ vi.mock("@/context/TestHookProvider", () => ({
   useTestHookOption: () => undefined,
 }));
 
-const auth = vi.hoisted(() => ({ order: [] as string[] }));
+const auth = vi.hoisted(() => ({ order: [] as string[], account: undefined as { id: string } | undefined }));
 vi.mock("@/lib/auth-client", () => ({
-  authClient: { useSession: () => ({ data: null, isPending: false }) },
-  accountUser: () => undefined,
+  authClient: { useSession: () => ({ data: auth.account ? { user: auth.account } : null, isPending: false }) },
+  accountUser: () => auth.account,
   ensureSession: vi.fn(async () => {
     auth.order.push("ensureSession");
     return true;
@@ -259,7 +259,27 @@ describe("AskIrisChat send", () => {
     renderChat(panel("/en/lenses/x/xf-56"));
 
     fireEvent.click(screen.getByRole("button", { name: "signInToKeepChats" }));
-    expect(openSignIn).toHaveBeenCalledWith("iris_history");
+    expect(openSignIn).toHaveBeenCalledWith("iris_top_bar");
+  });
+
+  it("shows no sign-in prompt to an account", () => {
+    captureChatBodies();
+    auth.account = { id: "user-1" };
+    try {
+      renderChat(panel("/en/lenses/x/xf-56"));
+      expect(screen.getByRole("button", { name: "history" })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "signInToKeepChats" })).toBeNull();
+    } finally {
+      auth.account = undefined;
+    }
+  });
+
+  it("expands the panel to open History", () => {
+    captureChatBodies();
+    renderChat(panel("/en/lenses/x/xf-56"));
+
+    fireEvent.click(screen.getByRole("button", { name: "history" }));
+    expect(expandedChange).toHaveBeenLastCalledWith(true);
   });
 
   it("expands in place from the full-screen button, keeping the unsent input", () => {

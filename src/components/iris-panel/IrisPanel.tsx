@@ -87,6 +87,8 @@ export default function IrisPanel({
                   : "h-[min(85svh,calc(100svh_-_var(--drawer-keyboard-inset,0px)_-_var(--safe-inset-top)_-_1rem))] rounded-t-3xl",
                 "[transform:translateY(var(--drawer-swipe-movement-y,0px))] transition-[transform,translate,height] duration-300 ease-out data-[swiping]:transition-none",
                 "data-ending-style:translate-y-full data-starting-style:translate-y-full",
+                // A drawer opened from the sheet (History) is nested and gets no backdrop of its own, so the sheet dims itself.
+                "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:bg-zinc-950/40 after:opacity-0 after:transition-opacity after:duration-200 data-[nested-drawer-open]:after:opacity-100",
               )}
             >
               {!expanded && (

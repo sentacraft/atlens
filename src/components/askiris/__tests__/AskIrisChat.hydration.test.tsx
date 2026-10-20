@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act } from "react";
-import { createRoot, hydrateRoot } from "react-dom/client";
+import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -67,8 +67,10 @@ afterEach(() => {
   document.body.innerHTML = "";
 });
 
-function historyButton(container: HTMLElement) {
-  return [...container.querySelectorAll("button")].find((button) => button.textContent === "history") ?? null;
+const guest = { ...signedIn, user: { ...signedIn.user, isAnonymous: true } };
+
+function buttonNamed(container: HTMLElement, text: string) {
+  return [...container.querySelectorAll("button")].find((button) => button.textContent === text) ?? null;
 }
 
 describe("AskIrisChat hydration", () => {
@@ -80,9 +82,9 @@ describe("AskIrisChat hydration", () => {
     const container = document.createElement("div");
     container.innerHTML = renderToString(<Chat />);
     document.body.appendChild(container);
-    expect(historyButton(container)).toBeNull();
+    expect(buttonNamed(container, "signInToKeepChats")).toBeNull();
 
-    authClient.hydrateSession(signedIn);
+    authClient.hydrateSession(guest);
     const onRecoverableError = vi.fn();
     await act(async () => {
       hydrateRoot(container, <Chat />, {
@@ -91,19 +93,7 @@ describe("AskIrisChat hydration", () => {
     });
 
     expect(onRecoverableError).not.toHaveBeenCalled();
-    expect(historyButton(container)).not.toBeNull();
+    expect(buttonNamed(container, "signInToKeepChats")).not.toBeNull();
   });
 
-  it("shows the history entry to a guest, whose conversations are stored too", async () => {
-    stubFetch();
-    authClient.hydrateSession({ ...signedIn, user: { ...signedIn.user, isAnonymous: true } });
-    const container = document.createElement("div");
-    document.body.appendChild(container);
-
-    await act(async () => {
-      createRoot(container).render(<Chat />);
-    });
-
-    expect(historyButton(container)).not.toBeNull();
-  });
 });
