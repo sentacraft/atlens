@@ -86,14 +86,17 @@ describe("AskIrisChat hydration", () => {
 
     authClient.hydrateSession(guest);
     const onRecoverableError = vi.fn();
+    let root: ReturnType<typeof hydrateRoot> | undefined;
     await act(async () => {
-      hydrateRoot(container, <Chat />, {
+      root = hydrateRoot(container, <Chat />, {
         onRecoverableError,
       });
     });
 
     expect(onRecoverableError).not.toHaveBeenCalled();
     expect(buttonNamed(container, "signInToKeepChats")).not.toBeNull();
+    // A session refetch can land after the test; unmounted, it no longer reaches React once jsdom is gone.
+    await act(async () => root?.unmount());
   });
 
 });
