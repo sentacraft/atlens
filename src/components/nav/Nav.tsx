@@ -17,10 +17,10 @@ import MountSwitcher from "@/components/mount/MountSwitcher";
 import FeedbackDialog from "@/components/feedback/FeedbackDialog";
 import GitHubMark from "@/components/logos/GitHubMark";
 import NavMenu from "@/components/nav/NavMenu";
-import { useOpenIris } from "@/context/IrisPanelProvider";
+import { useIris } from "@/context/IrisPanelProvider";
 import AiTag from "@/components/iris/AiTag";
 import { SITE } from "@/config/site";
-import { ASK_IRIS_PATH, browsePath } from "@/lib/url/routes";
+import { browsePath } from "@/lib/url/routes";
 import { buildComparePath } from "@/lib/url/compare";
 import { PAGE_GUTTER_CLS } from "@/config/ui-tokens";
 
@@ -31,7 +31,7 @@ export default function Nav() {
   const clearCompareWithUndo = useClearCompareWithUndo();
   const effectiveMount = useEffectiveMount();
   const { navLocked, lockNav, setNavHidden } = useNav();
-  const openIris = useOpenIris();
+  const { openIris, closeIris, irisShown } = useIris();
   const isPwa = usePwa();
   const [scrolledDown, setScrolledDown] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -87,7 +87,6 @@ export default function Nav() {
 
   const isBrowseActive = pathname.startsWith("/lenses") && !pathname.includes("/compare");
   const isCompareActive = pathname.includes("/compare");
-  const isAskIrisActive = pathname.startsWith(ASK_IRIS_PATH);
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
 
   function handleCompareLinkClick(e: React.MouseEvent) {
@@ -140,29 +139,32 @@ export default function Nav() {
           >
             {t("compare")}
           </Link>
-          <Link
-            href={ASK_IRIS_PATH}
-            onClick={(event) => {
-              if (event.metaKey || event.ctrlKey || event.shiftKey) {
-                return;
-              }
-              event.preventDefault();
-              openIris({ from: "nav" });
-            }}
-            className={cn(linkCls(isAskIrisActive), "inline-flex items-center gap-1.5 whitespace-nowrap")}
-          >
-            {t("askIris")}
-            <AiTag />
-          </Link>
           <span aria-hidden="true" className="mx-1 hidden h-5 w-px bg-zinc-200 sm:block" />
+          <button
+            type="button"
+            aria-pressed={irisShown}
+            onClick={() => (irisShown ? closeIris() : openIris({ from: "nav" }))}
+            className={cn(
+              // The ::after widens the hit area to 44px tall on phones without growing the button.
+              "relative mr-1.5 inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 text-[13px] font-medium text-zinc-900 transition-colors after:absolute after:inset-x-0 after:-inset-y-1.5",
+              irisShown ? "border-zinc-400 bg-zinc-100" : "border-zinc-200 bg-white hover:bg-zinc-50",
+            )}
+          >
+            <Iris config={IRIS_NAV} uid="nav-ask" size={15} />
+            {t("askIris")}
+            <span className="absolute -top-2 -right-2.5 rounded bg-white ring-2 ring-white">
+              <AiTag />
+            </span>
+          </button>
           <a
             href={SITE.repoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden h-8 items-center gap-1.5 rounded-lg border border-zinc-200 px-2.5 text-[13px] text-zinc-700 transition-colors hover:bg-zinc-50 hover:text-zinc-900 sm:inline-flex"
+            aria-label={t("starOnGitHub")}
+            className="hidden h-8 items-center gap-1.5 rounded-lg px-1.5 text-[13px] text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 sm:inline-flex"
           >
             <GitHubMark size={15} />
-            GitHub
+            {t("star")}
           </a>
           <NavMenu
             compareHref={compareHref}

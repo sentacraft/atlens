@@ -21,6 +21,8 @@
   "Nav": {
     "lenses": "Browse",
     "askIris": "Ask Iris",
+    "star": "Star",
+    "starOnGitHub": "Star Atlens on GitHub",
     "allLenses": "All Lenses",
     "collections": "Collections",
     "compare": "Compare",

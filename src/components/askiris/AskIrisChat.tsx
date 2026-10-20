@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { useTestHookOption } from "@/context/TestHookProvider";
-import { useOpenIris, type IrisPanelRequest } from "@/context/IrisPanelProvider";
+import { useIris, type IrisPanelRequest } from "@/context/IrisPanelProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { accountUser, authClient, ensureSession } from "@/lib/auth-client";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
@@ -85,7 +85,7 @@ export default function AskIrisChat({
   const t = useTranslations("AskIris");
   const tEntry = useTranslations("IrisEntry");
   const router = useRouter();
-  const openIris = useOpenIris();
+  const { openIris } = useIris();
   const openSignIn = useSignInDialog();
   const locale = useLocale();
   const mount = useEffectiveMount();

@@ -16,7 +16,7 @@ vi.mock("next-intl", () => {
   return { useTranslations: () => t, useLocale: () => "en" };
 });
 const openIris = vi.hoisted(() => vi.fn());
-vi.mock("@/context/IrisPanelProvider", () => ({ useOpenIris: () => openIris }));
+vi.mock("@/context/IrisPanelProvider", () => ({ useIris: () => ({ openIris, closeIris: vi.fn(), irisShown: false }) }));
 const push = vi.hoisted(() => vi.fn());
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 vi.mock("@/i18n/navigation", () => ({ Link: (props: object) => <a {...props} /> }));
