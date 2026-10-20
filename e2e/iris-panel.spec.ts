@@ -65,7 +65,10 @@ test.describe("Ask Iris side panel", () => {
     const panel = page.getByRole("complementary", { name: "Iris" });
 
     await panel.getByRole("button", { name: "Conversations" }).click();
-    await expect.poll(() => panel.evaluate((aside) => aside.getBoundingClientRect().left)).toBe(0);
+    // The open History drawer hides the rest of the page from assistive tech, the panel included,
+    // so the panel is found by its markup here rather than by role.
+    const expandedPanel = page.locator('aside[aria-label="Iris"]');
+    await expect.poll(() => expandedPanel.evaluate((aside) => aside.getBoundingClientRect().left)).toBe(0);
     const history = page.getByRole("dialog", { name: "Conversations" });
     await expect(history.getByRole("button", { name: "Sign in", exact: true })).toBeVisible();
   });
