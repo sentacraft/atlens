@@ -10,8 +10,12 @@ const {
   loadAccounts,
   loadDaily,
   loadFirstEventTs,
-  loadFunnel,
+  loadBreakdown,
   loadIris,
+  loadIrisFunnel,
+  loadSearchFunnel,
+  loadSessionFunnel,
+  loadSignInFunnel,
   loadIrisFeedback,
   loadOverview,
   loadSignedInShare,
@@ -115,7 +119,7 @@ describe("loadDaily", () => {
   });
 });
 
-describe("loadFunnel", () => {
+describe("loadSessionFunnel", () => {
   it("counts the sessions that reached each step", async () => {
     seed([
       { ts: T0, event: "search" },
@@ -125,12 +129,12 @@ describe("loadFunnel", () => {
       { ts: T0, event: "lens_view", vid: "v2" },
     ]);
 
-    expect(await loadFunnel(analytics.d1, WINDOW)).toEqual([
-      { key: "sessions", sessions: 2 },
-      { key: "explored", sessions: 1 },
-      { key: "viewed", sessions: 2 },
-      { key: "compared", sessions: 1 },
-      { key: "toStore", sessions: 1 },
+    expect((await loadSessionFunnel(analytics.d1, WINDOW)).map((step) => [step.label, step.count])).toEqual([
+      ["All sessions", 2],
+      ["Searched or filtered", 1],
+      ["Viewed a lens", 2],
+      ["Opened a comparison", 1],
+      ["Clicked through to a store", 1],
     ]);
   });
 });
@@ -247,12 +251,120 @@ describe("loadAccounts", () => {
       .prepare("INSERT INTO user_favorites (user_id, lens_id, created_at) VALUES ('u1', 'xf-33', ?)")
       .run(T0 + MIN);
 
-    expect(await loadAccounts(app.d1, WINDOW)).toEqual({
-      newAccounts: 1,
-      totalAccounts: 2,
-      favoritesAdded: 1,
-      gearAdded: 0,
-    });
+    const accounts = await loadAccounts(app.d1, WINDOW);
+    expect(accounts.newBySignUp.map((node) => [node.label, node.count])).toEqual([["Email code", 1]]);
+    expect(accounts.allBySignUp.map((node) => [node.label, node.count])).toEqual([["Email code", 2]]);
+    expect(accounts).toMatchObject({ favoritesAdded: 1, gearAdded: 0 });
+  });
+
+  it("tells Google sign-ups from email-code accounts that linked Google later", async () => {
+    const app = createSqliteD1("migrations/app");
+    const iso = (ts: number) => new Date(ts).toISOString();
+    const user = app.sqlite.prepare(
+      "INSERT INTO user (id, name, email, emailVerified, createdAt, updatedAt) VALUES (?, ?, ?, 1, ?, ?)",
+    );
+    const google = app.sqlite.prepare(
+      "INSERT INTO account (id, accountId, providerId, userId, createdAt, updatedAt) VALUES (?, ?, 'google', ?, ?, ?)",
+    );
+    user.run("g", "G", "g@test", iso(T0 + MIN), iso(T0 + MIN));
+    google.run("a1", "1", "g", iso(T0 + MIN + 500), iso(T0 + MIN + 500));
+    user.run("e", "E", "e@test", iso(T0 + 2 * MIN), iso(T0 + 2 * MIN));
+    user.run("l", "L", "l@test", iso(T0 - 5 * DAY), iso(T0 - 5 * DAY));
+    google.run("a2", "2", "l", iso(T0 + DAY), iso(T0 + DAY));
+
+    const { newBySignUp, allBySignUp } = await loadAccounts(app.d1, WINDOW);
+    expect(newBySignUp.map((node) => [node.label, node.count, node.children.length]).sort()).toEqual([
+      ["Email code", 1, 0],
+      ["Google", 1, 0],
+    ]);
+    const email = allBySignUp.find((node) => node.label === "Email code");
+    expect(email?.count).toBe(2);
+    expect(email?.children.map((node) => [node.label, node.count])).toEqual([
+      ["Later linked Google", 1],
+      ["Email only", 1],
+    ]);
+  });
+});
+
+describe("loadIrisFunnel", () => {
+  it("keeps each step a subset of the one above and splits it by each visitor's first event", async () => {
+    seed([
+      { ts: T0, event: "page_view", vid: "a" },
+      { ts: T0, event: "askiris_open", vid: "b", props: { entry: "home", surface: "page", pool: "need" } },
+      { ts: T0 + 1, event: "askiris_view", vid: "b" },
+      { ts: T0 + 2, event: "askiris_message", vid: "b", props: { method: "starter", pool: "need" } },
+      { ts: T0 + 3, event: "askiris_turn", vid: "b" },
+      { ts: T0 + 4, event: "askiris_rec_click", vid: "b", props: { source: "askiris" } },
+      { ts: T0 + 5, event: "askiris_open", vid: "b", props: { entry: "nav", surface: "panel" } },
+      { ts: T0, event: "askiris_open", vid: "c", props: { entry: "lens", surface: "panel" } },
+      { ts: T0 + 1, event: "askiris_view", vid: "c" },
+      { ts: T0, event: "askiris_view", vid: "d" },
+      { ts: T0, event: "askiris_rec_click", vid: "e", props: { source: "askiris" } },
+    ]);
+
+    const [all, opened, asked, clicked] = await loadIrisFunnel(analytics.d1, WINDOW);
+    expect([all.count, opened.count, asked.count, clicked.count]).toEqual([5, 3, 1, 1]);
+    expect(opened.breakdown.map((node) => [node.label, node.count])).toEqual([
+      ["Home", 1],
+      ["Lens page", 1],
+      ["Ask Iris page directly", 1],
+    ]);
+    expect(opened.breakdown[0].children.map((node) => node.label)).toEqual(["Find a lens"]);
+    expect(asked.breakdown[0]).toMatchObject({ label: "Example question", count: 1 });
+    expect(clicked.breakdown.map((node) => node.label)).toEqual(["Card"]);
+  });
+});
+
+describe("loadSignInFunnel", () => {
+  it("counts visitors who opened sign-in, then sent it", async () => {
+    seed([
+      { ts: T0, event: "sign_in_open", vid: "a", props: { reason: "favorite" } },
+      { ts: T0 + 1, event: "sign_in_submit", vid: "a", props: { method: "google" } },
+      { ts: T0, event: "sign_in_open", vid: "b", props: { reason: "general" } },
+      { ts: T0 + 1, event: "sign_in_open", vid: "b", props: { reason: "favorite" } },
+    ]);
+
+    const [opened, sent] = await loadSignInFunnel(analytics.d1, WINDOW);
+    expect(opened.breakdown.map((node) => [node.label, node.count])).toEqual([
+      ["Favorite", 1],
+      ["General", 1],
+    ]);
+    expect(sent).toMatchObject({ count: 1, breakdown: [{ label: "Google", count: 1 }] });
+  });
+});
+
+describe("loadSearchFunnel", () => {
+  it("counts searches, those with results and picks by position", async () => {
+    seed([
+      { ts: T0, event: "search", props: { query: "xf", results_count: 0 } },
+      { ts: T0, event: "search", props: { query: "56", results_count: 3 }, weight: 2 },
+      { ts: T0, event: "search_select", props: { rank: 1 } },
+    ]);
+
+    const steps = await loadSearchFunnel(analytics.d1, WINDOW);
+    expect(steps.map((step) => step.count)).toEqual([3, 2, 1]);
+    expect(steps[2].breakdown).toMatchObject([{ label: "Position 1", count: 1 }]);
+  });
+});
+
+describe("loadBreakdown", () => {
+  it("nests weighted counts and names values from the event docs", async () => {
+    seed([
+      { ts: T0, event: "purchase_click", props: { channel: "amazon", is_affiliate: true }, weight: 3 },
+      { ts: T0, event: "purchase_click", props: { channel: "amazon", is_affiliate: false } },
+      { ts: T0, event: "purchase_click", props: { channel: "ebay" } },
+    ]);
+
+    const nodes = await loadBreakdown(analytics.d1, WINDOW, "purchase_click", ["channel", "is_affiliate"]);
+    expect(nodes.map((node) => [node.label, node.count])).toEqual([
+      ["Amazon", 4],
+      ["eBay", 1],
+    ]);
+    expect(nodes[0].children.map((node) => [node.value, node.count])).toEqual([
+      ["1", 3],
+      ["0", 1],
+    ]);
+    expect(nodes[1].children).toEqual([]);
   });
 });
 

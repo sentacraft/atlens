@@ -1,12 +1,9 @@
-import type { FunnelStep } from "@/lib/analytics/dashboard";
+import { eventDefinitions, type Definition, type EVENT_DOCS } from "@/lib/analytics/events";
 
 // Events before this moved from Analytics Engine, whose 30-minute session id stands in for the visitor.
 export const D1_CUTOVER_DAY = "2026-10-19";
 
 export const AVERAGE_DAYS = 7;
-const SPARK = "#2a78d6";
-const GOOD = "#0ca30c";
-const CRITICAL = "#d03b3b";
 export const COUNT_WIDTH = "w-20";
 
 type Row = Record<string, unknown>;
@@ -27,15 +24,6 @@ export function ratio(part: number, whole: number): number | null {
   return whole > 0 ? part / whole : null;
 }
 
-export function Card({ title, children, className }: { title: string; children: React.ReactNode; className?: string }) {
-  return (
-    <section className={`min-w-0 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm ${className ?? ""}`}>
-      <h2 className="font-heading text-base font-semibold text-zinc-800">{title}</h2>
-      <div className="mt-3">{children}</div>
-    </section>
-  );
-}
-
 interface Column {
   key: string;
   label: string;
@@ -46,12 +34,12 @@ interface Column {
 
 export function Table({ rows, columns }: { rows: Row[]; columns: Column[] }) {
   if (rows.length === 0) {
-    return <p className="text-sm text-zinc-400">No data in this range.</p>;
+    return <p className="text-sm text-zinc-500">No data in this range.</p>;
   }
   return (
     <table className="w-full table-fixed text-sm">
       <thead>
-        <tr className="text-xs uppercase tracking-wider text-zinc-400">
+        <tr className="text-xs uppercase tracking-wider text-zinc-500">
           {columns.map((c) => (
             <th key={c.key} className={`pb-2 font-medium ${c.align === "right" ? "text-right" : "text-left"} ${c.widthClass ?? ""}`}>
               {c.label}
@@ -91,104 +79,41 @@ export function Facts({ items }: { items: Array<[string, string]> }) {
   );
 }
 
-function Sparkline({ values }: { values: Array<number | null> }) {
-  const present = values.filter((v): v is number => v !== null);
-  if (present.length < 2) {
-    return null;
-  }
-  const max = Math.max(...present) || 1;
-  const step = 100 / (values.length - 1);
-  const path = values
-    .map((v, i) => (v === null ? null : `${i * step},${28 - (v / max) * 26}`))
-    .reduce<string[]>((parts, point, i, all) => {
-      if (point) {
-        parts.push(`${i > 0 && all[i - 1] ? "L" : "M"}${point}`);
-      }
-      return parts;
-    }, [])
-    .join(" ");
+/** Terms and what they mean, for a card's info panel. */
+export function Definitions({ items }: { items: Definition[] }) {
   return (
-    <svg viewBox="0 0 100 30" preserveAspectRatio="none" className="mt-2 h-7 w-full" aria-hidden>
-      <path d={path} fill="none" stroke={SPARK} strokeWidth={2} vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
-    </svg>
+    <dl className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1">
+      {items.map((item) => (
+        <div key={item.term} className="contents">
+          <dt className="font-medium text-zinc-900">{item.term}</dt>
+          <dd>{item.description}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
-function Delta({ change, upIsGood, periodLabel }: { change: number | null; upIsGood: boolean; periodLabel: string }) {
-  if (change === null) {
-    return <span className="text-xs text-zinc-400">Not enough earlier data to compare</span>;
-  }
-  const up = change > 0;
-  const flat = Math.abs(change) < 0.005;
-  const good = up === upIsGood;
-  return (
-    <span className="text-xs text-zinc-500">
-      <span style={{ color: flat ? undefined : good ? GOOD : CRITICAL }} aria-hidden>
-        {flat ? "→" : up ? "▲" : "▼"}
-      </span>{" "}
-      <span className="tabular-nums">{`${up ? "+" : ""}${Math.round(change * 100)}%`}</span> vs previous {periodLabel}
-    </span>
-  );
-}
-
-export function StatTile({
-  label,
-  value,
-  change,
-  upIsGood = true,
-  periodLabel,
-  spark,
+/** An event's documented meaning, and its listed fields' values, from the event docs. */
+export function EventDefinitions({
+  event,
+  fields = [],
+  title,
 }: {
-  label: string;
-  value: string;
-  change: number | null;
-  upIsGood?: boolean;
-  periodLabel: string;
-  spark: Array<number | null>;
+  event: keyof typeof EVENT_DOCS;
+  fields?: string[];
+  title?: string;
 }) {
+  const docs = eventDefinitions(event, fields);
   return (
-    <div className="flex min-w-0 flex-col gap-1 rounded-2xl border border-zinc-200 bg-white px-4 py-4 shadow-sm">
-      <span className="text-sm text-zinc-500">{label}</span>
-      <span className="font-heading text-3xl font-semibold text-zinc-900">{value}</span>
-      <Delta change={change} upIsGood={upIsGood} periodLabel={periodLabel} />
-      <Sparkline values={spark} />
+    <div className="space-y-2">
+      {title && <p className="font-semibold text-zinc-900">{title}</p>}
+      <p>{docs.description}</p>
+      {docs.fields.map((field) => (
+        <div key={field.description} className="space-y-1">
+          <p className="text-zinc-600">{field.description}</p>
+          {field.values.length > 0 && <Definitions items={field.values} />}
+        </div>
+      ))}
     </div>
-  );
-}
-
-const FUNNEL_LABELS: Record<FunnelStep["key"], string> = {
-  sessions: "All sessions",
-  explored: "Searched or filtered",
-  viewed: "Viewed a lens",
-  compared: "Opened a comparison",
-  toStore: "Clicked through to a store",
-};
-
-export function Funnel({ steps, previous }: { steps: FunnelStep[]; previous: FunnelStep[] | null }) {
-  const total = steps[0]?.sessions ?? 0;
-  const previousTotal = previous?.[0]?.sessions ?? 0;
-  return (
-    <ul className="space-y-3">
-      {steps.map((step, i) => {
-        const share = ratio(step.sessions, total);
-        const previousShare = previous ? ratio(previous[i].sessions, previousTotal) : null;
-        return (
-          <li key={step.key}>
-            <div className="flex items-baseline justify-between gap-3 text-sm">
-              <span className="truncate text-zinc-700">{FUNNEL_LABELS[step.key]}</span>
-              <span className="shrink-0 tabular-nums text-zinc-900">
-                {fmtNum(step.sessions)} <span className="text-zinc-500">· {pct(step.sessions, total)}</span>
-              </span>
-            </div>
-            <div className="mt-1 h-3 rounded-full bg-zinc-100">
-              <div className="h-3 rounded-full" style={{ width: `${(share ?? 0) * 100}%`, background: SPARK }} />
-            </div>
-            {i > 0 && previousShare !== null && (
-              <p className="mt-0.5 text-xs text-zinc-400">Previous period {Math.round(previousShare * 100)}%</p>
-            )}
-          </li>
-        );
-      })}
-    </ul>
   );
 }

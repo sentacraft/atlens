@@ -1,5 +1,7 @@
 import "server-only";
 
+import { buildBreakdown, type BreakdownNode, type FunnelStep, type LabelFor } from "@/lib/analytics/breakdown";
+import { ASKIRIS_TURN_EVENT, EVENT_DOCS, valueLabel } from "@/lib/analytics/events";
 import type { AnalyticsRange } from "@/lib/url/admin-analytics";
 
 /** A half-open time window in epoch milliseconds. */
@@ -160,13 +162,8 @@ export async function loadDaily(db: D1Database, window: TimeWindow): Promise<Dai
   return filled;
 }
 
-export interface FunnelStep {
-  key: "sessions" | "explored" | "viewed" | "compared" | "toStore";
-  sessions: number;
-}
-
-/** Sessions that reached each step, in any order within the session. */
-export async function loadFunnel(db: D1Database, window: TimeWindow): Promise<FunnelStep[]> {
+/** Sessions that reached each step, in any order within the session; steps are not subsets of each other. */
+export async function loadSessionFunnel(db: D1Database, window: TimeWindow): Promise<FunnelStep[]> {
   const [row] = await rows<Record<string, number>>(
     db,
     `SELECT
@@ -189,11 +186,11 @@ export async function loadFunnel(db: D1Database, window: TimeWindow): Promise<Fu
     window.to,
   );
   return [
-    { key: "sessions", sessions: n(row?.sessions) },
-    { key: "explored", sessions: n(row?.explored) },
-    { key: "viewed", sessions: n(row?.viewed) },
-    { key: "compared", sessions: n(row?.compared) },
-    { key: "toStore", sessions: n(row?.to_store) },
+    { label: "All sessions", count: n(row?.sessions), breakdown: [] },
+    { label: "Searched or filtered", count: n(row?.explored), breakdown: [] },
+    { label: "Viewed a lens", count: n(row?.viewed), breakdown: [] },
+    { label: "Opened a comparison", count: n(row?.compared), breakdown: [] },
+    { label: "Clicked through to a store", count: n(row?.to_store), breakdown: [] },
   ];
 }
 
@@ -236,6 +233,147 @@ export async function countBy(
     ORDER BY n DESC
     LIMIT ${options.limit ?? 20}`;
   return rows(db, sql, ...params);
+}
+
+// Breakdowns sum every row into their groups, so they read all of them; they suit props with a
+// handful of values, never free text such as queries or paths.
+const BREAKDOWN_ROW_LIMIT = 1000;
+
+const NOT_RECORDED = "Not recorded";
+
+type DocumentedEvent = keyof typeof EVENT_DOCS;
+
+/** Labels a documented event's values, with names for missing values per level. */
+export function eventLabels(event: DocumentedEvent, missing: Record<string, string> = {}): LabelFor {
+  return (level, value) => (value === null ? (missing[level] ?? NOT_RECORDED) : valueLabel(event, level, value));
+}
+
+/** Weighted counts of one event split by `levels`, nested in that order. */
+export async function loadBreakdown(
+  db: D1Database,
+  window: TimeWindow,
+  event: DocumentedEvent,
+  levels: string[],
+  labelFor: LabelFor = eventLabels(event),
+): Promise<BreakdownNode[]> {
+  const counted = await countBy(db, window, event, levels, { limit: BREAKDOWN_ROW_LIMIT });
+  return buildBreakdown(counted, levels, labelFor);
+}
+
+const EVENT_PATTERN = /^[a-z_]+$/;
+
+function eventList(events: string[]): string {
+  for (const event of events) {
+    if (!EVENT_PATTERN.test(event)) {
+      throw new Error(`invalid event name: ${event}`);
+    }
+  }
+  return events.map((event) => `'${event}'`).join(", ");
+}
+
+export interface VisitorStep {
+  label: string;
+  /** Events any one of which puts a visitor in this step; null for every visitor. */
+  events: string[] | null;
+  /** Splits the step by the props of each member's first such event in the window. */
+  split?: { event: DocumentedEvent; levels: string[]; missing?: Record<string, string> };
+}
+
+/**
+ * Unique visitors in each step, where a step keeps only the visitors of every step before it, so
+ * each step is a subset of the one above.
+ */
+export async function loadVisitorFunnel(db: D1Database, window: TimeWindow, steps: VisitorStep[]): Promise<FunnelStep[]> {
+  const flags = steps.map((step, i) => (step.events ? `MAX(event IN (${eventList(step.events)})) AS s${i}` : `1 AS s${i}`));
+  const reached = (i: number) => steps.slice(0, i + 1).map((_, j) => `s${j}`).join(" AND ");
+  const visitors = `
+    WITH v AS (
+      SELECT vid, ${flags.join(", ")}
+      FROM events WHERE ${IN_WINDOW} AND vid IS NOT NULL
+      GROUP BY vid
+    )`;
+  const [counts] = await rows<Record<string, number | null>>(
+    db,
+    `${visitors} SELECT ${steps.map((_, i) => `SUM(${reached(i)}) AS c${i}`).join(", ")} FROM v`,
+    window.from,
+    window.to,
+  );
+  return Promise.all(
+    steps.map(async (step, i) => {
+      const count = n(counts?.[`c${i}`]);
+      if (!step.split || count === 0) {
+        return { label: step.label, count, breakdown: [] };
+      }
+      const { event, levels, missing } = step.split;
+      const firsts = await rows<Record<string, unknown> & { n: number }>(
+        db,
+        `${visitors}
+         SELECT ${levels.map((level) => `${keySql(level)} AS ${level}`).join(", ")}, COUNT(*) AS n
+         FROM (
+           SELECT *, ROW_NUMBER() OVER (PARTITION BY vid ORDER BY ts, id) AS rn
+           FROM events
+           WHERE ${IN_WINDOW} AND event = ?3 AND vid IN (SELECT vid FROM v WHERE ${reached(i)})
+         )
+         WHERE rn = 1
+         GROUP BY ${levels.join(", ")}`,
+        window.from,
+        window.to,
+        event,
+      );
+      return { label: step.label, count, breakdown: buildBreakdown(firsts, levels, eventLabels(event, missing), count) };
+    }),
+  );
+}
+
+/** Visitors from arriving to clicking a lens Iris recommended. */
+export function loadIrisFunnel(db: D1Database, window: TimeWindow): Promise<FunnelStep[]> {
+  return loadVisitorFunnel(db, window, [
+    { label: "All visitors", events: null },
+    {
+      label: "Opened Iris",
+      events: ["askiris_view"],
+      split: { event: "askiris_open", levels: ["entry", "pool"], missing: { entry: "Ask Iris page directly", pool: "Typed a question" } },
+    },
+    { label: "Asked a question", events: [ASKIRIS_TURN_EVENT], split: { event: "askiris_message", levels: ["method", "pool"] } },
+    { label: "Clicked a recommendation", events: ["askiris_rec_click"], split: { event: "askiris_rec_click", levels: ["source"] } },
+  ]);
+}
+
+/** Visitors who opened the sign-in dialog, then sent it. */
+export function loadSignInFunnel(db: D1Database, window: TimeWindow): Promise<FunnelStep[]> {
+  return loadVisitorFunnel(db, window, [
+    { label: "Opened sign-in", events: ["sign_in_open"], split: { event: "sign_in_open", levels: ["reason"] } },
+    { label: "Sent sign-in", events: ["sign_in_submit"], split: { event: "sign_in_submit", levels: ["method"] } },
+  ]);
+}
+
+/** Searches, those with results, and the results picked, by the position picked. */
+export async function loadSearchFunnel(db: D1Database, window: TimeWindow): Promise<FunnelStep[]> {
+  const [[totals], ranks] = await Promise.all([
+    rows<Record<string, number | null>>(
+      db,
+      `SELECT
+         SUM(CASE WHEN event = 'search' THEN weight END) AS searches,
+         SUM(CASE WHEN event = 'search' AND json_extract(props, '$.results_count') > 0 THEN weight END) AS with_results,
+         SUM(CASE WHEN event = 'search_select' THEN weight END) AS picks
+       FROM events WHERE ${IN_WINDOW} AND event IN ('search', 'search_select')`,
+      window.from,
+      window.to,
+    ),
+    countBy(db, window, "search_select", ["rank"], { limit: BREAKDOWN_ROW_LIMIT }),
+  ]);
+  const position = (value: string | null) => (value === null ? NOT_RECORDED : `Position ${value}`);
+  return [
+    { label: "Searches", count: n(totals?.searches), breakdown: [] },
+    { label: "Returned results", count: n(totals?.with_results), breakdown: [] },
+    {
+      label: "A result was picked",
+      count: n(totals?.picks),
+      breakdown: buildBreakdown(ranks, ["rank"], (_, value) => position(value)).sort(
+        (a, b) => Number(a.value ?? Infinity) - Number(b.value ?? Infinity),
+      ),
+    },
+  ];
 }
 
 export interface IrisSummary {
@@ -351,24 +489,50 @@ export async function loadIrisFeedback(db: D1Database, window: TimeWindow): Prom
 }
 
 export interface AccountActivity {
-  newAccounts: number;
-  totalAccounts: number;
+  /** Accounts created in the window, by how they were created. */
+  newBySignUp: BreakdownNode[];
+  /** Every account, by how it was created. */
+  allBySignUp: BreakdownNode[];
   favoritesAdded: number;
   gearAdded: number;
 }
 
+// Better Auth stores its timestamps as ISO text; integers are epoch milliseconds.
+const epochSeconds = (column: string) =>
+  `(CASE typeof(${column}) WHEN 'integer' THEN ${column} / 1000.0 ELSE (julianday(${column}) - 2440587.5) * 86400 END)`;
+
+// A Google sign-up writes the user and its Google account in one request; a Google account
+// added later, by signing in with Google to an email-code account, comes long after.
+const SAME_SIGN_UP_SECONDS = 60;
+
+const SIGN_UP_LABELS: LabelFor = (level, value) =>
+  level === "sign_up"
+    ? value === "google"
+      ? "Google"
+      : "Email code"
+    : value === "linked"
+      ? "Later linked Google"
+      : "Email only";
+
 /** Account sign-ups and saves, from the app database; guest users are not accounts. */
 export async function loadAccounts(db: D1Database, window: TimeWindow): Promise<AccountActivity> {
-  // Better Auth stores user.createdAt as ISO text; the app's own tables store epoch milliseconds.
   const fromIso = new Date(window.from).toISOString();
   const toIso = new Date(window.to).toISOString();
-  const [[users], [saves]] = await Promise.all([
-    rows<Record<string, number>>(
+  const userCreated = epochSeconds("u.createdAt");
+  const [users, [saves]] = await Promise.all([
+    rows<{ sign_up: string; later: string | null; new_accounts: number; accounts: number }>(
       db,
       `SELECT
-         SUM(createdAt >= ?1 AND createdAt < ?2) AS new_accounts,
-         COUNT(*) AS total_accounts
-       FROM user WHERE COALESCE(isAnonymous, 0) = 0`,
+         CASE WHEN g.first - ${userCreated} <= ${SAME_SIGN_UP_SECONDS} THEN 'google' ELSE 'email' END AS sign_up,
+         CASE WHEN g.first - ${userCreated} > ${SAME_SIGN_UP_SECONDS} THEN 'linked' END AS later,
+         SUM(u.createdAt >= ?1 AND u.createdAt < ?2) AS new_accounts,
+         COUNT(*) AS accounts
+       FROM user u
+       LEFT JOIN (
+         SELECT userId, MIN(${epochSeconds("createdAt")}) AS first FROM account WHERE providerId = 'google' GROUP BY userId
+       ) g ON g.userId = u.id
+       WHERE COALESCE(u.isAnonymous, 0) = 0
+       GROUP BY sign_up, later`,
       fromIso,
       toIso,
     ),
@@ -381,9 +545,14 @@ export async function loadAccounts(db: D1Database, window: TimeWindow): Promise<
       window.to,
     ),
   ]);
+  const levels = ["sign_up", "later"];
   return {
-    newAccounts: n(users?.new_accounts),
-    totalAccounts: n(users?.total_accounts),
+    newBySignUp: buildBreakdown(
+      users.map((row) => ({ ...row, n: n(row.new_accounts) })).filter((row) => row.n > 0),
+      levels,
+      SIGN_UP_LABELS,
+    ),
+    allBySignUp: buildBreakdown(users.map((row) => ({ ...row, n: n(row.accounts) })), levels, SIGN_UP_LABELS),
     favoritesAdded: n(saves?.favorites),
     gearAdded: n(saves?.gear),
   };
@@ -402,4 +571,12 @@ export async function loadSignedInShare(db: D1Database, window: TimeWindow): Pro
     window.to,
   );
   return { sessions: n(row?.sessions), signedIn: n(row?.signed_in) };
+}
+
+const LOCALE_LABELS: Record<string, string> = { en: "English", zh: "Chinese" };
+
+/** Events of every kind by the language of the page they came from. */
+export async function loadLocales(db: D1Database, window: TimeWindow): Promise<BreakdownNode[]> {
+  const counted = await countBy(db, window, null, ["locale"], { limit: BREAKDOWN_ROW_LIMIT });
+  return buildBreakdown(counted, ["locale"], (_, value) => (value === null ? NOT_RECORDED : (LOCALE_LABELS[value] ?? value)));
 }

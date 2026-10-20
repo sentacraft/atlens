@@ -1,9 +1,15 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { COUNT_WIDTH, Card, Facts, Table, fmtNum, pct } from "@/components/admin/AnalyticsUi";
-import { countBy, dashboardWindows, loadIris, loadIrisFeedback } from "@/lib/analytics/dashboard";
+import Card from "@/components/admin/AnalyticsCard";
+import { COUNT_WIDTH, Definitions, EventDefinitions, Facts, Table, fmtNum, pct } from "@/components/admin/AnalyticsUi";
+import { BreakdownTree, Funnel } from "@/components/admin/Breakdown";
+import { groupNode } from "@/lib/analytics/breakdown";
+import { dashboardWindows, loadBreakdown, loadIris, loadIrisFeedback, loadIrisFunnel } from "@/lib/analytics/dashboard";
+import { valueLabel } from "@/lib/analytics/events";
 import { resolveAnalyticsRange } from "@/lib/url/admin-analytics";
 
 export const dynamic = "force-dynamic";
+
+const tokens = (value: number | null) => (value === null ? "—" : `${fmtNum(value)} tokens`);
 
 export default async function AnalyticsIrisPage({
   searchParams,
@@ -12,102 +18,143 @@ export default async function AnalyticsIrisPage({
 }) {
   const range = resolveAnalyticsRange(await searchParams);
   const { env } = getCloudflareContext();
-  const { current } = await dashboardWindows(env.ANALYTICS_DB, range);
   const events = env.ANALYTICS_DB;
-  const [iris, feedback, opens, messages, starterMessages, homeExamples, contextRemovals, newConversations] = await Promise.all([
+  const { current } = await dashboardWindows(events, range);
+  const [iris, feedback, funnel, opens, messages, newConversations, contextRemovals] = await Promise.all([
     loadIris(events, current),
     loadIrisFeedback(env.ASKIRIS_DB, current),
-    countBy(events, current, "askiris_open", ["entry", "surface"]),
-    countBy(events, current, "askiris_message", ["method"]),
-    countBy(events, current, "askiris_message", ["pool"], { where: { method: "starter" } }),
-    countBy(events, current, "askiris_open", ["pool"], { where: { entry: "home" } }),
-    countBy(events, current, "askiris_context_remove", ["page_kind"]),
-    countBy(events, current, "askiris_new_conversation", ["reason"]),
+    loadIrisFunnel(events, current),
+    loadBreakdown(events, current, "askiris_open", ["entry", "surface"]),
+    loadBreakdown(events, current, "askiris_message", ["method", "pool"]),
+    loadBreakdown(events, current, "askiris_new_conversation", ["reason"]),
+    loadBreakdown(events, current, "askiris_context_remove", ["page_kind"]),
   ]);
-  const examplesByPool = new Map<string, { pool: string; n: number }>();
-  for (const row of [...starterMessages, ...homeExamples]) {
-    if (row.pool) {
-      const pool = String(row.pool);
-      const entry = examplesByPool.get(pool) ?? { pool, n: 0 };
-      entry.n += row.n;
-      examplesByPool.set(pool, entry);
-    }
-  }
   const ratings = feedback.helpful + feedback.unhelpful;
 
   return (
     <main className="mx-auto grid max-w-7xl grid-cols-1 gap-4 px-4 py-6 sm:px-6 md:grid-cols-2 lg:grid-cols-3">
-      <Card title="Use">
+      <Card
+        title="Iris funnel"
+        subtitle="Unique visitors · each step keeps only visitors from the step above"
+        className="md:col-span-2 lg:col-span-3"
+        info={
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="space-y-2">
+              <p className="font-semibold text-zinc-900">All visitors</p>
+              <p>Browsers with any event in the range, told apart by a random id kept for 30 days; internal traffic left out.</p>
+              <EventDefinitions title="Opened Iris" event="askiris_view" />
+            </div>
+            <EventDefinitions title="Opened Iris · split by where they first opened it" event="askiris_open" fields={["entry", "pool"]} />
+            <EventDefinitions title="Asked a question · split by their first message" event="askiris_message" fields={["method", "pool"]} />
+            <EventDefinitions title="Clicked a recommendation · split by their first click" event="askiris_rec_click" fields={["source"]} />
+          </div>
+        }
+      >
+        <Funnel steps={funnel} unit="Unique visitors" nested previous={null} />
+      </Card>
+      <Card
+        title="Opens"
+        subtitle="Every opening, by where and as what"
+        info={<EventDefinitions event="askiris_open" fields={["entry", "surface"]} />}
+      >
+        <BreakdownTree nodes={opens} unit="Opens" />
+      </Card>
+      <Card
+        title="Messages"
+        subtitle="Every message, by how it was sent"
+        info={<EventDefinitions event="askiris_message" fields={["method", "pool"]} />}
+      >
+        <BreakdownTree nodes={messages} unit="Messages" />
+      </Card>
+      <Card
+        title="Conversations"
+        subtitle="How long they run, and why new ones start"
+        info={
+          <div className="space-y-3">
+            <Definitions
+              items={[
+                { term: "Turn", description: "One question to Iris and its answer" },
+                { term: "Conversation", description: "Turns that share one chat thread" },
+              ]}
+            />
+            <EventDefinitions event="askiris_new_conversation" fields={["reason"]} />
+            <EventDefinitions event="askiris_context_remove" fields={["page_kind"]} />
+          </div>
+        }
+      >
         <Facts
           items={[
-            ["Turns", fmtNum(iris.turns)],
             ["Conversations", fmtNum(iris.conversations)],
+            ["Turns", fmtNum(iris.turns)],
             ["Turns per conversation", iris.conversations > 0 ? (iris.turns / iris.conversations).toFixed(1) : "—"],
-            ["Visitors who opened Iris", fmtNum(iris.viewers)],
-            ["Visitors who asked", fmtNum(iris.askers)],
-            ["Recommendation clicks", fmtNum(iris.recClicks)],
           ]}
         />
+        <div className="mt-4 space-y-4">
+          <BreakdownTree nodes={[groupNode("New conversations", newConversations)]} unit="Events" />
+          <BreakdownTree nodes={[groupNode("Page context removed", contextRemovals)]} unit="Events" />
+        </div>
       </Card>
-      <Card title="Reply ratings">
+      <Card
+        title="Reply ratings"
+        subtitle="Turns rated, then how"
+        info={
+          <p>
+            A rating is a thumbs up or down under one of Iris&apos;s replies. Ratings are stored with the conversation, not
+            the visitor, so they count turns.
+          </p>
+        }
+      >
         <Facts
           items={[
-            ["Helpful", fmtNum(feedback.helpful)],
-            ["Not helpful", fmtNum(feedback.unhelpful)],
-            ["Helpful share", pct(feedback.helpful, ratings)],
-            ["Rated turns", pct(ratings, iris.turns)],
+            ["Rated", `${fmtNum(ratings)} turns · ${pct(ratings, iris.turns)} of turns`],
+            ["Helpful", `${fmtNum(feedback.helpful)} turns · ${pct(feedback.helpful, ratings)} of rated`],
+            ["Not helpful", `${fmtNum(feedback.unhelpful)} turns · ${pct(feedback.unhelpful, ratings)} of rated`],
           ]}
         />
       </Card>
-      <Card title="Cost and limits">
+      <Card
+        title="Cost and limits"
+        subtitle="Model use across all turns"
+        info={
+          <Definitions
+            items={[
+              { term: "Step", description: "One model call; a turn takes more than one when Iris uses tools, up to the step limit" },
+              { term: "Cache hit", description: "Input tokens read from the prompt cache, as a share of all input tokens" },
+              {
+                term: "Peak input",
+                description:
+                  "Each conversation's largest single model call: system prompt, history and tool results. Shows how close conversations come to the context limit",
+              },
+            ]}
+          />
+        }
+      >
         <Facts
           items={[
-            ["Tokens", fmtNum(iris.totalTokens)],
-            ["Tokens per turn", iris.turns > 0 ? fmtNum(Math.round(iris.totalTokens / iris.turns)) : "—"],
-            ["Steps per turn", iris.turns > 0 ? (iris.steps / iris.turns).toFixed(1) : "—"],
-            ["Cache-hit rate (input)", pct(iris.cacheReadTokens, iris.inputTokens)],
-            ["Step-budget hits", pct(iris.budgetHits, iris.turns)],
-            [
-              "Context p50 / p75 / max",
-              [iris.contextP50, iris.contextP75, iris.contextMax].map((v) => (v === null ? "—" : fmtNum(v))).join(" / "),
-            ],
+            ["Tokens", tokens(iris.totalTokens)],
+            ["Per turn", iris.turns > 0 ? tokens(Math.round(iris.totalTokens / iris.turns)) : "—"],
+            ["Steps per turn", iris.turns > 0 ? `${(iris.steps / iris.turns).toFixed(1)} steps` : "—"],
+            ["Cache hit", `${pct(iris.cacheReadTokens, iris.inputTokens)} of input tokens`],
+            ["Hit the step limit", `${fmtNum(iris.budgetHits)} turns · ${pct(iris.budgetHits, iris.turns)}`],
+            ["Peak input, median conversation", tokens(iris.contextP50)],
+            ["Peak input, 75th percentile", tokens(iris.contextP75)],
+            ["Peak input, largest conversation", tokens(iris.contextMax)],
           ]}
         />
       </Card>
-      <Card title="Opened from">
+      <Card
+        title="Steps per turn"
+        subtitle="Turns by how many model calls they took"
+        info={<EventDefinitions event="askiris_turn" fields={["step_count"]} />}
+      >
         <Table
-          rows={opens}
-          columns={[
-            { key: "entry", label: "Entry" },
-            { key: "surface", label: "Opened as" },
-            { key: "n", label: "Opens", align: "right", widthClass: COUNT_WIDTH },
-          ]}
+          rows={iris.stepsHistogram}
+          columns={[{ key: "steps", label: "Steps" }, { key: "turns", label: "Turns", align: "right", widthClass: COUNT_WIDTH }]}
         />
       </Card>
-      <Card title="Messages by source">
-        <Table rows={messages} columns={[{ key: "method", label: "Source" }, { key: "n", label: "Messages", align: "right", widthClass: COUNT_WIDTH }]} />
-      </Card>
-      <Card title="Example questions by pool">
+      <Card title="By mount" subtitle="Turns and tokens by lens catalog" info={<EventDefinitions event="askiris_turn" fields={["mount"]} />}>
         <Table
-          rows={[...examplesByPool.values()].sort((a, b) => b.n - a.n)}
-          columns={[{ key: "pool", label: "Pool" }, { key: "n", label: "Clicks", align: "right", widthClass: COUNT_WIDTH }]}
-        />
-      </Card>
-      <Card title="Page context and new conversations">
-        <Table
-          rows={[
-            ...contextRemovals.map((r) => ({ what: `Context removed · ${r.page_kind ?? ""}`, n: r.n })),
-            ...newConversations.map((r) => ({ what: `New conversation · ${r.reason ?? ""}`, n: r.n })),
-          ]}
-          columns={[{ key: "what", label: "Event" }, { key: "n", label: "Count", align: "right", widthClass: COUNT_WIDTH }]}
-        />
-      </Card>
-      <Card title="Steps per turn">
-        <Table rows={iris.stepsHistogram} columns={[{ key: "steps", label: "Steps" }, { key: "turns", label: "Turns", align: "right", widthClass: COUNT_WIDTH }]} />
-      </Card>
-      <Card title="By mount">
-        <Table
-          rows={iris.byMount}
+          rows={iris.byMount.map((row) => ({ ...row, mount: valueLabel("askiris_turn", "mount", row.mount) }))}
           columns={[
             { key: "mount", label: "Mount" },
             { key: "turns", label: "Turns", align: "right", widthClass: COUNT_WIDTH },

@@ -1,9 +1,8 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { GRID, SERIES } from "@/components/admin/chart-colors";
 
-const SERIES = "#2a78d6";
-const GRID = "#e4e4e7";
 const HEIGHT = 200;
 const MARGIN = { top: 8, right: 8, bottom: 22, left: 40 };
 const MAX_BAR = 24;

@@ -94,3 +94,309 @@ export interface AskIrisTurnProps {
   budget_hit: boolean;
   max_context_tokens: number;
 }
+
+/** What a stored value means and what the dashboard calls it. */
+export interface ValueDoc {
+  label: string;
+  description: string;
+}
+
+export interface FieldDoc {
+  description: string;
+  values?: Record<string, ValueDoc>;
+}
+
+export interface EventDoc {
+  description: string;
+  fields?: Record<string, FieldDoc>;
+}
+
+type EventDocs = {
+  [E in EventName]: { description: string; fields?: { [K in keyof (typeof EVENT_FIELDS)[E]]?: FieldDoc } };
+} & { [ASKIRIS_TURN_EVENT]: EventDoc };
+
+const IRIS_PAGE_KINDS: Record<string, ValueDoc> = {
+  lens: { label: "Lens page", description: "A lens's detail page" },
+  compare: { label: "Compare page", description: "The comparison page" },
+  browse: { label: "Browse list", description: "The lens list, with its filters" },
+};
+
+const STARTER_POOLS: Record<string, ValueDoc> = {
+  need: { label: "Find a lens", description: "Find lenses for a need" },
+  compare: { label: "Compare", description: "Compare two lenses" },
+  favorites: { label: "Favorites", description: "About the visitor's favorites; signed-in visitors with favorites only" },
+  gearUnknown: { label: "Gear (unknown)", description: "About the visitor's own gear, before Iris knows it" },
+  gearKnown: { label: "Gear (known)", description: "About the gear in a signed-in visitor's profile" },
+  table: { label: "Spec table", description: "Ask for a spec table" },
+  terms: { label: "Terms", description: "Explain a lens term" },
+  about: { label: "About Iris", description: "What Iris is and can do" },
+};
+
+const MOUNT_VALUES: Record<string, ValueDoc> = {
+  X: { label: "X mount", description: "Fujifilm X (APS-C)" },
+  G: { label: "GF mount", description: "Fujifilm G (medium format)" },
+};
+
+/** Plain-language definitions the admin dashboard shows beside every metric. */
+export const EVENT_DOCS: EventDocs = {
+  search: {
+    description: "A query typed in the lens search dialog, recorded once typing pauses for half a second.",
+    fields: { results_count: { description: "How many lenses matched; 0 is a zero-result search." } },
+  },
+  filter_apply: {
+    description: "The browse filters changed and stayed put for a second.",
+    fields: { filters_json: { description: "Every filter set at that moment." } },
+  },
+  filter_reset: { description: "The browse filters went back to their defaults." },
+  compare_add: { description: "A lens was added to the comparison tray." },
+  compare_view: { description: "A comparison page opened, once per page load." },
+  compare_scroll: { description: "A visitor scrolled the comparison table." },
+  lens_view: {
+    description: "A lens's detail page opened.",
+    fields: { referrer: { description: "The page the browser came from, outside the site or within it." } },
+  },
+  lens_scroll: {
+    description: "A visitor scrolled a lens page past 50% or 90% of its height.",
+    fields: { depth_pct: { description: "The depth reached: 50 or 90." } },
+  },
+  feedback_open: {
+    description: "A feedback form opened.",
+    fields: {
+      feedback_type: {
+        description: "Which form.",
+        values: {
+          general: { label: "General", description: "The feedback button in the site header, or on a collection page" },
+          data_issue: { label: "Data issue", description: "\"Report an issue\" on a lens page, for wrong lens data" },
+        },
+      },
+    },
+  },
+  feedback_submit: {
+    description: "A feedback form was sent.",
+    fields: {
+      feedback_type: {
+        description: "Which form.",
+        values: {
+          general: { label: "General", description: "The general feedback form" },
+          data_issue: { label: "Data issue", description: "The form for wrong lens data" },
+        },
+      },
+    },
+  },
+  install_action: { description: "A visitor accepted the browser's prompt to install the app." },
+  share_action: {
+    description: "A visitor shared a lens or a comparison.",
+    fields: {
+      method: {
+        description: "How it was shared.",
+        values: {
+          copy_link: { label: "Copy link", description: "Copied the page link" },
+          native: { label: "Native share", description: "The phone's own share sheet" },
+          poster_download: { label: "Poster download", description: "Saved the share poster image" },
+          poster_share: { label: "Poster share", description: "Sent the share poster through the share sheet" },
+        },
+      },
+    },
+  },
+  outbound_click: { description: "A click on a link that leaves the site, other than a store link." },
+  mount_switch: {
+    description: "A visitor switched between the X and GF lens catalogs.",
+    fields: {
+      from_mount: { description: "The catalog they left.", values: MOUNT_VALUES },
+      to_mount: { description: "The catalog they switched to.", values: MOUNT_VALUES },
+    },
+  },
+  purchase_click: {
+    description: "A click on a store link for a lens.",
+    fields: {
+      channel: {
+        description: "The store.",
+        values: {
+          official: { label: "Official", description: "The maker's own store" },
+          amazon: { label: "Amazon", description: "Amazon" },
+          ebay: { label: "eBay", description: "eBay" },
+          bhphoto: { label: "B&H", description: "B&H Photo" },
+          jd: { label: "JD", description: "JD.com, shown in Chinese only" },
+          taobao: { label: "Taobao", description: "Taobao, shown in Chinese only" },
+        },
+      },
+      source: {
+        description: "Where the store link was.",
+        values: {
+          detail: { label: "Lens page", description: "The store menu on a lens page" },
+          compare: { label: "Compare table", description: "The store row of the comparison table" },
+          "compare-mobile": { label: "Compare, phone", description: "The store panel of the comparison on a phone" },
+          unknown: { label: "Other", description: "A store link without a recorded place" },
+        },
+      },
+      is_affiliate: {
+        description: "Whether the link earns a commission.",
+        values: {
+          "1": { label: "Affiliate link", description: "Earns a commission" },
+          "0": { label: "Plain link", description: "Earns nothing" },
+        },
+      },
+    },
+  },
+  pwa_launch: {
+    description: "The installed app was opened, once per app session.",
+    fields: {
+      source: {
+        description: "What it was opened from.",
+        values: {
+          pwa: { label: "App icon", description: "The home-screen icon" },
+          "pwa-browse": { label: "Browse shortcut", description: "The icon's Browse shortcut" },
+          "pwa-compare": { label: "Compare shortcut", description: "The icon's Compare shortcut" },
+        },
+      },
+    },
+  },
+  askiris_view: { description: "The Iris chat appeared on screen: the Ask Iris page, the side panel or the phone sheet." },
+  askiris_open: {
+    description: "A visitor opened Iris from a button or the home page's ask box.",
+    fields: {
+      entry: {
+        description: "Where Iris was opened from.",
+        values: {
+          home: { label: "Home", description: "The ask box or an example question on the home page" },
+          lens: { label: "Lens page", description: "\"Ask Iris\" on a lens's page" },
+          nav: { label: "Top navigation", description: "The Iris button in the site header" },
+          browse: { label: "Browse list", description: "\"Ask Iris\" in the lens list toolbar" },
+          empty: { label: "No-results prompt", description: "The prompt shown when the filters match no lens" },
+          compare: { label: "Compare page", description: "\"Ask Iris\" in the comparison header" },
+          resume: { label: "Past chat", description: "A conversation reopened from history while on another page" },
+        },
+      },
+      surface: {
+        description: "How Iris appeared.",
+        values: {
+          page: { label: "Full page", description: "The Ask Iris page" },
+          panel: { label: "Side panel", description: "The panel beside the page on wide screens" },
+          sheet: { label: "Phone sheet", description: "The same panel on a phone, rising from the bottom" },
+        },
+      },
+      pool: { description: "Which kind of example question was clicked on the home page; empty when typed.", values: STARTER_POOLS },
+    },
+  },
+  askiris_message: {
+    description: "A message sent to Iris.",
+    fields: {
+      method: {
+        description: "How it was sent.",
+        values: {
+          typed: { label: "Typed", description: "Written in the Iris composer" },
+          starter: { label: "Example question", description: "One of the suggested questions in an empty chat" },
+          handoff: { label: "Carried over", description: "Sent for the visitor when Iris opened from the home ask box or a page button" },
+          suggestion: { label: "Follow-up chip", description: "A suggested follow-up under one of Iris's replies" },
+        },
+      },
+      pool: { description: "Which kind of example question; only for example questions.", values: STARTER_POOLS },
+    },
+  },
+  askiris_rec_click: {
+    description: "A visitor opened a lens that Iris recommended.",
+    fields: {
+      source: {
+        description: "Where in the reply the lens was.",
+        values: {
+          askiris: { label: "Card", description: "The lens cards under a reply" },
+          askiris_table: { label: "Table", description: "A row of a spec table Iris drew" },
+          askiris_prose: { label: "Text link", description: "A lens name linked in the reply text" },
+        },
+      },
+    },
+  },
+  askiris_context_remove: {
+    description: "A visitor took the page chip out of the composer, so Iris stopped reading that page.",
+    fields: { page_kind: { description: "The kind of page.", values: IRIS_PAGE_KINDS } },
+  },
+  askiris_new_conversation: {
+    description: "A new Iris conversation started.",
+    fields: {
+      reason: {
+        description: "Why.",
+        values: {
+          manual: { label: "New chat button", description: "The visitor pressed New chat" },
+          page_change: { label: "Moved to another page", description: "Iris started fresh because the page it was reading changed" },
+        },
+      },
+    },
+  },
+  page_view: {
+    description: "A page opened, either from outside or by moving within the site.",
+    fields: {
+      from_path: { description: "The page before it, for a move within the site." },
+      referrer: { description: "The page the browser came from, for a first page." },
+    },
+  },
+  search_select: {
+    description: "A result picked in the lens search dialog.",
+    fields: { rank: { description: "The result's position in the list, from 1." } },
+  },
+  sign_in_open: {
+    description: "The sign-in dialog opened.",
+    fields: {
+      reason: {
+        description: "What opened it.",
+        values: {
+          favorite: { label: "Favorite", description: "Tried to save a favorite lens while signed out" },
+          gear: { label: "Gear", description: "Asked Iris to remember their gear while signed out" },
+          general: {
+            label: "General",
+            description: "A sign-in button not tied to an action: the account menu, the profile page, the Iris chat or a link in an Iris reply",
+          },
+        },
+      },
+    },
+  },
+  sign_in_submit: {
+    description: "A sign-in was sent, counted when the button is pressed and before it finishes.",
+    fields: {
+      method: {
+        description: "How.",
+        values: {
+          google: { label: "Google", description: "Pressed Continue with Google, before leaving for Google" },
+          email: { label: "Email code", description: "Entered the emailed code and pressed Sign in" },
+        },
+      },
+    },
+  },
+  [ASKIRIS_TURN_EVENT]: {
+    description: "One question to Iris and its answer, written by the server.",
+    fields: {
+      mount: { description: "Which lens catalog the conversation was about.", values: MOUNT_VALUES },
+      step_count: { description: "Model calls in the turn; Iris calls the model again after each tool it uses." },
+      max_context_tokens: { description: "Input tokens of the turn's largest model call: system prompt, history and tool results." },
+    },
+  },
+};
+
+export interface Definition {
+  term: string;
+  description: string;
+}
+
+/** An event's meaning and, for each listed field, what the field holds and what its values mean. */
+export function eventDefinitions(
+  event: keyof EventDocs,
+  fields: string[] = [],
+): { description: string; fields: Array<{ description: string; values: Definition[] }> } {
+  const doc: EventDoc = EVENT_DOCS[event];
+  return {
+    description: doc.description,
+    fields: fields.flatMap((field) => {
+      const fieldDoc = doc.fields?.[field];
+      if (!fieldDoc) {
+        return [];
+      }
+      const values = Object.values(fieldDoc.values ?? {}).map(({ label, description }) => ({ term: label, description }));
+      return [{ description: fieldDoc.description, values }];
+    }),
+  };
+}
+
+/** The dashboard's name for a stored value; the raw value when it has none. */
+export function valueLabel(event: keyof EventDocs, field: string, value: string): string {
+  const fields: Record<string, FieldDoc> | undefined = EVENT_DOCS[event].fields;
+  return fields?.[field]?.values?.[value]?.label ?? value;
+}
