@@ -17,7 +17,7 @@ vi.mock("@/components/askiris/useStarters", () => ({ useStarters: () => [{ text:
 vi.mock("@/hooks/useMountParam", () => ({ useEffectiveMount: () => "X" }));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
 vi.mock("@/context/TestHookProvider", () => ({ useTestHookOption: () => undefined }));
-vi.mock("@/context/IrisPanelProvider", () => ({ useOpenIris: () => vi.fn() }));
+vi.mock("@/context/IrisPanelProvider", () => ({ useIris: () => ({ openIris: vi.fn(), closeIris: vi.fn(), irisShown: false }) }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
 const signedIn = {
