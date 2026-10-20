@@ -74,7 +74,7 @@ function SignInPrompt() {
       <p className="text-sm text-zinc-500">{t("signInBody")}</p>
       <button
         type="button"
-        onClick={() => openSignIn()}
+        onClick={() => openSignIn("profile")}
         className={cn(ACTION_PRIMARY_CLS, "mt-3 h-10 rounded-lg px-5 text-sm font-medium")}
       >
         {t("signIn")}

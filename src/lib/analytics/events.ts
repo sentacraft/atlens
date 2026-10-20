@@ -29,7 +29,7 @@ const EVENT_FIELDS = {
   askiris_new_conversation: { reason: "string" },
   page_view: { referrer: "string", from_path: "string" },
   search_select: { query: "string", lens_id: "string", rank: "number" },
-  sign_in_open: { reason: "string" },
+  sign_in_open: { reason: "string", entry: "string" },
   sign_in_submit: { method: "string" },
 } as const satisfies Record<string, Record<string, FieldKind>>;
 
@@ -95,6 +95,14 @@ export interface AskIrisTurnProps {
   max_context_tokens: number;
 }
 
+/** Written by the auth server when a sign-in creates a session; never accepted from the client. */
+export const SIGN_IN_COMPLETE_EVENT = "sign_in_complete";
+
+export interface SignInCompleteProps {
+  method: "google" | "email";
+  new_account: boolean;
+}
+
 /** What a stored value means and what the dashboard calls it. */
 export interface ValueDoc {
   label: string;
@@ -113,7 +121,7 @@ export interface EventDoc {
 
 type EventDocs = {
   [E in EventName]: { description: string; fields?: { [K in keyof (typeof EVENT_FIELDS)[E]]?: FieldDoc } };
-} & { [ASKIRIS_TURN_EVENT]: EventDoc };
+} & { [ASKIRIS_TURN_EVENT]: EventDoc; [SIGN_IN_COMPLETE_EVENT]: EventDoc };
 
 const IRIS_PAGE_KINDS: Record<string, ValueDoc> = {
   lens: { label: "Lens page", description: "A lens's detail page" },
@@ -340,11 +348,17 @@ export const EVENT_DOCS: EventDocs = {
         description: "What opened it.",
         values: {
           favorite: { label: "Favorite", description: "Tried to save a favorite lens while signed out" },
-          gear: { label: "Gear", description: "Asked Iris to remember their gear while signed out" },
-          general: {
-            label: "General",
-            description: "A sign-in button not tied to an action: the account menu, the profile page, the Iris chat or a link in an Iris reply",
-          },
+          gear: { label: "Gear", description: "Tried to add a lens to their gear while signed out, on a lens page or from Iris" },
+          general: { label: "General", description: "A sign-in button not tied to an action; split by entry" },
+        },
+      },
+      entry: {
+        description: "Which sign-in button, for general sign-ins; recorded since this field was added.",
+        values: {
+          account_menu: { label: "Account menu", description: "Sign in in the account menu of the site header" },
+          profile: { label: "Profile page", description: "The sign-in button on the profile page" },
+          iris_chat: { label: "Iris chat notice", description: "The sign-in link in a new Iris chat, for guests" },
+          iris_reply: { label: "Link in an Iris reply", description: "A sign-in chip inside one of Iris's replies" },
         },
       },
     },
@@ -357,6 +371,25 @@ export const EVENT_DOCS: EventDocs = {
         values: {
           google: { label: "Google", description: "Pressed Continue with Google, before leaving for Google" },
           email: { label: "Email code", description: "Entered the emailed code and pressed Sign in" },
+        },
+      },
+    },
+  },
+  [SIGN_IN_COMPLETE_EVENT]: {
+    description: "A sign-in finished and created a session, written by the server. Guest Iris sessions are left out.",
+    fields: {
+      method: {
+        description: "How they signed in.",
+        values: {
+          google: { label: "Google", description: "Came back from Google signed in" },
+          email: { label: "Email code", description: "Entered a valid emailed code" },
+        },
+      },
+      new_account: {
+        description: "Whether the sign-in created the account.",
+        values: {
+          "1": { label: "New account", description: "The account was created by this sign-in" },
+          "0": { label: "Returning", description: "The account already existed" },
         },
       },
     },

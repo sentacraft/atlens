@@ -1,7 +1,7 @@
 import "server-only";
 
 import { buildBreakdown, type BreakdownNode, type FunnelStep, type LabelFor } from "@/lib/analytics/breakdown";
-import { ASKIRIS_TURN_EVENT, EVENT_DOCS, valueLabel } from "@/lib/analytics/events";
+import { ASKIRIS_TURN_EVENT, EVENT_DOCS, SIGN_IN_COMPLETE_EVENT, valueLabel } from "@/lib/analytics/events";
 import type { AnalyticsRange } from "@/lib/url/admin-analytics";
 
 /** A half-open time window in epoch milliseconds. */
@@ -339,11 +339,20 @@ export function loadIrisFunnel(db: D1Database, window: TimeWindow): Promise<Funn
   ]);
 }
 
-/** Visitors who opened the sign-in dialog, then sent it. */
+/** Visitors who opened the sign-in dialog, sent it, and came out signed in. */
 export function loadSignInFunnel(db: D1Database, window: TimeWindow): Promise<FunnelStep[]> {
   return loadVisitorFunnel(db, window, [
-    { label: "Opened sign-in", events: ["sign_in_open"], split: { event: "sign_in_open", levels: ["reason"] } },
+    {
+      label: "Opened sign-in",
+      events: ["sign_in_open"],
+      split: { event: "sign_in_open", levels: ["reason", "entry"], missing: { entry: "Before entries were recorded" } },
+    },
     { label: "Sent sign-in", events: ["sign_in_submit"], split: { event: "sign_in_submit", levels: ["method"] } },
+    {
+      label: "Signed in",
+      events: [SIGN_IN_COMPLETE_EVENT],
+      split: { event: SIGN_IN_COMPLETE_EVENT, levels: ["new_account", "method"] },
+    },
   ]);
 }
 
