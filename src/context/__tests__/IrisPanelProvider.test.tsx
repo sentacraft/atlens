@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { IrisPanelProvider, useOpenIris } from "../IrisPanelProvider";
+import { IrisPanelProvider, useIris } from "../IrisPanelProvider";
 import { track } from "@/lib/analytics/analytics";
 
 const push = vi.fn();
@@ -30,9 +30,13 @@ afterEach(() => {
 });
 
 function Ask() {
-  const openIris = useOpenIris();
+  const { openIris, closeIris, irisShown } = useIris();
   return (
     <>
+      <span data-testid="shown">{String(irisShown)}</span>
+      <button type="button" onClick={closeIris}>
+        close
+      </button>
       <button type="button" onClick={() => openIris({ from: "lens", request: { kind: "question", text: "Which 23mm?" } })}>
         ask
       </button>
@@ -80,13 +84,49 @@ describe("IrisPanelProvider", () => {
     expect(track).toHaveBeenLastCalledWith("askiris_open", { entry: "lens", surface: "sheet", pool: undefined });
   });
 
-  it("sends the nav to the Ask Iris page on a narrow screen", () => {
+  it("opens the sheet from the nav on a narrow screen, as on a wide one", () => {
     env.wide = false;
     renderProvider();
     fireEvent.click(screen.getByRole("button", { name: "nav" }));
 
-    expect(push).toHaveBeenCalledWith("/askiris");
-    expect(screen.queryByTestId("panel")).toBeNull();
-    expect(track).toHaveBeenLastCalledWith("askiris_open", { entry: "nav", surface: "page", pool: undefined });
+    expect(push).not.toHaveBeenCalled();
+    expect(screen.getByTestId("panel")).toHaveAttribute("data-shown", "true");
+    expect(screen.getByTestId("shown")).toHaveTextContent("true");
+    expect(track).toHaveBeenLastCalledWith("askiris_open", { entry: "nav", surface: "sheet", pool: undefined });
+  });
+
+  it("closes the panel and reports Iris hidden", () => {
+    renderProvider();
+    fireEvent.click(screen.getByRole("button", { name: "nav" }));
+    fireEvent.click(screen.getByRole("button", { name: "close" }));
+
+    expect(screen.getByTestId("panel")).toHaveAttribute("data-shown", "false");
+    expect(screen.getByTestId("shown")).toHaveTextContent("false");
+  });
+
+  it("counts the Ask Iris page as Iris shown, and closing it goes back to the page before", () => {
+    const { rerender } = render(
+      <IrisPanelProvider>
+        <Ask />
+      </IrisPanelProvider>,
+    );
+    env.pathname = "/askiris";
+    rerender(
+      <IrisPanelProvider>
+        <Ask />
+      </IrisPanelProvider>,
+    );
+    expect(screen.getByTestId("shown")).toHaveTextContent("true");
+
+    fireEvent.click(screen.getByRole("button", { name: "close" }));
+    expect(push).toHaveBeenCalledWith("/lenses/x/browse");
+  });
+
+  it("closing the Ask Iris page without an earlier page goes home", () => {
+    env.pathname = "/askiris";
+    renderProvider();
+    fireEvent.click(screen.getByRole("button", { name: "close" }));
+
+    expect(push).toHaveBeenCalledWith("/");
   });
 });
