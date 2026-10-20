@@ -139,6 +139,16 @@ export default function Nav() {
           >
             {t("compare")}
           </Link>
+          <a
+            href={SITE.repoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t("starOnGitHub")}
+            className={cn(linkCls(false), "hidden items-center gap-1.5 whitespace-nowrap sm:inline-flex")}
+          >
+            <GitHubMark size={15} />
+            {t("star")}
+          </a>
           <span aria-hidden="true" className="mx-1 hidden h-5 w-px bg-zinc-200 sm:block" />
           <button
             type="button"
@@ -156,16 +166,6 @@ export default function Nav() {
               <AiTag />
             </span>
           </button>
-          <a
-            href={SITE.repoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={t("starOnGitHub")}
-            className="hidden h-8 items-center gap-1.5 rounded-lg px-1.5 text-[13px] text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 sm:inline-flex"
-          >
-            <GitHubMark size={15} />
-            {t("star")}
-          </a>
           <NavMenu
             compareHref={compareHref}
             onCompareClick={handleCompareLinkClick}
