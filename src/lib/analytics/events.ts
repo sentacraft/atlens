@@ -285,9 +285,12 @@ export const EVENT_DOCS: EventDocs = {
         description: "How it was sent.",
         values: {
           typed: { label: "Typed", description: "Written in the Iris composer" },
-          starter: { label: "Example question", description: "One of the suggested questions in an empty chat" },
+          starter: { label: "Example question", description: "One of the example questions in an empty chat that is not about a page" },
           handoff: { label: "Carried over", description: "Sent for the visitor when Iris opened from the home ask box or a page button" },
-          suggestion: { label: "Follow-up chip", description: "A suggested follow-up under one of Iris's replies" },
+          suggestion: {
+            label: "Page question",
+            description: "One of the questions about the page, listed when a chat starts on a lens, compare or browse page",
+          },
         },
       },
       pool: { description: "Which kind of example question; only for example questions.", values: STARTER_POOLS },
