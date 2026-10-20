@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext, useEffect, useState, useSyncExternalStore } from "react";
-import { FlaskConical } from "lucide-react";
+import { FlaskConical, Minus } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -205,7 +205,7 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
     return null;
   }
 
-  const { state, setOption, setTestHook, reset, buildShareableLink } = context;
+  const { state, setOption, reset, buildShareableLink } = context;
 
   if (collapsed) {
     return (
@@ -280,14 +280,9 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
     <aside className="fixed bottom-4 right-4 z-50 max-h-[calc(100dvh-2rem)] w-[min(24rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl border border-zinc-200/80 bg-white/95 p-4 shadow-xl backdrop-blur">
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm font-semibold text-zinc-900">Test hooks</p>
-        <div className="flex gap-1">
-          <Button size="sm" variant="ghost" onClick={() => setTestHook(false)}>
-            Turn off
-          </Button>
-          <Button size="sm" variant="ghost" onClick={() => collapse(true)}>
-            Hide
-          </Button>
-        </div>
+        <Button size="icon-sm" variant="ghost" onClick={() => collapse(true)} aria-label="Minimize" title="Minimize">
+          <Minus />
+        </Button>
       </div>
 
       <div className="mt-3 flex gap-1 rounded-lg bg-zinc-100 p-1">
