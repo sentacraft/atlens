@@ -13,6 +13,7 @@ const ALLOWED = [
   "src/lib/purchase/links.ts", // JD and Taobao store names on the Chinese site
   "src/components/seo/SiteJsonLd.tsx", // the site's Chinese alternate names for search engines
   "eval/", // Chinese test turns
+  "src/lib/askiris/test-prompts.ts", // Chinese prompts the Test Hook panel offers for copying
   "e2e/", // Chinese UI assertions
   "README.md", // bilingual readme
 ];

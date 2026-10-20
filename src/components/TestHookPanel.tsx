@@ -23,6 +23,7 @@ import {
 } from "@/components/askiris/fixtureStore";
 import { TestHookContext, useTestHookEnabled } from "@/context/TestHookProvider";
 import { TESTHOOK_OPTION_DEFINITIONS } from "@/lib/testhook";
+import { TEST_PROMPTS } from "@/lib/askiris/test-prompts";
 import type { AgentModelInfo } from "@/lib/ai/model";
 import {
   REDACTION_KEYS,
@@ -54,17 +55,54 @@ function ModelReadout({ model }: { model: AgentModelInfo }) {
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500">
-        Model
+        Server default
       </span>
       <div className="flex flex-col gap-0.5 rounded-md border border-input px-2 py-1.5 font-mono text-[11px] leading-5">
         <div className="text-zinc-900">
           {model.provider}:{model.modelId}
         </div>
         <div className="text-zinc-500">
-          temperature {model.temperature} ·{" "}
+          temperature {model.temperature ?? "unset"} ·{" "}
           {model.overridden ? "AGENT_MODEL override" : "deployed default"}
         </div>
       </div>
+    </div>
+  );
+}
+
+function TestPromptList() {
+  const [copied, setCopied] = useState<string | null>(null);
+
+  function copy(key: string, text: string) {
+    navigator.clipboard.writeText(text);
+    setCopied(key);
+    setTimeout(() => setCopied((current) => (current === key ? null : current)), 1500);
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500">
+        Test prompts
+      </span>
+      <ul className="flex flex-col gap-2">
+        {TEST_PROMPTS.map((prompt) => (
+          <li key={prompt.label} className="rounded-md border border-input px-2 py-1.5">
+            <div className="text-xs font-medium text-zinc-900">{prompt.label}</div>
+            {(["zh", "en"] as const).map((lang) => {
+              const key = `${prompt.label}:${lang}`;
+              return (
+                <div key={lang} className="mt-1 flex items-start gap-2">
+                  <span className="mt-0.5 w-5 shrink-0 font-mono text-[10px] uppercase text-zinc-400">{lang}</span>
+                  <span className="min-w-0 flex-1 text-xs leading-5 text-zinc-600">{prompt[lang]}</span>
+                  <Button size="xs" variant="outline" onClick={() => copy(key, prompt[lang])}>
+                    {copied === key ? "Copied" : "Copy"}
+                  </Button>
+                </div>
+              );
+            })}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -197,6 +235,7 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
         <Select
           value={current}
           onValueChange={(value) => setOption(option.key, value ?? "")}
+          items={option.values.map((value) => ({ value: value.id, label: value.label }))}
         >
           <SelectTrigger className="h-10">
             <SelectValue />
@@ -265,6 +304,7 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
           <div className="space-y-4">
             <ModelReadout model={model} />
             {askIrisOptions.map(renderOption)}
+            <TestPromptList />
             <FixtureControl />
           </div>
         )}
