@@ -70,6 +70,13 @@ function agentTemperature(choice: AgentModelChoice): number | undefined {
   return choice.reasoning === "off" ? AGENT_TEMPERATURE : undefined;
 }
 
+function openRouterReasoning(reasoning: AgentReasoning) {
+  if (reasoning === "off") {
+    return { enabled: false };
+  }
+  return reasoning === "low" ? { effort: "low" } : { enabled: true };
+}
+
 function dashscopeThinking(reasoning: AgentReasoning) {
   if (reasoning === "off") {
     return { enable_thinking: false };
@@ -109,7 +116,7 @@ export function getAgentModel({ provider, modelId, reasoning }: AgentModelChoice
         name: "openrouter",
         baseURL: "https://openrouter.ai/api/v1",
         apiKey: process.env.OPENROUTER_API_KEY,
-        transformRequestBody: (args) => ({ ...args, reasoning: { enabled: false } }),
+        transformRequestBody: (args) => ({ ...args, reasoning: openRouterReasoning(reasoning) }),
       }).chatModel(modelId);
     default:
       throw new Error(

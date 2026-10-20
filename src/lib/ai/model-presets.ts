@@ -18,6 +18,8 @@ export const AGENT_MODEL_PRESETS = [
   { id: "qwen3.8-flash-low", label: "qwen3.8-flash · 1k reasoning budget", provider: "dashscope", modelId: "qwen3.8-flash", reasoning: "low" },
   { id: "gpt-6-luna", label: "GPT-6 Luna · effort none", provider: "openai", modelId: "gpt-6-luna", reasoning: "off" },
   { id: "gpt-6-luna-low", label: "GPT-6 Luna · effort low", provider: "openai", modelId: "gpt-6-luna", reasoning: "low" },
+  { id: "gpt-6-luna-or", label: "GPT-6 Luna via OpenRouter · effort none", provider: "openrouter", modelId: "openai/gpt-6-luna", reasoning: "off" },
+  { id: "gpt-6-luna-or-low", label: "GPT-6 Luna via OpenRouter · effort low", provider: "openrouter", modelId: "openai/gpt-6-luna", reasoning: "low" },
   { id: "deepseek-flash", label: "DeepSeek V4.1 Flash · no reasoning", provider: "deepseek", modelId: "deepseek-flash", reasoning: "off" },
   { id: "deepseek-flash-on", label: "DeepSeek V4.1 Flash · reasoning", provider: "deepseek", modelId: "deepseek-flash", reasoning: "on" },
 ] as const satisfies readonly AgentModelPreset[];
