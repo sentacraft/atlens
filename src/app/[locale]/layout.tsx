@@ -138,6 +138,8 @@ export default async function LocaleLayout({
           <CompareProvider>
           <SignInDialogProvider>
             <NavProvider>
+            {/* Base UI portals popups to <body>; isolating the page, Iris's side panel included, keeps them above any z-index in it (https://base-ui.com/react/overview/quick-start). */}
+            <div className="isolate">
             <IrisPanelProvider>
               <ConsoleEgg version={meta.version} lensCount={meta.lensCount} brandCount={brandCount} />
               {/* Redaction uses useSearchParams, which would force a CSR bailout on prerendered pages. */}
@@ -148,25 +150,23 @@ export default async function LocaleLayout({
               <Suspense fallback={null}>
                 <LensPreview />
               </Suspense>
-              {/* Base UI portals popups to <body>; isolating the page keeps them above any z-index in it (https://base-ui.com/react/overview/quick-start). */}
-              <div className="isolate">
-                {TESTHOOK_ALLOWED ? (
-                  // Wraps Nav too: its NavMenu reads the persisted test hook state.
-                  <TestHookProvider>
-                    <Nav />
-                    <PageFrame>
-                      {children}
-                      <TestHookPanel model={agentModelInfo()} />
-                    </PageFrame>
-                  </TestHookProvider>
-                ) : (
-                  <>
-                    <Nav />
-                    <PageFrame>{children}</PageFrame>
-                  </>
-                )}
-              </div>
+              {TESTHOOK_ALLOWED ? (
+                // Wraps Nav too: its NavMenu reads the persisted test hook state.
+                <TestHookProvider>
+                  <Nav />
+                  <PageFrame>
+                    {children}
+                    <TestHookPanel model={agentModelInfo()} />
+                  </PageFrame>
+                </TestHookProvider>
+              ) : (
+                <>
+                  <Nav />
+                  <PageFrame>{children}</PageFrame>
+                </>
+              )}
             </IrisPanelProvider>
+            </div>
             </NavProvider>
           </SignInDialogProvider>
           </CompareProvider>

@@ -39,6 +39,25 @@ test.describe("Ask Iris side panel", () => {
     await toggle.click();
     await expect(panel).toBeHidden();
   });
+
+  test("keeps the nav menu above the panel", async ({ page }) => {
+    await page.goto("/en/lenses/x/browse");
+    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    const panel = page.getByRole("complementary", { name: "Iris" });
+    await expect(panel).toBeVisible();
+
+    await page.getByRole("button", { name: "Menu" }).click();
+    const item = page.getByRole("menuitem", { name: "About" });
+    await expect(item).toBeVisible();
+    const panelLeft = await panel.evaluate((aside) => aside.getBoundingClientRect().left);
+    const hit = await item.evaluate((el) => {
+      const box = el.getBoundingClientRect();
+      const x = box.right - 4;
+      return { x, onItem: el.contains(document.elementFromPoint(x, box.top + box.height / 2)) };
+    });
+    expect(hit.x).toBeGreaterThan(panelLeft);
+    expect(hit.onItem).toBe(true);
+  });
 });
 
 test.describe("Ask Iris context entries", () => {
