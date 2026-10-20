@@ -25,35 +25,35 @@ const RECALL_LIMIT = 20;
 const recallConstraintsSchema = z.object({
   brands: z
     .array(z.string())
-    .optional()
+    .nullish()
     .describe("Brand whitelist, lowercase (e.g. 'fujifilm', 'sigma', 'viltrox')."),
-  type: z.enum(["prime", "zoom"]).optional(),
+  type: z.enum(["prime", "zoom"]).nullish(),
   focus: z
     .enum(["auto", "manual"])
-    .optional()
+    .nullish()
     .describe("auto = autofocus, manual = manual-focus only."),
   usage: z
     .enum(["photo", "cine"])
-    .optional()
+    .nullish()
     .describe(
       "Defaults to photo; cine lenses appear only when set to cine.",
     ),
   features: z
     .array(z.enum(FILTER_FEATURE_KEYS))
-    .optional()
+    .nullish()
     .describe(
       "Lens must have ALL of these. ois = stabilization, wr = weather-resistant.",
     ),
   opticalTraits: z
     .array(z.enum(OPTICAL_TRAITS))
-    .optional()
+    .nullish()
     .describe(
       "Restrict to lenses having any of these. fisheye/tilt/shift/anamorphic/probe " +
         "appear only when named here; macro always appears.",
     ),
   coversFocals: z
     .array(z.number())
-    .optional()
+    .nullish()
     .describe(
       "Native focal lengths in mm (the number printed on the lens, not the full-frame " +
         "equivalent) the lens must reach, matched within a small tolerance. Each value is " +
@@ -63,57 +63,57 @@ const recallConstraintsSchema = z.object({
   // Not a [min, max] tuple: it compiles to prefixItems, which Google's function
   // declarations reject.
   focalWithin: z
-    .object({ min: z.number().optional(), max: z.number().optional() })
-    .optional()
+    .object({ min: z.number().nullish(), max: z.number().nullish() })
+    .nullish()
     .describe(
       "Native focal window in mm (the number printed on the lens, not the full-frame " +
         "equivalent); an omitted end is open. The lens's ENTIRE focal range must lie inside it.",
     ),
   minReach: z
     .number()
-    .optional()
+    .nullish()
     .describe("Native mm; a hard lower bound on the lens's longest focal length (its tele end)."),
   maxWide: z
     .number()
-    .optional()
+    .nullish()
     .describe("Native mm; a hard upper bound on the lens's shortest focal length (its wide end)."),
   maxWeightG: z
     .number()
-    .optional()
+    .nullish()
     .describe("Grams; a hard upper bound on lens weight."),
   maxLengthMm: z
     .number()
-    .optional()
+    .nullish()
     .describe("Barrel length ceiling in mm; a hard upper bound."),
   maxApertureF: z
-    .object({ wide: z.number().optional(), tele: z.number().optional() })
-    .optional()
+    .object({ wide: z.number().nullish(), tele: z.number().nullish() })
+    .nullish()
     .describe(
       "f-number ceiling at each zoom end (smaller = wider); a hard bound.",
     ),
   maxPrice: z
     .number()
-    .optional()
+    .nullish()
     .describe("Price ceiling in the user's currency (CNY for zh, USD for en)."),
   minMagnification: z
     .number()
-    .optional()
+    .nullish()
     .describe(
       "Minimum magnification ratio (1 = life-size); a hard lower bound.",
     ),
   minApertureBladeCount: z
     .number()
-    .optional()
+    .nullish()
     .describe(
       "Minimum aperture blade count; a hard lower bound.",
     ),
   minReleaseYear: z
     .number()
-    .optional()
+    .nullish()
     .describe("Only lenses released in or after this year; a hard lower bound."),
   sortBy: z
     .enum(RECALL_SORT_NAMES)
-    .optional()
+    .nullish()
     .describe(
       "Which lenses lead the results. It orders them, it never excludes any, so the " +
         "cap keeps the ones this names. fastest = widest maximum aperture; " +
@@ -169,7 +169,7 @@ export function buildLensTools(
     queryLenses: tool({
       description:
         "Recall lenses by spec. Every parameter is a hard constraint, so set one only for a " +
-        "requirement the request makes; an unset one leaves that axis unrestricted. `maybe` " +
+        "requirement the request makes; leave the rest out or null, which leaves that axis unrestricted. `maybe` " +
         "holds lenses with no data on a constrained field — surface them, never drop them. " +
         `Results are capped at ${RECALL_LIMIT} per query by your sort, totalMatched is the count ` +
         "beyond the cap, and there is no paging. Independent recalls — say a standard zoom and a " +
