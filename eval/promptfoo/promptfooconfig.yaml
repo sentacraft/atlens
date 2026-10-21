@@ -89,8 +89,10 @@ assertions:
           gap stated with no such caveat.
 
 
-  # The card standard. It passes any reply without cards, so it is attached only to cases
-  # whose reply can carry a deck rather than run, and be paid for, on every case.
+  # The card standard. It passes any reply that puts no lens forward, so it is attached only
+  # to cases whose reply can recommend rather than run, and be paid for, on every case. It
+  # also owns "recommended in prose instead of on cards": only a judge can tell a lens put
+  # forward from one ruled out, owned or used as a reference.
   cardQuality: &card_quality
     type: llm-rubric
     metric: card-quality
@@ -102,10 +104,13 @@ assertions:
       deck; its rows carry no reason and this standard does not apply to them. The prose around the cards is
       connective — it frames the assumption, organizes the groups, and guides the
       choice. Overlap with a card is fine, including singling out one pick and
-      briefly saying why, or mapping needs to picks to help the user decide. It fails
-      only if the prose works through the set lens-by-lens, re-describing each card's
-      case as a standalone write-up parallel to the cards, or if it names a specific
-      lens that has no card. A reply with no cards passes this check.
+      briefly saying why, or mapping needs to picks to help the user decide. Lenses
+      mentioned in prose without a card are fine when they are not being put forward
+      as options to choose from — ruled out with a reason, already owned, a reference
+      point, a conditional alternative. It fails if the prose works through the set
+      lens-by-lens, re-describing each card's case as a standalone write-up parallel to
+      the cards, or if lenses the reply puts forward for the user to choose from appear
+      only in prose instead of as cards. A reply that puts no lens forward passes.
 
 defaultTest:
   # Runs on EVERY case. The javascript checks cover what is verifiable
@@ -117,6 +122,8 @@ defaultTest:
   # card standard; the card one is conditional too, so a prose-only reply passes it.
   # `metric` groups assertions in the results table: programmatic / behavior-floor /
   # card-quality / recommendation-quality / guard.
+  # Keep each javascript value on one line: promptfoo reads a multi-line value as a function
+  # body, and an expression written across lines then returns undefined and fails every case.
   assert:
     - type: javascript # every pick id resolved to a real catalogue lens
       metric: programmatic
@@ -151,15 +158,6 @@ defaultTest:
     - type: javascript # searchLensByName is for models the user named, not for fishing out ones it already had in mind
       metric: programmatic
       value: "context.vars.namesModels === true || context.metadata.searches.length === 0"
-    # A lens the reply puts in front of the user is backed by a card or a table row —
-    # a prose link is not a substitute for one. Exempt when the user named the models
-    # themselves: answering a question about a lens someone asked about by name is not
-    # recommending it, and those cases assert their own no-deck shape.
-    # One line, deliberately: promptfoo reads a multi-line value as a function body, and
-    # an expression written across lines then returns undefined and fails every case.
-    - type: javascript
-      metric: programmatic
-      value: 'context.vars.namesModels === true || context.metadata.linkIds.every((id) => context.metadata.shownIds.includes(id))'
     - type: javascript # replied in the requested locale (\u4e00-\u9fff = any CJK ideograph)
       metric: programmatic
       value: 'context.vars.locale !== "zh" || /[\u4e00-\u9fff]/.test(output)'
@@ -450,9 +448,11 @@ tests:
         metric: guard
         provider: *behavior_grader
         value: >-
-          The reply should help the user weigh the trade-off between the two lenses
-          and leave the final choice to them; if it decides on one for the user, it
-          fails.
+          The user asks to be told which lens to buy. The reply should lay out the
+          trade-off between the two lenses; after that it may lean one way, as long as the
+          lean is tied to how the user shoots ("if you mostly shoot X, A"). It fails if it
+          picks one without laying out the trade-off, or gives an unconditional verdict
+          that ignores what the user's own use would change.
 
   # Guard: an underspecified ask is answered on a stated assumption, not a silent one.
   - description: guard-underspecified
