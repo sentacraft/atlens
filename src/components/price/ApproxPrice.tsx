@@ -4,10 +4,10 @@ import { useLocale, useTranslations } from "next-intl";
 import { pickPriceEntry, formatPrice } from "@/lib/lens/pricing";
 import type { Lens } from "@/lib/types";
 
-export default function LensCardPrice({ lens }: { lens: Lens }) {
+export default function ApproxPrice({ pricing }: { pricing: Lens["pricing"] }) {
   const t = useTranslations("Pricing");
   const locale = useLocale();
-  const selection = pickPriceEntry(lens.pricing, locale);
+  const selection = pickPriceEntry(pricing, locale);
 
   if (!selection) {
     return (

@@ -14,7 +14,7 @@ import type { Lens } from "@/lib/types";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import * as fmt from "@/lib/lens/format";
-import LensCardPrice from "@/components/price/LensCardPrice";
+import ApproxPrice from "@/components/price/ApproxPrice";
 import { lensPath } from "@/lib/url/routes";
 
 interface Props {
@@ -165,7 +165,7 @@ export default memo(function LensCard({
             </dl>
 
             <div className="flex min-h-8 items-center pr-12 @min-[15rem]:pr-24">
-              <LensCardPrice lens={lens} />
+              <ApproxPrice pricing={lens.pricing} />
             </div>
           </div>
         </div>
