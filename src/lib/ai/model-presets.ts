@@ -13,6 +13,8 @@ export interface AgentModelPreset {
 
 /** Models a developer can switch Iris to from the Test Hook panel; the first is production's. */
 export const AGENT_MODEL_PRESETS = [
+  { id: "deepseek-flash", label: "DeepSeek V4.1 Flash · no reasoning", provider: "deepseek", modelId: "deepseek-flash", reasoning: "off" },
+  { id: "deepseek-flash-on", label: "DeepSeek V4.1 Flash · reasoning", provider: "deepseek", modelId: "deepseek-flash", reasoning: "on" },
   { id: "qwen3.7-plus", label: "qwen3.7-plus · no reasoning", provider: "dashscope", modelId: "qwen3.7-plus", reasoning: "off" },
   { id: "qwen3.8-flash", label: "qwen3.8-flash · no reasoning", provider: "dashscope", modelId: "qwen3.8-flash", reasoning: "off" },
   { id: "qwen3.8-flash-low", label: "qwen3.8-flash · 1k reasoning budget", provider: "dashscope", modelId: "qwen3.8-flash", reasoning: "low" },
@@ -20,8 +22,6 @@ export const AGENT_MODEL_PRESETS = [
   { id: "gpt-6-luna-low", label: "GPT-6 Luna · effort low", provider: "openai", modelId: "gpt-6-luna", reasoning: "low" },
   { id: "gpt-6-luna-or", label: "GPT-6 Luna via OpenRouter · effort none", provider: "openrouter", modelId: "openai/gpt-6-luna", reasoning: "off" },
   { id: "gpt-6-luna-or-low", label: "GPT-6 Luna via OpenRouter · effort low", provider: "openrouter", modelId: "openai/gpt-6-luna", reasoning: "low" },
-  { id: "deepseek-flash", label: "DeepSeek V4.1 Flash · no reasoning", provider: "deepseek", modelId: "deepseek-flash", reasoning: "off" },
-  { id: "deepseek-flash-on", label: "DeepSeek V4.1 Flash · reasoning", provider: "deepseek", modelId: "deepseek-flash", reasoning: "on" },
   { id: "glm-5.3-flash", label: "GLM-5.3-Flash · reasoning (always on)", provider: "zhipu", modelId: "glm-5.3-flash", reasoning: "on" },
 ] as const satisfies readonly AgentModelPreset[];
 

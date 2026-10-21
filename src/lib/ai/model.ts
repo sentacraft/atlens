@@ -47,8 +47,7 @@ export function activeAgentModel(preset?: AgentModelPreset): AgentModelChoice {
   }
   const sep = override.indexOf(":");
   const provider = override.slice(0, sep);
-  // DeepSeek keeps reasoning on: without it, v4-flash stopped following the tool and format rules.
-  return { provider, modelId: override.slice(sep + 1), reasoning: provider === "deepseek" ? "on" : "off" };
+  return { provider, modelId: override.slice(sep + 1), reasoning: "off" };
 }
 
 /** A preset's label, or the bare model name when AGENT_MODEL picked it. */

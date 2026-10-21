@@ -41,16 +41,14 @@ async function openActions(title: string) {
 }
 
 describe("ConversationHistory", () => {
-  it("offers a visitor without an account to sign in, worded for whether there is anything to keep", async () => {
+  it("offers a visitor without an account to sign in, with what an account adds", async () => {
     const onSignIn = vi.fn();
-    renderHistory({ onSignIn });
-    expect(await screen.findByText("historySignInBody")).toBeInTheDocument();
+    renderHistory({ list: [], onSignIn });
+    for (const benefit of ["historySignInKeep", "historySignInGear", "historySignInFavorites"]) {
+      expect(await screen.findByText(benefit)).toBeInTheDocument();
+    }
     fireEvent.click(screen.getByRole("button", { name: "historySignIn" }));
     expect(onSignIn).toHaveBeenCalled();
-
-    cleanup();
-    renderHistory({ list: [], onSignIn });
-    expect(await screen.findByText("historySignInBodyEmpty")).toBeInTheDocument();
   });
 
   it("shows no sign-in card to an account", async () => {

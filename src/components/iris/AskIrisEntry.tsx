@@ -20,7 +20,7 @@ export default function AskIrisEntry({
   request,
   className,
 }: {
-  id: Extract<IrisEntryPoint, "lens" | "browse" | "empty" | "compare">;
+  id: Extract<IrisEntryPoint, "lens" | "alternatives" | "browse" | "empty" | "compare">;
   label: string;
   phoneLabel: "full" | "short";
   request: IrisRequest;
