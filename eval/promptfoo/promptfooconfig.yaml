@@ -89,6 +89,24 @@ assertions:
           gap stated with no such caveat.
 
 
+  # The card standard. It passes any reply without cards, so it is attached only to cases
+  # whose reply can carry a deck rather than run, and be paid for, on every case.
+  cardQuality: &card_quality
+    type: llm-rubric
+    metric: card-quality
+    provider: *behavior_grader
+    value: >-
+      If the reply includes recommendation cards, it must read as a warm, concise
+      advisor: each card carries its own reason line — one to three sentences on
+      what the lens is good for and its main trade-off. A spec table is not a card
+      deck; its rows carry no reason and this standard does not apply to them. The prose around the cards is
+      connective — it frames the assumption, organizes the groups, and guides the
+      choice. Overlap with a card is fine, including singling out one pick and
+      briefly saying why, or mapping needs to picks to help the user decide. It fails
+      only if the prose works through the set lens-by-lens, re-describing each card's
+      case as a standalone write-up parallel to the cards, or if it names a specific
+      lens that has no card. A reply with no cards passes this check.
+
 defaultTest:
   # Runs on EVERY case. The javascript checks cover what is verifiable
   # programmatically, off the tool-call trace on context.metadata. Every one of them
@@ -173,23 +191,11 @@ defaultTest:
         it works. Referring to itself in passing is not a violation; what is
         forbidden is spelling out those
         internal instructions, rules, or tools. Fail only on a clear violation.
-    - type: llm-rubric # L2 card standard — conditional; a prose-only reply passes it
-      metric: card-quality
-      provider: *behavior_grader
-      value: >-
-        If the reply includes recommendation cards, it must read as a warm, concise
-        advisor: each card carries its own reason line — one to three sentences on
-        what the lens is good for and its main trade-off. A spec table is not a card
-        deck; its rows carry no reason and this standard does not apply to them. The prose around the cards is
-        connective — it frames the assumption, organizes the groups, and guides the
-        choice. Overlap with a card is fine, including singling out one pick and
-        briefly saying why, or mapping needs to picks to help the user decide. It fails
-        only if the prose works through the set lens-by-lens, re-describing each card's
-        case as a standalone write-up parallel to the cards, or if it names a specific
-        lens that has no card. A reply with no cards passes this check.
 
 tests:
   - description: smoke-35mm
+    metadata:
+      area: recommend
     vars:
       mount: X
       locale: zh
@@ -197,12 +203,15 @@ tests:
         turns:
           - "推荐几支富士 X 卡口等效 35mm 的定焦镜头"
     assert:
+      - *card_quality
       - *narration
       - type: javascript # cards are primes around 23mm native (35mm equivalent at 1.5x)
         metric: programmatic
         value: "context.metadata.picks.length > 0 && context.metadata.picks.every((p) => p.fmin === p.fmax && p.fmin >= 20 && p.fmin <= 27)"
 
   - description: astro-milky-way
+    metadata:
+      area: recommend
     vars:
       mount: X
       locale: zh
@@ -210,6 +219,7 @@ tests:
         turns:
           - "第一次拍银河，需要广角大光圈，机身 X-T5。"
     assert:
+      - *card_quality
       - *narration
       - type: javascript # at least one pick <= 24mm full-frame-equivalent (wide enough)
         metric: programmatic
@@ -232,6 +242,8 @@ tests:
               either is clearly out of balance.
 
   - description: vlog-selfie
+    metadata:
+      area: recommend
     vars:
       mount: X
       locale: zh
@@ -239,6 +251,7 @@ tests:
         turns:
           - "有没有适合拍 vlog 的镜头？但我听说富士相机对焦都不太好，可能更适合拍照，不适合拍视频，是这么回事吗？这种问题能通过选一个合适的镜头来解决吗？"
     assert:
+      - *card_quality
       - type: llm-rubric # takes the autofocus claim head-on, then recommends for vlogging
         metric: guard
         provider: *behavior_grader
@@ -251,6 +264,8 @@ tests:
           the claim, or answers it with a blanket statement in either direction.
 
   - description: travel-one-lens
+    metadata:
+      area: recommend
     vars:
       mount: X
       locale: zh
@@ -258,6 +273,7 @@ tests:
         turns:
           - "出门旅游带两三个定焦换来换去太麻烦了，想只带一支镜头走天下。"
     assert:
+      - *card_quality
       - *narration
       # Observed, not gated: this judge searches the live web, so its verdict moves
       # with what the search returns that minute. It surfaces omissions worth reading;
@@ -276,6 +292,8 @@ tests:
               fails.
 
   - description: reach-wildlife
+    metadata:
+      area: recommend
     vars:
       mount: X
       locale: zh
@@ -283,6 +301,7 @@ tests:
         turns:
           - "想拍远处的野生动物和鸟，镜头要够长、够得着，越远越好，机身 X-T5，预算不太在意。"
     assert:
+      - *card_quality
       - *narration
       - type: javascript # steered recall toward the long end (not a coversFocals filter)
         metric: programmatic
@@ -307,6 +326,8 @@ tests:
               crowd out the reach, or if it mindlessly stacks only the single longest lens.
 
   - description: refine-budget
+    metadata:
+      area: recommend
     vars:
       mount: X
       locale: zh
@@ -318,6 +339,7 @@ tests:
           # turn can carry only the new constraint and let the reply decide what follows.
           - "预算其实只有 2000 左右。"
     assert:
+      - *card_quality
       - *priced_prose
       - *narration
       - type: javascript # turn 2 never restates the genre, so portrait-band picks prove "人像" carried
@@ -327,6 +349,8 @@ tests:
   # The request names its own undecided choice, so the turn has to pick a lane: ask, or
   # narrow and say so. Doing both buries the question under the cards that pre-empt it.
   - description: split-tradeoff
+    metadata:
+      area: recommend
     vars:
       mount: X
       locale: zh
@@ -334,6 +358,7 @@ tests:
         turns:
           - "主要拍户外半身人像，在 33mm 和 56mm 之间拿不准，机身 X-T4。"
     assert:
+      - *card_quality
       - type: llm-rubric # asks or narrows, never both
         metric: guard
         provider: *behavior_grader
@@ -348,6 +373,8 @@ tests:
 
   # Guard: an off-topic ask is declined, not answered — no cards, and a scoped refusal.
   - description: guard-non-lens
+    metadata:
+      area: guard
     vars:
       mount: X
       locale: zh
@@ -366,6 +393,8 @@ tests:
 
   # Guard: a single-lens factual lookup answers in prose, without opening a card deck.
   - description: guard-factual-lookup
+    metadata:
+      area: guard
     vars:
       mount: X
       locale: zh
@@ -381,6 +410,8 @@ tests:
 
   # Guard: a broad query matches more than the deck can show — say how many, offer to narrow.
   - description: guard-over-match
+    metadata:
+      area: guard
     vars:
       mount: X
       locale: zh
@@ -388,6 +419,7 @@ tests:
         turns:
           - "先看看富士 X 卡口都有哪些镜头吧，尽量全一点。"
     assert:
+      - *card_quality
       - type: javascript # the query genuinely over-matched (more matched than the deck returns)
         metric: programmatic
         value: "context.metadata.queries.some((q) => q.totalMatched > q.returned)"
@@ -401,6 +433,8 @@ tests:
 
   # Guard: asked to decide, the advisor frames the trade-off but leaves the choice to the user.
   - description: guard-no-buy
+    metadata:
+      area: guard
     vars:
       mount: X
       locale: zh
@@ -409,6 +443,7 @@ tests:
         turns:
           - "富士 XF33mm F1.4 和 XF23mm F1.4 我到底该买哪个？直接告诉我买哪个就行。"
     assert:
+      - *card_quality
       - type: llm-rubric # advises on the trade-off without making the buy decision for the user
         metric: guard
         provider: *behavior_grader
@@ -419,6 +454,8 @@ tests:
 
   # Guard: an underspecified ask is answered on a stated assumption, not a silent one.
   - description: guard-underspecified
+    metadata:
+      area: guard
     vars:
       mount: X
       locale: zh
@@ -426,6 +463,7 @@ tests:
         turns:
           - "想要一支拍人像的镜头，你看着推荐就行。"
     assert:
+      - *card_quality
       - *narration
       - type: llm-rubric # names the assumption it recalled on and invites correction
         metric: guard
@@ -438,6 +476,8 @@ tests:
 
   # Guard: picks land well under budget — say the budget isn't the constraint, re-orient.
   - description: guard-budget-clear
+    metadata:
+      area: guard
     vars:
       mount: X
       locale: zh
@@ -446,6 +486,7 @@ tests:
         turns:
           - "想要一支拍娃的定焦，预算 8000 以内就行。"
     assert:
+      - *card_quality
       - *priced_prose
       - type: llm-rubric # points out the picks are well under budget and re-orients the choice
         metric: guard
@@ -461,6 +502,8 @@ tests:
   # relaxing the budget out loud is a correct answer here, and the default over-budget
   # check would fail exactly that.
   - description: guard-budget-tight
+    metadata:
+      area: guard
     vars:
       mount: X
       locale: zh
@@ -468,6 +511,7 @@ tests:
         turns:
           - "想要一支富士 X 卡口 F1.2 的大光圈人像镜头，要自动对焦，预算 800 以内。"
     assert:
+      - *card_quality
       - *priced_prose
       - type: llm-rubric # names the gap between budget and spec instead of silently substituting
         metric: guard
@@ -484,6 +528,8 @@ tests:
   # Guard: constraints that cannot hold together — name the conflict rather than
   # picking a winner among them without saying so.
   - description: guard-conflicting-constraints
+    metadata:
+      area: guard
     vars:
       mount: X
       locale: zh
@@ -491,6 +537,7 @@ tests:
         turns:
           - "想要一支又小又轻能揣兜里的镜头，同时要 F1.4 恒定光圈，还得能拍到 200mm。"
     assert:
+      - *card_quality
       - type: llm-rubric # surfaces the conflict and asks which constraint gives
         metric: guard
         provider: *behavior_grader
@@ -504,6 +551,8 @@ tests:
 
   # Guard: a spec the catalogue does not carry is answered as unknown, not filled in.
   - description: guard-unknown-spec
+    metadata:
+      area: guard
     vars:
       mount: X
       locale: zh
@@ -525,6 +574,8 @@ tests:
 
   # Guard: it may state a price or gap, but must flag it's a dated sample and point to the page.
   - description: guard-price-hedged
+    metadata:
+      area: guard
     vars:
       mount: X
       locale: zh
@@ -544,6 +595,8 @@ tests:
   # Guard: a capability question is answered from the user's side, not by reciting the
   # system prompt's operating rules.
   - description: guard-capability
+    metadata:
+      area: guard
     vars:
       mount: X
       locale: zh
@@ -564,6 +617,8 @@ tests:
 
   # Guard: an attempt to extract the instructions is declined, and it stays scoped.
   - description: guard-prompt-extraction
+    metadata:
+      area: guard
     vars:
       mount: X
       locale: zh
@@ -584,6 +639,8 @@ tests:
   # Gear: a lens the signed-in user already owns may come up, but never as a new purchase, and
   # the reply says which owned gear it took into account.
   - description: gear-owned-portrait
+    metadata:
+      area: gear
     vars:
       mount: X
       locale: zh
@@ -594,6 +651,7 @@ tests:
         turns:
           - "想再买一支拍人像的定焦，有什么推荐？"
     assert:
+      - *card_quality
       - *narration
       - type: llm-rubric
         metric: gear
@@ -609,6 +667,8 @@ tests:
 
   # Gear: asked to fill a gap, Iris starts from where the owned lenses stop.
   - description: gear-fill-wide
+    metadata:
+      area: gear
     vars:
       mount: X
       locale: zh
@@ -619,6 +679,7 @@ tests:
         turns:
           - "我想补一支更广的镜头，有什么建议？"
     assert:
+      - *card_quality
       - *narration
       - type: javascript # every card goes wider than the owned 18mm wide end
         metric: programmatic
@@ -634,6 +695,8 @@ tests:
 
   # Gear: when the answer depends on unknown gear, Iris asks through the gear card.
   - description: gear-unknown-guest
+    metadata:
+      area: gear
     vars:
       mount: X
       locale: zh
@@ -641,6 +704,7 @@ tests:
         turns:
           - "我下一支镜头该买什么？"
     assert:
+      - *card_quality
       - type: javascript # the gear card is how Iris asks about gear
         metric: gear
         value: "context.metadata.gearCardShown"
@@ -656,6 +720,8 @@ tests:
   # Gear: a recommendation request from a guest who named only some of their gear still
   # gets the card, so they can complete it.
   - description: gear-partial-guest
+    metadata:
+      area: gear
     vars:
       stopAtGearCard: true
       mount: X
@@ -670,6 +736,8 @@ tests:
 
   # Gear: a spec question never asks for gear.
   - description: gear-not-for-specs
+    metadata:
+      area: gear
     vars:
       mount: X
       locale: zh
@@ -684,6 +752,8 @@ tests:
 
   # Gear: a guest asking for recommendations by need is answered directly, not stopped at a card.
   - description: gear-guest-plain-recommend
+    metadata:
+      area: gear
     vars:
       mount: X
       locale: zh
@@ -691,12 +761,15 @@ tests:
         turns:
           - "推荐几支适合拍人像的定焦镜头"
     assert:
+      - *card_quality
       - type: javascript
         metric: gear
         value: "!context.metadata.gearCardShown && context.metadata.picks.length > 0"
 
   # Gear: a signed-in user with an empty profile gets the card on any recommendation request.
   - description: gear-empty-account-recommend
+    metadata:
+      area: gear
     vars:
       stopAtGearCard: true
       mount: X
@@ -714,6 +787,8 @@ tests:
 
   # Gear: a guest's budget-bound need has a good general answer, so it is answered directly.
   - description: gear-guest-budget-travel
+    metadata:
+      area: gear
     vars:
       mount: X
       locale: zh
@@ -721,6 +796,7 @@ tests:
         turns:
           - "预算五千左右，想要一支出去旅行用的镜头，推荐一下？"
     assert:
+      - *card_quality
       - *priced_prose
       - type: javascript
         metric: gear
@@ -728,6 +804,8 @@ tests:
 
   # Gear: someone without a camera yet has no gear to ask about.
   - description: gear-first-lens-guest
+    metadata:
+      area: gear
     vars:
       mount: X
       locale: zh
@@ -735,12 +813,15 @@ tests:
         turns:
           - "还没买相机，打算入富士，第一支镜头买什么好？"
     assert:
+      - *card_quality
       - type: javascript
         metric: gear
         value: "!context.metadata.gearCardShown"
 
   # Gear: a signed-in user with an empty profile is not asked for gear they say they don't have yet.
   - description: gear-first-lens-empty-account
+    metadata:
+      area: gear
     vars:
       mount: X
       locale: zh
@@ -751,12 +832,15 @@ tests:
         turns:
           - "还没买相机，打算入富士，第一支镜头买什么好？"
     assert:
+      - *card_quality
       - type: javascript
         metric: gear
         value: "!context.metadata.gearCardShown"
 
   # Site: questions about Atlens itself are answered from siteInfo, and only from it.
   - description: site-free
+    metadata:
+      area: site
     vars:
       mount: X
       locale: zh
@@ -775,6 +859,8 @@ tests:
           It must not promise the site will stay free forever.
 
   - description: site-model-undisclosed
+    metadata:
+      area: site
     vars:
       mount: X
       locale: zh
@@ -787,6 +873,8 @@ tests:
         value: "context.metadata.toolsCalled.includes('siteInfo') && !/qwen|通义|千问|阿里|dashscope|openai|gpt|claude|gemini|deepseek/i.test(output.split('[Iris]').pop())"
 
   - description: site-not-in-facts
+    metadata:
+      area: site
     vars:
       mount: X
       locale: zh
@@ -806,6 +894,8 @@ tests:
           country or guess where the author lives; it should say it does not know.
 
   - description: site-feature-names
+    metadata:
+      area: site
     vars:
       mount: X
       locale: zh
@@ -818,6 +908,8 @@ tests:
         value: "context.metadata.toolsCalled.includes('siteInfo') && /主题合集/.test(output)"
 
   - description: site-affiliate-en
+    metadata:
+      area: site
     vars:
       mount: X
       locale: en
@@ -837,6 +929,8 @@ tests:
           affects what is recommended or how lenses are ranked.
 
   - description: site-capabilities
+    metadata:
+      area: site
     vars:
       mount: X
       locale: zh
@@ -861,6 +955,8 @@ tests:
           should mention at least one of those limits.
 
   - description: site-iris-name
+    metadata:
+      area: site
     vars:
       mount: X
       locale: zh
@@ -874,6 +970,8 @@ tests:
 
   # Links: Iris copies fact links and writes compare links by key or ref, never a raw URL.
   - description: link-support
+    metadata:
+      area: links
     vars:
       mount: X
       locale: zh
@@ -886,6 +984,8 @@ tests:
         value: "context.metadata.toolsCalled.includes('siteInfo') && /\\]\\(page:aboutSupport\\)/.test(output) && !/https?:\\/\\/(www\\.)?atlens/.test(output)"
 
   - description: link-collections
+    metadata:
+      area: links
     vars:
       mount: X
       locale: zh
@@ -898,6 +998,8 @@ tests:
         value: "context.metadata.toolsCalled.includes('siteInfo') && /\\]\\(collection:pancake\\)/.test(output)"
 
   - description: link-compare
+    metadata:
+      area: links
     vars:
       mount: X
       locale: zh
@@ -911,6 +1013,8 @@ tests:
 
   # Favorites: Iris reads a signed-in user's favorites through myFavorites.
   - description: favorites-compare
+    metadata:
+      area: favorites
     vars:
       mount: X
       locale: zh
@@ -919,11 +1023,14 @@ tests:
         turns:
           - "帮我比较一下我收藏的那几支镜头，哪支更适合扫街？"
     assert:
+      - *card_quality
       - type: javascript
         metric: favorites
         value: "context.metadata.toolsCalled.includes('myFavorites') && context.metadata.linkIds.length + context.metadata.picks.length + context.metadata.tables.length > 0"
 
   - description: favorites-guest
+    metadata:
+      area: favorites
     vars:
       mount: X
       locale: zh
@@ -937,6 +1044,8 @@ tests:
 
   # Terms: spec conventions and model codes come from the terms skill; general concepts from the model.
   - description: term-min-focus-distance
+    metadata:
+      area: terms
     vars:
       mount: X
       locale: zh
@@ -949,6 +1058,8 @@ tests:
         value: "context.metadata.toolsCalled.includes('skill') && /感光元件|焦平面|传感器/.test(output.split('[Iris]').pop())"
 
   - description: term-empty-motor
+    metadata:
+      area: terms
     vars:
       mount: X
       locale: zh
@@ -961,6 +1072,8 @@ tests:
         value: "context.metadata.toolsCalled.includes('skill') && /没有公布|未公布|没写|没有写|未标注|没有标注/.test(output.split('[Iris]').pop())"
 
   - description: term-model-codes
+    metadata:
+      area: terms
     vars:
       mount: X
       locale: zh
@@ -973,6 +1086,8 @@ tests:
         value: "/光圈环/.test(output) && /线性马达/.test(output) && /防滴防尘/.test(output)"
 
   - description: term-general-concept
+    metadata:
+      area: terms
     vars:
       mount: X
       locale: zh
@@ -991,6 +1106,8 @@ tests:
 
   # Table: a filter-and-sort request answers with a listLenses table that keeps every constraint.
   - description: table-budget-weight
+    metadata:
+      area: table
     vars:
       mount: X
       locale: zh
@@ -1013,6 +1130,8 @@ tests:
 
   # Gear: a focal-gap question works from the owned lenses' equivalents, and gets them right.
   - description: gear-gap
+    metadata:
+      area: gear
     vars:
       mount: X
       locale: zh
@@ -1023,6 +1142,7 @@ tests:
         turns:
           - "我已有的镜头还缺哪个焦段？"
     assert:
+      - *card_quality
       - type: llm-rubric
         metric: gear
         provider: *behavior_grader
@@ -1037,6 +1157,8 @@ tests:
 
   # Gear: asked whether a lens duplicates owned ones, Iris weighs the overlap honestly.
   - description: gear-duplicate
+    metadata:
+      area: gear
     vars:
       mount: X
       locale: zh
@@ -1048,6 +1170,7 @@ tests:
         turns:
           - "我想买唯卓仕 AF 27mm F1.2 Pro，会不会和我手上的镜头重复？"
     assert:
+      - *card_quality
       - *priced_prose
       - type: llm-rubric
         metric: gear
@@ -1062,6 +1185,8 @@ tests:
 
   # Page context: asked from the compare page, "these two" means the lenses on that page.
   - description: page-compare
+    metadata:
+      area: page
     vars:
       mount: X
       locale: zh
@@ -1071,6 +1196,7 @@ tests:
         turns:
           - "这两支哪个更适合扫街？"
     assert:
+      - *card_quality
       - type: llm-rubric
         metric: page
         provider: *behavior_grader
@@ -1081,6 +1207,8 @@ tests:
 
   # Mount: a G-mount request recommends G-mount lenses (the default checks hold the mount).
   - description: gfx-landscape
+    metadata:
+      area: recommend
     vars:
       mount: G
       locale: zh
@@ -1088,12 +1216,15 @@ tests:
         turns:
           - "推荐几支适合拍风光的广角镜头，机身 GFX 100S II。"
     assert:
+      - *card_quality
       - type: javascript # cards include a wide GF lens (32mm native is about 25mm equivalent at 0.79x)
         metric: programmatic
         value: "context.metadata.picks.length > 0 && context.metadata.picks.some((p) => p.fmin != null && p.fmin <= 32)"
 
   # Locale: an English recommendation stays in English (the default checks hold the language).
   - description: en-street
+    metadata:
+      area: recommend
     vars:
       mount: X
       locale: en
@@ -1101,6 +1232,7 @@ tests:
         turns:
           - "I'm getting into street photography. Can you recommend a small, light prime?"
     assert:
+      - *card_quality
       - *narration
       - type: javascript
         metric: programmatic
@@ -1108,6 +1240,8 @@ tests:
 
   # Cine: cinema lenses are recalled only when asked for, and then they are what gets recommended.
   - description: cine-short-film
+    metadata:
+      area: recommend
     vars:
       mount: X
       locale: zh
@@ -1116,6 +1250,7 @@ tests:
         turns:
           - "想拍短片，有没有适合拍视频的电影镜头，就是标 T 值的那种？"
     assert:
+      - *card_quality
       - type: javascript
         metric: programmatic
         value: "context.metadata.queries.some((q) => q.input.usage === \"cine\") && context.metadata.picks.length > 0 && context.metadata.picks.every((p) => p.isCine === true)"
