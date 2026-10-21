@@ -103,11 +103,12 @@ export function getAgentModel({ provider, modelId, reasoning }: AgentModelChoice
       return google(modelId);
     case "zhipu":
       // Reasoning is on unless disabled: 14.8s to first token instead of 0.8s, on every step.
+      // GLM-5.3-Flash accepts only "enabled".
       return createOpenAICompatible({
         name: "zhipu",
         baseURL: "https://open.bigmodel.cn/api/paas/v4",
         apiKey: process.env.ZHIPU_API_KEY,
-        transformRequestBody: (args) => ({ ...args, thinking: { type: "disabled" } }),
+        transformRequestBody: (args) => ({ ...args, thinking: { type: reasoning === "off" ? "disabled" : "enabled" } }),
       }).chatModel(modelId);
     case "dashscope":
       // Reasoning is on unless disabled, adding ~10s to first token on every step.

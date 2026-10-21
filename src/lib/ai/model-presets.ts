@@ -22,6 +22,7 @@ export const AGENT_MODEL_PRESETS = [
   { id: "gpt-6-luna-or-low", label: "GPT-6 Luna via OpenRouter · effort low", provider: "openrouter", modelId: "openai/gpt-6-luna", reasoning: "low" },
   { id: "deepseek-flash", label: "DeepSeek V4.1 Flash · no reasoning", provider: "deepseek", modelId: "deepseek-flash", reasoning: "off" },
   { id: "deepseek-flash-on", label: "DeepSeek V4.1 Flash · reasoning", provider: "deepseek", modelId: "deepseek-flash", reasoning: "on" },
+  { id: "glm-5.3-flash", label: "GLM-5.3-Flash · reasoning (always on)", provider: "zhipu", modelId: "glm-5.3-flash", reasoning: "on" },
 ] as const satisfies readonly AgentModelPreset[];
 
 export type AgentModelPresetId = (typeof AGENT_MODEL_PRESETS)[number]["id"];
