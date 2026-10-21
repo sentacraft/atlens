@@ -57,7 +57,7 @@ const transport = new DefaultChatTransport({
   }),
 });
 
-// A case's `gear` var ({ bodies, lenses } catalog ids) and `favorites` var (catalog ids, newest
+// A case's `gear` var ({ bodies, lenses } catalog ids) and `favorites` var ({ lenses } catalog ids, newest
 // first) stand in for a signed-in user's profile. The dev server honors these headers; production
 // builds ignore them.
 const EVAL_GEAR_HEADER = "x-askiris-eval-gear";
@@ -72,8 +72,9 @@ function profileHeaders(vars) {
   if (vars?.gear) {
     headers[EVAL_GEAR_HEADER] = JSON.stringify(vars.gear);
   }
-  if (vars?.favorites) {
-    headers[EVAL_FAVORITES_HEADER] = JSON.stringify(vars.favorites);
+  // `{ lenses: [...] }`, an object for the same reason `dialog` is: a list var matrix-expands.
+  if (vars?.favorites?.lenses) {
+    headers[EVAL_FAVORITES_HEADER] = JSON.stringify(vars.favorites.lenses);
   }
   return headers;
 }
@@ -285,6 +286,8 @@ export default class AskIrisProvider {
     const messages = [];
     const convo = [];
     const recalledEver = new Set();
+    // Lenses shown on a card or table row in any turn: a later turn may link back to them.
+    const shownEver = new Set();
     let gearCardShown = false;
     let d = digest(null);
     for (let i = 0; i < turns.length; i++) {
@@ -303,6 +306,9 @@ export default class AskIrisProvider {
         d = digest(assistant);
         for (const ref of d.recalledRefs) {
           recalledEver.add(ref);
+        }
+        for (const id of [...d.picks.map((p) => p.id), ...d.tables.flatMap((t) => t.ids)]) {
+          shownEver.add(id);
         }
         convo.push(`[Iris]\n${d.output}`);
       }
@@ -323,6 +329,7 @@ export default class AskIrisProvider {
         linkIds: linkRefs.map((ref) => REF_TO_ID.get(ref) ?? ref),
         unknownLinkIds: [...new Set(linkRefs.filter((ref) => !REF_TO_ID.has(ref)))],
         compareLinks,
+        shownIds: [...shownEver],
         picks: d.picks,
         pickGroups: d.pickGroups,
         tables: d.tables,

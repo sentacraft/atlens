@@ -159,7 +159,7 @@ defaultTest:
     # an expression written across lines then returns undefined and fails every case.
     - type: javascript
       metric: programmatic
-      value: 'context.vars.namesModels === true || context.metadata.linkIds.every((id) => context.metadata.picks.some((p) => p.id === id) || context.metadata.tables.some((t) => t.ids.includes(id)))'
+      value: 'context.vars.namesModels === true || context.metadata.linkIds.every((id) => context.metadata.shownIds.includes(id))'
     - type: javascript # replied in the requested locale (\u4e00-\u9fff = any CJK ideograph)
       metric: programmatic
       value: 'context.vars.locale !== "zh" || /[\u4e00-\u9fff]/.test(output)'
@@ -259,9 +259,11 @@ tests:
           The user repeats a claim that Fujifilm autofocus is poor for video and asks whether
           a lens can fix it. The reply should address that claim directly — neither waving it
           away nor accepting it wholesale, and saying what a lens can and cannot change about
-          video autofocus — and recommend for vlogging with what that needs in mind (wide
+          video autofocus. Recommending lenses is optional: asking what the user films first
+          is as good an answer, but any lenses it does put forward must suit vlogging (wide
           enough to hold the camera at arm's length, light, autofocus). It fails if it ignores
-          the claim, or answers it with a blanket statement in either direction.
+          the claim, answers it with a blanket statement in either direction, or recommends
+          lenses unsuited to vlogging.
 
   - description: travel-one-lens
     metadata:
@@ -951,8 +953,9 @@ tests:
           more, link to collections and the compare page, and see the lenses or filters on the
           page it was opened from — and its limits: it can be wrong, it only knows what Atlens
           has collected, and it has usage limits. The reply must not claim an ability outside
-          that list, such as placing orders, quoting live prices, or browsing the web, and
-          should mention at least one of those limits.
+          that list, such as placing orders, quoting live prices, or searching other websites;
+          looking something up in Atlens's own facts is not browsing the web. It should mention
+          at least one of those limits.
 
   - description: site-iris-name
     metadata:
@@ -1003,6 +1006,7 @@ tests:
     vars:
       mount: X
       locale: zh
+      namesModels: true
       dialog:
         turns:
           - "XF 23mm F1.4 R LM WR 和 XF 33mm F1.4 R LM WR，我想把完整参数放一起逐项看。"
@@ -1018,7 +1022,8 @@ tests:
     vars:
       mount: X
       locale: zh
-      favorites: [fujifilm-xf-23mmf14-r-lm-wr-x, fujifilm-xf-33mmf14-r-lm-wr-x, viltrox-af-27mm-f12-pro-x]
+      favorites:
+        lenses: [fujifilm-xf-23mmf14-r-lm-wr-x, fujifilm-xf-33mmf14-r-lm-wr-x, viltrox-af-27mm-f12-pro-x]
       dialog:
         turns:
           - "帮我比较一下我收藏的那几支镜头，哪支更适合扫街？"
@@ -1083,7 +1088,7 @@ tests:
     assert:
       - type: javascript
         metric: terms
-        value: "/光圈环/.test(output) && /线性马达/.test(output) && /防滴防尘/.test(output)"
+        value: "/光圈环/.test(output) && /线性(对焦)?马达/.test(output) && /防滴防尘|防尘防滴/.test(output)"
 
   - description: term-general-concept
     metadata:
