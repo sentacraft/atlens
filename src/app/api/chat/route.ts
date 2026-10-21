@@ -24,7 +24,8 @@ import { findAgentModelPreset, MODEL_PRESET_HEADER } from "@/lib/ai/model-preset
 import { describeGear, EVAL_GEAR_HEADER, evalGear, type GearStatus } from "@/lib/ai/gear-context";
 import { EVAL_FAVORITES_HEADER, evalFavorites } from "@/lib/ai/favorites";
 import { listUserFavorites } from "@/lib/me/favorites-repository";
-import { ASK_FOR_GEAR, gearRequestDeclined } from "@/lib/ai/gear-request";
+import { ASK_FOR_GEAR, gearCardDecline } from "@/lib/ai/gear-request";
+import { SIGN_IN_DECLINED, SIGN_IN_GATED_TOOL_NAMES, signInApproval } from "@/lib/ai/sign-in-gate";
 import { listUserGear } from "@/lib/me/gear-repository";
 import { buildLensTools, seedRecalledRefs } from "@/lib/ai/tools";
 import { hasRepeatedToolFailure, withRepeatedFailureNotice } from "@/lib/ai/repeated-tool-failure";
@@ -147,6 +148,9 @@ export async function POST(req: NextRequest) {
       })
     : null;
   const gearStatus = await loadGearStatus(req, appDb, userId, isAccount);
+  const gearSummary = describeGear(gearStatus, brandName);
+  const testFavorites =
+    process.env.NODE_ENV === "production" ? undefined : evalFavorites(req.headers.get(EVAL_FAVORITES_HEADER));
   // Filled once the history is resolved below; validate needs the tools before that.
   const recalledRefs = new Set<string>();
   const tools = withRepeatedFailureNotice(
@@ -154,7 +158,10 @@ export async function POST(req: NextRequest) {
       mount,
       locale,
       brandName,
-      () => loadFavorites(req, appDb, userId, isAccount),
+      {
+        favorites: () => loadFavorites(testFavorites, appDb, userId, isAccount),
+        gear: gearSummary,
+      },
       recalledRefs,
     ),
   );
@@ -192,7 +199,11 @@ export async function POST(req: NextRequest) {
     console.error("[askiris] failed to load conversation", error);
     return chatErrorResponse("unavailable", 500);
   }
-  const turn = resolveTurn(stored, incoming.data[0], previousMessageId, [ASK_FOR_GEAR]);
+  const turn = resolveTurn(stored, incoming.data[0], previousMessageId, {
+    clientTools: [ASK_FOR_GEAR],
+    approvalTools: SIGN_IN_GATED_TOOL_NAMES,
+    deniedReason: SIGN_IN_DECLINED,
+  });
   if (turn.kind === "invalid") {
     return chatErrorResponse("unavailable", 400);
   }
@@ -201,8 +212,8 @@ export async function POST(req: NextRequest) {
   for (const ref of pageLensRefs(pageContext)) {
     recalledRefs.add(ref);
   }
-  const offerGearCard =
-    !(gearStatus.kind === "account" && gearStatus.gear.length > 0) && !gearRequestDeclined(history);
+  const gearDeclined = gearCardDecline(history);
+  const offerGearCard = !(gearStatus.kind === "account" && gearStatus.gear.length > 0) && !gearDeclined;
   const messageContext = traceMessageContext(history);
   const analyticsConversationId = await anonymizeId(
     conversationId,
@@ -264,13 +275,14 @@ export async function POST(req: NextRequest) {
       { role: "system", content: systemPrompt(mount, locale) },
       {
         role: "system",
-        content: gearPrompt(describeGear(gearStatus, brandName), { cardAvailable: offerGearCard }),
+        content: gearPrompt(gearSummary, { declined: gearDeclined }),
       },
       ...(pageContext ? [{ role: "system" as const, content: pagePrompt(pageContext) }] : []),
     ],
     messages: modelMessages,
     tools,
     activeTools: offerGearCard ? undefined : toolNamesWithout(tools, ASK_FOR_GEAR),
+    toolApproval: signInApproval(gearStatus.kind === "account" || testFavorites !== undefined),
     stopWhen: stepCountIs(STEP_BUDGET),
     // req.signal only fires on Workers with the enable_request_signal compatibility flag.
     abortSignal: AbortSignal.any([req.signal, AbortSignal.timeout(STREAM_TIMEOUT_MS)]),
@@ -409,13 +421,11 @@ async function loadGearStatus(
 }
 
 async function loadFavorites(
-  req: Request,
+  testFavorites: string[] | undefined,
   appDb: D1Database,
   userId: string,
   isAccount: boolean,
 ): Promise<string[] | null> {
-  const testFavorites =
-    process.env.NODE_ENV === "production" ? undefined : evalFavorites(req.headers.get(EVAL_FAVORITES_HEADER));
   if (testFavorites) {
     return testFavorites;
   }

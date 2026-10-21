@@ -4,13 +4,18 @@ import { ASK_IRIS_PATH } from "@/lib/url/routes";
 export const ASKIRIS_PARAMS = {
   question: "q",
   conversation: "conversation",
+  // On any page but the Ask Iris page: the conversation to reopen in the panel on load.
+  panelConversation: "iris",
 } as const;
 
 /** What an entry hands Iris: a question to send at once, or just the page the entry sits on. */
-export type IrisRequest = { kind: "question"; text: string } | { kind: "page" };
+export type IrisRequest =
+  | { kind: "question"; text: string }
+  | { kind: "page" }
+  | { kind: "conversation"; conversationId: string };
 
 /** Where Iris was opened from: the nav, the home hero, or a page's entry. */
-export type IrisEntryPoint = "nav" | "home" | "lens" | "alternatives" | "browse" | "empty" | "compare";
+export type IrisEntryPoint = "nav" | "home" | "lens" | "alternatives" | "browse" | "empty" | "compare" | "sign_in";
 
 /** How the Ask Iris page opens: a stored conversation, or a question that starts a new one. */
 export interface AskIrisEntry {
@@ -84,6 +89,27 @@ export const DETACHED_CONVERSATION_LOCATION: ConversationLocation = {
   write: () => {},
   followsHistory: false,
 };
+
+/**
+ * This page, set to reopen the panel on `conversationId` when it loads: where a sign-in that
+ * leaves the page (Google) brings the user back, so a turn paused for it carries on.
+ */
+export function panelReturnUrl(conversationId: string): string {
+  const url = new URL(window.location.href);
+  url.searchParams.set(ASKIRIS_PARAMS.panelConversation, conversationId);
+  return url.toString();
+}
+
+/** Reads and drops the panel's conversation param, so a reload does not reopen it again. */
+export function takePanelConversationParam(): string | null {
+  const url = new URL(window.location.href);
+  const conversationId = url.searchParams.get(ASKIRIS_PARAMS.panelConversation) || null;
+  if (conversationId) {
+    url.searchParams.delete(ASKIRIS_PARAMS.panelConversation);
+    window.history.replaceState(null, "", url.toString());
+  }
+  return conversationId;
+}
 
 /** Drops the one-off question param; `conversation` stays, as it names the open conversation. */
 export function clearEntryParams(): void {

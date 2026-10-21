@@ -29,6 +29,7 @@ import {
 import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { useNav } from "@/context/NavProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
+import SignInBenefits from "@/components/auth/SignInBenefits";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
 import Avatar from "@/components/auth/Avatar";
 import DeleteAccountDialog from "@/components/auth/DeleteAccountDialog";
@@ -69,13 +70,13 @@ function SignInPrompt() {
   const t = useTranslations("Profile");
   const openSignIn = useSignInDialog();
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center gap-3 px-5 py-24 text-center">
+    <div className="mx-auto flex max-w-md flex-col gap-4 px-5 py-24">
       <h1 className="font-heading text-2xl font-bold text-zinc-900">{t("signInTitle")}</h1>
-      <p className="text-sm text-zinc-500">{t("signInBody")}</p>
+      <SignInBenefits source="profile" className="text-sm" />
       <button
         type="button"
         onClick={() => openSignIn("profile")}
-        className={cn(ACTION_PRIMARY_CLS, "mt-3 h-10 rounded-lg px-5 text-sm font-medium")}
+        className={cn(ACTION_PRIMARY_CLS, "mt-2 h-10 self-start rounded-lg px-6 text-sm font-medium")}
       >
         {t("signIn")}
       </button>

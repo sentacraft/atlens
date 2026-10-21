@@ -14,9 +14,17 @@ vi.mock("@/i18n/navigation", () => ({
 vi.mock("@/hooks/useViewport", () => ({ useBreakpoint: () => env.wide }));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
 vi.mock("@/components/iris-panel/IrisPanel", () => ({
-  default: ({ layout, shown, request }: { layout: string; shown: boolean; request: { kind: string; text?: string } | null }) => (
+  default: ({
+    layout,
+    shown,
+    request,
+  }: {
+    layout: string;
+    shown: boolean;
+    request: { kind: string; text?: string; conversationId?: string } | null;
+  }) => (
     <div data-testid="panel" data-layout={layout} data-shown={String(shown)}>
-      {request?.text}
+      {request?.text ?? request?.conversationId}
     </div>
   ),
 }));
@@ -27,6 +35,7 @@ afterEach(() => {
   env.wide = true;
   env.pathname = "/lenses/x/browse";
   document.documentElement.style.removeProperty("--iris-panel-width");
+  window.history.replaceState(null, "", "/");
 });
 
 function Ask() {
@@ -56,6 +65,17 @@ function renderProvider() {
 }
 
 describe("IrisPanelProvider", () => {
+  it("reopens the panel on the conversation a sign-in left the page from, once", () => {
+    // Google sign-in leaves the page and comes back to it fresh; the panel's state was only in memory.
+    window.history.replaceState(null, "", "/lenses/x/browse?mount=x&iris=conv-1");
+    renderProvider();
+
+    expect(screen.getByTestId("panel")).toHaveAttribute("data-shown", "true");
+    expect(screen.getByTestId("panel")).toHaveTextContent("conv-1");
+    expect(window.location.search).toBe("?mount=x");
+    expect(track).toHaveBeenLastCalledWith("askiris_open", { entry: "sign_in", surface: "panel", pool: undefined });
+  });
+
   it("opens the side panel on a wide screen, makes room for it, and sends the question there", () => {
     render(
       <IrisPanelProvider>

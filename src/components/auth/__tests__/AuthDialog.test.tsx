@@ -8,20 +8,30 @@ vi.mock("@/lib/auth-client", () => ({ authClient: {} }));
 
 afterEach(cleanup);
 
+function benefits() {
+  return within(screen.getByRole("list")).getAllByRole("listitem").map((item) => item.textContent);
+}
+
 describe("AuthDialog", () => {
-  it("leads with the action's own benefit when opened for a reason", async () => {
-    render(<AuthDialog open reason="gear" onOpenChange={() => {}} />);
+  it("titles the dialog for the action and leads with its own benefit", async () => {
+    render(<AuthDialog open source="gear" onOpenChange={() => {}} />);
 
     expect(await screen.findByRole("heading", { name: "reasonGearTitle" })).toBeInTheDocument();
-    const benefits = within(screen.getByRole("list")).getAllByRole("listitem").map((item) => item.textContent);
-    expect(benefits).toEqual(["benefitGear", "benefitFavorites", "benefitSync"]);
+    expect(benefits()).toEqual(["benefitGear", "benefitFavorites", "benefitChats"]);
     expect(screen.getByRole("button", { name: "continueWithGoogle" })).toBeInTheDocument();
   });
 
-  it("keeps the generic title without a reason", async () => {
-    render(<AuthDialog open onOpenChange={() => {}} />);
+  it("pitches the same three benefits from a plain sign-in button, under the generic title", async () => {
+    render(<AuthDialog open source="account_menu" onOpenChange={() => {}} />);
 
     expect(await screen.findByRole("heading", { name: "title" })).toBeInTheDocument();
-    expect(screen.queryByRole("list")).toBeNull();
+    expect(benefits()).toEqual(["benefitFavorites", "benefitGear", "benefitChats"]);
+  });
+
+  it("leads with kept chats where Iris offers the sign-in", async () => {
+    render(<AuthDialog open source="iris_history" onOpenChange={() => {}} />);
+
+    expect(await screen.findByRole("heading", { name: "reasonChatsTitle" })).toBeInTheDocument();
+    expect(benefits()[0]).toBe("benefitChats");
   });
 });

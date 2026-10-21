@@ -1,10 +1,12 @@
 import { describe, it, expect } from "vitest";
 import type { UIMessage } from "ai";
-import { buildLensTools, seedRecalledRefs } from "../tools";
+import { buildLensTools, type AccountData, seedRecalledRefs } from "../tools";
 import { getLensesByMount } from "@/lib/lens/data";
 import { lensRef } from "../lens-ref";
 
-const tools = buildLensTools("X", "zh", (brand) => brand, async () => null, new Set());
+const GUEST: AccountData = { favorites: async () => null, gear: { known: false, reason: "guest" } };
+
+const tools = buildLensTools("X", "zh", (brand) => brand, GUEST, new Set());
 
 // The AI SDK types `execute` as optional and passes call options every tool here ignores.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,7 +44,7 @@ describe("a recall tool's gate accepts exactly what it returned", () => {
     ],
     ["searchLensByName", { query: "35" }, (out: { results: { ref: string }[] }) => out.results],
   ])("%s", async (name, input, pick) => {
-    const tools = buildLensTools("X", "zh", (brand) => brand, async () => null, new Set());
+    const tools = buildLensTools("X", "zh", (brand) => brand, GUEST, new Set());
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const refs = pick(await run((tools as any)[name], input)).map((lens) => lens.ref);
     expect(refs.length).toBeGreaterThan(0);
@@ -103,21 +105,17 @@ describe("myFavorites", () => {
   const X_FAVORITES = ["fujifilm-xf-23mmf14-r-lm-wr-x", "fujifilm-xf-33mmf14-r-lm-wr-x"];
   const G_FAVORITE = "fujifilm-gf-45mmf28-r-wr-g";
 
-  it("tells a guest to sign in, with the sign-in link ready to copy", async () => {
-    expect(await run(tools.myFavorites, {})).toEqual({
-      status: "not_signed_in",
-      signInLink: expect.stringMatching(/^\[.+\]\(action:signIn\)$/),
-    });
+  it("refuses to run without an account, which the sign-in gate keeps from happening", async () => {
+    await expect(run(tools.myFavorites, {})).rejects.toThrow(/not signed in/);
   });
 
   it("returns the current mount's favorites in order, counts the rest, and opens the gate for their refs", async () => {
-    const withFavorites = buildLensTools("X", "zh", (brand) => brand, async () => [
+    const withFavorites = buildLensTools("X", "zh", (brand) => brand, { ...GUEST, favorites: async () => [
       ...X_FAVORITES,
       G_FAVORITE,
       "no-such-lens",
-    ], new Set());
+    ] }, new Set());
     const out = await run(withFavorites.myFavorites, {});
-    expect(out.status).toBe("ok");
     expect(out.total).toBe(2);
     expect(out.otherMounts).toEqual([{ mount: "G", count: 1 }]);
     const refs = out.results.map((lens: { ref: string }) => lens.ref);
@@ -134,7 +132,7 @@ describe("myFavorites", () => {
 
 describe("queryLenses with several constraint sets", () => {
   it("recalls each set separately, in order, and gates every ref it returned", async () => {
-    const tools = buildLensTools("X", "zh", (brand) => brand, async () => null, new Set());
+    const tools = buildLensTools("X", "zh", (brand) => brand, GUEST, new Set());
 
     const out = await run(tools.queryLenses, {
       queries: [{ type: "zoom", minReach: 200 }, { type: "prime", maxWeightG: 200 }],
@@ -155,7 +153,7 @@ describe("queryLenses with several constraint sets", () => {
 
 describe("refs recalled earlier in the conversation", () => {
   async function priorTurn(): Promise<{ history: UIMessage[]; recalled: string[] }> {
-    const earlier = buildLensTools("X", "zh", (brand) => brand, async () => null, new Set());
+    const earlier = buildLensTools("X", "zh", (brand) => brand, GUEST, new Set());
     const input = { queries: [{ type: "prime" as const }] };
     const output = await run(earlier.queryLenses, input);
     const recalled = output.results[0].matches.slice(0, 3).map((lens: { ref: string }) => lens.ref);
@@ -177,7 +175,7 @@ describe("refs recalled earlier in the conversation", () => {
   function toolsSeededFrom(history: UIMessage[]) {
     const recalledRefs = new Set<string>();
     seedRecalledRefs(recalledRefs, history);
-    return buildLensTools("X", "zh", (brand) => brand, async () => null, recalledRefs);
+    return buildLensTools("X", "zh", (brand) => brand, GUEST, recalledRefs);
   }
 
   it("accepts a ref a recall tool returned in an earlier turn", async () => {
@@ -217,5 +215,27 @@ describe("refs recalled earlier in the conversation", () => {
     const tools = toolsSeededFrom(pending);
 
     expect(() => run(tools.lensDetails, { refs: [recalled[0]] })).toThrow(/was not returned/);
+  });
+});
+
+describe("myGear", () => {
+  it("returns the saved gear and opens the gate for its lens refs", async () => {
+    const [lens] = getLensesByMount("X", "zh");
+    const ref = lensRef(lens.id);
+    const tools = buildLensTools("X", "zh", (brand) => brand, {
+      ...GUEST,
+      gear: { known: true, bodies: [{ name: "Fujifilm X-T5" }], lenses: [{ name: lens.model, ref, manual: false, adapted: false }] },
+    }, new Set());
+
+    const out = await run(tools.myGear, {});
+
+    expect(out.bodies).toEqual([{ name: "Fujifilm X-T5" }]);
+    expect((await run(tools.lensDetails, { refs: [ref] })).lenses).toHaveLength(1);
+  });
+
+  it("reads an empty profile as nothing saved, and refuses to run for a guest", async () => {
+    const empty = buildLensTools("X", "zh", (brand) => brand, { ...GUEST, gear: { known: false, reason: "empty" } }, new Set());
+    expect(await run(empty.myGear, {})).toEqual({ bodies: [], lenses: [] });
+    await expect(run(tools.myGear, {})).rejects.toThrow(/not signed in/);
   });
 });

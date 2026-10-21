@@ -6,8 +6,8 @@ import { track } from "@/lib/analytics/analytics";
 
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
 vi.mock("@/components/auth/AuthDialog", () => ({
-  default: ({ open, reason }: { open: boolean; reason?: string }) => (
-    <div data-testid="dialog" data-open={String(open)} data-reason={reason ?? ""} />
+  default: ({ open, source }: { open: boolean; source: string }) => (
+    <div data-testid="dialog" data-open={String(open)} data-source={source} />
   ),
 }));
 
@@ -40,13 +40,13 @@ describe("SignInDialogProvider", () => {
     const dialog = open("account_menu");
 
     expect(track).toHaveBeenCalledWith("sign_in_open", { reason: "general", entry: "account_menu" });
-    expect(dialog.dataset).toMatchObject({ open: "true", reason: "" });
+    expect(dialog.dataset).toMatchObject({ open: "true", source: "account_menu" });
   });
 
   it("records an action as the reason and titles the dialog for it", () => {
     const dialog = open("favorite");
 
     expect(track).toHaveBeenCalledWith("sign_in_open", { reason: "favorite" });
-    expect(dialog.dataset.reason).toBe("favorite");
+    expect(dialog.dataset.source).toBe("favorite");
   });
 });

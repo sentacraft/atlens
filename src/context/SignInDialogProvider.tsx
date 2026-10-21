@@ -1,23 +1,27 @@
 "use client";
 
 import { createContext, useContext, useMemo, useState } from "react";
-import AuthDialog, { type SignInReason } from "@/components/auth/AuthDialog";
+import AuthDialog from "@/components/auth/AuthDialog";
+import { SIGN_IN_ACTIONS, type SignInSource } from "@/lib/sign-in-pitch";
 import { track } from "@/lib/analytics/analytics";
 
-/** What opened the dialog: an action that needs an account, or a plain sign-in button by where it sits. */
-export type SignInSource = SignInReason | "account_menu" | "profile" | "iris_history" | "iris_reply" | "iris_top_bar";
-
-type OpenSignIn = (source: SignInSource) => void;
+/** `returnTo` is where a sign-in that leaves the page (Google) comes back to; this page by default. */
+type OpenSignIn = (source: SignInSource, options?: { returnTo?: string }) => void;
 
 const SignInDialogContext = createContext<OpenSignIn>(() => {});
 
+export type { SignInSource };
+
 export function SignInDialogProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<{ open: boolean; reason?: SignInReason }>({ open: false });
+  const [state, setState] = useState<{ open: boolean; source: SignInSource; returnTo?: string }>({
+    open: false,
+    source: "account_menu",
+  });
   const openSignIn = useMemo<OpenSignIn>(
-    () => (source) => {
-      const reason = source === "favorite" || source === "gear" ? source : undefined;
-      track("sign_in_open", reason ? { reason } : { reason: "general", entry: source });
-      setState({ open: true, reason });
+    () => (source, options) => {
+      const action = (SIGN_IN_ACTIONS as readonly SignInSource[]).includes(source);
+      track("sign_in_open", action ? { reason: source } : { reason: "general", entry: source });
+      setState({ open: true, source, returnTo: options?.returnTo });
     },
     [],
   );
@@ -26,14 +30,15 @@ export function SignInDialogProvider({ children }: { children: React.ReactNode }
       {children}
       <AuthDialog
         open={state.open}
-        reason={state.reason}
+        source={state.source}
+        returnTo={state.returnTo}
         onOpenChange={(open) => setState((prev) => ({ ...prev, open }))}
       />
     </SignInDialogContext>
   );
 }
 
-/** Opens the sign-in dialog; an action source adds a title and the benefits of an account for that action. */
+/** Opens the sign-in dialog, titled and pitched for where it was opened from. */
 export function useSignInDialog(): OpenSignIn {
   return useContext(SignInDialogContext);
 }

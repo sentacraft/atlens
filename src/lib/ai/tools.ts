@@ -19,8 +19,7 @@ import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@
 import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
 import { SKILL_NAMES, readSkill } from "@/lib/ai/skills";
 import { favoritesOnMount } from "@/lib/ai/favorites";
-import { factLinkMarkdown } from "@/lib/askiris/inline-links";
-import { fillUiStrings } from "@/lib/ui-strings";
+import type { GearSummary } from "@/lib/ai/gear-context";
 
 const RECALL_LIMIT = 20;
 
@@ -135,6 +134,7 @@ const RECALL_OUTPUT_REFS: Record<string, (output: never) => unknown[]> = {
     ]),
   searchLensByName: (output: { results?: RefList }) => (output.results ?? []).map((lens) => lens.ref),
   myFavorites: (output: { results?: RefList }) => (output.results ?? []).map((lens) => lens.ref),
+  myGear: (output: { lenses?: RefList }) => (output.lenses ?? []).map((lens) => lens.ref),
 };
 
 /** Adds every ref a recall tool returned in `messages` to `recalledRefs`. */
@@ -154,8 +154,14 @@ export function seedRecalledRefs(recalledRefs: Set<string>, messages: UIMessage[
   }
 }
 
+/** What the user saved to their account, for the tools that read it. */
+export interface AccountData {
+  /** Favorite lens ids, newest first, or null for a guest. */
+  favorites: () => Promise<string[] | null>;
+  gear: GearSummary;
+}
+
 /**
- * `readFavorites` resolves to the user's favorite lens ids, newest first, or null for a guest.
  * `recalledRefs` gates every tool that takes a ref; the recall tools add to it, and
  * `seedRecalledRefs` adds the refs they returned earlier in the conversation.
  */
@@ -163,7 +169,7 @@ export function buildLensTools(
   mount: Mount,
   locale: string,
   tBrand: (brand: string) => string,
-  readFavorites: () => Promise<string[] | null>,
+  account: AccountData,
   recalledRefs: Set<string>,
 ) {
 
@@ -230,16 +236,37 @@ export function buildLensTools(
         "refers to lenses they favorited or saved. The refs work with every other tool, like a recall result.",
       inputSchema: z.object({}),
       execute: async () => {
-        const ids = await readFavorites();
+        const ids = await account.favorites();
+        // Unreachable through the sign-in gate, which pauses a guest's call until they sign in.
         if (ids === null) {
-          return { status: "not_signed_in" as const, signInLink: fillUiStrings(factLinkMarkdown("action:signIn"), locale) };
+          throw new Error("The user is not signed in.");
         }
         const { lenses, otherMounts } = favoritesOnMount(ids, mount, locale);
         const results = lenses.slice(0, RECALL_LIMIT).map((lens) => toRecalled(resolveLens(lens, locale, tBrand)));
         for (const lens of results) {
           recalledRefs.add(lens.ref);
         }
-        return { status: "ok" as const, results, total: lenses.length, otherMounts };
+        return { results, total: lenses.length, otherMounts };
+      },
+    }),
+
+    myGear: tool({
+      description:
+        "The camera bodies and lenses the user saved to their gear. Call it when the user asks what they own. " +
+        "Lens refs work with every other tool.",
+      inputSchema: z.object({}),
+      execute: async () => {
+        const { gear } = account;
+        if (!gear.known && gear.reason !== "empty") {
+          throw new Error(gear.reason === "guest" ? "The user is not signed in." : "The user's gear could not be read.");
+        }
+        const { bodies, lenses } = gear.known ? gear : { bodies: [], lenses: [] };
+        for (const lens of lenses) {
+          if (lens.ref) {
+            recalledRefs.add(lens.ref);
+          }
+        }
+        return { bodies, lenses };
       },
     }),
 
@@ -364,7 +391,8 @@ export function buildLensTools(
       description:
         "Show the user a card to add the camera bodies and lenses they own, before recommending, as the user-gear " +
         "note describes. List any lens or body they mentioned so the card can prefill it. The turn waits for the " +
-        "result: saved (gear now in the note), skipped, or not_signed_in; if not saved, recommend without their gear.",
+        "result: saved (gear now in the note), skipped, or not_signed_in (a guest chose to tell you in chat instead of " +
+        "signing in); the user-gear note then says how to go on.",
       inputSchema: gearRequestInputSchema,
       outputSchema: gearRequestOutputSchema,
     }),

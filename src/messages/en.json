@@ -35,7 +35,6 @@
   "Auth": {
     "login": "Log in",
     "title": "Sign in to Atlens",
-    "description": "Create an account to keep your Ask Iris experience available across devices.",
     "continueWithGoogle": "Continue with Google",
     "or": "or",
     "emailLabel": "Email",
@@ -65,9 +64,10 @@
     "profile": "My profile",
     "reasonFavoriteTitle": "Sign in to favorite this lens",
     "reasonGearTitle": "Sign in to record your gear",
+    "reasonChatsTitle": "Sign in to keep your chats",
     "benefitFavorites": "Save lenses you're interested in and come back to compare them",
-    "benefitGear": "Record your bodies and lenses and see which focal lengths you cover and which you're missing",
-    "benefitSync": "Favorites, gear, settings and Ask Iris chats stay with your account on every device"
+    "benefitGear": "Iris remembers your gear and recommends with it in mind",
+    "benefitChats": "Your chats with Iris are kept; without an account, only for 7 days"
   },
   "AuthEmail": {
     "signInSubject": "Your Atlens sign-in code",
@@ -99,7 +99,6 @@
     "deleteLabel": "Delete account",
     "deleteHint": "We'll email you a confirmation link. Opening it permanently removes your account, gear, favorites and Ask Iris conversations.",
     "signInTitle": "Sign in to see your profile",
-    "signInBody": "Your profile keeps your settings and works on every device you sign in on.",
     "signIn": "Sign in",
     "gearTitle": "My gear",
     "bodies": "Bodies",
@@ -205,11 +204,6 @@
     "closeHistory": "Close conversations",
     "historyEmpty": "No conversations yet. Questions you ask Iris are saved here.",
     "historyError": "Couldn’t load your conversations.",
-    "historySignInTitle": "Sign in to keep your chats",
-    "historySignInKeep": "Chats kept for good, not 7 days",
-    "historySignInGear": "Iris recommends with the bodies and lenses you own in mind",
-    "historySignInFavorites": "Save lenses Iris recommends and come back to compare them",
-    "historySignIn": "Sign in",
     "conversationActions": "More actions for “{title}”",
     "renameConversation": "Rename",
     "deleteConversation": "Delete",
@@ -242,12 +236,25 @@
       "saving": "Saving…",
       "saved": "Saved to My gear",
       "skipped": "Gear skipped this time",
-      "notSignedIn": "Continued without signing in",
-      "signInTitle": "Sign in so Iris remembers your gear",
-      "signIn": "Sign in",
-      "notNow": "Not now, I'll tell Iris",
       "savedItems": "Saved to My gear: {items}",
       "unanswered": "Gear not added"
+    },
+    "signInCard": {
+      "leadIn": {
+        "gear": "Your gear lives in your account, so I can see it once you sign in.",
+        "favorites": "Your favorites live in your account, so I can see them once you sign in."
+      },
+      "title": {
+        "gear": "Sign in so Iris remembers your gear",
+        "favorites": "Sign in so Iris can see your favorite lenses"
+      },
+      "signIn": "Sign in",
+      "notNow": {
+        "gear": "Not now, I'll tell Iris",
+        "favorites": "Not now"
+      },
+      "declined": "Continued without signing in",
+      "signedIn": "Signed in"
     },
     "responseFeedback": {
       "prompt": "Was this answer helpful?",
