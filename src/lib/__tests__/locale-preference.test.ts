@@ -11,8 +11,24 @@ describe("savedLocaleRedirectPath", () => {
     expect(savedLocaleRedirectPath("/", "ja")).toBeUndefined();
   });
 
-  it("lets a localized URL win over the saved language", () => {
-    expect(savedLocaleRedirectPath("/en/about", "zh")).toBeUndefined();
+  it("moves a URL in another language to the saved language", () => {
+    expect(savedLocaleRedirectPath("/en/about", "zh")).toBe("/zh/about");
+    expect(savedLocaleRedirectPath("/en", "zh")).toBe("/zh");
+    expect(savedLocaleRedirectPath("/zh/lens/xf-23mm", "en")).toBe("/en/lens/xf-23mm");
+  });
+
+  it("leaves a URL already in the saved language alone", () => {
+    expect(savedLocaleRedirectPath("/zh/about", "zh")).toBeUndefined();
+  });
+
+  it("leaves localized URLs alone without a valid saved language", () => {
+    expect(savedLocaleRedirectPath("/en/about", undefined)).toBeUndefined();
+    expect(savedLocaleRedirectPath("/en/about", "ja")).toBeUndefined();
+  });
+
+  it("leaves paths without a locale segment to next-intl", () => {
+    expect(savedLocaleRedirectPath("/offline", "zh")).toBeUndefined();
+    expect(savedLocaleRedirectPath("/english", "zh")).toBeUndefined();
   });
 });
 
