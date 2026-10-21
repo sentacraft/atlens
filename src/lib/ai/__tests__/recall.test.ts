@@ -236,3 +236,33 @@ describe("recallLenses · one-sided focal-reach bounds (minReach / maxWide)", ()
     expect(ids).not.toContain("fujifilm-xf-18-55mmf28-4-r-lm-ois-x"); // [18,55] never reaches 150
   });
 });
+
+describe("recallLenses · null leaves an axis unrestricted", () => {
+  it("recalls the same lenses when every unused field is null as when it is left out", () => {
+    const set: LensConstraints = { type: "prime", focalWithin: { max: 18 }, maxApertureF: { wide: 2 } };
+    const nulled: LensConstraints = {
+      ...set,
+      brands: null,
+      focus: null,
+      usage: null,
+      features: null,
+      opticalTraits: null,
+      coversFocals: null,
+      focalWithin: { min: null, max: 18 },
+      minReach: null,
+      maxWide: null,
+      maxWeightG: null,
+      maxLengthMm: null,
+      maxApertureF: { wide: 2, tele: null },
+      maxPrice: null,
+      minMagnification: null,
+      minApertureBladeCount: null,
+      minReleaseYear: null,
+      sortBy: null,
+    };
+
+    const expected = recall(set, ALL);
+    expect(expected.matches.length).toBeGreaterThan(0);
+    expect(recall(nulled, ALL)).toEqual(expected);
+  });
+});

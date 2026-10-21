@@ -17,6 +17,8 @@ vi.mock("next-intl", () => {
 });
 const openIris = vi.hoisted(() => vi.fn());
 vi.mock("@/context/IrisPanelProvider", () => ({ useIris: () => ({ openIris, closeIris: vi.fn(), irisShown: false }) }));
+const openSignIn = vi.hoisted(() => vi.fn());
+vi.mock("@/context/SignInDialogProvider", () => ({ useSignInDialog: () => openSignIn }));
 const push = vi.hoisted(() => vi.fn());
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 vi.mock("@/i18n/navigation", () => ({ Link: (props: object) => <a {...props} /> }));
@@ -28,10 +30,10 @@ vi.mock("@/context/TestHookProvider", () => ({
   useTestHookOption: () => undefined,
 }));
 
-const auth = vi.hoisted(() => ({ order: [] as string[] }));
+const auth = vi.hoisted(() => ({ order: [] as string[], account: undefined as { id: string } | undefined }));
 vi.mock("@/lib/auth-client", () => ({
-  authClient: { useSession: () => ({ data: null, isPending: false }) },
-  accountUser: () => undefined,
+  authClient: { useSession: () => ({ data: auth.account ? { user: auth.account } : null, isPending: false }) },
+  accountUser: () => auth.account,
   ensureSession: vi.fn(async () => {
     auth.order.push("ensureSession");
     return true;
@@ -83,8 +85,9 @@ function renderChat(shell: AskIrisShell = { variant: "page", entry: {}, starterS
   return { ...result, rerenderChat: (next: AskIrisShell) => result.rerender(view(next)) };
 }
 
+const expandedChange = vi.hoisted(() => vi.fn());
 const panel = (pagePath: string, request: AskIrisShell & { variant: "panel" } extends { request: infer R } ? R : never = null) =>
-  ({ variant: "panel", pagePath, request, onClose: () => {} }) as const;
+  ({ variant: "panel", pagePath, request, onClose: () => {}, expanded: false, onExpandedChange: expandedChange }) as const;
 
 function captureChatBodies() {
   const bodies: Record<string, unknown>[] = [];
@@ -212,7 +215,7 @@ describe("AskIrisChat send", () => {
     expect(track).toHaveBeenCalledWith("askiris_message", { method: "starter", pool: "terms" });
   });
 
-  it("starts a new conversation when an entry on another page opens the panel, and tells a guest how long the old one is kept", async () => {
+  it("starts a new conversation when an entry on another page opens the panel, and says where the old one went", async () => {
     const bodies = captureChatBodies();
     const { container, rerenderChat } = renderChat(panel("/en/lenses/x/browse"));
     submit(container, "Which lens?");
@@ -220,7 +223,7 @@ describe("AskIrisChat send", () => {
 
     rerenderChat(panel("/en/lenses/x/xf-56", { id: 1, kind: "page" }));
 
-    expect(await screen.findByText("newConversationGuest")).toBeInTheDocument();
+    expect(await screen.findByText("newConversation")).toBeInTheDocument();
     expect(screen.queryByText("Which lens?")).toBeNull();
     expect(screen.getByText("lookingAt")).toBeInTheDocument();
     expect(track).toHaveBeenCalledWith("askiris_new_conversation", { reason: "page_change" });
@@ -235,7 +238,7 @@ describe("AskIrisChat send", () => {
     rerenderChat(panel("/en/lenses/x/browse?t=prime", { id: 1, kind: "page" }));
 
     expect(screen.getByText("Which lens?")).toBeInTheDocument();
-    expect(screen.queryByText("newConversationGuest")).toBeNull();
+    expect(screen.queryByText("newConversation")).toBeNull();
   });
 
   it("sends a question from another page in a new conversation", async () => {
@@ -251,42 +254,45 @@ describe("AskIrisChat send", () => {
     expect(bodies[1].id).not.toBe(bodies[0].id);
   });
 
-  it("takes the unsent input and the page along to the full-screen page", () => {
+  it("asks a visitor without an account to sign in from the top bar", () => {
     captureChatBodies();
-    const { container } = renderChat(panel("/en/lenses/x/xf-56"));
+    renderChat(panel("/en/lenses/x/xf-56"));
+
+    fireEvent.click(screen.getByRole("button", { name: "signInToKeepChats" }));
+    expect(openSignIn).toHaveBeenCalledWith("iris_top_bar");
+  });
+
+  it("shows no sign-in prompt to an account", () => {
+    captureChatBodies();
+    auth.account = { id: "user-1" };
+    try {
+      renderChat(panel("/en/lenses/x/xf-56"));
+      expect(screen.getByRole("button", { name: "history" })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "signInToKeepChats" })).toBeNull();
+    } finally {
+      auth.account = undefined;
+    }
+  });
+
+  it("expands the panel to open History", () => {
+    captureChatBodies();
+    renderChat(panel("/en/lenses/x/xf-56"));
+
+    fireEvent.click(screen.getByRole("button", { name: "history" }));
+    expect(expandedChange).toHaveBeenLastCalledWith(true);
+  });
+
+  it("expands in place from the full-screen button, keeping the unsent input", () => {
+    captureChatBodies();
+    const { container, rerenderChat } = renderChat(panel("/en/lenses/x/xf-56"));
     fireEvent.change(container.querySelector("form input")!, { target: { value: "And the 50mm?" } });
 
-    const href = screen.getByRole("link", { name: "fullScreen" }).getAttribute("href")!;
-    const params = new URL(href, "https://atlens.test").searchParams;
-    expect(params.get("draft")).toBe("And the 50mm?");
-    expect(params.get("from")).toBe("/en/lenses/x/xf-56");
-  });
+    fireEvent.click(screen.getByRole("button", { name: "fullScreen" }));
+    expect(expandedChange).toHaveBeenLastCalledWith(true);
 
-  it("keeps sending the page a phone entry came from, on the Ask Iris page", async () => {
-    const bodies = captureChatBodies();
-    const { container } = renderChat({
-      variant: "page",
-      entry: { question: "Help me find one", from: "/en/lenses/x/browse?t=zoom" },
-      starterSeed: 1,
-    });
-
-    await waitFor(() => expect(bodies).toHaveLength(1));
-    submit(container, "Lighter, please");
-    await waitFor(() => expect(bodies).toHaveLength(2));
-    expect(bodies.map((body) => body.page)).toEqual(["/en/lenses/x/browse?t=zoom", "/en/lenses/x/browse?t=zoom"]);
-  });
-
-  it("goes back to the page it came from and reopens the conversation in the panel", async () => {
-    captureChatBodies();
-    renderChat({ variant: "page", entry: { question: "What is it for?", from: "/en/lenses/x/xf-56" }, starterSeed: 1 });
-    await screen.findByText("What is it for?");
-
-    fireEvent.click(screen.getByRole("button", { name: "backTo" }));
-
-    expect(push).toHaveBeenCalledWith("/en/lenses/x/xf-56");
-    expect(openIris).toHaveBeenCalledWith({
-      from: "resume",
-      request: expect.objectContaining({ kind: "resume", from: "/en/lenses/x/xf-56" }),
-    });
+    rerenderChat({ ...panel("/en/lenses/x/xf-56"), expanded: true });
+    expect(container.querySelector("form input")).toHaveValue("And the 50mm?");
+    fireEvent.click(screen.getByRole("button", { name: "exitFullScreen" }));
+    expect(expandedChange).toHaveBeenLastCalledWith(false);
   });
 });

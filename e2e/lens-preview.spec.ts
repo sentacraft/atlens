@@ -40,4 +40,23 @@ test.describe("Lens preview", () => {
     await expect(preview).toBeHidden();
     await expect(page).toHaveURL(new RegExp(`${BROWSE}$`));
   });
+
+  test("collapses expanded Iris so the preview shows beside it", async ({ page }, testInfo) => {
+    const viewport = page.viewportSize();
+    testInfo.skip(!viewport || viewport.width < 1024, "The side panel is for screens 1024px and wider");
+
+    await page.goto(BROWSE);
+    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    const panel = page.getByRole("complementary", { name: "Iris" });
+    const panelLeft = () => panel.evaluate((aside) => aside.getBoundingClientRect().left);
+    await panel.getByRole("button", { name: "Open full screen" }).click();
+    await expect.poll(panelLeft).toBe(0);
+
+    await page.evaluate((lens) => window.history.pushState(null, "", `${window.location.pathname}?lens=${lens}`), LENS);
+    const preview = page.getByRole("dialog", { name: "Fujifilm XF 23mm F2 R WR" });
+    await expect(preview).toBeVisible();
+    await expect
+      .poll(async () => (await preview.evaluate((el) => el.getBoundingClientRect().right)) <= (await panelLeft()))
+      .toBe(true);
+  });
 });
