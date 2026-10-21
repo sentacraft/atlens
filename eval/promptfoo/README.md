@@ -24,11 +24,25 @@ Every case is a paid agent conversation (several model steps, ~14k input tokens 
 every LLM-graded assertion is a paid judge call. Run as little as answers the question:
 
 - Batch prompt edits and evaluate them together, not after each tweak.
-- While iterating, run only the cases the change affects (`--filter-pattern`), once. Repeat
-  (`--repeat 2`) only to confirm a result before pushing, or to tell a regression from noise.
-- Run the full suite once per PR, when the prompt work is done.
+- While iterating, run only the area the change touches, once:
+  `--filter-metadata area=<area>`, where each case's `metadata.area` is one of `recommend`,
+  `guard`, `gear`, `site`, `links`, `favorites`, `terms`, `table`, `page`
+  (`--filter-pattern` still picks single cases by name).
+- Run the full suite once per PR when prompt or tool work is done, and when switching models.
+- After a run, rerun only what failed (`--filter-failing <eval id or results file>`), not the
+  whole suite. The judges take no temperature, so a single verdict can flip on a borderline
+  reply: rerun a lone failure before reading it as a regression, and use `--repeat 2` only to
+  tell a regression from noise.
+- With a DeepSeek preset, run outside its peak hours (Beijing time, weekdays 9:00–12:00 and
+  14:00–18:00): every token costs half.
 - Check in Vitest whatever code decides (which note or tools a turn gets); the eval is only
-  for what the model decides.
+  for what the model decides. Within the eval, write a `javascript` assertion whenever the
+  check is mechanical (a number in the reply, a tool called, a card's field); a judge call
+  costs money on every run and can flip, so keep judges for what code cannot decide.
+- Judges are attached where they can fail, not run everywhere: the card standard
+  (`*card_quality`) only on cases whose reply can carry cards, and the two observed rubrics
+  (`*narration`, `*priced_prose`) on a fixed sample. A new case sets `metadata.area`, and
+  opts into `*card_quality` if its reply can recommend.
 - A case that grades only whether the gear card showed sets `stopAtGearCard`, so it does not
   pay for the recommendation after the card.
 
