@@ -21,7 +21,6 @@ import {
 
 interface TestHookContextValue {
   state: TestHookState;
-  setTestHook: (enabled: boolean) => void;
   setOption: (key: string, value: string) => void;
   reset: () => void;
   buildShareableLink: () => string;
@@ -107,8 +106,6 @@ export function TestHookProvider({ children }: { children: ReactNode }) {
   const value: TestHookContextValue = useMemo(
     () => ({
       state,
-      setTestHook: (enabled) =>
-        update((prev) => ({ ...prev, testHook: enabled })),
       setOption: (key, val) =>
         update((prev) => ({
           ...prev,

@@ -1,4 +1,5 @@
 import type { ReadonlyURLSearchParams } from "next/navigation";
+import { AGENT_MODEL_PRESETS, DEFAULT_AGENT_MODEL_PRESET } from "@/lib/ai/model-presets";
 
 // Internal params: keep the Obsidian doc "Internal params & cookies" in sync.
 export const TESTHOOK_QUERY_KEYS = {
@@ -173,6 +174,18 @@ export const TESTHOOK_OPTION_DEFINITIONS: readonly TestHookOptionDefinition[] = 
       { id: "off", label: "Off", description: "Hide the agent trace." },
       { id: "on", label: "On", description: "Show each tool call and its result." },
     ],
+  },
+  {
+    key: "askIrisModel",
+    section: "askiris",
+    label: "Model",
+    description: "The model Iris answers with in this browser. The deployed site always uses the first one.",
+    defaultValue: DEFAULT_AGENT_MODEL_PRESET.id,
+    values: AGENT_MODEL_PRESETS.map((preset) => ({
+      id: preset.id,
+      label: preset.label,
+      description: `${preset.provider}:${preset.modelId}`,
+    })),
   },
 ];
 

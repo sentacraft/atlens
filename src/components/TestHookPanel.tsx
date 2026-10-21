@@ -1,6 +1,7 @@
 "use client";
 
 import { useContext, useEffect, useState, useSyncExternalStore } from "react";
+import { FlaskConical, Minus } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ import {
 } from "@/components/askiris/fixtureStore";
 import { TestHookContext, useTestHookEnabled } from "@/context/TestHookProvider";
 import { TESTHOOK_OPTION_DEFINITIONS } from "@/lib/testhook";
+import { TEST_PROMPTS } from "@/lib/askiris/test-prompts";
 import type { AgentModelInfo } from "@/lib/ai/model";
 import {
   REDACTION_KEYS,
@@ -54,17 +56,54 @@ function ModelReadout({ model }: { model: AgentModelInfo }) {
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500">
-        Model
+        Server default
       </span>
       <div className="flex flex-col gap-0.5 rounded-md border border-input px-2 py-1.5 font-mono text-[11px] leading-5">
         <div className="text-zinc-900">
           {model.provider}:{model.modelId}
         </div>
         <div className="text-zinc-500">
-          temperature {model.temperature} ·{" "}
+          temperature {model.temperature ?? "unset"} ·{" "}
           {model.overridden ? "AGENT_MODEL override" : "deployed default"}
         </div>
       </div>
+    </div>
+  );
+}
+
+function TestPromptList() {
+  const [copied, setCopied] = useState<string | null>(null);
+
+  function copy(key: string, text: string) {
+    navigator.clipboard.writeText(text);
+    setCopied(key);
+    setTimeout(() => setCopied((current) => (current === key ? null : current)), 1500);
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500">
+        Test prompts
+      </span>
+      <ul className="flex flex-col gap-2">
+        {TEST_PROMPTS.map((prompt) => (
+          <li key={prompt.label} className="rounded-md border border-input px-2 py-1.5">
+            <div className="text-xs font-medium text-zinc-900">{prompt.label}</div>
+            {(["zh", "en"] as const).map((lang) => {
+              const key = `${prompt.label}:${lang}`;
+              return (
+                <div key={lang} className="mt-1 flex items-start gap-2">
+                  <span className="mt-0.5 w-5 shrink-0 font-mono text-[10px] uppercase text-zinc-400">{lang}</span>
+                  <span className="min-w-0 flex-1 text-xs leading-5 text-zinc-600">{prompt[lang]}</span>
+                  <Button size="xs" variant="outline" onClick={() => copy(key, prompt[lang])}>
+                    {copied === key ? "Copied" : "Copy"}
+                  </Button>
+                </div>
+              );
+            })}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -145,22 +184,42 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
   const enabled = useTestHookEnabled();
   const [copied, setCopied] = useState(false);
   const [tab, setTab] = useState<TabId>("routes");
+  const [collapsed, setCollapsed] = useState(false);
   useEffect(() => {
     const saved = sessionStorage.getItem("testhook-tab");
     if (saved && TABS.some((t) => t.id === saved)) {
       setTab(saved as TabId);
     }
+    setCollapsed(sessionStorage.getItem("testhook-collapsed") === "1");
   }, []);
   const selectTab = (id: TabId) => {
     setTab(id);
     sessionStorage.setItem("testhook-tab", id);
+  };
+  const collapse = (next: boolean) => {
+    setCollapsed(next);
+    sessionStorage.setItem("testhook-collapsed", next ? "1" : "0");
   };
 
   if (!context || !enabled) {
     return null;
   }
 
-  const { state, setOption, setTestHook, reset, buildShareableLink } = context;
+  const { state, setOption, reset, buildShareableLink } = context;
+
+  if (collapsed) {
+    return (
+      <button
+        type="button"
+        onClick={() => collapse(false)}
+        aria-label="Show test hooks"
+        title="Show test hooks"
+        className="fixed bottom-4 right-4 z-50 inline-flex size-10 items-center justify-center rounded-full border border-zinc-200/80 bg-white/95 text-zinc-600 shadow-lg backdrop-blur transition-colors hover:text-zinc-900"
+      >
+        <FlaskConical className="size-4" />
+      </button>
+    );
+  }
 
   const uiTweaks = TESTHOOK_OPTION_DEFINITIONS.filter((o) => o.section !== "askiris");
   const askIrisOptions = TESTHOOK_OPTION_DEFINITIONS.filter((o) => o.section === "askiris");
@@ -197,8 +256,9 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
         <Select
           value={current}
           onValueChange={(value) => setOption(option.key, value ?? "")}
+          items={option.values.map((value) => ({ value: value.id, label: value.label }))}
         >
-          <SelectTrigger className="h-10">
+          <SelectTrigger className="h-10 w-full">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -220,8 +280,8 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
     <aside className="fixed bottom-4 right-4 z-50 max-h-[calc(100dvh-2rem)] w-[min(24rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl border border-zinc-200/80 bg-white/95 p-4 shadow-xl backdrop-blur">
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm font-semibold text-zinc-900">Test hooks</p>
-        <Button size="sm" variant="ghost" onClick={() => setTestHook(false)}>
-          Hide
+        <Button size="icon-sm" variant="ghost" onClick={() => collapse(true)} aria-label="Minimize" title="Minimize">
+          <Minus />
         </Button>
       </div>
 
@@ -265,6 +325,7 @@ export default function TestHookPanel({ model }: { model: AgentModelInfo }) {
           <div className="space-y-4">
             <ModelReadout model={model} />
             {askIrisOptions.map(renderOption)}
+            <TestPromptList />
             <FixtureControl />
           </div>
         )}

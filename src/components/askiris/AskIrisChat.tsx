@@ -45,7 +45,7 @@ import { History, Maximize2, Minimize2, Plus, X } from "lucide-react";
 import AiTag from "@/components/iris/AiTag";
 import ConversationHistory from "@/components/askiris/ConversationHistory";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
-import { openChat } from "@/components/askiris/live-chats";
+import { openChat, setModelPreset } from "@/components/askiris/live-chats";
 
 type ConversationSwitch = { kind: "select"; id: string } | { kind: "new"; reason: "manual" | "page_change" };
 
@@ -93,6 +93,8 @@ export default function AskIrisChat({
   const locale = useLocale();
   const mount = useEffectiveMount();
   const debug = useTestHookOption("askIrisTrace") === "on";
+  const modelPreset = useTestHookOption("askIrisModel");
+  useEffect(() => setModelPreset(modelPreset), [modelPreset]);
   const [input, setInput] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
