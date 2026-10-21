@@ -1,0 +1,43 @@
+name: IndexNow
+
+# Tells IndexNow (Bing, Yandex) about changed pages once a production deploy is live. Cloudflare
+# Workers Builds reports each build as a check run; the one on main is the production deploy.
+# Run it by hand with "force" to submit every sitemap URL regardless of what changed.
+
+on:
+  check_run:
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Submit every sitemap URL, even if no content changed
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    name: Submit to IndexNow
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.check_run.name == 'Workers Builds: atlens' &&
+       github.event.check_run.conclusion == 'success' &&
+       github.event.check_run.check_suite.head_branch == 'main')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # check_run runs on main's latest commit; check out the one this build deployed.
+          ref: ${{ github.event.check_run.head_sha || github.sha }}
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - run: node scripts/indexnow.mjs
+        env:
+          BASE_URL: https://atlens.app
+          INDEXNOW_FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force && '1' || '' }}

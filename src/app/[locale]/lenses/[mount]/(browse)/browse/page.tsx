@@ -28,7 +28,7 @@ export async function generateMetadata({
 
   const lenses = getLensesByMount(resolvedMount, locale);
   const brandCount = new Set(lenses.map((l) => l.brand)).size;
-  const title = resolvedMount === "X" ? t("metaTitleX") : t("metaTitleG");
+  const title = resolvedMount === "X" ? t("metaTitleX", { count: lenses.length }) : t("metaTitleG", { count: lenses.length });
   const description =
     resolvedMount === "X"
       ? t("metaDescX", { count: lenses.length, brandCount })
