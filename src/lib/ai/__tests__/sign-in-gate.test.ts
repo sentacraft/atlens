@@ -13,7 +13,7 @@ describe("the sign-in gate", () => {
   });
 
   it("names the card's reason, and does not take inherited keys for tool names", () => {
-    expect(signInGate("myFavorites")).toBe("favorite");
+    expect(signInGate("myFavorites")).toBe("favorites");
     expect(signInGate("toString")).toBeUndefined();
   });
 });
