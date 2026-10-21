@@ -242,7 +242,7 @@
     "signInCard": {
       "leadIn": {
         "gear": "Your gear lives in your account, so I can see it once you sign in.",
-        "favorite": "Your favorites live in your account, so I can see them once you sign in."
+        "favorites": "Your favorites live in your account, so I can see them once you sign in."
       },
       "title": {
         "gear": "Sign in so Iris remembers your gear",
