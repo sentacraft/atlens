@@ -8,8 +8,8 @@ import { track } from "@/lib/analytics/analytics";
 import type { StarterPool } from "@/lib/askiris/starter-questions";
 import { askIrisPagePath, type IrisEntryPoint, type IrisRequest } from "@/lib/url/askiris";
 import { ASK_IRIS_PATH } from "@/lib/url/routes";
+import { IRIS_PANEL_WIDTH, PAGE_MAX_WIDTH } from "@/config/ui";
 
-export const IRIS_PANEL_WIDTH = 400;
 
 /** A request as the panel receives it; a new `id` hands it in again. */
 export type IrisPanelRequest = IrisRequest & { id: number };
@@ -82,7 +82,12 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
   const controls = useMemo(() => ({ openIris, closeIris, irisShown }), [openIris, closeIris, irisShown]);
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--iris-panel-width", shown && wide ? `${IRIS_PANEL_WIDTH}px` : "0px");
+    const beside = shown && wide;
+    const root = document.documentElement.style;
+    root.setProperty("--iris-panel-width", beside ? `${IRIS_PANEL_WIDTH}px` : "0px");
+    // The page keeps the left edge it had when centred in the full width, so it narrows from the
+    // right instead of re-centring, which slid wide pages to the left.
+    root.setProperty("--iris-page-start", beside ? `max(0px, (100% - ${PAGE_MAX_WIDTH}) / 2)` : "0px");
   }, [shown, wide]);
 
   return (

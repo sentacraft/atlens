@@ -73,6 +73,43 @@ test.describe("Ask Iris side panel", () => {
     await expect(history.getByRole("button", { name: "Sign in", exact: true })).toBeVisible();
   });
 
+  test("narrows the page from the right, keeping its left edge under the nav's", async ({ page }) => {
+    await page.setViewportSize({ width: 1680, height: 900 });
+    await page.goto("/en/lenses/x/browse");
+    // The page's centred shell, the same max-w-7xl container the nav sits in.
+    const edges = () =>
+      page.evaluate(() => {
+        const shell = [...document.querySelectorAll("[class*='max-w-7xl']")].find((el) => !el.closest("header"))!;
+        const box = shell.getBoundingClientRect();
+        return [Math.round(box.left), Math.round(box.right)];
+      });
+    const [leftBefore] = await edges();
+
+    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    const panel = page.getByRole("complementary", { name: "Iris" });
+    await expect(panel).toBeVisible();
+    await expect
+      .poll(async () => {
+        const [left, right] = await edges();
+        const panelLeft = await panel.evaluate((aside) => Math.round(aside.getBoundingClientRect().left));
+        return { keepsLeft: left === leftBefore, endsAtPanel: Math.abs(right - panelLeft) <= 1 };
+      })
+      .toEqual({ keepsLeft: true, endsAtPanel: true });
+  });
+
+  test("collapses when a nav link is clicked, even one to the page it covers", async ({ page }) => {
+    await page.goto("/en/lenses/x/browse");
+    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    const panel = page.getByRole("complementary", { name: "Iris" });
+    const panelLeft = () => panel.evaluate((aside) => aside.getBoundingClientRect().left);
+    await panel.getByRole("button", { name: "Open full screen" }).click();
+    await expect.poll(panelLeft).toBe(0);
+
+    await page.getByRole("banner").getByRole("link", { name: "Browse" }).click();
+    await expect.poll(panelLeft).toBeGreaterThan(0);
+    await expect(panel).toBeVisible();
+  });
+
   test("expands over the page in place, and Back or the button collapses it", async ({ page }) => {
     const browse = /\/en\/lenses\/x\/browse$/;
     await page.goto("/en/lenses/x/browse");

@@ -8,7 +8,7 @@ import { Drawer } from "@base-ui/react/drawer";
 import AskIrisChat from "@/components/askiris/AskIrisChat";
 import type { IrisPanelRequest } from "@/context/IrisPanelProvider";
 import { useCurrentPagePath } from "@/hooks/useCurrentPagePath";
-import { Z } from "@/config/ui";
+import { IRIS_PANEL_WIDTH, Z } from "@/config/ui";
 import { askIrisChatDataQuery } from "@/lib/askiris/chat-data";
 import { cn } from "@/lib/utils";
 
@@ -50,12 +50,17 @@ export default function IrisPanel({
     return (
       <aside
         aria-label="Iris"
-        hidden={!shown}
+        data-iris=""
+        // Expanding moves the left edge, so the width animates instead of jumping.
+        style={{ left: expanded ? 0 : `calc(100% - ${IRIS_PANEL_WIDTH}px)` }}
         className={cn(
           "fixed right-0 bottom-0 flex flex-col bg-white",
-          expanded ? "left-0" : "w-[var(--iris-panel-width)] border-l border-zinc-200",
+          !expanded && "border-l border-zinc-200",
           // --nav-height leaves out the nav's 1px bottom border, which the panel would cover: it stacks above the nav.
           "top-[calc(var(--nav-height)+1px)] pb-[var(--safe-inset-bottom)]",
+          // Hidden by sliding out, not `hidden`, so closing can animate; visibility keeps it out of focus and the accessibility tree once out.
+          "transition-[left,translate,visibility] duration-300 ease-out motion-reduce:transition-none starting:translate-x-full",
+          !shown && "invisible translate-x-full",
           Z.fixed,
         )}
       >
@@ -77,6 +82,7 @@ export default function IrisPanel({
           <Drawer.Viewport className="fixed inset-0">
             <Drawer.Popup
               aria-label="Iris"
+              data-iris=""
               className={cn(
                 "fixed inset-x-0 flex flex-col bg-white pb-[var(--safe-inset-bottom)] shadow-2xl ring-1 ring-zinc-200",
                 // iOS leaves fixed elements under the keyboard; the provider reports its height, and the
@@ -135,6 +141,28 @@ function useExpanded(shown: boolean) {
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
+  }, [expanded]);
+
+  // A link outside Iris (the nav, its menu) leads to a page Iris covers. One to the current page
+  // changes no path, so the pathname rule below would leave Iris over it; the link's own
+  // navigation pushes an entry, so the one pushed on expanding stays.
+  useEffect(() => {
+    if (!expanded) {
+      return;
+    }
+    const onClick = (event: MouseEvent) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+      const link = event.target instanceof Element ? event.target.closest("a[href]") : null;
+      if (!(link instanceof HTMLAnchorElement) || link.closest("[data-iris]") || link.target === "_blank" || link.origin !== window.location.origin) {
+        return;
+      }
+      pushedEntry.current = false;
+      setExpandedState(false);
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
   }, [expanded]);
 
   // Closing Iris collapses it, taking back the entry Back would have stepped over.
