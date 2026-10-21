@@ -4,6 +4,7 @@ import { parseFilters } from "@/lib/url/filter-params";
 import { COMPARE_IDS_PARAM, readCompareIds } from "@/lib/url/compare";
 import type { Mount } from "@/lib/types";
 import { routing } from "@/i18n/routing";
+import type { NamespaceTranslator } from "@/i18n/translator";
 
 /** A page Iris can talk about, read from its path. Lens ids are unchecked: callers look them up. */
 export type PageRef =
@@ -59,10 +60,8 @@ export function pageKey(page: PageRef | null): string | null {
 
 export interface FilterLabels {
   brand: (slug: string) => string;
-  /** The `LensList` namespace, where the filter panel's labels live. */
-  list: (key: string) => string;
-  /** The `SpecialtyBadge` namespace, for optical traits. */
-  badge: (key: string) => string;
+  list: NamespaceTranslator<"LensList">;
+  badge: NamespaceTranslator<"SpecialtyBadge">;
 }
 
 const FOCUS_LABEL = { auto: "focusAuto", manual: "focusManual" } as const;

@@ -17,7 +17,7 @@ import {
   weightDelta,
 } from "@/lib/lens/alternatives";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
-import { focalRangeDisplay, lensDisplayName, lensSubtitleLine, primaryApertureDisplay, weightDisplay } from "@/lib/lens/format";
+import { focalRangeDisplay, lensDisplayName, lensSubtitleLine, primaryApertureDisplay, weightDisplay, brandLabel } from "@/lib/lens/format";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import type { Lens } from "@/lib/types";
 import { lensPath } from "@/lib/url/routes";
@@ -121,7 +121,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
   const tBrand: BrandT = await getTranslations("Brands");
   const kind = lensKind(lens);
   const zoom = kind === "zoom";
-  const name = lensDisplayName(tBrand(lens.brand), lens.series, lens.model);
+  const name = lensDisplayName(brandLabel(tBrand, lens.brand), lens.series, lens.model);
   const span = focalSpan(zoom ? [lens] : [lens, ...alternatives]);
   const range = focalRangeDisplay(span.min, span.max);
   const hidden = alternatives.length - ALTERNATIVES_SHOWN;
@@ -160,7 +160,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
 
   const compareProps = (l: Lens) => ({
     lensId: l.id,
-    lensName: lensDisplayName(tBrand(l.brand), l.series, l.model),
+    lensName: lensDisplayName(brandLabel(tBrand, l.brand), l.series, l.model),
     currentId: lens.id,
     currentName: name,
   });
@@ -190,7 +190,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
             <td className="py-3 pr-2 pl-4">
               <span className="flex items-center gap-3">
                 <Thumb lens={lens} size="table" />
-                <LensName lens={lens} brand={tBrand(lens.brand)} current={t("current")} />
+                <LensName lens={lens} brand={brandLabel(tBrand, lens.brand)} current={t("current")} />
               </span>
             </td>
             {zoom && <td className="px-2 py-3">{focalRangeDisplay(lens.focalLengthMin, lens.focalLengthMax)}</td>}
@@ -207,7 +207,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
               <td className="py-3 pr-2 pl-4">
                 <Link href={lensPath(l)} prefetch={false} className="flex items-center gap-3 after:absolute after:inset-0 after:content-['']">
                   <Thumb lens={l} size="table" />
-                  <LensName lens={l} brand={tBrand(l.brand)} />
+                  <LensName lens={l} brand={brandLabel(tBrand, l.brand)} />
                 </Link>
               </td>
               {zoom && (
@@ -234,7 +234,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
         <li className="flex items-center gap-3 bg-zinc-50/80 px-4 py-3">
           <Thumb lens={lens} size="list" />
           <div className="flex min-w-0 flex-col gap-1">
-            <LensName lens={lens} brand={tBrand(lens.brand)} current={t("current")} />
+            <LensName lens={lens} brand={brandLabel(tBrand, lens.brand)} current={t("current")} />
             <span className="text-[13px] text-zinc-600">
               {[...(zoom ? [focalRangeDisplay(lens.focalLengthMin, lens.focalLengthMax)] : []), aperture(lens), weight(lens), phoneFeatures(lens)].join(" · ")}
             </span>
@@ -249,7 +249,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
             <Link href={lensPath(l)} prefetch={false} className="flex min-w-0 flex-1 items-center gap-3 after:absolute after:inset-0 after:content-['']">
               <Thumb lens={l} size="list" />
               <div className="flex min-w-0 flex-col gap-1">
-                <LensName lens={l} brand={tBrand(l.brand)} />
+                <LensName lens={l} brand={brandLabel(tBrand, l.brand)} />
                 <span className="text-[13px] text-zinc-600">{phoneNotes(l)}</span>
                 <div className="flex flex-wrap items-baseline gap-x-3 text-[13px] text-zinc-500">
                   <span>{phoneFeatures(l)}</span>

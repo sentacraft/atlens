@@ -4,7 +4,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { PurchaseLinksCompact, PurchaseDisclosureCaption } from "@/components/price/PurchaseLinks";
 import { PriceCell } from "@/components/price/PriceCell";
 import { pickPriceEntry } from "@/lib/lens/pricing";
-import { lensSubtitleLine } from "@/lib/lens/format";
+import { lensSubtitleLine, brandLabel } from "@/lib/lens/format";
 import { buildPurchaseLinks, shouldShowDisclosure } from "@/lib/purchase/links";
 import { useCountryCode } from "@/hooks/useCountryCode";
 import { useIsMobileDevice } from "@/hooks/useViewport";
@@ -52,7 +52,7 @@ export function CompareMobileBuyPanel({ lenses }: Props) {
               <div className="flex items-baseline justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
                   <span className="shrink-0 text-[10px] text-zinc-400">
-                    {lensSubtitleLine(tBrand(lens.brand), lens.series)}
+                    {lensSubtitleLine(brandLabel(tBrand, lens.brand), lens.series)}
                   </span>
                   <span className="truncate text-[12px] font-semibold text-zinc-900">
                     {lens.model}

@@ -3,7 +3,10 @@ import createNextIntlPlugin from 'next-intl/plugin';
 import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
 import { SITE } from './src/config/site';
 
-const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+const withNextIntl = createNextIntlPlugin({
+  requestConfig: './src/i18n/request.ts',
+  experimental: { createMessagesDeclaration: './src/messages/en.json' },
+});
 
 initOpenNextCloudflareForDev();
 

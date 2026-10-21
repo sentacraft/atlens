@@ -16,8 +16,9 @@ import { useShareCapabilities } from "@/hooks/useShareCapabilities";
 import { useLightbox } from "@/hooks/useLightbox";
 import { LightboxDialog } from "./LightboxDialog";
 import { CustomizePopover } from "./CustomizePopover";
-import { lensDisplayName } from "@/lib/lens/format";
+import { lensDisplayName, brandLabel } from "@/lib/lens/format";
 import { SITE } from "@/config/site";
+import type { NamespaceTranslator } from "@/i18n/translator";
 
 const POSTER_W = 750;
 const PREVIEW_SCALE = 352 / POSTER_W; // ≈ 0.469
@@ -37,14 +38,14 @@ interface ShareButtonProps {
 
 function computePosterTitle(
   lenses: Lens[],
-  tBrand: (key: string) => string,
-  tImage: (key: string, values?: Record<string, string>) => string,
+  tBrand: NamespaceTranslator<"Brands">,
+  tImage: NamespaceTranslator<"ShareImage">,
 ): string[] {
   if (lenses.length >= 2) {
-    const uniqueBrands = [...new Set(lenses.map((l) => tBrand(l.brand)))];
+    const uniqueBrands = [...new Set(lenses.map((l) => brandLabel(tBrand, l.brand)))];
     return [tImage("comparisonTitle", { brands: uniqueBrands.join(" · ") })];
   }
-  return lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model));
+  return lenses.map((l) => lensDisplayName(brandLabel(tBrand, l.brand), l.series, l.model));
 }
 
 export function ShareButton({ lenses, variant = "default", triggerClassName, iconOnly, presetTitle, presetSubtitle, linkOnly, shareText }: ShareButtonProps) {
@@ -232,7 +233,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
   }, [effectiveTitle, effectiveSlogan, computedPosterTitle, lenses, t]);
 
   const truncatedUrl = shareUrl.length > 56 ? shareUrl.slice(0, 56) + "…" : shareUrl;
-  const lensCaption = lenses.map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model)).join(" / ");
+  const lensCaption = lenses.map((l) => lensDisplayName(brandLabel(tBrand, l.brand), l.series, l.model)).join(" / ");
   const posterCustom = {
     title: effectiveTitle.trim() || undefined,
     slogan: effectiveSlogan.trim() || undefined,

@@ -9,7 +9,7 @@ import { buildComparePath } from "@/lib/url/compare";
 import { HorizontalScrollRail } from "@/components/ui/horizontal-scroll-rail";
 import { useCompare } from "@/context/CompareProvider";
 import { curatedPresets, type CuratedPreset } from "@/lib/curated-presets";
-import { lensDisplayName } from "@/lib/lens/format";
+import { lensDisplayName, brandLabel } from "@/lib/lens/format";
 import type { Lens } from "@/lib/types";
 import { ScrollChevron } from "@/components/ui/scroll-chevron";
 
@@ -51,7 +51,7 @@ export function PresetCard({ preset, allLenses, onSelect }: { preset: CuratedPre
               key={lens.id}
               className="inline-block rounded-md bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-500"
             >
-              {lensDisplayName(tBrand(lens.brand), lens.series, lens.model)}
+              {lensDisplayName(brandLabel(tBrand, lens.brand), lens.series, lens.model)}
             </span>
           );
         })}

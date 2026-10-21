@@ -7,7 +7,7 @@ import type { UsageFilter } from "@/lib/lens/lens";
 
 const OPTIONS: {
   value: UsageFilter;
-  labelKey: string;
+  labelKey: "usagePhoto" | "usageCine";
   Icon: LucideIcon;
 }[] = [
   { value: "photo", labelKey: "usagePhoto", Icon: Camera },

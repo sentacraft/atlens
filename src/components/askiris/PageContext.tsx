@@ -6,7 +6,7 @@ import { Columns2, LayoutGrid, X } from "lucide-react";
 import { LensSilhouette } from "@/components/ui/lens-silhouette";
 import { describeFilters, parsePagePath, type PageRef } from "@/lib/askiris/page-ref";
 import type { LensSummary } from "@/lib/lens/data";
-import { lensDisplayName } from "@/lib/lens/format";
+import { lensDisplayName, brandLabel } from "@/lib/lens/format";
 import { getLensImageUrl } from "@/lib/lens/image";
 import { cn } from "@/lib/utils";
 
@@ -35,9 +35,9 @@ export function usePageContextView(path: string | null, lenses: LensSummary[]): 
   if (!page) {
     return null;
   }
-  const brand = (slug: string) => (tBrand.has(slug) ? tBrand(slug) : slug);
+  const brand = (slug: string) => brandLabel(tBrand, slug);
   if (page.kind === "browse") {
-    const filters = describeFilters(page.filters, { brand, list: (key) => tList(key), badge: (key) => tBadge(key) });
+    const filters = describeFilters(page.filters, { brand, list: tList, badge: tBadge });
     return {
       kind: "browse",
       label: t("browsing"),
