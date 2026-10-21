@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Star } from "lucide-react";
-import { FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
+import { COMPARE_CHIP_STATE_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { useFavorites } from "@/hooks/useFavorites";
 
@@ -10,8 +10,19 @@ import { useFavorites } from "@/hooks/useFavorites";
 const REVEAL_CLS =
   "pointer-fine:xs:opacity-0 pointer-fine:xs:group-hover:opacity-100 pointer-fine:xs:group-focus-within:opacity-100";
 
-/** The star overlaid on a lens card. The caller positions it inside a `group relative` card. */
-export default function FavoriteStarButton({ lensId, className }: { lensId: string; className: string }) {
+/**
+ * The favorite star. `overlay` sits on a lens card's image, inside a `group relative` card the caller
+ * positions it in; `inline` sits in a row beside the compare chip and is always shown.
+ */
+export default function FavoriteStarButton({
+  lensId,
+  placement,
+  className,
+}: {
+  lensId: string;
+  placement: "overlay" | "inline";
+  className?: string;
+}) {
   const t = useTranslations("LensActions");
   const favorites = useFavorites();
   const favorited = favorites.isFavorite(lensId);
@@ -21,13 +32,13 @@ export default function FavoriteStarButton({ lensId, className }: { lensId: stri
       type="button"
       onClick={() => favorites.toggle(lensId)}
       aria-label={favorited ? t("unfavorite") : t("favorite")}
+      title={favorited ? t("unfavorite") : t("favorite")}
       aria-pressed={favorited}
       className={cn(
-        "z-10 flex h-8 w-8 items-center justify-center rounded-full transition-[opacity,background-color,color]",
-        FROSTED_OVERLAY_CHROME_CLS,
-        favorited
-          ? "text-zinc-900"
-          : cn("text-zinc-600 hover:text-zinc-900", REVEAL_CLS),
+        "z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-[opacity,background-color,color]",
+        placement === "overlay"
+          ? cn(FROSTED_OVERLAY_CHROME_CLS, favorited ? "text-zinc-900" : cn("text-zinc-600 hover:text-zinc-900", REVEAL_CLS))
+          : cn("border", COMPARE_CHIP_STATE_CLS.idle, favorited && "text-zinc-900"),
         className,
       )}
     >

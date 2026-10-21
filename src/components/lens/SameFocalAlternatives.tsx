@@ -6,6 +6,7 @@ import AskIrisEntry from "@/components/iris/AskIrisEntry";
 import ApproxPrice from "@/components/price/ApproxPrice";
 import AlternativesExpander from "@/components/lens/AlternativesExpander";
 import AlternativeCompareToggle from "@/components/lens/AlternativeCompareToggle";
+import FavoriteStarButton from "@/components/lens/FavoriteStarButton";
 import {
   ALTERNATIVES_SHOWN,
   apertureDelta,
@@ -93,20 +94,24 @@ function ColumnHeader({ icon: Icon, label }: { icon: LucideIcon; label: string }
 
 function LensName({ lens, brand, current }: { lens: Lens; brand: string; current?: string }) {
   return (
-    <span className="flex min-w-0 flex-col whitespace-normal">
-      <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">
+    <span className="flex min-w-0 flex-col gap-0.5 whitespace-normal">
+      <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] uppercase tracking-[0.14em] text-zinc-500">
+        {current && (
+          <span className="shrink-0 rounded bg-zinc-900 px-1.5 text-[10px] leading-4 font-semibold tracking-normal whitespace-nowrap normal-case text-white">
+            {current}
+          </span>
+        )}
         {lensSubtitleLine(brand, lens.series)}
-        {current && ` · ${current}`}
       </span>
       <span className="font-semibold text-zinc-900">{lens.model}</span>
     </span>
   );
 }
 
-function Thumb({ lens }: { lens: Lens }) {
+function Thumb({ lens, size, current = false }: { lens: Lens; size: "table" | "list"; current?: boolean }) {
   return (
-    <span className="relative size-10 shrink-0 overflow-hidden rounded-lg bg-zinc-50">
-      <Image src={getLensImageUrl(lens.id)} alt="" fill sizes="40px" style={lensImageStyle} className="object-contain p-1" />
+    <span className={cn("relative shrink-0 overflow-hidden rounded-lg", current ? "bg-white" : "bg-zinc-50", size === "table" ? "size-10" : "size-14")}>
+      <Image src={getLensImageUrl(lens.id)} alt="" fill sizes={size === "table" ? "40px" : "56px"} style={lensImageStyle} className="object-contain p-1" />
     </span>
   );
 }
@@ -140,6 +145,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
     ...(zoom ? [<ColumnHeader key="ois" icon={FEATURE_ICONS.ois} label={t("columnOis")} />] : []),
     <ColumnHeader key="wr" icon={FEATURE_ICONS.wr} label={t("columnWr")} />,
   ];
+  const columnCount = headers.length + featureHeaders.length + 2;
   const featureCells = (l: Lens) => [
     focusText(l),
     ...(zoom ? [boolText(t, l.ois)] : []),
@@ -172,57 +178,65 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
         <thead className="bg-zinc-50 text-left text-xs text-zinc-500">
           <tr>
             {headers.map((label) => (
-              <th key={label} scope="col" className="px-2 py-2.5 font-normal first:pl-4">
+              <th key={label} scope="col" className="px-1.5 py-2.5 font-normal first:pl-4">
                 {label}
               </th>
             ))}
             {featureHeaders.map((header) => (
-              <th key={header.key} scope="col" className="px-2 py-2.5 font-normal">
+              <th key={header.key} scope="col" className="px-1.5 py-2.5 font-normal">
                 {header}
               </th>
             ))}
-            <th scope="col" className="px-2 py-2.5 font-normal">{t("columnPrice")}</th>
+            <th scope="col" className="px-1.5 py-2.5 font-normal">{t("columnPrice")}</th>
             <th scope="col" className="w-0 py-2.5 pr-4"><span className="sr-only">{t("compare")}</span></th>
           </tr>
         </thead>
         <tbody className="text-zinc-700">
-          <tr className="border-t border-zinc-200 bg-zinc-50/80">
-            <td className="py-3 pr-2 pl-4">
+          <tr className="border-t border-zinc-200 bg-zinc-100 font-semibold text-zinc-900">
+            <td className="py-3.5 pr-2 pl-4 shadow-[inset_3px_0_0_var(--color-zinc-900)]">
               <span className="flex items-center gap-3">
-                <Thumb lens={lens} />
+                <Thumb lens={lens} size="table" current />
                 <LensName lens={lens} brand={brandLabel(tBrand, lens.brand)} current={t("current")} />
               </span>
             </td>
-            {zoom && <td className="px-2 py-3">{focalRangeDisplay(lens.focalLengthMin, lens.focalLengthMax)}</td>}
-            <td className="px-2 py-3">{aperture(lens)}</td>
-            <td className="px-2 py-3">{weight(lens)}</td>
+            {zoom && <td className="px-1.5 py-3">{focalRangeDisplay(lens.focalLengthMin, lens.focalLengthMax)}</td>}
+            <td className="px-1.5 py-3">{aperture(lens)}</td>
+            <td className="px-1.5 py-3">{weight(lens)}</td>
             {featureCells(lens).map((text, i) => (
-              <td key={i} className="px-2 py-3">{text}</td>
+              <td key={i} className="px-1.5 py-3">{text}</td>
             ))}
-            <td className="px-2 py-3"><ApproxPrice pricing={lens.pricing} /></td>
+            <td className="px-1.5 py-3"><ApproxPrice pricing={lens.pricing} /></td>
             <td className="py-3 pr-4" />
+          </tr>
+          <tr>
+            <td colSpan={columnCount} className="border-t border-zinc-200 bg-zinc-50 px-4 py-1.5 text-[11px] tracking-[0.08em] text-zinc-500">
+              {t("comparedWith")}
+            </td>
           </tr>
           {alternatives.map((l, index) => (
             <tr key={l.id} className={cn("relative border-t border-zinc-100 transition-colors hover:bg-zinc-50", index >= ALTERNATIVES_SHOWN && EXTRA_ROW_CLS)}>
               <td className="py-3 pr-2 pl-4">
                 <Link href={lensPath(l)} prefetch={false} className="flex items-center gap-3 after:absolute after:inset-0 after:content-['']">
-                  <Thumb lens={l} />
+                  <Thumb lens={l} size="table" />
                   <LensName lens={l} brand={brandLabel(tBrand, l.brand)} />
                 </Link>
               </td>
               {zoom && (
-                <td className="px-2 py-3">
+                <td className="px-1.5 py-3">
                   <Valued value={focalRangeDisplay(l.focalLengthMin, l.focalLengthMax)} note={focalNote(t, lens, l)} />
                 </td>
               )}
-              <td className="px-2 py-3"><Valued value={aperture(l)} note={apertureNote(t, lens, l)} /></td>
-              <td className="px-2 py-3"><Valued value={weight(l)} note={weightNote(t, lens, l, { long: false })} /></td>
+              <td className="px-1.5 py-3"><Valued value={aperture(l)} note={apertureNote(t, lens, l)} /></td>
+              <td className="px-1.5 py-3"><Valued value={weight(l)} note={weightNote(t, lens, l, { long: false })} /></td>
               {featureCells(l).map((text, i) => (
-                <td key={i} className="px-2 py-3">{text}</td>
+                <td key={i} className="px-1.5 py-3">{text}</td>
               ))}
-              <td className="px-2 py-3"><ApproxPrice pricing={l.pricing} /></td>
+              <td className="px-1.5 py-3"><ApproxPrice pricing={l.pricing} /></td>
               <td className="py-3 pr-4 text-right">
-                <AlternativeCompareToggle {...compareProps(l)} className="relative z-10 min-w-20 justify-center" />
+                <span className="relative z-10 flex items-center justify-end gap-2">
+                  <FavoriteStarButton lensId={l.id} placement="inline" />
+                  <AlternativeCompareToggle {...compareProps(l)} />
+                </span>
               </td>
             </tr>
           ))}
@@ -231,27 +245,37 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
       </div>
 
       <ul className="text-sm lg:hidden">
-        <li className="flex flex-col gap-1 bg-zinc-50/80 px-4 py-3">
-          <LensName lens={lens} brand={brandLabel(tBrand, lens.brand)} current={t("current")} />
-          <span className="text-[13px] text-zinc-600">
-            {[...(zoom ? [focalRangeDisplay(lens.focalLengthMin, lens.focalLengthMax)] : []), aperture(lens), weight(lens), phoneFeatures(lens)].join(" · ")}
-          </span>
-          <ApproxPrice pricing={lens.pricing} />
+        <li className="flex items-center gap-3 bg-zinc-100 px-4 py-3.5 shadow-[inset_3px_0_0_var(--color-zinc-900)]">
+          <Thumb lens={lens} size="list" current />
+          <div className="flex min-w-0 flex-col gap-1">
+            <LensName lens={lens} brand={brandLabel(tBrand, lens.brand)} current={t("current")} />
+            <span className="text-[13px] text-zinc-600">
+              {[...(zoom ? [focalRangeDisplay(lens.focalLengthMin, lens.focalLengthMax)] : []), aperture(lens), weight(lens), phoneFeatures(lens)].join(" · ")}
+            </span>
+            <ApproxPrice pricing={lens.pricing} />
+          </div>
         </li>
+        <li className="border-t border-zinc-200 bg-zinc-50 px-4 py-1.5 text-[11px] tracking-[0.08em] text-zinc-500">{t("comparedWith")}</li>
         {alternatives.map((l, index) => (
           <li
             key={l.id}
             className={cn("relative flex items-center gap-3 border-t border-zinc-100 px-4 py-3 transition-colors hover:bg-zinc-50", index >= ALTERNATIVES_SHOWN && EXTRA_ITEM_CLS)}
           >
-            <Link href={lensPath(l)} prefetch={false} className="flex min-w-0 flex-1 flex-col gap-1 after:absolute after:inset-0 after:content-['']">
-              <LensName lens={l} brand={brandLabel(tBrand, l.brand)} />
-              <span className="text-[13px] text-zinc-600">{phoneNotes(l)}</span>
-              <div className="flex flex-wrap items-baseline gap-x-3 text-[13px] text-zinc-500">
-                <span>{phoneFeatures(l)}</span>
-                <ApproxPrice pricing={l.pricing} />
+            <Link href={lensPath(l)} prefetch={false} className="flex min-w-0 flex-1 items-center gap-3 after:absolute after:inset-0 after:content-['']">
+              <Thumb lens={l} size="list" />
+              <div className="flex min-w-0 flex-col gap-1">
+                <LensName lens={l} brand={brandLabel(tBrand, l.brand)} />
+                <span className="text-[13px] text-zinc-600">{phoneNotes(l)}</span>
+                <div className="flex flex-wrap items-baseline gap-x-3 text-[13px] text-zinc-500">
+                  <span>{phoneFeatures(l)}</span>
+                  <ApproxPrice pricing={l.pricing} />
+                </div>
               </div>
             </Link>
-            <AlternativeCompareToggle {...compareProps(l)} className="relative z-10" />
+            <span className="relative z-10 flex shrink-0 items-center gap-2">
+              <FavoriteStarButton lensId={l.id} placement="inline" />
+              <AlternativeCompareToggle {...compareProps(l)} />
+            </span>
           </li>
         ))}
       </ul>

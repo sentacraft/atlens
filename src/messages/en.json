@@ -513,7 +513,7 @@
     "askIrisQuestionZoom": "How do I choose between the {name} and the other zooms covering this range?",
     "columnLens": "Lens",
     "columnRange": "Range",
-    "columnAperture": "Max aperture",
+    "columnAperture": "Aperture",
     "columnWeight": "Weight",
     "columnFocus": "Focus",
     "columnOis": "OIS",
@@ -548,6 +548,7 @@
     "partial": "Partial",
     "comparisonStarted": "Added {current} and {lens} to compare",
     "comparisonReplaced": "Started a new comparison of {current} and {lens}; {count, plural, one {# lens was} other {# lenses were}} taken out",
+    "comparedWith": "Compared with this lens",
     "showMore": "Show {count, number} more",
     "showLess": "Show less",
     "footnote": "Prices are sampled from retailers, not live quotes. Compare puts a lens in your comparison list together with this one."
