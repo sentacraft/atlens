@@ -12,8 +12,8 @@
     "home": "返回首页"
   },
   "Metadata": {
-    "seoTitle": "Atlens | 富士 X / G 卡口镜头图鉴",
-    "seoDescription": "富士党的镜头图鉴。X 卡口覆盖原厂与主流副厂，规格统一标准，跨品牌横向对比；G 卡口（中画幅）也已开始收录。"
+    "seoTitle": "Atlens | 富士镜头图鉴：X 卡口规格对比与 AI 选镜",
+    "seoDescription": "富士 X 卡口原厂与副厂镜头全收录：规格统一标准，跨品牌横向对比，附各渠道参考价；还有基于这些数据回答的 AI 选镜助手 Iris。"
   },
   "Rename": {
     "toast": "X-Glass 已更名为 Atlens——还是那个镜头图鉴，只是换了个名字。欢迎回来 👋"
@@ -312,10 +312,10 @@
   },
   "LensList": {
     "title": "镜头库",
-    "metaTitleX": "X 卡口镜头库",
-    "metaTitleG": "GFX 卡口镜头库",
-    "metaDescX": "富士 X 卡口镜头数据库，{count} 只镜头覆盖 {brandCount} 个品牌。规格统一标准，跨品牌横向对比。",
-    "metaDescG": "富士 GFX 中画幅镜头数据库，{count} 只 GF 镜头规格、参数与横向对比。",
+    "metaTitleX": "富士 X 卡口镜头库：全部 {count} 支",
+    "metaTitleG": "富士 GFX 中画幅镜头库：全部 {count} 支",
+    "metaDescX": "富士 X 卡口全部 {count} 支镜头，覆盖原厂与七工匠、铭匠、唯卓仕等 {brandCount} 个品牌。按焦段、光圈、对焦方式筛选，规格横向对比。",
+    "metaDescG": "富士 GFX 中画幅全部 {count} 支镜头，原厂 GF 与副厂都在内。规格统一标准，横向对比。",
     "brand": "品牌",
     "brandSeparator": "、",
     "lensType": "类型",
@@ -410,7 +410,8 @@
     "note": "这里的参数不是 AI 生成的，取自厂商官网正式发布的资料。AI 只帮忙把官网文字归档成统一格式，不编造数值；每支镜头上线前由作者审核。<link>数据怎么来</link>"
   },
   "LensDetail": {
-    "metaDescPrefix": "{name} 富士 {mount} 卡口{type}镜头规格、参数与横向对比。",
+    "metaDescPrefix": "{name}：富士 {mount} 卡口{type}镜头规格参数与横向对比。",
+    "metaTitle": "{name} 规格参数与对比",
     "metaJoinSpace": "",
     "metaSep": "，",
     "metaPeriod": "。",
@@ -512,10 +513,10 @@
   },
   "Compare": {
     "title": "镜头对比",
-    "metaTitleX": "X 卡口镜头对比",
-    "metaTitleG": "GFX 卡口镜头对比",
-    "metaDescX": "对比任意富士 X 卡口镜头：焦段、光圈、重量、滤镜口径一目了然。跨品牌横向对比，规格统一标准。",
-    "metaDescG": "对比任意富士 GFX 中画幅镜头：焦段、光圈、重量、滤镜口径一目了然。",
+    "metaTitleX": "富士 X 卡口镜头对比",
+    "metaTitleG": "富士 GFX 中画幅镜头对比",
+    "metaDescX": "任选几支富士 X 卡口镜头并排对比，跨品牌也行：焦段、光圈、重量、尺寸、滤镜口径、对焦和参考价，一页看清。",
+    "metaDescG": "任选几支富士 GFX 中画幅镜头并排对比：焦段、光圈、重量、尺寸、滤镜口径和参考价，一页看清。",
     "metaDescCustom": "对比 {count} 只镜头的参数、规格与横向数据。",
     "clearedToast": "已清空对比",
     "undo": "撤销",
@@ -606,7 +607,7 @@
     "authorName": "仙塔匠 SentaCraft",
     "pageTitle": "关于",
     "rebrandNote": "Atlens 原名 X-Glass——同一个项目、同一个作者，只是换了个更简单好读的名字。",
-    "metaDescription": "Atlens 项目缘起、维护者，以及收录情况——以富士 X 卡口为主，G 卡口也在开始纳入。由独立工程师独立开发与维护，Web 代码开源。",
+    "metaDescription": "Atlens 的由来、维护者和收录范围：富士 X 卡口各主流品牌的镜头；以及 AI 助手 Iris 是怎么工作的。独立开发维护，Web 代码开源。",
     "backgroundTitle": "项目缘起",
     "backgroundBody1": "作为一名富士用户，我自己在选镜头时就常常被信息太分散困扰——比如想找一支等效 50mm 的大光圈定焦，或者旅游用的一镜走天下，或者一支恒定光圈的标准变焦镜头。市面上这么多品牌，从原厂到副厂几百支镜头，到底哪些能满足需求、值得纳入候选？我可能需要翻遍各个品牌的官方账号、官方商店或官网，这样费时费力。或者我也可以去参考一些媒体或博主的视频、文章，但这些内容的核心目的更多是给出观点、帮人做购买决策，不是客观地告诉我有多少镜头可能符合我的需求，而这恰恰是我认为选购镜头的第一步。",
     "backgroundBody2": "于是我开发了 Atlens，通过标准化的数据流水线收录镜头并采集厂商公开发布的官方参数信息，建立一个多品牌、规范化、可横向对比的数据库，解决选镜头第一步的问题。Atlens 起步时只做 X 卡口，后来应一些用户的请求也开始把 G 卡口（中画幅）纳入进来，不过目前的收录范围和功能丰富程度还无法和 X 卡口相比，后续会逐步完善。",
@@ -692,7 +693,7 @@
   },
   "RecentlyAdded": {
     "pageTitle": "新增镜头",
-    "metaDescription": "Atlens 数据库的增补记录，按日期排列——富士 X 卡口与 GFX 卡口（中画幅）新收录镜头一览。",
+    "metaDescription": "Atlens 新收录的富士镜头，按日期排列。",
     "intro": "记录数据库收录范围的持续扩展。",
     "added": "+{count}",
     "lensesCount": "{count} 支镜头",
@@ -733,7 +734,7 @@
   },
   "Install": {
     "pageTitle": "安装应用",
-    "metaDescription": "把 Atlens 装到手机主屏或电脑桌面，像 App 一样打开。",
+    "metaDescription": "把 Atlens 装到手机主屏或电脑桌面，像 App 一样打开，不用去应用商店。",
     "installedTitle": "已完成安装",
     "installedBody": "Atlens 已安装在此设备上。",
     "openApp": "打开 Atlens",
@@ -780,7 +781,7 @@
     "metaPrefix": "{count} 支镜头，{brandCount} 个品牌。",
     "relatedCollections": "相关合集",
     "indexTitle": "富士 X 卡口镜头合集",
-    "indexDescription": "富士 X 卡口镜头合集——按焦段、品牌、光圈等维度分类整理。",
+    "indexDescription": "按主题整理的富士 X 卡口镜头合集：饼干头、大光圈定焦、轻量镜头、防滴防尘、各焦段与各品牌，每个合集都跨品牌收录。",
     "indexStats": "共 {count} 个合集 · {lensCount} 支镜头",
     "indexSubtitle": "按焦段、品牌、光圈等维度分类整理",
     "coverageLink": "查看收录范围 →",
