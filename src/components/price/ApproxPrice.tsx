@@ -4,10 +4,10 @@ import { useLocale, useTranslations } from "next-intl";
 import { pickPriceEntry, formatPrice } from "@/lib/lens/pricing";
 import type { Lens } from "@/lib/types";
 
-export default function LensCardPrice({ lens }: { lens: Lens }) {
+export default function ApproxPrice({ pricing }: { pricing: Lens["pricing"] }) {
   const t = useTranslations("Pricing");
   const locale = useLocale();
-  const selection = pickPriceEntry(lens.pricing, locale);
+  const selection = pickPriceEntry(pricing, locale);
 
   if (!selection) {
     return (
@@ -21,7 +21,7 @@ export default function LensCardPrice({ lens }: { lens: Lens }) {
   const priceDisplay = formatPrice(t, entry.price, entry.currency);
 
   return (
-    <p className="flex items-baseline gap-1 text-sm">
+    <p className="flex items-center gap-1 text-sm">
       <span data-redact-hook="price" className="font-semibold whitespace-nowrap tabular-nums text-zinc-700">
         {t.rich("priceApprox", {
           price: priceDisplay,

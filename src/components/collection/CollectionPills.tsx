@@ -3,6 +3,7 @@ import { localized } from "@/i18n/localized";
 import type { LensCollection } from "@/lib/collections";
 import type { Mount } from "@/lib/types";
 import { collectionPath, collectionsPath } from "@/lib/url/routes";
+import { PAGE_SECTION_CLS, SECTION_HEADING_CLS } from "@/config/ui-tokens";
 
 interface CollectionPillsProps {
   collections: LensCollection[];
@@ -27,9 +28,9 @@ export default function CollectionPills({
   }
 
   return (
-    <section className="border-t border-zinc-200 pt-6">
+    <section className={PAGE_SECTION_CLS}>
       <div className="mb-4 flex items-baseline justify-between">
-        <h2 className="text-sm font-semibold text-zinc-900">
+        <h2 className={SECTION_HEADING_CLS}>
           {title}
         </h2>
         <Link
