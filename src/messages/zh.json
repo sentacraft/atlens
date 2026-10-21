@@ -35,7 +35,6 @@
   "Auth": {
     "login": "登录",
     "title": "登录 Atlens",
-    "description": "创建账户后，你可以在不同设备上继续使用 Ask Iris。",
     "continueWithGoogle": "使用 Google 登录",
     "or": "或",
     "emailLabel": "邮箱",
@@ -65,9 +64,10 @@
     "profile": "我的主页",
     "reasonFavoriteTitle": "登录后收藏这支镜头",
     "reasonGearTitle": "登录后记录你的器材",
+    "reasonChatsTitle": "登录，长期保存对话",
     "benefitFavorites": "收藏感兴趣的镜头，随时回来比较",
-    "benefitGear": "记录你的机身和镜头，看清焦段覆盖了哪里、还缺哪里",
-    "benefitSync": "收藏、器材、设置和 Ask Iris 对话都存在账号里，换台设备也能接着用"
+    "benefitGear": "Iris 长期记住你的器材，推荐时更懂你",
+    "benefitChats": "和 Iris 的对话长期保存，未登录只留 7 天"
   },
   "AuthEmail": {
     "signInSubject": "你的 Atlens 登录验证码",
@@ -99,7 +99,6 @@
     "deleteLabel": "删除账户",
     "deleteHint": "我们会发一封确认邮件。打开其中的链接后，账户、器材、收藏和 Ask Iris 对话会被永久删除。",
     "signInTitle": "登录后查看你的主页",
-    "signInBody": "主页保存你的设置，在你登录的所有设备上都能用。",
     "signIn": "登录",
     "gearTitle": "我的器材",
     "bodies": "机身",
@@ -205,11 +204,6 @@
     "closeHistory": "关闭历史对话",
     "historyEmpty": "还没有对话。问 Iris 的问题会自动存到这里。",
     "historyError": "暂时无法加载历史对话。",
-    "historySignInTitle": "登录以保存对话",
-    "historySignInKeep": "对话长期保存，未登录只留 7 天",
-    "historySignInGear": "Iris 推荐时会参考你已有的机身和镜头",
-    "historySignInFavorites": "收藏 Iris 推荐的镜头，随时回来比较",
-    "historySignIn": "登录",
     "conversationActions": "「{title}」的更多操作",
     "renameConversation": "重命名",
     "deleteConversation": "删除",
@@ -248,12 +242,12 @@
     "signInCard": {
       "title": {
         "gear": "登录后，Iris 会记住你的器材",
-        "favorite": "登录后，Iris 就能看到你收藏的镜头"
+        "favorites": "登录后，Iris 就能看到你收藏的镜头"
       },
       "signIn": "登录",
       "notNow": {
         "gear": "先不登录，直接告诉 Iris",
-        "favorite": "先不登录"
+        "favorites": "先不登录"
       },
       "declined": "这次先不登录",
       "signedIn": "已登录"

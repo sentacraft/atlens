@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
-import BenefitItem from "@/components/auth/BenefitItem";
 import { track } from "@/lib/analytics/analytics";
 import { authClient } from "@/lib/auth-client";
 import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
-import { SIGN_IN_BENEFITS, type SignInReason } from "@/lib/sign-in-reason";
+import { SIGN_IN_PITCHES, type SignInSource } from "@/lib/sign-in-pitch";
+import SignInBenefits from "@/components/auth/SignInBenefits";
 import {
   Dialog,
   DialogClose,
@@ -48,17 +48,17 @@ function useCountdown(durationMs: number) {
   return [seconds, start] as const;
 }
 
-const REASON_TITLE_KEY = { favorite: "reasonFavoriteTitle", gear: "reasonGearTitle" } as const;
 
 export default function AuthDialog({
   open,
   onOpenChange,
-  reason,
+  source,
   returnTo,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  reason?: SignInReason;
+  /** Where the sign-in started, which words the title and orders the benefits. */
+  source: SignInSource;
   returnTo?: string;
 }) {
   const t = useTranslations("Auth");
@@ -158,16 +158,10 @@ export default function AuthDialog({
           >
             <X className="h-4 w-4" />
           </DialogClose>
-          <DialogTitle>{reason ? t(REASON_TITLE_KEY[reason]) : t("title")}</DialogTitle>
-          {reason ? (
-            <DialogDescription render={<ul />} className="flex flex-col gap-2 pt-2">
-              {SIGN_IN_BENEFITS[reason].map((key) => (
-                <BenefitItem key={key}>{t(key)}</BenefitItem>
-              ))}
-            </DialogDescription>
-          ) : (
-            <DialogDescription>{t("description")}</DialogDescription>
-          )}
+          <DialogTitle>{t(SIGN_IN_PITCHES[source].title)}</DialogTitle>
+          <DialogDescription render={<div />} className="pt-2">
+            <SignInBenefits source={source} className="text-sm" />
+          </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4 px-5 pb-5">
           {step === "email" ? (

@@ -1,16 +1,16 @@
-import type { SignInReason } from "@/lib/sign-in-reason";
+import type { SignInCardReason } from "@/lib/sign-in-pitch";
 
 /**
  * Iris's server tools that need an account, by the reason their sign-in card shows. A guest's
  * call pauses the turn on that card, and the tool runs once they sign in. The gear card is a
  * client tool and shows the same card itself.
  */
-const SIGN_IN_GATED_TOOLS: Readonly<Record<string, SignInReason>> = {
-  myFavorites: "favorite",
+const SIGN_IN_GATED_TOOLS: Readonly<Record<string, SignInCardReason>> = {
+  myFavorites: "favorites",
   myGear: "gear",
 };
 
-export function signInGate(toolName: string): SignInReason | undefined {
+export function signInGate(toolName: string): SignInCardReason | undefined {
   return Object.hasOwn(SIGN_IN_GATED_TOOLS, toolName) ? SIGN_IN_GATED_TOOLS[toolName] : undefined;
 }
 
