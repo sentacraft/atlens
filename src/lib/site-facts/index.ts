@@ -29,7 +29,8 @@ export const SITE_TOPICS = [
 ] as const;
 export type SiteTopic = (typeof SITE_TOPICS)[number];
 
-type Messages = typeof en;
+// zh's JSON import keeps plain string types; en's generated declaration has literal ones.
+type Messages = typeof zh;
 const MESSAGES: Record<string, Messages> = { en, zh };
 const languageName = (code: string) => new Intl.DisplayNames(["en"], { type: "language" }).of(code) ?? code;
 

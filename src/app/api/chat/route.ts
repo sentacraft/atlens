@@ -55,6 +55,7 @@ import {
 } from "@/lib/askiris/message-metadata";
 import { MOUNTS } from "@/lib/mount";
 import { routing } from "@/i18n/routing";
+import { brandLabel } from "@/lib/lens/format";
 
 const chatRequestSchema = z.object({
   // The rest of the message is checked by validateUIMessages, against the tools.
@@ -137,7 +138,7 @@ export async function POST(req: NextRequest) {
   }
 
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
-  const brandName = (slug: string) => (tBrand.has(slug) ? tBrand(slug) : slug);
+  const brandName = (slug: string) => brandLabel(tBrand, slug);
   const pageContext = page
     ? resolvePageContext(page, locale, {
         brand: brandName,
@@ -152,7 +153,7 @@ export async function POST(req: NextRequest) {
     buildLensTools(
       mount,
       locale,
-      tBrand,
+      brandName,
       () => loadFavorites(req, appDb, userId, isAccount),
       recalledRefs,
     ),

@@ -7,6 +7,7 @@ import { FEATURE_ICONS } from "@/lib/feature-icons";
 import type { AvailableFilterOptions, FilterState, FocusFilter, FocusMotorClass, LensType, FilterFeatureKey, FocalCategory } from "@/lib/lens/lens";
 import { OPTICAL_TRAITS, type OpticalTrait } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { brandLabel } from "@/lib/lens/format";
 import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 import BrandFilterMenu from "@/components/lens-filters/BrandFilterMenu";
 import FilterRow from "@/components/lens-filters/FilterRow";
@@ -76,7 +77,7 @@ export default function LensFilters({
   // never clipped.
   const BRAND_PREVIEW_LIMIT = 2;
   const brandJoiner = t("brandSeparator");
-  const brandNames = Object.fromEntries(available.brands.map((b) => [b, tBrand(b)]));
+  const brandNames = Object.fromEntries(available.brands.map((b) => [b, brandLabel(tBrand, b)]));
   const selectedBrandNames = filters.brands.map((b) => brandNames[b] ?? b);
   const brandExtraCount = Math.max(0, selectedBrandNames.length - BRAND_PREVIEW_LIMIT);
   const brandTriggerLabel =
@@ -85,7 +86,7 @@ export default function LensFilters({
       : selectedBrandNames.slice(0, BRAND_PREVIEW_LIMIT).join(brandJoiner);
   const brandOptions: ToggleChipOption<string>[] = available.brands.map((brand) => ({
     key: brand,
-    label: tBrand(brand),
+    label: brandLabel(tBrand, brand),
   }));
   const brandRow = (
     <div className="flex items-center gap-2 sm:items-start sm:gap-2.5">

@@ -8,6 +8,7 @@ import type {
 } from "@/lib/types";
 import { SPEC_NA } from "@/lib/types";
 import { CROP_FACTOR } from "@/lib/lens/lens";
+import type messages from "@/messages/en.json";
 
 export function oisDisplay(
   ois: boolean,
@@ -185,6 +186,14 @@ export function maxMagnificationRichDisplay(
   }
 
   return `${maxMag.value}x`;
+}
+
+export type BrandKey = keyof (typeof messages)["Brands"];
+
+// Lens data comes from a pipeline outside this repo, so a brand slug is only a message key once checked.
+export function brandLabel(t: { (key: BrandKey): string; has(key: BrandKey): boolean }, slug: string): string {
+  const key = slug as BrandKey;
+  return t.has(key) ? t(key) : slug;
 }
 
 // Fujifilm model names already contain the series, so it is omitted.

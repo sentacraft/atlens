@@ -54,9 +54,8 @@ export default async function LensesPage({ params }: { params: Params }) {
     notFound();
   }
   const t = await getTranslations({ locale, namespace: "LensList" });
-  const h1Title = resolvedMount === "X" ? t("metaTitleX") : t("metaTitleG");
-
   const allLenses = getLensesByMount(resolvedMount, locale);
+  const h1Title = t(resolvedMount === "X" ? "metaTitleX" : "metaTitleG", { count: allLenses.length });
 
   return (
     <>

@@ -1,3 +1,4 @@
+import type { NamespaceTranslator } from "@/i18n/translator";
 import { SPEC_NA, type Lens, type FieldNoteKey } from "@/lib/types";
 import type { LensConfigurationLabels } from "@/lib/lens/format";
 import { classifyFocusMotor, leadingValue, type FocusMotorClass } from "@/lib/lens/lens";
@@ -148,7 +149,7 @@ export interface SpecGroupLabels {
   motorClass: Record<FocusMotorClass, string>;
 }
 
-type Translator = (key: string, values?: Record<string, string | number>) => string;
+type Translator = NamespaceTranslator<"LensDetail">;
 
 export function buildSpecGroupLabels(t: Translator): SpecGroupLabels {
   return {
