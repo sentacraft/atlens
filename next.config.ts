@@ -16,6 +16,11 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: process.cwd(),
   },
+  experimental: {
+    // Without it the persistent dev cache in .next/dev/cache only grows; a long-running dev server
+    // reached 6.5 GB. https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopackGc
+    turbopackGc: true,
+  },
   // Unoptimized: on Workers the image endpoint needs a paid IMAGES binding, and the lens images
   // are already optimized webp.
   images: {
