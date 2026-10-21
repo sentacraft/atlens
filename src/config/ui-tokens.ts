@@ -21,6 +21,19 @@ export const ACTION_ESCAPE_CLS =
   "transition-colors duration-150 hover:bg-zinc-900 hover:text-white active:bg-zinc-800 " +
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900";
 
+export const PAGE_SECTION_CLS = "border-t border-zinc-200 pt-6";
+
+export const SECTION_HEADING_CLS = "text-base font-semibold text-zinc-900";
+
+export const COMPARE_CHIP_CLS =
+  "inline-flex h-8 items-center gap-1 rounded-full border text-xs font-medium transition-colors";
+
+export const COMPARE_CHIP_STATE_CLS = {
+  selected: `${ACTION_PRIMARY_CLS} border-transparent`,
+  full: "border-zinc-200 bg-white text-zinc-400",
+  idle: "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50",
+} as const;
+
 export const CARD_SELECTED_BORDER_CLS =
   "border-zinc-900 ring-1 ring-zinc-900 shadow-lg shadow-zinc-900/10";
 

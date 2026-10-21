@@ -10,7 +10,7 @@ export const ASKIRIS_PARAMS = {
 export type IrisRequest = { kind: "question"; text: string } | { kind: "page" };
 
 /** Where Iris was opened from: the nav, the home hero, or a page's entry. */
-export type IrisEntryPoint = "nav" | "home" | "lens" | "browse" | "empty" | "compare";
+export type IrisEntryPoint = "nav" | "home" | "lens" | "alternatives" | "browse" | "empty" | "compare";
 
 /** How the Ask Iris page opens: a stored conversation, or a question that starts a new one. */
 export interface AskIrisEntry {
