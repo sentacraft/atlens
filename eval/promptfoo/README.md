@@ -32,7 +32,8 @@ every LLM-graded assertion is a paid judge call. Run as little as answers the qu
 - After a run, rerun only what failed (`--filter-failing <eval id or results file>`), not the
   whole suite. The judges take no temperature, so a single verdict can flip on a borderline
   reply: rerun a lone failure before reading it as a regression, and use `--repeat 2` only to
-  tell a regression from noise.
+  tell a regression from noise. `--filter-failing` reruns each case with the vars stored in that
+  results file, so after editing a case's vars pick it by name with `--filter-pattern` instead.
 - With a DeepSeek preset, run outside its peak hours (Beijing time, weekdays 9:00–12:00 and
   14:00–18:00): every token costs half.
 - Check in Vitest whatever code decides (which note or tools a turn gets); the eval is only

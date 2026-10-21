@@ -70,6 +70,16 @@ describe("lensDetails hands the model refs, never ids", () => {
     expect(found).toEqual([]);
   });
 
+  it("says outright that rendering quality is not in the data", async () => {
+    // Asked about sharpness or fringing, the model filled the silence with a verdict of its own.
+    const recall = await run(tools.queryLenses, { queries: [{ type: "prime" }] });
+    const [ref] = recall.results[0].matches.map((lens: { ref: string }) => lens.ref);
+
+    const details = await run(tools.lensDetails, { refs: [ref] });
+
+    expect(details.notInData).toMatch(/sharpness/);
+  });
+
   it("still carries the long-tail specs a recall result leaves out", async () => {
     const recall = await run(tools.queryLenses, { queries: [{ type: "prime" }] });
     const [ref] = recall.results[0].matches.map((lens: { ref: string }) => lens.ref);
@@ -93,8 +103,11 @@ describe("myFavorites", () => {
   const X_FAVORITES = ["fujifilm-xf-23mmf14-r-lm-wr-x", "fujifilm-xf-33mmf14-r-lm-wr-x"];
   const G_FAVORITE = "fujifilm-gf-45mmf28-r-wr-g";
 
-  it("tells a guest to sign in", async () => {
-    expect(await run(tools.myFavorites, {})).toEqual({ status: "not_signed_in" });
+  it("tells a guest to sign in, with the sign-in link ready to copy", async () => {
+    expect(await run(tools.myFavorites, {})).toEqual({
+      status: "not_signed_in",
+      signInLink: expect.stringMatching(/^\[.+\]\(action:signIn\)$/),
+    });
   });
 
   it("returns the current mount's favorites in order, counts the rest, and opens the gate for their refs", async () => {
