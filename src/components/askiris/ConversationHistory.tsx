@@ -3,9 +3,10 @@
 import { useRef, useState } from "react";
 import { Drawer } from "@base-ui/react/drawer";
 import { Menu } from "@base-ui/react/menu";
-import { Cloud, Ellipsis, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Ellipsis, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
+import BenefitItem from "@/components/auth/BenefitItem";
 import { ACTION_QUIET_CLS, ACTION_OUTLINE_CLS, ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS, LIST_ITEM_ACTIVE_CLS, MENU_ITEM_CLS, MENU_ITEM_DANGER_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
 import { MAX_CONVERSATION_TITLE_LENGTH } from "@/lib/askiris/conversation-contract";
 import type { AskIrisConversationRecord } from "@/lib/askiris/conversation-repository";
@@ -19,6 +20,8 @@ import {
   DialogPopup,
   DialogTitle,
 } from "@/components/ui/dialog";
+
+const HISTORY_SIGN_IN_BENEFITS = ["historySignInKeep", "historySignInGear", "historySignInFavorites"] as const;
 
 export default function ConversationHistory({
   open,
@@ -73,17 +76,12 @@ export default function ConversationHistory({
               </div>
               {onSignIn && (
                 <div className="mx-4 mb-3 flex flex-col gap-2.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5">
-                  <div className="flex items-start gap-2.5">
-                    <span className="grid size-7 shrink-0 place-items-center rounded-lg border border-zinc-200 bg-white text-zinc-700">
-                      <Cloud className="size-4" />
-                    </span>
-                    <div className="space-y-1">
-                      <p className="text-sm font-semibold text-zinc-900 sm:text-[13px]">{t("historySignInTitle")}</p>
-                      <p className="text-[13px] leading-relaxed text-zinc-500 sm:text-xs">
-                        {conversations.length > 0 ? t("historySignInBody") : t("historySignInBodyEmpty")}
-                      </p>
-                    </div>
-                  </div>
+                  <p className="text-sm font-semibold text-zinc-900">{t("historySignInTitle")}</p>
+                  <ul className="flex flex-col gap-1.5">
+                    {HISTORY_SIGN_IN_BENEFITS.map((key) => (
+                      <BenefitItem key={key}>{t(key)}</BenefitItem>
+                    ))}
+                  </ul>
                   <button type="button" onClick={onSignIn} className={cn(ACTION_PRIMARY_CLS, "h-10 justify-center rounded-lg text-sm sm:h-8 sm:text-[13px]")}>
                     {t("historySignIn")}
                   </button>

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check, X } from "lucide-react";
+import { X } from "lucide-react";
+import BenefitItem from "@/components/auth/BenefitItem";
 import { track } from "@/lib/analytics/analytics";
 import { authClient } from "@/lib/auth-client";
 import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
@@ -164,10 +165,7 @@ export default function AuthDialog({
           {reason ? (
             <DialogDescription render={<ul />} className="flex flex-col gap-2 pt-2">
               {BENEFIT_KEYS[reason].map((key) => (
-                <li key={key} className="flex gap-2 text-sm text-zinc-700">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-900" strokeWidth={2.5} />
-                  {t(key)}
-                </li>
+                <BenefitItem key={key}>{t(key)}</BenefitItem>
               ))}
             </DialogDescription>
           ) : (
