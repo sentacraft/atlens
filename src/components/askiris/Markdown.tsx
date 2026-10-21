@@ -17,9 +17,7 @@ import { PAGE_LINKS, isChatLinkHref, parseChatLink, type ChatLink } from "@/lib/
 import { mountHasCollections } from "@/lib/mount";
 import { buildComparePath } from "@/lib/url/compare";
 import { collectionPath, lensPath } from "@/lib/url/routes";
-
-const PROSE_CLS =
-  "prose prose-sm max-w-none prose-p:my-2 prose-headings:mb-1 prose-hr:hidden";
+import { IRIS_PROSE_CLS } from "@/config/ui-tokens";
 
 // The icon trails the label: an inline-flex box takes its baseline from its first child, so a
 // leading icon drops the chip below the line's text.
@@ -123,7 +121,7 @@ function ProseAnchor({ href, children }: { href?: string; children?: ReactNode }
 
 export default function Markdown({
   children,
-  className = PROSE_CLS,
+  className = IRIS_PROSE_CLS,
 }: {
   children: string;
   className?: string;

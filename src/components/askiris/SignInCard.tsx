@@ -5,11 +5,10 @@ import { useTranslations } from "next-intl";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { SIGN_IN_CARD_SOURCE, type SignInCardReason } from "@/lib/sign-in-pitch";
 import SignInBenefits from "@/components/auth/SignInBenefits";
-import { ACTION_PRIMARY_CLS, ACTION_QUIET_CLS, CHAT_CARD_CLS } from "@/config/ui-tokens";
+import { ACTION_PRIMARY_CLS, ACTION_QUIET_CLS, CHAT_CARD_CLS, IRIS_PROSE_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import AnsweredLine from "@/components/askiris/AnsweredLine";
-import Markdown from "@/components/askiris/Markdown";
 
 /** The in-chat card Iris shows a guest when what they asked for needs an account. */
 export default function SignInCard({
@@ -87,7 +86,9 @@ export function SignInGate({
   }
   return (
     <>
-      <Markdown>{t(`leadIn.${reason}`)}</Markdown>
+      <div className={IRIS_PROSE_CLS}>
+        <p>{t(`leadIn.${reason}`)}</p>
+      </div>
       <SignInCard reason={reason} returnTo={returnTo} onNotNow={() => onAnswer(false)} />
     </>
   );
