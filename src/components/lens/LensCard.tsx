@@ -173,6 +173,7 @@ export default memo(function LensCard({
 
       <FavoriteStarButton
         lensId={lens.id}
+        placement="overlay"
         className="absolute top-2.5 right-2.5 max-xs:top-1.5 max-xs:right-1.5 max-xs:h-9 max-xs:w-9 max-xs:border-0 max-xs:bg-transparent max-xs:shadow-none max-xs:backdrop-blur-none"
       />
 
