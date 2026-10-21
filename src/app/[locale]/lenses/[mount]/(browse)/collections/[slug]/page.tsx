@@ -10,7 +10,7 @@ import { getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount, mountSeoLabel, mountHasCollections } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { buildCollectionItemListSchema } from "@/lib/lens/seo";
-import { lensDisplayName } from "@/lib/lens/format";
+import { lensDisplayName, brandLabel } from "@/lib/lens/format";
 import { SITE } from "@/config/site";
 import { ACTION_ESCAPE_CLS, PAGE_GUTTER_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import JsonLd from "@/components/seo/JsonLd";
@@ -103,7 +103,7 @@ export default async function CollectionPage({
     description,
     url: `${SITE.url}/${locale}${collectionPath(resolvedMount, slug)}`,
     items: lenses.map((lens) => ({
-      name: lensDisplayName(tBrand(lens.brand), lens.series, lens.model),
+      name: lensDisplayName(brandLabel(tBrand, lens.brand), lens.series, lens.model),
       url: `${SITE.url}/${locale}${lensPath(lens)}`,
     })),
   });

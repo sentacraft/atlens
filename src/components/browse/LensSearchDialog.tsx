@@ -17,7 +17,7 @@ import { Link } from "@/i18n/navigation";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
 import type { SearchableLens } from "@/lib/lens/search";
 import { cn } from "@/lib/utils";
-import { lensSubtitleLine } from "@/lib/lens/format";
+import { lensSubtitleLine, brandLabel } from "@/lib/lens/format";
 import { trackSearchSelect, useSearchTelemetry } from "@/components/browse/LensSearchDialog.telemetry";
 import {
   Dialog,
@@ -228,7 +228,7 @@ export default function LensSearchDialog<T extends SearchableLens>({
             >
               <div className="min-w-0">
                 <p className="truncate text-xs uppercase tracking-[0.14em] text-zinc-500">
-                  {lensSubtitleLine(tBrand(lens.brand), lens.series)}
+                  {lensSubtitleLine(brandLabel(tBrand, lens.brand), lens.series)}
                 </p>
                 <p className="mt-0.5 truncate text-sm font-medium text-zinc-900">
                   {lens.model}

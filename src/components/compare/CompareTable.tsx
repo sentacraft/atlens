@@ -34,7 +34,7 @@ import { buildPurchaseLinks, purchaseDisclosureKey, shouldShowDisclosure } from 
 import { useCountryCode } from "@/hooks/useCountryCode";
 import { useIsMobileDevice } from "@/hooks/useViewport";
 import { pickPriceEntry } from "@/lib/lens/pricing";
-import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
+import { lensDisplayName, lensSubtitleLine, brandLabel } from "@/lib/lens/format";
 import { lensPath } from "@/lib/url/routes";
 import { DataSourceBar } from "@/components/lens/DataSource";
 
@@ -62,7 +62,7 @@ function LensHeaderContent({ lens }: { lens: Lens }) {
 
       <div className="my-1.5 flex min-h-[1.5rem] flex-wrap items-center justify-center gap-1.5">
         <span className="text-xs font-normal text-zinc-500">
-          {lensSubtitleLine(tBrand(lens.brand), lens.series)}
+          {lensSubtitleLine(brandLabel(tBrand, lens.brand), lens.series)}
         </span>
         <SpecialtyBadges {...deriveSpecialty(lens)} />
       </div>
@@ -331,7 +331,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                 className="px-2 py-1.5 text-center"
               >
                 <p className="truncate text-[10px] text-zinc-400">
-                  {lensSubtitleLine(tBrand(lens.brand), lens.series)}
+                  {lensSubtitleLine(brandLabel(tBrand, lens.brand), lens.series)}
                 </p>
                 <Link
                   href={lensPath(lens)}
@@ -392,7 +392,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
               <LensHeader
                 key={lens.id}
                 lens={lens}
-                removeLabel={t("removeLens", { model: lensDisplayName(tBrand(lens.brand), lens.series, lens.model) })}
+                removeLabel={t("removeLens", { model: lensDisplayName(brandLabel(tBrand, lens.brand), lens.series, lens.model) })}
                 shiftLeftLabel={t("shiftLeft")}
                 shiftRightLabel={t("shiftRight")}
                 canShiftLeft={index > 0}
@@ -750,7 +750,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                       )}
                       <FeedbackTrigger
                         type="data_issue"
-                        context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
+                        context={{ lensId: lens.id, lensModel: lens.model, lensBrand: brandLabel(tBrand, lens.brand) }}
                         fields={fields}
                         className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 ${TEXT_LINK_CLS}`}
                       >

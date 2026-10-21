@@ -23,7 +23,7 @@
     "nuke": "pkill -f 'next dev' 2>/dev/null; pkill -f 'next-server' 2>/dev/null; rm -rf .next; echo 'Cache cleared. Run pnpm run dev to restart.'",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "typecheck": "wrangler types --env-interface CloudflareEnv && tsc --noEmit",
+    "typecheck": "wrangler types --env-interface CloudflareEnv && next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",

@@ -7,11 +7,12 @@ import { defaultFilters, filterLenses } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
 import { serializeFilters } from "@/lib/url/filter-params";
 
-const labels: FilterLabels = {
-  brand: (slug) => `brand:${slug}`,
-  list: (key) => `list:${key}`,
-  badge: (key) => `badge:${key}`,
-};
+// Echo translators: the assertions read which key each label came from.
+const labels = {
+  brand: (slug: string) => `brand:${slug}`,
+  list: (key: string) => `list:${key}`,
+  badge: (key: string) => `badge:${key}`,
+} as unknown as FilterLabels;
 const xLenses = getLensesByMount("X", "en");
 const [first, second] = xLenses;
 

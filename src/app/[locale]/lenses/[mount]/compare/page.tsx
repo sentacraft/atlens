@@ -15,7 +15,7 @@ import CuratedComparisons from "@/components/compare/CuratedComparisons";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import Breadcrumb from "@/components/nav/Breadcrumb";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
-import { lensDisplayName } from "@/lib/lens/format";
+import { lensDisplayName, brandLabel } from "@/lib/lens/format";
 import { notFound } from "next/navigation";
 import { browsePath } from "@/lib/url/routes";
 import { PAGE_GUTTER_CLS } from "@/config/ui-tokens";
@@ -75,7 +75,7 @@ export async function generateMetadata({
   }
 
   const title = lenses
-    .map((l) => lensDisplayName(tBrand(l.brand), l.series, l.model))
+    .map((l) => lensDisplayName(brandLabel(tBrand, l.brand), l.series, l.model))
     .join(" vs ");
   const description = t("metaDescCustom", { count: lenses.length });
   return {
