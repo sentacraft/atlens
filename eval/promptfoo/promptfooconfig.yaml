@@ -112,9 +112,25 @@ defaultTest:
     - type: javascript # replied in the requested locale (\u4e00-\u9fff = any CJK ideograph)
       metric: programmatic
       value: 'context.vars.locale !== "zh" || /[\u4e00-\u9fff]/.test(output)'
+    - type: javascript # an English turn gets no Chinese back
+      metric: programmatic
+      value: 'context.vars.locale !== "en" || !/[\u4e00-\u9fff]/.test(output)'
+    # A recall bound of 0 matches no lens. A model that fills every parameter and has no way to
+    # say "unset" writes 0, and the whole turn comes back empty; null is the unset value.
+    - type: javascript
+      metric: programmatic
+      value: 'context.metadata.queries.every((q) => ["maxWide", "maxWeightG", "maxLengthMm", "maxPrice"].every((k) => q.input[k] !== 0) && q.input.maxApertureF?.wide !== 0 && q.input.maxApertureF?.tele !== 0)'
     - type: javascript # budget is soft — flag only a pick grossly over it (>1.5x)
       metric: programmatic
       value: "!context.vars.budgetCNY || context.metadata.picks.every((p) => p.price == null || p.price <= context.vars.budgetCNY * 1.5)"
+    # Observed, not gated: a turn that runs into the 8-step budget is forced to answer
+    # without tools. Worth reading when comparing models; not a failure on its own.
+    - type: assert-set
+      threshold: 0
+      assert:
+        - type: javascript
+          metric: efficiency
+          value: "context.metadata.steps < 8"
     - type: llm-rubric # L1 behavior floor — holds even for a terse factual reply or a refusal
       metric: behavior-floor
       provider: *behavior_grader
@@ -177,6 +193,10 @@ tests:
       dialog:
         turns:
           - "推荐几支富士 X 卡口等效 35mm 的定焦镜头"
+    assert:
+      - type: javascript # cards are primes around 23mm native (35mm equivalent at 1.5x)
+        metric: programmatic
+        value: "context.metadata.picks.length > 0 && context.metadata.picks.every((p) => p.fmin === p.fmax && p.fmin >= 20 && p.fmin <= 27)"
 
   - description: astro-milky-way
     vars:
@@ -213,6 +233,17 @@ tests:
       dialog:
         turns:
           - "有没有适合拍 vlog 的镜头？但我听说富士相机对焦都不太好，可能更适合拍照，不适合拍视频，是这么回事吗？这种问题能通过选一个合适的镜头来解决吗？"
+    assert:
+      - type: llm-rubric # takes the autofocus claim head-on, then recommends for vlogging
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          The user repeats a claim that Fujifilm autofocus is poor for video and asks whether
+          a lens can fix it. The reply should address that claim directly — neither waving it
+          away nor accepting it wholesale, and saying what a lens can and cannot change about
+          video autofocus — and recommend for vlogging with what that needs in mind (wide
+          enough to hold the camera at arm's length, light, autofocus). It fails if it ignores
+          the claim, or answers it with a blanket statement in either direction.
 
   - description: travel-one-lens
     vars:
@@ -335,6 +366,9 @@ tests:
           - "富士 XF35mm F1.4 R 这支镜头大概多重？"
     assert:
       - *no_deck
+      - type: javascript # the catalogue weight, not a remembered one
+        metric: programmatic
+        value: "/187/.test(output)"
 
   # Guard: a broad query matches more than the deck can show — say how many, offer to narrow.
   - description: guard-over-match
@@ -802,10 +836,14 @@ tests:
         metric: site
         provider: *behavior_grader
         value: >-
-          Iris's facts say it cannot yet see the page the user is on,
-          remember other conversations beyond saved gear, give live prices, place orders, or
-          send feedback for them. The reply must not claim any of those abilities, and should
-          mention at least some of its limits.
+          Iris's facts list what it can do — find and recommend lenses as cards, lay them out
+          in a spec table, explain how they differ, look up specs, use a signed-in user's saved
+          gear and favorites, answer questions about Atlens with links to the pages that say
+          more, link to collections and the compare page, and see the lenses or filters on the
+          page it was opened from — and its limits: it can be wrong, it only knows what Atlens
+          has collected, and it has usage limits. The reply must not claim an ability outside
+          that list, such as placing orders, quoting live prices, or browsing the web, and
+          should mention at least one of those limits.
 
   - description: site-iris-name
     vars:
@@ -935,3 +973,130 @@ tests:
           accounts for the light actually transmitted, so equal T-stops give equal exposure
           across lenses. It must not state specific specs for a particular lens unless the
           conversation shows a tool returned them.
+
+  # Table: a filter-and-sort request answers with a listLenses table that keeps every constraint.
+  - description: table-budget-weight
+    vars:
+      mount: X
+      locale: zh
+      budgetCNY: 1000
+      dialog:
+        turns:
+          - "把 1000 元以内的自动对焦定焦按重量排一张表"
+    assert:
+      - type: javascript # a table, not cards or prose
+        metric: programmatic
+        value: "context.metadata.tables.length > 0"
+      - type: javascript # every row is an autofocus prime within budget
+        metric: programmatic
+        value: "context.metadata.tables.at(-1).rows.every((r) => r.af === true && r.fmin === r.fmax && (r.price == null || r.price <= 1000))"
+      - type: javascript # rows run light to heavy
+        metric: programmatic
+        value: "context.metadata.tables.at(-1).rows.map((r) => r.weightG).filter((w) => w != null).every((w, i, a) => i === 0 || a[i - 1] <= w)"
+
+  # Gear: a focal-gap question works from the owned lenses' equivalents, and gets them right.
+  - description: gear-gap
+    vars:
+      mount: X
+      locale: zh
+      gear:
+        bodies: [fujifilm-x-t5]
+        lenses: [7artisans-4mm-f28-x, fujifilm-xf-18-55mmf28-4-r-lm-ois-x, fujifilm-xf-33mmf14-r-lm-wr-x, fujifilm-xf-70-300mmf4-56-r-lm-ois-wr-x]
+      dialog:
+        turns:
+          - "我已有的镜头还缺哪个焦段？"
+    assert:
+      - type: llm-rubric
+        metric: gear
+        provider: *behavior_grader
+        value: >-
+          The user's saved gear (not shown in the conversation) is an X-T5 (APS-C, 1.5x crop)
+          with a 7Artisans 4mm F2.8 fisheye (about 6mm equivalent), an XF 18-55mm (about
+          27-84mm), an XF 33mm F1.4 (about 50mm) and an XF 70-300mm (about 105-450mm). What
+          is actually missing: a regular, non-fisheye wide angle below about 27mm equivalent,
+          a small step between about 84 and 105mm, and anything beyond about 450mm. The reply
+          should name the wide-angle gap. It fails if it states any owned lens's equivalent
+          focal length wrongly, or presents a range these lenses already cover as missing.
+
+  # Gear: asked whether a lens duplicates owned ones, Iris weighs the overlap honestly.
+  - description: gear-duplicate
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      gear:
+        bodies: [fujifilm-x-t5]
+        lenses: [fujifilm-xf-18-55mmf28-4-r-lm-ois-x, fujifilm-xf-33mmf14-r-lm-wr-x]
+      dialog:
+        turns:
+          - "我想买唯卓仕 AF 27mm F1.2 Pro，会不会和我手上的镜头重复？"
+    assert:
+      - type: llm-rubric
+        metric: gear
+        provider: *behavior_grader
+        value: >-
+          The user's saved gear (not shown in the conversation) is an X-T5 with an XF 18-55mm
+          F2.8-4 and an XF 33mm F1.4. The Viltrox 27mm (about 41mm equivalent) sits inside the
+          18-55mm's range and close to the 33mm (about 50mm). The reply should say its focal
+          length overlaps what they own and what it still adds — mainly the f/1.2 aperture —
+          so the user can judge. It fails if it says there is no overlap, or states any of
+          these focal lengths or equivalents wrongly.
+
+  # Page context: asked from the compare page, "these two" means the lenses on that page.
+  - description: page-compare
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      page: /zh/lenses/x/compare?ids=fujifilm-xf-23mmf2-r-wr-x,fujifilm-xf-35mmf2-r-wr-x
+      dialog:
+        turns:
+          - "这两支哪个更适合扫街？"
+    assert:
+      - type: llm-rubric
+        metric: page
+        provider: *behavior_grader
+        value: >-
+          The user is on the compare page for the XF 23mm F2 R WR and the XF 35mm F2 R WR. The
+          reply should answer about those two lenses. It fails if it asks which two lenses the
+          user means, or answers about other lenses instead.
+
+  # Mount: a G-mount request recommends G-mount lenses (the default checks hold the mount).
+  - description: gfx-landscape
+    vars:
+      mount: G
+      locale: zh
+      dialog:
+        turns:
+          - "推荐几支适合拍风光的广角镜头，机身 GFX 100S II。"
+    assert:
+      - type: javascript # cards include a wide GF lens (32mm native is about 25mm equivalent at 0.79x)
+        metric: programmatic
+        value: "context.metadata.picks.length > 0 && context.metadata.picks.some((p) => p.fmin != null && p.fmin <= 32)"
+
+  # Locale: an English recommendation stays in English (the default checks hold the language).
+  - description: en-street
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "I'm getting into street photography. Can you recommend a small, light prime?"
+    assert:
+      - type: javascript
+        metric: programmatic
+        value: "context.metadata.picks.length > 0 && context.metadata.picks.every((p) => p.fmin === p.fmax)"
+
+  # Cine: cinema lenses are recalled only when asked for, and then they are what gets recommended.
+  - description: cine-short-film
+    vars:
+      mount: X
+      locale: zh
+      wantsCine: true
+      dialog:
+        turns:
+          - "想拍短片，有没有适合拍视频的电影镜头，就是标 T 值的那种？"
+    assert:
+      - type: javascript
+        metric: programmatic
+        value: "context.metadata.queries.some((q) => q.input.usage === \"cine\") && context.metadata.picks.length > 0 && context.metadata.picks.every((p) => p.isCine === true)"

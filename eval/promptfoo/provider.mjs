@@ -83,7 +83,8 @@ async function postTurn(messages, mount, locale, conversationId, vars, continuin
     chatId: conversationId,
     messages,
     trigger: "submit-message",
-    body: { mount, locale },
+    // A case's `page` var is the page the turn is asked from, as the Iris panel sends it.
+    body: { mount, locale, ...(vars?.page ? { page: vars.page } : {}) },
     headers: profileHeaders(vars),
   });
   let msg = null;
@@ -229,7 +230,19 @@ function digest(msg) {
     if (name === "listLenses" && Array.isArray(part.output?.lenses)) {
       const ids = part.output.lenses.map((l) => l.id);
       const columns = Array.isArray(part.output.columns) ? part.output.columns : [];
-      tables.push({ ids, columns, names: part.output.lenses.map((l) => l.name ?? null) });
+      tables.push({
+        ids,
+        columns,
+        names: part.output.lenses.map((l) => l.name ?? null),
+        rows: part.output.lenses.map((l) => ({
+          id: l.id,
+          fmin: Array.isArray(l.focalNativeMm) ? l.focalNativeMm[0] : null,
+          fmax: Array.isArray(l.focalNativeMm) ? l.focalNativeMm[1] : null,
+          weightG: l.weightG ?? null,
+          price: l.price?.amount ?? null,
+          af: l.af ?? null,
+        })),
+      });
       // Mirrors LensTable.tsx: the caption is prose the rubrics grade; cell values are not.
       const caption = part.output.caption?.trim() ? `\n${part.output.caption.trim()}` : "";
       transcript.push(
