@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { useGearAdders } from "@/components/me/useGearAdders";
 import AnsweredLine from "@/components/askiris/AnsweredLine";
 import SignInCard from "@/components/askiris/SignInCard";
+import { brandLabel } from "@/lib/lens/format";
 
 /** The in-chat card Iris shows through the askForGear client tool. */
 export default function GearRequestCard({
@@ -81,7 +82,7 @@ function GearPicker({
   const [pending, setPending] = useState({ bodies: hints.bodies, lenses: hints.lenses });
   const lensById = useMemo(() => new Map(lenses.map((lens) => [lens.id, lens])), [lenses]);
 
-  const brandName = (slug: string) => (tBrand.has(slug) ? tBrand(slug) : slug);
+  const brandName = (slug: string) => brandLabel(tBrand, slug);
   const savedBodies = gear.filter((item) => item.kind === "body");
   const savedLenses = gear.filter((item) => item.kind === "lens");
   const savedIds = new Set(gear.flatMap((item) => (item.catalogId ? [item.catalogId] : [])));

@@ -26,10 +26,7 @@ type Labels = {
   pricing: PricingTranslator;
 };
 
-const DETAIL_HEADER_KEY: Record<
-  Exclude<LensTableColumn, "price" | "focus">,
-  string
-> = {
+const DETAIL_HEADER_KEY = {
   focalNative: "focalLength",
   focalEquiv: "focalLengthEquiv",
   aperture: "maxAperture",
@@ -40,7 +37,7 @@ const DETAIL_HEADER_KEY: Record<
   wr: "wr",
   filterThread: "filterSize",
   releaseYear: "releaseYear",
-};
+} as const satisfies Record<Exclude<LensTableColumn, "price" | "focus">, string>;
 
 function priceCell(price: NonNullable<ResolvedLens["price"]>, l: Labels): string {
   const amount = formatPrice(l.pricing, price.amount, price.currency);

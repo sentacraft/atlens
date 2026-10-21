@@ -114,7 +114,7 @@ export default memo(function LensCard({
           <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between gap-2 max-xs:pr-7">
               <p className="min-w-0 truncate text-[11px] uppercase tracking-[0.14em] text-zinc-500">
-                {fmt.lensSubtitleLine(tBrand(lens.brand), lens.series)}
+                {fmt.lensSubtitleLine(fmt.brandLabel(tBrand, lens.brand), lens.series)}
               </p>
               {lens.releaseYear ? (
                 <p className="hidden sm:block shrink-0 text-[11px] uppercase tracking-[0.14em] text-zinc-500">

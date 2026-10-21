@@ -25,6 +25,7 @@ import { useGearAdders } from "@/components/me/useGearAdders";
 import { LensSilhouette } from "@/components/ui/lens-silhouette";
 import { BodySpecs } from "@/components/me/gear-specs";
 import { lensPath } from "@/lib/url/routes";
+import { brandLabel } from "@/lib/lens/format";
 
 const ADD_BUTTON_CLS = cn(ACTION_OUTLINE_CLS, "h-9 gap-1 px-3 text-[13px] md:h-8");
 const GROUP_LABEL_CLS = "text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500";
@@ -60,7 +61,7 @@ export default function GearSection({
   const lensItems = gear.filter((item) => item.kind === "lens");
 
   function brandName(slug: string) {
-    return tBrand.has(slug) ? tBrand(slug) : slug;
+    return brandLabel(tBrand, slug);
   }
 
   function failed(error: unknown) {

@@ -6,7 +6,7 @@ import LensSearchDialog from "../LensSearchDialog";
 import { track } from "@/lib/analytics/analytics";
 import type { SearchableLens } from "@/lib/lens/search";
 
-vi.mock("next-intl", () => ({ useTranslations: () => (key: string) => key }));
+vi.mock("next-intl", () => ({ useTranslations: () => Object.assign((key: string) => key, { has: () => true }) }));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
 vi.mock("@/i18n/navigation", () => ({ Link: (props: object) => <a {...props} /> }));
 vi.mock("@/components/feedback/FeedbackTrigger", () => ({ default: () => null }));

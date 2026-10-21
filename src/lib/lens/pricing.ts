@@ -1,3 +1,4 @@
+import type { NamespaceTranslator } from "@/i18n/translator";
 import type { LensPriceEntry } from "@/lib/types";
 
 type Condition = "new" | "used";
@@ -27,8 +28,7 @@ export function pickNewEntry(entries: LensPriceEntry[] | undefined): PricedEntry
   return entries?.find(isPriced);
 }
 
-/** A translator for the Pricing messages, from useTranslations or getTranslations. */
-export type PricingTranslator = (key: string, values?: Record<string, string | number | Date>) => string;
+export type PricingTranslator = NamespaceTranslator<"Pricing">;
 
 export function pickPriceEntry(
   pricing: PricingData | undefined,

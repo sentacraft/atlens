@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useMessages } from "next-intl";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { userFavoritesQuery } from "@/lib/me/favorites-client";
 import { userGearQuery } from "@/lib/me/gear-client";
@@ -13,8 +13,7 @@ import { pickStarters, seededRandom, type Starter, type StarterPools } from "@/l
  * server-rendered, so hydration draws the same ones; elsewhere each mount draws its own.
  */
 export function useStarters({ compact, seed }: { compact: boolean; seed: number | null }): Starter[] {
-  const t = useTranslations("AskIris");
-  const pools = t.raw("starters") as StarterPools;
+  const pools = useMessages().AskIris.starters as StarterPools;
   const { data: session } = authClient.useSession();
   const user = accountUser(session);
   const enabled = Boolean(user);

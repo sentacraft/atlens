@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useFavorites } from "@/hooks/useFavorites";
 import { LensSilhouette } from "@/components/ui/lens-silhouette";
 import { lensPath } from "@/lib/url/routes";
+import { brandLabel } from "@/lib/lens/format";
 
 function equivalentRange(lens: LensSummary): string {
   const min = equivalentFocal(lens.focalLengthMin, lens.mount);
@@ -57,7 +58,7 @@ export default function FavoritesSection({
               <FavoriteImage lensId={lens.id} />
               <div className="min-w-0 flex-1 md:px-3.5 md:pt-3 md:pb-3.5">
                 <div className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">
-                  {tBrand(lens.brand)}
+                  {brandLabel(tBrand, lens.brand)}
                 </div>
                 <Link
                   href={lensPath(lens)}

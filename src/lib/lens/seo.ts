@@ -1,4 +1,5 @@
 import { SITE } from "@/config/site";
+import type { NamespaceTranslator } from "@/i18n/translator";
 import { SPEC_NA } from "@/lib/types";
 import type { Lens, Mount } from "@/lib/types";
 import { mountSeoLabel } from "@/lib/mount";
@@ -9,7 +10,7 @@ import {
   mfdHeroValue,
 } from "@/lib/lens/format";
 
-type T = (key: string, values?: Record<string, string | number>) => string;
+type T = NamespaceTranslator<"LensDetail">;
 
 // Leaves out focal length and aperture: the display name already carries them.
 export function buildLensDescription(args: {
@@ -29,14 +30,14 @@ export function buildLensDescription(args: {
     clauses.push(t("metaWeight", { value: weight }));
   }
   if (lens.filterMm !== undefined && lens.filterMm !== SPEC_NA) {
-    clauses.push(t("metaFilter", { size: lens.filterMm }));
+    clauses.push(t("metaFilter", { size: String(lens.filterMm) }));
   }
   const mfd = mfdHeroValue(lens.minFocusDistance);
   if (mfd) {
     clauses.push(t("metaMfd", { value: mfd }));
   }
   if (lens.maxMagnification?.value !== undefined) {
-    clauses.push(t("metaMag", { value: lens.maxMagnification.value }));
+    clauses.push(t("metaMag", { value: String(lens.maxMagnification.value) }));
   }
   if (lens.af && lens.focusMotor && lens.focusMotor !== SPEC_NA) {
     clauses.push(t("metaMotor", { label: lens.focusMotor }));

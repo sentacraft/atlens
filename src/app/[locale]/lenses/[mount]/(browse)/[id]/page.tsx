@@ -32,7 +32,7 @@ import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates, lensOgImages } from "@/lib/seo";
 import { SITE } from "@/config/site";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens/pricing";
-import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
+import { lensDisplayName, lensSubtitleLine, brandLabel } from "@/lib/lens/format";
 import { buildLensDescription, buildLensProductSchema } from "@/lib/lens/seo";
 import { PriceSection } from "@/components/price/PriceSection";
 import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
@@ -72,7 +72,7 @@ export async function generateMetadata({
     return { title: t("notFoundTitle") };
   }
 
-  const brandName = tBrand(lens.brand);
+  const brandName = brandLabel(tBrand, lens.brand);
   const displayName = lensDisplayName(brandName, lens.series, lens.model);
   const description = buildLensDescription({ lens, mount: resolvedMount, brandName, t });
 
@@ -172,7 +172,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const tIris = await getTranslations("IrisEntry");
   const url = getLensUrl(lens, locale);
 
-  const brandName = tBrand(lens.brand);
+  const brandName = brandLabel(tBrand, lens.brand);
   const displayName = lensDisplayName(brandName, lens.series, lens.model);
   const description = buildLensDescription({ lens, mount: resolvedMount, brandName, t });
   const canonicalUrl = `${SITE.url}/${locale}${lensPath(lens)}`;
@@ -225,7 +225,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           <ShareButton lenses={[lens]} triggerClassName={UTILITY_BTN_CLS} />
           <FeedbackTrigger
             type="data_issue"
-            context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
+            context={{ lensId: lens.id, lensModel: lens.model, lensBrand: brandLabel(tBrand, lens.brand) }}
             fields={reportableFields}
             className={UTILITY_BTN_CLS}
           >
@@ -337,7 +337,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
             {t("nudgeText")}{" "}
             <FeedbackTrigger
               type="data_issue"
-              context={{ lensId: lens.id, lensModel: lens.model, lensBrand: tBrand(lens.brand) }}
+              context={{ lensId: lens.id, lensModel: lens.model, lensBrand: brandLabel(tBrand, lens.brand) }}
               fields={reportableFields}
             >
               {t("feedbackLink")}
