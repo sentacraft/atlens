@@ -19,6 +19,8 @@ import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@
 import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
 import { SKILL_NAMES, readSkill } from "@/lib/ai/skills";
 import { favoritesOnMount } from "@/lib/ai/favorites";
+import { factLinkMarkdown } from "@/lib/askiris/inline-links";
+import { fillUiStrings } from "@/lib/ui-strings";
 
 const RECALL_LIMIT = 20;
 
@@ -192,6 +194,7 @@ export function buildLensTools(
           }
           return result;
         }),
+        note: "Lenses you put forward for the user to choose from go on cards or a table; prose alone does not show them.",
       }),
     }),
 
@@ -229,7 +232,7 @@ export function buildLensTools(
       execute: async () => {
         const ids = await readFavorites();
         if (ids === null) {
-          return { status: "not_signed_in" as const };
+          return { status: "not_signed_in" as const, signInLink: fillUiStrings(factLinkMarkdown("action:signIn"), locale) };
         }
         const { lenses, otherMounts } = favoritesOnMount(ids, mount, locale);
         const results = lenses.slice(0, RECALL_LIMIT).map((lens) => toRecalled(resolveLens(lens, locale, tBrand)));
@@ -270,6 +273,7 @@ export function buildLensTools(
             }
             return toDetailed(resolveLens(lens, locale, tBrand));
           }),
+          notInData: "No test results: sharpness, chromatic aberration, distortion and bokeh rendering are not in Atlens's data.",
         };
       },
     }),
@@ -302,7 +306,8 @@ export function buildLensTools(
         type: "text",
         value:
           `Rendered ${output.recommendations.length} recommendation card(s) to the user, for: ` +
-          output.recommendations.map((rec) => lensRef(rec.id)).join(", "),
+          output.recommendations.map((rec) => lensRef(rec.id)).join(", ") +
+          ". The user reads each card's reason there; your text frames the choice rather than restating each card.",
       }),
     }),
 
