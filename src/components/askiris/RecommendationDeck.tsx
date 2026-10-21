@@ -12,6 +12,7 @@ import Markdown from "@/components/askiris/Markdown";
 import FavoriteStarButton from "@/components/lens/FavoriteStarButton";
 import type { Recommendation } from "@/lib/ai/recall";
 import { lensPath } from "@/lib/url/routes";
+import { previewOnPlainClick, useLensPreview } from "@/hooks/useLensPreview";
 
 export default function RecommendationDeck({
   recommendations,
@@ -37,6 +38,7 @@ const REASON_CLS =
 // for a card.
 function RecommendationCard({ rec }: { rec: Recommendation }) {
   const tPricing = useTranslations("Pricing");
+  const { openLensPreview } = useLensPreview();
   const weight = rec.weightG != null ? weightDisplay(rec.weightG, "g") : null;
   const price = rec.price ? formatPrice(tPricing, rec.price.amount, rec.price.currency) : null;
 
@@ -45,8 +47,11 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
       <Link
         href={lensPath(rec)}
         prefetch={false}
-        onClick={() => track("askiris_rec_click", { lens_id: rec.id, source: "askiris" })}
-        // New tab: a same-tab navigation would discard the conversation.
+        onClick={(event) => {
+          track("askiris_rec_click", { lens_id: rec.id, source: "askiris" });
+          previewOnPlainClick(event, () => openLensPreview(rec.id));
+        }}
+        // A modified click opens the full page in a new tab: a same-tab navigation would discard the conversation.
         target="_blank"
         rel="noopener noreferrer"
         className="flex flex-col gap-2 p-3.5"

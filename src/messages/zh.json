@@ -409,6 +409,12 @@
     "inline": "参数取自厂商官网 · 非 AI 生成",
     "note": "这里的参数不是 AI 生成的，取自厂商官网正式发布的资料。AI 只帮忙把官网文字归档成统一格式，不编造数值；每支镜头上线前由作者审核。<link>数据怎么来</link>"
   },
+  "LensPreview": {
+    "loading": "正在加载镜头…",
+    "openFullPage": "查看完整页面",
+    "close": "关闭",
+    "unavailable": "这款镜头加载失败。"
+  },
   "LensDetail": {
     "metaDescPrefix": "{name} 富士 {mount} 卡口{type}镜头规格、参数与横向对比。",
     "metaJoinSpace": "",

@@ -8,6 +8,7 @@ import { Drawer } from "@base-ui/react/drawer";
 import AskIrisChat from "@/components/askiris/AskIrisChat";
 import type { IrisPanelRequest } from "@/context/IrisPanelProvider";
 import { useCurrentPagePath } from "@/hooks/useCurrentPagePath";
+import { useLensPreview } from "@/hooks/useLensPreview";
 import { IRIS_PANEL_WIDTH, Z } from "@/config/ui";
 import { askIrisChatDataQuery } from "@/lib/askiris/chat-data";
 import { cn } from "@/lib/utils";
@@ -32,7 +33,8 @@ export default function IrisPanel({
   const locale = useLocale();
   const data = useQuery(askIrisChatDataQuery(locale));
   const pagePath = useCurrentPagePath();
-  const { expanded, setExpanded } = useExpanded(shown);
+  const { lensId } = useLensPreview();
+  const { expanded, setExpanded } = useExpanded(shown, layout === "side" && lensId !== null);
 
   const chat = data.data ? (
     <AskIrisChat
@@ -78,7 +80,7 @@ export default function IrisPanel({
               "fixed inset-0 bg-zinc-950/40 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0",
             )}
           />
-          {/* No z-index, like every portaled popup (see Z): popups opened from the sheet, History among them, stack above it. */}
+          {/* No z-index, like every portaled popup (see Z): popups opened from the sheet, History and a lens preview among them, stack above it. */}
           <Drawer.Viewport className="fixed inset-0">
             <Drawer.Popup
               aria-label="Iris"
@@ -115,7 +117,7 @@ export default function IrisPanel({
  * Whether Iris covers the page. Expanding adds a history entry, so Back collapses it instead of
  * leaving the page; closing Iris or moving to another page collapses it.
  */
-function useExpanded(shown: boolean) {
+function useExpanded(shown: boolean, previewBeside: boolean) {
   const pathname = usePathname();
   const [expanded, setExpandedState] = useState(false);
   const pushedEntry = useRef(false);
@@ -182,6 +184,15 @@ function useExpanded(shown: boolean) {
     pushedEntry.current = false;
     setExpandedState(false);
   }, [pathname]);
+
+  // A lens preview opened from the side panel sits beside it, which an expanded panel covers. The
+  // preview pushed its own entry, so the one pushed on expanding stays.
+  useEffect(() => {
+    if (previewBeside) {
+      pushedEntry.current = false;
+      setExpandedState(false);
+    }
+  }, [previewBeside]);
 
   return { expanded, setExpanded };
 }
