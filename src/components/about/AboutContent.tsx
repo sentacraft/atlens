@@ -276,7 +276,7 @@ export default async function AboutContent() {
             {t("dataSpecTitle")}
           </p>
           <div className="flex flex-col gap-2.5 pl-3 border-l-2 border-zinc-200">
-            {[1, 2, 3, 4].map((i) => (
+            {([1, 2, 3, 4] as const).map((i) => (
               <div key={i}>
                 <p className="text-sm font-medium text-zinc-700">
                   {t(`dataSpecPoint${i}Title`)}
@@ -298,7 +298,7 @@ export default async function AboutContent() {
             {t("dataPricingTitle")}
           </p>
           <div className="flex flex-col gap-2.5 pl-3 border-l-2 border-zinc-200">
-            {[1, 2, 3, 4].map((i) => (
+            {([1, 2, 3, 4] as const).map((i) => (
               <div key={i}>
                 <p className="text-sm font-medium text-zinc-700">
                   {t(`dataPricingPoint${i}Title`)}

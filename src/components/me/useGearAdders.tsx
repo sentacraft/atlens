@@ -14,6 +14,7 @@ import LensSearchDialog from "@/components/browse/LensSearchDialog";
 import { DialogCancel } from "@/components/ui/dialog";
 import AddBodyDialog from "@/components/me/AddBodyDialog";
 import ManualLensDialog from "@/components/me/ManualLensDialog";
+import { brandLabel } from "@/lib/lens/format";
 
 /**
  * The add-gear flow shared by the profile and the in-chat gear card: the body picker, the
@@ -33,7 +34,7 @@ export function useGearAdders({ userId, lenses }: { userId: string; lenses: Lens
   const [pickedLenses, setPickedLenses] = useState<LensSummary[]>([]);
 
   const brandSuggestions = useMemo(
-    () => [...new Set(lenses.map((lens) => lens.brand))].map((slug) => tBrand(slug)),
+    () => [...new Set(lenses.map((lens) => lens.brand))].map((slug) => brandLabel(tBrand, slug)),
     [lenses, tBrand],
   );
   const ownedBodyIds = new Set(gear.flatMap((item) => (item.kind === "body" && item.catalogId ? [item.catalogId] : [])));

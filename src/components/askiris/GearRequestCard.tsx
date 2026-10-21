@@ -12,6 +12,7 @@ import { ACTION_OUTLINE_CLS, ACTION_PRIMARY_CLS, ACTION_QUIET_CLS, CHIP_ACTIVE_C
 import { cn } from "@/lib/utils";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { useGearAdders } from "@/components/me/useGearAdders";
+import { brandLabel } from "@/lib/lens/format";
 
 const CARD_CLS = "w-full max-w-[560px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm";
 
@@ -119,7 +120,7 @@ function GearPicker({
   const [pending, setPending] = useState({ bodies: hints.bodies, lenses: hints.lenses });
   const lensById = useMemo(() => new Map(lenses.map((lens) => [lens.id, lens])), [lenses]);
 
-  const brandName = (slug: string) => (tBrand.has(slug) ? tBrand(slug) : slug);
+  const brandName = (slug: string) => brandLabel(tBrand, slug);
   const savedBodies = gear.filter((item) => item.kind === "body");
   const savedLenses = gear.filter((item) => item.kind === "lens");
   const savedIds = new Set(gear.flatMap((item) => (item.catalogId ? [item.catalogId] : [])));

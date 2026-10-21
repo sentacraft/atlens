@@ -16,7 +16,7 @@ import { ScrollChevron } from "@/components/ui/scroll-chevron";
 import { cn } from "@/lib/utils";
 import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, PAGE_GUTTER_CLS } from "@/config/ui-tokens";
 import { Z } from "@/config/ui";
-import { lensDisplayName, lensSubtitleLine } from "@/lib/lens/format";
+import { lensDisplayName, lensSubtitleLine, brandLabel } from "@/lib/lens/format";
 import type { Lens } from "@/lib/types";
 import { buildComparePath } from "@/lib/url/compare";
 
@@ -101,7 +101,7 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
             >
               <AnimatePresence mode="popLayout">
                 {selectedLenses.map((lens) => {
-                  const brandName = tBrand(lens.brand);
+                  const brandName = brandLabel(tBrand, lens.brand);
                   const displayName = lensDisplayName(brandName, lens.series, lens.model);
 
                   return (

@@ -93,7 +93,7 @@ export default function CoverageChart({ lenses }: { lenses: CoverageInput[] }) {
 
       {(gap !== undefined || hasManual) && (
         <p className="text-xs text-zinc-500">
-          {t("coverageNote", { gap: gap ?? "none", manual: hasManual ? "yes" : "no" })}
+          {t("coverageNote", { gap: gap === undefined ? "none" : String(gap), manual: hasManual ? "yes" : "no" })}
         </p>
       )}
     </div>

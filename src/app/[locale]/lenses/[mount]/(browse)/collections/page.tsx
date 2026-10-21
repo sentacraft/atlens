@@ -43,7 +43,7 @@ export async function generateMetadata({
   };
 }
 
-const GROUP_META: Record<CollectionGroup, { key: string; marker: string[]; markerItalic?: boolean }> = {
+const GROUP_META = {
   portability: { key: "category_portability", marker: ["G"] },
   aperture: { key: "category_aperture", marker: ["ƒ"], markerItalic: true },
   price: { key: "category_price", marker: ["$"] },
@@ -54,7 +54,7 @@ const GROUP_META: Record<CollectionGroup, { key: string; marker: string[]; marke
   trait: { key: "category_trait", marker: ["WR"] },
   brand: { key: "category_brand", marker: ["BRAND"] },
   dedicated: { key: "category_dedicated", marker: ["✦"] },
-};
+} as const satisfies Record<CollectionGroup, { key: string; marker: readonly string[]; markerItalic?: boolean }>;
 
 export default async function CollectionsIndexPage({
   params,

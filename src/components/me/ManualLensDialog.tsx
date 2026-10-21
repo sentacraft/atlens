@@ -41,12 +41,12 @@ const INPUT_CLS =
   "h-10 w-full min-w-0 rounded-lg border border-zinc-200 bg-white px-3 text-base text-zinc-900 outline-none transition-colors placeholder:text-zinc-400 focus:border-zinc-500 aria-invalid:border-red-500 sm:text-sm";
 const LABEL_CLS = "flex flex-col gap-1.5 text-[13px] font-medium text-zinc-700";
 
-const FEATURE_LABEL_KEY: Record<LensFeature, string> = {
+const FEATURE_LABEL_KEY = {
   weatherResistant: "featureWr",
   apertureRing: "featureApertureRing",
   powerZoom: "featurePowerZoom",
   internalZoom: "featureInternalZoom",
-};
+} as const satisfies Record<LensFeature, string>;
 const FEATURE_ICON_KEY: Record<LensFeature, string> = {
   weatherResistant: "wr",
   apertureRing: "apertureRing",
