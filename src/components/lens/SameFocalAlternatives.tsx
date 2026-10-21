@@ -93,19 +93,23 @@ function ColumnHeader({ icon: Icon, label }: { icon: LucideIcon; label: string }
 
 function LensName({ lens, brand, current }: { lens: Lens; brand: string; current?: string }) {
   return (
-    <span className="flex min-w-0 flex-col whitespace-normal">
-      <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">
+    <span className="flex min-w-0 flex-col gap-0.5 whitespace-normal">
+      <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] text-zinc-500">
+        {current && (
+          <span className="shrink-0 rounded bg-zinc-900 px-1.5 text-[10px] leading-4 font-semibold tracking-normal whitespace-nowrap normal-case text-white">
+            {current}
+          </span>
+        )}
         {lensSubtitleLine(brand, lens.series)}
-        {current && ` · ${current}`}
       </span>
       <span className="font-semibold text-zinc-900">{lens.model}</span>
     </span>
   );
 }
 
-function Thumb({ lens, size }: { lens: Lens; size: "table" | "list" }) {
+function Thumb({ lens, size, current = false }: { lens: Lens; size: "table" | "list"; current?: boolean }) {
   return (
-    <span className={cn("relative shrink-0 overflow-hidden rounded-lg bg-zinc-50", size === "table" ? "size-10" : "size-14")}>
+    <span className={cn("relative shrink-0 overflow-hidden rounded-lg", current ? "bg-white" : "bg-zinc-50", size === "table" ? "size-10" : "size-14")}>
       <Image src={getLensImageUrl(lens.id)} alt="" fill sizes={size === "table" ? "40px" : "56px"} style={lensImageStyle} className="object-contain p-1" />
     </span>
   );
@@ -140,6 +144,8 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
     ...(zoom ? [<ColumnHeader key="ois" icon={FEATURE_ICONS.ois} label={t("columnOis")} />] : []),
     <ColumnHeader key="wr" icon={FEATURE_ICONS.wr} label={t("columnWr")} />,
   ];
+  const columnCount = headers.length + featureHeaders.length + 2;
+  const comparedWith = t(zoom ? "comparedWithZoom" : "comparedWithPrime", { count: alternatives.length });
   const featureCells = (l: Lens) => [
     focusText(l),
     ...(zoom ? [boolText(t, l.ois)] : []),
@@ -186,10 +192,10 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
           </tr>
         </thead>
         <tbody className="text-zinc-700">
-          <tr className="border-t border-zinc-200 bg-zinc-50/80">
-            <td className="py-3 pr-2 pl-4">
+          <tr className="border-t border-zinc-200 bg-zinc-100 font-semibold text-zinc-900">
+            <td className="py-3.5 pr-2 pl-4 shadow-[inset_3px_0_0_var(--color-zinc-900)]">
               <span className="flex items-center gap-3">
-                <Thumb lens={lens} size="table" />
+                <Thumb lens={lens} size="table" current />
                 <LensName lens={lens} brand={brandLabel(tBrand, lens.brand)} current={t("current")} />
               </span>
             </td>
@@ -201,6 +207,11 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
             ))}
             <td className="px-2 py-3"><ApproxPrice pricing={lens.pricing} /></td>
             <td className="py-3 pr-4" />
+          </tr>
+          <tr>
+            <td colSpan={columnCount} className="border-t border-zinc-200 bg-zinc-50 px-4 py-1.5 text-[11px] tracking-[0.08em] text-zinc-500">
+              {comparedWith}
+            </td>
           </tr>
           {alternatives.map((l, index) => (
             <tr key={l.id} className={cn("relative border-t border-zinc-100 transition-colors hover:bg-zinc-50", index >= ALTERNATIVES_SHOWN && EXTRA_ROW_CLS)}>
@@ -231,8 +242,8 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
       </div>
 
       <ul className="text-sm lg:hidden">
-        <li className="flex items-center gap-3 bg-zinc-50/80 px-4 py-3">
-          <Thumb lens={lens} size="list" />
+        <li className="flex items-center gap-3 bg-zinc-100 px-4 py-3.5 shadow-[inset_3px_0_0_var(--color-zinc-900)]">
+          <Thumb lens={lens} size="list" current />
           <div className="flex min-w-0 flex-col gap-1">
             <LensName lens={lens} brand={brandLabel(tBrand, lens.brand)} current={t("current")} />
             <span className="text-[13px] text-zinc-600">
@@ -241,6 +252,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
             <ApproxPrice pricing={lens.pricing} />
           </div>
         </li>
+        <li className="border-t border-zinc-200 bg-zinc-50 px-4 py-1.5 text-[11px] tracking-[0.08em] text-zinc-500">{comparedWith}</li>
         {alternatives.map((l, index) => (
           <li
             key={l.id}
