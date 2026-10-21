@@ -12,8 +12,8 @@
     "home": "Back to Home"
   },
   "Metadata": {
-    "seoTitle": "Atlens | Fujifilm X & GFX Lens Specs, Comparison & AI Advice",
-    "seoDescription": "Every Fujifilm X-mount lens, first- and third-party, plus GFX: normalized specs, side-by-side comparison, reference prices, and Iris, an AI advisor that answers from the data."
+    "seoTitle": "Atlens | Fujifilm Lens Database: Specs, Comparison & AI Advice",
+    "seoDescription": "Every Fujifilm X-mount lens, first- and third-party: normalized specs, side-by-side comparison, reference prices, and Iris, an AI advisor that answers from the data."
   },
   "Rename": {
     "toast": "X-Glass is now Atlens — same lens database, just a new name. Welcome back 👋"
@@ -607,7 +607,7 @@
     "authorName": "SentaCraft",
     "pageTitle": "About",
     "rebrandNote": "Atlens was previously known as X-Glass — same project, same author, just a simpler, more readable name.",
-    "metaDescription": "Why Atlens exists, who builds it, what it covers (Fujifilm X-mount from every major brand, with GFX being added) and how its AI assistant Iris works. Built independently, with open-source web code.",
+    "metaDescription": "Why Atlens exists, who builds it, what it covers (Fujifilm X-mount lenses from every major brand) and how its AI assistant Iris works. Built independently, with open-source web code.",
     "backgroundTitle": "Background",
     "backgroundBody1": "As a Fujifilm shooter myself, I kept hitting the same wall when picking a lens: the information is scattered. Say I want a fast 50mm-equivalent prime, a do-it-all travel zoom, or a constant-aperture standard zoom — with hundreds of lenses out there across first-party and third-party brands, which ones actually fit and deserve a spot on the shortlist? To find out, I'd have to comb through every brand's official accounts, storefronts, and websites — slow and tedious. Or I could turn to reviews and creators' videos and articles, but those mostly exist to share opinions and steer a buying decision, not to objectively map out how many lenses might match what I'm after — which, to me, is the real first step in choosing a lens.",
     "backgroundBody2": "So I built Atlens: a standardized data pipeline catalogs lenses and collects manufacturers' officially published specs, building a multi-brand, normalized, side-by-side comparable database that tackles exactly that first step. Atlens started X-mount only; G-mount (medium format) came later at users' request, and while its coverage and breadth of features don't yet match X-mount's, they'll keep improving over time.",
@@ -693,7 +693,7 @@
   },
   "RecentlyAdded": {
     "pageTitle": "Recently Added",
-    "metaDescription": "Lenses newly added to Atlens, by date: the latest Fujifilm X-mount and GFX additions.",
+    "metaDescription": "Fujifilm lenses newly added to Atlens, by date.",
     "intro": "Tracking the expanding scope of the database.",
     "added": "+{count}",
     "lensesCount": "{count} lenses",
