@@ -498,8 +498,8 @@
   "Alternatives": {
     "titlePrime": "同焦段的其他选择",
     "titleZoom": "相近焦段的其他变焦",
-    "summaryPrime": "{range} 的定焦，共 {count} 支，和这支 {name} 逐项比较。",
-    "summaryZoom": "和 {range} 焦段大部分重合的变焦，共 {count} 支，和这支 {name} 逐项比较。",
+    "summaryPrime": "{range} 的定焦，共 {count} 支",
+    "summaryZoom": "和 {range} 焦段大部分重合的变焦，共 {count} 支",
     "askIris": "问 Iris 这几支怎么选",
     "askIrisQuestionPrime": "{name} 和同焦段的其他镜头怎么选？",
     "askIrisQuestionZoom": "{name} 和焦段相近的其他变焦怎么选？",
@@ -513,7 +513,6 @@
     "columnPrice": "参考价",
     "current": "当前",
     "compare": "并排对比",
-    "compareLabel": "把 {name} 和 {current} 并排对比",
     "same": "相同",
     "close": "相近",
     "faster": "亮 {stops} 档",
@@ -541,7 +540,7 @@
     "partial": "部分",
     "showMore": "展开其余 {count} 支",
     "showLess": "收起",
-    "footnote": "参考价为各渠道采样，不是实时报价。「并排对比」直接打开这支和当前镜头的对比页，不改动你的对比栏。"
+    "footnote": "参考价为各渠道采样，不是实时报价。点「对比」把这支加入对比栏。"
   },
   "Brands": {
     "7artisans": "七工匠",

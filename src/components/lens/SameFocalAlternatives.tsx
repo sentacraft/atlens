@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import AskIrisEntry from "@/components/iris/AskIrisEntry";
 import ApproxPrice from "@/components/price/ApproxPrice";
 import AlternativesExpander from "@/components/lens/AlternativesExpander";
+import CompareChipToggle from "@/components/compare/CompareChipToggle";
 import {
   ALTERNATIVES_SHOWN,
   apertureDelta,
@@ -19,9 +20,8 @@ import { FEATURE_ICONS } from "@/lib/feature-icons";
 import { focalRangeDisplay, lensDisplayName, lensSubtitleLine, primaryApertureDisplay, weightDisplay } from "@/lib/lens/format";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import type { Lens } from "@/lib/types";
-import { buildComparePath } from "@/lib/url/compare";
 import { lensPath } from "@/lib/url/routes";
-import { ACTION_OUTLINE_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
+import { PAGE_SECTION_CLS, SECTION_HEADING_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 
 type T = Awaited<ReturnType<typeof getTranslations<"Alternatives">>>;
@@ -157,10 +157,6 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
       apertureDelta(lens, l)?.kind === "same" ? t("sameAperture") : apertureNote(t, lens, l) ?? aperture(l),
       weightNote(t, lens, l, { long: true }),
     ].join(" · ");
-  const compareLink = (l: Lens) => ({
-    href: buildComparePath(lens.mount, [lens.id, l.id]),
-    "aria-label": t("compareLabel", { name: l.model, current: lens.model }),
-  });
 
   const rows = (
     <>
@@ -200,9 +196,9 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
             <td className="py-3 pr-4" />
           </tr>
           {alternatives.map((l, index) => (
-            <tr key={l.id} className={cn("border-t border-zinc-100", index >= ALTERNATIVES_SHOWN && EXTRA_ROW_CLS)}>
+            <tr key={l.id} className={cn("relative border-t border-zinc-100 transition-colors hover:bg-zinc-50", index >= ALTERNATIVES_SHOWN && EXTRA_ROW_CLS)}>
               <td className="py-3 pr-2 pl-4">
-                <Link href={lensPath(l)} prefetch={false} className="flex items-center gap-3">
+                <Link href={lensPath(l)} prefetch={false} className="flex items-center gap-3 after:absolute after:inset-0 after:content-['']">
                   <Thumb lens={l} />
                   <LensName lens={l} brand={tBrand(l.brand)} />
                 </Link>
@@ -219,9 +215,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
               ))}
               <td className="px-2 py-3"><ApproxPrice pricing={l.pricing} /></td>
               <td className="py-3 pr-4 text-right">
-                <Link {...compareLink(l)} prefetch={false} className={cn("text-[13px]", TEXT_LINK_CLS)}>
-                  {t("compare")}
-                </Link>
+                <CompareChipToggle lensId={l.id} className="relative z-10 min-w-20 justify-center" />
               </td>
             </tr>
           ))}
@@ -240,9 +234,9 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
         {alternatives.map((l, index) => (
           <li
             key={l.id}
-            className={cn("flex items-center gap-3 border-t border-zinc-100 px-4 py-3", index >= ALTERNATIVES_SHOWN && EXTRA_ITEM_CLS)}
+            className={cn("relative flex items-center gap-3 border-t border-zinc-100 px-4 py-3 transition-colors hover:bg-zinc-50", index >= ALTERNATIVES_SHOWN && EXTRA_ITEM_CLS)}
           >
-            <Link href={lensPath(l)} prefetch={false} className="flex min-w-0 flex-1 flex-col gap-1">
+            <Link href={lensPath(l)} prefetch={false} className="flex min-w-0 flex-1 flex-col gap-1 after:absolute after:inset-0 after:content-['']">
               <LensName lens={l} brand={tBrand(l.brand)} />
               <span className="text-[13px] text-zinc-600">{phoneNotes(l)}</span>
               <div className="flex flex-wrap items-baseline gap-x-3 text-[13px] text-zinc-500">
@@ -250,13 +244,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
                 <ApproxPrice pricing={l.pricing} />
               </div>
             </Link>
-            <Link
-              {...compareLink(l)}
-              prefetch={false}
-              className={cn(ACTION_OUTLINE_CLS, "h-11 shrink-0 px-3 text-[13px] font-normal")}
-            >
-              {t("compare")}
-            </Link>
+            <CompareChipToggle lensId={l.id} className="relative z-10" />
           </li>
         ))}
       </ul>
@@ -264,12 +252,12 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
   );
 
   return (
-    <section className="flex flex-col gap-4">
+    <section className={cn(PAGE_SECTION_CLS, "flex flex-col gap-4")}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-1">
-          <h2 className="font-heading text-xl font-bold text-zinc-900">{t(zoom ? "titleZoom" : "titlePrime")}</h2>
+          <h2 className={SECTION_HEADING_CLS}>{t(zoom ? "titleZoom" : "titlePrime")}</h2>
           <p className="text-[13px] text-zinc-500">
-            {t(zoom ? "summaryZoom" : "summaryPrime", { count: alternatives.length, range, name })}
+            {t(zoom ? "summaryZoom" : "summaryPrime", { count: alternatives.length, range })}
           </p>
         </div>
         <AskIrisEntry
