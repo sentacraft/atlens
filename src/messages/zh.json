@@ -541,8 +541,7 @@
     "partial": "部分",
     "comparisonStarted": "已加入对比：{current} 和 {lens}",
     "comparisonReplaced": "已开始新的对比：{current} 和 {lens}，原来的 {count, number} 支已移出",
-    "comparedWithPrime": "和它比 · 同焦段的其他 {count, number} 支",
-    "comparedWithZoom": "和它比 · 相近焦段的其他 {count, number} 支",
+    "comparedWith": "以下和它比较",
     "showMore": "展开其余 {count, number} 支",
     "showLess": "收起",
     "footnote": "参考价为各渠道采样，不是实时报价。点「对比」会把这支和当前镜头一起放进对比栏。"

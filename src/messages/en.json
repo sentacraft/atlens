@@ -541,8 +541,7 @@
     "partial": "Partial",
     "comparisonStarted": "Added {current} and {lens} to compare",
     "comparisonReplaced": "Started a new comparison of {current} and {lens}; {count, plural, one {# lens was} other {# lenses were}} taken out",
-    "comparedWithPrime": "Against this lens · {count, plural, one {# other prime} other {# other primes}}",
-    "comparedWithZoom": "Against this lens · {count, plural, one {# other zoom} other {# other zooms}}",
+    "comparedWith": "Compared with this lens",
     "showMore": "Show {count, number} more",
     "showLess": "Show less",
     "footnote": "Prices are sampled from retailers, not live quotes. Compare puts a lens in your comparison list together with this one."

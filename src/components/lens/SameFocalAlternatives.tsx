@@ -146,7 +146,6 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
     <ColumnHeader key="wr" icon={FEATURE_ICONS.wr} label={t("columnWr")} />,
   ];
   const columnCount = headers.length + featureHeaders.length + 2;
-  const comparedWith = t(zoom ? "comparedWithZoom" : "comparedWithPrime", { count: alternatives.length });
   const featureCells = (l: Lens) => [
     focusText(l),
     ...(zoom ? [boolText(t, l.ois)] : []),
@@ -211,7 +210,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
           </tr>
           <tr>
             <td colSpan={columnCount} className="border-t border-zinc-200 bg-zinc-50 px-4 py-1.5 text-[11px] tracking-[0.08em] text-zinc-500">
-              {comparedWith}
+              {t("comparedWith")}
             </td>
           </tr>
           {alternatives.map((l, index) => (
@@ -256,7 +255,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
             <ApproxPrice pricing={lens.pricing} />
           </div>
         </li>
-        <li className="border-t border-zinc-200 bg-zinc-50 px-4 py-1.5 text-[11px] tracking-[0.08em] text-zinc-500">{comparedWith}</li>
+        <li className="border-t border-zinc-200 bg-zinc-50 px-4 py-1.5 text-[11px] tracking-[0.08em] text-zinc-500">{t("comparedWith")}</li>
         {alternatives.map((l, index) => (
           <li
             key={l.id}
