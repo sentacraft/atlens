@@ -2,9 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Check } from "lucide-react";
 import { accountUser, authClient } from "@/lib/auth-client";
-import { SIGN_IN_BENEFITS, type SignInReason } from "@/lib/sign-in-reason";
+import { SIGN_IN_CARD_SOURCE, type SignInCardReason } from "@/lib/sign-in-pitch";
+import SignInBenefits from "@/components/auth/SignInBenefits";
 import { ACTION_PRIMARY_CLS, ACTION_QUIET_CLS, CHAT_CARD_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
@@ -16,29 +16,21 @@ export default function SignInCard({
   returnTo,
   onNotNow,
 }: {
-  reason: SignInReason;
+  reason: SignInCardReason;
   /** Where a sign-in that leaves the page brings the user back. */
   returnTo: () => string;
   onNotNow: () => void;
 }) {
   const t = useTranslations("AskIris.signInCard");
-  const tAuth = useTranslations("Auth");
   const openSignIn = useSignInDialog();
   return (
     <section aria-label={t(`title.${reason}`)} className={cn(CHAT_CARD_CLS, "flex flex-col gap-3.5 p-4")}>
       <h3 className="text-[15px] font-semibold text-zinc-900">{t(`title.${reason}`)}</h3>
-      <ul className="flex flex-col gap-2">
-        {SIGN_IN_BENEFITS[reason].map((key) => (
-          <li key={key} className="flex gap-2 text-[13px] leading-5 text-zinc-700">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-900" strokeWidth={2.5} />
-            {tAuth(key)}
-          </li>
-        ))}
-      </ul>
+      <SignInBenefits source={SIGN_IN_CARD_SOURCE[reason]} className="text-[13px] leading-5" />
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
-          onClick={() => openSignIn(reason, { returnTo: returnTo() })}
+          onClick={() => openSignIn(SIGN_IN_CARD_SOURCE[reason], { returnTo: returnTo() })}
           className={cn(ACTION_PRIMARY_CLS, "h-9 rounded-lg px-4 text-sm font-medium")}
         >
           {t("signIn")}
@@ -62,7 +54,7 @@ export function SignInGate({
   returnTo,
   onAnswer,
 }: {
-  reason: SignInReason;
+  reason: SignInCardReason;
   /** The user's answer, once given. */
   answered?: boolean;
   /** False once the conversation has moved past this call. */

@@ -3,13 +3,14 @@
 import { useRef, useState } from "react";
 import { Drawer } from "@base-ui/react/drawer";
 import { Menu } from "@base-ui/react/menu";
-import { Cloud, Ellipsis, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Ellipsis, Pencil, SquarePen, Trash2, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { ACTION_QUIET_CLS, ACTION_OUTLINE_CLS, ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS, LIST_ITEM_ACTIVE_CLS, MENU_ITEM_CLS, MENU_ITEM_DANGER_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
+import { ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS, LIST_ITEM_ACTIVE_CLS, MENU_ITEM_CLS, MENU_ITEM_DANGER_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
 import { MAX_CONVERSATION_TITLE_LENGTH } from "@/lib/askiris/conversation-contract";
 import type { AskIrisConversationRecord } from "@/lib/askiris/conversation-repository";
 import type { ConversationListState } from "@/components/askiris/useConversation";
+import SignInBenefits from "@/components/auth/SignInBenefits";
 import {
   Dialog,
   DialogClose,
@@ -45,6 +46,7 @@ export default function ConversationHistory({
   onSignIn: (() => void) | null;
 }) {
   const t = useTranslations("AskIris");
+  const tAuth = useTranslations("Auth");
   const locale = useLocale();
   const dateFormat = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric" });
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -63,37 +65,16 @@ export default function ConversationHistory({
                 "transition-transform duration-200 data-ending-style:-translate-x-full data-starting-style:-translate-x-full data-[swipe-dismiss]:!transition-none",
               )}
             >
-              <div className="flex items-center justify-between gap-3 px-4 pt-4 pb-3">
-                <Drawer.Title className="text-sm font-semibold text-zinc-900">
+              <div className="flex items-center gap-1 pt-4 pr-3 pb-2 pl-4">
+                <Drawer.Title className="flex-1 text-sm font-semibold text-zinc-900">
                   {t("history")}
                 </Drawer.Title>
+                <button type="button" onClick={onNew} aria-label={t("newChat")} className={cn(ICON_NAV_BTN_CLS, "size-8")}>
+                  <SquarePen className="size-4" />
+                </button>
                 <Drawer.Close aria-label={t("closeHistory")} className={cn(ICON_CLOSE_BTN_CLS, "size-8")}>
                   <X className="size-4" />
                 </Drawer.Close>
-              </div>
-              {onSignIn && (
-                <div className="mx-4 mb-3 flex flex-col gap-2.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5">
-                  <div className="flex items-start gap-2.5">
-                    <span className="grid size-7 shrink-0 place-items-center rounded-lg border border-zinc-200 bg-white text-zinc-700">
-                      <Cloud className="size-4" />
-                    </span>
-                    <div className="space-y-1">
-                      <p className="text-sm font-semibold text-zinc-900 sm:text-[13px]">{t("historySignInTitle")}</p>
-                      <p className="text-[13px] leading-relaxed text-zinc-500 sm:text-xs">
-                        {conversations.length > 0 ? t("historySignInBody") : t("historySignInBodyEmpty")}
-                      </p>
-                    </div>
-                  </div>
-                  <button type="button" onClick={onSignIn} className={cn(ACTION_PRIMARY_CLS, "h-10 justify-center rounded-lg text-sm sm:h-8 sm:text-[13px]")}>
-                    {t("historySignIn")}
-                  </button>
-                </div>
-              )}
-              <div className="px-4 pb-3">
-                <button type="button" onClick={onNew} className={cn(ACTION_OUTLINE_CLS, "w-full justify-center")}>
-                  <Plus className="size-4" />
-                  {t("newChat")}
-                </button>
               </div>
               <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-4">
                 {listState === "loading" ? (
@@ -174,6 +155,15 @@ export default function ConversationHistory({
                   </ul>
                 )}
               </div>
+              {onSignIn && (
+                <section aria-label={tAuth("reasonChatsTitle")} className="flex flex-col gap-3 border-t border-zinc-200 px-4 pt-4 pb-5">
+                  <p className="text-sm font-semibold text-zinc-900">{tAuth("reasonChatsTitle")}</p>
+                  <SignInBenefits source="iris_history" className="text-[13px] leading-5" />
+                  <button type="button" onClick={onSignIn} className={cn(ACTION_PRIMARY_CLS, "h-10 justify-center rounded-lg text-sm")}>
+                    {tAuth("signIn")}
+                  </button>
+                </section>
+              )}
             </Drawer.Popup>
           </Drawer.Viewport>
         </Drawer.Portal>

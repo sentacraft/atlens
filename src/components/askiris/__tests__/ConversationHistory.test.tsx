@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import ConversationHistory from "../ConversationHistory";
 
 vi.mock("next-intl", () => ({
@@ -16,7 +16,11 @@ const conversations = [
   { id: "c2", title: "Portrait for X-T5", createdAt: 1, updatedAt: 1_760_000_000_000 },
 ];
 
-function renderHistory({ list = conversations, onSignIn = null }: { list?: typeof conversations; onSignIn?: (() => void) | null } = {}) {
+function renderHistory({
+  list = conversations,
+  onSignIn = null,
+  onNew = () => {},
+}: { list?: typeof conversations; onSignIn?: (() => void) | null; onNew?: () => void } = {}) {
   const onRename = vi.fn();
   const onDelete = vi.fn();
   render(
@@ -27,7 +31,7 @@ function renderHistory({ list = conversations, onSignIn = null }: { list?: typeo
       listState="ready"
       activeConversationId="c1"
       onSelect={() => {}}
-      onNew={() => {}}
+      onNew={onNew}
       onRename={onRename}
       onDelete={onDelete}
       onSignIn={onSignIn}
@@ -41,22 +45,26 @@ async function openActions(title: string) {
 }
 
 describe("ConversationHistory", () => {
-  it("offers a visitor without an account to sign in, worded for whether there is anything to keep", async () => {
+  it("offers a visitor without an account to sign in below the list, leading with kept chats", async () => {
     const onSignIn = vi.fn();
     renderHistory({ onSignIn });
-    expect(await screen.findByText("historySignInBody")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "historySignIn" }));
+    const section = await screen.findByRole("region", { name: "reasonChatsTitle" });
+    expect(within(section).getAllByRole("listitem")[0]).toHaveTextContent("benefitChats");
+    fireEvent.click(within(section).getByRole("button", { name: "signIn" }));
     expect(onSignIn).toHaveBeenCalled();
-
-    cleanup();
-    renderHistory({ list: [], onSignIn });
-    expect(await screen.findByText("historySignInBodyEmpty")).toBeInTheDocument();
   });
 
-  it("shows no sign-in card to an account", async () => {
+  it("shows no sign-in section to an account", async () => {
     renderHistory();
     await screen.findByText("Street lens under 3000");
-    expect(screen.queryByRole("button", { name: "historySignIn" })).toBeNull();
+    expect(screen.queryByRole("region", { name: "reasonChatsTitle" })).toBeNull();
+  });
+
+  it("starts a new chat from the header", async () => {
+    const onNew = vi.fn();
+    renderHistory({ onNew });
+    fireEvent.click(await screen.findByRole("button", { name: "newChat" }));
+    expect(onNew).toHaveBeenCalled();
   });
 
   it("renames a conversation in place", async () => {
