@@ -48,7 +48,7 @@
     "lucide-react": "^1.7.0",
     "modern-screenshot": "^4.6.8",
     "motion": "^12.38.0",
-    "next": "^16.2.6",
+    "next": "^16.4.2",
     "next-intl": "^4.8.3",
     "qrcode.react": "^4.2.0",
     "react": "19.2.4",
@@ -64,7 +64,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "^1.19.8",
+    "@opennextjs/cloudflare": "^1.20.12",
     "@playwright/test": "^1.64.1",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/postcss": "^4",
@@ -76,14 +76,14 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.1",
+    "eslint-config-next": "16.4.2",
     "jsdom": "^29.1.1",
     "smol-toml": "^1.9.0",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^4.1.1",
-    "wrangler": "^4.144.0"
+    "wrangler": "^4.151.3"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
