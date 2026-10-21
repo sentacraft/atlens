@@ -13,14 +13,14 @@ import { getTranslations } from "next-intl/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import {
   activeAgentModel,
-  getAgentModel,
-  agentProviderOptions,
+  agentCallSettings,
+  agentModelLabel,
   missingAgentModelKey,
-  AGENT_TEMPERATURE,
 } from "@/lib/ai/model";
 import { gearPrompt, pagePrompt, systemPrompt } from "@/lib/ai/system-prompt";
 import { pageLensRefs, resolvePageContext } from "@/lib/ai/page-context";
 import { pagePathSchema } from "@/lib/askiris/page-path";
+import { findAgentModelPreset, MODEL_PRESET_HEADER } from "@/lib/ai/model-presets";
 import { describeGear, EVAL_GEAR_HEADER, evalGear, type GearStatus } from "@/lib/ai/gear-context";
 import { EVAL_FAVORITES_HEADER, evalFavorites } from "@/lib/ai/favorites";
 import { listUserFavorites } from "@/lib/me/favorites-repository";
@@ -72,7 +72,10 @@ const STREAM_TIMEOUT_MS = 120_000;
 
 /** Runs one Ask Iris turn and streams the reply, saving it to the conversation. Any session, guests included; 401 without one, 429 when over the rate limit or token budget. */
 export async function POST(req: NextRequest) {
-  const missingKey = missingAgentModelKey();
+  const model = activeAgentModel(
+    process.env.NODE_ENV === "production" ? undefined : findAgentModelPreset(req.headers.get(MODEL_PRESET_HEADER)),
+  );
+  const missingKey = missingAgentModelKey(model);
   if (missingKey) {
     console.error(`[askiris] ${missingKey} is not set`);
     return chatErrorResponse("unavailable", 500);
@@ -86,7 +89,6 @@ export async function POST(req: NextRequest) {
   const { message, previousMessageId, mount, locale, id: conversationId, page } = parsed.data;
   const startedAt = Date.now();
   const traceId = crypto.randomUUID();
-  const model = activeAgentModel();
   const traceCollector = new AskIrisTraceCollector(startedAt);
 
   const ip = clientIp(req);
@@ -222,7 +224,7 @@ export async function POST(req: NextRequest) {
       ...completion,
       responseMessageId: completion.responseMessage?.id,
       modelProvider: model.provider,
-      modelName: model.modelId,
+      modelName: model.reasoning === "off" ? model.modelId : `${model.modelId}:reasoning-${model.reasoning}`,
       releaseId,
       startedAt,
       finishedAt: Date.now(),
@@ -254,9 +256,7 @@ export async function POST(req: NextRequest) {
   };
 
   const result = streamText({
-    model: getAgentModel(),
-    providerOptions: agentProviderOptions,
-    temperature: AGENT_TEMPERATURE,
+    ...agentCallSettings(model),
     // The gear note is its own message after the fixed prompt, so that prompt stays identical
     // across users for prompt caching.
     instructions: [
@@ -344,6 +344,7 @@ export async function POST(req: NextRequest) {
           turnId: messageContext.turnId,
           traceId,
           ...(historyChanged ? { historyChanged: true as const } : {}),
+          ...(process.env.NODE_ENV === "production" ? {} : { model: agentModelLabel(model) }),
         };
       },
       onEnd: async (result) => {

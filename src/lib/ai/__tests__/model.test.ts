@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { missingAgentModelKey, getAgentModel } from "../model";
+import { activeAgentModel, agentCallSettings, agentModelLabel, missingAgentModelKey, getAgentModel } from "../model";
+import { findAgentModelPreset } from "../model-presets";
 
 // The chat route refuses a turn when the model it is about to call has no key. The
 // check has to follow AGENT_MODEL rather than name one provider: with a hardcoded
@@ -36,23 +37,70 @@ afterEach(() => {
 
 describe("missingAgentModelKey", () => {
   it("names the default provider's key when nothing overrides it", () => {
-    expect(missingAgentModelKey()).toBe("DASHSCOPE_API_KEY");
+    expect(missingAgentModelKey(activeAgentModel())).toBe("DASHSCOPE_API_KEY");
     process.env.DASHSCOPE_API_KEY = "set";
-    expect(missingAgentModelKey()).toBeNull();
+    expect(missingAgentModelKey(activeAgentModel())).toBeNull();
   });
 
   it("follows the override rather than the default provider", () => {
     // The deployed provider's key is present; the overridden one's is not.
     process.env.DASHSCOPE_API_KEY = "set";
     process.env.AGENT_MODEL = "google:gemini-3.5-flash-lite";
-    expect(missingAgentModelKey()).toBe("GOOGLE_GENERATIVE_AI_API_KEY");
+    expect(missingAgentModelKey(activeAgentModel())).toBe("GOOGLE_GENERATIVE_AI_API_KEY");
     process.env.GOOGLE_GENERATIVE_AI_API_KEY = "set";
-    expect(missingAgentModelKey()).toBeNull();
+    expect(missingAgentModelKey(activeAgentModel())).toBeNull();
   });
 
   it("has nothing to check for a provider it does not know, which getAgentModel rejects", () => {
     process.env.AGENT_MODEL = "anthropic:claude";
-    expect(missingAgentModelKey()).toBeNull();
-    expect(() => getAgentModel()).toThrow(/unknown provider/);
+    expect(missingAgentModelKey(activeAgentModel())).toBeNull();
+    expect(() => getAgentModel(activeAgentModel())).toThrow(/unknown provider/);
+  });
+});
+
+describe("activeAgentModel", () => {
+  it("lets a Test Hook preset win over AGENT_MODEL", () => {
+    process.env.AGENT_MODEL = "google:gemini-3.5-flash-lite";
+    expect(activeAgentModel(findAgentModelPreset("gpt-6-luna-low"))).toMatchObject({
+      provider: "openai",
+      modelId: "gpt-6-luna",
+      reasoning: "low",
+    });
+  });
+
+  it("keeps DeepSeek reasoning on when AGENT_MODEL picks it", () => {
+    process.env.AGENT_MODEL = "deepseek:deepseek-flash";
+    expect(activeAgentModel().reasoning).toBe("on");
+  });
+});
+
+describe("agentCallSettings", () => {
+  it("sends a temperature only when reasoning is off", () => {
+    process.env.OPENAI_API_KEY = "set";
+    expect(agentCallSettings(activeAgentModel(findAgentModelPreset("gpt-6-luna")))).toMatchObject({
+      temperature: 0,
+      providerOptions: { openai: { reasoningEffort: "none" } },
+    });
+    const low = agentCallSettings(activeAgentModel(findAgentModelPreset("gpt-6-luna-low")));
+    expect(low.temperature).toBeUndefined();
+    expect(low.providerOptions.openai.reasoningEffort).toBe("low");
+  });
+
+  it("turns DeepSeek reasoning off and on with its own flag", () => {
+    process.env.DEEPSEEK_API_KEY = "set";
+    expect(agentCallSettings(activeAgentModel(findAgentModelPreset("deepseek-flash"))).providerOptions.deepseek).toEqual({
+      thinking: { type: "disabled" },
+    });
+    expect(agentCallSettings(activeAgentModel(findAgentModelPreset("deepseek-flash-on"))).providerOptions.deepseek).toEqual({
+      thinking: { type: "enabled" },
+    });
+  });
+});
+
+describe("agentModelLabel", () => {
+  it("names a preset by its label and an AGENT_MODEL pick by provider and model", () => {
+    expect(agentModelLabel(activeAgentModel(findAgentModelPreset("qwen3.8-flash")))).toBe("qwen3.8-flash · no reasoning");
+    process.env.AGENT_MODEL = "deepseek:deepseek-flash";
+    expect(agentModelLabel(activeAgentModel())).toBe("deepseek:deepseek-flash · reasoning on");
   });
 });

@@ -4,10 +4,19 @@ import { Chat } from "@ai-sdk/react";
 import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from "ai";
 import { askIrisChatRequestBody } from "@/lib/askiris/chat-request";
 import { askIrisMessageMetadataSchema, type AskIrisUIMessage } from "@/lib/askiris/message-metadata";
+import { MODEL_PRESET_HEADER } from "@/lib/ai/model-presets";
+
+let modelPreset: string | undefined;
+
+/** Development only: the Test Hook model preset sent with each turn, or undefined for the default. */
+export function setModelPreset(id: string | undefined) {
+  modelPreset = id;
+}
 
 const transport = new DefaultChatTransport<AskIrisUIMessage>({
-  prepareSendMessagesRequest: ({ id, messages, body }) => ({
+  prepareSendMessagesRequest: ({ id, messages, body, headers }) => ({
     body: askIrisChatRequestBody({ id, messages, body }),
+    headers: modelPreset ? { ...headers, [MODEL_PRESET_HEADER]: modelPreset } : headers,
   }),
 });
 

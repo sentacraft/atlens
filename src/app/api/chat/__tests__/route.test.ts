@@ -22,7 +22,7 @@ vi.mock("next-intl/server", () => ({
 vi.mock("@/lib/ai/model", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/ai/model")>()),
   missingAgentModelKey: () => undefined,
-  getAgentModel: mocks.getAgentModel,
+  agentCallSettings: () => ({ model: mocks.getAgentModel(), temperature: 0, providerOptions: {} }),
 }));
 vi.mock("@/lib/rate-limit", () => ({
   clientIp: () => null,
