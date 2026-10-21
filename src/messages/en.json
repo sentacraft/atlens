@@ -538,9 +538,11 @@
     "yes": "Yes",
     "no": "No",
     "partial": "Partial",
+    "comparisonStarted": "Added {current} and {lens} to compare",
+    "comparisonReplaced": "Started a new comparison of {current} and {lens}; {count, plural, one {# lens was} other {# lenses were}} taken out",
     "showMore": "Show {count} more",
     "showLess": "Show less",
-    "footnote": "Prices are sampled from retailers, not live quotes. Compare adds a lens to your comparison list."
+    "footnote": "Prices are sampled from retailers, not live quotes. Compare puts a lens in your comparison list together with this one."
   },
   "Brands": {
     "7artisans": "7Artisans",

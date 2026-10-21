@@ -5,7 +5,7 @@ import { Link } from "@/i18n/navigation";
 import AskIrisEntry from "@/components/iris/AskIrisEntry";
 import ApproxPrice from "@/components/price/ApproxPrice";
 import AlternativesExpander from "@/components/lens/AlternativesExpander";
-import CompareChipToggle from "@/components/compare/CompareChipToggle";
+import AlternativeCompareToggle from "@/components/lens/AlternativeCompareToggle";
 import {
   ALTERNATIVES_SHOWN,
   apertureDelta,
@@ -158,6 +158,13 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
       weightNote(t, lens, l, { long: true }),
     ].join(" · ");
 
+  const compareProps = (l: Lens) => ({
+    lensId: l.id,
+    lensName: lensDisplayName(tBrand(l.brand), l.series, l.model),
+    currentId: lens.id,
+    currentName: name,
+  });
+
   const rows = (
     <>
       <div className="hidden overflow-x-auto lg:block">
@@ -215,7 +222,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
               ))}
               <td className="px-2 py-3"><ApproxPrice pricing={l.pricing} /></td>
               <td className="py-3 pr-4 text-right">
-                <CompareChipToggle lensId={l.id} className="relative z-10 min-w-20 justify-center" />
+                <AlternativeCompareToggle {...compareProps(l)} className="relative z-10 min-w-20 justify-center" />
               </td>
             </tr>
           ))}
@@ -244,7 +251,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
                 <ApproxPrice pricing={l.pricing} />
               </div>
             </Link>
-            <CompareChipToggle lensId={l.id} className="relative z-10" />
+            <AlternativeCompareToggle {...compareProps(l)} className="relative z-10" />
           </li>
         ))}
       </ul>

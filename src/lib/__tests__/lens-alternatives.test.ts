@@ -5,6 +5,7 @@ import {
   apertureDelta,
   findSameFocalAlternatives,
   focalDelta,
+  planAlternativeCompare,
   weightDelta,
   zoomOverlap,
 } from "@/lib/lens/alternatives";
@@ -137,5 +138,21 @@ describe("focalDelta", () => {
     const current = makeLens({ focalLengthMin: 18, focalLengthMax: 55 });
 
     expect(focalDelta(current, makeLens({ focalLengthMin: 16, focalLengthMax: 50 }))).toEqual({ wider: 2, longer: -5 });
+  });
+});
+
+describe("planAlternativeCompare", () => {
+  it("starts a comparison of the current lens and the alternative when the bar lacks the current lens", () => {
+    expect(planAlternativeCompare([], "cur", "alt", 4)).toEqual({ kind: "start", replaced: [] });
+    expect(planAlternativeCompare(["a", "b"], "cur", "alt", 4)).toEqual({ kind: "start", replaced: ["a", "b"] });
+  });
+
+  it("adds to a bar built around the current lens, unless it is full", () => {
+    expect(planAlternativeCompare(["cur", "a"], "cur", "alt", 4)).toEqual({ kind: "add" });
+    expect(planAlternativeCompare(["cur", "a", "b", "c"], "cur", "alt", 4)).toEqual({ kind: "full" });
+  });
+
+  it("takes out an alternative that is already in the bar", () => {
+    expect(planAlternativeCompare(["cur", "alt"], "cur", "alt", 4)).toEqual({ kind: "remove" });
   });
 });

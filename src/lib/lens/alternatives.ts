@@ -126,6 +126,27 @@ export function focalDelta(current: Lens, other: Lens): FocalDelta {
   };
 }
 
+export type AlternativeCompareStep =
+  | { kind: "remove" }
+  | { kind: "add" }
+  | { kind: "full" }
+  | { kind: "start"; replaced: string[] };
+
+/**
+ * What adding an alternative does to the compare bar. A bar already holding the current lens is being
+ * built around it, so the alternative joins it; any other bar starts over as the current lens and the
+ * alternative, and `replaced` is what it held, for undo.
+ */
+export function planAlternativeCompare(compareIds: readonly string[], currentId: string, lensId: string, max: number): AlternativeCompareStep {
+  if (compareIds.includes(lensId)) {
+    return { kind: "remove" };
+  }
+  if (compareIds.includes(currentId)) {
+    return compareIds.length >= max ? { kind: "full" } : { kind: "add" };
+  }
+  return { kind: "start", replaced: [...compareIds] };
+}
+
 /** The focal lengths the alternatives span, for the section's summary line. */
 export function focalSpan(lenses: readonly Lens[]): { min: number; max: number } {
   return {
