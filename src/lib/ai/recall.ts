@@ -75,27 +75,28 @@ export type LensTableColumn = (typeof LENS_TABLE_COLUMNS)[number];
 // Aperture is already in the lens name, the first column.
 const DEFAULT_TABLE_COLUMNS: LensTableColumn[] = ["focalEquiv", "weight", "price"];
 
+// Absent and null both leave an axis unrestricted: strict tool calling sends null for an unset field.
 export interface LensConstraints {
-  brands?: string[];
-  type?: "prime" | "zoom";
-  focus?: "auto" | "manual";
-  usage?: "photo" | "cine";
-  features?: FilterFeatureKey[];
-  opticalTraits?: OpticalTrait[];
+  brands?: string[] | null;
+  type?: "prime" | "zoom" | null;
+  focus?: "auto" | "manual" | null;
+  usage?: "photo" | "cine" | null;
+  features?: FilterFeatureKey[] | null;
+  opticalTraits?: OpticalTrait[] | null;
   // Focal fields are native mm, the number printed on the lens.
-  coversFocals?: number[];
-  focalWithin?: { min?: number; max?: number };
-  minReach?: number;
-  maxWide?: number;
-  maxWeightG?: number;
-  maxLengthMm?: number;
-  maxApertureF?: { wide?: number; tele?: number };
+  coversFocals?: number[] | null;
+  focalWithin?: { min?: number | null; max?: number | null } | null;
+  minReach?: number | null;
+  maxWide?: number | null;
+  maxWeightG?: number | null;
+  maxLengthMm?: number | null;
+  maxApertureF?: { wide?: number | null; tele?: number | null } | null;
   // In the locale's currency (zh → CNY, en → USD).
-  maxPrice?: number;
-  minMagnification?: number;
-  minApertureBladeCount?: number;
-  minReleaseYear?: number;
-  sortBy?: RecallSort;
+  maxPrice?: number | null;
+  minMagnification?: number | null;
+  minApertureBladeCount?: number | null;
+  minReleaseYear?: number | null;
+  sortBy?: RecallSort | null;
 }
 
 // officialLink, both angle-of-view forms, and compatibleMounts are left out: nothing read

@@ -1,18 +1,21 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 import { Drawer } from "@base-ui/react/drawer";
 import AskIrisChat from "@/components/askiris/AskIrisChat";
 import type { IrisPanelRequest } from "@/context/IrisPanelProvider";
 import { useCurrentPagePath } from "@/hooks/useCurrentPagePath";
-import { Z } from "@/config/ui";
+import { IRIS_PANEL_WIDTH, Z } from "@/config/ui";
 import { askIrisChatDataQuery } from "@/lib/askiris/chat-data";
 import { cn } from "@/lib/utils";
 
 /**
  * Ask Iris beside the page: a side panel below the nav on wide screens, which the page makes
- * room for, and a bottom sheet on narrow ones. Both stay mounted while closed, keeping the chat.
+ * room for, and a bottom sheet on narrow ones. Both stay mounted while closed, keeping the chat,
+ * and expand in place over the page.
  */
 export default function IrisPanel({
   layout,
@@ -29,10 +32,11 @@ export default function IrisPanel({
   const locale = useLocale();
   const data = useQuery(askIrisChatDataQuery(locale));
   const pagePath = useCurrentPagePath();
+  const { expanded, setExpanded } = useExpanded(shown);
 
   const chat = data.data ? (
     <AskIrisChat
-      shell={{ variant: "panel", pagePath, request, onClose }}
+      shell={{ variant: "panel", pagePath, request, onClose, expanded, onExpandedChange: setExpanded }}
       linkTargets={data.data.linkTargets}
       lenses={data.data.lenses}
     />
@@ -46,11 +50,17 @@ export default function IrisPanel({
     return (
       <aside
         aria-label="Iris"
-        hidden={!shown}
+        data-iris=""
+        // Expanding moves the left edge, so the width animates instead of jumping.
+        style={{ left: expanded ? 0 : `calc(100% - ${IRIS_PANEL_WIDTH}px)` }}
         className={cn(
-          "fixed right-0 bottom-0 flex w-[var(--iris-panel-width)] flex-col border-l border-zinc-200 bg-white",
+          "fixed right-0 bottom-0 flex flex-col bg-white",
+          !expanded && "border-l border-zinc-200",
           // --nav-height leaves out the nav's 1px bottom border, which the panel would cover: it stacks above the nav.
           "top-[calc(var(--nav-height)+1px)] pb-[var(--safe-inset-bottom)]",
+          // Hidden by sliding out, not `hidden`, so closing can animate; visibility keeps it out of focus and the accessibility tree once out.
+          "transition-[left,translate,visibility] duration-300 ease-out motion-reduce:transition-none starting:translate-x-full",
+          !shown && "invisible translate-x-full",
           Z.fixed,
         )}
       >
@@ -66,24 +76,32 @@ export default function IrisPanel({
           <Drawer.Backdrop
             className={cn(
               "fixed inset-0 bg-zinc-950/40 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0",
-              Z.fixed,
             )}
           />
-          <Drawer.Viewport className={cn("fixed inset-0", Z.fixed)}>
+          {/* No z-index, like every portaled popup (see Z): popups opened from the sheet, History among them, stack above it. */}
+          <Drawer.Viewport className="fixed inset-0">
             <Drawer.Popup
               aria-label="Iris"
+              data-iris=""
               className={cn(
-                "fixed inset-x-0 flex flex-col rounded-t-3xl bg-white pb-[var(--safe-inset-bottom)] shadow-2xl ring-1 ring-zinc-200",
+                "fixed inset-x-0 flex flex-col bg-white pb-[var(--safe-inset-bottom)] shadow-2xl ring-1 ring-zinc-200",
                 // iOS leaves fixed elements under the keyboard; the provider reports its height, and the
                 // sheet sits on top of it, shrinking so the composer stays above.
-                "bottom-[var(--drawer-keyboard-inset,0px)] h-[min(85svh,calc(100svh_-_var(--drawer-keyboard-inset,0px)_-_var(--safe-inset-top)_-_1rem))]",
-                "[transform:translateY(var(--drawer-swipe-movement-y,0px))] transition-[transform,translate] duration-300 ease-out data-[swiping]:transition-none",
+                "bottom-[var(--drawer-keyboard-inset,0px)]",
+                expanded
+                  ? "h-[calc(100svh_-_var(--drawer-keyboard-inset,0px))] pt-[var(--safe-inset-top)]"
+                  : "h-[min(85svh,calc(100svh_-_var(--drawer-keyboard-inset,0px)_-_var(--safe-inset-top)_-_1rem))] rounded-t-3xl",
+                "[transform:translateY(var(--drawer-swipe-movement-y,0px))] transition-[transform,translate,height] duration-300 ease-out data-[swiping]:transition-none",
                 "data-ending-style:translate-y-full data-starting-style:translate-y-full",
+                // A drawer opened from the sheet (History) is nested and gets no backdrop of its own, so the sheet dims itself.
+                "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:bg-zinc-950/40 after:opacity-0 after:transition-opacity after:duration-200 data-[nested-drawer-open]:after:opacity-100",
               )}
             >
-              <div className="flex shrink-0 touch-none justify-center pt-2.5 pb-0.5">
-                <div className="h-1.5 w-10 rounded-full bg-zinc-300" />
-              </div>
+              {!expanded && (
+                <div className="flex shrink-0 touch-none justify-center pt-2.5 pb-0.5">
+                  <div className="h-1.5 w-10 rounded-full bg-zinc-300" />
+                </div>
+              )}
               <div className="flex min-h-0 flex-1 flex-col">{chat}</div>
             </Drawer.Popup>
           </Drawer.Viewport>
@@ -91,4 +109,79 @@ export default function IrisPanel({
       </Drawer.VirtualKeyboardProvider>
     </Drawer.Root>
   );
+}
+
+/**
+ * Whether Iris covers the page. Expanding adds a history entry, so Back collapses it instead of
+ * leaving the page; closing Iris or moving to another page collapses it.
+ */
+function useExpanded(shown: boolean) {
+  const pathname = usePathname();
+  const [expanded, setExpandedState] = useState(false);
+  const pushedEntry = useRef(false);
+
+  const setExpanded = useCallback((next: boolean) => {
+    if (next) {
+      window.history.pushState(null, "", window.location.href);
+      pushedEntry.current = true;
+    } else if (pushedEntry.current) {
+      pushedEntry.current = false;
+      window.history.back();
+    }
+    setExpandedState(next);
+  }, []);
+
+  useEffect(() => {
+    if (!expanded) {
+      return;
+    }
+    const onPopState = () => {
+      pushedEntry.current = false;
+      setExpandedState(false);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [expanded]);
+
+  // A link outside Iris (the nav, its menu) leads to a page Iris covers. One to the current page
+  // changes no path, so the pathname rule below would leave Iris over it; the link's own
+  // navigation pushes an entry, so the one pushed on expanding stays.
+  useEffect(() => {
+    if (!expanded) {
+      return;
+    }
+    const onClick = (event: MouseEvent) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+      const link = event.target instanceof Element ? event.target.closest("a[href]") : null;
+      if (!(link instanceof HTMLAnchorElement) || link.closest("[data-iris]") || link.target === "_blank" || link.origin !== window.location.origin) {
+        return;
+      }
+      pushedEntry.current = false;
+      setExpandedState(false);
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, [expanded]);
+
+  // Closing Iris collapses it, taking back the entry Back would have stepped over.
+  useEffect(() => {
+    if (!shown) {
+      setExpanded(false);
+    }
+  }, [shown, setExpanded]);
+
+  const expandedOn = useRef(pathname);
+  useEffect(() => {
+    if (expandedOn.current === pathname) {
+      return;
+    }
+    expandedOn.current = pathname;
+    // Another page: the pushed entry now sits under the page left behind, so it stays.
+    pushedEntry.current = false;
+    setExpandedState(false);
+  }, [pathname]);
+
+  return { expanded, setExpanded };
 }
