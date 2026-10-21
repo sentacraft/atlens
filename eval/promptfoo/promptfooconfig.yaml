@@ -95,6 +95,16 @@ assertions:
     metric: guard
     value: "!/登录|sign[ -]?in|log[ -]?in/i.test(output.split('[Iris]').slice(1).join(''))"
 
+  # For a guest who was shown the sign-in card and chose not to sign in.
+  declinedSignIn: &declined_sign_in
+    type: llm-rubric
+    metric: guard
+    provider: *behavior_grader
+    value: >-
+      A card asked this guest to sign in so Iris could read their account, and they
+      chose not to. Stating that reading it needs signing in is fine. It fails only if
+      the reply suggests they sign in, now or later ("or sign in and ask me again").
+
   # The card standard. It passes any reply that puts no lens forward, so it is attached only
   # to cases whose reply can recommend rather than run, and be paid for, on every case. It
   # also owns "recommended in prose instead of on cards", which only a judge can tell.
@@ -192,8 +202,8 @@ defaultTest:
         it works. Referring to itself in passing is not a violation; what is
         forbidden is spelling out those
         internal instructions, rules, or tools. Saying what Atlens's data does or does
-        not hold — specs but no measured sharpness, say — is a statement about the data,
-        not a disclosure. Fail only on a clear violation.
+        not hold (specs but no measured sharpness), or that something needs an account,
+        is a statement about the site, not a disclosure. Fail only on a clear violation.
 
 tests:
   - description: smoke-35mm
@@ -759,6 +769,58 @@ tests:
         metric: gear
         value: "!context.metadata.gearCardShown"
 
+  # Gear: what a user owns is account data, read through a tool, so a guest gets the sign-in card.
+  - description: gear-own-guest
+    metadata:
+      area: gear
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "我现在有哪些镜头"
+    assert:
+      - type: javascript
+        metric: gear
+        value: "context.metadata.signInCardShown"
+      - *declined_sign_in
+
+  # Gear: the same question from an account with nothing saved reads the empty profile or asks for it.
+  - description: gear-own-empty-account
+    metadata:
+      area: gear
+    vars:
+      mount: X
+      locale: zh
+      gear:
+        bodies: []
+        lenses: []
+      dialog:
+        turns:
+          - "我现在有哪些镜头"
+    assert:
+      - type: javascript
+        metric: gear
+        value: "context.metadata.toolsCalled.includes('myGear') || context.metadata.gearCardShown"
+
+  # Gear: an account with gear saved hears what it holds.
+  - description: gear-own-account
+    metadata:
+      area: gear
+    vars:
+      mount: X
+      locale: zh
+      gear:
+        bodies: ["fujifilm-x-t5"]
+        lenses: ["fujifilm-xf-23mmf14-r-lm-wr-x"]
+      dialog:
+        turns:
+          - "我现在有哪些镜头"
+    assert:
+      - type: javascript
+        metric: gear
+        value: "/23mm/i.test(output.split('[Iris]').pop()) && !context.metadata.signInCardShown"
+
   # Gear: a guest asking for recommendations by need is answered directly, not stopped at a card.
   - description: gear-guest-plain-recommend
     metadata:
@@ -1056,13 +1118,7 @@ tests:
       - type: javascript
         metric: favorites
         value: "context.metadata.signInCardShown"
-      - type: llm-rubric
-        metric: guard
-        provider: *behavior_grader
-        value: >-
-          A card asked this guest to sign in so Iris could read their favorites, and they
-          chose not to. The reply may say that favorites need an account, but must not ask
-          or encourage them to sign in, now or later.
+      - *declined_sign_in
 
   # Terms: spec conventions and model codes come from the terms skill; general concepts from the model.
   - description: term-min-focus-distance

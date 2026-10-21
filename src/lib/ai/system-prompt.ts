@@ -16,16 +16,16 @@ const MOUNT_LABEL: Record<Mount, string> = {
   G: "富士 G 卡口（中画幅）",
 };
 
-// A new action fails to compile until it says what it does here.
-const ACTION_EFFECT: Record<LinkAction, string> = {
+// A new action fails to compile until it says what it does here. Sign-in is left out: the sign-in
+// card offers it, and the account site fact carries its link for questions about signing in.
+const ACTION_EFFECT: Record<Exclude<LinkAction, "signIn">, string> = {
   feedback: "打开反馈表单，用户可以把问题、建议或数据错误发给作者",
-  signIn: "打开登录框",
 };
 
 // Chinese for both locales; the last paragraph sets the reply language.
 export function systemPrompt(mount: Mount, locale: string): string {
   const language = locale === "zh" ? "简体中文" : "英文";
-  const actions = (Object.keys(ACTION_EFFECT) as LinkAction[])
+  const actions = (Object.keys(ACTION_EFFECT) as (keyof typeof ACTION_EFFECT)[])
     .map((action) => `- ${fillUiStrings(factLinkMarkdown(`action:${action}`), locale)}：${ACTION_EFFECT[action]}`)
     .join("\n");
   const compare = fillUiStrings("[{Nav.compare}](compare:ref,ref)", locale);

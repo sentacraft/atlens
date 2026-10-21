@@ -147,6 +147,7 @@ export async function POST(req: NextRequest) {
       })
     : null;
   const gearStatus = await loadGearStatus(req, appDb, userId, isAccount);
+  const gearSummary = describeGear(gearStatus, brandName);
   const testFavorites =
     process.env.NODE_ENV === "production" ? undefined : evalFavorites(req.headers.get(EVAL_FAVORITES_HEADER));
   // Filled once the history is resolved below; validate needs the tools before that.
@@ -156,7 +157,10 @@ export async function POST(req: NextRequest) {
       mount,
       locale,
       tBrand,
-      () => loadFavorites(testFavorites, appDb, userId, isAccount),
+      {
+        favorites: () => loadFavorites(testFavorites, appDb, userId, isAccount),
+        gear: gearSummary,
+      },
       recalledRefs,
     ),
   );
@@ -270,14 +274,14 @@ export async function POST(req: NextRequest) {
       { role: "system", content: systemPrompt(mount, locale) },
       {
         role: "system",
-        content: gearPrompt(describeGear(gearStatus, brandName), { declined: gearDeclined }),
+        content: gearPrompt(gearSummary, { declined: gearDeclined }),
       },
       ...(pageContext ? [{ role: "system" as const, content: pagePrompt(pageContext) }] : []),
     ],
     messages: modelMessages,
     tools,
     activeTools: offerGearCard ? undefined : toolNamesWithout(tools, ASK_FOR_GEAR),
-    toolApproval: signInApproval(isAccount || testFavorites !== undefined),
+    toolApproval: signInApproval(gearStatus.kind === "account" || testFavorites !== undefined),
     stopWhen: stepCountIs(STEP_BUDGET),
     // req.signal only fires on Workers with the enable_request_signal compatibility flag.
     abortSignal: AbortSignal.any([req.signal, AbortSignal.timeout(STREAM_TIMEOUT_MS)]),

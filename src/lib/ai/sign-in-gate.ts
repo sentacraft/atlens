@@ -7,6 +7,7 @@ import type { SignInReason } from "@/lib/sign-in-reason";
  */
 const SIGN_IN_GATED_TOOLS: Readonly<Record<string, SignInReason>> = {
   myFavorites: "favorite",
+  myGear: "gear",
 };
 
 export function signInGate(toolName: string): SignInReason | undefined {
