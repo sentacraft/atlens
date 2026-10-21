@@ -19,8 +19,16 @@ function findUnportable(node: unknown, path: string, found: string[]): void {
   if (schema.type === "array" && !schema.items) {
     found.push(`${path}: array without items`);
   }
-  if (schema.anyOf || schema.oneOf) {
-    found.push(`${path}: anyOf/oneOf (often a .nullable(); make it .optional() instead)`);
+  // A nullable field (anyOf: [T, null]) is allowed: strict-mode callers such as GPT need null
+  // to leave a field unset. Gemini now receives `parametersJsonSchema`, which should accept it,
+  // but that is unverified; check it before switching Iris to a Gemini model.
+  const variants = (schema.anyOf ?? schema.oneOf) as Record<string, unknown>[] | undefined;
+  const isNullable = variants?.length === 2 && variants.some((variant) => variant.type === "null");
+  if (variants && !isNullable) {
+    found.push(`${path}: anyOf/oneOf beyond a nullable field`);
+  }
+  for (const variant of isNullable ? variants : []) {
+    findUnportable(variant, path, found);
   }
   for (const key of ["properties", "$defs"]) {
     const group = schema[key] as Record<string, unknown> | undefined;
@@ -43,4 +51,15 @@ describe("tool schemas stay portable across providers", () => {
       expect(found).toEqual([]);
     });
   }
+});
+
+describe("queryLenses input", () => {
+  it("lets a caller leave a constraint unset with null", () => {
+    // GPT models fill every field; with no null allowed they sent 0, and maxWide: 0 matched nothing.
+    const schema = tools.queryLenses.inputSchema as z.ZodType;
+    expect(
+      schema.safeParse({ queries: [{ type: "prime", maxWide: null, maxWeightG: null, focalWithin: { min: null, max: 18 } }] })
+        .success,
+    ).toBe(true);
+  });
 });

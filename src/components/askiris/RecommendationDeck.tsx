@@ -20,10 +20,13 @@ export default function RecommendationDeck({
   recommendations: Recommendation[];
 }) {
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-      {recommendations.map((rec) => (
-        <RecommendationCard key={rec.id} rec={rec} />
-      ))}
+    // Columns follow the chat's own width, not the screen's: the side panel is narrow on any screen.
+    <div className="@container">
+      <div className="grid grid-cols-1 gap-3 @xl:grid-cols-2">
+        {recommendations.map((rec) => (
+          <RecommendationCard key={rec.id} rec={rec} />
+        ))}
+      </div>
     </div>
   );
 }

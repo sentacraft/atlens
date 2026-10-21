@@ -58,6 +58,82 @@ test.describe("Ask Iris side panel", () => {
     expect(hit.x).toBeGreaterThan(panelLeft);
     expect(hit.onItem).toBe(true);
   });
+
+  test("opens History from the panel by expanding it, with a sign-in card for a visitor without an account", async ({ page }) => {
+    await page.goto("/en/lenses/x/browse");
+    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    const panel = page.getByRole("complementary", { name: "Iris" });
+
+    await panel.getByRole("button", { name: "Conversations" }).click();
+    // The open History drawer hides the rest of the page from assistive tech, the panel included,
+    // so the panel is found by its markup here rather than by role.
+    const expandedPanel = page.locator('aside[aria-label="Iris"]');
+    await expect.poll(() => expandedPanel.evaluate((aside) => aside.getBoundingClientRect().left)).toBe(0);
+    const history = page.getByRole("dialog", { name: "Conversations" });
+    await expect(history.getByRole("button", { name: "Sign in", exact: true })).toBeVisible();
+  });
+
+  test("narrows the page from the right, keeping its left edge under the nav's", async ({ page }) => {
+    await page.setViewportSize({ width: 1680, height: 900 });
+    await page.goto("/en/lenses/x/browse");
+    // The page's centred shell, the same max-w-7xl container the nav sits in.
+    const edges = () =>
+      page.evaluate(() => {
+        const shell = [...document.querySelectorAll("[class*='max-w-7xl']")].find((el) => !el.closest("header"))!;
+        const box = shell.getBoundingClientRect();
+        return [Math.round(box.left), Math.round(box.right)];
+      });
+    const [leftBefore] = await edges();
+
+    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    const panel = page.getByRole("complementary", { name: "Iris" });
+    await expect(panel).toBeVisible();
+    await expect
+      .poll(async () => {
+        const [left, right] = await edges();
+        const panelLeft = await panel.evaluate((aside) => Math.round(aside.getBoundingClientRect().left));
+        return { keepsLeft: left === leftBefore, endsAtPanel: Math.abs(right - panelLeft) <= 1 };
+      })
+      .toEqual({ keepsLeft: true, endsAtPanel: true });
+  });
+
+  test("collapses when a nav link is clicked, even one to the page it covers", async ({ page }) => {
+    await page.goto("/en/lenses/x/browse");
+    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    const panel = page.getByRole("complementary", { name: "Iris" });
+    const panelLeft = () => panel.evaluate((aside) => aside.getBoundingClientRect().left);
+    await panel.getByRole("button", { name: "Open full screen" }).click();
+    await expect.poll(panelLeft).toBe(0);
+
+    await page.getByRole("banner").getByRole("link", { name: "Browse" }).click();
+    await expect.poll(panelLeft).toBeGreaterThan(0);
+    await expect(panel).toBeVisible();
+  });
+
+  test("expands over the page in place, and Back or the button collapses it", async ({ page }) => {
+    const browse = /\/en\/lenses\/x\/browse$/;
+    await page.goto("/en/lenses/x/browse");
+    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    const panel = page.getByRole("complementary", { name: "Iris" });
+    const panelLeft = () => panel.evaluate((aside) => aside.getBoundingClientRect().left);
+    await panel.getByRole("textbox").fill("Which one for travel?");
+
+    await panel.getByRole("button", { name: "Open full screen" }).click();
+    await expect.poll(panelLeft).toBe(0);
+    await expect(page).toHaveURL(browse);
+    await expect(panel.getByRole("textbox")).toHaveValue("Which one for travel?");
+
+    await page.goBack();
+    await expect.poll(panelLeft).toBeGreaterThan(0);
+    await expect(panel).toBeVisible();
+    await expect(page).toHaveURL(browse);
+
+    await panel.getByRole("button", { name: "Open full screen" }).click();
+    await expect.poll(panelLeft).toBe(0);
+    await panel.getByRole("button", { name: "Exit full screen" }).click();
+    await expect.poll(panelLeft).toBeGreaterThan(0);
+    await expect(page).toHaveURL(browse);
+  });
 });
 
 test.describe("Ask Iris context entries", () => {
@@ -105,5 +181,22 @@ test.describe("Ask Iris context entries", () => {
     // The open sheet hides the rest of the page from assistive tech, the nav included, so the
     // button is found by its markup here rather than by role.
     await expect(page.locator('header button[aria-pressed="true"]')).toBeVisible();
+  });
+
+  test("pulls the phone sheet up to the full screen and back", async ({ page }, testInfo) => {
+    const viewport = page.viewportSize();
+    testInfo.skip(!viewport || viewport.width >= 1024, "Narrow screens use the bottom sheet");
+
+    await page.goto("/en/lenses/x/browse");
+    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    const sheet = page.getByRole("dialog", { name: "Iris" });
+    const sheetTop = () => sheet.evaluate((popup) => popup.getBoundingClientRect().top);
+    await expect.poll(sheetTop).toBeGreaterThan(40);
+
+    await sheet.getByRole("button", { name: "Open full screen" }).click();
+    await expect.poll(sheetTop).toBeLessThan(1);
+    await sheet.getByRole("button", { name: "Exit full screen" }).click();
+    await expect.poll(sheetTop).toBeGreaterThan(40);
+    await expect(sheet).toBeVisible();
   });
 });

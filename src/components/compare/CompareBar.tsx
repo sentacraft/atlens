@@ -71,7 +71,7 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
           transition={spring.snappy}
           ref={barRef}
           data-testid="compare-bar"
-          className={`fixed bottom-0 left-0 right-[var(--iris-panel-width,0px)] ${Z.fixed} border-t border-zinc-200 bg-white/95 backdrop-blur-sm pb-[var(--safe-inset-bottom)]`}
+          className={`fixed bottom-0 left-0 right-[var(--iris-panel-width,0px)] pl-[var(--iris-page-start,0px)] transition-[right,padding] duration-300 ease-out motion-reduce:transition-none ${Z.fixed} border-t border-zinc-200 bg-white/95 backdrop-blur-sm pb-[var(--safe-inset-bottom)]`}
         >
           <div className={`mx-auto flex max-w-7xl flex-col gap-3 py-3 sm:flex-row sm:items-center sm:gap-4 ${PAGE_GUTTER_CLS}`}>
             <HorizontalScrollRail
