@@ -268,6 +268,7 @@ export const EVENT_DOCS: EventDocs = {
         values: {
           home: { label: "Home", description: "The ask box or an example question on the home page" },
           lens: { label: "Lens page", description: "\"Ask Iris\" on a lens's page" },
+          alternatives: { label: "Same focal length", description: "\"Ask Iris how to choose\" above a lens page's list of other lenses at its focal length" },
           nav: { label: "Top navigation", description: "The Iris button in the site header" },
           browse: { label: "Browse list", description: "\"Ask Iris\" in the lens list toolbar" },
           empty: { label: "No-results prompt", description: "The prompt shown when the filters match no lens" },

@@ -7,14 +7,14 @@ import { Plus, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "@/i18n/navigation";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
-import { ACTION_PRIMARY_CLS, CARD_SELECTED_BORDER_CLS } from "@/config/ui-tokens";
+import { CARD_SELECTED_BORDER_CLS, COMPARE_CHIP_CLS, COMPARE_CHIP_STATE_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import FavoriteStarButton from "@/components/lens/FavoriteStarButton";
 import type { Lens } from "@/lib/types";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import * as fmt from "@/lib/lens/format";
-import LensCardPrice from "@/components/price/LensCardPrice";
+import ApproxPrice from "@/components/price/ApproxPrice";
 import { lensPath } from "@/lib/url/routes";
 
 interface Props {
@@ -165,7 +165,7 @@ export default memo(function LensCard({
             </dl>
 
             <div className="flex min-h-8 items-center pr-12 @min-[15rem]:pr-24">
-              <LensCardPrice lens={lens} />
+              <ApproxPrice pricing={lens.pricing} />
             </div>
           </div>
         </div>
@@ -182,12 +182,9 @@ export default memo(function LensCard({
         aria-label={isSelected ? t("removeFromCompare") : selectionDisabled ? t("compareFull") : t("addToCompare")}
         aria-pressed={isSelected}
         className={cn(
-          "absolute right-3 bottom-3 z-10 inline-flex h-8 items-center gap-1 rounded-full border px-2 text-xs @min-[15rem]:pr-3 @min-[15rem]:pl-2.5 font-medium transition-colors sm:right-4 sm:bottom-4",
-          isSelected
-            ? cn(ACTION_PRIMARY_CLS, "border-transparent")
-            : selectionDisabled
-              ? "border-zinc-200 bg-white text-zinc-400"
-              : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50",
+          COMPARE_CHIP_CLS,
+          "absolute right-3 bottom-3 z-10 px-2 @min-[15rem]:pr-3 @min-[15rem]:pl-2.5 sm:right-4 sm:bottom-4",
+          COMPARE_CHIP_STATE_CLS[isSelected ? "selected" : selectionDisabled ? "full" : "idle"],
         )}
       >
         {isSelected ? <Check className="h-3.5 w-3.5" strokeWidth={2.5} /> : <Plus className="h-3.5 w-3.5" />}
