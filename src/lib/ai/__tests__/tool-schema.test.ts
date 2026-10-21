@@ -1,12 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { z } from "zod";
-import { buildLensTools } from "../tools";
+import { buildLensTools, type AccountData } from "../tools";
+
+const GUEST: AccountData = { favorites: async () => null, gear: { known: false, reason: "guest" } };
 
 // Google's function declarations accept an OpenAPI-3.0 subset, not full JSON Schema, and
 // reject the request outright rather than degrading — a `z.tuple()` in one parameter took
 // every Gemini model off the table until it was found. These are the constructs Zod emits
 // that that subset has no room for, checked on the shape actually sent to the provider.
-const tools = buildLensTools("X", "zh", (brand) => brand, async () => null, new Set());
+const tools = buildLensTools("X", "zh", (brand) => brand, GUEST, new Set());
 
 function findUnportable(node: unknown, path: string, found: string[]): void {
   if (!node || typeof node !== "object") {

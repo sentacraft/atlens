@@ -37,6 +37,10 @@ params are named, parsed, and written in one module under `src/lib/url/`.
 
 Rate limits go through `src/lib/rate-limit.ts`, which lists every limit the app enforces.
 
+An Ask Iris server tool that needs an account is listed in `src/lib/ai/sign-in-gate.ts`: a guest's
+call pauses the turn on the shared sign-in card and resumes once they sign in. Iris's prompts never
+word sign-in themselves.
+
 Internal page paths come from `src/lib/url/routes.ts` (and `buildComparePath` in `src/lib/url/compare.ts`); the site's domain, repository, and contact address come from `SITE` in `src/config/site.ts`. Don't spell them out in components.
 
 Each exported route handler under `src/app/api/` carries a one-line JSDoc: what it does, who may

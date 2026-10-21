@@ -2,19 +2,18 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Check, Plus, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { getBodyById } from "@/lib/body/data";
 import type { LensSummary } from "@/lib/lens/data";
 import { accountUser, authClient } from "@/lib/auth-client";
 import type { GearRequestInput, GearRequestOutput } from "@/lib/ai/gear-request";
 import { resolveGearHints } from "@/lib/me/gear-hints";
-import { ACTION_OUTLINE_CLS, ACTION_PRIMARY_CLS, ACTION_QUIET_CLS, CHIP_ACTIVE_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS } from "@/config/ui-tokens";
+import { ACTION_OUTLINE_CLS, ACTION_PRIMARY_CLS, ACTION_QUIET_CLS, CHAT_CARD_CLS, CHIP_ACTIVE_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
-import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { useGearAdders } from "@/components/me/useGearAdders";
+import AnsweredLine from "@/components/askiris/AnsweredLine";
+import SignInCard from "@/components/askiris/SignInCard";
 import { brandLabel } from "@/lib/lens/format";
-
-const CARD_CLS = "w-full max-w-[560px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm";
 
 /** The in-chat card Iris shows through the askForGear client tool. */
 export default function GearRequestCard({
@@ -22,6 +21,7 @@ export default function GearRequestCard({
   output,
   active,
   lenses,
+  signInReturnTo,
   onAnswer,
 }: {
   input: GearRequestInput;
@@ -29,9 +29,11 @@ export default function GearRequestCard({
   /** False once the conversation has moved past this request. */
   active: boolean;
   lenses: LensSummary[];
+  signInReturnTo: () => string;
   onAnswer: (output: GearRequestOutput) => void;
 }) {
   const t = useTranslations("AskIris.gearCard");
+  const tSignIn = useTranslations("AskIris.signInCard");
   const locale = useLocale();
   const { data: session } = authClient.useSession();
   const user = accountUser(session);
@@ -44,7 +46,7 @@ export default function GearRequestCard({
           : t("saved")
         : output.outcome === "skipped"
           ? t("skipped")
-          : t("notSignedIn");
+          : tSignIn("declined");
     return <AnsweredLine done={output.outcome === "saved"}>{text}</AnsweredLine>;
   }
   if (!active) {
@@ -53,52 +55,12 @@ export default function GearRequestCard({
   return user ? (
     <GearPicker userId={user.id} input={input} lenses={lenses} onAnswer={onAnswer} />
   ) : (
-    <SignInPrompt onDecline={() => onAnswer({ outcome: "not_signed_in" })} />
+    <SignInCard reason="gear" returnTo={signInReturnTo} onNotNow={() => onAnswer({ outcome: "not_signed_in" })} />
   );
 }
 
 function listNames(locale: string, names: string[]): string {
   return new Intl.ListFormat(locale, { type: "conjunction", style: "narrow" }).format(names);
-}
-
-function AnsweredLine({ done, children }: { done: boolean; children: ReactNode }) {
-  return (
-    <p className="flex items-start gap-1.5 px-1 text-xs leading-5 text-zinc-500">
-      {done && <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-700" strokeWidth={2.5} />}
-      {children}
-    </p>
-  );
-}
-
-function SignInPrompt({ onDecline }: { onDecline: () => void }) {
-  const t = useTranslations("AskIris.gearCard");
-  const tAuth = useTranslations("Auth");
-  const openSignIn = useSignInDialog();
-  return (
-    <section aria-label={t("signInTitle")} className={cn(CARD_CLS, "flex flex-col gap-3.5 p-4")}>
-      <h3 className="text-[15px] font-semibold text-zinc-900">{t("signInTitle")}</h3>
-      <ul className="flex flex-col gap-2">
-        {(["benefitGear", "benefitFavorites", "benefitSync"] as const).map((key) => (
-          <li key={key} className="flex gap-2 text-[13px] leading-5 text-zinc-700">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-900" strokeWidth={2.5} />
-            {tAuth(key)}
-          </li>
-        ))}
-      </ul>
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={() => openSignIn("gear")}
-          className={cn(ACTION_PRIMARY_CLS, "h-9 rounded-lg px-4 text-sm font-medium")}
-        >
-          {t("signIn")}
-        </button>
-        <button type="button" onClick={onDecline} className={ACTION_QUIET_CLS}>
-          {t("notNow")}
-        </button>
-      </div>
-    </section>
-  );
 }
 
 function GearPicker({
@@ -143,7 +105,7 @@ function GearPicker({
   }
 
   return (
-    <section aria-label={t("title")} className={CARD_CLS}>
+    <section aria-label={t("title")} className={CHAT_CARD_CLS}>
       <h3 className="px-4 pt-4 text-[15px] font-semibold text-zinc-900">{t("title")}</h3>
       <GearRow label={t("bodies")} addLabel={t("addBody")} onAdd={openBodyDialog}>
         {savedBodies.map((item) => (

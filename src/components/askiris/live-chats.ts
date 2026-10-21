@@ -1,7 +1,11 @@
 "use client";
 
 import { Chat } from "@ai-sdk/react";
-import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from "ai";
+import {
+  DefaultChatTransport,
+  lastAssistantMessageIsCompleteWithApprovalResponses,
+  lastAssistantMessageIsCompleteWithToolCalls,
+} from "ai";
 import { askIrisChatRequestBody } from "@/lib/askiris/chat-request";
 import { askIrisMessageMetadataSchema, type AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { MODEL_PRESET_HEADER } from "@/lib/ai/model-presets";
@@ -70,7 +74,8 @@ function createChat(id: string, seed: AskIrisUIMessage[]) {
     transport,
     generateId: () => crypto.randomUUID(),
     messageMetadataSchema: askIrisMessageMetadataSchema,
-    // A gear card's answer goes straight back to Iris, which carries on with the reply.
-    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
+    // The answer to a card the turn paused on goes straight back to Iris, which carries on.
+    sendAutomaticallyWhen: (options) =>
+      lastAssistantMessageIsCompleteWithToolCalls(options) || lastAssistantMessageIsCompleteWithApprovalResponses(options),
   });
 }

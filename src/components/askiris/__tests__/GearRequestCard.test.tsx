@@ -44,7 +44,14 @@ const account = { user: { id: "u1", name: "Iris", email: "iris@example.test", is
 function renderCard(props: Partial<Parameters<typeof GearRequestCard>[0]> = {}) {
   const onAnswer = vi.fn();
   render(
-    <GearRequestCard input={{ bodies: ["X-T5"], lenses: ["18-55"] }} active lenses={lenses} onAnswer={onAnswer} {...props} />,
+    <GearRequestCard
+      input={{ bodies: ["X-T5"], lenses: ["18-55"] }}
+      active
+      lenses={lenses}
+      signInReturnTo={() => "https://atlens.test/?iris=c1"}
+      onAnswer={onAnswer}
+      {...props}
+    />,
   );
   return onAnswer;
 }
@@ -54,10 +61,12 @@ describe("GearRequestCard", () => {
     mocks.session = { data: { user: { ...account.user, isAnonymous: true } } };
     const onAnswer = renderCard();
 
+    // The gear card is a client tool, not a gated one; its sign-in card still says why first.
+    expect(screen.getByText("leadIn.gear")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "signIn" }));
-    expect(mocks.openSignIn).toHaveBeenCalledWith("gear");
+    expect(mocks.openSignIn).toHaveBeenCalledWith("gear", { returnTo: "https://atlens.test/?iris=c1" });
 
-    fireEvent.click(screen.getByRole("button", { name: "notNow" }));
+    fireEvent.click(screen.getByRole("button", { name: "notNow.gear" }));
     expect(onAnswer).toHaveBeenCalledWith({ outcome: "not_signed_in" });
   });
 
@@ -100,7 +109,7 @@ describe("GearRequestCard", () => {
     expect(screen.getByText("savedItems X-T5, XF 18-55mm")).toBeInTheDocument();
     cleanup();
 
-    render(<GearRequestCard input={{}} active={false} lenses={lenses} onAnswer={() => {}} />);
+    render(<GearRequestCard input={{}} active={false} lenses={lenses} signInReturnTo={() => ""} onAnswer={() => {}} />);
     expect(screen.getByText("unanswered")).toBeInTheDocument();
   });
 });

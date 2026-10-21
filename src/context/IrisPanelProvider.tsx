@@ -6,7 +6,7 @@ import IrisPanel from "@/components/iris-panel/IrisPanel";
 import { useBreakpoint } from "@/hooks/useViewport";
 import { track } from "@/lib/analytics/analytics";
 import type { StarterPool } from "@/lib/askiris/starter-questions";
-import { askIrisPagePath, type IrisEntryPoint, type IrisRequest } from "@/lib/url/askiris";
+import { askIrisPagePath, takePanelConversationParam, type IrisEntryPoint, type IrisRequest } from "@/lib/url/askiris";
 import { ASK_IRIS_PATH } from "@/lib/url/routes";
 import { IRIS_PANEL_WIDTH, PAGE_MAX_WIDTH } from "@/config/ui";
 
@@ -59,7 +59,13 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
     const opened = (surface: "page" | "panel" | "sheet") => track("askiris_open", { entry: from, surface, pool });
     if (route.onAskIrisPage) {
       opened("page");
-      route.router.push(askIrisPagePath({ question: next?.kind === "question" ? next.text : undefined }));
+      route.router.push(
+        askIrisPagePath(
+          next?.kind === "conversation"
+            ? { conversationId: next.conversationId }
+            : { question: next?.kind === "question" ? next.text : undefined },
+        ),
+      );
       return;
     }
     opened(route.wide ? "panel" : "sheet");
@@ -70,6 +76,12 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
       setRequest({ ...next, id: nextRequestId.current });
     }
   }, []);
+  useEffect(() => {
+    const conversationId = takePanelConversationParam();
+    if (conversationId) {
+      openIris({ from: "sign_in", request: { kind: "conversation", conversationId } });
+    }
+  }, [openIris]);
   const close = useCallback(() => setOpen(false), []);
   const closeIris = useCallback(() => {
     if (routeRef.current.onAskIrisPage) {
