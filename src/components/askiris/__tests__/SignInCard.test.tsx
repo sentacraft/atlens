@@ -30,6 +30,8 @@ describe("SignInGate", () => {
     const onAnswer = vi.fn();
     render(<SignInGate reason="favorite" active returnTo={returnTo} onAnswer={onAnswer} />);
 
+    // The card leads with why, in Iris's voice, whether or not the reply said anything before it.
+    expect(screen.getByText("leadIn.favorite")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "signIn" }));
     // Google sign-in leaves the page; it has to come back to this conversation to carry on.
     expect(mocks.openSignIn).toHaveBeenCalledWith("favorite", { returnTo: "https://atlens.test/?iris=c1" });
@@ -57,6 +59,7 @@ describe("SignInGate", () => {
     render(<SignInGate reason="favorite" answered active={false} returnTo={returnTo} onAnswer={vi.fn()} />);
 
     expect(screen.getByText("signedIn")).toBeInTheDocument();
+    expect(screen.queryByText("leadIn.favorite")).toBeNull();
   });
 
   it("leaves a line, not a card, once the user declined or moved on", () => {

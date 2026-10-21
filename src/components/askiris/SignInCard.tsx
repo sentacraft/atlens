@@ -9,6 +9,7 @@ import { ACTION_PRIMARY_CLS, ACTION_QUIET_CLS, CHAT_CARD_CLS } from "@/config/ui
 import { cn } from "@/lib/utils";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import AnsweredLine from "@/components/askiris/AnsweredLine";
+import Markdown from "@/components/askiris/Markdown";
 
 /** The in-chat card Iris shows a guest when what they asked for needs an account. */
 export default function SignInCard({
@@ -52,8 +53,9 @@ export default function SignInCard({
 }
 
 /**
- * A gated tool call the turn paused on: the sign-in card while the user is a guest, and the
- * go-ahead once they sign in, whether in place or after the sign-in redirect reloads the page.
+ * A gated tool call the turn paused on: a line saying why, then the sign-in card, while the user
+ * is a guest; the go-ahead once they sign in, whether in place or after the sign-in redirect
+ * reloads the page.
  */
 export function SignInGate({
   reason,
@@ -88,5 +90,13 @@ export function SignInGate({
   if (!waiting) {
     return <AnsweredLine done={false}>{t("declined")}</AnsweredLine>;
   }
-  return signedIn ? null : <SignInCard reason={reason} returnTo={returnTo} onNotNow={() => onAnswer(false)} />;
+  if (signedIn) {
+    return null;
+  }
+  return (
+    <>
+      <Markdown>{t(`leadIn.${reason}`)}</Markdown>
+      <SignInCard reason={reason} returnTo={returnTo} onNotNow={() => onAnswer(false)} />
+    </>
+  );
 }

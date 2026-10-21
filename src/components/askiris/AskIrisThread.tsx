@@ -92,7 +92,7 @@ function ToolPart({
 }) {
   if (getToolName(part) === ASK_FOR_GEAR && cards && (part.state === "input-available" || part.state === "output-available")) {
     return (
-      <div className="mb-2 w-full px-1">
+      <div className="w-full px-1">
         <GearRequestCard
           input={(part.input ?? {}) as GearRequestInput}
           output={part.state === "output-available" ? (part.output as GearRequestOutput) : undefined}
@@ -108,7 +108,7 @@ function ToolPart({
   if (gate && cards && "approval" in part && part.approval && !part.approval.isAutomatic) {
     const { id } = part.approval;
     return (
-      <div className="mb-2 w-full px-1">
+      <div className="w-full px-1">
         <SignInGate
           reason={gate}
           answered={part.state === "approval-requested" ? undefined : part.approval.approved}
