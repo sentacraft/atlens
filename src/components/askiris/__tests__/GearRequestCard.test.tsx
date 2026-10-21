@@ -61,6 +61,8 @@ describe("GearRequestCard", () => {
     mocks.session = { data: { user: { ...account.user, isAnonymous: true } } };
     const onAnswer = renderCard();
 
+    // The gear card is a client tool, not a gated one; its sign-in card still says why first.
+    expect(screen.getByText("leadIn.gear")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "signIn" }));
     expect(mocks.openSignIn).toHaveBeenCalledWith("gear", { returnTo: "https://atlens.test/?iris=c1" });
 

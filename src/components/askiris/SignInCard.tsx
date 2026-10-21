@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import AnsweredLine from "@/components/askiris/AnsweredLine";
 
-/** The in-chat card Iris shows a guest when what they asked for needs an account. */
+/** The in-chat card Iris shows a guest when what they asked for needs an account, led by a line saying why. */
 export default function SignInCard({
   reason,
   returnTo,
@@ -24,29 +24,33 @@ export default function SignInCard({
   const t = useTranslations("AskIris.signInCard");
   const openSignIn = useSignInDialog();
   return (
-    <section aria-label={t(`title.${reason}`)} className={cn(CHAT_CARD_CLS, "flex flex-col gap-3.5 p-4")}>
-      <h3 className="text-[15px] font-semibold text-zinc-900">{t(`title.${reason}`)}</h3>
-      <SignInBenefits source={SIGN_IN_CARD_SOURCE[reason]} className="text-[13px] leading-5" />
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={() => openSignIn(SIGN_IN_CARD_SOURCE[reason], { returnTo: returnTo() })}
-          className={cn(ACTION_PRIMARY_CLS, "h-9 rounded-lg px-4 text-sm font-medium")}
-        >
-          {t("signIn")}
-        </button>
-        <button type="button" onClick={onNotNow} className={ACTION_QUIET_CLS}>
-          {t(`notNow.${reason}`)}
-        </button>
+    <>
+      <div className={IRIS_PROSE_CLS}>
+        <p>{t(`leadIn.${reason}`)}</p>
       </div>
-    </section>
+      <section aria-label={t(`title.${reason}`)} className={cn(CHAT_CARD_CLS, "flex flex-col gap-3.5 p-4")}>
+        <h3 className="text-[15px] font-semibold text-zinc-900">{t(`title.${reason}`)}</h3>
+        <SignInBenefits source={SIGN_IN_CARD_SOURCE[reason]} className="text-[13px] leading-5" />
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => openSignIn(SIGN_IN_CARD_SOURCE[reason], { returnTo: returnTo() })}
+            className={cn(ACTION_PRIMARY_CLS, "h-9 rounded-lg px-4 text-sm font-medium")}
+          >
+            {t("signIn")}
+          </button>
+          <button type="button" onClick={onNotNow} className={ACTION_QUIET_CLS}>
+            {t(`notNow.${reason}`)}
+          </button>
+        </div>
+      </section>
+    </>
   );
 }
 
 /**
- * A gated tool call the turn paused on: a line saying why, then the sign-in card, while the user
- * is a guest; the go-ahead once they sign in, whether in place or after the sign-in redirect
- * reloads the page.
+ * A gated tool call the turn paused on: the sign-in card while the user is a guest, and the
+ * go-ahead once they sign in, whether in place or after the sign-in redirect reloads the page.
  */
 export function SignInGate({
   reason,
@@ -84,12 +88,5 @@ export function SignInGate({
   if (signedIn) {
     return null;
   }
-  return (
-    <>
-      <div className={IRIS_PROSE_CLS}>
-        <p>{t(`leadIn.${reason}`)}</p>
-      </div>
-      <SignInCard reason={reason} returnTo={returnTo} onNotNow={() => onAnswer(false)} />
-    </>
-  );
+  return <SignInCard reason={reason} returnTo={returnTo} onNotNow={() => onAnswer(false)} />;
 }
