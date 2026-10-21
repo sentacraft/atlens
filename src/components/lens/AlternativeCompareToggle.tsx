@@ -15,14 +15,12 @@ export default function AlternativeCompareToggle({
   lensName,
   currentId,
   currentName,
-  showLabel,
   className,
 }: {
   lensId: string;
   lensName: string;
   currentId: string;
   currentName: string;
-  showLabel: boolean;
   className?: string;
 }) {
   const t = useTranslations("Alternatives");
@@ -31,6 +29,7 @@ export default function AlternativeCompareToggle({
   const { compareIds, add, remove, seed } = useCompare();
   const selected = compareIds.includes(lensId);
   const step = planAlternativeCompare(compareIds, currentId, lensId, MAX_COMPARE);
+  const label = selected ? tList("removeFromCompare") : step.kind === "full" ? tList("compareFull") : tList("addToCompare");
 
   const onClick = () => {
     switch (step.kind) {
@@ -61,17 +60,17 @@ export default function AlternativeCompareToggle({
     <button
       type="button"
       onClick={onClick}
-      aria-label={selected ? tList("removeFromCompare") : step.kind === "full" ? tList("compareFull") : tList("addToCompare")}
+      aria-label={label}
+      title={label}
       aria-pressed={selected}
       className={cn(
         COMPARE_CHIP_CLS,
-        showLabel ? "shrink-0 pr-3 pl-2.5" : "size-8 shrink-0 justify-center",
+        "size-8 shrink-0 justify-center",
         COMPARE_CHIP_STATE_CLS[selected ? "selected" : step.kind === "full" ? "full" : "idle"],
         className,
       )}
     >
       {selected ? <Check className="h-3.5 w-3.5" strokeWidth={2.5} /> : <Plus className="h-3.5 w-3.5" />}
-      {showLabel && (selected ? tList("compared") : tList("compareShort"))}
     </button>
   );
 }

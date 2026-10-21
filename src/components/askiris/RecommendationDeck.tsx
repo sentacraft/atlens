@@ -92,7 +92,7 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
 
         <Markdown className={REASON_CLS}>{rec.reason}</Markdown>
       </Link>
-      <FavoriteStarButton lensId={rec.id} className="absolute top-2 right-2" />
+      <FavoriteStarButton lensId={rec.id} placement="overlay" className="absolute top-2 right-2" />
     </div>
   );
 }

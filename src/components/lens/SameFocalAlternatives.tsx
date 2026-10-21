@@ -6,6 +6,7 @@ import AskIrisEntry from "@/components/iris/AskIrisEntry";
 import ApproxPrice from "@/components/price/ApproxPrice";
 import AlternativesExpander from "@/components/lens/AlternativesExpander";
 import AlternativeCompareToggle from "@/components/lens/AlternativeCompareToggle";
+import FavoriteStarButton from "@/components/lens/FavoriteStarButton";
 import {
   ALTERNATIVES_SHOWN,
   apertureDelta,
@@ -94,7 +95,7 @@ function ColumnHeader({ icon: Icon, label }: { icon: LucideIcon; label: string }
 function LensName({ lens, brand, current }: { lens: Lens; brand: string; current?: string }) {
   return (
     <span className="flex min-w-0 flex-col gap-0.5 whitespace-normal">
-      <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] text-zinc-500">
+      <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] uppercase tracking-[0.14em] text-zinc-500">
         {current && (
           <span className="shrink-0 rounded bg-zinc-900 px-1.5 text-[10px] leading-4 font-semibold tracking-normal whitespace-nowrap normal-case text-white">
             {current}
@@ -178,16 +179,16 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
         <thead className="bg-zinc-50 text-left text-xs text-zinc-500">
           <tr>
             {headers.map((label) => (
-              <th key={label} scope="col" className="px-2 py-2.5 font-normal first:pl-4">
+              <th key={label} scope="col" className="px-1.5 py-2.5 font-normal first:pl-4">
                 {label}
               </th>
             ))}
             {featureHeaders.map((header) => (
-              <th key={header.key} scope="col" className="px-2 py-2.5 font-normal">
+              <th key={header.key} scope="col" className="px-1.5 py-2.5 font-normal">
                 {header}
               </th>
             ))}
-            <th scope="col" className="px-2 py-2.5 font-normal">{t("columnPrice")}</th>
+            <th scope="col" className="px-1.5 py-2.5 font-normal">{t("columnPrice")}</th>
             <th scope="col" className="w-0 py-2.5 pr-4"><span className="sr-only">{t("compare")}</span></th>
           </tr>
         </thead>
@@ -199,13 +200,13 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
                 <LensName lens={lens} brand={brandLabel(tBrand, lens.brand)} current={t("current")} />
               </span>
             </td>
-            {zoom && <td className="px-2 py-3">{focalRangeDisplay(lens.focalLengthMin, lens.focalLengthMax)}</td>}
-            <td className="px-2 py-3">{aperture(lens)}</td>
-            <td className="px-2 py-3">{weight(lens)}</td>
+            {zoom && <td className="px-1.5 py-3">{focalRangeDisplay(lens.focalLengthMin, lens.focalLengthMax)}</td>}
+            <td className="px-1.5 py-3">{aperture(lens)}</td>
+            <td className="px-1.5 py-3">{weight(lens)}</td>
             {featureCells(lens).map((text, i) => (
-              <td key={i} className="px-2 py-3">{text}</td>
+              <td key={i} className="px-1.5 py-3">{text}</td>
             ))}
-            <td className="px-2 py-3"><ApproxPrice pricing={lens.pricing} /></td>
+            <td className="px-1.5 py-3"><ApproxPrice pricing={lens.pricing} /></td>
             <td className="py-3 pr-4" />
           </tr>
           <tr>
@@ -222,18 +223,21 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
                 </Link>
               </td>
               {zoom && (
-                <td className="px-2 py-3">
+                <td className="px-1.5 py-3">
                   <Valued value={focalRangeDisplay(l.focalLengthMin, l.focalLengthMax)} note={focalNote(t, lens, l)} />
                 </td>
               )}
-              <td className="px-2 py-3"><Valued value={aperture(l)} note={apertureNote(t, lens, l)} /></td>
-              <td className="px-2 py-3"><Valued value={weight(l)} note={weightNote(t, lens, l, { long: false })} /></td>
+              <td className="px-1.5 py-3"><Valued value={aperture(l)} note={apertureNote(t, lens, l)} /></td>
+              <td className="px-1.5 py-3"><Valued value={weight(l)} note={weightNote(t, lens, l, { long: false })} /></td>
               {featureCells(l).map((text, i) => (
-                <td key={i} className="px-2 py-3">{text}</td>
+                <td key={i} className="px-1.5 py-3">{text}</td>
               ))}
-              <td className="px-2 py-3"><ApproxPrice pricing={l.pricing} /></td>
+              <td className="px-1.5 py-3"><ApproxPrice pricing={l.pricing} /></td>
               <td className="py-3 pr-4 text-right">
-                <AlternativeCompareToggle {...compareProps(l)} showLabel className="relative z-10 min-w-20 justify-center" />
+                <span className="relative z-10 flex items-center justify-end gap-2">
+                  <FavoriteStarButton lensId={l.id} placement="inline" />
+                  <AlternativeCompareToggle {...compareProps(l)} />
+                </span>
               </td>
             </tr>
           ))}
@@ -269,7 +273,10 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
                 </div>
               </div>
             </Link>
-            <AlternativeCompareToggle {...compareProps(l)} showLabel={false} className="relative z-10" />
+            <span className="relative z-10 flex shrink-0 items-center gap-2">
+              <FavoriteStarButton lensId={l.id} placement="inline" />
+              <AlternativeCompareToggle {...compareProps(l)} />
+            </span>
           </li>
         ))}
       </ul>
