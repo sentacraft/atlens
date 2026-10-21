@@ -233,7 +233,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
               ))}
               <td className="px-2 py-3"><ApproxPrice pricing={l.pricing} /></td>
               <td className="py-3 pr-4 text-right">
-                <AlternativeCompareToggle {...compareProps(l)} className="relative z-10 min-w-20 justify-center" />
+                <AlternativeCompareToggle {...compareProps(l)} showLabel className="relative z-10 min-w-20 justify-center" />
               </td>
             </tr>
           ))}
@@ -269,7 +269,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
                 </div>
               </div>
             </Link>
-            <AlternativeCompareToggle {...compareProps(l)} className="relative z-10" />
+            <AlternativeCompareToggle {...compareProps(l)} showLabel={false} className="relative z-10" />
           </li>
         ))}
       </ul>

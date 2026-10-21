@@ -15,12 +15,14 @@ export default function AlternativeCompareToggle({
   lensName,
   currentId,
   currentName,
+  showLabel,
   className,
 }: {
   lensId: string;
   lensName: string;
   currentId: string;
   currentName: string;
+  showLabel: boolean;
   className?: string;
 }) {
   const t = useTranslations("Alternatives");
@@ -63,13 +65,13 @@ export default function AlternativeCompareToggle({
       aria-pressed={selected}
       className={cn(
         COMPARE_CHIP_CLS,
-        "shrink-0 pr-3 pl-2.5",
+        showLabel ? "shrink-0 pr-3 pl-2.5" : "size-8 shrink-0 justify-center",
         COMPARE_CHIP_STATE_CLS[selected ? "selected" : step.kind === "full" ? "full" : "idle"],
         className,
       )}
     >
       {selected ? <Check className="h-3.5 w-3.5" strokeWidth={2.5} /> : <Plus className="h-3.5 w-3.5" />}
-      {selected ? tList("compared") : tList("compareShort")}
+      {showLabel && (selected ? tList("compared") : tList("compareShort"))}
     </button>
   );
 }
