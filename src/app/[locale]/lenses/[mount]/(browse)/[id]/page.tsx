@@ -76,7 +76,7 @@ export async function generateMetadata({
   const description = buildLensDescription({ lens, mount: resolvedMount, brandName, t });
 
   return {
-    title: displayName,
+    title: t("metaTitle", { name: displayName }),
     description,
     openGraph: {
       title: `${displayName} | Atlens`,

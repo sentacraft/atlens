@@ -12,8 +12,8 @@
     "home": "Back to Home"
   },
   "Metadata": {
-    "seoTitle": "Atlens | Fujifilm Lens Database & Comparison",
-    "seoDescription": "The Fujifilm lens database. X-mount covers first-party plus major third-party brands — normalized specs, cross-brand comparison. G-mount (medium format) coverage is also under way."
+    "seoTitle": "Atlens | Fujifilm X & GFX Lens Specs, Comparison & AI Advice",
+    "seoDescription": "Every Fujifilm X-mount lens, first- and third-party, plus GFX: normalized specs, side-by-side comparison, reference prices, and Iris, an AI advisor that answers from the data."
   },
   "Rename": {
     "toast": "X-Glass is now Atlens — same lens database, just a new name. Welcome back 👋"
@@ -312,10 +312,10 @@
   },
   "LensList": {
     "title": "Lenses",
-    "metaTitleX": "X-mount Lens Library",
-    "metaTitleG": "GFX-mount Lens Library",
-    "metaDescX": "Fujifilm X-mount lens database. {count} lenses across {brandCount} brands. Normalized specs, cross-brand comparison.",
-    "metaDescG": "Fujifilm GFX medium-format lens database. {count} GF lens specs, parameters and side-by-side comparison.",
+    "metaTitleX": "All {count} Fujifilm X-Mount Lenses: Specs & Comparison",
+    "metaTitleG": "All {count} Fujifilm GFX Lenses: Specs & Comparison",
+    "metaDescX": "All {count} Fujifilm X-mount lenses from {brandCount} brands, 7Artisans, TTArtisan and Viltrox among them. Filter by focal length, aperture and autofocus, and compare specs side by side.",
+    "metaDescG": "All {count} lenses for Fujifilm's GFX medium-format system, Fujifilm GF and third-party: normalized specs and side-by-side comparison.",
     "brand": "Brand",
     "brandSeparator": ", ",
     "lensType": "Type",
@@ -410,7 +410,8 @@
     "note": "These specs are not AI-generated. They come from what the manufacturer officially publishes; AI only files that text into one format and never makes up a value. The author reviews every lens before it goes live. <link>How the data is made</link>"
   },
   "LensDetail": {
-    "metaDescPrefix": "{name}, {mount}-mount {type} lens for Fujifilm. Specs, parameters, and side-by-side comparison",
+    "metaDescPrefix": "{name} ({mount}-mount {type}) specs and side-by-side comparison",
+    "metaTitle": "{name}: Specs & Comparison",
     "metaJoinSpace": ": ",
     "metaSep": ", ",
     "metaPeriod": ".",
@@ -512,10 +513,10 @@
   },
   "Compare": {
     "title": "Compare",
-    "metaTitleX": "Compare X-mount Lenses",
-    "metaTitleG": "Compare GFX-mount Lenses",
-    "metaDescX": "Compare any Fujifilm X-mount lens side by side: focal length, aperture, weight, filter size at a glance. Cross-brand, normalized specs.",
-    "metaDescG": "Compare any Fujifilm GFX medium-format lens side by side: focal length, aperture, weight, filter size at a glance.",
+    "metaTitleX": "Compare Fujifilm X-Mount Lenses Side by Side",
+    "metaTitleG": "Compare Fujifilm GFX Lenses Side by Side",
+    "metaDescX": "Put any Fujifilm X-mount lenses side by side, across brands: focal length, aperture, weight, size, filter thread, focusing and reference prices on one page.",
+    "metaDescG": "Put any Fujifilm GFX medium-format lenses side by side: focal length, aperture, weight, size, filter thread and reference prices on one page.",
     "metaDescCustom": "Side-by-side comparison of {count} lenses: specs, parameters, normalized data.",
     "clearedToast": "Comparison cleared",
     "undo": "Undo",
@@ -606,7 +607,7 @@
     "authorName": "SentaCraft",
     "pageTitle": "About",
     "rebrandNote": "Atlens was previously known as X-Glass — same project, same author, just a simpler, more readable name.",
-    "metaDescription": "The story behind Atlens, who maintains it, and which Fujifilm lenses are covered — X-mount first, with G-mount also being added. Built and maintained solo by an independent engineer, with open-source web code.",
+    "metaDescription": "Why Atlens exists, who builds it, what it covers (Fujifilm X-mount from every major brand, with GFX being added) and how its AI assistant Iris works. Built independently, with open-source web code.",
     "backgroundTitle": "Background",
     "backgroundBody1": "As a Fujifilm shooter myself, I kept hitting the same wall when picking a lens: the information is scattered. Say I want a fast 50mm-equivalent prime, a do-it-all travel zoom, or a constant-aperture standard zoom — with hundreds of lenses out there across first-party and third-party brands, which ones actually fit and deserve a spot on the shortlist? To find out, I'd have to comb through every brand's official accounts, storefronts, and websites — slow and tedious. Or I could turn to reviews and creators' videos and articles, but those mostly exist to share opinions and steer a buying decision, not to objectively map out how many lenses might match what I'm after — which, to me, is the real first step in choosing a lens.",
     "backgroundBody2": "So I built Atlens: a standardized data pipeline catalogs lenses and collects manufacturers' officially published specs, building a multi-brand, normalized, side-by-side comparable database that tackles exactly that first step. Atlens started X-mount only; G-mount (medium format) came later at users' request, and while its coverage and breadth of features don't yet match X-mount's, they'll keep improving over time.",
@@ -692,7 +693,7 @@
   },
   "RecentlyAdded": {
     "pageTitle": "Recently Added",
-    "metaDescription": "Recently added lenses in the Atlens database, by date — new additions across Fujifilm X-mount and GFX-mount (Medium Format) coverage.",
+    "metaDescription": "Lenses newly added to Atlens, by date: the latest Fujifilm X-mount and GFX additions.",
     "intro": "Tracking the expanding scope of the database.",
     "added": "+{count}",
     "lensesCount": "{count} lenses",
@@ -733,7 +734,7 @@
   },
   "Install": {
     "pageTitle": "Get the App",
-    "metaDescription": "Install Atlens to your phone home screen or desktop for an app-like launch.",
+    "metaDescription": "Install Atlens on your phone's home screen or your desktop and open it like an app, no app store needed.",
     "installedTitle": "You're all set",
     "installedBody": "Atlens is already installed on this device.",
     "openApp": "Open Atlens",
@@ -779,8 +780,8 @@
     "stats": "{count} lenses · {brandCount} brands",
     "metaPrefix": "{count} lenses from {brandCount} brands.",
     "relatedCollections": "Related collections",
-    "indexTitle": "Lens Collections for Fujifilm X-Mount",
-    "indexDescription": "Curated lens collections for the Fujifilm X-mount system — organized by focal length, brand, aperture, and more.",
+    "indexTitle": "Fujifilm X-Mount Lens Collections",
+    "indexDescription": "Fujifilm X-mount lenses grouped by theme, across every brand: pancakes, fast primes, lightweight, weather-sealed, by focal length and by brand.",
     "indexStats": "{count} collections · {lensCount} lenses",
     "indexSubtitle": "Organized by focal length, brand, aperture, and more.",
     "coverageLink": "View lens coverage →",
