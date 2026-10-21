@@ -11,3 +11,9 @@ export const Z = {
 
 export const FAB_REVEAL_SCROLL_Y = 400;
 
+/** The widest the page content gets: Tailwind's max-w-7xl, which the nav and page shells use. */
+export const PAGE_MAX_WIDTH = "80rem";
+
+/** Iris's side panel, in px; the page narrows by this much while it is open. */
+export const IRIS_PANEL_WIDTH = 400;
+

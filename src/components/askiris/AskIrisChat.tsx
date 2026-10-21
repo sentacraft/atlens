@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { useTestHookOption } from "@/context/TestHookProvider";
-import { useIris, type IrisPanelRequest } from "@/context/IrisPanelProvider";
+import type { IrisPanelRequest } from "@/context/IrisPanelProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { accountUser, authClient, ensureSession } from "@/lib/auth-client";
 import AskIrisThread from "@/components/askiris/AskIrisThread";
@@ -19,7 +19,6 @@ import type { ChatLinkTargets } from "@/lib/askiris/inline-links";
 import type { LensSummary } from "@/lib/lens/data";
 import { ASK_FOR_GEAR } from "@/lib/ai/gear-request";
 import {
-  askIrisPagePath,
   clearEntryParams,
   DETACHED_CONVERSATION_LOCATION,
   URL_CONVERSATION_LOCATION,
@@ -41,10 +40,8 @@ import {
   DialogPopup,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
-import { ArrowLeft, History, Maximize2, Plus, X } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Link } from "@/i18n/navigation";
+import { ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
+import { History, Maximize2, Minimize2, Plus, X } from "lucide-react";
 import AiTag from "@/components/iris/AiTag";
 import ConversationHistory from "@/components/askiris/ConversationHistory";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
@@ -60,15 +57,23 @@ const TOP_BAR_BTN_CLS = cn(ICON_NAV_BTN_CLS, "h-9 gap-1.5 px-2.5 text-sm");
 const SHELL_CLS = {
   page: "mx-auto flex h-[calc(100svh-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4",
   panel: "flex h-full w-full flex-col px-4",
+  expandedPanel: "mx-auto flex h-full w-full max-w-[800px] flex-col px-4",
 };
 
 /**
  * Where the chat lives: the Ask Iris page, or the side panel that follows the user across
- * pages; `pagePath` is the page beside the panel.
+ * pages; `pagePath` is the page beside the panel, which `expanded` covers.
  */
 export type AskIrisShell =
   | { variant: "page"; entry: AskIrisEntry; starterSeed: number }
-  | { variant: "panel"; pagePath: string; request: IrisPanelRequest | null; onClose: () => void };
+  | {
+      variant: "panel";
+      pagePath: string;
+      request: IrisPanelRequest | null;
+      onClose: () => void;
+      expanded: boolean;
+      onExpandedChange: (expanded: boolean) => void;
+    };
 
 const NO_ENTRY: AskIrisEntry = {};
 
@@ -84,31 +89,25 @@ export default function AskIrisChat({
   const entry = shell.variant === "page" ? shell.entry : NO_ENTRY;
   const t = useTranslations("AskIris");
   const tEntry = useTranslations("IrisEntry");
-  const router = useRouter();
-  const { openIris } = useIris();
   const openSignIn = useSignInDialog();
   const locale = useLocale();
   const mount = useEffectiveMount();
   const debug = useTestHookOption("askIrisTrace") === "on";
-  const [input, setInput] = useState(entry.draft ?? "");
+  const [input, setInput] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
   const [pendingSwitch, setPendingSwitch] = useState<ConversationSwitch | null>(null);
-  // On the Ask Iris page, the page the conversation came from; the panel reads the page beside it.
-  const [originPage, setOriginPage] = useState(entry.from);
   // Whether the page goes along with each turn; the context card's × turns it off.
   const [attached, setAttached] = useState(true);
   // The page key this conversation is about, set by its first turn; undefined when not known.
-  const [conversationPage, setConversationPage] = useState<string | null | undefined>(() =>
-    entry.from ? pageKey(parsePagePath(entry.from)) : undefined,
-  );
+  const [conversationPage, setConversationPage] = useState<string | null | undefined>();
   const [freshNotice, setFreshNotice] = useState(false);
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
-  const pagePath = shell.variant === "panel" ? shell.pagePath : (originPage ?? null);
+  const pagePath = shell.variant === "panel" ? shell.pagePath : null;
   const pageView = usePageContextView(pagePath, lenses);
   const contextView = attached ? pageView : null;
   const contextPath = contextView ? pagePath : null;
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending: sessionPending } = authClient.useSession();
   // Guests have a session too, and their own stored conversations.
   const userId = session?.user.id;
   const isAccount = Boolean(accountUser(session));
@@ -200,24 +199,15 @@ export default function AskIrisChat({
     }
   });
   useEffect(() => {
-    if (entryHandled.current || !(entry.question || entry.draft || entry.from)) {
+    if (entryHandled.current || !entry.question) {
       return;
     }
     entryHandled.current = true;
     handleEntry();
-  }, [entry.question, entry.draft, entry.from]);
+  }, [entry.question]);
 
   // An entry on another page than the conversation's starts a new conversation about this one.
   const receiveRequest = useEffectEvent((request: IrisPanelRequest) => {
-    if (request.kind === "resume") {
-      if (request.conversationId !== conversationId) {
-        conversation.selectConversation(request.conversationId);
-      }
-      setAttached(true);
-      setConversationPage(pageKey(parsePagePath(request.from)));
-      setFreshNotice(false);
-      return;
-    }
     if (isBusy) {
       if (request.kind === "question") {
         setInput(request.text);
@@ -286,7 +276,6 @@ export default function AskIrisChat({
 
   function switchConversation(target: ConversationSwitch) {
     setHistoryOpen(false);
-    setOriginPage(undefined);
     setAttached(true);
     setConversationPage(undefined);
     setFreshNotice(false);
@@ -327,76 +316,85 @@ export default function AskIrisChat({
     setAttached(false);
   }
 
-  function backToPage(page: string) {
-    router.push(page);
-    if (messages.length > 0) {
-      openIris({ from: "resume", request: { kind: "resume", conversationId, from: page } });
+  const collapsedPanel = shell.variant === "panel" && !shell.expanded;
+  // History needs the room of the full view: the panel expands to show it.
+  function openHistory() {
+    if (collapsedPanel) {
+      shell.onExpandedChange(true);
     }
+    setHistoryOpen(true);
   }
-
-  const showHistory = shell.variant === "page" && Boolean(userId);
+  const shellCls =
+    shell.variant === "page" ? SHELL_CLS.page : shell.expanded ? SHELL_CLS.expandedPanel : SHELL_CLS.panel;
+  const historyControls = (
+    <>
+      <button type="button" onClick={openHistory} title={t("history")} className={TOP_BAR_BTN_CLS}>
+        <History className="size-4" />
+        <span className={collapsedPanel ? "sr-only" : "max-sm:sr-only"}>{t("history")}</span>
+      </button>
+      {!sessionPending && !isAccount && (
+        <button
+          type="button"
+          onClick={() => openSignIn("iris_top_bar")}
+          title={t("guestChatsKept")}
+          className={cn(TEXT_LINK_CLS, "min-w-0 truncate px-1.5 text-xs")}
+        >
+          {t("signInToKeepChats")}
+        </button>
+      )}
+    </>
+  );
+  const history = (
+    <ConversationHistory
+      open={historyOpen}
+      onOpenChange={setHistoryOpen}
+      conversations={conversation.conversations}
+      listState={conversation.listState}
+      activeConversationId={conversationId}
+      onSelect={(id) => requestSwitch({ kind: "select", id })}
+      onNew={startNewConversation}
+      onRename={conversation.renameConversation}
+      onDelete={conversation.deleteConversation}
+      onSignIn={isAccount ? null : () => openSignIn("iris_history")}
+    />
+  );
   const notice = freshNotice ? (
-    <p className="rounded-xl bg-zinc-100 px-3 py-2 text-xs leading-relaxed text-zinc-600">
-      {isAccount
-        ? tEntry("newConversation")
-        : tEntry.rich("newConversationGuest", {
-            signIn: (chunks) => (
-              <button
-                type="button"
-                onClick={() => openSignIn("iris_chat")}
-                className="font-semibold text-zinc-900 underline underline-offset-2"
-              >
-                {chunks}
-              </button>
-            ),
-          })}
-    </p>
+    <p className="rounded-xl bg-zinc-100 px-3 py-2 text-xs leading-relaxed text-zinc-600">{tEntry("newConversation")}</p>
   ) : null;
   const topBar = shell.variant === "panel" ? (
     <div className="-mx-1 flex h-12 shrink-0 items-center justify-between">
-      <span className="inline-flex items-center gap-1.5 px-1 text-sm font-semibold text-zinc-900">
-        Iris
-        <AiTag />
-      </span>
+      <div className="flex min-w-0 items-center gap-1">
+        <span className="inline-flex items-center gap-1.5 px-1 text-sm font-semibold text-zinc-900">
+          Iris
+          <AiTag />
+        </span>
+        {historyControls}
+      </div>
       <div className="flex items-center gap-0.5">
         {messages.length > 0 && (
           <button type="button" onClick={startNewConversation} aria-label={t("newChat")} title={t("newChat")} className={cn(ICON_NAV_BTN_CLS, "h-8 w-8")}>
             <Plus className="size-4" />
           </button>
         )}
-        <Link
-          href={askIrisPagePath({
-            conversationId: messages.length > 0 ? conversationId : undefined,
-            draft: input.trim() || undefined,
-            from: contextPath ?? undefined,
-          })}
-          aria-label={t("fullScreen")}
-          title={t("fullScreen")}
-          onClick={shell.onClose}
+        <button
+          type="button"
+          onClick={() => shell.onExpandedChange(!shell.expanded)}
+          aria-label={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
+          title={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
           className={cn(ICON_NAV_BTN_CLS, "h-8 w-8")}
         >
-          <Maximize2 className="size-4" />
-        </Link>
+          {shell.expanded ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+        </button>
         <button type="button" onClick={shell.onClose} aria-label={t("closePanel")} className={cn(ICON_CLOSE_BTN_CLS, "h-8 w-8")}>
           <X className="size-4" />
         </button>
       </div>
+      {history}
     </div>
   ) : (
     <div className="flex h-12 shrink-0 items-center justify-between">
       <div className="flex min-w-0 items-center gap-1">
-        {originPage && pageView && (
-          <button type="button" onClick={() => backToPage(originPage)} className={cn(TOP_BAR_BTN_CLS, "min-w-0")}>
-            <ArrowLeft className="size-4 shrink-0" />
-            <span className="truncate">{tEntry("backTo", { page: pageView.pageName })}</span>
-          </button>
-        )}
-        {showHistory && (
-          <button type="button" onClick={() => setHistoryOpen(true)} className={TOP_BAR_BTN_CLS}>
-            <History className="size-4" />
-            {t("history")}
-          </button>
-        )}
+        {historyControls}
       </div>
       {messages.length > 0 && (
         <button type="button" onClick={startNewConversation} className={TOP_BAR_BTN_CLS}>
@@ -404,25 +402,13 @@ export default function AskIrisChat({
           {t("newChat")}
         </button>
       )}
-      {showHistory && (
-        <ConversationHistory
-          open={historyOpen}
-          onOpenChange={setHistoryOpen}
-          conversations={conversation.conversations}
-          listState={conversation.listState}
-          activeConversationId={conversationId}
-          onSelect={(id) => requestSwitch({ kind: "select", id })}
-          onNew={startNewConversation}
-          onRename={conversation.renameConversation}
-          onDelete={conversation.deleteConversation}
-        />
-      )}
+      {history}
     </div>
   );
 
   if (conversation.loading) {
     return (
-      <div className={SHELL_CLS[shell.variant]}>
+      <div className={shellCls}>
         {topBar}
         <div className="grid flex-1 place-items-center text-sm text-zinc-500">
           {t("loadingConversation")}
@@ -433,7 +419,7 @@ export default function AskIrisChat({
 
   if (renderMessages.length === 0 && contextView && !entry.question && !pendingQuestion) {
     return (
-      <div className={SHELL_CLS[shell.variant]}>
+      <div className={shellCls}>
         {topBar}
         <PageContextStart
           view={contextView}
@@ -460,7 +446,7 @@ export default function AskIrisChat({
 
   if (renderMessages.length === 0 && !entry.question && !pendingQuestion) {
     return (
-      <div className={SHELL_CLS[shell.variant]}>
+      <div className={shellCls}>
         {topBar}
         {notice}
         <AskIrisEmptyState
@@ -478,7 +464,7 @@ export default function AskIrisChat({
 
   return (
     <ChatLinkProvider targets={linkTargets}>
-      <div className={SHELL_CLS[shell.variant]}>
+      <div className={shellCls}>
         {topBar}
         {notice}
         {contextView && (

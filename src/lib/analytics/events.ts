@@ -272,7 +272,7 @@ export const EVENT_DOCS: EventDocs = {
           browse: { label: "Browse list", description: "\"Ask Iris\" in the lens list toolbar" },
           empty: { label: "No-results prompt", description: "The prompt shown when the filters match no lens" },
           compare: { label: "Compare page", description: "\"Ask Iris\" in the comparison header" },
-          resume: { label: "Past chat", description: "A conversation reopened from history while on another page" },
+          resume: { label: "Past chat", description: "The Ask Iris page's way back to the page it came from, which reopened its conversation in the panel. Removed in October 2026; kept to label earlier events" },
         },
       },
       surface: {
@@ -360,7 +360,9 @@ export const EVENT_DOCS: EventDocs = {
         values: {
           account_menu: { label: "Account menu", description: "Sign in in the account menu of the site header" },
           profile: { label: "Profile page", description: "The sign-in button on the profile page" },
-          iris_chat: { label: "Iris chat notice", description: "The sign-in link in a new Iris chat, for guests" },
+          iris_chat: { label: "Iris chat notice", description: "The sign-in link in a new Iris chat's notice, for guests. Replaced by the Iris top bar prompt and history card in October 2026; kept to label earlier events" },
+          iris_history: { label: "Iris history card", description: "The sign-in card at the top of Iris's conversation history, for visitors without an account" },
+          iris_top_bar: { label: "Iris top bar prompt", description: "The sign-in prompt in Iris's top bar, for visitors without an account" },
           iris_reply: { label: "Link in an Iris reply", description: "A sign-in chip inside one of Iris's replies" },
         },
       },

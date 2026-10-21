@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { Drawer } from "@base-ui/react/drawer";
 import { Menu } from "@base-ui/react/menu";
-import { Ellipsis, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Cloud, Ellipsis, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { ACTION_QUIET_CLS, ACTION_OUTLINE_CLS, ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS, LIST_ITEM_ACTIVE_CLS, MENU_ITEM_CLS, MENU_ITEM_DANGER_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
@@ -30,6 +30,7 @@ export default function ConversationHistory({
   onNew,
   onRename,
   onDelete,
+  onSignIn,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -40,6 +41,8 @@ export default function ConversationHistory({
   onNew: () => void;
   onRename: (conversationId: string, title: string) => void;
   onDelete: (conversationId: string) => void;
+  /** Offers to sign in, for visitors without an account; null for those with one. */
+  onSignIn: (() => void) | null;
 }) {
   const t = useTranslations("AskIris");
   const locale = useLocale();
@@ -68,6 +71,24 @@ export default function ConversationHistory({
                   <X className="size-4" />
                 </Drawer.Close>
               </div>
+              {onSignIn && (
+                <div className="mx-4 mb-3 flex flex-col gap-2.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5">
+                  <div className="flex items-start gap-2.5">
+                    <span className="grid size-7 shrink-0 place-items-center rounded-lg border border-zinc-200 bg-white text-zinc-700">
+                      <Cloud className="size-4" />
+                    </span>
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-zinc-900 sm:text-[13px]">{t("historySignInTitle")}</p>
+                      <p className="text-[13px] leading-relaxed text-zinc-500 sm:text-xs">
+                        {conversations.length > 0 ? t("historySignInBody") : t("historySignInBodyEmpty")}
+                      </p>
+                    </div>
+                  </div>
+                  <button type="button" onClick={onSignIn} className={cn(ACTION_PRIMARY_CLS, "h-10 justify-center rounded-lg text-sm sm:h-8 sm:text-[13px]")}>
+                    {t("historySignIn")}
+                  </button>
+                </div>
+              )}
               <div className="px-4 pb-3">
                 <button type="button" onClick={onNew} className={cn(ACTION_OUTLINE_CLS, "w-full justify-center")}>
                   <Plus className="size-4" />
