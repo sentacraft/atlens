@@ -22,15 +22,17 @@ afterEach(() => {
 
 const guest = { user: { id: "g1", isAnonymous: true } };
 const account = { user: { id: "u1", isAnonymous: false } };
+const returnTo = () => "https://atlens.test/?iris=c1";
 
 describe("SignInGate", () => {
   it("asks a guest to sign in for the call's reason, or lets them go on without it", () => {
     mocks.session = { data: guest };
     const onAnswer = vi.fn();
-    render(<SignInGate reason="favorite" active onAnswer={onAnswer} />);
+    render(<SignInGate reason="favorite" active returnTo={returnTo} onAnswer={onAnswer} />);
 
     fireEvent.click(screen.getByRole("button", { name: "signIn" }));
-    expect(mocks.openSignIn).toHaveBeenCalledWith("favorite");
+    // Google sign-in leaves the page; it has to come back to this conversation to carry on.
+    expect(mocks.openSignIn).toHaveBeenCalledWith("favorite", { returnTo: "https://atlens.test/?iris=c1" });
 
     fireEvent.click(screen.getByRole("button", { name: "notNow.favorite" }));
     expect(onAnswer).toHaveBeenCalledWith(false);
@@ -39,21 +41,28 @@ describe("SignInGate", () => {
   it("lets the paused call run once the user has signed in, exactly once", () => {
     mocks.session = { data: guest };
     const onAnswer = vi.fn();
-    const { rerender } = render(<SignInGate reason="favorite" active onAnswer={onAnswer} />);
+    const { rerender } = render(<SignInGate reason="favorite" active returnTo={returnTo} onAnswer={onAnswer} />);
     expect(onAnswer).not.toHaveBeenCalled();
 
     mocks.session = { data: account };
-    rerender(<SignInGate reason="favorite" active onAnswer={onAnswer} />);
-    rerender(<SignInGate reason="favorite" active onAnswer={onAnswer} />);
+    rerender(<SignInGate reason="favorite" active returnTo={returnTo} onAnswer={onAnswer} />);
+    rerender(<SignInGate reason="favorite" active returnTo={returnTo} onAnswer={onAnswer} />);
 
     expect(onAnswer).toHaveBeenCalledTimes(1);
     expect(onAnswer).toHaveBeenCalledWith(true);
   });
 
+  it("leaves a line where the card was once the user signed in", () => {
+    mocks.session = { data: account };
+    render(<SignInGate reason="favorite" answered active={false} returnTo={returnTo} onAnswer={vi.fn()} />);
+
+    expect(screen.getByText("signedIn")).toBeInTheDocument();
+  });
+
   it("leaves a line, not a card, once the user declined or moved on", () => {
     mocks.session = { data: account };
     const onAnswer = vi.fn();
-    render(<SignInGate reason="favorite" active={false} onAnswer={onAnswer} />);
+    render(<SignInGate reason="favorite" active={false} returnTo={returnTo} onAnswer={onAnswer} />);
 
     expect(screen.getByText("declined")).toBeInTheDocument();
     expect(onAnswer).not.toHaveBeenCalled();

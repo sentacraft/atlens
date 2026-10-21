@@ -20,6 +20,7 @@ export default function GearRequestCard({
   output,
   active,
   lenses,
+  signInReturnTo,
   onAnswer,
 }: {
   input: GearRequestInput;
@@ -27,6 +28,7 @@ export default function GearRequestCard({
   /** False once the conversation has moved past this request. */
   active: boolean;
   lenses: LensSummary[];
+  signInReturnTo: () => string;
   onAnswer: (output: GearRequestOutput) => void;
 }) {
   const t = useTranslations("AskIris.gearCard");
@@ -52,7 +54,7 @@ export default function GearRequestCard({
   return user ? (
     <GearPicker userId={user.id} input={input} lenses={lenses} onAnswer={onAnswer} />
   ) : (
-    <SignInCard reason="gear" onNotNow={() => onAnswer({ outcome: "not_signed_in" })} />
+    <SignInCard reason="gear" returnTo={signInReturnTo} onNotNow={() => onAnswer({ outcome: "not_signed_in" })} />
   );
 }
 

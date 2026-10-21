@@ -66,6 +66,8 @@ export interface ChatCardBinding {
   lenses: LensSummary[];
   answerGear: (toolCallId: string, output: GearRequestOutput) => void;
   answerSignIn: (approvalId: string, approved: boolean) => void;
+  /** Where a sign-in that leaves the page returns, reopening this conversation. */
+  signInReturnTo: () => string;
 }
 
 /** A call the turn is paused on until the user answers its card. */
@@ -96,6 +98,7 @@ function ToolPart({
           output={part.state === "output-available" ? (part.output as GearRequestOutput) : undefined}
           active={latest}
           lenses={cards.lenses}
+          signInReturnTo={cards.signInReturnTo}
           onAnswer={(output) => cards.answerGear(part.toolCallId, output)}
         />
       </div>
@@ -110,6 +113,7 @@ function ToolPart({
           reason={gate}
           answered={part.state === "approval-requested" ? undefined : part.approval.approved}
           active={latest}
+          returnTo={cards.signInReturnTo}
           onAnswer={(approved) => cards.answerSignIn(id, approved)}
         />
       </div>

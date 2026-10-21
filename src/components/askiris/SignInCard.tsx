@@ -11,7 +11,16 @@ import { useSignInDialog } from "@/context/SignInDialogProvider";
 import AnsweredLine from "@/components/askiris/AnsweredLine";
 
 /** The in-chat card Iris shows a guest when what they asked for needs an account. */
-export default function SignInCard({ reason, onNotNow }: { reason: SignInReason; onNotNow: () => void }) {
+export default function SignInCard({
+  reason,
+  returnTo,
+  onNotNow,
+}: {
+  reason: SignInReason;
+  /** Where a sign-in that leaves the page brings the user back. */
+  returnTo: () => string;
+  onNotNow: () => void;
+}) {
   const t = useTranslations("AskIris.signInCard");
   const tAuth = useTranslations("Auth");
   const openSignIn = useSignInDialog();
@@ -29,7 +38,7 @@ export default function SignInCard({ reason, onNotNow }: { reason: SignInReason;
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
-          onClick={() => openSignIn(reason)}
+          onClick={() => openSignIn(reason, { returnTo: returnTo() })}
           className={cn(ACTION_PRIMARY_CLS, "h-9 rounded-lg px-4 text-sm font-medium")}
         >
           {t("signIn")}
@@ -50,6 +59,7 @@ export function SignInGate({
   reason,
   answered,
   active,
+  returnTo,
   onAnswer,
 }: {
   reason: SignInReason;
@@ -57,6 +67,7 @@ export function SignInGate({
   answered?: boolean;
   /** False once the conversation has moved past this call. */
   active: boolean;
+  returnTo: () => string;
   onAnswer: (approved: boolean) => void;
 }) {
   const t = useTranslations("AskIris.signInCard");
@@ -72,10 +83,10 @@ export function SignInGate({
   }, [waiting, signedIn, onAnswer]);
 
   if (answered) {
-    return null;
+    return <AnsweredLine done>{t("signedIn")}</AnsweredLine>;
   }
   if (!waiting) {
     return <AnsweredLine done={false}>{t("declined")}</AnsweredLine>;
   }
-  return signedIn ? null : <SignInCard reason={reason} onNotNow={() => onAnswer(false)} />;
+  return signedIn ? null : <SignInCard reason={reason} returnTo={returnTo} onNotNow={() => onAnswer(false)} />;
 }

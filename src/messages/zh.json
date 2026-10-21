@@ -254,7 +254,8 @@
         "gear": "先不登录，直接告诉 Iris",
         "favorite": "先不登录"
       },
-      "declined": "这次先不登录"
+      "declined": "这次先不登录",
+      "signedIn": "已登录"
     },
     "responseFeedback": {
       "prompt": "这个回答有帮助吗？",

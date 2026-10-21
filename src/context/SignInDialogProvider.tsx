@@ -8,17 +8,18 @@ import { track } from "@/lib/analytics/analytics";
 /** What opened the dialog: an action that needs an account, or a plain sign-in button by where it sits. */
 export type SignInSource = SignInReason | "account_menu" | "profile" | "iris_history" | "iris_reply" | "iris_top_bar";
 
-type OpenSignIn = (source: SignInSource) => void;
+/** `returnTo` is where a sign-in that leaves the page (Google) comes back to; this page by default. */
+type OpenSignIn = (source: SignInSource, options?: { returnTo?: string }) => void;
 
 const SignInDialogContext = createContext<OpenSignIn>(() => {});
 
 export function SignInDialogProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<{ open: boolean; reason?: SignInReason }>({ open: false });
+  const [state, setState] = useState<{ open: boolean; reason?: SignInReason; returnTo?: string }>({ open: false });
   const openSignIn = useMemo<OpenSignIn>(
-    () => (source) => {
+    () => (source, options) => {
       const reason = source === "favorite" || source === "gear" ? source : undefined;
       track("sign_in_open", reason ? { reason } : { reason: "general", entry: source });
-      setState({ open: true, reason });
+      setState({ open: true, reason, returnTo: options?.returnTo });
     },
     [],
   );
@@ -28,6 +29,7 @@ export function SignInDialogProvider({ children }: { children: React.ReactNode }
       <AuthDialog
         open={state.open}
         reason={state.reason}
+        returnTo={state.returnTo}
         onOpenChange={(open) => setState((prev) => ({ ...prev, open }))}
       />
     </SignInDialogContext>

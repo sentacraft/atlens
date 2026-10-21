@@ -53,10 +53,12 @@ export default function AuthDialog({
   open,
   onOpenChange,
   reason,
+  returnTo,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   reason?: SignInReason;
+  returnTo?: string;
 }) {
   const t = useTranslations("Auth");
   const [email, setEmail] = useState("");
@@ -92,7 +94,7 @@ export default function AuthDialog({
     try {
       const result = await authClient.signIn.social({
         provider: "google",
-        callbackURL: window.location.href,
+        callbackURL: returnTo ?? window.location.href,
       });
       if (result.error) {
         setError(errorMessage(result.error));

@@ -254,7 +254,8 @@
         "gear": "Not now, I'll tell Iris",
         "favorite": "Not now"
       },
-      "declined": "Continued without signing in"
+      "declined": "Continued without signing in",
+      "signedIn": "Signed in"
     },
     "responseFeedback": {
       "prompt": "Was this answer helpful?",

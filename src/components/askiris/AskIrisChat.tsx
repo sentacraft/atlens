@@ -21,6 +21,7 @@ import { ASK_FOR_GEAR } from "@/lib/ai/gear-request";
 import {
   clearEntryParams,
   DETACHED_CONVERSATION_LOCATION,
+  panelReturnUrl,
   URL_CONVERSATION_LOCATION,
   type AskIrisEntry,
 } from "@/lib/url/askiris";
@@ -211,6 +212,10 @@ export default function AskIrisChat({
 
   // An entry on another page than the conversation's starts a new conversation about this one.
   const receiveRequest = useEffectEvent((request: IrisPanelRequest) => {
+    if (request.kind === "conversation") {
+      requestSwitch({ kind: "select", id: request.conversationId });
+      return;
+    }
     if (isBusy) {
       if (request.kind === "question") {
         setInput(request.text);
@@ -491,6 +496,8 @@ export default function AskIrisChat({
                   void addToolOutput({ tool: ASK_FOR_GEAR, toolCallId, output, options: { body: turnBody() } }),
                 answerSignIn: (id, approved) =>
                   void addToolApprovalResponse({ id, approved, options: { body: turnBody() } }),
+                signInReturnTo: () =>
+                  shell.variant === "page" ? window.location.href : panelReturnUrl(conversationId),
               }}
             />
             {errorKind && (
