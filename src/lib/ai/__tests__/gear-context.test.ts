@@ -3,15 +3,21 @@ import { describeGear, evalGear, type GearStatus } from "../gear-context";
 import { gearPrompt } from "../system-prompt";
 import { lensRef } from "../lens-ref";
 import type { GearItem } from "@/lib/me/gear-schema";
+import type { GearCardDecline } from "../gear-request";
 
 const brandName = (slug: string) => (slug === "fujifilm" ? "富士" : slug);
-const gearContext = (status: GearStatus, cardAvailable = false) => gearPrompt(describeGear(status, brandName), { cardAvailable });
+const gearContext = (status: GearStatus, declined: GearCardDecline | null = "skipped") =>
+  gearPrompt(describeGear(status, brandName), { declined });
 
 describe("gearPrompt(describeGear(...))", () => {
   it("tells Iris a guest's gear is unknown, and how to ask for it", () => {
-    expect(gearContext({ kind: "guest" }, true)).toContain("只有当回答明显取决于他已有什么时");
-    expect(gearContext({ kind: "account", gear: [] }, true)).toContain("要推荐镜头时");
+    expect(gearContext({ kind: "guest" }, null)).toContain("只有当回答明显取决于他已有什么时");
+    expect(gearContext({ kind: "account", gear: [] }, null)).toContain("要推荐镜头时");
     expect(gearContext({ kind: "guest" })).toContain("不要再问他的器材");
+  });
+
+  it("has Iris ask once in chat after a guest chose that over signing in", () => {
+    expect(gearContext({ kind: "guest" }, "not_signed_in")).toContain("整段对话只问这一次");
   });
 
   it("tells Iris an empty profile leaves the gear unknown", () => {

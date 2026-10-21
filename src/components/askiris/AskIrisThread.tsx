@@ -16,6 +16,8 @@ import RecommendationDeck from "@/components/askiris/RecommendationDeck";
 import LensTable from "@/components/askiris/LensTable";
 import ResponseFeedback from "@/components/askiris/ResponseFeedback";
 import GearRequestCard from "@/components/askiris/GearRequestCard";
+import { SignInGate } from "@/components/askiris/SignInCard";
+import { signInGate } from "@/lib/ai/sign-in-gate";
 import { ASK_FOR_GEAR, type GearRequestInput, type GearRequestOutput } from "@/lib/ai/gear-request";
 import type { LensSummary } from "@/lib/lens/data";
 import type { LensTableColumn, Recommendation, ResolvedLens } from "@/lib/ai/recall";
@@ -59,33 +61,56 @@ function ToolTrace({ part }: { part: ToolUIPart | DynamicToolUIPart }) {
   );
 }
 
-/** What the thread needs to show the gear card and hand its answer back to the chat. */
-export interface GearCardBinding {
+/** What the thread needs to show the cards a turn pauses on and hand the user's answers back to the chat. */
+export interface ChatCardBinding {
   lenses: LensSummary[];
-  onAnswer: (toolCallId: string, output: GearRequestOutput) => void;
+  answerGear: (toolCallId: string, output: GearRequestOutput) => void;
+  answerSignIn: (approvalId: string, approved: boolean) => void;
+}
+
+/** A call the turn is paused on until the user answers its card. */
+function isAwaitingUser(part: ToolUIPart | DynamicToolUIPart): boolean {
+  return (
+    (getToolName(part) === ASK_FOR_GEAR && part.state === "input-available") ||
+    (part.state === "approval-requested" && !part.approval.isAutomatic)
+  );
 }
 
 function ToolPart({
   part,
   debug,
-  gearCard,
+  cards,
   latest,
 }: {
   part: ToolUIPart | DynamicToolUIPart;
   debug: boolean;
-  gearCard?: GearCardBinding;
+  cards?: ChatCardBinding;
   /** The part belongs to the newest message and no reply is streaming. */
   latest: boolean;
 }) {
-  if (getToolName(part) === ASK_FOR_GEAR && gearCard && (part.state === "input-available" || part.state === "output-available")) {
+  if (getToolName(part) === ASK_FOR_GEAR && cards && (part.state === "input-available" || part.state === "output-available")) {
     return (
       <div className="mb-2 w-full px-1">
         <GearRequestCard
           input={(part.input ?? {}) as GearRequestInput}
           output={part.state === "output-available" ? (part.output as GearRequestOutput) : undefined}
           active={latest}
-          lenses={gearCard.lenses}
-          onAnswer={(output) => gearCard.onAnswer(part.toolCallId, output)}
+          lenses={cards.lenses}
+          onAnswer={(output) => cards.answerGear(part.toolCallId, output)}
+        />
+      </div>
+    );
+  }
+  const gate = signInGate(getToolName(part));
+  if (gate && cards && "approval" in part && part.approval && !part.approval.isAutomatic) {
+    const { id } = part.approval;
+    return (
+      <div className="mb-2 w-full px-1">
+        <SignInGate
+          reason={gate}
+          answered={part.state === "approval-requested" ? undefined : part.approval.approved}
+          active={latest}
+          onAnswer={(approved) => cards.answerSignIn(id, approved)}
         />
       </div>
     );
@@ -150,12 +175,12 @@ export default function AskIrisThread({
   messages,
   debug = false,
   busy = false,
-  gearCard,
+  cards,
 }: {
   messages: AskIrisUIMessage[];
   debug?: boolean;
   busy?: boolean;
-  gearCard?: GearCardBinding;
+  cards?: ChatCardBinding;
 }) {
   const t = useTranslations("AskIris");
   const activeKey = activityKey(messages, busy, debug);
@@ -168,9 +193,7 @@ export default function AskIrisThread({
         const turnId = isUser ? null : (message.metadata?.turnId ?? null);
         const isLatest = message.id === messages[messages.length - 1]?.id;
         const isStreamingResponse = busy && isLatest;
-        const awaitingUser = message.parts.some(
-          (part) => isToolUIPart(part) && getToolName(part) === ASK_FOR_GEAR && part.state === "input-available",
-        );
+        const awaitingUser = message.parts.some((part) => isToolUIPart(part) && isAwaitingUser(part));
         return (
           <div
             key={message.id}
@@ -206,7 +229,7 @@ export default function AskIrisThread({
               }
               if (isToolUIPart(part)) {
                 return (
-                  <ToolPart key={key} part={part} debug={debug} gearCard={gearCard} latest={isLatest && !busy} />
+                  <ToolPart key={key} part={part} debug={debug} cards={cards} latest={isLatest && !busy} />
                 );
               }
               return null;

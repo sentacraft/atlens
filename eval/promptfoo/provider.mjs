@@ -95,20 +95,25 @@ async function postTurn(messages, mount, locale, conversationId, vars, continuin
   return msg;
 }
 
-// The gear card stops a turn until the user answers it. The eval answers as a guest who
-// declines (or as the case's `gearCardAnswer`) and lets Iris carry on, so the rest of the
-// reply is still graded. A case with `stopAtGearCard` grades only whether the card showed,
-// so it ends the dialog there instead of paying for the recommendation that follows.
-function answerGearCard(message, outcome) {
-  let answered = false;
+// The gear card and the sign-in card stop a turn until the user answers. The eval answers as
+// a guest who carries on without signing in (or, for the gear card, as the case's
+// `gearCardAnswer`) and lets Iris go on, so the rest of the reply is still graded. A case with
+// `stopAtGearCard` grades only whether the gear card showed, so it ends the dialog there
+// instead of paying for the recommendation that follows.
+function answerCards(message, gearOutcome) {
+  const shown = { gear: false, signIn: false };
   const parts = message.parts.map((part) => {
     if (part.type === "tool-askForGear" && part.state === "input-available") {
-      answered = true;
-      return { ...part, state: "output-available", output: { outcome } };
+      shown.gear = true;
+      return { ...part, state: "output-available", output: { outcome: gearOutcome } };
+    }
+    if (part.state === "approval-requested" && !part.approval?.isAutomatic) {
+      shown.signIn = true;
+      return { ...part, state: "approval-responded", approval: { ...part.approval, approved: false } };
     }
     return part;
   });
-  return answered ? { ...message, parts } : null;
+  return shown.gear || shown.signIn ? { message: { ...message, parts }, shown } : null;
 }
 
 function refsFromOutput(output) {
@@ -287,16 +292,18 @@ export default class AskIrisProvider {
     const convo = [];
     const recalledEver = new Set();
     let gearCardShown = false;
+    let signInCardShown = false;
     let d = digest(null);
     for (let i = 0; i < turns.length; i++) {
       messages.push({ id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text: turns[i] }] });
       convo.push(`[User] ${turns[i]}`);
       let assistant = await postTurn(messages, mount, locale, conversationId, context?.vars);
-      const answered = assistant && answerGearCard(assistant, context?.vars?.gearCardAnswer ?? "not_signed_in");
+      const answered = assistant && answerCards(assistant, context?.vars?.gearCardAnswer ?? "not_signed_in");
       if (answered) {
-        gearCardShown = true;
-        if (!context?.vars?.stopAtGearCard) {
-          assistant = await postTurn([...messages, answered], mount, locale, conversationId, context?.vars, answered);
+        gearCardShown ||= answered.shown.gear;
+        signInCardShown ||= answered.shown.signIn;
+        if (!(answered.shown.gear && context?.vars?.stopAtGearCard)) {
+          assistant = await postTurn([...messages, answered.message], mount, locale, conversationId, context?.vars, answered.message);
         }
       }
       if (assistant) {
@@ -335,6 +342,7 @@ export default class AskIrisProvider {
         preToolText: d.preToolText,
         toolsCalled: d.toolsCalled,
         gearCardShown,
+        signInCardShown,
         turnsRun: turns.length,
       },
     };

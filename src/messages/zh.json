@@ -241,12 +241,20 @@
       "saving": "保存中…",
       "saved": "已保存到我的器材",
       "skipped": "这次没有补充器材",
-      "notSignedIn": "这次先不登录",
-      "signInTitle": "登录后，Iris 会记住你的器材",
-      "signIn": "登录",
-      "notNow": "先不登录，直接告诉 Iris",
       "savedItems": "已保存到我的器材：{items}",
       "unanswered": "没有填写器材"
+    },
+    "signInCard": {
+      "title": {
+        "gear": "登录后，Iris 会记住你的器材",
+        "favorite": "登录后，Iris 就能看到你收藏的镜头"
+      },
+      "signIn": "登录",
+      "notNow": {
+        "gear": "先不登录，直接告诉 Iris",
+        "favorite": "先不登录"
+      },
+      "declined": "这次先不登录"
     },
     "responseFeedback": {
       "prompt": "这个回答有帮助吗？",

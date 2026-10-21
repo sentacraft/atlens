@@ -57,7 +57,7 @@ describe("GearRequestCard", () => {
     fireEvent.click(screen.getByRole("button", { name: "signIn" }));
     expect(mocks.openSignIn).toHaveBeenCalledWith("gear");
 
-    fireEvent.click(screen.getByRole("button", { name: "notNow" }));
+    fireEvent.click(screen.getByRole("button", { name: "notNow.gear" }));
     expect(onAnswer).toHaveBeenCalledWith({ outcome: "not_signed_in" });
   });
 

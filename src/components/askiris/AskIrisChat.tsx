@@ -133,7 +133,8 @@ export default function AskIrisChat({
     () => openChat(conversationId, conversation.initialMessages),
     [conversationId, conversation.initialMessages],
   );
-  const { messages, sendMessage, status, setMessages, stop, regenerate, error, addToolOutput } = useChat<AskIrisUIMessage>({
+  const { messages, sendMessage, status, setMessages, stop, regenerate, error, addToolOutput, addToolApprovalResponse } =
+    useChat<AskIrisUIMessage>({
     chat,
     experimental_throttle: 50,
   });
@@ -484,10 +485,12 @@ export default function AskIrisChat({
               messages={renderMessages}
               debug={debug}
               busy={isBusy}
-              gearCard={{
+              cards={{
                 lenses,
-                onAnswer: (toolCallId, output) =>
+                answerGear: (toolCallId, output) =>
                   void addToolOutput({ tool: ASK_FOR_GEAR, toolCallId, output, options: { body: turnBody() } }),
+                answerSignIn: (id, approved) =>
+                  void addToolApprovalResponse({ id, approved, options: { body: turnBody() } }),
               }}
             />
             {errorKind && (

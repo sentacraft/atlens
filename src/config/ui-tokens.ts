@@ -81,6 +81,9 @@ export const UTILITY_BTN_CLS =
 export const AI_TAG_CLS =
   "rounded px-1 text-[10px] leading-[14px] font-semibold tracking-wide bg-zinc-900/[0.08] text-zinc-900";
 
+// Surface of a card Iris shows in the chat for the user to act on: gear, sign-in.
+export const CHAT_CARD_CLS = "w-full max-w-[560px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm";
+
 export const NAV_CAPSULE_CLS =
   "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-zinc-200 bg-white pr-1 pl-2.5 transition-colors sm:gap-2 sm:pl-3 " +
   "hover:bg-zinc-50";

@@ -103,11 +103,8 @@ describe("myFavorites", () => {
   const X_FAVORITES = ["fujifilm-xf-23mmf14-r-lm-wr-x", "fujifilm-xf-33mmf14-r-lm-wr-x"];
   const G_FAVORITE = "fujifilm-gf-45mmf28-r-wr-g";
 
-  it("tells a guest to sign in, with the sign-in link ready to copy", async () => {
-    expect(await run(tools.myFavorites, {})).toEqual({
-      status: "not_signed_in",
-      signInLink: expect.stringMatching(/^\[.+\]\(action:signIn\)$/),
-    });
+  it("refuses to run without an account, which the sign-in gate keeps from happening", async () => {
+    await expect(run(tools.myFavorites, {})).rejects.toThrow(/not signed in/);
   });
 
   it("returns the current mount's favorites in order, counts the rest, and opens the gate for their refs", async () => {
@@ -117,7 +114,6 @@ describe("myFavorites", () => {
       "no-such-lens",
     ], new Set());
     const out = await run(withFavorites.myFavorites, {});
-    expect(out.status).toBe("ok");
     expect(out.total).toBe(2);
     expect(out.otherMounts).toEqual([{ mount: "G", count: 1 }]);
     const refs = out.results.map((lens: { ref: string }) => lens.ref);

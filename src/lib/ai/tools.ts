@@ -19,8 +19,6 @@ import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@
 import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
 import { SKILL_NAMES, readSkill } from "@/lib/ai/skills";
 import { favoritesOnMount } from "@/lib/ai/favorites";
-import { factLinkMarkdown } from "@/lib/askiris/inline-links";
-import { fillUiStrings } from "@/lib/ui-strings";
 
 const RECALL_LIMIT = 20;
 
@@ -231,15 +229,16 @@ export function buildLensTools(
       inputSchema: z.object({}),
       execute: async () => {
         const ids = await readFavorites();
+        // Unreachable through the sign-in gate, which pauses a guest's call until they sign in.
         if (ids === null) {
-          return { status: "not_signed_in" as const, signInLink: fillUiStrings(factLinkMarkdown("action:signIn"), locale) };
+          throw new Error("The user is not signed in.");
         }
         const { lenses, otherMounts } = favoritesOnMount(ids, mount, locale);
         const results = lenses.slice(0, RECALL_LIMIT).map((lens) => toRecalled(resolveLens(lens, locale, tBrand)));
         for (const lens of results) {
           recalledRefs.add(lens.ref);
         }
-        return { status: "ok" as const, results, total: lenses.length, otherMounts };
+        return { results, total: lenses.length, otherMounts };
       },
     }),
 
@@ -364,7 +363,8 @@ export function buildLensTools(
       description:
         "Show the user a card to add the camera bodies and lenses they own, before recommending, as the user-gear " +
         "note describes. List any lens or body they mentioned so the card can prefill it. The turn waits for the " +
-        "result: saved (gear now in the note), skipped, or not_signed_in; if not saved, recommend without their gear.",
+        "result: saved (gear now in the note), skipped, or not_signed_in (a guest chose to tell you in chat instead of " +
+        "signing in); the user-gear note then says how to go on.",
       inputSchema: gearRequestInputSchema,
       outputSchema: gearRequestOutputSchema,
     }),

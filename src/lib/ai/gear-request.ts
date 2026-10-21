@@ -26,17 +26,23 @@ export const gearRequestOutputSchema = z.object({
 export type GearRequestInput = z.infer<typeof gearRequestInputSchema>;
 export type GearRequestOutput = z.infer<typeof gearRequestOutputSchema>;
 
+/** How a gear card ended without saving. */
+export type GearCardDecline = "skipped" | "not_signed_in";
+
 /**
- * True once a gear card in this conversation ended without saving: skipped, not signed in, or
- * typed past without an answer.
+ * How a gear card in this conversation ended without saving: the form skipped (or typed past
+ * without an answer), or a guest choosing to tell Iris in chat instead of signing in.
  */
-export function gearRequestDeclined(messages: UIMessage[]): boolean {
-  return messages.some((message) =>
-    message.parts.some(
-      (part) =>
-        isToolUIPart(part) &&
-        getToolName(part) === ASK_FOR_GEAR &&
-        !(part.state === "output-available" && (part.output as GearRequestOutput | undefined)?.outcome === "saved"),
-    ),
-  );
+export function gearCardDecline(messages: UIMessage[]): GearCardDecline | null {
+  let decline: GearCardDecline | null = null;
+  for (const part of messages.flatMap((message) => message.parts)) {
+    if (!isToolUIPart(part) || getToolName(part) !== ASK_FOR_GEAR) {
+      continue;
+    }
+    const outcome = part.state === "output-available" ? (part.output as GearRequestOutput | undefined)?.outcome : undefined;
+    if (outcome !== "saved") {
+      decline = outcome === "not_signed_in" ? "not_signed_in" : "skipped";
+    }
+  }
+  return decline;
 }

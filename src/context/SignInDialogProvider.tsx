@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useContext, useMemo, useState } from "react";
-import AuthDialog, { type SignInReason } from "@/components/auth/AuthDialog";
+import AuthDialog from "@/components/auth/AuthDialog";
+import type { SignInReason } from "@/lib/sign-in-reason";
 import { track } from "@/lib/analytics/analytics";
 
 /** What opened the dialog: an action that needs an account, or a plain sign-in button by where it sits. */

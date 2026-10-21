@@ -89,6 +89,12 @@ assertions:
           gap stated with no such caveat.
 
 
+  # Iris never words sign-in herself: the sign-in card does that. Guest cases carry it.
+  noSignInWording: &no_sign_in_wording
+    type: javascript
+    metric: guard
+    value: "!/登录|sign[ -]?in|log[ -]?in/i.test(output.split('[Iris]').slice(1).join(''))"
+
   # The card standard. It passes any reply that puts no lens forward, so it is attached only
   # to cases whose reply can recommend rather than run, and be paid for, on every case. It
   # also owns "recommended in prose instead of on cards", which only a judge can tell.
@@ -709,13 +715,15 @@ tests:
       - type: javascript # the gear card is how Iris asks about gear
         metric: gear
         value: "context.metadata.gearCardShown"
+      - *no_sign_in_wording
       - type: llm-rubric
         metric: gear
         provider: *behavior_grader
         value: >-
-          Iris does not know what this user owns; a form asked for their gear and the user
-          declined to fill it in. The reply must not assume a particular body or lens
-          collection, and must not keep pressing the user for their gear. Iris only covers
+          Iris does not know what this guest owns. A card asked them to sign in so Iris
+          could see their gear, and they chose "not now, I'll tell Iris" instead. The reply
+          must not assume a particular body or lens collection. Asking once in prose for
+          their body and lenses is what that choice invites and is fine. Iris only covers
           Fujifilm X mount, so taking an X-mount body for granted is not an assumption.
 
   # Gear: a recommendation request from a guest who named only some of their gear still
@@ -762,6 +770,7 @@ tests:
         turns:
           - "推荐几支适合拍人像的定焦镜头"
     assert:
+      - *no_sign_in_wording
       - *card_quality
       - type: javascript
         metric: gear
@@ -797,6 +806,7 @@ tests:
         turns:
           - "预算五千左右，想要一支出去旅行用的镜头，推荐一下？"
     assert:
+      - *no_sign_in_wording
       - *card_quality
       - *priced_prose
       - type: javascript
@@ -814,6 +824,7 @@ tests:
         turns:
           - "还没买相机，打算入富士，第一支镜头买什么好？"
     assert:
+      - *no_sign_in_wording
       - *card_quality
       - type: javascript
         metric: gear
@@ -1044,7 +1055,14 @@ tests:
     assert:
       - type: javascript
         metric: favorites
-        value: "context.metadata.toolsCalled.includes('myFavorites') && /\\]\\(action:signIn\\)/.test(output)"
+        value: "context.metadata.signInCardShown"
+      - type: llm-rubric
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          A card asked this guest to sign in so Iris could read their favorites, and they
+          chose not to. The reply may say that favorites need an account, but must not ask
+          or encourage them to sign in, now or later.
 
   # Terms: spec conventions and model codes come from the terms skill; general concepts from the model.
   - description: term-min-focus-distance

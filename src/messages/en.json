@@ -241,12 +241,20 @@
       "saving": "Saving…",
       "saved": "Saved to My gear",
       "skipped": "Gear skipped this time",
-      "notSignedIn": "Continued without signing in",
-      "signInTitle": "Sign in so Iris remembers your gear",
-      "signIn": "Sign in",
-      "notNow": "Not now, I'll tell Iris",
       "savedItems": "Saved to My gear: {items}",
       "unanswered": "Gear not added"
+    },
+    "signInCard": {
+      "title": {
+        "gear": "Sign in so Iris remembers your gear",
+        "favorite": "Sign in so Iris can see your favorite lenses"
+      },
+      "signIn": "Sign in",
+      "notNow": {
+        "gear": "Not now, I'll tell Iris",
+        "favorite": "Not now"
+      },
+      "declined": "Continued without signing in"
     },
     "responseFeedback": {
       "prompt": "Was this answer helpful?",
