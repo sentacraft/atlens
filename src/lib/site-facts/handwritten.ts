@@ -1,3 +1,4 @@
+import { IRIS_QUOTA } from "@/lib/ai/iris-quota";
 import type { FactLink } from "@/lib/askiris/inline-links";
 import type { SiteTopic } from "@/lib/site-facts";
 
@@ -199,8 +200,9 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "rate-limit",
     topic: "askIris",
-    text: "Ask Iris has usage limits to keep costs under control.",
-    sources: ["src/lib/rate-limit.ts"],
+    text: `Without an account, Ask Iris answers ${IRIS_QUOTA.guestTurnsDaily} questions a day; signed in, ${IRIS_QUOTA.accountTurnsDaily}. Iris also has an overall usage limit, and when it is reached she pauses for everyone until it resets.`,
+    sources: ["src/lib/ai/iris-quota.ts"],
+    links: ["action:signIn"],
   },
   {
     id: "accuracy",

@@ -158,7 +158,7 @@ export default function AskIrisChat({
     setMessages,
     location: shell.variant === "page" ? URL_CONVERSATION_LOCATION : DETACHED_CONVERSATION_LOCATION,
   });
-  const errorKind = status === "error" ? classifyError(error) : null;
+  const chatError = status === "error" ? classifyError(error) : null;
   const turnBody = () => ({ mount, locale, ...(contextPath ? { page: contextPath } : {}) });
 
   useEffect(() => {
@@ -500,8 +500,8 @@ export default function AskIrisChat({
                   shell.variant === "page" ? window.location.href : panelReturnUrl(conversationId),
               }}
             />
-            {errorKind && (
-              <AskIrisError kind={errorKind} onRetry={() => regenerate({ body: turnBody() })} />
+            {chatError && (
+              <AskIrisError error={chatError} onRetry={() => regenerate({ body: turnBody() })} />
             )}
           </div>
           <div

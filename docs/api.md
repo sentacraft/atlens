@@ -15,7 +15,7 @@ change the JSDoc, then run `node --experimental-strip-types scripts/api-docs.mts
 | `/api/askiris/feedback` | POST | Saves or replaces the caller's rating of one Iris response. Any session, guests included; 401 without one, 404 when the response is not the caller's, 429 when rate limited. |
 | `/api/askiris/feedback/[responseMessageId]` | DELETE | Withdraws the caller's rating of one Iris response. Any session, guests included; 401 without one, 404 when the response is not the caller's, 429 when rate limited. |
 | `/api/auth/[...all]` | GET, POST, PATCH, PUT, DELETE | Better Auth: sign-in, email codes, session, sign-out, account deletion. See https://www.better-auth.com/docs/concepts/api |
-| `/api/chat` | POST | Runs one Ask Iris turn and streams the reply, saving it to the conversation. Any session, guests included; 401 without one, 429 when over the rate limit or token budget. |
+| `/api/chat` | POST | Runs one Ask Iris turn and streams the reply, saving it to the conversation. Any session, guests included; 401 without one, 429 when over the rate limit or a daily or global usage quota. |
 | `/api/feedback` | GET | Reports whether site feedback is configured (GitHub token and repository). Public. |
 | `/api/feedback` | POST | Files site feedback as a GitHub issue. Public; 400 with the failing rule as the error code, 429 when rate limited. |
 | `/api/lenses` | GET | Filters, sorts and pages one mount's lens catalog. No consumers: 404 in production. |
