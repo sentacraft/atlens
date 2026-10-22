@@ -12,6 +12,7 @@ import ComparePageHeader from "@/components/compare/ComparePageHeader";
 import CompareCollections from "@/components/compare/CompareCollections";
 import CompareTelemetry from "@/components/compare/CompareTelemetry";
 import CuratedComparisons from "@/components/compare/CuratedComparisons";
+import SupportNote from "@/components/support/SupportNote";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import Breadcrumb from "@/components/nav/Breadcrumb";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
@@ -119,6 +120,7 @@ export default async function ComparePage({
       <CompareTable allLenses={allLenses} minColumns={2} />
       <CompareCollections allLenses={allLenses} lensCounts={getCollectionLensCounts(locale)} />
       {resolvedMount === "X" && <CuratedComparisons allLenses={allLenses} />}
+      <SupportNote className="mt-10" />
       <BackToTopButton />
       <CompareUrlSync initialIds={lenses.map((l) => l.id)} />
       <CompareTelemetry lensIds={lenses.map((l) => l.id)} />

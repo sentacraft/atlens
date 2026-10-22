@@ -21,6 +21,12 @@ export const ACTION_ESCAPE_CLS =
   "transition-colors duration-150 hover:bg-zinc-900 hover:text-white active:bg-zinc-800 " +
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900";
 
+/** A segmented control: the track, and each tab in it (Base UI Tabs mark the current one data-active). */
+export const SEGMENTED_LIST_CLS = "flex gap-1 rounded-lg bg-zinc-100 p-1";
+export const SEGMENTED_TAB_CLS =
+  "flex-1 rounded-md px-3 py-1.5 text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900 " +
+  "data-[active]:bg-white data-[active]:text-zinc-900 data-[active]:shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 cursor-pointer";
+
 export const PAGE_SECTION_CLS = "border-t border-zinc-200 pt-6";
 
 export const SECTION_HEADING_CLS = "text-base font-semibold text-zinc-900";
