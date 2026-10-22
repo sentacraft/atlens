@@ -43,6 +43,18 @@ export function collectionPath(mount: Mount, slug: string): string {
   return `${collectionsPath(mount)}/${slug}`;
 }
 
+export function chartsPath(mount: Mount): string {
+  return `/lenses/${mountToUrlSegment(mount)}/charts`;
+}
+
+export function chartPath(mount: Mount, chart: "timeline" | "weight"): string {
+  return `${chartsPath(mount)}/${chart}`;
+}
+
+export function lineupPath(mount: Mount, brand: string): string {
+  return `${chartsPath(mount)}/lineup/${brand}`;
+}
+
 export function lensPath(lens: { mount: Mount; id: string }): string {
   return `/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`;
 }
