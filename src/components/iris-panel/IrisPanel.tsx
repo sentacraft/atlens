@@ -89,8 +89,8 @@ export default function IrisPanel({
                 // sheet sits on top of it, shrinking so the composer stays above.
                 "bottom-[var(--drawer-keyboard-inset,0px)]",
                 expanded
-                  ? "h-[calc(100svh_-_var(--drawer-keyboard-inset,0px))] pt-[var(--safe-inset-top)]"
-                  : "h-[min(85svh,calc(100svh_-_var(--drawer-keyboard-inset,0px)_-_var(--safe-inset-top)_-_1rem))] rounded-t-3xl",
+                  ? "h-[calc(var(--app-height)_-_var(--drawer-keyboard-inset,0px))] pt-[var(--safe-inset-top)]"
+                  : "h-[min(calc(var(--app-height)_*_0.85),calc(var(--app-height)_-_var(--drawer-keyboard-inset,0px)_-_var(--safe-inset-top)_-_1rem))] rounded-t-3xl",
                 "[transform:translateY(var(--drawer-swipe-movement-y,0px))] transition-[transform,translate,height] duration-300 ease-out data-[swiping]:transition-none",
                 "data-ending-style:translate-y-full data-starting-style:translate-y-full",
                 // A drawer opened from the sheet (History) is nested and gets no backdrop of its own, so the sheet dims itself.

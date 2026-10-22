@@ -54,7 +54,7 @@ export function LightboxDialog({
             <div className="relative w-full overflow-hidden rounded-2xl bg-white shadow-[0_8px_40px_rgba(0,0,0,0.22),0_0_0_1px_rgba(0,0,0,0.06)] animate-in fade-in-0 zoom-in-95 duration-150 ease-out">
               <div
                 ref={scrollRef}
-                className="max-h-[calc(100svh-3rem-10px)] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:max-h-[calc(100svh-3rem)]"
+                className="max-h-[calc(var(--app-height)-3rem-10px)] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:max-h-[calc(var(--app-height)-3rem)]"
                 onScroll={() => {
                   if (!hasScrolled) {
                     handleScroll();

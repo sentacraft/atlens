@@ -56,7 +56,7 @@ export default function AddBodyDialog({
   const t = useTranslations("Profile");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogPopup className="flex max-h-[85svh] w-full max-w-xl flex-col overflow-hidden">
+      <DialogPopup className="flex max-h-[calc(var(--app-height)*0.85)] w-full max-w-xl flex-col overflow-hidden">
         <DialogHeader className="pr-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
