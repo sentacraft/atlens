@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
@@ -19,26 +19,29 @@ function renderPanel(locale: "en" | "zh") {
   );
 }
 
-function channelOrder(): string[] {
-  const kofi = screen.getByRole("link", { name: /Ko-fi/ });
-  const wechat = screen.getByRole("img");
-  return kofi.compareDocumentPosition(wechat) & Node.DOCUMENT_POSITION_FOLLOWING ? ["kofi", "wechat"] : ["wechat", "kofi"];
+function tabNames(): string[] {
+  return screen.getAllByRole("tab").map((tab) => tab.textContent ?? "");
 }
 
 describe("SupportPanel", () => {
-  it("leads with Ko-fi on the English site", () => {
+  it("opens on Ko-fi on the English site, with WeChat a tab away", () => {
     renderPanel("en");
 
-    expect(channelOrder()).toEqual(["kofi", "wechat"]);
-    expect(screen.getByRole("link", { name: /Support on Ko-fi/ })).toHaveClass("bg-zinc-900");
+    expect(tabNames()).toEqual(["Ko-fi", en.Support.wechatTitle]);
+    expect(screen.getByRole("tab", { name: "Ko-fi" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("link", { name: /Support on Ko-fi/ })).toBeInTheDocument();
     expect(screen.getByText(/covers 224 lenses/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("tab", { name: en.Support.wechatTitle }));
+
+    expect(screen.getByRole("img", { name: en.Support.wechatQrAlt })).toBeInTheDocument();
   });
 
-  it("leads with the WeChat code on the Chinese site, and keeps Ko-fi for visitors abroad", () => {
+  it("opens on the WeChat code on the Chinese site, with Ko-fi a tab away", () => {
     renderPanel("zh");
 
-    expect(channelOrder()).toEqual(["wechat", "kofi"]);
+    expect(tabNames()).toEqual([zh.Support.wechatTitle, "Ko-fi"]);
+    expect(screen.getByRole("tab", { name: zh.Support.wechatTitle })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("img", { name: zh.Support.wechatQrAlt })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Ko-fi/ })).not.toHaveClass("bg-zinc-900");
   });
 });

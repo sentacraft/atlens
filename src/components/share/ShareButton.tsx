@@ -8,6 +8,7 @@ import { Tabs } from "@base-ui/react/tabs";
 import { useTranslations, useLocale } from "next-intl";
 import { Share2, Copy, Check, Download, Loader2, Expand } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SEGMENTED_LIST_CLS, SEGMENTED_TAB_CLS } from "@/config/ui-tokens";
 import type { Lens } from "@/lib/types";
 import { rasterizePoster } from "@/lib/share-image";
 import { track } from "@/lib/analytics/analytics";
@@ -266,9 +267,6 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
     slogan: effectiveSlogan.trim() || undefined,
   };
 
-  const tabClass =
-    "flex-1 rounded-md px-3 py-1.5 text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900 data-[active]:bg-white data-[active]:text-zinc-900 data-[active]:shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 cursor-pointer";
-
   const linkSection = (
     <div className="flex flex-col gap-3">
       <div className="select-all break-all rounded-md bg-zinc-100 px-3 py-2.5 font-mono text-xs leading-relaxed text-zinc-500">
@@ -326,9 +324,9 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
       </div>
 
       <Tabs.Root defaultValue="image" className="flex flex-col gap-4">
-        <Tabs.List className="flex gap-1 rounded-lg bg-zinc-100 p-1">
-          <Tabs.Tab value="image" className={tabClass}>{t("tabImage")}</Tabs.Tab>
-          <Tabs.Tab value="link" className={tabClass}>{t("tabLink")}</Tabs.Tab>
+        <Tabs.List className={SEGMENTED_LIST_CLS}>
+          <Tabs.Tab value="image" className={SEGMENTED_TAB_CLS}>{t("tabImage")}</Tabs.Tab>
+          <Tabs.Tab value="link" className={SEGMENTED_TAB_CLS}>{t("tabLink")}</Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="link">

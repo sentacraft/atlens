@@ -28,7 +28,7 @@ export function SupportDialogProvider({ lensCount, children }: { lensCount: numb
     <SupportDialogContext value={openSupport}>
       {children}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogPopup className="max-w-xl">
+        <DialogPopup className="max-w-md">
           <DialogHeader className="flex-row items-start justify-between gap-3 pr-5">
             <DialogTitle>{t("title")}</DialogTitle>
             <DialogClose aria-label={t("close")} className={cn(ICON_CLOSE_BTN_CLS, "hidden h-9 w-9 sm:inline-flex")}>
