@@ -5,9 +5,10 @@ import { NextIntlClientProvider } from "next-intl";
 import messages from "@/messages/en.json";
 import AskIrisError, { classifyError, RESET_AT_FORMAT } from "../AskIrisError";
 
-const mocks = vi.hoisted(() => ({ openSignIn: vi.fn() }));
+const mocks = vi.hoisted(() => ({ openSignIn: vi.fn(), openSupport: vi.fn() }));
 
 vi.mock("@/context/SignInDialogProvider", () => ({ useSignInDialog: () => mocks.openSignIn }));
+vi.mock("@/context/SupportDialogProvider", () => ({ useSupportDialog: () => mocks.openSupport }));
 
 afterEach(() => {
   cleanup();
@@ -49,5 +50,21 @@ describe("AskIrisError", () => {
 
     expect(alert).toHaveTextContent(`will be back on ${localResetAt}`);
     expect(alert).not.toHaveTextContent(messages.AskIris.rateLimited);
+  });
+
+  it("keeps a guest's way forward to signing in, without asking for support", () => {
+    renderError({ kind: "guest_quota", resetAt: RESET_AT });
+
+    expect(screen.queryByRole("button", { name: messages.AskIris.limitSupport })).toBeNull();
+  });
+
+  it("asks for support when an account or the whole site has run out", () => {
+    renderError({ kind: "account_quota", resetAt: RESET_AT });
+    fireEvent.click(screen.getByRole("button", { name: messages.AskIris.limitSupport }));
+    expect(mocks.openSupport).toHaveBeenCalledWith("iris_limit");
+
+    cleanup();
+    renderError({ kind: "budget", resetAt: RESET_AT });
+    expect(screen.getByRole("button", { name: messages.AskIris.limitSupport })).toBeInTheDocument();
   });
 });

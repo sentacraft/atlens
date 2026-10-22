@@ -21,7 +21,7 @@ import { lensDisplayName, brandLabel } from "@/lib/lens/format";
 import { SITE } from "@/config/site";
 import type { NamespaceTranslator } from "@/i18n/translator";
 import { useSupportDialog } from "@/context/SupportDialogProvider";
-import { browserPromptStore, claimPosterPrompt } from "@/lib/support-prompts";
+import { browserPromptStore, claimPrompt } from "@/lib/support-prompts";
 
 const POSTER_W = 750;
 const PREVIEW_SCALE = 352 / POSTER_W; // ≈ 0.469
@@ -177,7 +177,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
 
   const offerSupport = useCallback(
     (title: string) => {
-      if (!claimPosterPrompt(browserPromptStore())) {
+      if (!claimPrompt(browserPromptStore(), "poster")) {
         return;
       }
       track("support_prompt", { prompt: "poster_toast", action: "shown" });

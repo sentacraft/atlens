@@ -4,13 +4,30 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import ResponseFeedback from "../ResponseFeedback";
 
+const mocks = vi.hoisted(() => ({ openSupport: vi.fn() }));
+
 vi.mock("next-intl", () => ({
-  useTranslations: () => (key: string) => key,
+  useTranslations: () =>
+    Object.assign((key: string) => key, {
+      rich: (key: string, values: Record<string, (chunks: string) => unknown>) => values.support?.(key) ?? key,
+    }),
 }));
+vi.mock("@/context/SupportDialogProvider", () => ({ useSupportDialog: () => mocks.openSupport }));
 
 let fetchMock: ReturnType<typeof vi.fn>;
 
+function memoryStorage(): Pick<Storage, "getItem" | "setItem"> {
+  const values = new Map<string, string>();
+  return {
+    getItem: (key) => values.get(key) ?? null,
+    setItem: (key, value) => {
+      values.set(key, value);
+    },
+  };
+}
+
 beforeEach(() => {
+  vi.stubGlobal("localStorage", memoryStorage());
   fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 200 }));
   vi.stubGlobal("fetch", fetchMock);
 });
@@ -18,6 +35,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
+  vi.clearAllMocks();
 });
 
 function renderResponseFeedback() {
@@ -30,7 +48,9 @@ function renderResponseFeedback() {
 }
 
 function sentBodies() {
-  return fetchMock.mock.calls.map((call) => JSON.parse(call[1].body));
+  return fetchMock.mock.calls
+    .filter(([url]) => String(url).includes("/api/askiris/feedback"))
+    .map((call) => JSON.parse(call[1].body));
 }
 
 describe("ResponseFeedback", () => {
@@ -88,5 +108,25 @@ describe("ResponseFeedback", () => {
 
     expect(within(group).getByRole("button", { name: "helpful" })).toBeInTheDocument();
     expect(within(group).getByRole("button", { name: "unhelpful" })).toBeInTheDocument();
+  });
+
+  it("offers support after a helpful rating, at most once a week", () => {
+    renderResponseFeedback();
+    fireEvent.click(screen.getByRole("button", { name: "helpful" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "supportLine" }));
+    expect(mocks.openSupport).toHaveBeenCalledWith("iris_helpful");
+
+    cleanup();
+    renderResponseFeedback();
+    fireEvent.click(screen.getByRole("button", { name: "helpful" }));
+    expect(screen.queryByRole("button", { name: "supportLine" })).toBeNull();
+  });
+
+  it("does not offer support after an unhelpful rating", () => {
+    renderResponseFeedback();
+    fireEvent.click(screen.getByRole("button", { name: "unhelpful" }));
+
+    expect(screen.queryByRole("button", { name: "supportLine" })).toBeNull();
   });
 });
