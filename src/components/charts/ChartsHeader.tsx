@@ -1,6 +1,5 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { DataSourceInline } from "@/components/lens/DataSource";
 import { chartPath } from "@/lib/url/routes";
 import type { Mount } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -16,12 +15,14 @@ export default async function ChartsHeader({
   active,
   title,
   description,
+  children,
 }: {
   locale: string;
   mount: Mount;
   active: (typeof TABS)[number]["chart"];
   title: string;
   description: string;
+  children?: React.ReactNode;
 }) {
   const t = await getTranslations({ locale, namespace: "Charts" });
   return (
@@ -44,7 +45,7 @@ export default async function ChartsHeader({
       <div className="flex flex-col gap-2">
         <h1 className="font-heading text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">{title}</h1>
         <p className="text-sm leading-relaxed text-zinc-600">{description}</p>
-        <DataSourceInline />
+        {children}
       </div>
     </header>
   );

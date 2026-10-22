@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import ChartsHeader from "@/components/charts/ChartsHeader";
+import { DataSourceInline } from "@/components/lens/DataSource";
 import WeightLadderChart, { WeightLadderChartFromUrl } from "@/components/charts/WeightLadderChart";
 import { BROWSE_PAGE_MAIN_CLS } from "@/config/ui-tokens";
 import { chartBrands } from "@/lib/charts/catalog";
@@ -62,7 +63,9 @@ export default async function WeightPage({ params }: { params: Params }) {
           weight: ladder.heaviest?.weightG ?? 0,
           ratio: ladder.ratio ?? 0,
         })}
-      />
+      >
+        <DataSourceInline />
+      </ChartsHeader>
       <Suspense fallback={<WeightLadderChart {...chartProps} initial={{}} />}>
         <WeightLadderChartFromUrl {...chartProps} />
       </Suspense>
