@@ -199,7 +199,6 @@
     },
     "newChat": "新对话",
     "history": "历史对话",
-    "signInToKeepChats": "登录以长期保存对话",
     "guestChatsKept": "未登录时，对话保留 7 天",
     "backToChat": "返回对话",
     "historyEmpty": "还没有对话。问 Iris 的问题会自动存到这里。",
