@@ -59,18 +59,25 @@ test.describe("Ask Iris side panel", () => {
     expect(hit.onItem).toBe(true);
   });
 
-  test("opens History from the panel by expanding it, with a sign-in card for a visitor without an account", async ({ page }) => {
+  test("opens History as a popover under its button, leaving the panel its width", async ({ page }) => {
     await page.goto("/en/lenses/x/browse");
     await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
     const panel = page.getByRole("complementary", { name: "Iris" });
+    const panelLeft = await panel.evaluate((aside) => aside.getBoundingClientRect().left);
 
-    await panel.getByRole("button", { name: "Conversations" }).click();
-    // The open History drawer hides the rest of the page from assistive tech, the panel included,
-    // so the panel is found by its markup here rather than by role.
-    const expandedPanel = page.locator('aside[aria-label="Iris"]');
-    await expect.poll(() => expandedPanel.evaluate((aside) => aside.getBoundingClientRect().left)).toBe(0);
+    const button = panel.getByRole("button", { name: "Conversations" });
+    await button.click();
     const history = page.getByRole("dialog", { name: "Conversations" });
     await expect(history.getByRole("button", { name: "Sign in", exact: true })).toBeVisible();
+
+    const [buttonBox, historyBox] = await Promise.all([button.boundingBox(), history.boundingBox()]);
+    expect(historyBox!.y).toBeGreaterThanOrEqual(buttonBox!.y + buttonBox!.height);
+    expect(historyBox!.x).toBeLessThanOrEqual(buttonBox!.x);
+    expect(historyBox!.x + historyBox!.width).toBeGreaterThanOrEqual(buttonBox!.x + buttonBox!.width);
+    expect(await panel.evaluate((aside) => aside.getBoundingClientRect().left)).toBe(panelLeft);
+
+    await page.keyboard.press("Escape");
+    await expect(history).toBeHidden();
   });
 
   test("narrows the page from the right, keeping its left edge under the nav's", async ({ page }) => {
