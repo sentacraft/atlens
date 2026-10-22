@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { ArrowUpRight } from "lucide-react";
 import PlatformMark from "@/components/logos/PlatformMark";
-import { brandLabel } from "@/lib/lens/format";
 import { buildReviewSearchLinks } from "@/lib/lens/review-search";
 import type { Lens } from "@/lib/types";
 import { PAGE_SECTION_CLS, SECTION_HEADING_CLS } from "@/config/ui-tokens";
@@ -10,11 +9,9 @@ import { cn } from "@/lib/utils";
 /** Search links to other sites' reviews, samples and discussions of the lens. */
 export default async function LensReviewSearch({ lens, locale }: { lens: Lens; locale: string }) {
   const t = await getTranslations("LensReviews");
-  const tBrandEn = await getTranslations({ locale: "en", namespace: "Brands" });
   const links = buildReviewSearchLinks({
     lens,
     locale,
-    brandName: brandLabel(tBrandEn, lens.brand),
     reviewKeyword: t("searchKeyword"),
   });
 

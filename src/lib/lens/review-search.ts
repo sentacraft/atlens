@@ -26,32 +26,35 @@ const CHANNELS: Record<string, ReviewSearchChannel[]> = {
   en: ["youtube", "google", "flickr", "reddit"],
 };
 
+// Store-search aliases end in the mount ("Fuji X", "富士", "GFX") because sellers list mount
+// variants apart. Reviews, photos and posts rarely repeat it, and on Flickr the suffix cut a
+// third-party lens's results to nothing.
+const MOUNT_SUFFIX = /\s+(Fuji (X|GFX)|富士|GFX)$/;
+
 /**
- * Search links for other sites' reviews, sample photos and owner discussions of a lens. The
+ * Search links for other sites' reviews, sample photos and community discussions of a lens. The
  * results are each site's own; nothing here is chosen or ranked by us.
  */
 export function buildReviewSearchLinks({
   lens,
   locale,
-  brandName,
   reviewKeyword,
 }: {
   lens: Lens;
   locale: string;
-  /** The brand in English: Flickr titles and tags are mostly English. */
-  brandName: string;
   /** "review" in the page language, appended to video and article searches. */
   reviewKeyword: string;
 }): ReviewSearchLink[] {
-  const name = lensSearchQuery(lens, locale);
+  const name = lensSearchQuery(lens, locale).replace(MOUNT_SUFFIX, "");
+  const english = lensSearchQuery(lens, "en").replace(MOUNT_SUFFIX, "");
   const review = encodeURIComponent(`${name} ${reviewKeyword}`);
   const url: Record<ReviewSearchChannel, () => string> = {
     bilibili: () => `https://search.bilibili.com/all?keyword=${review}`,
     youtube: () => `https://www.youtube.com/results?search_query=${review}`,
     bing: () => `https://www.bing.com/search?q=${review}`,
     google: () => `https://www.google.com/search?q=${review}`,
-    // Store aliases end in a mount suffix ("Fuji X") that few photo titles carry.
-    flickr: () => `https://www.flickr.com/search/?text=${encodeURIComponent(`${brandName} ${lens.model}`)}`,
+    // Flickr titles and tags are mostly English.
+    flickr: () => `https://www.flickr.com/search/?text=${encodeURIComponent(english)}`,
     reddit: () => `https://www.reddit.com/r/fujifilm/search/?q=${encodeURIComponent(name)}`,
   };
   return (CHANNELS[locale] ?? CHANNELS.en).map((channel) => ({ channel, kind: KIND[channel], url: url[channel]() }));

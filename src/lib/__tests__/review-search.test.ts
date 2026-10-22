@@ -13,7 +13,7 @@ const viltrox: Lens = {
 };
 
 function links(locale: string, lens: Lens = viltrox) {
-  return buildReviewSearchLinks({ lens, locale, brandName: "Viltrox", reviewKeyword: locale === "zh" ? "评测" : "review" });
+  return buildReviewSearchLinks({ lens, locale, reviewKeyword: locale === "zh" ? "评测" : "review" });
 }
 
 describe("lensSearchQuery", () => {
@@ -45,22 +45,29 @@ describe("buildReviewSearchLinks", () => {
     ]);
   });
 
-  it("searches videos and articles for the page-language alias plus the review keyword", () => {
+  it("searches videos and articles for the page-language alias without its mount suffix, plus the review keyword", () => {
     const byChannel = Object.fromEntries(links("zh").map((link) => [link.channel, new URL(link.url)]));
-    expect(byChannel.bilibili.searchParams.get("keyword")).toBe("唯卓仕 AF 23mm f1.4 富士 评测");
-    expect(byChannel.youtube.searchParams.get("search_query")).toBe("唯卓仕 AF 23mm f1.4 富士 评测");
+    expect(byChannel.bilibili.searchParams.get("keyword")).toBe("唯卓仕 AF 23mm f1.4 评测");
+    expect(byChannel.youtube.searchParams.get("search_query")).toBe("唯卓仕 AF 23mm f1.4 评测");
     expect(byChannel.bing.origin).toBe("https://www.bing.com");
-    expect(byChannel.bing.searchParams.get("q")).toBe("唯卓仕 AF 23mm f1.4 富士 评测");
+    expect(byChannel.bing.searchParams.get("q")).toBe("唯卓仕 AF 23mm f1.4 评测");
+    const google = new URL(links("en").find((link) => link.channel === "google")!.url);
+    expect(google.searchParams.get("q")).toBe("Viltrox AF 23mm f1.4 review");
   });
 
-  it("searches Flickr for the English brand and model, without the store-listing mount suffix", () => {
-    const flickr = new URL(links("zh").find((link) => link.channel === "flickr")!.url);
-    expect(flickr.searchParams.get("text")).toBe("Viltrox AF 23mm F1.4");
-  });
-
-  it("searches r/fujifilm for the alias alone", () => {
+  it("searches Flickr and r/fujifilm for the English alias without its mount suffix", () => {
+    const zhFlickr = new URL(links("zh").find((link) => link.channel === "flickr")!.url);
+    expect(zhFlickr.searchParams.get("text")).toBe("Viltrox AF 23mm f1.4");
     const reddit = new URL(links("en").find((link) => link.channel === "reddit")!.url);
     expect(reddit.pathname).toBe("/r/fujifilm/search/");
-    expect(reddit.searchParams.get("q")).toBe("Viltrox AF 23mm f1.4 Fuji X");
+    expect(reddit.searchParams.get("q")).toBe("Viltrox AF 23mm f1.4");
+  });
+
+  it("strips the GFX suffix and leaves Fujifilm aliases, which carry none, as they are", () => {
+    const laowa = { ...viltrox, searchAliases: { en: "Laowa 8-15mm f2.8 Fisheye Zoom Fuji GFX", zh: "老蛙 8-15mm f2.8 Fisheye Zoom GFX" } };
+    expect(new URL(links("zh", laowa)[0].url).searchParams.get("keyword")).toBe("老蛙 8-15mm f2.8 Fisheye Zoom 评测");
+    expect(new URL(links("en", laowa)[0].url).searchParams.get("search_query")).toBe("Laowa 8-15mm f2.8 Fisheye Zoom review");
+    const fuji = { ...viltrox, searchAliases: { en: "Fujifilm XF 23mm f2 WR", zh: "富士 XF 23mm f2 WR" } };
+    expect(new URL(links("zh", fuji)[0].url).searchParams.get("keyword")).toBe("富士 XF 23mm f2 WR 评测");
   });
 });
