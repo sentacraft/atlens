@@ -20,7 +20,8 @@ import NavMenu from "@/components/nav/NavMenu";
 import { useIris } from "@/context/IrisPanelProvider";
 import AiTag from "@/components/iris/AiTag";
 import { SITE } from "@/config/site";
-import { browsePath } from "@/lib/url/routes";
+import { browsePath, chartsPath } from "@/lib/url/routes";
+import { mountHasCharts } from "@/lib/mount";
 import { buildComparePath } from "@/lib/url/compare";
 import { PAGE_GUTTER_CLS } from "@/config/ui-tokens";
 
@@ -77,6 +78,7 @@ export default function Nav() {
 
   const browseHref = browsePath(effectiveMount);
   const compareHref = buildComparePath(effectiveMount, compareIds);
+  const chartsHref = chartsPath(mountHasCharts(effectiveMount) ? effectiveMount : "X");
 
   const linkCls = (active: boolean) =>
     `text-sm transition-colors px-1.5 sm:px-2 ${
@@ -85,8 +87,9 @@ export default function Nav() {
         : "text-zinc-500 hover:text-zinc-900"
     }`;
 
-  const isBrowseActive = pathname.startsWith("/lenses") && !pathname.includes("/compare");
   const isCompareActive = pathname.includes("/compare");
+  const isChartsActive = pathname.includes("/charts");
+  const isBrowseActive = pathname.startsWith("/lenses") && !isCompareActive && !isChartsActive;
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
 
   function handleCompareLinkClick(e: React.MouseEvent) {
@@ -139,6 +142,9 @@ export default function Nav() {
           >
             {t("compare")}
           </Link>
+          <Link href={chartsHref} className={cn(linkCls(isChartsActive), "hidden whitespace-nowrap sm:inline")}>
+            {t("charts")}
+          </Link>
           <a
             href={SITE.repoUrl}
             target="_blank"
@@ -168,6 +174,7 @@ export default function Nav() {
           </button>
           <NavMenu
             compareHref={compareHref}
+            chartsHref={chartsHref}
             onCompareClick={handleCompareLinkClick}
             showGetApp={!isPwa}
             onFeedback={openFeedback}

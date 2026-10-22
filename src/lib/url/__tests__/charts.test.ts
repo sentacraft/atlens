@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chartHighlightQuery, readChartHighlight } from "../charts";
+import { readChartHighlight, readChartHighlightFromSearch, writeChartHighlight } from "../charts";
 import { chartPath, chartsPath, lineupPath } from "../routes";
 
 const brands = ["fujifilm", "sigma"];
@@ -18,16 +18,18 @@ describe("readChartHighlight", () => {
   });
 });
 
-describe("chartHighlightQuery", () => {
-  it("round-trips through readChartHighlight", () => {
-    const query = chartHighlightQuery({ brand: "sigma", focal: "standard" });
-    expect(query).toBe("?brand=sigma&focal=standard");
-    const params = Object.fromEntries(new URLSearchParams(query));
-    expect(readChartHighlight(params, brands)).toEqual({ brand: "sigma", focal: "standard" });
+describe("writeChartHighlight", () => {
+  it("round-trips through the URL and leaves other params alone", () => {
+    const url = new URL("https://atlens.test/en/lenses/x/charts/weight?ref=share&brand=fujifilm");
+    writeChartHighlight(url, { brand: "sigma", focal: "standard" });
+    expect(url.searchParams.get("ref")).toBe("share");
+    expect(readChartHighlightFromSearch(url.searchParams, brands)).toEqual({ brand: "sigma", focal: "standard" });
   });
 
-  it("is empty without a highlight", () => {
-    expect(chartHighlightQuery({})).toBe("");
+  it("removes the params when the highlight is cleared", () => {
+    const url = new URL("https://atlens.test/en/lenses/x/charts/weight?brand=sigma&focal=wide");
+    writeChartHighlight(url, {});
+    expect(url.search).toBe("");
   });
 });
 

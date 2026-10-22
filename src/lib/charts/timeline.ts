@@ -1,11 +1,9 @@
-import { chartLenses, countByBrand, equivFocalRange, type BrandCount } from "@/lib/charts/catalog";
+import { chartLenses, countByBrand, type BrandCount, type ChartLens } from "@/lib/charts/catalog";
 import type { Lens } from "@/lib/types";
 
 export interface TimelineEntry {
-  lens: Lens;
+  lens: ChartLens;
   year: number;
-  focalMin: number;
-  focalMax: number;
   /** Geometric middle of the equivalent range: where a zoom's image sits on a log axis. */
   focalMid: number;
 }
@@ -26,13 +24,10 @@ export interface Timeline {
 
 export function buildTimeline(lenses: Lens[]): Timeline {
   const pool = chartLenses(lenses);
-  const dated = pool.filter((lens): lens is Lens & { releaseYear: number } => lens.releaseYear !== undefined);
+  const dated = pool.filter((lens): lens is ChartLens & { releaseYear: number } => lens.releaseYear !== undefined);
 
   const entries = dated
-    .map((lens) => {
-      const { min, max } = equivFocalRange(lens);
-      return { lens, year: lens.releaseYear, focalMin: min, focalMax: max, focalMid: Math.sqrt(min * max) };
-    })
+    .map((lens) => ({ lens, year: lens.releaseYear, focalMid: Math.sqrt(lens.focalMin * lens.focalMax) }))
     .sort((a, b) => a.year - b.year || a.focalMid - b.focalMid || a.lens.id.localeCompare(b.lens.id));
 
   const years: TimelineYear[] = [];

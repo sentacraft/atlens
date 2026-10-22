@@ -19,13 +19,17 @@ export function mountToUrlSegment(mount: Mount): MountSegment {
 }
 
 // Collections exist only for X: the collection filters match X-mount lenses.
-const MOUNT_CAPABILITIES: Record<Mount, { collections: boolean }> = {
-  X: { collections: true },
-  G: { collections: false },
+const MOUNT_CAPABILITIES: Record<Mount, { collections: boolean; charts: boolean }> = {
+  X: { collections: true, charts: true },
+  G: { collections: false, charts: false },
 };
 
 export function mountHasCollections(mount: Mount): boolean {
   return MOUNT_CAPABILITIES[mount].collections;
+}
+
+export function mountHasCharts(mount: Mount): boolean {
+  return MOUNT_CAPABILITIES[mount].charts;
 }
 
 // "GFX", not "G": it is what people search for.

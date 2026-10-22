@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Menu } from "@base-ui/react/menu";
-import { Columns2, Download, Flag, Heart, Info, LogIn, LogOut, Menu as MenuIcon, UserRound } from "lucide-react";
+import { ChartColumn, Columns2, Download, Flag, Heart, Info, LogIn, LogOut, Menu as MenuIcon, UserRound } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { MENU_ITEM_CLS, MENU_POPUP_CLS, NAV_CAPSULE_CLS } from "@/config/ui-tokens";
@@ -19,11 +19,13 @@ const SEPARATOR_CLS = "my-1 h-px bg-zinc-200";
 /** The nav's one menu: the account, the pages the bar has no room for, and feedback. */
 export default function NavMenu({
   compareHref,
+  chartsHref,
   onCompareClick,
   showGetApp,
   onFeedback,
 }: {
   compareHref: string;
+  chartsHref: string;
   onCompareClick: (event: React.MouseEvent) => void;
   showGetApp: boolean;
   onFeedback: () => void;
@@ -82,6 +84,10 @@ export default function NavMenu({
             <Menu.Item render={<Link href={compareHref} />} onClick={onCompareClick} className={cn(MENU_ITEM_CLS, "sm:hidden")}>
               <Columns2 className="h-4 w-4 shrink-0" />
               {tNav("compare")}
+            </Menu.Item>
+            <Menu.Item render={<Link href={chartsHref} />} className={cn(MENU_ITEM_CLS, "sm:hidden")}>
+              <ChartColumn className="h-4 w-4 shrink-0" />
+              {tNav("charts")}
             </Menu.Item>
             <Menu.Item render={<Link href={ABOUT_PATH} />} className={MENU_ITEM_CLS}>
               <Info className="h-4 w-4 shrink-0" />

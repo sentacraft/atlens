@@ -2,6 +2,9 @@ export const PAGE_GUTTER_CLS = "px-5 sm:px-8 lg:px-12";
 
 export const LENS_INDEX_SHELL_CLS = `mx-auto w-full max-w-7xl ${PAGE_GUTTER_CLS}`;
 
+/** A page under the browse layout: the bottom padding clears the compare bar when it shows. */
+export const BROWSE_PAGE_MAIN_CLS = `mx-auto max-w-6xl py-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] ${PAGE_GUTTER_CLS}`;
+
 // 72px is three of the widest gap (xl:gap-6): the min track never exceeds a quarter row, capping the grid at 4 columns.
 export const LENS_GRID_CLS =
   "grid grid-cols-1 gap-4 xs:grid-cols-[repeat(auto-fill,minmax(max(208px,calc((100%_-_72px)/4)),1fr))] md:gap-5 xl:gap-6";

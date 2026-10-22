@@ -25,14 +25,24 @@ export function readChartHighlight(
   };
 }
 
-export function chartHighlightQuery(highlight: ChartHighlight): string {
-  const params = new URLSearchParams();
+export function readChartHighlightFromSearch(search: URLSearchParams, knownBrands: readonly string[]): ChartHighlight {
+  return readChartHighlight(
+    {
+      [CHART_BRAND_PARAM]: search.get(CHART_BRAND_PARAM) ?? undefined,
+      [CHART_FOCAL_PARAM]: search.get(CHART_FOCAL_PARAM) ?? undefined,
+    },
+    knownBrands,
+  );
+}
+
+/** Sets the highlight params on `url` in place, leaving every other param alone. */
+export function writeChartHighlight(url: URL, highlight: ChartHighlight): void {
+  url.searchParams.delete(CHART_BRAND_PARAM);
+  url.searchParams.delete(CHART_FOCAL_PARAM);
   if (highlight.brand) {
-    params.set(CHART_BRAND_PARAM, highlight.brand);
+    url.searchParams.set(CHART_BRAND_PARAM, highlight.brand);
   }
   if (highlight.focal) {
-    params.set(CHART_FOCAL_PARAM, highlight.focal);
+    url.searchParams.set(CHART_FOCAL_PARAM, highlight.focal);
   }
-  const qs = params.toString();
-  return qs ? `?${qs}` : "";
 }
