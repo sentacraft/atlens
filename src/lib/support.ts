@@ -10,6 +10,6 @@ export const KOFI_URL = "https://ko-fi.com/sentacraft";
 export const WECHAT_QR_SRC = "/wechat-qr.jpg";
 
 /** Where a support dialog was opened from, for analytics. */
-export const SUPPORT_ENTRIES = ["menu", "page_end", "poster_toast", "revisit"] as const;
+export const SUPPORT_ENTRIES = ["menu", "page_end", "poster_toast", "revisit", "iris_helpful", "iris_limit"] as const;
 
 export type SupportEntry = (typeof SUPPORT_ENTRIES)[number];

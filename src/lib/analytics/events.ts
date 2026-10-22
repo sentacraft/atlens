@@ -385,6 +385,8 @@ export const EVENT_DOCS: EventDocs = {
           page_end: { label: "Page end", description: "The line at the end of a lens, collection or compare page" },
           poster_toast: { label: "Poster toast", description: "The button on the toast after saving or sharing a poster" },
           revisit: { label: "Returning visit", description: "The prompt shown to a visitor on their third day of visits" },
+          iris_helpful: { label: "Iris, after Helpful", description: "The line under an Iris answer just rated helpful" },
+          iris_limit: { label: "Iris, out of questions", description: "The card when an account or the whole site has used today's Iris questions" },
         },
       },
     },
@@ -397,6 +399,7 @@ export const EVENT_DOCS: EventDocs = {
         values: {
           revisit: { label: "Returning visit", description: "The card shown on the third day of visits within 30 days" },
           poster_toast: { label: "Poster toast", description: "The support line on the toast after a poster" },
+          iris_helpful: { label: "Iris, after Helpful", description: "The line under an Iris answer just rated helpful, at most once a week" },
         },
       },
       action: {

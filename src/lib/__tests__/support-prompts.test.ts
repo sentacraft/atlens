@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  claimPosterPrompt,
+  claimPrompt,
   finishRevisitPrompt,
   recordVisit,
   revisitPromptDue,
@@ -58,13 +58,22 @@ describe("returning-visit prompt", () => {
   });
 });
 
-describe("poster prompt", () => {
-  it("is claimed at most once every 30 days", () => {
+describe("claimed prompts", () => {
+  it("lets the poster prompt through at most once every 30 days", () => {
     const store = memoryStore();
 
-    expect(claimPosterPrompt(store, START)).toBe(true);
-    expect(claimPosterPrompt(store, START + 29 * DAY)).toBe(false);
-    expect(claimPosterPrompt(store, START + 30 * DAY)).toBe(true);
+    expect(claimPrompt(store, "poster", START)).toBe(true);
+    expect(claimPrompt(store, "poster", START + 29 * DAY)).toBe(false);
+    expect(claimPrompt(store, "poster", START + 30 * DAY)).toBe(true);
+  });
+
+  it("lets the line after a helpful Iris answer through at most once every 7 days, apart from the poster's", () => {
+    const store = memoryStore();
+    claimPrompt(store, "poster", START);
+
+    expect(claimPrompt(store, "iris_helpful", START)).toBe(true);
+    expect(claimPrompt(store, "iris_helpful", START + 6 * DAY)).toBe(false);
+    expect(claimPrompt(store, "iris_helpful", START + 7 * DAY)).toBe(true);
   });
 });
 
@@ -84,6 +93,6 @@ describe("unavailable storage", () => {
     }
 
     expect(revisitPromptDue(store, START + 2 * DAY)).toBe(false);
-    expect(claimPosterPrompt(store, START)).toBe(false);
+    expect(claimPrompt(store, "poster", START)).toBe(false);
   });
 });

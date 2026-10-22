@@ -12,6 +12,9 @@ import type { AskIrisResponseFeedbackInput } from "@/lib/askiris/response-feedba
 import { postResponseFeedback } from "@/lib/askiris/response-feedback-client";
 import { CHIP_BASE_CLS, CHIP_IDLE_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
+import { track } from "@/lib/analytics/analytics";
+import { browserPromptStore, claimPrompt } from "@/lib/support-prompts";
+import { useSupportDialog } from "@/context/SupportDialogProvider";
 
 type Rating = AskIrisResponseFeedbackInput["rating"];
 
@@ -39,7 +42,9 @@ function logFeedbackFailure(responseMessageId: string, error: unknown): void {
 export default function ResponseFeedback({ responseMessageId }: { responseMessageId: string }) {
   const t = useTranslations("AskIris.responseFeedback");
   const promptId = useId();
+  const openSupport = useSupportDialog();
   const [rating, setRating] = useState<Rating | null>(null);
+  const [offerSupport, setOfferSupport] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [detailsSent, setDetailsSent] = useState(false);
   const [reasons, setReasons] = useState<ReasonCode[]>([]);
@@ -54,6 +59,10 @@ export default function ResponseFeedback({ responseMessageId }: { responseMessag
   function rate(next: Rating) {
     setRating(next);
     write.mutate({ responseMessageId, rating: next });
+    if (next === "helpful" && claimPrompt(browserPromptStore(), "iris_helpful")) {
+      setOfferSupport(true);
+      track("support_prompt", { prompt: "iris_helpful", action: "shown" });
+    }
   }
 
   function sendDetails(event: React.FormEvent<HTMLFormElement>) {
@@ -69,7 +78,8 @@ export default function ResponseFeedback({ responseMessageId }: { responseMessag
   const canSendDetails = reasons.length > 0 || comment.trim().length > 0;
 
   return (
-    <div className="mx-1 mt-1 flex min-h-11 items-center justify-between self-stretch gap-2 border-t border-zinc-100 pt-2.5 text-xs">
+    <div className="mx-1 mt-1 flex flex-col gap-1.5 self-stretch border-t border-zinc-100 pt-2.5 text-xs">
+      <div className="flex min-h-8 items-center justify-between gap-2">
       {rating === null ? (
         <>
           <span id={promptId} className="text-zinc-500">
@@ -97,6 +107,25 @@ export default function ResponseFeedback({ responseMessageId }: { responseMessag
             </button>
           )}
         </>
+      )}
+      </div>
+      {offerSupport && (
+        <p className="leading-relaxed text-zinc-500">
+          {t.rich("supportLine", {
+            support: (chunks) => (
+              <button
+                type="button"
+                onClick={() => {
+                  track("support_prompt", { prompt: "iris_helpful", action: "opened" });
+                  openSupport("iris_helpful");
+                }}
+                className={cn(TEXT_LINK_CLS, "underline-offset-2")}
+              >
+                {chunks}
+              </button>
+            ),
+          })}
+        </p>
       )}
 
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
