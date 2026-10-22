@@ -147,7 +147,7 @@ export default function Nav() {
             className={cn(linkCls(false), "hidden items-center gap-1.5 whitespace-nowrap sm:inline-flex")}
           >
             <GitHubMark size={15} />
-            {t("star")}
+            {t("github")}
           </a>
           <span aria-hidden="true" className="mx-1 hidden h-5 w-px bg-zinc-200 sm:block" />
           <button
