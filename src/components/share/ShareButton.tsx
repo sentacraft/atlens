@@ -419,7 +419,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner side={isFab ? "top" : "bottom"} align="end" sideOffset={8}>
-          <Popover.Popup className="w-96 max-h-[calc(100svh-80px)] overflow-y-auto origin-(--transform-origin) rounded-xl bg-white shadow-lg ring-1 ring-zinc-200 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
+          <Popover.Popup className="w-96 max-h-[calc(var(--app-height)-80px)] overflow-y-auto origin-(--transform-origin) rounded-xl bg-white shadow-lg ring-1 ring-zinc-200 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
             {activePanel}
           </Popover.Popup>
         </Popover.Positioner>
@@ -436,7 +436,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
           lightbox.open ? "bg-transparent" : "bg-black/40"
         )} />
         <Drawer.Viewport>
-          <Drawer.Popup className={`fixed inset-x-0 bottom-0 max-h-[85svh] flex flex-col rounded-t-2xl bg-white pb-[var(--safe-inset-bottom)] ring-1 ring-zinc-200 duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom`}>
+          <Drawer.Popup className={`fixed inset-x-0 bottom-0 max-h-[calc(var(--app-height)*0.85)] flex flex-col rounded-t-2xl bg-white pb-[var(--safe-inset-bottom)] ring-1 ring-zinc-200 duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom`}>
             <div className="flex shrink-0 touch-none justify-center pb-1 pt-3">
               <div className="h-1 w-10 rounded-full bg-zinc-300" />
             </div>

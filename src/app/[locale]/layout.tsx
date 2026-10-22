@@ -100,7 +100,7 @@ export function generateStaticParams() {
 
 function PageFrame({ children }: { children: ReactNode }) {
   return (
-    <div className="pt-[var(--nav-height)] pb-[var(--safe-inset-bottom)] pr-[var(--iris-panel-width,0px)] pl-[var(--iris-page-start,0px)] min-h-svh transition-[padding] duration-300 ease-out motion-reduce:transition-none">
+    <div className="pt-[var(--nav-height)] pb-[var(--safe-inset-bottom)] pr-[var(--iris-panel-width,0px)] pl-[var(--iris-page-start,0px)] min-h-[var(--app-height)] transition-[padding] duration-300 ease-out motion-reduce:transition-none">
       {children}
     </div>
   );

@@ -57,7 +57,7 @@ export default function ProfilePage({ lenses }: { lenses: LensSummary[] }) {
   useEffect(() => setHydrated(true), []);
 
   if (!hydrated || isPending) {
-    return <div className="min-h-[60svh]" aria-busy="true" />;
+    return <div className="min-h-[calc(var(--app-height)*0.6)]" aria-busy="true" />;
   }
   const user = accountUser(session);
   if (!user) {

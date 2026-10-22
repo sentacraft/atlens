@@ -45,7 +45,7 @@ function Dialog({
 // iOS keeps fixed elements on the layout viewport, under the keyboard; VirtualKeyboardProvider
 // reports the keyboard's height, and the drawer sits on top of it and shrinks to fit above.
 const DRAWER_KEYBOARD_CLS =
-  "fixed inset-x-0 bottom-[var(--drawer-keyboard-inset,0px)] max-h-[min(85svh,calc(100svh_-_var(--drawer-keyboard-inset,0px)_-_var(--safe-inset-top)_-_1rem))]";
+  "fixed inset-x-0 bottom-[var(--drawer-keyboard-inset,0px)] max-h-[min(calc(var(--app-height)_*_0.85),calc(var(--app-height)_-_var(--drawer-keyboard-inset,0px)_-_var(--safe-inset-top)_-_1rem))]";
 
 function DialogPortal({ children }: { children: React.ReactNode }) {
   const mode = useDialogMode();
