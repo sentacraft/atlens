@@ -14,6 +14,7 @@ const HERO_SIZE = { page: IRIS_ASSISTANT.size, side: IRIS_ASSISTANT.size, sheet:
 
 export default function AskIrisEmptyState({
   variant,
+  openCount,
   input,
   onInputChange,
   onSubmit,
@@ -23,6 +24,8 @@ export default function AskIrisEmptyState({
 }: {
   /** side and sheet: the Iris panel beside the page, which drops the hero on a short screen. */
   variant: "page" | "side" | "sheet";
+  /** A new count replays the hero's opening sweep. */
+  openCount: number;
   input: string;
   onInputChange: (value: string) => void;
   onSubmit: () => void;
@@ -47,7 +50,7 @@ export default function AskIrisEmptyState({
       )}
     >
       <div className={cn("shrink-0", panel && "[@container(max-height:480px)]:hidden")}>
-        <Iris config={IRIS_ASSISTANT} size={HERO_SIZE[variant]} uid="askiris-hero" />
+        <Iris key={openCount} config={IRIS_ASSISTANT} size={HERO_SIZE[variant]} uid="askiris-hero" />
       </div>
 
       <div className={panel ? "space-y-2" : "space-y-3"}>

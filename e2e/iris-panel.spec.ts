@@ -232,4 +232,20 @@ test.describe("Ask Iris panel empty state", () => {
       }
     });
   }
+
+  test("replays the hero's opening sweep each time the panel opens again", async ({ page }, testInfo) => {
+    testInfo.skip(testInfo.project.name !== "chromium", "Sets its own viewport");
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto("/en");
+    const toggle = page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ });
+    await toggle.click();
+    const sheet = page.getByRole("dialog", { name: "Iris" });
+    const hero = sheet.getByTestId("iris");
+    await expect(hero).toHaveAttribute("data-animating", "false", { timeout: 10_000 });
+
+    await page.keyboard.press("Escape");
+    await expect(sheet).toBeHidden();
+    await toggle.click();
+    await expect(hero).toHaveAttribute("data-animating", "true");
+  });
 });

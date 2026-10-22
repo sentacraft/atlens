@@ -71,6 +71,8 @@ export type AskIrisShell =
   | {
       variant: "panel";
       layout: "side" | "sheet";
+      /** Counts the panel's openings; the empty state replays its hero on each. */
+      openCount: number;
       pagePath: string;
       request: IrisPanelRequest | null;
       onClose: () => void;
@@ -455,6 +457,7 @@ export default function AskIrisChat({
         {notice}
         <AskIrisEmptyState
           variant={shell.variant === "page" ? "page" : shell.layout}
+          openCount={shell.variant === "page" ? 1 : shell.openCount}
           input={input}
           onInputChange={setInput}
           onSubmit={() => void submitText(input)}
