@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
+import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import ConversationHistory from "../ConversationHistory";
+import { ConversationHistoryPopover, ConversationHistoryView } from "../ConversationHistory";
 
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string, values?: Record<string, unknown>) =>
@@ -20,13 +21,13 @@ function renderHistory({
   list = conversations,
   onSignIn = null,
   onNew = () => {},
-}: { list?: typeof conversations; onSignIn?: (() => void) | null; onNew?: () => void } = {}) {
+  onBack = () => {},
+}: { list?: typeof conversations; onSignIn?: (() => void) | null; onNew?: () => void; onBack?: () => void } = {}) {
   const onRename = vi.fn();
   const onDelete = vi.fn();
   render(
-    <ConversationHistory
-      open
-      onOpenChange={() => {}}
+    <ConversationHistoryView
+      onBack={onBack}
       conversations={list}
       listState="ready"
       activeConversationId="c1"
@@ -45,11 +46,10 @@ async function openActions(title: string) {
 }
 
 describe("ConversationHistory", () => {
-  it("offers a visitor without an account to sign in below the list, leading with kept chats", async () => {
+  it("tells a visitor without an account how long chats are kept, with a sign-in button below the list", async () => {
     const onSignIn = vi.fn();
     renderHistory({ onSignIn });
-    const section = await screen.findByRole("region", { name: "reasonChatsTitle" });
-    expect(within(section).getAllByRole("listitem")[0]).toHaveTextContent("benefitChats");
+    const section = await screen.findByRole("region", { name: "guestChatsKept" });
     fireEvent.click(within(section).getByRole("button", { name: "signIn" }));
     expect(onSignIn).toHaveBeenCalled();
   });
@@ -57,7 +57,40 @@ describe("ConversationHistory", () => {
   it("shows no sign-in section to an account", async () => {
     renderHistory();
     await screen.findByText("Street lens under 3000");
-    expect(screen.queryByRole("region", { name: "reasonChatsTitle" })).toBeNull();
+    expect(screen.queryByRole("region", { name: "guestChatsKept" })).toBeNull();
+  });
+
+  it("goes back to the chat from the in-panel view", async () => {
+    const onBack = vi.fn();
+    renderHistory({ onBack });
+    fireEvent.click(await screen.findByRole("button", { name: "backToChat" }));
+    expect(onBack).toHaveBeenCalled();
+  });
+
+  it("opens as a popover from its trigger", async () => {
+    function Harness() {
+      const [open, setOpen] = useState(false);
+      return (
+        <ConversationHistoryPopover
+          open={open}
+          onOpenChange={setOpen}
+          trigger={<button type="button">history</button>}
+          conversations={conversations}
+          listState="ready"
+          activeConversationId="c1"
+          onSelect={() => {}}
+          onNew={() => {}}
+          onRename={() => {}}
+          onDelete={() => {}}
+          onSignIn={null}
+        />
+      );
+    }
+    render(<Harness />);
+    expect(screen.queryByRole("dialog", { name: "history" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "history" }));
+    const popover = await screen.findByRole("dialog", { name: "history" });
+    expect(within(popover).getByText("Portrait for X-T5")).toBeInTheDocument();
   });
 
   it("starts a new chat from the header", async () => {
