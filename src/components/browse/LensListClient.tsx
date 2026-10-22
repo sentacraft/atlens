@@ -132,7 +132,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
                 <AskIrisEntry
                   id="browse"
                   label={tIris("browseLabel")}
-                  phoneLabel="short"
+                  labelFit="phone"
                   request={{ kind: "page" }}
                   className="h-8 px-3 text-[13px]"
                 />
@@ -208,7 +208,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
               <AskIrisEntry
                 id="empty"
                 label={tIris("emptyLabel")}
-                phoneLabel="full"
+                labelFit="full"
                 request={{ kind: "question", text: tIris("emptyQuestion") }}
               />
             </div>

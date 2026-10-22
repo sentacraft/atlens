@@ -496,7 +496,7 @@
     "missing": "-",
     "addToCompare": "Compare",
     "removeFromCompare": "Remove",
-    "compareFull": "Compare List Full",
+    "compareFull": "List full",
     "sourceSite": "{brand} official site",
     "reportIssue": "Report an issue",
     "nudgeText": "Spotted an error in the data?",
@@ -832,6 +832,7 @@
   "Purchase": {
     "whereToBuy": "Check price",
     "buyAt": "Check price",
+    "buyAtShort": "Price",
     "disclosureDetail": "Some retailer links are affiliate. Atlens may earn a small commission at no extra cost to you.",
     "disclosureNoAffiliate": "Atlens has no partnership whatsoever with the platforms, sellers, or manufacturers, and earns nothing from them."
   },
