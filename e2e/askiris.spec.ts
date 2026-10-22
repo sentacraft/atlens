@@ -26,4 +26,19 @@ test.describe("Ask Iris page", () => {
 
     await expect(page.getByTestId("askiris-privacy-trigger")).toHaveCount(0);
   });
+
+  test("shows History in place of the chat below 1024px, and goes back", async ({ page }, testInfo) => {
+    const viewport = page.viewportSize();
+    testInfo.skip(!viewport || viewport.width >= 1024, "Wider screens open History as a popover");
+    await page.goto("/en/askiris");
+
+    await page.getByRole("button", { name: "Conversations" }).click();
+    await expect(page.getByRole("heading", { name: "Conversations" })).toBeVisible();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Sign in", exact: true })).toBeVisible();
+
+    await page.getByRole("button", { name: "Back to chat" }).click();
+    await expect(page.getByRole("heading", { name: "Conversations" })).toBeHidden();
+    await expect(page.getByRole("button", { name: "Conversations" })).toBeVisible();
+  });
 });

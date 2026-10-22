@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ensureSession } from "@/lib/auth-client";
 import { track } from "@/lib/analytics/analytics";
@@ -254,32 +254,41 @@ describe("AskIrisChat send", () => {
     expect(bodies[1].id).not.toBe(bodies[0].id);
   });
 
-  it("asks a visitor without an account to sign in from the top bar", () => {
+  it("keeps the top bar free of sign-in prompts, and asks a visitor without an account to sign in from History", () => {
     captureChatBodies();
     renderChat(panel("/en/lenses/x/xf-56"));
+    expect(screen.queryByRole("button", { name: /signIn/ })).toBeNull();
 
-    fireEvent.click(screen.getByRole("button", { name: "signInToKeepChats" }));
-    expect(openSignIn).toHaveBeenCalledWith("iris_top_bar");
+    fireEvent.click(screen.getByRole("button", { name: "history" }));
+    const section = screen.getByRole("region", { name: "guestChatsKept" });
+    fireEvent.click(within(section).getByRole("button", { name: "signIn" }));
+    expect(openSignIn).toHaveBeenCalledWith("iris_history");
   });
 
-  it("shows no sign-in prompt to an account", () => {
+  it("shows no sign-in prompt in History to an account", () => {
     captureChatBodies();
     auth.account = { id: "user-1" };
     try {
       renderChat(panel("/en/lenses/x/xf-56"));
-      expect(screen.getByRole("button", { name: "history" })).toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: "signInToKeepChats" })).toBeNull();
+      fireEvent.click(screen.getByRole("button", { name: "history" }));
+      expect(screen.getByRole("heading", { name: "history" })).toBeInTheDocument();
+      expect(screen.queryByRole("region", { name: "guestChatsKept" })).toBeNull();
     } finally {
       auth.account = undefined;
     }
   });
 
-  it("expands the panel to open History", () => {
+  it("shows History inside the narrow panel without expanding it, and goes back to the chat", () => {
     captureChatBodies();
     renderChat(panel("/en/lenses/x/xf-56"));
 
     fireEvent.click(screen.getByRole("button", { name: "history" }));
-    expect(expandedChange).toHaveBeenLastCalledWith(true);
+    expect(expandedChange).not.toHaveBeenCalled();
+    expect(screen.getByRole("heading", { name: "history" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "fullScreen" })).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "backToChat" }));
+    expect(screen.getByRole("button", { name: "fullScreen" })).toBeInTheDocument();
   });
 
   it("expands in place from the full-screen button, keeping the unsent input", () => {

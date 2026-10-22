@@ -41,10 +41,11 @@ import {
   DialogPopup,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
+import { ACTION_OUTLINE_CLS, ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
 import { History, Maximize2, Minimize2, Plus, X } from "lucide-react";
 import AiTag from "@/components/iris/AiTag";
-import ConversationHistory from "@/components/askiris/ConversationHistory";
+import { ConversationHistoryPopover, ConversationHistoryView } from "@/components/askiris/ConversationHistory";
+import { useBreakpoint } from "@/hooks/useViewport";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { openChat, setModelPreset } from "@/components/askiris/live-chats";
 
@@ -98,6 +99,8 @@ export default function AskIrisChat({
   useEffect(() => setModelPreset(modelPreset), [modelPreset]);
   const [input, setInput] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
+  // From lg up Iris sits beside the page, with room for History as a popover over the chat.
+  const historyAsPopover = useBreakpoint("lg");
   const [signingIn, setSigningIn] = useState(false);
   const [pendingSwitch, setPendingSwitch] = useState<ConversationSwitch | null>(null);
   // Whether the page goes along with each turn; the context card's × turns it off.
@@ -110,7 +113,7 @@ export default function AskIrisChat({
   const pageView = usePageContextView(pagePath, lenses);
   const contextView = attached ? pageView : null;
   const contextPath = contextView ? pagePath : null;
-  const { data: session, isPending: sessionPending } = authClient.useSession();
+  const { data: session } = authClient.useSession();
   // Guests have a session too, and their own stored conversations.
   const userId = session?.user.id;
   const isAccount = Boolean(accountUser(session));
@@ -324,47 +327,33 @@ export default function AskIrisChat({
     setAttached(false);
   }
 
-  const collapsedPanel = shell.variant === "panel" && !shell.expanded;
-  // History needs the room of the full view: the panel expands to show it.
-  function openHistory() {
-    if (collapsedPanel) {
-      shell.onExpandedChange(true);
-    }
-    setHistoryOpen(true);
-  }
   const shellCls =
     shell.variant === "page" ? SHELL_CLS.page : shell.expanded ? SHELL_CLS.expandedPanel : SHELL_CLS.panel;
-  const historyControls = (
-    <>
-      <button type="button" onClick={openHistory} title={t("history")} className={TOP_BAR_BTN_CLS}>
-        <History className="size-4" />
-        <span className={collapsedPanel ? "sr-only" : "max-sm:sr-only"}>{t("history")}</span>
-      </button>
-      {!sessionPending && !isAccount && (
-        <button
-          type="button"
-          onClick={() => openSignIn("iris_top_bar")}
-          title={t("guestChatsKept")}
-          className={cn(TEXT_LINK_CLS, "min-w-0 truncate px-1.5 text-xs")}
-        >
-          {t("signInToKeepChats")}
-        </button>
-      )}
-    </>
+  const historyProps = {
+    conversations: conversation.conversations,
+    listState: conversation.listState,
+    activeConversationId: conversationId,
+    onSelect: (id: string) => requestSwitch({ kind: "select", id }),
+    onNew: startNewConversation,
+    onRename: conversation.renameConversation,
+    onDelete: conversation.deleteConversation,
+    onSignIn: isAccount ? null : () => openSignIn("iris_history"),
+  };
+  const historyButton = (
+    <button
+      type="button"
+      onClick={historyAsPopover ? undefined : () => setHistoryOpen(true)}
+      title={t("history")}
+      className={cn(ACTION_OUTLINE_CLS, "h-8 px-2.5 text-[13px] data-popup-open:bg-zinc-50")}
+    >
+      <History className="size-4" />
+      {t("history")}
+    </button>
   );
-  const history = (
-    <ConversationHistory
-      open={historyOpen}
-      onOpenChange={setHistoryOpen}
-      conversations={conversation.conversations}
-      listState={conversation.listState}
-      activeConversationId={conversationId}
-      onSelect={(id) => requestSwitch({ kind: "select", id })}
-      onNew={startNewConversation}
-      onRename={conversation.renameConversation}
-      onDelete={conversation.deleteConversation}
-      onSignIn={isAccount ? null : () => openSignIn("iris_history")}
-    />
+  const historyControl = historyAsPopover ? (
+    <ConversationHistoryPopover {...historyProps} open={historyOpen} onOpenChange={setHistoryOpen} trigger={historyButton} />
+  ) : (
+    historyButton
   );
   const notice = freshNotice ? (
     <p className="rounded-xl bg-zinc-100 px-3 py-2 text-xs leading-relaxed text-zinc-600">{tEntry("newConversation")}</p>
@@ -376,7 +365,7 @@ export default function AskIrisChat({
           Iris
           <AiTag />
         </span>
-        {historyControls}
+        {historyControl}
       </div>
       <div className="flex items-center gap-0.5">
         {messages.length > 0 && (
@@ -397,12 +386,11 @@ export default function AskIrisChat({
           <X className="size-4" />
         </button>
       </div>
-      {history}
     </div>
   ) : (
     <div className="flex h-12 shrink-0 items-center justify-between">
       <div className="flex min-w-0 items-center gap-1">
-        {historyControls}
+        {historyControl}
       </div>
       {messages.length > 0 && (
         <button type="button" onClick={startNewConversation} className={TOP_BAR_BTN_CLS}>
@@ -410,9 +398,16 @@ export default function AskIrisChat({
           {t("newChat")}
         </button>
       )}
-      {history}
     </div>
   );
+
+  if (historyOpen && !historyAsPopover) {
+    return (
+      <div className={shellCls}>
+        <ConversationHistoryView {...historyProps} onBack={() => setHistoryOpen(false)} />
+      </div>
+    );
+  }
 
   if (conversation.loading) {
     return (

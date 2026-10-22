@@ -27,7 +27,7 @@ describe("savedLocaleRedirectPath", () => {
   });
 
   it("leaves paths without a locale segment to next-intl", () => {
-    expect(savedLocaleRedirectPath("/offline", "zh")).toBeUndefined();
+    expect(savedLocaleRedirectPath("/admin", "zh")).toBeUndefined();
     expect(savedLocaleRedirectPath("/english", "zh")).toBeUndefined();
   });
 });

@@ -1,16 +1,15 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Drawer } from "@base-ui/react/drawer";
+import { useId, useRef, useState, type ReactElement, type ReactNode } from "react";
 import { Menu } from "@base-ui/react/menu";
-import { Ellipsis, Pencil, SquarePen, Trash2, X } from "lucide-react";
+import { Popover } from "@base-ui/react/popover";
+import { ArrowLeft, Ellipsis, Pencil, SquarePen, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS, LIST_ITEM_ACTIVE_CLS, MENU_ITEM_CLS, MENU_ITEM_DANGER_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
+import { ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, ICON_NAV_BTN_CLS, LIST_ITEM_ACTIVE_CLS, MENU_ITEM_CLS, MENU_ITEM_DANGER_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
 import { MAX_CONVERSATION_TITLE_LENGTH } from "@/lib/askiris/conversation-contract";
 import type { AskIrisConversationRecord } from "@/lib/askiris/conversation-repository";
 import type { ConversationListState } from "@/components/askiris/useConversation";
-import SignInBenefits from "@/components/auth/SignInBenefits";
 import {
   Dialog,
   DialogClose,
@@ -21,20 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-export default function ConversationHistory({
-  open,
-  onOpenChange,
-  conversations,
-  listState,
-  activeConversationId,
-  onSelect,
-  onNew,
-  onRename,
-  onDelete,
-  onSignIn,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+interface HistoryProps {
   conversations: AskIrisConversationRecord[];
   listState: ConversationListState;
   activeConversationId: string;
@@ -44,160 +30,232 @@ export default function ConversationHistory({
   onDelete: (conversationId: string) => void;
   /** Offers to sign in, for visitors without an account; null for those with one. */
   onSignIn: (() => void) | null;
+}
+
+/** History as a popover under its trigger, for screens wide enough to keep the chat in view. */
+export function ConversationHistoryPopover({
+  open,
+  onOpenChange,
+  trigger,
+  ...history
+}: HistoryProps & { open: boolean; onOpenChange: (open: boolean) => void; trigger: ReactElement }) {
+  const t = useTranslations("AskIris");
+  const [pendingDelete, setPendingDelete] = useState<AskIrisConversationRecord | null>(null);
+
+  return (
+    <>
+      <Popover.Root open={open} onOpenChange={onOpenChange}>
+        <Popover.Trigger render={trigger} />
+        <Popover.Portal>
+          <Popover.Positioner side="bottom" align="start" sideOffset={4} collisionPadding={8}>
+            <Popover.Popup
+              className={cn(
+                MENU_POPUP_CLS,
+                "flex max-h-[min(32rem,var(--available-height))] w-80 flex-col outline-none",
+              )}
+            >
+              <HistoryContent
+                {...history}
+                header={<Popover.Title className="flex-1 pl-2 text-sm font-semibold text-zinc-900">{t("history")}</Popover.Title>}
+                onRequestDelete={setPendingDelete}
+              />
+            </Popover.Popup>
+          </Popover.Positioner>
+        </Popover.Portal>
+      </Popover.Root>
+      <DeleteConversationDialog
+        conversation={pendingDelete}
+        onClose={() => setPendingDelete(null)}
+        onDelete={history.onDelete}
+      />
+    </>
+  );
+}
+
+/** History in place of the chat, for the phone sheet and narrow screens. */
+export function ConversationHistoryView({ onBack, ...history }: HistoryProps & { onBack: () => void }) {
+  const t = useTranslations("AskIris");
+  const titleId = useId();
+  const [pendingDelete, setPendingDelete] = useState<AskIrisConversationRecord | null>(null);
+
+  return (
+    <section aria-labelledby={titleId} className="-mx-4 flex min-h-0 flex-1 flex-col">
+      <HistoryContent
+        {...history}
+        header={
+          <>
+            <button type="button" onClick={onBack} aria-label={t("backToChat")} className={cn(ICON_NAV_BTN_CLS, "size-10")}>
+              <ArrowLeft className="size-4" />
+            </button>
+            <h2 id={titleId} className="flex-1 text-sm font-semibold text-zinc-900">{t("history")}</h2>
+          </>
+        }
+        onRequestDelete={setPendingDelete}
+      />
+      <DeleteConversationDialog
+        conversation={pendingDelete}
+        onClose={() => setPendingDelete(null)}
+        onDelete={history.onDelete}
+      />
+    </section>
+  );
+}
+
+function HistoryContent({
+  header,
+  conversations,
+  listState,
+  activeConversationId,
+  onSelect,
+  onNew,
+  onRename,
+  onRequestDelete,
+  onSignIn,
+}: Omit<HistoryProps, "onDelete"> & {
+  header: ReactNode;
+  onRequestDelete: (conversation: AskIrisConversationRecord) => void;
 }) {
   const t = useTranslations("AskIris");
   const tAuth = useTranslations("Auth");
   const locale = useLocale();
   const dateFormat = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric" });
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [pendingDelete, setPendingDelete] = useState<AskIrisConversationRecord | null>(null);
 
   return (
     <>
-      <Drawer.Root open={open} onOpenChange={onOpenChange} swipeDirection="left">
-        <Drawer.Portal>
-          <Drawer.Backdrop className="fixed inset-0 bg-zinc-950/40 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0" />
-          <Drawer.Viewport>
-            <Drawer.Popup
-              className={cn(
-                "fixed inset-y-0 left-0 flex w-[min(20rem,85vw)] flex-col border-r border-zinc-200 bg-white shadow-2xl",
-                "pt-[calc(var(--safe-inset-top)+var(--titlebar-height))] pb-[var(--safe-inset-bottom)]",
-                "transition-transform duration-200 data-ending-style:-translate-x-full data-starting-style:-translate-x-full data-[swipe-dismiss]:!transition-none",
-              )}
-            >
-              <div className="flex items-center gap-1 pt-4 pr-3 pb-2 pl-4">
-                <Drawer.Title className="flex-1 text-sm font-semibold text-zinc-900">
-                  {t("history")}
-                </Drawer.Title>
-                <button type="button" onClick={onNew} aria-label={t("newChat")} className={cn(ICON_NAV_BTN_CLS, "size-8")}>
-                  <SquarePen className="size-4" />
-                </button>
-                <Drawer.Close aria-label={t("closeHistory")} className={cn(ICON_CLOSE_BTN_CLS, "size-8")}>
-                  <X className="size-4" />
-                </Drawer.Close>
-              </div>
-              <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-4">
-                {listState === "loading" ? (
-                  <div className="space-y-2 px-2" aria-busy="true">
-                    {[0, 1, 2].map((key) => (
-                      <div key={key} className="h-12 animate-pulse rounded-lg bg-zinc-100" />
-                    ))}
-                  </div>
-                ) : listState === "error" ? (
-                  <p className="px-2 py-3 text-xs text-zinc-500">{t("historyError")}</p>
-                ) : conversations.length === 0 ? (
-                  <p className="px-2 py-3 text-xs text-zinc-500">{t("historyEmpty")}</p>
-                ) : (
-                  <ul className="space-y-1">
-                    {conversations.map((conversation) => {
-                      const active = conversation.id === activeConversationId;
-                      if (conversation.id === editingId) {
-                        return (
-                          <li key={conversation.id}>
-                            <RenameForm
-                              title={conversation.title}
-                              onDone={(title) => {
-                                setEditingId(null);
-                                if (title && title !== conversation.title) {
-                                  onRename(conversation.id, title);
-                                }
-                              }}
-                            />
-                          </li>
-                        );
-                      }
-                      return (
-                        <li
-                          key={conversation.id}
-                          className={cn(
-                            "group flex items-start rounded-lg border transition-colors",
-                            active ? LIST_ITEM_ACTIVE_CLS : "border-transparent hover:bg-zinc-50",
-                          )}
-                        >
-                          <button
-                            type="button"
-                            onClick={() => onSelect(conversation.id)}
-                            aria-current={active ? "true" : undefined}
-                            className="flex min-w-0 flex-1 flex-col gap-0.5 py-2.5 pl-3 text-left"
-                          >
-                            <span className="line-clamp-2 text-sm leading-5 text-zinc-800">
-                              {conversation.title}
-                            </span>
-                            <span className="text-[11px] text-zinc-500">
-                              {dateFormat.format(conversation.updatedAt)}
-                            </span>
-                          </button>
-                          <Menu.Root>
-                            <Menu.Trigger
-                              aria-label={t("conversationActions", { title: conversation.title })}
-                              className={cn(ICON_NAV_BTN_CLS, "m-1 size-9 sm:size-8")}
-                            >
-                              <Ellipsis className="size-4" />
-                            </Menu.Trigger>
-                            <Menu.Portal>
-                              <Menu.Positioner side="bottom" align="end" sideOffset={4}>
-                                <Menu.Popup className={cn(MENU_POPUP_CLS, "w-36")}>
-                                  <Menu.Item onClick={() => setEditingId(conversation.id)} className={MENU_ITEM_CLS}>
-                                    <Pencil className="size-4 shrink-0" />
-                                    {t("renameConversation")}
-                                  </Menu.Item>
-                                  <Menu.Item onClick={() => setPendingDelete(conversation)} className={MENU_ITEM_DANGER_CLS}>
-                                    <Trash2 className="size-4 shrink-0" />
-                                    {t("deleteConversation")}
-                                  </Menu.Item>
-                                </Menu.Popup>
-                              </Menu.Positioner>
-                            </Menu.Portal>
-                          </Menu.Root>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </div>
-              {onSignIn && (
-                <section aria-label={tAuth("reasonChatsTitle")} className="flex flex-col gap-3 border-t border-zinc-200 px-4 pt-4 pb-5">
-                  <p className="text-sm font-semibold text-zinc-900">{tAuth("reasonChatsTitle")}</p>
-                  <SignInBenefits source="iris_history" className="text-[13px] leading-5" />
-                  <button type="button" onClick={onSignIn} className={cn(ACTION_PRIMARY_CLS, "h-10 justify-center rounded-lg text-sm")}>
-                    {tAuth("signIn")}
+      <div className="flex shrink-0 items-center gap-1 py-1.5 pr-2 pl-2">
+        {header}
+        <button type="button" onClick={onNew} aria-label={t("newChat")} className={cn(ICON_NAV_BTN_CLS, "size-8")}>
+          <SquarePen className="size-4" />
+        </button>
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto px-1.5 pb-1.5">
+        {listState === "loading" ? (
+          <div className="space-y-2 px-2" aria-busy="true">
+            {[0, 1, 2].map((key) => (
+              <div key={key} className="h-12 animate-pulse rounded-lg bg-zinc-100" />
+            ))}
+          </div>
+        ) : listState === "error" ? (
+          <p className="px-2 py-3 text-xs text-zinc-500">{t("historyError")}</p>
+        ) : conversations.length === 0 ? (
+          <p className="px-2 py-3 text-xs text-zinc-500">{t("historyEmpty")}</p>
+        ) : (
+          <ul className="space-y-1">
+            {conversations.map((conversation) => {
+              const active = conversation.id === activeConversationId;
+              if (conversation.id === editingId) {
+                return (
+                  <li key={conversation.id}>
+                    <RenameForm
+                      title={conversation.title}
+                      onDone={(title) => {
+                        setEditingId(null);
+                        if (title && title !== conversation.title) {
+                          onRename(conversation.id, title);
+                        }
+                      }}
+                    />
+                  </li>
+                );
+              }
+              return (
+                <li
+                  key={conversation.id}
+                  className={cn(
+                    "group flex items-start rounded-lg border transition-colors",
+                    active ? LIST_ITEM_ACTIVE_CLS : "border-transparent hover:bg-zinc-50",
+                  )}
+                >
+                  <button
+                    type="button"
+                    onClick={() => onSelect(conversation.id)}
+                    aria-current={active ? "true" : undefined}
+                    className="flex min-w-0 flex-1 flex-col gap-0.5 py-2.5 pl-3 text-left"
+                  >
+                    <span className="line-clamp-2 text-sm leading-5 text-zinc-800">
+                      {conversation.title}
+                    </span>
+                    <span className="text-[11px] text-zinc-500">
+                      {dateFormat.format(conversation.updatedAt)}
+                    </span>
                   </button>
-                </section>
-              )}
-            </Drawer.Popup>
-          </Drawer.Viewport>
-        </Drawer.Portal>
-      </Drawer.Root>
-
-      <Dialog open={pendingDelete !== null} onOpenChange={(next) => !next && setPendingDelete(null)}>
-        <DialogPopup className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t("deleteConversationTitle")}</DialogTitle>
-            <DialogDescription>{t("deleteConversationBody", { title: pendingDelete?.title ?? "" })}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <DialogClose
-              type="button"
-              className={ACTION_QUIET_CLS}
-            >
-              {t("cancel")}
-            </DialogClose>
-            <button
-              type="button"
-              onClick={() => {
-                if (pendingDelete) {
-                  onDelete(pendingDelete.id);
-                }
-                setPendingDelete(null);
-              }}
-              className={cn(ACTION_PRIMARY_CLS, "h-9 rounded-lg px-3 text-sm")}
-            >
-              {t("deleteConversation")}
-            </button>
-          </DialogFooter>
-        </DialogPopup>
-      </Dialog>
+                  <Menu.Root>
+                    <Menu.Trigger
+                      aria-label={t("conversationActions", { title: conversation.title })}
+                      className={cn(ICON_NAV_BTN_CLS, "m-1 size-9 sm:size-8")}
+                    >
+                      <Ellipsis className="size-4" />
+                    </Menu.Trigger>
+                    <Menu.Portal>
+                      <Menu.Positioner side="bottom" align="end" sideOffset={4}>
+                        <Menu.Popup className={cn(MENU_POPUP_CLS, "w-36")}>
+                          <Menu.Item onClick={() => setEditingId(conversation.id)} className={MENU_ITEM_CLS}>
+                            <Pencil className="size-4 shrink-0" />
+                            {t("renameConversation")}
+                          </Menu.Item>
+                          <Menu.Item onClick={() => onRequestDelete(conversation)} className={MENU_ITEM_DANGER_CLS}>
+                            <Trash2 className="size-4 shrink-0" />
+                            {t("deleteConversation")}
+                          </Menu.Item>
+                        </Menu.Popup>
+                      </Menu.Positioner>
+                    </Menu.Portal>
+                  </Menu.Root>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+      {onSignIn && (
+        <section aria-label={t("guestChatsKept")} className="flex shrink-0 items-center gap-3 border-t border-zinc-200 py-2.5 pr-2.5 pl-4">
+          <p className="flex-1 text-xs text-zinc-500">{t("guestChatsKept")}</p>
+          <button type="button" onClick={onSignIn} className={cn(ACTION_PRIMARY_CLS, "h-8 rounded-lg px-3 text-[13px]")}>
+            {tAuth("signIn")}
+          </button>
+        </section>
+      )}
     </>
+  );
+}
+
+function DeleteConversationDialog({
+  conversation,
+  onClose,
+  onDelete,
+}: {
+  conversation: AskIrisConversationRecord | null;
+  onClose: () => void;
+  onDelete: (conversationId: string) => void;
+}) {
+  const t = useTranslations("AskIris");
+  return (
+    <Dialog open={conversation !== null} onOpenChange={(next) => !next && onClose()}>
+      <DialogPopup className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>{t("deleteConversationTitle")}</DialogTitle>
+          <DialogDescription>{t("deleteConversationBody", { title: conversation?.title ?? "" })}</DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <DialogClose type="button" className={ACTION_QUIET_CLS}>
+            {t("cancel")}
+          </DialogClose>
+          <button
+            type="button"
+            onClick={() => {
+              if (conversation) {
+                onDelete(conversation.id);
+              }
+              onClose();
+            }}
+            className={cn(ACTION_PRIMARY_CLS, "h-9 rounded-lg px-3 text-sm")}
+          >
+            {t("deleteConversation")}
+          </button>
+        </DialogFooter>
+      </DialogPopup>
+    </Dialog>
   );
 }
 

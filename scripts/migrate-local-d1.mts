@@ -15,16 +15,16 @@ const config = parse(readFileSync(path.join(repoRoot, "wrangler.toml"), "utf8"))
   d1_databases?: Database[];
 };
 
-await Promise.all(
-  (config.d1_databases ?? []).map(async ({ database_name: name }) => {
-    // CI=true answers wrangler's "apply these migrations?" prompt, which would otherwise block dev.
-    const { stdout } = await run("pnpm", ["exec", "wrangler", "d1", "migrations", "apply", name, "--local"], {
-      cwd: repoRoot,
-      env: { ...process.env, CI: "true" },
-    });
-    const applied = stdout.split("\n").filter((line) => line.includes("✅") && line.includes(".sql"));
-    for (const line of applied) {
-      console.log(`[d1:migrate:local] ${name}: ${line.replace(/[│✅]/g, "").trim()}`);
-    }
-  }),
-);
+// One at a time: each wrangler call starts its own workerd on the shared local D1 directory, and
+// parallel runs fail with SQLITE_BUSY_RECOVERY on its metadata database.
+for (const { database_name: name } of config.d1_databases ?? []) {
+  // CI=true answers wrangler's "apply these migrations?" prompt, which would otherwise block dev.
+  const { stdout } = await run("pnpm", ["exec", "wrangler", "d1", "migrations", "apply", name, "--local"], {
+    cwd: repoRoot,
+    env: { ...process.env, CI: "true" },
+  });
+  const applied = stdout.split("\n").filter((line) => line.includes("✅") && line.includes(".sql"));
+  for (const line of applied) {
+    console.log(`[d1:migrate:local] ${name}: ${line.replace(/[│✅]/g, "").trim()}`);
+  }
+}

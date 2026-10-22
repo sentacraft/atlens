@@ -13,7 +13,6 @@ export const SIGN_IN_PITCHES = {
   favorite: { title: "reasonFavoriteTitle", benefits: [FAVORITES, GEAR, CHATS, QUOTA] },
   gear: { title: "reasonGearTitle", benefits: [GEAR, FAVORITES, CHATS, QUOTA] },
   iris_favorites: { title: "title", benefits: [FAVORITES, GEAR, CHATS, QUOTA] },
-  iris_top_bar: { title: "reasonChatsTitle", benefits: [CHATS, GEAR, FAVORITES, QUOTA] },
   iris_history: { title: "reasonChatsTitle", benefits: [CHATS, GEAR, FAVORITES, QUOTA] },
   iris_quota: { title: "reasonQuotaTitle", benefits: [QUOTA, CHATS, GEAR, FAVORITES] },
   iris_reply: { title: "title", benefits: [FAVORITES, GEAR, CHATS, QUOTA] },

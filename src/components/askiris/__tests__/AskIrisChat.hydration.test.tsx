@@ -82,7 +82,6 @@ describe("AskIrisChat hydration", () => {
     const container = document.createElement("div");
     container.innerHTML = renderToString(<Chat />);
     document.body.appendChild(container);
-    expect(buttonNamed(container, "signInToKeepChats")).toBeNull();
 
     authClient.hydrateSession(guest);
     const onRecoverableError = vi.fn();
@@ -94,7 +93,9 @@ describe("AskIrisChat hydration", () => {
     });
 
     expect(onRecoverableError).not.toHaveBeenCalled();
-    expect(buttonNamed(container, "signInToKeepChats")).not.toBeNull();
+    // The guest session reached the UI: History offers a visitor without an account to sign in.
+    await act(async () => buttonNamed(container, "history")?.click());
+    expect(container.querySelector('[aria-label="guestChatsKept"]')).not.toBeNull();
     // A session refetch can land after the test; unmounted, it no longer reaches React once jsdom is gone.
     await act(async () => root?.unmount());
   });
