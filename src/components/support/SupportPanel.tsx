@@ -50,17 +50,20 @@ function KofiCard({ lead }: { lead: boolean }) {
   );
 }
 
-function WechatCard({ lead }: { lead: boolean }) {
+function WechatCard() {
   const t = useTranslations("Support");
   return (
-    <div className={cn(CHANNEL_CARD_CLS, lead ? "flex-col items-center text-center" : "items-center")}>
-      <Image
-        src={WECHAT_QR_SRC}
-        alt={t("wechatQrAlt")}
-        width={lead ? 168 : 112}
-        height={lead ? 168 : 112}
-        className="shrink-0 rounded-lg"
-      />
+    <div className={cn(CHANNEL_CARD_CLS, "flex-col items-center text-center")}>
+      <a href={WECHAT_QR_SRC} target="_blank" rel="noopener" aria-label={t("wechatEnlarge")} className="block w-full max-w-60">
+        <Image
+          src={WECHAT_QR_SRC}
+          alt={t("wechatQrAlt")}
+          width={1152}
+          height={1152}
+          sizes="240px"
+          className="h-auto w-full rounded-lg"
+        />
+      </a>
       <div className="flex flex-col gap-1">
         <span className="text-sm font-semibold text-zinc-900">{t("wechatTitle")}</span>
         <span className="text-xs text-zinc-500">{t("wechatHint")}</span>
