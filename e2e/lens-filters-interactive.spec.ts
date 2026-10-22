@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { openSecondaryFilters, selectBrandFilter } from "./helpers";
+import { LENS_CARD_LINK, openSecondaryFilters, selectBrandFilter } from "./helpers";
 
 test.describe("Focal range filter", () => {
   test.beforeEach(async ({ page }) => {
@@ -41,7 +41,7 @@ test.describe("Sort controls", () => {
 
   test("toggling sort direction reverses card order", async ({ page }) => {
     const firstCardAsc = await page
-      .locator('a[href^="/en/lenses/x/"]:not([href$="/browse"]):not([href$="/collections"]):not([href*="/compare"])')
+      .locator(LENS_CARD_LINK)
       .first()
       .getAttribute("href");
 
@@ -50,7 +50,7 @@ test.describe("Sort controls", () => {
     await page.waitForTimeout(200);
 
     const firstCardDesc = await page
-      .locator('a[href^="/en/lenses/x/"]:not([href$="/browse"]):not([href$="/collections"]):not([href*="/compare"])')
+      .locator(LENS_CARD_LINK)
       .first()
       .getAttribute("href");
 
