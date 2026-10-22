@@ -82,7 +82,7 @@ export default function ManualLensDialog({
   const t = useTranslations("Profile");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogPopup className="flex max-h-[90svh] w-full max-w-xl flex-col overflow-hidden">
+      <DialogPopup className="flex max-h-[calc(var(--app-height)*0.9)] w-full max-w-xl flex-col overflow-hidden">
         <DialogHeader className="border-b border-zinc-100 pr-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">

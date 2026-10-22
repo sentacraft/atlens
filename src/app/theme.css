@@ -28,6 +28,11 @@
   --titlebar-height: env(titlebar-area-height, 0px);
 
   --nav-height: calc(3.5rem + var(--safe-inset-top) + var(--titlebar-height));
+  /* One screen of height. A standalone PWA has no browser toolbars, so lvh is the same height, and
+     iOS 26.1+ home-screen apps report svh/dvh without the status bar while the page still spans
+     the whole screen, leaving that much blank at the bottom:
+     https://bugs.webkit.org/show_bug.cgi?id=301994 */
+  --app-height: 100svh;
   --compare-bar-height: 0px;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -63,3 +68,8 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+@media (display-mode: standalone) {
+  :root {
+    --app-height: 100lvh;
+  }
+}
