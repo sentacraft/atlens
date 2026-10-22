@@ -62,16 +62,16 @@ export default function WeightLadderChart({ tiers, brands, initial }: Props & { 
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <ChartChips
-          label={t("filterFocal")}
-          chips={FOCAL_CATEGORIES.map((c) => ({ key: c.key, label: tList(`category-${c.key}`) }))}
-          selected={selected.focal}
-          onSelect={(focal) => select({ ...selected, focal })}
-        />
-        <ChartChips
           label={t("filterBrand")}
           chips={brands.map((b) => ({ key: b.brand, label: `${brandLabel(tBrand, b.brand)} ${b.count}` }))}
           selected={selected.brand}
           onSelect={(brand) => select({ ...selected, brand })}
+        />
+        <ChartChips
+          label={t("filterFocal")}
+          chips={FOCAL_CATEGORIES.map((c) => ({ key: c.key, label: tList(`category-${c.key}`) }))}
+          selected={selected.focal}
+          onSelect={(focal) => select({ ...selected, focal })}
         />
       </div>
 
