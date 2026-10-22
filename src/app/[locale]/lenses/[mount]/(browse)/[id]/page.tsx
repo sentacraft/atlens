@@ -27,6 +27,7 @@ import { getMemberCollections } from "@/lib/collections";
 import { getCollectionLensCounts } from "@/lib/collection-stats";
 import CollectionPills from "@/components/collection/CollectionPills";
 import SameFocalAlternatives from "@/components/lens/SameFocalAlternatives";
+import LensReviewSearch from "@/components/lens/LensReviewSearch";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates, lensOgImages } from "@/lib/seo";
@@ -344,6 +345,8 @@ export default async function LensDetailPage({ params }: { params: Params }) {
             </FeedbackTrigger>
           </p>
       </div>
+
+      <LensReviewSearch lens={lens} locale={locale} />
 
       <SameFocalAlternatives lens={lens} lenses={lenses} />
 

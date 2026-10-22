@@ -11,6 +11,11 @@ export const CROP_FACTOR: Record<Mount, number> = {
 export const LENS_TYPES = ["prime", "zoom"] as const;
 export type LensType = (typeof LENS_TYPES)[number];
 
+/** The lens name sellers and reviewers list it under, in the page language when there is one. */
+export function lensSearchQuery(lens: Lens, locale: string): string {
+  return (locale === "zh" && lens.searchAliases.zh) || lens.searchAliases.en;
+}
+
 export function isZoom(lens: Lens): boolean {
   return lens.focalLengthMin !== lens.focalLengthMax;
 }
