@@ -131,9 +131,10 @@ details[open] > div {
     @apply border-border outline-ring/50;
   }
   /* Tailwind v4 preflight gives buttons the default cursor:
-     https://tailwindcss.com/docs/upgrade-guide#buttons-use-the-default-cursor */
+     https://tailwindcss.com/docs/upgrade-guide#buttons-use-the-default-cursor
+     Every clickable role takes the pointer here; a component never sets cursor-default on one. */
   button:not(:disabled),
-  [role="button"]:not(:disabled) {
+  :is([role="button"], [role="menuitem"], [role="menuitemradio"], [role="menuitemcheckbox"], [role="option"]):not([aria-disabled="true"], [data-disabled]) {
     cursor: pointer;
   }
   body {
