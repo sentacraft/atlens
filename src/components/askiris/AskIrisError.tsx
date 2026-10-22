@@ -35,7 +35,6 @@ export default function AskIrisError({
   const t = useTranslations("AskIris");
   const format = useFormatter();
   const openSignIn = useSignInDialog();
-  const turns = { guestTurns: IRIS_QUOTA.guestTurnsDaily, accountTurns: IRIS_QUOTA.accountTurnsDaily };
   // The app formats in UTC so server and browser agree; this only renders after a failed send,
   // so it can use the visitor's own time zone for when they can ask again.
   const resetAt =
@@ -54,7 +53,7 @@ export default function AskIrisError({
         })
       ) : error.kind === "guest_quota" ? (
         t.rich("guestQuota", {
-          ...turns,
+          guestTurns: IRIS_QUOTA.guestTurnsDaily,
           signIn: (chunks) => (
             <button type="button" onClick={() => openSignIn("iris_quota")} className={linkClass}>
               {chunks}
@@ -62,7 +61,7 @@ export default function AskIrisError({
           ),
         })
       ) : error.kind === "account_quota" ? (
-        <span>{t("accountQuota", { accountTurns: turns.accountTurns, resetAt })}</span>
+        <span>{t("accountQuota", { resetAt })}</span>
       ) : error.kind === "budget" ? (
         <span>{t("budgetExhausted", { resetAt })}</span>
       ) : (
