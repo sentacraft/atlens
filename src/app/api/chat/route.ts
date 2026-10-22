@@ -29,7 +29,7 @@ import { SIGN_IN_DECLINED, SIGN_IN_GATED_TOOL_NAMES, signInApproval } from "@/li
 import { listUserGear } from "@/lib/me/gear-repository";
 import { buildLensTools, seedRecalledRefs } from "@/lib/ai/tools";
 import { hasRepeatedToolFailure, withRepeatedFailureNotice } from "@/lib/ai/repeated-tool-failure";
-import { isOverTokenBudget, recordTokens } from "@/lib/ai/token-budget";
+import { checkIrisQuota, recordIrisTurn, type IrisQuotaUser } from "@/lib/ai/iris-quota";
 import { clientIp, isBypassed, isRateLimited } from "@/lib/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
 import { anonymizeId } from "@/lib/analytics/anonymize";
@@ -72,7 +72,7 @@ const STEP_BUDGET = 8;
 
 const STREAM_TIMEOUT_MS = 120_000;
 
-/** Runs one Ask Iris turn and streams the reply, saving it to the conversation. Any session, guests included; 401 without one, 429 when over the rate limit or token budget. */
+/** Runs one Ask Iris turn and streams the reply, saving it to the conversation. Any session, guests included; 401 without one, 429 when over the rate limit or a daily or global usage quota. */
 export async function POST(req: NextRequest) {
   const model = activeAgentModel(
     process.env.NODE_ENV === "production" ? undefined : findAgentModelPreset(req.headers.get(MODEL_PRESET_HEADER)),
@@ -114,10 +114,7 @@ export async function POST(req: NextRequest) {
     appDb = cf.env.APP_DB;
     releaseId = workerReleaseId(cf.env.CF_VERSION_METADATA);
     ctx = cf.ctx;
-    if (
-      (await isRateLimited(req, "chat")) ||
-      (rateKv && ip && !bypassed && (await isOverTokenBudget(rateKv, ip)))
-    ) {
+    if (await isRateLimited(req, "chat")) {
       return chatErrorResponse("rate_limit", 429);
     }
   } catch {
@@ -206,6 +203,18 @@ export async function POST(req: NextRequest) {
   });
   if (turn.kind === "invalid") {
     return chatErrorResponse("unavailable", 400);
+  }
+  const quotaUser: IrisQuotaUser = { userId, isAccount, ip };
+  // Answering a card resumes the turn it paused, which was already counted.
+  const countsAsTurn = turn.kind !== "tool-result";
+  if (rateKv && countsAsTurn && !bypassed) {
+    const block = await checkIrisQuota(rateKv, quotaUser).catch((error: unknown) => {
+      console.error("[askiris] failed to check quota", error);
+      return null;
+    });
+    if (block) {
+      return chatErrorResponse(block, 429);
+    }
   }
   const { history, userMessage, historyChanged } = turn;
   seedRecalledRefs(recalledRefs, history);
@@ -333,11 +342,15 @@ export async function POST(req: NextRequest) {
           `[askiris] in ${input} (cached ${cached} = ${hit}%) · out ${usage.outputTokens ?? 0} · ${stepNumber + 1} steps`,
         );
       }
-      const tokens = usage.totalTokens;
-      if (rateKv && ip && ctx && typeof tokens === "number") {
+      if (rateKv && ctx) {
+        const turnUsage = {
+          inputTokens: usage.inputTokens ?? 0,
+          cacheReadTokens: usage.inputTokenDetails?.cacheReadTokens ?? 0,
+          outputTokens: usage.outputTokens ?? 0,
+        };
         ctx.waitUntil(
-          recordTokens(rateKv, ip, tokens).catch((error) =>
-            console.error("[askiris] failed to record tokens", error),
+          recordIrisTurn(rateKv, quotaUser, turnUsage, { countsAsTurn }).catch((error) =>
+            console.error("[askiris] failed to record usage", error),
           ),
         );
       }

@@ -367,6 +367,7 @@ export const EVENT_DOCS: EventDocs = {
           iris_favorites: { label: "Iris favorites card", description: "The sign-in card Iris shows a guest who asks about their favorites" },
           iris_top_bar: { label: "Iris top bar prompt", description: "The sign-in prompt in Iris's top bar, for visitors without an account" },
           iris_reply: { label: "Link in an Iris reply", description: "A sign-in chip inside one of Iris's replies" },
+          iris_quota: { label: "Iris guest quota", description: "The sign-in link shown when a guest has used today's Iris questions" },
         },
       },
     },

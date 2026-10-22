@@ -67,7 +67,9 @@
     "reasonChatsTitle": "Sign in to keep your chats",
     "benefitFavorites": "Save lenses you're interested in and come back to compare them",
     "benefitGear": "Iris remembers your gear and recommends with it in mind",
-    "benefitChats": "Your chats with Iris are kept; without an account, only for 7 days"
+    "benefitChats": "Your chats with Iris are kept; without an account, only for 7 days",
+    "benefitQuota": "Ask Iris more questions each day",
+    "reasonQuotaTitle": "Sign in to keep asking Iris"
   },
   "AuthEmail": {
     "signInSubject": "Your Atlens sign-in code",
@@ -219,6 +221,9 @@
     "conversationUnavailable": "That conversation isn’t available, so a new one has started.",
     "conversationLoadFailed": "Couldn’t open that conversation. Please try again.",
     "rateLimited": "Iris is taking a lot of questions right now — please try again in a little while.",
+    "budgetExhausted": "Iris has reached her usage limit for now and will be back on {resetAt}.",
+    "accountQuota": "You've used today's {accountTurns, number} questions. You can ask again from {resetAt}.",
+    "guestQuota": "You've used today's {guestTurns, number} free questions. <signIn>Sign in</signIn> to ask up to {accountTurns, number} a day.",
     "errorRetry": "Something went wrong on Iris's side — please <retry>try again</retry>.",
     "errorUnavailable": "Iris is unavailable right now — please try again later.",
     "gearCard": {
