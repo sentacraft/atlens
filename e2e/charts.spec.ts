@@ -65,4 +65,32 @@ test.describe("Charts", () => {
       expect(label).toMatch(/^Tamron /);
     }
   });
+
+  test("a tap on a weight ladder tile opens its sheet instead of the lens page", async ({ page, hasTouch }) => {
+    test.skip(!hasTouch, "Touch only; mouse users get the tile's own buttons");
+    // Phones show only the first tiles of each tier, so tap one that is on screen.
+    const sheet = page.getByRole("dialog");
+    await expect(async () => {
+      await page.goto(WEIGHT);
+      await page.locator("main section li a").locator("visible=true").first().tap();
+      await expect(sheet).toBeVisible({ timeout: 1000 });
+    }).toPass();
+    await expect(page).toHaveURL(new RegExp(`${WEIGHT}$`));
+    const compare = sheet.getByRole("button", { name: "Add to compare" });
+    await compare.click();
+    await expect(sheet.getByRole("button", { pressed: true })).toBeVisible();
+    await expect(sheet.getByRole("link", { name: "View details" })).toBeVisible();
+  });
+
+  test("a weight ladder tile shows its compare button only on hover", async ({ page, hasTouch }) => {
+    test.skip(hasTouch, "Mouse only");
+    await page.goto(WEIGHT);
+    const compare = page.getByRole("button", { name: "Add to compare: Fujifilm XF 16mm F1.4 R WR" });
+    await expect(compare).toHaveCSS("opacity", "0");
+    await expect(async () => {
+      await page.mouse.move(0, 0);
+      await page.getByRole("link", { name: "Fujifilm XF 16mm F1.4 R WR" }).hover();
+      await expect(compare).toHaveCSS("opacity", "1", { timeout: 1000 });
+    }).toPass();
+  });
 });

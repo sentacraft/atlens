@@ -85,6 +85,11 @@ export const ICON_CLOSE_BTN_CLS =
   "inline-flex shrink-0 items-center justify-center rounded-full transition-colors " +
   "text-zinc-500 hover:bg-red-50 hover:text-red-500 active:bg-red-50 active:text-red-500";
 
+// A card action that mouse users see on hover or focus inside the `group` card; touch has no hover,
+// so it stays visible there.
+export const HOVER_REVEAL_CLS =
+  "pointer-fine:xs:opacity-0 pointer-fine:xs:group-hover:opacity-100 pointer-fine:xs:group-focus-within:opacity-100";
+
 export const FROSTED_OVERLAY_CHROME_CLS =
   "border border-zinc-200/80 bg-white/95 shadow-sm backdrop-blur-sm";
 

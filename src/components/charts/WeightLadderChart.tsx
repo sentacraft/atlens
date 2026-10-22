@@ -1,20 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Check, Plus } from "lucide-react";
+import { Check, Plus, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "@/i18n/navigation";
 import ChartChips from "@/components/charts/ChartChips";
+import FavoriteStarButton from "@/components/lens/FavoriteStarButton";
+import { Dialog, DialogPopup, DialogTitle } from "@/components/ui/dialog";
 import { useCompare } from "@/context/CompareProvider";
-import { COMPARE_CHIP_STATE_CLS } from "@/config/ui-tokens";
+import { ACTION_PRIMARY_CLS, COMPARE_CHIP_CLS, COMPARE_CHIP_STATE_CLS, HOVER_REVEAL_CLS } from "@/config/ui-tokens";
+import { useFavorites } from "@/hooks/useFavorites";
 import { useChartSelection } from "@/hooks/useChartSelection";
 import { type BrandCount, type ChartLens } from "@/lib/charts/catalog";
 import type { WeightTier } from "@/lib/charts/weight";
-import { brandLabel } from "@/lib/lens/format";
-import { getLensImageUrl } from "@/lib/lens/image";
+import { brandLabel, focalRangeDisplay } from "@/lib/lens/format";
+import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import { FOCAL_CATEGORIES, MAX_COMPARE } from "@/lib/lens/lens";
 import { lensPath } from "@/lib/url/routes";
 import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/charts";
@@ -38,6 +41,9 @@ export default function WeightLadderChart({ tiers, brands, initial }: Props & { 
   const tBrand = useTranslations("Brands");
   const { selected, select } = useChartSelection(initial);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  // The lens is kept after closing so the sheet does not empty out during its exit animation.
+  const [sheet, setSheet] = useState<{ lens?: ChartLens; open: boolean }>({ open: false });
+  const openSheet = useCallback((lens: ChartLens) => setSheet({ lens, open: true }), []);
   const heaviest = Math.max(...tiers.flatMap((tier) => tier.lenses.map((l) => l.weightG)));
 
   const matches = (lens: ChartLens) =>
@@ -90,7 +96,7 @@ export default function WeightLadderChart({ tiers, brands, initial }: Props & { 
                 <ul className="grid grid-cols-3 gap-2 sm:grid-cols-[repeat(auto-fill,minmax(104px,1fr))] md:gap-2.5">
                   {lenses.map((lens, i) => (
                     <li key={lens.id} className={cn(!open && i >= PHONE_TIER_PREVIEW && "max-md:hidden")}>
-                      <LadderTile lens={lens} barPct={Math.round(Math.sqrt(lens.weightG / heaviest) * 100)} />
+                      <LadderTile lens={lens} onOpen={openSheet} barPct={Math.round(Math.sqrt(lens.weightG / heaviest) * 100)} />
                     </li>
                   ))}
                 </ul>
@@ -108,22 +114,53 @@ export default function WeightLadderChart({ tiers, brands, initial }: Props & { 
           </section>
         );
       })}
+
+      <Dialog open={sheet.open} onOpenChange={(open) => setSheet((prev) => ({ ...prev, open }))}>
+        <DialogPopup className="sm:max-w-sm">{sheet.lens && <LensSheet lens={sheet.lens} />}</DialogPopup>
+      </Dialog>
     </div>
   );
 }
 
-function LadderTile({ lens, barPct }: { lens: ChartLens; barPct: number }) {
-  const t = useTranslations("Charts");
+function useCompareToggle(lens: ChartLens) {
   const tList = useTranslations("LensList");
-  const tBrand = useTranslations("Brands");
   const { compareIds, toggle } = useCompare();
   const selected = compareIds.includes(lens.id);
   const full = !selected && compareIds.length >= MAX_COMPARE;
+  return {
+    selected,
+    stateCls: COMPARE_CHIP_STATE_CLS[selected ? "selected" : full ? "full" : "idle"],
+    label: selected ? tList("removeFromCompare") : full ? tList("compareFull") : tList("addToCompare"),
+    onToggle: full ? () => toast(tList("compareFullToast")) : () => toggle(lens.id),
+  };
+}
+
+// Mouse users get the actions on the tile; touch has no hover, so a tap opens the lens sheet instead
+// and the tile only marks what is already favorited or compared.
+function LadderTile({ lens, barPct, onOpen }: { lens: ChartLens; barPct: number; onOpen: (lens: ChartLens) => void }) {
+  const t = useTranslations("Charts");
+  const tBrand = useTranslations("Brands");
+  const compare = useCompareToggle(lens);
+  const favorited = useFavorites().isFavorite(lens.id);
+  const lastPointer = useRef("mouse");
   const name = `${brandLabel(tBrand, lens.brand)} ${lens.model}`;
 
   return (
-    <div className="relative flex h-full flex-col gap-0.5 rounded-xl border border-zinc-200 bg-white p-1.5 pb-2 transition-colors hover:border-zinc-900">
-      <Link href={lensPath(lens)} aria-label={name} className="absolute inset-0 z-0 rounded-xl" />
+    <div className="group relative flex h-full flex-col gap-0.5 rounded-xl border border-zinc-200 bg-white p-1.5 pb-2 transition-colors hover:border-zinc-900 has-focus-visible:border-zinc-900">
+      <Link
+        href={lensPath(lens)}
+        aria-label={name}
+        className="absolute inset-0 z-0 rounded-xl"
+        onPointerDown={(e) => {
+          lastPointer.current = e.pointerType;
+        }}
+        onClick={(e) => {
+          if (lastPointer.current !== "mouse") {
+            e.preventDefault();
+            onOpen(lens);
+          }
+        }}
+      />
       <Image src={getLensImageUrl(lens.id)} alt="" width={96} height={96} className="pointer-events-none aspect-square w-full object-contain" />
       <span className="pointer-events-none truncate text-[9px] uppercase tracking-[0.12em] text-zinc-500">{brandLabel(tBrand, lens.brand)}</span>
       <span className="pointer-events-none line-clamp-2 min-h-7 text-[11px] leading-[14px] text-zinc-900">{lens.model}</span>
@@ -135,16 +172,73 @@ function LadderTile({ lens, barPct }: { lens: ChartLens; barPct: number }) {
       </span>
       <button
         type="button"
-        onClick={full ? () => toast(tList("compareFullToast")) : () => toggle(lens.id)}
-        aria-pressed={selected}
-        aria-label={`${selected ? tList("removeFromCompare") : full ? tList("compareFull") : tList("addToCompare")}: ${name}`}
+        onClick={compare.onToggle}
+        aria-pressed={compare.selected}
+        aria-label={`${compare.label}: ${name}`}
         className={cn(
-          "absolute right-1 top-1 z-10 inline-flex size-7 items-center justify-center rounded-full border transition-colors",
-          selected ? COMPARE_CHIP_STATE_CLS.selected : full ? COMPARE_CHIP_STATE_CLS.full : COMPARE_CHIP_STATE_CLS.idle,
+          "absolute left-1 top-1 z-10 inline-flex size-7 items-center justify-center rounded-full border shadow-sm transition-[opacity,background-color,color] pointer-coarse:hidden",
+          compare.stateCls,
+          !compare.selected && HOVER_REVEAL_CLS,
         )}
       >
-        {selected ? <Check className="size-3.5" aria-hidden="true" /> : <Plus className="size-3.5" aria-hidden="true" />}
+        {compare.selected ? <Check className="size-3.5" aria-hidden="true" /> : <Plus className="size-3.5" aria-hidden="true" />}
       </button>
+      <FavoriteStarButton lensId={lens.id} placement="overlay" className="absolute right-1 top-1 h-7 w-7 pointer-coarse:hidden" />
+      {compare.selected && (
+        <span className="pointer-events-none absolute left-1.5 top-1.5 flex size-5 items-center justify-center rounded-full bg-zinc-900 text-white pointer-fine:hidden" aria-hidden="true">
+          <Check className="size-3" strokeWidth={3} />
+        </span>
+      )}
+      {favorited && (
+        <Star className="pointer-events-none absolute right-1.5 top-1.5 size-4 fill-zinc-900 stroke-white text-zinc-900 pointer-fine:hidden" aria-hidden="true" />
+      )}
+    </div>
+  );
+}
+
+function LensSheet({ lens }: { lens: ChartLens }) {
+  const t = useTranslations("Charts");
+  const tActions = useTranslations("LensActions");
+  const tBrand = useTranslations("Brands");
+  const compare = useCompareToggle(lens);
+  const favorites = useFavorites();
+  const favorited = favorites.isFavorite(lens.id);
+
+  return (
+    <div className="flex flex-col gap-4 px-5 pb-5 pt-2">
+      <div className="flex items-center gap-3.5">
+        <Image src={getLensImageUrl(lens.id)} alt="" width={88} height={88} className="size-22 shrink-0 object-contain" style={lensImageStyle} />
+        <div className="flex min-w-0 flex-col gap-1">
+          <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">{brandLabel(tBrand, lens.brand)}</span>
+          <DialogTitle className="text-base font-semibold leading-snug text-zinc-900">{lens.model}</DialogTitle>
+          <span className="text-[13px] text-zinc-600">
+            {t("equivFocal", { focal: focalRangeDisplay(lens.focalMin, lens.focalMax) })} · {t("weight", { weight: lens.weightG })}
+          </span>
+        </div>
+      </div>
+      <div className="flex gap-2.5">
+        <button
+          type="button"
+          onClick={() => favorites.toggle(lens.id)}
+          aria-pressed={favorited}
+          className={cn(COMPARE_CHIP_CLS, COMPARE_CHIP_STATE_CLS.idle, "h-11 flex-1 justify-center gap-1.5 text-sm", favorited && "border-zinc-900 text-zinc-900")}
+        >
+          <Star className="size-4" fill={favorited ? "currentColor" : "none"} aria-hidden="true" />
+          {favorited ? tActions("favorited") : tActions("favorite")}
+        </button>
+        <button
+          type="button"
+          onClick={compare.onToggle}
+          aria-pressed={compare.selected}
+          className={cn(COMPARE_CHIP_CLS, compare.stateCls, "h-11 flex-1 justify-center gap-1.5 text-sm")}
+        >
+          {compare.selected ? <Check className="size-4" aria-hidden="true" /> : <Plus className="size-4" aria-hidden="true" />}
+          {compare.label}
+        </button>
+      </div>
+      <Link href={lensPath(lens)} className={cn(ACTION_PRIMARY_CLS, "flex h-11 items-center justify-center rounded-lg text-sm font-medium")}>
+        {t("viewDetails")}
+      </Link>
     </div>
   );
 }
