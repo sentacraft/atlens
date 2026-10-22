@@ -5,7 +5,8 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
  * Every limit the app enforces:
  *
  * - Per-IP request rates: the policies below, as `[[ratelimits]]` bindings in wrangler.toml.
- * - Ask Iris daily token budgets, per IP and global: src/lib/ai/token-budget.ts (KV).
+ * - Ask Iris daily turns per guest and account, and its global daily and monthly spend:
+ *   src/lib/ai/iris-quota.ts (KV).
  * - /api/auth/*: Better Auth's own limiter, configured in src/lib/auth.ts (D1).
  *
  * The Cloudflare dashboard has no security or rate-limiting rules for atlens.app.

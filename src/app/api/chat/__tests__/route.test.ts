@@ -8,11 +8,21 @@ const mocks = vi.hoisted(() => ({
   writeAskIrisTrace: vi.fn(),
   appendAskIrisTurn: vi.fn(),
   waitUntil: vi.fn(),
+  kv: new Map<string, string>(),
 }));
 
 vi.mock("@opennextjs/cloudflare", () => ({
   getCloudflareContext: () => ({
-    env: { APP_DB: {}, ASKIRIS_DB: {} },
+    env: {
+      APP_DB: {},
+      ASKIRIS_DB: {},
+      RATE_KV: {
+        get: async (key: string) => mocks.kv.get(key) ?? null,
+        put: async (key: string, value: string) => {
+          mocks.kv.set(key, value);
+        },
+      },
+    },
     ctx: { waitUntil: mocks.waitUntil },
   }),
 }));
@@ -45,6 +55,7 @@ vi.mock("@/lib/askiris/trace-repository", () => ({
 }));
 
 const { POST } = await import("../route");
+const { IRIS_QUOTA } = await import("@/lib/ai/iris-quota");
 
 type LanguageModelV4StreamPart =
   Awaited<ReturnType<MockLanguageModelV4["doStream"]>>["stream"] extends ReadableStream<infer Part> ? Part : never;
@@ -92,6 +103,39 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.clearAllMocks();
+  mocks.kv.clear();
+});
+
+function textReply() {
+  return modelStep(
+    [
+      { type: "text-start", id: "text-1" },
+      { type: "text-delta", id: "text-1", delta: "Hello." },
+      { type: "text-end", id: "text-1" },
+    ],
+    "stop",
+  );
+}
+
+describe("POST /api/chat quota", () => {
+  it("answers a guest's daily turns, then refuses and says when the quota resets", async () => {
+    const turns = IRIS_QUOTA.guestTurnsDaily;
+    mocks.getAgentModel.mockReturnValue(
+      new MockLanguageModelV4({ doStream: Array.from({ length: turns }, textReply) }),
+    );
+    for (let i = 0; i < turns; i++) {
+      const response = await POST(chatRequest());
+      expect(response.status).toBe(200);
+      await settle(response);
+    }
+
+    const refused = await POST(chatRequest());
+
+    expect(refused.status).toBe(429);
+    const body = (await refused.json()) as { kind: string; resetAt: number };
+    expect(body).toMatchObject({ kind: "guest_quota" });
+    expect(body.resetAt).toBe((Math.floor(Date.now() / 86_400_000) + 1) * 86_400_000);
+  });
 });
 
 describe("POST /api/chat trace status", () => {
