@@ -13,6 +13,8 @@ export const STATIC_LOCALIZED_SUBPATHS = [
   "me",
   "lenses/x/browse",
   "lenses/gfx/browse",
+  "lenses/x/charts/timeline",
+  "lenses/x/charts/weight",
 ] as const;
 
 // Not asserted; listed so reviewers see the intentional exceptions.

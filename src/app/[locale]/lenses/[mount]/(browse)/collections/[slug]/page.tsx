@@ -12,7 +12,7 @@ import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { buildCollectionItemListSchema } from "@/lib/lens/seo";
 import { lensDisplayName, brandLabel } from "@/lib/lens/format";
 import { SITE } from "@/config/site";
-import { ACTION_ESCAPE_CLS, PAGE_GUTTER_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
+import { ACTION_ESCAPE_CLS, BROWSE_PAGE_MAIN_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import JsonLd from "@/components/seo/JsonLd";
 import CollectionLensGrid from "@/components/collection/CollectionLensGrid";
 import RelatedCollectionCard from "@/components/collection/RelatedCollectionCard";
@@ -112,7 +112,7 @@ export default async function CollectionPage({
   return (
     <>
       <JsonLd data={itemListSchema} />
-      <main className={`mx-auto max-w-6xl py-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] ${PAGE_GUTTER_CLS}`}>
+      <main className={BROWSE_PAGE_MAIN_CLS}>
         <header className="mb-8">
           <div className="mb-4 flex items-center justify-between gap-3">
             <Breadcrumb

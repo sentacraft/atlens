@@ -2,12 +2,12 @@ import type { MetadataRoute } from "next";
 import { SITE } from "@/config/site";
 import { routing } from "@/i18n/routing";
 import { COLLECTIONS } from "@/lib/collections";
-import { MOUNTS, mountHasCollections } from "@/lib/mount";
+import { MOUNTS, mountHasCharts, mountHasCollections } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
 import xLensesData from "@/data/lenses.json";
 import gfxLensesData from "@/data/lenses-gfx.json";
 import { buildComparePath } from "@/lib/url/compare";
-import { ABOUT_PATH, GET_APP_PATH, RECENTLY_ADDED_PATH, browsePath, collectionPath, collectionsPath, lensPath } from "@/lib/url/routes";
+import { ABOUT_PATH, GET_APP_PATH, RECENTLY_ADDED_PATH, browsePath, chartPath, collectionPath, collectionsPath, lensPath } from "@/lib/url/routes";
 
 const LOCALES = routing.locales;
 
@@ -25,6 +25,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const paths = [browsePath(mount), buildComparePath(mount, [])];
     if (mountHasCollections(mount)) {
       paths.push(collectionsPath(mount));
+    }
+    if (mountHasCharts(mount)) {
+      paths.push(chartPath(mount, "timeline"), chartPath(mount, "weight"));
     }
     return paths;
   });

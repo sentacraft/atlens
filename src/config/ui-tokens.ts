@@ -2,6 +2,9 @@ export const PAGE_GUTTER_CLS = "px-5 sm:px-8 lg:px-12";
 
 export const LENS_INDEX_SHELL_CLS = `mx-auto w-full max-w-7xl ${PAGE_GUTTER_CLS}`;
 
+/** A page under the browse layout: the bottom padding clears the compare bar when it shows. */
+export const BROWSE_PAGE_MAIN_CLS = `mx-auto max-w-6xl py-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] ${PAGE_GUTTER_CLS}`;
+
 // 72px is three of the widest gap (xl:gap-6): the min track never exceeds a quarter row, capping the grid at 4 columns.
 export const LENS_GRID_CLS =
   "grid grid-cols-1 gap-4 xs:grid-cols-[repeat(auto-fill,minmax(max(208px,calc((100%_-_72px)/4)),1fr))] md:gap-5 xl:gap-6";
@@ -81,6 +84,11 @@ export const TEXT_LINK_CLS =
 export const ICON_CLOSE_BTN_CLS =
   "inline-flex shrink-0 items-center justify-center rounded-full transition-colors " +
   "text-zinc-500 hover:bg-red-50 hover:text-red-500 active:bg-red-50 active:text-red-500";
+
+// A card action that mouse users see on hover or focus inside the `group` card; touch has no hover,
+// so it stays visible there.
+export const HOVER_REVEAL_CLS =
+  "pointer-fine:xs:opacity-0 pointer-fine:xs:group-hover:opacity-100 pointer-fine:xs:group-focus-within:opacity-100";
 
 export const FROSTED_OVERLAY_CHROME_CLS =
   "border border-zinc-200/80 bg-white/95 shadow-sm backdrop-blur-sm";
