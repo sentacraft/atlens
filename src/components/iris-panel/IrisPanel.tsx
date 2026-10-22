@@ -36,7 +36,7 @@ export default function IrisPanel({
 
   const chat = data.data ? (
     <AskIrisChat
-      shell={{ variant: "panel", pagePath, request, onClose, expanded, onExpandedChange: setExpanded }}
+      shell={{ variant: "panel", layout, pagePath, request, onClose, expanded, onExpandedChange: setExpanded }}
       linkTargets={data.data.linkTargets}
       lenses={data.data.lenses}
     />

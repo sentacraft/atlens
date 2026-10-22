@@ -207,3 +207,29 @@ test.describe("Ask Iris context entries", () => {
     await expect(sheet).toBeVisible();
   });
 });
+
+test.describe("Ask Iris panel empty state", () => {
+  for (const { name, viewport, role, heroSize } of [
+    { name: "side panel", viewport: { width: 1280, height: 800 }, role: "complementary", heroSize: 56 },
+    { name: "phone sheet", viewport: { width: 375, height: 812 }, role: "dialog", heroSize: 64 },
+    { name: "short phone sheet", viewport: { width: 375, height: 667 }, role: "dialog", heroSize: null },
+  ] as const) {
+    test(`shows the Iris hero at its size in the ${name}, or drops it when short`, async ({ page }, testInfo) => {
+      testInfo.skip(testInfo.project.name !== "chromium", "Sets its own viewports");
+      await page.setViewportSize(viewport);
+      // The home page gives Iris no page context, so the panel opens on its plain empty state.
+      await page.goto("/en");
+      await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+
+      const panel = page.getByRole(role, { name: "Iris" });
+      await expect(panel.getByRole("heading", { level: 1 })).toBeVisible();
+      const hero = panel.getByTestId("iris");
+      if (heroSize === null) {
+        await expect(hero).toBeHidden();
+      } else {
+        await expect(hero).toBeVisible();
+        expect((await hero.boundingBox())!.width).toBe(heroSize);
+      }
+    });
+  }
+});

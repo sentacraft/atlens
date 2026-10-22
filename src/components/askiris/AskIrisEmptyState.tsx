@@ -10,6 +10,8 @@ import ExampleQuestion from "@/components/askiris/ExampleQuestion";
 import { useStarters } from "@/components/askiris/useStarters";
 import type { Starter } from "@/lib/askiris/starter-questions";
 
+const HERO_SIZE = { page: IRIS_ASSISTANT.size, side: IRIS_ASSISTANT.size, sheet: 64 } as const;
+
 export default function AskIrisEmptyState({
   variant,
   input,
@@ -19,8 +21,8 @@ export default function AskIrisEmptyState({
   starterSeed,
   disabled,
 }: {
-  /** panel: the narrow side panel, without the hero animation. */
-  variant: "page" | "panel";
+  /** side and sheet: the Iris panel beside the page, which drops the hero on a short screen. */
+  variant: "page" | "side" | "sheet";
   input: string;
   onInputChange: (value: string) => void;
   onSubmit: () => void;
@@ -31,7 +33,7 @@ export default function AskIrisEmptyState({
   disabled: boolean;
 }) {
   const t = useTranslations("AskIris");
-  const panel = variant === "panel";
+  const panel = variant !== "page";
   const starters = useStarters({ compact: panel, seed: starterSeed });
 
   return (
@@ -41,10 +43,12 @@ export default function AskIrisEmptyState({
         // keyboard), it starts at the top and scrolls instead of spilling over the top bar.
         // -mx-2 px-2: the scroll box clips sideways too, and would cut off the composer's shadow.
         "-mx-2 flex min-h-0 flex-1 flex-col items-center justify-center-safe overflow-y-auto px-2 text-center",
-        panel ? "gap-4 pb-6" : "gap-6 pb-10",
+        panel ? "gap-4 pb-6 [container-type:size]" : "gap-6 pb-10",
       )}
     >
-      {!panel && <Iris config={IRIS_ASSISTANT} uid="askiris-hero" />}
+      <div className={cn("shrink-0", panel && "[@container(max-height:480px)]:hidden")}>
+        <Iris config={IRIS_ASSISTANT} size={HERO_SIZE[variant]} uid="askiris-hero" />
+      </div>
 
       <div className={panel ? "space-y-2" : "space-y-3"}>
         <h1

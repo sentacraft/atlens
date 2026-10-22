@@ -70,6 +70,7 @@ export type AskIrisShell =
   | { variant: "page"; entry: AskIrisEntry; starterSeed: number }
   | {
       variant: "panel";
+      layout: "side" | "sheet";
       pagePath: string;
       request: IrisPanelRequest | null;
       onClose: () => void;
@@ -453,7 +454,7 @@ export default function AskIrisChat({
         {topBar}
         {notice}
         <AskIrisEmptyState
-          variant={shell.variant}
+          variant={shell.variant === "page" ? "page" : shell.layout}
           input={input}
           onInputChange={setInput}
           onSubmit={() => void submitText(input)}
