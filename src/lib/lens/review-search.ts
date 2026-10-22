@@ -1,5 +1,5 @@
 import type { Lens } from "@/lib/types";
-import { lensSearchQuery } from "@/lib/lens/lens";
+import { searchNameFor } from "@/lib/lens/lens";
 
 export type ReviewSearchChannel = "bilibili" | "youtube" | "bing" | "google" | "flickr" | "reddit";
 export type ReviewSearchKind = "video" | "article" | "photos" | "discussion";
@@ -26,11 +26,6 @@ const CHANNELS: Record<string, ReviewSearchChannel[]> = {
   en: ["youtube", "google", "flickr", "reddit"],
 };
 
-// Store-search aliases end in the mount ("Fuji X", "富士", "GFX") because sellers list mount
-// variants apart. Reviews, photos and posts rarely repeat it, and on Flickr the suffix cut a
-// third-party lens's results to nothing.
-const MOUNT_SUFFIX = /\s+(Fuji (X|GFX)|富士|GFX)$/;
-
 /**
  * Search links for other sites' reviews, sample photos and community discussions of a lens. The
  * results are each site's own; nothing here is chosen or ranked by us.
@@ -45,8 +40,8 @@ export function buildReviewSearchLinks({
   /** "review" in the page language, appended to video and article searches. */
   reviewKeyword: string;
 }): ReviewSearchLink[] {
-  const name = lensSearchQuery(lens, locale).replace(MOUNT_SUFFIX, "");
-  const english = lensSearchQuery(lens, "en").replace(MOUNT_SUFFIX, "");
+  const name = searchNameFor(lens.searchAliases.review, locale);
+  const english = lens.searchAliases.review.en;
   const review = encodeURIComponent(`${name} ${reviewKeyword}`);
   const url: Record<ReviewSearchChannel, () => string> = {
     bilibili: () => `https://search.bilibili.com/all?keyword=${review}`,

@@ -11,7 +11,6 @@ const ALLOWED = [
   "src/data/", // lens and collection data
   "src/lib/types.ts", // Lens JSDoc examples, the data pipeline's extraction spec
   "src/lib/purchase/links.ts", // JD and Taobao store names on the Chinese site
-  "src/lib/lens/review-search.ts", // the Chinese mount suffix that store-search aliases end in
   "src/components/seo/SiteJsonLd.tsx", // the site's Chinese alternate names for search engines
   "eval/", // Chinese test turns
   "src/lib/askiris/test-prompts.ts", // Chinese prompts the Test Hook panel offers for copying

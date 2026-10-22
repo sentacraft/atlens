@@ -1,4 +1,4 @@
-import { OPTICAL_TRAITS, type Lens, type Mount, type OpticalTrait } from "@/lib/types";
+import { OPTICAL_TRAITS, type Lens, type Mount, type OpticalTrait, type SearchName } from "@/lib/types";
 import { deriveSpecialty } from "@/lib/lens/specialty";
 
 export const MAX_COMPARE = 4;
@@ -11,9 +11,9 @@ export const CROP_FACTOR: Record<Mount, number> = {
 export const LENS_TYPES = ["prime", "zoom"] as const;
 export type LensType = (typeof LENS_TYPES)[number];
 
-/** The lens name sellers and reviewers list it under, in the page language when there is one. */
-export function lensSearchQuery(lens: Lens, locale: string): string {
-  return (locale === "zh" && lens.searchAliases.zh) || lens.searchAliases.en;
+/** A search name in the page language when there is one, else in English. */
+export function searchNameFor(name: SearchName, locale: string): string {
+  return (locale === "zh" && name.zh) || name.en;
 }
 
 export function isZoom(lens: Lens): boolean {

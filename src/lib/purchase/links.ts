@@ -1,6 +1,6 @@
 import type { Lens, PurchaseChannelType } from "@/lib/types";
 import { getChannelPriority } from "@/lib/purchase/channel-priority";
-import { lensSearchQuery } from "@/lib/lens/lens";
+import { searchNameFor } from "@/lib/lens/lens";
 
 const EPN_CAMPAIGN_ID = "5339154376";
 const EPN_TOOL_ID = "10001";
@@ -98,7 +98,7 @@ function buildEbayUrl(
   customId?: string,
 ): string {
   const market = EBAY_MARKETS[countryCode] ?? EBAY_DEFAULT_MARKET;
-  const query = lensSearchQuery(lens, locale);
+  const query = searchNameFor(lens.searchAliases.store, locale);
   const target = `https://www.${market.domain}/sch/i.html?_nkw=${encodeURIComponent(query)}`;
   const params = [
     `mkevt=1`,
@@ -114,21 +114,21 @@ function buildEbayUrl(
 }
 
 function buildBhPhotoUrl(lens: Lens, locale: string): string {
-  const query = lensSearchQuery(lens, locale);
+  const query = searchNameFor(lens.searchAliases.store, locale);
   return `https://www.bhphotovideo.com/c/search?Ntt=${encodeURIComponent(query)}`;
 }
 
 // No affiliate program here: JD/Taobao promotion requires an ICP-registered site. Phones get
 // the mobile H5 domains so the platforms hand off to their apps.
 function buildJdUrl(lens: Lens, isMobileDevice: boolean): string {
-  const query = encodeURIComponent(lensSearchQuery(lens, "zh"));
+  const query = encodeURIComponent(searchNameFor(lens.searchAliases.store, "zh"));
   return isMobileDevice
     ? `https://so.m.jd.com/ware/search.action?keyword=${query}`
     : `https://search.jd.com/Search?keyword=${query}&enc=utf-8`;
 }
 
 function buildTaobaoUrl(lens: Lens, isMobileDevice: boolean): string {
-  const query = encodeURIComponent(lensSearchQuery(lens, "zh"));
+  const query = encodeURIComponent(searchNameFor(lens.searchAliases.store, "zh"));
   return isMobileDevice
     ? `https://main.m.taobao.com/search/index.html?q=${query}`
     : `https://s.taobao.com/search?q=${query}`;
@@ -158,7 +158,7 @@ function buildAmazonUrl(
     const asin = extractAsin(sourceUrl);
     return asin ? `https://www.${domain}/dp/${asin}` : sourceUrl;
   }
-  const query = lensSearchQuery(lens, locale);
+  const query = searchNameFor(lens.searchAliases.store, locale);
   return `https://www.${domain}/s?k=${encodeURIComponent(query)}`;
 }
 
