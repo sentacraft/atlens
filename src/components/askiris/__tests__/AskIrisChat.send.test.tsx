@@ -274,12 +274,17 @@ describe("AskIrisChat send", () => {
     }
   });
 
-  it("expands the panel to open History", () => {
+  it("shows History inside the narrow panel without expanding it, and goes back to the chat", () => {
     captureChatBodies();
     renderChat(panel("/en/lenses/x/xf-56"));
 
     fireEvent.click(screen.getByRole("button", { name: "history" }));
-    expect(expandedChange).toHaveBeenLastCalledWith(true);
+    expect(expandedChange).not.toHaveBeenCalled();
+    expect(screen.getByRole("heading", { name: "history" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "fullScreen" })).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "backToChat" }));
+    expect(screen.getByRole("button", { name: "fullScreen" })).toBeInTheDocument();
   });
 
   it("expands in place from the full-screen button, keeping the unsent input", () => {
