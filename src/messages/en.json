@@ -262,15 +262,14 @@
       "signedIn": "Signed in"
     },
     "responseFeedback": {
-      "prompt": "Was this answer helpful?",
+      "prompt": "Was this helpful?",
       "thanks": "Thanks for the feedback.",
       "tellMore": "Tell us more",
       "detailsThanks": "Got it, thanks for the details.",
-      "dismiss": "Dismiss",
       "cancel": "Cancel",
       "title": "What could be improved?",
-      "helpful": "Helpful",
-      "unhelpful": "Not helpful",
+      "helpful": "Yes",
+      "unhelpful": "No",
       "submit": "Send",
       "dialogTitle": "Send feedback",
       "commentPlaceholderHelpful": "Anything else you'd like to tell us?",

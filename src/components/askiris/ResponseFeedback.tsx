@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { X } from "lucide-react";
+import { ThumbsDown, ThumbsUp } from "lucide-react";
 import ToggleChipGroup from "@/components/ui/toggle-chip-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogCancel, DialogFooter, DialogHeader, DialogPopup, DialogTitle } from "@/components/ui/dialog";
 import type { AskIrisResponseFeedbackInput } from "@/lib/askiris/response-feedback-contract";
 import { postResponseFeedback } from "@/lib/askiris/response-feedback-client";
+import { CHIP_BASE_CLS, CHIP_IDLE_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 
 type Rating = AskIrisResponseFeedbackInput["rating"];
@@ -25,8 +26,7 @@ const REASONS = [
 
 type ReasonCode = (typeof REASONS)[number];
 
-const OPTION_CLS =
-  "rounded-md px-1.5 py-1 text-zinc-400 transition-colors hover:text-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/50";
+const OPTION_CLS = cn(CHIP_BASE_CLS, CHIP_IDLE_CLS, "gap-1 px-2.5 py-1");
 
 function logFeedbackFailure(responseMessageId: string, error: unknown): void {
   console.error("[askiris] response feedback request failed", {
@@ -35,11 +35,11 @@ function logFeedbackFailure(responseMessageId: string, error: unknown): void {
   });
 }
 
-/** A one-line rating under a response: a tap saves it, and details open in a dialog only on request. */
+/** A one-line rating under a response, set off by a rule: a tap saves it, and details open in a dialog only on request. */
 export default function ResponseFeedback({ responseMessageId }: { responseMessageId: string }) {
   const t = useTranslations("AskIris.responseFeedback");
+  const promptId = useId();
   const [rating, setRating] = useState<Rating | null>(null);
-  const [dismissed, setDismissed] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [detailsSent, setDetailsSent] = useState(false);
   const [reasons, setReasons] = useState<ReasonCode[]>([]);
@@ -50,10 +50,6 @@ export default function ResponseFeedback({ responseMessageId }: { responseMessag
     retry: false,
     onError: (error) => logFeedbackFailure(responseMessageId, error),
   });
-
-  if (dismissed) {
-    return null;
-  }
 
   function rate(next: Rating) {
     setRating(next);
@@ -73,40 +69,35 @@ export default function ResponseFeedback({ responseMessageId }: { responseMessag
   const canSendDetails = reasons.length > 0 || comment.trim().length > 0;
 
   return (
-    <div className="flex flex-col gap-2 px-1 pt-1 text-sm">
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <span role={rating === null ? undefined : "status"} className="text-zinc-600">
-          {rating === null ? t("prompt") : detailsSent ? t("detailsThanks") : t("thanks")}
-        </span>
-        {/* One group, so the × wraps together with the options instead of alone. */}
-        <span className="flex items-center gap-1">
-          {rating === null ? (
-            <>
-              <button type="button" onClick={() => rate("helpful")} className={OPTION_CLS}>
-                {t("helpful")}
-              </button>
-              <button type="button" onClick={() => rate("unhelpful")} className={OPTION_CLS}>
-                {t("unhelpful")}
-              </button>
-            </>
-          ) : (
-            !detailsSent &&
-            !detailsOpen && (
-              <button type="button" onClick={() => setDetailsOpen(true)} className={OPTION_CLS}>
-                {t("tellMore")}
-              </button>
-            )
+    <div className="mx-1 mt-1 flex min-h-11 items-center justify-between self-stretch gap-2 border-t border-zinc-100 pt-2.5 text-xs">
+      {rating === null ? (
+        <>
+          <span id={promptId} className="text-zinc-500">
+            {t("prompt")}
+          </span>
+          <span role="group" aria-labelledby={promptId} className="flex shrink-0 items-center gap-1.5">
+            <button type="button" onClick={() => rate("helpful")} className={OPTION_CLS}>
+              <ThumbsUp className="size-3.5" aria-hidden="true" />
+              {t("helpful")}
+            </button>
+            <button type="button" onClick={() => rate("unhelpful")} className={OPTION_CLS}>
+              <ThumbsDown className="size-3.5" aria-hidden="true" />
+              {t("unhelpful")}
+            </button>
+          </span>
+        </>
+      ) : (
+        <>
+          <span role="status" className="text-zinc-500">
+            {detailsSent ? t("detailsThanks") : t("thanks")}
+          </span>
+          {!detailsSent && !detailsOpen && (
+            <button type="button" onClick={() => setDetailsOpen(true)} className={cn(TEXT_LINK_CLS, "shrink-0 underline-offset-2")}>
+              {t("tellMore")}
+            </button>
           )}
-          <button
-            type="button"
-            onClick={() => setDismissed(true)}
-            aria-label={t("dismiss")}
-            className={cn(OPTION_CLS, "inline-flex items-center")}
-          >
-            <X className="size-4" />
-          </button>
-        </span>
-      </div>
+        </>
+      )}
 
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
         <DialogPopup className="max-w-md">

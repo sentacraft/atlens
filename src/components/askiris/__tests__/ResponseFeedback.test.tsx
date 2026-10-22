@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import ResponseFeedback from "../ResponseFeedback";
 
 vi.mock("next-intl", () => ({
@@ -81,12 +81,12 @@ describe("ResponseFeedback", () => {
     expect(screen.getByRole("button", { name: "submit" })).toBeDisabled();
   });
 
-  it("hides the bar without rating when dismissed", () => {
-    const { container } = renderResponseFeedback();
+  it("names the two ratings by the question they answer", () => {
+    renderResponseFeedback();
 
-    fireEvent.click(screen.getByRole("button", { name: "dismiss" }));
+    const group = screen.getByRole("group", { name: "prompt" });
 
-    expect(container).toBeEmptyDOMElement();
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(within(group).getByRole("button", { name: "helpful" })).toBeInTheDocument();
+    expect(within(group).getByRole("button", { name: "unhelpful" })).toBeInTheDocument();
   });
 });
