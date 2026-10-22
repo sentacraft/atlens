@@ -6,6 +6,11 @@ import type { ApertureValue, Lens } from "../types.ts";
 
 const positiveNumberSchema = z.number().positive();
 const nonEmptyStringSchema = z.string().trim().min(1);
+
+const searchNameSchema = z.strictObject({
+  en: nonEmptyStringSchema,
+  zh: nonEmptyStringSchema.optional(),
+});
 const optionalNonEmptyStringSchema = nonEmptyStringSchema.optional();
 function createApertureSchema(fieldName: "maxAperture" | "minAperture" | "maxTStop" | "minTStop") {
   return z.union([
@@ -117,8 +122,8 @@ const lensBaseShape = {
   apertureBladeCount: z.union([z.number().int().positive(), specNaSchema]).optional(),
   releaseYear: z.number().int().min(1900).max(2100).optional(),
   searchAliases: z.strictObject({
-    en: nonEmptyStringSchema,
-    zh: nonEmptyStringSchema.optional(),
+    store: searchNameSchema,
+    review: searchNameSchema,
   }),
   pricing: z.strictObject({
     cn: pricingMarketSchema.optional(),

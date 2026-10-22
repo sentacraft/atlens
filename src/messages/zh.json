@@ -507,6 +507,25 @@
     "viewAllCollections": "查看所有合集",
     "notFoundTitle": "未找到这支镜头"
   },
+  "LensReviews": {
+    "title": "评测与样张",
+    "subtitle": "在其他平台搜索这支镜头的评测和样张，结果由各平台提供",
+    "searchKeyword": "评测",
+    "kind": {
+      "video": "视频评测",
+      "article": "评测文章",
+      "photos": "用户样张",
+      "discussion": "社区讨论"
+    },
+    "channel": {
+      "bilibili": "B 站",
+      "youtube": "YouTube",
+      "bing": "必应",
+      "google": "Google",
+      "flickr": "Flickr",
+      "reddit": "r/fujifilm"
+    }
+  },
   "Alternatives": {
     "titlePrime": "同焦段的其他选择",
     "titleZoom": "相近焦段的其他变焦",

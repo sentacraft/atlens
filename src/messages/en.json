@@ -507,6 +507,25 @@
     "viewAllCollections": "View all collections",
     "notFoundTitle": "Lens Not Found"
   },
+  "LensReviews": {
+    "title": "Reviews & samples",
+    "subtitle": "Search other sites for reviews and sample photos of this lens. Results come from each site.",
+    "searchKeyword": "review",
+    "kind": {
+      "video": "Video reviews",
+      "article": "Written reviews",
+      "photos": "Sample photos",
+      "discussion": "Community discussions"
+    },
+    "channel": {
+      "bilibili": "Bilibili",
+      "youtube": "YouTube",
+      "bing": "Bing",
+      "google": "Google",
+      "flickr": "Flickr",
+      "reddit": "r/fujifilm"
+    }
+  },
   "Alternatives": {
     "titlePrime": "Other lenses at this focal length",
     "titleZoom": "Other zooms covering this range",

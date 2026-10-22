@@ -46,7 +46,7 @@ function makeLens(
     minFocusDistance: { normal: { cm: 28 } },
     releaseYear: 2012,
     officialLinks: { global: "https://example.com/lens" },
-    searchAliases: { en: "Fujifilm XF35mm F1.4 R" },
+    searchAliases: { store: { en: "Fujifilm XF35mm F1.4 R" }, review: { en: "Fujifilm XF35mm F1.4 R" } },
     ...overrides,
   };
 }
