@@ -12,16 +12,17 @@ test.describe("Charts", () => {
     await expect(page).toHaveURL(new RegExp(`${TIMELINE}$`));
   });
 
-  test("a tap on a timeline lens opens its card instead of the lens page", async ({ page, hasTouch }) => {
+  test("the first tap on a timeline lens shows its card, the second opens the lens", async ({ page, hasTouch }) => {
     test.skip(!hasTouch, "Touch only; a mouse click opens the lens page");
-    const card = page.getByRole("dialog", { name: LENS });
+    const lens = page.getByRole("link", { name: LENS }).locator("visible=true");
     await expect(async () => {
       await page.goto(TIMELINE);
-      await page.getByRole("link", { name: LENS }).locator("visible=true").tap();
-      await expect(card).toBeVisible({ timeout: 1000 });
+      await lens.tap();
+      await expect(page.getByRole("tooltip").filter({ hasText: LENS })).toBeVisible({ timeout: 1000 });
     }).toPass();
     await expect(page).toHaveURL(new RegExp(`${TIMELINE}$`));
-    await expect(card.getByRole("link", { name: "View details" })).toBeVisible();
+    await lens.tap();
+    await expect(page).toHaveURL(/\/en\/lenses\/x\/sigma-[^/]+-x$/);
   });
 
   test("hovering a timeline lens opens its card", async ({ page, hasTouch }) => {
@@ -30,7 +31,7 @@ test.describe("Charts", () => {
     await expect(async () => {
       await page.mouse.move(0, 0);
       await page.getByRole("link", { name: LENS }).locator("visible=true").hover();
-      await expect(page.getByRole("dialog", { name: LENS })).toBeVisible({ timeout: 1000 });
+      await expect(page.getByRole("tooltip").filter({ hasText: LENS })).toBeVisible({ timeout: 1000 });
     }).toPass();
   });
 
@@ -48,10 +49,20 @@ test.describe("Charts", () => {
     await expect(chip).toHaveAttribute("aria-pressed", "true");
   });
 
-  test("the weight ladder reads its focal highlight from the URL", async ({ page }) => {
-    await page.goto(`${WEIGHT}?focal=standard`);
-    await expect(
-      page.getByRole("group", { name: "Highlight focal range" }).getByRole("button", { name: "Standard" }),
-    ).toHaveAttribute("aria-pressed", "true");
+  test("the weight ladder filters by the brand in the URL", async ({ page }) => {
+    await page.goto(`${WEIGHT}?brand=tamron&focal=standard`);
+    await expect(page.getByRole("group", { name: "Brand" }).getByRole("button", { name: /^Tamron/ })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await expect(page.getByRole("group", { name: "Focal range" }).getByRole("button", { name: "Standard" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    const tiles = page.locator("main section li a");
+    await expect(tiles.first()).toBeVisible();
+    for (const label of await tiles.evaluateAll((links) => links.map((l) => l.getAttribute("aria-label")))) {
+      expect(label).toMatch(/^Tamron /);
+    }
   });
 });

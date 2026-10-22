@@ -4,8 +4,8 @@ import { firstSearchParam } from "@/lib/url/search-params";
 export const CHART_BRAND_PARAM = "brand";
 export const CHART_FOCAL_PARAM = "focal";
 
-/** What a chart page emphasizes; the chart itself always shows every lens. */
-export interface ChartHighlight {
+/** The brand and focal range a chart page highlights (timeline) or filters by (weight ladder). */
+export interface ChartSelection {
   brand?: string;
   focal?: FocalCategory;
 }
@@ -13,10 +13,10 @@ export interface ChartHighlight {
 type ParamValue = string | string[] | undefined;
 
 /** Unknown brands and categories are dropped rather than rejected, so a stale link still opens the chart. */
-export function readChartHighlight(
+export function readChartSelection(
   params: { [CHART_BRAND_PARAM]?: ParamValue; [CHART_FOCAL_PARAM]?: ParamValue },
   knownBrands: readonly string[],
-): ChartHighlight {
+): ChartSelection {
   const brand = firstSearchParam(params[CHART_BRAND_PARAM]);
   const focal = firstSearchParam(params[CHART_FOCAL_PARAM]);
   return {
@@ -25,8 +25,8 @@ export function readChartHighlight(
   };
 }
 
-export function readChartHighlightFromSearch(search: URLSearchParams, knownBrands: readonly string[]): ChartHighlight {
-  return readChartHighlight(
+export function readChartSelectionFromSearch(search: URLSearchParams, knownBrands: readonly string[]): ChartSelection {
+  return readChartSelection(
     {
       [CHART_BRAND_PARAM]: search.get(CHART_BRAND_PARAM) ?? undefined,
       [CHART_FOCAL_PARAM]: search.get(CHART_FOCAL_PARAM) ?? undefined,
@@ -35,8 +35,8 @@ export function readChartHighlightFromSearch(search: URLSearchParams, knownBrand
   );
 }
 
-/** Sets the highlight params on `url` in place, leaving every other param alone. */
-export function writeChartHighlight(url: URL, highlight: ChartHighlight): void {
+/** Sets the selection params on `url` in place, leaving every other param alone. */
+export function writeChartSelection(url: URL, highlight: ChartSelection): void {
   url.searchParams.delete(CHART_BRAND_PARAM);
   url.searchParams.delete(CHART_FOCAL_PARAM);
   if (highlight.brand) {

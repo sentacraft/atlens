@@ -6,21 +6,21 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import ChartLensCard from "@/components/charts/ChartLensCard";
-import HighlightChips from "@/components/charts/HighlightChips";
-import { useChartHighlight } from "@/hooks/useChartHighlight";
+import ChartChips from "@/components/charts/ChartChips";
+import { useChartSelection } from "@/hooks/useChartSelection";
 import { assignLanes, type TimelineEntry, type TimelineYear } from "@/lib/charts/timeline";
 import { isChartZoom, type BrandCount, type ChartLens } from "@/lib/charts/catalog";
 import { brandLabel, focalRangeDisplay } from "@/lib/lens/format";
 import { getLensImageUrl } from "@/lib/lens/image";
 import { lensPath } from "@/lib/url/routes";
-import { readChartHighlightFromSearch, type ChartHighlight } from "@/lib/url/charts";
+import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/charts";
 import { cn } from "@/lib/utils";
 
 const WIDE = { height: 720, padTop: 16, padBottom: 48, padLeft: 52, padRight: 12, size: 40, laneStep: 22 };
 const TALL = { rowLabel: 24, size: 30, rowGap: 4, rowPad: 10, laneGapFrac: 0.09 };
 const TICKS = [8, 15, 24, 35, 50, 85, 135, 200, 300, 600];
 const TALL_TICKS = [15, 35, 85, 200, 600];
-const DIM = 0.15;
+const DIM = 0.08;
 
 type Props = {
   entries: TimelineEntry[];
@@ -43,16 +43,15 @@ function pct(frac: number): string {
 }
 
 export function TimelineChartFromUrl(props: Props) {
-  const { brand } = readChartHighlightFromSearch(useSearchParams(), props.brands.map((b) => b.brand));
+  const { brand } = readChartSelectionFromSearch(useSearchParams(), props.brands.map((b) => b.brand));
   return <TimelineChart {...props} initial={{ brand }} />;
 }
 
-export default function TimelineChart({ entries, years, brands, initial }: Props & { initial: ChartHighlight }) {
+export default function TimelineChart({ entries, years, brands, initial }: Props & { initial: ChartSelection }) {
   const t = useTranslations("Charts");
   const tBrand = useTranslations("Brands");
-  const { pinned, shown, pin, setPreview } = useChartHighlight(initial);
+  const { selected, shown, select, setPreview } = useChartSelection(initial);
   const [active, setActive] = useState<string>();
-  const leaveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const lastPointer = useRef<string>("mouse");
 
   const [fMin, fMax] = useMemo(() => {
@@ -96,20 +95,13 @@ export default function TimelineChart({ entries, years, brands, initial }: Props
       t("weight", { weight: e.lens.weightG }),
     ].join(" · ");
 
-  const hoverOn = (id: string) => {
-    clearTimeout(leaveTimer.current);
-    setActive(id);
-  };
-  const hoverOff = () => {
-    leaveTimer.current = setTimeout(() => setActive(undefined), 150);
-  };
   const itemHandlers = (id: string) => ({
     onPointerDown: (ev: React.PointerEvent) => {
       lastPointer.current = ev.pointerType;
     },
-    onPointerEnter: (ev: React.PointerEvent) => ev.pointerType === "mouse" && hoverOn(id),
-    onPointerLeave: (ev: React.PointerEvent) => ev.pointerType === "mouse" && hoverOff(),
-    // On touch the first tap opens the card; the card's own link opens the lens.
+    onPointerEnter: (ev: React.PointerEvent) => ev.pointerType === "mouse" && setActive(id),
+    onPointerLeave: (ev: React.PointerEvent) => ev.pointerType === "mouse" && setActive(undefined),
+    // Touch has no hover: the first tap shows the card, a second tap on the same lens opens it.
     onClick: (ev: React.MouseEvent) => {
       if (lastPointer.current !== "mouse" && active !== id) {
         ev.preventDefault();
@@ -130,12 +122,12 @@ export default function TimelineChart({ entries, years, brands, initial }: Props
 
   return (
     <div className="flex flex-col gap-4">
-      <HighlightChips
+      <ChartChips
         label={t("highlightBrand")}
         chips={brands.map((b) => ({ key: b.brand, label: `${brandLabel(tBrand, b.brand)} ${b.count}` }))}
-        pinned={pinned.brand}
+        selected={selected.brand}
         onPreview={(brand) => setPreview({ brand })}
-        onPin={(brand) => pin({ brand })}
+        onSelect={(brand) => select({ brand })}
       />
 
       {/* Wide layout: years across, focal length up the side. */}
@@ -213,8 +205,6 @@ export default function TimelineChart({ entries, years, brands, initial }: Props
                 left: pct(colFrac(activeWide.col)),
                 marginLeft: wideCardOffset(activeWide),
               }}
-              onPointerEnter={() => hoverOn(activeEntry.lens.id)}
-              onPointerLeave={hoverOff}
             />
           )}
         </div>
