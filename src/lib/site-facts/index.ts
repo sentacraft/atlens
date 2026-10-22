@@ -10,7 +10,7 @@ import { MAX_COMPARE } from "@/lib/lens/lens";
 import { mountHasCollections } from "@/lib/mount";
 import { priceMarket, type Market } from "@/lib/lens/pricing";
 import { isPurchaseLocale } from "@/lib/purchase/links";
-import { donationChannel } from "@/lib/support";
+import { donationChannels } from "@/lib/support";
 import { MOUNTS, type Lens, type LensPriceEntry, type Mount } from "@/lib/types";
 import { HANDWRITTEN_FACTS } from "@/lib/site-facts/handwritten";
 import { fillUiStrings } from "@/lib/ui-strings";
@@ -87,11 +87,11 @@ function priceSources(locale: string): string[] {
 
 function commercialTies(locale: string): string[] {
   const m = MESSAGES[locale];
-  const channel = donationChannel(locale) === "wechat" ? m.About.donationWechatLabel : "Ko-fi";
+  const channels = donationChannels(locale).map((channel) => (channel === "wechat" ? m.Support.wechatTitle : "Ko-fi"));
   return [
     withLinks(
       locale,
-      `Visitors who want to support Atlens can tip with ${channel}, from the "${m.About.supportTitle}" section of the "${m.Nav.about}" page.`,
+      `Visitors who want to support Atlens can tip with ${channels.join(" or ")}, from "${m.Nav.support}" in the site menu or the "${m.About.supportTitle}" section of the "${m.Nav.about}" page.`,
       ["page:aboutSupport"],
     ),
     `Store links on this site: ${isPurchaseLocale(locale) ? en.Purchase.disclosureDetail : en.Purchase.disclosureNoAffiliate}`,

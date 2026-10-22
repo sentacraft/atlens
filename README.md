@@ -1,5 +1,9 @@
 # Atlens
 
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-support-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/sentacraft)
+[![微信赞赏](https://img.shields.io/badge/%E5%BE%AE%E4%BF%A1-%E8%B5%9E%E8%B5%8F-07C160?logo=wechat&logoColor=white)](https://atlens.app/zh/about#support)
+[![GitHub stars](https://img.shields.io/github/stars/sentacraft/atlens?style=flat)](https://github.com/sentacraft/atlens/stargazers)
+
 > Formerly X-Glass.
 
 Atlens is a lens database and comparison tool for Fujifilm shooters — X mount (APS-C) and G mount (GFX medium format), first-party and third-party. It turns specs scattered across manufacturers' sites into one normalized catalog of 200+ lenses, sourced from official pages by an agentic data pipeline, with an AI assistant, Ask Iris, built on top.
@@ -7,6 +11,8 @@ Atlens is a lens database and comparison tool for Fujifilm shooters — X mount 
 **English**：[atlens.app/en](https://atlens.app/en)
 
 **简体中文**：[atlens.app/zh](https://atlens.app/zh)
+
+Atlens is free, open source, and maintained by one person. If it helps you pick a lens, a ⭐ or a [coffee on Ko-fi](https://ko-fi.com/sentacraft) keeps it going ([微信赞赏](https://atlens.app/zh/about#support)).
 
 **Desktop**
 
@@ -314,7 +320,7 @@ Small fixes are welcome. For larger code changes or new features, please open an
 
 To report a data issue (wrong spec, broken image) or suggest a missing lens, use the feedback links inside the app, or open a [GitHub Issue](https://github.com/sentacraft/atlens/issues).
 
-If you find Atlens useful, a ⭐ on this repo goes a long way — and if you'd like to support the project: [donate](https://atlens.app/en/about#donation) · [打赏](https://atlens.app/zh/about#donation)
+If you find Atlens useful, a ⭐ on this repo goes a long way — and if you'd like to support the project: [donate](https://atlens.app/en/about#support) · [打赏](https://atlens.app/zh/about#support)
 
 ## Affiliate Disclosure
 

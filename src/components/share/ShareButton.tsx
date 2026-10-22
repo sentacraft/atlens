@@ -19,6 +19,8 @@ import { CustomizePopover } from "./CustomizePopover";
 import { lensDisplayName, brandLabel } from "@/lib/lens/format";
 import { SITE } from "@/config/site";
 import type { NamespaceTranslator } from "@/i18n/translator";
+import { useSupportDialog } from "@/context/SupportDialogProvider";
+import { browserPromptStore, claimPosterPrompt } from "@/lib/support-prompts";
 
 const POSTER_W = 750;
 const PREVIEW_SCALE = 352 / POSTER_W; // ≈ 0.469
@@ -54,6 +56,8 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
   const tImage = useTranslations("ShareImage");
   const tBrand = useTranslations("Brands");
   const tPricing = useTranslations("Pricing");
+  const tSupport = useTranslations("Support");
+  const openSupport = useSupportDialog();
 
   const { mounted, isDesktop, canNativeShare, canShareFile } = useShareCapabilities();
 
@@ -170,6 +174,27 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
     }
   }, [lenses, shareText, t]);
 
+  const offerSupport = useCallback(
+    (title: string) => {
+      if (!claimPosterPrompt(browserPromptStore())) {
+        return;
+      }
+      track("support_prompt", { prompt: "poster_toast", action: "shown" });
+      toast(title, {
+        description: tSupport("posterBody"),
+        duration: 8000,
+        action: {
+          label: tSupport("posterAction"),
+          onClick: () => {
+            track("support_prompt", { prompt: "poster_toast", action: "opened" });
+            openSupport("poster_toast");
+          },
+        },
+      });
+    },
+    [openSupport, tSupport],
+  );
+
   const handleDownload = useCallback(async () => {
     if (!posterRef.current) {
       return;
@@ -182,12 +207,13 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
       link.href = url;
       link.click();
       track("share_action", { method: "poster_download" });
+      offerSupport(tSupport("posterSaved"));
     } catch (e) {
       console.error(e);
     } finally {
       setPosterGenerating(false);
     }
-  }, []);
+  }, [offerSupport, tSupport]);
 
   const handleShareImage = useCallback(async () => {
     if (!posterRef.current) {
@@ -215,6 +241,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
         text,
       });
       track("share_action", { method: "poster_share" });
+      offerSupport(tSupport("posterShared"));
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") {
         return;
@@ -230,7 +257,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
     } finally {
       setPosterGenerating(false);
     }
-  }, [effectiveTitle, effectiveSlogan, computedPosterTitle, lenses, t]);
+  }, [effectiveTitle, effectiveSlogan, computedPosterTitle, lenses, t, offerSupport, tSupport]);
 
   const truncatedUrl = shareUrl.length > 56 ? shareUrl.slice(0, 56) + "…" : shareUrl;
   const lensCaption = lenses.map((l) => lensDisplayName(brandLabel(tBrand, l.brand), l.series, l.model)).join(" / ");

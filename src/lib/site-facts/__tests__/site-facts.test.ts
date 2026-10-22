@@ -32,11 +32,9 @@ describe("siteFacts", () => {
     }
   });
 
-  it("gives only the user's own site's tipping channel, store links, and price sources", () => {
-    expect(factsFor("business", "zh")).toContain(zh.About.donationWechatLabel);
-    expect(factsFor("business", "zh")).not.toContain("Ko-fi");
-    expect(factsFor("business", "en")).toContain("tip with Ko-fi");
-    expect(factsFor("business", "en")).not.toContain(en.About.donationWechatLabel);
+  it("gives both tipping channels, the site's usual one first, and only its own store links and price sources", () => {
+    expect(factsFor("business", "zh")).toContain(`tip with ${zh.Support.wechatTitle} or Ko-fi`);
+    expect(factsFor("business", "en")).toContain(`tip with Ko-fi or ${en.Support.wechatTitle}`);
     expect(factsFor("business", "en")).toContain(en.Purchase.disclosureDetail);
     expect(factsFor("prices", "zh")).not.toContain("eBay");
   });
