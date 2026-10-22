@@ -33,7 +33,7 @@ export default function Autocomplete({
                 <AutocompletePrimitive.Item
                   key={item}
                   value={item}
-                  className="flex cursor-default items-center rounded-md px-3 py-2.5 text-sm text-zinc-700 outline-hidden select-none data-[highlighted]:bg-zinc-100 data-[highlighted]:text-zinc-900 sm:py-1.5"
+                  className="flex items-center rounded-md px-3 py-2.5 text-sm text-zinc-700 outline-hidden select-none data-[highlighted]:bg-zinc-100 data-[highlighted]:text-zinc-900 sm:py-1.5"
                 >
                   {item}
                 </AutocompletePrimitive.Item>
