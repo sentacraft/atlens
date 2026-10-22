@@ -85,7 +85,7 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
             <AskIrisEntry
               id="compare"
               label={tIris("compareLabel")}
-              phoneLabel="short"
+              labelFit="phone"
               request={{ kind: "page" }}
               className="mr-1 h-9 max-sm:px-3"
             />

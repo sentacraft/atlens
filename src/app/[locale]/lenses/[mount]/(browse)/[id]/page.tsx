@@ -270,10 +270,15 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
           <PriceSection lens={lens} />
 
-          <div className="mt-auto flex flex-wrap items-center gap-2">
-            <LensDetailCompareToggle lensId={lens.id} />
-            <RetailersDropdown lens={lens} customId="detail" />
-            <AskIrisEntry id="lens" label={tIris("lensLabel")} phoneLabel="full" request={{ kind: "page" }} />
+          <div className="mt-auto flex flex-col gap-2">
+            {/* Labels shorten by this row's width, so Iris's side panel narrowing the page counts too. */}
+            <div data-testid="lens-detail-actions" className="@container">
+              <div className="flex items-center gap-2">
+                <LensDetailCompareToggle lensId={lens.id} />
+                <RetailersDropdown lens={lens} customId="detail" />
+                <AskIrisEntry id="lens" label={tIris("lensLabel")} labelFit="container" request={{ kind: "page" }} />
+              </div>
+            </div>
             <LensDetailSaveActions lensId={lens.id} />
           </div>
         </div>
