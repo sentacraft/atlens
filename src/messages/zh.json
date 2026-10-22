@@ -223,8 +223,8 @@
     "conversationLoadFailed": "暂时打不开这个对话，请稍后再试。",
     "rateLimited": "Iris 现在有点忙，稍后再试。",
     "budgetExhausted": "Iris 暂时到了用量上限，{resetAt} 恢复。",
-    "accountQuota": "今天的 {accountTurns, number} 次提问已经用完，{resetAt} 起可以继续问。",
-    "guestQuota": "今天的 {guestTurns, number} 次免费提问已经用完。<signIn>登录</signIn>后每天可以问 {accountTurns, number} 次。",
+    "accountQuota": "今天的提问次数已经用完，{resetAt} 起可以继续问。",
+    "guestQuota": "今天的 {guestTurns, number} 次免费提问已经用完。<signIn>登录</signIn>后每天可以问更多次。",
     "errorRetry": "Iris 这边出了点问题，请<retry>重试</retry>。",
     "errorUnavailable": "Iris 暂时无法使用，请稍后再来。",
     "gearCard": {

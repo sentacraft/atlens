@@ -32,13 +32,15 @@ describe("AskIrisError", () => {
     const alert = renderError({ kind: "guest_quota", resetAt: RESET_AT });
 
     expect(alert).toHaveTextContent("You've used today's 3 free questions");
+    expect(alert).toHaveTextContent("to ask more each day");
+    expect(alert).not.toHaveTextContent("20");
     fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
     expect(mocks.openSignIn).toHaveBeenCalledWith("iris_quota");
   });
 
   it("tells an account when its questions come back", () => {
     expect(renderError({ kind: "account_quota", resetAt: RESET_AT })).toHaveTextContent(
-      `You've used today's 20 questions. You can ask again from ${localResetAt}.`,
+      `You've used today's questions. You can ask again from ${localResetAt}.`,
     );
   });
 
