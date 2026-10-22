@@ -6,12 +6,18 @@ export interface PromptStore {
 
 const REVISIT_DISTINCT_DAYS = 3;
 const REVISIT_WINDOW_DAYS = 30;
-const POSTER_INTERVAL_DAYS = 30;
 const DAY_MS = 86_400_000;
 
 const VISIT_DAYS_KEY = "atlens_visit_days";
 const REVISIT_DONE_KEY = "atlens_support_revisit_done";
-const POSTER_SHOWN_KEY = "atlens_support_poster_at";
+
+/** Prompts that show at most once per interval, and how many days that interval is. */
+const CLAIMED_PROMPTS = {
+  poster: { key: "atlens_support_poster_at", days: 30 },
+  iris_helpful: { key: "atlens_support_iris_helpful_at", days: 7 },
+} as const;
+
+export type ClaimedPrompt = keyof typeof CLAIMED_PROMPTS;
 
 export function browserPromptStore(): PromptStore {
   return {
@@ -76,11 +82,12 @@ export function finishRevisitPrompt(store: PromptStore): void {
   write(store, REVISIT_DONE_KEY, "1");
 }
 
-/** Whether a saved poster may carry the support line now; claiming it starts the interval. */
-export function claimPosterPrompt(store: PromptStore, now = Date.now()): boolean {
-  const last = read(store, POSTER_SHOWN_KEY);
-  if (last === undefined || (last !== null && now - Number(last) < POSTER_INTERVAL_DAYS * DAY_MS)) {
+/** Whether `prompt` may show now; claiming it starts its interval. */
+export function claimPrompt(store: PromptStore, prompt: ClaimedPrompt, now = Date.now()): boolean {
+  const { key, days } = CLAIMED_PROMPTS[prompt];
+  const last = read(store, key);
+  if (last === undefined || (last !== null && now - Number(last) < days * DAY_MS)) {
     return false;
   }
-  return write(store, POSTER_SHOWN_KEY, String(now));
+  return write(store, key, String(now));
 }
