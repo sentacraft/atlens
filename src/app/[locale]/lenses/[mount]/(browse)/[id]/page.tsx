@@ -13,6 +13,7 @@ import { ExternalLink } from "@/components/ui/external-link";
 import LensDetailCompareToggle from "@/components/compare/LensDetailCompareToggle";
 import LensDetailSaveActions from "@/components/lens/LensDetailSaveActions";
 import AskIrisEntry from "@/components/iris/AskIrisEntry";
+import SupportNote from "@/components/support/SupportNote";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import LensDetailTelemetry from "@/components/lens/LensDetailTelemetry";
 import ShareFAB from "@/components/share/ShareFAB";
@@ -27,6 +28,7 @@ import { getMemberCollections } from "@/lib/collections";
 import { getCollectionLensCounts } from "@/lib/collection-stats";
 import CollectionPills from "@/components/collection/CollectionPills";
 import SameFocalAlternatives from "@/components/lens/SameFocalAlternatives";
+import LensReviewSearch from "@/components/lens/LensReviewSearch";
 import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates, lensOgImages } from "@/lib/seo";
@@ -269,10 +271,15 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
           <PriceSection lens={lens} />
 
-          <div className="mt-auto flex flex-wrap items-center gap-2">
-            <LensDetailCompareToggle lensId={lens.id} />
-            <RetailersDropdown lens={lens} customId="detail" />
-            <AskIrisEntry id="lens" label={tIris("lensLabel")} phoneLabel="full" request={{ kind: "page" }} />
+          <div className="mt-auto flex flex-col gap-2">
+            {/* Labels shorten by this row's width, so Iris's side panel narrowing the page counts too. */}
+            <div data-testid="lens-detail-actions" className="@container">
+              <div className="flex items-center gap-2">
+                <LensDetailCompareToggle lensId={lens.id} />
+                <RetailersDropdown lens={lens} customId="detail" />
+                <AskIrisEntry id="lens" label={tIris("lensLabel")} labelFit="container" request={{ kind: "page" }} />
+              </div>
+            </div>
             <LensDetailSaveActions lensId={lens.id} />
           </div>
         </div>
@@ -345,6 +352,8 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           </p>
       </div>
 
+      <LensReviewSearch lens={lens} locale={locale} />
+
       <SameFocalAlternatives lens={lens} lenses={lenses} />
 
       <CollectionPills
@@ -355,6 +364,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
         title={t("collectionsTitle")}
         viewAllLabel={t("viewAllCollections")}
       />
+      <SupportNote className="mt-6" />
     </div>
     <BackToTopButton />
     <ShareFAB lenses={[lens]} />

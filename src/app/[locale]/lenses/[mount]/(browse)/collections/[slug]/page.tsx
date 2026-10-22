@@ -16,6 +16,7 @@ import { ACTION_ESCAPE_CLS, PAGE_GUTTER_CLS, UTILITY_BTN_CLS } from "@/config/ui
 import JsonLd from "@/components/seo/JsonLd";
 import CollectionLensGrid from "@/components/collection/CollectionLensGrid";
 import RelatedCollectionCard from "@/components/collection/RelatedCollectionCard";
+import SupportNote from "@/components/support/SupportNote";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import { ShareButton } from "@/components/share/ShareButton";
 import Breadcrumb from "@/components/nav/Breadcrumb";
@@ -188,6 +189,7 @@ export default async function CollectionPage({
               <ArrowRight size={15} className="text-zinc-400 transition-colors group-hover:text-white" aria-hidden="true" />
             </Link>
           </div>
+          <SupportNote className="mt-12" />
         </footer>
       </main>
       <BackToTopButton />

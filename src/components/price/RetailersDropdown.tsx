@@ -11,6 +11,7 @@ import { track } from "@/lib/analytics/analytics";
 import { useCountryCode } from "@/hooks/useCountryCode";
 import { useIsMobileDevice } from "@/hooks/useViewport";
 import { cn } from "@/lib/utils";
+import { LENS_ACTION_FIT as fit } from "@/config/lens-action-fit";
 
 interface Props {
   lens: Lens;
@@ -36,10 +37,14 @@ export function RetailersDropdown({ lens, customId }: Props) {
 
   return (
     <Popover.Root>
-      <Popover.Trigger className={`${ACTION_OUTLINE_CLS} cursor-pointer`}>
+      <Popover.Trigger
+        data-testid="lens-detail-price-trigger"
+        className={cn(ACTION_OUTLINE_CLS, "shrink-0 cursor-pointer whitespace-nowrap", fit.roomy)}
+      >
         <span className="inline-flex items-baseline gap-1.5">
-          {t("buyAt")}
-          <span data-redact-hook="priceSource" className="text-xs text-zinc-400">
+          <span className={fit.priceLabelShort}>{t("buyAtShort")}</span>
+          <span className={fit.priceLabel}>{t("buyAt")}</span>
+          <span data-redact-hook="priceSource" className={cn("text-xs text-zinc-400", fit.storeHint)}>
             {preview}{extra}
           </span>
         </span>

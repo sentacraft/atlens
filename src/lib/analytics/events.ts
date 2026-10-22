@@ -31,6 +31,8 @@ const EVENT_FIELDS = {
   search_select: { query: "string", lens_id: "string", rank: "number" },
   sign_in_open: { reason: "string", entry: "string" },
   sign_in_submit: { method: "string" },
+  support_open: { entry: "string" },
+  support_prompt: { prompt: "string", action: "string" },
 } as const satisfies Record<string, Record<string, FieldKind>>;
 
 export type EventName = keyof typeof EVENT_FIELDS;
@@ -202,6 +204,7 @@ export const EVENT_DOCS: EventDocs = {
           native: { label: "Native share", description: "The phone's own share sheet" },
           poster_download: { label: "Poster download", description: "Saved the share poster image" },
           poster_share: { label: "Poster share", description: "Sent the share poster through the share sheet" },
+          site_link: { label: "Site link", description: "Shared the site itself from the support dialog" },
         },
       },
     },
@@ -368,6 +371,43 @@ export const EVENT_DOCS: EventDocs = {
           iris_top_bar: { label: "Iris top bar prompt", description: "The sign-in prompt in Iris's top bar, for visitors without an account" },
           iris_reply: { label: "Link in an Iris reply", description: "A sign-in chip inside one of Iris's replies" },
           iris_quota: { label: "Iris guest quota", description: "The sign-in link shown when a guest has used today's Iris questions" },
+        },
+      },
+    },
+  },
+  support_open: {
+    description: "The support dialog opened, with the ways to tip.",
+    fields: {
+      entry: {
+        description: "What opened it.",
+        values: {
+          menu: { label: "Site menu", description: "Support Atlens in the site menu" },
+          page_end: { label: "Page end", description: "The line at the end of a lens, collection or compare page" },
+          poster_toast: { label: "Poster toast", description: "The button on the toast after saving or sharing a poster" },
+          revisit: { label: "Returning visit", description: "The prompt shown to a visitor on their third day of visits" },
+          iris_helpful: { label: "Iris, after Helpful", description: "The line under an Iris answer just rated helpful" },
+          iris_limit: { label: "Iris, out of questions", description: "The card when an account or the whole site has used today's Iris questions" },
+        },
+      },
+    },
+  },
+  support_prompt: {
+    description: "A support prompt shown on its own, and what the visitor did with it.",
+    fields: {
+      prompt: {
+        description: "Which prompt.",
+        values: {
+          revisit: { label: "Returning visit", description: "The card shown on the third day of visits within 30 days" },
+          poster_toast: { label: "Poster toast", description: "The support line on the toast after a poster" },
+          iris_helpful: { label: "Iris, after Helpful", description: "The line under an Iris answer just rated helpful, at most once a week" },
+        },
+      },
+      action: {
+        description: "What happened.",
+        values: {
+          shown: { label: "Shown", description: "The prompt appeared" },
+          dismissed: { label: "Dismissed", description: "Closed, or Not now" },
+          opened: { label: "Opened", description: "Followed to the support dialog" },
         },
       },
     },

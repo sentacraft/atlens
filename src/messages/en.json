@@ -27,6 +27,7 @@
     "collections": "Collections",
     "compare": "Compare",
     "about": "About",
+    "support": "Support Atlens",
     "getApp": "Get App",
     "feedback": "Feedback",
     "menu": "Menu",
@@ -222,8 +223,10 @@
     "conversationLoadFailed": "Couldn’t open that conversation. Please try again.",
     "rateLimited": "Iris is taking a lot of questions right now — please try again in a little while.",
     "budgetExhausted": "Iris has reached her usage limit for now and will be back on {resetAt}.",
-    "accountQuota": "You've used today's {accountTurns, number} questions. You can ask again from {resetAt}.",
-    "guestQuota": "You've used today's {guestTurns, number} free questions. <signIn>Sign in</signIn> to ask up to {accountTurns, number} a day.",
+    "limitSupport": "Support Atlens",
+    "limitSupportBody": "Every Iris answer has a model cost; supporting Atlens helps keep it going.",
+    "accountQuota": "You've used today's questions. You can ask again from {resetAt}.",
+    "guestQuota": "You've used today's {guestTurns, number} free questions. <signIn>Sign in</signIn> to ask more each day.",
     "errorRetry": "Something went wrong on Iris's side — please <retry>try again</retry>.",
     "errorUnavailable": "Iris is unavailable right now — please try again later.",
     "gearCard": {
@@ -261,15 +264,15 @@
       "signedIn": "Signed in"
     },
     "responseFeedback": {
-      "prompt": "Was this answer helpful?",
+      "prompt": "Was this helpful?",
       "thanks": "Thanks for the feedback.",
       "tellMore": "Tell us more",
+      "supportLine": "Every Iris answer has a model cost. If this helped, you can <support>support Atlens</support>.",
       "detailsThanks": "Got it, thanks for the details.",
-      "dismiss": "Dismiss",
       "cancel": "Cancel",
       "title": "What could be improved?",
-      "helpful": "Helpful",
-      "unhelpful": "Not helpful",
+      "helpful": "Yes",
+      "unhelpful": "No",
       "submit": "Send",
       "dialogTitle": "Send feedback",
       "commentPlaceholderHelpful": "Anything else you'd like to tell us?",
@@ -495,7 +498,7 @@
     "missing": "-",
     "addToCompare": "Compare",
     "removeFromCompare": "Remove",
-    "compareFull": "Compare List Full",
+    "compareFull": "List full",
     "sourceSite": "{brand} official site",
     "reportIssue": "Report an issue",
     "nudgeText": "Spotted an error in the data?",
@@ -506,6 +509,25 @@
     "collectionsTitle": "Featured In",
     "viewAllCollections": "View all collections",
     "notFoundTitle": "Lens Not Found"
+  },
+  "LensReviews": {
+    "title": "Reviews & samples",
+    "subtitle": "Search other sites for reviews and sample photos of this lens. Results come from each site.",
+    "searchKeyword": "review",
+    "kind": {
+      "video": "Video reviews",
+      "article": "Written reviews",
+      "photos": "Sample photos",
+      "discussion": "Community discussions"
+    },
+    "channel": {
+      "bilibili": "Bilibili",
+      "youtube": "YouTube",
+      "bing": "Bing",
+      "google": "Google",
+      "flickr": "Flickr",
+      "reddit": "r/fujifilm"
+    }
   },
   "Alternatives": {
     "titlePrime": "Other lenses at this focal length",
@@ -729,11 +751,7 @@
     "supportNoAffiliate": "The Chinese edition carries no affiliate or commercial ties — every link out to an e-commerce platform is purely there to help you check current prices, with no advertising of any kind.",
     "supportAffiliate": "For your convenience, some pages include purchase links to dealers, some of which are affiliate links. If you make a purchase through them, Atlens earns a small commission at absolutely no extra cost to you — this simply helps sustain my development.",
     "supportIntegrity": "Affiliate partnerships never influence rankings or pricing data. The codebase is open source — you're welcome to verify how it works under the hood. If you ever encounter a broken link, a model mismatch, or any dealer issues, please <feedback>tell me</feedback> so I can fix it promptly.",
-    "supportDonate": "If Atlens helped you find the right lens or saved you some research time, consider supporting the project directly.",
-    "supportDonateAlt": "You can also support the project directly — every bit helps keep Atlens going.",
-    "donationKofi": "Support on Ko-fi",
-    "donationWechatLabel": "WeChat Pay",
-    "donationWechatQrAlt": "WeChat appreciation QR code",
+    "supportDirectTitle": "Support Atlens directly",
     "ackTitle": "Acknowledgments",
     "ackBody": "Over the past year, large language models have shown capabilities that once felt out of reach. I could not have imagined completing a project at this scale on my own — let alone shipping it in under a month. Without large language models and AI coding agents, this project might have stayed an idea forever. I am grateful to live in an era where the technology dividend is real, and where a spark of inspiration can actually become something in the hands of a solo developer.",
     "ackStory1Tag": "Claude Code",
@@ -835,6 +853,7 @@
   "Purchase": {
     "whereToBuy": "Check price",
     "buyAt": "Check price",
+    "buyAtShort": "Price",
     "disclosureDetail": "Some retailer links are affiliate. Atlens may earn a small commission at no extra cost to you.",
     "disclosureNoAffiliate": "Atlens has no partnership whatsoever with the platforms, sellers, or manufacturers, and earns nothing from them."
   },
@@ -915,5 +934,29 @@
     "newConversation": "New conversation. The previous one is in your history.",
     "browseName": "lenses",
     "compareName": "comparison"
+  },
+  "Support": {
+    "title": "Support Atlens",
+    "close": "Close",
+    "body": "Atlens is free and open source, built and run by one person. It covers {count, number} lenses, with specs gathered from manufacturer sources and reviewed by hand. Support goes to that data work, Iris’s model costs and hosting, and the price of a coffee goes a long way.",
+    "kofiBody": "One-off or monthly, by card or PayPal.",
+    "kofiButton": "Support on Ko-fi",
+    "wechatTitle": "WeChat Pay",
+    "wechatQrAlt": "WeChat appreciation QR code",
+    "wechatEnlarge": "Open the WeChat code full size",
+    "otherWays": "Other ways to help",
+    "star": "Star on GitHub",
+    "share": "Share Atlens",
+    "shareText": "Atlens: a Fujifilm lens database with specs, comparisons and an AI lens advisor",
+    "linkCopied": "Link copied",
+    "pageEnd": "Atlens is free and maintained by one person. <support>Support it</support>",
+    "revisitTitle": "Good to see you again",
+    "revisitBody": "Atlens is free and run by one person. If it’s been useful, you can help keep it going.",
+    "revisitLater": "Not now",
+    "revisitSupport": "Support Atlens",
+    "posterSaved": "Poster saved",
+    "posterShared": "Poster shared",
+    "posterBody": "If Atlens helped, you can support it.",
+    "posterAction": "Support"
   }
 }

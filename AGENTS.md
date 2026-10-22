@@ -74,8 +74,9 @@ leave out (they close by swipe or the backdrop); a yes-or-no confirmation keeps 
 
 The Atlens design system (https://claude.ai/artifact/4HmVRpfNHU5zsrhynoCceH) mirrors the theme,
 fonts, `ui-tokens.ts` and a set of components; `scripts/hooks/ui-token-review.mjs` lists those
-files. When a change alters how any of them looks, re-sync the affected parts of the design
-system, or say in the PR that it needs a re-sync.
+files. It is re-synced on demand, not per change: a PR that alters how any of them looks says
+which part of the design system it affects. Before building mockups on it, diff those files
+between the commit its `tokens.json` records (`meta.ref`) and `main`, and re-sync what changed.
 
 Device insets (iOS notch, home indicator, Window Controls Overlay) are consumed through the
 `--safe-inset-*` and `--titlebar-height` variables declared in `src/app/theme.css`. Never call

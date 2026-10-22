@@ -27,6 +27,7 @@
     "collections": "主题合集",
     "compare": "对比",
     "about": "关于",
+    "support": "支持 Atlens",
     "getApp": "获取应用",
     "feedback": "反馈",
     "menu": "菜单",
@@ -222,8 +223,10 @@
     "conversationLoadFailed": "暂时打不开这个对话，请稍后再试。",
     "rateLimited": "Iris 现在有点忙，稍后再试。",
     "budgetExhausted": "Iris 暂时到了用量上限，{resetAt} 恢复。",
-    "accountQuota": "今天的 {accountTurns, number} 次提问已经用完，{resetAt} 起可以继续问。",
-    "guestQuota": "今天的 {guestTurns, number} 次免费提问已经用完。<signIn>登录</signIn>后每天可以问 {accountTurns, number} 次。",
+    "limitSupport": "支持 Atlens",
+    "limitSupportBody": "Iris 的每次回答都有模型费用，也欢迎支持一下 Atlens。",
+    "accountQuota": "今天的提问次数已经用完，{resetAt} 起可以继续问。",
+    "guestQuota": "今天的 {guestTurns, number} 次免费提问已经用完。<signIn>登录</signIn>后每天可以问更多次。",
     "errorRetry": "Iris 这边出了点问题，请<retry>重试</retry>。",
     "errorUnavailable": "Iris 暂时无法使用，请稍后再来。",
     "gearCard": {
@@ -264,12 +267,12 @@
       "prompt": "这个回答有帮助吗？",
       "thanks": "感谢反馈。",
       "tellMore": "补充说明",
+      "supportLine": "Iris 的每次回答都有模型费用。觉得有用的话，可以<support>支持一下 Atlens</support>。",
       "detailsThanks": "已收到补充说明，谢谢。",
-      "dismiss": "关闭",
       "cancel": "取消",
       "title": "哪里没有做好？",
       "helpful": "有帮助",
-      "unhelpful": "没有帮助",
+      "unhelpful": "没帮助",
       "submit": "发送",
       "dialogTitle": "发送反馈",
       "commentPlaceholderHelpful": "还有什么想告诉我们的？",
@@ -495,7 +498,7 @@
     "missing": "-",
     "addToCompare": "对比",
     "removeFromCompare": "移除",
-    "compareFull": "对比列表已满",
+    "compareFull": "列表已满",
     "sourceSite": "{brand}官网",
     "reportIssue": "反馈问题",
     "nudgeText": "发现数据有误？",
@@ -506,6 +509,25 @@
     "collectionsTitle": "所属合集",
     "viewAllCollections": "查看所有合集",
     "notFoundTitle": "未找到这支镜头"
+  },
+  "LensReviews": {
+    "title": "评测与样张",
+    "subtitle": "在其他平台搜索这支镜头的评测和样张，结果由各平台提供",
+    "searchKeyword": "评测",
+    "kind": {
+      "video": "视频评测",
+      "article": "评测文章",
+      "photos": "用户样张",
+      "discussion": "社区讨论"
+    },
+    "channel": {
+      "bilibili": "B 站",
+      "youtube": "YouTube",
+      "bing": "必应",
+      "google": "Google",
+      "flickr": "Flickr",
+      "reddit": "r/fujifilm"
+    }
   },
   "Alternatives": {
     "titlePrime": "同焦段的其他选择",
@@ -729,11 +751,7 @@
     "supportNoAffiliate": "本站中文版不接入任何返佣或商业合作——页面上所有跳转电商平台的链接仅为了方便大家查询最新价格，无任何广告成分。",
     "supportAffiliate": "为了方便大家查看或购买，部分页面提供了跳转到商家的购买链接，其中有一些属于联盟营销（Affiliate）链接。如果大家通过这些链接下单，Atlens 会获得一笔微薄的佣金。这不会让大家多花一分钱，但能帮我分担部分维护成本。",
     "supportIntegrity": "联盟合作绝不会影响排名或价格数据。Atlens 的代码完全开源，欢迎随时查看代码是如何实现的。如果发现链接失效、型号错配或其他问题，欢迎<feedback>告诉我</feedback>，我会及时修复与处理。",
-    "supportDonate": "如果 Atlens 帮你选到了心仪的镜头，或者为你节省了时间，欢迎直接赞赏支持。",
-    "supportDonateAlt": "你也可以直接赞赏来支持这个项目，每一份支持都是对我的鼓励。",
-    "donationKofi": "Support on Ko-fi",
-    "donationWechatLabel": "微信赞赏码",
-    "donationWechatQrAlt": "微信赞赏码",
+    "supportDirectTitle": "直接支持 Atlens",
     "ackTitle": "致谢",
     "ackBody": "过去的这一年，大语言模型展现出了超凡的能力。过去，我很难想象仅凭一己之力就能完成如此规模的项目，更不敢奢望在不到一个月内将其落地。如果没有大语言模型和 AI Coding Agent，这个项目可能永远只会停留在构想阶段。感谢这个时代的技术红利，让那些曾经只是灵感火花的想法，能够在一个独立开发者手中真正变成现实。",
     "ackStory1Tag": "Claude Code",
@@ -835,6 +853,7 @@
   "Purchase": {
     "whereToBuy": "查询价格",
     "buyAt": "查询价格",
+    "buyAtShort": "价格",
     "disclosureDetail": "部分购买链接含电商平台合作。你的购买价格不受任何影响，但 Atlens 可能从中获得少量佣金。",
     "disclosureNoAffiliate": "Atlens 与平台、商家及厂商均无任何合作。"
   },
@@ -915,5 +934,29 @@
     "newConversation": "新对话。上一段对话已存进历史记录。",
     "browseName": "镜头库",
     "compareName": "对比页"
+  },
+  "Support": {
+    "title": "支持 Atlens",
+    "close": "关闭",
+    "body": "Atlens 免费、开源，由我一个人开发和维护。目前收录 {count, number} 支镜头，参数来自厂商资料，逐支人工核对。你的支持会用在数据整理、Iris 的模型费用和服务器上，一杯咖啡的钱就很够了。",
+    "kofiBody": "在海外？可以用银行卡或 PayPal，单次或按月都行。",
+    "kofiButton": "用 Ko-fi 支持",
+    "wechatTitle": "微信赞赏",
+    "wechatQrAlt": "微信赞赏码",
+    "wechatEnlarge": "查看微信赞赏码大图",
+    "otherWays": "其他支持方式",
+    "star": "GitHub 点 Star",
+    "share": "分享给朋友",
+    "shareText": "Atlens：富士镜头图鉴，规格对比和 AI 选镜",
+    "linkCopied": "链接已复制",
+    "pageEnd": "Atlens 免费，由我一个人维护。<support>支持一下</support>",
+    "revisitTitle": "欢迎回来",
+    "revisitBody": "Atlens 免费，由我一个人维护。如果它帮到了你，可以支持一下，让它继续做下去。",
+    "revisitLater": "下次再说",
+    "revisitSupport": "支持 Atlens",
+    "posterSaved": "海报已保存",
+    "posterShared": "海报已分享",
+    "posterBody": "如果 Atlens 帮到了你，可以支持一下",
+    "posterAction": "支持"
   }
 }

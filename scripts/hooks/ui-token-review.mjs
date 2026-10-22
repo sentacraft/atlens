@@ -68,7 +68,7 @@ if (designFiles.length > 0) {
   sections.push(
     "The latest edit touched files the design system mirrors:",
     list(designFiles),
-    `If the change alters colors, type, spacing, radii, shadows or a mirrored component's look, re-sync the design system (${DESIGN_SYSTEM_URL}): update only the affected tokens or component files there, and mention it in the PR.`,
+    `If the change alters colors, type, spacing, radii, shadows or a mirrored component's look, say in the PR which part of the design system (${DESIGN_SYSTEM_URL}) it affects. Do not re-sync it now: it is re-synced before the next mockup work.`,
   );
 }
 const additionalContext = sections.join("\n");

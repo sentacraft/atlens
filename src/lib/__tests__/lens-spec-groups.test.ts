@@ -100,7 +100,7 @@ function makeLens(overrides: Partial<Lens> = {}): Lens {
     diameterMm: 65,
     length: { mm: 70 },
     angleOfViewCalc: 30,
-    searchAliases: { en: "Test Lens" },
+    searchAliases: { store: { en: "Test Lens" }, review: { en: "Test Lens" } },
     ...overrides,
   };
 }

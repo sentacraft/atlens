@@ -21,6 +21,8 @@ import { MountPreferenceProvider } from "@/context/MountPreferenceProvider";
 import { NavProvider } from "@/context/NavProvider";
 import { IrisPanelProvider } from "@/context/IrisPanelProvider";
 import { SignInDialogProvider } from "@/context/SignInDialogProvider";
+import { SupportDialogProvider } from "@/context/SupportDialogProvider";
+import RevisitPrompt from "@/components/support/RevisitPrompt";
 import { TestHookProvider } from "@/context/TestHookProvider";
 import { TESTHOOK_ALLOWED } from "@/lib/testhook";
 import { SITE } from "@/config/site";
@@ -135,11 +137,13 @@ export default async function LocaleLayout({
           <LocalePreferenceSync />
           <CompareProvider>
           <SignInDialogProvider>
+          <SupportDialogProvider lensCount={meta.lensCount}>
             <NavProvider>
             {/* Base UI portals popups to <body>; isolating the page, Iris's side panel included, keeps them above any z-index in it (https://base-ui.com/react/overview/quick-start). */}
             <div className="isolate">
             <IrisPanelProvider>
               <ConsoleEgg version={meta.version} lensCount={meta.lensCount} brandCount={brandCount} />
+              <RevisitPrompt />
               {/* Redaction uses useSearchParams, which would force a CSR bailout on prerendered pages. */}
               <Suspense fallback={null}>
                 <Redaction />
@@ -162,6 +166,7 @@ export default async function LocaleLayout({
             </IrisPanelProvider>
             </div>
             </NavProvider>
+          </SupportDialogProvider>
           </SignInDialogProvider>
           </CompareProvider>
           </MountPreferenceProvider>
