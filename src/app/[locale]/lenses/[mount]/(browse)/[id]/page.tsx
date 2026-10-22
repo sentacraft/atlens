@@ -13,6 +13,7 @@ import { ExternalLink } from "@/components/ui/external-link";
 import LensDetailCompareToggle from "@/components/compare/LensDetailCompareToggle";
 import LensDetailSaveActions from "@/components/lens/LensDetailSaveActions";
 import AskIrisEntry from "@/components/iris/AskIrisEntry";
+import SupportNote from "@/components/support/SupportNote";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import LensDetailTelemetry from "@/components/lens/LensDetailTelemetry";
 import ShareFAB from "@/components/share/ShareFAB";
@@ -355,6 +356,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
         title={t("collectionsTitle")}
         viewAllLabel={t("viewAllCollections")}
       />
+      <SupportNote className="mt-6" />
     </div>
     <BackToTopButton />
     <ShareFAB lenses={[lens]} />

@@ -2,12 +2,13 @@
 
 import { useTranslations } from "next-intl";
 import { Menu } from "@base-ui/react/menu";
-import { Columns2, Download, Flag, Info, LogIn, LogOut, Menu as MenuIcon, UserRound } from "lucide-react";
+import { Columns2, Download, Flag, Heart, Info, LogIn, LogOut, Menu as MenuIcon, UserRound } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { MENU_ITEM_CLS, MENU_POPUP_CLS, NAV_CAPSULE_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
+import { useSupportDialog } from "@/context/SupportDialogProvider";
 import Avatar from "@/components/auth/Avatar";
 import GitHubMark from "@/components/logos/GitHubMark";
 import { SITE } from "@/config/site";
@@ -31,6 +32,7 @@ export default function NavMenu({
   const t = useTranslations("Auth");
   const { data: session } = authClient.useSession();
   const openSignIn = useSignInDialog();
+  const openSupport = useSupportDialog();
   const user = accountUser(session);
 
   return (
@@ -84,6 +86,10 @@ export default function NavMenu({
             <Menu.Item render={<Link href={ABOUT_PATH} />} className={MENU_ITEM_CLS}>
               <Info className="h-4 w-4 shrink-0" />
               {tNav("about")}
+            </Menu.Item>
+            <Menu.Item onClick={() => openSupport("menu")} className={MENU_ITEM_CLS}>
+              <Heart className="h-4 w-4 shrink-0" />
+              {tNav("support")}
             </Menu.Item>
             {showGetApp && (
               <Menu.Item render={<Link href={GET_APP_PATH} />} className={MENU_ITEM_CLS}>
