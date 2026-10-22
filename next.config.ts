@@ -50,6 +50,11 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/:locale(en|zh)/lenses/x/charts",
+        destination: "/:locale/lenses/x/charts/timeline",
+        permanent: false,
+      },
+      {
         source: "/:locale(en|zh)/lenses/compare",
         destination: "/:locale/lenses/x/compare",
         permanent: false,

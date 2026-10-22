@@ -4,8 +4,8 @@ import { firstSearchParam } from "@/lib/url/search-params";
 export const CHART_BRAND_PARAM = "brand";
 export const CHART_FOCAL_PARAM = "focal";
 
-/** What a chart page emphasizes; the chart itself always shows every lens. */
-export interface ChartHighlight {
+/** The brand and focal range a chart page highlights (timeline) or filters by (weight ladder). */
+export interface ChartSelection {
   brand?: string;
   focal?: FocalCategory;
 }
@@ -13,10 +13,10 @@ export interface ChartHighlight {
 type ParamValue = string | string[] | undefined;
 
 /** Unknown brands and categories are dropped rather than rejected, so a stale link still opens the chart. */
-export function readChartHighlight(
+export function readChartSelection(
   params: { [CHART_BRAND_PARAM]?: ParamValue; [CHART_FOCAL_PARAM]?: ParamValue },
   knownBrands: readonly string[],
-): ChartHighlight {
+): ChartSelection {
   const brand = firstSearchParam(params[CHART_BRAND_PARAM]);
   const focal = firstSearchParam(params[CHART_FOCAL_PARAM]);
   return {
@@ -25,14 +25,24 @@ export function readChartHighlight(
   };
 }
 
-export function chartHighlightQuery(highlight: ChartHighlight): string {
-  const params = new URLSearchParams();
+export function readChartSelectionFromSearch(search: URLSearchParams, knownBrands: readonly string[]): ChartSelection {
+  return readChartSelection(
+    {
+      [CHART_BRAND_PARAM]: search.get(CHART_BRAND_PARAM) ?? undefined,
+      [CHART_FOCAL_PARAM]: search.get(CHART_FOCAL_PARAM) ?? undefined,
+    },
+    knownBrands,
+  );
+}
+
+/** Sets the selection params on `url` in place, leaving every other param alone. */
+export function writeChartSelection(url: URL, highlight: ChartSelection): void {
+  url.searchParams.delete(CHART_BRAND_PARAM);
+  url.searchParams.delete(CHART_FOCAL_PARAM);
   if (highlight.brand) {
-    params.set(CHART_BRAND_PARAM, highlight.brand);
+    url.searchParams.set(CHART_BRAND_PARAM, highlight.brand);
   }
   if (highlight.focal) {
-    params.set(CHART_FOCAL_PARAM, highlight.focal);
+    url.searchParams.set(CHART_FOCAL_PARAM, highlight.focal);
   }
-  const qs = params.toString();
-  return qs ? `?${qs}` : "";
 }

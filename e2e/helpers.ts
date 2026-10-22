@@ -1,5 +1,8 @@
 import type { Page } from "@playwright/test";
 
+// Lens ids end in the mount suffix, so nav links under /lenses/x/ (browse, charts, compare, ...) never match.
+export const LENS_CARD_LINK = 'a[href^="/en/lenses/x/"][href$="-x"]';
+
 async function isBelowBreakpoint(page: Page, bp: "sm" | "md" | "lg" | "xl" | "2xl"): Promise<boolean> {
   return page.evaluate((name) => {
     const value = getComputedStyle(document.documentElement)

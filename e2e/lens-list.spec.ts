@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { selectBrandFilter } from "./helpers";
+import { LENS_CARD_LINK, selectBrandFilter } from "./helpers";
 
 const RESULT_COUNT_RE = /\d+ (lenses|支镜头)/;
 
@@ -9,7 +9,7 @@ test.describe("Lens list page", () => {
   });
 
   test("loads lens cards", async ({ page }) => {
-    const cards = page.locator('a[href^="/en/lenses/x/"]:not([href$="/browse"]):not([href$="/collections"]):not([href*="/compare"])');
+    const cards = page.locator(LENS_CARD_LINK);
     await expect(cards.first()).toBeVisible();
     const count = await cards.count();
     expect(count).toBeGreaterThan(10);
@@ -46,7 +46,7 @@ test.describe("Lens list page", () => {
 
   test("clicking a lens card navigates to detail page", async ({ page }) => {
     const firstCard = page
-      .locator('a[href^="/en/lenses/x/"]:not([href$="/browse"]):not([href$="/collections"]):not([href*="/compare"])')
+      .locator(LENS_CARD_LINK)
       .first();
     const href = await firstCard.getAttribute("href");
     await firstCard.click();

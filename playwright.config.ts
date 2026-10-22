@@ -10,7 +10,7 @@ const baseURL = `http://localhost:${PORT}`;
 const PWA_SPEC = /pwa-safe-area\.spec\.ts/;
 
 // The WebKit pass runs only specs where the engine, viewport, or touch changes behavior.
-const MOBILE_ENGINE_SPECS = /(home-no-scroll|dynamic-ui|search)\.spec\.ts/;
+const MOBILE_ENGINE_SPECS = /(home-no-scroll|dynamic-ui|search|charts)\.spec\.ts/;
 
 export default defineConfig({
   testDir: "./e2e",

@@ -2,8 +2,9 @@ import { describe, expect, it } from "vitest";
 import type { Lens } from "@/lib/types";
 import { getLensesByMount } from "@/lib/lens/data";
 import { assignLanes, buildTimeline } from "@/lib/charts/timeline";
-import { buildWeightLadder, inFocalCategory } from "@/lib/charts/weight";
-import { buildLineup, lineupBrands } from "@/lib/charts/lineup";
+import { buildWeightLadder } from "@/lib/charts/weight";
+import { buildLineup } from "@/lib/charts/lineup";
+import { chartBrands, toChartLens, type ChartLens } from "@/lib/charts/catalog";
 
 function makeLens(overrides: Partial<Lens> = {}): Lens {
   return {
@@ -31,7 +32,7 @@ function makeLens(overrides: Partial<Lens> = {}): Lens {
   };
 }
 
-const ids = (lenses: Lens[]) => lenses.map((lens) => lens.id);
+const ids = (lenses: ChartLens[]) => lenses.map((lens) => lens.id);
 const xLenses = getLensesByMount("X", "en");
 
 describe("buildTimeline", () => {
@@ -60,8 +61,8 @@ describe("buildTimeline", () => {
 
   it("places a zoom at the geometric middle of its equivalent range", () => {
     const [entry] = buildTimeline([makeLens({ focalLengthMin: 10, focalLengthMax: 40, releaseYear: 2020 })]).entries;
-    expect(entry.focalMin).toBe(15);
-    expect(entry.focalMax).toBe(60);
+    expect(entry.lens.focalMin).toBe(15);
+    expect(entry.lens.focalMax).toBe(60);
     expect(entry.focalMid).toBe(30);
   });
 });
@@ -80,25 +81,24 @@ describe("buildWeightLadder", () => {
       makeLens({ id: "w999", weightG: 999 }),
       makeLens({ id: "w58", weightG: 58 }),
     ]);
-    const byTier = Object.fromEntries(ladder.tiers.map((t) => [t.key, t.entries.map((e) => e.lens.id)]));
+    const byTier = Object.fromEntries(ladder.tiers.map((t) => [t.key, ids(t.lenses)]));
     expect(byTier).toEqual({ cannon: ["w1000"], heavy: ["w999"], everyday: [], light: ["w150"], pocket: ["w58"] });
-    expect(ladder.heaviest?.lens.id).toBe("w1000");
-    expect(ladder.lightest?.lens.id).toBe("w58");
+    expect(ladder.heaviest?.id).toBe("w1000");
+    expect(ladder.lightest?.id).toBe("w58");
     expect(ladder.ratio).toBe(17);
   });
 
   it("uses the midpoint of a weight range", () => {
     const ladder = buildWeightLadder([makeLens({ weightG: [480, 520] })]);
-    expect(ladder.tiers.find((t) => t.key === "heavy")?.entries[0].weightG).toBe(500);
+    expect(ladder.tiers.find((t) => t.key === "heavy")?.lenses[0].weightG).toBe(500);
   });
 });
 
-describe("inFocalCategory", () => {
-  it("matches a zoom to every category its range touches", () => {
-    const zoom = makeLens({ focalLengthMin: 16, focalLengthMax: 55 });
-    expect(inFocalCategory(zoom, "wide")).toBe(true);
-    expect(inFocalCategory(zoom, "standard")).toBe(true);
-    expect(inFocalCategory(zoom, "superTele")).toBe(false);
+describe("toChartLens", () => {
+  // Same rule as the browse filter, on unrounded equivalents: 23mm is 34.5mm, so wide, not standard.
+  it("assigns focal categories the way the browse filter does", () => {
+    expect(toChartLens(makeLens({ focalLengthMin: 23, focalLengthMax: 23 })).focalCategories).toEqual(["wide"]);
+    expect(toChartLens(makeLens({ focalLengthMin: 16, focalLengthMax: 55 })).focalCategories).toEqual(["wide", "standard", "mediumTele"]);
   });
 });
 
@@ -151,7 +151,7 @@ describe("X-mount catalog", () => {
   it("weighs 179 lenses, the heaviest 39 times the lightest", () => {
     const ladder = buildWeightLadder(xLenses);
     expect(ladder.count).toBe(179);
-    expect(ladder.heaviest?.lens.model).toBe("XF 200mm F2 R LM OIS WR");
+    expect(ladder.heaviest?.model).toBe("XF 200mm F2 R LM OIS WR");
     expect(ladder.ratio).toBe(39);
   });
 
@@ -160,6 +160,6 @@ describe("X-mount catalog", () => {
     expect(lineup.primes.flatMap((c) => c.lenses)).toHaveLength(28);
     expect(lineup.zooms).toHaveLength(21);
     expect([lineup.focalMin, lineup.focalMax]).toEqual([12, 900]);
-    expect(lineupBrands(xLenses)).toHaveLength(12);
+    expect(chartBrands(xLenses)).toHaveLength(12);
   });
 });

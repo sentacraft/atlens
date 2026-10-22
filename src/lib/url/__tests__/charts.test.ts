@@ -1,33 +1,35 @@
 import { describe, expect, it } from "vitest";
-import { chartHighlightQuery, readChartHighlight } from "../charts";
+import { readChartSelection, readChartSelectionFromSearch, writeChartSelection } from "../charts";
 import { chartPath, chartsPath, lineupPath } from "../routes";
 
 const brands = ["fujifilm", "sigma"];
 
-describe("readChartHighlight", () => {
+describe("readChartSelection", () => {
   it("reads a known brand and focal category", () => {
-    expect(readChartHighlight({ brand: "sigma", focal: "wide" }, brands)).toEqual({ brand: "sigma", focal: "wide" });
+    expect(readChartSelection({ brand: "sigma", focal: "wide" }, brands)).toEqual({ brand: "sigma", focal: "wide" });
   });
 
   it("drops values the chart cannot show instead of failing", () => {
-    expect(readChartHighlight({ brand: "canon", focal: "fisheye" }, brands)).toEqual({});
+    expect(readChartSelection({ brand: "canon", focal: "fisheye" }, brands)).toEqual({});
   });
 
   it("takes the first of a repeated param", () => {
-    expect(readChartHighlight({ brand: ["sigma", "fujifilm"] }, brands).brand).toBe("sigma");
+    expect(readChartSelection({ brand: ["sigma", "fujifilm"] }, brands).brand).toBe("sigma");
   });
 });
 
-describe("chartHighlightQuery", () => {
-  it("round-trips through readChartHighlight", () => {
-    const query = chartHighlightQuery({ brand: "sigma", focal: "standard" });
-    expect(query).toBe("?brand=sigma&focal=standard");
-    const params = Object.fromEntries(new URLSearchParams(query));
-    expect(readChartHighlight(params, brands)).toEqual({ brand: "sigma", focal: "standard" });
+describe("writeChartSelection", () => {
+  it("round-trips through the URL and leaves other params alone", () => {
+    const url = new URL("https://atlens.test/en/lenses/x/charts/weight?ref=share&brand=fujifilm");
+    writeChartSelection(url, { brand: "sigma", focal: "standard" });
+    expect(url.searchParams.get("ref")).toBe("share");
+    expect(readChartSelectionFromSearch(url.searchParams, brands)).toEqual({ brand: "sigma", focal: "standard" });
   });
 
-  it("is empty without a highlight", () => {
-    expect(chartHighlightQuery({})).toBe("");
+  it("removes the params when the highlight is cleared", () => {
+    const url = new URL("https://atlens.test/en/lenses/x/charts/weight?brand=sigma&focal=wide");
+    writeChartSelection(url, {});
+    expect(url.search).toBe("");
   });
 });
 

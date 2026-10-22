@@ -1,12 +1,10 @@
 import { test, expect, type Page } from "@playwright/test";
-
-const CARD_LINKS =
-  'a[href^="/en/lenses/x/"]:not([href$="/browse"]):not([href$="/collections"]):not([href*="/compare"])';
+import { LENS_CARD_LINK } from "./helpers";
 
 async function layoutAt(page: Page, width: number) {
   await page.setViewportSize({ width, height: 900 });
-  await expect(page.locator(CARD_LINKS).first()).toBeVisible();
-  return page.locator(CARD_LINKS).first().evaluate((link) => {
+  await expect(page.locator(LENS_CARD_LINK).first()).toBeVisible();
+  return page.locator(LENS_CARD_LINK).first().evaluate((link) => {
     const card = link.parentElement!;
     const grid = card.parentElement!;
     const nav = document.querySelector("nav")!;

@@ -30,7 +30,7 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-const menu = <NavMenu compareHref="/lenses/x/compare" onCompareClick={vi.fn()} showGetApp onFeedback={vi.fn()} />;
+const menu = <NavMenu compareHref="/lenses/x/compare" chartsHref="/lenses/x/charts" onCompareClick={vi.fn()} showGetApp onFeedback={vi.fn()} />;
 
 async function openMenu() {
   fireEvent.click(screen.getByRole("button", { name: "menu" }));

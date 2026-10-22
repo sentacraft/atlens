@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { LENS_CARD_LINK } from "./helpers";
 
 test.describe("Ask Iris side panel", () => {
   test.beforeEach(({ page }, testInfo) => {
@@ -25,7 +26,7 @@ test.describe("Ask Iris side panel", () => {
     expect(panelTop).toBeGreaterThanOrEqual(navBottom);
 
     // A client-side navigation keeps the panel and its conversation.
-    await page.locator('a[href^="/en/lenses/x/"]:not([href$="/browse"]):not([href*="/collections"])').first().click();
+    await page.locator(LENS_CARD_LINK).first().click();
     await expect(page).not.toHaveURL(/\/browse$/);
     await expect(panel).toBeVisible();
 
