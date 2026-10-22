@@ -304,6 +304,12 @@ interface LensLocaleTranslations {
   accessories?: string[];
 }
 
+/** A lens search name per locale; `zh` falls back to `en`. */
+export interface SearchName {
+  en: string;
+  zh?: string;
+}
+
 /**
  * Canonical lens record used by the X-Glass app.
  */
@@ -703,16 +709,19 @@ export interface Lens {
   releaseYear?: number;
 
   /**
-   * Locale-keyed search terms optimised for marketplace search engines
-   * (eBay, B&H, MPB, etc.). Pipeline generates these by normalising
-   * brand/model names to match how sellers actually list products.
+   * Search names for the lens, one set per use. Pipeline generates both by
+   * normalising brand/model names; within a set, `zh` is optional and the
+   * front-end falls back to `en`.
    *
-   * Front-end uses the value for the current locale to build affiliate
-   * search URLs. Falls back to `brand + " " + model` when absent.
+   * - `store`: how sellers list the lens, for marketplace search links (eBay,
+   *   B&H, JD, Taobao). Non-Fujifilm names end in the mount ("Fuji X" / "富士",
+   *   "Fuji GFX" / "GFX") so other mounts' listings stay out.
+   * - `review`: the same name without the mount, for review, sample-photo and
+   *   discussion searches, where reviewers and posters rarely name it.
    *
-   * @example { en: "7Artisans 50mm f0.95", zh: "七工匠 50mm f0.95" }
+   * @example { store: { en: "7Artisans 50mm f0.95 Fuji X", zh: "七工匠 50mm f0.95 富士" }, review: { en: "7Artisans 50mm f0.95", zh: "七工匠 50mm f0.95" } }
    */
-  searchAliases: { en: string; zh?: string };
+  searchAliases: { store: SearchName; review: SearchName };
 
   /**
    * Sampled prices per market. Each market holds independent `new` (official
