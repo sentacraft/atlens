@@ -496,7 +496,7 @@
     "missing": "-",
     "addToCompare": "对比",
     "removeFromCompare": "移除",
-    "compareFull": "对比列表已满",
+    "compareFull": "列表已满",
     "sourceSite": "{brand}官网",
     "reportIssue": "反馈问题",
     "nudgeText": "发现数据有误？",
@@ -832,6 +832,7 @@
   "Purchase": {
     "whereToBuy": "查询价格",
     "buyAt": "查询价格",
+    "buyAtShort": "价格",
     "disclosureDetail": "部分购买链接含电商平台合作。你的购买价格不受任何影响，但 Atlens 可能从中获得少量佣金。",
     "disclosureNoAffiliate": "Atlens 与平台、商家及厂商均无任何合作。"
   },
