@@ -55,6 +55,11 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
       {
+        source: "/:locale(en|zh)/lenses/x/charts/lineup",
+        destination: "/:locale/lenses/x/charts/lineup/fujifilm",
+        permanent: false,
+      },
+      {
         source: "/:locale(en|zh)/lenses/compare",
         destination: "/:locale/lenses/x/compare",
         permanent: false,

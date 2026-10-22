@@ -67,7 +67,7 @@ export const FILTERS = {
 
   fujifilm: (lens) => xPhoto(lens) && lens.brand === "fujifilm",
   "7artisans": xBrand("7artisans"),
-  viltrox: (lens) => xPhoto(lens) && lens.brand === "viltrox" && lens.af === true,
+  viltrox: xBrand("viltrox"),
   ttartisan: xBrand("ttartisan"),
   sigma: xBrand("sigma"),
   brightinstar: xBrand("brightinstar"),
@@ -75,6 +75,8 @@ export const FILTERS = {
   laowa: xBrand("laowa"),
   tamron: xBrand("tamron"),
   sgimage: xBrand("sgimage"),
+  meike: xBrand("meike"),
+  sirui: xBrand("sirui"),
 
   "fujifilm-xf": (lens) =>
     xPhoto(lens) && lens.brand === "fujifilm" && lens.series === "XF",

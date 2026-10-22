@@ -49,7 +49,7 @@ export default async function WeightPage({ params }: { params: Params }) {
   }
   const t = await getTranslations({ locale, namespace: "Charts" });
   const { ladder } = data;
-  const chartProps = { tiers: ladder.tiers, brands: data.brands };
+  const chartProps = { mount: data.resolvedMount, tiers: ladder.tiers, brands: data.brands };
 
   return (
     <main className={BROWSE_PAGE_MAIN_CLS}>

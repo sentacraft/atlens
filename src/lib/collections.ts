@@ -58,6 +58,11 @@ for (const slug of Object.keys(FILTERS)) {
   }
 }
 
+/** The collection of every photo lens from `brand`; brand collections are keyed by the brand slug. */
+export function getBrandCollection(brand: string): LensCollection | undefined {
+  return COLLECTION_GROUPS.find((g) => g.group === "brand")?.collections.find((c) => c.slug === brand);
+}
+
 export const FEATURED_COLLECTION_SLUGS = ["pancake", "under-200g", "fast-aperture-primes", "travel-zoom"] as const;
 
 for (const slug of FEATURED_COLLECTION_SLUGS) {

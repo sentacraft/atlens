@@ -5,10 +5,11 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Flag } from "lucide-react";
 import { getLensUrl } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
-import { urlSegmentToMount } from "@/lib/mount";
+import { mountHasCollections, urlSegmentToMount } from "@/lib/mount";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
 import { buildSpecGroups, buildSpecGroupLabels, resolveSpecGroups, rowPlainText } from "@/lib/lens/spec-groups";
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens/spec-groups";
+import { Link } from "@/i18n/navigation";
 import { ExternalLink } from "@/components/ui/external-link";
 import LensDetailCompareToggle from "@/components/compare/LensDetailCompareToggle";
 import LensDetailSaveActions from "@/components/lens/LensDetailSaveActions";
@@ -24,7 +25,7 @@ import Breadcrumb from "@/components/nav/Breadcrumb";
 import SpecialtyBadges from "@/components/lens/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens/specialty";
 import { RetailersDropdown } from "@/components/price/RetailersDropdown";
-import { getMemberCollections } from "@/lib/collections";
+import { getBrandCollection, getMemberCollections } from "@/lib/collections";
 import { getCollectionLensCounts } from "@/lib/collection-stats";
 import CollectionPills from "@/components/collection/CollectionPills";
 import SameFocalAlternatives from "@/components/lens/SameFocalAlternatives";
@@ -34,11 +35,11 @@ import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates, lensOgImages } from "@/lib/seo";
 import { SITE } from "@/config/site";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens/pricing";
-import { lensDisplayName, lensSubtitleLine, brandLabel } from "@/lib/lens/format";
+import { lensDisplayName, brandLabel } from "@/lib/lens/format";
 import { buildLensDescription, buildLensProductSchema } from "@/lib/lens/seo";
 import { PriceSection } from "@/components/price/PriceSection";
 import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
-import { browsePath, lensPath } from "@/lib/url/routes";
+import { browsePath, collectionPath, lensPath } from "@/lib/url/routes";
 import { DataSourceBar } from "@/components/lens/DataSource";
 import { PAGE_GUTTER_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 
@@ -177,6 +178,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const brandName = brandLabel(tBrand, lens.brand);
   const displayName = lensDisplayName(brandName, lens.series, lens.model);
   const description = buildLensDescription({ lens, mount: resolvedMount, brandName, t });
+  const brandCollection = mountHasCollections(resolvedMount) ? getBrandCollection(lens.brand) : undefined;
   const canonicalUrl = `${SITE.url}/${locale}${lensPath(lens)}`;
   const productSchema = buildLensProductSchema({
     lens,
@@ -260,7 +262,17 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-center gap-1.5">
               <span className="text-xs font-normal text-zinc-500">
-                {lensSubtitleLine(brandName, lens.series)}
+                {brandCollection ? (
+                  <Link
+                    href={collectionPath(resolvedMount, brandCollection.slug)}
+                    className="underline-offset-4 transition-colors hover:text-zinc-900 hover:underline"
+                  >
+                    {brandName}
+                  </Link>
+                ) : (
+                  brandName
+                )}
+                {lens.series && ` · ${lens.series}`}
               </span>
               <SpecialtyBadges {...deriveSpecialty(lens)} />
             </div>

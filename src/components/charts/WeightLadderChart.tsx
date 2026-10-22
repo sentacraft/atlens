@@ -11,7 +11,7 @@ import ChartChips from "@/components/charts/ChartChips";
 import FavoriteStarButton from "@/components/lens/FavoriteStarButton";
 import { Dialog, DialogPopup, DialogTitle } from "@/components/ui/dialog";
 import { useCompare } from "@/context/CompareProvider";
-import { ACTION_PRIMARY_CLS, COMPARE_CHIP_CLS, COMPARE_CHIP_STATE_CLS, HOVER_REVEAL_CLS } from "@/config/ui-tokens";
+import { ACTION_PRIMARY_CLS, COMPARE_CHIP_CLS, COMPARE_CHIP_STATE_CLS, HOVER_REVEAL_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useChartSelection } from "@/hooks/useChartSelection";
 import { type BrandCount, type ChartLens } from "@/lib/charts/catalog";
@@ -19,13 +19,15 @@ import type { WeightTier } from "@/lib/charts/weight";
 import { brandLabel, focalRangeDisplay } from "@/lib/lens/format";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import { FOCAL_CATEGORIES, MAX_COMPARE } from "@/lib/lens/lens";
-import { lensPath } from "@/lib/url/routes";
+import type { Mount } from "@/lib/types";
+import { lensPath, lineupPath } from "@/lib/url/routes";
 import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/charts";
 import { cn } from "@/lib/utils";
 
 const PHONE_TIER_PREVIEW = 6;
 
 type Props = {
+  mount: Mount;
   tiers: WeightTier[];
   brands: BrandCount[];
 };
@@ -35,7 +37,7 @@ export function WeightLadderChartFromUrl(props: Props) {
   return <WeightLadderChart {...props} initial={initial} />;
 }
 
-export default function WeightLadderChart({ tiers, brands, initial }: Props & { initial: ChartSelection }) {
+export default function WeightLadderChart({ mount, tiers, brands, initial }: Props & { initial: ChartSelection }) {
   const t = useTranslations("Charts");
   const tList = useTranslations("LensList");
   const tBrand = useTranslations("Brands");
@@ -73,6 +75,11 @@ export default function WeightLadderChart({ tiers, brands, initial }: Props & { 
           selected={selected.focal}
           onSelect={(focal) => select({ ...selected, focal })}
         />
+        {selected.brand && (
+          <Link href={lineupPath(mount, selected.brand)} className={cn(TEXT_LINK_CLS, "self-start text-sm")}>
+            {t("seeLineup", { brand: brandLabel(tBrand, selected.brand) })}
+          </Link>
+        )}
       </div>
 
       {tiers.map((tier) => {

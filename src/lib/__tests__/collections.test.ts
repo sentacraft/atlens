@@ -1,8 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { COLLECTIONS, getSharedCollections } from "../collections";
+import { chartBrands } from "../charts/catalog";
+import { COLLECTIONS, getBrandCollection, getSharedCollections } from "../collections";
 import { getCollectionStats, getRelatedCollectionsWithStats } from "../collection-stats";
 import { isZoom } from "../lens/lens";
-import { getAllLenses } from "../lens/data";
+import { getAllLenses, getLensesByMount } from "../lens/data";
 import type { Lens } from "../types";
 
 const allLenses = getAllLenses("en");
@@ -400,5 +401,19 @@ describe("getSharedCollections", () => {
       expect(col.filter(lens1, "en")).toBe(true);
       expect(col.filter(lens2, "en")).toBe(true);
     }
+  });
+});
+
+describe("brand collections", () => {
+  it("cover every brand the charts show, so each lineup links to one", () => {
+    const missing = chartBrands(getLensesByMount("X", "en"))
+      .map(({ brand }) => brand)
+      .filter((brand) => !getBrandCollection(brand));
+    expect(missing).toEqual([]);
+  });
+
+  it("include a brand's manual-focus lenses", () => {
+    const meike = getCollectionStats("meike", "en");
+    expect(meike?.lenses.some((lens) => lens.af === false)).toBe(true);
   });
 });

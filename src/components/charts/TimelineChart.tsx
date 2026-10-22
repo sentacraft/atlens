@@ -1,18 +1,22 @@
 "use client";
 
-import { Fragment, useMemo, useRef, useState } from "react";
+import { Fragment, useMemo } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import ChartLensCard from "@/components/charts/ChartLensCard";
 import ChartChips from "@/components/charts/ChartChips";
+import { useChartCard } from "@/hooks/useChartCard";
 import { useChartSelection } from "@/hooks/useChartSelection";
 import { assignLanes, type TimelineEntry, type TimelineYear } from "@/lib/charts/timeline";
 import { isChartZoom, type BrandCount, type ChartLens } from "@/lib/charts/catalog";
+import { logFrac, pct } from "@/lib/charts/scale";
 import { brandLabel, focalRangeDisplay } from "@/lib/lens/format";
 import { getLensImageUrl } from "@/lib/lens/image";
-import { lensPath } from "@/lib/url/routes";
+import { TEXT_LINK_CLS } from "@/config/ui-tokens";
+import type { Mount } from "@/lib/types";
+import { lensPath, lineupPath } from "@/lib/url/routes";
 import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/charts";
 import { cn } from "@/lib/utils";
 
@@ -23,23 +27,14 @@ const TALL_TICKS = [15, 35, 85, 200, 600];
 const DIM = 0.08;
 
 type Props = {
+  mount: Mount;
   entries: TimelineEntry[];
   years: TimelineYear[];
   brands: BrandCount[];
 };
 
-function logFrac(f: number, lo: number, hi: number): number {
-  return Math.log(f / lo) / Math.log(hi / lo);
-}
-
 function laneOffset(lane: number, step: number): number {
   return lane === 0 ? 0 : (lane % 2 === 1 ? -1 : 1) * Math.ceil(lane / 2) * step;
-}
-
-// Two decimals and whole pixels: the browser re-serializes inline styles, and longer values or
-// calc() come back in a different form, which React reports as a hydration mismatch.
-function pct(frac: number): string {
-  return `${(frac * 100).toFixed(2)}%`;
 }
 
 export function TimelineChartFromUrl(props: Props) {
@@ -47,12 +42,11 @@ export function TimelineChartFromUrl(props: Props) {
   return <TimelineChart {...props} initial={{ brand }} />;
 }
 
-export default function TimelineChart({ entries, years, brands, initial }: Props & { initial: ChartSelection }) {
+export default function TimelineChart({ mount, entries, years, brands, initial }: Props & { initial: ChartSelection }) {
   const t = useTranslations("Charts");
   const tBrand = useTranslations("Brands");
   const { selected, shown, select, setPreview } = useChartSelection(initial);
-  const [active, setActive] = useState<string>();
-  const lastPointer = useRef<string>("mouse");
+  const { active, itemHandlers } = useChartCard();
 
   const [fMin, fMax] = useMemo(() => {
     const lows = entries.map((e) => e.lens.focalMin);
@@ -95,21 +89,6 @@ export default function TimelineChart({ entries, years, brands, initial }: Props
       t("weight", { weight: e.lens.weightG }),
     ].join(" · ");
 
-  const itemHandlers = (id: string) => ({
-    onPointerDown: (ev: React.PointerEvent) => {
-      lastPointer.current = ev.pointerType;
-    },
-    onPointerEnter: (ev: React.PointerEvent) => ev.pointerType === "mouse" && setActive(id),
-    onPointerLeave: (ev: React.PointerEvent) => ev.pointerType === "mouse" && setActive(undefined),
-    // Touch has no hover: the first tap shows the card, a second tap on the same lens opens it.
-    onClick: (ev: React.MouseEvent) => {
-      if (lastPointer.current !== "mouse" && active !== id) {
-        ev.preventDefault();
-        setActive(id);
-      }
-    },
-  });
-
   const activeEntry = entries.find((e) => e.lens.id === active);
   const n = years.length;
   const colFrac = (col: number) => (col + 0.5) / n;
@@ -129,6 +108,11 @@ export default function TimelineChart({ entries, years, brands, initial }: Props
         onPreview={(brand) => setPreview({ brand })}
         onSelect={(brand) => select({ brand })}
       />
+      {selected.brand && (
+        <Link href={lineupPath(mount, selected.brand)} className={cn(TEXT_LINK_CLS, "self-start text-sm")}>
+          {t("seeLineup", { brand: brandLabel(tBrand, selected.brand) })}
+        </Link>
+      )}
 
       {/* Wide layout: years across, focal length up the side. */}
       <div className="relative hidden md:block" style={{ height: WIDE.height }}>

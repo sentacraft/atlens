@@ -489,8 +489,8 @@
           "zh": "唯卓仕镜头"
         },
         "description": {
-          "en": "If you're after a third-party autofocus lens for Fuji, Viltrox is hard to skip. This page collects its native AF glass, from the featherweight Air line up to the f/1.2 Pro. Solid optics, aggressively bright apertures and keen pricing — paired with focus motors that edge closer to first-party every year — have made it the benchmark among independent AF makers.",
-          "zh": "买富士副厂自动头，唯卓仕基本绕不开。本页收录其原生自动对焦镜头，从轻量化的 Air 到 f/1.2 的 Pro 都在其中。扎实的光学素质、激进的大光圈和高性价比，加上逐年逼近原厂的对焦马达，让它成了第三方自动头里的标杆。"
+          "en": "If you're after a third-party autofocus lens for Fuji, Viltrox is hard to skip. This page collects its X-mount lenses, from the featherweight Air line up to the f/1.2 Pro. Solid optics, aggressively bright apertures and keen pricing — paired with focus motors that edge closer to first-party every year — have made it the benchmark among independent AF makers.",
+          "zh": "买富士副厂自动头，唯卓仕基本绕不开。本页收录其 X 卡口镜头，从轻量化的 Air 到 f/1.2 的 Pro 都在其中。扎实的光学素质、激进的大光圈和高性价比，加上逐年逼近原厂的对焦马达，让它成了第三方自动头里的标杆。"
         },
         "shortDescription": {
           "en": "The benchmark for affordable native AF glass",
@@ -600,6 +600,36 @@
         "shortDescription": {
           "en": "From pancakes to f/0.95, from a versatile newcomer",
           "zh": "饼干头到 f/0.95 的全能新锐"
+        }
+      },
+      {
+        "slug": "meike",
+        "title": {
+          "en": "Meike Lenses",
+          "zh": "美科镜头"
+        },
+        "description": {
+          "en": "Meike's X-mount photo lenses are all primes, from 23mm to 85mm. All but a manual-focus 50mm F1.7 autofocus, across lines such as Neo, Air and Pro. Its T2.2 cine primes are not part of this collection.",
+          "zh": "美科在 X 卡口的照相镜头都是定焦，焦段从 23mm 到 85mm。除一支手动对焦的 50mm F1.7 外都是自动对焦，分为 Neo、Air、Pro 等几条产品线。另有一套 T2.2 电影镜头，不在本合集内。"
+        },
+        "shortDescription": {
+          "en": "Autofocus primes from 23mm to 85mm",
+          "zh": "23–85mm 的自动对焦定焦"
+        }
+      },
+      {
+        "slug": "sirui",
+        "title": {
+          "en": "Sirui Lenses",
+          "zh": "思锐镜头"
+        },
+        "description": {
+          "en": "Every Sirui lens for X-mount is an autofocus prime: five f/1.2 APS-C lenses from 16mm to 75mm, plus a 35mm and an 85mm f/1.4 designed for full frame.",
+          "zh": "思锐在 X 卡口的镜头全部是自动对焦定焦：16mm 到 75mm 的五支 F1.2 APS-C 镜头，加上两支为全画幅设计的 35mm 和 85mm F1.4。"
+        },
+        "shortDescription": {
+          "en": "Autofocus primes at f/1.2 and f/1.4",
+          "zh": "F1.2 与 F1.4 的自动对焦定焦"
         }
       }
     ],

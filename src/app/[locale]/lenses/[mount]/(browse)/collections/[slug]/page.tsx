@@ -4,16 +4,18 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight, Flag } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { COLLECTIONS } from "@/lib/collections";
+import { buildLineup } from "@/lib/charts/lineup";
+import { COLLECTIONS, getBrandCollection } from "@/lib/collections";
 import { getCollectionStats, getRelatedCollectionsWithStats } from "@/lib/collection-stats";
 import { getLensesByMount } from "@/lib/lens/data";
-import { urlSegmentToMount, mountSeoLabel, mountHasCollections } from "@/lib/mount";
+import { urlSegmentToMount, mountSeoLabel, mountHasCharts, mountHasCollections } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { buildCollectionItemListSchema } from "@/lib/lens/seo";
 import { lensDisplayName, brandLabel } from "@/lib/lens/format";
 import { SITE } from "@/config/site";
 import { ACTION_ESCAPE_CLS, BROWSE_PAGE_MAIN_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import JsonLd from "@/components/seo/JsonLd";
+import LineupBanner from "@/components/charts/LineupBanner";
 import CollectionLensGrid from "@/components/collection/CollectionLensGrid";
 import RelatedCollectionCard from "@/components/collection/RelatedCollectionCard";
 import SupportNote from "@/components/support/SupportNote";
@@ -98,6 +100,7 @@ export default async function CollectionPage({
   const description = localized(collection.description, locale);
   const statsLabel = t("stats", { count: lensCount, brandCount });
   const relatedWithStats = getRelatedCollectionsWithStats(slug, locale);
+  const lineup = mountHasCharts(resolvedMount) && getBrandCollection(slug) ? buildLineup(mountLenses, slug) : undefined;
 
   const itemListSchema = buildCollectionItemListSchema({
     name: title,
@@ -146,6 +149,7 @@ export default async function CollectionPage({
             {description}
           </p>
         </header>
+        {lineup && <LineupBanner locale={locale} mount={resolvedMount} lineup={lineup} />}
         <CollectionLensGrid lenses={lenses} />
 
         <p className="mt-8 text-sm text-zinc-500">

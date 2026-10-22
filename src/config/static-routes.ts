@@ -3,6 +3,7 @@
 import { routing } from "../i18n/routing.ts";
 import xLensesData from "../data/lenses.json" with { type: "json" };
 import gLensesData from "../data/lenses-gfx.json" with { type: "json" };
+import collectionsData from "../data/collections.json" with { type: "json" };
 
 // "" is the locale root.
 export const STATIC_LOCALIZED_SUBPATHS = [
@@ -48,6 +49,13 @@ export function expectedStaticRoutes(): string[] {
     }
     for (const id of gLensIds) {
       routes.push(`/${locale}/lenses/gfx/${id}`);
+    }
+  }
+
+  // Every brand collection has a lineup, which links back to it.
+  for (const locale of routing.locales) {
+    for (const { slug } of collectionsData.groups.brand) {
+      routes.push(`/${locale}/lenses/x/charts/lineup/${slug}`);
     }
   }
 
