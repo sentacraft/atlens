@@ -6,7 +6,8 @@ const LINEUP = "/en/lenses/x/charts/lineup";
 const LENS = /15mm F1\.4 DC \| Contemporary/;
 
 // The charts are in the static HTML, so an action can land before hydration attaches its
-// handlers; each interaction retries until the client responds.
+// handlers; each interaction retries until the client responds. A tap that lands too early follows
+// the link, so the tap tests also wait for the network to settle first.
 test.describe("Charts", () => {
   test("/charts redirects to the timeline", async ({ page }) => {
     await page.goto("/en/lenses/x/charts");
@@ -17,7 +18,7 @@ test.describe("Charts", () => {
     test.skip(!hasTouch, "Touch only; a mouse click opens the lens page");
     const lens = page.getByRole("link", { name: LENS }).locator("visible=true");
     await expect(async () => {
-      await page.goto(TIMELINE);
+      await page.goto(TIMELINE, { waitUntil: "networkidle" });
       await lens.tap();
       await expect(page.getByRole("tooltip").filter({ hasText: LENS })).toBeVisible({ timeout: 1000 });
     }).toPass();
@@ -72,7 +73,7 @@ test.describe("Charts", () => {
     // Phones show only the first tiles of each tier, so tap one that is on screen.
     const sheet = page.getByRole("dialog");
     await expect(async () => {
-      await page.goto(WEIGHT);
+      await page.goto(WEIGHT, { waitUntil: "networkidle" });
       await page.locator("main section li a").locator("visible=true").first().tap();
       await expect(sheet).toBeVisible({ timeout: 1000 });
     }).toPass();
