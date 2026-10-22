@@ -7,7 +7,7 @@ import ChartsHeader from "@/components/charts/ChartsHeader";
 import LineupBrandPicker from "@/components/charts/LineupBrandPicker";
 import LineupChart from "@/components/charts/LineupChart";
 import { BROWSE_PAGE_MAIN_CLS } from "@/config/ui-tokens";
-import { chartBrands } from "@/lib/charts/catalog";
+import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildLineup } from "@/lib/charts/lineup";
 import { getBrandCollection } from "@/lib/collections";
 import { getLensesByMount } from "@/lib/lens/data";
@@ -45,6 +45,8 @@ async function load(params: Params) {
     lineup,
     brands: chartBrands(lenses),
     collection: getBrandCollection(brand),
+    cineCount: countCineLenses(lenses, brand),
+    brandName: brandLabel(tBrand, brand),
     title: t("lineupTitle", { brand, label: brandLabel(tBrand, brand) }),
     description: t("lineupDesc", {
       count: lineup.count,
@@ -95,7 +97,11 @@ export default async function LineupPage({ params }: { params: Params }) {
         )}
       </div>
       <LineupChart lineup={data.lineup} />
-      <p className="mt-8 text-xs leading-relaxed text-zinc-500">{t("lineupNote")}</p>
+      {data.cineCount > 0 && (
+        <p className="mt-8 text-xs leading-relaxed text-zinc-500">
+          {t("lineupCineNote", { brand: data.brandName, count: data.cineCount })}
+        </p>
+      )}
     </main>
   );
 }

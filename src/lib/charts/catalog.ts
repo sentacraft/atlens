@@ -54,6 +54,11 @@ export function chartLenses(lenses: Lens[]): ChartLens[] {
   return lenses.filter((lens) => !lens.isCine).map(toChartLens);
 }
 
+/** Cine lenses the charts leave out, optionally for one brand. */
+export function countCineLenses(lenses: Lens[], brand?: string): number {
+  return lenses.filter((lens) => lens.isCine && (brand === undefined || lens.brand === brand)).length;
+}
+
 export function isChartZoom(lens: ChartLens): boolean {
   return lens.focalMin !== lens.focalMax;
 }

@@ -90,7 +90,7 @@ export default function LineupChart({ lineup }: { lineup: Lineup }) {
         <section className="flex flex-col gap-4">
           <SectionHead label={t("lineupZooms")} note={t("lineupZoomsNote", { count: lineup.zooms.length })} />
           <div className="relative pt-6">
-            <div className="absolute inset-y-0 left-14 right-0" aria-hidden="true">
+            <div className="absolute inset-y-0 left-14 right-0 md:left-[84px]" aria-hidden="true">
               {ZOOM_TICKS.filter((f) => f > lo && f < hi).map((f) => (
                 <div key={f} className={cn("absolute inset-y-0", !PHONE_ZOOM_TICKS.has(f) && "max-md:hidden")} style={{ left: pct(zx(f)) }}>
                   <span className="absolute top-0 w-12 -translate-x-1/2 text-center text-[11px] tabular-nums text-zinc-500">{f}mm</span>
@@ -101,12 +101,12 @@ export default function LineupChart({ lineup }: { lineup: Lineup }) {
             <ul className="relative">
               {lineup.zooms.map((lens) => (
                 <li key={lens.id}>
-                  <Link href={lensPath(lens)} aria-label={lens.model} {...itemHandlers(lens.id)} className="flex h-14 items-center gap-2">
-                    <Image src={getLensImageUrl(lens.id)} alt="" width={48} height={48} className="size-12 shrink-0 object-contain drop-shadow-sm" />
+                  <Link href={lensPath(lens)} aria-label={lens.model} {...itemHandlers(lens.id)} className="flex h-14 items-center gap-2 md:h-[88px]">
+                    <Image src={getLensImageUrl(lens.id)} alt="" width={76} height={76} className="size-12 shrink-0 object-contain drop-shadow-sm md:size-[76px]" />
                     <span className="relative h-full flex-1">
-                      <span className="absolute inset-x-0 top-2 truncate text-xs text-zinc-700">{lens.model}</span>
+                      <span className="absolute inset-x-0 top-2 truncate text-xs text-zinc-700 md:top-5 md:text-sm">{lens.model}</span>
                       <span
-                        className={cn("absolute bottom-3 h-1.5 rounded transition-colors", active === lens.id ? "bg-zinc-900" : "bg-zinc-300")}
+                        className={cn("absolute bottom-3 h-1.5 rounded transition-colors md:bottom-6 md:h-2", active === lens.id ? "bg-zinc-900" : "bg-zinc-300")}
                         style={{ left: pct(zx(lens.focalMin)), width: pct(zx(lens.focalMax) - zx(lens.focalMin)) }}
                       />
                     </span>
