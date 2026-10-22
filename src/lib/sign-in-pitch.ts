@@ -1,5 +1,3 @@
-import { IRIS_QUOTA } from "@/lib/ai/iris-quota";
-
 const FAVORITES = "benefitFavorites";
 const GEAR = "benefitGear";
 const CHATS = "benefitChats";
@@ -22,11 +20,6 @@ export const SIGN_IN_PITCHES = {
 
 export type SignInSource = keyof typeof SIGN_IN_PITCHES;
 
-/** The numbers the `Auth` benefits quote. */
-export const SIGN_IN_BENEFIT_VALUES = {
-  accountTurns: IRIS_QUOTA.accountTurnsDaily,
-  guestTurns: IRIS_QUOTA.guestTurnsDaily,
-};
 
 /** Sources that are an action the user tried; analytics records the rest as general, by entry. */
 export const SIGN_IN_ACTIONS = ["favorite", "gear"] as const satisfies readonly SignInSource[];

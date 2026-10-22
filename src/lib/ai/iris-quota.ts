@@ -10,12 +10,16 @@ export const IRIS_QUOTA = {
   globalMonthlyCny: 50,
 } as const;
 
-/** The model PRICE_CNY_PER_MTOK is for; a test fails when production switches models. */
+/** The model PEAK_PRICE_CNY_PER_MTOK is for; a test fails when production switches models. */
 export const PRICED_MODEL_ID = "deepseek-flash";
 
-// Peak-hour rates, the higher of DeepSeek's two:
-// https://api-docs.deepseek.com/zh-cn/quick_start/pricing
-const PRICE_CNY_PER_MTOK = { cacheHit: 0.04, cacheMiss: 2, output: 8 } as const;
+// https://api-docs.deepseek.com/zh-cn/quick_start/pricing. Off-peak is half; public holidays
+// are off-peak too but are charged as peak here, since the calendar isn't known.
+const PEAK_PRICE_CNY_PER_MTOK = { cacheHit: 0.04, cacheMiss: 2, output: 8 } as const;
+const PEAK_HOURS_BEIJING = [
+  [9, 12],
+  [14, 18],
+] as const;
 
 export type IrisQuotaBlock = {
   kind: "guest_quota" | "account_quota" | "budget";
@@ -47,15 +51,22 @@ function stored(raw: string | null): number {
   return count(Number(raw));
 }
 
-/** What a turn cost, in millionths of a yuan. */
-export function turnCostMicroCny(usage: TurnUsage): number {
+function isPeak(at: number): boolean {
+  const beijing = new Date(at + 8 * 60 * 60 * 1000);
+  const weekday = beijing.getUTCDay();
+  const hour = beijing.getUTCHours();
+  return weekday >= 1 && weekday <= 5 && PEAK_HOURS_BEIJING.some(([from, to]) => hour >= from && hour < to);
+}
+
+/** What a turn finished at `at` cost, in millionths of a yuan. */
+export function turnCostMicroCny(usage: TurnUsage, at: number): number {
   const input = count(usage.inputTokens);
   const hits = Math.min(count(usage.cacheReadTokens), input);
-  return Math.round(
-    (input - hits) * PRICE_CNY_PER_MTOK.cacheMiss +
-      hits * PRICE_CNY_PER_MTOK.cacheHit +
-      count(usage.outputTokens) * PRICE_CNY_PER_MTOK.output,
-  );
+  const peakCost =
+    (input - hits) * PEAK_PRICE_CNY_PER_MTOK.cacheMiss +
+    hits * PEAK_PRICE_CNY_PER_MTOK.cacheHit +
+    count(usage.outputTokens) * PEAK_PRICE_CNY_PER_MTOK.output;
+  return Math.round(isPeak(at) ? peakCost : peakCost / 2);
 }
 
 function periods(now: number) {
@@ -122,7 +133,7 @@ export async function recordIrisTurn(
       await kv.put(key, String(stored(await kv.get(key)) + amount), { expirationTtl: ttl });
     }
   };
-  const cost = turnCostMicroCny(usage);
+  const cost = turnCostMicroCny(usage, now);
   const turn = countsAsTurn ? 1 : 0;
   await Promise.all([
     add(k.dayCost, cost, KEY_TTL_SECONDS),

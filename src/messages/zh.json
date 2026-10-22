@@ -68,7 +68,7 @@
     "benefitFavorites": "收藏感兴趣的镜头，随时回来比较",
     "benefitGear": "Iris 长期记住你的器材，推荐时更懂你",
     "benefitChats": "和 Iris 的对话长期保存，未登录只留 7 天",
-    "benefitQuota": "每天可以问 Iris {accountTurns, number} 次，未登录只有 {guestTurns, number} 次",
+    "benefitQuota": "每天可以向 Iris 提更多问题",
     "reasonQuotaTitle": "登录后继续问 Iris"
   },
   "AuthEmail": {

@@ -68,7 +68,7 @@
     "benefitFavorites": "Save lenses you're interested in and come back to compare them",
     "benefitGear": "Iris remembers your gear and recommends with it in mind",
     "benefitChats": "Your chats with Iris are kept; without an account, only for 7 days",
-    "benefitQuota": "Ask Iris {accountTurns, number} questions a day; without an account, {guestTurns, number}",
+    "benefitQuota": "Ask Iris more questions each day",
     "reasonQuotaTitle": "Sign in to keep asking Iris"
   },
   "AuthEmail": {
