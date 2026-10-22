@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import NavProgress from "@/components/nav/NavProgress";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
-import RegisterSW from "@/components/pwa/RegisterSW";
 import AssetTelemetry from "@/components/telemetry/AssetTelemetry";
 import OutboundLinkTelemetry from "@/components/telemetry/OutboundLinkTelemetry";
 import PwaLaunchTelemetry from "@/components/telemetry/PwaLaunchTelemetry";
@@ -170,7 +169,6 @@ export default async function LocaleLayout({
           <RenameToast />
         </NextIntlClientProvider>
         </QueryProvider>
-        <RegisterSW />
         <AssetTelemetry />
         <OutboundLinkTelemetry />
         <PwaLaunchTelemetry />

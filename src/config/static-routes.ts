@@ -15,8 +15,6 @@ export const STATIC_LOCALIZED_SUBPATHS = [
   "lenses/gfx/browse",
 ] as const;
 
-export const STATIC_NON_LOCALIZED_ROUTES = ["/offline"] as const;
-
 // Not asserted; listed so reviewers see the intentional exceptions.
 export const INTENTIONALLY_DYNAMIC_ROUTE_PATTERNS = [
   {
@@ -49,10 +47,6 @@ export function expectedStaticRoutes(): string[] {
     for (const id of gLensIds) {
       routes.push(`/${locale}/lenses/gfx/${id}`);
     }
-  }
-
-  for (const route of STATIC_NON_LOCALIZED_ROUTES) {
-    routes.push(route);
   }
 
   return routes;

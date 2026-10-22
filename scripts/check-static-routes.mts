@@ -57,7 +57,7 @@ async function main(): Promise<void> {
         `    - src/app/[locale]/layout.tsx     (must call setRequestLocale)\n` +
         `    - the affected page files         (must call setRequestLocale)\n\n` +
         `  If a route was intentionally made dynamic, remove it from\n` +
-        `  STATIC_LOCALIZED_SUBPATHS / STATIC_NON_LOCALIZED_ROUTES and add\n` +
+        `  STATIC_LOCALIZED_SUBPATHS and add\n` +
         `  its pattern to INTENTIONALLY_DYNAMIC_ROUTE_PATTERNS in\n` +
         `  src/config/static-routes.ts.\n`
     );
