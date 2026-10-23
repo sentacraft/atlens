@@ -224,5 +224,6 @@ export function BrandShare({
 /** A chart page without a poster yet shares its link only. */
 export function ChartLinkShare({ title }: { title: string }) {
   const t = useTranslations("Charts");
-  return <ShareButton heading={t("shareChart")} caption={t("shareCaption")} shareText={t("shareText", { title })} triggerClassName={TRIGGER_CLS.primary} posters={[]} />;
+  const tShare = useTranslations("Share");
+  return <ShareButton heading={tShare("button")} shareText={t("shareText", { title })} triggerClassName={TRIGGER_CLS.primary} posters={[]} />;
 }

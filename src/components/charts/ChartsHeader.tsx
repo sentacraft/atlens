@@ -46,13 +46,13 @@ export default async function ChartsHeader({
           </Link>
         ))}
       </nav>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="font-heading text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">{title}</h1>
           <p className="text-sm leading-relaxed text-zinc-600">{description}</p>
           {children}
         </div>
-        <div className="self-start sm:self-end">{action}</div>
+        <div className="shrink-0 self-start">{action}</div>
       </div>
     </header>
   );
