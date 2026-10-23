@@ -152,9 +152,10 @@ test.describe("Ask Iris page entries", () => {
     testInfo.skip(!viewport || viewport.width < 1024, "The side panel is for screens 1024px and wider");
 
     await page.goto(compareUrl);
-    const entry = page.getByRole("main").getByRole("button", { name: /Explain the differences/ });
+    const entry = page.getByRole("button", { name: /Explain the differences/ });
     await expect(entry).toBeVisible();
-    await expect(page.getByRole("main").getByRole("button", { name: /^Ask Iris/ })).toHaveCount(0);
+    // The nav's is the only button that says just "Ask Iris".
+    await expect(page.getByRole("button", { name: /^Ask Iris/ })).toHaveCount(1);
     await entry.click();
     await expect(page.getByRole("complementary", { name: "Iris" })).toBeVisible();
   });

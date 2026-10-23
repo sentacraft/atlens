@@ -20,6 +20,7 @@ async function expectTwoRows(page: Page, locale: keyof typeof LABELS) {
 
   const [c, p, f, o, r] = await Promise.all(
     [compare, price, favorite, owned, row].map(async (locator) => {
+      await expect(locator).toBeVisible();
       const box = await locator.boundingBox();
       expect(box, "every action is laid out").not.toBeNull();
       return box!;
