@@ -26,12 +26,12 @@ import { buildTimeline } from "@/lib/charts/timeline";
 import { getBrandCollectionsWithStats } from "@/lib/collection-stats";
 import { formatDataDate } from "@/lib/charts/data-date";
 import { getLensesByMount, meta } from "@/lib/lens/data";
-import { brandLabel, focalRangeDisplay, lensDisplayName } from "@/lib/lens/format";
-import { buildCollectionItemListSchema } from "@/lib/lens/seo";
+import { brandLabel, focalRangeDisplay } from "@/lib/lens/format";
+import { buildItemListSchema, lensListItems } from "@/lib/lens/seo";
 import { mountHasCollections, urlSegmentToMount } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { chartHref } from "@/lib/url/charts";
-import { brandPath, browsePath, chartPath, collectionsPath, lensPath } from "@/lib/url/routes";
+import { brandPath, browsePath, chartPath, collectionsPath } from "@/lib/url/routes";
 import { cn } from "@/lib/utils";
 
 type Params = Promise<{ locale: string; mount: string; brand: string }>;
@@ -87,9 +87,19 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     return {};
   }
   const t = await getTranslations({ locale: data.locale, namespace: "Collection" });
+  const tPage = await getTranslations({ locale: data.locale, namespace: "Brand" });
+  const brand = data.info.slug;
   // The year suffix is for the SERP title only; it rolls forward on each deploy.
-  const seoTitle = t("seoTitleYear", { base: data.title, year: String(new Date().getFullYear()) });
-  const description = `${data.summary} ${localized(data.info.description, data.locale)}`;
+  const seoTitle = t("seoTitleYear", {
+    base: tPage("metaTitle", { brand, label: data.name, count: data.lenses.length }),
+    year: String(new Date().getFullYear()),
+  });
+  const description = tPage("metaDescription", {
+    brand,
+    label: data.name,
+    summary: data.summary,
+    intro: localized(data.info.description, data.locale),
+  });
   return {
     title: seoTitle,
     description,
@@ -125,14 +135,11 @@ export default async function BrandPage({ params }: { params: Params }) {
     { id: "lenses", label: t("allLenses", { count: data.lenses.length }) },
   ];
 
-  const itemListSchema = buildCollectionItemListSchema({
+  const itemListSchema = buildItemListSchema({
     name: data.title,
     description,
     url: `${SITE.url}/${locale}${brandPath(data.resolvedMount, data.info.slug)}`,
-    items: data.lenses.map((lens) => ({
-      name: lensDisplayName(brandLabel(tBrand, lens.brand), lens.series, lens.model),
-      url: `${SITE.url}/${locale}${lensPath(lens)}`,
-    })),
+    items: lensListItems(data.lenses, (brand) => brandLabel(tBrand, brand), locale),
   });
 
   const share = {

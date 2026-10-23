@@ -9,8 +9,8 @@ import { getCollectionStats, getRelatedCollectionsWithStats } from "@/lib/collec
 import { getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount, mountSeoLabel, mountHasCollections } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
-import { buildCollectionItemListSchema } from "@/lib/lens/seo";
-import { lensDisplayName, brandLabel } from "@/lib/lens/format";
+import { buildItemListSchema, lensListItems } from "@/lib/lens/seo";
+import { brandLabel } from "@/lib/lens/format";
 import { SITE } from "@/config/site";
 import { ACTION_ESCAPE_CLS, BROWSE_PAGE_MAIN_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import JsonLd from "@/components/seo/JsonLd";
@@ -22,7 +22,7 @@ import { ShareButton } from "@/components/share/ShareButton";
 import Breadcrumb from "@/components/nav/Breadcrumb";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import { DataSourceInline } from "@/components/lens/DataSource";
-import { browsePath, collectionPath, collectionsPath, lensPath } from "@/lib/url/routes";
+import { browsePath, collectionPath, collectionsPath } from "@/lib/url/routes";
 
 type Params = Promise<{ locale: string; mount: string; slug: string }>;
 
@@ -100,14 +100,11 @@ export default async function CollectionPage({
   const statsLabel = t("stats", { count: lensCount, brandCount });
   const relatedWithStats = getRelatedCollectionsWithStats(slug, locale);
 
-  const itemListSchema = buildCollectionItemListSchema({
+  const itemListSchema = buildItemListSchema({
     name: title,
     description,
     url: `${SITE.url}/${locale}${collectionPath(resolvedMount, slug)}`,
-    items: lenses.map((lens) => ({
-      name: lensDisplayName(brandLabel(tBrand, lens.brand), lens.series, lens.model),
-      url: `${SITE.url}/${locale}${lensPath(lens)}`,
-    })),
+    items: lensListItems(lenses, (brand) => brandLabel(tBrand, brand), locale),
   });
 
   return (

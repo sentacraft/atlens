@@ -5,15 +5,19 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import ChartsHeader from "@/components/charts/ChartsHeader";
 import { TimelineShare, TimelineShareFromUrl } from "@/components/charts/ChartShare";
 import TimelineChart, { TimelineChartFromUrl } from "@/components/charts/TimelineChart";
+import JsonLd from "@/components/seo/JsonLd";
 import SupportNote from "@/components/support/SupportNote";
+import { SITE } from "@/config/site";
 import { BROWSE_PAGE_MAIN_CLS } from "@/config/ui-tokens";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildTimeline } from "@/lib/charts/timeline";
 import { formatDataDate } from "@/lib/charts/data-date";
 import { getLensesByMount, meta } from "@/lib/lens/data";
-import { brandLabel } from "@/lib/lens/format";
+import { brandLabel, lensDisplayName } from "@/lib/lens/format";
+import { buildItemListSchema, lensListItems } from "@/lib/lens/seo";
 import { mountHasCharts, urlSegmentToMount } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
+import { chartPath } from "@/lib/url/routes";
 
 type Params = Promise<{ locale: string; mount: string }>;
 
@@ -28,6 +32,27 @@ async function load(params: Params) {
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const list = (brands: string[]) => new Intl.ListFormat(locale, { type: "conjunction" }).format(brands);
   const undated = timeline.brandsWithoutYear.map((b) => brandLabel(tBrand, b));
+  const brandName = (brand: string) => brandLabel(tBrand, brand);
+  const first = String(timeline.years[0]?.year ?? "");
+  const last = String(timeline.years.at(-1)?.year ?? "");
+  const latest = timeline.entries.at(-1);
+  const t = await getTranslations({ locale, namespace: "Charts" });
+  const seo = {
+    title: t("timelineMetaTitle", { first, last }),
+    description: t("timelineMetaDesc", {
+      count: timeline.entries.length,
+      first,
+      last,
+      brands: list(timeline.brands.map((b) => brandName(b.brand))),
+      latest: latest ? lensDisplayName(brandName(latest.lens.brand), latest.lens.series, latest.lens.model) : "",
+      latestYear: String(latest?.year ?? ""),
+    }),
+    items: lensListItems(
+      timeline.entries.map((e) => e.lens),
+      brandName,
+      locale,
+    ),
+  };
   return {
     locale,
     mount,
@@ -35,9 +60,9 @@ async function load(params: Params) {
     timeline,
     brandTotals: chartBrands(lenses),
     cineCount: countCineLenses(lenses),
-    first: String(timeline.years[0]?.year ?? ""),
-    last: String(timeline.years.at(-1)?.year ?? ""),
-    datedBrands: list(timeline.brands.map((b) => brandLabel(tBrand, b.brand))),
+    first,
+    last,
+    seo,
     undated,
     undatedList: list(undated),
   };
@@ -48,9 +73,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!data) {
     return {};
   }
-  const t = await getTranslations({ locale: data.locale, namespace: "Charts" });
-  const title = t("timelineMetaTitle", { first: data.first, last: data.last });
-  const description = t("timelineMetaDesc", { brands: data.datedBrands });
+  const { title, description } = data.seo;
   return {
     title,
     description,
@@ -89,25 +112,34 @@ export default async function TimelinePage({ params }: { params: Params }) {
     dataDate: formatDataDate(meta.lastUpdated, locale),
   };
 
+  const itemList = buildItemListSchema({
+    name: data.seo.title,
+    description: data.seo.description,
+    url: `${SITE.url}/${locale}${chartPath(data.resolvedMount, "timeline")}`,
+    items: data.seo.items,
+  });
   return (
-    <main className={BROWSE_PAGE_MAIN_CLS}>
-      <ChartsHeader
-        locale={locale}
-        mount={data.resolvedMount}
-        active="timeline"
-        note={t("excludesCine", { count: data.cineCount })}
-        title={title}
-        description={description}
-        action={
-          <Suspense fallback={<TimelineShare {...shareProps} selection={{}} />}>
-            <TimelineShareFromUrl {...shareProps} />
-          </Suspense>
-        }
-      />
-      <Suspense fallback={<TimelineChart entries={timeline.entries} years={timeline.years} mode={{ kind: "page", initial: {}, ...pageProps }} />}>
-        <TimelineChartFromUrl entries={timeline.entries} years={timeline.years} {...pageProps} />
-      </Suspense>
-      <SupportNote className="mt-12" />
-    </main>
+    <>
+      <JsonLd data={itemList} />
+      <main className={BROWSE_PAGE_MAIN_CLS}>
+        <ChartsHeader
+          locale={locale}
+          mount={data.resolvedMount}
+          active="timeline"
+          note={t("excludesCine", { count: data.cineCount })}
+          title={title}
+          description={description}
+          action={
+            <Suspense fallback={<TimelineShare {...shareProps} selection={{}} />}>
+              <TimelineShareFromUrl {...shareProps} />
+            </Suspense>
+          }
+        />
+        <Suspense fallback={<TimelineChart entries={timeline.entries} years={timeline.years} mode={{ kind: "page", initial: {}, ...pageProps }} />}>
+          <TimelineChartFromUrl entries={timeline.entries} years={timeline.years} {...pageProps} />
+        </Suspense>
+        <SupportNote className="mt-12" />
+      </main>
+    </>
   );
 }
