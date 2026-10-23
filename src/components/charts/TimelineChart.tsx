@@ -27,6 +27,8 @@ const TALL_TICKS = [15, 35, 85, 200, 600];
 const DIM = 0.08;
 
 type Props = {
+  /** A poster is rasterized at a fixed width: the wide chart only, without controls. */
+  size: "responsive" | "poster";
   mount: Mount;
   entries: TimelineEntry[];
   years: TimelineYear[];
@@ -42,7 +44,7 @@ export function TimelineChartFromUrl(props: Props) {
   return <TimelineChart {...props} initial={{ brand }} />;
 }
 
-export default function TimelineChart({ mount, entries, years, brands, initial }: Props & { initial: ChartSelection }) {
+export default function TimelineChart({ size, mount, entries, years, brands, initial }: Props & { initial: ChartSelection }) {
   const t = useTranslations("Charts");
   const tBrand = useTranslations("Brands");
   const { selected, shown, select, setPreview } = useChartSelection(initial);
@@ -101,21 +103,25 @@ export default function TimelineChart({ mount, entries, years, brands, initial }
 
   return (
     <div className="flex flex-col gap-4">
-      <ChartChips
-        label={t("highlightBrand")}
-        chips={brands.map((b) => ({ key: b.brand, label: `${brandLabel(tBrand, b.brand)} ${b.count}` }))}
-        selected={selected.brand}
-        onPreview={(brand) => setPreview({ brand })}
-        onSelect={(brand) => select({ brand })}
-      />
-      {selected.brand && (
-        <Link href={brandPath(mount, selected.brand)} className={cn(TEXT_LINK_CLS, "self-start text-sm")}>
-          {t("seeLineup", { brand: brandLabel(tBrand, selected.brand) })}
-        </Link>
+      {size === "responsive" && (
+        <>
+          <ChartChips
+            label={t("highlightBrand")}
+            chips={brands.map((b) => ({ key: b.brand, label: `${brandLabel(tBrand, b.brand)} ${b.count}` }))}
+            selected={selected.brand}
+            onPreview={(brand) => setPreview({ brand })}
+            onSelect={(brand) => select({ brand })}
+          />
+          {selected.brand && (
+            <Link href={brandPath(mount, selected.brand)} className={cn(TEXT_LINK_CLS, "self-start text-sm")}>
+              {t("seeLineup", { brand: brandLabel(tBrand, selected.brand) })}
+            </Link>
+          )}
+        </>
       )}
 
       {/* Wide layout: years across, focal length up the side. */}
-      <div className="relative hidden md:block" style={{ height: WIDE.height }}>
+      <div className={cn("relative", size === "responsive" && "hidden md:block")} style={{ height: WIDE.height }}>
         {wide.ticks.map(({ f, y }) => (
           <span key={f} className="absolute left-0 w-11 text-right text-[11px] tabular-nums text-zinc-500" style={{ top: y - 8 }}>
             {f}mm
@@ -176,7 +182,7 @@ export default function TimelineChart({ mount, entries, years, brands, initial }
                 opacity: dimmed(e.lens),
               }}
             >
-              <Image src={getLensImageUrl(e.lens.id)} alt="" width={WIDE.size} height={WIDE.size} className="size-full object-contain drop-shadow-sm" />
+              <Image src={getLensImageUrl(e.lens.id)} alt="" width={WIDE.size} height={WIDE.size} loading={size === "poster" ? "eager" : "lazy"} className="size-full object-contain drop-shadow-sm" />
             </Link>
           ))}
           {activeEntry && activeWide && (
@@ -194,70 +200,74 @@ export default function TimelineChart({ mount, entries, years, brands, initial }
         </div>
       </div>
 
-      {/* Tall layout for phones: one row per year, newest first, focal length across. */}
-      <div className="relative md:hidden" style={{ height: tall.height + 40 }}>
-        {tall.rows.map(({ yr, top, height }, i) => (
-          <Fragment key={yr.year}>
-            {i % 2 === 0 && <div className="absolute inset-x-0 bg-zinc-50" style={{ top, height }} />}
-            <div className="absolute left-2.5 flex items-baseline gap-1.5" style={{ top: top + 4 }}>
-              <span className="text-xs font-semibold tabular-nums text-zinc-900">{yr.year}</span>
-              <span className="text-[11px] tabular-nums text-zinc-500">{t("lensCount", { count: yr.count })}</span>
-            </div>
-          </Fragment>
-        ))}
-        <div className="absolute inset-y-0 left-2.5 right-2.5">
-          {TALL_TICKS.filter((f) => f > fMin && f < fMax).map((f) => (
-            <Fragment key={f}>
-              <span className="absolute top-0 w-12 -translate-x-1/2 text-center text-[11px] tabular-nums text-zinc-500" style={{ left: pct(frac(f)) }}>
-                {f}mm
-              </span>
-              <div className="absolute w-px bg-zinc-100" style={{ left: pct(frac(f)), top: TALL.rowLabel - 4, height: tall.height - TALL.rowLabel }} />
-            </Fragment>
-          ))}
-          {tall.rows.flatMap(({ placed }) =>
-            placed.map(({ e, top: itemTop }) => (
-              <Fragment key={e.lens.id}>
-                {isChartZoom(e.lens) && (
-                  <div
-                    aria-hidden="true"
-                    className="absolute h-1.5 rounded bg-zinc-900/15"
-                    style={{
-                      left: pct(frac(e.lens.focalMin)),
-                      width: pct(frac(e.lens.focalMax) - frac(e.lens.focalMin)),
-                      top: itemTop + TALL.size / 2 - 3,
-                      opacity: dimmed(e.lens),
-                    }}
-                  />
-                )}
-                <Link
-                  href={lensPath(e.lens)}
-                  aria-label={`${brandLabel(tBrand, e.lens.brand)} ${e.lens.model}`}
-                  {...itemHandlers(e.lens.id)}
-                  className={cn("absolute block", active === e.lens.id ? "z-20" : "z-10")}
-                  style={{
-                    left: pct(frac(e.focalMid)),
-                    marginLeft: -TALL.size / 2,
-                    top: itemTop,
-                    width: TALL.size,
-                    height: TALL.size,
-                    opacity: dimmed(e.lens),
-                  }}
-                >
-                  <Image src={getLensImageUrl(e.lens.id)} alt="" width={TALL.size} height={TALL.size} className="size-full object-contain drop-shadow-sm" />
-                </Link>
+      {size === "responsive" && (
+        <>
+          {/* Tall layout for phones: one row per year, newest first, focal length across. */}
+          <div className="relative md:hidden" style={{ height: tall.height + 40 }}>
+            {tall.rows.map(({ yr, top, height }, i) => (
+              <Fragment key={yr.year}>
+                {i % 2 === 0 && <div className="absolute inset-x-0 bg-zinc-50" style={{ top, height }} />}
+                <div className="absolute left-2.5 flex items-baseline gap-1.5" style={{ top: top + 4 }}>
+                  <span className="text-xs font-semibold tabular-nums text-zinc-900">{yr.year}</span>
+                  <span className="text-[11px] tabular-nums text-zinc-500">{t("lensCount", { count: yr.count })}</span>
+                </div>
               </Fragment>
-            )),
-          )}
-        </div>
-        {activeEntry && activeTall && (
-          <ChartLensCard
-            lens={activeEntry.lens}
-            spec={spec(activeEntry)}
-            className="absolute inset-x-0 z-30 w-auto"
-            style={{ top: activeTall.top + TALL.size + 6 }}
-          />
-        )}
-      </div>
+            ))}
+            <div className="absolute inset-y-0 left-2.5 right-2.5">
+              {TALL_TICKS.filter((f) => f > fMin && f < fMax).map((f) => (
+                <Fragment key={f}>
+                  <span className="absolute top-0 w-12 -translate-x-1/2 text-center text-[11px] tabular-nums text-zinc-500" style={{ left: pct(frac(f)) }}>
+                    {f}mm
+                  </span>
+                  <div className="absolute w-px bg-zinc-100" style={{ left: pct(frac(f)), top: TALL.rowLabel - 4, height: tall.height - TALL.rowLabel }} />
+                </Fragment>
+              ))}
+              {tall.rows.flatMap(({ placed }) =>
+                placed.map(({ e, top: itemTop }) => (
+                  <Fragment key={e.lens.id}>
+                    {isChartZoom(e.lens) && (
+                      <div
+                        aria-hidden="true"
+                        className="absolute h-1.5 rounded bg-zinc-900/15"
+                        style={{
+                          left: pct(frac(e.lens.focalMin)),
+                          width: pct(frac(e.lens.focalMax) - frac(e.lens.focalMin)),
+                          top: itemTop + TALL.size / 2 - 3,
+                          opacity: dimmed(e.lens),
+                        }}
+                      />
+                    )}
+                    <Link
+                      href={lensPath(e.lens)}
+                      aria-label={`${brandLabel(tBrand, e.lens.brand)} ${e.lens.model}`}
+                      {...itemHandlers(e.lens.id)}
+                      className={cn("absolute block", active === e.lens.id ? "z-20" : "z-10")}
+                      style={{
+                        left: pct(frac(e.focalMid)),
+                        marginLeft: -TALL.size / 2,
+                        top: itemTop,
+                        width: TALL.size,
+                        height: TALL.size,
+                        opacity: dimmed(e.lens),
+                      }}
+                    >
+                      <Image src={getLensImageUrl(e.lens.id)} alt="" width={TALL.size} height={TALL.size} className="size-full object-contain drop-shadow-sm" />
+                    </Link>
+                  </Fragment>
+                )),
+              )}
+            </div>
+            {activeEntry && activeTall && (
+              <ChartLensCard
+                lens={activeEntry.lens}
+                spec={spec(activeEntry)}
+                className="absolute inset-x-0 z-30 w-auto"
+                style={{ top: activeTall.top + TALL.size + 6 }}
+              />
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }

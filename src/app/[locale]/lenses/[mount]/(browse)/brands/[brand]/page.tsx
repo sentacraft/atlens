@@ -5,6 +5,7 @@ import { Flag } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { localized } from "@/i18n/localized";
 import BrandPicker from "@/components/brand/BrandPicker";
+import { LineupShare } from "@/components/charts/ChartShare";
 import LineupChart from "@/components/charts/LineupChart";
 import CollectionLensGrid from "@/components/collection/CollectionLensGrid";
 import RelatedCollectionCard from "@/components/collection/RelatedCollectionCard";
@@ -13,7 +14,6 @@ import { DataSourceInline } from "@/components/lens/DataSource";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import Breadcrumb from "@/components/nav/Breadcrumb";
 import JsonLd from "@/components/seo/JsonLd";
-import { ShareButton } from "@/components/share/ShareButton";
 import SupportNote from "@/components/support/SupportNote";
 import { SITE } from "@/config/site";
 import { BROWSE_PAGE_MAIN_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
@@ -21,10 +21,11 @@ import { BRANDS, getBrandInfo, getBrandLenses } from "@/lib/brands";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildLineup } from "@/lib/charts/lineup";
 import { getBrandCollectionsWithStats } from "@/lib/collection-stats";
-import { getLensesByMount } from "@/lib/lens/data";
+import { formatDataDate } from "@/lib/charts/data-date";
+import { getLensesByMount, meta } from "@/lib/lens/data";
 import { brandLabel, focalRangeDisplay, lensDisplayName } from "@/lib/lens/format";
 import { buildCollectionItemListSchema } from "@/lib/lens/seo";
-import { mountHasCollections, mountSeoLabel, urlSegmentToMount } from "@/lib/mount";
+import { mountHasCollections, urlSegmentToMount } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { brandPath, browsePath, collectionsPath, lensPath } from "@/lib/url/routes";
 
@@ -99,7 +100,6 @@ export default async function BrandPage({ params }: { params: Params }) {
   const tCollection = await getTranslations({ locale, namespace: "Collection" });
   const tNav = await getTranslations({ locale, namespace: "Nav" });
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
-  const mountLabel = tCollection("mountLabel", { mount: mountSeoLabel(data.resolvedMount) });
   const description = localized(data.info.description, locale);
   const related = getBrandCollectionsWithStats(data.info.slug, locale);
 
@@ -121,11 +121,13 @@ export default async function BrandPage({ params }: { params: Params }) {
           <div className="mb-4 flex items-center justify-between gap-3">
             <Breadcrumb segments={[{ label: tNav("lenses"), href: browsePath(data.resolvedMount) }]} current={data.name} />
             <div className="flex shrink-0 items-center gap-1">
-              <ShareButton
-                lenses={data.lenses}
-                linkOnly
-                shareText={tCollection("shareText", { title: data.title, mount: mountLabel })}
-                triggerClassName={UTILITY_BTN_CLS}
+              <LineupShare
+                lineup={data.lineup}
+                name={data.name}
+                otherBrands={data.brands.length - 1}
+                title={data.title}
+                summary={data.summary}
+                dataDate={formatDataDate(meta.lastUpdated, locale)}
               />
               <FeedbackTrigger type="general" className={UTILITY_BTN_CLS}>
                 <Flag className="size-4" />
@@ -141,7 +143,7 @@ export default async function BrandPage({ params }: { params: Params }) {
           <p className="mt-3 text-sm leading-relaxed text-zinc-700 sm:text-base">{description}</p>
         </header>
 
-        <LineupChart lineup={data.lineup} />
+        <LineupChart lineup={data.lineup} size="responsive" />
         {data.cineCount > 0 && (
           <p className="mt-6 text-xs leading-relaxed text-zinc-500">{t("cineNote", { brand: data.name, count: data.cineCount })}</p>
         )}

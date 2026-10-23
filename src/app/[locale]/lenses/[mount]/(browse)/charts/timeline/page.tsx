@@ -3,10 +3,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import ChartsHeader from "@/components/charts/ChartsHeader";
+import { TimelineShare, TimelineShareFromUrl } from "@/components/charts/ChartShare";
 import TimelineChart, { TimelineChartFromUrl } from "@/components/charts/TimelineChart";
 import { BROWSE_PAGE_MAIN_CLS } from "@/config/ui-tokens";
 import { buildTimeline } from "@/lib/charts/timeline";
-import { getLensesByMount } from "@/lib/lens/data";
+import { formatDataDate } from "@/lib/charts/data-date";
+import { getLensesByMount, meta } from "@/lib/lens/data";
 import { brandLabel } from "@/lib/lens/format";
 import { mountHasCharts, urlSegmentToMount } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
@@ -61,7 +63,7 @@ export default async function TimelinePage({ params }: { params: Params }) {
   }
   const t = await getTranslations({ locale, namespace: "Charts" });
   const { timeline } = data;
-  const chartProps = { mount: data.resolvedMount, entries: timeline.entries, years: timeline.years, brands: timeline.brands };
+  const chartProps = { size: "responsive" as const, mount: data.resolvedMount, entries: timeline.entries, years: timeline.years, brands: timeline.brands };
   const count = timeline.entries.length;
   const [first, second, third, ...rest] = data.undated;
   // en names three brands plus "N others", zh says "N brands in all"; message types come from en
@@ -73,6 +75,16 @@ export default async function TimelinePage({ params }: { params: Params }) {
       : rest.length === 0
         ? t("timelineDescUndated", { count, brands: data.undatedList, brandCount: data.undated.length })
         : t("timelineDescUndatedMore", moreArgs);
+  const title = t("timelineTitle", { first: data.first, last: data.last });
+  const shareProps = {
+    mount: data.resolvedMount,
+    entries: timeline.entries,
+    years: timeline.years,
+    brands: timeline.brands,
+    title,
+    description,
+    dataDate: formatDataDate(meta.lastUpdated, locale),
+  };
 
   return (
     <main className={BROWSE_PAGE_MAIN_CLS}>
@@ -80,8 +92,13 @@ export default async function TimelinePage({ params }: { params: Params }) {
         locale={locale}
         mount={data.resolvedMount}
         active="timeline"
-        title={t("timelineTitle", { first: data.first, last: data.last })}
+        title={title}
         description={description}
+        action={
+          <Suspense fallback={<TimelineShare {...shareProps} selection={{}} />}>
+            <TimelineShareFromUrl {...shareProps} />
+          </Suspense>
+        }
       />
       <Suspense fallback={<TimelineChart {...chartProps} initial={{}} />}>
         <TimelineChartFromUrl {...chartProps} />

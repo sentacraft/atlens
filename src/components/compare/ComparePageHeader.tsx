@@ -7,7 +7,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 import LensSearchDialog from "@/components/browse/LensSearchDialog";
 import { Flag, Search } from "lucide-react";
-import { ShareButton } from "@/components/share/ShareButton";
+import { LensShareButton } from "@/components/share/LensShareButton";
 import ShareFAB from "@/components/share/ShareFAB";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import AskIrisEntry from "@/components/iris/AskIrisEntry";
@@ -91,7 +91,7 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
             />
           )}
           {activeLenses.length >= 1 && (
-            <ShareButton lenses={activeLenses} presetTitle={presetTitle} presetSubtitle={presetSubtitle} triggerClassName={UTILITY_BTN_CLS} />
+            <LensShareButton lenses={activeLenses} presetTitle={presetTitle} presetSubtitle={presetSubtitle} triggerClassName={UTILITY_BTN_CLS} />
           )}
           <FeedbackTrigger
             type="general"

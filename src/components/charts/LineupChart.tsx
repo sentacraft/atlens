@@ -17,9 +17,36 @@ import { cn } from "@/lib/utils";
 const ZOOM_TICKS = [10, 15, 24, 35, 50, 85, 135, 200, 300, 450, 600, 900];
 const PHONE_ZOOM_TICKS = new Set([15, 35, 85, 200, 600]);
 const CARD_WIDTH = 288;
+
+// A poster is rasterized at a fixed width, so it takes the wide layout whatever the screen.
+const SIZES = {
+  responsive: {
+    column: "w-16 md:w-[92px]",
+    image: "size-12 md:size-[76px]",
+    zoomAxis: "left-14 md:left-[84px]",
+    zoomRow: "h-14 md:h-[88px]",
+    zoomName: "top-2 text-xs md:top-5 md:text-sm",
+    zoomBar: "bottom-3 h-1.5 md:bottom-6 md:h-2",
+    heading: "text-lg md:text-xl",
+    narrowTick: "max-md:hidden",
+    loading: "lazy",
+  },
+  poster: {
+    column: "w-[92px]",
+    image: "size-[76px]",
+    zoomAxis: "left-[84px]",
+    zoomRow: "h-[88px]",
+    zoomName: "top-5 text-sm",
+    zoomBar: "bottom-6 h-2",
+    heading: "text-xl",
+    narrowTick: "",
+    loading: "eager",
+  },
+} as const;
 const CARD_GAP = 12;
 
-export default function LineupChart({ lineup }: { lineup: Lineup }) {
+export default function LineupChart({ lineup, size }: { lineup: Lineup; size: keyof typeof SIZES }) {
+  const cls = SIZES[size];
   const t = useTranslations("Charts");
   const container = useRef<HTMLDivElement>(null);
   const [cardPos, setCardPos] = useState<{ left: number; top: number; width?: number }>();
@@ -60,10 +87,10 @@ export default function LineupChart({ lineup }: { lineup: Lineup }) {
     <div ref={container} className="relative flex flex-col gap-10">
       {lineup.primes.length > 0 && (
         <section className="flex flex-col gap-4">
-          <SectionHead label={t("lineupPrimes")} note={t("lineupPrimesNote", { count: lineup.primes.reduce((n, c) => n + c.lenses.length, 0) })} />
+          <SectionHead headingCls={cls.heading} label={t("lineupPrimes")} note={t("lineupPrimesNote", { count: lineup.primes.reduce((n, c) => n + c.lenses.length, 0) })} />
           <ul className="flex flex-wrap items-end gap-y-6">
             {lineup.primes.map((column) => (
-              <li key={column.focal} className="flex w-16 flex-col items-center md:w-[92px]">
+              <li key={column.focal} className={cn("flex flex-col items-center", cls.column)}>
                 <div className="flex flex-col-reverse items-center gap-1.5 pb-1.5">
                   {column.lenses.map((lens) => (
                     <Link
@@ -73,7 +100,7 @@ export default function LineupChart({ lineup }: { lineup: Lineup }) {
                       {...itemHandlers(lens.id)}
                       className={cn("flex flex-col items-center gap-0.5 transition-transform", active === lens.id && "scale-110")}
                     >
-                      <Image src={getLensImageUrl(lens.id)} alt="" width={76} height={76} className="size-12 object-contain drop-shadow-sm md:size-[76px]" />
+                      <Image src={getLensImageUrl(lens.id)} alt="" width={76} height={76} loading={cls.loading} className={cn("object-contain drop-shadow-sm", cls.image)} />
                       {lens.aperture !== undefined && <span className="text-[11px] tabular-nums text-zinc-600">F{lens.aperture}</span>}
                     </Link>
                   ))}
@@ -88,11 +115,11 @@ export default function LineupChart({ lineup }: { lineup: Lineup }) {
 
       {lineup.zooms.length > 0 && (
         <section className="flex flex-col gap-4">
-          <SectionHead label={t("lineupZooms")} note={t("lineupZoomsNote", { count: lineup.zooms.length })} />
+          <SectionHead headingCls={cls.heading} label={t("lineupZooms")} note={t("lineupZoomsNote", { count: lineup.zooms.length })} />
           <div className="relative pt-6">
-            <div className="absolute inset-y-0 left-14 right-0 md:left-[84px]" aria-hidden="true">
+            <div className={cn("absolute inset-y-0 right-0", cls.zoomAxis)} aria-hidden="true">
               {ZOOM_TICKS.filter((f) => f > lo && f < hi).map((f) => (
-                <div key={f} className={cn("absolute inset-y-0", !PHONE_ZOOM_TICKS.has(f) && "max-md:hidden")} style={{ left: pct(zx(f)) }}>
+                <div key={f} className={cn("absolute inset-y-0", !PHONE_ZOOM_TICKS.has(f) && cls.narrowTick)} style={{ left: pct(zx(f)) }}>
                   <span className="absolute top-0 w-12 -translate-x-1/2 text-center text-[11px] tabular-nums text-zinc-500">{f}mm</span>
                   <span className="absolute bottom-0 top-6 w-px bg-zinc-100" />
                 </div>
@@ -101,12 +128,12 @@ export default function LineupChart({ lineup }: { lineup: Lineup }) {
             <ul className="relative">
               {lineup.zooms.map((lens) => (
                 <li key={lens.id}>
-                  <Link href={lensPath(lens)} aria-label={lens.model} {...itemHandlers(lens.id)} className="flex h-14 items-center gap-2 md:h-[88px]">
-                    <Image src={getLensImageUrl(lens.id)} alt="" width={76} height={76} className="size-12 shrink-0 object-contain drop-shadow-sm md:size-[76px]" />
+                  <Link href={lensPath(lens)} aria-label={lens.model} {...itemHandlers(lens.id)} className={cn("flex items-center gap-2", cls.zoomRow)}>
+                    <Image src={getLensImageUrl(lens.id)} alt="" width={76} height={76} loading={cls.loading} className={cn("shrink-0 object-contain drop-shadow-sm", cls.image)} />
                     <span className="relative h-full flex-1">
-                      <span className="absolute inset-x-0 top-2 truncate text-xs text-zinc-700 md:top-5 md:text-sm">{lens.model}</span>
+                      <span className={cn("absolute inset-x-0 truncate text-zinc-700", cls.zoomName)}>{lens.model}</span>
                       <span
-                        className={cn("absolute bottom-3 h-1.5 rounded transition-colors md:bottom-6 md:h-2", active === lens.id ? "bg-zinc-900" : "bg-zinc-300")}
+                        className={cn("absolute rounded transition-colors", cls.zoomBar, active === lens.id ? "bg-zinc-900" : "bg-zinc-300")}
                         style={{ left: pct(zx(lens.focalMin)), width: pct(zx(lens.focalMax) - zx(lens.focalMin)) }}
                       />
                     </span>
@@ -130,10 +157,10 @@ export default function LineupChart({ lineup }: { lineup: Lineup }) {
   );
 }
 
-function SectionHead({ label, note }: { label: string; note: string }) {
+function SectionHead({ label, note, headingCls }: { label: string; note: string; headingCls: string }) {
   return (
     <div className="flex flex-wrap items-baseline gap-x-2 border-b border-zinc-200 pb-1.5">
-      <h2 className="font-heading text-lg font-bold text-zinc-900 md:text-xl">{label}</h2>
+      <h2 className={cn("font-heading font-bold text-zinc-900", headingCls)}>{label}</h2>
       <span className="text-xs text-zinc-500">{note}</span>
     </div>
   );

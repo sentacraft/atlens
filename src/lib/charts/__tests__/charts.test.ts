@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { formatDataDate } from "../data-date";
 import type { Lens } from "@/lib/types";
 import { getLensesByMount } from "@/lib/lens/data";
 import { assignLanes, buildTimeline } from "@/lib/charts/timeline";
@@ -161,5 +162,12 @@ describe("X-mount catalog", () => {
     expect(lineup.zooms).toHaveLength(21);
     expect([lineup.focalMin, lineup.focalMax]).toEqual([12, 900]);
     expect(chartBrands(xLenses)).toHaveLength(12);
+  });
+});
+
+describe("formatDataDate", () => {
+  it("writes the snapshot date the way each language expects", () => {
+    expect(formatDataDate("2026-10-22T08:19:15.077Z", "zh")).toBe("2026-10-22");
+    expect(formatDataDate("2026-10-22T08:19:15.077Z", "en")).toBe("Oct 22, 2026");
   });
 });

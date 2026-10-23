@@ -4,11 +4,13 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import ChartsHeader from "@/components/charts/ChartsHeader";
 import { DataSourceInline } from "@/components/lens/DataSource";
+import { WeightShare, WeightShareFromUrl } from "@/components/charts/ChartShare";
 import WeightLadderChart, { WeightLadderChartFromUrl } from "@/components/charts/WeightLadderChart";
 import { BROWSE_PAGE_MAIN_CLS } from "@/config/ui-tokens";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildWeightLadder } from "@/lib/charts/weight";
-import { getLensesByMount } from "@/lib/lens/data";
+import { formatDataDate } from "@/lib/charts/data-date";
+import { getLensesByMount, meta } from "@/lib/lens/data";
 import { mountHasCharts, urlSegmentToMount } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 
@@ -50,6 +52,16 @@ export default async function WeightPage({ params }: { params: Params }) {
   const t = await getTranslations({ locale, namespace: "Charts" });
   const { ladder } = data;
   const chartProps = { mount: data.resolvedMount, tiers: ladder.tiers, brands: data.brands };
+  const shareProps = {
+    tiers: ladder.tiers,
+    brands: data.brands,
+    title: t("weightTitle"),
+    ratio: ladder.ratio ?? 0,
+    count: ladder.count,
+    maxG: ladder.heaviest?.weightG ?? 0,
+    minG: ladder.lightest?.weightG ?? 0,
+    dataDate: formatDataDate(meta.lastUpdated, locale),
+  };
 
   return (
     <main className={BROWSE_PAGE_MAIN_CLS}>
@@ -63,6 +75,11 @@ export default async function WeightPage({ params }: { params: Params }) {
           weight: ladder.heaviest?.weightG ?? 0,
           ratio: ladder.ratio ?? 0,
         })}
+        action={
+          <Suspense fallback={<WeightShare {...shareProps} selection={{}} />}>
+            <WeightShareFromUrl {...shareProps} />
+          </Suspense>
+        }
       >
         <DataSourceInline />
       </ChartsHeader>

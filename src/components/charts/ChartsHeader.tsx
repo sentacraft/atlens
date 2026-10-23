@@ -16,6 +16,7 @@ export default async function ChartsHeader({
   active,
   title,
   description,
+  action,
   children,
 }: {
   locale: string;
@@ -23,6 +24,8 @@ export default async function ChartsHeader({
   active: (typeof TABS)[number]["chart"];
   title: string;
   description: string;
+  /** Beside the title on wide screens, under it on phones: the page's share button. */
+  action: React.ReactNode;
   children?: React.ReactNode;
 }) {
   const t = await getTranslations({ locale, namespace: "Charts" });
@@ -43,10 +46,13 @@ export default async function ChartsHeader({
           </Link>
         ))}
       </nav>
-      <div className="flex flex-col gap-2">
-        <h1 className="font-heading text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">{title}</h1>
-        <p className="text-sm leading-relaxed text-zinc-600">{description}</p>
-        {children}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-2">
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">{title}</h1>
+          <p className="text-sm leading-relaxed text-zinc-600">{description}</p>
+          {children}
+        </div>
+        <div className="self-start sm:self-end">{action}</div>
       </div>
     </header>
   );

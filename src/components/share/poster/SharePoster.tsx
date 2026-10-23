@@ -1,6 +1,5 @@
 "use client";
 
-import type { Ref } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import Iris from "@/components/iris/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
@@ -198,10 +197,9 @@ interface SharePosterProps {
   labels: PosterLabels;
   custom?: PosterCustom;
   shareUrl?: string;
-  ref?: Ref<HTMLDivElement>;
 }
 
-export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePosterProps) {
+export function SharePoster({ lenses, labels, custom, shareUrl }: SharePosterProps) {
   const n = lenses.length;
   const titleLines: string[] = custom?.title?.trim()
     ? [custom.title.trim()]
@@ -314,7 +312,6 @@ export function SharePoster({ lenses, labels, custom, shareUrl, ref }: SharePost
 
   return (
     <div
-      ref={ref as React.Ref<HTMLDivElement>}
       className="bg-white"
       style={{ width: POSTER_W }}
     >
