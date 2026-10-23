@@ -31,28 +31,28 @@ export default async function ChartsHeader({
   const t = await getTranslations({ locale, namespace: "Charts" });
   return (
     <header className="mb-6 flex flex-col gap-5">
-      <nav aria-label={t("tabsLabel")} className="flex gap-6 overflow-x-auto whitespace-nowrap border-b border-zinc-200 [scrollbar-width:none]">
-        {TABS.map(({ chart, key, href }) => (
-          <Link
-            key={chart}
-            href={href(mount)}
-            aria-current={chart === active ? "page" : undefined}
-            className={cn(
-              "-mb-px border-b-2 py-2.5 text-sm transition-colors",
-              chart === active ? "border-zinc-900 font-semibold text-zinc-900" : "border-transparent font-medium text-zinc-500 hover:text-zinc-900",
-            )}
-          >
-            {t(key)}
-          </Link>
-        ))}
-      </nav>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex flex-col gap-2">
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">{title}</h1>
-          <p className="text-sm leading-relaxed text-zinc-600">{description}</p>
-          {children}
-        </div>
-        <div className="shrink-0 self-start">{action}</div>
+      <div className="flex items-center justify-between gap-3 border-b border-zinc-200">
+        <nav aria-label={t("tabsLabel")} className="-mb-px flex min-w-0 gap-6 overflow-x-auto whitespace-nowrap [scrollbar-width:none]">
+          {TABS.map(({ chart, key, href }) => (
+            <Link
+              key={chart}
+              href={href(mount)}
+              aria-current={chart === active ? "page" : undefined}
+              className={cn(
+                "border-b-2 py-2.5 text-sm transition-colors",
+                chart === active ? "border-zinc-900 font-semibold text-zinc-900" : "border-transparent font-medium text-zinc-500 hover:text-zinc-900",
+              )}
+            >
+              {t(key)}
+            </Link>
+          ))}
+        </nav>
+        <div className="shrink-0">{action}</div>
+      </div>
+      <div className="flex flex-col gap-2">
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">{title}</h1>
+        <p className="text-sm leading-relaxed text-zinc-600">{description}</p>
+        {children}
       </div>
     </header>
   );

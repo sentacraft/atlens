@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { LineupPoster, TimelinePoster, WeightPoster } from "@/components/charts/posters/ChartPosters";
 import { POSTER_WIDTH } from "@/components/charts/posters/PosterFrame";
 import { ShareButton } from "@/components/share/ShareButton";
-import { ACTION_PRIMARY_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
+import { UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { useShareUrl } from "@/hooks/useShareUrl";
 import type { BrandCount, ChartLens } from "@/lib/charts/catalog";
 import type { Lineup } from "@/lib/charts/lineup";
@@ -17,19 +17,18 @@ import type { Mount } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const TRIGGER_CLS = {
-  primary: cn(ACTION_PRIMARY_CLS, "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium"),
   utility: UTILITY_BTN_CLS,
   section: cn(UTILITY_BTN_CLS, "shrink-0 font-sans font-normal"),
 };
 
 /**
- * The chart share button with its heading and caption; the poster says what is on screen. A chart
- * page leads with it; a brand page puts it among its header utilities and beside each chart's heading.
+ * The chart share button with its heading and caption; the poster says what is on screen. A page
+ * puts it among its header utilities; a brand page also puts one beside each chart's heading.
  */
 function ChartShareButton({
   title,
   posters,
-  trigger = "primary",
+  trigger = "utility",
 }: {
   title: string;
   posters: { label: string; fileName: string; content: React.ReactNode }[];
@@ -214,7 +213,7 @@ export function BrandShare({
   }
   return (
     <ChartShareButton
-      trigger={only ? "section" : "utility"}
+      trigger={only ? "section" : undefined}
       title={title}
       posters={posters.filter((poster) => !only || poster.key === only)}
     />
@@ -225,5 +224,5 @@ export function BrandShare({
 export function ChartLinkShare({ title }: { title: string }) {
   const t = useTranslations("Charts");
   const tShare = useTranslations("Share");
-  return <ShareButton heading={tShare("button")} shareText={t("shareText", { title })} triggerClassName={TRIGGER_CLS.primary} posters={[]} />;
+  return <ShareButton heading={tShare("button")} shareText={t("shareText", { title })} triggerClassName={TRIGGER_CLS.utility} posters={[]} />;
 }
