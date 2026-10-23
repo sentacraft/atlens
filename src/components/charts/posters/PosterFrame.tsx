@@ -1,12 +1,10 @@
 import { QRCodeSVG } from "qrcode.react";
 
 export const POSTER_WIDTH = 1080;
-// Content width inside the frame's side padding and the chart card's own padding.
-export const POSTER_CHART_WIDTH = POSTER_WIDTH - 2 * 48 - 2 * 24 - 2;
 
 /**
- * The shared layout of every chart poster: a headline that works out of context, the chart with a
- * watermark inside it, and a footer pointing back to the live page.
+ * The shared layout of every chart poster: a headline that works out of context, the chart, and a
+ * footer pointing back to the live page.
  */
 export default function PosterFrame({
   eyebrow,
@@ -41,12 +39,7 @@ export default function PosterFrame({
           {subtitle}
         </p>
       </div>
-      <div className="relative border border-zinc-200" style={{ borderRadius: 24, padding: "28px 24px 20px" }}>
-        {children}
-        <span className="absolute uppercase text-zinc-400" style={{ right: 24, top: 24, fontSize: 14, letterSpacing: "0.16em" }}>
-          atlens.app
-        </span>
-      </div>
+      <div>{children}</div>
       <div className="flex items-center justify-between border-t border-zinc-200" style={{ gap: 24, paddingTop: 24 }}>
         <div className="flex flex-col" style={{ gap: 6 }}>
           <span className="font-heading font-bold" style={{ fontSize: 30 }}>
