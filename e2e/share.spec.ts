@@ -31,7 +31,7 @@ test.describe("Share", () => {
     await page.goto("/en/lenses/x/charts/weight", { waitUntil: "networkidle" });
     await openShare(page, /^Share$/);
     await expect(page.getByText("Long image · scroll to preview, tap to enlarge")).toBeVisible();
-    await expect(page.getByText("179 lenses from 12 brands, 2265g down to 58g.")).toBeVisible();
+    await expect(page.getByText("179 lenses from 12 brands, 2,265g down to 58g.")).toBeVisible();
   });
 
   test("a filtered weight ladder poster shows only what the filter keeps", async ({ page }) => {
