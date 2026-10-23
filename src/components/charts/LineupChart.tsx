@@ -21,13 +21,14 @@ const CARD_WIDTH = 288;
 // A poster is rasterized at a fixed width, so it takes the wide layout whatever the screen.
 const SIZES = {
   responsive: {
-    column: "w-16 md:w-[92px]",
+    column: "w-[60px] md:w-[92px]",
     image: "size-12 md:size-[76px]",
     zoomAxis: "left-14 md:left-[84px]",
     zoomRow: "h-14 md:h-[88px]",
     zoomName: "top-2 text-xs md:top-5 md:text-sm",
     zoomBar: "bottom-3 h-1.5 md:bottom-6 md:h-2",
-    heading: "text-sm",
+    heading: "text-base",
+    group: "px-2.5 py-3 md:px-6 md:pb-6 md:pt-5",
     narrowTick: "max-md:hidden",
     loading: "lazy",
   },
@@ -38,7 +39,8 @@ const SIZES = {
     zoomRow: "h-[88px]",
     zoomName: "top-5 text-sm",
     zoomBar: "bottom-6 h-2",
-    heading: "text-base",
+    heading: "text-lg",
+    group: "px-6 pb-6 pt-5",
     narrowTick: "",
     loading: "eager",
   },
@@ -84,9 +86,9 @@ export default function LineupChart({ lineup, size }: { lineup: Lineup; size: ke
   const zx = (f: number) => logFrac(f, lo, hi);
 
   return (
-    <div ref={container} className="relative flex flex-col gap-8">
+    <div ref={container} className="relative flex flex-col gap-4">
       {lineup.primes.length > 0 && (
-        <section className="flex flex-col gap-3">
+        <section className={cn("flex flex-col gap-4 rounded-2xl bg-zinc-50", cls.group)}>
           <SectionHead headingCls={cls.heading} label={t("lineupPrimes")} note={t("lineupPrimesNote", { count: lineup.primes.reduce((n, c) => n + c.lenses.length, 0) })} />
           <ul className="flex flex-wrap items-end gap-y-6">
             {lineup.primes.map((column) => (
@@ -114,14 +116,14 @@ export default function LineupChart({ lineup, size }: { lineup: Lineup; size: ke
       )}
 
       {lineup.zooms.length > 0 && (
-        <section className="flex flex-col gap-3">
+        <section className={cn("flex flex-col gap-4 rounded-2xl bg-zinc-50", cls.group)}>
           <SectionHead headingCls={cls.heading} label={t("lineupZooms")} note={t("lineupZoomsNote", { count: lineup.zooms.length })} />
           <div className="relative pt-6">
             <div className={cn("absolute inset-y-0 right-0", cls.zoomAxis)} aria-hidden="true">
               {ZOOM_TICKS.filter((f) => f > lo && f < hi).map((f) => (
                 <div key={f} className={cn("absolute inset-y-0", !PHONE_ZOOM_TICKS.has(f) && cls.narrowTick)} style={{ left: pct(zx(f)) }}>
                   <span className="absolute top-0 w-12 -translate-x-1/2 text-center text-[11px] tabular-nums text-zinc-500">{f}mm</span>
-                  <span className="absolute bottom-0 top-6 w-px bg-zinc-100" />
+                  <span className="absolute bottom-0 top-6 w-px bg-zinc-200/70" />
                 </div>
               ))}
             </div>
