@@ -964,6 +964,16 @@
     "tabsLabel": "图鉴",
     "tabTimeline": "发布时间轴",
     "tabWeight": "重量天梯",
+    "tabLineup": "品牌全家福",
+    "lineupsTitle": "富士 X 卡口镜头品牌全家福",
+    "lineupsDesc": "{brandCount} 个品牌的 {count} 支镜头，每个品牌按焦段从广到长排开。",
+    "lineupsCta": "看全家福 →",
+    "lineupsNote": "不含 {count} 支电影镜头。",
+    "lineupPrimes": "定焦",
+    "lineupPrimesNote": "{count} 支 · 按等效焦段排列，同焦段光圈越大越靠上",
+    "lineupZooms": "变焦",
+    "lineupZoomsNote": "{count} 支 · 横条是等效焦段范围",
+    "seeLineup": "看{brand}全家福 →",
     "timelineTitle": "富士 X 卡口镜头发布时间轴 · {first}–{last}",
     "timelineDesc": "{count, number} 支镜头，按发布年份和焦段排开，含原厂和副厂。",
     "timelineDescUndated": "{count, number} 支镜头，按发布年份和焦段排开，含原厂和副厂。{brands}暂无准确发布年份，未列入。",
@@ -972,7 +982,7 @@
     "timelineMetaDesc": "{brands}所有有发布年份的 X 卡口镜头，按发布年份和焦段排开。",
     "weightTitle": "富士 X 卡口镜头重量天梯",
     "weightDesc": "最重的 {model} 有 {weight}g，是最轻那支的 {ratio} 倍。",
-    "weightNote": "重量为官方标称值，含已停产镜头。",
+    "weightNote": "重量为官方标称值，含已停产镜头，不含 {count} 支电影镜头。",
     "weightMetaTitle": "富士 X 卡口镜头重量对比：{count} 支镜头",
     "weightMetaDesc": "全部 X 卡口镜头按重量排序，从 {min}g 到 {max}g，分成五档。",
     "tier-cannon": "大炮",
@@ -998,5 +1008,13 @@
     "equivFocal": "等效 {focal}",
     "weight": "{weight}g",
     "showAll": "展开全部 {count} 支"
+  },
+  "Brand": {
+    "title": "{brand, select, fujifilm {富士原厂 X 卡口镜头} other {{label}的富士 X 卡口镜头}}",
+    "summary": "{zooms, plural, =0 {{count} 支，全是定焦} other {{primes, plural, =0 {{count} 支，全是变焦} other {{primes} 支定焦、{zooms} 支变焦}}}}，等效 {focal}。",
+    "cineNote": "不含{brand}的 {count} 支电影镜头。",
+    "allLenses": "全部 {count} 支",
+    "relatedCollections": "{brand}的镜头也在这些合集里",
+    "otherBrands": "其他品牌"
   }
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readChartSelection, readChartSelectionFromSearch, writeChartSelection } from "../charts";
-import { chartPath, chartsPath, lineupPath } from "../routes";
+import { brandPath, chartPath, chartsPath } from "../routes";
 
 const brands = ["fujifilm", "sigma"];
 
@@ -37,6 +37,6 @@ describe("chart paths", () => {
   it("sit under the mount", () => {
     expect(chartsPath("X")).toBe("/lenses/x/charts");
     expect(chartPath("X", "weight")).toBe("/lenses/x/charts/weight");
-    expect(lineupPath("X", "viltrox")).toBe("/lenses/x/charts/lineup/viltrox");
+    expect(brandPath("X", "viltrox")).toBe("/lenses/x/brands/viltrox");
   });
 });

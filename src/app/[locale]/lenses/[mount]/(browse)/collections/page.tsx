@@ -12,7 +12,9 @@ import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
 import LensIndexShell from "@/components/browse/LensIndexShell";
 import CollectionChipRail from "@/components/collection/CollectionChipRail";
-import { aboutPath, browsePath, collectionPath } from "@/lib/url/routes";
+import { BRANDS, getBrandLenses } from "@/lib/brands";
+import { brandLabel } from "@/lib/lens/format";
+import { aboutPath, brandPath, browsePath, collectionPath } from "@/lib/url/routes";
 
 type Params = Promise<{ locale: string; mount: string }>;
 
@@ -52,7 +54,6 @@ const GROUP_META = {
   prime: { key: "category_prime", marker: ["PRIME"] },
   zoom: { key: "category_zoom", marker: ["ZOOM"] },
   trait: { key: "category_trait", marker: ["WR"] },
-  brand: { key: "category_brand", marker: ["BRAND"] },
   dedicated: { key: "category_dedicated", marker: ["✦"] },
 } as const satisfies Record<CollectionGroup, { key: string; marker: readonly string[]; markerItalic?: boolean }>;
 
@@ -72,12 +73,36 @@ export default async function CollectionsIndexPage({
   const t = await getTranslations({ locale, namespace: "Collection" });
   const mountLenses = getLensesByMount(resolvedMount, locale);
 
-  const categories = COLLECTION_GROUPS.map(({ group, collections }) => ({
+  const tBrand = await getTranslations({ locale, namespace: "Brands" });
+  const themeCategories = COLLECTION_GROUPS.map(({ group, collections }) => ({
     id: `section-${group}`,
     ...GROUP_META[group],
-    collections,
     label: t(GROUP_META[group].key),
-    count: collections.length,
+    items: collections.map((collection) => ({
+      key: collection.slug,
+      href: collectionPath(resolvedMount, collection.slug),
+      title: localized(collection.title, locale),
+      summary: localized(collection.shortDescription, locale),
+      count: getCollectionStats(collection.slug, locale)?.lensCount ?? 0,
+    })),
+  }));
+  // Brands are not themes but have their own pages; they keep their old place in the list.
+  const brandCategory = {
+    id: "section-brand",
+    marker: ["BRAND"],
+    label: t("category_brand"),
+    items: BRANDS.map((brand) => ({
+      key: brand.slug,
+      href: brandPath(resolvedMount, brand.slug),
+      title: brandLabel(tBrand, brand.slug),
+      summary: localized(brand.shortDescription, locale),
+      count: getBrandLenses(mountLenses, brand.slug).length,
+    })),
+  };
+  const dedicatedAt = themeCategories.findIndex((cat) => cat.id === "section-dedicated");
+  const categories = [...themeCategories.slice(0, dedicatedAt), brandCategory, ...themeCategories.slice(dedicatedAt)].map((cat) => ({
+    ...cat,
+    count: cat.items.length,
   }));
 
   const totalCollections = COLLECTION_GROUPS.reduce((n, g) => n + g.collections.length, 0);
@@ -140,24 +165,23 @@ export default async function CollectionsIndexPage({
           </div>
 
           <div className="grid grid-cols-1 gap-x-10 sm:grid-cols-2">
-            {cat.collections.map((collection) => {
-              const lensCount = getCollectionStats(collection.slug, locale)?.lensCount ?? 0;
+            {cat.items.map((item) => {
               return (
                 <Link
-                  key={collection.slug}
-                  href={collectionPath(resolvedMount, collection.slug)}
+                  key={item.key}
+                  href={item.href}
                   className="group grid grid-cols-[1fr_auto] items-start gap-4 border-b border-zinc-100 py-2.5 transition-colors"
                 >
                   <div>
                     <p className="text-sm font-medium leading-snug text-zinc-900 group-hover:underline">
-                      {localized(collection.title, locale)}
+                      {item.title}
                     </p>
                     <p className="mt-0.5 text-xs leading-[1.45] text-zinc-500">
-                      {localized(collection.shortDescription, locale)}
+                      {item.summary}
                     </p>
                   </div>
                   <span className="pt-0.5 font-mono text-[11px] whitespace-nowrap text-zinc-400">
-                    {t("lensCountShort", { count: lensCount })}
+                    {t("lensCountShort", { count: item.count })}
                   </span>
                 </Link>
               );

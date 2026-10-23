@@ -1,8 +1,10 @@
 import { describe, it, expect } from "vitest";
+import { chartBrands } from "../charts/catalog";
+import { BRANDS, getBrandInfo, getBrandLenses } from "../brands";
 import { COLLECTIONS, getSharedCollections } from "../collections";
 import { getCollectionStats, getRelatedCollectionsWithStats } from "../collection-stats";
 import { isZoom } from "../lens/lens";
-import { getAllLenses } from "../lens/data";
+import { getAllLenses, getLensesByMount } from "../lens/data";
 import type { Lens } from "../types";
 
 const allLenses = getAllLenses("en");
@@ -148,29 +150,8 @@ describe("zoom collections", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Filter predicates — brand/series
+// Filter predicates — series
 // ---------------------------------------------------------------------------
-describe("brand collections", () => {
-  it("fujifilm matches only fujifilm X-photo lenses", () => {
-    const lenses = matchingLenses("fujifilm");
-    expect(lenses.length).toBeGreaterThan(0);
-    for (const l of lenses) {
-      expect(l.brand).toBe("fujifilm");
-      expect(l.mount).toBe("X");
-      expect(l.isCine).not.toBe(true);
-    }
-  });
-
-  it("viltrox collection only includes AF lenses", () => {
-    const lenses = matchingLenses("viltrox");
-    expect(lenses.length).toBeGreaterThan(0);
-    for (const l of lenses) {
-      expect(l.brand).toBe("viltrox");
-      expect(l.af).toBe(true);
-    }
-  });
-});
-
 describe("series collections", () => {
   it("fujifilm-xf matches fujifilm XF series", () => {
     const lenses = matchingLenses("fujifilm-xf");
@@ -400,5 +381,24 @@ describe("getSharedCollections", () => {
       expect(col.filter(lens1, "en")).toBe(true);
       expect(col.filter(lens2, "en")).toBe(true);
     }
+  });
+});
+
+describe("brand pages", () => {
+  it("cover every brand the charts show", () => {
+    const missing = chartBrands(getLensesByMount("X", "en"))
+      .map(({ brand }) => brand)
+      .filter((brand) => !getBrandInfo(brand));
+    expect(missing).toEqual([]);
+  });
+
+  it("list a brand's manual-focus lenses but not its cine lenses", () => {
+    const meike = getBrandLenses(getLensesByMount("X", "en"), "meike");
+    expect(meike.some((lens) => lens.af === false)).toBe(true);
+    expect(meike.some((lens) => lens.isCine)).toBe(false);
+  });
+
+  it("are not also collections", () => {
+    expect(BRANDS.filter((brand) => brand.slug in COLLECTIONS)).toEqual([]);
   });
 });
