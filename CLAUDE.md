@@ -134,6 +134,10 @@ in its README before running it.
 Visual verification must cover desktop and mobile. Use a 375px viewport for mobile. A
 desktop-only screenshot is not evidence that a UI change works.
 
+Text must fit in both locales: don't give a text container a fixed width that only the Chinese copy
+fits. A PR that reworks layout gets the `layout-check` label, which runs the text-layout sweep
+(`e2e/text-layout.spec.ts`: text spilling out of its box or over other text); it also runs weekly.
+
 ## Git workflow
 
 - Commit completed changes and push the current branch immediately without asking for separate
