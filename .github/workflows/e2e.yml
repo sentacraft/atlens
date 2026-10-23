@@ -27,7 +27,7 @@ jobs:
   # The container image must match the locked Playwright version exactly, or its browsers won't
   # match the test runner. Reading it from the lockfile keeps dependency bumps from breaking CI.
   playwright-version:
-    name: Playwright version
+    name: Resolve Playwright image
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
