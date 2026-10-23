@@ -136,3 +136,15 @@ export const MENU_ITEM_CLS =
   "flex items-center gap-2.5 px-4 py-2.5 text-sm text-zinc-600 outline-none transition-colors hover:bg-zinc-50 hover:text-zinc-900 data-[highlighted]:bg-zinc-50 data-[highlighted]:text-zinc-900";
 export const MENU_ITEM_DANGER_CLS =
   "flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 outline-none transition-colors hover:bg-red-50 data-[highlighted]:bg-red-50";
+
+// Brand colors for charts that split counts by brand. Fixed per brand so a color never moves to
+// another brand when counts change; validated as an adjacent set for color-vision deficiency.
+// Brands without a slot share the neutral color.
+export const CHART_BRAND_COLORS: Record<string, string> = {
+  fujifilm: "#2a78d6",
+  sigma: "#eb6834",
+  laowa: "#1baf7a",
+  voigtlander: "#eda100",
+  tamron: "#e87ba4",
+};
+export const CHART_BRAND_OTHER_COLOR = "#a1a1aa";

@@ -972,6 +972,7 @@
     "posterEyebrow": "Atlens · 富士镜头图鉴",
     "posterDataNote": "数据来自 atlens.app · 截至 {date}",
     "timelinePosterCta": "扫码看看你那支是哪年出的",
+    "timelinePosterSubtitle": "{count, number} 支镜头，来自{brands}。",
     "timelinePosterHighlight": "{brand}的镜头已高亮",
     "weightPosterTitle": "最重的，\n是最轻的 {ratio, number} 倍",
     "weightPosterSubtitle": "富士 X 卡口镜头重量天梯：{brandCount} 个品牌、{count} 支镜头，从 {max} 到 {min}",

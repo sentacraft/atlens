@@ -82,7 +82,6 @@ export default async function TimelinePage({ params }: { params: Params }) {
     years: timeline.years,
     brands: timeline.brands,
     title,
-    description,
     dataDate: formatDataDate(meta.lastUpdated, locale),
   };
 

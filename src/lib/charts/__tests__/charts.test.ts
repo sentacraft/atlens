@@ -53,10 +53,26 @@ describe("buildTimeline", () => {
       makeLens({ id: "a", releaseYear: 2012 }),
       makeLens({ id: "b", releaseYear: 2014 }),
     ]);
-    expect(timeline.years).toEqual([
-      { year: 2012, count: 1 },
-      { year: 2013, count: 0 },
-      { year: 2014, count: 1 },
+    expect(timeline.years.map(({ year, count }) => [year, count])).toEqual([
+      [2012, 1],
+      [2013, 0],
+      [2014, 1],
+    ]);
+  });
+
+  it("splits each year by brand, in the chart's brand order", () => {
+    const timeline = buildTimeline([
+      makeLens({ id: "a", releaseYear: 2020 }),
+      makeLens({ id: "b", releaseYear: 2020 }),
+      makeLens({ id: "c", releaseYear: 2020, brand: "sigma" }),
+      makeLens({ id: "d", releaseYear: 2021, brand: "sigma" }),
+    ]);
+    expect(timeline.years.map((y) => y.byBrand)).toEqual([
+      [
+        { brand: "fujifilm", count: 2 },
+        { brand: "sigma", count: 1 },
+      ],
+      [{ brand: "sigma", count: 1 }],
     ]);
   });
 

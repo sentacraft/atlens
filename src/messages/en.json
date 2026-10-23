@@ -972,6 +972,7 @@
     "posterEyebrow": "Atlens · Fujifilm Lens Charts",
     "posterDataNote": "Data from atlens.app, as of {date}",
     "timelinePosterCta": "Scan to find the year your lens came out",
+    "timelinePosterSubtitle": "{count, number} lenses from {brands}.",
     "timelinePosterHighlight": "{brand} lenses highlighted",
     "weightPosterTitle": "The heaviest weighs\n{ratio, number}× the lightest",
     "weightPosterSubtitle": "Fujifilm X-mount lens weight ladder: {count, number} lenses from {brandCount, number} brands, {max} down to {min}",

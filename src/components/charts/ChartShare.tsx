@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { LineupPoster, TimelinePoster, WeightPoster } from "@/components/charts/posters/ChartPosters";
 import { POSTER_WIDTH } from "@/components/charts/posters/PosterFrame";
 import { ShareButton } from "@/components/share/ShareButton";
@@ -56,7 +56,6 @@ type TimelineShareProps = {
   years: TimelineYear[];
   brands: BrandCount[];
   title: string;
-  description: string;
   dataDate: string;
 };
 
@@ -64,9 +63,11 @@ export function TimelineShareFromUrl(props: TimelineShareProps) {
   return <TimelineShare {...props} selection={useSelection(props.brands)} />;
 }
 
-export function TimelineShare({ title, description, dataDate, selection, ...chart }: TimelineShareProps & { selection: ChartSelection }) {
+export function TimelineShare({ title, dataDate, selection, ...chart }: TimelineShareProps & { selection: ChartSelection }) {
   const t = useTranslations("Charts");
   const tBrand = useTranslations("Brands");
+  const locale = useLocale();
+  const brandList = new Intl.ListFormat(locale, { type: "conjunction" }).format(chart.brands.map((b) => brandLabel(tBrand, b.brand)));
   const shareUrl = useShareUrl();
   const brand = selection.brand;
   return (
@@ -79,7 +80,9 @@ export function TimelineShare({ title, description, dataDate, selection, ...char
           selection={{ brand }}
           text={{
             title,
-            subtitle: brand ? t("timelinePosterHighlight", { brand: brandLabel(tBrand, brand) }) : description,
+            subtitle: brand
+              ? t("timelinePosterHighlight", { brand: brandLabel(tBrand, brand) })
+              : t("timelinePosterSubtitle", { count: chart.entries.length, brands: brandList }),
             cta: t("timelinePosterCta"),
             note: t("posterDataNote", { date: dataDate }),
             shareUrl,

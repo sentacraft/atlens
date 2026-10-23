@@ -14,7 +14,7 @@ import { isChartZoom, type BrandCount, type ChartLens } from "@/lib/charts/catal
 import { logFrac, pct } from "@/lib/charts/scale";
 import { brandLabel, focalRangeDisplay } from "@/lib/lens/format";
 import { getLensImageUrl } from "@/lib/lens/image";
-import { TEXT_LINK_CLS } from "@/config/ui-tokens";
+import { CHART_BRAND_COLORS, CHART_BRAND_OTHER_COLOR, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import type { Mount } from "@/lib/types";
 import { lensPath, brandPath } from "@/lib/url/routes";
 import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/charts";
@@ -25,6 +25,8 @@ const TALL = { rowLabel: 24, size: 30, rowGap: 4, rowPad: 10, laneGapFrac: 0.09 
 const TICKS = [8, 15, 24, 35, 50, 85, 135, 200, 300, 600];
 const TALL_TICKS = [15, 35, 85, 200, 600];
 const DIM = 0.08;
+const STRIP_UNIT = 6;
+const STRIP_DIM = 0.25;
 
 type Props = {
   /** A poster is rasterized at a fixed width: the wide chart only, without controls. */
@@ -200,6 +202,8 @@ export default function TimelineChart({ size, mount, entries, years, brands, ini
         </div>
       </div>
 
+      {size === "poster" && <BrandCountStrip years={years} brands={brands} highlight={shown.brand} />}
+
       {size === "responsive" && (
         <>
           {/* Tall layout for phones: one row per year, newest first, focal length across. */}
@@ -268,6 +272,44 @@ export default function TimelineChart({ size, mount, entries, years, brands, ini
           </div>
         </>
       )}
+    </div>
+  );
+}
+
+/** Each year's count split by brand, under the wide chart's columns, with a legend; for posters. */
+function BrandCountStrip({ years, brands, highlight }: { years: TimelineYear[]; brands: BrandCount[]; highlight?: string }) {
+  const tBrand = useTranslations("Brands");
+  const n = years.length;
+  const tallest = Math.max(...years.map((yr) => yr.count));
+  const color = (brand: string) => CHART_BRAND_COLORS[brand] ?? CHART_BRAND_OTHER_COLOR;
+  const dim = (brand: string) => (highlight && brand !== highlight ? STRIP_DIM : 1);
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="relative" style={{ height: tallest * STRIP_UNIT, marginLeft: WIDE.padLeft, marginRight: WIDE.padRight }}>
+        {years.map((yr, col) => (
+          <div
+            key={yr.year}
+            className="absolute bottom-0 flex flex-col-reverse gap-0.5"
+            style={{ left: pct((col + 0.5) / n), width: 18, marginLeft: -9 }}
+          >
+            {yr.byBrand.map(({ brand, count }) => (
+              <span
+                key={brand}
+                className="block rounded-sm"
+                style={{ height: count * STRIP_UNIT - 2, background: color(brand), opacity: dim(brand) }}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+      <ul className="flex flex-wrap justify-center gap-x-5 gap-y-1.5" style={{ marginLeft: WIDE.padLeft, marginRight: WIDE.padRight }}>
+        {brands.map(({ brand, count }) => (
+          <li key={brand} className="flex items-center gap-1.5 text-sm text-zinc-700" style={{ opacity: dim(brand) }}>
+            <span className="size-3 rounded-sm" style={{ background: color(brand) }} aria-hidden="true" />
+            {brandLabel(tBrand, brand)} {count}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

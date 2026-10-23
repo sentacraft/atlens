@@ -11,6 +11,8 @@ export interface TimelineEntry {
 export interface TimelineYear {
   year: number;
   count: number;
+  /** That year's lenses per brand, brands in the chart's overall order, empty ones left out. */
+  byBrand: BrandCount[];
 }
 
 export interface Timeline {
@@ -30,12 +32,17 @@ export function buildTimeline(lenses: Lens[]): Timeline {
     .map((lens) => ({ lens, year: lens.releaseYear, focalMid: Math.sqrt(lens.focalMin * lens.focalMax) }))
     .sort((a, b) => a.year - b.year || a.focalMid - b.focalMid || a.lens.id.localeCompare(b.lens.id));
 
+  const brands = countByBrand(dated);
   const years: TimelineYear[] = [];
   if (entries.length > 0) {
     const first = entries[0].year;
     const last = entries[entries.length - 1].year;
     for (let year = first; year <= last; year++) {
-      years.push({ year, count: entries.filter((entry) => entry.year === year).length });
+      const ofYear = entries.filter((entry) => entry.year === year);
+      const byBrand = brands
+        .map(({ brand }) => ({ brand, count: ofYear.filter((entry) => entry.lens.brand === brand).length }))
+        .filter(({ count }) => count > 0);
+      years.push({ year, count: ofYear.length, byBrand });
     }
   }
 
@@ -44,7 +51,7 @@ export function buildTimeline(lenses: Lens[]): Timeline {
     .map(({ brand }) => brand)
     .filter((brand) => !datedBrands.has(brand));
 
-  return { entries, years, brands: countByBrand(dated), brandsWithoutYear };
+  return { entries, years, brands, brandsWithoutYear };
 }
 
 /**
