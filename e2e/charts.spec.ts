@@ -15,16 +15,17 @@ test.describe("Charts", () => {
     await expect(page).toHaveURL(new RegExp(`${TIMELINE}$`));
   });
 
-  test("the first tap on a timeline lens shows its card, the second opens the lens", async ({ page, hasTouch }) => {
+  test("a tap on a timeline lens opens its sheet instead of the lens page", async ({ page, hasTouch }) => {
     test.skip(!hasTouch, "Touch only; a mouse click opens the lens page");
     const lens = page.getByRole("link", { name: LENS }).locator("visible=true");
+    const sheet = page.getByRole("dialog");
     await expect(async () => {
       await page.goto(TIMELINE, { waitUntil: "networkidle" });
       await lens.tap();
-      await expect(page.getByRole("tooltip").filter({ hasText: LENS })).toBeVisible({ timeout: 1000 });
+      await expect(sheet.getByRole("heading", { name: LENS })).toBeVisible({ timeout: 1000 });
     }).toPass();
     await expect(page).toHaveURL(new RegExp(`${TIMELINE}$`));
-    await lens.tap();
+    await sheet.getByRole("link", { name: "View details" }).click();
     await expect(page).toHaveURL(/\/en\/lenses\/x\/sigma-[^/]+-x$/);
   });
 

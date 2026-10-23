@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import ChartLensCard from "@/components/charts/ChartLensCard";
+import ChartLensSheet from "@/components/charts/ChartLensSheet";
 import ChartChips from "@/components/charts/ChartChips";
 import { useChartCard } from "@/hooks/useChartCard";
 import { useChartSelection } from "@/hooks/useChartSelection";
@@ -52,7 +53,7 @@ export default function TimelineChart({ mode, mount, entries, years, brands, ini
   const t = useTranslations("Charts");
   const tBrand = useTranslations("Brands");
   const { selected, shown, select, setPreview } = useChartSelection(initial);
-  const { active, itemHandlers } = useChartCard();
+  const { active, itemHandlers, sheet } = useChartCard();
   // One brand has few lenses; the full height would leave the section mostly empty.
   const wideHeight = mode.kind === "section" ? WIDE.sectionHeight : WIDE.height;
 
@@ -98,6 +99,7 @@ export default function TimelineChart({ mode, mount, entries, years, brands, ini
     ].join(" · ");
 
   const activeEntry = entries.find((e) => e.lens.id === active);
+  const sheetEntry = entries.find((e) => e.lens.id === sheet.id);
   const n = years.length;
   const colFrac = (col: number) => (col + 0.5) / n;
   const activeWide = wide.placed.find((p) => p.e.lens.id === active);
@@ -280,6 +282,7 @@ export default function TimelineChart({ mode, mount, entries, years, brands, ini
           </div>
         </>
       )}
+      <ChartLensSheet lens={sheetEntry?.lens} spec={sheetEntry ? spec(sheetEntry) : ""} open={sheet.open} onOpenChange={sheet.onOpenChange} />
     </div>
   );
 }

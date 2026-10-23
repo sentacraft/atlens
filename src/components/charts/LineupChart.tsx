@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import ChartLensCard from "@/components/charts/ChartLensCard";
+import ChartLensSheet from "@/components/charts/ChartLensSheet";
 import { useChartCard } from "@/hooks/useChartCard";
 import type { ChartLens } from "@/lib/charts/catalog";
 import type { Lineup } from "@/lib/charts/lineup";
@@ -52,7 +53,7 @@ export default function LineupChart({ lineup, size }: { lineup: Lineup; size: ke
   const t = useTranslations("Charts");
   const container = useRef<HTMLDivElement>(null);
   const [cardPos, setCardPos] = useState<{ left: number; top: number; width?: number }>();
-  const { active, itemHandlers } = useChartCard((el) => {
+  const { active, itemHandlers, sheet } = useChartCard((el) => {
     const box = container.current?.getBoundingClientRect();
     if (!box) {
       return;
@@ -72,6 +73,7 @@ export default function LineupChart({ lineup, size }: { lineup: Lineup; size: ke
 
   const all = [...lineup.primes.flatMap((c) => c.lenses), ...lineup.zooms];
   const activeLens = all.find((l) => l.id === active);
+  const sheetLens = all.find((l) => l.id === sheet.id);
   const spec = (lens: ChartLens) =>
     [
       lens.releaseYear ? t("released", { year: String(lens.releaseYear) }) : undefined,
@@ -155,6 +157,7 @@ export default function LineupChart({ lineup, size }: { lineup: Lineup; size: ke
           style={{ left: Math.round(cardPos.left), top: Math.round(cardPos.top), width: cardPos.width }}
         />
       )}
+      <ChartLensSheet lens={sheetLens} spec={sheetLens ? spec(sheetLens) : ""} open={sheet.open} onOpenChange={sheet.onOpenChange} />
     </div>
   );
 }
