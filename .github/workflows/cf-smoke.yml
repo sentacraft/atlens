@@ -40,6 +40,14 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: nextjs-cf-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('src/**', 'next.config.ts') }}
+          restore-keys: |
+            nextjs-cf-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+
       - name: Build for Cloudflare (OpenNext)
         # `opennextjs-cloudflare build` directly, NOT `pnpm run build:cf` — the
         # latter ends in `populateCache remote`, which uploads to the live
