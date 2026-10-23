@@ -27,7 +27,7 @@ export default async function AnalyticsIrisPage({
   const { env } = getCloudflareContext();
   const events = env.ANALYTICS_DB;
   const { current } = await dashboardWindows(events, range);
-  const [iris, feedback, funnel, perVisitor, opens, messages, newConversations, contextRemovals] = await Promise.all([
+  const [iris, feedback, funnel, perVisitor, opens, messages, newConversations] = await Promise.all([
     loadIris(events, current),
     loadIrisFeedback(env.ASKIRIS_DB, current),
     loadIrisFunnel(events, current),
@@ -35,7 +35,6 @@ export default async function AnalyticsIrisPage({
     loadBreakdown(events, current, "askiris_open", ["entry", "surface"]),
     loadBreakdown(events, current, "askiris_message", ["method", "pool"]),
     loadBreakdown(events, current, "askiris_new_conversation", ["reason"]),
-    loadBreakdown(events, current, "askiris_context_remove", ["page_kind"]),
   ]);
   const ratings = feedback.helpful + feedback.unhelpful;
 
@@ -91,7 +90,6 @@ export default async function AnalyticsIrisPage({
               ]}
             />
             <EventDefinitions event="askiris_new_conversation" fields={["reason"]} />
-            <EventDefinitions event="askiris_context_remove" fields={["page_kind"]} />
           </div>
         }
       >
@@ -111,7 +109,6 @@ export default async function AnalyticsIrisPage({
         <div className="mt-4 space-y-4">
           <BreakdownTree nodes={[groupNode("Asking visitors", perVisitor.distribution)]} unit="Visitors" />
           <BreakdownTree nodes={[groupNode("New conversations", newConversations)]} unit="Events" />
-          <BreakdownTree nodes={[groupNode("Page context removed", contextRemovals)]} unit="Events" />
         </div>
       </Card>
       <Card

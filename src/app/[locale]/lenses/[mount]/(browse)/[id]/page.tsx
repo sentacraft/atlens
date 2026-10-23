@@ -13,7 +13,6 @@ import { Link } from "@/i18n/navigation";
 import { ExternalLink } from "@/components/ui/external-link";
 import LensDetailCompareToggle from "@/components/compare/LensDetailCompareToggle";
 import LensDetailSaveActions from "@/components/lens/LensDetailSaveActions";
-import AskIrisEntry from "@/components/iris/AskIrisEntry";
 import SupportNote from "@/components/support/SupportNote";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import LensDetailTelemetry from "@/components/lens/LensDetailTelemetry";
@@ -173,7 +172,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const tBrand = await getTranslations("Brands");
   const tPricing = await getTranslations("Pricing");
   const tNav = await getTranslations("Nav");
-  const tIris = await getTranslations("IrisEntry");
   const url = getLensUrl(lens, locale);
 
   const brandName = brandLabel(tBrand, lens.brand);
@@ -290,7 +288,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               <div className="flex items-center gap-2">
                 <LensDetailCompareToggle lensId={lens.id} />
                 <RetailersDropdown lens={lens} customId="detail" />
-                <AskIrisEntry id="lens" label={tIris("lensLabel")} labelFit="container" request={{ kind: "page" }} />
               </div>
             </div>
             <LensDetailSaveActions lensId={lens.id} />

@@ -202,6 +202,7 @@
       "about": ["Atlens 的数据是怎么来的？", "收录了哪些品牌？", "有哪些主题合集？", "怎么把 Atlens 装到手机上？"]
     },
     "newChat": "新对话",
+    "resume": "继续上一段：{title}",
     "history": "历史对话",
     "guestChatsKept": "未登录时，对话保留 7 天",
     "backToChat": "返回对话",
@@ -854,7 +855,6 @@
   "Purchase": {
     "whereToBuy": "查询价格",
     "buyAt": "查询价格",
-    "buyAtShort": "价格",
     "disclosureDetail": "部分购买链接含电商平台合作。你的购买价格不受任何影响，但 Atlens 可能从中获得少量佣金。",
     "disclosureNoAffiliate": "Atlens 与平台、商家及厂商均无任何合作。"
   },
@@ -911,30 +911,17 @@
     "ownedRemoved": "已从我的器材移除"
   },
   "IrisEntry": {
-    "browseLabel": "不知道怎么选？问 Iris",
+    "browseLabel": "按筛选帮我挑",
+    "browseQuestion": "按这些条件帮我挑镜头：{filters}",
     "emptyHint": "可以清除几个筛选，或者直接告诉 Iris 你想要什么。",
     "emptyClear": "清除筛选",
     "emptyLabel": "让 Iris 帮你找",
-    "emptyQuestion": "我按这些条件没找到镜头，帮我找找",
-    "compareLabel": "让 Iris 解释差异",
-    "lensLabel": "问问 Iris 这支镜头",
-    "lookingAt": "正在看",
-    "comparing": "正在对比 {count, number} 支",
-    "browsing": "正在浏览镜头库",
-    "noFilters": "全部镜头",
-    "detach": "不带上这个页面",
-    "lensHeading": "关于这支镜头，可以问：",
-    "compareHeading": "关于这几支镜头，可以问：",
-    "browseHeading": "按现在的筛选，可以问：",
-    "lensSuggestions": ["适合拍什么？", "和同焦段的其他镜头比怎么样？", "对焦马达那一栏是什么意思？"],
-    "compareSuggestions": ["主要差在哪？", "日常带出门选哪支？"],
-    "browseSuggestions": ["按我现在的筛选，该怎么选？", "这里面最轻的几支是哪些？"],
-    "lensPlaceholder": "关于这支镜头，想问什么？",
-    "comparePlaceholder": "关于这几支镜头，想问什么？",
-    "browsePlaceholder": "想找什么样的镜头？",
-    "newConversation": "新对话。上一段对话已存进历史记录。",
-    "browseName": "镜头库",
-    "compareName": "对比页"
+    "emptyQuestion": "按这些条件没找到镜头：{filters}。帮我找找",
+    "compareLabel": "解释差异",
+    "compareQuestion": "{names} 主要差在哪？",
+    "compareDaily": "{names} 日常带出门选哪支？",
+    "lensUse": "{name} 适合拍什么？",
+    "lensTradeoffs": "{name} 有哪些优缺点？"
   },
   "Support": {
     "title": "支持 Atlens",

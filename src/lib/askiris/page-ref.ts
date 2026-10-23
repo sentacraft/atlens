@@ -6,7 +6,7 @@ import type { Mount } from "@/lib/types";
 import { routing } from "@/i18n/routing";
 import type { NamespaceTranslator } from "@/i18n/translator";
 
-/** A page Iris can talk about, read from its path. Lens ids are unchecked: callers look them up. */
+/** A page whose lenses or filters Iris's example questions can name, read from its path. Lens ids are unchecked: callers look them up. */
 export type PageRef =
   | { kind: "browse"; mount: Mount; filters: FilterState }
   | { kind: "compare"; mount: Mount; lensIds: string[] }
@@ -44,21 +44,7 @@ export function parsePagePath(path: string): PageRef | null {
   return NOT_A_LENS.has(page) ? null : { kind: "lens", mount, lensId: page };
 }
 
-/** Two paths with the same key are the same page for a conversation: filters may change, the lenses may not. */
-export function pageKey(page: PageRef | null): string | null {
-  if (!page) {
-    return null;
-  }
-  if (page.kind === "browse") {
-    return `browse:${page.mount}`;
-  }
-  if (page.kind === "compare") {
-    return `compare:${page.mount}:${[...page.lensIds].sort().join(",")}`;
-  }
-  return `lens:${page.lensId}`;
-}
-
-export interface FilterLabels {
+interface FilterLabels {
   brand: (slug: string) => string;
   list: NamespaceTranslator<"LensList">;
   badge: NamespaceTranslator<"SpecialtyBadge">;

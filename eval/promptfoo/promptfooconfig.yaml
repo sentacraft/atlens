@@ -122,8 +122,7 @@ assertions:
       recommending lenses for the user to choose from, yet none of them is on a card
       or in a table, only listed in the prose. Once the main picks are on cards or in
       a table, any other lens the prose mentions, in any role, is fine. Comparing
-      lenses the user named, or the lenses on the page the user is looking at, in
-      prose or in a table needs no cards. A reply that puts no lens forward passes.
+      lenses the user named, in prose or in a table, needs no cards. A reply that puts no lens forward passes.
 
 defaultTest:
   # Runs on EVERY case. The javascript checks cover what is verifiable
@@ -1022,8 +1021,7 @@ tests:
           Iris's facts list what it can do — find and recommend lenses as cards, lay them out
           in a spec table, explain how they differ, look up specs, use a signed-in user's saved
           gear and favorites, answer questions about Atlens with links to the pages that say
-          more, link to collections and the compare page, and see the lenses or filters on the
-          page it was opened from — and its limits: it can be wrong, it only knows what Atlens
+          more, link to collections and the compare page — and its limits: it can be wrong, it only knows what Atlens
           has collected, and it has usage limits. The reply must not claim an ability outside
           that list, such as placing orders, quoting live prices, or searching other websites;
           looking something up in Atlens's own facts is not browsing the web. It should mention
@@ -1260,28 +1258,6 @@ tests:
           length overlaps what they own and what it still adds — mainly the f/1.2 aperture —
           so the user can judge. It fails if it says there is no overlap, or states any of
           these focal lengths or equivalents wrongly.
-
-  # Page context: asked from the compare page, "these two" means the lenses on that page.
-  - description: page-compare
-    metadata:
-      area: page
-    vars:
-      mount: X
-      locale: zh
-      namesModels: true
-      page: /zh/lenses/x/compare?ids=fujifilm-xf-23mmf2-r-wr-x,fujifilm-xf-35mmf2-r-wr-x
-      dialog:
-        turns:
-          - "这两支哪个更适合扫街？"
-    assert:
-      - *card_quality
-      - type: llm-rubric
-        metric: page
-        provider: *behavior_grader
-        value: >-
-          The user is on the compare page for the XF 23mm F2 R WR and the XF 35mm F2 R WR. The
-          reply should answer about those two lenses. It fails if it asks which two lenses the
-          user means, or answers about other lenses instead.
 
   # Mount: a G-mount request recommends G-mount lenses (the default checks hold the mount).
   - description: gfx-landscape

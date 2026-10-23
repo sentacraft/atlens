@@ -3,7 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import { toast } from "sonner";
 import { track } from "@/lib/analytics/analytics";
-import type { StarterPool } from "@/lib/askiris/starter-questions";
+import type { PageStarter, Starter } from "@/lib/askiris/starter-questions";
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
@@ -25,8 +25,7 @@ import {
   URL_CONVERSATION_LOCATION,
   type AskIrisEntry,
 } from "@/lib/url/askiris";
-import { pageKey, parsePagePath } from "@/lib/askiris/page-ref";
-import { PageContextCard, PageContextStart, usePageContextView } from "@/components/askiris/PageContext";
+import { usePageStarters } from "@/components/askiris/usePageStarters";
 import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import AskIrisEmptyState from "@/components/askiris/AskIrisEmptyState";
 import AskIrisError, { classifyError } from "@/components/askiris/AskIrisError";
@@ -42,17 +41,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ACTION_OUTLINE_CLS, ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
-import { History, Maximize2, Minimize2, Plus, X } from "lucide-react";
+import { ArrowRight, History, Maximize2, Minimize2, Plus, X } from "lucide-react";
 import AiTag from "@/components/iris/AiTag";
 import { ConversationHistoryPopover, ConversationHistoryView } from "@/components/askiris/ConversationHistory";
 import { useBreakpoint } from "@/hooks/useViewport";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { openChat, setModelPreset } from "@/components/askiris/live-chats";
 
-type ConversationSwitch = { kind: "select"; id: string } | { kind: "new"; reason: "manual" | "page_change" };
+type ConversationSwitch = { kind: "select"; id: string } | { kind: "new"; reason: "manual" | "reopen" };
 
 /** How a message came to be sent, for analytics. */
-type MessageSource = { method: "typed" | "handoff" | "suggestion" } | { method: "starter"; pool: StarterPool };
+type MessageSource = { method: "typed" | "handoff" } | { method: "starter"; pool: (Starter | PageStarter)["pool"] };
 
 const TOP_BAR_BTN_CLS = cn(ICON_NAV_BTN_CLS, "h-9 gap-1.5 px-2.5 text-sm");
 
@@ -64,7 +63,7 @@ const SHELL_CLS = {
 
 /**
  * Where the chat lives: the Ask Iris page, or the side panel that follows the user across
- * pages; `pagePath` is the page beside the panel, which `expanded` covers.
+ * pages; `pagePath` is the page beside the panel, which picks its first example questions.
  */
 export type AskIrisShell =
   | { variant: "page"; entry: AskIrisEntry; starterSeed: number }
@@ -93,7 +92,6 @@ export default function AskIrisChat({
 }) {
   const entry = shell.variant === "page" ? shell.entry : NO_ENTRY;
   const t = useTranslations("AskIris");
-  const tEntry = useTranslations("IrisEntry");
   const openSignIn = useSignInDialog();
   const locale = useLocale();
   const mount = useEffectiveMount();
@@ -106,16 +104,10 @@ export default function AskIrisChat({
   const historyAsPopover = useBreakpoint("lg");
   const [signingIn, setSigningIn] = useState(false);
   const [pendingSwitch, setPendingSwitch] = useState<ConversationSwitch | null>(null);
-  // Whether the page goes along with each turn; the context card's × turns it off.
-  const [attached, setAttached] = useState(true);
-  // The page key this conversation is about, set by its first turn; undefined when not known.
-  const [conversationPage, setConversationPage] = useState<string | null | undefined>();
-  const [freshNotice, setFreshNotice] = useState(false);
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
-  const pagePath = shell.variant === "panel" ? shell.pagePath : null;
-  const pageView = usePageContextView(pagePath, lenses);
-  const contextView = attached ? pageView : null;
-  const contextPath = contextView ? pagePath : null;
+  // The conversation an opening left for a new one, offered back until another is picked.
+  const [resumeId, setResumeId] = useState<string | null>(null);
+  const pageStarters = usePageStarters(shell.variant === "panel" ? shell.pagePath : null, lenses);
   const { data: session } = authClient.useSession();
   // Guests have a session too, and their own stored conversations.
   const userId = session?.user.id;
@@ -165,7 +157,7 @@ export default function AskIrisChat({
     location: shell.variant === "page" ? URL_CONVERSATION_LOCATION : DETACHED_CONVERSATION_LOCATION,
   });
   const chatError = status === "error" ? classifyError(error) : null;
-  const turnBody = () => ({ mount, locale, ...(contextPath ? { page: contextPath } : {}) });
+  const turnBody = () => ({ mount, locale });
 
   useEffect(() => {
     track("askiris_view");
@@ -181,9 +173,6 @@ export default function AskIrisChat({
         toast.error(t("errorUnavailable"));
         return false;
       }
-    }
-    if (messages.length === 0) {
-      setConversationPage(pageKey(contextPath ? parsePagePath(contextPath) : null));
     }
     void sendMessage({ text }, { body: turnBody() });
     track("askiris_message", source);
@@ -216,7 +205,7 @@ export default function AskIrisChat({
     handleEntry();
   }, [entry.question]);
 
-  // An entry on another page than the conversation's starts a new conversation about this one.
+  // Each opening starts a new conversation, except over a reply still being written.
   const receiveRequest = useEffectEvent((request: IrisPanelRequest) => {
     if (request.kind === "conversation") {
       requestSwitch({ kind: "select", id: request.conversationId });
@@ -228,13 +217,11 @@ export default function AskIrisChat({
       }
       return;
     }
-    const here = shell.variant === "panel" ? pageKey(parsePagePath(shell.pagePath)) : null;
-    const fresh = messages.length > 0 && conversationPage !== here;
+    const fresh = messages.length > 0;
     if (fresh) {
-      switchConversation({ kind: "new", reason: "page_change" });
-      setFreshNotice(true);
+      switchConversation({ kind: "new", reason: "reopen" });
+      setResumeId(conversationId);
     }
-    setAttached(true);
     if (request.kind === "question") {
       if (fresh) {
         setPendingQuestion(request.text);
@@ -290,9 +277,7 @@ export default function AskIrisChat({
 
   function switchConversation(target: ConversationSwitch) {
     setHistoryOpen(false);
-    setAttached(true);
-    setConversationPage(undefined);
-    setFreshNotice(false);
+    setResumeId(null);
     if (target.kind === "new") {
       track("askiris_new_conversation", { reason: target.reason });
       conversation.startNewConversation();
@@ -323,13 +308,6 @@ export default function AskIrisChat({
     requestSwitch({ kind: "new", reason: "manual" });
   }
 
-  function detachContext() {
-    if (contextView) {
-      track("askiris_context_remove", { page_kind: contextView.kind });
-    }
-    setAttached(false);
-  }
-
   const shellCls =
     shell.variant === "page" ? SHELL_CLS.page : shell.expanded ? SHELL_CLS.expandedPanel : SHELL_CLS.panel;
   const historyProps = {
@@ -358,8 +336,17 @@ export default function AskIrisChat({
   ) : (
     historyButton
   );
-  const notice = freshNotice ? (
-    <p className="rounded-xl bg-zinc-100 px-3 py-2 text-xs leading-relaxed text-zinc-600">{tEntry("newConversation")}</p>
+  // Only a stored conversation can be reopened; one whose first turn failed never was.
+  const resumable = conversation.conversations.find((item) => item.id === resumeId);
+  const resume = resumable ? (
+    <button
+      type="button"
+      onClick={() => requestSwitch({ kind: "select", id: resumable.id })}
+      className="flex w-full shrink-0 items-center justify-between gap-3 rounded-xl bg-zinc-100 px-3 py-2.5 text-left text-[13px] text-zinc-700 transition-colors hover:bg-zinc-200/70"
+    >
+      <span className="truncate">{t("resume", { title: resumable.title })}</span>
+      <ArrowRight className="size-4 shrink-0 text-zinc-500" />
+    </button>
   ) : null;
   const topBar = shell.variant === "panel" ? (
     <div className="-mx-1 flex h-12 shrink-0 items-center justify-between">
@@ -423,38 +410,11 @@ export default function AskIrisChat({
     );
   }
 
-  if (renderMessages.length === 0 && contextView && !entry.question && !pendingQuestion) {
-    return (
-      <div className={shellCls}>
-        {topBar}
-        <PageContextStart
-          view={contextView}
-          notice={notice}
-          onDetach={detachContext}
-          onSuggestion={(text) => void submitText(text, { method: "suggestion" })}
-          disabled={isBusy}
-          composer={
-            <AskIrisComposer
-              size="md"
-              value={input}
-              onChange={setInput}
-              onSubmit={() => void submitText(input)}
-              disabled={isBusy}
-              placeholder={contextView.placeholder}
-              sendLabel={t("send")}
-              autoFocus
-            />
-          }
-        />
-      </div>
-    );
-  }
-
   if (renderMessages.length === 0 && !entry.question && !pendingQuestion) {
     return (
       <div className={shellCls}>
         {topBar}
-        {notice}
+        {resume}
         <AskIrisEmptyState
           variant={shell.variant === "page" ? "page" : shell.layout}
           openCount={shell.variant === "page" ? 1 : shell.openCount}
@@ -463,6 +423,7 @@ export default function AskIrisChat({
           onSubmit={() => void submitText(input)}
           onStarter={(starter) => void submitText(starter.text, { method: "starter", pool: starter.pool })}
           starterSeed={shell.variant === "page" ? shell.starterSeed : null}
+          pageStarters={pageStarters}
           disabled={isBusy}
         />
       </div>
@@ -473,12 +434,6 @@ export default function AskIrisChat({
     <ChatLinkProvider targets={linkTargets}>
       <div className={shellCls}>
         {topBar}
-        {notice}
-        {contextView && (
-          <div className="flex pt-1">
-            <PageContextCard view={contextView} variant="chip" onDetach={detachContext} />
-          </div>
-        )}
         <div className="relative min-h-0 flex-1">
           <div
             ref={scrollRef}

@@ -141,7 +141,7 @@ export default function HomeHeroActions() {
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0, transition: { delay: 0.2 + index * 0.035, duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
                   >
-                    <ExampleQuestion disabled={false} onClick={() => ask(example.text, example.pool)}>
+                    <ExampleQuestion tone="general" disabled={false} onClick={() => ask(example.text, example.pool)}>
                       {example.text}
                     </ExampleQuestion>
                   </motion.div>

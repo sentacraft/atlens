@@ -11,6 +11,8 @@ import { ShareButton } from "@/components/share/ShareButton";
 import ShareFAB from "@/components/share/ShareFAB";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import AskIrisEntry from "@/components/iris/AskIrisEntry";
+import { usePageQuestions } from "@/components/iris/usePageQuestions";
+import { brandLabel, lensDisplayName } from "@/lib/lens/format";
 import { UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { useCompare } from "@/context/CompareProvider";
 import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
@@ -26,6 +28,8 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
   const t = useTranslations("Compare");
   const tList = useTranslations("LensList");
   const tIris = useTranslations("IrisEntry");
+  const tBrand = useTranslations("Brands");
+  const irisQuestions = usePageQuestions();
   const { compareIds } = useCompare();
   const search = useCompareLensSearch();
   const clearCompareWithUndo = useClearCompareWithUndo();
@@ -43,7 +47,7 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
 
   return (
     <>
-      <div className={`flex items-center gap-3 ${isEmpty ? "hidden sm:flex" : ""}`}>
+      <div className={`flex flex-wrap items-center gap-x-3 gap-y-2 ${isEmpty ? "hidden sm:flex" : ""}`}>
         <h1 className="hidden sm:block text-2xl font-bold text-zinc-900">
           {t("title")}
         </h1>
@@ -85,8 +89,11 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
             <AskIrisEntry
               id="compare"
               label={tIris("compareLabel")}
-              labelFit="phone"
-              request={{ kind: "page" }}
+              question={
+                irisQuestions.compare(
+                  activeLenses.map((lens) => lensDisplayName(brandLabel(tBrand, lens.brand), lens.series, lens.model)),
+                )[0]
+              }
               className="mr-1 h-9 max-sm:px-3"
             />
           )}

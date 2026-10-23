@@ -26,7 +26,7 @@ every LLM-graded assertion is a paid judge call. Run as little as answers the qu
 - Batch prompt edits and evaluate them together, not after each tweak.
 - While iterating, run only the area the change touches, once:
   `--filter-metadata area=<area>`, where each case's `metadata.area` is one of `recommend`,
-  `guard`, `gear`, `site`, `links`, `favorites`, `terms`, `table`, `page`
+  `guard`, `gear`, `site`, `links`, `favorites`, `terms`, `table`
   (`--filter-pattern` still picks single cases by name).
 - Run the full suite once per PR when prompt or tool work is done, and when switching models.
 - After a run, rerun only what failed (`--filter-failing <eval id or results file>`), not the

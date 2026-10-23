@@ -21,9 +21,14 @@ vi.mock("@/components/iris-panel/IrisPanel", () => ({
   }: {
     layout: string;
     shown: boolean;
-    request: { kind: string; text?: string; conversationId?: string } | null;
+    request: { id: number; kind: string; text?: string; conversationId?: string } | null;
   }) => (
-    <div data-testid="panel" data-layout={layout} data-shown={String(shown)}>
+    <div
+      data-testid="panel"
+      data-layout={layout}
+      data-shown={String(shown)}
+      data-request={request ? `${request.id}:${request.kind}` : ""}
+    >
       {request?.text ?? request?.conversationId}
     </div>
   ),
@@ -46,7 +51,7 @@ function Ask() {
       <button type="button" onClick={closeIris}>
         close
       </button>
-      <button type="button" onClick={() => openIris({ from: "lens", request: { kind: "question", text: "Which 23mm?" } })}>
+      <button type="button" onClick={() => openIris({ from: "alternatives", request: { kind: "question", text: "Which 23mm?" } })}>
         ask
       </button>
       <button type="button" onClick={() => openIris({ from: "nav" })}>
@@ -88,7 +93,7 @@ describe("IrisPanelProvider", () => {
     expect(screen.getByTestId("panel")).toHaveTextContent("Which 23mm?");
     expect(document.documentElement.style.getPropertyValue("--iris-panel-width")).toBe("400px");
     expect(push).not.toHaveBeenCalled();
-    expect(track).toHaveBeenLastCalledWith("askiris_open", { entry: "lens", surface: "panel", pool: undefined });
+    expect(track).toHaveBeenLastCalledWith("askiris_open", { entry: "alternatives", surface: "panel", pool: undefined });
   });
 
   it("opens a bottom sheet on a narrow screen, without making room beside the page", () => {
@@ -101,7 +106,7 @@ describe("IrisPanelProvider", () => {
     expect(screen.getByTestId("panel")).toHaveTextContent("Which 23mm?");
     expect(document.documentElement.style.getPropertyValue("--iris-panel-width")).toBe("0px");
     expect(push).not.toHaveBeenCalled();
-    expect(track).toHaveBeenLastCalledWith("askiris_open", { entry: "lens", surface: "sheet", pool: undefined });
+    expect(track).toHaveBeenLastCalledWith("askiris_open", { entry: "alternatives", surface: "sheet", pool: undefined });
   });
 
   it("opens the sheet from the nav on a narrow screen, as on a wide one", () => {
@@ -113,6 +118,16 @@ describe("IrisPanelProvider", () => {
     expect(screen.getByTestId("panel")).toHaveAttribute("data-shown", "true");
     expect(screen.getByTestId("shown")).toHaveTextContent("true");
     expect(track).toHaveBeenLastCalledWith("askiris_open", { entry: "nav", surface: "sheet", pool: undefined });
+  });
+
+  it("hands the panel a new opening each time the nav opens it, so the chat starts fresh", () => {
+    renderProvider();
+    fireEvent.click(screen.getByRole("button", { name: "nav" }));
+    expect(screen.getByTestId("panel")).toHaveAttribute("data-request", "1:open");
+
+    fireEvent.click(screen.getByRole("button", { name: "close" }));
+    fireEvent.click(screen.getByRole("button", { name: "nav" }));
+    expect(screen.getByTestId("panel")).toHaveAttribute("data-request", "2:open");
   });
 
   it("closes the panel and reports Iris hidden", () => {

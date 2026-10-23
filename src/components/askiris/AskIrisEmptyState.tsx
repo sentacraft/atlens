@@ -8,7 +8,7 @@ import AskIrisComposer from "@/components/askiris/AskIrisComposer";
 import { cn } from "@/lib/utils";
 import ExampleQuestion from "@/components/askiris/ExampleQuestion";
 import { useStarters } from "@/components/askiris/useStarters";
-import type { Starter } from "@/lib/askiris/starter-questions";
+import type { PageStarter, Starter } from "@/lib/askiris/starter-questions";
 
 const HERO_SIZE = { page: IRIS_ASSISTANT.size, side: IRIS_ASSISTANT.size, sheet: 64 } as const;
 
@@ -20,6 +20,7 @@ export default function AskIrisEmptyState({
   onSubmit,
   onStarter,
   starterSeed,
+  pageStarters,
   disabled,
 }: {
   /** side and sheet: the Iris panel beside the page, which drops the hero on a short screen. */
@@ -30,14 +31,17 @@ export default function AskIrisEmptyState({
   onInputChange: (value: string) => void;
   onSubmit: () => void;
   /** Sends an example question as it is. */
-  onStarter: (starter: Starter) => void;
+  onStarter: (starter: Starter | PageStarter) => void;
   /** From the server where this renders there, so hydration shows the same questions. */
   starterSeed: number | null;
+  /** About the page beside the panel; they take the first places, keeping the count. */
+  pageStarters: PageStarter[];
   disabled: boolean;
 }) {
   const t = useTranslations("AskIris");
   const panel = variant !== "page";
-  const starters = useStarters({ compact: panel, seed: starterSeed });
+  const general = useStarters({ compact: panel, seed: starterSeed });
+  const starters = [...pageStarters, ...general].slice(0, Math.max(general.length, pageStarters.length));
 
   return (
     <div
@@ -87,7 +91,7 @@ export default function AskIrisEmptyState({
       <div className="flex flex-wrap items-center justify-center gap-2.5 max-sm:min-h-0 max-sm:w-full max-sm:flex-col max-sm:content-start max-sm:overflow-hidden">
         {starters.map((starter) => (
           <div key={starter.text} className="max-sm:flex max-sm:w-full max-sm:justify-center">
-            <ExampleQuestion disabled={disabled} onClick={() => onStarter(starter)}>
+            <ExampleQuestion tone={starter.pool === "page" ? "page" : "general"} disabled={disabled} onClick={() => onStarter(starter)}>
               {starter.text}
             </ExampleQuestion>
           </div>
