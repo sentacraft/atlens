@@ -22,6 +22,11 @@ const nextConfig: NextConfig = {
     // reached 6.5 GB. https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopackGc
     turbopackGc: true,
   },
+  // Skips the build's own type check (about 12s): `pnpm run typecheck` covers it in CI and
+  // `pnpm run check`, route types included. Builds that skip both no longer catch type errors.
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   // Unoptimized: on Workers the image endpoint needs a paid IMAGES binding, and the lens images
   // are already optimized webp.
   images: {
