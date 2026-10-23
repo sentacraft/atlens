@@ -82,7 +82,7 @@ export default async function WeightPage({ params }: { params: Params }) {
       >
         <DataSourceInline />
       </ChartsHeader>
-      <Suspense fallback={<WeightLadderChart {...chartProps} initial={{}} />}>
+      <Suspense fallback={<WeightLadderChart tiers={ladder.tiers} mode={{ kind: "page", initial: {}, mount: data.resolvedMount, brands: data.brands }} />}>
         <WeightLadderChartFromUrl {...chartProps} />
       </Suspense>
       <p className="mt-6 text-xs leading-relaxed text-zinc-500">{t("weightNote", { count: data.cineCount })}</p>

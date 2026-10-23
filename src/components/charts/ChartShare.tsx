@@ -2,46 +2,29 @@
 
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { LineupPoster, TimelinePoster, WeightPoster } from "@/components/charts/posters/ChartPosters";
-import { POSTER_WIDTH } from "@/components/charts/posters/PosterFrame";
+import LineupChart from "@/components/charts/LineupChart";
+import TimelineChart from "@/components/charts/TimelineChart";
+import WeightLadderChart from "@/components/charts/WeightLadderChart";
+import PosterFrame, { POSTER_WIDTH } from "@/components/charts/posters/PosterFrame";
 import { ShareButton } from "@/components/share/ShareButton";
-import { UTILITY_BTN_CLS } from "@/config/ui-tokens";
-import { useShareUrl } from "@/hooks/useShareUrl";
-import type { BrandCount, ChartLens } from "@/lib/charts/catalog";
+import { matchesChartSelection, type BrandCount } from "@/lib/charts/catalog";
 import type { Lineup } from "@/lib/charts/lineup";
 import type { TimelineEntry, TimelineYear } from "@/lib/charts/timeline";
 import type { WeightTier } from "@/lib/charts/weight";
 import { brandLabel } from "@/lib/lens/format";
 import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/charts";
-import type { Mount } from "@/lib/types";
-import { cn } from "@/lib/utils";
 
-const TRIGGER_CLS = {
-  utility: UTILITY_BTN_CLS,
-  section: cn(UTILITY_BTN_CLS, "shrink-0 font-sans font-normal"),
-};
+type ChartPoster = { label: string; fileName: string; content: (shareUrl: string) => React.ReactNode };
 
-/**
- * The chart share button with its heading and caption; the poster says what is on screen. A page
- * puts it among its header utilities; a brand page also puts one beside each chart's heading.
- */
-function ChartShareButton({
-  title,
-  posters,
-  trigger = "utility",
-}: {
-  title: string;
-  posters: { label: string; fileName: string; content: React.ReactNode }[];
-  trigger?: keyof typeof TRIGGER_CLS;
-}) {
+/** The chart share panel's heading and caption around its posters; the poster says what is on screen. */
+function ChartShareButton({ title, posters, trigger }: { title: string; posters: ChartPoster[]; trigger: "utility" | "section" }) {
   const t = useTranslations("Charts");
   return (
     <ShareButton
       heading={t("shareChart")}
       caption={t("shareCaption")}
-      label={trigger === "utility" ? undefined : t("shareChart")}
       shareText={t("shareText", { title })}
-      triggerClassName={TRIGGER_CLS[trigger]}
+      trigger={trigger}
       posters={posters.map((poster) => ({ ...poster, width: POSTER_WIDTH, imageText: t("shareText", { title }) }))}
     />
   );
@@ -52,7 +35,6 @@ function useSelection(brands: BrandCount[]): ChartSelection {
 }
 
 type TimelineShareProps = {
-  mount: Mount;
   entries: TimelineEntry[];
   years: TimelineYear[];
   brands: BrandCount[];
@@ -64,29 +46,32 @@ export function TimelineShareFromUrl(props: TimelineShareProps) {
   return <TimelineShare {...props} selection={useSelection(props.brands)} />;
 }
 
-export function TimelineShare({ title, dataDate, selection, ...chart }: TimelineShareProps & { selection: ChartSelection }) {
+export function TimelineShare({ entries, years, brands, title, dataDate, selection }: TimelineShareProps & { selection: ChartSelection }) {
   const t = useTranslations("Charts");
   const tBrand = useTranslations("Brands");
   const locale = useLocale();
-  const brandList = new Intl.ListFormat(locale, { type: "conjunction" }).format(chart.brands.map((b) => brandLabel(tBrand, b.brand)));
-  const shareUrl = useShareUrl();
+  const brandList = new Intl.ListFormat(locale, { type: "conjunction" }).format(brands.map((b) => brandLabel(tBrand, b.brand)));
   const brand = selection.brand;
-  const poster = (
-    <TimelinePoster
-      {...chart}
-      selection={{ brand }}
-      text={{
-        title,
-        subtitle: brand
-          ? t("timelinePosterHighlight", { brand: brandLabel(tBrand, brand) })
-          : t("timelinePosterSubtitle", { count: chart.entries.length, brands: brandList }),
-        cta: t("timelinePosterCta"),
-        note: t("posterDataNote", { date: dataDate }),
-        shareUrl,
-      }}
+  const subtitle = brand
+    ? t("timelinePosterHighlight", { brand: brandLabel(tBrand, brand) })
+    : t("timelinePosterSubtitle", { count: entries.length, brands: brandList });
+  return (
+    <ChartShareButton
+      trigger="utility"
+      title={title}
+      posters={[
+        {
+          label: t("posterTimeline"),
+          fileName: brand ? `timeline_${brand}` : "timeline",
+          content: (shareUrl) => (
+            <PosterFrame title={title} subtitle={subtitle} cta={t("timelinePosterCta")} note={t("posterDataNote", { date: dataDate })} shareUrl={shareUrl}>
+              <TimelineChart mode={{ kind: "poster", highlight: brand }} entries={entries} years={years} />
+            </PosterFrame>
+          ),
+        },
+      ]}
     />
   );
-  return <ChartShareButton title={title} posters={[{ label: t("posterTimeline"), fileName: brand ? `timeline_${brand}` : "timeline", content: poster }]} />;
 }
 
 type WeightShareProps = {
@@ -107,46 +92,46 @@ export function WeightShare({ tiers, brands, title, count, maxG, minG, dataDate,
   const t = useTranslations("Charts");
   const tBrand = useTranslations("Brands");
   const tList = useTranslations("LensList");
-  const shareUrl = useShareUrl();
-  const matches = (lens: ChartLens) =>
-    (!selection.brand || lens.brand === selection.brand) && (!selection.focal || lens.focalCategories.includes(selection.focal));
   const filters = [
     selection.brand && brandLabel(tBrand, selection.brand),
     selection.focal && tList(`category-${selection.focal}`),
   ].filter(Boolean);
-  const shown = tiers.reduce((n, tier) => n + tier.lenses.filter(matches).length, 0);
+  const shown = tiers.reduce((n, tier) => n + tier.lenses.filter((lens) => matchesChartSelection(lens, selection)).length, 0);
+  const subtitle =
+    filters.length > 0
+      ? t("weightPosterFiltered", { filters: filters.join(" · "), count: shown })
+      : t("weightPosterSubtitle", {
+          brandCount: brands.length,
+          count,
+          max: t("weight", { weight: maxG }),
+          min: t("weight", { weight: minG }),
+        });
   const note = [t("weightPosterNote"), t("posterDataNote", { date: dataDate })].join(" · ");
-  const poster = (
-    <WeightPoster
-      tiers={tiers}
-      matches={matches}
-      text={{
-        title,
-        subtitle:
-          filters.length > 0
-            ? t("weightPosterFiltered", { filters: filters.join(" · "), count: shown })
-            : t("weightPosterSubtitle", {
-                brandCount: brands.length,
-                count,
-                max: t("weight", { weight: maxG }),
-                min: t("weight", { weight: minG }),
-              }),
-        cta: t("weightPosterCta"),
-        note,
-        shareUrl,
-      }}
+  return (
+    <ChartShareButton
+      trigger="utility"
+      title={title}
+      posters={[
+        {
+          label: t("tabWeight"),
+          fileName: ["weight", selection.brand, selection.focal].filter(Boolean).join("_"),
+          content: (shareUrl) => (
+            <PosterFrame title={title} subtitle={subtitle} cta={t("weightPosterCta")} note={note} shareUrl={shareUrl}>
+              <WeightLadderChart tiers={tiers} mode={{ kind: "poster", selection }} />
+            </PosterFrame>
+          ),
+        },
+      ]}
     />
   );
-  return <ChartShareButton title={title} posters={[{ label: t("tabWeight"), fileName: ["weight", selection.brand, selection.focal].filter(Boolean).join("_"), content: poster }]} />;
 }
 
-/**
- * A brand page shares its lineup, and its release timeline when its lenses have years; `only`
- * narrows it to one of them, for the button beside that chart's heading.
- */
+type BrandPoster = "lineup" | "timeline";
+
+/** A brand page's lineup and release-timeline posters; the timeline is left out when no lens has a year. */
 export function BrandShare({
-  only,
-  mount,
+  posters,
+  trigger,
   lineup,
   timeline,
   name,
@@ -155,10 +140,10 @@ export function BrandShare({
   summary,
   dataDate,
 }: {
-  only?: "lineup" | "timeline";
-  mount: Mount;
+  posters: BrandPoster[];
+  trigger: "utility" | "section";
   lineup: Lineup;
-  timeline: { entries: TimelineEntry[]; years: TimelineYear[]; brands: BrandCount[] };
+  timeline: { entries: TimelineEntry[]; years: TimelineYear[] };
   name: string;
   otherBrands: number;
   title: string;
@@ -167,62 +152,53 @@ export function BrandShare({
 }) {
   const t = useTranslations("Charts");
   const tBrand = useTranslations("Brand");
-  const shareUrl = useShareUrl();
   const note = t("posterDataNote", { date: dataDate });
-  const posters = [
-    {
-      key: "lineup",
+  const made: Record<BrandPoster, ChartPoster | undefined> = {
+    lineup: {
       label: t("posterLineup"),
       fileName: `lineup_${lineup.brand}`,
-      content: (
-        <LineupPoster
-          lineup={lineup}
-          text={{
-            title: t("lineupPosterTitle", { brand: lineup.brand, label: name, count: lineup.count }),
-            subtitle: summary,
-            cta: t("lineupPosterCta", { others: otherBrands }),
-            note,
-            shareUrl,
-          }}
-        />
+      content: (shareUrl) => (
+        <PosterFrame
+          title={t("lineupPosterTitle", { brand: lineup.brand, label: name, count: lineup.count })}
+          subtitle={summary}
+          cta={t("lineupPosterCta", { others: otherBrands })}
+          note={note}
+          shareUrl={shareUrl}
+        >
+          <LineupChart lineup={lineup} mode={{ kind: "poster" }} />
+        </PosterFrame>
       ),
     },
-  ];
-  if (timeline.entries.length > 0) {
-    const first = String(timeline.years[0].year);
-    const last = String(timeline.years[timeline.years.length - 1].year);
-    posters.push({
-      key: "timeline",
-      label: t("posterTimeline"),
-      fileName: `timeline_${lineup.brand}`,
-      content: (
-        <TimelinePoster
-          mount={mount}
-          {...timeline}
-          selection={{}}
-          text={{
-            title: tBrand("timelinePosterTitle", { brand: lineup.brand, label: name, first, last }),
-            subtitle: tBrand("timelinePosterSubtitle", { count: timeline.entries.length }),
-            cta: t("timelinePosterCta"),
-            note,
-            shareUrl,
-          }}
-        />
-      ),
-    });
-  }
-  return (
-    <ChartShareButton
-      trigger={only ? "section" : undefined}
-      title={title}
-      posters={posters.filter((poster) => !only || poster.key === only)}
-    />
-  );
+    timeline:
+      timeline.entries.length > 0
+        ? {
+            label: t("posterTimeline"),
+            fileName: `timeline_${lineup.brand}`,
+            content: (shareUrl) => (
+              <PosterFrame
+                title={tBrand("timelinePosterTitle", {
+                  brand: lineup.brand,
+                  label: name,
+                  first: String(timeline.years[0].year),
+                  last: String(timeline.years[timeline.years.length - 1].year),
+                })}
+                subtitle={tBrand("timelinePosterSubtitle", { count: timeline.entries.length })}
+                cta={t("timelinePosterCta")}
+                note={note}
+                shareUrl={shareUrl}
+              >
+                <TimelineChart mode={{ kind: "poster" }} entries={timeline.entries} years={timeline.years} />
+              </PosterFrame>
+            ),
+          }
+        : undefined,
+  };
+  return <ChartShareButton trigger={trigger} title={title} posters={posters.flatMap((key) => made[key] ?? [])} />;
 }
 
 /** A chart page without a poster yet shares its link only. */
 export function ChartLinkShare({ title }: { title: string }) {
   const t = useTranslations("Charts");
   const tShare = useTranslations("Share");
-  return <ShareButton heading={tShare("button")} shareText={t("shareText", { title })} triggerClassName={TRIGGER_CLS.utility} posters={[]} />;
+  return <ShareButton heading={tShare("button")} shareText={t("shareText", { title })} trigger="utility" posters={[]} />;
 }

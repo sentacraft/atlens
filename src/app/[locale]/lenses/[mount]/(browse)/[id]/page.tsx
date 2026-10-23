@@ -227,7 +227,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               current={displayName}
             />
         <div className="flex items-center gap-1">
-          <LensShareButton lenses={[lens]} triggerClassName={UTILITY_BTN_CLS} />
+          <LensShareButton lenses={[lens]} trigger="utility" />
           <FeedbackTrigger
             type="data_issue"
             context={{ lensId: lens.id, lensModel: lens.model, lensBrand: brandLabel(tBrand, lens.brand) }}

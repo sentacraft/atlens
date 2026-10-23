@@ -29,7 +29,7 @@ export function buildLineup(lenses: Lens[], brand: string): Lineup | undefined {
   for (const lens of pool.filter((l) => !isChartZoom(l))) {
     columns.set(lens.focalMin, [...(columns.get(lens.focalMin) ?? []), lens]);
   }
-  const aperture = (lens: ChartLens) => lens.aperture ?? Infinity;
+  const aperture = (lens: ChartLens) => (Array.isArray(lens.aperture) ? lens.aperture[0] : (lens.aperture ?? Infinity));
   const primes = [...columns]
     .sort(([a], [b]) => a - b)
     .map(([focal, stack]) => ({

@@ -35,7 +35,7 @@ export default function ShareFAB({ lenses, presetTitle, presetSubtitle }: Props)
     >
       <LensShareButton
         lenses={lenses}
-        variant="fab"
+        trigger="fab"
         presetTitle={presetTitle}
         presetSubtitle={presetSubtitle}
       />

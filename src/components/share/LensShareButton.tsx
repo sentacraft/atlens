@@ -6,7 +6,6 @@ import type { Lens } from "@/lib/types";
 import { SharePoster, type PosterLabels } from "@/components/share/poster/SharePoster";
 import { ShareButton } from "@/components/share/ShareButton";
 import { useShareCapabilities } from "@/hooks/useShareCapabilities";
-import { useShareUrl } from "@/hooks/useShareUrl";
 import { CustomizePopover } from "./CustomizePopover";
 import { lensDisplayName, brandLabel } from "@/lib/lens/format";
 import { SITE } from "@/config/site";
@@ -29,14 +28,12 @@ function computePosterTitle(
 /** Shares one lens or a comparison: the link, or a spec poster whose title and slogan can be edited. */
 export function LensShareButton({
   lenses,
-  variant,
-  triggerClassName,
+  trigger,
   presetTitle,
   presetSubtitle,
 }: {
   lenses: Lens[];
-  variant?: "default" | "fab";
-  triggerClassName?: string;
+  trigger: "utility" | "fab";
   presetTitle?: string;
   presetSubtitle?: string;
 }) {
@@ -49,7 +46,6 @@ export function LensShareButton({
   const { isDesktop } = useShareCapabilities();
   const [titleOverride, setTitleOverride] = useState<string | null>(null);
   const [sloganOverride, setSloganOverride] = useState<string | null>(null);
-  const shareUrl = useShareUrl();
 
   const isSingle = lenses.length === 1;
   const computedPosterTitle = computePosterTitle(lenses, tBrand, tImage);
@@ -116,14 +112,13 @@ export function LensShareButton({
       heading={isSingle ? t("titleSingle") : t("title")}
       caption={lenses.map((l) => lensDisplayName(brandLabel(tBrand, l.brand), l.series, l.model)).join(" / ")}
       shareText={cta}
-      variant={variant}
-      triggerClassName={triggerClassName}
+      trigger={trigger}
       posters={[{
         label: t("tabImage"),
         width: POSTER_W,
         fileName,
         imageText: [cta, effectiveSlogan.trim()].filter(Boolean).join("\n"),
-        content: <SharePoster lenses={lenses} labels={posterLabels} custom={custom} shareUrl={shareUrl} />,
+        content: (shareUrl) => <SharePoster lenses={lenses} labels={posterLabels} custom={custom} shareUrl={shareUrl} />,
         extraActions: isDesktop ? (
           <CustomizePopover
             title={effectiveTitle}

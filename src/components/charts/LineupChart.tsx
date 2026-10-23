@@ -3,16 +3,15 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
 import ChartLensCard from "@/components/charts/ChartLensCard";
+import ChartLensItem from "@/components/charts/ChartLensItem";
 import ChartLensSheet from "@/components/charts/ChartLensSheet";
 import { useChartCard } from "@/hooks/useChartCard";
-import { apertureLabel } from "@/lib/charts/catalog";
+import type { ChartLens } from "@/lib/charts/catalog";
 import type { Lineup } from "@/lib/charts/lineup";
 import { logFrac, pct } from "@/lib/charts/scale";
-import { focalRangeDisplay } from "@/lib/lens/format";
+import { apertureDisplay, focalRangeDisplay } from "@/lib/lens/format";
 import { getLensImageUrl } from "@/lib/lens/image";
-import { lensPath } from "@/lib/url/routes";
 import { cn } from "@/lib/utils";
 
 const ZOOM_TICKS = [10, 16, 23, 35, 56, 90, 135, 200, 400, 600];
@@ -20,8 +19,8 @@ const PHONE_ZOOM_TICKS = new Set([10, 23, 56, 135, 400]);
 const CARD_WIDTH = 288;
 
 // A poster is rasterized at a fixed width, so it takes the wide layout whatever the screen.
-const SIZES = {
-  responsive: {
+const LAYOUT = {
+  section: {
     column: "w-[60px] md:w-[92px]",
     image: "size-12 md:size-[76px]",
     zoomAxis: "left-14 md:left-[84px]",
@@ -49,8 +48,9 @@ const SIZES = {
 const CARD_GAP = 12;
 const LABEL_CLS = "text-[11px] tabular-nums text-zinc-600";
 
-export default function LineupChart({ lineup, size }: { lineup: Lineup; size: keyof typeof SIZES }) {
-  const cls = SIZES[size];
+/** `section`: one brand's lineup on its page. `poster`: rasterized at a fixed width, with nothing to click. */
+export default function LineupChart({ lineup, mode }: { lineup: Lineup; mode: { kind: "section" } | { kind: "poster" } }) {
+  const cls = LAYOUT[mode.kind];
   const t = useTranslations("Charts");
   const container = useRef<HTMLDivElement>(null);
   const [cardPos, setCardPos] = useState<{ left: number; top: number; width?: number }>();
@@ -72,6 +72,7 @@ export default function LineupChart({ lineup, size }: { lineup: Lineup; size: ke
     }
   });
 
+  const handlers = (lens: ChartLens) => (mode.kind === "poster" ? undefined : itemHandlers(lens.id));
   const all = [...lineup.primes.flatMap((c) => c.lenses), ...lineup.zooms];
   const activeLens = all.find((l) => l.id === active);
   const sheetLens = all.find((l) => l.id === sheet.id);
@@ -89,16 +90,15 @@ export default function LineupChart({ lineup, size }: { lineup: Lineup; size: ke
               <li key={column.focal} className={cn("flex flex-col items-center", cls.column)}>
                 <div className="flex flex-col-reverse items-center gap-1.5 pb-1.5">
                   {column.lenses.map((lens) => (
-                    <Link
+                    <ChartLensItem
                       key={lens.id}
-                      href={lensPath(lens)}
-                      aria-label={lens.model}
-                      {...itemHandlers(lens.id)}
+                      lens={lens}
+                      handlers={handlers(lens)}
                       className={cn("flex flex-col items-center gap-0.5 transition-transform", active === lens.id && "scale-110")}
                     >
                       <Image src={getLensImageUrl(lens.id)} alt="" width={76} height={76} loading={cls.loading} className={cn("object-contain drop-shadow-sm", cls.image)} />
-                      {lens.aperture !== undefined && <span className={LABEL_CLS}>{apertureLabel(lens)}</span>}
-                    </Link>
+                      {lens.aperture !== undefined && <span className={LABEL_CLS}>{apertureDisplay(lens.aperture)}</span>}
+                    </ChartLensItem>
                   ))}
                 </div>
                 <span className="h-0.5 w-full bg-zinc-200" aria-hidden="true" />
@@ -124,21 +124,21 @@ export default function LineupChart({ lineup, size }: { lineup: Lineup; size: ke
             <ul className="relative">
               {lineup.zooms.map((lens) => (
                 <li key={lens.id}>
-                  <Link href={lensPath(lens)} aria-label={lens.model} {...itemHandlers(lens.id)} className={cn("flex items-center gap-2", cls.zoomRow)}>
+                  <ChartLensItem lens={lens} handlers={handlers(lens)} className={cn("flex items-center gap-2", cls.zoomRow)}>
                     <Image src={getLensImageUrl(lens.id)} alt="" width={76} height={76} loading={cls.loading} className={cn("shrink-0 object-contain drop-shadow-sm", cls.image)} />
                     <span className="relative h-full flex-1">
                       <span
                         className={cn("absolute whitespace-nowrap bg-zinc-50 pr-1", LABEL_CLS, cls.zoomLabel)}
                         style={zx(lens.focalMin) > 0.6 ? { right: pct(1 - zx(lens.focalMax)) } : { left: pct(zx(lens.focalMin)) }}
                       >
-                        {[focalRangeDisplay(lens.focalMin, lens.focalMax), apertureLabel(lens)].filter(Boolean).join(" ")}
+                        {[focalRangeDisplay(lens.focalMin, lens.focalMax), lens.aperture !== undefined && apertureDisplay(lens.aperture)].filter(Boolean).join(" ")}
                       </span>
                       <span
                         className={cn("absolute rounded transition-colors", cls.zoomBar, active === lens.id ? "bg-zinc-900" : "bg-zinc-300")}
                         style={{ left: pct(zx(lens.focalMin)), width: pct(zx(lens.focalMax) - zx(lens.focalMin)) }}
                       />
                     </span>
-                  </Link>
+                  </ChartLensItem>
                 </li>
               ))}
             </ul>
@@ -153,7 +153,7 @@ export default function LineupChart({ lineup, size }: { lineup: Lineup; size: ke
           style={{ left: Math.round(cardPos.left), top: Math.round(cardPos.top), width: cardPos.width }}
         />
       )}
-      <ChartLensSheet lens={sheetLens} open={sheet.open} onOpenChange={sheet.onOpenChange} />
+      {mode.kind !== "poster" && <ChartLensSheet lens={sheetLens} open={sheet.open} onOpenChange={sheet.onOpenChange} />}
     </div>
   );
 }

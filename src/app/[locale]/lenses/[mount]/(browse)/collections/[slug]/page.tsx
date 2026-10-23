@@ -128,7 +128,7 @@ export default async function CollectionPage({
                 heading={tShare("button")}
                 posters={[]}
                 shareText={t("shareText", { title, mount: mountLabel })}
-                triggerClassName={UTILITY_BTN_CLS}
+                trigger="utility"
               />
               <FeedbackTrigger type="general" className={UTILITY_BTN_CLS}>
                 <Flag className="size-4" />

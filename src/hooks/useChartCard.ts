@@ -29,7 +29,8 @@ export function useChartCard(onShow?: (el: HTMLElement) => void) {
       }
     },
     onClick: (ev: React.MouseEvent<HTMLElement>) => {
-      if (lastPointer.current !== "mouse") {
+      // A keyboard Enter also fires click, with detail 0; it should follow the link like a mouse.
+      if (lastPointer.current !== "mouse" && ev.detail !== 0) {
         ev.preventDefault();
         setSheet({ id, open: true });
       }
@@ -42,3 +43,5 @@ export function useChartCard(onShow?: (el: HTMLElement) => void) {
     sheet: { id: sheet.id, open: sheet.open, onOpenChange: (open: boolean) => setSheet((prev) => ({ ...prev, open })) },
   };
 }
+
+export type ChartItemHandlers = ReturnType<ReturnType<typeof useChartCard>["itemHandlers"]>;

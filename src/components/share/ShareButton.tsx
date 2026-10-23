@@ -8,7 +8,7 @@ import { Tabs } from "@base-ui/react/tabs";
 import { useTranslations } from "next-intl";
 import { Share2, Copy, Check, Download, Loader2, Expand } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { CHIP_ACTIVE_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS, SEGMENTED_LIST_CLS, SEGMENTED_TAB_CLS } from "@/config/ui-tokens";
+import { CHIP_ACTIVE_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS, SEGMENTED_LIST_CLS, SEGMENTED_TAB_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { rasterizePoster } from "@/lib/share-image";
 import { track } from "@/lib/analytics/analytics";
 import { useShareCapabilities } from "@/hooks/useShareCapabilities";
@@ -24,7 +24,8 @@ const PREVIEW_H = 310;
 export interface SharePoster {
   /** Names the poster in the picker when a page offers more than one. */
   label: string;
-  content: React.ReactNode;
+  /** Rendered with the page URL as it was when the panel opened, for the poster's QR code. */
+  content: (shareUrl: string) => React.ReactNode;
   /** Natural width in px; the preview scales the poster down to fit the panel. */
   width: number;
   fileName: string;
@@ -41,14 +42,20 @@ interface ShareButtonProps {
   shareText: string;
   /** The images on offer; none shares the link only, several get a picker. */
   posters: SharePoster[];
-  /** Trigger label, always shown; without it the plain "Share" hides on narrow screens. */
-  label?: string;
-  variant?: "default" | "fab";
-  triggerClassName?: string;
-  iconOnly?: boolean;
+  /**
+   * `utility`: a page's top-row action, its "Share" label hidden on narrow screens. `section`: beside
+   * a section heading, labelled with the panel's heading. `fab`: the floating round button.
+   */
+  trigger: "utility" | "section" | "fab";
 }
 
-export function ShareButton({ heading, caption, shareText, posters, label, variant = "default", triggerClassName, iconOnly }: ShareButtonProps) {
+const TRIGGER_CLS = {
+  utility: UTILITY_BTN_CLS,
+  section: cn(UTILITY_BTN_CLS, "shrink-0"),
+  fab: "flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-zinc-900 text-white shadow-lg outline-none transition-colors hover:bg-zinc-700 focus-visible:ring-2 focus-visible:ring-zinc-400",
+};
+
+export function ShareButton({ heading, caption, shareText, posters, trigger }: ShareButtonProps) {
   const t = useTranslations("Share");
   const tSupport = useTranslations("Support");
   const openSupport = useSupportDialog();
@@ -272,9 +279,10 @@ export function ShareButton({ heading, caption, shareText, posters, label, varia
             className="absolute left-0 top-0"
             style={{ width: poster.width, transform: `scale(${scale})`, transformOrigin: "top left", pointerEvents: "none" }}
             aria-hidden="true"
+            inert
           >
             <div ref={attachPoster} style={{ width: poster.width }}>
-              {poster.content}
+              {poster.content(shareUrl)}
             </div>
           </div>
         </div>
@@ -349,36 +357,32 @@ export function ShareButton({ heading, caption, shareText, posters, label, varia
     </div>
   );
 
-  const isFab = variant === "fab";
-
-  const defaultTriggerClass =
-    triggerClassName ??
-    "flex cursor-pointer items-center gap-1.5 rounded-md p-1 text-sm text-zinc-500 outline-none transition-colors hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-400";
-
-  const fabTriggerClass =
-    "flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-zinc-900 text-white shadow-lg outline-none transition-colors hover:bg-zinc-700 focus-visible:ring-2 focus-visible:ring-zinc-400";
-
-  const triggerContent = isFab ? <Share2 className="size-5" /> : iconOnly ? (
-    <Share2 className="size-4" />
-  ) : (
-    <><Share2 className="size-4" />{label ? <span>{label}</span> : <span className="max-xs:hidden @max-md:hidden">{t("button")}</span>}</>
-  );
+  const triggerLabel = trigger === "section" ? heading : t("button");
+  const triggerContent =
+    trigger === "fab" ? (
+      <Share2 className="size-5" />
+    ) : (
+      <>
+        <Share2 className="size-4" />
+        <span className={cn(trigger === "utility" && "max-xs:hidden @max-md:hidden")}>{triggerLabel}</span>
+      </>
+    );
 
   return !mounted ? (
     <button
       disabled
       aria-hidden
-      className={isFab ? fabTriggerClass + " cursor-default opacity-0" : defaultTriggerClass}
+      className={cn(TRIGGER_CLS[trigger], trigger === "fab" && "cursor-default opacity-0")}
     >
       {triggerContent}
     </button>
   ) : isDesktop ? (
     <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger aria-label={label ?? t("button")} className={isFab ? fabTriggerClass : defaultTriggerClass}>
+      <Popover.Trigger aria-label={triggerLabel} className={TRIGGER_CLS[trigger]}>
         {triggerContent}
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Positioner side={isFab ? "top" : "bottom"} align="end" sideOffset={8}>
+        <Popover.Positioner side={trigger === "fab" ? "top" : "bottom"} align="end" sideOffset={8}>
           <Popover.Popup className="w-96 max-h-[calc(var(--app-height)-80px)] overflow-y-auto origin-(--transform-origin) rounded-xl bg-white shadow-lg ring-1 ring-zinc-200 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
             {activePanel}
           </Popover.Popup>
@@ -387,7 +391,7 @@ export function ShareButton({ heading, caption, shareText, posters, label, varia
     </Popover.Root>
   ) : (
     <Drawer.Root open={open} onOpenChange={setOpen} swipeDirection="down">
-      <Drawer.Trigger aria-label={label ?? t("button")} className={isFab ? fabTriggerClass : defaultTriggerClass}>
+      <Drawer.Trigger aria-label={triggerLabel} className={TRIGGER_CLS[trigger]}>
         {triggerContent}
       </Drawer.Trigger>
       <Drawer.Portal>

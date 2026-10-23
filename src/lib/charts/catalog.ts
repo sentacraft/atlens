@@ -1,7 +1,8 @@
 import { weightMid } from "@/lib/lens/alternatives";
 import { focalEquiv, focalRangeDisplay } from "@/lib/lens/format";
 import { getFocalCategoriesOf, type FocalCategory } from "@/lib/lens/lens";
-import type { Lens, Mount } from "@/lib/types";
+import type { ApertureValue, Lens, Mount } from "@/lib/types";
+import type { ChartSelection } from "@/lib/url/charts";
 
 export const CHART_KINDS = ["timeline", "weight", "lineup"] as const;
 export type ChartKind = (typeof CHART_KINDS)[number];
@@ -23,10 +24,8 @@ export interface ChartLens {
   /** The midpoint when the spec gives a range. */
   weightG: number;
   releaseYear?: number;
-  /** f-number at the wide end, falling back to the T-stop. */
-  aperture?: number;
-  /** f-number at the long end, when a zoom's aperture changes as it zooms. */
-  apertureTele?: number;
+  /** Maximum f-number, a wide–tele pair when it changes as a zoom zooms; falls back to the T-stop. */
+  aperture?: ApertureValue;
   af: boolean;
 }
 
@@ -50,8 +49,7 @@ export function toChartLens(lens: Lens): ChartLens {
     focalCategories: getFocalCategoriesOf(lens),
     weightG: weightMid(lens.weightG),
     releaseYear: lens.releaseYear,
-    aperture: Array.isArray(aperture) ? aperture[0] : aperture,
-    apertureTele: Array.isArray(aperture) ? aperture[1] : undefined,
+    aperture,
     af: lens.af,
   };
 }
@@ -61,12 +59,9 @@ export function focalEquivDisplay(lens: ChartLens): string {
   return focalRangeDisplay(lens.focalEquivMin, lens.focalEquivMax);
 }
 
-/** The aperture as a chart labels it: "F1.4", or "F3.5–5.6" for a variable-aperture zoom. */
-export function apertureLabel(lens: ChartLens): string | undefined {
-  if (lens.aperture === undefined) {
-    return undefined;
-  }
-  return lens.apertureTele === undefined ? `F${lens.aperture}` : `F${lens.aperture}–${lens.apertureTele}`;
+/** Whether a lens passes a chart's brand and focal-category filters. */
+export function matchesChartSelection(lens: ChartLens, selection: ChartSelection): boolean {
+  return (!selection.brand || lens.brand === selection.brand) && (!selection.focal || lens.focalCategories.includes(selection.focal));
 }
 
 /** Charts plot stills lenses only: cine lenses publish T-stops and would read as outliers. */

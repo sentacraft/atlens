@@ -3,9 +3,9 @@ import { formatDataDate } from "../data-date";
 import type { Lens } from "@/lib/types";
 import { getLensesByMount } from "@/lib/lens/data";
 import { assignLanes, buildTimeline } from "@/lib/charts/timeline";
-import { buildWeightLadder } from "@/lib/charts/weight";
+import { buildWeightLadder, weightBarPct } from "@/lib/charts/weight";
 import { buildLineup } from "@/lib/charts/lineup";
-import { apertureLabel, chartBrands, toChartLens, type ChartLens } from "@/lib/charts/catalog";
+import { chartBrands, matchesChartSelection, toChartLens, type ChartLens } from "@/lib/charts/catalog";
 
 function makeLens(overrides: Partial<Lens> = {}): Lens {
   return {
@@ -108,10 +108,21 @@ describe("toChartLens", () => {
   });
 });
 
-describe("apertureLabel", () => {
-  it("writes a fixed aperture once and a variable one as a range", () => {
-    expect(apertureLabel(toChartLens(makeLens({ maxAperture: 4 })))).toBe("F4");
-    expect(apertureLabel(toChartLens(makeLens({ maxAperture: [3.5, 5.6] })))).toBe("F3.5–5.6");
+describe("matchesChartSelection", () => {
+  it("keeps a lens only when it passes every filter that is set", () => {
+    const lens = toChartLens(makeLens({ brand: "sigma", focalLengthMin: 16, focalLengthMax: 16 }));
+    expect(matchesChartSelection(lens, {})).toBe(true);
+    expect(matchesChartSelection(lens, { brand: "sigma" })).toBe(true);
+    expect(matchesChartSelection(lens, { brand: "viltrox" })).toBe(false);
+    expect(matchesChartSelection(lens, { brand: "sigma", focal: lens.focalCategories[0] })).toBe(true);
+    expect(matchesChartSelection(lens, { brand: "sigma", focal: "superTele" })).toBe(false);
+  });
+});
+
+describe("weightBarPct", () => {
+  it("scales by the square root so light lenses keep a visible bar", () => {
+    expect(weightBarPct(400, 400)).toBe(100);
+    expect(weightBarPct(100, 400)).toBe(50);
   });
 });
 

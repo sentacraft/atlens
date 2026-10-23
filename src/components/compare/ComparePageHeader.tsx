@@ -91,7 +91,7 @@ export default function ComparePageHeader({ allLenses }: { allLenses: Lens[] }) 
             />
           )}
           {activeLenses.length >= 1 && (
-            <LensShareButton lenses={activeLenses} presetTitle={presetTitle} presetSubtitle={presetSubtitle} triggerClassName={UTILITY_BTN_CLS} />
+            <LensShareButton lenses={activeLenses} presetTitle={presetTitle} presetSubtitle={presetSubtitle} trigger="utility" />
           )}
           <FeedbackTrigger
             type="general"

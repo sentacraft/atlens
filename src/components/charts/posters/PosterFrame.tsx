@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { QRCodeSVG } from "qrcode.react";
 
 export const POSTER_WIDTH = 1080;
@@ -7,7 +10,6 @@ export const POSTER_WIDTH = 1080;
  * footer pointing back to the live page.
  */
 export default function PosterFrame({
-  eyebrow,
   title,
   subtitle,
   cta,
@@ -15,7 +17,6 @@ export default function PosterFrame({
   shareUrl,
   children,
 }: {
-  eyebrow: string;
   title: string;
   subtitle: string;
   cta: string;
@@ -23,6 +24,7 @@ export default function PosterFrame({
   shareUrl: string;
   children: React.ReactNode;
 }) {
+  const t = useTranslations("Charts");
   return (
     <div
       className="flex flex-col bg-white font-sans text-zinc-900"
@@ -30,7 +32,7 @@ export default function PosterFrame({
     >
       <div className="flex flex-col" style={{ gap: 14 }}>
         <span className="uppercase text-zinc-500" style={{ fontSize: 20, letterSpacing: "0.16em" }}>
-          {eyebrow}
+          {t("posterEyebrow")}
         </span>
         <h1 className="m-0 whitespace-pre-line font-heading font-bold" style={{ fontSize: 68, lineHeight: 1.08, letterSpacing: "-0.02em" }}>
           {title}

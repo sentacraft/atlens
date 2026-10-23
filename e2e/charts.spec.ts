@@ -114,7 +114,7 @@ test.describe("Charts", () => {
   test("hovering a lens in a brand lineup shows its card", async ({ page, hasTouch }) => {
     test.skip(hasTouch, "Mouse only");
     await page.goto(`${BRANDS}/sigma`);
-    const lens = page.getByRole("link", { name: "18-50mm F2.8 DC DN | Contemporary", exact: true });
+    const lens = page.locator("#lineup").getByRole("link", { name: "Sigma 18-50mm F2.8 DC DN | Contemporary", exact: true });
     await expect(async () => {
       await page.mouse.move(0, 0);
       await lens.hover();

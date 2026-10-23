@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { DialogTitle } from "@/components/ui/dialog";
 import { POPUP_SURFACE_CLS } from "@/config/ui-tokens";
 import { brandLabel } from "@/lib/lens/format";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
@@ -18,42 +19,48 @@ export default function ChartLensCard({
   className?: string;
   style?: React.CSSProperties;
 }) {
-  const tBrand = useTranslations("Brands");
-
   return (
-    <div
-      role="tooltip"
-      className={cn(POPUP_SURFACE_CLS, "pointer-events-none flex w-72 items-center gap-3 p-3", className)}
-      style={style}
-    >
-      <Image
-        src={getLensImageUrl(lens.id)}
-        alt=""
-        width={80}
-        height={80}
-        className="size-20 shrink-0 object-contain"
-        style={lensImageStyle}
-      />
-      <div className="flex min-w-0 flex-col gap-1">
-        <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">{brandLabel(tBrand, lens.brand)}</span>
-        <span className="text-sm font-semibold leading-snug text-zinc-900">{lens.model}</span>
-        <ChartLensFacts lens={lens} className="text-xs" />
-      </div>
+    <div role="tooltip" className={cn(POPUP_SURFACE_CLS, "pointer-events-none w-72 p-3", className)} style={style}>
+      <ChartLensSummary lens={lens} size="card" />
     </div>
   );
 }
 
-// One fact group per line, so a fact never moves between lines with the card's width.
-/** A lens's facts on fixed lines: equivalent focal length and weight, then the release year when known. */
-export function ChartLensFacts({ lens, className }: { lens: ChartLens; className?: string }) {
+const SUMMARY = {
+  card: { image: 80, imageCls: "size-20", gap: "gap-3", model: "text-sm", facts: "text-xs" },
+  sheet: { image: 88, imageCls: "size-22", gap: "gap-3.5", model: "text-base", facts: "text-[13px]" },
+} as const;
+
+/**
+ * The lens's image, brand, model and facts, shared by the hover card and the tap sheet. Facts sit
+ * on fixed lines so none moves between lines with the width; in the sheet the model titles the dialog.
+ */
+export function ChartLensSummary({ lens, size }: { lens: ChartLens; size: keyof typeof SUMMARY }) {
   const t = useTranslations("Charts");
-  const lines = [
+  const tBrand = useTranslations("Brands");
+  const cls = SUMMARY[size];
+  const Model = size === "sheet" ? DialogTitle : "span";
+  const facts = [
     `${t("equivFocal", { focal: focalEquivDisplay(lens) })} · ${t("weight", { weight: lens.weightG })}`,
     lens.releaseYear ? t("released", { year: String(lens.releaseYear) }) : undefined,
   ];
   return (
-    <span className={cn("flex flex-col whitespace-nowrap text-zinc-600", className)}>
-      {lines.map((line) => line && <span key={line}>{line}</span>)}
-    </span>
+    <div className={cn("flex items-center", cls.gap)}>
+      <Image
+        src={getLensImageUrl(lens.id)}
+        alt=""
+        width={cls.image}
+        height={cls.image}
+        className={cn("shrink-0 object-contain", cls.imageCls)}
+        style={lensImageStyle}
+      />
+      <div className="flex min-w-0 flex-col gap-1">
+        <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">{brandLabel(tBrand, lens.brand)}</span>
+        <Model className={cn("font-semibold leading-snug text-zinc-900", cls.model)}>{lens.model}</Model>
+        <span className={cn("flex flex-col whitespace-nowrap text-zinc-600", cls.facts)}>
+          {facts.map((line) => line && <span key={line}>{line}</span>)}
+        </span>
+      </div>
+    </div>
   );
 }

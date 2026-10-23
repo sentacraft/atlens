@@ -24,7 +24,7 @@ export default async function ChartsHeader({
   active: (typeof TABS)[number]["chart"];
   title: string;
   description: string;
-  /** Beside the title on wide screens, under it on phones: the page's share button. */
+  /** The page's share button, at the right end of the tab row. */
   action: React.ReactNode;
   children?: React.ReactNode;
 }) {

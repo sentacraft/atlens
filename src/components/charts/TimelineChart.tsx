@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import ChartLensCard from "@/components/charts/ChartLensCard";
+import ChartLensItem from "@/components/charts/ChartLensItem";
 import ChartLensSheet from "@/components/charts/ChartLensSheet";
 import ChartChips from "@/components/charts/ChartChips";
 import { useChartCard } from "@/hooks/useChartCard";
@@ -17,7 +18,7 @@ import { brandLabel } from "@/lib/lens/format";
 import { getLensImageUrl } from "@/lib/lens/image";
 import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 import type { Mount } from "@/lib/types";
-import { lensPath, brandPath } from "@/lib/url/routes";
+import { brandPath } from "@/lib/url/routes";
 import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/charts";
 import { cn } from "@/lib/utils";
 
@@ -27,33 +28,43 @@ const TICKS = [8, 16, 23, 35, 56, 90, 200, 400];
 const TALL_TICKS = [10, 23, 56, 135, 400];
 const DIM = 0.08;
 
-type Props = {
-  /**
-   * `page`: the all-brand chart with its highlight chips and a link to the highlighted brand's page.
-   * `section`: one brand's chart inside its page, no controls. `poster`: rasterized at a fixed
-   * width, so the wide chart only, with brand counts under it.
-   */
-  mode: { kind: "page"; brandTotals: BrandCount[] } | { kind: "section" } | { kind: "poster" };
+type PageProps = {
   mount: Mount;
   entries: TimelineEntry[];
   years: TimelineYear[];
+  /** Brands with dated lenses, for the highlight chips. */
   brands: BrandCount[];
+  /** Every brand's full lens count, for the link to the highlighted brand's page. */
+  brandTotals: BrandCount[];
 };
+
+/**
+ * `page`: the all-brand chart with its highlight chips and a link to the highlighted brand's page.
+ * `section`: one brand's chart inside its page, no controls. `poster`: rasterized at a fixed width,
+ * so the wide layout only, with nothing to click.
+ */
+type Mode =
+  | ({ kind: "page"; initial: ChartSelection } & Pick<PageProps, "mount" | "brands" | "brandTotals">)
+  | { kind: "section" }
+  | { kind: "poster"; highlight?: string };
 
 function laneOffset(lane: number, step: number): number {
   return lane === 0 ? 0 : (lane % 2 === 1 ? -1 : 1) * Math.ceil(lane / 2) * step;
 }
 
-export function TimelineChartFromUrl(props: Props) {
-  const { brand } = readChartSelectionFromSearch(useSearchParams(), props.brands.map((b) => b.brand));
-  return <TimelineChart {...props} initial={{ brand }} />;
+export function TimelineChartFromUrl({ entries, years, ...page }: PageProps) {
+  const { brand } = readChartSelectionFromSearch(useSearchParams(), page.brands.map((b) => b.brand));
+  return <TimelineChart entries={entries} years={years} mode={{ kind: "page", initial: { brand }, ...page }} />;
 }
 
-export default function TimelineChart({ mode, mount, entries, years, brands, initial }: Props & { initial: ChartSelection }) {
+export default function TimelineChart({ mode, entries, years }: { mode: Mode; entries: TimelineEntry[]; years: TimelineYear[] }) {
   const t = useTranslations("Charts");
   const tBrand = useTranslations("Brands");
-  const { selected, shown, select, setPreview } = useChartSelection(initial);
+  const { selected, shown, select, setPreview } = useChartSelection(
+    mode.kind === "page" ? mode.initial : { brand: mode.kind === "poster" ? mode.highlight : undefined },
+  );
   const { active, itemHandlers, sheet } = useChartCard();
+  const handlers = (lens: ChartLens) => (mode.kind === "poster" ? undefined : itemHandlers(lens.id));
   // One brand has few lenses; the full height would leave the section mostly empty.
   const wideHeight = mode.kind === "section" ? WIDE.sectionHeight : WIDE.height;
 
@@ -108,13 +119,13 @@ export default function TimelineChart({ mode, mount, entries, years, brands, ini
         <>
           <ChartChips
             label={t("highlightBrand")}
-            chips={brands.map((b) => ({ key: b.brand, label: `${brandLabel(tBrand, b.brand)} ${b.count}` }))}
+            chips={mode.brands.map((b) => ({ key: b.brand, label: `${brandLabel(tBrand, b.brand)} ${b.count}` }))}
             selected={selected.brand}
             onPreview={(brand) => setPreview({ brand })}
             onSelect={(brand) => select({ brand })}
           />
           {selected.brand && (
-            <Link href={brandPath(mount, selected.brand)} className={cn(TEXT_LINK_CLS, "self-start text-sm")}>
+            <Link href={brandPath(mode.mount, selected.brand)} className={cn(TEXT_LINK_CLS, "self-start text-sm")}>
               {t("seeBrand", {
                 brand: brandLabel(tBrand, selected.brand),
                 count: mode.brandTotals.find((b) => b.brand === selected.brand)?.count ?? 0,
@@ -171,11 +182,10 @@ export default function TimelineChart({ mode, mount, entries, years, brands, ini
             ) : null,
           )}
           {wide.placed.map(({ e, col, lane, y }) => (
-            <Link
+            <ChartLensItem
               key={e.lens.id}
-              href={lensPath(e.lens)}
-              aria-label={`${brandLabel(tBrand, e.lens.brand)} ${e.lens.model}`}
-              {...itemHandlers(e.lens.id)}
+              lens={e.lens}
+              handlers={handlers(e.lens)}
               className={cn("absolute block transition-[opacity,transform] duration-150", active === e.lens.id ? "z-20 scale-150" : "z-10")}
               style={{
                 left: pct(colFrac(col)),
@@ -187,7 +197,7 @@ export default function TimelineChart({ mode, mount, entries, years, brands, ini
               }}
             >
               <Image src={getLensImageUrl(e.lens.id)} alt="" width={WIDE.size} height={WIDE.size} loading={mode.kind === "poster" ? "eager" : "lazy"} className="size-full object-contain drop-shadow-sm" />
-            </Link>
+            </ChartLensItem>
           ))}
           {activeEntry && activeWide && (
             <ChartLensCard
@@ -243,10 +253,9 @@ export default function TimelineChart({ mode, mount, entries, years, brands, ini
                         }}
                       />
                     )}
-                    <Link
-                      href={lensPath(e.lens)}
-                      aria-label={`${brandLabel(tBrand, e.lens.brand)} ${e.lens.model}`}
-                      {...itemHandlers(e.lens.id)}
+                    <ChartLensItem
+                      lens={e.lens}
+                      handlers={handlers(e.lens)}
                       className={cn("absolute block", active === e.lens.id ? "z-20" : "z-10")}
                       style={{
                         left: pct(frac(e.focalMid)),
@@ -258,7 +267,7 @@ export default function TimelineChart({ mode, mount, entries, years, brands, ini
                       }}
                     >
                       <Image src={getLensImageUrl(e.lens.id)} alt="" width={TALL.size} height={TALL.size} className="size-full object-contain drop-shadow-sm" />
-                    </Link>
+                    </ChartLensItem>
                   </Fragment>
                 )),
               )}
@@ -273,7 +282,7 @@ export default function TimelineChart({ mode, mount, entries, years, brands, ini
           </div>
         </>
       )}
-      <ChartLensSheet lens={sheetEntry?.lens} open={sheet.open} onOpenChange={sheet.onOpenChange} />
+      {mode.kind !== "poster" && <ChartLensSheet lens={sheetEntry?.lens} open={sheet.open} onOpenChange={sheet.onOpenChange} />}
     </div>
   );
 }

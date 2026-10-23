@@ -66,7 +66,7 @@ export default async function TimelinePage({ params }: { params: Params }) {
   }
   const t = await getTranslations({ locale, namespace: "Charts" });
   const { timeline } = data;
-  const chartProps = { mode: { kind: "page" as const, brandTotals: data.brandTotals }, mount: data.resolvedMount, entries: timeline.entries, years: timeline.years, brands: timeline.brands };
+  const pageProps = { mount: data.resolvedMount, brands: timeline.brands, brandTotals: data.brandTotals };
   const count = timeline.entries.length;
   const [first, second, third, ...rest] = data.undated;
   // en names three brands plus "N others", zh says "N brands in all"; message types come from en
@@ -80,7 +80,6 @@ export default async function TimelinePage({ params }: { params: Params }) {
         : t("timelineDescUndatedMore", moreArgs);
   const title = t("timelineTitle", { first: data.first, last: data.last });
   const shareProps = {
-    mount: data.resolvedMount,
     entries: timeline.entries,
     years: timeline.years,
     brands: timeline.brands,
@@ -102,8 +101,8 @@ export default async function TimelinePage({ params }: { params: Params }) {
           </Suspense>
         }
       />
-      <Suspense fallback={<TimelineChart {...chartProps} initial={{}} />}>
-        <TimelineChartFromUrl {...chartProps} />
+      <Suspense fallback={<TimelineChart entries={timeline.entries} years={timeline.years} mode={{ kind: "page", initial: {}, ...pageProps }} />}>
+        <TimelineChartFromUrl entries={timeline.entries} years={timeline.years} {...pageProps} />
       </Suspense>
     </main>
   );
