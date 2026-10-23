@@ -11,8 +11,6 @@ export interface TimelineEntry {
 export interface TimelineYear {
   year: number;
   count: number;
-  /** That year's lenses per brand, brands in the chart's overall order, empty ones left out. */
-  byBrand: BrandCount[];
 }
 
 export interface Timeline {
@@ -38,11 +36,7 @@ export function buildTimeline(lenses: Lens[]): Timeline {
     const first = entries[0].year;
     const last = entries[entries.length - 1].year;
     for (let year = first; year <= last; year++) {
-      const ofYear = entries.filter((entry) => entry.year === year);
-      const byBrand = brands
-        .map(({ brand }) => ({ brand, count: ofYear.filter((entry) => entry.lens.brand === brand).length }))
-        .filter(({ count }) => count > 0);
-      years.push({ year, count: ofYear.length, byBrand });
+      years.push({ year, count: entries.filter((entry) => entry.year === year).length });
     }
   }
 

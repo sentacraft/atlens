@@ -60,21 +60,6 @@ describe("buildTimeline", () => {
     ]);
   });
 
-  it("splits each year by brand, in the chart's brand order", () => {
-    const timeline = buildTimeline([
-      makeLens({ id: "a", releaseYear: 2020 }),
-      makeLens({ id: "b", releaseYear: 2020 }),
-      makeLens({ id: "c", releaseYear: 2020, brand: "sigma" }),
-      makeLens({ id: "d", releaseYear: 2021, brand: "sigma" }),
-    ]);
-    expect(timeline.years.map((y) => y.byBrand)).toEqual([
-      [
-        { brand: "fujifilm", count: 2 },
-        { brand: "sigma", count: 1 },
-      ],
-      [{ brand: "sigma", count: 1 }],
-    ]);
-  });
 
   it("places a zoom at the geometric middle of its equivalent range", () => {
     const [entry] = buildTimeline([makeLens({ focalLengthMin: 10, focalLengthMax: 40, releaseYear: 2020 })]).entries;
