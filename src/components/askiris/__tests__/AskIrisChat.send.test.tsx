@@ -87,7 +87,7 @@ function renderChat(shell: AskIrisShell = { variant: "page", entry: {}, starterS
 
 const expandedChange = vi.hoisted(() => vi.fn());
 const panel = (pagePath: string, request: AskIrisShell & { variant: "panel" } extends { request: infer R } ? R : never = null) =>
-  ({ variant: "panel", pagePath, request, onClose: () => {}, expanded: false, onExpandedChange: expandedChange }) as const;
+  ({ variant: "panel", layout: "side", openCount: 1, pagePath, request, onClose: () => {}, expanded: false, onExpandedChange: expandedChange }) as const;
 
 function captureChatBodies() {
   const bodies: Record<string, unknown>[] = [];
