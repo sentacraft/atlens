@@ -5,8 +5,9 @@ import { Flag } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { localized } from "@/i18n/localized";
 import BrandPicker from "@/components/brand/BrandPicker";
-import { LineupShare } from "@/components/charts/ChartShare";
+import { BrandShare } from "@/components/charts/ChartShare";
 import LineupChart from "@/components/charts/LineupChart";
+import TimelineChart from "@/components/charts/TimelineChart";
 import CollectionLensGrid from "@/components/collection/CollectionLensGrid";
 import RelatedCollectionCard from "@/components/collection/RelatedCollectionCard";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
@@ -16,10 +17,11 @@ import Breadcrumb from "@/components/nav/Breadcrumb";
 import JsonLd from "@/components/seo/JsonLd";
 import SupportNote from "@/components/support/SupportNote";
 import { SITE } from "@/config/site";
-import { BROWSE_PAGE_MAIN_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
+import { BROWSE_PAGE_MAIN_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { BRANDS, getBrandInfo, getBrandLenses } from "@/lib/brands";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildLineup } from "@/lib/charts/lineup";
+import { buildTimeline } from "@/lib/charts/timeline";
 import { getBrandCollectionsWithStats } from "@/lib/collection-stats";
 import { formatDataDate } from "@/lib/charts/data-date";
 import { getLensesByMount, meta } from "@/lib/lens/data";
@@ -27,9 +29,14 @@ import { brandLabel, focalRangeDisplay, lensDisplayName } from "@/lib/lens/forma
 import { buildCollectionItemListSchema } from "@/lib/lens/seo";
 import { mountHasCollections, urlSegmentToMount } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
-import { brandPath, browsePath, collectionsPath, lensPath } from "@/lib/url/routes";
+import { chartHref } from "@/lib/url/charts";
+import { brandPath, browsePath, chartPath, collectionsPath, lensPath } from "@/lib/url/routes";
+import { cn } from "@/lib/utils";
 
 type Params = Promise<{ locale: string; mount: string; brand: string }>;
+
+const SECTION_CLS = "flex scroll-mt-[calc(var(--nav-height)+1rem)] flex-col gap-4";
+const SECTION_HEADING_CLS = "border-b border-zinc-200 pb-2 font-heading text-xl font-bold text-zinc-900 md:text-2xl";
 
 export function generateStaticParams() {
   return BRANDS.map(({ slug }) => ({ brand: slug }));
@@ -60,6 +67,7 @@ async function load(params: Params) {
     name,
     lineup,
     lenses: getBrandLenses(mountLenses, brand),
+    timeline: buildTimeline(mountLenses.filter((lens) => lens.brand === brand)),
     brands: chartBrands(mountLenses),
     cineCount: countCineLenses(mountLenses, brand),
     title: t("title", { brand, label: name }),
@@ -102,6 +110,19 @@ export default async function BrandPage({ params }: { params: Params }) {
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const description = localized(data.info.description, locale);
   const related = getBrandCollectionsWithStats(data.info.slug, locale);
+  const dated = data.timeline.entries.length;
+  const hasTimeline = dated > 0;
+  const years = data.timeline.years;
+  const span = { first: String(years[0]?.year ?? ""), last: String(years.at(-1)?.year ?? "") };
+  const timelineSpan =
+    dated === data.lenses.length
+      ? t("timelineSpan", { ...span, count: dated })
+      : t("timelineSpanPartial", { ...span, count: dated, total: data.lenses.length });
+  const contents = [
+    { id: "lineup", label: t("lineupHeading") },
+    ...(hasTimeline ? [{ id: "timeline", label: t("timelineHeading") }] : []),
+    { id: "lenses", label: t("allLenses", { count: data.lenses.length }) },
+  ];
 
   const itemListSchema = buildCollectionItemListSchema({
     name: data.title,
@@ -121,8 +142,10 @@ export default async function BrandPage({ params }: { params: Params }) {
           <div className="mb-4 flex items-center justify-between gap-3">
             <Breadcrumb segments={[{ label: tNav("lenses"), href: browsePath(data.resolvedMount) }]} current={data.name} />
             <div className="flex shrink-0 items-center gap-1">
-              <LineupShare
+              <BrandShare
+                mount={data.resolvedMount}
                 lineup={data.lineup}
+                timeline={data.timeline}
                 name={data.name}
                 otherBrands={data.brands.length - 1}
                 title={data.title}
@@ -141,15 +164,50 @@ export default async function BrandPage({ params }: { params: Params }) {
             <DataSourceInline />
           </p>
           <p className="mt-3 text-sm leading-relaxed text-zinc-700 sm:text-base">{description}</p>
+          <nav aria-label={t("contents")} className="mt-4 flex flex-wrap gap-1.5">
+            {contents.map(({ id, label }) => (
+              <a key={id} href={`#${id}`} className={cn(CHIP_BASE_CLS, CHIP_IDLE_CLS)}>
+                {label}
+              </a>
+            ))}
+          </nav>
         </header>
 
-        <LineupChart lineup={data.lineup} size="responsive" />
-        {data.cineCount > 0 && (
-          <p className="mt-6 text-xs leading-relaxed text-zinc-500">{t("cineNote", { brand: data.name, count: data.cineCount })}</p>
+        <section id="lineup" className={SECTION_CLS} aria-labelledby="lineup-heading">
+          <h2 id="lineup-heading" className={SECTION_HEADING_CLS}>
+            {t("lineupHeading")}
+          </h2>
+          <LineupChart lineup={data.lineup} size="responsive" />
+          {data.cineCount > 0 && (
+            <p className="text-xs leading-relaxed text-zinc-500">{t("cineNote", { brand: data.name, count: data.cineCount })}</p>
+          )}
+        </section>
+
+        {hasTimeline && (
+          <section id="timeline" className={cn(SECTION_CLS, "mt-12")} aria-labelledby="timeline-heading">
+            <div className={cn(SECTION_HEADING_CLS, "flex flex-wrap items-baseline gap-x-3")}>
+              <h2 id="timeline-heading">{t("timelineHeading")}</h2>
+              <span className="font-sans text-sm font-normal text-zinc-500">{timelineSpan}</span>
+            </div>
+            <TimelineChart
+              mode={{ kind: "section" }}
+              mount={data.resolvedMount}
+              entries={data.timeline.entries}
+              years={data.timeline.years}
+              brands={data.timeline.brands}
+              initial={{}}
+            />
+            <Link
+              href={chartHref(chartPath(data.resolvedMount, "timeline"), { brand: data.info.slug })}
+              className={cn(TEXT_LINK_CLS, "self-start text-sm")}
+            >
+              {t("toAllBrands")}
+            </Link>
+          </section>
         )}
 
-        <section className="mt-12 flex flex-col gap-4" aria-labelledby="brand-lenses">
-          <h2 id="brand-lenses" className="font-heading text-lg font-bold text-zinc-900 md:text-xl">
+        <section id="lenses" className={cn(SECTION_CLS, "mt-12")} aria-labelledby="lenses-heading">
+          <h2 id="lenses-heading" className={SECTION_HEADING_CLS}>
             {t("allLenses", { count: data.lenses.length })}
           </h2>
           <CollectionLensGrid lenses={data.lenses} />

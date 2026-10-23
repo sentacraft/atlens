@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readChartSelection, readChartSelectionFromSearch, writeChartSelection } from "../charts";
+import { chartHref, readChartSelection, readChartSelectionFromSearch, writeChartSelection } from "../charts";
 import { brandPath, chartPath, chartsPath } from "../routes";
 
 const brands = ["fujifilm", "sigma"];
@@ -30,6 +30,13 @@ describe("writeChartSelection", () => {
     const url = new URL("https://atlens.test/en/lenses/x/charts/weight?brand=sigma&focal=wide");
     writeChartSelection(url, {});
     expect(url.search).toBe("");
+  });
+});
+
+describe("chartHref", () => {
+  it("opens a chart with a brand highlighted", () => {
+    expect(chartHref("/lenses/x/charts/timeline", { brand: "sigma" })).toBe("/lenses/x/charts/timeline?brand=sigma");
+    expect(chartHref("/lenses/x/charts/timeline", {})).toBe("/lenses/x/charts/timeline");
   });
 });
 

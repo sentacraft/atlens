@@ -51,5 +51,7 @@ test.describe("Share", () => {
     await openShare(page, /^Share$/);
     await expect(page.getByText(/Sigma's 11\s+Fujifilm X-mount lenses/)).toBeVisible();
     await expect(page.getByText("Scan to see the other 11 brands")).toBeVisible();
+    await page.getByRole("button", { name: "Timeline", exact: true }).click();
+    await expect(page.getByText("Sigma's Fujifilm X-Mount Lenses by Release Year, 2022–2026")).toBeVisible();
   });
 });

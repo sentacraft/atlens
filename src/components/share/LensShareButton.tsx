@@ -118,7 +118,8 @@ export function LensShareButton({
       shareText={cta}
       variant={variant}
       triggerClassName={triggerClassName}
-      poster={{
+      posters={[{
+        label: t("tabImage"),
         width: POSTER_W,
         fileName,
         imageText: [cta, effectiveSlogan.trim()].filter(Boolean).join("\n"),
@@ -132,7 +133,7 @@ export function LensShareButton({
             titlePlaceholder={computedPosterTitle.join(" · ")}
           />
         ) : undefined,
-      }}
+      }]}
     />
   );
 }

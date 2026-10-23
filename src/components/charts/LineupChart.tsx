@@ -160,7 +160,7 @@ export default function LineupChart({ lineup, size }: { lineup: Lineup; size: ke
 function SectionHead({ label, note, headingCls }: { label: string; note: string; headingCls: string }) {
   return (
     <div className="flex flex-wrap items-baseline gap-x-2 border-b border-zinc-200 pb-1.5">
-      <h2 className={cn("font-heading font-bold text-zinc-900", headingCls)}>{label}</h2>
+      <h3 className={cn("font-heading font-bold text-zinc-900", headingCls)}>{label}</h3>
       <span className="text-xs text-zinc-500">{note}</span>
     </div>
   );

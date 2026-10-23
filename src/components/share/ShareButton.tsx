@@ -8,7 +8,7 @@ import { Tabs } from "@base-ui/react/tabs";
 import { useTranslations } from "next-intl";
 import { Share2, Copy, Check, Download, Loader2, Expand } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SEGMENTED_LIST_CLS, SEGMENTED_TAB_CLS } from "@/config/ui-tokens";
+import { CHIP_ACTIVE_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS, SEGMENTED_LIST_CLS, SEGMENTED_TAB_CLS } from "@/config/ui-tokens";
 import { rasterizePoster } from "@/lib/share-image";
 import { track } from "@/lib/analytics/analytics";
 import { useShareCapabilities } from "@/hooks/useShareCapabilities";
@@ -22,6 +22,8 @@ const PREVIEW_H = 310;
 
 /** An image the page offers alongside its link, rendered at full size, previewed scaled down, rasterized on demand. */
 export interface SharePoster {
+  /** Names the poster in the picker when a page offers more than one. */
+  label: string;
   content: React.ReactNode;
   /** Natural width in px; the preview scales the poster down to fit the panel. */
   width: number;
@@ -37,7 +39,8 @@ interface ShareButtonProps {
   caption?: string;
   /** Text the system share sheet sends with the link. */
   shareText: string;
-  poster?: SharePoster;
+  /** The images on offer; none shares the link only, several get a picker. */
+  posters: SharePoster[];
   /** Trigger label, always shown; without it the plain "Share" hides on narrow screens. */
   label?: string;
   variant?: "default" | "fab";
@@ -45,7 +48,7 @@ interface ShareButtonProps {
   iconOnly?: boolean;
 }
 
-export function ShareButton({ heading, caption, shareText, poster, label, variant = "default", triggerClassName, iconOnly }: ShareButtonProps) {
+export function ShareButton({ heading, caption, shareText, posters, label, variant = "default", triggerClassName, iconOnly }: ShareButtonProps) {
   const t = useTranslations("Share");
   const tSupport = useTranslations("Support");
   const openSupport = useSupportDialog();
@@ -57,6 +60,8 @@ export function ShareButton({ heading, caption, shareText, poster, label, varian
   const [copyFailed, setCopyFailed] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [posterGenerating, setPosterGenerating] = useState(false);
+  const [posterIndex, setPosterIndex] = useState(0);
+  const poster: SharePoster | undefined = posters[posterIndex] ?? posters[0];
 
   const posterRef = useRef<HTMLDivElement | null>(null);
   const lightbox = useLightbox(posterRef);
@@ -239,6 +244,21 @@ export function ShareButton({ heading, caption, shareText, poster, label, varian
 
   const imagePanel = poster && (
     <Tabs.Panel value="image" className="flex flex-col gap-3">
+      {posters.length > 1 && (
+        <div className="flex gap-1.5">
+          {posters.map((p, i) => (
+            <button
+              key={p.label}
+              type="button"
+              aria-pressed={p === poster}
+              onClick={() => setPosterIndex(i)}
+              className={cn(CHIP_BASE_CLS, p === poster ? CHIP_ACTIVE_CLS : CHIP_IDLE_CLS)}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      )}
       <div
         className={cn(
           "group relative -mx-4 cursor-zoom-in overflow-x-hidden",

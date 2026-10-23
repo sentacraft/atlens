@@ -129,7 +129,25 @@ test.describe("Charts", () => {
 
   test("a chart with a brand selected links to that brand's page", async ({ page }) => {
     await page.goto(`${TIMELINE}?brand=sigma`);
-    await expect(page.getByRole("link", { name: "See the Sigma lineup →" })).toHaveAttribute("href", `${BRANDS}/sigma`);
+    await expect(page.getByRole("link", { name: "See all 11 Sigma lenses →" })).toHaveAttribute("href", `${BRANDS}/sigma`);
+  });
+
+  test("a brand with release years has its own timeline, linked to the all-brand one", async ({ page }) => {
+    await page.goto(`${BRANDS}/sigma`);
+    const section = page.locator("section#timeline");
+    await expect(section.getByRole("heading", { name: "Release timeline" })).toBeVisible();
+    await expect(section.getByText("2022–2026 · 11 lenses")).toBeVisible();
+    await expect(section.getByRole("link", { name: "See it on the all-brand timeline →" })).toHaveAttribute(
+      "href",
+      `${TIMELINE}?brand=sigma`,
+    );
+  });
+
+  test("a brand without release years has no timeline", async ({ page }) => {
+    await page.goto(`${BRANDS}/viltrox`);
+    await expect(page.getByRole("heading", { name: "Lineup" })).toBeVisible();
+    await expect(page.locator("section#timeline")).toHaveCount(0);
+    await expect(page.getByRole("navigation", { name: "On this page" }).getByRole("link")).toHaveText(["Lineup", "All 16 lenses"]);
   });
 
   test("the brand on a lens page links to the brand page", async ({ page }) => {

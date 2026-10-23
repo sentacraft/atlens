@@ -35,6 +35,13 @@ export function readChartSelectionFromSearch(search: URLSearchParams, knownBrand
   );
 }
 
+/** A chart path opened with `selection` applied, for links from other pages. */
+export function chartHref(path: string, selection: ChartSelection): string {
+  const url = new URL(path, "https://x.invalid");
+  writeChartSelection(url, selection);
+  return `${url.pathname}${url.search}`;
+}
+
 /** Sets the selection params on `url` in place, leaving every other param alone. */
 export function writeChartSelection(url: URL, highlight: ChartSelection): void {
   url.searchParams.delete(CHART_BRAND_PARAM);

@@ -50,7 +50,7 @@ export function TimelinePoster({
 }) {
   return (
     <Frame text={text}>
-      <TimelineChart size="poster" mount={mount} entries={entries} years={years} brands={brands} initial={selection} />
+      <TimelineChart mode={{ kind: "poster" }} mount={mount} entries={entries} years={years} brands={brands} initial={selection} />
     </Frame>
   );
 }

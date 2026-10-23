@@ -77,7 +77,10 @@ export default function WeightLadderChart({ mount, tiers, brands, initial }: Pro
         />
         {selected.brand && (
           <Link href={brandPath(mount, selected.brand)} className={cn(TEXT_LINK_CLS, "self-start text-sm")}>
-            {t("seeLineup", { brand: brandLabel(tBrand, selected.brand) })}
+            {t("seeBrand", {
+              brand: brandLabel(tBrand, selected.brand),
+              count: brands.find((b) => b.brand === selected.brand)?.count ?? 0,
+            })}
           </Link>
         )}
       </div>

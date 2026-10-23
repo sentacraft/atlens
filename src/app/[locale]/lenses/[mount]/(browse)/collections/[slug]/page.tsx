@@ -126,6 +126,7 @@ export default async function CollectionPage({
             <div className="flex shrink-0 items-center gap-1">
               <ShareButton
                 heading={tShare("button")}
+                posters={[]}
                 shareText={t("shareText", { title, mount: mountLabel })}
                 triggerClassName={UTILITY_BTN_CLS}
               />

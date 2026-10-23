@@ -20,15 +20,19 @@ import { lensPath, brandPath } from "@/lib/url/routes";
 import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/charts";
 import { cn } from "@/lib/utils";
 
-const WIDE = { height: 720, padTop: 16, padBottom: 48, padLeft: 52, padRight: 12, size: 40, laneStep: 22 };
+const WIDE = { height: 720, sectionHeight: 480, padTop: 16, padBottom: 48, padLeft: 52, padRight: 12, size: 40, laneStep: 22 };
 const TALL = { rowLabel: 24, size: 30, rowGap: 4, rowPad: 10, laneGapFrac: 0.09 };
 const TICKS = [8, 15, 24, 35, 50, 85, 135, 200, 300, 600];
 const TALL_TICKS = [15, 35, 85, 200, 600];
 const DIM = 0.08;
 
 type Props = {
-  /** A poster is rasterized at a fixed width: the wide chart only, without controls. */
-  size: "responsive" | "poster";
+  /**
+   * `page`: the all-brand chart with its highlight chips and a link to the highlighted brand's page.
+   * `section`: one brand's chart inside its page, no controls. `poster`: rasterized at a fixed
+   * width, so the wide chart only, with brand counts under it.
+   */
+  mode: { kind: "page"; brandTotals: BrandCount[] } | { kind: "section" } | { kind: "poster" };
   mount: Mount;
   entries: TimelineEntry[];
   years: TimelineYear[];
@@ -44,11 +48,13 @@ export function TimelineChartFromUrl(props: Props) {
   return <TimelineChart {...props} initial={{ brand }} />;
 }
 
-export default function TimelineChart({ size, mount, entries, years, brands, initial }: Props & { initial: ChartSelection }) {
+export default function TimelineChart({ mode, mount, entries, years, brands, initial }: Props & { initial: ChartSelection }) {
   const t = useTranslations("Charts");
   const tBrand = useTranslations("Brands");
   const { selected, shown, select, setPreview } = useChartSelection(initial);
   const { active, itemHandlers } = useChartCard();
+  // One brand has few lenses; the full height would leave the section mostly empty.
+  const wideHeight = mode.kind === "section" ? WIDE.sectionHeight : WIDE.height;
 
   const [fMin, fMax] = useMemo(() => {
     const lows = entries.map((e) => e.lens.focalMin);
@@ -58,7 +64,7 @@ export default function TimelineChart({ size, mount, entries, years, brands, ini
   const frac = (f: number) => logFrac(f, fMin, fMax);
 
   const wide = useMemo(() => {
-    const ph = WIDE.height - WIDE.padTop - WIDE.padBottom;
+    const ph = wideHeight - WIDE.padTop - WIDE.padBottom;
     const y = (f: number) => Math.round(WIDE.padTop + (1 - logFrac(f, fMin, fMax)) * ph);
     const placed = years.flatMap((yr, col) => {
       const row = entries.filter((e) => e.year === yr.year);
@@ -66,7 +72,7 @@ export default function TimelineChart({ size, mount, entries, years, brands, ini
       return row.map((e, i) => ({ e, col, lane: lanes[i], y: y(e.focalMid), yMin: y(e.lens.focalMin), yMax: y(e.lens.focalMax) }));
     });
     return { placed, ticks: TICKS.filter((f) => f > fMin && f < fMax).map((f) => ({ f, y: y(f) })) };
-  }, [entries, years, fMin, fMax]);
+  }, [entries, years, fMin, fMax, wideHeight]);
 
   const tall = useMemo(() => {
     let top = TALL.rowLabel;
@@ -103,7 +109,7 @@ export default function TimelineChart({ size, mount, entries, years, brands, ini
 
   return (
     <div className="flex flex-col gap-4">
-      {size === "responsive" && (
+      {mode.kind === "page" && (
         <>
           <ChartChips
             label={t("highlightBrand")}
@@ -114,14 +120,17 @@ export default function TimelineChart({ size, mount, entries, years, brands, ini
           />
           {selected.brand && (
             <Link href={brandPath(mount, selected.brand)} className={cn(TEXT_LINK_CLS, "self-start text-sm")}>
-              {t("seeLineup", { brand: brandLabel(tBrand, selected.brand) })}
+              {t("seeBrand", {
+                brand: brandLabel(tBrand, selected.brand),
+                count: mode.brandTotals.find((b) => b.brand === selected.brand)?.count ?? 0,
+              })}
             </Link>
           )}
         </>
       )}
 
       {/* Wide layout: years across, focal length up the side. */}
-      <div className={cn("relative", size === "responsive" && "hidden md:block")} style={{ height: WIDE.height }}>
+      <div className={cn("relative", mode.kind !== "poster" && "hidden md:block")} style={{ height: wideHeight }}>
         {wide.ticks.map(({ f, y }) => (
           <span key={f} className="absolute left-0 w-11 text-right text-[11px] tabular-nums text-zinc-500" style={{ top: y - 8 }}>
             {f}mm
@@ -144,7 +153,7 @@ export default function TimelineChart({ size, mount, entries, years, brands, ini
             <div
               key={yr.year}
               className="absolute flex -translate-x-1/2 flex-col items-center"
-              style={{ left: pct(colFrac(col)), top: WIDE.height - WIDE.padBottom + 8 }}
+              style={{ left: pct(colFrac(col)), top: wideHeight - WIDE.padBottom + 8 }}
             >
               <span className="text-xs font-semibold tabular-nums text-zinc-900">{yr.year}</span>
               <span className="text-[11px] tabular-nums text-zinc-500">{t("lensCount", { count: yr.count })}</span>
@@ -182,7 +191,7 @@ export default function TimelineChart({ size, mount, entries, years, brands, ini
                 opacity: dimmed(e.lens),
               }}
             >
-              <Image src={getLensImageUrl(e.lens.id)} alt="" width={WIDE.size} height={WIDE.size} loading={size === "poster" ? "eager" : "lazy"} className="size-full object-contain drop-shadow-sm" />
+              <Image src={getLensImageUrl(e.lens.id)} alt="" width={WIDE.size} height={WIDE.size} loading={mode.kind === "poster" ? "eager" : "lazy"} className="size-full object-contain drop-shadow-sm" />
             </Link>
           ))}
           {activeEntry && activeWide && (
@@ -191,7 +200,7 @@ export default function TimelineChart({ size, mount, entries, years, brands, ini
               spec={spec(activeEntry)}
               className="absolute z-30"
               style={{
-                top: Math.max(0, Math.min(activeWide.y - 56, WIDE.height - 140)),
+                top: Math.max(0, Math.min(activeWide.y - 56, wideHeight - 140)),
                 left: pct(colFrac(activeWide.col)),
                 marginLeft: wideCardOffset(activeWide),
               }}
@@ -200,7 +209,7 @@ export default function TimelineChart({ size, mount, entries, years, brands, ini
         </div>
       </div>
 
-      {size === "responsive" && (
+      {mode.kind !== "poster" && (
         <>
           {/* Tall layout for phones: one row per year, newest first, focal length across. */}
           <div className="relative md:hidden" style={{ height: tall.height + 40 }}>
