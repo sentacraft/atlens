@@ -974,7 +974,7 @@
     "lineupsMetaTitle": "富士 X 卡口镜头有哪些品牌：{brandCount, number} 个品牌 {count, number} 支一览",
     "lineupsMetaDesc": "富士 X 卡口目前有 {brandCount, number} 个品牌出镜头：{brands}。每个品牌的定焦和变焦按焦段排开，一页看全。",
     "lineupsCta": "看全家福 →",
-    "lineupsNote": "不含 {count} 支电影镜头。",
+    "excludesCine": "不含 {count} 支电影镜头。",
     "lineupPrimes": "定焦",
     "lineupZooms": "变焦",
     "seeBrand": "看{brand}的全部 {count} 支镜头 →",

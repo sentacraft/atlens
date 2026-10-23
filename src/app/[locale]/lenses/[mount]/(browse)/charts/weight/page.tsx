@@ -7,6 +7,7 @@ import { DataSourceInline } from "@/components/lens/DataSource";
 import { WeightShare, WeightShareFromUrl } from "@/components/charts/ChartShare";
 import WeightLadderChart, { WeightLadderChartFromUrl } from "@/components/charts/WeightLadderChart";
 import JsonLd from "@/components/seo/JsonLd";
+import SupportNote from "@/components/support/SupportNote";
 import { SITE } from "@/config/site";
 import { BROWSE_PAGE_MAIN_CLS } from "@/config/ui-tokens";
 import { chartBrands, countCineLenses, type ChartLens } from "@/lib/charts/catalog";
@@ -102,6 +103,7 @@ export default async function WeightPage({ params }: { params: Params }) {
           locale={locale}
           mount={data.resolvedMount}
           active="weight"
+          note={t("weightNote", { count: data.cineCount })}
           title={t("weightTitle")}
           description={t("weightDesc", {
             model: ladder.heaviest?.model ?? "",
@@ -119,7 +121,7 @@ export default async function WeightPage({ params }: { params: Params }) {
         <Suspense fallback={<WeightLadderChart tiers={ladder.tiers} mode={{ kind: "page", initial: {}, mount: data.resolvedMount, brands: data.brands }} />}>
           <WeightLadderChartFromUrl {...chartProps} />
         </Suspense>
-        <p className="mt-6 text-xs leading-relaxed text-zinc-500">{t("weightNote", { count: data.cineCount })}</p>
+        <SupportNote className="mt-12" />
       </main>
     </>
   );
