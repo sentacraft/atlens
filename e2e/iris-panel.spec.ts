@@ -64,9 +64,9 @@ test.describe("Ask Iris side panel", () => {
     await page.goto("/en/lenses/x/browse");
     await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
     const panel = page.getByRole("complementary", { name: "Iris" });
-    // The panel slides in, so its left edge is only stable once it rests 400px from the right.
-    const panelLeft = page.viewportSize()!.width - 400;
-    await expect.poll(() => panel.evaluate((aside) => aside.getBoundingClientRect().left)).toBe(panelLeft);
+    // The panel slides in; its left edge is only its own once the slide has finished.
+    await expect.poll(() => panel.evaluate((aside) => aside.getAnimations().length)).toBe(0);
+    const panelLeft = await panel.evaluate((aside) => aside.getBoundingClientRect().left);
 
     const button = panel.getByRole("button", { name: "Conversations" });
     await button.click();
