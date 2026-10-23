@@ -1,6 +1,8 @@
 #!/usr/bin/env node
-// Probes every sitemap URL. Knows nothing about route shapes, only the sitemap.
+// Probes sitemap URLs, then a few routes the sitemap leaves out: read-only API routes, the
+// per-request compare page and the Ask Iris page.
 // Used by .github/workflows/uptime.yml (prod) and cf-smoke.yml (local workerd).
+import { readFileSync } from "node:fs";
 
 const rawBase = process.env.BASE_URL;
 if (!rawBase) {
@@ -34,6 +36,34 @@ if (sampleRaw !== undefined) {
     );
     process.exit(1);
   }
+}
+
+// A build's prerender manifest maps each page to its route template; one page per template and
+// locale/mount stands in for the rest, which share its code and were already rendered at build time.
+const manifestPath = process.env.UPTIME_PRERENDER_MANIFEST;
+
+function oneEachTemplate(paths, manifest) {
+  const seen = new Set();
+  const picked = [];
+  for (const path of paths.slice().sort()) {
+    const template = manifest.routes[path]?.srcRoute;
+    if (!template) {
+      picked.push(path);
+      continue;
+    }
+    const pathParts = path.split("/");
+    const templateParts = template.split("/");
+    const dynamic = templateParts.flatMap((part, i) => (part.startsWith("[") ? [i] : []));
+    const last = templateParts.length - 1;
+    const key = templateParts
+      .map((part, i) => (part.startsWith("[") && !(i === last && dynamic.length > 1) ? pathParts[i] : part))
+      .join("/");
+    if (!seen.has(key)) {
+      seen.add(key);
+      picked.push(path);
+    }
+  }
+  return picked;
 }
 
 function rotatingSample(paths) {
@@ -102,13 +132,29 @@ async function check(path) {
     if (status !== 200) {
       return { path, reason: `status ${status}` };
     }
-    if (!/<\/html>/i.test(body)) {
+    if (path.startsWith("/api/")) {
+      JSON.parse(body);
+    } else if (!/<\/html>/i.test(body)) {
       return { path, reason: "no </html> — empty/broken render" };
     }
     return null;
   } catch (err) {
     return { path, reason: `fetch failed: ${err.message}` };
   }
+}
+
+// Routes the sitemap leaves out. All are GETs without side effects, safe against production.
+async function extraPaths() {
+  const chatData = "/api/askiris/chat-data?locale=en";
+  const paths = [chatData, "/api/feedback", "/api/auth/get-session", "/en/askiris"];
+  try {
+    const { lenses } = JSON.parse((await fetchText(`${BASE_URL}${chatData}`)).body);
+    const ids = lenses.filter((lens) => lens.mount === "X").slice(0, 2).map((lens) => lens.id);
+    paths.push(`/en/lenses/x/compare?ids=${ids.join(",")}`);
+  } catch {
+    // The chat-data probe itself reports the failure.
+  }
+  return paths;
 }
 
 async function runPool(items, concurrency, worker) {
@@ -137,7 +183,10 @@ async function main() {
   }
 
   let targets = paths;
-  if (sampleSize !== null && sampleSize < paths.length) {
+  if (manifestPath) {
+    targets = oneEachTemplate(paths, JSON.parse(readFileSync(manifestPath, "utf8")));
+    console.log(`Probing ${targets.length} of ${paths.length} URLs, one per route template (concurrency ${CONCURRENCY})…\n`);
+  } else if (sampleSize !== null && sampleSize < paths.length) {
     targets = rotatingSample(paths);
     console.log(
       `Sampling ${targets.length} of ${paths.length} URLs ` +
@@ -147,6 +196,7 @@ async function main() {
     console.log(`Probing all ${paths.length} sitemap URLs (concurrency ${CONCURRENCY})…\n`);
   }
 
+  targets = [...targets, ...(await extraPaths())];
   const startedAt = Date.now();
   const failures = await runPool(targets, CONCURRENCY, check);
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
