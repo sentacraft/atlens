@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Check, Plus, Star } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { ChartSpecLine } from "@/components/charts/ChartLensCard";
 import { Dialog, DialogPopup, DialogTitle } from "@/components/ui/dialog";
 import { ACTION_PRIMARY_CLS, COMPARE_CHIP_CLS, COMPARE_CHIP_STATE_CLS } from "@/config/ui-tokens";
 import { useCompareToggle } from "@/hooks/useCompareToggle";
@@ -22,7 +23,7 @@ export default function ChartLensSheet({
   onOpenChange,
 }: {
   lens: ChartLens | undefined;
-  spec: string;
+  spec: (string | undefined)[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
@@ -33,7 +34,7 @@ export default function ChartLensSheet({
   );
 }
 
-function SheetBody({ lens, spec }: { lens: ChartLens; spec: string }) {
+function SheetBody({ lens, spec }: { lens: ChartLens; spec: (string | undefined)[] }) {
   const t = useTranslations("Charts");
   const tActions = useTranslations("LensActions");
   const tBrand = useTranslations("Brands");
@@ -48,7 +49,7 @@ function SheetBody({ lens, spec }: { lens: ChartLens; spec: string }) {
         <div className="flex min-w-0 flex-col gap-1">
           <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">{brandLabel(tBrand, lens.brand)}</span>
           <DialogTitle className="text-base font-semibold leading-snug text-zinc-900">{lens.model}</DialogTitle>
-          <span className="text-[13px] text-zinc-600">{spec}</span>
+          <ChartSpecLine items={spec} className="text-[13px]" />
         </div>
       </div>
       <div className="flex gap-2.5">

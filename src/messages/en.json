@@ -1023,7 +1023,7 @@
     "filteredCount": "{shown, number} of {total, plural, one {# lens} other {# lenses}}",
     "viewDetails": "View details →",
     "released": "Released {year}",
-    "focalSpec": "{focal} ({equiv} equiv.)",
+    "equivFocal": "{focal} equiv.",
     "weight": "{weight, number}g",
     "showAll": "Show all {count, number}"
   },

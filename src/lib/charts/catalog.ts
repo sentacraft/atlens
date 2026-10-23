@@ -56,12 +56,9 @@ export function toChartLens(lens: Lens): ChartLens {
   };
 }
 
-/** The focal length and its full-frame equivalent, for the `focalSpec` message. */
-export function focalSpecArgs(lens: ChartLens): { focal: string; equiv: string } {
-  return {
-    focal: focalRangeDisplay(lens.focalMin, lens.focalMax),
-    equiv: focalRangeDisplay(lens.focalEquivMin, lens.focalEquivMax),
-  };
+/** The full-frame equivalent focal length; the lens name already gives the physical one. */
+export function focalEquivDisplay(lens: ChartLens): string {
+  return focalRangeDisplay(lens.focalEquivMin, lens.focalEquivMax);
 }
 
 /** The aperture as a chart labels it: "F1.4", or "F3.5–5.6" for a variable-aperture zoom. */

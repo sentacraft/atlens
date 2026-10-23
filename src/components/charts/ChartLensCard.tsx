@@ -16,7 +16,7 @@ export default function ChartLensCard({
   style,
 }: {
   lens: ChartLens;
-  spec: string;
+  spec: (string | undefined)[];
   className?: string;
   style?: React.CSSProperties;
 }) {
@@ -39,8 +39,23 @@ export default function ChartLensCard({
       <div className="flex min-w-0 flex-col gap-1">
         <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">{brandLabel(tBrand, lens.brand)}</span>
         <span className="text-sm font-semibold leading-snug text-zinc-900">{lens.model}</span>
-        <span className="text-xs text-zinc-600">{spec}</span>
+        <ChartSpecLine items={spec} className="text-xs" />
       </div>
     </div>
+  );
+}
+
+/** Short facts about a lens, wrapping between items but never inside one. */
+export function ChartSpecLine({ items, className }: { items: (string | undefined)[]; className?: string }) {
+  const shown = items.filter(Boolean);
+  return (
+    <span className={cn("text-zinc-600", className)}>
+      {shown.map((item, i) => (
+        <span key={item}>
+          <span className="whitespace-nowrap">{i < shown.length - 1 ? `${item}\u00a0·` : item}</span>
+          {i < shown.length - 1 && " "}
+        </span>
+      ))}
+    </span>
   );
 }

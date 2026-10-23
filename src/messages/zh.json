@@ -1023,7 +1023,7 @@
     "filteredCount": "{shown, number} / {total, number} 支",
     "viewDetails": "查看详情 →",
     "released": "{year} 年发布",
-    "focalSpec": "{focal}（等效 {equiv}）",
+    "equivFocal": "等效 {focal}",
     "weight": "{weight}g",
     "showAll": "展开全部 {count} 支"
   },
