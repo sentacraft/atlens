@@ -1,1 +1,149 @@
-AGENTS.md
+# Atlens
+
+Fujifilm lens comparison tool — X mount, with GF (medium format) coverage under way.
+Next.js App Router + TypeScript, Tailwind, next-intl, deployed to Cloudflare Workers via OpenNext.
+
+## Commands
+
+pnpm only. The repo has no `package-lock.json` and `package.json`'s own scripts call `pnpm`.
+Never run `npm` or `yarn` — they resolve dependencies differently and write a lockfile that
+must not exist here.
+
+| Command | Purpose |
+|---|---|
+| `pnpm run lint` | ESLint (`lint:fix` to autofix) |
+| `pnpm run typecheck` | `wrangler types` + `tsc --noEmit` |
+| `pnpm run check` | lint + typecheck |
+| `pnpm run test` | Vitest |
+| `pnpm run test:e2e` | Playwright |
+| `pnpm run build` | production build |
+| `pnpm run preview` | production build served on the real workerd runtime |
+
+`pnpm run lint` must pass before committing.
+
+Run `pnpm run preview` before merging any change to routing, rendering mode, or
+`next.config.ts`: some regressions appear only on workerd. See the `//preview` and `//start`
+entries in `package.json` for why `next start` is not a substitute.
+
+## Project layout
+
+Business logic, types, and data access live in `src/lib/`; components under `src/components/`
+render and do not embed business logic. Keep that separation when adding code — the split
+exists so the logic layer can move to a shared package later.
+
+Components do not call `fetch` or hard-code API paths: each feature's requests live in a client
+module under `src/lib/`, and client-side reads go through TanStack Query. Each feature's URL query
+params are named, parsed, and written in one module under `src/lib/url/`.
+
+Rate limits go through `src/lib/rate-limit.ts`, which lists every limit the app enforces.
+
+An Ask Iris server tool that needs an account is listed in `src/lib/ai/sign-in-gate.ts`: a guest's
+call pauses the turn on the shared sign-in card and resumes once they sign in. Iris's prompts never
+word sign-in themselves.
+
+Internal page paths come from `src/lib/url/routes.ts` (and `buildComparePath` in `src/lib/url/compare.ts`); the site's domain, repository, and contact address come from `SITE` in `src/config/site.ts`. Don't spell them out in components.
+
+Each exported route handler under `src/app/api/` carries a one-line JSDoc: what it does, who may
+call it, and its main error statuses. `docs/api.md` is generated from them, and the build fails
+when it is stale. A request body or payload shared by a client module and its route is one Zod
+schema in `src/lib/`, imported by both.
+
+Pure helpers and UI state used by a single component stay in its file; extract when the code does
+I/O, carries testable logic, or gains a second consumer.
+
+When a shared component or helper gains a caller, redesign its props around every caller as equals
+and update the existing call sites, rather than adding optional props so old calls stay unchanged.
+
+Mockups and design explorations go in a Claude artifact built on the Atlens design system (see
+Code style), not in the repo. Demos and UX experiments that need the app's own code or data
+belong under `src/app/[locale]/design-lab/`, never in production code. Pages and components there — and all Test Hook pages and components —
+hardcode English strings, do not use `next-intl`, and must not add keys to `en.json` or
+`zh.json`.
+
+## Code style
+
+ESLint is the sole style authority; run `pnpm run lint`. The project deliberately has no
+Prettier — do not add one, and do not bulk-reformat files.
+
+Reusable visual language — interaction colors, button styles, selected states — is defined and
+exported from `src/config/ui-tokens.ts` and imported by components. Do not inline duplicate
+style strings across components. Inline only genuinely one-off local styles.
+
+A dialog with something to fill in or pick puts its Cancel in `DialogCancel`, which phone drawers
+leave out (they close by swipe or the backdrop); a yes-or-no confirmation keeps its Cancel.
+
+The Atlens design system (https://claude.ai/artifact/4HmVRpfNHU5zsrhynoCceH) mirrors the theme,
+fonts, `ui-tokens.ts` and a set of components; `scripts/hooks/ui-token-review.mjs` lists those
+files. It is re-synced on demand, not per change: a PR that alters how any of them looks says
+which part of the design system it affects. Before building mockups on it, diff those files
+between the commit its `tokens.json` records (`meta.ref`) and `main`, and re-sync what changed.
+
+Device insets (iOS notch, home indicator, Window Controls Overlay) are consumed through the
+`--safe-inset-*` and `--titlebar-height` variables declared in `src/app/theme.css`. Never call
+`env(safe-area-inset-*)` directly in a component. Cover any new inset in
+`e2e/pwa-safe-area.spec.ts`.
+
+Chinese text belongs only in the files `scripts/hooks/cjk-guard.mjs` allows: UI copy in `zh.json`,
+model-facing wording in `system-prompt.ts`, data, tests, and a few listed exceptions.
+
+Write all code comments in English. Default to no comment. Write one only where a reader would
+otherwise "fix" the code back — it looks wrong or roundabout but is required — and say in a line
+or two what breaks without it, linking the upstream issue or spec when there is one.
+
+Background, design rationale, alternatives considered, and bug histories belong in the commit
+message or PR description, not in the source.
+
+## Environment variables
+
+- Read secrets and per-environment config from `process.env`, and Cloudflare bindings from
+  `getCloudflareContext().env`.
+- Non-secret config lives in `wrangler.toml` `[vars]`; override it in `.env.local` only where the
+  local value must differ.
+- Add secrets with `pnpm run secret:add`. Setting a production value changes production, so ask
+  first, and third-party key values never pass through the chat.
+- Branch previews (`<branch>.preview.atlens.app`) inherit nothing from production. Declare every
+  new var or binding again under `[previews]` in `wrangler.toml`, pointing storage at a preview
+  copy; `--prod` on `secret:add` also sets the preview secret.
+- Google sign-in works locally only on ports 3000 (`dev`) and 8787 (`preview`).
+
+## Data
+
+- Never edit `src/data/lenses.json` or `src/data/lenses-gfx.json`. Both are generated by a
+  separate private data pipeline and written into this repo. Data corrections go through the
+  pipeline, not through this repo.
+- `src/data/collections.json` is hand-authored and may be edited directly; its copy follows
+  `src/data/collections.md`.
+- The `Lens` JSDoc in `src/lib/types.ts` is the pipeline's field-extraction spec. Do not trim it.
+
+## Testing
+
+Every bug fix ships with a regression test. Write the failing test first, then fix the code.
+Tests live in a `__tests__/` directory beside the module under test. Choose the lightest layer
+that covers the bug:
+
+| Bug type | Layer |
+|---|---|
+| Pure logic — utilities, transforms, calculations | Vitest |
+| Component rendering or hook behavior | Vitest + `@testing-library/react` + jsdom (`// @vitest-environment jsdom`) |
+| Layout, interaction, browser APIs — fixed positioning, scroll, ResizeObserver, viewport | Playwright (`e2e/`) |
+| Pure CSS — color, spacing, font size, no conditional logic | No test required; verify with a screenshot |
+
+The AskIris eval (`eval/promptfoo/`) calls paid models on every case. Follow the cost rules
+in its README before running it.
+
+Visual verification must cover desktop and mobile. Use a 375px viewport for mobile. A
+desktop-only screenshot is not evidence that a UI change works.
+
+## Git workflow
+
+- Commit completed changes and push the current branch immediately without asking for separate
+  confirmation.
+- PR titles follow Conventional Commits. Titles and descriptions are written in English.
+- Describe what the diff does not make obvious. Do not restate the changes.
+- Do not merge. Wait for CI, report the result, and leave the merge decision to the maintainer.
+
+## Compatibility
+
+- Do not keep legacy exports, aliases, fallback paths, duplicate fields, or compatibility layers
+  for hypothetical consumers. Search for actual consumers first. If compatibility is required,
+  document the consumer, removal condition, and expected lifetime; otherwise remove the old path.
