@@ -1,9 +1,9 @@
-name: Layout check
+name: Text fit check
 
-# The @layout sweep (e2e/text-layout.spec.ts): text that spills out of its box or over other text,
+# The @text-fit sweep (e2e/text-fit.spec.ts): text that spills out of its box or over other text,
 # one page per route template and locale, at desktop and phone widths. Its findings are small and it
 # adds about a minute, so it does not gate every PR: it runs weekly, by hand, and on any PR that
-# carries the layout-check label (add the label when a change reworks layout).
+# carries the text-fit-check label (add the label when a change reworks layout).
 
 on:
   schedule:
@@ -14,13 +14,13 @@ on:
     types: [labeled, synchronize]
 
 concurrency:
-  group: layout-check-${{ github.ref }}
+  group: text-fit-check-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   playwright-version:
     name: Resolve Playwright image
-    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'layout-check')
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'text-fit-check')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -36,8 +36,8 @@ jobs:
           test -n "$version"
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-  layout:
-    name: Text layout sweep
+  text-fit:
+    name: Text fit sweep
     needs: playwright-version
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -59,11 +59,11 @@ jobs:
           restore-keys: |
             nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
       - name: Run the sweep
-        run: pnpm exec playwright test --project=chromium --grep "@layout"
+        run: pnpm exec playwright test --project=chromium --grep "@text-fit"
       - name: Upload report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: layout-report
+          name: text-fit-report
           path: playwright-report/
           retention-days: 7

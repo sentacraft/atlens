@@ -80,10 +80,10 @@ jobs:
       # webServer runs `pnpm run build && next start` itself (CI=true disables
       # reuseExistingServer). Matrix: desktop + mobile WebKit + the PWA project.
       # --grep-invert drops @local-only tests (slow, low-gate-value animation /
-      # scroll-choreography guards that still run locally) and the @layout sweep,
-      # which runs on its own schedule (layout-check.yml).
+      # scroll-choreography guards that still run locally) and the @text-fit sweep,
+      # which runs on its own schedule (text-fit-check.yml).
       - name: Run E2E
-        run: pnpm exec playwright test --project=chromium --project=ios-safari --project=ios-pwa --grep-invert "@local-only|@layout"
+        run: pnpm exec playwright test --project=chromium --project=ios-safari --project=ios-pwa --grep-invert "@local-only|@text-fit"
 
       - name: Upload report
         if: ${{ !cancelled() }}
