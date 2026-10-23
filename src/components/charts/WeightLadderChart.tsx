@@ -30,7 +30,7 @@ const PHONE_TIER_PREVIEW = 6;
 const LAYOUT = {
   page: {
     list: "gap-6",
-    section: "border-t border-zinc-200 pt-4 md:grid md:grid-cols-[148px_1fr] md:gap-4",
+    section: "border-t border-zinc-200 pt-4 md:grid md:grid-cols-[176px_1fr] md:gap-4",
     header: "mb-3 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 md:mb-0 md:flex-col md:gap-1",
     name: PAGE_SECTION_HEADING_CLS,
     detail: "text-xs",

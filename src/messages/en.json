@@ -974,7 +974,7 @@
     "lineupsMetaTitle": "Fujifilm X-Mount Lens Brands: {brandCount, number} Makers, {count, number} Lenses",
     "lineupsMetaDesc": "{brandCount, number} brands make lenses for Fujifilm X-mount: {brands}. Each brand's primes and zooms laid out by focal length on one page.",
     "lineupsCta": "See the lineup →",
-    "lineupsNote": "The {count, number} cine lenses are not included.",
+    "excludesCine": "The {count, number} cine lenses are not included.",
     "lineupPrimes": "Primes",
     "lineupZooms": "Zooms",
     "seeBrand": "See all {count, number} {brand} lenses →",

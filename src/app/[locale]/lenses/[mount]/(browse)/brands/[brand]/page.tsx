@@ -7,6 +7,7 @@ import { localized } from "@/i18n/localized";
 import BrandPicker from "@/components/brand/BrandPicker";
 import { BrandShare } from "@/components/charts/ChartShare";
 import LineupChart from "@/components/charts/LineupChart";
+import ScopeNote from "@/components/charts/ScopeNote";
 import TimelineChart from "@/components/charts/TimelineChart";
 import CollectionLensGrid from "@/components/collection/CollectionLensGrid";
 import RelatedCollectionCard from "@/components/collection/RelatedCollectionCard";
@@ -171,6 +172,11 @@ export default async function BrandPage({ params }: { params: Params }) {
             {data.summary}
             <DataSourceInline />
           </p>
+          {data.cineCount > 0 && (
+            <div className="mt-1">
+              <ScopeNote>{t("cineNote", { brand: data.name, count: data.cineCount })}</ScopeNote>
+            </div>
+          )}
           <p className="mt-3 text-sm leading-relaxed text-zinc-700 sm:text-base">{description}</p>
           <nav aria-label={t("contents")} className="mt-4 flex flex-wrap gap-1.5">
             {contents.map(({ id, label }) => (
@@ -189,9 +195,6 @@ export default async function BrandPage({ params }: { params: Params }) {
             <BrandShare {...share} posters={["lineup"]} trigger="section" />
           </div>
           <LineupChart lineup={data.lineup} mode={{ kind: "section" }} />
-          {data.cineCount > 0 && (
-            <p className="text-xs leading-relaxed text-zinc-500">{t("cineNote", { brand: data.name, count: data.cineCount })}</p>
-          )}
         </section>
 
         {hasTimeline && (
