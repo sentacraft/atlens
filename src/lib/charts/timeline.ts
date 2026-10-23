@@ -30,6 +30,7 @@ export function buildTimeline(lenses: Lens[]): Timeline {
     .map((lens) => ({ lens, year: lens.releaseYear, focalMid: Math.sqrt(lens.focalMin * lens.focalMax) }))
     .sort((a, b) => a.year - b.year || a.focalMid - b.focalMid || a.lens.id.localeCompare(b.lens.id));
 
+  const brands = countByBrand(dated);
   const years: TimelineYear[] = [];
   if (entries.length > 0) {
     const first = entries[0].year;
@@ -44,7 +45,7 @@ export function buildTimeline(lenses: Lens[]): Timeline {
     .map(({ brand }) => brand)
     .filter((brand) => !datedBrands.has(brand));
 
-  return { entries, years, brands: countByBrand(dated), brandsWithoutYear };
+  return { entries, years, brands, brandsWithoutYear };
 }
 
 /**

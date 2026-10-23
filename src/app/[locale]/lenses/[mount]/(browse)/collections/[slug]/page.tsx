@@ -92,6 +92,7 @@ export default async function CollectionPage({
   const t = await getTranslations({ locale, namespace: "Collection" });
   const tNav = await getTranslations({ locale, namespace: "Nav" });
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
+  const tShare = await getTranslations({ locale, namespace: "Share" });
 
   const title = localized(collection.title, locale);
   const mountLabel = t("mountLabel", { mount: mountSeoLabel(resolvedMount) });
@@ -124,10 +125,10 @@ export default async function CollectionPage({
             />
             <div className="flex shrink-0 items-center gap-1">
               <ShareButton
-                lenses={lenses}
-                linkOnly
+                heading={tShare("button")}
+                posters={[]}
                 shareText={t("shareText", { title, mount: mountLabel })}
-                triggerClassName={UTILITY_BTN_CLS}
+                trigger="utility"
               />
               <FeedbackTrigger type="general" className={UTILITY_BTN_CLS}>
                 <Flag className="size-4" />

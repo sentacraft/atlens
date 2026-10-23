@@ -3,6 +3,20 @@ import { deriveSpecialty } from "@/lib/lens/specialty";
 
 export const MAX_COMPARE = 4;
 
+export type CompareChipState = "selected" | "full" | "idle";
+
+/** The add-to-compare control's state; `full` means the list has no room for this lens. */
+export function compareChipState(selected: boolean, full: boolean): CompareChipState {
+  return selected ? "selected" : full ? "full" : "idle";
+}
+
+/** `LensList` message keys for the add-to-compare control's accessible name, by state. */
+export const COMPARE_CHIP_LABEL_KEY = {
+  selected: "removeFromCompare",
+  full: "compareFull",
+  idle: "addToCompare",
+} as const satisfies Record<CompareChipState, string>;
+
 export const CROP_FACTOR: Record<Mount, number> = {
   X: 1.5,
   G: 0.79, // GFX 44×33 mm diagonal ≈54.78 mm vs FF ≈43.3 mm

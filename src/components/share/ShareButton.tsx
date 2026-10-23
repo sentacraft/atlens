@@ -5,58 +5,58 @@ import { toast } from "sonner";
 import { Popover } from "@base-ui/react/popover";
 import { Drawer } from "@base-ui/react/drawer";
 import { Tabs } from "@base-ui/react/tabs";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Share2, Copy, Check, Download, Loader2, Expand } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SEGMENTED_LIST_CLS, SEGMENTED_TAB_CLS } from "@/config/ui-tokens";
-import type { Lens } from "@/lib/types";
+import { CHIP_ACTIVE_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS, SEGMENTED_LIST_CLS, SEGMENTED_TAB_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { rasterizePoster } from "@/lib/share-image";
 import { track } from "@/lib/analytics/analytics";
-import { SharePoster, type PosterLabels } from "@/components/share/poster/SharePoster";
 import { useShareCapabilities } from "@/hooks/useShareCapabilities";
 import { useLightbox } from "@/hooks/useLightbox";
 import { LightboxDialog } from "./LightboxDialog";
-import { CustomizePopover } from "./CustomizePopover";
-import { lensDisplayName, brandLabel } from "@/lib/lens/format";
-import { SITE } from "@/config/site";
-import type { NamespaceTranslator } from "@/i18n/translator";
 import { useSupportDialog } from "@/context/SupportDialogProvider";
 import { browserPromptStore, claimPrompt } from "@/lib/support-prompts";
 
-const POSTER_W = 750;
-const PREVIEW_SCALE = 352 / POSTER_W; // ≈ 0.469
-const PREVIEW_SCALED_W = POSTER_W * PREVIEW_SCALE; // 352px — visual width after scale
-const PREVIEW_H = 310; // visible preview height in pixels
+const PREVIEW_W = 352;
+const PREVIEW_H = 310;
+
+/** An image the page offers alongside its link, rendered at full size, previewed scaled down, rasterized on demand. */
+export interface SharePoster {
+  /** Names the poster in the picker when a page offers more than one. */
+  label: string;
+  /** Rendered with the page URL as it was when the panel opened, for the poster's QR code. */
+  content: (shareUrl: string) => React.ReactNode;
+  /** Natural width in px; the preview scales the poster down to fit the panel. */
+  width: number;
+  fileName: string;
+  /** Text the system share sheet sends with the image. */
+  imageText: string;
+  /** Controls beside the image buttons, such as the lens poster's customize popover. */
+  extraActions?: React.ReactNode;
+}
 
 interface ShareButtonProps {
-  lenses: Lens[];
-  variant?: "default" | "fab";
-  triggerClassName?: string;
-  iconOnly?: boolean;
-  presetTitle?: string;
-  presetSubtitle?: string;
-  linkOnly?: boolean;
-  shareText?: string;
+  heading: string;
+  caption?: string;
+  /** Text the system share sheet sends with the link. */
+  shareText: string;
+  /** The images on offer; none shares the link only, several get a picker. */
+  posters: SharePoster[];
+  /**
+   * `utility`: a page's top-row action, its "Share" label hidden on narrow screens. `section`: beside
+   * a section heading, labelled with the panel's heading. `fab`: the floating round button.
+   */
+  trigger: "utility" | "section" | "fab";
 }
 
-function computePosterTitle(
-  lenses: Lens[],
-  tBrand: NamespaceTranslator<"Brands">,
-  tImage: NamespaceTranslator<"ShareImage">,
-): string[] {
-  if (lenses.length >= 2) {
-    const uniqueBrands = [...new Set(lenses.map((l) => brandLabel(tBrand, l.brand)))];
-    return [tImage("comparisonTitle", { brands: uniqueBrands.join(" · ") })];
-  }
-  return lenses.map((l) => lensDisplayName(brandLabel(tBrand, l.brand), l.series, l.model));
-}
+const TRIGGER_CLS = {
+  utility: UTILITY_BTN_CLS,
+  section: cn(UTILITY_BTN_CLS, "shrink-0"),
+  fab: "flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-zinc-900 text-white shadow-lg outline-none transition-colors hover:bg-zinc-700 focus-visible:ring-2 focus-visible:ring-zinc-400",
+};
 
-export function ShareButton({ lenses, variant = "default", triggerClassName, iconOnly, presetTitle, presetSubtitle, linkOnly, shareText }: ShareButtonProps) {
+export function ShareButton({ heading, caption, shareText, posters, trigger }: ShareButtonProps) {
   const t = useTranslations("Share");
-  const locale = useLocale();
-  const tImage = useTranslations("ShareImage");
-  const tBrand = useTranslations("Brands");
-  const tPricing = useTranslations("Pricing");
   const tSupport = useTranslations("Support");
   const openSupport = useSupportDialog();
 
@@ -67,78 +67,28 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
   const [copyFailed, setCopyFailed] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [posterGenerating, setPosterGenerating] = useState(false);
-  const [titleOverride, setTitleOverride] = useState<string | null>(null);
-  const [sloganOverride, setSloganOverride] = useState<string | null>(null);
+  const [posterIndex, setPosterIndex] = useState(0);
+  const poster: SharePoster | undefined = posters[posterIndex] ?? posters[0];
 
-  const posterRef = useRef<HTMLDivElement>(null);
-  const slugRef = useRef("");
-
+  const posterRef = useRef<HTMLDivElement | null>(null);
   const lightbox = useLightbox(posterRef);
+  const [posterHeight, setPosterHeight] = useState(0);
+  const resizeObserver = useRef<ResizeObserver | null>(null);
+  // A callback ref: the poster mounts inside a portal only once the panel opens.
+  const attachPoster = useCallback((el: HTMLDivElement | null) => {
+    posterRef.current = el;
+    resizeObserver.current?.disconnect();
+    if (el) {
+      resizeObserver.current = new ResizeObserver(() => setPosterHeight(el.scrollHeight));
+      resizeObserver.current.observe(el);
+    }
+  }, []);
 
   useEffect(() => {
-    if (!open) {
-      return;
+    if (open) {
+      setShareUrl(window.location.href);
     }
-    setShareUrl(window.location.href);
-    slugRef.current = lenses
-      .map((l) => l.model.replace(/\s+/g, "-").toLowerCase())
-      .join("_vs_")
-      .slice(0, 60);
-  }, [open, lenses]);
-
-  const tSpecialty = useTranslations("SpecialtyBadge");
-  const computedPosterTitle = computePosterTitle(lenses, tBrand, tImage);
-
-  const effectiveTitle = titleOverride ?? presetTitle ?? "";
-  const effectiveSlogan = sloganOverride ?? presetSubtitle ?? "";
-
-  const posterLabels: PosterLabels = {
-    appName: "Atlens",
-    siteUrl: `${SITE.host}/${locale}`,
-    brandTagline: tImage("brandTagline"),
-    cta: lenses.length === 1 ? tImage("ctaSingle") : tImage("cta"),
-    comparison: computedPosterTitle,
-    sectionFocalCoverage: tImage("sectionFocalCoverage"),
-    sectionFocus: tImage("sectionFocus"),
-    sectionSizeWeight: tImage("sectionSizeWeight"),
-    sectionFeatures: tImage("sectionFeatures"),
-    minFocusLabel: tImage("minFocusLabel"),
-    maxMagLabel: tImage("maxMagLabel"),
-    macroLabel: tImage("macroLabel"),
-    normalLabel: tImage("normalLabel"),
-    weightLabel: tImage("weightLabel"),
-    dimensionsLabel: tImage("dimensionsLabel"),
-    filterLabel: tImage("filterLabel"),
-    focusMotorLabel: tImage("focusMotorLabel"),
-    tStopLabel: tImage("tStopLabel"),
-    lensConfigLabel: tImage("lensConfigLabel"),
-    featureWR: tImage("featureWR"),
-    wrPartialSub: tImage("wrPartialSub"),
-    featureOIS: tImage("featureOIS"),
-    featureAF: tImage("featureAF"),
-    featureApertureRing: tImage("featureApertureRing"),
-    featurePowerZoom: tImage("featurePowerZoom"),
-    featureInternalZoom: tImage("featureInternalZoom"),
-    motorLinear: tImage("motorLinear"),
-    motorStepping: tImage("motorStepping"),
-    motorDc: tImage("motorDc"),
-    motorOther: tImage("motorOther"),
-    wide: tImage("wide"),
-    tele: tImage("tele"),
-    tagCine: tSpecialty("cine"),
-    tagAnamorphic: tSpecialty("anamorphic"),
-    tagTilt: tSpecialty("tilt"),
-    tagShift: tSpecialty("shift"),
-    tagMacro: tSpecialty("macro"),
-    tagFisheye: tSpecialty("fisheye"),
-    tagProbe: tSpecialty("probe"),
-    na: tImage("na"),
-    priceLabel: tImage("priceLabel"),
-    usedBadge: tImage("usedBadge"),
-    pricing: tPricing,
-    disclaimerWarn: tPricing("disclaimerWarn"),
-    locale,
-  };
+  }, [open]);
 
   const handleCopy = useCallback(async () => {
     try {
@@ -155,16 +105,10 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
   }, []);
 
   const handleNativeShare = useCallback(async () => {
-    const isSingle = lenses.length === 1;
-    const cta = shareText ?? (isSingle
-      ? t("shareCtaSingle")
-      : t("shareCtaMulti", { count: lenses.length }));
-    const pageUrl = window.location.href;
     try {
       await navigator.share({
         // TODO: debug title/url field behavior across platforms before re-enabling
-        // title: effectiveTitle.trim() || computedPosterTitle.join(" · "),
-        text: `${cta}\n👉 ${pageUrl}`,
+        text: `${shareText}\n👉 ${window.location.href}`,
       });
       track("share_action", { method: "native" });
     } catch (err) {
@@ -173,7 +117,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
       }
       toast.error(t("shareFailed"));
     }
-  }, [lenses, shareText, t]);
+  }, [shareText, t]);
 
   const offerSupport = useCallback(
     (title: string) => {
@@ -196,17 +140,23 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
     [openSupport, tSupport],
   );
 
+  const download = useCallback(
+    (url: string) => {
+      const link = document.createElement("a");
+      link.download = `atlens_${poster?.fileName ?? "share"}.png`;
+      link.href = url;
+      link.click();
+    },
+    [poster?.fileName],
+  );
+
   const handleDownload = useCallback(async () => {
     if (!posterRef.current) {
       return;
     }
     setPosterGenerating(true);
     try {
-      const url = await rasterizePoster(posterRef.current);
-      const link = document.createElement("a");
-      link.download = `atlens_${slugRef.current}.png`;
-      link.href = url;
-      link.click();
+      download(await rasterizePoster(posterRef.current));
       track("share_action", { method: "poster_download" });
       offerSupport(tSupport("posterSaved"));
     } catch (e) {
@@ -214,32 +164,23 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
     } finally {
       setPosterGenerating(false);
     }
-  }, [offerSupport, tSupport]);
+  }, [download, offerSupport, tSupport]);
 
   const handleShareImage = useCallback(async () => {
-    if (!posterRef.current) {
+    if (!posterRef.current || !poster) {
       return;
     }
-    const posterTitle = effectiveTitle.trim() || computedPosterTitle.join(" · ");
-    const isSingle = lenses.length === 1;
-    const cta = isSingle
-      ? t("shareCtaSingle")
-      : t("shareCtaMulti", { count: lenses.length });
-    const slogan = effectiveSlogan.trim();
-    const textParts = [cta, slogan].filter(Boolean);
-    const text = textParts.join("\n");
-
     setPosterGenerating(true);
     let blobUrl: string | undefined;
     try {
       // 1280px is the long-axis threshold of the most aggressive IM compressors.
       blobUrl = await rasterizePoster(posterRef.current, { maxWidth: 1280 });
       const blob = await (await fetch(blobUrl)).blob();
-      const file = new File([blob], `${posterTitle}.png`, { type: "image/png" });
+      const file = new File([blob], `${poster.fileName}.png`, { type: "image/png" });
       await navigator.share({
         files: [file],
         // TODO: debug title/url fields across platforms before re-enabling
-        text,
+        text: poster.imageText,
       });
       track("share_action", { method: "poster_share" });
       offerSupport(tSupport("posterShared"));
@@ -248,24 +189,16 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
         return;
       }
       if (blobUrl) {
-        const link = document.createElement("a");
-        link.download = `atlens_${slugRef.current}.png`;
-        link.href = blobUrl;
-        link.click();
+        download(blobUrl);
       } else {
         toast.error(t("shareFailed"));
       }
     } finally {
       setPosterGenerating(false);
     }
-  }, [effectiveTitle, effectiveSlogan, computedPosterTitle, lenses, t, offerSupport, tSupport]);
+  }, [poster, download, offerSupport, t, tSupport]);
 
   const truncatedUrl = shareUrl.length > 56 ? shareUrl.slice(0, 56) + "…" : shareUrl;
-  const lensCaption = lenses.map((l) => lensDisplayName(brandLabel(tBrand, l.brand), l.series, l.model)).join(" / ");
-  const posterCustom = {
-    title: effectiveTitle.trim() || undefined,
-    slogan: effectiveSlogan.trim() || undefined,
-  };
 
   const linkSection = (
     <div className="flex flex-col gap-3">
@@ -305,145 +238,151 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
     </div>
   );
 
-  const linkOnlyContent = (
-    <div className="flex flex-col gap-4 p-4">
-      <h2 className="text-base font-semibold text-zinc-900">
-        {t("button")}
-      </h2>
-      {linkSection}
+  const header = (
+    <div className="flex flex-col gap-0.5">
+      <h2 className="text-base font-semibold text-zinc-900">{heading}</h2>
+      {caption && <p className="text-xs leading-relaxed text-zinc-400">{caption}</p>}
     </div>
   );
 
-  const panelContent = (
-    <div className="flex flex-col gap-4 p-4">
-      <div className="flex flex-col gap-0.5">
-        <h2 className="text-base font-semibold text-zinc-900">
-          {lenses.length === 1 ? t("titleSingle") : t("title")}
-        </h2>
-        <p className="text-xs leading-relaxed text-zinc-400">{lensCaption}</p>
-      </div>
+  const scale = poster ? PREVIEW_W / poster.width : 1;
+  // A tall poster scrolls in the preview; a regular one is cropped and fades out.
+  const long = poster !== undefined && posterHeight > poster.width * 2;
 
-      <Tabs.Root defaultValue="image" className="flex flex-col gap-4">
-        <Tabs.List className={SEGMENTED_LIST_CLS}>
-          <Tabs.Tab value="image" className={SEGMENTED_TAB_CLS}>{t("tabImage")}</Tabs.Tab>
-          <Tabs.Tab value="link" className={SEGMENTED_TAB_CLS}>{t("tabLink")}</Tabs.Tab>
-        </Tabs.List>
-
-        <Tabs.Panel value="link">
-          {linkSection}
-        </Tabs.Panel>
-
-        <Tabs.Panel value="image" className="flex flex-col gap-3">
-          <div
-            className="group relative -mx-4 cursor-zoom-in overflow-hidden"
-            style={{ height: PREVIEW_H }}
-            onClick={lightbox.handleOpen}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: `calc(50% - ${PREVIEW_SCALED_W / 2}px)`,
-                width: POSTER_W,
-                transform: `scale(${PREVIEW_SCALE})`,
-                transformOrigin: "top left",
-                pointerEvents: "none",
-              }}
-              aria-hidden="true"
+  const imagePanel = poster && (
+    <Tabs.Panel value="image" className="flex flex-col gap-3">
+      {posters.length > 1 && (
+        <div className="flex gap-1.5">
+          {posters.map((p, i) => (
+            <button
+              key={p.label}
+              type="button"
+              aria-pressed={p === poster}
+              onClick={() => setPosterIndex(i)}
+              className={cn(CHIP_BASE_CLS, p === poster ? CHIP_ACTIVE_CLS : CHIP_IDLE_CLS)}
             >
-              <SharePoster
-                ref={posterRef}
-                lenses={lenses}
-                labels={posterLabels}
-                custom={posterCustom}
-                shareUrl={shareUrl}
-              />
+              {p.label}
+            </button>
+          ))}
+        </div>
+      )}
+      <div
+        className={cn(
+          "group relative -mx-4 cursor-zoom-in overflow-x-hidden",
+          long ? "overflow-y-auto [scrollbar-gutter:stable] [scrollbar-width:thin]" : "overflow-y-hidden",
+        )}
+        style={{ height: PREVIEW_H }}
+        onClick={lightbox.handleOpen}
+      >
+        <div className="relative mx-auto" style={{ width: PREVIEW_W, height: long ? posterHeight * scale : undefined }}>
+          <div
+            className="absolute left-0 top-0"
+            style={{ width: poster.width, transform: `scale(${scale})`, transformOrigin: "top left", pointerEvents: "none" }}
+            aria-hidden="true"
+            inert
+          >
+            <div ref={attachPoster} style={{ width: poster.width }}>
+              {poster.content(shareUrl)}
             </div>
+          </div>
+        </div>
+        {!long && (
+          <>
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white to-transparent" />
             <div className="absolute right-2 top-2 rounded-md bg-black/30 p-1 opacity-0 transition-opacity group-hover:opacity-100">
               <Expand className="size-3.5 text-white" />
             </div>
-          </div>
+          </>
+        )}
+      </div>
+      {long && (
+        <p className="-mt-1 text-xs text-zinc-500">
+          {t("longImage")}
+        </p>
+      )}
 
-          <LightboxDialog {...lightbox} />
+      <LightboxDialog {...lightbox} />
 
-          <div className="flex gap-2">
-            {isDesktop && (
-              <CustomizePopover
-                title={effectiveTitle}
-                slogan={effectiveSlogan}
-                onTitleChange={(v) => setTitleOverride(v || null)}
-                onSloganChange={(v) => setSloganOverride(v || null)}
-                titlePlaceholder={computedPosterTitle.join(" · ")}
-              />
-            )}
+      <div className="flex gap-2">
+        {poster.extraActions}
+        {canShareFile ? (
+          <>
+            <button
+              onClick={handleShareImage}
+              disabled={posterGenerating}
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-700 disabled:opacity-40"
+            >
+              {posterGenerating ? <Loader2 className="size-4 animate-spin" /> : <Share2 className="size-4" />}
+              {t("posterShare")}
+            </button>
+            <button
+              onClick={handleDownload}
+              disabled={posterGenerating}
+              title={t("posterDownload")}
+              aria-label={t("posterDownload")}
+              className="flex items-center justify-center rounded-lg border border-zinc-200 px-3 py-2.5 text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-40"
+            >
+              <Download className="size-4" />
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={handleDownload}
+            disabled={posterGenerating}
+            className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-700 disabled:opacity-40"
+          >
+            {posterGenerating ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
+            {t("posterDownload")}
+          </button>
+        )}
+      </div>
+    </Tabs.Panel>
+  );
 
-            {canShareFile ? (
-              <>
-                <button
-                  onClick={handleShareImage}
-                  disabled={posterGenerating}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-700 disabled:opacity-40"
-                >
-                  {posterGenerating ? <Loader2 className="size-4 animate-spin" /> : <Share2 className="size-4" />}
-                  {t("posterShare")}
-                </button>
-                <button
-                  onClick={handleDownload}
-                  disabled={posterGenerating}
-                  title={t("posterDownload")}
-                  className="flex items-center justify-center rounded-lg border border-zinc-200 px-3 py-2.5 text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-40"
-                >
-                  <Download className="size-4" />
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={handleDownload}
-                disabled={posterGenerating}
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-zinc-50 transition-colors hover:bg-zinc-700 disabled:opacity-40"
-              >
-                {posterGenerating ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
-                {t("posterDownload")}
-              </button>
-            )}
-          </div>
-        </Tabs.Panel>
-      </Tabs.Root>
+  const activePanel = (
+    <div className="flex flex-col gap-4 p-4">
+      {header}
+      {poster ? (
+        <Tabs.Root defaultValue="image" className="flex flex-col gap-4">
+          <Tabs.List className={SEGMENTED_LIST_CLS}>
+            <Tabs.Tab value="image" className={SEGMENTED_TAB_CLS}>{t("tabImage")}</Tabs.Tab>
+            <Tabs.Tab value="link" className={SEGMENTED_TAB_CLS}>{t("tabLink")}</Tabs.Tab>
+          </Tabs.List>
+          <Tabs.Panel value="link">{linkSection}</Tabs.Panel>
+          {imagePanel}
+        </Tabs.Root>
+      ) : (
+        linkSection
+      )}
     </div>
   );
 
-  const isFab = variant === "fab";
-  const activePanel = linkOnly ? linkOnlyContent : panelContent;
+  const triggerLabel = trigger === "section" ? heading : t("button");
+  const triggerContent =
+    trigger === "fab" ? (
+      <Share2 className="size-5" />
+    ) : (
+      <>
+        <Share2 className="size-4" />
+        <span className={cn(trigger === "utility" && "max-xs:hidden @max-md:hidden")}>{triggerLabel}</span>
+      </>
+    );
 
-  const defaultTriggerClass =
-    triggerClassName ??
-    "flex cursor-pointer items-center gap-1.5 rounded-md p-1 text-sm text-zinc-500 outline-none transition-colors hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-400";
-
-  const fabTriggerClass =
-    "flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-zinc-900 text-white shadow-lg outline-none transition-colors hover:bg-zinc-700 focus-visible:ring-2 focus-visible:ring-zinc-400";
-
-  const triggerContent = isFab ? <Share2 className="size-5" /> : iconOnly ? (
-    <Share2 className="size-4" />
-  ) : (
-    <><Share2 className="size-4" /><span className="max-xs:hidden @max-md:hidden">{t("button")}</span></>
-  );
-
-  const shareControl = !mounted ? (
+  return !mounted ? (
     <button
       disabled
       aria-hidden
-      className={isFab ? fabTriggerClass + " cursor-default opacity-0" : defaultTriggerClass}
+      className={cn(TRIGGER_CLS[trigger], trigger === "fab" && "cursor-default opacity-0")}
     >
       {triggerContent}
     </button>
   ) : isDesktop ? (
     <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger className={isFab ? fabTriggerClass : defaultTriggerClass}>
+      <Popover.Trigger aria-label={triggerLabel} className={TRIGGER_CLS[trigger]}>
         {triggerContent}
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Positioner side={isFab ? "top" : "bottom"} align="end" sideOffset={8}>
+        <Popover.Positioner side={trigger === "fab" ? "top" : "bottom"} align="end" sideOffset={8}>
           <Popover.Popup className="w-96 max-h-[calc(var(--app-height)-80px)] overflow-y-auto origin-(--transform-origin) rounded-xl bg-white shadow-lg ring-1 ring-zinc-200 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
             {activePanel}
           </Popover.Popup>
@@ -452,7 +391,7 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
     </Popover.Root>
   ) : (
     <Drawer.Root open={open} onOpenChange={setOpen} swipeDirection="down">
-      <Drawer.Trigger className={isFab ? fabTriggerClass : defaultTriggerClass}>
+      <Drawer.Trigger aria-label={triggerLabel} className={TRIGGER_CLS[trigger]}>
         {triggerContent}
       </Drawer.Trigger>
       <Drawer.Portal>
@@ -473,6 +412,4 @@ export function ShareButton({ lenses, variant = "default", triggerClassName, ico
       </Drawer.Portal>
     </Drawer.Root>
   );
-
-  return shareControl;
 }

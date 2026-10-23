@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useCompare } from "@/context/CompareProvider";
 import { track } from "@/lib/analytics/analytics";
 import { planAlternativeCompare } from "@/lib/lens/alternatives";
-import { MAX_COMPARE } from "@/lib/lens/lens";
+import { compareChipState, MAX_COMPARE } from "@/lib/lens/lens";
 import { COMPARE_CHIP_CLS, COMPARE_CHIP_STATE_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 
@@ -66,7 +66,7 @@ export default function AlternativeCompareToggle({
       className={cn(
         COMPARE_CHIP_CLS,
         "size-8 shrink-0 justify-center",
-        COMPARE_CHIP_STATE_CLS[selected ? "selected" : step.kind === "full" ? "full" : "idle"],
+        COMPARE_CHIP_STATE_CLS[compareChipState(selected, step.kind === "full")],
         className,
       )}
     >
