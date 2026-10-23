@@ -3,18 +3,15 @@
 import { useRef, useState } from "react";
 
 /**
- * Which lens's card a chart shows. Mouse users get it on hover; touch has no hover, so the first tap
- * shows it and a second tap on the same lens follows its link. `onShow` receives the lens element
- * whenever its card appears, for charts that place the card beside it.
+ * How a chart shows one lens. Mouse users get its card on hover and follow its link on click; touch
+ * has no hover, so a tap opens the lens sheet instead. `onShow` receives the lens element whenever
+ * its card appears, for charts that place the card beside it.
  */
 export function useChartCard(onShow?: (el: HTMLElement) => void) {
   const [active, setActive] = useState<string>();
+  // The lens is kept after closing so the sheet does not empty out during its exit animation.
+  const [sheet, setSheet] = useState<{ id?: string; open: boolean }>({ open: false });
   const lastPointer = useRef("mouse");
-
-  const show = (id: string, el: HTMLElement) => {
-    setActive(id);
-    onShow?.(el);
-  };
 
   const itemHandlers = (id: string) => ({
     onPointerDown: (ev: React.PointerEvent) => {
@@ -22,7 +19,8 @@ export function useChartCard(onShow?: (el: HTMLElement) => void) {
     },
     onPointerEnter: (ev: React.PointerEvent<HTMLElement>) => {
       if (ev.pointerType === "mouse") {
-        show(id, ev.currentTarget);
+        setActive(id);
+        onShow?.(ev.currentTarget);
       }
     },
     onPointerLeave: (ev: React.PointerEvent) => {
@@ -31,12 +29,19 @@ export function useChartCard(onShow?: (el: HTMLElement) => void) {
       }
     },
     onClick: (ev: React.MouseEvent<HTMLElement>) => {
-      if (lastPointer.current !== "mouse" && active !== id) {
+      // A keyboard Enter also fires click, with detail 0; it should follow the link like a mouse.
+      if (lastPointer.current !== "mouse" && ev.detail !== 0) {
         ev.preventDefault();
-        show(id, ev.currentTarget);
+        setSheet({ id, open: true });
       }
     },
   });
 
-  return { active, itemHandlers };
+  return {
+    active,
+    itemHandlers,
+    sheet: { id: sheet.id, open: sheet.open, onOpenChange: (open: boolean) => setSheet((prev) => ({ ...prev, open })) },
+  };
 }
+
+export type ChartItemHandlers = ReturnType<ReturnType<typeof useChartCard>["itemHandlers"]>;

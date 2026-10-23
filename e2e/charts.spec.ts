@@ -15,16 +15,17 @@ test.describe("Charts", () => {
     await expect(page).toHaveURL(new RegExp(`${TIMELINE}$`));
   });
 
-  test("the first tap on a timeline lens shows its card, the second opens the lens", async ({ page, hasTouch }) => {
+  test("a tap on a timeline lens opens its sheet instead of the lens page", async ({ page, hasTouch }) => {
     test.skip(!hasTouch, "Touch only; a mouse click opens the lens page");
     const lens = page.getByRole("link", { name: LENS }).locator("visible=true");
+    const sheet = page.getByRole("dialog");
     await expect(async () => {
       await page.goto(TIMELINE, { waitUntil: "networkidle" });
       await lens.tap();
-      await expect(page.getByRole("tooltip").filter({ hasText: LENS })).toBeVisible({ timeout: 1000 });
+      await expect(sheet.getByRole("heading", { name: LENS })).toBeVisible({ timeout: 1000 });
     }).toPass();
     await expect(page).toHaveURL(new RegExp(`${TIMELINE}$`));
-    await lens.tap();
+    await sheet.getByRole("link", { name: "View details" }).click();
     await expect(page).toHaveURL(/\/en\/lenses\/x\/sigma-[^/]+-x$/);
   });
 
@@ -52,18 +53,14 @@ test.describe("Charts", () => {
     await expect(chip).toHaveAttribute("aria-pressed", "true");
   });
 
-  test("the weight ladder filters by the brand in the URL", async ({ page }) => {
+  test("the weight ladder filters by the brand in the URL and ignores the old focal param", async ({ page }) => {
     await page.goto(`${WEIGHT}?brand=tamron&focal=standard`);
     await expect(page.getByRole("group", { name: "Brand" }).getByRole("button", { name: /^Tamron/ })).toHaveAttribute(
       "aria-pressed",
       "true",
     );
-    await expect(page.getByRole("group", { name: "Focal range" }).getByRole("button", { name: "Standard" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    const tiles = page.locator("main section li a");
-    await expect(tiles.first()).toBeVisible();
+    const tiles = page.locator("main section li a").locator("visible=true");
+    await expect(tiles).toHaveCount(4);
     for (const label of await tiles.evaluateAll((links) => links.map((l) => l.getAttribute("aria-label")))) {
       expect(label).toMatch(/^Tamron /);
     }
@@ -113,7 +110,7 @@ test.describe("Charts", () => {
   test("hovering a lens in a brand lineup shows its card", async ({ page, hasTouch }) => {
     test.skip(hasTouch, "Mouse only");
     await page.goto(`${BRANDS}/sigma`);
-    const lens = page.getByRole("link", { name: "18-50mm F2.8 DC DN | Contemporary", exact: true });
+    const lens = page.locator("#lineup").getByRole("link", { name: "Sigma 18-50mm F2.8 DC DN | Contemporary", exact: true });
     await expect(async () => {
       await page.mouse.move(0, 0);
       await lens.hover();
@@ -129,7 +126,25 @@ test.describe("Charts", () => {
 
   test("a chart with a brand selected links to that brand's page", async ({ page }) => {
     await page.goto(`${TIMELINE}?brand=sigma`);
-    await expect(page.getByRole("link", { name: "See the Sigma lineup →" })).toHaveAttribute("href", `${BRANDS}/sigma`);
+    await expect(page.getByRole("link", { name: "See all 11 Sigma lenses →" })).toHaveAttribute("href", `${BRANDS}/sigma`);
+  });
+
+  test("a brand with release years has its own timeline, linked to the all-brand one", async ({ page }) => {
+    await page.goto(`${BRANDS}/sigma`);
+    const section = page.locator("section#timeline");
+    await expect(section.getByRole("heading", { name: "Release timeline" })).toBeVisible();
+    await expect(section.getByText("2022–2026 · 11 lenses")).toBeVisible();
+    await expect(section.getByRole("link", { name: "See it on the all-brand timeline →" })).toHaveAttribute(
+      "href",
+      `${TIMELINE}?brand=sigma`,
+    );
+  });
+
+  test("a brand without release years has no timeline", async ({ page }) => {
+    await page.goto(`${BRANDS}/viltrox`);
+    await expect(page.getByRole("heading", { name: "Lineup" })).toBeVisible();
+    await expect(page.locator("section#timeline")).toHaveCount(0);
+    await expect(page.getByRole("navigation", { name: "On this page" }).getByRole("link")).toHaveText(["Lineup", "All 16 lenses"]);
   });
 
   test("the brand on a lens page links to the brand page", async ({ page }) => {

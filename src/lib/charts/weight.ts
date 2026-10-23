@@ -48,3 +48,8 @@ export function buildWeightLadder(lenses: Lens[]): WeightLadder {
   const ratio = heaviest && lightest ? Math.round(heaviest.weightG / lightest.weightG) : undefined;
   return { tiers, count: pool.length, heaviest, lightest, ratio };
 }
+
+/** A weight bar's length as a percentage of the heaviest lens's; square-rooted so light lenses stay visible. */
+export function weightBarPct(weightG: number, heaviestG: number): number {
+  return Math.round(Math.sqrt(weightG / heaviestG) * 100);
+}

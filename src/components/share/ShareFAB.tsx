@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Z, FAB_REVEAL_SCROLL_Y } from "@/config/ui";
-import { ShareButton } from "@/components/share/ShareButton";
+import { LensShareButton } from "@/components/share/LensShareButton";
 import type { Lens } from "@/lib/types";
 
 interface Props {
@@ -33,9 +33,9 @@ export default function ShareFAB({ lenses, presetTitle, presetSubtitle }: Props)
       className={`fixed right-6 ${Z.fixed} opacity-0 scale-[0.8] pointer-events-none transition-[opacity,transform] duration-200 ease-out motion-reduce:transition-none data-[visible=true]:opacity-100 data-[visible=true]:scale-100 data-[visible=true]:pointer-events-auto`}
       data-testid="share-fab"
     >
-      <ShareButton
+      <LensShareButton
         lenses={lenses}
-        variant="fab"
+        trigger="fab"
         presetTitle={presetTitle}
         presetSubtitle={presetSubtitle}
       />

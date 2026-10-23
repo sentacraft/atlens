@@ -3,10 +3,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import ChartsHeader from "@/components/charts/ChartsHeader";
+import { TimelineShare, TimelineShareFromUrl } from "@/components/charts/ChartShare";
 import TimelineChart, { TimelineChartFromUrl } from "@/components/charts/TimelineChart";
 import { BROWSE_PAGE_MAIN_CLS } from "@/config/ui-tokens";
+import { chartBrands } from "@/lib/charts/catalog";
 import { buildTimeline } from "@/lib/charts/timeline";
-import { getLensesByMount } from "@/lib/lens/data";
+import { formatDataDate } from "@/lib/charts/data-date";
+import { getLensesByMount, meta } from "@/lib/lens/data";
 import { brandLabel } from "@/lib/lens/format";
 import { mountHasCharts, urlSegmentToMount } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
@@ -19,7 +22,8 @@ async function load(params: Params) {
   if (!resolvedMount || !mountHasCharts(resolvedMount)) {
     return undefined;
   }
-  const timeline = buildTimeline(getLensesByMount(resolvedMount, locale));
+  const lenses = getLensesByMount(resolvedMount, locale);
+  const timeline = buildTimeline(lenses);
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const list = (brands: string[]) => new Intl.ListFormat(locale, { type: "conjunction" }).format(brands);
   const undated = timeline.brandsWithoutYear.map((b) => brandLabel(tBrand, b));
@@ -28,6 +32,7 @@ async function load(params: Params) {
     mount,
     resolvedMount,
     timeline,
+    brandTotals: chartBrands(lenses),
     first: String(timeline.years[0]?.year ?? ""),
     last: String(timeline.years.at(-1)?.year ?? ""),
     datedBrands: list(timeline.brands.map((b) => brandLabel(tBrand, b.brand))),
@@ -61,7 +66,7 @@ export default async function TimelinePage({ params }: { params: Params }) {
   }
   const t = await getTranslations({ locale, namespace: "Charts" });
   const { timeline } = data;
-  const chartProps = { mount: data.resolvedMount, entries: timeline.entries, years: timeline.years, brands: timeline.brands };
+  const pageProps = { mount: data.resolvedMount, brands: timeline.brands, brandTotals: data.brandTotals };
   const count = timeline.entries.length;
   const [first, second, third, ...rest] = data.undated;
   // en names three brands plus "N others", zh says "N brands in all"; message types come from en
@@ -73,6 +78,14 @@ export default async function TimelinePage({ params }: { params: Params }) {
       : rest.length === 0
         ? t("timelineDescUndated", { count, brands: data.undatedList, brandCount: data.undated.length })
         : t("timelineDescUndatedMore", moreArgs);
+  const title = t("timelineTitle", { first: data.first, last: data.last });
+  const shareProps = {
+    entries: timeline.entries,
+    years: timeline.years,
+    brands: timeline.brands,
+    title,
+    dataDate: formatDataDate(meta.lastUpdated, locale),
+  };
 
   return (
     <main className={BROWSE_PAGE_MAIN_CLS}>
@@ -80,11 +93,16 @@ export default async function TimelinePage({ params }: { params: Params }) {
         locale={locale}
         mount={data.resolvedMount}
         active="timeline"
-        title={t("timelineTitle", { first: data.first, last: data.last })}
+        title={title}
         description={description}
+        action={
+          <Suspense fallback={<TimelineShare {...shareProps} selection={{}} />}>
+            <TimelineShareFromUrl {...shareProps} />
+          </Suspense>
+        }
       />
-      <Suspense fallback={<TimelineChart {...chartProps} initial={{}} />}>
-        <TimelineChartFromUrl {...chartProps} />
+      <Suspense fallback={<TimelineChart entries={timeline.entries} years={timeline.years} mode={{ kind: "page", initial: {}, ...pageProps }} />}>
+        <TimelineChartFromUrl entries={timeline.entries} years={timeline.years} {...pageProps} />
       </Suspense>
     </main>
   );
