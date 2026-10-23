@@ -4,6 +4,7 @@ import { SPEC_NA } from "@/lib/types";
 import type { Lens, Mount } from "@/lib/types";
 import { mountSeoLabel } from "@/lib/mount";
 import { isZoom } from "@/lib/lens/lens";
+import { lensPath } from "@/lib/url/routes";
 import {
   lensDisplayName,
   weightDisplay,
@@ -122,7 +123,7 @@ export function buildLensProductSchema(args: {
   };
 }
 
-export function buildCollectionItemListSchema(args: {
+export function buildItemListSchema(args: {
   name: string;
   description: string;
   url: string;
@@ -143,4 +144,16 @@ export function buildCollectionItemListSchema(args: {
       name: item.name,
     })),
   };
+}
+
+/** ItemList entries for lenses, named the way the site names them and linked to their pages. */
+export function lensListItems(
+  lenses: Pick<Lens, "id" | "mount" | "brand" | "series" | "model">[],
+  brandName: (brand: string) => string,
+  locale: string,
+): { name: string; url: string }[] {
+  return lenses.map((lens) => ({
+    name: lensDisplayName(brandName(lens.brand), lens.series, lens.model),
+    url: `${SITE.url}/${locale}${lensPath(lens)}`,
+  }));
 }
