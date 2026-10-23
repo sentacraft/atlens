@@ -86,7 +86,7 @@ export function WeightPoster({ text, tiers, matches }: { text: PosterText; tiers
               {lenses.length > 0 && (
                 <div className="grid" style={{ gridTemplateColumns: `repeat(${LADDER_COLUMNS}, minmax(0, 1fr))`, gap: 10 }}>
                   {lenses.map((lens) => (
-                    <div key={lens.id} className="flex flex-col rounded-xl border border-zinc-200" style={{ padding: 6, gap: 2 }}>
+                    <div key={lens.id} className="flex flex-col" style={{ gap: 2 }}>
                       <Image src={getLensImageUrl(lens.id)} alt="" width={104} height={104} loading="eager" className="aspect-square w-full object-contain" />
                       <span className="truncate uppercase text-zinc-500" style={{ fontSize: 10, letterSpacing: "0.12em" }}>
                         {brandLabel(tBrand, lens.brand)}

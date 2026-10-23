@@ -56,7 +56,6 @@ export default async function WeightPage({ params }: { params: Params }) {
     tiers: ladder.tiers,
     brands: data.brands,
     title: t("weightTitle"),
-    ratio: ladder.ratio ?? 0,
     count: ladder.count,
     maxG: ladder.heaviest?.weightG ?? 0,
     minG: ladder.lightest?.weightG ?? 0,

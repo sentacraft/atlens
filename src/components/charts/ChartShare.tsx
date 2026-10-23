@@ -94,7 +94,6 @@ type WeightShareProps = {
   tiers: WeightTier[];
   brands: BrandCount[];
   title: string;
-  ratio: number;
   count: number;
   maxG: number;
   minG: number;
@@ -105,7 +104,7 @@ export function WeightShareFromUrl(props: WeightShareProps) {
   return <WeightShare {...props} selection={useSelection(props.brands)} />;
 }
 
-export function WeightShare({ tiers, brands, title, ratio, count, maxG, minG, dataDate, selection }: WeightShareProps & { selection: ChartSelection }) {
+export function WeightShare({ tiers, brands, title, count, maxG, minG, dataDate, selection }: WeightShareProps & { selection: ChartSelection }) {
   const t = useTranslations("Charts");
   const tBrand = useTranslations("Brands");
   const tList = useTranslations("LensList");
@@ -122,28 +121,21 @@ export function WeightShare({ tiers, brands, title, ratio, count, maxG, minG, da
     <WeightPoster
       tiers={tiers}
       matches={matches}
-      text={
-        filters.length > 0
-          ? {
-              title,
-              subtitle: t("weightPosterFiltered", { filters: filters.join(" · "), count: shown }),
-              cta: t("weightPosterCta"),
-              note,
-              shareUrl,
-            }
-          : {
-              title: t("weightPosterTitle", { ratio }),
-              subtitle: t("weightPosterSubtitle", {
+      text={{
+        title,
+        subtitle:
+          filters.length > 0
+            ? t("weightPosterFiltered", { filters: filters.join(" · "), count: shown })
+            : t("weightPosterSubtitle", {
                 brandCount: brands.length,
                 count,
                 max: t("weight", { weight: maxG }),
                 min: t("weight", { weight: minG }),
               }),
-              cta: t("weightPosterCta"),
-              note,
-              shareUrl,
-            }
-      }
+        cta: t("weightPosterCta"),
+        note,
+        shareUrl,
+      }}
     />
   );
   return <ChartShareButton title={title} posters={[{ label: t("tabWeight"), fileName: ["weight", selection.brand, selection.focal].filter(Boolean).join("_"), content: poster }]} />;
