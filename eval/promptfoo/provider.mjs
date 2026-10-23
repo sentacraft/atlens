@@ -84,8 +84,7 @@ async function postTurn(messages, mount, locale, conversationId, vars, continuin
     chatId: conversationId,
     messages,
     trigger: "submit-message",
-    // A case's `page` var is the page the turn is asked from, as the Iris panel sends it.
-    body: { mount, locale, ...(vars?.page ? { page: vars.page } : {}) },
+    body: { mount, locale },
     headers: profileHeaders(vars),
   });
   let msg = null;

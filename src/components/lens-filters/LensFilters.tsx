@@ -23,7 +23,7 @@ interface Props {
   activeFilterCount: number;
   onReset: () => void;
   searchSlot?: ReactNode;
-  /** Sits at the end of the more-filters row. */
+  /** Sits at the end of the more-filters row, or under it when the row has no room. */
   assistSlot: ReactNode;
 }
 
@@ -313,9 +313,9 @@ export default function LensFilters({
           {typeRow}
           {focusRow}
         </div>
-        <div className="flex items-center justify-between gap-3 sm:my-1.5">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 sm:my-1.5">
           {filtersMetaRow}
-          {assistSlot}
+          <div className="ml-auto">{assistSlot}</div>
         </div>
       </div>
 

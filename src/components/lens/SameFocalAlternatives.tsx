@@ -294,8 +294,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
         <AskIrisEntry
           id="alternatives"
           label={t("askIris")}
-          labelFit="full"
-          request={{ kind: "question", text: t(zoom ? "askIrisQuestionZoom" : "askIrisQuestionPrime", { name }) }}
+          question={t(zoom ? "askIrisQuestionZoom" : "askIrisQuestionPrime", { name })}
           className="self-start sm:self-auto"
         />
       </div>

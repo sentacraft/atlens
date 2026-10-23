@@ -10,8 +10,6 @@ export const MAX_MESSAGE_BYTES = 1.5 * 1024 * 1024;
 export interface AskIrisConversationContext {
   mount: Mount;
   locale: Locale;
-  /** The page path the user asked from, when they asked from the side panel or a page entry. */
-  page?: string;
 }
 
 export interface AskIrisConversationRecord {

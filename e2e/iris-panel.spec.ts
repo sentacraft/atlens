@@ -64,6 +64,8 @@ test.describe("Ask Iris side panel", () => {
     await page.goto("/en/lenses/x/browse");
     await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
     const panel = page.getByRole("complementary", { name: "Iris" });
+    // The panel slides in; its left edge is only its own once the slide has finished.
+    await expect.poll(() => panel.evaluate((aside) => aside.getAnimations().length)).toBe(0);
     const panelLeft = await panel.evaluate((aside) => aside.getBoundingClientRect().left);
 
     const button = panel.getByRole("button", { name: "Conversations" });
@@ -144,51 +146,36 @@ test.describe("Ask Iris side panel", () => {
   });
 });
 
-test.describe("Ask Iris context entries", () => {
+test.describe("Ask Iris page entries", () => {
   const compareUrl = "/en/lenses/x/compare?ids=fujifilm-xf-23mmf14-r-lm-wr-x,fujifilm-xf-33mmf14-r-lm-wr-x";
 
-  test("opens the side panel about the page, with questions for it, without sending anything", async ({ page }, testInfo) => {
+  test("names the question a page entry asks, never the nav's general Ask Iris", async ({ page }, testInfo) => {
     const viewport = page.viewportSize();
     testInfo.skip(!viewport || viewport.width < 1024, "The side panel is for screens 1024px and wider");
-    const chatRequests: string[] = [];
-    page.on("request", (request) => {
-      if (request.url().includes("/api/chat")) {
-        chatRequests.push(request.url());
-      }
-    });
 
     await page.goto(compareUrl);
-    await page.getByRole("button", { name: /Ask Iris how they differ/ }).click();
-
-    const panel = page.getByRole("complementary", { name: "Iris" });
-    await expect(panel.getByText("Comparing 2")).toBeVisible();
-    await expect(panel.getByRole("button", { name: /What are the main differences/ })).toBeVisible();
-    await expect(panel.getByRole("textbox")).toHaveValue("");
-    expect(chatRequests).toEqual([]);
+    const entry = page.getByRole("button", { name: /Explain the differences/ });
+    await expect(entry).toBeVisible();
+    // The nav's is the only button that says just "Ask Iris".
+    await expect(page.getByRole("button", { name: /^Ask Iris/ })).toHaveCount(1);
+    await entry.click();
+    await expect(page.getByRole("complementary", { name: "Iris" })).toBeVisible();
   });
 
-  test("opens a bottom sheet about the page on a phone, and the nav opens the same sheet", async ({ page }, testInfo) => {
+  test("leaves the lens page's actions to the nav, which opens Iris with this lens's questions first", async ({ page }, testInfo) => {
     const viewport = page.viewportSize();
     testInfo.skip(!viewport || viewport.width >= 1024, "Narrow screens use the bottom sheet");
     const lensUrl = "/en/lenses/x/fujifilm-xf-33mmf14-r-lm-wr-x";
 
     await page.goto(lensUrl);
-    await page.getByRole("button", { name: /Ask Iris about this lens/ }).click();
+    await expect(page.getByTestId("lens-detail-actions").getByRole("button")).toHaveCount(2);
+    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
 
     const sheet = page.getByRole("dialog", { name: "Iris" });
-    await expect(sheet.getByText("Looking at")).toBeVisible();
+    const starters = sheet.getByRole("button", { name: /\?$/ });
+    await expect(starters.first()).toHaveText(/^What is the .*XF 33mm F1\.4 R LM WR good for\?$/);
     await expect(sheet.getByRole("textbox")).toBeInViewport();
     await expect(page).toHaveURL(new RegExp(`${lensUrl}$`));
-
-    await page.keyboard.press("Escape");
-    await expect(sheet).toBeHidden();
-    const toggle = page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ });
-    await toggle.click();
-    await expect(sheet).toBeVisible();
-    await expect(page).toHaveURL(new RegExp(`${lensUrl}$`));
-    // The open sheet hides the rest of the page from assistive tech, the nav included, so the
-    // button is found by its markup here rather than by role.
-    await expect(page.locator('header button[aria-pressed="true"]')).toBeVisible();
   });
 
   test("pulls the phone sheet up to the full screen and back", async ({ page }, testInfo) => {

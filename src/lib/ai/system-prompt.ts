@@ -1,6 +1,5 @@
 import type { GearBody, GearLens, GearSummary } from "@/lib/ai/gear-context";
 import type { GearCardDecline } from "@/lib/ai/gear-request";
-import type { PageContext, PageLens } from "@/lib/ai/page-context";
 import { factLinkMarkdown, type LinkAction } from "@/lib/askiris/inline-links";
 import type { Mount } from "@/lib/types";
 import { fillUiStrings } from "@/lib/ui-strings";
@@ -117,22 +116,5 @@ export function gearPrompt(gear: GearSummary, { declined }: { declined: GearCard
   if (gear.lenses.length > 0) {
     lines.push("镜头：", ...gear.lenses.map(lensLine));
   }
-  return lines.join("\n");
-}
-
-const pageLensLine = (lens: PageLens) => `- [${lens.name}](lens:${lens.ref})`;
-
-/** The page the user is on as they ask; refs here count as already looked up. */
-export function pagePrompt(page: PageContext): string {
-  const lines = ["【当前页面】"];
-  if (page.kind === "browse") {
-    const filters = page.filters.length > 0 ? `筛选条件是：${page.filters.join("、")}` : "没有设筛选条件";
-    lines.push(`用户正在${MOUNT_LABEL[page.mount]}的镜头库里浏览，${filters}，共 ${page.resultCount} 支镜头。`);
-  } else if (page.kind === "compare") {
-    lines.push("用户正在对比页上并排看这几支镜头：", ...page.lenses.map(pageLensLine));
-  } else {
-    lines.push("用户正在看这支镜头的详情页：", pageLensLine(page.lens));
-  }
-  lines.push("用户说「这支」「这几支」「这些」时，指的是页面上的镜头。");
   return lines.join("\n");
 }

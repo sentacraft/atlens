@@ -17,9 +17,7 @@ import {
   agentModelLabel,
   missingAgentModelKey,
 } from "@/lib/ai/model";
-import { gearPrompt, pagePrompt, systemPrompt } from "@/lib/ai/system-prompt";
-import { pageLensRefs, resolvePageContext } from "@/lib/ai/page-context";
-import { pagePathSchema } from "@/lib/askiris/page-path";
+import { gearPrompt, systemPrompt } from "@/lib/ai/system-prompt";
 import { findAgentModelPreset, MODEL_PRESET_HEADER } from "@/lib/ai/model-presets";
 import { describeGear, EVAL_GEAR_HEADER, evalGear, type GearStatus } from "@/lib/ai/gear-context";
 import { EVAL_FAVORITES_HEADER, evalFavorites } from "@/lib/ai/favorites";
@@ -65,7 +63,6 @@ const chatRequestSchema = z.object({
   mount: z.enum(MOUNTS),
   locale: z.enum(routing.locales),
   id: z.uuid(),
-  page: pagePathSchema.optional(),
 });
 
 const STEP_BUDGET = 8;
@@ -88,7 +85,7 @@ export async function POST(req: NextRequest) {
     console.warn("[askiris] invalid request", z.prettifyError(parsed.error));
     return chatErrorResponse("unavailable", 400);
   }
-  const { message, previousMessageId, mount, locale, id: conversationId, page } = parsed.data;
+  const { message, previousMessageId, mount, locale, id: conversationId } = parsed.data;
   const startedAt = Date.now();
   const traceId = crypto.randomUUID();
   const traceCollector = new AskIrisTraceCollector(startedAt);
@@ -137,13 +134,6 @@ export async function POST(req: NextRequest) {
 
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const brandName = (slug: string) => brandLabel(tBrand, slug);
-  const pageContext = page
-    ? resolvePageContext(page, locale, {
-        brand: brandName,
-        list: await getTranslations({ locale, namespace: "LensList" }),
-        badge: await getTranslations({ locale, namespace: "SpecialtyBadge" }),
-      })
-    : null;
   const gearStatus = await loadGearStatus(req, appDb, userId, isAccount);
   const gearSummary = describeGear(gearStatus, brandName);
   const testFavorites =
@@ -218,9 +208,6 @@ export async function POST(req: NextRequest) {
   }
   const { history, userMessage, historyChanged } = turn;
   seedRecalledRefs(recalledRefs, history);
-  for (const ref of pageLensRefs(pageContext)) {
-    recalledRefs.add(ref);
-  }
   const gearDeclined = gearCardDecline(history);
   const offerGearCard = !(gearStatus.kind === "account" && gearStatus.gear.length > 0) && !gearDeclined;
   const messageContext = traceMessageContext(history);
@@ -286,7 +273,6 @@ export async function POST(req: NextRequest) {
         role: "system",
         content: gearPrompt(gearSummary, { declined: gearDeclined }),
       },
-      ...(pageContext ? [{ role: "system" as const, content: pagePrompt(pageContext) }] : []),
     ],
     messages: modelMessages,
     tools,
@@ -391,7 +377,7 @@ export async function POST(req: NextRequest) {
           userMessage: turn.kind === "new" ? userMessage : undefined,
           replaceAfterMessageId: turn.kind === "new" ? undefined : userMessage.id,
           responseMessage: result.responseMessage,
-          context: { mount, locale, ...(page ? { page } : {}) },
+          context: { mount, locale },
           now: Date.now(),
         }).catch((error) =>
           console.error("[askiris] failed to persist conversation", {

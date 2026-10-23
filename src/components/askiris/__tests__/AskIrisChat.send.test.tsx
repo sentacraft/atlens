@@ -47,6 +47,7 @@ const emptyStream = () =>
 
 beforeEach(() => {
   auth.order = [];
+  auth.account = undefined;
   vi.stubGlobal(
     "ResizeObserver",
     class {
@@ -89,7 +90,8 @@ const expandedChange = vi.hoisted(() => vi.fn());
 const panel = (pagePath: string, request: AskIrisShell & { variant: "panel" } extends { request: infer R } ? R : never = null) =>
   ({ variant: "panel", layout: "side", openCount: 1, pagePath, request, onClose: () => {}, expanded: false, onExpandedChange: expandedChange }) as const;
 
-function captureChatBodies() {
+/** `stored` is the conversation list the server answers with. */
+function captureChatBodies(stored: () => unknown[] = () => []) {
   const bodies: Record<string, unknown>[] = [];
   vi.stubGlobal(
     "fetch",
@@ -97,6 +99,9 @@ function captureChatBodies() {
       if (String(input).includes("/api/chat")) {
         bodies.push(JSON.parse(String(init?.body)));
         return emptyStream();
+      }
+      if (String(input).endsWith("/api/askiris/conversations")) {
+        return Response.json({ conversations: stored() });
       }
       return Response.json({});
     }),
@@ -187,22 +192,16 @@ describe("AskIrisChat send", () => {
     await waitFor(() => expect(screen.queryByText("Which lens?")).toBeNull());
   });
 
-  it("sends the page the panel is open beside, and stops once the card's × is pressed", async () => {
+  it("lists questions about the page first, and sends no page with any turn", async () => {
     const bodies = captureChatBodies();
-    const { container } = renderChat(panel("/en/lenses/x/browse?t=zoom"));
+    renderChat(panel("/en/lenses/x/xf-56"));
 
-    expect(screen.getByText("browsing")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "browseSuggestions-1" }));
+    expect(screen.getByRole("button", { name: "lensTradeoffs" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "lensUse" }));
+
     await waitFor(() => expect(bodies).toHaveLength(1));
-    expect(bodies[0]).toMatchObject({ page: "/en/lenses/x/browse?t=zoom" });
-
-    fireEvent.click(screen.getByRole("button", { name: "detach" }));
-    submit(container, "Lighter, please");
-    await waitFor(() => expect(bodies).toHaveLength(2));
-    expect(bodies[1]).not.toHaveProperty("page");
-    expect(track).toHaveBeenCalledWith("askiris_message", { method: "suggestion" });
-    expect(track).toHaveBeenCalledWith("askiris_context_remove", { page_kind: "browse" });
-    expect(track).toHaveBeenCalledWith("askiris_message", { method: "typed" });
+    expect(bodies[0]).not.toHaveProperty("page");
+    expect(track).toHaveBeenCalledWith("askiris_message", { method: "starter", pool: "page" });
   });
 
   it("records an example question with the pool it came from", async () => {
@@ -215,33 +214,38 @@ describe("AskIrisChat send", () => {
     expect(track).toHaveBeenCalledWith("askiris_message", { method: "starter", pool: "terms" });
   });
 
-  it("starts a new conversation when an entry on another page opens the panel, and says where the old one went", async () => {
-    const bodies = captureChatBodies();
+  it("starts a new conversation each time the panel opens, and offers the stored one back", async () => {
+    auth.account = { id: "u1" };
+    const STORED = "11111111-1111-4111-8111-111111111111";
+    vi.spyOn(crypto, "randomUUID").mockReturnValueOnce(STORED);
+    const bodies = captureChatBodies(() => [{ id: STORED, title: "Which lens?", createdAt: 1, updatedAt: 1 }]);
     const { container, rerenderChat } = renderChat(panel("/en/lenses/x/browse"));
     submit(container, "Which lens?");
     await waitFor(() => expect(bodies).toHaveLength(1));
+    await waitFor(() => expect(screen.getByText("Which lens?")).toBeInTheDocument());
 
-    rerenderChat(panel("/en/lenses/x/xf-56", { id: 1, kind: "page" }));
+    rerenderChat(panel("/en/lenses/x/browse", { id: 1, kind: "open" }));
 
-    expect(await screen.findByText("newConversation")).toBeInTheDocument();
+    const resume = await screen.findByRole("button", { name: "resume" });
     expect(screen.queryByText("Which lens?")).toBeNull();
-    expect(screen.getByText("lookingAt")).toBeInTheDocument();
-    expect(track).toHaveBeenCalledWith("askiris_new_conversation", { reason: "page_change" });
+    expect(track).toHaveBeenCalledWith("askiris_new_conversation", { reason: "reopen" });
+    fireEvent.click(resume);
+    await waitFor(() => expect(screen.queryByRole("button", { name: "resume" })).toBeNull());
   });
 
-  it("keeps the conversation when an entry on the same page opens the panel again", async () => {
+  it("offers nothing back for a conversation that was never stored", async () => {
     const bodies = captureChatBodies();
     const { container, rerenderChat } = renderChat(panel("/en/lenses/x/browse"));
     submit(container, "Which lens?");
     await waitFor(() => expect(bodies).toHaveLength(1));
 
-    rerenderChat(panel("/en/lenses/x/browse?t=prime", { id: 1, kind: "page" }));
+    rerenderChat(panel("/en/lenses/x/browse", { id: 1, kind: "open" }));
 
-    expect(screen.getByText("Which lens?")).toBeInTheDocument();
-    expect(screen.queryByText("newConversation")).toBeNull();
+    await waitFor(() => expect(screen.queryByText("Which lens?")).toBeNull());
+    expect(screen.queryByRole("button", { name: "resume" })).toBeNull();
   });
 
-  it("sends a question from another page in a new conversation", async () => {
+  it("sends an entry's question in a new conversation", async () => {
     const bodies = captureChatBodies();
     const { container, rerenderChat } = renderChat(panel("/en/lenses/x/browse"));
     submit(container, "Which lens?");
@@ -250,7 +254,8 @@ describe("AskIrisChat send", () => {
     rerenderChat(panel("/en/lenses/x/xf-56", { id: 1, kind: "question", text: "What is it for?" }));
 
     await waitFor(() => expect(bodies).toHaveLength(2));
-    expect(bodies[1]).toMatchObject({ page: "/en/lenses/x/xf-56", previousMessageId: null });
+    expect(bodies[1]).toMatchObject({ previousMessageId: null });
+    expect(bodies[1]).not.toHaveProperty("page");
     expect(bodies[1].id).not.toBe(bodies[0].id);
   });
 

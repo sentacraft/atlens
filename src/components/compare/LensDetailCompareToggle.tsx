@@ -5,7 +5,6 @@ import { Check, Plus } from "lucide-react";
 import { useCompare } from "@/context/CompareProvider";
 import { MAX_COMPARE } from "@/lib/lens/lens";
 import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
-import { LENS_ACTION_FIT as fit } from "@/config/lens-action-fit";
 
 interface Props {
   lensId: string;
@@ -22,7 +21,7 @@ export default function LensDetailCompareToggle({ lensId }: Props) {
     <button
       onClick={() => toggle(lensId)}
       disabled={isFull}
-      className={`inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap text-sm font-medium ${fit.roomy} rounded-lg transition-colors ${
+      className={`inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap text-sm font-medium px-4 rounded-lg transition-colors ${
         isSelected
           ? "bg-zinc-200 text-zinc-700 hover:bg-zinc-300"
           : ACTION_PRIMARY_CLS

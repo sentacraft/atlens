@@ -202,6 +202,7 @@
       "about": ["Where does Atlens get its data?", "Which brands are covered?", "What collections are there?", "How do I install Atlens on my phone?"]
     },
     "newChat": "New chat",
+    "resume": "Continue: {title}",
     "history": "Conversations",
     "guestChatsKept": "Without an account, chats are kept for 7 days",
     "backToChat": "Back to chat",
@@ -854,7 +855,6 @@
   "Purchase": {
     "whereToBuy": "Check price",
     "buyAt": "Check price",
-    "buyAtShort": "Price",
     "disclosureDetail": "Some retailer links are affiliate. Atlens may earn a small commission at no extra cost to you.",
     "disclosureNoAffiliate": "Atlens has no partnership whatsoever with the platforms, sellers, or manufacturers, and earns nothing from them."
   },
@@ -911,30 +911,17 @@
     "ownedRemoved": "Removed from my gear"
   },
   "IrisEntry": {
-    "browseLabel": "Not sure which? Ask Iris",
+    "browseLabel": "Pick for my filters",
+    "browseQuestion": "Help me pick a lens with these filters: {filters}",
     "emptyHint": "Clear a few filters, or just tell Iris what you're after.",
     "emptyClear": "Clear filters",
     "emptyLabel": "Let Iris find one",
-    "emptyQuestion": "Nothing matched these filters. Help me find something.",
-    "compareLabel": "Ask Iris how they differ",
-    "lensLabel": "Ask Iris about this lens",
-    "lookingAt": "Looking at",
-    "comparing": "Comparing {count, number}",
-    "browsing": "Browsing lenses",
-    "noFilters": "All lenses",
-    "detach": "Don't include this page",
-    "lensHeading": "About this lens, you could ask:",
-    "compareHeading": "About these lenses, you could ask:",
-    "browseHeading": "With these filters, you could ask:",
-    "lensSuggestions": ["What is it good for?", "How does it compare with others at this focal length?", "What does the focus motor row mean?"],
-    "compareSuggestions": ["What are the main differences?", "Which one is better for everyday carry?"],
-    "browseSuggestions": ["Given my filters, how should I choose?", "Which of these are the lightest?"],
-    "lensPlaceholder": "Ask anything about this lens",
-    "comparePlaceholder": "Ask anything about these lenses",
-    "browsePlaceholder": "What kind of lens are you after?",
-    "newConversation": "New conversation. The previous one is in your history.",
-    "browseName": "lenses",
-    "compareName": "comparison"
+    "emptyQuestion": "Nothing matched these filters: {filters}. Help me find something.",
+    "compareLabel": "Explain the differences",
+    "compareQuestion": "What are the main differences between the {names}?",
+    "compareDaily": "Of the {names}, which is better for everyday carry?",
+    "lensUse": "What is the {name} good for?",
+    "lensTradeoffs": "What are the strengths and weaknesses of the {name}?"
   },
   "Support": {
     "title": "Support Atlens",

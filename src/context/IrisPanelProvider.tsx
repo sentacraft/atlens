@@ -11,13 +11,12 @@ import { ASK_IRIS_PATH } from "@/lib/url/routes";
 import { IRIS_PANEL_WIDTH, PAGE_MAX_WIDTH } from "@/config/ui";
 
 
-/** A request as the panel receives it; a new `id` hands it in again. */
-export type IrisPanelRequest = IrisRequest & { id: number };
+/** One opening as the panel receives it; `open` is an opening with nothing to hand in. */
+export type IrisPanelRequest = (IrisRequest | { kind: "open" }) & { id: number };
 
 /**
- * Opens Iris beside the page: a side panel on wide screens, a bottom sheet on narrow ones.
- * With a request it is about the page it is called from; without one (the nav) it returns to
- * the open conversation.
+ * Opens Iris beside the page: a side panel on wide screens, a bottom sheet on narrow ones. Each
+ * opening starts a new conversation, sending the request's question at once.
  */
 export type OpenIris = (open: { from: IrisEntryPoint; request?: IrisRequest; pool?: StarterPool }) => void;
 
@@ -71,10 +70,8 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
     opened(route.wide ? "panel" : "sheet");
     setMounted(true);
     setOpen(true);
-    if (next) {
-      nextRequestId.current += 1;
-      setRequest({ ...next, id: nextRequestId.current });
-    }
+    nextRequestId.current += 1;
+    setRequest({ ...(next ?? { kind: "open" }), id: nextRequestId.current });
   }, []);
   useEffect(() => {
     const conversationId = takePanelConversationParam();
