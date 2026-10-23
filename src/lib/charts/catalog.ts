@@ -59,9 +59,9 @@ export function focalEquivDisplay(lens: ChartLens): string {
   return focalRangeDisplay(lens.focalEquivMin, lens.focalEquivMax);
 }
 
-/** Whether a lens passes a chart's brand and focal-category filters. */
+/** Whether a lens passes a chart's brand filter. */
 export function matchesChartSelection(lens: ChartLens, selection: ChartSelection): boolean {
-  return (!selection.brand || lens.brand === selection.brand) && (!selection.focal || lens.focalCategories.includes(selection.focal));
+  return !selection.brand || lens.brand === selection.brand;
 }
 
 /** Charts plot stills lenses only: cine lenses publish T-stops and would read as outliers. */

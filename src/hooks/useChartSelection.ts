@@ -5,7 +5,7 @@ import { projectToUrl } from "@/lib/url/projection";
 import { writeChartSelection, type ChartSelection } from "@/lib/url/charts";
 
 /**
- * The chosen brand and focal range, mirrored into the URL so a shared link opens with them, plus a
+ * The chosen brand, mirrored into the URL so a shared link opens with it, plus a
  * hover preview that stays out of the URL. `shown` is what the chart should apply right now.
  */
 export function useChartSelection(initial: ChartSelection) {
@@ -17,10 +17,7 @@ export function useChartSelection(initial: ChartSelection) {
     projectToUrl((url) => writeChartSelection(url, next));
   }, []);
 
-  const shown: ChartSelection = {
-    brand: preview.brand ?? selected.brand,
-    focal: preview.focal ?? selected.focal,
-  };
+  const shown: ChartSelection = { brand: preview.brand ?? selected.brand };
 
   return { selected, shown, select, setPreview };
 }

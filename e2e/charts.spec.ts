@@ -53,18 +53,14 @@ test.describe("Charts", () => {
     await expect(chip).toHaveAttribute("aria-pressed", "true");
   });
 
-  test("the weight ladder filters by the brand in the URL", async ({ page }) => {
+  test("the weight ladder filters by the brand in the URL and ignores the old focal param", async ({ page }) => {
     await page.goto(`${WEIGHT}?brand=tamron&focal=standard`);
     await expect(page.getByRole("group", { name: "Brand" }).getByRole("button", { name: /^Tamron/ })).toHaveAttribute(
       "aria-pressed",
       "true",
     );
-    await expect(page.getByRole("group", { name: "Focal range" }).getByRole("button", { name: "Standard" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
     const tiles = page.locator("main section li a");
-    await expect(tiles.first()).toBeVisible();
+    await expect(tiles).toHaveCount(4);
     for (const label of await tiles.evaluateAll((links) => links.map((l) => l.getAttribute("aria-label")))) {
       expect(label).toMatch(/^Tamron /);
     }

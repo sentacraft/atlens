@@ -119,6 +119,7 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
         <>
           <ChartChips
             label={t("highlightBrand")}
+            labelShown
             chips={mode.brands.map((b) => ({ key: b.brand, label: `${brandLabel(tBrand, b.brand)} ${b.count}` }))}
             selected={selected.brand}
             onPreview={(brand) => setPreview({ brand })}

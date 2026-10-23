@@ -109,13 +109,11 @@ describe("toChartLens", () => {
 });
 
 describe("matchesChartSelection", () => {
-  it("keeps a lens only when it passes every filter that is set", () => {
-    const lens = toChartLens(makeLens({ brand: "sigma", focalLengthMin: 16, focalLengthMax: 16 }));
+  it("keeps every lens when no brand is set, and only that brand's when one is", () => {
+    const lens = toChartLens(makeLens({ brand: "sigma" }));
     expect(matchesChartSelection(lens, {})).toBe(true);
     expect(matchesChartSelection(lens, { brand: "sigma" })).toBe(true);
     expect(matchesChartSelection(lens, { brand: "viltrox" })).toBe(false);
-    expect(matchesChartSelection(lens, { brand: "sigma", focal: lens.focalCategories[0] })).toBe(true);
-    expect(matchesChartSelection(lens, { brand: "sigma", focal: "superTele" })).toBe(false);
   });
 });
 

@@ -91,15 +91,10 @@ export function WeightShareFromUrl(props: WeightShareProps) {
 export function WeightShare({ tiers, brands, title, count, maxG, minG, dataDate, selection }: WeightShareProps & { selection: ChartSelection }) {
   const t = useTranslations("Charts");
   const tBrand = useTranslations("Brands");
-  const tList = useTranslations("LensList");
-  const filters = [
-    selection.brand && brandLabel(tBrand, selection.brand),
-    selection.focal && tList(`category-${selection.focal}`),
-  ].filter(Boolean);
   const shown = tiers.reduce((n, tier) => n + tier.lenses.filter((lens) => matchesChartSelection(lens, selection)).length, 0);
   const subtitle =
-    filters.length > 0
-      ? t("weightPosterFiltered", { filters: filters.join(" · "), count: shown })
+    selection.brand
+      ? t("weightPosterFiltered", { brand: brandLabel(tBrand, selection.brand), count: shown })
       : t("weightPosterSubtitle", {
           brandCount: brands.length,
           count,
@@ -114,7 +109,7 @@ export function WeightShare({ tiers, brands, title, count, maxG, minG, dataDate,
       posters={[
         {
           label: t("tabWeight"),
-          fileName: ["weight", selection.brand, selection.focal].filter(Boolean).join("_"),
+          fileName: selection.brand ? `weight_${selection.brand}` : "weight",
           content: (shareUrl) => (
             <PosterFrame title={title} subtitle={subtitle} cta={t("weightPosterCta")} note={note} shareUrl={shareUrl}>
               <WeightLadderChart tiers={tiers} mode={{ kind: "poster", selection }} />

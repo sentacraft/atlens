@@ -19,7 +19,6 @@ import { matchesChartSelection, type BrandCount, type ChartLens } from "@/lib/ch
 import { weightBarPct, type WeightTier } from "@/lib/charts/weight";
 import { brandLabel } from "@/lib/lens/format";
 import { getLensImageUrl } from "@/lib/lens/image";
-import { FOCAL_CATEGORIES } from "@/lib/lens/lens";
 import type { Mount } from "@/lib/types";
 import { brandPath } from "@/lib/url/routes";
 import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/charts";
@@ -67,14 +66,13 @@ export function WeightLadderChartFromUrl({ tiers, ...page }: PageProps) {
 
 export default function WeightLadderChart({ tiers, mode }: { tiers: WeightTier[]; mode: Mode }) {
   const t = useTranslations("Charts");
-  const tList = useTranslations("LensList");
-  const tBrand = useTranslations("Brands");
+    const tBrand = useTranslations("Brands");
   const { selected, select } = useChartSelection(mode.kind === "page" ? mode.initial : mode.selection);
   const { itemHandlers, sheet } = useChartCard();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const cls = LAYOUT[mode.kind];
   const heaviest = Math.max(...tiers.flatMap((tier) => tier.lenses.map((l) => l.weightG)));
-  const filtering = Boolean(selected.brand || selected.focal);
+  const filtering = Boolean(selected.brand);
   const sheetLens = tiers.flatMap((tier) => tier.lenses).find((l) => l.id === sheet.id);
 
   const range = (tier: WeightTier) =>
@@ -90,15 +88,10 @@ export default function WeightLadderChart({ tiers, mode }: { tiers: WeightTier[]
         <div className="flex flex-col gap-2">
           <ChartChips
             label={t("filterBrand")}
+            labelShown={false}
             chips={mode.brands.map((b) => ({ key: b.brand, label: `${brandLabel(tBrand, b.brand)} ${b.count}` }))}
             selected={selected.brand}
             onSelect={(brand) => select({ ...selected, brand })}
-          />
-          <ChartChips
-            label={t("filterFocal")}
-            chips={FOCAL_CATEGORIES.map((c) => ({ key: c.key, label: tList(`category-${c.key}`) }))}
-            selected={selected.focal}
-            onSelect={(focal) => select({ ...selected, focal })}
           />
           {selected.brand && (
             <Link href={brandPath(mode.mount, selected.brand)} className={cn(TEXT_LINK_CLS, "self-start text-sm")}>

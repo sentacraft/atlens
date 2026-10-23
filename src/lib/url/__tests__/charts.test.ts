@@ -5,12 +5,12 @@ import { brandPath, chartPath, chartsPath } from "../routes";
 const brands = ["fujifilm", "sigma"];
 
 describe("readChartSelection", () => {
-  it("reads a known brand and focal category", () => {
-    expect(readChartSelection({ brand: "sigma", focal: "wide" }, brands)).toEqual({ brand: "sigma", focal: "wide" });
+  it("reads a known brand", () => {
+    expect(readChartSelection({ brand: "sigma" }, brands)).toEqual({ brand: "sigma" });
   });
 
-  it("drops values the chart cannot show instead of failing", () => {
-    expect(readChartSelection({ brand: "canon", focal: "fisheye" }, brands)).toEqual({});
+  it("drops a brand the chart cannot show instead of failing", () => {
+    expect(readChartSelection({ brand: "canon" }, brands)).toEqual({ brand: undefined });
   });
 
   it("takes the first of a repeated param", () => {
@@ -21,13 +21,13 @@ describe("readChartSelection", () => {
 describe("writeChartSelection", () => {
   it("round-trips through the URL and leaves other params alone", () => {
     const url = new URL("https://atlens.test/en/lenses/x/charts/weight?ref=share&brand=fujifilm");
-    writeChartSelection(url, { brand: "sigma", focal: "standard" });
+    writeChartSelection(url, { brand: "sigma" });
     expect(url.searchParams.get("ref")).toBe("share");
-    expect(readChartSelectionFromSearch(url.searchParams, brands)).toEqual({ brand: "sigma", focal: "standard" });
+    expect(readChartSelectionFromSearch(url.searchParams, brands)).toEqual({ brand: "sigma" });
   });
 
-  it("removes the params when the highlight is cleared", () => {
-    const url = new URL("https://atlens.test/en/lenses/x/charts/weight?brand=sigma&focal=wide");
+  it("removes the param when the selection is cleared", () => {
+    const url = new URL("https://atlens.test/en/lenses/x/charts/weight?brand=sigma");
     writeChartSelection(url, {});
     expect(url.search).toBe("");
   });
