@@ -30,6 +30,7 @@ jobs:
     # Playwright's WebKit build loads, so every WebKit project fails to launch. Unpin once
     # Playwright supports 26.04: https://github.com/microsoft/playwright/issues/36364
     runs-on: ubuntu-24.04
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
 
@@ -60,9 +61,11 @@ jobs:
       # the system deps are (re)installed; on a miss, download the browsers too.
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 15
         run: pnpm exec playwright install --with-deps chromium webkit
       - name: Install Playwright system dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
+        timeout-minutes: 10
         run: pnpm exec playwright install-deps chromium webkit
 
       # Next.js incremental build cache (compiler/output), per the official CI
