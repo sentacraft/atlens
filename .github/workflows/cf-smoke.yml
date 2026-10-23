@@ -51,7 +51,9 @@ jobs:
       - name: Boot workerd and smoke-test canaries
         run: |
           # wrangler dev runs the worker on local workerd (same runtime as prod,
-          # local mode — no CF account needed).
+          # local mode — no CF account needed). Auth refuses to start without a
+          # secret, and wrangler dev reads worker secrets from .dev.vars only.
+          echo "BETTER_AUTH_SECRET=cf-smoke-$(openssl rand -hex 16)" > .dev.vars
           pnpm exec wrangler dev --port 8787 &
           WRANGLER_PID=$!
 
@@ -70,7 +72,8 @@ jobs:
             exit 1
           fi
 
-          BASE_URL=http://localhost:8787 node scripts/uptime-check.mjs
+          BASE_URL=http://localhost:8787 UPTIME_PRERENDER_MANIFEST=.next/prerender-manifest.json \
+            node scripts/uptime-check.mjs
           status=$?
 
           kill "$WRANGLER_PID" 2>/dev/null || true

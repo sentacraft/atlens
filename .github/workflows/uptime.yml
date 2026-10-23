@@ -2,7 +2,8 @@ name: Uptime
 
 # Post-deploy safety net against PRODUCTION. Two checks, run on a schedule:
 #   1. Reachability/render — probe a rotating sample of sitemap URLs (status +
-#      rendered HTML). Detection, not prevention: wouldn't have stopped the #397
+#      rendered HTML), plus the read-only API routes, the per-request compare
+#      page and the Ask Iris page, which the sitemap leaves out. Detection, not prevention: wouldn't have stopped the #397
 #      deploy, but would have alerted within ~30 min. (cf-smoke prevents that
 #      class at PR time; this is the safety net.)
 #   2. SSG cache behavior — assert SSG pages are actually served from the
@@ -41,8 +42,8 @@ jobs:
           BASE_URL: https://atlens.app
           # Sample ~50 URLs per run via deterministic rotation seeded by the run
           # number, so consecutive runs cover the whole sitemap with no overlap.
-          # (cf-smoke sweeps all URLs against local workerd; the prod cron stays
-          # light.) Bump UPTIME_SAMPLE to widen each run.
+          # (cf-smoke probes one URL per route template against local workerd.)
+          # Bump UPTIME_SAMPLE to widen each run.
           UPTIME_SAMPLE: "50"
           UPTIME_RUN_INDEX: ${{ github.run_number }}
 
