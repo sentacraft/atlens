@@ -3,6 +3,7 @@
 // per-request compare page and the Ask Iris page.
 // Used by .github/workflows/uptime.yml (prod) and cf-smoke.yml (local workerd).
 import { readFileSync } from "node:fs";
+import { oneEachTemplate } from "./lib/route-templates.mjs";
 
 const rawBase = process.env.BASE_URL;
 if (!rawBase) {
@@ -41,30 +42,6 @@ if (sampleRaw !== undefined) {
 // A build's prerender manifest maps each page to its route template; one page per template and
 // locale/mount stands in for the rest, which share its code and were already rendered at build time.
 const manifestPath = process.env.UPTIME_PRERENDER_MANIFEST;
-
-function oneEachTemplate(paths, manifest) {
-  const seen = new Set();
-  const picked = [];
-  for (const path of paths.slice().sort()) {
-    const template = manifest.routes[path]?.srcRoute;
-    if (!template) {
-      picked.push(path);
-      continue;
-    }
-    const pathParts = path.split("/");
-    const templateParts = template.split("/");
-    const dynamic = templateParts.flatMap((part, i) => (part.startsWith("[") ? [i] : []));
-    const last = templateParts.length - 1;
-    const key = templateParts
-      .map((part, i) => (part.startsWith("[") && !(i === last && dynamic.length > 1) ? pathParts[i] : part))
-      .join("/");
-    if (!seen.has(key)) {
-      seen.add(key);
-      picked.push(path);
-    }
-  }
-  return picked;
-}
 
 function rotatingSample(paths) {
   const sorted = paths.slice().sort();

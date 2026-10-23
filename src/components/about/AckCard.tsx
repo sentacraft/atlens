@@ -31,7 +31,7 @@ export default function AckCard({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className={`group w-full flex items-center gap-5 px-8 py-6 cursor-pointer select-none text-left rounded-2xl transition-[border-radius] duration-[0ms] ${
+        className={`group w-full flex items-center gap-3 px-5 py-6 sm:gap-5 sm:px-8 cursor-pointer select-none text-left rounded-2xl transition-[border-radius] duration-[0ms] ${
           open ? "rounded-b-none" : ""
         }`}
         style={{
