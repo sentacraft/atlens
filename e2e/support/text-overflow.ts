@@ -8,7 +8,8 @@ export interface TextProblem {
 /**
  * Runs in the page. Checks every visible text node: its glyphs must stay inside the nearest
  * block-level ancestor, unless that box deliberately clips or scrolls (`truncate`, `line-clamp`,
- * a scrolling tab row); and no two text nodes may share more than a few pixels, line by line. Text
+ * a scrolling tab row); and no two text nodes may share more than a few pixels, line by line, counting
+ * only the part of each line its nearest clipping box lets through. Text
  * in hidden, `aria-hidden` or `inert` subtrees, and in fixed or sticky overlays, is skipped.
  */
 export function findTextProblems(): TextProblem[] {
@@ -33,7 +34,7 @@ export function findTextProblems(): TextProblem[] {
     acceptNode: (node) => (node.textContent?.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT),
   });
 
-  const lines: { text: string; rect: DOMRect; el: Element }[] = [];
+  const lines: { text: string; rect: { left: number; right: number; top: number; bottom: number }; el: Element }[] = [];
   for (let node = walker.nextNode(); node; node = walker.nextNode()) {
     const parent = node.parentElement;
     if (!parent || hidden(parent) || floating(parent) || parent.closest("script, style, noscript, svg")) {
@@ -50,9 +51,24 @@ export function findTextProblems(): TextProblem[] {
       continue;
     }
     const text = node.textContent!.trim().slice(0, 60);
+    let clip: DOMRect | undefined;
+    for (let e: Element | null = parent; e && e !== document.body; e = e.parentElement) {
+      if (clips(getComputedStyle(e))) {
+        clip = e.getBoundingClientRect();
+        break;
+      }
+    }
     for (const line of range.getClientRects()) {
-      if (line.width > 0 && line.height > 0) {
-        lines.push({ text, rect: line, el: parent });
+      const visible = clip
+        ? {
+            left: Math.max(line.left, clip.left),
+            right: Math.min(line.right, clip.right),
+            top: Math.max(line.top, clip.top),
+            bottom: Math.min(line.bottom, clip.bottom),
+          }
+        : { left: line.left, right: line.right, top: line.top, bottom: line.bottom };
+      if (visible.right > visible.left && visible.bottom > visible.top) {
+        lines.push({ text, rect: visible, el: parent });
       }
     }
 
