@@ -93,6 +93,9 @@ test.describe("Ask Iris side panel", () => {
         const box = shell.getBoundingClientRect();
         return [Math.round(box.left), Math.round(box.right)];
       });
+    // The list renders in the browser; until it does the page is too short for a scrollbar, and
+    // the scrollbar's arrival moves the centred shell.
+    await expect(page.getByRole("heading", { level: 3 }).first()).toBeVisible();
     const [leftBefore] = await edges();
 
     await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
