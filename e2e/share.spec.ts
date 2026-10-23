@@ -31,13 +31,13 @@ test.describe("Share", () => {
     await page.goto("/en/lenses/x/charts/weight", { waitUntil: "networkidle" });
     await openShare(page, /^Share$/);
     await expect(page.getByText("Long image · scroll to preview, tap to enlarge")).toBeVisible();
-    await expect(page.getByText("The heaviest weighs")).toBeVisible();
+    await expect(page.getByText("179 lenses from 12 brands, 2265g down to 58g.")).toBeVisible();
   });
 
   test("a filtered weight ladder poster shows only what the filter keeps", async ({ page }) => {
     await page.goto("/en/lenses/x/charts/weight?brand=sigma", { waitUntil: "networkidle" });
     await openShare(page, /^Share$/);
-    await expect(page.getByText(/Fujifilm X-mount lens weight ladder · Sigma, 11 lenses/)).toBeVisible();
+    await expect(page.getByText("Sigma, 11 lenses.", { exact: true })).toBeVisible();
   });
 
   test("a timeline poster keeps the highlighted brand", async ({ page }) => {
