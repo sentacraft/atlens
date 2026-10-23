@@ -7,5 +7,5 @@ export const miniLabelClass =
 export const rowClass =
   "flex flex-col gap-1.5 sm:flex-row sm:items-start sm:gap-2.5";
 
-export const rowLabelClass = `${inlineLabelClass} sm:flex sm:h-8 sm:w-24 sm:shrink-0 sm:items-center sm:whitespace-nowrap`;
+export const rowLabelClass = `${inlineLabelClass} sm:flex sm:h-8 sm:w-28 sm:shrink-0 sm:items-center sm:whitespace-nowrap`;
 
