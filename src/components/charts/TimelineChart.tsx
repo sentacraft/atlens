@@ -16,7 +16,7 @@ import { brandLabel, focalRangeDisplay } from "@/lib/lens/format";
 import { getLensImageUrl } from "@/lib/lens/image";
 import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 import type { Mount } from "@/lib/types";
-import { lensPath, lineupPath } from "@/lib/url/routes";
+import { lensPath, brandPath } from "@/lib/url/routes";
 import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/charts";
 import { cn } from "@/lib/utils";
 
@@ -109,7 +109,7 @@ export default function TimelineChart({ mount, entries, years, brands, initial }
         onSelect={(brand) => select({ brand })}
       />
       {selected.brand && (
-        <Link href={lineupPath(mount, selected.brand)} className={cn(TEXT_LINK_CLS, "self-start text-sm")}>
+        <Link href={brandPath(mount, selected.brand)} className={cn(TEXT_LINK_CLS, "self-start text-sm")}>
           {t("seeLineup", { brand: brandLabel(tBrand, selected.brand) })}
         </Link>
       )}

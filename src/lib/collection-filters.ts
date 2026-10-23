@@ -26,10 +26,6 @@ function xPrime(focalMin: number, focalMax: number): LensFilter {
     lens.focalLengthMin <= focalMax;
 }
 
-function xBrand(brand: string): LensFilter {
-  return (lens) => xPhoto(lens) && lens.brand === brand;
-}
-
 const CHINESE_BRANDS = ["viltrox", "7artisans", "ttartisan", "brightinstar", "sgimage", "laowa", "meike", "sirui"];
 
 export const FILTERS = {
@@ -64,19 +60,6 @@ export const FILTERS = {
   "super-tele": (lens) =>
     xPhoto(lens) &&
     (isZoom(lens) ? lens.focalLengthMax >= 300 : lens.focalLengthMin >= 200),
-
-  fujifilm: (lens) => xPhoto(lens) && lens.brand === "fujifilm",
-  "7artisans": xBrand("7artisans"),
-  viltrox: xBrand("viltrox"),
-  ttartisan: xBrand("ttartisan"),
-  sigma: xBrand("sigma"),
-  brightinstar: xBrand("brightinstar"),
-  voigtlander: xBrand("voigtlander"),
-  laowa: xBrand("laowa"),
-  tamron: xBrand("tamron"),
-  sgimage: xBrand("sgimage"),
-  meike: xBrand("meike"),
-  sirui: xBrand("sirui"),
 
   "fujifilm-xf": (lens) =>
     xPhoto(lens) && lens.brand === "fujifilm" && lens.series === "XF",

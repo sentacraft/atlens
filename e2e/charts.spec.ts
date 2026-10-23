@@ -2,7 +2,8 @@ import { test, expect } from "@playwright/test";
 
 const TIMELINE = "/en/lenses/x/charts/timeline";
 const WEIGHT = "/en/lenses/x/charts/weight";
-const LINEUP = "/en/lenses/x/charts/lineup";
+const LINEUPS = "/en/lenses/x/charts/lineups";
+const BRANDS = "/en/lenses/x/brands";
 const LENS = /15mm F1\.4 DC \| Contemporary/;
 
 // The charts are in the static HTML, so an action can land before hydration attaches its
@@ -96,23 +97,23 @@ test.describe("Charts", () => {
     }).toPass();
   });
 
-  test("/charts/lineup opens the Fujifilm lineup", async ({ page }) => {
-    await page.goto(LINEUP);
-    await expect(page).toHaveURL(new RegExp(`${LINEUP}/fujifilm$`));
+  test("an old brand collection URL moves to the brand page", async ({ page }) => {
+    await page.goto("/en/lenses/x/collections/viltrox");
+    await expect(page).toHaveURL(new RegExp(`${BRANDS}/viltrox$`));
   });
 
-  test("picking a brand opens its lineup, which links to its collection", async ({ page }) => {
-    await page.goto(`${LINEUP}/fujifilm`);
-    await page.getByRole("navigation", { name: "Brand" }).getByRole("link", { name: /^Sigma/ }).click();
-    await expect(page).toHaveURL(new RegExp(`${LINEUP}/sigma$`));
+  test("a brand page links to the other brand pages", async ({ page }) => {
+    await page.goto(`${BRANDS}/fujifilm`);
+    await expect(page.getByRole("navigation", { name: "Other brands" }).getByRole("link", { name: /^Fujifilm/ })).toHaveCount(0);
+    await page.getByRole("navigation", { name: "Other brands" }).getByRole("link", { name: /^Sigma/ }).click();
+    await expect(page).toHaveURL(new RegExp(`${BRANDS}/sigma$`));
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Sigma Lenses for Fujifilm X-Mount");
-    await expect(page.getByRole("link", { name: /Sigma Lenses collection/ })).toHaveAttribute("href", "/en/lenses/x/collections/sigma");
   });
 
-  test("hovering a lineup lens shows its card", async ({ page, hasTouch }) => {
+  test("hovering a lens in a brand lineup shows its card", async ({ page, hasTouch }) => {
     test.skip(hasTouch, "Mouse only");
-    await page.goto(`${LINEUP}/sigma`);
-    const lens = page.getByRole("link", { name: "18-50mm F2.8 DC DN | Contemporary" });
+    await page.goto(`${BRANDS}/sigma`);
+    const lens = page.getByRole("link", { name: "18-50mm F2.8 DC DN | Contemporary", exact: true });
     await expect(async () => {
       await page.mouse.move(0, 0);
       await lens.hover();
@@ -120,22 +121,19 @@ test.describe("Charts", () => {
     }).toPass();
   });
 
-  test("a brand collection links to its lineup", async ({ page }) => {
-    await page.goto("/en/lenses/x/collections/viltrox");
-    await page.getByRole("link", { name: /See the lineup/ }).click();
-    await expect(page).toHaveURL(new RegExp(`${LINEUP}/viltrox$`));
+  test("the lineups chart opens each brand page", async ({ page }) => {
+    await page.goto(LINEUPS);
+    await page.getByRole("link", { name: /^Viltrox/ }).click();
+    await expect(page).toHaveURL(new RegExp(`${BRANDS}/viltrox$`));
   });
 
-  test("a chart with a brand selected links to that brand's lineup", async ({ page }) => {
+  test("a chart with a brand selected links to that brand's page", async ({ page }) => {
     await page.goto(`${TIMELINE}?brand=sigma`);
-    await expect(page.getByRole("link", { name: "See the Sigma lineup →" })).toHaveAttribute("href", `${LINEUP}/sigma`);
+    await expect(page.getByRole("link", { name: "See the Sigma lineup →" })).toHaveAttribute("href", `${BRANDS}/sigma`);
   });
 
-  test("the brand on a lens page links to the brand collection", async ({ page }) => {
+  test("the brand on a lens page links to the brand page", async ({ page }) => {
     await page.goto("/en/lenses/x/sigma-contemporary-18-50mm-f28-dc-dn-x");
-    await expect(page.getByRole("link", { name: "Sigma", exact: true })).toHaveAttribute(
-      "href",
-      "/en/lenses/x/collections/sigma",
-    );
+    await expect(page.getByRole("link", { name: "Sigma", exact: true })).toHaveAttribute("href", `${BRANDS}/sigma`);
   });
 });

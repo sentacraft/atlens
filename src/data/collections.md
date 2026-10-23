@@ -1,10 +1,10 @@
-# Writing collection copy
+# Writing collection and brand copy
 
-`collections.json` is hand-written, and the catalog keeps growing under it. Write copy that stays
-true as lenses are added:
+`collections.json` and `brands.json` are hand-written, and the catalog keeps growing under them.
+Write copy that stays true as lenses are added:
 
 - Describe the brand or theme: its character, positioning and what sets its lenses apart. Lens
-  counts already appear in the stats line generated from the data.
+  counts already appear in lines generated from the data.
 - Don't enumerate focal lengths or models ("16, 23, 33, 56 and 75mm"); name a line by what it is
   ("a set of f/1.2 primes").
 - Avoid absolutes such as "all", "every" or "only"; prefer "mostly" or "focuses on".

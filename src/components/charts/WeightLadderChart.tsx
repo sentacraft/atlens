@@ -20,7 +20,7 @@ import { brandLabel, focalRangeDisplay } from "@/lib/lens/format";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import { FOCAL_CATEGORIES, MAX_COMPARE } from "@/lib/lens/lens";
 import type { Mount } from "@/lib/types";
-import { lensPath, lineupPath } from "@/lib/url/routes";
+import { lensPath, brandPath } from "@/lib/url/routes";
 import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/charts";
 import { cn } from "@/lib/utils";
 
@@ -76,7 +76,7 @@ export default function WeightLadderChart({ mount, tiers, brands, initial }: Pro
           onSelect={(focal) => select({ ...selected, focal })}
         />
         {selected.brand && (
-          <Link href={lineupPath(mount, selected.brand)} className={cn(TEXT_LINK_CLS, "self-start text-sm")}>
+          <Link href={brandPath(mount, selected.brand)} className={cn(TEXT_LINK_CLS, "self-start text-sm")}>
             {t("seeLineup", { brand: brandLabel(tBrand, selected.brand) })}
           </Link>
         )}

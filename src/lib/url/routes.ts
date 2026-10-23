@@ -47,12 +47,12 @@ export function chartsPath(mount: Mount): string {
   return `/lenses/${mountToUrlSegment(mount)}/charts`;
 }
 
-export function chartPath(mount: Mount, chart: "timeline" | "weight"): string {
+export function chartPath(mount: Mount, chart: "timeline" | "weight" | "lineups"): string {
   return `${chartsPath(mount)}/${chart}`;
 }
 
-export function lineupPath(mount: Mount, brand: string): string {
-  return `${chartsPath(mount)}/lineup/${brand}`;
+export function brandPath(mount: Mount, brand: string): string {
+  return `/lenses/${mountToUrlSegment(mount)}/brands/${brand}`;
 }
 
 export function lensPath(lens: { mount: Mount; id: string }): string {
