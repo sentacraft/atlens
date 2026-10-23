@@ -649,7 +649,7 @@
     "shareCtaSingle": "我在 Atlens 上发现了一支镜头，快来看看 👀",
     "copyFailed": "复制失败",
     "shareFailed": "分享失败，请重试",
-    "longImage": "长图 {width} × {height} · 上下滚动预览，点击放大"
+    "longImage": "长图 · 上下滚动预览，点击放大"
   },
   "ShareImage": {
     "comparison": "镜头对比",

@@ -30,7 +30,7 @@ test.describe("Share", () => {
   test("the full weight ladder becomes a long image", async ({ page }) => {
     await page.goto("/en/lenses/x/charts/weight", { waitUntil: "networkidle" });
     await openShare(page, /Share this chart/);
-    await expect(page.getByText(/^Long image, 1080 × \d+/)).toBeVisible();
+    await expect(page.getByText("Long image · scroll to preview, tap to enlarge")).toBeVisible();
     await expect(page.getByText("The heaviest weighs")).toBeVisible();
   });
 
@@ -53,5 +53,12 @@ test.describe("Share", () => {
     await expect(page.getByText("Scan to see the other 11 brands")).toBeVisible();
     await page.getByRole("button", { name: "Timeline", exact: true }).click();
     await expect(page.getByText("Sigma's Fujifilm X-Mount Lenses by Release Year, 2022–2026")).toBeVisible();
+  });
+
+  test("a brand page section shares only its own chart", async ({ page }) => {
+    await page.goto("/en/lenses/x/brands/sigma", { waitUntil: "networkidle" });
+    await openShare(page, /^Share this chart$/);
+    await expect(page.getByText(/Sigma's 11\s+Fujifilm X-mount lenses/)).toBeVisible();
+    await expect(page.getByRole("button", { name: "Timeline", exact: true })).toHaveCount(0);
   });
 });

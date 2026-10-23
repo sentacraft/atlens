@@ -216,7 +216,10 @@ export default function TimelineChart({ mode, mount, entries, years, brands, ini
             {tall.rows.map(({ yr, top, height }, i) => (
               <Fragment key={yr.year}>
                 {i % 2 === 0 && <div className="absolute inset-x-0 bg-zinc-50" style={{ top, height }} />}
-                <div className="absolute left-2.5 flex items-baseline gap-1.5" style={{ top: top + 4 }}>
+                <div
+                  className={cn("absolute left-1.5 z-10 flex items-baseline gap-1.5 px-1", i % 2 === 0 ? "bg-zinc-50" : "bg-white")}
+                  style={{ top: top + 4 }}
+                >
                   <span className="text-xs font-semibold tabular-nums text-zinc-900">{yr.year}</span>
                   <span className="text-[11px] tabular-nums text-zinc-500">{t("lensCount", { count: yr.count })}</span>
                 </div>

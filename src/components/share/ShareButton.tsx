@@ -288,8 +288,8 @@ export function ShareButton({ heading, caption, shareText, posters, label, varia
         )}
       </div>
       {long && (
-        <p className="-mt-1 text-xs tabular-nums text-zinc-500">
-          {t("longImage", { width: String(poster.width), height: String(Math.round(posterHeight)) })}
+        <p className="-mt-1 text-xs text-zinc-500">
+          {t("longImage")}
         </p>
       )}
 

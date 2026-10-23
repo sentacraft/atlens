@@ -134,6 +134,17 @@ export default async function BrandPage({ params }: { params: Params }) {
     })),
   });
 
+  const share = {
+    mount: data.resolvedMount,
+    lineup: data.lineup,
+    timeline: data.timeline,
+    name: data.name,
+    otherBrands: data.brands.length - 1,
+    title: data.title,
+    summary: data.summary,
+    dataDate: formatDataDate(meta.lastUpdated, locale),
+  };
+
   return (
     <>
       <JsonLd data={itemListSchema} />
@@ -142,16 +153,7 @@ export default async function BrandPage({ params }: { params: Params }) {
           <div className="mb-4 flex items-center justify-between gap-3">
             <Breadcrumb segments={[{ label: tNav("lenses"), href: browsePath(data.resolvedMount) }]} current={data.name} />
             <div className="flex shrink-0 items-center gap-1">
-              <BrandShare
-                mount={data.resolvedMount}
-                lineup={data.lineup}
-                timeline={data.timeline}
-                name={data.name}
-                otherBrands={data.brands.length - 1}
-                title={data.title}
-                summary={data.summary}
-                dataDate={formatDataDate(meta.lastUpdated, locale)}
-              />
+              <BrandShare {...share} />
               <FeedbackTrigger type="general" className={UTILITY_BTN_CLS}>
                 <Flag className="size-4" />
                 <span className="hidden sm:inline">{tCollection("reportIssue")}</span>
@@ -174,9 +176,10 @@ export default async function BrandPage({ params }: { params: Params }) {
         </header>
 
         <section id="lineup" className={SECTION_CLS} aria-labelledby="lineup-heading">
-          <h2 id="lineup-heading" className={SECTION_HEADING_CLS}>
-            {t("lineupHeading")}
-          </h2>
+          <div className={cn(SECTION_HEADING_CLS, "flex items-center justify-between gap-3")}>
+            <h2 id="lineup-heading">{t("lineupHeading")}</h2>
+            <BrandShare {...share} only="lineup" />
+          </div>
           <LineupChart lineup={data.lineup} size="responsive" />
           {data.cineCount > 0 && (
             <p className="text-xs leading-relaxed text-zinc-500">{t("cineNote", { brand: data.name, count: data.cineCount })}</p>
@@ -185,9 +188,12 @@ export default async function BrandPage({ params }: { params: Params }) {
 
         {hasTimeline && (
           <section id="timeline" className={cn(SECTION_CLS, "mt-12")} aria-labelledby="timeline-heading">
-            <div className={cn(SECTION_HEADING_CLS, "flex flex-wrap items-baseline gap-x-3")}>
-              <h2 id="timeline-heading">{t("timelineHeading")}</h2>
-              <span className="font-sans text-sm font-normal text-zinc-500">{timelineSpan}</span>
+            <div className={cn(SECTION_HEADING_CLS, "flex items-center justify-between gap-3")}>
+              <div className="flex flex-wrap items-baseline gap-x-3">
+                <h2 id="timeline-heading">{t("timelineHeading")}</h2>
+                <span className="font-sans text-sm font-normal text-zinc-500">{timelineSpan}</span>
+              </div>
+              <BrandShare {...share} only="timeline" />
             </div>
             <TimelineChart
               mode={{ kind: "section" }}

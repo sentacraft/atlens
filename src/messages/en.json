@@ -649,7 +649,7 @@
     "shareCtaSingle": "I found a lens on Atlens — check it out 👀",
     "copyFailed": "Copy failed",
     "shareFailed": "Share failed, please try again",
-    "longImage": "Long image, {width} × {height} · scroll to preview, tap to enlarge"
+    "longImage": "Long image · scroll to preview, tap to enlarge"
   },
   "ShareImage": {
     "comparison": "Lens Comparison",

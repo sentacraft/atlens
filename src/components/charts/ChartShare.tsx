@@ -16,11 +16,15 @@ import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/cha
 import type { Mount } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-const TRIGGER_CLS = cn(ACTION_PRIMARY_CLS, "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium");
+const TRIGGER_CLS = {
+  primary: cn(ACTION_PRIMARY_CLS, "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium"),
+  utility: UTILITY_BTN_CLS,
+  section: cn(UTILITY_BTN_CLS, "shrink-0 font-sans font-normal"),
+};
 
 /**
  * The chart share button with its heading and caption; the poster says what is on screen. A chart
- * page leads with it; a brand page puts it among its header utilities.
+ * page leads with it; a brand page puts it among its header utilities and beside each chart's heading.
  */
 function ChartShareButton({
   title,
@@ -29,16 +33,16 @@ function ChartShareButton({
 }: {
   title: string;
   posters: { label: string; fileName: string; content: React.ReactNode }[];
-  trigger?: "primary" | "utility";
+  trigger?: keyof typeof TRIGGER_CLS;
 }) {
   const t = useTranslations("Charts");
   return (
     <ShareButton
       heading={t("shareChart")}
       caption={t("shareCaption")}
-      label={trigger === "primary" ? t("shareChart") : undefined}
+      label={trigger === "utility" ? undefined : t("shareChart")}
       shareText={t("shareText", { title })}
-      triggerClassName={trigger === "primary" ? TRIGGER_CLS : UTILITY_BTN_CLS}
+      triggerClassName={TRIGGER_CLS[trigger]}
       posters={posters.map((poster) => ({ ...poster, width: POSTER_WIDTH, imageText: t("shareText", { title }) }))}
     />
   );
@@ -145,8 +149,12 @@ export function WeightShare({ tiers, brands, title, ratio, count, maxG, minG, da
   return <ChartShareButton title={title} posters={[{ label: t("tabWeight"), fileName: ["weight", selection.brand, selection.focal].filter(Boolean).join("_"), content: poster }]} />;
 }
 
-/** A brand page shares its lineup, and its release timeline when its lenses have years. */
+/**
+ * A brand page shares its lineup, and its release timeline when its lenses have years; `only`
+ * narrows it to one of them, for the button beside that chart's heading.
+ */
 export function BrandShare({
+  only,
   mount,
   lineup,
   timeline,
@@ -156,6 +164,7 @@ export function BrandShare({
   summary,
   dataDate,
 }: {
+  only?: "lineup" | "timeline";
   mount: Mount;
   lineup: Lineup;
   timeline: { entries: TimelineEntry[]; years: TimelineYear[]; brands: BrandCount[] };
@@ -171,6 +180,7 @@ export function BrandShare({
   const note = t("posterDataNote", { date: dataDate });
   const posters = [
     {
+      key: "lineup",
       label: t("posterLineup"),
       fileName: `lineup_${lineup.brand}`,
       content: (
@@ -191,6 +201,7 @@ export function BrandShare({
     const first = String(timeline.years[0].year);
     const last = String(timeline.years[timeline.years.length - 1].year);
     posters.push({
+      key: "timeline",
       label: t("posterTimeline"),
       fileName: `timeline_${lineup.brand}`,
       content: (
@@ -209,11 +220,17 @@ export function BrandShare({
       ),
     });
   }
-  return <ChartShareButton trigger="utility" title={title} posters={posters} />;
+  return (
+    <ChartShareButton
+      trigger={only ? "section" : "utility"}
+      title={title}
+      posters={posters.filter((poster) => !only || poster.key === only)}
+    />
+  );
 }
 
 /** A chart page without a poster yet shares its link only. */
 export function ChartLinkShare({ title }: { title: string }) {
   const t = useTranslations("Charts");
-  return <ShareButton heading={t("shareChart")} caption={t("shareCaption")} shareText={t("shareText", { title })} triggerClassName={TRIGGER_CLS} posters={[]} />;
+  return <ShareButton heading={t("shareChart")} caption={t("shareCaption")} shareText={t("shareText", { title })} triggerClassName={TRIGGER_CLS.primary} posters={[]} />;
 }
