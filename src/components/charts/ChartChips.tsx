@@ -30,7 +30,7 @@ export default function ChartChips<K extends string>({
 }) {
   return (
     <div role="group" aria-label={label} className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:gap-2">
-      {labelShown && <span className="shrink-0 text-xs text-zinc-500 sm:w-20 sm:pt-2">{label}</span>}
+      {labelShown && <span className="shrink-0 whitespace-nowrap text-xs text-zinc-500 sm:pt-[7px]">{label}</span>}
       <div className="flex min-w-0 flex-wrap gap-1.5">
         {chips.map((chip) => (
           <button
