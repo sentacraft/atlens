@@ -6,13 +6,18 @@ import ChartsHeader from "@/components/charts/ChartsHeader";
 import { DataSourceInline } from "@/components/lens/DataSource";
 import { WeightShare, WeightShareFromUrl } from "@/components/charts/ChartShare";
 import WeightLadderChart, { WeightLadderChartFromUrl } from "@/components/charts/WeightLadderChart";
+import JsonLd from "@/components/seo/JsonLd";
+import { SITE } from "@/config/site";
 import { BROWSE_PAGE_MAIN_CLS } from "@/config/ui-tokens";
-import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
+import { chartBrands, countCineLenses, type ChartLens } from "@/lib/charts/catalog";
 import { buildWeightLadder } from "@/lib/charts/weight";
 import { formatDataDate } from "@/lib/charts/data-date";
 import { getLensesByMount, meta } from "@/lib/lens/data";
+import { brandLabel, lensDisplayName } from "@/lib/lens/format";
+import { buildItemListSchema, lensListItems } from "@/lib/lens/seo";
 import { mountHasCharts, urlSegmentToMount } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
+import { chartPath } from "@/lib/url/routes";
 
 type Params = Promise<{ locale: string; mount: string }>;
 
@@ -23,7 +28,30 @@ async function load(params: Params) {
     return undefined;
   }
   const lenses = getLensesByMount(resolvedMount, locale);
-  return { locale, mount, resolvedMount, ladder: buildWeightLadder(lenses), brands: chartBrands(lenses), cineCount: countCineLenses(lenses) };
+  const ladder = buildWeightLadder(lenses);
+  const brands = chartBrands(lenses);
+  const t = await getTranslations({ locale, namespace: "Charts" });
+  const tBrand = await getTranslations({ locale, namespace: "Brands" });
+  const brandName = (brand: string) => brandLabel(tBrand, brand);
+  const lensName = (lens: ChartLens | undefined) => (lens ? lensDisplayName(brandName(lens.brand), lens.series, lens.model) : "");
+  const seo = {
+    title: t("weightMetaTitle", { count: ladder.count }),
+    description: t("weightMetaDesc", {
+      count: ladder.count,
+      brandCount: brands.length,
+      brands: new Intl.ListFormat(locale, { type: "conjunction" }).format(brands.slice(0, 4).map((b) => brandName(b.brand))),
+      lightest: lensName(ladder.lightest),
+      min: ladder.lightest?.weightG ?? 0,
+      heaviest: lensName(ladder.heaviest),
+      max: ladder.heaviest?.weightG ?? 0,
+    }),
+    items: lensListItems(
+      ladder.tiers.flatMap((tier) => tier.lenses),
+      brandName,
+      locale,
+    ),
+  };
+  return { locale, mount, resolvedMount, ladder, brands, seo, cineCount: countCineLenses(lenses) };
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
@@ -31,9 +59,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!data) {
     return {};
   }
-  const t = await getTranslations({ locale: data.locale, namespace: "Charts" });
-  const title = t("weightMetaTitle", { count: data.ladder.count });
-  const description = t("weightMetaDesc", { min: data.ladder.lightest?.weightG ?? 0, max: data.ladder.heaviest?.weightG ?? 0 });
+  const { title, description } = data.seo;
   return {
     title,
     description,
@@ -62,30 +88,39 @@ export default async function WeightPage({ params }: { params: Params }) {
     dataDate: formatDataDate(meta.lastUpdated, locale),
   };
 
+  const itemList = buildItemListSchema({
+    name: data.seo.title,
+    description: data.seo.description,
+    url: `${SITE.url}/${locale}${chartPath(data.resolvedMount, "weight")}`,
+    items: data.seo.items,
+  });
   return (
-    <main className={BROWSE_PAGE_MAIN_CLS}>
-      <ChartsHeader
-        locale={locale}
-        mount={data.resolvedMount}
-        active="weight"
-        title={t("weightTitle")}
-        description={t("weightDesc", {
-          model: ladder.heaviest?.model ?? "",
-          weight: ladder.heaviest?.weightG ?? 0,
-          ratio: ladder.ratio ?? 0,
-        })}
-        action={
-          <Suspense fallback={<WeightShare {...shareProps} selection={{}} />}>
-            <WeightShareFromUrl {...shareProps} />
-          </Suspense>
-        }
-      >
-        <DataSourceInline />
-      </ChartsHeader>
-      <Suspense fallback={<WeightLadderChart tiers={ladder.tiers} mode={{ kind: "page", initial: {}, mount: data.resolvedMount, brands: data.brands }} />}>
-        <WeightLadderChartFromUrl {...chartProps} />
-      </Suspense>
-      <p className="mt-6 text-xs leading-relaxed text-zinc-500">{t("weightNote", { count: data.cineCount })}</p>
-    </main>
+    <>
+      <JsonLd data={itemList} />
+      <main className={BROWSE_PAGE_MAIN_CLS}>
+        <ChartsHeader
+          locale={locale}
+          mount={data.resolvedMount}
+          active="weight"
+          title={t("weightTitle")}
+          description={t("weightDesc", {
+            model: ladder.heaviest?.model ?? "",
+            weight: ladder.heaviest?.weightG ?? 0,
+            ratio: ladder.ratio ?? 0,
+          })}
+          action={
+            <Suspense fallback={<WeightShare {...shareProps} selection={{}} />}>
+              <WeightShareFromUrl {...shareProps} />
+            </Suspense>
+          }
+        >
+          <DataSourceInline />
+        </ChartsHeader>
+        <Suspense fallback={<WeightLadderChart tiers={ladder.tiers} mode={{ kind: "page", initial: {}, mount: data.resolvedMount, brands: data.brands }} />}>
+          <WeightLadderChartFromUrl {...chartProps} />
+        </Suspense>
+        <p className="mt-6 text-xs leading-relaxed text-zinc-500">{t("weightNote", { count: data.cineCount })}</p>
+      </main>
+    </>
   );
 }
