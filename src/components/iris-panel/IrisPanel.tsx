@@ -33,10 +33,11 @@ export default function IrisPanel({
   const data = useQuery(askIrisChatDataQuery(locale));
   const pagePath = useCurrentPagePath();
   const { expanded, setExpanded } = useExpanded(shown);
+  const openCount = useOpenCount(shown);
 
   const chat = data.data ? (
     <AskIrisChat
-      shell={{ variant: "panel", pagePath, request, onClose, expanded, onExpandedChange: setExpanded }}
+      shell={{ variant: "panel", layout, openCount, pagePath, request, onClose, expanded, onExpandedChange: setExpanded }}
       linkTargets={data.data.linkTargets}
       lenses={data.data.lenses}
     />
@@ -115,6 +116,15 @@ export default function IrisPanel({
  * Whether Iris covers the page. Expanding adds a history entry, so Back collapses it instead of
  * leaving the page; closing Iris or moving to another page collapses it.
  */
+/** How many times the panel has been shown; stays mounted while closed, so this marks each opening. */
+function useOpenCount(shown: boolean) {
+  const [opens, setOpens] = useState({ shown, count: shown ? 1 : 0 });
+  if (opens.shown !== shown) {
+    setOpens({ shown, count: shown ? opens.count + 1 : opens.count });
+  }
+  return opens.count;
+}
+
 function useExpanded(shown: boolean) {
   const pathname = usePathname();
   const [expanded, setExpandedState] = useState(false);
