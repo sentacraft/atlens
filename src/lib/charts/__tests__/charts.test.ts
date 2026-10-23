@@ -5,7 +5,7 @@ import { getLensesByMount } from "@/lib/lens/data";
 import { assignLanes, buildTimeline } from "@/lib/charts/timeline";
 import { buildWeightLadder } from "@/lib/charts/weight";
 import { buildLineup } from "@/lib/charts/lineup";
-import { chartBrands, toChartLens, type ChartLens } from "@/lib/charts/catalog";
+import { apertureLabel, chartBrands, toChartLens, type ChartLens } from "@/lib/charts/catalog";
 
 function makeLens(overrides: Partial<Lens> = {}): Lens {
   return {
@@ -101,6 +101,13 @@ describe("toChartLens", () => {
   it("assigns focal categories the way the browse filter does", () => {
     expect(toChartLens(makeLens({ focalLengthMin: 23, focalLengthMax: 23 })).focalCategories).toEqual(["wide"]);
     expect(toChartLens(makeLens({ focalLengthMin: 16, focalLengthMax: 55 })).focalCategories).toEqual(["wide", "standard", "mediumTele"]);
+  });
+});
+
+describe("apertureLabel", () => {
+  it("writes a fixed aperture once and a variable one as a range", () => {
+    expect(apertureLabel(toChartLens(makeLens({ maxAperture: 4 })))).toBe("F4");
+    expect(apertureLabel(toChartLens(makeLens({ maxAperture: [3.5, 5.6] })))).toBe("F3.5–5.6");
   });
 });
 

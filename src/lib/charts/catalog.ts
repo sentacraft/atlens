@@ -23,6 +23,8 @@ export interface ChartLens {
   releaseYear?: number;
   /** f-number at the wide end, falling back to the T-stop. */
   aperture?: number;
+  /** f-number at the long end, when a zoom's aperture changes as it zooms. */
+  apertureTele?: number;
   af: boolean;
 }
 
@@ -45,8 +47,17 @@ export function toChartLens(lens: Lens): ChartLens {
     weightG: weightMid(lens.weightG),
     releaseYear: lens.releaseYear,
     aperture: Array.isArray(aperture) ? aperture[0] : aperture,
+    apertureTele: Array.isArray(aperture) ? aperture[1] : undefined,
     af: lens.af,
   };
+}
+
+/** The aperture as a chart labels it: "F1.4", or "F3.5–5.6" for a variable-aperture zoom. */
+export function apertureLabel(lens: ChartLens): string | undefined {
+  if (lens.aperture === undefined) {
+    return undefined;
+  }
+  return lens.apertureTele === undefined ? `F${lens.aperture}` : `F${lens.aperture}–${lens.apertureTele}`;
 }
 
 /** Charts plot stills lenses only: cine lenses publish T-stops and would read as outliers. */

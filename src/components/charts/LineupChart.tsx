@@ -7,7 +7,7 @@ import { Link } from "@/i18n/navigation";
 import ChartLensCard from "@/components/charts/ChartLensCard";
 import ChartLensSheet from "@/components/charts/ChartLensSheet";
 import { useChartCard } from "@/hooks/useChartCard";
-import type { ChartLens } from "@/lib/charts/catalog";
+import { apertureLabel, type ChartLens } from "@/lib/charts/catalog";
 import type { Lineup } from "@/lib/charts/lineup";
 import { logFrac, pct } from "@/lib/charts/scale";
 import { focalRangeDisplay } from "@/lib/lens/format";
@@ -26,7 +26,7 @@ const SIZES = {
     image: "size-12 md:size-[76px]",
     zoomAxis: "left-14 md:left-[84px]",
     zoomRow: "h-14 md:h-[88px]",
-    zoomName: "top-2 text-xs md:top-5 md:text-sm",
+    zoomLabel: "bottom-[22px] md:bottom-9",
     zoomBar: "bottom-3 h-1.5 md:bottom-6 md:h-2",
     heading: "text-base",
     group: "px-2.5 py-3 md:px-6 md:pb-6 md:pt-5",
@@ -38,7 +38,7 @@ const SIZES = {
     image: "size-[76px]",
     zoomAxis: "left-[84px]",
     zoomRow: "h-[88px]",
-    zoomName: "top-5 text-sm",
+    zoomLabel: "bottom-9",
     zoomBar: "bottom-6 h-2",
     heading: "text-lg",
     group: "px-6 pb-6 pt-5",
@@ -47,6 +47,7 @@ const SIZES = {
   },
 } as const;
 const CARD_GAP = 12;
+const LABEL_CLS = "text-[11px] tabular-nums text-zinc-600";
 
 export default function LineupChart({ lineup, size }: { lineup: Lineup; size: keyof typeof SIZES }) {
   const cls = SIZES[size];
@@ -105,7 +106,7 @@ export default function LineupChart({ lineup, size }: { lineup: Lineup; size: ke
                       className={cn("flex flex-col items-center gap-0.5 transition-transform", active === lens.id && "scale-110")}
                     >
                       <Image src={getLensImageUrl(lens.id)} alt="" width={76} height={76} loading={cls.loading} className={cn("object-contain drop-shadow-sm", cls.image)} />
-                      {lens.aperture !== undefined && <span className="text-[11px] tabular-nums text-zinc-600">F{lens.aperture}</span>}
+                      {lens.aperture !== undefined && <span className={LABEL_CLS}>{apertureLabel(lens)}</span>}
                     </Link>
                   ))}
                 </div>
@@ -135,7 +136,12 @@ export default function LineupChart({ lineup, size }: { lineup: Lineup; size: ke
                   <Link href={lensPath(lens)} aria-label={lens.model} {...itemHandlers(lens.id)} className={cn("flex items-center gap-2", cls.zoomRow)}>
                     <Image src={getLensImageUrl(lens.id)} alt="" width={76} height={76} loading={cls.loading} className={cn("shrink-0 object-contain drop-shadow-sm", cls.image)} />
                     <span className="relative h-full flex-1">
-                      <span className={cn("absolute inset-x-0 truncate text-zinc-700", cls.zoomName)}>{lens.model}</span>
+                      <span
+                        className={cn("absolute whitespace-nowrap bg-zinc-50 pr-1", LABEL_CLS, cls.zoomLabel)}
+                        style={zx(lens.focalMin) > 0.6 ? { right: pct(1 - zx(lens.focalMax)) } : { left: pct(zx(lens.focalMin)) }}
+                      >
+                        {[focalRangeDisplay(lens.focalMin, lens.focalMax), apertureLabel(lens)].filter(Boolean).join(" ")}
+                      </span>
                       <span
                         className={cn("absolute rounded transition-colors", cls.zoomBar, active === lens.id ? "bg-zinc-900" : "bg-zinc-300")}
                         style={{ left: pct(zx(lens.focalMin)), width: pct(zx(lens.focalMax) - zx(lens.focalMin)) }}
