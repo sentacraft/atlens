@@ -7,7 +7,7 @@ import { Link } from "@/i18n/navigation";
 import ChartLensCard from "@/components/charts/ChartLensCard";
 import ChartLensSheet from "@/components/charts/ChartLensSheet";
 import { useChartCard } from "@/hooks/useChartCard";
-import { apertureLabel, focalEquivDisplay, type ChartLens } from "@/lib/charts/catalog";
+import { apertureLabel } from "@/lib/charts/catalog";
 import type { Lineup } from "@/lib/charts/lineup";
 import { logFrac, pct } from "@/lib/charts/scale";
 import { focalRangeDisplay } from "@/lib/lens/format";
@@ -75,12 +75,6 @@ export default function LineupChart({ lineup, size }: { lineup: Lineup; size: ke
   const all = [...lineup.primes.flatMap((c) => c.lenses), ...lineup.zooms];
   const activeLens = all.find((l) => l.id === active);
   const sheetLens = all.find((l) => l.id === sheet.id);
-  const spec = (lens: ChartLens) => [
-    lens.releaseYear ? t("released", { year: String(lens.releaseYear) }) : undefined,
-    t("equivFocal", { focal: focalEquivDisplay(lens) }),
-    t("weight", { weight: lens.weightG }),
-  ];
-
   const lo = Math.min(...lineup.zooms.map((l) => l.focalMin)) * 0.85;
   const hi = Math.max(...lineup.zooms.map((l) => l.focalMax)) * 1.08;
   const zx = (f: number) => logFrac(f, lo, hi);
@@ -155,12 +149,11 @@ export default function LineupChart({ lineup, size }: { lineup: Lineup; size: ke
       {activeLens && cardPos && (
         <ChartLensCard
           lens={activeLens}
-          spec={spec(activeLens)}
           className="absolute z-30"
           style={{ left: Math.round(cardPos.left), top: Math.round(cardPos.top), width: cardPos.width }}
         />
       )}
-      <ChartLensSheet lens={sheetLens} spec={sheetLens ? spec(sheetLens) : []} open={sheet.open} onOpenChange={sheet.onOpenChange} />
+      <ChartLensSheet lens={sheetLens} open={sheet.open} onOpenChange={sheet.onOpenChange} />
     </div>
   );
 }

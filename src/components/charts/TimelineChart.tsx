@@ -11,7 +11,7 @@ import ChartChips from "@/components/charts/ChartChips";
 import { useChartCard } from "@/hooks/useChartCard";
 import { useChartSelection } from "@/hooks/useChartSelection";
 import { assignLanes, type TimelineEntry, type TimelineYear } from "@/lib/charts/timeline";
-import { focalEquivDisplay, isChartZoom, type BrandCount, type ChartLens } from "@/lib/charts/catalog";
+import { isChartZoom, type BrandCount, type ChartLens } from "@/lib/charts/catalog";
 import { logFrac, pct } from "@/lib/charts/scale";
 import { brandLabel } from "@/lib/lens/format";
 import { getLensImageUrl } from "@/lib/lens/image";
@@ -91,12 +91,6 @@ export default function TimelineChart({ mode, mount, entries, years, brands, ini
   }, [entries, years, fMin, fMax]);
 
   const dimmed = (lens: ChartLens) => (shown.brand && lens.brand !== shown.brand ? DIM : 1);
-  const spec = (e: TimelineEntry) => [
-    t("released", { year: String(e.year) }),
-    t("equivFocal", { focal: focalEquivDisplay(e.lens) }),
-    t("weight", { weight: e.lens.weightG }),
-  ];
-
   const activeEntry = entries.find((e) => e.lens.id === active);
   const sheetEntry = entries.find((e) => e.lens.id === sheet.id);
   const n = years.length;
@@ -198,7 +192,6 @@ export default function TimelineChart({ mode, mount, entries, years, brands, ini
           {activeEntry && activeWide && (
             <ChartLensCard
               lens={activeEntry.lens}
-              spec={spec(activeEntry)}
               className="absolute z-30"
               style={{
                 top: Math.max(0, Math.min(activeWide.y - 56, wideHeight - 140)),
@@ -273,7 +266,6 @@ export default function TimelineChart({ mode, mount, entries, years, brands, ini
             {activeEntry && activeTall && (
               <ChartLensCard
                 lens={activeEntry.lens}
-                spec={spec(activeEntry)}
                 className="absolute inset-x-0 z-30 w-auto"
                 style={{ top: activeTall.top + TALL.size + 6 }}
               />
@@ -281,7 +273,7 @@ export default function TimelineChart({ mode, mount, entries, years, brands, ini
           </div>
         </>
       )}
-      <ChartLensSheet lens={sheetEntry?.lens} spec={sheetEntry ? spec(sheetEntry) : []} open={sheet.open} onOpenChange={sheet.onOpenChange} />
+      <ChartLensSheet lens={sheetEntry?.lens} open={sheet.open} onOpenChange={sheet.onOpenChange} />
     </div>
   );
 }

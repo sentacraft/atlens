@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Check, Plus, Star } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { ChartSpecLine } from "@/components/charts/ChartLensCard";
+import { ChartLensFacts } from "@/components/charts/ChartLensCard";
 import { Dialog, DialogPopup, DialogTitle } from "@/components/ui/dialog";
 import { ACTION_PRIMARY_CLS, COMPARE_CHIP_CLS, COMPARE_CHIP_STATE_CLS } from "@/config/ui-tokens";
 import { useCompareToggle } from "@/hooks/useCompareToggle";
@@ -18,23 +18,21 @@ import { cn } from "@/lib/utils";
 /** What a tap on a chart's lens opens: its details, favorite and compare, and a link to its page. */
 export default function ChartLensSheet({
   lens,
-  spec,
   open,
   onOpenChange,
 }: {
   lens: ChartLens | undefined;
-  spec: (string | undefined)[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogPopup className="sm:max-w-sm">{lens && <SheetBody lens={lens} spec={spec} />}</DialogPopup>
+      <DialogPopup className="sm:max-w-sm">{lens && <SheetBody lens={lens} />}</DialogPopup>
     </Dialog>
   );
 }
 
-function SheetBody({ lens, spec }: { lens: ChartLens; spec: (string | undefined)[] }) {
+function SheetBody({ lens }: { lens: ChartLens }) {
   const t = useTranslations("Charts");
   const tActions = useTranslations("LensActions");
   const tBrand = useTranslations("Brands");
@@ -49,7 +47,7 @@ function SheetBody({ lens, spec }: { lens: ChartLens; spec: (string | undefined)
         <div className="flex min-w-0 flex-col gap-1">
           <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">{brandLabel(tBrand, lens.brand)}</span>
           <DialogTitle className="text-base font-semibold leading-snug text-zinc-900">{lens.model}</DialogTitle>
-          <ChartSpecLine items={spec} className="text-[13px]" />
+          <ChartLensFacts lens={lens} className="text-[13px]" />
         </div>
       </div>
       <div className="flex gap-2.5">

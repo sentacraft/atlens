@@ -5,18 +5,16 @@ import { useTranslations } from "next-intl";
 import { POPUP_SURFACE_CLS } from "@/config/ui-tokens";
 import { brandLabel } from "@/lib/lens/format";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
-import type { ChartLens } from "@/lib/charts/catalog";
+import { focalEquivDisplay, type ChartLens } from "@/lib/charts/catalog";
 import { cn } from "@/lib/utils";
 
 /** Read-only details for the lens under the pointer; the lens itself links to its page. */
 export default function ChartLensCard({
   lens,
-  spec,
   className,
   style,
 }: {
   lens: ChartLens;
-  spec: (string | undefined)[];
   className?: string;
   style?: React.CSSProperties;
 }) {
@@ -39,23 +37,23 @@ export default function ChartLensCard({
       <div className="flex min-w-0 flex-col gap-1">
         <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">{brandLabel(tBrand, lens.brand)}</span>
         <span className="text-sm font-semibold leading-snug text-zinc-900">{lens.model}</span>
-        <ChartSpecLine items={spec} className="text-xs" />
+        <ChartLensFacts lens={lens} className="text-xs" />
       </div>
     </div>
   );
 }
 
-/** Short facts about a lens, wrapping between items but never inside one. */
-export function ChartSpecLine({ items, className }: { items: (string | undefined)[]; className?: string }) {
-  const shown = items.filter(Boolean);
+// One fact group per line, so a fact never moves between lines with the card's width.
+/** A lens's facts on fixed lines: equivalent focal length and weight, then the release year when known. */
+export function ChartLensFacts({ lens, className }: { lens: ChartLens; className?: string }) {
+  const t = useTranslations("Charts");
+  const lines = [
+    `${t("equivFocal", { focal: focalEquivDisplay(lens) })} · ${t("weight", { weight: lens.weightG })}`,
+    lens.releaseYear ? t("released", { year: String(lens.releaseYear) }) : undefined,
+  ];
   return (
-    <span className={cn("text-zinc-600", className)}>
-      {shown.map((item, i) => (
-        <span key={item}>
-          <span className="whitespace-nowrap">{i < shown.length - 1 ? `${item}\u00a0·` : item}</span>
-          {i < shown.length - 1 && " "}
-        </span>
-      ))}
+    <span className={cn("flex flex-col whitespace-nowrap text-zinc-600", className)}>
+      {lines.map((line) => line && <span key={line}>{line}</span>)}
     </span>
   );
 }

@@ -13,7 +13,7 @@ import { HOVER_REVEAL_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { useCompareToggle } from "@/hooks/useCompareToggle";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useChartSelection } from "@/hooks/useChartSelection";
-import { focalEquivDisplay, type BrandCount, type ChartLens } from "@/lib/charts/catalog";
+import { type BrandCount, type ChartLens } from "@/lib/charts/catalog";
 import type { WeightTier } from "@/lib/charts/weight";
 import { brandLabel } from "@/lib/lens/format";
 import { getLensImageUrl } from "@/lib/lens/image";
@@ -126,7 +126,6 @@ export default function WeightLadderChart({ mount, tiers, brands, initial }: Pro
 
       <ChartLensSheet
         lens={sheet.lens}
-        spec={sheet.lens ? [t("equivFocal", { focal: focalEquivDisplay(sheet.lens) }), t("weight", { weight: sheet.lens.weightG })] : []}
         open={sheet.open}
         onOpenChange={(open) => setSheet((prev) => ({ ...prev, open }))}
       />
