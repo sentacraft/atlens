@@ -972,7 +972,7 @@
     "lineupsTitle": "富士 X 卡口镜头品牌全家福",
     "lineupsDesc": "{brandCount} 个品牌的 {count} 支镜头，每个品牌按焦段从广到长排开。",
     "lineupsCta": "看全家福 →",
-    "lineupsNote": "不含 {count} 支电影镜头。",
+    "excludesCine": "不含 {count} 支电影镜头。",
     "lineupPrimes": "定焦",
     "lineupZooms": "变焦",
     "seeBrand": "看{brand}的全部 {count} 支镜头 →",

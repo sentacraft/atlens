@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import BrandLineupsOverview from "@/components/charts/BrandLineupsOverview";
 import { ChartLinkShare } from "@/components/charts/ChartShare";
 import ChartsHeader from "@/components/charts/ChartsHeader";
+import SupportNote from "@/components/support/SupportNote";
 import { BROWSE_PAGE_MAIN_CLS } from "@/config/ui-tokens";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildLineup, type Lineup } from "@/lib/charts/lineup";
@@ -62,12 +63,13 @@ export default async function LineupsPage({ params }: { params: Params }) {
         locale={locale}
         mount={data.resolvedMount}
         active="lineups"
+        note={t("excludesCine", { count: data.cineCount })}
         title={data.title}
         description={data.description}
         action={<ChartLinkShare title={data.title} />}
       />
       <BrandLineupsOverview locale={locale} mount={data.resolvedMount} lineups={data.lineups} />
-      <p className="mt-6 text-xs leading-relaxed text-zinc-500">{t("lineupsNote", { count: data.cineCount })}</p>
+      <SupportNote className="mt-12" />
     </main>
   );
 }

@@ -5,8 +5,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import ChartsHeader from "@/components/charts/ChartsHeader";
 import { TimelineShare, TimelineShareFromUrl } from "@/components/charts/ChartShare";
 import TimelineChart, { TimelineChartFromUrl } from "@/components/charts/TimelineChart";
+import SupportNote from "@/components/support/SupportNote";
 import { BROWSE_PAGE_MAIN_CLS } from "@/config/ui-tokens";
-import { chartBrands } from "@/lib/charts/catalog";
+import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildTimeline } from "@/lib/charts/timeline";
 import { formatDataDate } from "@/lib/charts/data-date";
 import { getLensesByMount, meta } from "@/lib/lens/data";
@@ -33,6 +34,7 @@ async function load(params: Params) {
     resolvedMount,
     timeline,
     brandTotals: chartBrands(lenses),
+    cineCount: countCineLenses(lenses),
     first: String(timeline.years[0]?.year ?? ""),
     last: String(timeline.years.at(-1)?.year ?? ""),
     datedBrands: list(timeline.brands.map((b) => brandLabel(tBrand, b.brand))),
@@ -93,6 +95,7 @@ export default async function TimelinePage({ params }: { params: Params }) {
         locale={locale}
         mount={data.resolvedMount}
         active="timeline"
+        note={t("excludesCine", { count: data.cineCount })}
         title={title}
         description={description}
         action={
@@ -104,6 +107,7 @@ export default async function TimelinePage({ params }: { params: Params }) {
       <Suspense fallback={<TimelineChart entries={timeline.entries} years={timeline.years} mode={{ kind: "page", initial: {}, ...pageProps }} />}>
         <TimelineChartFromUrl entries={timeline.entries} years={timeline.years} {...pageProps} />
       </Suspense>
+      <SupportNote className="mt-12" />
     </main>
   );
 }

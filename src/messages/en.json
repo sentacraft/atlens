@@ -972,7 +972,7 @@
     "lineupsTitle": "Fujifilm X-Mount Lens Lineups by Brand",
     "lineupsDesc": "{count, number} lenses from {brandCount, number} brands, each brand laid out from wide to long.",
     "lineupsCta": "See the lineup →",
-    "lineupsNote": "The {count, number} cine lenses are not included.",
+    "excludesCine": "The {count, number} cine lenses are not included.",
     "lineupPrimes": "Primes",
     "lineupZooms": "Zooms",
     "seeBrand": "See all {count, number} {brand} lenses →",
