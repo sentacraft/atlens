@@ -1,0 +1,69 @@
+name: Layout check
+
+# The @layout sweep (e2e/text-layout.spec.ts): text that spills out of its box or over other text,
+# one page per route template and locale, at desktop and phone widths. Its findings are small and it
+# adds about a minute, so it does not gate every PR: it runs weekly, by hand, and on any PR that
+# carries the layout-check label (add the label when a change reworks layout).
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    types: [labeled, synchronize]
+
+concurrency:
+  group: layout-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  playwright-version:
+    name: Resolve Playwright image
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'layout-check')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.lock.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: pnpm-lock.yaml
+          sparse-checkout-cone-mode: false
+      - id: lock
+        run: |
+          version=$(sed -n "s/^  '@playwright\/test@\([0-9.]*\)':$/\1/p" pnpm-lock.yaml | head -1)
+          test -n "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  layout:
+    name: Text layout sweep
+    needs: playwright-version
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.playwright-version.outputs.version }}-noble
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('src/**', 'next.config.ts') }}
+          restore-keys: |
+            nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+      - name: Run the sweep
+        run: pnpm exec playwright test --project=chromium --grep "@layout"
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: layout-report
+          path: playwright-report/
+          retention-days: 7

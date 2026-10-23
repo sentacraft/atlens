@@ -4,7 +4,8 @@ import { oneEachTemplate } from "../scripts/lib/route-templates.mjs";
 import { findTextProblems, type TextProblem } from "./support/text-overflow";
 
 // One page per route template and locale, so a new page type is checked the day it enters the
-// sitemap; text widths that only fit Chinese, or only a wide screen, show up here.
+// sitemap; text widths that only fit Chinese, or only a wide screen, show up here. Tagged @layout:
+// it runs weekly and on PRs labelled layout-check (.github/workflows/layout-check.yml), not on every PR.
 const VIEWPORTS = {
   desktop: { width: 1280, height: 900 },
   phone: { width: 375, height: 812 },
@@ -24,7 +25,7 @@ async function pagesToCheck(page: Page): Promise<string[]> {
 }
 
 for (const [name, viewport] of Object.entries(VIEWPORTS)) {
-  test(`no text spills out of its box or over other text (${name})`, async ({ page }) => {
+  test(`no text spills out of its box or over other text (${name})`, { tag: "@layout" }, async ({ page }) => {
     test.setTimeout(5 * 60 * 1000);
     await page.setViewportSize(viewport);
     const found: string[] = [];
