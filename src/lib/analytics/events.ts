@@ -25,7 +25,6 @@ const EVENT_FIELDS = {
   askiris_open: { entry: "string", surface: "string", pool: "string" },
   askiris_message: { method: "string", pool: "string" },
   askiris_rec_click: { lens_id: "string", source: "string" },
-  askiris_context_remove: { page_kind: "string" },
   askiris_new_conversation: { reason: "string" },
   page_view: { referrer: "string", from_path: "string" },
   search_select: { query: "string", lens_id: "string", rank: "number" },
@@ -125,12 +124,6 @@ type EventDocs = {
   [E in EventName]: { description: string; fields?: { [K in keyof (typeof EVENT_FIELDS)[E]]?: FieldDoc } };
 } & { [ASKIRIS_TURN_EVENT]: EventDoc; [SIGN_IN_COMPLETE_EVENT]: EventDoc };
 
-const IRIS_PAGE_KINDS: Record<string, ValueDoc> = {
-  lens: { label: "Lens page", description: "A lens's detail page" },
-  compare: { label: "Compare page", description: "The comparison page" },
-  browse: { label: "Browse list", description: "The lens list, with its filters" },
-};
-
 const STARTER_POOLS: Record<string, ValueDoc> = {
   need: { label: "Find a lens", description: "Find lenses for a need" },
   compare: { label: "Compare", description: "Compare two lenses" },
@@ -140,6 +133,7 @@ const STARTER_POOLS: Record<string, ValueDoc> = {
   table: { label: "Spec table", description: "Ask for a spec table" },
   terms: { label: "Terms", description: "Explain a lens term" },
   about: { label: "About Iris", description: "What Iris is and can do" },
+  page: { label: "This page", description: "About the lens, lenses or filters on the page Iris opened over" },
 };
 
 const MOUNT_VALUES: Record<string, ValueDoc> = {
@@ -270,12 +264,12 @@ export const EVENT_DOCS: EventDocs = {
         description: "Where Iris was opened from.",
         values: {
           home: { label: "Home", description: "The ask box or an example question on the home page" },
-          lens: { label: "Lens page", description: "\"Ask Iris\" on a lens's page" },
+          lens: { label: "Lens page", description: "\"Ask Iris\" on a lens's page. Removed in October 2026; kept to label earlier events" },
           alternatives: { label: "Same focal length", description: "\"Ask Iris how to choose\" above a lens page's list of other lenses at its focal length" },
           nav: { label: "Top navigation", description: "The Iris button in the site header" },
-          browse: { label: "Browse list", description: "\"Ask Iris\" in the lens list toolbar" },
+          browse: { label: "Browse list", description: "\"Pick for my filters\" in the lens list toolbar, shown while filters are set" },
           empty: { label: "No-results prompt", description: "The prompt shown when the filters match no lens" },
-          compare: { label: "Compare page", description: "\"Ask Iris\" in the comparison header" },
+          compare: { label: "Compare page", description: "\"Explain the differences\" in the comparison header" },
           sign_in: { label: "After sign-in", description: "Signing in from a card in the chat, which left the page and reopened its conversation in the panel on return" },
           resume: { label: "Past chat", description: "The Ask Iris page's way back to the page it came from, which reopened its conversation in the panel. Removed in October 2026; kept to label earlier events" },
         },
@@ -298,11 +292,11 @@ export const EVENT_DOCS: EventDocs = {
         description: "How it was sent.",
         values: {
           typed: { label: "Typed", description: "Written in the Iris composer" },
-          starter: { label: "Example question", description: "One of the example questions in an empty chat that is not about a page" },
+          starter: { label: "Example question", description: "One of the example questions in an empty chat" },
           handoff: { label: "Carried over", description: "Sent for the visitor when Iris opened from the home ask box or a page button" },
           suggestion: {
             label: "Page question",
-            description: "One of the questions about the page, listed when a chat starts on a lens, compare or browse page",
+            description: "One of the questions about the page, listed when a chat started on a lens, compare or browse page. Removed in October 2026, when those became example questions; kept to label earlier events",
           },
         },
       },
@@ -322,10 +316,6 @@ export const EVENT_DOCS: EventDocs = {
       },
     },
   },
-  askiris_context_remove: {
-    description: "A visitor took the page chip out of the composer, so Iris stopped reading that page.",
-    fields: { page_kind: { description: "The kind of page.", values: IRIS_PAGE_KINDS } },
-  },
   askiris_new_conversation: {
     description: "A new Iris conversation started.",
     fields: {
@@ -333,7 +323,8 @@ export const EVENT_DOCS: EventDocs = {
         description: "Why.",
         values: {
           manual: { label: "New chat button", description: "The visitor pressed New chat" },
-          page_change: { label: "Moved to another page", description: "Iris started fresh because the page it was reading changed" },
+          reopen: { label: "Opened again", description: "Iris was opened again over a conversation it had left, which went to History" },
+          page_change: { label: "Moved to another page", description: "Iris started fresh because the page it was reading changed. Removed in October 2026; kept to label earlier events" },
         },
       },
     },

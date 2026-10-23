@@ -30,6 +30,7 @@ import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ACTION_OUTLINE_CLS, LENS_GRID_CLS, SEARCH_TRIGGER_CLS } from "@/config/ui-tokens";
 import { aboutPath, lensPath } from "@/lib/url/routes";
+import { usePageQuestions } from "@/components/iris/usePageQuestions";
 
 interface LensListClientProps {
   lenses: Lens[];
@@ -39,10 +40,12 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   const t = useTranslations("LensList");
   const tSearch = useTranslations("Search");
   const tIris = useTranslations("IrisEntry");
+  const irisQuestions = usePageQuestions();
   const hookAttr = useUiHookAttr();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
+  const browseQuestion = irisQuestions.browse(filters);
   const [searchOpen, setSearchOpen] = useState(false);
   const { compareIds, toggle } = useCompare();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -128,12 +131,12 @@ export default function LensListClient({ lenses }: LensListClientProps) {
             activeFilterCount={activeFilterCount}
             onReset={clearAllFilters}
             assistSlot={
-              displayed.length > 0 && (
+              displayed.length > 0 &&
+              browseQuestion && (
                 <AskIrisEntry
                   id="browse"
                   label={tIris("browseLabel")}
-                  labelFit="phone"
-                  request={{ kind: "page" }}
+                  question={browseQuestion}
                   className="h-8 px-3 text-[13px]"
                 />
               )
@@ -208,8 +211,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
               <AskIrisEntry
                 id="empty"
                 label={tIris("emptyLabel")}
-                labelFit="full"
-                request={{ kind: "question", text: tIris("emptyQuestion") }}
+                question={irisQuestions.noMatch(filters)}
               />
             </div>
           </div>

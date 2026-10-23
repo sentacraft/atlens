@@ -22,6 +22,12 @@ export interface Starter {
   pool: StarterPool;
 }
 
+/** An example question about the page Iris opened over, worded for it rather than drawn from a pool. */
+export interface PageStarter {
+  text: string;
+  pool: "page";
+}
+
 export interface StarterAudience {
   hasGear: boolean;
   hasFavorites: boolean;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pageKey, parsePagePath } from "../page-ref";
+import { parsePagePath } from "../page-ref";
 
 describe("parsePagePath", () => {
   it("reads browse filters, compared lenses and a lens page, with or without a locale", () => {
@@ -15,20 +15,3 @@ describe("parsePagePath", () => {
   });
 });
 
-describe("pageKey", () => {
-  const key = (path: string) => pageKey(parsePagePath(path));
-
-  it("treats browse with other filters as the same page", () => {
-    expect(key("/en/lenses/x/browse?t=zoom")).toBe(key("/zh/lenses/x/browse?t=prime"));
-  });
-
-  it("tells apart other lenses and other comparisons, but not their order", () => {
-    expect(key("/en/lenses/x/a")).not.toBe(key("/en/lenses/x/b"));
-    expect(key("/en/lenses/x/compare?ids=a,b")).toBe(key("/en/lenses/x/compare?ids=b,a"));
-    expect(key("/en/lenses/x/compare?ids=a,b")).not.toBe(key("/en/lenses/x/compare?ids=a,c"));
-  });
-
-  it("is null without a page", () => {
-    expect(key("/en/about")).toBeNull();
-  });
-});

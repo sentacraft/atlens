@@ -8,14 +8,11 @@ export const ASKIRIS_PARAMS = {
   panelConversation: "iris",
 } as const;
 
-/** What an entry hands Iris: a question to send at once, or just the page the entry sits on. */
-export type IrisRequest =
-  | { kind: "question"; text: string }
-  | { kind: "page" }
-  | { kind: "conversation"; conversationId: string };
+/** What an opening hands Iris: a question to send at once, or a stored conversation to show. */
+export type IrisRequest = { kind: "question"; text: string } | { kind: "conversation"; conversationId: string };
 
 /** Where Iris was opened from: the nav, the home hero, or a page's entry. */
-export type IrisEntryPoint = "nav" | "home" | "lens" | "alternatives" | "browse" | "empty" | "compare" | "sign_in";
+export type IrisEntryPoint = "nav" | "home" | "alternatives" | "browse" | "empty" | "compare" | "sign_in";
 
 /** How the Ask Iris page opens: a stored conversation, or a question that starts a new one. */
 export interface AskIrisEntry {

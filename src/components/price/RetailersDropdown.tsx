@@ -11,7 +11,6 @@ import { track } from "@/lib/analytics/analytics";
 import { useCountryCode } from "@/hooks/useCountryCode";
 import { useIsMobileDevice } from "@/hooks/useViewport";
 import { cn } from "@/lib/utils";
-import { LENS_ACTION_FIT as fit } from "@/config/lens-action-fit";
 
 interface Props {
   lens: Lens;
@@ -39,12 +38,13 @@ export function RetailersDropdown({ lens, customId }: Props) {
     <Popover.Root>
       <Popover.Trigger
         data-testid="lens-detail-price-trigger"
-        className={cn(ACTION_OUTLINE_CLS, "shrink-0 cursor-pointer whitespace-nowrap", fit.roomy)}
+        className={cn(ACTION_OUTLINE_CLS, "shrink-0 cursor-pointer whitespace-nowrap")}
       >
         <span className="inline-flex items-baseline gap-1.5">
-          <span className={fit.priceLabelShort}>{t("buyAtShort")}</span>
-          <span className={fit.priceLabel}>{t("buyAt")}</span>
-          <span data-redact-hook="priceSource" className={cn("text-xs text-zinc-400", fit.storeHint)}>
+          {t("buyAt")}
+          {/* The lens page's action row is its @container: below 328px, Compare and this button
+              with "Amazon +2", the widest hint, no longer fit on one line. */}
+          <span data-redact-hook="priceSource" className="hidden text-xs text-zinc-400 @min-[328px]:inline">
             {preview}{extra}
           </span>
         </span>
