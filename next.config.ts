@@ -2,6 +2,7 @@ import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
 import { SITE } from './src/config/site';
+import brandsData from './src/data/brands.json';
 
 const withNextIntl = createNextIntlPlugin({
   requestConfig: './src/i18n/request.ts',
@@ -53,6 +54,11 @@ const nextConfig: NextConfig = {
         source: "/:locale(en|zh)/lenses/x/charts",
         destination: "/:locale/lenses/x/charts/timeline",
         permanent: false,
+      },
+      {
+        source: `/:locale(en|zh)/lenses/x/collections/:brand(${Object.keys(brandsData).join("|")})`,
+        destination: "/:locale/lenses/x/brands/:brand",
+        permanent: true,
       },
       {
         source: "/:locale(en|zh)/lenses/compare",

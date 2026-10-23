@@ -61,7 +61,7 @@ export default async function TimelinePage({ params }: { params: Params }) {
   }
   const t = await getTranslations({ locale, namespace: "Charts" });
   const { timeline } = data;
-  const chartProps = { entries: timeline.entries, years: timeline.years, brands: timeline.brands };
+  const chartProps = { mount: data.resolvedMount, entries: timeline.entries, years: timeline.years, brands: timeline.brands };
   const count = timeline.entries.length;
   const [first, second, third, ...rest] = data.undated;
   // en names three brands plus "N others", zh says "N brands in all"; message types come from en

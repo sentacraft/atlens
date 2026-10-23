@@ -6,7 +6,7 @@ import ChartsHeader from "@/components/charts/ChartsHeader";
 import { DataSourceInline } from "@/components/lens/DataSource";
 import WeightLadderChart, { WeightLadderChartFromUrl } from "@/components/charts/WeightLadderChart";
 import { BROWSE_PAGE_MAIN_CLS } from "@/config/ui-tokens";
-import { chartBrands } from "@/lib/charts/catalog";
+import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildWeightLadder } from "@/lib/charts/weight";
 import { getLensesByMount } from "@/lib/lens/data";
 import { mountHasCharts, urlSegmentToMount } from "@/lib/mount";
@@ -21,7 +21,7 @@ async function load(params: Params) {
     return undefined;
   }
   const lenses = getLensesByMount(resolvedMount, locale);
-  return { locale, mount, resolvedMount, ladder: buildWeightLadder(lenses), brands: chartBrands(lenses) };
+  return { locale, mount, resolvedMount, ladder: buildWeightLadder(lenses), brands: chartBrands(lenses), cineCount: countCineLenses(lenses) };
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
@@ -49,7 +49,7 @@ export default async function WeightPage({ params }: { params: Params }) {
   }
   const t = await getTranslations({ locale, namespace: "Charts" });
   const { ladder } = data;
-  const chartProps = { tiers: ladder.tiers, brands: data.brands };
+  const chartProps = { mount: data.resolvedMount, tiers: ladder.tiers, brands: data.brands };
 
   return (
     <main className={BROWSE_PAGE_MAIN_CLS}>
@@ -69,7 +69,7 @@ export default async function WeightPage({ params }: { params: Params }) {
       <Suspense fallback={<WeightLadderChart {...chartProps} initial={{}} />}>
         <WeightLadderChartFromUrl {...chartProps} />
       </Suspense>
-      <p className="mt-6 text-xs leading-relaxed text-zinc-500">{t("weightNote")}</p>
+      <p className="mt-6 text-xs leading-relaxed text-zinc-500">{t("weightNote", { count: data.cineCount })}</p>
     </main>
   );
 }

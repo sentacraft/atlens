@@ -5,8 +5,9 @@ import type { Mount } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const TABS = [
-  { chart: "timeline", key: "tabTimeline" },
-  { chart: "weight", key: "tabWeight" },
+  { chart: "timeline", key: "tabTimeline", href: (mount: Mount) => chartPath(mount, "timeline") },
+  { chart: "weight", key: "tabWeight", href: (mount: Mount) => chartPath(mount, "weight") },
+  { chart: "lineups", key: "tabLineup", href: (mount: Mount) => chartPath(mount, "lineups") },
 ] as const;
 
 export default async function ChartsHeader({
@@ -27,11 +28,11 @@ export default async function ChartsHeader({
   const t = await getTranslations({ locale, namespace: "Charts" });
   return (
     <header className="mb-6 flex flex-col gap-5">
-      <nav aria-label={t("tabsLabel")} className="flex gap-6 border-b border-zinc-200">
-        {TABS.map(({ chart, key }) => (
+      <nav aria-label={t("tabsLabel")} className="flex gap-6 overflow-x-auto whitespace-nowrap border-b border-zinc-200 [scrollbar-width:none]">
+        {TABS.map(({ chart, key, href }) => (
           <Link
             key={chart}
-            href={chartPath(mount, chart)}
+            href={href(mount)}
             aria-current={chart === active ? "page" : undefined}
             className={cn(
               "-mb-px border-b-2 py-2.5 text-sm transition-colors",

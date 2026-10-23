@@ -94,3 +94,13 @@ export function getRelatedCollectionsWithStats(
 export function getFeaturedCollectionsWithStats(locale: string): RelatedCollectionStats[] {
   return FEATURED_COLLECTION_SLUGS.map((slug) => withPreview(COLLECTIONS[slug], locale));
 }
+
+/** Theme collections holding a brand's lenses, those with the most of them first, previewed by one of them. */
+export function getBrandCollectionsWithStats(brand: string, locale: string, limit = 6): RelatedCollectionStats[] {
+  return Object.values(COLLECTIONS)
+    .map((collection) => ({ collection, own: membersOf(collection.slug, locale).filter((l) => l.brand === brand) }))
+    .filter(({ own }) => own.length > 0)
+    .sort((a, b) => b.own.length - a.own.length)
+    .slice(0, limit)
+    .map(({ collection, own }) => ({ ...withPreview(collection, locale), previewLens: own[0] }));
+}

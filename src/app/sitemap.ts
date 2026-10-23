@@ -1,13 +1,14 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/config/site";
 import { routing } from "@/i18n/routing";
+import { BRANDS } from "@/lib/brands";
 import { COLLECTIONS } from "@/lib/collections";
 import { MOUNTS, mountHasCharts, mountHasCollections } from "@/lib/mount";
 import type { Mount } from "@/lib/types";
 import xLensesData from "@/data/lenses.json";
 import gfxLensesData from "@/data/lenses-gfx.json";
 import { buildComparePath } from "@/lib/url/compare";
-import { ABOUT_PATH, GET_APP_PATH, RECENTLY_ADDED_PATH, browsePath, chartPath, collectionPath, collectionsPath, lensPath } from "@/lib/url/routes";
+import { ABOUT_PATH, GET_APP_PATH, RECENTLY_ADDED_PATH, brandPath, browsePath, chartPath, collectionPath, collectionsPath, lensPath } from "@/lib/url/routes";
 
 const LOCALES = routing.locales;
 
@@ -24,10 +25,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const mountPaths = MOUNTS.flatMap((mount) => {
     const paths = [browsePath(mount), buildComparePath(mount, [])];
     if (mountHasCollections(mount)) {
-      paths.push(collectionsPath(mount));
+      paths.push(collectionsPath(mount), ...BRANDS.map(({ slug }) => brandPath(mount, slug)));
     }
     if (mountHasCharts(mount)) {
-      paths.push(chartPath(mount, "timeline"), chartPath(mount, "weight"));
+      paths.push(
+        chartPath(mount, "timeline"),
+        chartPath(mount, "weight"),
+        chartPath(mount, "lineups"),
+      );
     }
     return paths;
   });

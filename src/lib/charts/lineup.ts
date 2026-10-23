@@ -1,8 +1,6 @@
 import { chartLenses, isChartZoom, type ChartLens } from "@/lib/charts/catalog";
 import type { Lens } from "@/lib/types";
 
-export const DEFAULT_LINEUP_BRAND = "fujifilm";
-
 export interface LineupColumn {
   /** Equivalent focal length. */
   focal: number;
