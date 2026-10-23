@@ -59,7 +59,7 @@ test.describe("Charts", () => {
       "aria-pressed",
       "true",
     );
-    const tiles = page.locator("main section li a");
+    const tiles = page.locator("main section li a").locator("visible=true");
     await expect(tiles).toHaveCount(4);
     for (const label of await tiles.evaluateAll((links) => links.map((l) => l.getAttribute("aria-label")))) {
       expect(label).toMatch(/^Tamron /);
