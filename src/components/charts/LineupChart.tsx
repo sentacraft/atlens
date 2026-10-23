@@ -7,7 +7,7 @@ import { Link } from "@/i18n/navigation";
 import ChartLensCard from "@/components/charts/ChartLensCard";
 import ChartLensSheet from "@/components/charts/ChartLensSheet";
 import { useChartCard } from "@/hooks/useChartCard";
-import { apertureLabel, type ChartLens } from "@/lib/charts/catalog";
+import { apertureLabel, focalSpecArgs, type ChartLens } from "@/lib/charts/catalog";
 import type { Lineup } from "@/lib/charts/lineup";
 import { logFrac, pct } from "@/lib/charts/scale";
 import { focalRangeDisplay } from "@/lib/lens/format";
@@ -15,8 +15,8 @@ import { getLensImageUrl } from "@/lib/lens/image";
 import { lensPath } from "@/lib/url/routes";
 import { cn } from "@/lib/utils";
 
-const ZOOM_TICKS = [10, 15, 24, 35, 50, 85, 135, 200, 300, 450, 600, 900];
-const PHONE_ZOOM_TICKS = new Set([15, 35, 85, 200, 600]);
+const ZOOM_TICKS = [10, 16, 23, 35, 56, 90, 135, 200, 400, 600];
+const PHONE_ZOOM_TICKS = new Set([10, 23, 56, 135, 400]);
 const CARD_WIDTH = 288;
 
 // A poster is rasterized at a fixed width, so it takes the wide layout whatever the screen.
@@ -78,7 +78,7 @@ export default function LineupChart({ lineup, size }: { lineup: Lineup; size: ke
   const spec = (lens: ChartLens) =>
     [
       lens.releaseYear ? t("released", { year: String(lens.releaseYear) }) : undefined,
-      t("equivFocal", { focal: focalRangeDisplay(lens.focalMin, lens.focalMax) }),
+      t("focalSpec", focalSpecArgs(lens)),
       t("weight", { weight: lens.weightG }),
     ]
       .filter(Boolean)

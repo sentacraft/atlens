@@ -61,11 +61,9 @@ describe("buildTimeline", () => {
   });
 
 
-  it("places a zoom at the geometric middle of its equivalent range", () => {
+  it("places a zoom at the geometric middle of its focal range", () => {
     const [entry] = buildTimeline([makeLens({ focalLengthMin: 10, focalLengthMax: 40, releaseYear: 2020 })]).entries;
-    expect(entry.lens.focalMin).toBe(15);
-    expect(entry.lens.focalMax).toBe(60);
-    expect(entry.focalMid).toBe(30);
+    expect(entry.focalMid).toBe(20);
   });
 });
 
@@ -97,6 +95,12 @@ describe("buildWeightLadder", () => {
 });
 
 describe("toChartLens", () => {
+  it("keeps the focal length the lens name gives, with its full-frame equivalent beside it", () => {
+    const lens = toChartLens(makeLens({ focalLengthMin: 10, focalLengthMax: 24 }));
+    expect([lens.focalMin, lens.focalMax]).toEqual([10, 24]);
+    expect([lens.focalEquivMin, lens.focalEquivMax]).toEqual([15, 36]);
+  });
+
   // Same rule as the browse filter, on unrounded equivalents: 23mm is 34.5mm, so wide, not standard.
   it("assigns focal categories the way the browse filter does", () => {
     expect(toChartLens(makeLens({ focalLengthMin: 23, focalLengthMax: 23 })).focalCategories).toEqual(["wide"]);
@@ -112,7 +116,7 @@ describe("apertureLabel", () => {
 });
 
 describe("buildLineup", () => {
-  it("stacks primes by equivalent focal length with the widest aperture on top", () => {
+  it("stacks primes by focal length with the widest aperture on top", () => {
     const lineup = buildLineup(
       [
         makeLens({ id: "f2", focalLengthMin: 56, focalLengthMax: 56, maxAperture: 2 }),
@@ -123,7 +127,7 @@ describe("buildLineup", () => {
       ],
       "fujifilm",
     );
-    expect(lineup?.primes.map((c) => c.focal)).toEqual([35, 84]);
+    expect(lineup?.primes.map((c) => c.focal)).toEqual([23, 56]);
     expect(ids(lineup!.primes[1].lenses)).toEqual(["f2", "f14-light", "f14-heavy", "f12"]);
   });
 
@@ -137,8 +141,8 @@ describe("buildLineup", () => {
       "fujifilm",
     );
     expect(ids(lineup!.zooms)).toEqual(["16-55", "16-80", "70-300"]);
-    expect(lineup?.focalMin).toBe(24);
-    expect(lineup?.focalMax).toBe(450);
+    expect(lineup?.focalMin).toBe(16);
+    expect(lineup?.focalMax).toBe(300);
   });
 
   it("returns nothing for a brand without stills lenses", () => {
@@ -164,11 +168,11 @@ describe("X-mount catalog", () => {
     expect(ladder.ratio).toBe(39);
   });
 
-  it("gives Fujifilm 28 primes and 21 zooms from 12mm to 900mm equivalent", () => {
+  it("gives Fujifilm 28 primes and 21 zooms from 8mm to 600mm", () => {
     const lineup = buildLineup(xLenses, "fujifilm")!;
     expect(lineup.primes.flatMap((c) => c.lenses)).toHaveLength(28);
     expect(lineup.zooms).toHaveLength(21);
-    expect([lineup.focalMin, lineup.focalMax]).toEqual([12, 900]);
+    expect([lineup.focalMin, lineup.focalMax]).toEqual([8, 600]);
     expect(chartBrands(xLenses)).toHaveLength(12);
   });
 });

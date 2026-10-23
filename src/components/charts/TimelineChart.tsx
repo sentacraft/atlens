@@ -11,9 +11,9 @@ import ChartChips from "@/components/charts/ChartChips";
 import { useChartCard } from "@/hooks/useChartCard";
 import { useChartSelection } from "@/hooks/useChartSelection";
 import { assignLanes, type TimelineEntry, type TimelineYear } from "@/lib/charts/timeline";
-import { isChartZoom, type BrandCount, type ChartLens } from "@/lib/charts/catalog";
+import { focalSpecArgs, isChartZoom, type BrandCount, type ChartLens } from "@/lib/charts/catalog";
 import { logFrac, pct } from "@/lib/charts/scale";
-import { brandLabel, focalRangeDisplay } from "@/lib/lens/format";
+import { brandLabel } from "@/lib/lens/format";
 import { getLensImageUrl } from "@/lib/lens/image";
 import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 import type { Mount } from "@/lib/types";
@@ -23,8 +23,8 @@ import { cn } from "@/lib/utils";
 
 const WIDE = { height: 720, sectionHeight: 480, padTop: 16, padBottom: 48, padLeft: 52, padRight: 12, size: 40, laneStep: 22 };
 const TALL = { rowLabel: 24, size: 30, rowGap: 4, rowPad: 10, laneGapFrac: 0.09 };
-const TICKS = [8, 15, 24, 35, 50, 85, 135, 200, 300, 600];
-const TALL_TICKS = [15, 35, 85, 200, 600];
+const TICKS = [8, 16, 23, 35, 56, 90, 200, 400];
+const TALL_TICKS = [10, 23, 56, 135, 400];
 const DIM = 0.08;
 
 type Props = {
@@ -94,7 +94,7 @@ export default function TimelineChart({ mode, mount, entries, years, brands, ini
   const spec = (e: TimelineEntry) =>
     [
       t("released", { year: String(e.year) }),
-      t("equivFocal", { focal: focalRangeDisplay(e.lens.focalMin, e.lens.focalMax) }),
+      t("focalSpec", focalSpecArgs(e.lens)),
       t("weight", { weight: e.lens.weightG }),
     ].join(" · ");
 
