@@ -3,6 +3,6 @@ CREATE TABLE lens_reviews (
   sources TEXT NOT NULL CHECK (json_valid(sources)),
   claims TEXT NOT NULL CHECK (json_valid(claims)),
   source_count INTEGER NOT NULL,
-  published_at INTEGER NOT NULL,
+  synced_at INTEGER NOT NULL,
   pipeline_rev TEXT NOT NULL
 );
