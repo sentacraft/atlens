@@ -2,13 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Flag } from "lucide-react";
-import { Link } from "@/i18n/navigation";
 import { localized } from "@/i18n/localized";
 import BrandPicker from "@/components/brand/BrandPicker";
 import { BrandShare } from "@/components/charts/ChartShare";
 import LineupChart from "@/components/charts/LineupChart";
 import ScopeNote from "@/components/charts/ScopeNote";
-import TimelineChart from "@/components/charts/TimelineChart";
+import TimelineSection from "@/components/charts/TimelineSection";
 import CollectionLensGrid from "@/components/collection/CollectionLensGrid";
 import CollectionLinks from "@/components/collection/CollectionLinks";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
@@ -18,7 +17,7 @@ import Breadcrumb from "@/components/nav/Breadcrumb";
 import JsonLd from "@/components/seo/JsonLd";
 import SupportNote from "@/components/support/SupportNote";
 import { SITE } from "@/config/site";
-import { BROWSE_PAGE_MAIN_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS, PAGE_SECTION_HEADING_CLS, SECTION_HEADING_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
+import { ANCHORED_SECTION_CLS, BROWSE_PAGE_MAIN_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS, PAGE_SECTION_HEADING_CLS, SECTION_HEADING_CLS, SECTION_HEADING_ROW_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { BRANDS, getBrandInfo, getBrandLenses } from "@/lib/brands";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildLineup } from "@/lib/charts/lineup";
@@ -36,8 +35,6 @@ import { cn } from "@/lib/utils";
 
 type Params = Promise<{ locale: string; mount: string; brand: string }>;
 
-const SECTION_CLS = "flex scroll-mt-[calc(var(--nav-height)+1rem)] flex-col gap-4";
-const HEADING_ROW_CLS = "flex items-center justify-between gap-3 border-b border-zinc-200 pb-2";
 
 export function generateStaticParams() {
   return BRANDS.map(({ slug }) => ({ brand: slug }));
@@ -121,17 +118,11 @@ export default async function BrandPage({ params }: { params: Params }) {
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const description = localized(data.info.description, locale);
   const related = getBrandCollectionsWithStats(data.info.slug, locale);
-  const dated = data.timeline.entries.length;
-  const hasTimeline = dated > 0;
-  const years = data.timeline.years;
-  const span = { first: String(years[0]?.year ?? ""), last: String(years.at(-1)?.year ?? "") };
-  const timelineSpan =
-    dated === data.lenses.length
-      ? t("timelineSpan", { ...span, count: dated })
-      : t("timelineSpanPartial", { ...span, count: dated, total: data.lenses.length });
+  const tCharts = await getTranslations({ locale, namespace: "Charts" });
+  const hasTimeline = data.timeline.entries.length > 0;
   const contents = [
     { id: "lineup", label: t("lineupHeading") },
-    ...(hasTimeline ? [{ id: "timeline", label: t("timelineHeading") }] : []),
+    ...(hasTimeline ? [{ id: "timeline", label: tCharts("timelineHeading") }] : []),
     { id: "lenses", label: t("lensList") },
   ];
 
@@ -185,8 +176,8 @@ export default async function BrandPage({ params }: { params: Params }) {
           </nav>
         </header>
 
-        <section id="lineup" className={SECTION_CLS} aria-labelledby="lineup-heading">
-          <div className={HEADING_ROW_CLS}>
+        <section id="lineup" className={ANCHORED_SECTION_CLS} aria-labelledby="lineup-heading">
+          <div className={SECTION_HEADING_ROW_CLS}>
             <h2 id="lineup-heading" className={PAGE_SECTION_HEADING_CLS}>
               {t("lineupHeading")}
             </h2>
@@ -196,27 +187,17 @@ export default async function BrandPage({ params }: { params: Params }) {
         </section>
 
         {hasTimeline && (
-          <section id="timeline" className={cn(SECTION_CLS, "mt-12")} aria-labelledby="timeline-heading">
-            <div className={HEADING_ROW_CLS}>
-              <div className="flex flex-wrap items-baseline gap-x-3">
-                <h2 id="timeline-heading" className={PAGE_SECTION_HEADING_CLS}>
-                  {t("timelineHeading")}
-                </h2>
-                <span className="text-sm text-zinc-500">{timelineSpan}</span>
-              </div>
-              <BrandShare {...share} posters={["timeline"]} trigger="section" />
-            </div>
-            <TimelineChart mode={{ kind: "section" }} entries={data.timeline.entries} years={data.timeline.years} />
-            <Link
-              href={chartHref(chartPath(data.resolvedMount, "timeline"), { brand: data.info.slug })}
-              className={cn(TEXT_LINK_CLS, "self-start text-sm")}
-            >
-              {t("toAllBrands")}
-            </Link>
-          </section>
+          <TimelineSection
+            className="mt-12"
+            entries={data.timeline.entries}
+            years={data.timeline.years}
+            total={data.lenses.length}
+            fullHref={chartHref(chartPath(data.resolvedMount, "timeline"), { brand: data.info.slug })}
+            action={<BrandShare {...share} posters={["timeline"]} trigger="section" />}
+          />
         )}
 
-        <section id="lenses" className={cn(SECTION_CLS, "mt-12")} aria-labelledby="lenses-heading">
+        <section id="lenses" className={cn(ANCHORED_SECTION_CLS, "mt-12")} aria-labelledby="lenses-heading">
           <div className="flex flex-wrap items-baseline gap-x-3 border-b border-zinc-200 pb-2">
             <h2 id="lenses-heading" className={PAGE_SECTION_HEADING_CLS}>
               {t("lensList")}

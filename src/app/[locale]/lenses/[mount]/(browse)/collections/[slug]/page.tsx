@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { localized } from "@/i18n/localized";
 import { notFound } from "next/navigation";
@@ -7,14 +8,18 @@ import { Link } from "@/i18n/navigation";
 import { COLLECTIONS } from "@/lib/collections";
 import { getCollectionStats, getRelatedCollectionsWithStats } from "@/lib/collection-stats";
 import { getLensesByMount } from "@/lib/lens/data";
-import { urlSegmentToMount, mountSeoLabel, mountHasCollections } from "@/lib/mount";
+import { urlSegmentToMount, mountSeoLabel, mountHasCharts, mountHasCollections } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { buildItemListSchema, lensListItems } from "@/lib/lens/seo";
 import { brandLabel } from "@/lib/lens/format";
 import { SITE } from "@/config/site";
 import { ACTION_ESCAPE_CLS, BROWSE_PAGE_MAIN_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import JsonLd from "@/components/seo/JsonLd";
-import CollectionLensGrid from "@/components/collection/CollectionLensGrid";
+import CollectionLensGrid, { CollectionLensGridFromUrl } from "@/components/collection/CollectionLensGrid";
+import TimelineSection from "@/components/charts/TimelineSection";
+import { rankedRows } from "@/lib/charts/weight";
+import { buildTimeline } from "@/lib/charts/timeline";
+import { chartHref } from "@/lib/url/charts";
 import CollectionLinks from "@/components/collection/CollectionLinks";
 import SupportNote from "@/components/support/SupportNote";
 import BackToTopButton from "@/components/nav/BackToTopButton";
@@ -22,7 +27,7 @@ import { ShareButton } from "@/components/share/ShareButton";
 import Breadcrumb from "@/components/nav/Breadcrumb";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import { DataSourcePill } from "@/components/lens/DataSource";
-import { browsePath, collectionPath, collectionsPath } from "@/lib/url/routes";
+import { browsePath, chartPath, collectionPath, collectionsPath } from "@/lib/url/routes";
 
 type Params = Promise<{ locale: string; mount: string; slug: string }>;
 
@@ -99,6 +104,10 @@ export default async function CollectionPage({
   const description = localized(collection.description, locale);
   const statsLabel = t("stats", { count: lensCount, brandCount });
   const relatedWithStats = getRelatedCollectionsWithStats(slug, locale);
+  const charted = mountHasCharts(resolvedMount);
+  const weightRanking = charted && collection.chart === "weight" ? rankedRows(lenses) : undefined;
+  const timeline = charted && collection.chart === "timeline" ? buildTimeline(lenses) : undefined;
+  const timelineBrand = timeline?.brands.length === 1 ? timeline.brands[0].brand : undefined;
 
   const itemListSchema = buildItemListSchema({
     name: title,
@@ -142,7 +151,22 @@ export default async function CollectionPage({
             {description}
           </p>
         </header>
-        <CollectionLensGrid lenses={lenses} />
+        {weightRanking ? (
+          <Suspense fallback={<CollectionLensGrid lenses={lenses} weightRanking={weightRanking} />}>
+            <CollectionLensGridFromUrl lenses={lenses} weightRanking={weightRanking} />
+          </Suspense>
+        ) : (
+          <CollectionLensGrid lenses={lenses} />
+        )}
+        {timeline && timeline.entries.length > 0 && (
+          <TimelineSection
+            className="mt-12"
+            entries={timeline.entries}
+            years={timeline.years}
+            total={lenses.length}
+            fullHref={chartHref(chartPath(resolvedMount, "timeline"), { brand: timelineBrand })}
+          />
+        )}
 
         <p className="mt-8 text-sm text-zinc-500">
           {t("feedbackPrompt")}{" "}
