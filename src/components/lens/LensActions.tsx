@@ -15,7 +15,7 @@ import { COMPARE_CHIP_LABEL_KEY, compareChipState } from "@/lib/lens/lens";
 import { cn } from "@/lib/utils";
 
 const ROW_IDLE_STAR_CLS =
-  "border-transparent bg-transparent text-zinc-500 group-hover:border-zinc-200 group-hover:bg-white group-hover:text-zinc-700 group-focus-within:border-zinc-200 group-focus-within:text-zinc-700 hover:text-zinc-900";
+  "border-zinc-100 bg-white text-zinc-500 group-hover:border-zinc-200 group-hover:text-zinc-700 group-focus-within:border-zinc-200 group-focus-within:text-zinc-700 hover:border-zinc-300 hover:text-zinc-900";
 const ROW_IDLE_COMPARE_CLS =
   "border-zinc-100 bg-white text-zinc-500 group-hover:border-zinc-200 group-hover:text-zinc-700 group-focus-within:border-zinc-200 group-focus-within:text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50";
 
