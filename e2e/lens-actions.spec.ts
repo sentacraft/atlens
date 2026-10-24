@@ -24,29 +24,34 @@ for (const { name, path } of PAGES) {
 }
 
 // Prices vary in length; every card must still hold its price and both buttons on one line.
+// Phones get mobile emulation so their scrollbars overlay the page instead of taking 15px from it.
 for (const width of [375, 390, 1280]) {
-  for (const locale of ["en", "zh"]) {
-    test(`lens list at ${width}px (${locale}): every card keeps price and buttons on one line`, async ({ page }) => {
-      await page.setViewportSize({ width, height: 900 });
-      await page.goto(`/${locale}/lenses/x/browse`);
-      const prices = page.locator("[data-redact-hook=price]");
-      await expect(prices.first()).toBeAttached();
-      await page.evaluate(() => document.fonts.ready);
+  test.describe(`lens list at ${width}px`, () => {
+    const phone = width < 768;
+    test.use({ viewport: { width, height: 900 }, isMobile: phone, hasTouch: phone });
 
-      const broken = await prices.evaluateAll((spans) =>
-        spans.flatMap((span) => {
-          const price = span.parentElement!;
-          const actions = price.nextElementSibling;
-          if (!actions) {
-            return [span.textContent];
-          }
-          const p = price.getBoundingClientRect();
-          const a = actions.getBoundingClientRect();
-          const overflow = Math.round(span.getBoundingClientRect().right - p.right);
-          return a.top >= p.bottom || a.bottom <= p.top || overflow > 0 ? [`${span.textContent} (+${overflow}px of ${Math.round(p.width)}px)`] : [];
-        }),
-      );
-      expect(broken).toEqual([]);
-    });
-  }
+    for (const locale of ["en", "zh"]) {
+      test(`${locale}: every card keeps price and buttons on one line`, async ({ page }) => {
+        await page.goto(`/${locale}/lenses/x/browse`);
+        const prices = page.locator("[data-redact-hook=price]");
+        await expect(prices.first()).toBeAttached();
+        await page.evaluate(() => document.fonts.ready);
+
+        const broken = await prices.evaluateAll((spans) =>
+          spans.flatMap((span) => {
+            const price = span.parentElement!;
+            const actions = price.nextElementSibling;
+            if (!actions) {
+              return [span.textContent];
+            }
+            const p = price.getBoundingClientRect();
+            const a = actions.getBoundingClientRect();
+            const overflow = Math.round(span.getBoundingClientRect().right - p.right);
+            return a.top >= p.bottom || a.bottom <= p.top || overflow > 0 ? [`${span.textContent} (+${overflow}px of ${Math.round(p.width)}px)`] : [];
+          }),
+        );
+        expect(broken).toEqual([]);
+      });
+    }
+  });
 }
