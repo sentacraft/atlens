@@ -1027,7 +1027,8 @@
     "timelinePosterTitle": "{brand, select, fujifilm {富士原厂 X 卡口镜头发布时间轴 · {first}–{last}} other {{label}的富士 X 卡口镜头发布时间轴 · {first}–{last}}}",
     "timelinePosterSubtitle": "{count} 支镜头，按发布年份和焦段排开。",
     "cineNote": "不含{brand}的 {count} 支电影镜头。",
-    "allLenses": "全部 {count} 支",
+    "lensList": "镜头列表",
+    "lensCount": "{count} 支",
     "relatedCollections": "包含{brand}镜头的合集",
     "otherBrands": "其他品牌"
   }

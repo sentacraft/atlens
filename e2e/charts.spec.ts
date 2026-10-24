@@ -164,7 +164,7 @@ test.describe("Charts", () => {
     await page.goto(`${BRANDS}/viltrox`);
     await expect(page.getByRole("heading", { name: "Lineup" })).toBeVisible();
     await expect(page.locator("section#timeline")).toHaveCount(0);
-    await expect(page.getByRole("navigation", { name: "On this page" }).getByRole("link")).toHaveText(["Lineup", "All 16 lenses"]);
+    await expect(page.getByRole("navigation", { name: "On this page" }).getByRole("link")).toHaveText(["Lineup", "Lens list"]);
   });
 
   test("the brand on a lens page links to the brand page", async ({ page }) => {

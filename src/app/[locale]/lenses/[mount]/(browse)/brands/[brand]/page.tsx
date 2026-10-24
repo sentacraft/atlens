@@ -12,7 +12,7 @@ import TimelineChart from "@/components/charts/TimelineChart";
 import CollectionLensGrid from "@/components/collection/CollectionLensGrid";
 import RelatedCollectionCard from "@/components/collection/RelatedCollectionCard";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
-import { DataSourceInline } from "@/components/lens/DataSource";
+import { DataSourcePill } from "@/components/lens/DataSource";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import Breadcrumb from "@/components/nav/Breadcrumb";
 import JsonLd from "@/components/seo/JsonLd";
@@ -132,7 +132,7 @@ export default async function BrandPage({ params }: { params: Params }) {
   const contents = [
     { id: "lineup", label: t("lineupHeading") },
     ...(hasTimeline ? [{ id: "timeline", label: t("timelineHeading") }] : []),
-    { id: "lenses", label: t("allLenses", { count: data.lenses.length }) },
+    { id: "lenses", label: t("lensList") },
   ];
 
   const itemListSchema = buildItemListSchema({
@@ -168,10 +168,8 @@ export default async function BrandPage({ params }: { params: Params }) {
             </div>
           </div>
           <h1 className="font-heading text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">{data.title}</h1>
-          <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
-            {data.summary}
-            <DataSourceInline />
-          </p>
+          <p className="mt-2 text-xs text-zinc-500">{data.summary}</p>
+          <DataSourcePill className="mt-2" />
           {data.cineCount > 0 && (
             <div className="mt-1">
               <ScopeNote>{t("cineNote", { brand: data.name, count: data.cineCount })}</ScopeNote>
@@ -219,9 +217,12 @@ export default async function BrandPage({ params }: { params: Params }) {
         )}
 
         <section id="lenses" className={cn(SECTION_CLS, "mt-12")} aria-labelledby="lenses-heading">
-          <h2 id="lenses-heading" className={cn(PAGE_SECTION_HEADING_CLS, "border-b border-zinc-200 pb-2")}>
-            {t("allLenses", { count: data.lenses.length })}
-          </h2>
+          <div className="flex flex-wrap items-baseline gap-x-3 border-b border-zinc-200 pb-2">
+            <h2 id="lenses-heading" className={PAGE_SECTION_HEADING_CLS}>
+              {t("lensList")}
+            </h2>
+            <span className="text-sm text-zinc-500">{t("lensCount", { count: data.lenses.length })}</span>
+          </div>
           <CollectionLensGrid lenses={data.lenses} />
         </section>
 
