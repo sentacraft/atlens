@@ -1,10 +1,15 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import AuthDialog from "../AuthDialog";
 
-vi.mock("next-intl", () => ({ useTranslations: () => (key: string) => key }));
-vi.mock("@/lib/auth-client", () => ({ authClient: {} }));
+const social = vi.hoisted(() => vi.fn(async () => ({})));
+
+vi.mock("next-intl", () => ({
+  useTranslations: () => (key: string, values?: { provider?: string }) => (values?.provider ? `${key} ${values.provider}` : key),
+}));
+vi.mock("@/lib/auth-client", () => ({ authClient: { signIn: { social } } }));
+vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
 
 afterEach(cleanup);
 
@@ -18,7 +23,15 @@ describe("AuthDialog", () => {
 
     expect(await screen.findByRole("heading", { name: "reasonGearTitle" })).toBeInTheDocument();
     expect(benefits()).toEqual(["benefitGear", "benefitFavorites", "benefitChats", "benefitQuota"]);
-    expect(screen.getByRole("button", { name: "continueWithGoogle" })).toBeInTheDocument();
+  });
+
+  it("offers Google and GitHub side by side and signs in with the one pressed", async () => {
+    render(<AuthDialog open source="account_menu" onOpenChange={() => {}} />);
+
+    expect(await screen.findByRole("button", { name: "continueWith Google" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "continueWith GitHub" }));
+
+    expect(social).toHaveBeenCalledWith(expect.objectContaining({ provider: "github" }));
   });
 
   it("pitches the same benefits from a plain sign-in button, under the generic title", async () => {

@@ -2,10 +2,11 @@
 
 import { createContext, useContext, useMemo, useState } from "react";
 import AuthDialog from "@/components/auth/AuthDialog";
+import OneTapPrompt from "@/components/auth/OneTapPrompt";
 import { SIGN_IN_ACTIONS, type SignInSource } from "@/lib/sign-in-pitch";
 import { track } from "@/lib/analytics/analytics";
 
-/** `returnTo` is where a sign-in that leaves the page (Google) comes back to; this page by default. */
+/** `returnTo` is where a sign-in that leaves the page (Google, GitHub) comes back to; this page by default. */
 type OpenSignIn = (source: SignInSource, options?: { returnTo?: string }) => void;
 
 const SignInDialogContext = createContext<OpenSignIn>(() => {});
@@ -34,6 +35,7 @@ export function SignInDialogProvider({ children }: { children: React.ReactNode }
         returnTo={state.returnTo}
         onOpenChange={(open) => setState((prev) => ({ ...prev, open }))}
       />
+      <OneTapPrompt paused={state.open} />
     </SignInDialogContext>
   );
 }
