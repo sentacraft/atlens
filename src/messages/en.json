@@ -532,7 +532,13 @@
     "findings": {
       "title": "What reviews say",
       "subtitle": "Summarized from {count} published reviews",
-      "summary": "Overall",
+      "summary": "Overall verdict",
+      "verdict": {
+        "positive": "Positive",
+        "mixed": "Mixed",
+        "negative": "Negative"
+      },
+      "overallFrom": "Summed up from <reviews></reviews>",
       "conflict": "Mixed views",
       "pros": "Highlights",
       "cons": "Worth knowing",

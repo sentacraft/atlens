@@ -130,6 +130,12 @@ export const IRIS_PROSE_CLS = "prose prose-sm max-w-none prose-p:my-2 prose-head
 // Review findings: strengths and weaknesses are told apart by icon shape as well as colour.
 export const REVIEW_POSITIVE_CLS = "text-emerald-600";
 export const REVIEW_NEGATIVE_CLS = "text-amber-600";
+// Tint of the chip that says which way a lens's overall verdict leans; a disputed verdict uses `mixed`.
+export const REVIEW_VERDICT_CHIP_CLS = {
+  positive: "bg-emerald-50 text-emerald-700",
+  negative: "bg-amber-50 text-amber-700",
+  mixed: "bg-zinc-100 text-zinc-600",
+} as const;
 
 // Surface of a card Iris shows in the chat for the user to act on: gear, sign-in.
 export const CHAT_CARD_CLS = "w-full max-w-[560px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm";

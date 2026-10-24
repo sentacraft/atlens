@@ -13,6 +13,7 @@ import {
   PAGE_SECTION_CLS,
   REVIEW_NEGATIVE_CLS,
   REVIEW_POSITIVE_CLS,
+  REVIEW_VERDICT_CHIP_CLS,
   SECTION_HEADING_CLS,
 } from "@/config/ui-tokens";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
@@ -48,14 +49,14 @@ function PolarityIcon({ polarity, className }: { polarity: ReviewClaimView["pola
 }
 
 /** The review count after a finding; it opens the list of the reviews behind it. */
-function ReviewsButton({ claim, citations }: { claim: ReviewClaimView; citations: Citations }) {
+function ReviewsButton({ claim, citations, className }: { claim: ReviewClaimView; citations: Citations; className?: string }) {
   const t = useTranslations("LensReviews.findings");
   const cited = claim.sources.map((id) => citations.byKey.get(id)).filter((entry) => entry !== undefined);
   return (
     <Popover.Root>
       <Popover.Trigger
         aria-label={t("reviewSources", { count: claim.reviewCount, aspect: t(`aspects.${claim.aspect}`) })}
-        className={cn(QUIET_TRIGGER_CLS, "ml-1.5 whitespace-nowrap")}
+        className={cn(QUIET_TRIGGER_CLS, "whitespace-nowrap", className)}
       >
         {t("reviewCount", { count: claim.reviewCount })}
       </Popover.Trigger>
@@ -93,6 +94,28 @@ function ReviewsButton({ claim, citations }: { claim: ReviewClaimView; citations
   );
 }
 
+/** The lens's overall verdict, set apart from the findings below it: which way reviewers lean, then the verdict itself. */
+function OverallVerdict({ claim, citations }: { claim: ReviewClaimView; citations: Citations }) {
+  const t = useTranslations("LensReviews.findings");
+  const disputed = claim.agreement === "conflict";
+  const Icon = disputed ? MessagesSquare : POLARITY_ICON[claim.polarity].Icon;
+  return (
+    <div className="mb-3 flex flex-col gap-2 rounded-2xl border border-zinc-200 bg-white p-4 shadow-xs sm:px-5 sm:py-[18px]">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[13px] font-semibold text-zinc-900">{t("summary")}</span>
+        <span className={cn("inline-flex h-[22px] items-center gap-1 rounded-full px-2 text-xs font-medium", REVIEW_VERDICT_CHIP_CLS[disputed ? "mixed" : claim.polarity])}>
+          <Icon className="size-3 shrink-0" aria-hidden />
+          {disputed ? t("conflict") : t(`verdict.${claim.polarity}`)}
+        </span>
+      </div>
+      <p className="text-[17px] leading-7 font-semibold text-zinc-900 sm:text-lg">{claim.text}</p>
+      <p className="text-xs text-zinc-500">
+        {t.rich("overallFrom", { reviews: () => <ReviewsButton claim={claim} citations={citations} /> })}
+      </p>
+    </div>
+  );
+}
+
 /** A clock after a finding whose sources may not hold on current bodies; it opens the reason in one sentence. */
 function StaleHint({ claim }: { claim: ReviewClaimView }) {
   const t = useTranslations("LensReviews.findings");
@@ -126,7 +149,7 @@ function CollapsedRow({ claim, citations }: { claim: ReviewClaimView; citations:
       <span className="text-xs text-zinc-500">{t(`aspects.${claim.aspect}`)}</span>
       <p className="text-sm leading-[22px] text-zinc-800">
         {claim.text}
-        <ReviewsButton claim={claim} citations={citations} />
+        <ReviewsButton claim={claim} citations={citations} className="ml-1.5" />
         <StaleHint claim={claim} />
       </p>
     </li>
@@ -279,21 +302,7 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
         <p className="text-[13px] text-zinc-500">{t("subtitle", { count: String(locked?.sourceCount ?? citations.list.length) })}</p>
       </div>
       <CitationsProvider citations={citations}>
-        {layout.overall ? (
-          <div className="flex items-start gap-2.5 rounded-xl bg-zinc-50 px-3.5 py-3">
-            <PolarityIcon polarity={layout.overall.polarity} className="mt-[3px]" />
-            <div className="flex min-w-0 flex-col gap-0.5">
-              <span className="text-xs text-zinc-500">
-                {t("summary")}
-                {layout.overall.agreement === "conflict" ? ` · ${t("conflict")}` : ""}
-              </span>
-              <p className="text-sm leading-[22px] text-zinc-800">
-                {layout.overall.text}
-                <ReviewsButton claim={layout.overall} citations={citations} />
-              </p>
-            </div>
-          </div>
-        ) : null}
+        {layout.overall ? <OverallVerdict claim={layout.overall} citations={citations} /> : null}
 
         {open ? (
           <>

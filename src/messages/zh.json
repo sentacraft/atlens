@@ -532,7 +532,13 @@
     "findings": {
       "title": "评测怎么说",
       "subtitle": "根据 {count} 篇公开评测整理",
-      "summary": "整体",
+      "summary": "整体评价",
+      "verdict": {
+        "positive": "评价正面",
+        "mixed": "褒贬不一",
+        "negative": "评价偏负面"
+      },
+      "overallFrom": "<reviews></reviews>这样总结",
       "conflict": "看法不一",
       "pros": "亮点",
       "cons": "需要留意",

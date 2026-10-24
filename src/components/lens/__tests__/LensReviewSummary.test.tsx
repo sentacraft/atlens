@@ -11,8 +11,11 @@ const openSignIn = vi.hoisted(() => vi.fn());
 vi.mock("next-intl", () => ({
   useLocale: () => "zh",
   useFormatter: () => ({ list: (items: string[]) => items.join(", ") }),
-  useTranslations: () => (key: string, values?: Record<string, string | number>) =>
-    values ? `${key}(${Object.values(values).join(",")})` : key,
+  useTranslations: () =>
+    Object.assign(
+      (key: string, values?: Record<string, string | number>) => (values ? `${key}(${Object.values(values).join(",")})` : key),
+      { rich: (key: string, tags: Record<string, (chunks: string) => unknown>) => [key, ...Object.values(tags).map((tag) => tag(""))] },
+    ),
 }));
 vi.mock("@/lib/lens/reviews-client", () => ({
   lensReviewsQuery: (id: string) => ({ queryKey: ["lens-reviews", id], queryFn: async () => view.current }),
@@ -101,6 +104,20 @@ describe("LensReviewSummary", () => {
     fireEvent.click(await screen.findByRole("button", { name: "reviewSources(2,aspects.bokeh)" }));
     expect((await screen.findByRole("link", { name: /Site A/ })).getAttribute("href")).toBe("https://example.com/a");
     expect(screen.getByRole("link", { name: /Site B/ })).toBeTruthy();
+  });
+
+  it("leads with the overall verdict, labelled by how reviewers lean", async () => {
+    renderWith({ ...DATA, claims: [claim("overall", "positive", "值得推荐", ["a", "b"]), ...DATA.claims] } as LensReviewsView);
+    expect(await screen.findByText("值得推荐")).toBeTruthy();
+    expect(screen.getByText("summary")).toBeTruthy();
+    expect(screen.getByText("verdict.positive")).toBeTruthy();
+  });
+
+  it("labels a disputed overall verdict as disputed rather than by its lean", async () => {
+    renderWith({ ...DATA, claims: [{ ...claim("overall", "mixed", "两家结论相反", ["a", "b"]), agreement: "conflict" }, ...DATA.claims] } as LensReviewsView);
+    expect(await screen.findByText("两家结论相反")).toBeTruthy();
+    expect(screen.getByText("conflict")).toBeTruthy();
+    expect(screen.queryByText("verdict.mixed")).toBeNull();
   });
 
   it("explains why a finding may not hold on the reader's body in one sentence", async () => {
