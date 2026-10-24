@@ -12,7 +12,7 @@ import { ABOUT_PATH, GET_APP_PATH, RECENTLY_ADDED_PATH, aboutPath, profilePath }
 export const PAGE_LINKS = {
   about: { href: ABOUT_PATH, label: "{About.pageTitle}" },
   aboutBackground: { href: aboutPath("background"), label: "{About.backgroundTitle}" },
-  aboutAskIris: { href: aboutPath("ask-iris"), label: "{About.askIrisTitle}" },
+  aboutAskIris: { href: aboutPath("ask-iris"), label: "{About.askIrisTitlePlain}" },
   aboutDataAccuracy: { href: aboutPath("data-accuracy"), label: "{About.dataAccuracyTitle}" },
   aboutCoverage: { href: aboutPath("coverage"), label: "{About.coverageTitle}" },
   aboutSupport: { href: aboutPath("support"), label: "{About.supportTitle}" },

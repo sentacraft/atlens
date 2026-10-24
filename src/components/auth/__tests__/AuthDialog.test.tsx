@@ -6,7 +6,10 @@ import AuthDialog from "../AuthDialog";
 const social = vi.hoisted(() => vi.fn(async () => ({})));
 
 vi.mock("next-intl", () => ({
-  useTranslations: () => (key: string, values?: { provider?: string }) => (values?.provider ? `${key} ${values.provider}` : key),
+  useTranslations: () =>
+    Object.assign((key: string, values?: { provider?: string }) => (values?.provider ? `${key} ${values.provider}` : key), {
+      rich: (key: string) => key,
+    }),
 }));
 vi.mock("@/lib/auth-client", () => ({ authClient: { signIn: { social } } }));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));

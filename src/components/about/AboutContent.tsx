@@ -13,6 +13,7 @@ import SupportPanel from "@/components/support/SupportPanel";
 import { PAGE_GUTTER_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { SITE } from "@/config/site";
 import { ASK_IRIS_PATH, RECENTLY_ADDED_PATH } from "@/lib/url/routes";
+import { tagIris } from "@/components/iris/AiTag";
 
 function Check() {
   return <span className="text-zinc-700 text-sm">✓</span>;
@@ -114,7 +115,7 @@ function Section({
   children,
 }: {
   id?: string;
-  title: string;
+  title: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -170,7 +171,7 @@ export default async function AboutContent() {
           { id: "background", label: t("backgroundTitle") },
           { id: "coverage", label: t("coverageTitle") },
           { id: "data-accuracy", label: t("dataAccuracyTitle") },
-          { id: "ask-iris", label: t("askIrisTitle") },
+          { id: "ask-iris", label: t.rich("askIrisTitle", { iris: tagIris }) },
           { id: "disclaimer", label: t("disclaimerTitle") },
           { id: "reuse", label: t("reuseTitle") },
           { id: "privacy", label: t("privacyTitle") },
@@ -185,7 +186,7 @@ export default async function AboutContent() {
             <span className="text-[10px] text-zinc-300 w-4 text-right tabular-nums">
               {String(i + 1).padStart(2, "0")}
             </span>
-            {label}
+            <span>{label}</span>
           </a>
         ))}
       </nav>
@@ -333,7 +334,7 @@ export default async function AboutContent() {
         </a>
       </Section>
 
-      <Section id="ask-iris" title={t("askIrisTitle")}>
+      <Section id="ask-iris" title={t.rich("askIrisTitle", { iris: tagIris })}>
         <p className="text-sm leading-relaxed text-zinc-600">
           {t.rich("askIrisBody", {
             askIris: (chunks) => (

@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("next-intl", () => {
   const t = (key: string, values?: Record<string, unknown>) => (values ? `${key} ${Object.values(values).join(",")}` : key);
   t.has = () => false;
+  t.rich = (key: string) => key;
   return { useTranslations: () => t, useLocale: () => mocks.locale };
 });
 vi.mock("@/lib/auth-client", async (importOriginal) => ({
