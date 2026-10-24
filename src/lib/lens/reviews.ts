@@ -1,7 +1,7 @@
 /**
- * Third-party review claims about a lens, as stored in the `lens_reviews` table of `CATALOG_DB`.
- * The data pipeline writes these rows; Ask Iris reads them. Claims are our own English summaries
- * of first-hand reviews, never the reviews' text.
+ * What published reviews say about a lens, as stored in the `lens_reviews` table of `CATALOG_DB`.
+ * The data pipeline writes these rows; Ask Iris reads them. Each claim is written in our own words
+ * and cites the reviews it rests on.
  */
 
 /**
@@ -41,7 +41,7 @@ export const REVIEW_KINDS = ["measured", "hands_on"] as const;
 export const REVIEW_SAMPLES = ["production", "pre-production"] as const;
 
 /**
- * The reviewer's tie to the maker or seller, as the article discloses it (affiliate links do not count):
+ * The reviewer's tie to the maker or seller, as the review discloses it (affiliate links do not count):
  * - `independent`: bought or borrowed with no tie.
  * - `loaned`: lent by the maker, a distributor or a retailer for the review.
  * - `brand_partner`: sponsored, ambassador or other paid relationship with the brand.
@@ -69,7 +69,7 @@ export const REVIEW_AGREEMENTS = ["consensus", "single_source", "conflict", "bas
  */
 export const STALENESS_REASONS = ["pre_x_trans_iv_body", "pre_production", "unknown_body"] as const;
 
-/** One third-party review article that a lens's claims cite. */
+/** One published review that a lens's claims cite. */
 export interface LensReviewSource {
   /**
    * Short handle, unique within the lens, that claims cite. Carries no meaning.
@@ -83,7 +83,7 @@ export interface LensReviewSource {
    */
   site: string;
   /**
-   * Article language, BCP 47.
+   * Language of the review, BCP 47.
    * @example "en"
    */
   lang: string;
@@ -95,7 +95,7 @@ export interface LensReviewSource {
    */
   mountTested?: string;
   /**
-   * Camera bodies the review used. Absent when the article does not say.
+   * Camera bodies the review used. Absent when the review does not say.
    * @example ["X-T5"]
    */
   bodies?: string[];
@@ -106,11 +106,11 @@ export interface LensReviewSource {
    * @example "2024-12"
    */
   published?: string;
-  /** Absent when the article does not say. */
+  /** Absent when the review does not say. */
   sample?: (typeof REVIEW_SAMPLES)[number];
-  /** Absent when the article does not say. */
+  /** Absent when the review does not say. */
   affiliation?: (typeof REVIEW_AFFILIATIONS)[number];
-  /** Who published it; for a repost, the original outlet. Articles sharing a publisher count as one outlet. */
+  /** The outlet that published it. Reviews from the same outlet count as one outlet. */
   publisher?: string;
 }
 
@@ -139,9 +139,9 @@ export interface LensReviewClaim {
   basis?: string;
   /** Ids of the sources behind `text`. */
   sources: string[];
-  /** Number of articles behind `text`. */
-  articleCount: number;
-  /** Number of distinct publishers behind `text`; lower than `articleCount` when one outlet ran several reviews. */
+  /** Number of reviews behind `text`. */
+  reviewCount: number;
+  /** Number of distinct publishers behind `text`; lower than `reviewCount` when one outlet ran several reviews. */
   outletCount: number;
   /** Findings only one source reports (numbers, comparisons with other lenses, hit rates). */
   details?: { id: string; text: string }[];
