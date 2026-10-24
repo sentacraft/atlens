@@ -1,14 +1,14 @@
 "use client";
 
-import { createContext, useContext, useMemo, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { Dialog, DialogClose, DialogHeader, DialogPopup, DialogTitle } from "@/components/ui/dialog";
 import SupportPanel from "@/components/support/SupportPanel";
 import { ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { track } from "@/lib/analytics/analytics";
-import type { SupportEntry } from "@/lib/support";
+import { donationChannels, WECHAT_QR_DISPLAY_SRC, type SupportEntry } from "@/lib/support";
 import { cn } from "@/lib/utils";
 
 type OpenSupport = (entry: SupportEntry) => void;
@@ -18,6 +18,7 @@ const SupportDialogContext = createContext<OpenSupport>(() => {});
 export function SupportDialogProvider({ children }: { children: React.ReactNode }) {
   const t = useTranslations("Support");
   const [open, setOpen] = useState(false);
+  usePreloadWechatCode();
   const openSupport = useMemo<OpenSupport>(
     () => (entry) => {
       track("support_open", { entry });
@@ -72,4 +73,25 @@ function SupportBody() {
 
 export function useSupportDialog(): OpenSupport {
   return useContext(SupportDialogContext);
+}
+
+/** Fetches the WeChat code once the page is idle where the dialog opens on it, so it shows at once. */
+function usePreloadWechatCode() {
+  const locale = useLocale();
+  const opensOnWechat = donationChannels(locale)[0] === "wechat";
+  useEffect(() => {
+    if (!opensOnWechat) {
+      return;
+    }
+    const load = () => {
+      new Image().src = WECHAT_QR_DISPLAY_SRC;
+    };
+    // Safari has no requestIdleCallback.
+    if (typeof window.requestIdleCallback === "function") {
+      const id = window.requestIdleCallback(load, { timeout: 5000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = window.setTimeout(load, 3000);
+    return () => window.clearTimeout(id);
+  }, [opensOnWechat]);
 }
