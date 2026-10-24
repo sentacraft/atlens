@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -13,7 +13,7 @@ import ChartChips from "@/components/charts/ChartChips";
 import { HorizontalScrollRail } from "@/components/ui/horizontal-scroll-rail";
 import { useChartCard, type ChartItemHandlers } from "@/hooks/useChartCard";
 import { useChartSelection } from "@/hooks/useChartSelection";
-import { assignLanes, type TimelineEntry, type TimelineYear } from "@/lib/charts/timeline";
+import { assignLanes, fitItemSize, LANE_GAP, LANE_STEP, laneOffset, type TimelineEntry, type TimelineYear } from "@/lib/charts/timeline";
 import { isChartZoom, type BrandCount, type ChartLens } from "@/lib/charts/catalog";
 import { logFrac, pct } from "@/lib/charts/scale";
 import { brandLabel } from "@/lib/lens/format";
@@ -25,9 +25,11 @@ import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/cha
 import { cn } from "@/lib/utils";
 
 // A phone has no room for 15 year columns, so the same chart scrolls sideways there instead.
+// plotWidth is the plot's nominal width at that breakpoint, which sizes the lens images.
 const GEOMETRY = {
-  wide: { height: 720, sectionHeight: 480, padTop: 16, padBottom: 48, size: 40, laneStep: 22 },
-  compact: { height: 420, sectionHeight: 340, padTop: 24, padBottom: 40, size: 24, laneStep: 13, minColWidth: 56 },
+  wide: { height: 720, sectionHeight: 480, padTop: 16, padBottom: 48, plotWidth: 1040, size: { min: 40, max: 88 } },
+  poster: { height: 720, sectionHeight: 720, padTop: 16, padBottom: 48, plotWidth: 920, size: { min: 40, max: 128 } },
+  compact: { height: 420, sectionHeight: 340, padTop: 24, padBottom: 40, plotWidth: 300, size: { min: 28, max: 48 }, scrollSize: 30, minColWidth: 56 },
 } as const;
 const WIDE_PAD = { left: 52, right: 12 };
 const COMPACT_AXIS_WIDTH = 28;
@@ -54,10 +56,6 @@ type Mode =
   | { kind: "section" }
   | { kind: "poster"; highlight?: string };
 
-function laneOffset(lane: number, step: number): number {
-  return lane === 0 ? 0 : (lane % 2 === 1 ? -1 : 1) * Math.ceil(lane / 2) * step;
-}
-
 export function TimelineChartFromUrl({ entries, years, ...page }: PageProps) {
   const { brand } = readChartSelectionFromSearch(useSearchParams(), page.brands.map((b) => b.brand));
   return <TimelineChart entries={entries} years={years} mode={{ kind: "page", initial: { brand }, ...page }} />;
@@ -73,16 +71,19 @@ function useLayout(entries: TimelineEntry[], years: TimelineYear[], geometry: Ge
     const fMax = Math.max(...highs) * 1.15;
     const ph = height - geometry.padTop - geometry.padBottom;
     const y = (f: number) => Math.round(geometry.padTop + (1 - logFrac(f, fMin, fMax)) * ph);
-    const rows = years.map((yr, col) => {
-      const row = entries.filter((e) => e.year === yr.year);
-      const lanes = assignLanes(row, (e) => y(e.focalMid), geometry.size * 0.82);
+    const byYear = years.map((yr) => entries.filter((e) => e.year === yr.year));
+    // A phone fits a few years on screen; more than that, the chart scrolls and each year takes the room its lanes need.
+    const scrolls = "minColWidth" in geometry && years.length * geometry.minColWidth > geometry.plotWidth;
+    const size = scrolls
+      ? geometry.scrollSize
+      : fitItemSize(byYear.map((row) => row.map((e) => y(e.focalMid))), geometry.plotWidth / years.length, geometry.size);
+    const step = size * LANE_STEP;
+    const rows = byYear.map((row, col) => {
+      const lanes = assignLanes(row, (e) => y(e.focalMid), size * LANE_GAP);
       return row.map((e, i) => ({ e, col, lane: lanes[i], y: y(e.focalMid), yMin: y(e.lens.focalMin), yMax: y(e.lens.focalMax) }));
     });
-    // The wide chart splits its width evenly; the scrolling one gives a crowded year the room its lanes take.
     const widths = rows.map((row) =>
-      "minColWidth" in geometry
-        ? Math.max(geometry.minColWidth, 2 * Math.abs(laneOffset(Math.max(0, ...row.map((p) => p.lane)), geometry.laneStep)) + geometry.size + 12)
-        : 1,
+      scrolls ? Math.max(geometry.minColWidth, 2 * Math.abs(laneOffset(Math.max(0, ...row.map((p) => p.lane)), step)) + size + 12) : 1,
     );
     const total = widths.reduce((a, b) => a + b, 0);
     let start = 0;
@@ -91,7 +92,7 @@ function useLayout(entries: TimelineEntry[], years: TimelineYear[], geometry: Ge
       start += w;
       return col;
     });
-    return { placed: rows.flat(), cols, total, ticks: TICKS.filter((f) => f > fMin && f < fMax).map((f) => ({ f, y: y(f) })) };
+    return { size, step, placed: rows.flat(), cols, total, ticks: TICKS.filter((f) => f > fMin && f < fMax).map((f) => ({ f, y: y(f) })) };
   }, [entries, years, geometry, height]);
 }
 
@@ -107,26 +108,20 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
   const handlers = (lens: ChartLens) => (mode.kind === "poster" ? undefined : itemHandlers(lens.id));
   // One brand has few lenses; the full height would leave the section mostly empty.
   const heightOf = (geometry: Geometry) => (mode.kind === "section" ? geometry.sectionHeight : geometry.height);
-  const wideHeight = heightOf(GEOMETRY.wide);
+  const wideGeometry = mode.kind === "poster" ? GEOMETRY.poster : GEOMETRY.wide;
+  const wideHeight = heightOf(wideGeometry);
   const compactHeight = heightOf(GEOMETRY.compact);
-  const wide = useLayout(entries, years, GEOMETRY.wide, wideHeight);
+  const wide = useLayout(entries, years, wideGeometry, wideHeight);
   const compact = useLayout(entries, years, GEOMETRY.compact, compactHeight);
-  const rail = useRef<HTMLDivElement>(null);
-
-  // Open on the newest years, at the right end, as the wide chart reads.
-  useLayoutEffect(() => {
-    if (rail.current) {
-      rail.current.scrollLeft = rail.current.scrollWidth;
-    }
-  }, []);
 
   const dimmed = (lens: ChartLens) => (shown.brand && lens.brand !== shown.brand ? DIM : 1);
   const activeEntry = entries.find((e) => e.lens.id === active);
   const sheetEntry = entries.find((e) => e.lens.id === sheet.id);
   const activeWide = wide.placed.find((p) => p.e.lens.id === active);
   const wideCardOffset = (p: Layout["placed"][number]) => {
-    const x = laneOffset(p.lane, GEOMETRY.wide.laneStep);
-    return wide.cols[p.col].center > 0.6 ? x - 288 - 36 : x + 36;
+    const x = laneOffset(p.lane, wide.step);
+    const gap = wide.size / 2 + 16;
+    return wide.cols[p.col].center > 0.6 ? x - 288 - gap : x + gap;
   };
   const plot = { years, dimmed, handlers, active, eager: mode.kind === "poster", yearLabel: (count: number) => t("lensCount", { count }) };
   const tickLabels = (layout: Layout, width: string, unit: "each" | "once") => (
@@ -166,7 +161,7 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
       <div className={cn("relative", mode.kind !== "poster" && "hidden md:block")} style={{ height: wideHeight }}>
         {tickLabels(wide, "w-11", "each")}
         <div className="absolute inset-y-0" style={{ left: WIDE_PAD.left, right: WIDE_PAD.right }}>
-          <TimelinePlot {...plot} layout={wide} geometry={GEOMETRY.wide} height={wideHeight}>
+          <TimelinePlot {...plot} layout={wide} geometry={wideGeometry} height={wideHeight}>
             {activeEntry && activeWide && (
               <ChartLensCard
                 lens={activeEntry.lens}
@@ -186,7 +181,6 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
         <div className="relative md:hidden" style={{ height: compactHeight }}>
           {tickLabels(compact, "w-6", "once")}
           <HorizontalScrollRail
-            scrollRef={rail}
             wrapperClassName="absolute inset-y-0 right-0"
             wrapperStyle={{ left: COMPACT_AXIS_WIDTH }}
             fadeBg="from-white from-40%"
@@ -248,8 +242,7 @@ function TimelinePlot({
   yearLabel: (count: number) => string;
   children?: React.ReactNode;
 }) {
-  const { cols } = layout;
-  const { size, laneStep } = geometry;
+  const { cols, size, step: laneStep } = layout;
   return (
     <>
       {years.map((yr, col) =>

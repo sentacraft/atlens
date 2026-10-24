@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { formatDataDate } from "../data-date";
 import type { Lens } from "@/lib/types";
 import { getLensesByMount } from "@/lib/lens/data";
-import { assignLanes, buildTimeline } from "@/lib/charts/timeline";
+import { assignLanes, buildTimeline, fitItemSize } from "@/lib/charts/timeline";
 import { buildWeightLadder, weightBarPct } from "@/lib/charts/weight";
 import { buildLineup } from "@/lib/charts/lineup";
 import { chartBrands, matchesChartSelection, toChartLens, type ChartLens } from "@/lib/charts/catalog";
@@ -70,6 +70,24 @@ describe("buildTimeline", () => {
 describe("assignLanes", () => {
   it("opens a new lane only when every lane already has a neighbour too close", () => {
     expect(assignLanes([0, 10, 50, 55, 58], (p) => p, 20)).toEqual([0, 1, 0, 1, 2]);
+  });
+});
+
+describe("fitItemSize", () => {
+  const bounds = { min: 40, max: 88 };
+
+  it("takes the largest size when lenses sit far apart", () => {
+    expect(fitItemSize([[100], [50, 300], [400]], 370, bounds)).toBe(88);
+  });
+
+  it("shrinks when one year's lenses crowd into side-by-side lanes", () => {
+    const size = fitItemSize([[100, 110, 120, 300]], 224, bounds);
+    expect(size).toBeLessThan(88);
+    expect(size).toBeGreaterThan(40);
+  });
+
+  it("stops at the minimum on narrow columns", () => {
+    expect(fitItemSize([[100, 105, 110, 115, 120]], 75, bounds)).toBe(40);
   });
 });
 
