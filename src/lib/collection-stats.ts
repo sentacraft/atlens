@@ -65,42 +65,53 @@ export function getCollectionStats(slug: string, locale: string): CollectionStat
   return { collection, ...statsFor(collection, locale) };
 }
 
-interface RelatedCollectionStats {
+/** What a link to a collection shows: one of its lenses as a preview, and its counts. */
+export interface CollectionSummary {
   collection: LensCollection;
-  previewLens: Lens;
+  previewLens: Pick<Lens, "id" | "mount">;
   lensCount: number;
   brandCount: number;
 }
 
-export function getCollectionLensCounts(locale: string): Record<string, number> {
+function preview(lens: Lens): CollectionSummary["previewLens"] {
+  return { id: lens.id, mount: lens.mount };
+}
+
+function previewOf(collection: LensCollection, locale: string): CollectionPreview {
+  const { lenses, lensCount, brandCount } = statsFor(collection, locale);
+  return { previewLens: preview(lenses[0]), lensCount, brandCount };
+}
+
+function summarize(collection: LensCollection, locale: string): CollectionSummary {
+  return { collection, ...previewOf(collection, locale) };
+}
+
+/** A summary without the collection itself, which holds a filter function and so can't reach a client component. */
+export type CollectionPreview = Omit<CollectionSummary, "collection">;
+
+/** Every collection that has lenses in this locale, by slug. */
+export function getCollectionPreviews(locale: string): Record<string, CollectionPreview> {
   return Object.fromEntries(
-    Object.keys(COLLECTIONS).map((slug) => [slug, membersOf(slug, locale).length]),
+    Object.values(COLLECTIONS)
+      .filter((collection) => membersOf(collection.slug, locale).length > 0)
+      .map((collection) => [collection.slug, previewOf(collection, locale)]),
   );
 }
 
-function withPreview(collection: LensCollection, locale: string): RelatedCollectionStats {
-  const { lenses, lensCount, brandCount } = statsFor(collection, locale);
-  return { collection, previewLens: lenses[0], lensCount, brandCount };
+export function getRelatedCollectionsWithStats(slug: string, locale: string, limit = 4): CollectionSummary[] {
+  return getRelatedCollections(slug, locale, limit).map((collection) => summarize(collection, locale));
 }
 
-export function getRelatedCollectionsWithStats(
-  slug: string,
-  locale: string,
-  limit = 4,
-): RelatedCollectionStats[] {
-  return getRelatedCollections(slug, locale, limit).map((collection) => withPreview(collection, locale));
-}
-
-export function getFeaturedCollectionsWithStats(locale: string): RelatedCollectionStats[] {
-  return FEATURED_COLLECTION_SLUGS.map((slug) => withPreview(COLLECTIONS[slug], locale));
+export function getFeaturedCollectionsWithStats(locale: string): CollectionSummary[] {
+  return FEATURED_COLLECTION_SLUGS.map((slug) => summarize(COLLECTIONS[slug], locale));
 }
 
 /** Theme collections holding a brand's lenses, those with the most of them first, previewed by one of them. */
-export function getBrandCollectionsWithStats(brand: string, locale: string, limit = 6): RelatedCollectionStats[] {
+export function getBrandCollectionsWithStats(brand: string, locale: string, limit = 6): CollectionSummary[] {
   return Object.values(COLLECTIONS)
     .map((collection) => ({ collection, own: membersOf(collection.slug, locale).filter((l) => l.brand === brand) }))
     .filter(({ own }) => own.length > 0)
     .sort((a, b) => b.own.length - a.own.length)
     .slice(0, limit)
-    .map(({ collection, own }) => ({ ...withPreview(collection, locale), previewLens: own[0] }));
+    .map(({ collection, own }) => ({ ...summarize(collection, locale), previewLens: preview(own[0]) }));
 }

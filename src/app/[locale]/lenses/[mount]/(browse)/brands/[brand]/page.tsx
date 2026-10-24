@@ -10,7 +10,7 @@ import LineupChart from "@/components/charts/LineupChart";
 import ScopeNote from "@/components/charts/ScopeNote";
 import TimelineChart from "@/components/charts/TimelineChart";
 import CollectionLensGrid from "@/components/collection/CollectionLensGrid";
-import RelatedCollectionCard from "@/components/collection/RelatedCollectionCard";
+import CollectionLinks from "@/components/collection/CollectionLinks";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import { DataSourcePill } from "@/components/lens/DataSource";
 import BackToTopButton from "@/components/nav/BackToTopButton";
@@ -18,7 +18,7 @@ import Breadcrumb from "@/components/nav/Breadcrumb";
 import JsonLd from "@/components/seo/JsonLd";
 import SupportNote from "@/components/support/SupportNote";
 import { SITE } from "@/config/site";
-import { BROWSE_PAGE_MAIN_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS, PAGE_SECTION_HEADING_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
+import { BROWSE_PAGE_MAIN_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS, PAGE_SECTION_HEADING_CLS, SECTION_HEADING_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { BRANDS, getBrandInfo, getBrandLenses } from "@/lib/brands";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildLineup } from "@/lib/charts/lineup";
@@ -31,7 +31,7 @@ import { buildItemListSchema, lensListItems } from "@/lib/lens/seo";
 import { mountHasCollections, urlSegmentToMount } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { chartHref } from "@/lib/url/charts";
-import { brandPath, browsePath, chartPath, collectionsPath } from "@/lib/url/routes";
+import { brandPath, browsePath, chartPath } from "@/lib/url/routes";
 import { cn } from "@/lib/utils";
 
 type Params = Promise<{ locale: string; mount: string; brand: string }>;
@@ -227,36 +227,14 @@ export default async function BrandPage({ params }: { params: Params }) {
         </section>
 
         <footer className="mt-12 flex flex-col gap-10">
-          {related.length > 0 && (
-            <section className="flex flex-col gap-4">
-              <div className="flex items-baseline justify-between">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
-                  {t("relatedCollections", { brand: data.name })}
-                </h2>
-                <Link
-                  href={collectionsPath(data.resolvedMount)}
-                  className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900"
-                >
-                  {tCollection("viewAllCollections")} →
-                </Link>
-              </div>
-              <ul className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
-                {related.map(({ collection, previewLens, lensCount, brandCount }) => (
-                  <li key={collection.slug}>
-                    <RelatedCollectionCard
-                      collection={collection}
-                      previewLens={previewLens}
-                      locale={locale}
-                      statsLabel={tCollection("stats", { count: lensCount, brandCount })}
-                      density="comfortable"
-                    />
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+          <CollectionLinks
+            items={related}
+            mount={data.resolvedMount}
+            locale={locale}
+            title={t("relatedCollections", { brand: data.name })}
+          />
           <section className="flex flex-col gap-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">{t("otherBrands")}</h2>
+            <h2 className={SECTION_HEADING_CLS}>{t("otherBrands")}</h2>
             <BrandPicker
               locale={locale}
               mount={data.resolvedMount}

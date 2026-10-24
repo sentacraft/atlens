@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 interface Props {
   collection: LensCollection;
-  previewLens: Lens;
+  previewLens: Pick<Lens, "id" | "mount">;
   locale: string;
   statsLabel: string;
   /** compact clamps the title to two lines, for the home page's five-column grid. */

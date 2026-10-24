@@ -5,15 +5,17 @@ import { useTranslations, useLocale } from "next-intl";
 import { useCompare } from "@/context/CompareProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { getSharedCollections } from "@/lib/collections";
-import CollectionPills from "@/components/collection/CollectionPills";
+import CollectionLinks from "@/components/collection/CollectionLinks";
+import { PAGE_SECTION_CLS } from "@/config/ui-tokens";
+import type { CollectionPreview } from "@/lib/collection-stats";
 import type { Lens } from "@/lib/types";
 
 export default function CompareCollections({
   allLenses,
-  lensCounts,
+  previews,
 }: {
   allLenses: Lens[];
-  lensCounts: Record<string, number>;
+  previews: Record<string, CollectionPreview>;
 }) {
   const t = useTranslations("Compare");
   const locale = useLocale();
@@ -29,18 +31,20 @@ export default function CompareCollections({
   );
 
   const sharedCollections = useMemo(
-    () => getSharedCollections(activeLenses, locale),
-    [activeLenses, locale],
+    () =>
+      getSharedCollections(activeLenses, locale)
+        .filter((c) => previews[c.slug])
+        .map((c) => ({ collection: c, ...previews[c.slug] })),
+    [activeLenses, locale, previews],
   );
 
   return (
-    <CollectionPills
-      collections={sharedCollections}
-      lensCounts={lensCounts}
+    <CollectionLinks
+      items={sharedCollections}
       mount={mount}
       locale={locale}
       title={t("collectionsTitle")}
-      viewAllLabel={t("viewAllCollections")}
+      className={PAGE_SECTION_CLS}
     />
   );
 }
