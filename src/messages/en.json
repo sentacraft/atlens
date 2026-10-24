@@ -37,8 +37,8 @@
   "Auth": {
     "login": "Log in",
     "title": "Sign in to Atlens",
-    "continueWithGoogle": "Continue with Google",
-    "or": "or",
+    "continueWith": "Continue with {provider}",
+    "orEmail": "or use email",
     "emailLabel": "Email",
     "emailPlaceholder": "you@example.com",
     "sendCode": "Send code",
@@ -86,6 +86,7 @@
     "pageTitle": "My profile",
     "sectionsLabel": "Profile sections",
     "signedInWithGoogle": "Signed in with Google",
+    "signedInWithGithub": "Signed in with GitHub",
     "signedInWithEmail": "Signed in with an email code",
     "editName": "Edit name",
     "nameLabel": "Name",

@@ -212,7 +212,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "sign-in-methods",
     topic: "account",
-    text: "Sign-in is with a Google account or an email verification code.",
+    text: "Sign-in is with a Google or GitHub account, or an email verification code. On the live site, Google may also offer a one-tap sign-in.",
     sources: ["src/lib/auth.ts"],
     links: ["action:signIn"],
   },

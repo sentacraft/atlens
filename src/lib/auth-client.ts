@@ -1,11 +1,12 @@
 "use client";
 
 import { createAuthClient } from "better-auth/react";
-import { anonymousClient, emailOTPClient } from "better-auth/client/plugins";
+import { anonymousClient, emailOTPClient, oneTapClient } from "better-auth/client/plugins";
+import { GOOGLE_CLIENT_ID } from "@/config/google";
 import { LOCALE_HEADER } from "@/lib/locale-preference";
 
 export const authClient = createAuthClient({
-  plugins: [anonymousClient(), emailOTPClient()],
+  plugins: [anonymousClient(), emailOTPClient(), oneTapClient({ clientId: GOOGLE_CLIENT_ID, context: "signin" })],
   fetchOptions: {
     onRequest(context) {
       context.headers.set(LOCALE_HEADER, document.documentElement.lang);
