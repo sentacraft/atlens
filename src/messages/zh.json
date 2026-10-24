@@ -1003,8 +1003,6 @@
     "rangeBetween": "{min}–{max}g",
     "rangeUnder": "{max}g 以下",
     "lensCount": "{count} 支",
-    "earlierYears": "更早的年份",
-    "laterYears": "更近的年份",
     "highlightBrand": "高亮品牌",
     "filterBrand": "品牌",
     "filteredCount": "{shown, number} / {total, number} 支",

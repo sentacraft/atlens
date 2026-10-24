@@ -32,13 +32,13 @@ test.describe("Charts", () => {
   test("on a phone the timeline scrolls sideways and opens on the newest years", async ({ page }) => {
     test.skip((page.viewportSize()?.width ?? 0) >= 768, "Phone layout only");
     await page.goto(TIMELINE, { waitUntil: "networkidle" });
-    const earlier = page.getByRole("button", { name: "Earlier years" });
-    const later = page.getByRole("button", { name: "Later years" });
+    const earlier = page.locator('[data-scroll-hint="left"]').locator("visible=true");
+    const later = page.locator('[data-scroll-hint="right"]').locator("visible=true");
     await expect(page.getByText("2026", { exact: true }).locator("visible=true")).toBeInViewport();
     await expect(earlier).toHaveCSS("opacity", "1");
     await expect(later).toHaveCSS("opacity", "0");
-    await earlier.evaluate((button) => {
-      const rail = button.parentElement?.querySelector<HTMLElement>(".overflow-x-auto");
+    await earlier.evaluate((hint) => {
+      const rail = hint.parentElement?.querySelector<HTMLElement>(".overflow-x-auto");
       if (rail) {
         rail.scrollLeft = 0;
       }
