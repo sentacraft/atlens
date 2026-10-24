@@ -37,7 +37,7 @@ function SheetBody({ lens }: { lens: ChartLens }) {
     <div className="flex flex-col gap-4 px-5 pb-5 pt-2">
       <ChartLensSummary lens={lens} size="sheet" />
       <div className="flex gap-2.5">
-        <FavoriteStarButton lensId={lens.id} placement="inline" className="h-11 w-11" />
+        <FavoriteStarButton lensId={lens.id} placement="labelled" className="h-11 flex-1" />
         <button
           type="button"
           onClick={compare.onToggle}
