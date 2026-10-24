@@ -26,6 +26,7 @@ import { ASK_FOR_GEAR, gearCardDecline } from "@/lib/ai/gear-request";
 import { SIGN_IN_DECLINED, SIGN_IN_GATED_TOOL_NAMES, signInApproval } from "@/lib/ai/sign-in-gate";
 import { listUserGear } from "@/lib/me/gear-repository";
 import { buildLensTools, seedRecalledRefs } from "@/lib/ai/tools";
+import { loadLensReviews } from "@/lib/lens/reviews-repository";
 import { hasRepeatedToolFailure, withRepeatedFailureNotice } from "@/lib/ai/repeated-tool-failure";
 import { checkIrisQuota, recordIrisTurn, type IrisQuotaUser } from "@/lib/ai/iris-quota";
 import { clientIp, isBypassed, isRateLimited } from "@/lib/rate-limit";
@@ -99,6 +100,7 @@ export async function POST(req: NextRequest) {
   let analyticsDb: D1Database | undefined;
   let traceDb: D1Database | undefined;
   let appDb: D1Database | undefined;
+  let catalogDb: D1Database | undefined;
   let releaseId: string | undefined;
   let ctx: ExecutionContext | undefined;
   let userId: string | undefined;
@@ -109,6 +111,7 @@ export async function POST(req: NextRequest) {
     analyticsDb = cf.env.ANALYTICS_DB;
     traceDb = cf.env.ASKIRIS_DB;
     appDb = cf.env.APP_DB;
+    catalogDb = cf.env.CATALOG_DB;
     releaseId = workerReleaseId(cf.env.CF_VERSION_METADATA);
     ctx = cf.ctx;
     if (await isRateLimited(req, "chat")) {
@@ -148,6 +151,12 @@ export async function POST(req: NextRequest) {
       {
         favorites: () => loadFavorites(testFavorites, appDb, userId, isAccount),
         gear: gearSummary,
+        reviews: (lensIds) => {
+          if (!catalogDb) {
+            throw new Error("Review findings are unavailable right now.");
+          }
+          return loadLensReviews(catalogDb, lensIds);
+        },
       },
       recalledRefs,
     ),
