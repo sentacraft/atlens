@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -23,8 +22,6 @@ import type { Mount } from "@/lib/types";
 import { brandPath } from "@/lib/url/routes";
 import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/charts";
 import { cn } from "@/lib/utils";
-
-const PHONE_TIER_PREVIEW = 6;
 
 const REFERENCE_ICONS: Record<WeightReference["key"], LucideIcon> = {
   cola2l: CupSoda,
@@ -93,7 +90,6 @@ export default function WeightLadderChart({ tiers, mode }: { tiers: WeightTier[]
   const tBrand = useTranslations("Brands");
   const { selected, select } = useChartSelection(mode.kind === "page" ? mode.initial : mode.selection);
   const { itemHandlers, sheet } = useChartCard();
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const cls = LAYOUT[mode.kind];
   const heaviest = Math.max(...tiers.flatMap((tier) => tier.lenses.map((l) => l.weightG)));
   const filtering = Boolean(selected.brand);
@@ -131,9 +127,7 @@ export default function WeightLadderChart({ tiers, mode }: { tiers: WeightTier[]
       {tiers.map((tier) => {
         const rows = tier.rows.filter((row) => row.kind === "reference" || matchesChartSelection(row.lens, selected));
         const lensCount = rows.filter((row) => row.kind === "lens").length;
-        const collapsed = mode.kind === "page" && !(expanded[tier.key] ?? false);
         const headingId = mode.kind === "page" ? `tier-${tier.key}` : undefined;
-        let lensIndex = 0;
         return (
           <section key={tier.key} aria-labelledby={headingId} className={cls.section}>
             <header className={cls.header}>
@@ -154,9 +148,8 @@ export default function WeightLadderChart({ tiers, mode }: { tiers: WeightTier[]
                   if (row.kind === "reference") {
                     return <ReferenceRow key={row.reference.key} reference={row.reference} cls={cls} />;
                   }
-                  const hidden = collapsed && lensIndex++ >= PHONE_TIER_PREVIEW;
                   return (
-                    <li key={row.lens.id} className={cn(hidden && "max-md:hidden")}>
+                    <li key={row.lens.id}>
                       <LensRow
                         row={row}
                         barPct={weightBarPct(row.lens.weightG, heaviest)}
@@ -167,15 +160,6 @@ export default function WeightLadderChart({ tiers, mode }: { tiers: WeightTier[]
                   );
                 })}
               </ol>
-              {collapsed && lensCount > PHONE_TIER_PREVIEW && (
-                <button
-                  type="button"
-                  onClick={() => setExpanded((e) => ({ ...e, [tier.key]: true }))}
-                  className="mt-2 h-11 w-full rounded-lg border border-zinc-200 bg-white text-sm font-medium text-zinc-700 md:hidden"
-                >
-                  {t("showAll", { count: lensCount })}
-                </button>
-              )}
             </div>
           </section>
         );

@@ -1012,7 +1012,6 @@
     "released": "Released {year}",
     "equivFocal": "{focal} equiv.",
     "weight": "{weight, number}g",
-    "showAll": "Show all {count, number}",
     "refWeight": "about {weight, number}g",
     "ref-cola2l": "A 2 L bottle of cola",
     "ref-water750": "A 750 ml bottle of water",

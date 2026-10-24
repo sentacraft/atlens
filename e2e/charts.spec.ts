@@ -88,7 +88,6 @@ test.describe("Charts", () => {
 
   test("a tap on a weight ladder row opens its sheet instead of the lens page", async ({ page, hasTouch }) => {
     test.skip(!hasTouch, "Touch only; mouse users get the row's own buttons");
-    // Phones show only the first rows of each tier, so tap one that is on screen.
     const sheet = page.getByRole("dialog");
     await expect(async () => {
       await page.goto(WEIGHT, { waitUntil: "networkidle" });
