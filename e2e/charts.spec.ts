@@ -29,6 +29,26 @@ test.describe("Charts", () => {
     await expect(page).toHaveURL(/\/en\/lenses\/x\/sigma-[^/]+-x$/);
   });
 
+  test("on a phone the timeline scrolls sideways and opens on the newest years", async ({ page }) => {
+    test.skip((page.viewportSize()?.width ?? 0) >= 768, "Phone layout only");
+    await page.goto(TIMELINE, { waitUntil: "networkidle" });
+    const earlier = page.locator('[data-scroll-hint="left"]').locator("visible=true");
+    const later = page.locator('[data-scroll-hint="right"]').locator("visible=true");
+    const newest = page.getByText("2026", { exact: true }).locator("visible=true");
+    await earlier.scrollIntoViewIfNeeded();
+    await expect(newest).toBeInViewport();
+    await expect(earlier).toHaveCSS("opacity", "1");
+    await expect(later).toHaveCSS("opacity", "0");
+    await earlier.evaluate((hint) => {
+      const rail = hint.parentElement?.querySelector<HTMLElement>(".overflow-x-auto");
+      if (rail) {
+        rail.scrollLeft = 0;
+      }
+    });
+    await expect(earlier).toHaveCSS("opacity", "0");
+    await expect(later).toHaveCSS("opacity", "1");
+  });
+
   test("hovering a timeline lens opens its card", async ({ page, hasTouch }) => {
     test.skip(hasTouch, "Mouse only");
     await page.goto(TIMELINE);
