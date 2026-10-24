@@ -1,77 +1,74 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/config/site";
 import { routing } from "@/i18n/routing";
-import { BRANDS } from "@/lib/brands";
+import { BRANDS, getBrandLenses } from "@/lib/brands";
 import { COLLECTIONS } from "@/lib/collections";
+import { getAllLenses, getLensesByMount } from "@/lib/lens/data";
 import { MOUNTS, mountHasCharts, mountHasCollections } from "@/lib/mount";
-import type { Mount } from "@/lib/types";
-import xLensesData from "@/data/lenses.json";
-import gfxLensesData from "@/data/lenses-gfx.json";
+import type { Lens } from "@/lib/types";
 import { buildComparePath } from "@/lib/url/compare";
 import { ABOUT_PATH, GET_APP_PATH, RECENTLY_ADDED_PATH, brandPath, browsePath, chartPath, collectionPath, collectionsPath, lensPath } from "@/lib/url/routes";
 
 const LOCALES = routing.locales;
-
-const LENS_DATA: Record<Mount, { id: string }[]> = {
-  X: xLensesData as { id: string }[],
-  G: gfxLensesData as { id: string }[],
-};
+const DATA_LOCALE = routing.defaultLocale;
 
 function url(path: string): string {
   return `${SITE.url}${path}`;
 }
 
+function latest(dates: (string | undefined)[]): string | undefined {
+  return dates.filter((d): d is string => Boolean(d)).sort().at(-1);
+}
+
+function lastChanged(lenses: Lens[]): string | undefined {
+  return latest(lenses.flatMap((l) => [l.createdAt, l.updatedAt]));
+}
+
+function lastAdded(lenses: Lens[]): string | undefined {
+  return latest(lenses.map((l) => l.createdAt));
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const mountPaths = MOUNTS.flatMap((mount) => {
-    const paths = [browsePath(mount), buildComparePath(mount, [])];
+  const allLenses = getAllLenses(DATA_LOCALE);
+  const newest = lastAdded(allLenses);
+
+  const pages: { path: string; lastModified?: string }[] = [
+    { path: "", lastModified: newest },
+    { path: RECENTLY_ADDED_PATH, lastModified: newest },
+    { path: ABOUT_PATH },
+    { path: GET_APP_PATH },
+  ];
+
+  for (const mount of MOUNTS) {
+    const lenses = getLensesByMount(mount, DATA_LOCALE);
+    const photoLenses = lenses.filter((l) => !l.isCine);
+    const mountChanged = lastChanged(lenses);
+    pages.push({ path: browsePath(mount), lastModified: mountChanged }, { path: buildComparePath(mount, []) });
     if (mountHasCollections(mount)) {
-      paths.push(collectionsPath(mount), ...BRANDS.map(({ slug }) => brandPath(mount, slug)));
+      pages.push({ path: collectionsPath(mount), lastModified: mountChanged });
+      for (const { slug } of BRANDS) {
+        pages.push({ path: brandPath(mount, slug), lastModified: lastChanged(getBrandLenses(lenses, slug)) });
+      }
+      for (const collection of Object.values(COLLECTIONS)) {
+        const members = lenses.filter((l) => collection.filter(l, DATA_LOCALE));
+        pages.push({ path: collectionPath(mount, collection.slug), lastModified: lastChanged(members) });
+      }
     }
     if (mountHasCharts(mount)) {
-      paths.push(
-        chartPath(mount, "timeline"),
-        chartPath(mount, "weight"),
-        chartPath(mount, "lineups"),
-      );
+      const chartsChanged = lastChanged(photoLenses);
+      for (const chart of ["timeline", "weight", "lineups"] as const) {
+        pages.push({ path: chartPath(mount, chart), lastModified: chartsChanged });
+      }
     }
-    return paths;
-  });
-  const staticPaths = [...mountPaths, ABOUT_PATH, RECENTLY_ADDED_PATH, GET_APP_PATH];
+    for (const lens of lenses) {
+      pages.push({ path: lensPath(lens), lastModified: lastChanged([lens]) });
+    }
+  }
 
-  const staticEntries: MetadataRoute.Sitemap = LOCALES.flatMap((locale) => [
-    {
-      url: url(`/${locale}`),
-      changeFrequency: "weekly",
-      priority: 1.0,
-    },
-    ...staticPaths.map((path) => ({
+  return pages.flatMap(({ path, lastModified }) =>
+    LOCALES.map((locale) => ({
       url: url(`/${locale}${path}`),
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
+      ...(lastModified && { lastModified }),
     })),
-  ]);
-
-  const lensEntries: MetadataRoute.Sitemap = MOUNTS.flatMap((mount) => {
-    return LENS_DATA[mount].flatMap((lens) =>
-      LOCALES.map((locale) => ({
-        url: url(`/${locale}${lensPath({ mount, id: lens.id })}`),
-        changeFrequency: "monthly" as const,
-        priority: 0.6,
-      }))
-    );
-  });
-
-  const collectionEntries: MetadataRoute.Sitemap = MOUNTS.filter(mountHasCollections).flatMap(
-    (mount) => {
-      return Object.keys(COLLECTIONS).flatMap((slug) =>
-        LOCALES.map((locale) => ({
-          url: url(`/${locale}${collectionPath(mount, slug)}`),
-          changeFrequency: "weekly" as const,
-          priority: 0.7,
-        }))
-      );
-    }
   );
-
-  return [...staticEntries, ...collectionEntries, ...lensEntries];
 }
