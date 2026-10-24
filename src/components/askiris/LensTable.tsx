@@ -1,6 +1,9 @@
 "use client";
 
+import { Maximize2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useRef } from "react";
+import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
 import {
@@ -60,18 +63,27 @@ const RENDERERS: Record<LensTableColumn, (lens: ResolvedLens, l: Labels) => stri
   releaseYear: (lens) => (lens.releaseYear != null ? String(lens.releaseYear) : null),
 };
 
+// Opaque, unlike the row's own hover: the pinned name column covers cells scrolling under it.
+const NAME_CELL_CLS = "sticky left-0 z-[1] min-w-36 max-w-48 border-r border-zinc-100 bg-white px-3.5 py-2 text-left";
+
 export default function LensTable({
   lenses,
   columns,
   caption,
+  onExpand,
 }: {
   lenses: ResolvedLens[];
   columns: LensTableColumn[];
   caption: string | null;
+  /** Widens the chat so the table fits; offered only while the table scrolls sideways. */
+  onExpand?: () => void;
 }) {
   const t = useTranslations("AskIris.table");
   const td = useTranslations("LensDetail");
   const tp = useTranslations("Pricing");
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const { canScrollLeft, canScrollRight } = useScrollAffordance(scrollRef, [lenses, columns]);
+  const expandable = onExpand !== undefined && (canScrollLeft || canScrollRight);
 
   const labels: Labels = {
     yes: td("yes"),
@@ -96,16 +108,26 @@ export default function LensTable({
 
   return (
     <figure className="border-border bg-background my-1 w-full overflow-hidden rounded-xl border">
-      {caption ? (
-        <figcaption className="text-muted-foreground border-border border-b px-3.5 py-2 text-xs">
-          {caption}
+      {caption || expandable ? (
+        <figcaption className="text-muted-foreground border-border flex items-center gap-2 border-b py-1.5 pr-1.5 pl-3.5 text-xs">
+          <span className="min-w-0 flex-1">{caption}</span>
+          {expandable ? (
+            <button
+              type="button"
+              onClick={onExpand}
+              className="inline-flex h-7 shrink-0 items-center gap-1 rounded-md px-2 font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
+            >
+              <Maximize2 className="size-3.5" aria-hidden />
+              {t("expand")}
+            </button>
+          ) : null}
         </figcaption>
       ) : null}
-      <div className="w-full overflow-x-auto">
+      <div ref={scrollRef} className="w-full overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="text-muted-foreground border-border border-b text-left text-xs">
-              <th scope="col" className="px-3.5 py-2 font-medium">
+              <th scope="col" className={`${NAME_CELL_CLS} font-medium`}>
                 {t("lensHeader")}
               </th>
               {columns.map((col) => (
@@ -120,9 +142,9 @@ export default function LensTable({
               <tr
                 key={lens.id}
                 onClick={(e) => e.currentTarget.querySelector("a")?.click()}
-                className="border-border hover:bg-muted/40 cursor-pointer border-b transition-colors last:border-b-0"
+                className="group border-border cursor-pointer border-b transition-colors last:border-b-0 hover:bg-zinc-50"
               >
-                <th scope="row" className="px-3.5 py-2 text-left font-normal">
+                <th scope="row" className={`${NAME_CELL_CLS} font-normal transition-colors group-hover:bg-zinc-50`}>
                   <Link
                     href={lensPath(lens)}
                     prefetch={false}
