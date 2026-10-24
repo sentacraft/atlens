@@ -6,6 +6,7 @@ import { Popover } from "@base-ui/react/popover";
 import { Drawer } from "@base-ui/react/drawer";
 import { Tabs } from "@base-ui/react/tabs";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { Share2, Copy, Check, Download, Loader2, Expand } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CHIP_ACTIVE_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS, SEGMENTED_LIST_CLS, SEGMENTED_TAB_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
@@ -16,6 +17,7 @@ import { useLightbox } from "@/hooks/useLightbox";
 import { LightboxDialog } from "./LightboxDialog";
 import { useSupportDialog } from "@/context/SupportDialogProvider";
 import { browserPromptStore, claimPrompt } from "@/lib/support-prompts";
+import { aboutPath } from "@/lib/url/routes";
 
 const PREVIEW_W = 352;
 const PREVIEW_H = 310;
@@ -242,6 +244,17 @@ export function ShareButton({ heading, caption, shareText, posters, trigger }: S
     <div className="flex flex-col gap-0.5">
       <h2 className="text-base font-semibold text-zinc-900">{heading}</h2>
       {caption && <p className="text-xs leading-relaxed text-zinc-400">{caption}</p>}
+      {posters.length > 0 && (
+        <p className="text-xs leading-relaxed text-zinc-400">
+          {t.rich("reuseNote", {
+            link: (chunks) => (
+              <Link href={aboutPath("reuse")} className="underline underline-offset-2 transition-colors hover:text-zinc-600">
+                {chunks}
+              </Link>
+            ),
+          })}
+        </p>
+      )}
     </div>
   );
 

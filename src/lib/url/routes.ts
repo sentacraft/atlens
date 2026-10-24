@@ -21,6 +21,7 @@ export type AboutSection =
   | "support"
   | "privacy"
   | "disclaimer"
+  | "reuse"
   | "ack";
 
 export function aboutPath(section?: AboutSection): string {

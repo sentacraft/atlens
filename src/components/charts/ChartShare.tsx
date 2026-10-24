@@ -52,8 +52,16 @@ export function TimelineShare({ entries, years, brands, title, dataDate, selecti
   const locale = useLocale();
   const brandList = new Intl.ListFormat(locale, { type: "conjunction" }).format(brands.map((b) => brandLabel(tBrand, b.brand)));
   const brand = selection.brand;
+  const highlighted = entries.filter((e) => e.lens.brand === brand).length;
+  const span = { first: String(years[0]?.year ?? ""), last: String(years.at(-1)?.year ?? "") };
+  const posterTitle = brand ? t("timelinePosterHighlightTitle", { brand: brandLabel(tBrand, brand), ...span }) : title;
   const subtitle = brand
-    ? t("timelinePosterHighlight", { brand: brandLabel(tBrand, brand) })
+    ? t("timelinePosterHighlight", {
+        brand: brandLabel(tBrand, brand),
+        count: highlighted,
+        others: entries.length - highlighted,
+        otherBrands: brands.length - 1,
+      })
     : t("timelinePosterSubtitle", { count: entries.length, brands: brandList });
   return (
     <ChartShareButton
@@ -64,7 +72,7 @@ export function TimelineShare({ entries, years, brands, title, dataDate, selecti
           label: t("posterTimeline"),
           fileName: brand ? `timeline_${brand}` : "timeline",
           content: (shareUrl) => (
-            <PosterFrame title={title} subtitle={subtitle} cta={t("timelinePosterCta")} note={t("posterDataNote", { date: dataDate })} shareUrl={shareUrl}>
+            <PosterFrame title={posterTitle} subtitle={subtitle} cta={t("timelinePosterCta")} note={t("posterDataNote", { date: dataDate })} shareUrl={shareUrl}>
               <TimelineChart mode={{ kind: "poster", highlight: brand }} entries={entries} years={years} />
             </PosterFrame>
           ),

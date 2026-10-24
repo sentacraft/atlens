@@ -43,7 +43,8 @@ test.describe("Share", () => {
   test("a timeline poster keeps the highlighted brand", async ({ page }) => {
     await page.goto("/en/lenses/x/charts/timeline?brand=sigma", { waitUntil: "networkidle" });
     await openShare(page, /^Share$/);
-    await expect(page.getByText("Sigma lenses highlighted")).toBeVisible();
+    await expect(page.getByText(/^Sigma on the all-brand timeline · \d{4}–\d{4}$/)).toBeVisible();
+    await expect(page.getByText(/^Sigma's \d+ lenses highlighted; the other \d+ are from \d+ other brands$/)).toBeVisible();
   });
 
   test("a brand page offers its lineup poster", async ({ page }) => {
