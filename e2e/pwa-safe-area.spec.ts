@@ -119,7 +119,9 @@ test.describe("Layout body bottom inset", () => {
 });
 
 test.describe("Drawer bottom inset", () => {
-  test("the home bar's padding comes on top of the drawer's 85% height, not out of it", async ({ page }) => {
+  test("the drawer may reach 2.5rem below the notch, on what is visible now", async ({ page }) => {
+    // A full-height iPhone screen, where the old 85% cap fell short of this one.
+    await page.setViewportSize({ width: 393, height: 852 });
     await page.goto("/en");
     await page.waitForLoadState("networkidle");
     await simulateNotch(page);
@@ -128,15 +130,14 @@ test.describe("Drawer bottom inset", () => {
 
     const drawer = page.locator('[data-slot="dialog-content"]');
     await expect(drawer).toBeVisible();
-    const { maxHeight, appHeight } = await drawer.evaluate((el) => {
+    const { maxHeight, visibleHeight } = await drawer.evaluate((el) => {
       const probe = document.createElement("div");
-      probe.style.height = "var(--app-height)";
+      probe.style.height = "var(--visible-height)";
       document.body.append(probe);
-      const appHeight = probe.getBoundingClientRect().height;
+      const visibleHeight = probe.getBoundingClientRect().height;
       probe.remove();
-      return { maxHeight: parseFloat(getComputedStyle(el).maxHeight), appHeight };
+      return { maxHeight: parseFloat(getComputedStyle(el).maxHeight), visibleHeight };
     });
-    // A short screen is capped by the notch instead: what is left once it and a 1rem gap are taken.
-    expect(maxHeight).toBeCloseTo(Math.min(appHeight * 0.85 + HOME_BAR, appHeight - NOTCH_TOP - 16), 0);
+    expect(maxHeight).toBeCloseTo(visibleHeight - NOTCH_TOP - 40, 0);
   });
 });

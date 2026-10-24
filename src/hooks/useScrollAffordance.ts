@@ -43,6 +43,11 @@ export function useScrollAffordance(
     el.addEventListener("scroll", update, { passive: true });
     const ro = new ResizeObserver(update);
     ro.observe(el);
+    // Content that grows inside a fixed-size container (a tab switch, an image loading) resizes
+    // its children, not the container.
+    for (const child of el.children) {
+      ro.observe(child);
+    }
     return () => {
       el.removeEventListener("scroll", update);
       ro.disconnect();
