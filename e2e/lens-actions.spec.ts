@@ -31,6 +31,7 @@ for (const width of [375, 390, 1280]) {
       await page.goto(`/${locale}/lenses/x/browse`);
       const prices = page.locator("[data-redact-hook=price]");
       await expect(prices.first()).toBeAttached();
+      await page.evaluate(() => document.fonts.ready);
 
       const broken = await prices.evaluateAll((spans) =>
         spans.flatMap((span) => {
@@ -41,8 +42,8 @@ for (const width of [375, 390, 1280]) {
           }
           const p = price.getBoundingClientRect();
           const a = actions.getBoundingClientRect();
-          const overflows = span.getBoundingClientRect().right > p.right + 0.5;
-          return a.top >= p.bottom || a.bottom <= p.top || overflows ? [span.textContent] : [];
+          const overflow = Math.round(span.getBoundingClientRect().right - p.right);
+          return a.top >= p.bottom || a.bottom <= p.top || overflow > 0 ? [`${span.textContent} (+${overflow}px of ${Math.round(p.width)}px)`] : [];
         }),
       );
       expect(broken).toEqual([]);
