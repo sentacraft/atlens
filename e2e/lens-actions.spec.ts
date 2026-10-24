@@ -22,3 +22,22 @@ for (const { name, path } of PAGES) {
     await expect(page.getByRole("button", { name: FAVORITE })).toHaveCount(compareCount);
   });
 }
+
+// Prices vary in length, so a shared row would hold both on some cards and wrap on others.
+for (const width of [375, 1280]) {
+  test(`lens list at ${width}px: every card puts its buttons on a line below the price`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/en/lenses/x/browse");
+    const compares = page.getByRole("button", { name: COMPARE });
+    await expect(compares.first()).toBeAttached();
+
+    const sharedLines = await compares.evaluateAll((buttons) =>
+      buttons.filter((button) => {
+        const actions = button.parentElement!;
+        const price = actions.previousElementSibling;
+        return !price || actions.getBoundingClientRect().top < price.getBoundingClientRect().bottom;
+      }).length,
+    );
+    expect(sharedLines).toBe(0);
+  });
+}

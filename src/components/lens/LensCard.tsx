@@ -159,17 +159,16 @@ export default memo(function LensCard({
               <div className="text-right">{weightDisplay}</div>
             </dl>
 
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              <div className="mr-auto min-w-0">
-                <ApproxPrice pricing={lens.pricing} />
-              </div>
-              <LensActions
-                lensId={lens.id}
-                lensName={lens.model}
-                compare={{ selected: isSelected, full: selectionDisabled, onToggle: () => onToggle(lens.id) }}
-                tier="row"
-              />
+            <div className="min-w-0">
+              <ApproxPrice pricing={lens.pricing} />
             </div>
+            <LensActions
+              lensId={lens.id}
+              lensName={lens.model}
+              compare={{ selected: isSelected, full: selectionDisabled, onToggle: () => onToggle(lens.id) }}
+              tier="row"
+              className="self-end"
+            />
           </div>
         </div>
       </div>
