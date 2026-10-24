@@ -38,7 +38,7 @@ export default function RevisitPrompt() {
 
   async function markAccountDone(userId: string) {
     try {
-      queryClient.setQueryData(userSettingsQuery(userId).queryKey, await patchUserSettings({ revisitPromptFinished: true }));
+      queryClient.setQueryData(userSettingsQuery(userId).queryKey, await patchUserSettings({ supportPromptResponded: true }));
     } catch {
       // This browser still remembers; the account catches up on the next visit.
     }
@@ -55,20 +55,20 @@ export default function RevisitPrompt() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  const accountFinishedAt = settings.data?.revisitPromptFinishedAt;
-  const accountDone = accountFinishedAt === undefined ? undefined : accountFinishedAt !== null;
+  const accountRespondedAt = settings.data?.supportPromptRespondedAt;
+  const accountDone = accountRespondedAt === undefined ? undefined : accountRespondedAt !== null;
   useEffect(() => {
-    if (!account || accountFinishedAt === undefined) {
+    if (!account || accountRespondedAt === undefined) {
       return;
     }
     const store = browserPromptStore();
-    if (accountFinishedAt !== null) {
-      finishRevisitPrompt(store, accountFinishedAt);
+    if (accountRespondedAt !== null) {
+      finishRevisitPrompt(store, accountRespondedAt);
     } else if (revisitPromptDone(store)) {
       void markAccountDone(account.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once the account's record is known
-  }, [account?.id, accountFinishedAt]);
+  }, [account?.id, accountRespondedAt]);
 
   const visible = due && !finished && !sessionPending && (!account || accountDone === false);
 

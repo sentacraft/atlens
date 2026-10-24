@@ -9,18 +9,18 @@ import {
 interface SettingsRow {
   default_mount: UserSettings["defaultMount"];
   locale: UserSettings["locale"];
-  revisit_prompt_finished_at: number | null;
+  support_prompt_responded_at: number | null;
 }
 
 function toSettings(row: SettingsRow | null): UserSettings {
   return row
-    ? { defaultMount: row.default_mount, locale: row.locale, revisitPromptFinishedAt: row.revisit_prompt_finished_at }
+    ? { defaultMount: row.default_mount, locale: row.locale, supportPromptRespondedAt: row.support_prompt_responded_at }
     : { ...DEFAULT_USER_SETTINGS };
 }
 
 export async function getUserSettings(db: D1Database, userId: string): Promise<UserSettings> {
   const row = await db
-    .prepare("SELECT default_mount, locale, revisit_prompt_finished_at FROM user_settings WHERE user_id = ?")
+    .prepare("SELECT default_mount, locale, support_prompt_responded_at FROM user_settings WHERE user_id = ?")
     .bind(userId)
     .first<SettingsRow>();
   return toSettings(row);
@@ -31,22 +31,22 @@ export async function updateUserSettings(
   input: { userId: string; patch: UserSettingsPatch; now?: number },
 ): Promise<UserSettings> {
   const now = input.now ?? Date.now();
-  const { revisitPromptFinished, ...values } = input.patch;
+  const { supportPromptResponded, ...values } = input.patch;
   const next: UserSettings = {
     ...(await getUserSettings(db, input.userId)),
     ...values,
-    ...(revisitPromptFinished ? { revisitPromptFinishedAt: now } : {}),
+    ...(supportPromptResponded ? { supportPromptRespondedAt: now } : {}),
   };
   await db
     .prepare(
-      `INSERT INTO user_settings (user_id, default_mount, locale, revisit_prompt_finished_at, updated_at) VALUES (?, ?, ?, ?, ?)
+      `INSERT INTO user_settings (user_id, default_mount, locale, support_prompt_responded_at, updated_at) VALUES (?, ?, ?, ?, ?)
       ON CONFLICT (user_id) DO UPDATE SET
         default_mount = excluded.default_mount,
         locale = excluded.locale,
-        revisit_prompt_finished_at = excluded.revisit_prompt_finished_at,
+        support_prompt_responded_at = excluded.support_prompt_responded_at,
         updated_at = excluded.updated_at`,
     )
-    .bind(input.userId, next.defaultMount, next.locale, next.revisitPromptFinishedAt, now)
+    .bind(input.userId, next.defaultMount, next.locale, next.supportPromptRespondedAt, now)
     .run();
   return next;
 }

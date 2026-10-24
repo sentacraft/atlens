@@ -161,29 +161,29 @@ describe("user favorites", () => {
 
 describe("user settings", () => {
   it("returns the defaults before anything is saved", async () => {
-    await expect(getUserSettings(db, "owner")).resolves.toEqual({ defaultMount: "X", locale: null, revisitPromptFinishedAt: null });
+    await expect(getUserSettings(db, "owner")).resolves.toEqual({ defaultMount: "X", locale: null, supportPromptRespondedAt: null });
   });
 
   it("merges each patch into the saved settings", async () => {
     await updateUserSettings(db, { userId: "owner", patch: { locale: "zh" } });
     const settings = await updateUserSettings(db, { userId: "owner", patch: { defaultMount: "G" } });
 
-    expect(settings).toEqual({ defaultMount: "G", locale: "zh", revisitPromptFinishedAt: null });
+    expect(settings).toEqual({ defaultMount: "G", locale: "zh", supportPromptRespondedAt: null });
     await expect(getUserSettings(db, "owner")).resolves.toEqual(settings);
   });
 
   it("stamps when the returning-visit prompt was finished, and keeps it through other patches", async () => {
-    await updateUserSettings(db, { userId: "owner", patch: { revisitPromptFinished: true }, now: 1234 });
+    await updateUserSettings(db, { userId: "owner", patch: { supportPromptResponded: true }, now: 1234 });
     await updateUserSettings(db, { userId: "owner", patch: { locale: "en" }, now: 5678 });
 
-    await expect(getUserSettings(db, "owner")).resolves.toMatchObject({ revisitPromptFinishedAt: 1234, locale: "en" });
+    await expect(getUserSettings(db, "owner")).resolves.toMatchObject({ supportPromptRespondedAt: 1234, locale: "en" });
   });
 
   it("can clear the language back to unset", async () => {
     await updateUserSettings(db, { userId: "owner", patch: { locale: "en" } });
     await updateUserSettings(db, { userId: "owner", patch: { locale: null } });
 
-    await expect(getUserSettings(db, "owner")).resolves.toEqual({ defaultMount: "X", locale: null, revisitPromptFinishedAt: null });
+    await expect(getUserSettings(db, "owner")).resolves.toEqual({ defaultMount: "X", locale: null, supportPromptRespondedAt: null });
   });
 
   it("rejects an unknown mount at the database level", () => {
