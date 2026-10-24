@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { QRCodeSVG } from "qrcode.react";
+import { SITE } from "@/config/site";
 
 export const POSTER_WIDTH = 1080;
 
@@ -41,7 +42,12 @@ export default function PosterFrame({
           {subtitle}
         </p>
       </div>
-      <div>{children}</div>
+      <div className="flex flex-col" style={{ gap: 12 }}>
+        {children}
+        <span className="self-end text-zinc-400" style={{ fontSize: 16 }}>
+          {SITE.host}
+        </span>
+      </div>
       <div className="flex items-center justify-between border-t border-zinc-200" style={{ gap: 24, paddingTop: 24 }}>
         <div className="flex flex-col" style={{ gap: 6 }}>
           <span className="font-heading font-bold" style={{ fontSize: 30 }}>

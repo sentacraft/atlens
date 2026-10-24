@@ -172,6 +172,7 @@ export default async function AboutContent() {
           { id: "data-accuracy", label: t("dataAccuracyTitle") },
           { id: "ask-iris", label: t("askIrisTitle") },
           { id: "disclaimer", label: t("disclaimerTitle") },
+          { id: "reuse", label: t("reuseTitle") },
           { id: "privacy", label: t("privacyTitle") },
           { id: "support", label: t("supportTitle") },
           { id: "ack", label: t("ackTitle") },
@@ -366,6 +367,25 @@ export default async function AboutContent() {
             })}
           </p>
         </div>
+      </Section>
+
+      <Section id="reuse" title={t("reuseTitle")}>
+        <ul className="flex flex-col gap-2 text-sm leading-relaxed text-zinc-600">
+          <li>{t.rich("reuseWelcome", { host: SITE.host, b: (chunks) => <strong className="font-semibold text-zinc-800">{chunks}</strong> })}</li>
+          <li>{t.rich("reuseForbidden", { b: (chunks) => <strong className="font-semibold text-zinc-800">{chunks}</strong> })}</li>
+          <li>
+            {t.rich("reuseContact", {
+              address: SITE.contactEmail,
+              b: (chunks) => <strong className="font-semibold text-zinc-800">{chunks}</strong>,
+              email: (chunks) => (
+                <a href={`mailto:${SITE.contactEmail}`} className={TEXT_LINK_CLS}>
+                  {chunks}
+                </a>
+              ),
+            })}
+          </li>
+          <li>{t.rich("reuseImages", { b: (chunks) => <strong className="font-semibold text-zinc-800">{chunks}</strong> })}</li>
+        </ul>
       </Section>
 
       <Section id="privacy" title={t("privacyTitle")}>
