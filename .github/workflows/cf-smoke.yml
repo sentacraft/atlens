@@ -40,6 +40,11 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Fetch lens catalog
+        run: pnpm run catalog:fetch
+        env:
+          LENS_CATALOG_TOKEN: ${{ secrets.LENS_CATALOG_TOKEN }}
+
       - name: Build for Cloudflare (OpenNext)
         # `opennextjs-cloudflare build` directly, NOT `pnpm run build:cf` — the
         # latter ends in `populateCache remote`, which uploads to the live
