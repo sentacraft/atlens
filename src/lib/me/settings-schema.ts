@@ -6,14 +6,17 @@ export interface UserSettings {
   defaultMount: Mount;
   /** Null until the user picks a language. */
   locale: Locale | null;
+  /** The returning-visit support prompt was closed or followed on some device. */
+  revisitPromptDone: boolean;
 }
 
-export const DEFAULT_USER_SETTINGS: UserSettings = { defaultMount: "X", locale: null };
+export const DEFAULT_USER_SETTINGS: UserSettings = { defaultMount: "X", locale: null, revisitPromptDone: false };
 
 export const userSettingsPatchSchema = z
   .strictObject({
     defaultMount: z.enum(MOUNTS).optional(),
     locale: z.enum(routing.locales).nullable().optional(),
+    revisitPromptDone: z.literal(true).optional(),
   })
   .refine((patch) => Object.keys(patch).length > 0, { message: "empty settings patch" });
 

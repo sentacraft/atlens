@@ -61,6 +61,7 @@ describe("userSettingsPatchSchema", () => {
   it("accepts a partial patch and a cleared language", () => {
     expect(userSettingsPatchSchema.safeParse({ defaultMount: "G" }).success).toBe(true);
     expect(userSettingsPatchSchema.safeParse({ locale: null }).success).toBe(true);
+    expect(userSettingsPatchSchema.safeParse({ revisitPromptDone: true }).success).toBe(true);
   });
 
   it("rejects an empty patch and unknown values", () => {

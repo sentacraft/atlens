@@ -77,6 +77,10 @@ export function revisitPromptDue(store: PromptStore, now = Date.now()): boolean 
   return done === null && visitDays(store, now).length >= REVISIT_DISTINCT_DAYS;
 }
 
+export function revisitPromptDone(store: PromptStore): boolean {
+  return read(store, REVISIT_DONE_KEY) === "1";
+}
+
 /** The visitor closed the returning-visit prompt or followed it; it does not show again. */
 export function finishRevisitPrompt(store: PromptStore): void {
   write(store, REVISIT_DONE_KEY, "1");

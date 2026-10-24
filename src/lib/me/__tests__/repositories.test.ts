@@ -161,22 +161,29 @@ describe("user favorites", () => {
 
 describe("user settings", () => {
   it("returns the defaults before anything is saved", async () => {
-    await expect(getUserSettings(db, "owner")).resolves.toEqual({ defaultMount: "X", locale: null });
+    await expect(getUserSettings(db, "owner")).resolves.toEqual({ defaultMount: "X", locale: null, revisitPromptDone: false });
   });
 
   it("merges each patch into the saved settings", async () => {
     await updateUserSettings(db, { userId: "owner", patch: { locale: "zh" } });
     const settings = await updateUserSettings(db, { userId: "owner", patch: { defaultMount: "G" } });
 
-    expect(settings).toEqual({ defaultMount: "G", locale: "zh" });
+    expect(settings).toEqual({ defaultMount: "G", locale: "zh", revisitPromptDone: false });
     await expect(getUserSettings(db, "owner")).resolves.toEqual(settings);
+  });
+
+  it("remembers that the returning-visit prompt was finished", async () => {
+    await updateUserSettings(db, { userId: "owner", patch: { revisitPromptDone: true } });
+    await updateUserSettings(db, { userId: "owner", patch: { locale: "en" } });
+
+    await expect(getUserSettings(db, "owner")).resolves.toMatchObject({ revisitPromptDone: true, locale: "en" });
   });
 
   it("can clear the language back to unset", async () => {
     await updateUserSettings(db, { userId: "owner", patch: { locale: "en" } });
     await updateUserSettings(db, { userId: "owner", patch: { locale: null } });
 
-    await expect(getUserSettings(db, "owner")).resolves.toEqual({ defaultMount: "X", locale: null });
+    await expect(getUserSettings(db, "owner")).resolves.toEqual({ defaultMount: "X", locale: null, revisitPromptDone: false });
   });
 
   it("rejects an unknown mount at the database level", () => {
