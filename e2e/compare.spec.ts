@@ -39,6 +39,13 @@ test.describe("Compare flow", () => {
     await expect(page.getByText(LENS_B_MODEL).first()).toBeVisible();
   });
 
+  test("compare page links the collections both lenses share", async ({ page }) => {
+    await page.goto(`/en/lenses/x/compare?ids=${LENS_A},${LENS_B}`);
+
+    const section = page.locator("section").filter({ has: page.getByRole("heading", { name: "Featured In" }) });
+    await expect(section.getByRole("link", { name: /lenses ·/ }).first()).toBeVisible();
+  });
+
   test("compare page with fewer than 2 ids still renders without crashing", async ({
     page,
   }) => {
