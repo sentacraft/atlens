@@ -522,6 +522,66 @@
     "notFoundTitle": "Lens Not Found"
   },
   "LensReviews": {
+    "findings": {
+      "title": "What reviews say",
+      "subtitle": "Summarized from {count} published reviews; tap a note for its source",
+      "summary": "Overall",
+      "conflict": "Mixed views",
+      "pros": "Strengths",
+      "cons": "Weaknesses",
+      "count": "{count}",
+      "weight": "{reviews} reviews · {outlets} outlets",
+      "weightSingle": "1 review",
+      "expand": "Show all {count}",
+      "collapse": "Show less",
+      "showDetails": "Show {count} more",
+      "hideDetails": "Hide details",
+      "sourcesLead": "Sources: ",
+      "otherMount": "Tested on another mount",
+      "polarity": {
+        "positive": "Positive",
+        "negative": "Negative",
+        "mixed": "Mixed"
+      },
+      "staleness": {
+        "pre_x_trans_iv_body": "Some sources tested on older bodies",
+        "unknown_body": "Some sources name no body",
+        "pre_production": "Some sources used a pre-production copy"
+      },
+      "groups": {
+        "image": "Image quality",
+        "focus": "Focus and stabilization",
+        "build": "Build and handling"
+      },
+      "aspects": {
+        "resolution_center": "Center sharpness",
+        "resolution_edge": "Edge sharpness",
+        "field_curvature": "Field curvature",
+        "distortion": "Distortion",
+        "vignetting": "Vignetting",
+        "chromatic_aberration": "Chromatic aberration",
+        "bokeh": "Bokeh",
+        "flare": "Flare",
+        "sunstar": "Sunstars",
+        "coma": "Coma",
+        "astigmatism": "Astigmatism",
+        "focus_shift": "Focus shift",
+        "autofocus": "Autofocus",
+        "manual_focus": "Manual focus",
+        "focus_breathing": "Focus breathing",
+        "stabilization": "Stabilization",
+        "build": "Build",
+        "weather_sealing": "Weather sealing",
+        "handling": "Handling",
+        "size_weight": "Size and weight",
+        "close_focus": "Close focus",
+        "compatibility": "Compatibility",
+        "sample_variation": "Sample variation",
+        "color": "Color",
+        "award": "Award",
+        "overall": "Overall"
+      }
+    },
     "title": "Reviews & samples",
     "subtitle": "Search other sites for reviews and sample photos of this lens. Results come from each site.",
     "searchKeyword": "review",

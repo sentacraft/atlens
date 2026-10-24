@@ -522,6 +522,66 @@
     "notFoundTitle": "未找到这支镜头"
   },
   "LensReviews": {
+    "findings": {
+      "title": "评测",
+      "subtitle": "根据 {count} 篇公开评测整理，点角标查看来源",
+      "summary": "整体",
+      "conflict": "看法不一",
+      "pros": "优点",
+      "cons": "不足",
+      "count": "{count} 条",
+      "weight": "{reviews} 篇评测 · {outlets} 家",
+      "weightSingle": "1 篇评测",
+      "expand": "展开全部 {count} 条",
+      "collapse": "收起",
+      "showDetails": "展开 {count} 条细节",
+      "hideDetails": "收起细节",
+      "sourcesLead": "参考来源：",
+      "otherMount": "在其他卡口上测试",
+      "polarity": {
+        "positive": "正面",
+        "negative": "负面",
+        "mixed": "褒贬不一"
+      },
+      "staleness": {
+        "pre_x_trans_iv_body": "部分来源用较老机身测试",
+        "unknown_body": "部分来源未注明机身",
+        "pre_production": "部分来源用工程样品"
+      },
+      "groups": {
+        "image": "画质",
+        "focus": "对焦与防抖",
+        "build": "做工与操控"
+      },
+      "aspects": {
+        "resolution_center": "中心锐度",
+        "resolution_edge": "边缘锐度",
+        "field_curvature": "场曲",
+        "distortion": "畸变",
+        "vignetting": "暗角",
+        "chromatic_aberration": "色差",
+        "bokeh": "焦外",
+        "flare": "眩光",
+        "sunstar": "星芒",
+        "coma": "彗差",
+        "astigmatism": "像散",
+        "focus_shift": "焦点偏移",
+        "autofocus": "自动对焦",
+        "manual_focus": "手动对焦",
+        "focus_breathing": "呼吸效应",
+        "stabilization": "防抖",
+        "build": "做工",
+        "weather_sealing": "防尘防滴",
+        "handling": "操控",
+        "size_weight": "尺寸重量",
+        "close_focus": "最近对焦",
+        "compatibility": "兼容性",
+        "sample_variation": "个体差异",
+        "color": "色彩",
+        "award": "奖项",
+        "overall": "整体评价"
+      }
+    },
     "title": "评测与样张",
     "subtitle": "在其他平台搜索这支镜头的评测和样张，结果由各平台提供",
     "searchKeyword": "评测",
