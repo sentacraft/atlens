@@ -12,6 +12,7 @@ import Iris from "@/components/iris/Iris";
 import AiTag from "@/components/iris/AiTag";
 import { IRIS_NAV } from "@/config/iris-config";
 import Markdown from "@/components/askiris/Markdown";
+import { CitationsProvider, SourceList } from "@/components/askiris/ReviewSources";
 import RecommendationDeck from "@/components/askiris/RecommendationDeck";
 import LensTable from "@/components/askiris/LensTable";
 import ResponseFeedback from "@/components/askiris/ResponseFeedback";
@@ -22,6 +23,7 @@ import { ASK_FOR_GEAR, type GearRequestInput, type GearRequestOutput } from "@/l
 import type { LensSummary } from "@/lib/lens/data";
 import type { LensTableColumn, Recommendation, ResolvedLens } from "@/lib/ai/recall";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
+import { messageCitations } from "@/lib/askiris/review-citations";
 
 function traceSummary(output: unknown): string {
   if (output && typeof output === "object") {
@@ -152,6 +154,7 @@ const TOOL_ACTIVITY: Record<string, ActivityKey> = {
   queryLenses: "gathering",
   searchLensByName: "gathering",
   lensDetails: "gathering",
+  lensReviews: "gathering",
   recommendLenses: "composing",
   listLenses: "composing",
 };
@@ -175,6 +178,8 @@ function activityKey(messages: AskIrisUIMessage[], busy: boolean, debug: boolean
   return "thinking";
 }
 
+const NO_CITATIONS = { byKey: new Map(), list: [] };
+
 export default function AskIrisThread({
   messages,
   debug = false,
@@ -192,8 +197,9 @@ export default function AskIrisThread({
 
   return (
     <>
-      {messages.map((message) => {
+      {messages.map((message, index) => {
         const isUser = message.role === "user";
+        const citations = isUser ? null : messageCitations(messages, index);
         const turnId = isUser ? null : (message.metadata?.turnId ?? null);
         const isLatest = message.id === messages[messages.length - 1]?.id;
         const isStreamingResponse = busy && isLatest;
@@ -203,6 +209,7 @@ export default function AskIrisThread({
             key={message.id}
             className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start"}`}
           >
+            <CitationsProvider citations={citations ?? NO_CITATIONS}>
             {isUser ? null : (
               <div className="flex items-center gap-1.5 px-1">
                 <span className="border-border bg-background inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border">
@@ -238,6 +245,8 @@ export default function AskIrisThread({
               }
               return null;
             })}
+            </CitationsProvider>
+            {citations && !isStreamingResponse ? <SourceList list={citations.list} /> : null}
             {!isUser && turnId && !isStreamingResponse && !awaitingUser ? (
               <ResponseFeedback responseMessageId={message.id} />
             ) : null}
