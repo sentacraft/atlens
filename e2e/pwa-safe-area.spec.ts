@@ -136,6 +136,7 @@ test.describe("Drawer bottom inset", () => {
       probe.remove();
       return { maxHeight: parseFloat(getComputedStyle(el).maxHeight), appHeight };
     });
-    expect(maxHeight).toBeCloseTo(appHeight * 0.85 + HOME_BAR, 0);
+    // A short screen is capped by the notch instead: what is left once it and a 1rem gap are taken.
+    expect(maxHeight).toBeCloseTo(Math.min(appHeight * 0.85 + HOME_BAR, appHeight - NOTCH_TOP - 16), 0);
   });
 });
