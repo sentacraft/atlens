@@ -538,16 +538,17 @@
       "reviewCount": "{count} 篇评测",
       "reviewSources": "{aspect}的 {count} 篇评测",
       "disagree": "各家看法不一：{aspects}",
-      "otherMount": "在其他卡口上测试",
       "polarity": {
         "positive": "亮点",
         "negative": "需要留意",
         "mixed": "褒贬不一"
       },
-      "staleness": {
-        "pre_x_trans_iv_body": "部分来源用较老机身测试",
-        "unknown_body": "部分来源未注明机身",
-        "pre_production": "部分来源用工程样品"
+      "staleNote": "部分评测{causes}，结论不一定适用于你的机身。",
+      "staleCause": {
+        "pre_x_trans_iv_body": "用的是较老机身",
+        "unknown_body": "没有注明机身",
+        "pre_production": "用的是工程样品",
+        "other_mount": "是在其他卡口上测的"
       },
       "groups": {
         "image": "画质",

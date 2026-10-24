@@ -89,28 +89,26 @@ function ReviewsButton({ claim, citations }: { claim: ReviewClaimView; citations
   );
 }
 
-/** A clock after a finding whose sources may not hold on current bodies; it opens the reason. */
+/** A clock after a finding whose sources may not hold on current bodies; it opens the reason in one sentence. */
 function StaleHint({ claim }: { claim: ReviewClaimView }) {
   const t = useTranslations("LensReviews.findings");
+  const format = useFormatter();
   if (claim.staleness.length === 0 && !claim.otherMount) {
     return null;
   }
-  const notes = [...claim.staleness.map((reason) => t(`staleness.${reason}`)), ...(claim.otherMount ? [t("otherMount")] : [])];
+  const causes = [...claim.staleness.map((reason) => t(`staleCause.${reason}`)), ...(claim.otherMount ? [t("staleCause.other_mount")] : [])];
+  const note = t("staleNote", { causes: format.list(causes, { type: "disjunction" }) });
   return (
     <Popover.Root>
       <Popover.Trigger
-        aria-label={notes.join("; ")}
+        aria-label={note}
         className="relative ml-1.5 inline-flex align-[-2px] text-zinc-400 outline-none after:absolute after:-inset-x-1 after:-inset-y-2 hover:text-zinc-600 focus-visible:ring-2 focus-visible:ring-zinc-400"
       >
         <Clock className="size-3.5" aria-hidden />
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner side="top" align="center" sideOffset={6} collisionPadding={12}>
-          <Popover.Popup className={cn(MENU_POPUP_CLS, "max-w-64 px-3 py-2 text-xs leading-relaxed text-zinc-700")}>
-            {notes.map((note) => (
-              <p key={note}>{note}</p>
-            ))}
-          </Popover.Popup>
+          <Popover.Popup className={cn(MENU_POPUP_CLS, "max-w-64 px-3 py-2 text-xs leading-relaxed text-zinc-700")}>{note}</Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>
     </Popover.Root>

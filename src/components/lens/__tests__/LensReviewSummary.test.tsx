@@ -75,6 +75,14 @@ describe("LensReviewSummary", () => {
     expect(screen.getByRole("link", { name: /Site B/ })).toBeTruthy();
   });
 
+  it("explains why a finding may not hold on the reader's body in one sentence", async () => {
+    renderWith({
+      ...DATA,
+      claims: [{ ...claim("autofocus", "positive", "对焦快", ["a", "b"]), staleness: ["pre_x_trans_iv_body", "unknown_body"], otherMount: true }],
+    } as LensReviewsView);
+    expect(await screen.findByRole("button", { name: "staleNote(staleCause.pre_x_trans_iv_body, staleCause.unknown_body, staleCause.other_mount)" })).toBeTruthy();
+  });
+
   it("renders nothing for a lens without findings", async () => {
     const { container } = renderWith({ sources: [], claims: [] });
     await new Promise((resolve) => setTimeout(resolve, 0));

@@ -41,5 +41,5 @@ test("adjacent source markers each take their own hover and click", async ({ pag
   for (const marker of await markers.all()) {
     expect(await ownsItsBox(marker)).toBe(true);
   }
-  expect(await ownsItsBox(row.getByRole("button", { name: "Some sources name no body" }))).toBe(true);
+  expect(await ownsItsBox(row.getByRole("button", { name: /^Some reviewers didn't name the body/ }))).toBe(true);
 });
