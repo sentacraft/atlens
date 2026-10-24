@@ -16,8 +16,10 @@ vi.mock("@/lib/auth-client", async (importOriginal) => ({
   },
 }));
 vi.mock("next-intl", () => ({
-  useTranslations: () => (key: string, values?: Record<string, unknown>) =>
-    values ? `${key} ${JSON.stringify(values)}` : key,
+  useTranslations: () =>
+    Object.assign((key: string, values?: Record<string, unknown>) => (values ? `${key} ${JSON.stringify(values)}` : key), {
+      rich: (key: string) => key,
+    }),
   useLocale: () => "zh",
 }));
 vi.mock("@/i18n/navigation", () => ({

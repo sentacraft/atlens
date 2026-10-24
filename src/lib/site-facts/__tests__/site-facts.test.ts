@@ -84,3 +84,12 @@ describe("siteFacts", () => {
     expect(factsFor("project", "en")).toContain(`(links: [GitHub](page:repo), [${en.AskIris.linkDataLicense}](page:dataLicense))`);
   });
 });
+
+describe("site facts are plain text", () => {
+  it("carry no UI markup into what Iris reads", () => {
+    for (const locale of ["en", "zh"]) {
+      const text = siteFacts([...SITE_TOPICS], locale, "X").flatMap((t) => t.facts).join("\n");
+      expect(text).not.toMatch(/<\/?iris>/);
+    }
+  });
+});

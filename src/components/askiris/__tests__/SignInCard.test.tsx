@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   openSignIn: vi.fn(),
 }));
 
-vi.mock("next-intl", () => ({ useTranslations: () => (key: string) => key }));
+vi.mock("next-intl", () => ({ useTranslations: () => Object.assign((key: string) => key, { rich: (key: string) => key }) }));
 vi.mock("@/lib/auth-client", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/auth-client")>()),
   authClient: { useSession: () => mocks.session },

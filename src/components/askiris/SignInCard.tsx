@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { SIGN_IN_CARD_SOURCE, type SignInCardReason } from "@/lib/sign-in-pitch";
 import SignInBenefits from "@/components/auth/SignInBenefits";
+import FreeNote from "@/components/auth/FreeNote";
 import { ACTION_PRIMARY_CLS, ACTION_QUIET_CLS, CHAT_CARD_CLS, IRIS_PROSE_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
@@ -29,7 +30,10 @@ export default function SignInCard({
         <p>{t(`leadIn.${reason}`)}</p>
       </div>
       <section aria-label={t(`title.${reason}`)} className={cn(CHAT_CARD_CLS, "flex flex-col gap-3.5 p-4")}>
-        <h3 className="text-[15px] font-semibold text-zinc-900">{t(`title.${reason}`)}</h3>
+        <div className="flex flex-col gap-1.5">
+          <h3 className="text-[15px] font-semibold text-zinc-900">{t(`title.${reason}`)}</h3>
+          <FreeNote />
+        </div>
         <SignInBenefits source={SIGN_IN_CARD_SOURCE[reason]} className="text-[13px] leading-5" />
         <div className="flex flex-wrap items-center gap-2">
           <button

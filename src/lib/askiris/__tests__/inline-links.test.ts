@@ -14,3 +14,13 @@ describe("fact link labels", () => {
     }
   });
 });
+
+describe("page link labels", () => {
+  it("are plain text in every locale", () => {
+    for (const locale of ["en", "zh"]) {
+      for (const { label } of Object.values(PAGE_LINKS)) {
+        expect(fillUiStrings(label, locale)).not.toMatch(/<\/?\w+>/);
+      }
+    }
+  });
+});

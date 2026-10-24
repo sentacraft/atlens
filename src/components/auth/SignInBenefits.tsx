@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
 import { SIGN_IN_PITCHES, type SignInSource } from "@/lib/sign-in-pitch";
 import { cn } from "@/lib/utils";
+import { tagIris } from "@/components/iris/AiTag";
 
 /** What an account adds, as ticked lines in the order the source pitches them. */
 export default function SignInBenefits({ source, className }: { source: SignInSource; className?: string }) {
@@ -11,7 +12,7 @@ export default function SignInBenefits({ source, className }: { source: SignInSo
       {SIGN_IN_PITCHES[source].benefits.map((key) => (
         <li key={key} className="flex gap-2">
           <Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-900" strokeWidth={2.5} />
-          {t(key)}
+          <span>{t.rich(key, { iris: tagIris })}</span>
         </li>
       ))}
     </ul>
