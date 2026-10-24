@@ -79,14 +79,15 @@ export default async function AnalyticsAccountsPage({
         info={
           <div className="space-y-2">
             <p>
-              One email address is one account: Google and an email code both sign in to it, whichever came first. Guest
+              One email address is one account: Google, GitHub and an email code all sign in to it, whichever came first. Guest
               Iris users are not accounts.
             </p>
             <Definitions
               items={[
-                { term: "Google", description: "Created by a Google sign-in" },
+                { term: "Google", description: "Created by a Google sign-in, One Tap included" },
+                { term: "GitHub", description: "Created by a GitHub sign-in" },
                 { term: "Email code", description: "Created by an email code" },
-                { term: "Later linked Google", description: "Created by an email code, then signed in with Google using the same address" },
+                { term: "Later linked Google or GitHub", description: "Created by an email code, then signed in with Google or GitHub using the same address" },
               ]}
             />
           </div>
