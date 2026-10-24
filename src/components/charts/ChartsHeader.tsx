@@ -4,6 +4,7 @@ import { chartPath } from "@/lib/url/routes";
 import type { Mount } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import ScopeNote from "@/components/charts/ScopeNote";
+import { DataSourcePill } from "@/components/lens/DataSource";
 
 const TABS = [
   { chart: "timeline", key: "tabTimeline", href: (mount: Mount) => chartPath(mount, "timeline") },
@@ -19,7 +20,6 @@ export default async function ChartsHeader({
   description,
   note,
   action,
-  children,
 }: {
   locale: string;
   mount: Mount;
@@ -30,7 +30,6 @@ export default async function ChartsHeader({
   note: string;
   /** The page's share button, at the right end of the tab row. */
   action: React.ReactNode;
-  children?: React.ReactNode;
 }) {
   const t = await getTranslations({ locale, namespace: "Charts" });
   return (
@@ -56,8 +55,8 @@ export default async function ChartsHeader({
       <div className="flex flex-col gap-2">
         <h1 className="font-heading text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">{title}</h1>
         <p className="text-sm leading-relaxed text-zinc-600">{description}</p>
+        <DataSourcePill />
         <ScopeNote>{note}</ScopeNote>
-        {children}
       </div>
     </header>
   );

@@ -47,24 +47,14 @@ export function DataSourceBar({ source, className }: { source: ReactNode; classN
   );
 }
 
-export function DataSourceInline({ className }: { className?: string }) {
+/** The data-source note as a small pill under a page's subtitle, its own line so it does not read as body text. */
+export function DataSourcePill({ className }: { className?: string }) {
   const t = useTranslations("DataSource");
-  const text = t("inline");
-  const split = text.lastIndexOf(" ") + 1;
-  const head = text.slice(0, split);
-  const tail = text.slice(split);
-
   return (
-    <span className={cn("text-xs text-zinc-500", className)}>
-      <BadgeCheck className="mr-1 inline size-3.5 -mt-0.5 text-zinc-900" aria-hidden="true" />
-      {head}
-      {/* The last word rides with the info icon; otherwise the icon wraps onto a line of its own on phones. */}
-      <span className="whitespace-nowrap">
-        {tail}
-        <span className="ml-1 inline-flex align-middle -mt-0.5">
-          <DataSourcePopover />
-        </span>
-      </span>
+    <span className={cn("inline-flex h-6 items-center gap-1 self-start rounded-full bg-zinc-100 px-2.5 text-[11px] text-zinc-600", className)}>
+      <BadgeCheck className="size-3.5 shrink-0 text-zinc-900" aria-hidden="true" />
+      {t("inline")}
+      <DataSourcePopover />
     </span>
   );
 }

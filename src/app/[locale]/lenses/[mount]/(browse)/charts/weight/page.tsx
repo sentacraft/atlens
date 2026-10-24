@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import ChartsHeader from "@/components/charts/ChartsHeader";
-import { DataSourceInline } from "@/components/lens/DataSource";
 import { WeightShare, WeightShareFromUrl } from "@/components/charts/ChartShare";
 import WeightLadderChart, { WeightLadderChartFromUrl } from "@/components/charts/WeightLadderChart";
 import JsonLd from "@/components/seo/JsonLd";
@@ -115,9 +114,7 @@ export default async function WeightPage({ params }: { params: Params }) {
               <WeightShareFromUrl {...shareProps} />
             </Suspense>
           }
-        >
-          <DataSourceInline />
-        </ChartsHeader>
+        />
         <Suspense fallback={<WeightLadderChart tiers={ladder.tiers} mode={{ kind: "page", initial: {}, mount: data.resolvedMount, brands: data.brands }} />}>
           <WeightLadderChartFromUrl {...chartProps} />
         </Suspense>

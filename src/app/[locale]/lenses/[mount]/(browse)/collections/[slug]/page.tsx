@@ -21,7 +21,7 @@ import BackToTopButton from "@/components/nav/BackToTopButton";
 import { ShareButton } from "@/components/share/ShareButton";
 import Breadcrumb from "@/components/nav/Breadcrumb";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
-import { DataSourceInline } from "@/components/lens/DataSource";
+import { DataSourcePill } from "@/components/lens/DataSource";
 import { browsePath, collectionPath, collectionsPath } from "@/lib/url/routes";
 
 type Params = Promise<{ locale: string; mount: string; slug: string }>;
@@ -136,10 +136,8 @@ export default async function CollectionPage({
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             {title}
           </h1>
-          <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
-            {statsLabel}
-            <DataSourceInline />
-          </p>
+          <p className="mt-2 text-xs text-zinc-500">{statsLabel}</p>
+          <DataSourcePill className="mt-2" />
           <p className="mt-3 text-sm leading-relaxed text-zinc-700 sm:text-base">
             {description}
           </p>
