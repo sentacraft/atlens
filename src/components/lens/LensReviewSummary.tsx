@@ -2,7 +2,7 @@
 
 import { Popover } from "@base-ui/react/popover";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowUpRight, CircleAlert, CircleCheck, Clock, Contrast, MessagesSquare } from "lucide-react";
+import { ArrowUpRight, CircleAlert, CircleCheck, Clock, MessagesSquare, type LucideProps } from "lucide-react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { CitationsProvider, SourceList, SourceMarker } from "@/components/askiris/ReviewSources";
@@ -18,10 +18,20 @@ import { lensReviewsQuery } from "@/lib/lens/reviews-client";
 import { layoutReviews, type ReviewClaimView } from "@/lib/lens/reviews-view";
 import { cn } from "@/lib/utils";
 
+// A ring with its right half filled, drawn like the Lucide circles beside it; Lucide's Contrast nests a second ring.
+function HalfFilledCircle(props: LucideProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor" />
+    </svg>
+  );
+}
+
 const POLARITY_ICON = {
   positive: { Icon: CircleCheck, cls: REVIEW_POSITIVE_CLS },
   negative: { Icon: CircleAlert, cls: REVIEW_NEGATIVE_CLS },
-  mixed: { Icon: Contrast, cls: "text-zinc-500" },
+  mixed: { Icon: HalfFilledCircle, cls: "text-zinc-500" },
 } as const;
 
 const QUIET_TRIGGER_CLS =
