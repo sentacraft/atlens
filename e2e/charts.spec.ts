@@ -34,7 +34,9 @@ test.describe("Charts", () => {
     await page.goto(TIMELINE, { waitUntil: "networkidle" });
     const earlier = page.locator('[data-scroll-hint="left"]').locator("visible=true");
     const later = page.locator('[data-scroll-hint="right"]').locator("visible=true");
-    await expect(page.getByText("2026", { exact: true }).locator("visible=true")).toBeInViewport();
+    const newest = page.getByText("2026", { exact: true }).locator("visible=true");
+    await earlier.scrollIntoViewIfNeeded();
+    await expect(newest).toBeInViewport();
     await expect(earlier).toHaveCSS("opacity", "1");
     await expect(later).toHaveCSS("opacity", "0");
     await earlier.evaluate((hint) => {
