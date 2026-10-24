@@ -47,13 +47,14 @@ const LAYOUT = {
     name: PAGE_SECTION_HEADING_CLS,
     detail: "text-xs",
     rows: "flex flex-col",
-    row: "h-12 gap-2 sm:gap-3",
-    rank: "w-6 text-[11px] sm:w-8",
-    image: "size-9 sm:size-10",
+    row: "grid-cols-[1.5rem_2.25rem_minmax(0,1fr)_auto_auto] gap-x-2 gap-y-1.5 py-2 sm:h-12 sm:grid-cols-[2rem_2.5rem_minmax(0,1fr)_30%_3.5rem_auto] sm:gap-x-3 sm:py-0",
+    rank: "row-span-2 text-[11px] sm:row-span-1",
+    image: "row-span-2 size-9 sm:row-span-1 sm:size-10",
     brand: "text-[9px]",
     model: "text-[13px]",
-    bar: "w-[34%] sm:w-[38%]",
-    weight: "text-[13px]",
+    bar: "col-start-3 col-end-6 row-start-2 sm:col-start-4 sm:col-end-5 sm:row-start-1",
+    weight: "col-start-4 row-start-1 text-[13px] sm:col-start-5",
+    actions: "col-start-5 row-start-1 row-span-2 sm:col-start-6 sm:row-span-1",
     reference: "h-9 text-xs",
   },
   poster: {
@@ -63,13 +64,14 @@ const LAYOUT = {
     name: "font-heading text-[28px] font-bold text-zinc-900",
     detail: "text-base",
     rows: "columns-2 gap-x-10",
-    row: "h-14 gap-3 break-inside-avoid",
-    rank: "w-8 text-xs",
+    row: "h-14 grid-cols-[2rem_2.75rem_minmax(0,1fr)_22%_3.25rem] gap-x-3 break-inside-avoid",
+    rank: "text-xs",
     image: "size-11",
     brand: "text-[10px]",
     model: "text-sm",
-    bar: "w-[34%]",
-    weight: "text-sm",
+    bar: "col-start-4",
+    weight: "col-start-5 text-sm",
+    actions: "",
     reference: "h-10 text-sm break-inside-avoid",
   },
 } as const;
@@ -222,20 +224,22 @@ function LensRow({
   const name = `${brandLabel(tBrand, lens.brand)} ${lens.model}`;
 
   return (
-    <div className={cn("group relative flex items-center border-b border-zinc-100", cls.row)}>
+    <div className={cn("group relative grid items-center border-b border-zinc-100", cls.row)}>
       {handlers && <ChartLensItem lens={lens} handlers={handlers} className="absolute inset-0 z-0 rounded-md hover:bg-zinc-50" />}
-      <span className={cn("pointer-events-none relative shrink-0 text-right tabular-nums text-zinc-400", cls.rank)}>{rank}</span>
-      <Image src={getLensImageUrl(lens.id)} alt="" width={48} height={48} loading={handlers ? "lazy" : "eager"} className={cn("pointer-events-none relative shrink-0 object-contain", cls.image)} />
-      <span className="pointer-events-none relative flex min-w-0 flex-1 flex-col">
+      <span className={cn("pointer-events-none relative text-right tabular-nums text-zinc-400", cls.rank)}>{rank}</span>
+      <Image src={getLensImageUrl(lens.id)} alt="" width={48} height={48} loading={handlers ? "lazy" : "eager"} className={cn("pointer-events-none relative object-contain", cls.image)} />
+      <span className="pointer-events-none relative col-start-3 row-start-1 flex min-w-0 flex-col">
         <span className={cn("truncate uppercase tracking-[0.12em] text-zinc-500", cls.brand)}>{brandLabel(tBrand, lens.brand)}</span>
         <span className={cn("truncate text-zinc-900", cls.model)}>{lens.model}</span>
       </span>
-      <span className={cn("pointer-events-none relative flex shrink-0 items-center gap-1.5", cls.bar)}>
-        <span className="h-1.5 rounded-full bg-zinc-900" style={{ width: `${barPct * 0.62}%` }} aria-hidden="true" />
-        <span className={cn("shrink-0 font-semibold tabular-nums text-zinc-900", cls.weight)}>{t("weight", { weight: lens.weightG })}</span>
+      <span className={cn("pointer-events-none relative flex items-center", cls.bar)} aria-hidden="true">
+        <span className="h-1.5 rounded-full bg-zinc-900" style={{ width: `${barPct}%` }} />
+      </span>
+      <span className={cn("pointer-events-none relative text-right font-semibold tabular-nums text-zinc-900", cls.weight)}>
+        {t("weight", { weight: lens.weightG })}
       </span>
       {handlers && (
-        <span className="relative flex shrink-0 items-center gap-1 pointer-coarse:hidden">
+        <span className={cn("relative flex items-center gap-1 pointer-coarse:hidden", cls.actions)}>
           <button
             type="button"
             onClick={compare.onToggle}
@@ -253,7 +257,7 @@ function LensRow({
         </span>
       )}
       {handlers && (compare.selected || favorited) && (
-        <span className="pointer-events-none relative flex shrink-0 items-center gap-1 pointer-fine:hidden" aria-hidden="true">
+        <span className={cn("pointer-events-none relative flex items-center gap-1 pointer-fine:hidden", cls.actions)} aria-hidden="true">
           {compare.selected && (
             <span className="flex size-5 items-center justify-center rounded-full bg-zinc-900 text-white">
               <Check className="size-3" strokeWidth={3} />
