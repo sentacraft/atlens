@@ -4,10 +4,11 @@ import { Popover } from "@base-ui/react/popover";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight, CircleAlert, CircleCheck, Clock, MessagesSquare, type LucideProps } from "lucide-react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CitationsProvider, SourceList, SourceMarker } from "@/components/askiris/ReviewSources";
 import {
   ACTION_PRIMARY_CLS,
+  ANCHORED_SECTION_CLS,
   MENU_POPUP_CLS,
   PAGE_SECTION_CLS,
   REVIEW_NEGATIVE_CLS,
@@ -199,6 +200,8 @@ function SideList({
   );
 }
 
+const REVIEWS_ANCHOR = "reviews";
+
 const SKELETON_WIDTHS = ["w-3/5", "w-1/2", "w-2/3"];
 
 /** The aspects a guest's view leaves out, named over placeholder bars that fade out: the text itself is never sent. */
@@ -225,15 +228,30 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
   const openSignIn = useSignInDialog();
   const { data } = useQuery(lensReviewsQuery(lensId, locale, Boolean(accountUser(session))));
   const [expanded, setExpanded] = useState(false);
+  const [askedToSignIn, setAskedToSignIn] = useState(false);
+  const [linked, setLinked] = useState(() => typeof window !== "undefined" && window.location.hash === `#${REVIEWS_ANCHOR}`);
+  const sectionRef = useRef<HTMLElement>(null);
   const layout = useMemo(() => (data ? layoutReviews(data) : null), [data]);
   const citations = useMemo(
     () => (data && layout ? numberSources(layout.sourceOrder, data.sources) : null),
     [data, layout],
   );
+  const autoOpen = Boolean(data && !data.locked && (askedToSignIn || linked));
+  useEffect(() => {
+    if (autoOpen) {
+      sectionRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+  }, [autoOpen]);
+  const open = expanded || autoOpen;
   if (!data || !layout || !citations || layout.total === 0) {
     return null;
   }
   const locked = data.locked;
+  const collapse = () => {
+    setExpanded(false);
+    setAskedToSignIn(false);
+    setLinked(false);
+  };
   const total = locked?.total ?? layout.total;
   const disputed = (
     locked?.disputed ??
@@ -251,7 +269,13 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
     ) : null;
 
   return (
-    <section aria-labelledby="lens-review-findings" data-nosnippet="" className={cn(PAGE_SECTION_CLS, "flex flex-col gap-4")}>
+    <section
+      ref={sectionRef}
+      id={REVIEWS_ANCHOR}
+      aria-labelledby="lens-review-findings"
+      data-nosnippet=""
+      className={cn(PAGE_SECTION_CLS, ANCHORED_SECTION_CLS)}
+    >
       <div className="flex flex-col gap-1">
         <h2 id="lens-review-findings" className={SECTION_HEADING_CLS}>{t("title")}</h2>
         <p className="text-[13px] text-zinc-500">{t("subtitle", { count: String(locked?.sourceCount ?? citations.list.length) })}</p>
@@ -273,7 +297,7 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
           </div>
         ))}
 
-        {expanded ? (
+        {open ? (
           <>
             {layout.groups.map(({ group, claims }) => (
               <div key={group} className="flex flex-col">
@@ -304,7 +328,10 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
           {disputedLine}
           <button
             type="button"
-            onClick={() => openSignIn("reviews")}
+            onClick={() => {
+              setAskedToSignIn(true);
+              openSignIn("reviews", { returnTo: `${window.location.href.split("#")[0]}#${REVIEWS_ANCHOR}` });
+            }}
             className={cn(ACTION_PRIMARY_CLS, "-mt-1 h-11 self-stretch rounded-lg px-4 text-sm font-medium sm:h-10 sm:self-center")}
           >
             {t("expandSignIn", { count: String(total) })}
@@ -312,15 +339,15 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
         </div>
       ) : (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-          {expanded ? <span className="hidden sm:block" /> : (disputedLine ?? <span className="hidden sm:block" />)}
+          {open ? <span className="hidden sm:block" /> : (disputedLine ?? <span className="hidden sm:block" />)}
           {total > layout.pros.length + layout.cons.length ? (
             <button
               type="button"
-              onClick={() => setExpanded(!expanded)}
-              aria-expanded={expanded}
+              onClick={() => (open ? collapse() : setExpanded(true))}
+              aria-expanded={open}
               className="min-h-11 shrink-0 rounded-lg border border-zinc-200 bg-white px-3 text-[13px] font-medium text-zinc-700 transition-colors hover:bg-zinc-50 sm:min-h-8"
             >
-              {expanded ? t("collapse") : t("expand", { count: String(total) })}
+              {open ? t("collapse") : t("expand", { count: String(total) })}
             </button>
           ) : null}
         </div>
