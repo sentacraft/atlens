@@ -160,7 +160,7 @@ export default memo(function LensCard({
             </dl>
 
             <div className="@container/lens-row flex items-center gap-2">
-              <ApproxPrice pricing={lens.pricing} className="flex-1 @max-[230px]/lens-row:text-[13px]" />
+              <ApproxPrice pricing={lens.pricing} className="flex-1" />
               <LensActions
                 lensId={lens.id}
                 lensName={lens.model}
