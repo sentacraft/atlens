@@ -4,13 +4,13 @@ import { useLayoutEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { ChevronsLeft, ChevronsRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import ChartLensCard from "@/components/charts/ChartLensCard";
 import ChartLensItem from "@/components/charts/ChartLensItem";
 import ChartLensSheet from "@/components/charts/ChartLensSheet";
 import ChartChips from "@/components/charts/ChartChips";
 import { HorizontalScrollRail } from "@/components/ui/horizontal-scroll-rail";
-import { ScrollChevron } from "@/components/ui/scroll-chevron";
 import { useChartCard, type ChartItemHandlers } from "@/hooks/useChartCard";
 import { useChartSelection } from "@/hooks/useChartSelection";
 import { assignLanes, type TimelineEntry, type TimelineYear } from "@/lib/charts/timeline";
@@ -30,7 +30,7 @@ const GEOMETRY = {
   compact: { height: 420, sectionHeight: 340, padTop: 10, padBottom: 40, size: 24, laneStep: 13, minColWidth: 56 },
 } as const;
 const WIDE_PAD = { left: 52, right: 12 };
-const COMPACT_AXIS_WIDTH = 40;
+const COMPACT_AXIS_WIDTH = 28;
 const TICKS = [8, 16, 23, 35, 56, 90, 200, 400];
 const DIM = 0.08;
 
@@ -129,12 +129,16 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
     return wide.cols[p.col].center > 0.6 ? x - 288 - 36 : x + 36;
   };
   const plot = { years, dimmed, handlers, active, eager: mode.kind === "poster", yearLabel: (count: number) => t("lensCount", { count }) };
-  const tickLabels = (layout: Layout, width: string) =>
-    layout.ticks.map(({ f, y }) => (
-      <span key={f} className={cn("absolute left-0 text-right text-[11px] tabular-nums text-zinc-500", width)} style={{ top: y - 8 }}>
-        {f}mm
-      </span>
-    ));
+  const tickLabels = (layout: Layout, width: string, unit: "each" | "once") => (
+    <>
+      {unit === "once" && <span className={cn("absolute left-0 top-0 text-right text-[10px] text-zinc-400", width)}>mm</span>}
+      {layout.ticks.map(({ f, y }) => (
+        <span key={f} className={cn("absolute left-0 text-right text-[11px] tabular-nums text-zinc-500", width)} style={{ top: y - 8 }}>
+          {unit === "each" ? `${f}mm` : f}
+        </span>
+      ))}
+    </>
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -160,7 +164,7 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
       )}
 
       <div className={cn("relative", mode.kind !== "poster" && "hidden md:block")} style={{ height: wideHeight }}>
-        {tickLabels(wide, "w-11")}
+        {tickLabels(wide, "w-11", "each")}
         <div className="absolute inset-y-0" style={{ left: WIDE_PAD.left, right: WIDE_PAD.right }}>
           <TimelinePlot {...plot} layout={wide} geometry={GEOMETRY.wide} height={wideHeight}>
             {activeEntry && activeWide && (
@@ -180,7 +184,7 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
 
       {mode.kind !== "poster" && (
         <div className="relative md:hidden" style={{ height: compactHeight }}>
-          {tickLabels(compact, "w-8")}
+          {tickLabels(compact, "w-6", "once")}
           <HorizontalScrollRail
             scrollRef={rail}
             wrapperClassName="absolute inset-y-0 right-0"
@@ -188,8 +192,8 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
             fadeBg="from-white from-40%"
             renderOverlay={({ canScrollLeft, canScrollRight }) => (
               <>
-                <ScrollChevron direction="left" visible={canScrollLeft} ariaLabel={t("earlierYears")} onClick={() => scrollYears(rail.current, -1)} />
-                <ScrollChevron direction="right" visible={canScrollRight} ariaLabel={t("laterYears")} onClick={() => scrollYears(rail.current, 1)} />
+                <ScrollHint side="left" visible={canScrollLeft} />
+                <ScrollHint side="right" visible={canScrollRight} />
               </>
             )}
           >
@@ -204,8 +208,20 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
   );
 }
 
-function scrollYears(el: HTMLDivElement | null, direction: -1 | 1) {
-  el?.scrollBy({ left: direction * 4 * GEOMETRY.compact.minColWidth, behavior: "smooth" });
+/** A small double chevron inside the rail's edge fade, marking the side with more years. */
+function ScrollHint({ side, visible }: { side: "left" | "right"; visible: boolean }) {
+  const Icon = side === "left" ? ChevronsLeft : ChevronsRight;
+  return (
+    <Icon
+      aria-hidden="true"
+      data-scroll-hint={side}
+      className={cn(
+        "pointer-events-none absolute top-1/2 z-10 size-4 -translate-y-1/2 text-zinc-500 transition-opacity",
+        side === "left" ? "left-0.5" : "right-0.5",
+        visible ? "opacity-100" : "opacity-0",
+      )}
+    />
+  );
 }
 
 /** Year columns across, focal length up the side, inside a box whose width sets the columns. */
