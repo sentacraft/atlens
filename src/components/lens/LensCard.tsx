@@ -159,10 +159,8 @@ export default memo(function LensCard({
               <div className="text-right">{weightDisplay}</div>
             </dl>
 
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              <div className="mr-auto min-w-0">
-                <ApproxPrice pricing={lens.pricing} />
-              </div>
+            <div className="@container/lens-row flex items-center gap-2">
+              <ApproxPrice pricing={lens.pricing} className="flex-1" />
               <LensActions
                 lensId={lens.id}
                 lensName={lens.model}
