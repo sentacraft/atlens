@@ -1,16 +1,15 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Check, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useCompare } from "@/context/CompareProvider";
+import LensActions from "@/components/lens/LensActions";
 import { track } from "@/lib/analytics/analytics";
 import { planAlternativeCompare } from "@/lib/lens/alternatives";
-import { compareChipState, MAX_COMPARE } from "@/lib/lens/lens";
-import { COMPARE_CHIP_CLS, COMPARE_CHIP_STATE_CLS } from "@/config/ui-tokens";
-import { cn } from "@/lib/utils";
+import { MAX_COMPARE } from "@/lib/lens/lens";
 
-export default function AlternativeCompareToggle({
+/** Favorite and compare for a same-focal alternative, where compare adds it together with the lens on the page. */
+export default function AlternativeLensActions({
   lensId,
   lensName,
   currentId,
@@ -24,23 +23,17 @@ export default function AlternativeCompareToggle({
   className?: string;
 }) {
   const t = useTranslations("Alternatives");
-  const tList = useTranslations("LensList");
   const tCompare = useTranslations("Compare");
   const { compareIds, add, remove, seed } = useCompare();
-  const selected = compareIds.includes(lensId);
   const step = planAlternativeCompare(compareIds, currentId, lensId, MAX_COMPARE);
-  const label = selected ? tList("removeFromCompare") : step.kind === "full" ? tList("compareFull") : tList("addToCompare");
 
-  const onClick = () => {
+  const onToggle = () => {
     switch (step.kind) {
       case "remove":
         remove(lensId);
         return;
       case "add":
         add(lensId);
-        return;
-      case "full":
-        toast(tList("compareFullToast"));
         return;
       case "start": {
         seed([currentId, lensId]);
@@ -57,20 +50,12 @@ export default function AlternativeCompareToggle({
   };
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      title={label}
-      aria-pressed={selected}
-      className={cn(
-        COMPARE_CHIP_CLS,
-        "size-8 shrink-0 justify-center",
-        COMPARE_CHIP_STATE_CLS[compareChipState(selected, step.kind === "full")],
-        className,
-      )}
-    >
-      {selected ? <Check className="h-3.5 w-3.5" strokeWidth={2.5} /> : <Plus className="h-3.5 w-3.5" />}
-    </button>
+    <LensActions
+      lensId={lensId}
+      lensName={lensName}
+      compare={{ selected: compareIds.includes(lensId), full: step.kind === "full", onToggle, hint: t("compareWithCurrent") }}
+      tier="row"
+      className={className}
+    />
   );
 }

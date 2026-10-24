@@ -3,20 +3,16 @@
 import { memo } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Plus, Check } from "lucide-react";
-import { toast } from "sonner";
 import { Link } from "@/i18n/navigation";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
-import { CARD_SELECTED_BORDER_CLS, COMPARE_CHIP_CLS, COMPARE_CHIP_STATE_CLS } from "@/config/ui-tokens";
-import { cn } from "@/lib/utils";
-import FavoriteStarButton from "@/components/lens/FavoriteStarButton";
+import { CARD_SELECTED_BORDER_CLS } from "@/config/ui-tokens";
+import LensActions from "@/components/lens/LensActions";
 import type { Lens } from "@/lib/types";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import * as fmt from "@/lib/lens/format";
 import ApproxPrice from "@/components/price/ApproxPrice";
 import { lensPath } from "@/lib/url/routes";
-import { COMPARE_CHIP_LABEL_KEY, compareChipState } from "@/lib/lens/lens";
 
 interface Props {
   lens: Lens;
@@ -35,7 +31,6 @@ export default memo(function LensCard({
 }: Props) {
   const t = useTranslations("LensList");
   const tBrand = useTranslations("Brands");
-  const compareState = compareChipState(isSelected, selectionDisabled);
   const hookAttr = useUiHookAttr();
   const equivDisplay = fmt.focalRangeDisplay(fmt.focalEquiv(lens.focalLengthMin, lens.mount), fmt.focalEquiv(lens.focalLengthMax, lens.mount));
   const mfdDisplay = lens.minFocusDistance ? `${lens.minFocusDistance.normal.cm}cm` : "—";
@@ -81,11 +76,7 @@ export default memo(function LensCard({
           : "border-zinc-200"
       }`}
     >
-      <Link
-        href={lensPath(lens)}
-        prefetch={false}
-        className="flex-1 flex flex-col max-xs:flex-row after:absolute after:inset-0 after:content-['']"
-      >
+      <div className="flex-1 flex flex-col max-xs:flex-row">
         <div
           {...hookAttr("cardMedia")}
           className="relative aspect-[3/2] overflow-hidden border-b border-zinc-100/80 bg-zinc-50/40 max-xs:aspect-auto max-xs:w-[145px] max-xs:shrink-0 max-xs:self-stretch max-xs:border-b-0 max-xs:border-r"
@@ -114,7 +105,7 @@ export default memo(function LensCard({
           className="flex flex-1 flex-col gap-2 p-3 sm:gap-2.5 sm:p-4 max-xs:min-w-0"
         >
           <div className="flex flex-col gap-1">
-            <div className="flex items-center justify-between gap-2 max-xs:pr-7">
+            <div className="flex items-center justify-between gap-2">
               <p className="min-w-0 truncate text-[11px] uppercase tracking-[0.14em] text-zinc-500">
                 {fmt.lensSubtitleLine(fmt.brandLabel(tBrand, lens.brand), lens.series)}
               </p>
@@ -133,7 +124,9 @@ export default memo(function LensCard({
               className="font-semibold text-sm text-zinc-900 leading-snug line-clamp-2 min-h-[2.5rem]"
               title={lens.model}
             >
-              {lens.model}
+              <Link href={lensPath(lens)} prefetch={false} className="after:absolute after:inset-0 after:content-['']">
+                {lens.model}
+              </Link>
             </h3>
           </div>
 
@@ -166,33 +159,20 @@ export default memo(function LensCard({
               <div className="text-right">{weightDisplay}</div>
             </dl>
 
-            <div className="flex min-h-8 items-center pr-12 @min-[15rem]:pr-24">
-              <ApproxPrice pricing={lens.pricing} />
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <div className="mr-auto min-w-0">
+                <ApproxPrice pricing={lens.pricing} />
+              </div>
+              <LensActions
+                lensId={lens.id}
+                lensName={lens.model}
+                compare={{ selected: isSelected, full: selectionDisabled, onToggle: () => onToggle(lens.id) }}
+                tier="row"
+              />
             </div>
           </div>
         </div>
-      </Link>
-
-      <FavoriteStarButton
-        lensId={lens.id}
-        placement="overlay"
-        className="absolute top-2.5 right-2.5 max-xs:top-1.5 max-xs:right-1.5 max-xs:h-9 max-xs:w-9 max-xs:border-0 max-xs:bg-transparent max-xs:shadow-none max-xs:backdrop-blur-none"
-      />
-
-      <button
-        type="button"
-        onClick={selectionDisabled ? () => toast(t("compareFullToast")) : () => onToggle(lens.id)}
-        aria-label={t(COMPARE_CHIP_LABEL_KEY[compareState])}
-        aria-pressed={isSelected}
-        className={cn(
-          COMPARE_CHIP_CLS,
-          "absolute right-3 bottom-3 z-10 px-2 @min-[15rem]:pr-3 @min-[15rem]:pl-2.5 sm:right-4 sm:bottom-4",
-          COMPARE_CHIP_STATE_CLS[compareState],
-        )}
-      >
-        {isSelected ? <Check className="h-3.5 w-3.5" strokeWidth={2.5} /> : <Plus className="h-3.5 w-3.5" />}
-        <span className="hidden @min-[15rem]:inline">{isSelected ? t("compared") : t("compareShort")}</span>
-      </button>
+      </div>
     </div>
   );
 });

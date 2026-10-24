@@ -5,7 +5,8 @@ async function layoutAt(page: Page, width: number) {
   await page.setViewportSize({ width, height: 900 });
   await expect(page.locator(LENS_CARD_LINK).first()).toBeVisible();
   return page.locator(LENS_CARD_LINK).first().evaluate((link) => {
-    const card = link.parentElement!;
+    // The link is the card's title, stretched over the card.
+    const card = link.closest<HTMLElement>(".\\@container")!;
     const grid = card.parentElement!;
     const nav = document.querySelector("nav")!;
     return {
@@ -41,7 +42,7 @@ test.describe("Lens library grid density", () => {
   test("cards at 1280px and wider keep the compare button's label", async ({ page }) => {
     for (const width of [1280, 1920]) {
       await layoutAt(page, width);
-      await expect(page.locator("span", { hasText: /^Compare$/ }).first()).toBeVisible();
+      await expect(page.getByRole("button", { name: /^Add to Compare: / }).first()).toHaveText("Compare");
     }
   });
 

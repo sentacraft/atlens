@@ -12,6 +12,7 @@ import {
 import { MAX_COMPARE } from "@/lib/lens/lens";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { track } from "@/lib/analytics/analytics";
+import type { Mount } from "@/lib/types";
 
 type CompareState = { X: string[]; G: string[] };
 const initialCompareState: CompareState = { X: [], G: [] };
@@ -24,6 +25,9 @@ interface CompareContextValue {
   clear: () => void;
   toggle: (id: string) => void;
   seed: (ids: string[]) => void;
+  /** Every mount's list, for a lens shown outside its own mount's pages (Iris, favorites). */
+  slots: CompareState;
+  toggleIn: (mount: Mount, id: string) => void;
 }
 
 const CompareContext = createContext<CompareContextValue | null>(null);
@@ -90,21 +94,20 @@ export function CompareProvider({ children }: { children: React.ReactNode }) {
     });
   }, [mount]);
 
-  const toggle = useCallback(
-    (id: string) => {
-      setState((prev) => {
-        const slot = prev[mount];
-        if (slot.includes(id)) {
-          return { ...prev, [mount]: slot.filter((value) => value !== id) };
-        }
-        if (slot.length >= MAX_COMPARE) {
-          return prev;
-        }
-        return { ...prev, [mount]: [...slot, id] };
-      });
-    },
-    [mount],
-  );
+  const toggleIn = useCallback((slotMount: Mount, id: string) => {
+    setState((prev) => {
+      const slot = prev[slotMount];
+      if (slot.includes(id)) {
+        return { ...prev, [slotMount]: slot.filter((value) => value !== id) };
+      }
+      if (slot.length >= MAX_COMPARE) {
+        return prev;
+      }
+      return { ...prev, [slotMount]: [...slot, id] };
+    });
+  }, []);
+
+  const toggle = useCallback((id: string) => toggleIn(mount, id), [mount, toggleIn]);
 
   const seed = useCallback(
     (ids: string[]) => {
@@ -124,8 +127,8 @@ export function CompareProvider({ children }: { children: React.ReactNode }) {
   );
 
   const value = useMemo(
-    () => ({ compareIds, add, remove, reorder, clear, toggle, seed }),
-    [compareIds, add, remove, reorder, clear, toggle, seed],
+    () => ({ compareIds, add, remove, reorder, clear, toggle, seed, slots: state, toggleIn }),
+    [compareIds, add, remove, reorder, clear, toggle, seed, state, toggleIn],
   );
 
   useEffect(() => {

@@ -9,7 +9,8 @@ import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import { weightDisplay } from "@/lib/lens/format";
 import { formatPrice } from "@/lib/lens/pricing";
 import Markdown from "@/components/askiris/Markdown";
-import FavoriteStarButton from "@/components/lens/FavoriteStarButton";
+import LensActions from "@/components/lens/LensActions";
+import { useCompareToggle } from "@/hooks/useCompareToggle";
 import type { Recommendation } from "@/lib/ai/recall";
 import { lensPath } from "@/lib/url/routes";
 
@@ -36,6 +37,7 @@ const REASON_CLS =
 // EVAL MIRROR: `formatCard` in eval/promptfoo/provider.mjs hand-writes what the judges read
 // for a card.
 function RecommendationCard({ rec }: { rec: Recommendation }) {
+  const compare = useCompareToggle(rec);
   const tPricing = useTranslations("Pricing");
   const weight = rec.weightG != null ? weightDisplay(rec.weightG, "g") : null;
   const price = rec.price ? formatPrice(tPricing, rec.price.amount, rec.price.currency) : null;
@@ -65,7 +67,7 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
           </div>
 
           <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-            <h4 className="line-clamp-2 pr-8 text-sm leading-snug font-semibold" title={rec.name}>
+            <h4 className="line-clamp-2 text-sm leading-snug font-semibold" title={rec.name}>
               {rec.name}
             </h4>
             {price || weight ? (
@@ -92,7 +94,13 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
 
         <Markdown className={REASON_CLS}>{rec.reason}</Markdown>
       </Link>
-      <FavoriteStarButton lensId={rec.id} placement="overlay" className="absolute top-2 right-2" />
+      <LensActions
+        lensId={rec.id}
+        lensName={rec.name}
+        compare={compare}
+        tier="row"
+        className="mx-3.5 justify-end border-t border-zinc-100 pt-2.5 pb-3"
+      />
     </div>
   );
 }

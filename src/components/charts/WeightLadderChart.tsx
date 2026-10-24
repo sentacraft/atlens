@@ -3,13 +3,13 @@
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Apple, Banana, Check, CupSoda, Egg, GlassWater, Milk, Plus, SoapDispenserDroplet, Star, type LucideIcon } from "lucide-react";
+import { Apple, Banana, Check, CupSoda, Egg, GlassWater, Milk, SoapDispenserDroplet, Star, type LucideIcon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import ChartChips from "@/components/charts/ChartChips";
 import ChartLensItem from "@/components/charts/ChartLensItem";
 import ChartLensSheet from "@/components/charts/ChartLensSheet";
-import FavoriteStarButton from "@/components/lens/FavoriteStarButton";
-import { HOVER_REVEAL_CLS, PAGE_SECTION_HEADING_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
+import LensActions from "@/components/lens/LensActions";
+import { PAGE_SECTION_HEADING_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { useChartCard, type ChartItemHandlers } from "@/hooks/useChartCard";
 import { useChartSelection } from "@/hooks/useChartSelection";
 import { useCompareToggle } from "@/hooks/useCompareToggle";
@@ -203,7 +203,7 @@ function LensRow({
   const t = useTranslations("Charts");
   const tBrand = useTranslations("Brands");
   const { lens, rank } = row;
-  const compare = useCompareToggle(lens.id);
+  const compare = useCompareToggle(lens);
   const favorited = useFavorites().isFavorite(lens.id);
   const name = `${brandLabel(tBrand, lens.brand)} ${lens.model}`;
 
@@ -223,22 +223,7 @@ function LensRow({
         {t("weight", { weight: lens.weightG })}
       </span>
       {handlers && (
-        <span className={cn("relative flex items-center gap-1 pointer-coarse:hidden", cls.actions)}>
-          <button
-            type="button"
-            onClick={compare.onToggle}
-            aria-pressed={compare.selected}
-            aria-label={`${compare.label}: ${name}`}
-            className={cn(
-              "inline-flex size-7 items-center justify-center rounded-full border shadow-sm transition-[opacity,background-color,color]",
-              compare.stateCls,
-              !compare.selected && HOVER_REVEAL_CLS,
-            )}
-          >
-            {compare.selected ? <Check className="size-3.5" aria-hidden="true" /> : <Plus className="size-3.5" aria-hidden="true" />}
-          </button>
-          <FavoriteStarButton lensId={lens.id} placement="overlay" className="h-7 w-7" />
-        </span>
+        <LensActions lensId={lens.id} lensName={name} compare={compare} tier="dense" className={cls.actions} />
       )}
       {handlers && (compare.selected || favorited) && (
         <span className={cn("pointer-events-none relative flex items-center gap-1 pointer-fine:hidden", cls.actions)} aria-hidden="true">

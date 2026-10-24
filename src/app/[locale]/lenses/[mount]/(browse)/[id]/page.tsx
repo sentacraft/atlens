@@ -11,8 +11,7 @@ import { buildSpecGroups, buildSpecGroupLabels, resolveSpecGroups, rowPlainText 
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens/spec-groups";
 import { Link } from "@/i18n/navigation";
 import { ExternalLink } from "@/components/ui/external-link";
-import LensDetailCompareToggle from "@/components/compare/LensDetailCompareToggle";
-import LensDetailSaveActions from "@/components/lens/LensDetailSaveActions";
+import LensDetailActions from "@/components/lens/LensDetailActions";
 import SupportNote from "@/components/support/SupportNote";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import LensDetailTelemetry from "@/components/lens/LensDetailTelemetry";
@@ -23,7 +22,6 @@ import JsonLd from "@/components/seo/JsonLd";
 import Breadcrumb from "@/components/nav/Breadcrumb";
 import SpecialtyBadges from "@/components/lens/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens/specialty";
-import { RetailersDropdown } from "@/components/price/RetailersDropdown";
 import { getBrandInfo } from "@/lib/brands";
 import { getMemberCollections } from "@/lib/collections";
 import { getCollectionPreviews } from "@/lib/collection-stats";
@@ -284,14 +282,8 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           <PriceSection lens={lens} />
 
           <div className="mt-auto flex flex-col gap-2">
-            {/* Labels shorten by this row's width, so Iris's side panel narrowing the page counts too. */}
-            <div data-testid="lens-detail-actions" className="@container">
-              <div className="flex items-center gap-2">
-                <LensDetailCompareToggle lensId={lens.id} />
-                <RetailersDropdown lens={lens} customId="detail" />
-              </div>
-            </div>
-            <LensDetailSaveActions lensId={lens.id} />
+            {/* Labels shorten by this block's width, so Iris's side panel narrowing the page counts too. */}
+            <LensDetailActions lens={lens} />
           </div>
         </div>
       </div>
