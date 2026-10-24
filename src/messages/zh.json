@@ -1015,10 +1015,10 @@
   },
   "Brand": {
     "title": "{brand, select, fujifilm {富士原厂 X 卡口镜头} other {{label}的富士 X 卡口镜头}}",
-    "summary": "{zooms, plural, =0 {{count} 支，全是定焦} other {{primes, plural, =0 {{count} 支，全是变焦} other {{primes} 支定焦、{zooms} 支变焦}}}}，焦段 {focal}。",
+    "summary": "{zooms, plural, =0 {{count} 支定焦镜头} other {{primes, plural, =0 {{count} 支变焦镜头} other {{count} 支镜头：{primes} 支定焦、{zooms} 支变焦}}}}，焦段 {focal}。",
     "contents": "本页内容",
     "metaTitle": "{brand, select, fujifilm {富士原厂 X 卡口镜头有哪些：全部 {count, number} 支一览} other {{label}富士 X 卡口镜头有哪些：全部 {count, number} 支一览}}",
-    "metaDescription": "{brand, select, fujifilm {富士原厂的 X 卡口镜头：} other {{label}为富士 X 卡口出的镜头：}}{summary}{intro}",
+    "metaDescription": "{brand, select, fujifilm {富士原厂为 X 卡口出了 } other {{label}为富士 X 卡口出了 }}{summary}{intro}",
     "lineupHeading": "全家福",
     "timelineHeading": "发布时间轴",
     "timelineSpan": "{first}–{last} · {count} 支",

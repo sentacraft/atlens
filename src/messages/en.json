@@ -1015,10 +1015,10 @@
   },
   "Brand": {
     "title": "{brand, select, fujifilm {Fujifilm's Own X-Mount Lenses} other {{label} Lenses for Fujifilm X-Mount}}",
-    "summary": "{zooms, plural, =0 {{count, plural, one {# lens} other {# lenses}}, all primes} other {{primes, plural, =0 {{count, plural, one {# lens} other {# lenses}}, all zooms} one {# prime and {zooms, plural, one {# zoom} other {# zooms}}} other {# primes and {zooms, plural, one {# zoom} other {# zooms}}}}}}, covering {focal}.",
+    "summary": "{zooms, plural, =0 {{count, plural, one {# prime lens} other {# prime lenses}}} other {{primes, plural, =0 {{count, plural, one {# zoom lens} other {# zoom lenses}}} other {{count, plural, one {# lens} other {# lenses}}, {primes, plural, one {# prime} other {# primes}} and {zooms, plural, one {# zoom} other {# zooms}}}}}}, covering {focal}.",
     "contents": "On this page",
     "metaTitle": "{brand, select, fujifilm {Fujifilm X-Mount Lenses: All {count, number} Fujinon Lenses} other {{label} Lenses for Fujifilm X: All {count, number}}}",
-    "metaDescription": "{brand, select, fujifilm {Fujifilm's own X-mount lenses: } other {{label} lenses for Fujifilm X-mount: }}{summary} {intro}",
+    "metaDescription": "{brand, select, fujifilm {Fujifilm's own X-mount line: } other {{label} on Fujifilm X-mount: }}{summary} {intro}",
     "lineupHeading": "Lineup",
     "timelineHeading": "Release timeline",
     "timelineSpan": "{first}–{last} · {count, plural, one {# lens} other {# lenses}}",
