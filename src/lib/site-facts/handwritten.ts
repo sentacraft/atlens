@@ -184,7 +184,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "capabilities",
     topic: "askIris",
-    text: "What Iris can do: find and recommend lenses for a need, as cards with a reason for each; lay lenses side by side in a spec table; explain how lenses differ; look up any lens's specs; for signed-in users, take their saved gear into account and ask them to add it when missing, and read their favorites; answer questions about Atlens itself, linking to the pages that say more; link to collections; and give a link that opens the lenses it mentions side by side on the compare page.",
+    text: "What Iris can do: find and recommend lenses for a need, as cards with a reason for each; lay lenses side by side in a spec table; explain how lenses differ; look up any lens's specs; for lenses Atlens has review findings on, sum up what published reviews say about image quality, focusing, handling and build, citing them; for signed-in users, take their saved gear into account and ask them to add it when missing, and read their favorites; answer questions about Atlens itself, linking to the pages that say more; link to collections; and give a link that opens the lenses it mentions side by side on the compare page.",
   },
   {
     id: "model-provider",

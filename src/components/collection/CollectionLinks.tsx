@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { localized } from "@/i18n/localized";
 import { Link } from "@/i18n/navigation";
 import RelatedCollectionCard from "@/components/collection/RelatedCollectionCard";
-import { SECTION_HEADING_CLS } from "@/config/ui-tokens";
+import { SECTION_HEADING_CLS, SECTION_VIEW_ALL_LINK_CLS } from "@/config/ui-tokens";
 import type { CollectionSummary } from "@/lib/collection-stats";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import type { Mount } from "@/lib/types";
@@ -31,12 +31,9 @@ export default function CollectionLinks({
   }
   return (
     <section className={cn("flex flex-col gap-4", className)}>
-      <div className="flex items-baseline justify-between gap-3">
+      <div className="flex items-baseline justify-between gap-4">
         <h2 className={SECTION_HEADING_CLS}>{title}</h2>
-        <Link
-          href={collectionsPath(mount)}
-          className="shrink-0 text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900"
-        >
+        <Link href={collectionsPath(mount)} className={SECTION_VIEW_ALL_LINK_CLS}>
           {t("viewAllCollections")} →
         </Link>
       </div>

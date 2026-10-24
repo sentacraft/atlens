@@ -148,6 +148,7 @@ function digest(msg) {
   const queries = [];
   const searches = [];
   const details = [];
+  const reviews = [];
   const recalledRefs = new Set();
   const toolsCalled = [];
   let steps = 0;
@@ -193,6 +194,20 @@ function digest(msg) {
     }
     if (name === "lensDetails") {
       details.push(...(part.input?.refs ?? []));
+    }
+    if (name === "lensReviews") {
+      for (const lens of part.output?.lenses ?? []) {
+        reviews.push({
+          ref: lens.ref,
+          aspects: part.input?.aspects ?? null,
+          claims: (lens.claims ?? []).map((claim) => ({
+            aspect: claim.aspect,
+            agreement: claim.agreement,
+            otherMount: Boolean(claim.otherMount),
+            stale: (claim.staleness ?? []).map((entry) => entry.reason),
+          })),
+        });
+      }
     }
     if (name === "searchLensByName") {
       searches.push({ query: part.input?.query ?? null, refs: refsFromOutput(part.output) });
@@ -265,6 +280,7 @@ function digest(msg) {
     queries,
     searches,
     details,
+    reviews,
     recalledRefs: [...recalledRefs],
     steps,
     preToolText,
@@ -336,6 +352,7 @@ export default class AskIrisProvider {
         queries: d.queries,
         searches: d.searches,
         details: d.details,
+        reviews: d.reviews,
         recalledRefs: d.recalledRefs,
         steps: d.steps,
         preToolText: d.preToolText,

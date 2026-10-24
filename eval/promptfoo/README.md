@@ -9,6 +9,7 @@ replay cannot.
 
 Needs the dev server up (`localhost:3000`) and, for the judge, `EVAL_OPENAI_API_KEY` in `.env.local` —
 its own OpenAI key, separate from the `OPENAI_API_KEY` Iris uses for GPT models.
+The `reviews` cases also need review findings in the local catalog: run `pnpm run d1:pull:catalog` first.
 
 ```bash
 # from the repo root
@@ -26,7 +27,7 @@ every LLM-graded assertion is a paid judge call. Run as little as answers the qu
 - Batch prompt edits and evaluate them together, not after each tweak.
 - While iterating, run only the area the change touches, once:
   `--filter-metadata area=<area>`, where each case's `metadata.area` is one of `recommend`,
-  `guard`, `gear`, `site`, `links`, `favorites`, `terms`, `table`
+  `guard`, `gear`, `site`, `links`, `favorites`, `terms`, `table`, `reviews`
   (`--filter-pattern` still picks single cases by name).
 - Run the full suite once per PR when prompt or tool work is done, and when switching models.
 - After a run, rerun only what failed (`--filter-failing <eval id or results file>`), not the

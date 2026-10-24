@@ -79,6 +79,9 @@ export const FEEDBACK_LINK_CLS =
   "text-zinc-500 underline underline-offset-2 transition-colors " +
   "hover:text-zinc-900";
 
+export const SECTION_VIEW_ALL_LINK_CLS =
+  "shrink-0 whitespace-nowrap text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900";
+
 export const TEXT_LINK_CLS =
   "text-zinc-700 underline decoration-zinc-300 underline-offset-4 transition-colors " +
   "hover:text-zinc-900 hover:decoration-zinc-500";
