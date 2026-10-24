@@ -117,3 +117,25 @@ test.describe("Layout body bottom inset", () => {
     expect(paddingBottom).toBe(HOME_BAR);
   });
 });
+
+test.describe("Drawer bottom inset", () => {
+  test("the home bar's padding comes on top of the drawer's 85% height, not out of it", async ({ page }) => {
+    await page.goto("/en");
+    await page.waitForLoadState("networkidle");
+    await simulateNotch(page);
+    await page.getByRole("button", { name: "Menu" }).click();
+    await page.getByRole("menuitem", { name: "Support Atlens" }).click();
+
+    const drawer = page.locator('[data-slot="dialog-content"]');
+    await expect(drawer).toBeVisible();
+    const { maxHeight, appHeight } = await drawer.evaluate((el) => {
+      const probe = document.createElement("div");
+      probe.style.height = "var(--app-height)";
+      document.body.append(probe);
+      const appHeight = probe.getBoundingClientRect().height;
+      probe.remove();
+      return { maxHeight: parseFloat(getComputedStyle(el).maxHeight), appHeight };
+    });
+    expect(maxHeight).toBeCloseTo(appHeight * 0.85 + HOME_BAR, 0);
+  });
+});

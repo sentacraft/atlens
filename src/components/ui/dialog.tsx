@@ -44,8 +44,10 @@ function Dialog({
 
 // iOS keeps fixed elements on the layout viewport, under the keyboard; VirtualKeyboardProvider
 // reports the keyboard's height, and the drawer sits on top of it and shrinks to fit above.
+// The home-bar padding goes on top of the 85%: --app-height is the small viewport, so with
+// Safari's toolbar collapsed the padding would otherwise cut the content short.
 const DRAWER_KEYBOARD_CLS =
-  "fixed inset-x-0 bottom-[var(--drawer-keyboard-inset,0px)] max-h-[min(calc(var(--app-height)_*_0.85),calc(var(--app-height)_-_var(--drawer-keyboard-inset,0px)_-_var(--safe-inset-top)_-_1rem))]";
+  "fixed inset-x-0 bottom-[var(--drawer-keyboard-inset,0px)] max-h-[min(calc(var(--app-height)_*_0.85_+_var(--safe-inset-bottom)),calc(var(--app-height)_-_var(--drawer-keyboard-inset,0px)_-_var(--safe-inset-top)_-_1rem))]";
 
 function DialogPortal({ children }: { children: React.ReactNode }) {
   const mode = useDialogMode();
