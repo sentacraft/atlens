@@ -74,14 +74,14 @@ export function SourceList({ list }: { list: CitedSource[] }) {
     return null;
   }
   return (
-    <div className="mt-1 w-full border-t border-zinc-100 px-1 pt-2.5">
-      <p className="text-xs text-zinc-500">{t("title")}</p>
-      <ol className="mt-1.5 flex flex-col gap-1 text-xs">
+    <div className="mt-1 w-full border-t border-zinc-100 px-1 pt-2">
+      <p className="text-[11px] leading-4 text-zinc-500">{t("title")}</p>
+      <ol className="mt-1 flex flex-col gap-0.5 text-[11px] leading-4">
         {list.map(({ number, key, source }) => {
           const href = sourceHref(source);
           return (
-            <li key={key} className="flex min-h-7 items-baseline gap-2 sm:min-h-0">
-              <span className="min-w-4 text-center font-semibold text-zinc-600">{number}</span>
+            <li key={key} className="flex min-h-6 items-baseline gap-1.5 sm:min-h-0">
+              <span className="min-w-3.5 text-center font-semibold text-zinc-600">{number}</span>
               {href ? (
                 <a href={href} target="_blank" rel="noopener noreferrer" className={TEXT_LINK_CLS}>
                   {source.site}
