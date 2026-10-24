@@ -89,11 +89,13 @@ describe("LensReviewSummary", () => {
     renderWith({
       sources: [DATA.sources[1]],
       claims: [DATA.claims[1]],
-      locked: { total: 4, sourceCount: 2, disputed: ["manual_focus"] },
+      locked: { total: 4, sourceCount: 2, disputed: ["manual_focus"], hiddenAspects: ["vignetting", "manual_focus"] },
     } as LensReviewsView);
     expect(await screen.findByText("对焦偏慢")).toBeTruthy();
     expect(screen.getByText("subtitle(2)")).toBeTruthy();
     expect(screen.getByText("disagree(aspects.manual_focus)")).toBeTruthy();
+
+    expect(screen.getByText("aspects.vignetting")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "expandSignIn(4)" }));
     expect(openSignIn).toHaveBeenCalledWith("reviews");

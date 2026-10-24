@@ -9,6 +9,7 @@ import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { SIGN_IN_PITCHES, type SignInSource } from "@/lib/sign-in-pitch";
 import SignInBenefits from "@/components/auth/SignInBenefits";
+import FreeNote from "@/components/auth/FreeNote";
 import {
   Dialog,
   DialogClose,
@@ -191,7 +192,8 @@ export default function AuthDialog({
             <X className="h-4 w-4" />
           </DialogClose>
           <DialogTitle>{t(SIGN_IN_PITCHES[source].title)}</DialogTitle>
-          <DialogDescription render={<div />} className="pt-2">
+          <DialogDescription render={<div />} className="flex flex-col gap-3 pt-1.5">
+            <FreeNote />
             <SignInBenefits source={source} className="text-sm" />
           </DialogDescription>
         </DialogHeader>

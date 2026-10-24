@@ -30,6 +30,7 @@ import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { useNav } from "@/context/NavProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import SignInBenefits from "@/components/auth/SignInBenefits";
+import FreeNote from "@/components/auth/FreeNote";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
 import Avatar from "@/components/auth/Avatar";
 import DeleteAccountDialog from "@/components/auth/DeleteAccountDialog";
@@ -71,7 +72,10 @@ function SignInPrompt() {
   const openSignIn = useSignInDialog();
   return (
     <div className="mx-auto flex max-w-md flex-col gap-4 px-5 py-24">
-      <h1 className="font-heading text-2xl font-bold text-zinc-900">{t("signInTitle")}</h1>
+      <div className="flex flex-col gap-2">
+        <h1 className="font-heading text-2xl font-bold text-zinc-900">{t("signInTitle")}</h1>
+        <FreeNote />
+      </div>
       <SignInBenefits source="profile" className="text-sm" />
       <button
         type="button"

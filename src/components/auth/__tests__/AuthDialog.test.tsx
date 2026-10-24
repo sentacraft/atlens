@@ -64,4 +64,11 @@ describe("AuthDialog", () => {
     expect(await screen.findByRole("heading", { name: "reasonReviewsTitle" })).toBeInTheDocument();
     expect(benefits()[0]).toBe("benefitReviews");
   });
+
+  it("says an account is free", async () => {
+    render(<AuthDialog open source="account_menu" onOpenChange={() => {}} />);
+
+    expect(await screen.findByText("freeBadge")).toBeInTheDocument();
+    expect(screen.getByText("freeNote")).toBeInTheDocument();
+  });
 });

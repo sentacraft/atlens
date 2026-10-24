@@ -75,7 +75,9 @@
     "benefitQuota": "Ask <iris>Iris</iris> more questions each day",
     "reasonQuotaTitle": "Sign in to keep asking Iris",
     "reasonReviewsTitle": "Sign in to read every review finding",
-    "benefitReviews": "Read every finding from published reviews, with its sources"
+    "benefitReviews": "Read every finding from published reviews, with its sources",
+    "freeBadge": "Free",
+    "freeNote": "No charge, no subscription"
   },
   "AuthEmail": {
     "signInSubject": "Your Atlens sign-in code",
@@ -536,7 +538,7 @@
       "cons": "Worth knowing",
       "count": "{count}",
       "expand": "Show all {count}",
-      "expandSignIn": "Sign in to see all {count}",
+      "expandSignIn": "Sign in free to see all {count}",
       "collapse": "Show less",
       "showDetails": "Show {count} more",
       "hideDetails": "Hide details",

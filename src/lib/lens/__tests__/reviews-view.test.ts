@@ -116,7 +116,12 @@ describe("previewReviews", () => {
   });
 
   it("says how much the full view holds", () => {
-    expect(preview.locked).toEqual({ total: 9, sourceCount: 6, disputed: ["manual_focus"] });
+    expect(preview.locked).toEqual({
+      total: 9,
+      sourceCount: 6,
+      disputed: ["manual_focus"],
+      hiddenAspects: ["manual_focus", "vignetting", "sunstar"],
+    });
     expect(full.locked).toBeUndefined();
   });
 });

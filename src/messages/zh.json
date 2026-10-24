@@ -75,7 +75,9 @@
     "benefitQuota": "每天可以向 <iris>Iris</iris> 提更多问题",
     "reasonQuotaTitle": "登录后继续问 Iris",
     "reasonReviewsTitle": "登录后查看全部评测要点",
-    "benefitReviews": "查看评测要点的全部内容和来源"
+    "benefitReviews": "查看评测要点的全部内容和来源",
+    "freeBadge": "免费",
+    "freeNote": "不收费、不订阅，登录就能用"
   },
   "AuthEmail": {
     "signInSubject": "你的 Atlens 登录验证码",
@@ -536,7 +538,7 @@
       "cons": "需要留意",
       "count": "{count} 条",
       "expand": "展开全部 {count} 条",
-      "expandSignIn": "登录后查看全部 {count} 条",
+      "expandSignIn": "免费登录，查看全部 {count} 条",
       "collapse": "收起",
       "showDetails": "展开 {count} 条细节",
       "hideDetails": "收起细节",

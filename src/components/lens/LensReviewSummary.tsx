@@ -7,6 +7,7 @@ import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { CitationsProvider, SourceList, SourceMarker } from "@/components/askiris/ReviewSources";
 import {
+  ACTION_PRIMARY_CLS,
   MENU_POPUP_CLS,
   PAGE_SECTION_CLS,
   REVIEW_NEGATIVE_CLS,
@@ -198,6 +199,23 @@ function SideList({
   );
 }
 
+const SKELETON_WIDTHS = ["w-3/5", "w-1/2", "w-2/3"];
+
+/** The aspects a guest's view leaves out, named over placeholder bars that fade out: the text itself is never sent. */
+function LockedTeaser({ aspects }: { aspects: ReviewClaimView["aspect"][] }) {
+  const t = useTranslations("LensReviews.findings");
+  return (
+    <div aria-hidden className="-mt-2 flex flex-col border-t border-zinc-200 [mask-image:linear-gradient(to_bottom,black,transparent)]">
+      {aspects.map((aspect, i) => (
+        <div key={aspect} className="flex flex-col gap-2 py-2.5">
+          <span className="text-xs text-zinc-500">{t(`aspects.${aspect}`)}</span>
+          <div className={cn("h-2.5 rounded-full bg-zinc-200", SKELETON_WIDTHS[i % SKELETON_WIDTHS.length])} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /** What published reviews say about the lens, collapsed to its strengths and weaknesses. Renders nothing without findings. */
 export default function LensReviewSummary({ lensId }: { lensId: string }) {
   const locale = useLocale();
@@ -224,6 +242,13 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
       .filter((claim) => claim.agreement === "conflict")
       .map((claim) => claim.aspect)
   ).map((aspect) => t(`aspects.${aspect}`).toLowerCase());
+  const disputedLine =
+    disputed.length > 0 ? (
+      <p className="flex items-center gap-1.5 text-[13px] text-zinc-600">
+        <MessagesSquare className="size-3.5 shrink-0 text-zinc-500" aria-hidden />
+        {t("disagree", { aspects: format.list(disputed, { type: "conjunction" }) })}
+      </p>
+    ) : null;
 
   return (
     <section aria-labelledby="lens-review-findings" data-nosnippet="" className={cn(PAGE_SECTION_CLS, "flex flex-col gap-4")}>
@@ -271,28 +296,35 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
             {layout.cons.length > 0 ? <SideList polarity="negative" claims={layout.cons} citations={citations} /> : null}
           </div>
         )}
+        {locked && locked.hiddenAspects.length > 0 ? <LockedTeaser aspects={locked.hiddenAspects} /> : null}
       </CitationsProvider>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-        {!expanded && disputed.length > 0 ? (
-          <p className="flex items-center gap-1.5 text-[13px] text-zinc-600">
-            <MessagesSquare className="size-3.5 shrink-0 text-zinc-500" aria-hidden />
-            {t("disagree", { aspects: format.list(disputed, { type: "conjunction" }) })}
-          </p>
-        ) : (
-          <span className="hidden sm:block" />
-        )}
-        {total > layout.pros.length + layout.cons.length ? (
+      {locked ? (
+        <div className="flex flex-col gap-3">
+          {disputedLine}
           <button
             type="button"
-            onClick={() => (locked ? openSignIn("reviews") : setExpanded(!expanded))}
-            aria-expanded={locked ? undefined : expanded}
-            className="min-h-11 shrink-0 rounded-lg border border-zinc-200 bg-white px-3 text-[13px] font-medium text-zinc-700 transition-colors hover:bg-zinc-50 sm:min-h-8"
+            onClick={() => openSignIn("reviews")}
+            className={cn(ACTION_PRIMARY_CLS, "-mt-1 h-11 self-stretch rounded-lg px-4 text-sm font-medium sm:h-10 sm:self-center")}
           >
-            {locked ? t("expandSignIn", { count: String(total) }) : expanded ? t("collapse") : t("expand", { count: String(total) })}
+            {t("expandSignIn", { count: String(total) })}
           </button>
-        ) : null}
-      </div>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+          {expanded ? <span className="hidden sm:block" /> : (disputedLine ?? <span className="hidden sm:block" />)}
+          {total > layout.pros.length + layout.cons.length ? (
+            <button
+              type="button"
+              onClick={() => setExpanded(!expanded)}
+              aria-expanded={expanded}
+              className="min-h-11 shrink-0 rounded-lg border border-zinc-200 bg-white px-3 text-[13px] font-medium text-zinc-700 transition-colors hover:bg-zinc-50 sm:min-h-8"
+            >
+              {expanded ? t("collapse") : t("expand", { count: String(total) })}
+            </button>
+          ) : null}
+        </div>
+      )}
     </section>
   );
 }
