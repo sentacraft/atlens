@@ -1020,7 +1020,16 @@
     "released": "Released {year}",
     "equivFocal": "{focal} equiv.",
     "weight": "{weight, number}g",
-    "showAll": "Show all {count, number}"
+    "refWeight": "about {weight, number}g",
+    "ref-cola2l": "A 2 L bottle of cola",
+    "ref-water750": "A 750 ml bottle of water",
+    "ref-water500": "A 500 ml bottle of water",
+    "ref-colaCan": "A 330 ml can of cola",
+    "ref-milk250": "A 250 ml carton of milk",
+    "ref-apple": "An apple",
+    "ref-banana": "A banana",
+    "ref-soap": "A bar of soap",
+    "ref-egg": "An egg"
   },
   "Brand": {
     "title": "{brand, select, fujifilm {Fujifilm's Own X-Mount Lenses} other {{label} Lenses for Fujifilm X-Mount}}",

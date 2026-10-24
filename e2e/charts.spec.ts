@@ -79,16 +79,15 @@ test.describe("Charts", () => {
       "aria-pressed",
       "true",
     );
-    const tiles = page.locator("main section li a").locator("visible=true");
-    await expect(tiles).toHaveCount(4);
-    for (const label of await tiles.evaluateAll((links) => links.map((l) => l.getAttribute("aria-label")))) {
+    const rows = page.locator("main section li a").locator("visible=true");
+    await expect(rows).toHaveCount(4);
+    for (const label of await rows.evaluateAll((links) => links.map((l) => l.getAttribute("aria-label")))) {
       expect(label).toMatch(/^Tamron /);
     }
   });
 
-  test("a tap on a weight ladder tile opens its sheet instead of the lens page", async ({ page, hasTouch }) => {
-    test.skip(!hasTouch, "Touch only; mouse users get the tile's own buttons");
-    // Phones show only the first tiles of each tier, so tap one that is on screen.
+  test("a tap on a weight ladder row opens its sheet instead of the lens page", async ({ page, hasTouch }) => {
+    test.skip(!hasTouch, "Touch only; mouse users get the row's own buttons");
     const sheet = page.getByRole("dialog");
     await expect(async () => {
       await page.goto(WEIGHT, { waitUntil: "networkidle" });
@@ -102,7 +101,18 @@ test.describe("Charts", () => {
     await expect(sheet.getByRole("link", { name: "View details" })).toBeVisible();
   });
 
-  test("a weight ladder tile shows its compare button only on hover", async ({ page, hasTouch }) => {
+  test("the weight ladder sets everyday references among the lenses by weight", async ({ page }) => {
+    await page.goto(WEIGHT);
+    const heavy = page.locator("section", { has: page.getByRole("heading", { name: "Heavyweights" }) });
+    const rows = await heavy.locator("ol > li").allInnerTexts();
+    const water = rows.findIndex((text) => text.includes("A 750 ml bottle of water"));
+    expect(water).toBeGreaterThan(0);
+    const weightOf = (text: string) => Number(text.match(/([\d,]+)g/)?.[1].replace(/,/g, ""));
+    expect(weightOf(rows[water - 1])).toBeGreaterThanOrEqual(770);
+    expect(weightOf(rows[water + 1])).toBeLessThan(770);
+  });
+
+  test("a weight ladder row shows its compare button only on hover", async ({ page, hasTouch }) => {
     test.skip(hasTouch, "Mouse only");
     await page.goto(WEIGHT);
     const compare = page.getByRole("button", { name: "Add to compare: Fujifilm XF 16mm F1.4 R WR" });
