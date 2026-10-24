@@ -281,9 +281,31 @@ describe("loadAccounts", () => {
     const email = allBySignUp.find((node) => node.label === "Email code");
     expect(email?.count).toBe(2);
     expect(email?.children.map((node) => [node.label, node.count])).toEqual([
-      ["Later linked Google", 1],
+      ["Later linked Google or GitHub", 1],
       ["Email only", 1],
     ]);
+  });
+});
+
+describe("loadAccounts sign-up providers", () => {
+  it("counts a GitHub sign-up as GitHub and a GitHub account added later as linked", async () => {
+    const app = createSqliteD1("migrations/app");
+    const iso = (ts: number) => new Date(ts).toISOString();
+    const user = app.sqlite.prepare(
+      "INSERT INTO user (id, name, email, emailVerified, createdAt, updatedAt) VALUES (?, ?, ?, 1, ?, ?)",
+    );
+    const account = app.sqlite.prepare(
+      "INSERT INTO account (id, accountId, providerId, userId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)",
+    );
+    user.run("h", "H", "h@test", iso(T0 + MIN), iso(T0 + MIN));
+    account.run("a1", "1", "github", "h", iso(T0 + MIN + 500), iso(T0 + MIN + 500));
+    user.run("l", "L", "l@test", iso(T0 - 5 * DAY), iso(T0 - 5 * DAY));
+    account.run("a2", "2", "github", "l", iso(T0 + DAY), iso(T0 + DAY));
+
+    const { newBySignUp, allBySignUp } = await loadAccounts(app.d1, WINDOW);
+    expect(newBySignUp.map((node) => [node.label, node.count])).toEqual([["GitHub", 1]]);
+    const email = allBySignUp.find((node) => node.label === "Email code");
+    expect(email?.children.map((node) => [node.label, node.count])).toEqual([["Later linked Google or GitHub", 1]]);
   });
 });
 
