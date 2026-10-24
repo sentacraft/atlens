@@ -1,16 +1,20 @@
 import { getToolName, isToolUIPart, type UIMessage } from "ai";
 import type { LensReviewSource } from "@/lib/lens/reviews";
 
-/** A review source as one message shows it: its marker number, and the source itself. */
+/** What a citation marker and its card show of a review source. */
+export type CitedReviewSource = Pick<LensReviewSource, "id" | "url" | "site" | "kind" | "published" | "bodies">;
+
+/** A review source with the number its markers carry. */
 export interface CitedSource {
   number: number;
   key: string;
-  source: LensReviewSource;
+  source: CitedReviewSource;
 }
 
-export interface MessageCitations {
+/** The numbered sources of one Iris reply, or of one lens page's review section. */
+export interface Citations {
   byKey: Map<string, CitedSource>;
-  /** Every source the message cites, in marker order. */
+  /** Every cited source, in marker order. */
   list: CitedSource[];
 }
 
@@ -44,7 +48,7 @@ function fetchedSources(message: UIMessage): Map<string, LensReviewSource> {
  * nowhere gets no number. Sources fetched but never cited are left out: listing them would
  * attribute the reply to reviews it may not have used.
  */
-export function messageCitations(messages: UIMessage[], index: number): MessageCitations {
+export function messageCitations(messages: UIMessage[], index: number): Citations {
   const known = new Map<string, LensReviewSource>();
   for (const message of messages.slice(0, index + 1)) {
     for (const [key, source] of fetchedSources(message)) {
@@ -54,17 +58,24 @@ export function messageCitations(messages: UIMessage[], index: number): MessageC
   const message = messages[index];
   const text = message.parts.map((part) => (part.type === "text" ? part.text : "")).join("\n");
   const cited = [...text.matchAll(SOURCE_LINK_RE)].map((match) => match[1]);
-  const keys = [...new Set(cited)].filter((key) => known.has(key));
-  const list = keys.map((key, i) => ({ number: i + 1, key, source: known.get(key)! }));
-  return { byKey: new Map(list.map((entry) => [entry.key, entry])), list };
+  return numberSources([...new Set(cited)], [...known.values()]);
 }
 
 /** The source's own page, or undefined for anything but an http(s) URL. */
-export function sourceHref(source: LensReviewSource): string | undefined {
+export function sourceHref(source: CitedReviewSource): string | undefined {
   try {
     const url = new URL(source.url);
     return url.protocol === "https:" || url.protocol === "http:" ? url.href : undefined;
   } catch {
     return undefined;
   }
+}
+
+/** Numbers sources in the given order; ids with no matching source are skipped. */
+export function numberSources(order: string[], sources: CitedReviewSource[]): Citations {
+  const byId = new Map(sources.map((source) => [source.id, source]));
+  const list = order
+    .filter((id) => byId.has(id))
+    .map((id, i) => ({ number: i + 1, key: id, source: byId.get(id)! }));
+  return { byKey: new Map(list.map((entry) => [entry.key, entry])), list };
 }

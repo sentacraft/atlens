@@ -247,10 +247,11 @@ describe("lensReviews", () => {
     polarity: "positive" as const,
     agreement: sources.length > 1 ? ("consensus" as const) : ("single_source" as const),
     text: `Good ${aspect}.`,
+    textZh: `${aspect} 不错。`,
     sources,
     reviewCount: sources.length,
     outletCount: sources.length,
-    ...(detail ? { details: [{ id: detail, text: "More." }] } : {}),
+    ...(detail ? { details: [{ id: detail, text: "More.", textZh: "更多。" }] } : {}),
   });
 
   async function setup() {
@@ -296,6 +297,7 @@ describe("lensReviews", () => {
     expect(out.lenses[0].claims[1]).toMatchObject({ sources: [ref("c")], details: [{ id: ref("a") }] });
     expect(out.lenses[1]).toMatchObject({ claims: [], sources: [] });
     expect(out.note).toMatch(/otherMount/);
+    expect(JSON.stringify(out)).not.toContain("textZh");
     expect(JSON.stringify(out)).not.toContain(reviewedId);
   });
 

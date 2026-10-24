@@ -135,6 +135,8 @@ export interface LensReviewClaim {
    * @example "Strong vignetting wide open."
    */
   text: string;
+  /** `text` in Simplified Chinese, shown on Chinese pages. */
+  textZh: string;
   /**
    * How each source tested, when that explains a difference or qualifies a number.
    * @example "Kok: 40MP X-T5; Radojuva: 24MP X-T2"
@@ -147,7 +149,7 @@ export interface LensReviewClaim {
   /** Number of distinct publishers behind `text`; lower than `reviewCount` when one outlet ran several reviews. */
   outletCount: number;
   /** Findings only one source reports (numbers, comparisons with other lenses, hit rates). */
-  details?: { id: string; text: string }[];
+  details?: { id: string; text: string; textZh: string }[];
   /** Set when only other-mount reviews cover a mount-dependent aspect; reference only for X mount. */
   otherMount?: boolean;
   /** Sources, core or detail, tested in conditions that may not match current bodies. Only on body-dependent aspects. */

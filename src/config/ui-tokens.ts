@@ -123,6 +123,10 @@ export const AI_TAG_CLS =
 // Iris's reply text, and anything the chat writes in her voice.
 export const IRIS_PROSE_CLS = "prose prose-sm max-w-none prose-p:my-2 prose-headings:mb-1 prose-hr:hidden";
 
+// Review findings: strengths and weaknesses are told apart by icon shape as well as colour.
+export const REVIEW_POSITIVE_CLS = "text-emerald-600";
+export const REVIEW_NEGATIVE_CLS = "text-amber-600";
+
 // Surface of a card Iris shows in the chat for the user to act on: gear, sign-in.
 export const CHAT_CARD_CLS = "w-full max-w-[560px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm";
 

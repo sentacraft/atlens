@@ -5,12 +5,12 @@ import { ArrowUpRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createContext, useContext, type ReactNode } from "react";
 import { MENU_POPUP_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
-import { sourceHref, type CitedSource, type MessageCitations } from "@/lib/askiris/review-citations";
+import { sourceHref, type CitedSource, type Citations } from "@/lib/askiris/review-citations";
 
-const CitationsContext = createContext<MessageCitations | undefined>(undefined);
+const CitationsContext = createContext<Citations | undefined>(undefined);
 
 /** Gives the markdown of one message the numbers of the sources it cites. */
-export function CitationsProvider({ citations, children }: { citations: MessageCitations; children: ReactNode }) {
+export function CitationsProvider({ citations, children }: { citations: Citations; children: ReactNode }) {
   return <CitationsContext.Provider value={citations}>{children}</CitationsContext.Provider>;
 }
 
