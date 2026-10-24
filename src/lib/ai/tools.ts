@@ -165,6 +165,13 @@ export interface ToolData {
   reviews: (lensIds: string[]) => Promise<Map<string, LensReviews>>;
 }
 
+// Iris writes in the user's language from the English; the Chinese copy is for lens pages.
+function withoutChinese<T extends { textZh?: string }>(value: T): Omit<T, "textZh"> {
+  const copy = { ...value };
+  delete copy.textZh;
+  return copy;
+}
+
 // Returned with every lensReviews result, so the reading rules arrive with the data they govern.
 const REVIEWS_NOTE =
   "Each claim summarizes the reviews it cites; it is not Atlens's own testing. Say how many reviews back it " +
@@ -346,10 +353,13 @@ export function buildLensTools(
             const ref = (id: string) => sourceRef(lens.id, id);
             const claims = (found?.claims ?? [])
               .filter((claim) => !aspects?.length || aspects.includes(claim.aspect))
+              .map(withoutChinese)
               .map((claim) => ({
                 ...claim,
                 sources: claim.sources.map(ref),
-                ...(claim.details ? { details: claim.details.map((detail) => ({ ...detail, id: ref(detail.id) })) } : {}),
+                ...(claim.details
+                  ? { details: claim.details.map((detail) => ({ ...withoutChinese(detail), id: ref(detail.id) })) }
+                  : {}),
                 ...(claim.staleness ? { staleness: claim.staleness.map((entry) => ({ ...entry, id: ref(entry.id) })) } : {}),
               }));
             const cited = new Set(

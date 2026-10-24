@@ -15,6 +15,7 @@ const POLICY_BINDINGS = {
   feedback: "RL_FEEDBACK",
   askirisFeedback: "RL_ASKIRIS_FEEDBACK",
   chat: "RL_CHAT",
+  lensReviews: "RL_LENS_REVIEWS",
 } as const satisfies Record<string, keyof CloudflareEnv>;
 
 export type RateLimitPolicy = keyof typeof POLICY_BINDINGS;
