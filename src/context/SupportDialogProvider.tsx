@@ -1,11 +1,12 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { Dialog, DialogClose, DialogHeader, DialogPopup, DialogTitle } from "@/components/ui/dialog";
 import SupportPanel from "@/components/support/SupportPanel";
 import { ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
+import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { track } from "@/lib/analytics/analytics";
 import type { SupportEntry } from "@/lib/support";
 import { cn } from "@/lib/utils";
@@ -35,10 +36,37 @@ export function SupportDialogProvider({ lensCount, children }: { lensCount: numb
               <X className="h-4 w-4" />
             </DialogClose>
           </DialogHeader>
-          <SupportPanel lensCount={lensCount} className="overflow-y-auto px-5 pb-5" />
+          <SupportBody lensCount={lensCount} />
         </DialogPopup>
       </Dialog>
     </SupportDialogContext>
+  );
+}
+
+/**
+ * On a short screen the panel scrolls; a fade at the bottom shows there is more below. The scroll
+ * area runs through the drawer's home-bar padding and pads its own end instead, so content slides
+ * under the home bar rather than stopping short of a blank strip.
+ */
+function SupportBody({ lensCount }: { lensCount: number }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const { canScrollDown } = useScrollAffordance(scrollRef);
+  return (
+    <div className="relative flex min-h-0 flex-1 flex-col">
+      <div
+        ref={scrollRef}
+        className="-mb-[var(--safe-inset-bottom)] min-h-0 overflow-y-auto px-5 pb-[calc(1.25rem+var(--safe-inset-bottom))]"
+      >
+        <SupportPanel lensCount={lensCount} />
+      </div>
+      <div
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-x-0 -bottom-[var(--safe-inset-bottom)] h-12 bg-gradient-to-t from-white to-transparent transition-opacity duration-200",
+          canScrollDown ? "opacity-100" : "opacity-0",
+        )}
+      />
+    </div>
   );
 }
 

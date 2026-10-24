@@ -927,8 +927,8 @@
   "Support": {
     "title": "Support Atlens",
     "close": "Close",
-    "body": "Atlens is free and open source, built and run by one person. It covers {count, number} lenses, with specs gathered from manufacturer sources and reviewed by hand. Support goes to that data work, Iris’s model costs and hosting, and the price of a coffee goes a long way.",
-    "kofiBody": "One-off or monthly, by card or PayPal.",
+    "body": "Atlens is free and open source, built and run by one person. It covers {count, number} lenses, with specs gathered from manufacturer sources and reviewed by hand. Support goes to that data work, Iris’s model costs and hosting. Any amount helps.",
+    "kofiBody": "Ko-fi takes cards, PayPal and Venmo.",
     "kofiButton": "Support on Ko-fi",
     "wechatTitle": "WeChat Pay",
     "wechatQrAlt": "WeChat appreciation QR code",
