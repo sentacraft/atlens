@@ -400,6 +400,8 @@
     "removeFromCompare": "Remove from Compare",
     "compareFull": "Compare List Full",
     "compareFullToast": "Compare list full — remove one first",
+    "addedToMountCompare": "Added to the {mount} comparison",
+    "viewCompare": "View",
     "goCompare": "Compare ({count, number})",
     "clearCompare": "Clear",
     "compareShort": "Compare",
@@ -498,9 +500,6 @@
     "partial": "Partial",
     "unknown": "N/A",
     "missing": "-",
-    "addToCompare": "Compare",
-    "removeFromCompare": "Remove",
-    "compareFull": "List full",
     "sourceSite": "{brand} official site",
     "reportIssue": "Report an issue",
     "nudgeText": "Spotted an error in the data?",
@@ -531,6 +530,7 @@
     }
   },
   "Alternatives": {
+    "compareWithCurrent": "Compare with this lens",
     "titlePrime": "Other lenses at this focal length",
     "titleZoom": "Other zooms covering this range",
     "summaryPrime": "{count, number} primes at {range}",

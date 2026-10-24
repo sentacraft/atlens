@@ -19,6 +19,12 @@ export const ACTION_QUIET_CLS =
 export const ACTION_OUTLINE_CLS =
   "inline-flex h-10 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50";
 
+/**
+ * An equal-width button in a row of a lens panel's actions (lens page, chart sheet): 44px tall on
+ * phones. Inside a container under 300px wide (a 320px screen) it drops its icon to fit "Mark as owned".
+ */
+export const PANEL_ACTION_CLS = `${ACTION_OUTLINE_CLS} flex-1 justify-center whitespace-nowrap max-sm:h-11 @max-[300px]:px-2 @max-[300px]:[&>svg]:hidden`;
+
 export const ACTION_ESCAPE_CLS =
   "group inline-flex h-12 items-center gap-2.5 border border-zinc-900 bg-white pl-5 pr-4 text-sm font-medium text-zinc-900 " +
   "transition-colors duration-150 hover:bg-zinc-900 hover:text-white active:bg-zinc-800 " +

@@ -2,14 +2,13 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { Star } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { LensSummary } from "@/lib/lens/data";
 import { getLensImageUrl } from "@/lib/lens/image";
 import { equivalentFocal } from "@/lib/me/coverage";
-import { ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
-import { cn } from "@/lib/utils";
 import { useFavorites } from "@/hooks/useFavorites";
+import { useCompareToggle } from "@/hooks/useCompareToggle";
+import LensActions from "@/components/lens/LensActions";
 import { LensSilhouette } from "@/components/ui/lens-silhouette";
 import { lensPath } from "@/lib/url/routes";
 import { brandLabel } from "@/lib/lens/format";
@@ -32,7 +31,6 @@ export default function FavoritesSection({
   heading: (count: number) => ReactNode;
 }) {
   const t = useTranslations("Profile");
-  const tActions = useTranslations("LensActions");
   const tBrand = useTranslations("Brands");
   const favorites = useFavorites();
   const lensById = useMemo(() => new Map(lenses.map((lens) => [lens.id, lens])), [lenses]);
@@ -53,34 +51,26 @@ export default function FavoritesSection({
           {favoriteLenses.map((lens) => (
             <li
               key={lens.id}
-              className="relative flex items-center gap-3 rounded-2xl border border-zinc-200 py-2.5 pr-1.5 pl-2.5 transition-colors hover:bg-zinc-50 md:flex-col md:items-stretch md:gap-0 md:overflow-hidden md:p-0"
+              className="relative flex flex-col gap-2 rounded-2xl border border-zinc-200 p-2.5 transition-colors hover:bg-zinc-50 md:gap-0 md:overflow-hidden md:p-0"
             >
-              <FavoriteImage lensId={lens.id} />
-              <div className="min-w-0 flex-1 md:px-3.5 md:pt-3 md:pb-3.5">
-                <div className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">
-                  {brandLabel(tBrand, lens.brand)}
-                </div>
-                <Link
-                  href={lensPath(lens)}
-                  className="block truncate text-sm font-semibold text-zinc-900 after:absolute after:inset-0 after:content-['']"
-                >
-                  {lens.model}
-                </Link>
-                <div className="truncate text-xs text-zinc-500">
-                  {t("equivalent", { range: equivalentRange(lens) })}
+              <div className="flex items-center gap-3 md:flex-col md:items-stretch md:gap-0">
+                <FavoriteImage lensId={lens.id} />
+                <div className="min-w-0 flex-1 md:px-3.5 md:pt-3">
+                  <div className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">
+                    {brandLabel(tBrand, lens.brand)}
+                  </div>
+                  <Link
+                    href={lensPath(lens)}
+                    className="block truncate text-sm font-semibold text-zinc-900 after:absolute after:inset-0 after:content-['']"
+                  >
+                    {lens.model}
+                  </Link>
+                  <div className="truncate text-xs text-zinc-500">
+                    {t("equivalent", { range: equivalentRange(lens) })}
+                  </div>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => favorites.toggle(lens.id)}
-                aria-label={tActions("unfavorite")}
-                className={cn(
-                  ICON_NAV_BTN_CLS,
-                  "relative z-10 h-11 w-11 text-zinc-900 md:absolute md:top-2 md:right-2 md:h-8 md:w-8",
-                )}
-              >
-                <Star className="h-4 w-4" fill="currentColor" />
-              </button>
+              <FavoriteLensActions lens={lens} name={`${brandLabel(tBrand, lens.brand)} ${lens.model}`} />
             </li>
           ))}
         </ul>
@@ -101,4 +91,9 @@ function FavoriteImage({ lensId }: { lensId: string }) {
       )}
     </div>
   );
+}
+
+function FavoriteLensActions({ lens, name }: { lens: LensSummary; name: string }) {
+  const compare = useCompareToggle(lens);
+  return <LensActions lensId={lens.id} lensName={name} compare={compare} tier="row" className="self-end md:px-3.5 md:pt-2 md:pb-3.5" />;
 }

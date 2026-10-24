@@ -6,7 +6,7 @@ import { ArrowUpRight, ChevronDown, Info } from "lucide-react";
 import { buildPurchaseLinks, purchaseDisclosureKey, shouldShowDisclosure } from "@/lib/purchase/links";
 import type { PurchaseLink } from "@/lib/purchase/links";
 import type { Lens } from "@/lib/types";
-import { ACTION_OUTLINE_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
+import { MENU_POPUP_CLS, PANEL_ACTION_CLS } from "@/config/ui-tokens";
 import { track } from "@/lib/analytics/analytics";
 import { useCountryCode } from "@/hooks/useCountryCode";
 import { useIsMobileDevice } from "@/hooks/useViewport";
@@ -38,13 +38,13 @@ export function RetailersDropdown({ lens, customId }: Props) {
     <Popover.Root>
       <Popover.Trigger
         data-testid="lens-detail-price-trigger"
-        className={cn(ACTION_OUTLINE_CLS, "shrink-0 cursor-pointer whitespace-nowrap")}
+        className={cn(PANEL_ACTION_CLS, "min-w-0 cursor-pointer")}
       >
         <span className="inline-flex items-baseline gap-1.5">
           {t("buyAt")}
-          {/* The lens page's action row is its @container: below 328px, Compare and this button
-              with "Amazon +2", the widest hint, no longer fit on one line. */}
-          <span data-redact-hook="priceSource" className="hidden text-xs text-zinc-400 @min-[328px]:inline">
+          {/* The lens page's actions are its @container, and this button takes half their width:
+              below 440px that half no longer fits "Amazon +2", the widest hint. */}
+          <span data-redact-hook="priceSource" className="hidden text-xs text-zinc-400 @min-[440px]:inline">
             {preview}{extra}
           </span>
         </span>

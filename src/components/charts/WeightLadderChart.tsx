@@ -4,13 +4,13 @@ import { useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Check, Plus, Star } from "lucide-react";
+import { Check, Star } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import ChartChips from "@/components/charts/ChartChips";
 import ChartLensItem from "@/components/charts/ChartLensItem";
 import ChartLensSheet from "@/components/charts/ChartLensSheet";
-import FavoriteStarButton from "@/components/lens/FavoriteStarButton";
-import { HOVER_REVEAL_CLS, PAGE_SECTION_HEADING_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
+import LensActions from "@/components/lens/LensActions";
+import { PAGE_SECTION_HEADING_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { useChartCard, type ChartItemHandlers } from "@/hooks/useChartCard";
 import { useChartSelection } from "@/hooks/useChartSelection";
 import { useCompareToggle } from "@/hooks/useCompareToggle";
@@ -172,7 +172,7 @@ function LadderTile({
 }) {
   const t = useTranslations("Charts");
   const tBrand = useTranslations("Brands");
-  const compare = useCompareToggle(lens.id);
+  const compare = useCompareToggle(lens);
   const favorited = useFavorites().isFavorite(lens.id);
   const name = `${brandLabel(tBrand, lens.brand)} ${lens.model}`;
 
@@ -190,20 +190,7 @@ function LadderTile({
       </span>
       {handlers && (
         <>
-          <button
-            type="button"
-            onClick={compare.onToggle}
-            aria-pressed={compare.selected}
-            aria-label={`${compare.label}: ${name}`}
-            className={cn(
-              "absolute left-1 top-1 z-10 inline-flex size-7 items-center justify-center rounded-full border shadow-sm transition-[opacity,background-color,color] pointer-coarse:hidden",
-              compare.stateCls,
-              !compare.selected && HOVER_REVEAL_CLS,
-            )}
-          >
-            {compare.selected ? <Check className="size-3.5" aria-hidden="true" /> : <Plus className="size-3.5" aria-hidden="true" />}
-          </button>
-          <FavoriteStarButton lensId={lens.id} placement="overlay" className="absolute right-1 top-1 h-7 w-7 pointer-coarse:hidden" />
+          <LensActions lensId={lens.id} lensName={name} compare={compare} tier="dense" />
           {compare.selected && (
             <span className="pointer-events-none absolute left-1.5 top-1.5 flex size-5 items-center justify-center rounded-full bg-zinc-900 text-white pointer-fine:hidden" aria-hidden="true">
               <Check className="size-3" strokeWidth={3} />

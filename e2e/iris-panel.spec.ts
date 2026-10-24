@@ -171,7 +171,7 @@ test.describe("Ask Iris page entries", () => {
     const lensUrl = "/en/lenses/x/fujifilm-xf-33mmf14-r-lm-wr-x";
 
     await page.goto(lensUrl);
-    await expect(page.getByTestId("lens-detail-actions").getByRole("button")).toHaveCount(2);
+    await expect(page.getByTestId("lens-detail-actions").getByRole("button")).toHaveCount(4);
     await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
 
     const sheet = page.getByRole("dialog", { name: "Iris" });

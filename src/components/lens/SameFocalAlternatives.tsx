@@ -5,8 +5,7 @@ import { Link } from "@/i18n/navigation";
 import AskIrisEntry from "@/components/iris/AskIrisEntry";
 import ApproxPrice from "@/components/price/ApproxPrice";
 import AlternativesExpander from "@/components/lens/AlternativesExpander";
-import AlternativeCompareToggle from "@/components/lens/AlternativeCompareToggle";
-import FavoriteStarButton from "@/components/lens/FavoriteStarButton";
+import AlternativeLensActions from "@/components/lens/AlternativeLensActions";
 import {
   ALTERNATIVES_SHOWN,
   apertureDelta,
@@ -233,10 +232,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
               ))}
               <td className="px-1.5 py-3"><ApproxPrice pricing={l.pricing} /></td>
               <td className="py-3 pr-4 text-right">
-                <span className="relative z-10 flex items-center justify-end gap-2">
-                  <FavoriteStarButton lensId={l.id} placement="inline" />
-                  <AlternativeCompareToggle {...compareProps(l)} />
-                </span>
+                <AlternativeLensActions {...compareProps(l)} className="justify-end" />
               </td>
             </tr>
           ))}
@@ -259,9 +255,9 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
         {alternatives.map((l, index) => (
           <li
             key={l.id}
-            className={cn("relative flex items-center gap-3 border-t border-zinc-100 px-4 py-3 transition-colors hover:bg-zinc-50", index >= ALTERNATIVES_SHOWN && EXTRA_ITEM_CLS)}
+            className={cn("relative flex flex-col gap-2 border-t border-zinc-100 px-4 py-3 transition-colors hover:bg-zinc-50", index >= ALTERNATIVES_SHOWN && EXTRA_ITEM_CLS)}
           >
-            <Link href={lensPath(l)} prefetch={false} className="flex min-w-0 flex-1 items-center gap-3 after:absolute after:inset-0 after:content-['']">
+            <Link href={lensPath(l)} prefetch={false} className="flex min-w-0 items-center gap-3 after:absolute after:inset-0 after:content-['']">
               <Thumb lens={l} size="list" />
               <div className="flex min-w-0 flex-col gap-1">
                 <LensName lens={l} brand={brandLabel(tBrand, l.brand)} />
@@ -272,10 +268,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
                 </div>
               </div>
             </Link>
-            <span className="relative z-10 flex shrink-0 items-center gap-2">
-              <FavoriteStarButton lensId={l.id} placement="inline" />
-              <AlternativeCompareToggle {...compareProps(l)} />
-            </span>
+            <AlternativeLensActions {...compareProps(l)} className="self-end" />
           </li>
         ))}
       </ul>
