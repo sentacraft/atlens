@@ -246,7 +246,7 @@ export default function AskIrisThread({
               return null;
             })}
             </CitationsProvider>
-            {citations ? <SourceList list={citations.list} /> : null}
+            {citations && !isStreamingResponse ? <SourceList list={citations.list} /> : null}
             {!isUser && turnId && !isStreamingResponse && !awaitingUser ? (
               <ResponseFeedback responseMessageId={message.id} />
             ) : null}
