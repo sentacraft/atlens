@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -113,14 +113,6 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
   const compactHeight = heightOf(GEOMETRY.compact);
   const wide = useLayout(entries, years, wideGeometry, wideHeight);
   const compact = useLayout(entries, years, GEOMETRY.compact, compactHeight);
-  const rail = useRef<HTMLDivElement>(null);
-
-  // Open on the newest years, at the right end, as the wide chart reads.
-  useLayoutEffect(() => {
-    if (rail.current) {
-      rail.current.scrollLeft = rail.current.scrollWidth;
-    }
-  }, []);
 
   const dimmed = (lens: ChartLens) => (shown.brand && lens.brand !== shown.brand ? DIM : 1);
   const activeEntry = entries.find((e) => e.lens.id === active);
@@ -189,7 +181,6 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
         <div className="relative md:hidden" style={{ height: compactHeight }}>
           {tickLabels(compact, "w-6", "once")}
           <HorizontalScrollRail
-            scrollRef={rail}
             wrapperClassName="absolute inset-y-0 right-0"
             wrapperStyle={{ left: COMPACT_AXIS_WIDTH }}
             fadeBg="from-white from-40%"

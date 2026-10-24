@@ -18,7 +18,7 @@ import Breadcrumb from "@/components/nav/Breadcrumb";
 import JsonLd from "@/components/seo/JsonLd";
 import SupportNote from "@/components/support/SupportNote";
 import { SITE } from "@/config/site";
-import { BROWSE_PAGE_MAIN_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS, PAGE_SECTION_HEADING_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
+import { BROWSE_PAGE_MAIN_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS, PAGE_SECTION_HEADING_CLS, SECTION_VIEW_ALL_LINK_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { BRANDS, getBrandInfo, getBrandLenses } from "@/lib/brands";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildLineup } from "@/lib/charts/lineup";
@@ -229,13 +229,13 @@ export default async function BrandPage({ params }: { params: Params }) {
         <footer className="mt-12 flex flex-col gap-10">
           {related.length > 0 && (
             <section className="flex flex-col gap-4">
-              <div className="flex items-baseline justify-between">
+              <div className="flex items-baseline justify-between gap-4">
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
                   {t("relatedCollections", { brand: data.name })}
                 </h2>
                 <Link
                   href={collectionsPath(data.resolvedMount)}
-                  className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900"
+                  className={SECTION_VIEW_ALL_LINK_CLS}
                 >
                   {tCollection("viewAllCollections")} →
                 </Link>

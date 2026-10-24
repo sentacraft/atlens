@@ -12,7 +12,7 @@ import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { buildItemListSchema, lensListItems } from "@/lib/lens/seo";
 import { brandLabel } from "@/lib/lens/format";
 import { SITE } from "@/config/site";
-import { ACTION_ESCAPE_CLS, BROWSE_PAGE_MAIN_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
+import { ACTION_ESCAPE_CLS, BROWSE_PAGE_MAIN_CLS, SECTION_VIEW_ALL_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import JsonLd from "@/components/seo/JsonLd";
 import CollectionLensGrid from "@/components/collection/CollectionLensGrid";
 import RelatedCollectionCard from "@/components/collection/RelatedCollectionCard";
@@ -152,13 +152,13 @@ export default async function CollectionPage({
         </p>
 
         <footer className="mt-12">
-          <div className="mb-4 flex items-baseline justify-between">
+          <div className="mb-4 flex items-baseline justify-between gap-4">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
               {t("relatedCollections")}
             </h2>
             <Link
               href={collectionsPath(resolvedMount)}
-              className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900"
+              className={SECTION_VIEW_ALL_LINK_CLS}
             >
               {t("viewAllCollections")} →
             </Link>
