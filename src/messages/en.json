@@ -438,6 +438,8 @@
     "note": "These specs are not AI-generated. They come from what the manufacturer officially publishes; AI only files that text into one format and never makes up a value. The author reviews every lens before it goes live. <link>How the data is made</link>"
   },
   "LensDetail": {
+    "seeOnWeightLadder": "See it on the weight ladder →",
+    "seeOnTimeline": "See it on the release timeline →",
     "metaDescPrefix": "{name} ({mount}-mount {type}) specs and side-by-side comparison",
     "metaTitle": "{name}: Specs & Comparison",
     "metaJoinSpace": ": ",
@@ -1021,6 +1023,9 @@
     "released": "Released {year}",
     "equivFocal": "{focal} equiv.",
     "weight": "{weight, number}g",
+    "focusLadder": "{name} · #{rank, number} heaviest",
+    "focusTimeline": "{name} · {year}",
+    "clearFocus": "Clear",
     "refWeight": "about {weight, number}g",
     "ref-cola2l": "A 2 L bottle of cola",
     "ref-water750": "A 750 ml bottle of water",

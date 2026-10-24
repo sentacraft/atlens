@@ -101,6 +101,21 @@ test.describe("Charts", () => {
     await expect(sheet.getByRole("link", { name: "View details" })).toBeVisible();
   });
 
+  for (const { row, link, chart } of [
+    { row: "weight", link: "See it on the weight ladder →", chart: "weight" },
+    { row: "release year", link: "See it on the release timeline →", chart: "timeline" },
+  ]) {
+    test(`a lens page's ${row} row opens the ${chart} chart on that lens`, async ({ page }) => {
+      await page.goto("/en/lenses/x/fujifilm-xf-56mmf12-r-wr-x");
+      await page.getByRole("link", { name: link }).locator("visible=true").click();
+      await expect(page).toHaveURL(new RegExp(`/charts/${chart}\\?lens=fujifilm-xf-56mmf12-r-wr-x$`));
+      await expect(page.locator("[data-focused]").locator("visible=true")).toBeInViewport();
+      await page.getByRole("button", { name: "Clear" }).click();
+      await expect(page).toHaveURL(new RegExp(`/charts/${chart}$`));
+      await expect(page.locator("[data-focused]")).toHaveCount(0);
+    });
+  }
+
   test("the weight ladder sets everyday references among the lenses by weight", async ({ page }) => {
     await page.goto(WEIGHT);
     const heavy = page.locator("section", { has: page.getByRole("heading", { name: "Heavyweights" }) });

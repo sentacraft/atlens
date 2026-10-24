@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -10,9 +10,11 @@ import ChartLensCard from "@/components/charts/ChartLensCard";
 import ChartLensItem from "@/components/charts/ChartLensItem";
 import ChartLensSheet from "@/components/charts/ChartLensSheet";
 import ChartChips from "@/components/charts/ChartChips";
+import ChartFocusPill from "@/components/charts/ChartFocusPill";
 import { HorizontalScrollRail } from "@/components/ui/horizontal-scroll-rail";
 import { useChartCard, type ChartItemHandlers } from "@/hooks/useChartCard";
 import { useChartSelection } from "@/hooks/useChartSelection";
+import { useScrollToFocused } from "@/hooks/useScrollToFocused";
 import { assignLanes, fitItemSize, LANE_GAP, LANE_STEP, laneOffset, type TimelineEntry, type TimelineYear } from "@/lib/charts/timeline";
 import { isChartZoom, type BrandCount, type ChartLens } from "@/lib/charts/catalog";
 import { logFrac, pct } from "@/lib/charts/scale";
@@ -35,6 +37,7 @@ const WIDE_PAD = { left: 52, right: 12 };
 const COMPACT_AXIS_WIDTH = 28;
 const TICKS = [8, 16, 23, 35, 56, 90, 200, 400];
 const DIM = 0.08;
+const FOCUS_DIM = 0.3;
 
 type PageProps = {
   mount: Mount;
@@ -57,8 +60,11 @@ type Mode =
   | { kind: "poster"; highlight?: string };
 
 export function TimelineChartFromUrl({ entries, years, ...page }: PageProps) {
-  const { brand } = readChartSelectionFromSearch(useSearchParams(), page.brands.map((b) => b.brand));
-  return <TimelineChart entries={entries} years={years} mode={{ kind: "page", initial: { brand }, ...page }} />;
+  const initial = readChartSelectionFromSearch(useSearchParams(), {
+    brands: page.brands.map((b) => b.brand),
+    lenses: entries.map((e) => e.lens.id),
+  });
+  return <TimelineChart entries={entries} years={years} mode={{ kind: "page", initial, ...page }} />;
 }
 
 type Geometry = (typeof GEOMETRY)[keyof typeof GEOMETRY];
@@ -114,7 +120,12 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
   const wide = useLayout(entries, years, wideGeometry, wideHeight);
   const compact = useLayout(entries, years, GEOMETRY.compact, compactHeight);
 
-  const dimmed = (lens: ChartLens) => (shown.brand && lens.brand !== shown.brand ? DIM : 1);
+  const focus = mode.kind === "page" ? entries.find((e) => e.lens.id === shown.lens) : undefined;
+  const focusName = focus ? `${brandLabel(tBrand, focus.lens.brand)} ${focus.lens.model}` : undefined;
+  const root = useRef<HTMLDivElement>(null);
+  useScrollToFocused(root, focus?.lens.id);
+  const dimmed = (lens: ChartLens) =>
+    focus ? (lens.id === focus.lens.id ? 1 : FOCUS_DIM) : shown.brand && lens.brand !== shown.brand ? DIM : 1;
   const activeEntry = entries.find((e) => e.lens.id === active);
   const sheetEntry = entries.find((e) => e.lens.id === sheet.id);
   const activeWide = wide.placed.find((p) => p.e.lens.id === active);
@@ -123,7 +134,15 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
     const gap = wide.size / 2 + 16;
     return wide.cols[p.col].center > 0.6 ? x - 288 - gap : x + gap;
   };
-  const plot = { years, dimmed, handlers, active, eager: mode.kind === "poster", yearLabel: (count: number) => t("lensCount", { count }) };
+  const plot = {
+    years,
+    dimmed,
+    handlers,
+    active,
+    focus: focus && focusName ? { id: focus.lens.id, name: focusName } : undefined,
+    eager: mode.kind === "poster",
+    yearLabel: (count: number) => t("lensCount", { count }),
+  };
   const tickLabels = (layout: Layout, width: string, unit: "each" | "once") => (
     <>
       {unit === "once" && <span className="absolute left-0 top-0 z-20 whitespace-nowrap text-[10px] text-zinc-400">{t("focalAxis")}</span>}
@@ -136,7 +155,7 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
   );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div ref={root} className="flex flex-col gap-4">
       {mode.kind === "page" && (
         <>
           <ChartChips
@@ -154,6 +173,12 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
                 count: mode.brandTotals.find((b) => b.brand === selected.brand)?.count ?? 0,
               })}
             </Link>
+          )}
+          {focus && focusName && (
+            <ChartFocusPill
+              label={t("focusTimeline", { name: focusName, year: String(focus.year) })}
+              onClear={() => select({ ...selected, lens: undefined })}
+            />
           )}
         </>
       )}
@@ -227,6 +252,7 @@ function TimelinePlot({
   dimmed,
   handlers,
   active,
+  focus,
   eager,
   yearLabel,
   children,
@@ -238,6 +264,8 @@ function TimelinePlot({
   dimmed: (lens: ChartLens) => number;
   handlers: (lens: ChartLens) => ChartItemHandlers | undefined;
   active: string | undefined;
+  /** The lens a link opened the chart on, outlined and named. */
+  focus: { id: string; name: string } | undefined;
   eager: boolean;
   yearLabel: (count: number) => string;
   children?: React.ReactNode;
@@ -288,7 +316,12 @@ function TimelinePlot({
           key={e.lens.id}
           lens={e.lens}
           handlers={handlers(e.lens)}
-          className={cn("absolute block transition-[opacity,transform] duration-150", active === e.lens.id ? "z-20 scale-150" : "z-10")}
+          focused={focus?.id === e.lens.id}
+          className={cn(
+            "absolute block transition-[opacity,transform] duration-150",
+            active === e.lens.id ? "z-20 scale-150" : "z-10",
+            focus?.id === e.lens.id && "z-20 rounded-full ring-2 ring-zinc-900 ring-offset-2 ring-offset-white",
+          )}
           style={{
             left: pct(cols[col].center),
             marginLeft: laneOffset(lane, laneStep) - size / 2,
@@ -301,6 +334,18 @@ function TimelinePlot({
           <Image src={getLensImageUrl(e.lens.id)} alt="" width={size} height={size} loading={eager ? "eager" : "lazy"} className="size-full object-contain drop-shadow-sm" />
         </ChartLensItem>
       ))}
+      {layout.placed.map(({ e, col, lane, y }) =>
+        focus?.id === e.lens.id ? (
+          <span
+            key={`focus-${e.lens.id}`}
+            aria-hidden="true"
+            className="pointer-events-none absolute z-30 -translate-x-1/2 whitespace-nowrap rounded bg-zinc-900 px-1.5 py-0.5 text-[11px] text-white"
+            style={{ left: pct(cols[col].center), marginLeft: laneOffset(lane, laneStep), top: y - size / 2 - 26 }}
+          >
+            {focus.name}
+          </span>
+        ) : null,
+      )}
       {children}
     </>
   );
