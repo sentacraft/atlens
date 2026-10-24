@@ -11,6 +11,7 @@ import ChartFocusPill from "@/components/charts/ChartFocusPill";
 import ChartLensItem from "@/components/charts/ChartLensItem";
 import ChartLensSheet from "@/components/charts/ChartLensSheet";
 import LensActions from "@/components/lens/LensActions";
+import { SITE } from "@/config/site";
 import { PAGE_SECTION_HEADING_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { useChartCard, type ChartItemHandlers } from "@/hooks/useChartCard";
 import { useChartSelection } from "@/hooks/useChartSelection";
@@ -156,6 +157,7 @@ export default function WeightLadderChart({ tiers, mode }: { tiers: WeightTier[]
                   ? t("filteredCount", { shown: lensCount, total: tier.lenses.length })
                   : t("lensCount", { count: lensCount })}
               </span>
+              {mode.kind === "poster" && <span className={cn("ml-auto text-zinc-400", cls.detail)}>{SITE.host}</span>}
               <span className={cn("w-full text-zinc-600", cls.detail)}>{t(`tier-${tier.key}-tagline`)}</span>
             </header>
             <div className="min-w-0">

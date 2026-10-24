@@ -20,6 +20,7 @@ import { isChartZoom, type BrandCount, type ChartLens } from "@/lib/charts/catal
 import { logFrac, pct } from "@/lib/charts/scale";
 import { brandLabel } from "@/lib/lens/format";
 import { getLensImageUrl } from "@/lib/lens/image";
+import { SITE } from "@/config/site";
 import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 import type { Mount } from "@/lib/types";
 import { brandPath } from "@/lib/url/routes";
@@ -185,6 +186,7 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
 
       <div className={cn("relative", mode.kind !== "poster" && "hidden md:block")} style={{ height: wideHeight }}>
         {tickLabels(wide, "w-11", "each")}
+        {mode.kind === "poster" && <span className="absolute bottom-2 left-0 text-[11px] text-zinc-400">{SITE.host}</span>}
         <div className="absolute inset-y-0" style={{ left: WIDE_PAD.left, right: WIDE_PAD.right }}>
           <TimelinePlot {...plot} layout={wide} geometry={wideGeometry} height={wideHeight}>
             {activeEntry && activeWide && (

@@ -1,7 +1,7 @@
 Data License — Proprietary
 
 Applies to: src/data/lenses.json, src/data/lenses-gfx.json
-Excludes: product images (src/data/images/) — all product images and brand trademarks
+Excludes: product images (public/lenses/) — all product images and brand trademarks
   are the property of their respective owners.
 
 Copyright (c) 2026 SentaCraft. All rights reserved.
@@ -9,12 +9,17 @@ Copyright (c) 2026 SentaCraft. All rights reserved.
 Permission is granted to access and view this data for personal, non-commercial
 reference purposes only.
 
+You may also share, with credit to "Atlens (atlens.app)":
+  - images and links made with the share features of atlens.app, and screenshots of it
+  - individual lens specifications, quoted one lens at a time
+
 The following are expressly prohibited without prior written permission from SentaCraft:
-  - Copying, reproducing, or redistributing the data in any form or medium
+  - Copying, reproducing, or redistributing the data in any other form or medium
+  - Republishing the data as a table, dataset, or database
   - Using the data to build, train, or populate any competing product or service
-  - Incorporating the data into any commercial product or service
+  - Incorporating the data into any commercial product or service, or other commercial use
   - Bulk downloading or systematic scraping of this data
 
 This data is provided "as is" without warranty of any kind.
 
-For licensing inquiries, contact: me@atlens.app
+For licensing inquiries and partnerships, contact: me@atlens.app
