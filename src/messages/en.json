@@ -921,6 +921,7 @@
     "usedReason": "No new-price listing was found in official channels; showing a used-market reference instead.",
     "sampledAt": "Sampled {date, date, medium}",
     "priceApprox": "{price} <approx>approx.</approx>",
+    "priceAbout": "~{price}",
     "priceUnavailable": "Price N/A"
   },
   "Purchase": {

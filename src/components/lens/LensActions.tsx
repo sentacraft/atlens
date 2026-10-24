@@ -88,7 +88,8 @@ export default function LensActions({
 
   if (tier === "row") {
     // The buttons look 36px but take taps 4px beyond their edges, for a 44px target. Unselected,
-    // they stay light until the pointer is on their card or row (the caller's `group`).
+    // they stay light until the pointer is on their card or row (the caller's `group`). In a
+    // `lens-row` container under 230px, compare shrinks to an icon so both fit beside the price.
     return (
       <div className={cn("relative z-10 flex shrink-0 items-center gap-2", className)}>
         <button
@@ -113,11 +114,11 @@ export default function LensActions({
           className={cn(
             COMPARE_CHIP_CLS,
             state === "idle" ? ROW_IDLE_COMPARE_CLS : COMPARE_CHIP_STATE_CLS[state],
-            "relative h-9 pr-3 pl-2.5 text-[13px] after:absolute after:-inset-1",
+            "relative h-9 justify-center pr-3 pl-2.5 text-[13px] after:absolute after:-inset-1 @max-[230px]/lens-row:w-9 @max-[230px]/lens-row:px-0",
           )}
         >
           {compareIcon("size-3.5")}
-          {compare.selected ? tList("compared") : tList("compareShort")}
+          <span className="@max-[230px]/lens-row:hidden">{compare.selected ? tList("compared") : tList("compareShort")}</span>
         </button>
       </div>
     );

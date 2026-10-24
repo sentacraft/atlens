@@ -23,21 +23,29 @@ for (const { name, path } of PAGES) {
   });
 }
 
-// Prices vary in length, so a shared row would hold both on some cards and wrap on others.
-for (const width of [375, 1280]) {
-  test(`lens list at ${width}px: every card puts its buttons on a line below the price`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 900 });
-    await page.goto("/en/lenses/x/browse");
-    const compares = page.getByRole("button", { name: COMPARE });
-    await expect(compares.first()).toBeAttached();
+// Prices vary in length; every card must still hold its price and both buttons on one line.
+for (const width of [375, 390, 1280]) {
+  for (const locale of ["en", "zh"]) {
+    test(`lens list at ${width}px (${locale}): every card keeps price and buttons on one line`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`/${locale}/lenses/x/browse`);
+      const prices = page.locator("[data-redact-hook=price]");
+      await expect(prices.first()).toBeAttached();
 
-    const sharedLines = await compares.evaluateAll((buttons) =>
-      buttons.filter((button) => {
-        const actions = button.parentElement!;
-        const price = actions.previousElementSibling;
-        return !price || actions.getBoundingClientRect().top < price.getBoundingClientRect().bottom;
-      }).length,
-    );
-    expect(sharedLines).toBe(0);
-  });
+      const broken = await prices.evaluateAll((spans) =>
+        spans.flatMap((span) => {
+          const price = span.parentElement!;
+          const actions = price.nextElementSibling;
+          if (!actions) {
+            return [span.textContent];
+          }
+          const p = price.getBoundingClientRect();
+          const a = actions.getBoundingClientRect();
+          const overflows = span.getBoundingClientRect().right > p.right + 0.5;
+          return a.top >= p.bottom || a.bottom <= p.top || overflows ? [span.textContent] : [];
+        }),
+      );
+      expect(broken).toEqual([]);
+    });
+  }
 }
