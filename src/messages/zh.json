@@ -524,7 +524,7 @@
   },
   "LensReviews": {
     "findings": {
-      "title": "评测",
+      "title": "评测怎么说",
       "subtitle": "根据 {count} 篇公开评测整理",
       "summary": "整体",
       "conflict": "看法不一",
@@ -583,7 +583,7 @@
         "overall": "整体评价"
       }
     },
-    "title": "评测与样张",
+    "title": "搜索更多评测与样张",
     "subtitle": "在其他平台搜索这支镜头的评测和样张，结果由各平台提供",
     "searchKeyword": "评测",
     "kind": {
