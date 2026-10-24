@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { chartBrands } from "../charts/catalog";
 import { BRANDS, getBrandInfo, getBrandLenses } from "../brands";
-import { COLLECTIONS, getSharedCollections } from "../collections";
+import { COLLECTIONS, getSharedCollections, seriesCollection } from "../collections";
 import { getBrandCollectionsWithStats, getCollectionPreviews, getCollectionStats, getRelatedCollectionsWithStats } from "../collection-stats";
 import { isZoom } from "../lens/lens";
 import { getAllLenses, getLensesByMount } from "../lens/data";
@@ -426,5 +426,18 @@ describe("collection covers", () => {
     const ids = getBrandCollectionsWithStats("meike", "en").map(({ previewLens }) => previewLens.id);
     expect(ids.every((id) => id.startsWith("meike-"))).toBe(true);
     expect(new Set(ids).size).toBe(ids.length);
+  });
+});
+
+describe("seriesCollection", () => {
+  const byId = (id: string) => xLenses.find((l) => l.id === id)!;
+
+  it("finds the series page of a lens whose series has one", () => {
+    expect(seriesCollection(byId("fujifilm-xf-56mmf12-r-wr-x"), "en")?.slug).toBe("fujifilm-xf");
+  });
+
+  it("finds none for a series without a page, or a lens without a series", () => {
+    expect(seriesCollection(byId("sirui-sniper-33mmf12-aps-c-frame-autofocus-lens-x"), "en")).toBeUndefined();
+    expect(seriesCollection(byId("7artisans-af-35mm-f14-x"), "en")).toBeUndefined();
   });
 });
