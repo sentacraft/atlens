@@ -5,7 +5,7 @@ import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import AnthropicLogo from "@/components/logos/AnthropicLogo";
 import GeminiLogo from "@/components/logos/GeminiLogo";
 import GitHubMark from "@/components/logos/GitHubMark";
-import { lensCountsByBrand, meta } from "@/lib/lens/data";
+import { lensCountsByBrand } from "@/lib/lens/data";
 import { CATALOG_COVERAGE, type BrandCoverage, type CoverageState } from "@/lib/lens/catalog-coverage";
 import AckCard from "@/components/about/AckCard";
 import { isPurchaseLocale } from "@/lib/purchase/links";
@@ -403,7 +403,7 @@ export default async function AboutContent() {
         )}
         <div className="mt-2 rounded-2xl border border-zinc-200 p-5">
           <h3 className="mb-1 text-sm font-semibold text-zinc-900">{t("supportDirectTitle")}</h3>
-          <SupportPanel lensCount={meta.lensCount} />
+          <SupportPanel />
         </div>
       </Section>
 

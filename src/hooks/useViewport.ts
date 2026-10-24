@@ -49,3 +49,14 @@ function subscribeMobile(): () => void {
 export function useIsMobileDevice(): boolean {
   return useSyncExternalStore(subscribeMobile, getMobileSnapshot, getMobileServerSnapshot);
 }
+
+const WECHAT_UA = /MicroMessenger/i;
+
+function getWeChatSnapshot(): boolean {
+  return WECHAT_UA.test(navigator.userAgent);
+}
+
+/** WeChat's in-app browser, on a phone or the desktop client. */
+export function useIsWeChatBrowser(): boolean {
+  return useSyncExternalStore(subscribeMobile, getWeChatSnapshot, getMobileServerSnapshot);
+}
