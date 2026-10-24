@@ -79,7 +79,7 @@ function renderChat(shell: AskIrisShell = { variant: "page", entry: {}, starterS
   const client = new QueryClient();
   const view = (next: AskIrisShell) => (
     <QueryClientProvider client={client}>
-      <AskIrisChat shell={next} linkTargets={{ lenses: {}, collections: [] }} lenses={LENSES} />
+      <AskIrisChat shell={next} linkTargets={{ lenses: {}, collections: [], brands: [] }} lenses={LENSES} />
     </QueryClientProvider>
   );
   const result = render(view(shell));

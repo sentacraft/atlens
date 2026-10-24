@@ -46,7 +46,7 @@ const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false 
 function Chat() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AskIrisChat shell={{ variant: "page", entry: {}, starterSeed: 1 }} linkTargets={{ lenses: {}, collections: [] }} lenses={[]} />
+      <AskIrisChat shell={{ variant: "page", entry: {}, starterSeed: 1 }} linkTargets={{ lenses: {}, collections: [], brands: [] }} lenses={[]} />
     </QueryClientProvider>
   );
 }

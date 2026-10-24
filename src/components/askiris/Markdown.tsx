@@ -16,9 +16,9 @@ import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { escapeLensLinkLabels } from "@/lib/ai/lens-ref";
 import { PAGE_LINKS, isChatLinkHref, parseChatLink, type ChatLink } from "@/lib/askiris/inline-links";
-import { mountHasCollections } from "@/lib/mount";
+import { mountHasCharts, mountHasCollections } from "@/lib/mount";
 import { buildComparePath } from "@/lib/url/compare";
-import { collectionPath, lensPath } from "@/lib/url/routes";
+import { brandPath, chartPath, collectionPath, lensPath } from "@/lib/url/routes";
 import { IRIS_PROSE_CLS } from "@/config/ui-tokens";
 
 // The icon trails the label: an inline-flex box takes its baseline from its first child, so a
@@ -118,6 +118,16 @@ function ChatLinkAnchor({ link, children }: { link: ChatLink; children?: ReactNo
         return <>{children}</>;
       }
       return <ChipLink href={collectionPath(mount, link.slug)}>{children}</ChipLink>;
+    case "brand":
+      if (!targets?.brands.includes(link.slug) || !mountHasCollections(mount)) {
+        return <>{children}</>;
+      }
+      return <ChipLink href={brandPath(mount, link.slug)}>{children}</ChipLink>;
+    case "chart":
+      if (!mountHasCharts(mount)) {
+        return <>{children}</>;
+      }
+      return <ChipLink href={chartPath(mount, link.chart)}>{children}</ChipLink>;
   }
 }
 
