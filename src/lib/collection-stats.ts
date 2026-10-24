@@ -22,6 +22,50 @@ function membersOf(slug: string, locale: string): Lens[] {
   return MEMBERS[locale]?.[slug as CollectionSlug] ?? [];
 }
 
+function middleByFocal(lenses: Lens[]): Lens {
+  const sorted = [...lenses].sort(
+    (a, b) => a.focalLengthMin + a.focalLengthMax - (b.focalLengthMin + b.focalLengthMax) || a.id.localeCompare(b.id),
+  );
+  return sorted[Math.floor((sorted.length - 1) / 2)];
+}
+
+/**
+ * A collection's cover lens: a Fujifilm one if it has any, else one from its largest brand, taking
+ * the middle focal length so a fisheye or a super-telephoto rarely stands for the set. Lenses in
+ * `used` are passed over while others remain, so a list of collections doesn't repeat a picture.
+ */
+function pickCover(members: Lens[], used: Set<string>): Lens {
+  const fresh = members.filter((l) => !used.has(l.id));
+  const candidates = fresh.length > 0 ? fresh : members;
+  const fujifilm = candidates.filter((l) => l.brand === "fujifilm");
+  if (fujifilm.length > 0) {
+    return middleByFocal(fujifilm);
+  }
+  const byBrand = new Map<string, Lens[]>();
+  for (const lens of candidates) {
+    byBrand.set(lens.brand, [...(byBrand.get(lens.brand) ?? []), lens]);
+  }
+  const [, largest] = [...byBrand].sort(([a, x], [b, y]) => y.length - x.length || a.localeCompare(b))[0];
+  return middleByFocal(largest);
+}
+
+// One cover per collection for the whole site, smallest collections choosing first since they
+// have the fewest lenses to choose from.
+const COVERS: Record<string, Record<string, Lens>> = {};
+for (const locale of routing.locales) {
+  const used = new Set<string>();
+  const covers: Record<string, Lens> = {};
+  const slugs = (Object.keys(FILTERS) as CollectionSlug[])
+    .filter((slug) => membersOf(slug, locale).length > 0)
+    .sort((a, b) => membersOf(a, locale).length - membersOf(b, locale).length || a.localeCompare(b));
+  for (const slug of slugs) {
+    const cover = pickCover(membersOf(slug, locale), used);
+    used.add(cover.id);
+    covers[slug] = cover;
+  }
+  COVERS[locale] = covers;
+}
+
 function getRelatedCollections(slug: string, locale: string, limit = 4): LensCollection[] {
   if (!COLLECTIONS[slug]) {
     return [];
@@ -78,8 +122,8 @@ function preview(lens: Lens): CollectionSummary["previewLens"] {
 }
 
 function previewOf(collection: LensCollection, locale: string): CollectionPreview {
-  const { lenses, lensCount, brandCount } = statsFor(collection, locale);
-  return { previewLens: preview(lenses[0]), lensCount, brandCount };
+  const { lensCount, brandCount } = statsFor(collection, locale);
+  return { previewLens: preview(COVERS[locale][collection.slug]), lensCount, brandCount };
 }
 
 function summarize(collection: LensCollection, locale: string): CollectionSummary {
@@ -106,12 +150,17 @@ export function getFeaturedCollectionsWithStats(locale: string): CollectionSumma
   return FEATURED_COLLECTION_SLUGS.map((slug) => summarize(COLLECTIONS[slug], locale));
 }
 
-/** Theme collections holding a brand's lenses, those with the most of them first, previewed by one of them. */
+/** Theme collections holding a brand's lenses, those with the most of them first, each previewed by a different one of them where it can. */
 export function getBrandCollectionsWithStats(brand: string, locale: string, limit = 6): CollectionSummary[] {
+  const used = new Set<string>();
   return Object.values(COLLECTIONS)
     .map((collection) => ({ collection, own: membersOf(collection.slug, locale).filter((l) => l.brand === brand) }))
     .filter(({ own }) => own.length > 0)
     .sort((a, b) => b.own.length - a.own.length)
     .slice(0, limit)
-    .map(({ collection, own }) => ({ ...summarize(collection, locale), previewLens: preview(own[0]) }));
+    .map(({ collection, own }) => {
+      const cover = pickCover(own, used);
+      used.add(cover.id);
+      return { ...summarize(collection, locale), previewLens: preview(cover) };
+    });
 }

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { chartBrands } from "../charts/catalog";
 import { BRANDS, getBrandInfo, getBrandLenses } from "../brands";
 import { COLLECTIONS, getSharedCollections } from "../collections";
-import { getCollectionStats, getRelatedCollectionsWithStats } from "../collection-stats";
+import { getBrandCollectionsWithStats, getCollectionPreviews, getCollectionStats, getRelatedCollectionsWithStats } from "../collection-stats";
 import { isZoom } from "../lens/lens";
 import { getAllLenses, getLensesByMount } from "../lens/data";
 import type { Lens } from "../types";
@@ -400,5 +400,31 @@ describe("brand pages", () => {
 
   it("are not also collections", () => {
     expect(BRANDS.filter((brand) => brand.slug in COLLECTIONS)).toEqual([]);
+  });
+});
+
+describe("collection covers", () => {
+  const previews = getCollectionPreviews("en");
+
+  it("picks a Fujifilm lens wherever a collection has one, and one of its members otherwise", () => {
+    for (const [slug, { previewLens }] of Object.entries(previews)) {
+      const members = getCollectionStats(slug, "en")!.lenses;
+      const cover = members.find((l) => l.id === previewLens.id);
+      expect(cover, slug).toBeDefined();
+      if (members.some((l) => l.brand === "fujifilm")) {
+        expect(cover!.brand, slug).toBe("fujifilm");
+      }
+    }
+  });
+
+  it("gives every collection a different cover", () => {
+    const ids = Object.values(previews).map(({ previewLens }) => previewLens.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("covers a brand's collections with that brand's lenses, a different one per collection", () => {
+    const ids = getBrandCollectionsWithStats("meike", "en").map(({ previewLens }) => previewLens.id);
+    expect(ids.every((id) => id.startsWith("meike-"))).toBe(true);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 });
