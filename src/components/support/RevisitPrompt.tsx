@@ -1,22 +1,49 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Heart, X } from "lucide-react";
 import { useSupportDialog } from "@/context/SupportDialogProvider";
 import { ACTION_PRIMARY_CLS, ACTION_QUIET_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { Z } from "@/config/ui";
 import { track } from "@/lib/analytics/analytics";
-import { browserPromptStore, finishRevisitPrompt, recordVisit, revisitPromptDue } from "@/lib/support-prompts";
+import { accountUser, authClient } from "@/lib/auth-client";
+import { patchUserSettings, userSettingsQuery } from "@/lib/me/settings-client";
+import {
+  browserPromptStore,
+  finishRevisitPrompt,
+  recordVisit,
+  revisitPromptDone,
+  revisitPromptDue,
+} from "@/lib/support-prompts";
 import { cn } from "@/lib/utils";
 
 const SHOW_AFTER_MS = 4000;
 
-/** A one-time card for a visitor on their third day of visits within 30 days. */
+/**
+ * A one-time card for a visitor on their third day of visits within 30 days. Visits count per
+ * browser; an account also remembers the card was finished, so it shows once across devices.
+ */
 export default function RevisitPrompt() {
   const t = useTranslations("Support");
   const openSupport = useSupportDialog();
-  const [visible, setVisible] = useState(false);
+  const queryClient = useQueryClient();
+  const { data: session, isPending: sessionPending } = authClient.useSession();
+  const account = accountUser(session);
+  const settings = useQuery({ ...userSettingsQuery(account?.id ?? ""), enabled: Boolean(account) });
+  const [due, setDue] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const cardRef = useRef<HTMLElement>(null);
+
+  async function markAccountDone(userId: string) {
+    try {
+      queryClient.setQueryData(userSettingsQuery(userId).queryKey, await patchUserSettings({ supportPromptResponded: true }));
+    } catch {
+      // This browser still remembers; the account catches up on the next visit.
+    }
+  }
+
 
   useEffect(() => {
     const store = browserPromptStore();
@@ -24,12 +51,51 @@ export default function RevisitPrompt() {
     if (!revisitPromptDue(store)) {
       return;
     }
-    const timer = window.setTimeout(() => {
-      setVisible(true);
-      track("support_prompt", { prompt: "revisit", action: "shown" });
-    }, SHOW_AFTER_MS);
+    const timer = window.setTimeout(() => setDue(true), SHOW_AFTER_MS);
     return () => window.clearTimeout(timer);
   }, []);
+
+  const accountRespondedAt = settings.data?.supportPromptRespondedAt;
+  const accountDone = accountRespondedAt === undefined ? undefined : accountRespondedAt !== null;
+  useEffect(() => {
+    if (!account || accountRespondedAt === undefined) {
+      return;
+    }
+    const store = browserPromptStore();
+    if (accountRespondedAt !== null) {
+      finishRevisitPrompt(store, accountRespondedAt);
+    } else if (revisitPromptDone(store)) {
+      void markAccountDone(account.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once the account's record is known
+  }, [account?.id, accountRespondedAt]);
+
+  const visible = due && !finished && !sessionPending && (!account || accountDone === false);
+
+  useEffect(() => {
+    if (visible) {
+      track("support_prompt", { prompt: "revisit", action: "shown" });
+    }
+  }, [visible]);
+
+  // Lifts the back-to-top button above the card, which sits in the same corner.
+  useLayoutEffect(() => {
+    const card = cardRef.current;
+    if (!visible || !card) {
+      return;
+    }
+    const root = document.documentElement.style;
+    const place = () => root.setProperty("--revisit-prompt-top", `${window.innerHeight - card.getBoundingClientRect().top + 12}px`);
+    place();
+    const observer = new ResizeObserver(place);
+    observer.observe(card);
+    window.addEventListener("resize", place);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", place);
+      root.removeProperty("--revisit-prompt-top");
+    };
+  }, [visible]);
 
   if (!visible) {
     return null;
@@ -37,8 +103,11 @@ export default function RevisitPrompt() {
 
   const finish = (action: "dismissed" | "opened") => {
     finishRevisitPrompt(browserPromptStore());
+    if (account) {
+      void markAccountDone(account.id);
+    }
     track("support_prompt", { prompt: "revisit", action });
-    setVisible(false);
+    setFinished(true);
     if (action === "opened") {
       openSupport("revisit");
     }
@@ -46,11 +115,12 @@ export default function RevisitPrompt() {
 
   return (
     <section
+      ref={cardRef}
       aria-labelledby="revisit-prompt-title"
       className={cn(
         "fixed flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-lg",
         "inset-x-3 bottom-[calc(var(--compare-bar-height,0px)+var(--safe-inset-bottom)+0.75rem)]",
-        "sm:inset-x-auto sm:left-6 sm:bottom-6 sm:w-90",
+        "sm:inset-x-auto sm:right-[calc(var(--iris-panel-width,0px)+1.5rem)] sm:bottom-[calc(var(--compare-bar-height,0px)+1.5rem)] sm:w-90",
         "animate-in fade-in-0 slide-in-from-bottom-2 duration-300 motion-reduce:animate-none",
         Z.fixed,
       )}
