@@ -265,6 +265,14 @@
       "declined": "Continued without signing in",
       "signedIn": "Signed in"
     },
+    "sources": {
+      "title": "Sources",
+      "measured": "Measured",
+      "handsOn": "Hands-on",
+      "readOriginal": "Read the original",
+      "marker": "Source {number}: {site}",
+      "bodiesSeparator": ", "
+    },
     "responseFeedback": {
       "prompt": "Was this helpful?",
       "thanks": "Thanks for the feedback.",

@@ -607,6 +607,9 @@ tests:
       - type: javascript # answered from findings it actually fetched
         metric: programmatic
         value: "context.metadata.reviews.some((lens) => lens.claims.length > 0)"
+      - type: javascript # cites the findings it relays, and only sources the tool returned
+        metric: programmatic
+        value: "context.metadata.sourceLinks.length > 0 && context.metadata.unknownSourceLinks.length === 0"
       - type: llm-rubric
         metric: reviews
         provider: *behavior_grader
@@ -634,6 +637,9 @@ tests:
       - type: javascript # the findings it fetched carried staleness
         metric: programmatic
         value: "context.metadata.reviews.some((lens) => lens.claims.some((claim) => claim.aspect === 'autofocus' && claim.stale.length > 0))"
+      - type: javascript # cites the findings it relays, and only sources the tool returned
+        metric: programmatic
+        value: "context.metadata.sourceLinks.length > 0 && context.metadata.unknownSourceLinks.length === 0"
       - type: llm-rubric
         metric: reviews
         provider: *behavior_grader

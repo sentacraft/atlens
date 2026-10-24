@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import type { UIMessage } from "ai";
 import { buildLensTools, type ToolData, seedRecalledRefs } from "../tools";
 import { getLensesByMount } from "@/lib/lens/data";
-import { lensRef } from "../lens-ref";
+import { lensRef, sourceRef } from "../lens-ref";
 
 const GUEST: ToolData = { favorites: async () => null, gear: { known: false, reason: "guest" }, reviews: async () => new Map() };
 
@@ -290,19 +290,21 @@ describe("lensReviews", () => {
     const out = await run(tools.lensReviews, { refs: [reviewed, unreviewed] });
 
     expect(out.lenses.map((lens: { ref: string }) => lens.ref)).toEqual([reviewed, unreviewed]);
+    const ref = (id: string) => sourceRef(reviewedId, id);
     expect(out.lenses[0].claims.map((c: { aspect: string }) => c.aspect)).toEqual(["bokeh", "autofocus"]);
-    expect(out.lenses[0].sources.map((s: { id: string }) => s.id)).toEqual(["a", "b", "c"]);
+    expect(out.lenses[0].sources.map((s: { id: string }) => s.id)).toEqual(["a", "b", "c"].map(ref));
+    expect(out.lenses[0].claims[1]).toMatchObject({ sources: [ref("c")], details: [{ id: ref("a") }] });
     expect(out.lenses[1]).toMatchObject({ claims: [], sources: [] });
     expect(out.note).toMatch(/otherMount/);
     expect(JSON.stringify(out)).not.toContain(reviewedId);
   });
 
   it("narrows to the asked aspects, keeping the sources their details cite", async () => {
-    const { tools, reviewed } = await setup();
+    const { tools, reviewed, reviewedId } = await setup();
     const out = await run(tools.lensReviews, { refs: [reviewed], aspects: ["autofocus"] });
 
     expect(out.lenses[0].claims.map((c: { aspect: string }) => c.aspect)).toEqual(["autofocus"]);
-    expect(out.lenses[0].sources.map((s: { id: string }) => s.id)).toEqual(["a", "c"]);
+    expect(out.lenses[0].sources.map((s: { id: string }) => s.id)).toEqual(["a", "c"].map((id) => sourceRef(reviewedId, id)));
   });
 
   it("refuses a ref the conversation never recalled, without reading the store", async () => {
