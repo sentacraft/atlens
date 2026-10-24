@@ -110,6 +110,25 @@ describe("buildWeightLadder", () => {
     const ladder = buildWeightLadder([makeLens({ weightG: [480, 520] })]);
     expect(ladder.tiers.find((t) => t.key === "heavy")?.lenses[0].weightG).toBe(500);
   });
+
+  it("ranks lenses across tiers and sets each reference after the last lens at least as heavy", () => {
+    const ladder = buildWeightLadder([
+      makeLens({ id: "w600", weightG: 600 }),
+      makeLens({ id: "w520", weightG: 520 }),
+      makeLens({ id: "w510", weightG: 510 }),
+      makeLens({ id: "w58", weightG: 58 }),
+    ]);
+    const rows = (key: string) =>
+      ladder.tiers.find((t) => t.key === key)?.rows.map((r) => (r.kind === "lens" ? `${r.lens.id}#${r.rank}` : r.reference.key));
+    expect(rows("heavy")).toEqual(["water750", "w600#1", "w520#2", "water500", "w510#3"]);
+    expect(rows("pocket")).toEqual(["soap", "w58#4", "egg"]);
+  });
+
+  it("keeps lenses of equal weight in rank order", () => {
+    const ladder = buildWeightLadder(["e", "d", "c", "b", "a"].map((id) => makeLens({ id, weightG: 490 })));
+    const ranks = ladder.tiers.find((t) => t.key === "everyday")?.rows.flatMap((r) => (r.kind === "lens" ? [r.rank] : []));
+    expect(ranks).toEqual([1, 2, 3, 4, 5]);
+  });
 });
 
 describe("toChartLens", () => {
@@ -136,9 +155,10 @@ describe("matchesChartSelection", () => {
 });
 
 describe("weightBarPct", () => {
-  it("scales by the square root so light lenses keep a visible bar", () => {
+  it("scales in proportion, keeping the lightest bar visible", () => {
     expect(weightBarPct(400, 400)).toBe(100);
-    expect(weightBarPct(100, 400)).toBe(50);
+    expect(weightBarPct(100, 400)).toBe(25);
+    expect(weightBarPct(10, 2000)).toBe(1);
   });
 });
 

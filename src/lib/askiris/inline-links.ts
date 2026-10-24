@@ -75,6 +75,7 @@ const PARSERS = {
     return refs ? ({ kind: "compare", refs }) as const : null;
   },
   collection: (value: string) => ({ kind: "collection", slug: value }) as const,
+  source: (value: string) => (/^[0-9a-z]+$/.test(value) ? ({ kind: "source", key: value }) as const : null),
 };
 
 type ChatLinkScheme = keyof typeof PARSERS;

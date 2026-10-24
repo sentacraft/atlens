@@ -25,6 +25,11 @@ export function lensRef(id: string): string {
   return (hash32(id) % SPACE).toString(36).padStart(LENS_REF_LENGTH, "0");
 }
 
+/** The opaque id Iris sees for one review source of one lens, made the same way as a lens ref. */
+export function sourceRef(lensId: string, sourceId: string): string {
+  return lensRef(`${lensId}/${sourceId}`);
+}
+
 export const LENS_LINK_PREFIX = "lens:";
 
 // GFM splits table cells on `|` before parsing links, and Sigma names contain one.

@@ -31,8 +31,8 @@ export interface CompareControl {
 /**
  * Favorite and compare for one lens, in one of three tiers chosen by how the lens is shown:
  * `panel` when it has a panel to itself (lens page, chart sheet), `row` when it is one card or row
- * among many, `dense` on a chart tile, where the buttons sit in the tile's top corners and appear
- * on hover, compare top left and favorite top right. Favorite comes first, compare second, in reading and tab order.
+ * among many, `dense` in a packed chart row, where they are icons that appear on hover and stay off
+ * touch screens, which open the chart's lens sheet instead. Favorite comes first, compare second.
  */
 export default function LensActions({
   lensId,
@@ -124,7 +124,7 @@ export default function LensActions({
   }
 
   return (
-    <>
+    <span className={cn("relative flex items-center gap-1 pointer-coarse:hidden", className)}>
       <button
         type="button"
         onClick={() => favorites.toggle(lensId)}
@@ -132,7 +132,7 @@ export default function LensActions({
         aria-label={`${favoriteLabel}: ${lensName}`}
         title={favoriteLabel}
         className={cn(
-          "absolute right-1 top-1 z-10 flex size-7 items-center justify-center rounded-full transition-[opacity,background-color,color] pointer-coarse:hidden",
+          "flex size-7 items-center justify-center rounded-full transition-[opacity,background-color,color]",
           FROSTED_OVERLAY_CHROME_CLS,
           favorited ? "text-zinc-900" : cn("text-zinc-600 hover:text-zinc-900", HOVER_REVEAL_CLS),
         )}
@@ -145,13 +145,13 @@ export default function LensActions({
         aria-pressed={compare.selected}
         aria-label={`${compareLabel}: ${lensName}`}
         className={cn(
-          "absolute left-1 top-1 z-10 inline-flex size-7 items-center justify-center rounded-full border shadow-sm transition-[opacity,background-color,color] pointer-coarse:hidden",
+          "inline-flex size-7 items-center justify-center rounded-full border shadow-sm transition-[opacity,background-color,color]",
           COMPARE_CHIP_STATE_CLS[state],
           !compare.selected && HOVER_REVEAL_CLS,
         )}
       >
         {compareIcon("size-3.5")}
       </button>
-    </>
+    </span>
   );
 }
