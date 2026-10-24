@@ -37,6 +37,8 @@ export interface NumericRow extends BaseRow {
   // Structured mode matches a line's value exactly; plain mode matches a substring.
   // Omitted: the whole cell is highlighted.
   getHighlightFragment?: (l: Lens) => string | undefined;
+  /** The chart that ranks this value; the lens page links to it beside the value. */
+  chart?: "weight" | "timeline";
 }
 
 export interface BoolRow extends BaseRow {
@@ -82,6 +84,7 @@ export interface ResolvedNumericRow {
   comparable?: number;
   bestDir?: "min" | "max";
   highlightFragment?: string;
+  chart?: "weight" | "timeline";
 }
 
 export interface ResolvedBoolRow {
@@ -253,6 +256,7 @@ export function resolveSpecRow(row: SpecRow, lens: Lens): ResolvedSpecRow | null
       comparable: row.toComparable(lens),
       bestDir: row.bestDir,
       highlightFragment: row.getHighlightFragment?.(lens),
+      chart: row.chart,
     };
   }
 
@@ -414,6 +418,7 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
           getDisplayValue: (l) => fmt.weightDisplay(l.weightG, "g"),
           toComparable: (l) => leadingValue(l.weightG),
           bestDir: "min",
+          chart: "weight",
         },
         {
           kind: "text",
@@ -563,6 +568,7 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
           hasData: (l) => l.releaseYear !== undefined,
           getDisplayValue: (l) => fmt.optionalNumber(l.releaseYear, ""),
           toComparable: (l) => l.releaseYear,
+          chart: "timeline",
         },
         {
           kind: "text",

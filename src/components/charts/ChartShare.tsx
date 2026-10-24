@@ -30,8 +30,8 @@ function ChartShareButton({ title, posters, trigger }: { title: string; posters:
   );
 }
 
-function useSelection(brands: BrandCount[]): ChartSelection {
-  return readChartSelectionFromSearch(useSearchParams(), brands.map((b) => b.brand));
+function useSelection(brands: BrandCount[], lenses: string[]): ChartSelection {
+  return readChartSelectionFromSearch(useSearchParams(), { brands: brands.map((b) => b.brand), lenses });
 }
 
 type TimelineShareProps = {
@@ -43,7 +43,7 @@ type TimelineShareProps = {
 };
 
 export function TimelineShareFromUrl(props: TimelineShareProps) {
-  return <TimelineShare {...props} selection={useSelection(props.brands)} />;
+  return <TimelineShare {...props} selection={useSelection(props.brands, props.entries.map((e) => e.lens.id))} />;
 }
 
 export function TimelineShare({ entries, years, brands, title, dataDate, selection }: TimelineShareProps & { selection: ChartSelection }) {
@@ -85,7 +85,7 @@ type WeightShareProps = {
 };
 
 export function WeightShareFromUrl(props: WeightShareProps) {
-  return <WeightShare {...props} selection={useSelection(props.brands)} />;
+  return <WeightShare {...props} selection={useSelection(props.brands, props.tiers.flatMap((tier) => tier.lenses.map((lens) => lens.id)))} />;
 }
 
 export function WeightShare({ tiers, brands, title, count, maxG, minG, dataDate, selection }: WeightShareProps & { selection: ChartSelection }) {

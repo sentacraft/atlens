@@ -1,17 +1,20 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Apple, Banana, Check, CupSoda, Egg, GlassWater, Milk, SoapDispenserDroplet, Star, type LucideIcon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import ChartChips from "@/components/charts/ChartChips";
+import ChartFocusPill from "@/components/charts/ChartFocusPill";
 import ChartLensItem from "@/components/charts/ChartLensItem";
 import ChartLensSheet from "@/components/charts/ChartLensSheet";
 import LensActions from "@/components/lens/LensActions";
 import { PAGE_SECTION_HEADING_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { useChartCard, type ChartItemHandlers } from "@/hooks/useChartCard";
 import { useChartSelection } from "@/hooks/useChartSelection";
+import { useScrollToFocused } from "@/hooks/useScrollToFocused";
 import { useCompareToggle } from "@/hooks/useCompareToggle";
 import { useFavorites } from "@/hooks/useFavorites";
 import { matchesChartSelection, type BrandCount } from "@/lib/charts/catalog";
@@ -81,7 +84,10 @@ type PageProps = { mount: Mount; tiers: WeightTier[]; brands: BrandCount[] };
 type Mode = ({ kind: "page"; initial: ChartSelection } & Pick<PageProps, "mount" | "brands">) | { kind: "poster"; selection: ChartSelection };
 
 export function WeightLadderChartFromUrl({ tiers, ...page }: PageProps) {
-  const initial = readChartSelectionFromSearch(useSearchParams(), page.brands.map((b) => b.brand));
+  const initial = readChartSelectionFromSearch(useSearchParams(), {
+    brands: page.brands.map((b) => b.brand),
+    lenses: tiers.flatMap((tier) => tier.lenses.map((lens) => lens.id)),
+  });
   return <WeightLadderChart tiers={tiers} mode={{ kind: "page", initial, ...page }} />;
 }
 
@@ -94,6 +100,10 @@ export default function WeightLadderChart({ tiers, mode }: { tiers: WeightTier[]
   const heaviest = Math.max(...tiers.flatMap((tier) => tier.lenses.map((l) => l.weightG)));
   const filtering = Boolean(selected.brand);
   const sheetLens = tiers.flatMap((tier) => tier.lenses).find((l) => l.id === sheet.id);
+  const focus = mode.kind === "page" ? selected.lens : undefined;
+  const focusRow = tiers.flatMap((tier) => tier.rows).find((row) => row.kind === "lens" && row.lens.id === focus);
+  const root = useRef<HTMLDivElement>(null);
+  useScrollToFocused(root, focus);
 
   const range = (tier: WeightTier) =>
     tier.maxG === undefined
@@ -103,7 +113,7 @@ export default function WeightLadderChart({ tiers, mode }: { tiers: WeightTier[]
         : t("rangeBetween", { min: tier.minG, max: tier.maxG - 1 });
 
   return (
-    <div className={cn("flex flex-col", cls.list)}>
+    <div ref={root} className={cn("flex flex-col", cls.list)}>
       {mode.kind === "page" && (
         <div className="flex flex-col gap-2">
           <ChartChips
@@ -111,7 +121,7 @@ export default function WeightLadderChart({ tiers, mode }: { tiers: WeightTier[]
             labelShown={false}
             chips={mode.brands.map((b) => ({ key: b.brand, label: `${brandLabel(tBrand, b.brand)} ${b.count}` }))}
             selected={selected.brand}
-            onSelect={(brand) => select({ ...selected, brand })}
+            onSelect={(brand) => select({ brand })}
           />
           {selected.brand && (
             <Link href={brandPath(mode.mount, selected.brand)} className={cn(TEXT_LINK_CLS, "self-start text-sm")}>
@@ -120,6 +130,12 @@ export default function WeightLadderChart({ tiers, mode }: { tiers: WeightTier[]
                 count: mode.brands.find((b) => b.brand === selected.brand)?.count ?? 0,
               })}
             </Link>
+          )}
+          {focusRow?.kind === "lens" && (
+            <ChartFocusPill
+              label={t("focusLadder", { name: `${brandLabel(tBrand, focusRow.lens.brand)} ${focusRow.lens.model}`, rank: focusRow.rank })}
+              onClear={() => select({ ...selected, lens: undefined })}
+            />
           )}
         </div>
       )}
@@ -152,6 +168,7 @@ export default function WeightLadderChart({ tiers, mode }: { tiers: WeightTier[]
                     <li key={row.lens.id}>
                       <LensRow
                         row={row}
+                        focused={row.lens.id === focus}
                         barPct={weightBarPct(row.lens.weightG, heaviest)}
                         handlers={mode.kind === "page" ? itemHandlers(row.lens.id) : undefined}
                         cls={cls}
@@ -191,11 +208,13 @@ function ReferenceRow({ reference, cls }: { reference: WeightReference; cls: Lay
 // and the row only marks what is already favorited or compared.
 function LensRow({
   row,
+  focused,
   barPct,
   handlers,
   cls,
 }: {
   row: Extract<LadderRow, { kind: "lens" }>;
+  focused: boolean;
   barPct: number;
   handlers: ChartItemHandlers | undefined;
   cls: Layout;
@@ -208,8 +227,8 @@ function LensRow({
   const name = `${brandLabel(tBrand, lens.brand)} ${lens.model}`;
 
   return (
-    <div className={cn("group relative grid items-center border-b border-zinc-100", cls.row)}>
-      {handlers && <ChartLensItem lens={lens} handlers={handlers} className="absolute inset-0 z-0 rounded-md hover:bg-zinc-50" />}
+    <div className={cn("group relative grid items-center border-b border-zinc-100", focused && "rounded-md bg-zinc-100 ring-1 ring-zinc-900", cls.row)}>
+      {handlers && <ChartLensItem lens={lens} handlers={handlers} focused={focused} className="absolute inset-0 z-0 rounded-md hover:bg-zinc-50" />}
       <span className={cn("pointer-events-none relative text-right tabular-nums text-zinc-400", cls.rank)}>{rank}</span>
       <Image src={getLensImageUrl(lens.id)} alt="" width={48} height={48} loading={handlers ? "lazy" : "eager"} className={cn("pointer-events-none relative object-contain", cls.image)} />
       <span className="pointer-events-none relative col-start-3 row-start-1 flex min-w-0 flex-col">
