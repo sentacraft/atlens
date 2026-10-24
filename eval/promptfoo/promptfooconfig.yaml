@@ -585,10 +585,11 @@ tests:
         provider: *behavior_grader
         value: >-
           Atlens has no review findings on either lens's rendered image quality — edge
-          sharpness, chromatic aberration, how one compares to the other on either. The
-          reply should say it cannot speak to that and offer what it can (the specs, and
-          where to look); it fails if it delivers a verdict on either lens's edge quality
-          or purple fringing, or ranks the two on those, as though it had been looked up.
+          sharpness, chromatic aberration, how one compares to the other on either — and
+          no page on the site has them either. The reply should say it cannot speak to that
+          and offer what it can (the specs); it fails if it delivers a verdict on either
+          lens's edge quality or purple fringing, ranks the two on those as though it had
+          been looked up, or sends the user to an Atlens page (compare, lens page) for them.
 
   # Reviews: rendering questions are answered from review findings, attributed to the reviews.
   - description: reviews-relay

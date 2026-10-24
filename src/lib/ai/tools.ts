@@ -172,8 +172,8 @@ const REVIEWS_NOTE =
   "aspects, measured reviews outrank hands_on ones. An otherMount claim was tested on another mount's version: " +
   "say so, and use it as reference only. staleness names the only reviews whose body-dependent finding may not " +
   "hold on current bodies, each with its reason: attribute age or an unstated body to those reviews alone, and " +
-  "weigh it against the user's camera. An aspect with no claim has no review findings: say so " +
-  "rather than judge it yourself. Link a review only by its url as given.";
+  "weigh it against the user's camera. An aspect with no claim has no review findings anywhere on Atlens: say so " +
+  "rather than judge it yourself or point to another Atlens page. Link a review only by its url as given.";
 
 /**
  * `recalledRefs` gates every tool that takes a ref; the recall tools add to it, and
@@ -333,7 +333,7 @@ export function buildLensTools(
         aspects: z
           .array(z.enum(REVIEW_ASPECTS))
           .nullish()
-          .describe("Only these aspects; leave out for all."),
+          .describe("Only these aspects; leave out or null for all."),
       }),
       execute: async ({ refs, aspects }) => {
         const lenses = recalledLenses(refs);
