@@ -50,14 +50,30 @@ export function collectionLink(slug: string): string {
   return `collection:${slug}`;
 }
 
-/** What the chat can link to: every lens by ref, and the collection slugs. */
+export function brandLink(slug: string): string {
+  return `brand:${slug}`;
+}
+
+export const CHART_KEYS = ["timeline", "weight", "lineups"] as const;
+export type ChartKey = (typeof CHART_KEYS)[number];
+
+export function chartLink(chart: ChartKey): string {
+  return `chart:${chart}`;
+}
+
+/** What the chat can link to: every lens by ref, and the collection and brand slugs. */
 export interface ChatLinkTargets {
   lenses: LensLinkIndex;
   collections: string[];
+  brands: string[];
 }
 
 function isKeyOf<T extends object>(value: string, record: T): value is Extract<keyof T, string> {
   return Object.hasOwn(record, value);
+}
+
+function isOneOf<T extends string>(value: string, options: readonly T[]): value is T {
+  return (options as readonly string[]).includes(value);
 }
 
 function compareRefs(value: string): string[] | null {
@@ -75,6 +91,8 @@ const PARSERS = {
     return refs ? ({ kind: "compare", refs }) as const : null;
   },
   collection: (value: string) => ({ kind: "collection", slug: value }) as const,
+  brand: (value: string) => ({ kind: "brand", slug: value }) as const,
+  chart: (value: string) => (isOneOf(value, CHART_KEYS) ? ({ kind: "chart", chart: value }) as const : null),
   source: (value: string) => (/^[0-9a-z]+$/.test(value) ? ({ kind: "source", key: value }) as const : null),
 };
 

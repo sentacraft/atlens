@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import AskIrisChat from "@/components/askiris/AskIrisChat";
 import { getLensLinkIndex } from "@/lib/ai/lens-link-index";
+import { BRANDS } from "@/lib/brands";
 import { COLLECTIONS } from "@/lib/collections";
 import { getLensSummaries } from "@/lib/lens/data";
 import { resolveAskIrisEntry } from "@/lib/url/askiris";
@@ -30,7 +31,7 @@ export default async function AskIrisPage({
   return (
     <AskIrisChat
       shell={{ variant: "page", entry: resolveAskIrisEntry(await searchParams), starterSeed }}
-      linkTargets={{ lenses: getLensLinkIndex(locale), collections: Object.keys(COLLECTIONS) }}
+      linkTargets={{ lenses: getLensLinkIndex(locale), collections: Object.keys(COLLECTIONS), brands: BRANDS.map((b) => b.slug) }}
       lenses={getLensSummaries(locale)}
     />
   );

@@ -66,6 +66,19 @@ describe("siteFacts", () => {
     expect(siteFacts(["collections"], "en", "G")[0].facts.join("\n")).not.toContain("collection:");
   });
 
+  it("links every brand page and chart on mounts that have them", () => {
+    const zhBrands = factsFor("brands", "zh");
+    expect(zhBrands).toContain(`[${zh.Brands.sigma}](brand:sigma)`);
+    expect(factsFor("brands", "en")).not.toMatch(/[\u4e00-\u9fff]/);
+    const charts = factsFor("charts", "zh");
+    for (const chart of ["timeline", "weight", "lineups"]) {
+      expect(charts).toContain(`(chart:${chart})`);
+    }
+    expect(factsFor("usage", "zh")).toContain(`"${zh.Nav.charts}"`);
+    expect(siteFacts(["brands", "charts"], "en", "G")[0].facts.join("\n")).not.toContain("brand:");
+    expect(siteFacts(["charts"], "en", "G")[0].facts.join("\n")).not.toContain("chart:");
+  });
+
   it("hands Iris each fact's links", () => {
     expect(factsFor("business", "zh")).toContain(`(links: [${zh.About.supportTitle}](page:aboutSupport))`);
     expect(factsFor("project", "en")).toContain(`(links: [GitHub](page:repo), [${en.AskIris.linkDataLicense}](page:dataLicense))`);
