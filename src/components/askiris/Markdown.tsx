@@ -9,6 +9,8 @@ import { ArrowUpRight, LogIn, MessageSquare } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
 import { useChatLinkTargets } from "@/components/askiris/ChatLinkContext";
+import { SourceMarker } from "@/components/askiris/ReviewSources";
+import { SOURCE_MARKER_LABEL } from "@/lib/askiris/review-citations";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -103,6 +105,14 @@ function ChatLinkAnchor({ link, children }: { link: ChatLink; children?: ReactNo
         <ChipLink href={buildComparePath(known[0].mount, known.map((entry) => entry.id))}>{children}</ChipLink>
       );
     }
+    case "source":
+      // A label other than the bare marker is a name the sentence needs, such as its subject.
+      return (
+        <>
+          {children === SOURCE_MARKER_LABEL ? null : children}
+          <SourceMarker sourceKey={link.key} />
+        </>
+      );
     case "collection":
       if (!targets?.collections.includes(link.slug) || !mountHasCollections(mount)) {
         return <>{children}</>;

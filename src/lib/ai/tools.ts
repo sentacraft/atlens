@@ -13,7 +13,7 @@ import {
   RECALL_SORT_NAMES,
   LENS_TABLE_COLUMNS,
 } from "@/lib/ai/recall";
-import { lensRef, buildRefIndex } from "@/lib/ai/lens-ref";
+import { lensRef, buildRefIndex, sourceRef } from "@/lib/ai/lens-ref";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
 import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
@@ -173,7 +173,8 @@ const REVIEWS_NOTE =
   "say so, and use it as reference only. staleness names the only reviews whose body-dependent finding may not " +
   "hold on current bodies, each with its reason: attribute age or an unstated body to those reviews alone, and " +
   "weigh it against the user's camera. An aspect with no claim has no review findings anywhere on Atlens: say so " +
-  "rather than judge it yourself or point to another Atlens page. Link a review only by its url as given.";
+  "rather than judge it yourself or point to another Atlens page. Never write a review's url: the source " +
+  "links turn into numbered notes that open it.";
 
 /**
  * `recalledRefs` gates every tool that takes a ref; the recall tools add to it, and
@@ -341,7 +342,16 @@ export function buildLensTools(
         return {
           lenses: lenses.map((lens) => {
             const found = reviews.get(lens.id);
-            const claims = (found?.claims ?? []).filter((claim) => !aspects?.length || aspects.includes(claim.aspect));
+            // Stored source ids abbreviate the site's name, so the model could guess one it was never given.
+            const ref = (id: string) => sourceRef(lens.id, id);
+            const claims = (found?.claims ?? [])
+              .filter((claim) => !aspects?.length || aspects.includes(claim.aspect))
+              .map((claim) => ({
+                ...claim,
+                sources: claim.sources.map(ref),
+                ...(claim.details ? { details: claim.details.map((detail) => ({ ...detail, id: ref(detail.id) })) } : {}),
+                ...(claim.staleness ? { staleness: claim.staleness.map((entry) => ({ ...entry, id: ref(entry.id) })) } : {}),
+              }));
             const cited = new Set(
               claims.flatMap((claim) => [...claim.sources, ...(claim.details ?? []).map((detail) => detail.id)]),
             );
@@ -349,7 +359,9 @@ export function buildLensTools(
               ref: lensRef(lens.id),
               name: resolveLens(lens, locale, tBrand).name,
               claims,
-              sources: (found?.sources ?? []).filter((source) => cited.has(source.id)),
+              sources: (found?.sources ?? [])
+                .map((source) => ({ ...source, id: ref(source.id) }))
+                .filter((source) => cited.has(source.id)),
             };
           }),
           note: REVIEWS_NOTE,
