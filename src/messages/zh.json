@@ -1012,7 +1012,17 @@
     "released": "{year} 年发布",
     "equivFocal": "等效 {focal}",
     "weight": "{weight}g",
-    "showAll": "展开全部 {count} 支"
+    "showAll": "展开全部 {count} 支",
+    "refWeight": "约 {weight}g",
+    "ref-cola2l": "一瓶 2L 可乐",
+    "ref-water750": "一瓶 750ml 矿泉水",
+    "ref-water500": "一瓶 500ml 矿泉水",
+    "ref-colaCan": "一罐 330ml 可乐",
+    "ref-milk250": "一盒 250ml 牛奶",
+    "ref-apple": "一个苹果",
+    "ref-banana": "一根香蕉",
+    "ref-soap": "一块香皂",
+    "ref-egg": "一个鸡蛋"
   },
   "Brand": {
     "title": "{brand, select, fujifilm {富士原厂 X 卡口镜头} other {{label}的富士 X 卡口镜头}}",
