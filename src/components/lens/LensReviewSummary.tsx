@@ -100,7 +100,7 @@ function StaleHint({ claim }: { claim: ReviewClaimView }) {
     <Popover.Root>
       <Popover.Trigger
         aria-label={notes.join("; ")}
-        className="relative ml-1.5 inline-flex align-[-2px] text-zinc-400 outline-none after:absolute after:-inset-2 hover:text-zinc-600 focus-visible:ring-2 focus-visible:ring-zinc-400"
+        className="relative ml-1.5 inline-flex align-[-2px] text-zinc-400 outline-none after:absolute after:-inset-x-1 after:-inset-y-2 hover:text-zinc-600 focus-visible:ring-2 focus-visible:ring-zinc-400"
       >
         <Clock className="size-3.5" aria-hidden />
       </Popover.Trigger>

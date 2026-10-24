@@ -39,7 +39,7 @@ export function SourceMarker({ sourceKey }: { sourceKey: string }) {
     <Popover.Root>
       <Popover.Trigger
         aria-label={t("marker", { number: String(cited.number), site: cited.source.site })}
-        className="not-prose relative mx-px inline-flex min-w-4 -translate-y-1.5 items-center after:absolute after:-inset-2 after:content-[''] justify-center rounded bg-zinc-100 px-1 align-baseline text-[10px] leading-4 font-semibold text-zinc-600 outline-none transition-colors hover:bg-zinc-200 focus-visible:ring-2 focus-visible:ring-zinc-400 data-[popup-open]:bg-zinc-900 data-[popup-open]:text-white"
+        className="not-prose relative mx-px inline-flex min-w-4 -translate-y-1.5 items-center after:absolute after:-inset-x-px after:-inset-y-2 after:content-[''] justify-center rounded bg-zinc-100 px-1 align-baseline text-[10px] leading-4 font-semibold text-zinc-600 outline-none transition-colors hover:bg-zinc-200 focus-visible:ring-2 focus-visible:ring-zinc-400 data-[popup-open]:bg-zinc-900 data-[popup-open]:text-white"
       >
         {cited.number}
       </Popover.Trigger>
