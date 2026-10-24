@@ -1003,6 +1003,7 @@
     "rangeBetween": "{min, number}–{max, number}g",
     "rangeUnder": "Under {max, number}g",
     "lensCount": "{count, plural, one {# lens} other {# lenses}}",
+    "focalAxis": "Focal length / mm",
     "highlightBrand": "Highlight brand",
     "filterBrand": "Brand",
     "filteredCount": "{shown, number} of {total, plural, one {# lens} other {# lenses}}",

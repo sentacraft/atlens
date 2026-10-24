@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 // A phone has no room for 15 year columns, so the same chart scrolls sideways there instead.
 const GEOMETRY = {
   wide: { height: 720, sectionHeight: 480, padTop: 16, padBottom: 48, size: 40, laneStep: 22 },
-  compact: { height: 420, sectionHeight: 340, padTop: 10, padBottom: 40, size: 24, laneStep: 13, minColWidth: 56 },
+  compact: { height: 420, sectionHeight: 340, padTop: 24, padBottom: 40, size: 24, laneStep: 13, minColWidth: 56 },
 } as const;
 const WIDE_PAD = { left: 52, right: 12 };
 const COMPACT_AXIS_WIDTH = 28;
@@ -131,7 +131,7 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
   const plot = { years, dimmed, handlers, active, eager: mode.kind === "poster", yearLabel: (count: number) => t("lensCount", { count }) };
   const tickLabels = (layout: Layout, width: string, unit: "each" | "once") => (
     <>
-      {unit === "once" && <span className={cn("absolute left-0 top-0 text-right text-[10px] text-zinc-400", width)}>mm</span>}
+      {unit === "once" && <span className="absolute left-0 top-0 z-20 whitespace-nowrap text-[10px] text-zinc-400">{t("focalAxis")}</span>}
       {layout.ticks.map(({ f, y }) => (
         <span key={f} className={cn("absolute left-0 text-right text-[11px] tabular-nums text-zinc-500", width)} style={{ top: y - 8 }}>
           {unit === "each" ? `${f}mm` : f}
