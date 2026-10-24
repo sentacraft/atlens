@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
 import type { UIMessage } from "ai";
-import { buildLensTools, type AccountData, seedRecalledRefs } from "../tools";
+import { buildLensTools, type ToolData, seedRecalledRefs } from "../tools";
 import { getLensesByMount } from "@/lib/lens/data";
 import { lensRef } from "../lens-ref";
 
-const GUEST: AccountData = { favorites: async () => null, gear: { known: false, reason: "guest" } };
+const GUEST: ToolData = { favorites: async () => null, gear: { known: false, reason: "guest" }, reviews: async () => new Map() };
 
 const tools = buildLensTools("X", "zh", (brand) => brand, GUEST, new Set());
 
@@ -72,14 +72,14 @@ describe("lensDetails hands the model refs, never ids", () => {
     expect(found).toEqual([]);
   });
 
-  it("says outright that rendering quality is not in the data", async () => {
+  it("points rendering and handling questions to lensReviews", async () => {
     // Asked about sharpness or fringing, the model filled the silence with a verdict of its own.
     const recall = await run(tools.queryLenses, { queries: [{ type: "prime" }] });
     const [ref] = recall.results[0].matches.map((lens: { ref: string }) => lens.ref);
 
     const details = await run(tools.lensDetails, { refs: [ref] });
 
-    expect(details.notInData).toMatch(/sharpness/);
+    expect(details.notInData).toMatch(/lensReviews/);
   });
 
   it("still carries the long-tail specs a recall result leaves out", async () => {
@@ -237,5 +237,77 @@ describe("myGear", () => {
     const empty = buildLensTools("X", "zh", (brand) => brand, { ...GUEST, gear: { known: false, reason: "empty" } }, new Set());
     expect(await run(empty.myGear, {})).toEqual({ bodies: [], lenses: [] });
     await expect(run(tools.myGear, {})).rejects.toThrow(/not signed in/);
+  });
+});
+
+describe("lensReviews", () => {
+  const source = (id: string) => ({ id, url: `https://example.com/${id}`, site: id, lang: "en", kind: "measured" as const });
+  const claim = (aspect: "bokeh" | "autofocus", sources: string[], detail?: string) => ({
+    aspect,
+    polarity: "positive" as const,
+    agreement: sources.length > 1 ? ("consensus" as const) : ("single_source" as const),
+    text: `Good ${aspect}.`,
+    sources,
+    reviewCount: sources.length,
+    outletCount: sources.length,
+    ...(detail ? { details: [{ id: detail, text: "More." }] } : {}),
+  });
+
+  async function setup() {
+    const recalledRefs = new Set<string>();
+    const lookup = buildLensTools("X", "zh", (brand) => brand, GUEST, recalledRefs);
+    const recall = await run(lookup.queryLenses, { queries: [{ type: "prime" }] });
+    const [reviewed, unreviewed] = recall.results[0].matches.map((lens: { ref: string }) => lens.ref);
+    const byRef = new Map(getLensesByMount("X", "zh").map((lens) => [lensRef(lens.id), lens.id]));
+    const reviewedId = byRef.get(reviewed)!;
+    const asked: string[][] = [];
+    const tools = buildLensTools(
+      "X",
+      "zh",
+      (brand) => brand,
+      {
+        ...GUEST,
+        reviews: async (ids) => {
+          asked.push(ids);
+          return new Map([
+            [
+              reviewedId,
+              {
+                sources: [source("a"), source("b"), source("c"), source("unused")],
+                claims: [claim("bokeh", ["a", "b"]), claim("autofocus", ["c"], "a")],
+              },
+            ],
+          ]);
+        },
+      },
+      recalledRefs,
+    );
+    return { tools, reviewed, unreviewed, reviewedId, asked };
+  }
+
+  it("returns each lens's claims and only the sources they cite, by ref", async () => {
+    const { tools, reviewed, unreviewed, reviewedId } = await setup();
+    const out = await run(tools.lensReviews, { refs: [reviewed, unreviewed] });
+
+    expect(out.lenses.map((lens: { ref: string }) => lens.ref)).toEqual([reviewed, unreviewed]);
+    expect(out.lenses[0].claims.map((c: { aspect: string }) => c.aspect)).toEqual(["bokeh", "autofocus"]);
+    expect(out.lenses[0].sources.map((s: { id: string }) => s.id)).toEqual(["a", "b", "c"]);
+    expect(out.lenses[1]).toMatchObject({ claims: [], sources: [] });
+    expect(out.note).toMatch(/otherMount/);
+    expect(JSON.stringify(out)).not.toContain(reviewedId);
+  });
+
+  it("narrows to the asked aspects, keeping the sources their details cite", async () => {
+    const { tools, reviewed } = await setup();
+    const out = await run(tools.lensReviews, { refs: [reviewed], aspects: ["autofocus"] });
+
+    expect(out.lenses[0].claims.map((c: { aspect: string }) => c.aspect)).toEqual(["autofocus"]);
+    expect(out.lenses[0].sources.map((s: { id: string }) => s.id)).toEqual(["a", "c"]);
+  });
+
+  it("refuses a ref the conversation never recalled, without reading the store", async () => {
+    const { tools, asked } = await setup();
+    await expect(run(tools.lensReviews, { refs: ["zzzzz"] })).rejects.toThrow(/was not returned/);
+    expect(asked).toEqual([]);
   });
 });
