@@ -3,16 +3,32 @@
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { ArrowUpRight, Share, Star } from "lucide-react";
+import { ArrowUpRight, Download, Share, Star } from "lucide-react";
 import { Tabs } from "@base-ui/react/tabs";
 import { ACTION_OUTLINE_CLS, ACTION_PRIMARY_CLS, SEGMENTED_LIST_CLS, SEGMENTED_TAB_CLS } from "@/config/ui-tokens";
 import { SITE } from "@/config/site";
+import { useIsMobileDevice, useIsWeChatBrowser } from "@/hooks/useViewport";
 import { track } from "@/lib/analytics/analytics";
+import { saveImage } from "@/lib/share-image";
 import { donationChannels, KOFI_URL, WECHAT_QR_SRC, type DonationChannel } from "@/lib/support";
 import { cn } from "@/lib/utils";
 
-// Both panels share one height so switching tabs does not move the rest of the dialog.
-const CHANNEL_PANEL_CLS = "flex min-h-64 flex-col items-center justify-center gap-4 text-center outline-none";
+// Both panels share one height so switching tabs does not move the rest of the dialog; on a phone
+// the WeChat panel carries a line of instructions below the code.
+const CHANNEL_PANEL_CLS = "flex flex-col items-center justify-center gap-4 text-center outline-none";
+const CHANNEL_PANEL_HEIGHT_CLS = { desktop: "min-h-64", phone: "min-h-84", wechat: "min-h-80" } as const;
+
+/** How a WeChat code can be used here: scanned from another phone, saved and scanned from the album, or pressed in WeChat. */
+type WechatMode = keyof typeof CHANNEL_PANEL_HEIGHT_CLS;
+
+function useWechatMode(): WechatMode {
+  const mobile = useIsMobileDevice();
+  const wechat = useIsWeChatBrowser();
+  if (!mobile) {
+    return "desktop";
+  }
+  return wechat ? "wechat" : "phone";
+}
 const HELP_BTN_CLS = cn(ACTION_OUTLINE_CLS, "h-9 px-3 text-[13px] max-sm:h-11 max-sm:flex-1 max-sm:justify-center");
 
 function KofiMark() {
@@ -45,23 +61,49 @@ function KofiPanel() {
   );
 }
 
-function WechatPanel() {
+function WechatPanel({ mode }: { mode: WechatMode }) {
   const t = useTranslations("Support");
+  const image = (
+    <Image
+      src={WECHAT_QR_SRC}
+      alt={t("wechatQrAlt")}
+      width={1152}
+      height={1152}
+      sizes="240px"
+      className="h-auto w-full rounded-lg"
+    />
+  );
+  if (mode === "wechat") {
+    return (
+      <>
+        <div className="w-60">{image}</div>
+        <p className="rounded-lg bg-zinc-100 px-3 py-2 text-[13px] leading-5 text-zinc-700">{t("wechatPressHint")}</p>
+      </>
+    );
+  }
   return (
-    <a href={WECHAT_QR_SRC} target="_blank" rel="noopener" aria-label={t("wechatEnlarge")} className="block w-60">
-      <Image
-        src={WECHAT_QR_SRC}
-        alt={t("wechatQrAlt")}
-        width={1152}
-        height={1152}
-        sizes="240px"
-        className="h-auto w-full rounded-lg"
-      />
-    </a>
+    <>
+      <a href={WECHAT_QR_SRC} target="_blank" rel="noopener" aria-label={t("wechatEnlarge")} className="block w-60">
+        {image}
+      </a>
+      {mode === "phone" && (
+        <div className="flex flex-col items-center gap-2">
+          <button
+            type="button"
+            onClick={() => saveImage(WECHAT_QR_SRC, "atlens-wechat.jpg").catch(console.error)}
+            className={ACTION_OUTLINE_CLS}
+          >
+            <Download className="size-4" aria-hidden="true" />
+            {t("wechatSave")}
+          </button>
+          <p className="text-xs text-zinc-500">{t("wechatSaveHint")}</p>
+        </div>
+      )}
+    </>
   );
 }
 
-const CHANNEL_PANELS: Record<DonationChannel, () => React.ReactNode> = {
+const CHANNEL_PANELS: Record<DonationChannel, (props: { mode: WechatMode }) => React.ReactNode> = {
   kofi: KofiPanel,
   wechat: WechatPanel,
 };
@@ -90,6 +132,7 @@ export default function SupportPanel({ lensCount, className }: { lensCount: numb
   const t = useTranslations("Support");
   const locale = useLocale();
   const channels = donationChannels(locale);
+  const mode = useWechatMode();
   return (
     <div className={cn("flex flex-col gap-4", className)}>
       <p className="text-sm leading-relaxed text-zinc-500">{t("body", { count: lensCount })}</p>
@@ -104,8 +147,8 @@ export default function SupportPanel({ lensCount, className }: { lensCount: numb
         {channels.map((channel) => {
           const Panel = CHANNEL_PANELS[channel];
           return (
-            <Tabs.Panel key={channel} value={channel} className={CHANNEL_PANEL_CLS}>
-              <Panel />
+            <Tabs.Panel key={channel} value={channel} className={cn(CHANNEL_PANEL_CLS, CHANNEL_PANEL_HEIGHT_CLS[mode])}>
+              <Panel mode={mode} />
             </Tabs.Panel>
           );
         })}

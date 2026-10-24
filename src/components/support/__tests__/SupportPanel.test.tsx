@@ -1,12 +1,23 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
 import SupportPanel from "../SupportPanel";
 
-afterEach(cleanup);
+const device = vi.hoisted(() => ({ mobile: false, wechat: false }));
+
+vi.mock("@/hooks/useViewport", () => ({
+  useIsMobileDevice: () => device.mobile,
+  useIsWeChatBrowser: () => device.wechat,
+}));
+
+afterEach(() => {
+  cleanup();
+  device.mobile = false;
+  device.wechat = false;
+});
 
 // The app types messages as en.json; zh.json has the same keys with other literals.
 const MESSAGES = { en, zh: zh as unknown as typeof en };
@@ -43,5 +54,30 @@ describe("SupportPanel", () => {
     expect(tabNames()).toEqual([zh.Support.wechatTitle, "Ko-fi"]);
     expect(screen.getByRole("tab", { name: zh.Support.wechatTitle })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("img", { name: zh.Support.wechatQrAlt })).toBeInTheDocument();
+  });
+
+  it("offers no save button on a desktop", () => {
+    renderPanel("zh");
+
+    expect(screen.queryByRole("button", { name: zh.Support.wechatSave })).not.toBeInTheDocument();
+    expect(screen.queryByText(zh.Support.wechatPressHint)).not.toBeInTheDocument();
+  });
+
+  it("offers to save the code in a phone browser", () => {
+    device.mobile = true;
+    renderPanel("zh");
+
+    expect(screen.getByRole("button", { name: zh.Support.wechatSave })).toBeInTheDocument();
+    expect(screen.getByText(zh.Support.wechatSaveHint)).toBeInTheDocument();
+  });
+
+  it("says to press and hold the code inside WeChat, with the code outside a link", () => {
+    device.mobile = true;
+    device.wechat = true;
+    renderPanel("zh");
+
+    expect(screen.getByText(zh.Support.wechatPressHint)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: zh.Support.wechatSave })).not.toBeInTheDocument();
+    expect(screen.getByRole("img", { name: zh.Support.wechatQrAlt }).closest("a")).toBeNull();
   });
 });
