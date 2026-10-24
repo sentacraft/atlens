@@ -26,8 +26,8 @@ import { deriveSpecialty } from "@/lib/lens/specialty";
 import { RetailersDropdown } from "@/components/price/RetailersDropdown";
 import { getBrandInfo } from "@/lib/brands";
 import { getMemberCollections } from "@/lib/collections";
-import { getCollectionLensCounts } from "@/lib/collection-stats";
-import CollectionPills from "@/components/collection/CollectionPills";
+import { getCollectionPreviews } from "@/lib/collection-stats";
+import CollectionLinks from "@/components/collection/CollectionLinks";
 import SameFocalAlternatives from "@/components/lens/SameFocalAlternatives";
 import LensReviewSearch from "@/components/lens/LensReviewSearch";
 import { BoolCell } from "@/components/ui/bool-cell";
@@ -41,7 +41,7 @@ import { PriceSection } from "@/components/price/PriceSection";
 import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
 import { brandPath, browsePath, lensPath } from "@/lib/url/routes";
 import { DataSourceBar } from "@/components/lens/DataSource";
-import { PAGE_GUTTER_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
+import { PAGE_GUTTER_CLS, PAGE_SECTION_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
 
@@ -202,6 +202,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
   const mediaGroupLabel = t("fieldGroupMedia");
   const memberCollections = getMemberCollections(lens, locale);
+  const previews = getCollectionPreviews(locale);
 
   const priceSelection = pickPriceEntry(lens.pricing, locale);
   const reportableFields = [
@@ -366,13 +367,12 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
       <SameFocalAlternatives lens={lens} lenses={lenses} />
 
-      <CollectionPills
-        collections={memberCollections}
-        lensCounts={getCollectionLensCounts(locale)}
+      <CollectionLinks
+        items={memberCollections.filter((c) => previews[c.slug]).map((c) => ({ collection: c, ...previews[c.slug] }))}
         mount={resolvedMount}
         locale={locale}
         title={t("collectionsTitle")}
-        viewAllLabel={t("viewAllCollections")}
+        className={PAGE_SECTION_CLS}
       />
       <SupportNote className="mt-6" />
     </div>

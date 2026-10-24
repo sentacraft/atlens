@@ -509,7 +509,6 @@
     "fieldLensImage": "Lens Image",
     "fieldGroupMedia": "Media & Links",
     "collectionsTitle": "Featured In",
-    "viewAllCollections": "View all collections",
     "notFoundTitle": "Lens Not Found"
   },
   "LensReviews": {
@@ -627,8 +626,7 @@
     "shiftRight": "Move right",
     "curatedTitle": "Curated Comparisons",
     "curatedHint": "Not sure where to start? Try one of my curated comparisons below.",
-    "collectionsTitle": "Featured In",
-    "viewAllCollections": "View all collections"
+    "collectionsTitle": "Featured In"
   },
   "Share": {
     "button": "Share",

@@ -11,7 +11,7 @@ import { CHIP_BASE_CLS, CHIP_IDLE_CLS, PAGE_GUTTER_CLS } from "@/config/ui-token
 
 export interface FeaturedCollection {
   collection: LensCollection;
-  previewLens: Lens;
+  previewLens: Pick<Lens, "id" | "mount">;
   statsLabel: string;
 }
 

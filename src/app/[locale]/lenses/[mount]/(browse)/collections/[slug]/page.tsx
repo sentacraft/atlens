@@ -12,10 +12,10 @@ import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { buildItemListSchema, lensListItems } from "@/lib/lens/seo";
 import { brandLabel } from "@/lib/lens/format";
 import { SITE } from "@/config/site";
-import { ACTION_ESCAPE_CLS, BROWSE_PAGE_MAIN_CLS, SECTION_VIEW_ALL_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
+import { ACTION_ESCAPE_CLS, BROWSE_PAGE_MAIN_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import JsonLd from "@/components/seo/JsonLd";
 import CollectionLensGrid from "@/components/collection/CollectionLensGrid";
-import RelatedCollectionCard from "@/components/collection/RelatedCollectionCard";
+import CollectionLinks from "@/components/collection/CollectionLinks";
 import SupportNote from "@/components/support/SupportNote";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import { ShareButton } from "@/components/share/ShareButton";
@@ -152,30 +152,7 @@ export default async function CollectionPage({
         </p>
 
         <footer className="mt-12">
-          <div className="mb-4 flex items-baseline justify-between gap-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
-              {t("relatedCollections")}
-            </h2>
-            <Link
-              href={collectionsPath(resolvedMount)}
-              className={SECTION_VIEW_ALL_LINK_CLS}
-            >
-              {t("viewAllCollections")} →
-            </Link>
-          </div>
-          <ul className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
-            {relatedWithStats.map(({ collection: c, previewLens, lensCount: lc, brandCount: bc }) => (
-              <li key={c.slug}>
-                <RelatedCollectionCard
-                  collection={c}
-                  previewLens={previewLens}
-                  locale={locale}
-                  statsLabel={t("stats", { count: lc, brandCount: bc })}
-                  density="comfortable"
-                />
-              </li>
-            ))}
-          </ul>
+          <CollectionLinks items={relatedWithStats} mount={resolvedMount} locale={locale} title={t("relatedCollections")} />
           <div className="mt-6 flex justify-center border-t border-zinc-100 pt-5">
             <Link
               href={browsePath(resolvedMount)}

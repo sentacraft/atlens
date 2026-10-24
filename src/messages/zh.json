@@ -509,7 +509,6 @@
     "fieldLensImage": "镜头图片",
     "fieldGroupMedia": "媒体与链接",
     "collectionsTitle": "所属合集",
-    "viewAllCollections": "查看所有合集",
     "notFoundTitle": "未找到这支镜头"
   },
   "LensReviews": {
@@ -627,8 +626,7 @@
     "shiftRight": "右移一列",
     "curatedTitle": "精选对比",
     "curatedHint": "还没想好比什么？试试下面这些精选对比吧。",
-    "collectionsTitle": "所属合集",
-    "viewAllCollections": "查看所有合集"
+    "collectionsTitle": "所属合集"
   },
   "Share": {
     "button": "分享",

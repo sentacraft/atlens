@@ -3,7 +3,7 @@ import { localized } from "@/i18n/localized";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { parseLensIds, getLensesByMount } from "@/lib/lens/data";
 import { readCompareIds } from "@/lib/url/compare";
-import { getCollectionLensCounts } from "@/lib/collection-stats";
+import { getCollectionPreviews } from "@/lib/collection-stats";
 import { urlSegmentToMount } from "@/lib/mount";
 import { findPresetByIds } from "@/lib/curated-presets";
 import CompareTable from "@/components/compare/CompareTable";
@@ -118,7 +118,7 @@ export default async function ComparePage({
       />
       <ComparePageHeader allLenses={allLenses} />
       <CompareTable allLenses={allLenses} minColumns={2} />
-      <CompareCollections allLenses={allLenses} lensCounts={getCollectionLensCounts(locale)} />
+      <CompareCollections allLenses={allLenses} previews={getCollectionPreviews(locale)} />
       {resolvedMount === "X" && <CuratedComparisons allLenses={allLenses} />}
       <SupportNote className="mt-10" />
       <BackToTopButton />
