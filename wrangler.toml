@@ -54,6 +54,12 @@ database_name = "atlens-analytics"
 database_id = "b4606596-b605-49ff-9697-c6d0da11ab94"
 migrations_dir = "migrations/analytics"
 
+[[d1_databases]]
+binding = "CATALOG_DB"
+database_name = "atlens-catalog"
+database_id = "d3e66a39-2855-4d48-8a23-29c9c77363b7"
+migrations_dir = "migrations/catalog"
+
 [[send_email]]
 name = "EMAIL"
 
@@ -125,6 +131,12 @@ binding = "ANALYTICS_DB"
 database_name = "atlens-analytics-preview"
 database_id = "bd85e0af-3947-4dcf-8416-a2e56b248516"
 migrations_dir = "migrations/analytics"
+
+[[previews.d1_databases]]
+binding = "CATALOG_DB"
+database_name = "atlens-catalog-preview"
+database_id = "dbb0e5f4-481c-475a-95b8-8ab7d9187b6c"
+migrations_dir = "migrations/catalog"
 
 [[previews.send_email]]
 name = "EMAIL"

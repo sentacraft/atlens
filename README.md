@@ -300,6 +300,7 @@ cp .env.example .env.local
 pnpm exec wrangler d1 migrations apply atlens-app --local
 pnpm exec wrangler d1 migrations apply atlens-askiris-traces --local
 pnpm exec wrangler d1 migrations apply atlens-analytics --local
+pnpm exec wrangler d1 migrations apply atlens-catalog --local
 
 pnpm run dev
 ```
