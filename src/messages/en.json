@@ -524,19 +524,19 @@
   "LensReviews": {
     "findings": {
       "title": "What reviews say",
-      "subtitle": "Summarized from {count} published reviews; tap a note for its source",
+      "subtitle": "Summarized from {count} published reviews",
       "summary": "Overall",
       "conflict": "Mixed views",
       "pros": "Strengths",
       "cons": "Weaknesses",
       "count": "{count}",
-      "weight": "{reviews} reviews · {outlets} outlets",
-      "weightSingle": "1 review",
       "expand": "Show all {count}",
       "collapse": "Show less",
       "showDetails": "Show {count} more",
       "hideDetails": "Hide details",
-      "sourcesLead": "Sources: ",
+      "reviewCount": "{count, plural, one {# review} other {# reviews}}",
+      "reviewSources": "{count, plural, one {# review} other {# reviews}} on {aspect}",
+      "disagree": "Reviewers disagree on {aspects}",
       "otherMount": "Tested on another mount",
       "polarity": {
         "positive": "Positive",

@@ -1,72 +1,151 @@
 "use client";
 
+import { Popover } from "@base-ui/react/popover";
 import { useQuery } from "@tanstack/react-query";
-import { useLocale, useTranslations } from "next-intl";
+import { ArrowLeftRight, ArrowUpRight, Clock, Scale, ThumbsDown, ThumbsUp } from "lucide-react";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { CitationsProvider, SourceList, SourceMarker } from "@/components/askiris/ReviewSources";
-import { PAGE_SECTION_CLS, SECTION_HEADING_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
-import { numberSources, sourceHref } from "@/lib/askiris/review-citations";
+import {
+  MENU_POPUP_CLS,
+  PAGE_SECTION_CLS,
+  REVIEW_NEGATIVE_CLS,
+  REVIEW_POSITIVE_CLS,
+  SECTION_HEADING_CLS,
+} from "@/config/ui-tokens";
+import { numberSources, sourceHref, type Citations } from "@/lib/askiris/review-citations";
 import { lensReviewsQuery } from "@/lib/lens/reviews-client";
 import { layoutReviews, type ReviewClaimView } from "@/lib/lens/reviews-view";
 import { cn } from "@/lib/utils";
 
-const MARK = { positive: "+", negative: "−", mixed: "±" } as const;
-const MARK_CLS = { positive: "text-zinc-900", negative: "text-zinc-500", mixed: "text-zinc-600" } as const;
-const TAG_CLS = "rounded-full bg-zinc-100 px-2 py-px text-[11px] font-medium whitespace-nowrap text-zinc-700";
+const POLARITY_ICON = {
+  positive: { Icon: ThumbsUp, cls: REVIEW_POSITIVE_CLS },
+  negative: { Icon: ThumbsDown, cls: REVIEW_NEGATIVE_CLS },
+  mixed: { Icon: Scale, cls: "text-zinc-500" },
+} as const;
 
-function Markers({ ids }: { ids: string[] }) {
+const QUIET_TRIGGER_CLS =
+  "text-xs text-zinc-500 underline decoration-zinc-300 decoration-dotted underline-offset-[3px] outline-none hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-zinc-400";
+
+function PolarityIcon({ polarity, className }: { polarity: ReviewClaimView["polarity"]; className?: string }) {
+  const t = useTranslations("LensReviews.findings");
+  const { Icon, cls } = POLARITY_ICON[polarity];
+  return <Icon role="img" aria-label={t(`polarity.${polarity}`)} className={cn("size-4 shrink-0", cls, className)} />;
+}
+
+/** The review count after a finding; it opens the list of the reviews behind it. */
+function ReviewsButton({ claim, citations }: { claim: ReviewClaimView; citations: Citations }) {
+  const t = useTranslations("LensReviews.findings");
+  const cited = claim.sources.map((id) => citations.byKey.get(id)).filter((entry) => entry !== undefined);
   return (
-    <>
-      {ids.map((id) => (
-        <SourceMarker key={id} sourceKey={id} />
-      ))}
-    </>
+    <Popover.Root>
+      <Popover.Trigger
+        aria-label={t("reviewSources", { count: claim.reviewCount, aspect: t(`aspects.${claim.aspect}`) })}
+        className={cn(QUIET_TRIGGER_CLS, "ml-1.5 whitespace-nowrap")}
+      >
+        {t("reviewCount", { count: claim.reviewCount })}
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner side="bottom" align="start" sideOffset={6} collisionPadding={12}>
+          <Popover.Popup className={cn(MENU_POPUP_CLS, "w-72 py-1.5")}>
+            <ul>
+              {cited.map(({ key, source }) => {
+                const href = sourceHref(source);
+                const meta = [source.published, source.bodies?.join(", ")].filter(Boolean).join(" · ");
+                const body = (
+                  <>
+                    <span className="font-medium text-zinc-900">{source.site}</span>
+                    <span className="min-w-0 flex-1 truncate text-xs text-zinc-500">{meta}</span>
+                    {href ? <ArrowUpRight className="size-3 shrink-0 text-zinc-400" aria-hidden /> : null}
+                  </>
+                );
+                return (
+                  <li key={key}>
+                    {href ? (
+                      <a href={href} target="_blank" rel="noopener noreferrer" className="flex min-h-9 items-center gap-2 px-3 text-[13px] hover:bg-zinc-50">
+                        {body}
+                      </a>
+                    ) : (
+                      <span className="flex min-h-9 items-center gap-2 px-3 text-[13px]">{body}</span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
 
-function ClaimMeta({ claim }: { claim: ReviewClaimView }) {
+/** A clock after a finding whose sources may not hold on current bodies; it opens the reason. */
+function StaleHint({ claim }: { claim: ReviewClaimView }) {
+  const t = useTranslations("LensReviews.findings");
+  if (claim.staleness.length === 0 && !claim.otherMount) {
+    return null;
+  }
+  const notes = [...claim.staleness.map((reason) => t(`staleness.${reason}`)), ...(claim.otherMount ? [t("otherMount")] : [])];
+  return (
+    <Popover.Root>
+      <Popover.Trigger
+        aria-label={notes.join("; ")}
+        className="relative ml-1.5 inline-flex align-[-2px] text-zinc-400 outline-none after:absolute after:-inset-2 hover:text-zinc-600 focus-visible:ring-2 focus-visible:ring-zinc-400"
+      >
+        <Clock className="size-3.5" aria-hidden />
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner side="top" align="center" sideOffset={6} collisionPadding={12}>
+          <Popover.Popup className={cn(MENU_POPUP_CLS, "max-w-64 px-3 py-2 text-xs leading-relaxed text-zinc-700")}>
+            {notes.map((note) => (
+              <p key={note}>{note}</p>
+            ))}
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}
+
+function CollapsedRow({ claim, citations }: { claim: ReviewClaimView; citations: Citations }) {
   const t = useTranslations("LensReviews.findings");
   return (
-    <>
-      <span>
-        {claim.reviewCount === 1
-          ? t("weightSingle")
-          : t("weight", { reviews: String(claim.reviewCount), outlets: String(claim.outletCount) })}
-      </span>
-      {claim.staleness.map((reason) => (
-        <span key={reason} className={TAG_CLS}>
-          {t(`staleness.${reason}`)}
-        </span>
-      ))}
-      {claim.otherMount ? <span className={TAG_CLS}>{t("otherMount")}</span> : null}
-    </>
+    <li className="flex flex-col gap-0.5 border-b border-zinc-100 py-2.5 last:border-b-0">
+      <span className="text-xs text-zinc-500">{t(`aspects.${claim.aspect}`)}</span>
+      <p className="text-sm leading-[22px] text-zinc-800">
+        {claim.text}
+        <ReviewsButton claim={claim} citations={citations} />
+        <StaleHint claim={claim} />
+      </p>
+    </li>
   );
 }
 
-function ClaimRow({ claim }: { claim: ReviewClaimView }) {
+function ExpandedRow({ claim }: { claim: ReviewClaimView }) {
   const t = useTranslations("LensReviews.findings");
   const [open, setOpen] = useState(false);
   return (
-    <li className="grid grid-cols-[1rem_minmax(0,1fr)] gap-x-2 border-b border-zinc-100 py-3 last:border-b-0 sm:grid-cols-[6rem_1rem_minmax(0,1fr)] sm:gap-x-2.5">
-      <span className="col-span-2 text-xs text-zinc-500 sm:col-span-1 sm:text-[13px] sm:leading-[22px]">
-        {t(`aspects.${claim.aspect}`)}
-      </span>
-      <span aria-label={t(`polarity.${claim.polarity}`)} className={cn("text-center text-[13px] leading-[22px] font-semibold", MARK_CLS[claim.polarity])}>
-        {MARK[claim.polarity]}
-      </span>
-      <div className="flex min-w-0 flex-col gap-1">
+    <li className="flex gap-2.5 border-b border-zinc-100 py-3 last:border-b-0">
+      <PolarityIcon polarity={claim.polarity} className="mt-[3px]" />
+      <div className="flex min-w-0 flex-col gap-0.5">
+        <span className="text-xs text-zinc-500">{t(`aspects.${claim.aspect}`)}</span>
         <p className="text-sm leading-[22px] text-zinc-800">
           {claim.text}
-          <Markers ids={claim.sources} />
+          {claim.sources.map((id) => (
+            <SourceMarker key={id} sourceKey={id} />
+          ))}
+          <StaleHint claim={claim} />
         </p>
-        <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
-          <ClaimMeta claim={claim} />
-          {claim.details.length > 0 ? (
-            <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="text-zinc-700 hover:text-zinc-900">
-              {open ? t("hideDetails") : t("showDetails", { count: String(claim.details.length) })}
-            </button>
-          ) : null}
-        </div>
+        {claim.details.length > 0 ? (
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            aria-expanded={open}
+            className="self-start text-xs text-zinc-500 hover:text-zinc-900"
+          >
+            {open ? t("hideDetails") : t("showDetails", { count: String(claim.details.length) })}
+          </button>
+        ) : null}
         {open ? (
           <ul className="mt-1 flex flex-col gap-1.5 rounded-lg bg-zinc-50 px-3 py-2 text-[13px] leading-5 text-zinc-700">
             {claim.details.map((detail, i) => (
@@ -82,26 +161,25 @@ function ClaimRow({ claim }: { claim: ReviewClaimView }) {
   );
 }
 
-function SideList({ title, polarity, claims }: { title: string; polarity: "positive" | "negative"; claims: ReviewClaimView[] }) {
+function SideList({
+  polarity,
+  claims,
+  citations,
+}: {
+  polarity: "positive" | "negative";
+  claims: ReviewClaimView[];
+  citations: Citations;
+}) {
   const t = useTranslations("LensReviews.findings");
   return (
     <div className="flex min-w-0 flex-col">
-      <div className="flex items-baseline gap-1.5 border-b border-zinc-200 pb-1.5">
-        <span aria-hidden className={cn("text-[13px] font-semibold", MARK_CLS[polarity])}>
-          {MARK[polarity]}
-        </span>
-        <h3 className="text-sm font-semibold text-zinc-900">{title}</h3>
+      <div className="flex items-center gap-2 border-b border-zinc-200 pb-2">
+        <PolarityIcon polarity={polarity} />
+        <h3 className="text-sm font-semibold text-zinc-900">{t(polarity === "positive" ? "pros" : "cons")}</h3>
       </div>
       <ul>
         {claims.map((claim) => (
-          <li key={claim.aspect} className="grid grid-cols-[4rem_minmax(0,1fr)] gap-x-2.5 border-b border-zinc-100 py-2 text-sm leading-[22px] last:border-b-0">
-            <span className="text-xs leading-[22px] text-zinc-500">{t(`aspects.${claim.aspect}`)}</span>
-            <span className="text-zinc-800">
-              {claim.text}
-              <Markers ids={claim.sources} />
-              {claim.staleness.length > 0 ? <span className={cn(TAG_CLS, "ml-1.5")}>{t(`staleness.${claim.staleness[0]}`)}</span> : null}
-            </span>
-          </li>
+          <CollapsedRow key={claim.aspect + claim.text} claim={claim} citations={citations} />
         ))}
       </ul>
     </div>
@@ -112,6 +190,7 @@ function SideList({ title, polarity, claims }: { title: string; polarity: "posit
 export default function LensReviewSummary({ lensId }: { lensId: string }) {
   const locale = useLocale();
   const t = useTranslations("LensReviews.findings");
+  const format = useFormatter();
   const { data } = useQuery(lensReviewsQuery(lensId, locale));
   const [expanded, setExpanded] = useState(false);
   const layout = useMemo(() => (data ? layoutReviews(data) : null), [data]);
@@ -122,6 +201,10 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
   if (!data || !layout || !citations || layout.total === 0) {
     return null;
   }
+  const disputed = layout.groups
+    .flatMap(({ claims }) => claims)
+    .filter((claim) => claim.agreement === "conflict")
+    .map((claim) => t(`aspects.${claim.aspect}`).toLowerCase());
 
   return (
     <section aria-labelledby="lens-review-findings" data-nosnippet="" className={cn(PAGE_SECTION_CLS, "flex flex-col gap-4")}>
@@ -131,15 +214,18 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
       </div>
       <CitationsProvider citations={citations}>
         {layout.summary.map((claim) => (
-          <div key={claim.aspect} className="flex flex-col gap-1.5 rounded-xl border border-zinc-200 px-4 py-3 sm:flex-row sm:items-baseline sm:gap-2.5">
-            <span className={cn(TAG_CLS, "self-start")}>
-              {claim.aspect === "overall" ? t("summary") : t("aspects.award")}
-              {claim.agreement === "conflict" ? ` · ${t("conflict")}` : ""}
-            </span>
-            <p className="text-sm leading-[22px] text-zinc-800">
-              {claim.text}
-              <Markers ids={claim.sources} />
-            </p>
+          <div key={claim.aspect} className="flex items-start gap-2.5 rounded-xl bg-zinc-50 px-3.5 py-3">
+            <PolarityIcon polarity={claim.polarity} className="mt-[3px]" />
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <span className="text-xs text-zinc-500">
+                {claim.aspect === "overall" ? t("summary") : t("aspects.award")}
+                {claim.agreement === "conflict" ? ` · ${t("conflict")}` : ""}
+              </span>
+              <p className="text-sm leading-[22px] text-zinc-800">
+                {claim.text}
+                <ReviewsButton claim={claim} citations={citations} />
+              </p>
+            </div>
           </div>
         ))}
 
@@ -153,7 +239,7 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
                 </div>
                 <ul>
                   {claims.map((claim) => (
-                    <ClaimRow key={claim.aspect + claim.text} claim={claim} />
+                    <ExpandedRow key={claim.aspect + claim.text} claim={claim} />
                   ))}
                 </ul>
               </div>
@@ -161,34 +247,21 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
             <SourceList list={citations.list} />
           </>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 sm:gap-7">
-            {layout.pros.length > 0 ? <SideList title={t("pros")} polarity="positive" claims={layout.pros} /> : null}
-            {layout.cons.length > 0 ? <SideList title={t("cons")} polarity="negative" claims={layout.cons} /> : null}
+          <div className="grid gap-5 sm:grid-cols-2 sm:gap-8">
+            {layout.pros.length > 0 ? <SideList polarity="positive" claims={layout.pros} citations={citations} /> : null}
+            {layout.cons.length > 0 ? <SideList polarity="negative" claims={layout.cons} citations={citations} /> : null}
           </div>
         )}
       </CitationsProvider>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-        {expanded ? null : (
-          <p className="text-[11px] leading-4 text-zinc-500">
-            {t("sourcesLead")}
-            {citations.list.map(({ number, key, source }, i) => {
-              const href = sourceHref(source);
-              return (
-                <span key={key}>
-                  {i > 0 ? " · " : ""}
-                  {number}{" "}
-                  {href ? (
-                    <a href={href} target="_blank" rel="noopener noreferrer" className={TEXT_LINK_CLS}>
-                      {source.site}
-                    </a>
-                  ) : (
-                    source.site
-                  )}
-                </span>
-              );
-            })}
+        {!expanded && disputed.length > 0 ? (
+          <p className="flex items-center gap-1.5 text-[13px] text-zinc-600">
+            <ArrowLeftRight className="size-3.5 shrink-0 text-zinc-500" aria-hidden />
+            {t("disagree", { aspects: format.list(disputed, { type: "conjunction" }) })}
           </p>
+        ) : (
+          <span className="hidden sm:block" />
         )}
         {layout.total > layout.pros.length + layout.cons.length ? (
           <button

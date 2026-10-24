@@ -524,19 +524,19 @@
   "LensReviews": {
     "findings": {
       "title": "评测",
-      "subtitle": "根据 {count} 篇公开评测整理，点角标查看来源",
+      "subtitle": "根据 {count} 篇公开评测整理",
       "summary": "整体",
       "conflict": "看法不一",
       "pros": "优点",
       "cons": "不足",
       "count": "{count} 条",
-      "weight": "{reviews} 篇评测 · {outlets} 家",
-      "weightSingle": "1 篇评测",
       "expand": "展开全部 {count} 条",
       "collapse": "收起",
       "showDetails": "展开 {count} 条细节",
       "hideDetails": "收起细节",
-      "sourcesLead": "参考来源：",
+      "reviewCount": "{count} 篇评测",
+      "reviewSources": "{aspect}的 {count} 篇评测",
+      "disagree": "各家看法不一：{aspects}",
       "otherMount": "在其他卡口上测试",
       "polarity": {
         "positive": "正面",

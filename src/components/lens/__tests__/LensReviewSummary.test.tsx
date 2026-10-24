@@ -9,7 +9,8 @@ const view = vi.hoisted(() => ({ current: null as unknown }));
 
 vi.mock("next-intl", () => ({
   useLocale: () => "zh",
-  useTranslations: () => (key: string, values?: Record<string, string>) =>
+  useFormatter: () => ({ list: (items: string[]) => items.join(", ") }),
+  useTranslations: () => (key: string, values?: Record<string, string | number>) =>
     values ? `${key}(${Object.values(values).join(",")})` : key,
 }));
 vi.mock("@/lib/lens/reviews-client", () => ({
@@ -49,6 +50,7 @@ const DATA = {
     claim("bokeh", "positive", "背景虚化讨喜", ["a", "b"]),
     claim("autofocus", "negative", "对焦偏慢", ["b"]),
     claim("vignetting", "mixed", "全开有暗角", ["a"]),
+    { ...claim("manual_focus", "mixed", "两家看法相反", ["a", "b"]), agreement: "conflict" },
   ],
 } as LensReviewsView;
 
@@ -59,9 +61,18 @@ describe("LensReviewSummary", () => {
     expect(screen.getByText("对焦偏慢")).toBeTruthy();
     expect(screen.queryByText("全开有暗角")).toBeNull();
 
-    fireEvent.click(screen.getByRole("button", { name: "expand(3)" }));
+    expect(screen.getByText("disagree(aspects.manual_focus)")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "expand(4)" }));
     expect(screen.getByText("全开有暗角")).toBeTruthy();
     expect(screen.getByText("groups.image")).toBeTruthy();
+  });
+
+  it("lists the reviews behind a finding from its review count", async () => {
+    renderWith(DATA);
+    fireEvent.click(await screen.findByRole("button", { name: "reviewSources(2,aspects.bokeh)" }));
+    expect((await screen.findByRole("link", { name: /Site A/ })).getAttribute("href")).toBe("https://example.com/a");
+    expect(screen.getByRole("link", { name: /Site B/ })).toBeTruthy();
   });
 
   it("renders nothing for a lens without findings", async () => {
