@@ -7,12 +7,8 @@ export function donationChannels(locale: string): DonationChannel[] {
 
 export const KOFI_URL = "https://ko-fi.com/sentacraft";
 
-/** The full-size code, for saving and opening on its own. */
+/** 720px, three times the dialog's 240px slot; a new code replaces the file under the same name. */
 export const WECHAT_QR_SRC = "/wechat-qr.jpg";
-
-// The hash in the name is what lets `public/_headers` cache it for a year: a new code needs a new name.
-/** The code as the support dialog shows it, 720px for a 240px slot. */
-export const WECHAT_QR_DISPLAY_SRC = "/wechat-qr-425fb78f.webp";
 
 /** Where a support dialog was opened from, for analytics. */
 export const SUPPORT_ENTRIES = ["menu", "page_end", "poster_toast", "revisit", "iris_helpful", "iris_limit"] as const;

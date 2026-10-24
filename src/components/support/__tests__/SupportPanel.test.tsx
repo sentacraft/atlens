@@ -79,15 +79,4 @@ describe("SupportPanel", () => {
     expect(screen.queryByRole("button", { name: zh.Support.wechatSave })).not.toBeInTheDocument();
     expect(screen.getByRole("img", { name: zh.Support.wechatQrAlt }).closest("a")).toBeNull();
   });
-
-  it("shows the small WebP of the code, and the full-size JPEG inside WeChat where it is pressed", () => {
-    renderPanel("zh");
-    expect(screen.getByRole("img", { name: zh.Support.wechatQrAlt }).getAttribute("src")).toContain("wechat-qr-425fb78f.webp");
-    cleanup();
-
-    device.mobile = true;
-    device.wechat = true;
-    renderPanel("zh");
-    expect(screen.getByRole("img", { name: zh.Support.wechatQrAlt }).getAttribute("src")).toContain("wechat-qr.jpg");
-  });
 });

@@ -10,7 +10,7 @@ import { SITE } from "@/config/site";
 import { useIsMobileDevice, useIsWeChatBrowser } from "@/hooks/useViewport";
 import { track } from "@/lib/analytics/analytics";
 import { saveImage } from "@/lib/share-image";
-import { donationChannels, KOFI_URL, WECHAT_QR_DISPLAY_SRC, WECHAT_QR_SRC, type DonationChannel } from "@/lib/support";
+import { donationChannels, KOFI_URL, WECHAT_QR_SRC, type DonationChannel } from "@/lib/support";
 import { cn } from "@/lib/utils";
 
 // Both panels share one height so switching tabs does not move the rest of the dialog; on a phone
@@ -65,8 +65,7 @@ function WechatPanel({ mode }: { mode: WechatMode }) {
   const t = useTranslations("Support");
   const image = (
     <Image
-      // Inside WeChat the code is pressed to be recognized, so it stays the full-size JPEG there.
-      src={mode === "wechat" ? WECHAT_QR_SRC : WECHAT_QR_DISPLAY_SRC}
+      src={WECHAT_QR_SRC}
       alt={t("wechatQrAlt")}
       width={720}
       height={720}
