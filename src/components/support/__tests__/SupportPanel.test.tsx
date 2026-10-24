@@ -25,7 +25,7 @@ const MESSAGES = { en, zh: zh as unknown as typeof en };
 function renderPanel(locale: "en" | "zh") {
   render(
     <NextIntlClientProvider locale={locale} messages={MESSAGES[locale]}>
-      <SupportPanel lensCount={224} />
+      <SupportPanel />
     </NextIntlClientProvider>,
   );
 }
@@ -41,7 +41,6 @@ describe("SupportPanel", () => {
     expect(tabNames()).toEqual(["Ko-fi", en.Support.wechatTitle]);
     expect(screen.getByRole("tab", { name: "Ko-fi" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("link", { name: /Support on Ko-fi/ })).toBeInTheDocument();
-    expect(screen.getByText(/covers 224 lenses/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("tab", { name: en.Support.wechatTitle }));
 

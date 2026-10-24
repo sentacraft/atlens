@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 // Both panels share one height so switching tabs does not move the rest of the dialog; on a phone
 // the WeChat panel carries a line of instructions below the code.
 const CHANNEL_PANEL_CLS = "flex flex-col items-center justify-center gap-4 text-center outline-none";
-const CHANNEL_PANEL_HEIGHT_CLS = { desktop: "min-h-64", phone: "min-h-84", wechat: "min-h-80" } as const;
+const CHANNEL_PANEL_HEIGHT_CLS = { desktop: "min-h-64", phone: "min-h-72", wechat: "min-h-72" } as const;
 
 /** How a WeChat code can be used here: scanned from another phone, saved and scanned from the album, or pressed in WeChat. */
 type WechatMode = keyof typeof CHANNEL_PANEL_HEIGHT_CLS;
@@ -76,29 +76,33 @@ function WechatPanel({ mode }: { mode: WechatMode }) {
   if (mode === "wechat") {
     return (
       <>
-        <div className="w-60">{image}</div>
-        <p className="rounded-lg bg-zinc-100 px-3 py-2 text-[13px] leading-5 text-zinc-700">{t("wechatPressHint")}</p>
+        <div className="w-58">{image}</div>
+        <p className="rounded-full bg-zinc-100 px-3 py-1.5 text-[13px] leading-5 text-zinc-700">{t("wechatPressHint")}</p>
       </>
     );
   }
+  const enlarge = (
+    <a href={WECHAT_QR_SRC} target="_blank" rel="noopener" aria-label={t("wechatEnlarge")} className="block">
+      {image}
+    </a>
+  );
+  if (mode === "desktop") {
+    return <div className="w-60">{enlarge}</div>;
+  }
   return (
     <>
-      <a href={WECHAT_QR_SRC} target="_blank" rel="noopener" aria-label={t("wechatEnlarge")} className="block w-60">
-        {image}
-      </a>
-      {mode === "phone" && (
-        <div className="flex flex-col items-center gap-2">
-          <button
-            type="button"
-            onClick={() => saveImage(WECHAT_QR_SRC, "atlens-wechat.jpg").catch(console.error)}
-            className={ACTION_OUTLINE_CLS}
-          >
-            <Download className="size-4" aria-hidden="true" />
-            {t("wechatSave")}
-          </button>
-          <p className="text-xs text-zinc-500">{t("wechatSaveHint")}</p>
-        </div>
-      )}
+      <div className="relative w-58">
+        {enlarge}
+        <button
+          type="button"
+          onClick={() => saveImage(WECHAT_QR_SRC, "atlens-wechat.jpg").catch(console.error)}
+          className={cn(ACTION_OUTLINE_CLS, "absolute -right-2.5 -bottom-2.5 h-8 gap-1 rounded-full px-3 text-[13px] shadow-md")}
+        >
+          <Download className="size-3.5" aria-hidden="true" />
+          {t("wechatSave")}
+        </button>
+      </div>
+      <p className="text-xs text-zinc-500">{t("wechatSaveHint")}</p>
     </>
   );
 }
@@ -128,14 +132,14 @@ async function shareSite(url: string, text: string, copiedLabel: string) {
 }
 
 /** The ways to support Atlens: a tab per tipping channel, this locale's usual one first and open, then free ways to help. */
-export default function SupportPanel({ lensCount, className }: { lensCount: number; className?: string }) {
+export default function SupportPanel({ className }: { className?: string }) {
   const t = useTranslations("Support");
   const locale = useLocale();
   const channels = donationChannels(locale);
   const mode = useWechatMode();
   return (
     <div className={cn("flex flex-col gap-4", className)}>
-      <p className="text-sm leading-relaxed text-zinc-500">{t("body", { count: lensCount })}</p>
+      <p className="text-sm leading-relaxed text-zinc-500">{t("body")}</p>
       <Tabs.Root defaultValue={channels[0]}>
         <Tabs.List className={SEGMENTED_LIST_CLS}>
           {channels.map((channel) => (
