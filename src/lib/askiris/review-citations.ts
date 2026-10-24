@@ -10,7 +10,7 @@ export interface CitedSource {
 
 export interface MessageCitations {
   byKey: Map<string, CitedSource>;
-  /** Every source the message cites or fetched, in marker order. */
+  /** Every source the message cites, in marker order. */
   list: CitedSource[];
 }
 
@@ -39,9 +39,10 @@ function fetchedSources(message: UIMessage): Map<string, LensReviewSource> {
 }
 
 /**
- * Numbers the review sources of `messages[index]`: the ones its text cites, in order of first
- * citation, then the ones it fetched without citing. A citation resolves against any review the
- * conversation fetched up to that message; one that resolves nowhere gets no number.
+ * Numbers the review sources `messages[index]` cites, in order of first citation. A citation
+ * resolves against any review the conversation fetched up to that message; one that resolves
+ * nowhere gets no number. Sources fetched but never cited are left out: listing them would
+ * attribute the reply to reviews it may not have used.
  */
 export function messageCitations(messages: UIMessage[], index: number): MessageCitations {
   const known = new Map<string, LensReviewSource>();
@@ -53,7 +54,7 @@ export function messageCitations(messages: UIMessage[], index: number): MessageC
   const message = messages[index];
   const text = message.parts.map((part) => (part.type === "text" ? part.text : "")).join("\n");
   const cited = [...text.matchAll(SOURCE_LINK_RE)].map((match) => match[1]);
-  const keys = [...new Set([...cited, ...fetchedSources(message).keys()])].filter((key) => known.has(key));
+  const keys = [...new Set(cited)].filter((key) => known.has(key));
   const list = keys.map((key, i) => ({ number: i + 1, key, source: known.get(key)! }));
   return { byKey: new Map(list.map((entry) => [entry.key, entry])), list };
 }

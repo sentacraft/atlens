@@ -20,7 +20,7 @@ describe("source links", () => {
 });
 
 describe("messageCitations", () => {
-  it("numbers cited sources by first citation, then the fetched ones left uncited", () => {
+  it("numbers cited sources by first citation and leaves out fetched ones it never cites", () => {
     const message: UIMessage = {
       id: "a1",
       role: "assistant",
@@ -33,7 +33,6 @@ describe("messageCitations", () => {
     expect(list.map((entry) => [entry.number, entry.key])).toEqual([
       [1, "et"],
       [2, "fv"],
-      [3, "mb"],
     ]);
     expect(byKey.get("fv")?.source.site).toBe("Site fv");
   });
@@ -51,6 +50,38 @@ describe("messageCitations", () => {
     };
     const { list } = messageCitations([earlier, { id: "u2", role: "user", parts: [text("and?")] }, later], 2);
     expect(list.map((entry) => entry.key)).toEqual(["ol"]);
+  });
+
+  it("numbers each reply on its own, so a source cited twice may carry two numbers", () => {
+    const first: UIMessage = {
+      id: "a1",
+      role: "assistant",
+      parts: [
+        reviews("c1", [{ sources: [source("aa"), source("bb"), source("cc")] }]),
+        text("One [^](source:aa) two [^](source:bb) three [^](source:cc)."),
+      ],
+    };
+    const ask: UIMessage = { id: "u2", role: "user", parts: [text("more?")] };
+    const second: UIMessage = {
+      id: "a2",
+      role: "assistant",
+      parts: [reviews("c2", [{ sources: [source("dd")] }]), text("Again [^](source:cc), new [^](source:dd).")],
+    };
+    const messages = [first, ask, second];
+    expect(messageCitations(messages, 0).byKey.get("cc")?.number).toBe(3);
+    expect(messageCitations(messages, 2).list.map((entry) => [entry.number, entry.key])).toEqual([
+      [1, "cc"],
+      [2, "dd"],
+    ]);
+  });
+
+  it("lists nothing for a reply that fetched reviews but cites none", () => {
+    const message: UIMessage = {
+      id: "a1",
+      role: "assistant",
+      parts: [reviews("c1", [{ sources: [source("aa")] }]), text("Only the specs, then.")],
+    };
+    expect(messageCitations([message], 0).list).toEqual([]);
   });
 });
 
