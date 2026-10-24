@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils";
 import { ACTION_OUTLINE_CLS, LENS_GRID_CLS, SEARCH_TRIGGER_CLS } from "@/config/ui-tokens";
 import { aboutPath, lensPath } from "@/lib/url/routes";
 import { usePageQuestions } from "@/components/iris/usePageQuestions";
+import { tagIris } from "@/components/iris/AiTag";
 
 interface LensListClientProps {
   lenses: Lens[];
@@ -202,7 +203,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
           <div className="flex flex-col items-start gap-3 py-6 animate-in fade-in duration-200">
             <div className="flex flex-col gap-1">
               <p className="text-sm font-medium text-zinc-700">{t("noResults")}</p>
-              <p className="text-sm text-zinc-500">{tIris("emptyHint")}</p>
+              <p className="text-sm text-zinc-500">{tIris.rich("emptyHint", { iris: tagIris })}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <button type="button" onClick={clearAllFilters} className={ACTION_OUTLINE_CLS}>

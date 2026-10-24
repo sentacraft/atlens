@@ -106,7 +106,7 @@ function accountFeatures(locale: string): string[] {
   return [
     withLinks(
       locale,
-      `Browsing, comparing, and Ask Iris all work without an account. Signing in adds: ${[auth.benefitGear, auth.benefitFavorites, auth.benefitChats].join("; ")}`,
+      `Browsing, comparing, and Ask Iris all work without an account. Signing in adds: ${[auth.benefitGearPlain, auth.benefitFavorites, auth.benefitChatsPlain].join("; ")}`,
       ["action:signIn", "page:profileFavorites", "page:profileGear"],
     ),
   ];

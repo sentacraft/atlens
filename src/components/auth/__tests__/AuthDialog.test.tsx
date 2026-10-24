@@ -6,7 +6,10 @@ import AuthDialog from "../AuthDialog";
 const social = vi.hoisted(() => vi.fn(async () => ({})));
 
 vi.mock("next-intl", () => ({
-  useTranslations: () => (key: string, values?: { provider?: string }) => (values?.provider ? `${key} ${values.provider}` : key),
+  useTranslations: () =>
+    Object.assign((key: string, values?: { provider?: string }) => (values?.provider ? `${key} ${values.provider}` : key), {
+      rich: (key: string) => key,
+    }),
 }));
 vi.mock("@/lib/auth-client", () => ({ authClient: { signIn: { social } } }));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
@@ -22,7 +25,7 @@ describe("AuthDialog", () => {
     render(<AuthDialog open source="gear" onOpenChange={() => {}} />);
 
     expect(await screen.findByRole("heading", { name: "reasonGearTitle" })).toBeInTheDocument();
-    expect(benefits()).toEqual(["benefitGear", "benefitFavorites", "benefitChats", "benefitQuota"]);
+    expect(benefits()).toEqual(["benefitGear", "benefitFavorites", "benefitChats", "benefitQuota", "benefitReviews"]);
   });
 
   it("offers Google and GitHub side by side and signs in with the one pressed", async () => {
@@ -38,7 +41,7 @@ describe("AuthDialog", () => {
     render(<AuthDialog open source="account_menu" onOpenChange={() => {}} />);
 
     expect(await screen.findByRole("heading", { name: "title" })).toBeInTheDocument();
-    expect(benefits()).toEqual(["benefitFavorites", "benefitGear", "benefitChats", "benefitQuota"]);
+    expect(benefits()).toEqual(["benefitFavorites", "benefitGear", "benefitChats", "benefitQuota", "benefitReviews"]);
   });
 
   it("leads with kept chats where Iris offers the sign-in", async () => {
@@ -53,5 +56,19 @@ describe("AuthDialog", () => {
 
     expect(await screen.findByRole("heading", { name: "reasonQuotaTitle" })).toBeInTheDocument();
     expect(benefits()[0]).toBe("benefitQuota");
+  });
+
+  it("leads with the full review findings when a guest asks for them", async () => {
+    render(<AuthDialog open source="reviews" onOpenChange={() => {}} />);
+
+    expect(await screen.findByRole("heading", { name: "reasonReviewsTitle" })).toBeInTheDocument();
+    expect(benefits()[0]).toBe("benefitReviews");
+  });
+
+  it("says an account is free", async () => {
+    render(<AuthDialog open source="account_menu" onOpenChange={() => {}} />);
+
+    expect(await screen.findByText("freeBadge")).toBeInTheDocument();
+    expect(screen.getByText("freeNote")).toBeInTheDocument();
   });
 });

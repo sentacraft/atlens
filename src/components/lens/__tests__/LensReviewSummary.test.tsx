@@ -1,11 +1,12 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import LensReviewSummary from "../LensReviewSummary";
 import type { LensReviewsView } from "@/lib/lens/reviews-view";
 
 const view = vi.hoisted(() => ({ current: null as unknown }));
+const openSignIn = vi.hoisted(() => vi.fn());
 
 vi.mock("next-intl", () => ({
   useLocale: () => "zh",
@@ -17,7 +18,18 @@ vi.mock("@/lib/lens/reviews-client", () => ({
   lensReviewsQuery: (id: string) => ({ queryKey: ["lens-reviews", id], queryFn: async () => view.current }),
 }));
 
-afterEach(cleanup);
+vi.mock("@/lib/auth-client", () => ({
+  authClient: { useSession: () => ({ data: null }) },
+  accountUser: () => undefined,
+}));
+vi.mock("@/context/SignInDialogProvider", () => ({ useSignInDialog: () => openSignIn }));
+
+afterEach(() => {
+  cleanup();
+  openSignIn.mockClear();
+  scrollIntoView.mockClear();
+  window.history.replaceState(null, "", "/");
+});
 
 const claim = (aspect: string, polarity: string, text: string, sources: string[]) => ({
   aspect,
@@ -32,13 +44,29 @@ const claim = (aspect: string, polarity: string, text: string, sources: string[]
   otherMount: false,
 });
 
-function renderWith(data: LensReviewsView) {
+const scrollIntoView = vi.fn();
+Element.prototype.scrollIntoView = scrollIntoView;
+
+function renderWith(data: LensReviewsView, client = new QueryClient()) {
   view.current = data;
   return render(
-    <QueryClientProvider client={new QueryClient()}>
+    <QueryClientProvider client={client}>
       <LensReviewSummary lensId="lens" />
     </QueryClientProvider>,
   );
+}
+
+const LOCKED = {
+  sources: [DATA_SOURCES()[1]],
+  claims: [claim("autofocus", "negative", "对焦偏慢", ["b"])],
+  locked: { total: 4, sourceCount: 2, disputed: ["manual_focus"], hiddenAspects: ["vignetting", "manual_focus"] },
+} as LensReviewsView;
+
+function DATA_SOURCES() {
+  return [
+    { id: "a", url: "https://example.com/a", site: "Site A", kind: "measured" },
+    { id: "b", url: "https://example.com/b", site: "Site B", kind: "hands_on" },
+  ];
 }
 
 const DATA = {
@@ -81,6 +109,47 @@ describe("LensReviewSummary", () => {
       claims: [{ ...claim("autofocus", "positive", "对焦快", ["a", "b"]), staleness: ["pre_x_trans_iv_body", "unknown_body"], otherMount: true }],
     } as LensReviewsView);
     expect(await screen.findByRole("button", { name: "staleNote(staleCause.pre_x_trans_iv_body, staleCause.unknown_body, staleCause.other_mount)" })).toBeTruthy();
+  });
+
+  it("asks a guest to sign in for the rest, counting what the full view holds", async () => {
+    renderWith({
+      sources: [DATA.sources[1]],
+      claims: [DATA.claims[1]],
+      locked: { total: 4, sourceCount: 2, disputed: ["manual_focus"], hiddenAspects: ["vignetting", "manual_focus"] },
+    } as LensReviewsView);
+    expect(await screen.findByText("对焦偏慢")).toBeTruthy();
+    expect(screen.getByText("subtitle(2)")).toBeTruthy();
+    expect(screen.getByText("disagree(aspects.manual_focus)")).toBeTruthy();
+
+    expect(screen.getByText("aspects.vignetting")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "expandSignIn(4)" }));
+    expect(openSignIn).toHaveBeenCalledWith("reviews", { returnTo: expect.stringMatching(/#reviews$/) });
+    expect(screen.queryByText("groups.image")).toBeNull();
+  });
+
+  it("opens the findings it asked to sign in for once the full set arrives", async () => {
+    const client = new QueryClient();
+    renderWith(LOCKED, client);
+    fireEvent.click(await screen.findByRole("button", { name: "expandSignIn(4)" }));
+
+    act(() => client.setQueryData(["lens-reviews", "lens"], DATA));
+    expect(await screen.findByText("全开有暗角")).toBeTruthy();
+    expect(scrollIntoView).toHaveBeenCalled();
+  });
+
+  it("opens the findings when a sign-in comes back to them by link", async () => {
+    window.history.replaceState(null, "", "/#reviews");
+    renderWith(DATA);
+    expect(await screen.findByText("全开有暗角")).toBeTruthy();
+    expect(scrollIntoView).toHaveBeenCalled();
+  });
+
+  it("leaves a guest's findings collapsed even when linked to them", async () => {
+    window.history.replaceState(null, "", "/#reviews");
+    renderWith(LOCKED);
+    expect(await screen.findByText("对焦偏慢")).toBeTruthy();
+    expect(screen.queryByText("groups.image")).toBeNull();
   });
 
   it("renders nothing for a lens without findings", async () => {
