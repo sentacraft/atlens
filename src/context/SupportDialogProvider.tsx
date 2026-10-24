@@ -15,7 +15,7 @@ type OpenSupport = (entry: SupportEntry) => void;
 
 const SupportDialogContext = createContext<OpenSupport>(() => {});
 
-export function SupportDialogProvider({ lensCount, children }: { lensCount: number; children: React.ReactNode }) {
+export function SupportDialogProvider({ children }: { children: React.ReactNode }) {
   const t = useTranslations("Support");
   const [open, setOpen] = useState(false);
   const openSupport = useMemo<OpenSupport>(
@@ -36,7 +36,7 @@ export function SupportDialogProvider({ lensCount, children }: { lensCount: numb
               <X className="h-4 w-4" />
             </DialogClose>
           </DialogHeader>
-          <SupportBody lensCount={lensCount} />
+          <SupportBody />
         </DialogPopup>
       </Dialog>
     </SupportDialogContext>
@@ -48,7 +48,7 @@ export function SupportDialogProvider({ lensCount, children }: { lensCount: numb
  * area runs through the drawer's home-bar padding and pads its own end instead, so content slides
  * under the home bar rather than stopping short of a blank strip.
  */
-function SupportBody({ lensCount }: { lensCount: number }) {
+function SupportBody() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { canScrollDown } = useScrollAffordance(scrollRef);
   return (
@@ -57,7 +57,7 @@ function SupportBody({ lensCount }: { lensCount: number }) {
         ref={scrollRef}
         className="-mb-[var(--safe-inset-bottom)] min-h-0 overflow-y-auto px-5 pb-[calc(1.25rem+var(--safe-inset-bottom))]"
       >
-        <SupportPanel lensCount={lensCount} />
+        <SupportPanel />
       </div>
       <div
         aria-hidden

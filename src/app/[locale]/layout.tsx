@@ -137,7 +137,7 @@ export default async function LocaleLayout({
           <LocalePreferenceSync />
           <CompareProvider>
           <SignInDialogProvider>
-          <SupportDialogProvider lensCount={meta.lensCount}>
+          <SupportDialogProvider>
             <NavProvider>
             {/* Base UI portals popups to <body>; isolating the page, Iris's side panel included, keeps them above any z-index in it (https://base-ui.com/react/overview/quick-start). */}
             <div className="isolate">

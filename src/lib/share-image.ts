@@ -27,3 +27,28 @@ export async function rasterizePoster(
     height: naturalHeight,
   });
 }
+
+/**
+ * Hands an image to the system share sheet, whose "Save Image" puts it in the photo library;
+ * where files can't be shared, downloads it instead. Resolves false if the visitor cancels.
+ */
+export async function saveImage(src: string, fileName: string): Promise<boolean> {
+  const blob = await (await fetch(src)).blob();
+  const file = new File([blob], fileName, { type: blob.type });
+  if (navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file] });
+      return true;
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") {
+        return false;
+      }
+    }
+  }
+  const link = document.createElement("a");
+  link.download = fileName;
+  link.href = URL.createObjectURL(blob);
+  link.click();
+  URL.revokeObjectURL(link.href);
+  return true;
+}
