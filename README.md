@@ -174,7 +174,7 @@ A promptfoo suite drives the live endpoint the way the browser does and grades e
 
 For a lens comparison tool, data accuracy isn't a nice-to-have — it's the product.
 
-The catalog is maintained by an **agentic data-operations pipeline** in a private repo (`atlens-pipeline`). A **tool-calling agent** (Claude Code) drives a multi-stage workflow — index, collect, derive, compute, pricing, images — under **`PreToolUse` / `PostToolUse` hooks** and a single validated write path, so guardrails live in code rather than in the prompt. Around it, a **triage bot** (a Codex agent in GitHub Actions) screens every incoming user issue, a scheduled **LLM worker with web search** discovers new releases, and an independent **LLM-as-a-judge** audits every collected source before anything is derived from it. Verified incidents feed a **self-improvement loop** that turns them into reviewed tests, hooks, and rules. The maintainer stays **in the loop** for review and publishing. Output lands in `src/data/lenses.json` (X mount) and `src/data/lenses-gfx.json` (G mount) as a pull request to this repo.
+The catalog is maintained by an **agentic data-operations pipeline** in a private repo (`atlens-pipeline`). A **tool-calling agent** (Claude Code) drives a multi-stage workflow — index, collect, derive, compute, pricing, images — under **`PreToolUse` / `PostToolUse` hooks** and a single validated write path, so guardrails live in code rather than in the prompt. Around it, a **triage bot** (a Codex agent in GitHub Actions) screens every incoming user issue, a scheduled **LLM worker with web search** discovers new releases, and an independent **LLM-as-a-judge** audits every collected source before anything is derived from it. Verified incidents feed a **self-improvement loop** that turns them into reviewed tests, hooks, and rules. The maintainer stays **in the loop** for review and publishing. Its output, `lenses.json` (X mount) and `lenses-gfx.json` (G mount), stays in that private repo; a pull request here pins the published commit, and the build downloads it.
 
 The pipeline currently manages 248 lenses and has grown through 900+ commits since March 2026.
 
@@ -341,7 +341,7 @@ Built on the shoulders of great open source work: [Base UI](https://base-ui.com)
 
 **Source code** — [MIT](LICENSE) © 2026 SentaCraft
 
-**Lens data** (`src/data/lenses.json`, `src/data/lenses-gfx.json`) — [Proprietary](LICENSE-DATA) © 2026 SentaCraft
+**Lens data** (`lenses.json`, `lenses-gfx.json`, kept in the private pipeline repo and downloaded at build time) — [Proprietary](LICENSE-DATA) © 2026 SentaCraft
 Available for personal reference only. Redistribution, commercial use, and bulk scraping are not permitted.
 
 **Product images and brand trademarks** are the property of their respective owners.

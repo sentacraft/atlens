@@ -1,6 +1,7 @@
 Data License — Proprietary
 
-Applies to: src/data/lenses.json, src/data/lenses-gfx.json
+Applies to: the lens catalog (lenses.json, lenses-gfx.json), including copies downloaded into
+  src/data/ at build time and earlier versions in this repository's history
 Excludes: product images (public/lenses/) — all product images and brand trademarks
   are the property of their respective owners.
 

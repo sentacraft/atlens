@@ -51,6 +51,11 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+
+      - name: Fetch lens catalog
+        run: pnpm run catalog:fetch
+        env:
+          LENS_CATALOG_TOKEN: ${{ secrets.LENS_CATALOG_TOKEN }}
       - name: Cache Next.js build
         uses: actions/cache@v4
         with:
