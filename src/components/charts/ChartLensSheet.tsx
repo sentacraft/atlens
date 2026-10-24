@@ -1,14 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Check, Plus } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { ChartLensSummary } from "@/components/charts/ChartLensCard";
-import FavoriteStarButton from "@/components/lens/FavoriteStarButton";
+import LensActions from "@/components/lens/LensActions";
 import { Dialog, DialogPopup } from "@/components/ui/dialog";
-import { ACTION_PRIMARY_CLS, COMPARE_CHIP_CLS } from "@/config/ui-tokens";
+import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
 import { useCompareToggle } from "@/hooks/useCompareToggle";
 import type { ChartLens } from "@/lib/charts/catalog";
+import { brandLabel } from "@/lib/lens/format";
 import { lensPath } from "@/lib/url/routes";
 import { cn } from "@/lib/utils";
 
@@ -31,23 +31,13 @@ export default function ChartLensSheet({
 
 function SheetBody({ lens }: { lens: ChartLens }) {
   const t = useTranslations("Charts");
-  const compare = useCompareToggle(lens.id);
+  const tBrand = useTranslations("Brands");
+  const compare = useCompareToggle(lens);
 
   return (
     <div className="flex flex-col gap-4 px-5 pb-5 pt-2">
       <ChartLensSummary lens={lens} size="sheet" />
-      <div className="flex gap-2.5">
-        <FavoriteStarButton lensId={lens.id} placement="labelled" className="h-11 flex-1" />
-        <button
-          type="button"
-          onClick={compare.onToggle}
-          aria-pressed={compare.selected}
-          className={cn(COMPARE_CHIP_CLS, compare.stateCls, "h-11 flex-1 justify-center gap-1.5 text-sm")}
-        >
-          {compare.selected ? <Check className="size-4" aria-hidden="true" /> : <Plus className="size-4" aria-hidden="true" />}
-          {compare.label}
-        </button>
-      </div>
+      <LensActions lensId={lens.id} lensName={`${brandLabel(tBrand, lens.brand)} ${lens.model}`} compare={compare} tier="panel" />
       <Link href={lensPath(lens)} className={cn(ACTION_PRIMARY_CLS, "flex h-11 items-center justify-center rounded-lg text-sm font-medium")}>
         {t("viewDetails")}
       </Link>

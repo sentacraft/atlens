@@ -409,6 +409,8 @@
     "removeFromCompare": "移除对比",
     "compareFull": "对比列表已满",
     "compareFullToast": "对比已满，先移除一款",
+    "addedToMountCompare": "已加入 {mount} 卡口的对比",
+    "viewCompare": "查看",
     "goCompare": "查看对比（{count, number}）",
     "clearCompare": "清空",
     "compareShort": "对比",
@@ -507,9 +509,6 @@
     "partial": "部分",
     "unknown": "N/A",
     "missing": "-",
-    "addToCompare": "对比",
-    "removeFromCompare": "移除",
-    "compareFull": "列表已满",
     "sourceSite": "{brand}官网",
     "reportIssue": "反馈问题",
     "nudgeText": "发现数据有误？",
@@ -540,6 +539,7 @@
     }
   },
   "Alternatives": {
+    "compareWithCurrent": "和当前镜头一起对比",
     "titlePrime": "同焦段的其他选择",
     "titleZoom": "相近焦段的其他变焦",
     "summaryPrime": "{range} 的定焦，共 {count, number} 支",

@@ -85,7 +85,7 @@ test.describe("Compare flow", () => {
   }) => {
     await page.goto(`/en/lenses/x/${LENS_A}`);
 
-    await page.getByRole("button", { name: "Compare", exact: true }).click();
+    await page.getByRole("button", { name: "Add to Compare", exact: true }).click();
 
     await page.getByRole("button", { name: /Compare \(1\)/i }).waitFor();
 
