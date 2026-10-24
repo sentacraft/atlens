@@ -65,8 +65,12 @@ export function matchesChartSelection(lens: ChartLens, selection: ChartSelection
 }
 
 /** Charts plot stills lenses only: cine lenses publish T-stops and would read as outliers. */
+export function isOnCharts(lens: Lens): boolean {
+  return !lens.isCine;
+}
+
 export function chartLenses(lenses: Lens[]): ChartLens[] {
-  return lenses.filter((lens) => !lens.isCine).map(toChartLens);
+  return lenses.filter(isOnCharts).map(toChartLens);
 }
 
 /** Cine lenses the charts leave out, optionally for one brand. */

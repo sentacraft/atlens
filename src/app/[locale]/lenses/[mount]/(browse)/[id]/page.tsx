@@ -5,7 +5,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Flag } from "lucide-react";
 import { getLensUrl } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
-import { mountHasCollections, urlSegmentToMount } from "@/lib/mount";
+import { mountHasCharts, mountHasCollections, urlSegmentToMount } from "@/lib/mount";
+import { isOnCharts } from "@/lib/charts/catalog";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
 import { buildSpecGroups, buildSpecGroupLabels, resolveSpecGroups, rowPlainText } from "@/lib/lens/spec-groups";
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens/spec-groups";
@@ -39,7 +40,8 @@ import { lensDisplayName, brandLabel } from "@/lib/lens/format";
 import { buildLensDescription, buildLensProductSchema } from "@/lib/lens/seo";
 import { PriceSection } from "@/components/price/PriceSection";
 import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
-import { brandPath, browsePath, lensPath } from "@/lib/url/routes";
+import { brandPath, browsePath, chartPath, lensPath } from "@/lib/url/routes";
+import { chartHref } from "@/lib/url/charts";
 import { DataSourceBar } from "@/components/lens/DataSource";
 import { PAGE_GUTTER_CLS, PAGE_SECTION_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 
@@ -178,6 +180,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const displayName = lensDisplayName(brandName, lens.series, lens.model);
   const description = buildLensDescription({ lens, mount: resolvedMount, brandName, t });
   const hasBrandPage = mountHasCollections(resolvedMount) && getBrandInfo(lens.brand) !== undefined;
+  const onCharts = mountHasCharts(resolvedMount) && isOnCharts(lens);
   const canonicalUrl = `${SITE.url}/${locale}${lensPath(lens)}`;
   const productSchema = buildLensProductSchema({
     lens,
@@ -339,9 +342,17 @@ export default async function LensDetailPage({ params }: { params: Params }) {
                           </div>
                         </td>
                         <td className="px-4 py-2.5 text-zinc-700">
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
                             {renderRowValue(resolved, valueCellLabels)}
                             {resolved.note && <FieldNotePopover note={resolved.note} />}
+                            {resolved.kind === "numeric" && resolved.chart && onCharts && (
+                              <Link
+                                href={chartHref(chartPath(resolvedMount, resolved.chart), { lens: lens.id })}
+                                className={`basis-full text-xs sm:ml-3 sm:basis-auto ${TEXT_LINK_CLS}`}
+                              >
+                                {t(resolved.chart === "weight" ? "seeOnWeightLadder" : "seeOnTimeline")}
+                              </Link>
+                            )}
                           </div>
                         </td>
                       </tr>

@@ -435,6 +435,8 @@
     "note": "这里的参数不是 AI 生成的，取自厂商官网正式发布的资料。AI 只帮忙把官网文字归档成统一格式，不编造数值；每支镜头上线前由作者审核。<link>数据怎么来</link>"
   },
   "LensDetail": {
+    "seeOnWeightLadder": "在重量天梯里看 →",
+    "seeOnTimeline": "在时间轴里看 →",
     "metaDescPrefix": "{name}：富士 {mount} 卡口{type}镜头规格参数与横向对比。",
     "metaTitle": "{name} 规格参数与对比",
     "metaJoinSpace": "",
@@ -1020,6 +1022,9 @@
     "released": "{year} 年发布",
     "equivFocal": "等效 {focal}",
     "weight": "{weight}g",
+    "focusLadder": "{name} · 第 {rank} 重",
+    "focusTimeline": "{name} · {year} 年",
+    "clearFocus": "取消定位",
     "refWeight": "约 {weight}g",
     "ref-cola2l": "一瓶 2L 可乐",
     "ref-water750": "一瓶 750ml 矿泉水",

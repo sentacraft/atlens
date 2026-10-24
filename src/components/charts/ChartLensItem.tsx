@@ -11,6 +11,7 @@ import { lensPath } from "@/lib/url/routes";
 export default function ChartLensItem({
   lens,
   handlers,
+  focused,
   className,
   style,
   children,
@@ -18,6 +19,8 @@ export default function ChartLensItem({
   lens: ChartLens;
   /** Absent on a poster, which nobody can click. */
   handlers: ChartItemHandlers | undefined;
+  /** The lens a link opened the chart on; `useScrollToFocused` finds it by this mark. */
+  focused?: boolean;
   className?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
@@ -25,13 +28,21 @@ export default function ChartLensItem({
   const tBrand = useTranslations("Brands");
   if (!handlers) {
     return (
-      <span aria-hidden="true" className={className} style={style}>
+      <span aria-hidden="true" data-focused={focused || undefined} className={className} style={style}>
         {children}
       </span>
     );
   }
   return (
-    <Link href={lensPath(lens)} aria-label={`${brandLabel(tBrand, lens.brand)} ${lens.model}`} {...handlers} className={className} style={style}>
+    <Link
+      href={lensPath(lens)}
+      aria-label={`${brandLabel(tBrand, lens.brand)} ${lens.model}`}
+      aria-current={focused || undefined}
+      data-focused={focused || undefined}
+      {...handlers}
+      className={className}
+      style={style}
+    >
       {children}
     </Link>
   );
