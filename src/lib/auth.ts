@@ -2,7 +2,7 @@ import "server-only";
 
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { betterAuth } from "better-auth";
-import { anonymous, emailOTP, oAuthProxy } from "better-auth/plugins";
+import { anonymous, emailOTP, oAuthProxy, oneTap } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { D1Dialect } from "kysely-d1";
 import { cookieReader } from "@/lib/analytics/session";
@@ -27,18 +27,15 @@ function getAuthContext() {
 
 export function createAuth() {
   const { context, env, secret } = getAuthContext();
-  const googleClientId = process.env.GOOGLE_CLIENT_ID;
-  const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
   const siteURL = process.env.SITE_URL;
-  const socialProviders =
-    googleClientId && googleClientSecret
-      ? {
-          google: {
-            clientId: googleClientId,
-            clientSecret: googleClientSecret,
-          },
-        }
-      : undefined;
+  const socialProviders = {
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? { google: { clientId: process.env.GOOGLE_CLIENT_ID, clientSecret: process.env.GOOGLE_CLIENT_SECRET } }
+      : {}),
+    ...(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET
+      ? { github: { clientId: process.env.GITHUB_CLIENT_ID, clientSecret: process.env.GITHUB_CLIENT_SECRET } }
+      : {}),
+  };
 
   return betterAuth({
     appName: "Atlens",
@@ -89,7 +86,7 @@ export function createAuth() {
             }
             const write = recordSignIn(
               env.ANALYTICS_DB,
-              { path: ctx.path, user, sessionCreatedAt: session.createdAt },
+              { path: ctx.path, provider: ctx.params?.id, user, sessionCreatedAt: session.createdAt },
               { cookies: cookieReader(ctx.headers?.get("cookie")), raw: ctx.request },
             ).catch((error: unknown) => console.error("[auth] failed to record sign-in", error));
             context.ctx.waitUntil(write);
@@ -128,9 +125,10 @@ export function createAuth() {
           });
         },
       }),
-      // Google accepts only the production callback, so previews sign in through it; the
-      // proxy secret is the one secret previews share with production.
+      // Google and GitHub accept only the production callback, so previews sign in through it;
+      // the proxy secret is the one secret previews share with production.
       oAuthProxy({ productionURL: siteURL, secret: process.env.OAUTH_PROXY_SECRET }),
+      oneTap(),
       nextCookies(),
     ],
     advanced: {

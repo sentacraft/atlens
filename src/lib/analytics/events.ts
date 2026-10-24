@@ -100,7 +100,7 @@ export interface AskIrisTurnProps {
 export const SIGN_IN_COMPLETE_EVENT = "sign_in_complete";
 
 export interface SignInCompleteProps {
-  method: "google" | "email";
+  method: "google" | "github" | "one_tap" | "email";
   new_account: boolean;
 }
 
@@ -409,7 +409,8 @@ export const EVENT_DOCS: EventDocs = {
       method: {
         description: "How.",
         values: {
-          google: { label: "Google", description: "Pressed Continue with Google, before leaving for Google" },
+          google: { label: "Google", description: "Pressed Google in the sign-in dialog, before leaving for Google" },
+          github: { label: "GitHub", description: "Pressed GitHub in the sign-in dialog, before leaving for GitHub" },
           email: { label: "Email code", description: "Entered the emailed code and pressed Sign in" },
         },
       },
@@ -422,6 +423,8 @@ export const EVENT_DOCS: EventDocs = {
         description: "How they signed in.",
         values: {
           google: { label: "Google", description: "Came back from Google signed in" },
+          github: { label: "GitHub", description: "Came back from GitHub signed in" },
+          one_tap: { label: "Google One Tap", description: "Continued from Google's One Tap prompt" },
           email: { label: "Email code", description: "Entered a valid emailed code" },
         },
       },

@@ -11,7 +11,7 @@ const betterAuth = vi.fn((config: unknown) => config);
 vi.mock("better-auth", () => ({ betterAuth }));
 const emailOTP = vi.fn((options: unknown) => options);
 const oAuthProxy = vi.fn((options: unknown) => options);
-vi.mock("better-auth/plugins", () => ({ anonymous: vi.fn(() => ({})), emailOTP, oAuthProxy }));
+vi.mock("better-auth/plugins", () => ({ anonymous: vi.fn(() => ({})), emailOTP, oAuthProxy, oneTap: vi.fn(() => ({})) }));
 vi.mock("better-auth/next-js", () => ({ nextCookies: vi.fn(() => ({})) }));
 vi.mock("kysely-d1", () => ({ D1Dialect: vi.fn() }));
 // `next dev` exposes only Wrangler bindings here; `.env.local` values reach process.env.
@@ -27,7 +27,7 @@ const { createAuth } = await import("../auth");
 type AuthConfig = {
   secret: string;
   baseURL: { fallback?: string };
-  socialProviders?: { google: { clientId: string; clientSecret: string } };
+  socialProviders: Partial<Record<"google" | "github", { clientId: string; clientSecret: string }>>;
 };
 
 describe("createAuth", () => {
@@ -42,6 +42,8 @@ describe("createAuth", () => {
     vi.stubEnv("BETTER_AUTH_SECRET", "local-secret");
     vi.stubEnv("GOOGLE_CLIENT_ID", "client-id");
     vi.stubEnv("GOOGLE_CLIENT_SECRET", "client-secret");
+    vi.stubEnv("GITHUB_CLIENT_ID", "github-id");
+    vi.stubEnv("GITHUB_CLIENT_SECRET", "github-secret");
     vi.stubEnv("SITE_URL", "http://localhost:3000");
   });
 
@@ -54,18 +56,19 @@ describe("createAuth", () => {
 
     expect(config.secret).toBe("local-secret");
     expect(config.baseURL.fallback).toBe("http://localhost:3000");
-    expect(config.socialProviders?.google).toEqual({
-      clientId: "client-id",
-      clientSecret: "client-secret",
+    expect(config.socialProviders).toEqual({
+      google: { clientId: "client-id", clientSecret: "client-secret" },
+      github: { clientId: "github-id", clientSecret: "github-secret" },
     });
   });
 
-  it("omits Google sign-in when its credentials are missing", () => {
+  it("omits a social sign-in whose credentials are missing", () => {
     vi.stubEnv("GOOGLE_CLIENT_SECRET", "");
+    vi.stubEnv("GITHUB_CLIENT_ID", "");
 
     const config = createAuth() as unknown as AuthConfig;
 
-    expect(config.socialProviders).toBeUndefined();
+    expect(config.socialProviders).toEqual({});
   });
 
   it.each([

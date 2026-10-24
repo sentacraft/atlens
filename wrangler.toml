@@ -29,6 +29,8 @@ required = [
   "BETTER_AUTH_SECRET",
   "DASHSCOPE_API_KEY",
   "DEEPSEEK_API_KEY",
+  "GITHUB_CLIENT_ID",
+  "GITHUB_CLIENT_SECRET",
   "GITHUB_TOKEN",
   "GOOGLE_CLIENT_ID",
   "GOOGLE_CLIENT_SECRET",
@@ -110,8 +112,9 @@ SITE_URL = "https://atlens.app"
 GITHUB_FEEDBACK_REPO = "sentacraft/atlens-pipeline"
 GITHUB_FEEDBACK_ASSIGNEES = "sentacraft"
 AUTH_EMAIL_FROM = "login@atlens.app"
-# Better Auth needs a value to build the Google authorization URL; the code exchange that
-# uses the real secret runs on production through oAuthProxy.
+# Better Auth needs a value to build each provider's authorization URL; the code exchange
+# that uses the real secret runs on production through oAuthProxy.
+GITHUB_CLIENT_SECRET = "unused-on-previews"
 GOOGLE_CLIENT_SECRET = "unused-on-previews"
 
 [[previews.d1_databases]]

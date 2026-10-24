@@ -9,22 +9,28 @@ import { isBypassed } from "@/lib/rate-limit";
 const SAME_REQUEST_MS = 60_000;
 
 /** How a session-creating auth route signed someone in; null for routes that are not a sign-in. */
-function methodOf(path: string): SignInCompleteProps["method"] | null {
+function methodOf(path: string, provider: string | undefined): SignInCompleteProps["method"] | null {
+  // The path is the route's pattern, "/callback/:id", so the provider comes from its params.
   if (path.startsWith("/callback/")) {
-    return "google";
+    return provider === "github" ? "github" : provider === "google" ? "google" : null;
+  }
+  if (path === "/one-tap/callback") {
+    return "one_tap";
   }
   return path === "/sign-in/email-otp" ? "email" : null;
 }
 
 export interface CreatedSession {
   path: string;
+  /** The social provider of a `/callback/:id` route. */
+  provider?: string;
   user: { isAnonymous?: boolean | null; createdAt: Date };
   sessionCreatedAt: Date;
 }
 
 /** The completed sign-in a new session stands for; null for a guest session or a session that is not a sign-in. */
-export function signInCompleteProps({ path, user, sessionCreatedAt }: CreatedSession): SignInCompleteProps | null {
-  const method = methodOf(path);
+export function signInCompleteProps({ path, provider, user, sessionCreatedAt }: CreatedSession): SignInCompleteProps | null {
+  const method = methodOf(path, provider);
   if (!method || user.isAnonymous) {
     return null;
   }

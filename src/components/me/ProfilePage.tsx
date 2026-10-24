@@ -189,7 +189,11 @@ function ProfileHeader({ user }: { user: ProfileUser }) {
   const t = useTranslations("Profile");
   const { data: providers } = useQuery(linkedProvidersQuery(user.id));
   const [editing, setEditing] = useState(false);
-  const signedInWith = providers?.includes("google") ? t("signedInWithGoogle") : t("signedInWithEmail");
+  const signedInWith = providers?.includes("google")
+    ? t("signedInWithGoogle")
+    : providers?.includes("github")
+      ? t("signedInWithGithub")
+      : t("signedInWithEmail");
 
   return (
     <section className="flex items-center gap-3.5 md:gap-5">

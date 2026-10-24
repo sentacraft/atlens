@@ -37,8 +37,8 @@
   "Auth": {
     "login": "登录",
     "title": "登录 Atlens",
-    "continueWithGoogle": "使用 Google 登录",
-    "or": "或",
+    "continueWith": "使用 {provider} 登录",
+    "orEmail": "或用邮箱",
     "emailLabel": "邮箱",
     "emailPlaceholder": "you@example.com",
     "sendCode": "发送验证码",
@@ -86,6 +86,7 @@
     "pageTitle": "我的主页",
     "sectionsLabel": "主页分区",
     "signedInWithGoogle": "通过 Google 登录",
+    "signedInWithGithub": "通过 GitHub 登录",
     "signedInWithEmail": "通过邮箱验证码登录",
     "editName": "修改名字",
     "nameLabel": "名字",

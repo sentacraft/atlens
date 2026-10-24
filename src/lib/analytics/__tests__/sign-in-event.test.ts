@@ -10,8 +10,13 @@ const later = (ms: number) => new Date(AT.getTime() + ms);
 describe("signInCompleteProps", () => {
   it("names the method from the auth route", () => {
     const user = { createdAt: AT };
-    expect(signInCompleteProps({ path: "/callback/:id", user, sessionCreatedAt: later(1) })?.method).toBe("google");
-    expect(signInCompleteProps({ path: "/sign-in/email-otp", user, sessionCreatedAt: later(1) })?.method).toBe("email");
+    const method = (path: string, provider?: string) =>
+      signInCompleteProps({ path, provider, user, sessionCreatedAt: later(1) })?.method;
+    expect(method("/callback/:id", "google")).toBe("google");
+    expect(method("/callback/:id", "github")).toBe("github");
+    expect(method("/one-tap/callback")).toBe("one_tap");
+    expect(method("/sign-in/email-otp")).toBe("email");
+    expect(method("/callback/:id", "unknown")).toBeUndefined();
   });
 
   it("counts a user created with the session as a new account, an older one as returning", () => {

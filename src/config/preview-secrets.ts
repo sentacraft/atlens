@@ -5,7 +5,8 @@
  * preview secrets, so previews take every other required name.
  */
 export const SECRETS_NOT_ON_PREVIEWS: readonly string[] = [
-  // A `[previews.vars]` placeholder instead: the code exchange runs on production.
+  // `[previews.vars]` placeholders instead: the code exchange runs on production.
+  "GITHUB_CLIENT_SECRET",
   "GOOGLE_CLIENT_SECRET",
 ];
 
