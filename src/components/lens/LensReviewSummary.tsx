@@ -223,21 +223,21 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
         <p className="text-[13px] text-zinc-500">{t("subtitle", { count: String(citations.list.length) })}</p>
       </div>
       <CitationsProvider citations={citations}>
-        {layout.summary.map((claim) => (
-          <div key={claim.aspect} className="flex items-start gap-2.5 rounded-xl bg-zinc-50 px-3.5 py-3">
-            <PolarityIcon polarity={claim.polarity} className="mt-[3px]" />
+        {layout.overall ? (
+          <div className="flex items-start gap-2.5 rounded-xl bg-zinc-50 px-3.5 py-3">
+            <PolarityIcon polarity={layout.overall.polarity} className="mt-[3px]" />
             <div className="flex min-w-0 flex-col gap-0.5">
               <span className="text-xs text-zinc-500">
-                {claim.aspect === "overall" ? t("summary") : t("aspects.award")}
-                {claim.agreement === "conflict" ? ` · ${t("conflict")}` : ""}
+                {t("summary")}
+                {layout.overall.agreement === "conflict" ? ` · ${t("conflict")}` : ""}
               </span>
               <p className="text-sm leading-[22px] text-zinc-800">
-                {claim.text}
-                <ReviewsButton claim={claim} citations={citations} />
+                {layout.overall.text}
+                <ReviewsButton claim={layout.overall} citations={citations} />
               </p>
             </div>
           </div>
-        ))}
+        ) : null}
 
         {expanded ? (
           <>

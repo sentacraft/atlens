@@ -51,8 +51,9 @@ describe("toLensReviewsView", () => {
 describe("layoutReviews", () => {
   const view = toLensReviewsView(
     {
-      sources: ["a", "b", "c", "d"].map(source),
+      sources: ["a", "b", "c", "d", "e"].map(source),
       claims: [
+        claim("award", "positive", ["e"]),
         claim("overall", "mixed", ["d", "a"], { agreement: "conflict" }),
         claim("vignetting", "mixed", ["a", "b"]),
         claim("distortion", "positive", ["a"]),
@@ -68,7 +69,7 @@ describe("layoutReviews", () => {
   const layout = layoutReviews(view);
 
   it("leads with the overall verdict and groups the rest, best-supported first", () => {
-    expect(layout.summary.map((c) => c.aspect)).toEqual(["overall"]);
+    expect(layout.overall?.aspect).toBe("overall");
     expect(layout.groups.map((g) => [g.group, g.claims.map((c) => c.aspect)])).toEqual([
       ["image", ["bokeh", "vignetting", "distortion", "color", "sunstar"]],
       ["focus", ["autofocus"]],
@@ -81,6 +82,11 @@ describe("layoutReviews", () => {
     expect(layout.pros.map((c) => c.aspect)).toEqual(["bokeh", "distortion", "color", "sunstar"]);
     expect(layout.cons.map((c) => c.aspect)).toEqual(["autofocus"]);
     expect(layout.total).toBe(8);
+  });
+
+  it("leaves awards off the page", () => {
+    const shown = [layout.overall, ...layout.groups.flatMap((g) => g.claims), ...layout.pros, ...layout.cons];
+    expect(shown.map((c) => c?.aspect)).not.toContain("award");
   });
 
   it("numbers sources in the order the full view first cites them", () => {

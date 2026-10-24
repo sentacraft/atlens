@@ -65,7 +65,7 @@ export function toLensReviewsView(
   };
 }
 
-/** The sections a lens page groups claims into, in order; `overall` and `award` lead as a summary. */
+/** The sections a lens page groups claims into, in order; `overall` leads on its own and `award` is not shown. */
 export const REVIEW_GROUPS = {
   image: [
     "resolution_center", "resolution_edge", "bokeh", "chromatic_aberration", "flare", "distortion", "vignetting",
@@ -76,7 +76,6 @@ export const REVIEW_GROUPS = {
 } as const satisfies Record<string, readonly ReviewAspect[]>;
 export type ReviewGroup = keyof typeof REVIEW_GROUPS;
 
-const SUMMARY_ASPECTS: readonly ReviewAspect[] = ["overall", "award"];
 const COLLAPSED_PER_SIDE = 4;
 
 // Within a group, findings more reviews agree on come first; ties keep the group's aspect order.
@@ -86,7 +85,7 @@ function byWeight(order: readonly ReviewAspect[]) {
 }
 
 export interface ReviewLayout {
-  summary: ReviewClaimView[];
+  overall?: ReviewClaimView;
   groups: { group: ReviewGroup; claims: ReviewClaimView[] }[];
   /** The collapsed view: the best-supported strengths and weaknesses. */
   pros: ReviewClaimView[];
@@ -96,10 +95,10 @@ export interface ReviewLayout {
   total: number;
 }
 
-/** Arranges a lens's claims for its page: the summary, the groups, and the collapsed strengths and weaknesses. */
+/** Arranges a lens's claims for its page: the overall verdict, the groups, and the collapsed strengths and weaknesses. */
 export function layoutReviews(view: LensReviewsView): ReviewLayout {
   const allAspects = Object.values(REVIEW_GROUPS).flat() as ReviewAspect[];
-  const summary = view.claims.filter((claim) => SUMMARY_ASPECTS.includes(claim.aspect));
+  const overall = view.claims.find((claim) => claim.aspect === "overall");
   const groups = (Object.keys(REVIEW_GROUPS) as ReviewGroup[])
     .map((group) => ({
       group,
@@ -111,18 +110,18 @@ export function layoutReviews(view: LensReviewsView): ReviewLayout {
   const ranked = groups.flatMap(({ claims }) => claims).sort(byWeight(allAspects));
   const sourceOrder = [
     ...new Set(
-      [...summary, ...groups.flatMap(({ claims }) => claims)].flatMap((claim) => [
+      [...(overall ? [overall] : []), ...groups.flatMap(({ claims }) => claims)].flatMap((claim) => [
         ...claim.sources,
         ...claim.details.map((detail) => detail.id),
       ]),
     ),
   ];
   return {
-    summary,
+    overall,
     groups,
     pros: ranked.filter((claim) => claim.polarity === "positive").slice(0, COLLAPSED_PER_SIDE),
     cons: ranked.filter((claim) => claim.polarity === "negative").slice(0, COLLAPSED_PER_SIDE),
     sourceOrder,
-    total: view.claims.length,
+    total: (overall ? 1 : 0) + ranked.length,
   };
 }
