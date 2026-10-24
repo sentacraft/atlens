@@ -10,6 +10,7 @@ import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
 import { useChatLinkTargets } from "@/components/askiris/ChatLinkContext";
 import { SourceMarker } from "@/components/askiris/ReviewSources";
+import { SOURCE_MARKER_LABEL } from "@/lib/askiris/review-citations";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -105,7 +106,13 @@ function ChatLinkAnchor({ link, children }: { link: ChatLink; children?: ReactNo
       );
     }
     case "source":
-      return <SourceMarker sourceKey={link.key} />;
+      // A label other than the bare marker is a name the sentence needs, such as its subject.
+      return (
+        <>
+          {children === SOURCE_MARKER_LABEL ? null : children}
+          <SourceMarker sourceKey={link.key} />
+        </>
+      );
     case "collection":
       if (!targets?.collections.includes(link.slug) || !mountHasCollections(mount)) {
         return <>{children}</>;

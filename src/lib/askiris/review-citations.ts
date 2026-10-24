@@ -14,6 +14,9 @@ export interface MessageCitations {
   list: CitedSource[];
 }
 
+/** The label of a source link that is only a marker; the system prompt asks Iris to write it. */
+export const SOURCE_MARKER_LABEL = "^";
+
 const SOURCE_LINK_RE = /\]\(source:([^)\s]+)\)/g;
 
 // Read loosely: stored turns are replayed even when they no longer match the tool schemas.
