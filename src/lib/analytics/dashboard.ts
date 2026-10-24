@@ -549,17 +549,19 @@ export interface AccountActivity {
 const epochSeconds = (column: string) =>
   `(CASE typeof(${column}) WHEN 'integer' THEN ${column} / 1000.0 ELSE (julianday(${column}) - 2440587.5) * 86400 END)`;
 
-// A Google sign-up writes the user and its Google account in one request; a Google account
-// added later, by signing in with Google to an email-code account, comes long after.
+// A Google or GitHub sign-up writes the user and its account in one request; one added later, by
+// signing in that way to an email-code account, comes long after. One Tap writes a Google account.
 const SAME_SIGN_UP_SECONDS = 60;
 
 const SIGN_UP_LABELS: LabelFor = (level, value) =>
   level === "sign_up"
     ? value === "google"
       ? "Google"
-      : "Email code"
+      : value === "github"
+        ? "GitHub"
+        : "Email code"
     : value === "linked"
-      ? "Later linked Google"
+      ? "Later linked Google or GitHub"
       : "Email only";
 
 /** Account sign-ups and saves, from the app database; guest users are not accounts. */
@@ -571,13 +573,17 @@ export async function loadAccounts(db: D1Database, window: TimeWindow): Promise<
     rows<{ sign_up: string; later: string | null; new_accounts: number; accounts: number }>(
       db,
       `SELECT
-         CASE WHEN g.first - ${userCreated} <= ${SAME_SIGN_UP_SECONDS} THEN 'google' ELSE 'email' END AS sign_up,
+         CASE WHEN g.first - ${userCreated} <= ${SAME_SIGN_UP_SECONDS} THEN g.providerId ELSE 'email' END AS sign_up,
          CASE WHEN g.first - ${userCreated} > ${SAME_SIGN_UP_SECONDS} THEN 'linked' END AS later,
          SUM(u.createdAt >= ?1 AND u.createdAt < ?2) AS new_accounts,
          COUNT(*) AS accounts
        FROM user u
        LEFT JOIN (
-         SELECT userId, MIN(${epochSeconds("createdAt")}) AS first FROM account WHERE providerId = 'google' GROUP BY userId
+         SELECT userId, providerId, first FROM (
+           SELECT userId, providerId, ${epochSeconds("createdAt")} AS first,
+                  ROW_NUMBER() OVER (PARTITION BY userId ORDER BY ${epochSeconds("createdAt")}) AS rank
+           FROM account WHERE providerId IN ('google', 'github')
+         ) WHERE rank = 1
        ) g ON g.userId = u.id
        WHERE COALESCE(u.isAnonymous, 0) = 0
        GROUP BY sign_up, later`,
