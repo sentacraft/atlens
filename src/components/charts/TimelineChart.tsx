@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useMemo } from "react";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -9,7 +9,9 @@ import ChartLensCard from "@/components/charts/ChartLensCard";
 import ChartLensItem from "@/components/charts/ChartLensItem";
 import ChartLensSheet from "@/components/charts/ChartLensSheet";
 import ChartChips from "@/components/charts/ChartChips";
-import { useChartCard } from "@/hooks/useChartCard";
+import { HorizontalScrollRail } from "@/components/ui/horizontal-scroll-rail";
+import { ScrollChevron } from "@/components/ui/scroll-chevron";
+import { useChartCard, type ChartItemHandlers } from "@/hooks/useChartCard";
 import { useChartSelection } from "@/hooks/useChartSelection";
 import { assignLanes, type TimelineEntry, type TimelineYear } from "@/lib/charts/timeline";
 import { isChartZoom, type BrandCount, type ChartLens } from "@/lib/charts/catalog";
@@ -22,10 +24,14 @@ import { brandPath } from "@/lib/url/routes";
 import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/charts";
 import { cn } from "@/lib/utils";
 
-const WIDE = { height: 720, sectionHeight: 480, padTop: 16, padBottom: 48, padLeft: 52, padRight: 12, size: 40, laneStep: 22 };
-const TALL = { rowLabel: 24, size: 30, rowGap: 4, rowPad: 10, laneGapFrac: 0.09 };
+// A phone has no room for 15 year columns, so the same chart scrolls sideways there instead.
+const GEOMETRY = {
+  wide: { height: 720, sectionHeight: 480, padTop: 16, padBottom: 48, size: 40, laneStep: 22 },
+  compact: { height: 420, sectionHeight: 340, padTop: 10, padBottom: 40, size: 24, laneStep: 13, minColWidth: 56 },
+} as const;
+const WIDE_PAD = { left: 52, right: 12 };
+const COMPACT_AXIS_WIDTH = 40;
 const TICKS = [8, 16, 23, 35, 56, 90, 200, 400];
-const TALL_TICKS = [10, 23, 56, 135, 400];
 const DIM = 0.08;
 
 type PageProps = {
@@ -57,6 +63,40 @@ export function TimelineChartFromUrl({ entries, years, ...page }: PageProps) {
   return <TimelineChart entries={entries} years={years} mode={{ kind: "page", initial: { brand }, ...page }} />;
 }
 
+type Geometry = (typeof GEOMETRY)[keyof typeof GEOMETRY];
+
+function useLayout(entries: TimelineEntry[], years: TimelineYear[], geometry: Geometry, height: number) {
+  return useMemo(() => {
+    const lows = entries.map((e) => e.lens.focalMin);
+    const highs = entries.map((e) => e.lens.focalMax);
+    const fMin = Math.min(...lows) * 0.85;
+    const fMax = Math.max(...highs) * 1.15;
+    const ph = height - geometry.padTop - geometry.padBottom;
+    const y = (f: number) => Math.round(geometry.padTop + (1 - logFrac(f, fMin, fMax)) * ph);
+    const rows = years.map((yr, col) => {
+      const row = entries.filter((e) => e.year === yr.year);
+      const lanes = assignLanes(row, (e) => y(e.focalMid), geometry.size * 0.82);
+      return row.map((e, i) => ({ e, col, lane: lanes[i], y: y(e.focalMid), yMin: y(e.lens.focalMin), yMax: y(e.lens.focalMax) }));
+    });
+    // The wide chart splits its width evenly; the scrolling one gives a crowded year the room its lanes take.
+    const widths = rows.map((row) =>
+      "minColWidth" in geometry
+        ? Math.max(geometry.minColWidth, 2 * Math.abs(laneOffset(Math.max(0, ...row.map((p) => p.lane)), geometry.laneStep)) + geometry.size + 12)
+        : 1,
+    );
+    const total = widths.reduce((a, b) => a + b, 0);
+    let start = 0;
+    const cols = widths.map((w) => {
+      const col = { start: start / total, width: w / total, center: (start + w / 2) / total };
+      start += w;
+      return col;
+    });
+    return { placed: rows.flat(), cols, total, ticks: TICKS.filter((f) => f > fMin && f < fMax).map((f) => ({ f, y: y(f) })) };
+  }, [entries, years, geometry, height]);
+}
+
+type Layout = ReturnType<typeof useLayout>;
+
 export default function TimelineChart({ mode, entries, years }: { mode: Mode; entries: TimelineEntry[]; years: TimelineYear[] }) {
   const t = useTranslations("Charts");
   const tBrand = useTranslations("Brands");
@@ -66,52 +106,35 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
   const { active, itemHandlers, sheet } = useChartCard();
   const handlers = (lens: ChartLens) => (mode.kind === "poster" ? undefined : itemHandlers(lens.id));
   // One brand has few lenses; the full height would leave the section mostly empty.
-  const wideHeight = mode.kind === "section" ? WIDE.sectionHeight : WIDE.height;
+  const heightOf = (geometry: Geometry) => (mode.kind === "section" ? geometry.sectionHeight : geometry.height);
+  const wideHeight = heightOf(GEOMETRY.wide);
+  const compactHeight = heightOf(GEOMETRY.compact);
+  const wide = useLayout(entries, years, GEOMETRY.wide, wideHeight);
+  const compact = useLayout(entries, years, GEOMETRY.compact, compactHeight);
+  const rail = useRef<HTMLDivElement>(null);
 
-  const [fMin, fMax] = useMemo(() => {
-    const lows = entries.map((e) => e.lens.focalMin);
-    const highs = entries.map((e) => e.lens.focalMax);
-    return [Math.min(...lows) * 0.85, Math.max(...highs) * 1.15];
-  }, [entries]);
-  const frac = (f: number) => logFrac(f, fMin, fMax);
-
-  const wide = useMemo(() => {
-    const ph = wideHeight - WIDE.padTop - WIDE.padBottom;
-    const y = (f: number) => Math.round(WIDE.padTop + (1 - logFrac(f, fMin, fMax)) * ph);
-    const placed = years.flatMap((yr, col) => {
-      const row = entries.filter((e) => e.year === yr.year);
-      const lanes = assignLanes(row, (e) => y(e.focalMid), WIDE.size * 0.82);
-      return row.map((e, i) => ({ e, col, lane: lanes[i], y: y(e.focalMid), yMin: y(e.lens.focalMin), yMax: y(e.lens.focalMax) }));
-    });
-    return { placed, ticks: TICKS.filter((f) => f > fMin && f < fMax).map((f) => ({ f, y: y(f) })) };
-  }, [entries, years, fMin, fMax, wideHeight]);
-
-  const tall = useMemo(() => {
-    let top = TALL.rowLabel;
-    const rows = [...years].reverse().map((yr) => {
-      const row = entries.filter((e) => e.year === yr.year);
-      const lanes = assignLanes(row, (e) => logFrac(e.focalMid, fMin, fMax), TALL.laneGapFrac);
-      const laneCount = Math.max(1, ...lanes.map((l) => l + 1));
-      const height = TALL.rowLabel + laneCount * (TALL.size + TALL.rowGap) + TALL.rowPad;
-      const placed = row.map((e, i) => ({ e, lane: lanes[i], top: top + TALL.rowLabel + lanes[i] * (TALL.size + TALL.rowGap) }));
-      const out = { yr, top, height, placed };
-      top += height;
-      return out;
-    });
-    return { rows, height: top };
-  }, [entries, years, fMin, fMax]);
+  // Open on the newest years, at the right end, as the wide chart reads.
+  useLayoutEffect(() => {
+    if (rail.current) {
+      rail.current.scrollLeft = rail.current.scrollWidth;
+    }
+  }, []);
 
   const dimmed = (lens: ChartLens) => (shown.brand && lens.brand !== shown.brand ? DIM : 1);
   const activeEntry = entries.find((e) => e.lens.id === active);
   const sheetEntry = entries.find((e) => e.lens.id === sheet.id);
-  const n = years.length;
-  const colFrac = (col: number) => (col + 0.5) / n;
   const activeWide = wide.placed.find((p) => p.e.lens.id === active);
-  const activeTall = tall.rows.flatMap((r) => r.placed).find((p) => p.e.lens.id === active);
-  const wideCardOffset = (p: (typeof wide.placed)[number]) => {
-    const x = laneOffset(p.lane, WIDE.laneStep);
-    return colFrac(p.col) > 0.6 ? x - 288 - 36 : x + 36;
+  const wideCardOffset = (p: Layout["placed"][number]) => {
+    const x = laneOffset(p.lane, GEOMETRY.wide.laneStep);
+    return wide.cols[p.col].center > 0.6 ? x - 288 - 36 : x + 36;
   };
+  const plot = { years, dimmed, handlers, active, eager: mode.kind === "poster", yearLabel: (count: number) => t("lensCount", { count }) };
+  const tickLabels = (layout: Layout, width: string) =>
+    layout.ticks.map(({ f, y }) => (
+      <span key={f} className={cn("absolute left-0 text-right text-[11px] tabular-nums text-zinc-500", width)} style={{ top: y - 8 }}>
+        {f}mm
+      </span>
+    ));
 
   return (
     <div className="flex flex-col gap-4">
@@ -136,154 +159,140 @@ export default function TimelineChart({ mode, entries, years }: { mode: Mode; en
         </>
       )}
 
-      {/* Wide layout: years across, focal length up the side. */}
       <div className={cn("relative", mode.kind !== "poster" && "hidden md:block")} style={{ height: wideHeight }}>
-        {wide.ticks.map(({ f, y }) => (
-          <span key={f} className="absolute left-0 w-11 text-right text-[11px] tabular-nums text-zinc-500" style={{ top: y - 8 }}>
-            {f}mm
-          </span>
-        ))}
-        <div className="absolute inset-y-0" style={{ left: WIDE.padLeft, right: WIDE.padRight }}>
-          {years.map((yr, col) =>
-            col % 2 === 0 ? (
-              <div
-                key={yr.year}
-                className="absolute bg-zinc-50"
-                style={{ left: pct(col / n), width: pct(1 / n), top: WIDE.padTop, bottom: WIDE.padBottom }}
-              />
-            ) : null,
-          )}
-          {wide.ticks.map(({ f, y }) => (
-            <div key={f} className="absolute inset-x-0 h-px bg-zinc-100" style={{ top: y }} />
-          ))}
-          {years.map((yr, col) => (
-            <div
-              key={yr.year}
-              className="absolute flex -translate-x-1/2 flex-col items-center"
-              style={{ left: pct(colFrac(col)), top: wideHeight - WIDE.padBottom + 8 }}
-            >
-              <span className="text-xs font-semibold tabular-nums text-zinc-900">{yr.year}</span>
-              <span className="text-[11px] tabular-nums text-zinc-500">{t("lensCount", { count: yr.count })}</span>
-            </div>
-          ))}
-          {wide.placed.map(({ e, col, lane, yMin, yMax }) =>
-            isChartZoom(e.lens) ? (
-              <div
-                key={`bar-${e.lens.id}`}
-                aria-hidden="true"
-                className="absolute w-1.5 rounded bg-zinc-900/15 transition-opacity"
+        {tickLabels(wide, "w-11")}
+        <div className="absolute inset-y-0" style={{ left: WIDE_PAD.left, right: WIDE_PAD.right }}>
+          <TimelinePlot {...plot} layout={wide} geometry={GEOMETRY.wide} height={wideHeight}>
+            {activeEntry && activeWide && (
+              <ChartLensCard
+                lens={activeEntry.lens}
+                className="absolute z-30"
                 style={{
-                  left: pct(colFrac(col)),
-                  marginLeft: laneOffset(lane, WIDE.laneStep) - 3,
-                  top: yMax,
-                  height: yMin - yMax,
-                  opacity: dimmed(e.lens),
+                  top: Math.max(0, Math.min(activeWide.y - 56, wideHeight - 140)),
+                  left: pct(wide.cols[activeWide.col].center),
+                  marginLeft: wideCardOffset(activeWide),
                 }}
               />
-            ) : null,
-          )}
-          {wide.placed.map(({ e, col, lane, y }) => (
-            <ChartLensItem
-              key={e.lens.id}
-              lens={e.lens}
-              handlers={handlers(e.lens)}
-              className={cn("absolute block transition-[opacity,transform] duration-150", active === e.lens.id ? "z-20 scale-150" : "z-10")}
-              style={{
-                left: pct(colFrac(col)),
-                marginLeft: laneOffset(lane, WIDE.laneStep) - WIDE.size / 2,
-                top: y - WIDE.size / 2,
-                width: WIDE.size,
-                height: WIDE.size,
-                opacity: dimmed(e.lens),
-              }}
-            >
-              <Image src={getLensImageUrl(e.lens.id)} alt="" width={WIDE.size} height={WIDE.size} loading={mode.kind === "poster" ? "eager" : "lazy"} className="size-full object-contain drop-shadow-sm" />
-            </ChartLensItem>
-          ))}
-          {activeEntry && activeWide && (
-            <ChartLensCard
-              lens={activeEntry.lens}
-              className="absolute z-30"
-              style={{
-                top: Math.max(0, Math.min(activeWide.y - 56, wideHeight - 140)),
-                left: pct(colFrac(activeWide.col)),
-                marginLeft: wideCardOffset(activeWide),
-              }}
-            />
-          )}
+            )}
+          </TimelinePlot>
         </div>
       </div>
 
       {mode.kind !== "poster" && (
-        <>
-          {/* Tall layout for phones: one row per year, newest first, focal length across. */}
-          <div className="relative md:hidden" style={{ height: tall.height + 40 }}>
-            {tall.rows.map(({ yr, top, height }, i) => (
-              <Fragment key={yr.year}>
-                {i % 2 === 0 && <div className="absolute inset-x-0 bg-zinc-50" style={{ top, height }} />}
-                <div
-                  className={cn("absolute left-1.5 z-10 flex items-baseline gap-1.5 px-1", i % 2 === 0 ? "bg-zinc-50" : "bg-white")}
-                  style={{ top: top + 4 }}
-                >
-                  <span className="text-xs font-semibold tabular-nums text-zinc-900">{yr.year}</span>
-                  <span className="text-[11px] tabular-nums text-zinc-500">{t("lensCount", { count: yr.count })}</span>
-                </div>
-              </Fragment>
-            ))}
-            <div className="absolute inset-y-0 left-2.5 right-2.5">
-              {TALL_TICKS.filter((f) => f > fMin && f < fMax).map((f) => (
-                <Fragment key={f}>
-                  <span className="absolute top-0 w-12 -translate-x-1/2 text-center text-[11px] tabular-nums text-zinc-500" style={{ left: pct(frac(f)) }}>
-                    {f}mm
-                  </span>
-                  <div className="absolute w-px bg-zinc-100" style={{ left: pct(frac(f)), top: TALL.rowLabel - 4, height: tall.height - TALL.rowLabel }} />
-                </Fragment>
-              ))}
-              {tall.rows.flatMap(({ placed }) =>
-                placed.map(({ e, top: itemTop }) => (
-                  <Fragment key={e.lens.id}>
-                    {isChartZoom(e.lens) && (
-                      <div
-                        aria-hidden="true"
-                        className="absolute h-1.5 rounded bg-zinc-900/15"
-                        style={{
-                          left: pct(frac(e.lens.focalMin)),
-                          width: pct(frac(e.lens.focalMax) - frac(e.lens.focalMin)),
-                          top: itemTop + TALL.size / 2 - 3,
-                          opacity: dimmed(e.lens),
-                        }}
-                      />
-                    )}
-                    <ChartLensItem
-                      lens={e.lens}
-                      handlers={handlers(e.lens)}
-                      className={cn("absolute block", active === e.lens.id ? "z-20" : "z-10")}
-                      style={{
-                        left: pct(frac(e.focalMid)),
-                        marginLeft: -TALL.size / 2,
-                        top: itemTop,
-                        width: TALL.size,
-                        height: TALL.size,
-                        opacity: dimmed(e.lens),
-                      }}
-                    >
-                      <Image src={getLensImageUrl(e.lens.id)} alt="" width={TALL.size} height={TALL.size} className="size-full object-contain drop-shadow-sm" />
-                    </ChartLensItem>
-                  </Fragment>
-                )),
-              )}
-            </div>
-            {activeEntry && activeTall && (
-              <ChartLensCard
-                lens={activeEntry.lens}
-                className="absolute inset-x-0 z-30 w-auto"
-                style={{ top: activeTall.top + TALL.size + 6 }}
-              />
+        <div className="relative md:hidden" style={{ height: compactHeight }}>
+          {tickLabels(compact, "w-8")}
+          <HorizontalScrollRail
+            scrollRef={rail}
+            wrapperClassName="absolute inset-y-0 right-0"
+            wrapperStyle={{ left: COMPACT_AXIS_WIDTH }}
+            fadeBg="from-white from-40%"
+            renderOverlay={({ canScrollLeft, canScrollRight }) => (
+              <>
+                <ScrollChevron direction="left" visible={canScrollLeft} ariaLabel={t("earlierYears")} onClick={() => scrollYears(rail.current, -1)} />
+                <ScrollChevron direction="right" visible={canScrollRight} ariaLabel={t("laterYears")} onClick={() => scrollYears(rail.current, 1)} />
+              </>
             )}
-          </div>
-        </>
+          >
+            <div className="relative shrink-0" style={{ width: compact.total, minWidth: "100%", height: compactHeight }}>
+              <TimelinePlot {...plot} layout={compact} geometry={GEOMETRY.compact} height={compactHeight} />
+            </div>
+          </HorizontalScrollRail>
+        </div>
       )}
       {mode.kind !== "poster" && <ChartLensSheet lens={sheetEntry?.lens} open={sheet.open} onOpenChange={sheet.onOpenChange} />}
     </div>
+  );
+}
+
+function scrollYears(el: HTMLDivElement | null, direction: -1 | 1) {
+  el?.scrollBy({ left: direction * 4 * GEOMETRY.compact.minColWidth, behavior: "smooth" });
+}
+
+/** Year columns across, focal length up the side, inside a box whose width sets the columns. */
+function TimelinePlot({
+  layout,
+  geometry,
+  height,
+  years,
+  dimmed,
+  handlers,
+  active,
+  eager,
+  yearLabel,
+  children,
+}: {
+  layout: Layout;
+  geometry: Geometry;
+  height: number;
+  years: TimelineYear[];
+  dimmed: (lens: ChartLens) => number;
+  handlers: (lens: ChartLens) => ChartItemHandlers | undefined;
+  active: string | undefined;
+  eager: boolean;
+  yearLabel: (count: number) => string;
+  children?: React.ReactNode;
+}) {
+  const { cols } = layout;
+  const { size, laneStep } = geometry;
+  return (
+    <>
+      {years.map((yr, col) =>
+        col % 2 === 0 ? (
+          <div
+            key={yr.year}
+            className="absolute bg-zinc-50"
+            style={{ left: pct(cols[col].start), width: pct(cols[col].width), top: geometry.padTop, bottom: geometry.padBottom }}
+          />
+        ) : null,
+      )}
+      {layout.ticks.map(({ f, y }) => (
+        <div key={f} className="absolute inset-x-0 h-px bg-zinc-100" style={{ top: y }} />
+      ))}
+      {years.map((yr, col) => (
+        <div
+          key={yr.year}
+          className="absolute flex -translate-x-1/2 flex-col items-center"
+          style={{ left: pct(cols[col].center), top: height - geometry.padBottom + 8 }}
+        >
+          <span className="text-xs font-semibold tabular-nums text-zinc-900">{yr.year}</span>
+          <span className="whitespace-nowrap text-[11px] tabular-nums text-zinc-500">{yearLabel(yr.count)}</span>
+        </div>
+      ))}
+      {layout.placed.map(({ e, col, lane, yMin, yMax }) =>
+        isChartZoom(e.lens) ? (
+          <div
+            key={`bar-${e.lens.id}`}
+            aria-hidden="true"
+            className="absolute w-1.5 rounded bg-zinc-900/15 transition-opacity"
+            style={{
+              left: pct(cols[col].center),
+              marginLeft: laneOffset(lane, laneStep) - 3,
+              top: yMax,
+              height: yMin - yMax,
+              opacity: dimmed(e.lens),
+            }}
+          />
+        ) : null,
+      )}
+      {layout.placed.map(({ e, col, lane, y }) => (
+        <ChartLensItem
+          key={e.lens.id}
+          lens={e.lens}
+          handlers={handlers(e.lens)}
+          className={cn("absolute block transition-[opacity,transform] duration-150", active === e.lens.id ? "z-20 scale-150" : "z-10")}
+          style={{
+            left: pct(cols[col].center),
+            marginLeft: laneOffset(lane, laneStep) - size / 2,
+            top: y - size / 2,
+            width: size,
+            height: size,
+            opacity: dimmed(e.lens),
+          }}
+        >
+          <Image src={getLensImageUrl(e.lens.id)} alt="" width={size} height={size} loading={eager ? "eager" : "lazy"} className="size-full object-contain drop-shadow-sm" />
+        </ChartLensItem>
+      ))}
+      {children}
+    </>
   );
 }
