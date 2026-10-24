@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { layoutReviews, toLensReviewsView } from "../reviews-view";
+import { layoutReviews, previewReviews, toLensReviewsView } from "../reviews-view";
 import type { LensReviewClaim, LensReviewSource } from "../reviews";
 
 const source = (id: string): LensReviewSource => ({
@@ -85,5 +85,38 @@ describe("layoutReviews", () => {
 
   it("numbers sources in the order the full view first cites them", () => {
     expect(layout.sourceOrder).toEqual(["d", "a", "b", "c"]);
+  });
+});
+
+describe("previewReviews", () => {
+  const row = {
+    sources: ["a", "b", "c", "d", "e", "f"].map(source),
+    claims: [
+      claim("overall", "positive", ["a"]),
+      claim("resolution_center", "positive", ["a", "b"], { details: [{ id: "b", text: "Sharp.", textZh: "锐。" }] }),
+      claim("bokeh", "positive", ["b"]),
+      claim("color", "positive", ["b"]),
+      claim("flare", "positive", ["b"]),
+      claim("sunstar", "positive", ["f"]),
+      claim("autofocus", "negative", ["c"]),
+      claim("vignetting", "mixed", ["d"]),
+      claim("manual_focus", "mixed", ["d", "e"], { agreement: "conflict" }),
+    ],
+  };
+  const full = toLensReviewsView(row, "en");
+  const preview = previewReviews(full);
+
+  it("keeps the summary and the collapsed strengths and weaknesses, without their details", () => {
+    expect(preview.claims.map((c) => c.aspect)).toEqual(["overall", "resolution_center", "bokeh", "flare", "color", "autofocus"]);
+    expect(preview.claims.every((c) => c.details.length === 0)).toBe(true);
+  });
+
+  it("sends only the sources the kept findings cite", () => {
+    expect(preview.sources.map((s) => s.id)).toEqual(["a", "b", "c"]);
+  });
+
+  it("says how much the full view holds", () => {
+    expect(preview.locked).toEqual({ total: 9, sourceCount: 6, disputed: ["manual_focus"] });
+    expect(full.locked).toBeUndefined();
   });
 });

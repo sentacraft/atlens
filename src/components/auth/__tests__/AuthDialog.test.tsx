@@ -22,7 +22,7 @@ describe("AuthDialog", () => {
     render(<AuthDialog open source="gear" onOpenChange={() => {}} />);
 
     expect(await screen.findByRole("heading", { name: "reasonGearTitle" })).toBeInTheDocument();
-    expect(benefits()).toEqual(["benefitGear", "benefitFavorites", "benefitChats", "benefitQuota"]);
+    expect(benefits()).toEqual(["benefitGear", "benefitFavorites", "benefitChats", "benefitQuota", "benefitReviews"]);
   });
 
   it("offers Google and GitHub side by side and signs in with the one pressed", async () => {
@@ -38,7 +38,7 @@ describe("AuthDialog", () => {
     render(<AuthDialog open source="account_menu" onOpenChange={() => {}} />);
 
     expect(await screen.findByRole("heading", { name: "title" })).toBeInTheDocument();
-    expect(benefits()).toEqual(["benefitFavorites", "benefitGear", "benefitChats", "benefitQuota"]);
+    expect(benefits()).toEqual(["benefitFavorites", "benefitGear", "benefitChats", "benefitQuota", "benefitReviews"]);
   });
 
   it("leads with kept chats where Iris offers the sign-in", async () => {
@@ -53,5 +53,12 @@ describe("AuthDialog", () => {
 
     expect(await screen.findByRole("heading", { name: "reasonQuotaTitle" })).toBeInTheDocument();
     expect(benefits()[0]).toBe("benefitQuota");
+  });
+
+  it("leads with the full review findings when a guest asks for them", async () => {
+    render(<AuthDialog open source="reviews" onOpenChange={() => {}} />);
+
+    expect(await screen.findByRole("heading", { name: "reasonReviewsTitle" })).toBeInTheDocument();
+    expect(benefits()[0]).toBe("benefitReviews");
   });
 });

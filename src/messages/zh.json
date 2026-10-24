@@ -71,7 +71,9 @@
     "benefitGear": "Iris 长期记住你的器材，推荐时更懂你",
     "benefitChats": "和 Iris 的对话长期保存，未登录只留 7 天",
     "benefitQuota": "每天可以向 Iris 提更多问题",
-    "reasonQuotaTitle": "登录后继续问 Iris"
+    "reasonQuotaTitle": "登录后继续问 Iris",
+    "reasonReviewsTitle": "登录后查看全部评测要点",
+    "benefitReviews": "查看评测要点的全部内容和来源"
   },
   "AuthEmail": {
     "signInSubject": "你的 Atlens 登录验证码",
@@ -532,6 +534,7 @@
       "cons": "需要留意",
       "count": "{count} 条",
       "expand": "展开全部 {count} 条",
+      "expandSignIn": "登录后查看全部 {count} 条",
       "collapse": "收起",
       "showDetails": "展开 {count} 条细节",
       "hideDetails": "收起细节",

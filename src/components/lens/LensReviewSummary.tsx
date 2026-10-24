@@ -13,7 +13,9 @@ import {
   REVIEW_POSITIVE_CLS,
   SECTION_HEADING_CLS,
 } from "@/config/ui-tokens";
+import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { numberSources, sourceHref, type Citations } from "@/lib/askiris/review-citations";
+import { accountUser, authClient } from "@/lib/auth-client";
 import { lensReviewsQuery } from "@/lib/lens/reviews-client";
 import { layoutReviews, type ReviewClaimView } from "@/lib/lens/reviews-view";
 import { cn } from "@/lib/utils";
@@ -201,7 +203,9 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
   const locale = useLocale();
   const t = useTranslations("LensReviews.findings");
   const format = useFormatter();
-  const { data } = useQuery(lensReviewsQuery(lensId, locale));
+  const { data: session } = authClient.useSession();
+  const openSignIn = useSignInDialog();
+  const { data } = useQuery(lensReviewsQuery(lensId, locale, Boolean(accountUser(session))));
   const [expanded, setExpanded] = useState(false);
   const layout = useMemo(() => (data ? layoutReviews(data) : null), [data]);
   const citations = useMemo(
@@ -211,16 +215,21 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
   if (!data || !layout || !citations || layout.total === 0) {
     return null;
   }
-  const disputed = layout.groups
-    .flatMap(({ claims }) => claims)
-    .filter((claim) => claim.agreement === "conflict")
-    .map((claim) => t(`aspects.${claim.aspect}`).toLowerCase());
+  const locked = data.locked;
+  const total = locked?.total ?? layout.total;
+  const disputed = (
+    locked?.disputed ??
+    layout.groups
+      .flatMap(({ claims }) => claims)
+      .filter((claim) => claim.agreement === "conflict")
+      .map((claim) => claim.aspect)
+  ).map((aspect) => t(`aspects.${aspect}`).toLowerCase());
 
   return (
     <section aria-labelledby="lens-review-findings" data-nosnippet="" className={cn(PAGE_SECTION_CLS, "flex flex-col gap-4")}>
       <div className="flex flex-col gap-1">
         <h2 id="lens-review-findings" className={SECTION_HEADING_CLS}>{t("title")}</h2>
-        <p className="text-[13px] text-zinc-500">{t("subtitle", { count: String(citations.list.length) })}</p>
+        <p className="text-[13px] text-zinc-500">{t("subtitle", { count: String(locked?.sourceCount ?? citations.list.length) })}</p>
       </div>
       <CitationsProvider citations={citations}>
         {layout.summary.map((claim) => (
@@ -273,14 +282,14 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
         ) : (
           <span className="hidden sm:block" />
         )}
-        {layout.total > layout.pros.length + layout.cons.length ? (
+        {total > layout.pros.length + layout.cons.length ? (
           <button
             type="button"
-            onClick={() => setExpanded(!expanded)}
-            aria-expanded={expanded}
+            onClick={() => (locked ? openSignIn("reviews") : setExpanded(!expanded))}
+            aria-expanded={locked ? undefined : expanded}
             className="min-h-11 shrink-0 rounded-lg border border-zinc-200 bg-white px-3 text-[13px] font-medium text-zinc-700 transition-colors hover:bg-zinc-50 sm:min-h-8"
           >
-            {expanded ? t("collapse") : t("expand", { count: String(layout.total) })}
+            {locked ? t("expandSignIn", { count: String(total) }) : expanded ? t("collapse") : t("expand", { count: String(total) })}
           </button>
         ) : null}
       </div>

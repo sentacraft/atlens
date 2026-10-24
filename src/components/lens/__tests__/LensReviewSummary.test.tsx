@@ -6,6 +6,7 @@ import LensReviewSummary from "../LensReviewSummary";
 import type { LensReviewsView } from "@/lib/lens/reviews-view";
 
 const view = vi.hoisted(() => ({ current: null as unknown }));
+const openSignIn = vi.hoisted(() => vi.fn());
 
 vi.mock("next-intl", () => ({
   useLocale: () => "zh",
@@ -17,7 +18,16 @@ vi.mock("@/lib/lens/reviews-client", () => ({
   lensReviewsQuery: (id: string) => ({ queryKey: ["lens-reviews", id], queryFn: async () => view.current }),
 }));
 
-afterEach(cleanup);
+vi.mock("@/lib/auth-client", () => ({
+  authClient: { useSession: () => ({ data: null }) },
+  accountUser: () => undefined,
+}));
+vi.mock("@/context/SignInDialogProvider", () => ({ useSignInDialog: () => openSignIn }));
+
+afterEach(() => {
+  cleanup();
+  openSignIn.mockClear();
+});
 
 const claim = (aspect: string, polarity: string, text: string, sources: string[]) => ({
   aspect,
@@ -73,6 +83,21 @@ describe("LensReviewSummary", () => {
     fireEvent.click(await screen.findByRole("button", { name: "reviewSources(2,aspects.bokeh)" }));
     expect((await screen.findByRole("link", { name: /Site A/ })).getAttribute("href")).toBe("https://example.com/a");
     expect(screen.getByRole("link", { name: /Site B/ })).toBeTruthy();
+  });
+
+  it("asks a guest to sign in for the rest, counting what the full view holds", async () => {
+    renderWith({
+      sources: [DATA.sources[1]],
+      claims: [DATA.claims[1]],
+      locked: { total: 4, sourceCount: 2, disputed: ["manual_focus"] },
+    } as LensReviewsView);
+    expect(await screen.findByText("对焦偏慢")).toBeTruthy();
+    expect(screen.getByText("subtitle(2)")).toBeTruthy();
+    expect(screen.getByText("disagree(aspects.manual_focus)")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "expandSignIn(4)" }));
+    expect(openSignIn).toHaveBeenCalledWith("reviews");
+    expect(screen.queryByText("groups.image")).toBeNull();
   });
 
   it("renders nothing for a lens without findings", async () => {

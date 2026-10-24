@@ -37,6 +37,10 @@ export const lensReviewsViewSchema = z.object({
       otherMount: z.boolean(),
     }),
   ),
+  /** Set when only the collapsed findings were sent: what the full view, for an account, holds. */
+  locked: z
+    .object({ total: z.number(), sourceCount: z.number(), disputed: z.array(z.enum(REVIEW_ASPECTS)) })
+    .optional(),
 });
 export type LensReviewsView = z.infer<typeof lensReviewsViewSchema>;
 export type ReviewClaimView = LensReviewsView["claims"][number];
@@ -124,5 +128,26 @@ export function layoutReviews(view: LensReviewsView): ReviewLayout {
     cons: ranked.filter((claim) => claim.polarity === "negative").slice(0, COLLAPSED_PER_SIDE),
     sourceOrder,
     total: view.claims.length,
+  };
+}
+
+/** What a guest gets: the collapsed findings without their details, and only the sources those cite. */
+export function previewReviews(view: LensReviewsView): LensReviewsView {
+  const layout = layoutReviews(view);
+  const claims = [...layout.summary, ...layout.pros, ...layout.cons].map((claim) => ({ ...claim, details: [] }));
+  const cited = new Set(claims.flatMap((claim) => claim.sources));
+  const known = new Set(view.sources.map((source) => source.id));
+  return {
+    sources: view.sources.filter((source) => cited.has(source.id)),
+    claims,
+    locked: {
+      total: layout.total,
+      sourceCount: layout.sourceOrder.filter((id) => known.has(id)).length,
+      disputed: [
+        ...new Set(
+          layout.groups.flatMap(({ claims }) => claims).filter((claim) => claim.agreement === "conflict").map((claim) => claim.aspect),
+        ),
+      ],
+    },
   };
 }
