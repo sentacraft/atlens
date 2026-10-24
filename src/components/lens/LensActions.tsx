@@ -56,7 +56,7 @@ export default function LensActions({
 
   if (tier === "panel") {
     return (
-      <div className={cn("flex gap-2", className)}>
+      <div className={cn("grid grid-cols-2 gap-2", className)}>
         <button
           type="button"
           onClick={() => favorites.toggle(lensId)}

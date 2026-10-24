@@ -23,7 +23,7 @@ export const ACTION_OUTLINE_CLS =
  * An equal-width button in a row of a lens panel's actions (lens page, chart sheet): 44px tall on
  * phones. Inside a container under 300px wide (a 320px screen) it drops its icon to fit "Mark as owned".
  */
-export const PANEL_ACTION_CLS = `${ACTION_OUTLINE_CLS} flex-1 justify-center whitespace-nowrap max-sm:h-11 @max-[300px]:px-2 @max-[300px]:[&>svg]:hidden`;
+export const PANEL_ACTION_CLS = `${ACTION_OUTLINE_CLS} min-w-0 justify-center whitespace-nowrap max-sm:h-11 @max-[300px]:px-2 @max-[300px]:[&>svg]:hidden`;
 
 export const ACTION_ESCAPE_CLS =
   "group inline-flex h-12 items-center gap-2.5 border border-zinc-900 bg-white pl-5 pr-4 text-sm font-medium text-zinc-900 " +

@@ -38,7 +38,7 @@ export function RetailersDropdown({ lens, customId }: Props) {
     <Popover.Root>
       <Popover.Trigger
         data-testid="lens-detail-price-trigger"
-        className={cn(PANEL_ACTION_CLS, "min-w-0 cursor-pointer")}
+        className={cn(PANEL_ACTION_CLS, "cursor-pointer")}
       >
         <span className="inline-flex items-baseline gap-1.5">
           {t("buyAt")}

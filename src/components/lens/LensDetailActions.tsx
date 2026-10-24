@@ -18,7 +18,7 @@ export default function LensDetailActions({ lens }: { lens: Lens }) {
   return (
     <div data-testid="lens-detail-actions" className="@container flex flex-col gap-2">
       <LensActions lensId={lens.id} lensName={lens.model} compare={compare} tier="panel" />
-      <div className="flex gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <RetailersDropdown lens={lens} customId="detail" />
         <button
           type="button"

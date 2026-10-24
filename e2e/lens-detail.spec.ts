@@ -23,7 +23,7 @@ test.describe("Lens detail page", () => {
 
   test("add to compare button is present", async ({ page }) => {
     await expect(
-      page.getByRole("button", { name: "Compare", exact: true })
+      page.getByRole("button", { name: "Add to Compare", exact: true })
     ).toBeVisible();
   });
 

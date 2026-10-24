@@ -300,7 +300,7 @@ test.describe("CompareBar does not obscure BackToTopButton or page content", () 
     await page.goto(`/en/lenses/x/${LENS_A}`);
     await page.waitForLoadState("networkidle");
 
-    await page.getByRole("button", { name: "Compare", exact: true }).click();
+    await page.getByRole("button", { name: "Add to Compare", exact: true }).click();
     await page.locator('[data-testid="compare-bar"]').waitFor({ state: "visible" });
 
     const barHeight = await getCompareBarHeightVar(page);
