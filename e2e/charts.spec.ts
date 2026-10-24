@@ -118,8 +118,11 @@ test.describe("Charts", () => {
 
   test("a collection with a weight chart switches between cards and its weight ranking", async ({ page }) => {
     await page.goto("/en/lenses/x/collections/35mm");
-    await page.getByRole("radio", { name: "By weight" }).click();
-    await expect(page).toHaveURL(/\/collections\/35mm\?view=weight$/);
+    // A click before hydration does nothing, so retry until the view switches.
+    await expect(async () => {
+      await page.getByRole("radio", { name: "By weight" }).click();
+      await expect(page).toHaveURL(/\/collections\/35mm\?view=weight$/, { timeout: 1000 });
+    }).toPass();
     const ranking = page.locator("main ol").first();
     await expect(ranking.getByText("A 330 ml can of cola")).toBeVisible();
     await page.reload();
@@ -141,6 +144,7 @@ test.describe("Charts", () => {
   test("the weight ladder sets everyday references among the lenses by weight", async ({ page }) => {
     await page.goto(WEIGHT);
     const heavy = page.locator("section", { has: page.getByRole("heading", { name: "Heavyweights" }) });
+    await expect(heavy.getByText("A 750 ml bottle of water")).toBeVisible();
     const rows = await heavy.locator("ol > li").allInnerTexts();
     const water = rows.findIndex((text) => text.includes("A 750 ml bottle of water"));
     expect(water).toBeGreaterThan(0);
