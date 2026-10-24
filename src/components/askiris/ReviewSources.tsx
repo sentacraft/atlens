@@ -80,7 +80,7 @@ export function SourceList({ list }: { list: CitedSource[] }) {
         {list.map(({ number, key, source }) => {
           const href = sourceHref(source);
           return (
-            <li key={key} className="flex min-h-6 items-baseline gap-1.5 sm:min-h-0">
+            <li key={key} className="flex min-h-5 items-baseline gap-1.5 sm:min-h-0">
               <span className="min-w-3.5 text-center font-semibold text-zinc-600">{number}</span>
               {href ? (
                 <a href={href} target="_blank" rel="noopener noreferrer" className={TEXT_LINK_CLS}>
