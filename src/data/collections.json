@@ -14,7 +14,8 @@
         "shortDescription": {
           "en": "Featherweight glass under 200 grams",
           "zh": "轻量化镜头，机身平衡好"
-        }
+        },
+        "chart": "weight"
       },
       {
         "slug": "pancake",
@@ -29,7 +30,8 @@
         "shortDescription": {
           "en": "Ultra-slim profiles for pocketable setups",
           "zh": "极致轻薄，挂机无负担"
-        }
+        },
+        "chart": "weight"
       }
     ],
     "aperture": [
@@ -46,7 +48,8 @@
         "shortDescription": {
           "en": "f/1.4 and faster for bokeh and low light",
           "zh": "f/1.4 及以上，极致虚化与暗光"
-        }
+        },
+        "chart": "weight"
       },
       {
         "slug": "constant-aperture",
@@ -172,7 +175,8 @@
         "shortDescription": {
           "en": "Fuji's flagship glass — as good as first-party gets",
           "zh": "原厂旗舰线，画质与操控的上限"
-        }
+        },
+        "chart": "timeline"
       },
       {
         "slug": "fujifilm-xc",
@@ -187,7 +191,8 @@
         "shortDescription": {
           "en": "Fuji's lightweight budget line — what most kits ship with",
           "zh": "原厂轻量入门线，套机常见"
-        }
+        },
+        "chart": "timeline"
       },
       {
         "slug": "sigma-contemporary",
@@ -202,7 +207,8 @@
         "shortDescription": {
           "en": "Compact APS-C glass that doesn't trade away sharpness",
           "zh": "高解析与小体积平衡的 APS-C 精品线"
-        }
+        },
+        "chart": "timeline"
       },
       {
         "slug": "viltrox-air",
@@ -247,7 +253,8 @@
         "shortDescription": {
           "en": "Voigtländer's fast manual primes, built for character",
           "zh": "大光圈手动定焦的经典序列"
-        }
+        },
+        "chart": "timeline"
       }
     ],
     "prime": [
@@ -264,7 +271,8 @@
         "shortDescription": {
           "en": "35mm equiv — street and environmental portraits",
           "zh": "等效 35mm，环境人像与旅拍常用焦段"
-        }
+        },
+        "chart": "weight"
       },
       {
         "slug": "35mm",
@@ -279,7 +287,8 @@
         "shortDescription": {
           "en": "50mm equiv — the quintessential standard prime",
           "zh": "等效 50mm，最百搭的标头焦段"
-        }
+        },
+        "chart": "weight"
       },
       {
         "slug": "50mm",
@@ -294,7 +303,8 @@
         "shortDescription": {
           "en": "75mm equiv — tight frames and portraits",
           "zh": "等效 75mm，特写与空间感人像"
-        }
+        },
+        "chart": "weight"
       },
       {
         "slug": "56mm",
@@ -309,7 +319,8 @@
         "shortDescription": {
           "en": "85mm equiv — the portrait focal length",
           "zh": "等效 85mm，富士人像王牌焦段"
-        }
+        },
+        "chart": "weight"
       },
       {
         "slug": "85mm",
@@ -401,7 +412,8 @@
         "shortDescription": {
           "en": "Reach for sports, wildlife, and compression",
           "zh": "长焦变焦，运动与生态"
-        }
+        },
+        "chart": "weight"
       }
     ],
     "trait": [
@@ -448,7 +460,8 @@
         "shortDescription": {
           "en": "300mm+ equiv for wildlife and aviation",
           "zh": "等效 300mm 以上的远摄选集"
-        }
+        },
+        "chart": "weight"
       }
     ],
     "dedicated": [

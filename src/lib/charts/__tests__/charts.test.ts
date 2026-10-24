@@ -3,7 +3,7 @@ import { formatDataDate } from "../data-date";
 import type { Lens } from "@/lib/types";
 import { getLensesByMount } from "@/lib/lens/data";
 import { assignLanes, buildTimeline, fitItemSize } from "@/lib/charts/timeline";
-import { buildWeightLadder, weightBarPct } from "@/lib/charts/weight";
+import { buildWeightLadder, rankedRows, weightBarPct } from "@/lib/charts/weight";
 import { buildLineup } from "@/lib/charts/lineup";
 import { chartBrands, matchesChartSelection, toChartLens, type ChartLens } from "@/lib/charts/catalog";
 
@@ -128,6 +128,24 @@ describe("buildWeightLadder", () => {
     const ladder = buildWeightLadder(["e", "d", "c", "b", "a"].map((id) => makeLens({ id, weightG: 490 })));
     const ranks = ladder.tiers.find((t) => t.key === "everyday")?.rows.flatMap((r) => (r.kind === "lens" ? [r.rank] : []));
     expect(ranks).toEqual([1, 2, 3, 4, 5]);
+  });
+});
+
+describe("rankedRows", () => {
+  it("ranks within the set and brings only the references its weights reach, plus one below", () => {
+    const rows = rankedRows([
+      makeLens({ id: "w380", weightG: 380 }),
+      makeLens({ id: "w180", weightG: 180 }),
+      makeLens({ id: "cine", weightG: 900, isCine: true }),
+    ]);
+    expect(rows.map((r) => (r.kind === "lens" ? `${r.lens.id}#${r.rank}` : r.reference.key))).toEqual([
+      "w380#1",
+      "colaCan",
+      "milk250",
+      "apple",
+      "w180#2",
+      "banana",
+    ]);
   });
 });
 

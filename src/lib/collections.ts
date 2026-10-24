@@ -11,13 +11,19 @@ export interface LensCollection {
   description: { en: string; zh: string };
   shortDescription: { en: string; zh: string };
   filter: LensFilter;
+  /** A chart the collection's question calls for, shown on its page. */
+  chart?: CollectionChart;
 }
+
+export type CollectionChart = "weight" | "timeline";
+const COLLECTION_CHARTS: readonly string[] = ["weight", "timeline"] satisfies CollectionChart[];
 
 interface CollectionMeta {
   slug: string;
   title: { en: string; zh: string };
   description: { en: string; zh: string };
   shortDescription: { en: string; zh: string };
+  chart?: string;
 }
 
 export type CollectionGroup = keyof typeof collectionsData.groups;
@@ -29,12 +35,16 @@ function toCollection(entry: CollectionMeta): LensCollection {
   if (!filter) {
     throw new Error(`collections.json: "${entry.slug}" has no predicate in FILTERS`);
   }
+  if (entry.chart !== undefined && !COLLECTION_CHARTS.includes(entry.chart)) {
+    throw new Error(`collections.json: "${entry.slug}" has an unknown chart "${entry.chart}"`);
+  }
   return {
     slug: entry.slug,
     title: entry.title,
     description: entry.description,
     shortDescription: entry.shortDescription,
     filter,
+    chart: entry.chart as CollectionChart | undefined,
   };
 }
 

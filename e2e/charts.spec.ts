@@ -116,6 +116,28 @@ test.describe("Charts", () => {
     });
   }
 
+  test("a collection with a weight chart switches between cards and its weight ranking", async ({ page }) => {
+    await page.goto("/en/lenses/x/collections/35mm");
+    await page.getByRole("radio", { name: "By weight" }).click();
+    await expect(page).toHaveURL(/\/collections\/35mm\?view=weight$/);
+    const ranking = page.locator("main ol").first();
+    await expect(ranking.getByText("A 330 ml can of cola")).toBeVisible();
+    await page.reload();
+    await expect(page.getByRole("radio", { name: "By weight" })).toHaveAttribute("aria-checked", "true");
+    await page.getByRole("radio", { name: "Cards" }).click();
+    await expect(page).toHaveURL(/\/collections\/35mm$/);
+  });
+
+  test("a series collection shows its release timeline, linked to the full one with its brand highlighted", async ({ page }) => {
+    await page.goto("/en/lenses/x/collections/fujifilm-xf");
+    const section = page.locator("section#timeline");
+    await expect(section.getByRole("heading", { name: "Release timeline" })).toBeVisible();
+    await expect(section.getByRole("link", { name: "See it on the full timeline →" })).toHaveAttribute(
+      "href",
+      /\/charts\/timeline\?brand=fujifilm$/,
+    );
+  });
+
   test("the weight ladder sets everyday references among the lenses by weight", async ({ page }) => {
     await page.goto(WEIGHT);
     const heavy = page.locator("section", { has: page.getByRole("heading", { name: "Heavyweights" }) });
@@ -179,7 +201,7 @@ test.describe("Charts", () => {
     const section = page.locator("section#timeline");
     await expect(section.getByRole("heading", { name: "Release timeline" })).toBeVisible();
     await expect(section.getByText("2022–2026 · 11 lenses")).toBeVisible();
-    await expect(section.getByRole("link", { name: "See it on the all-brand timeline →" })).toHaveAttribute(
+    await expect(section.getByRole("link", { name: "See it on the full timeline →" })).toHaveAttribute(
       "href",
       `${TIMELINE}?brand=sigma`,
     );

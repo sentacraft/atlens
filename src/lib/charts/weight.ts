@@ -58,17 +58,37 @@ export function buildWeightLadder(lenses: Lens[]): WeightLadder {
     const maxG = i === 0 ? undefined : WEIGHT_TIERS[i - 1].minG;
     const inTier = (weightG: number) => weightG >= tier.minG && (maxG === undefined || weightG < maxG);
     const lenses = pool.filter((lens) => inTier(lens.weightG));
-    const rows: LadderRow[] = [
-      ...lenses.map((lens) => ({ kind: "lens" as const, lens, rank: rank.get(lens.id) ?? 0 })),
-      ...WEIGHT_REFERENCES.filter((ref) => inTier(ref.weightG)).map((reference) => ({ kind: "reference" as const, reference })),
-    ].sort((a, b) => rowWeight(b) - rowWeight(a) || (a.kind === b.kind ? 0 : a.kind === "lens" ? -1 : 1));
-    return { key: tier.key, minG: tier.minG, maxG, lenses, rows };
+    return { key: tier.key, minG: tier.minG, maxG, lenses, rows: mergeRows(lenses, rank, WEIGHT_REFERENCES.filter((ref) => inTier(ref.weightG))) };
   });
 
   const heaviest = pool[0];
   const lightest = pool[pool.length - 1];
   const ratio = heaviest && lightest ? Math.round(heaviest.weightG / lightest.weightG) : undefined;
   return { tiers, count: pool.length, heaviest, lightest, ratio };
+}
+
+/**
+ * A short ranked list for a handful of lenses, as a collection page shows it: ranks count within
+ * the set, and only references from the set's lightest weight up to its heaviest come along,
+ * plus one just under the lightest so the light end has something to hold.
+ */
+export function rankedRows(lenses: Lens[]): LadderRow[] {
+  const pool = chartLenses(lenses).sort((a, b) => b.weightG - a.weightG || a.id.localeCompare(b.id));
+  if (pool.length === 0) {
+    return [];
+  }
+  const heaviest = pool[0].weightG;
+  const lightest = pool[pool.length - 1].weightG;
+  const below = WEIGHT_REFERENCES.find((ref) => ref.weightG < lightest);
+  const references = WEIGHT_REFERENCES.filter((ref) => (ref.weightG >= lightest && ref.weightG <= heaviest) || ref === below);
+  return mergeRows(pool, new Map(pool.map((lens, i) => [lens.id, i + 1])), references);
+}
+
+function mergeRows(lenses: ChartLens[], rank: Map<string, number>, references: readonly WeightReference[]): LadderRow[] {
+  return [
+    ...lenses.map((lens) => ({ kind: "lens" as const, lens, rank: rank.get(lens.id) ?? 0 })),
+    ...references.map((reference) => ({ kind: "reference" as const, reference })),
+  ].sort((a, b) => rowWeight(b) - rowWeight(a) || (a.kind === b.kind ? 0 : a.kind === "lens" ? -1 : 1));
 }
 
 function rowWeight(row: LadderRow): number {
