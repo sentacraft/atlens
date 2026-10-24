@@ -49,7 +49,7 @@ const INDEX: LensLinkIndex = {
 describe("Markdown lens: links", () => {
   it("renders a known lens ref as a link to its lens page", () => {
     const { container } = render(
-      <ChatLinkProvider targets={{ lenses: INDEX, collections: [] }}>
+      <ChatLinkProvider targets={{ lenses: INDEX, collections: [], brands: [] }}>
         <Markdown>
           {`See [Viltrox AF 35mm F1.7 Air](lens:${REF}) here.`}
         </Markdown>
@@ -66,7 +66,7 @@ describe("Markdown lens: links", () => {
 
   it("degrades an unknown lens ref to plain text, not a link", () => {
     const { container } = render(
-      <ChatLinkProvider targets={{ lenses: INDEX, collections: [] }}>
+      <ChatLinkProvider targets={{ lenses: INDEX, collections: [], brands: [] }}>
         <Markdown>{"This [made-up lens](lens:zzzzz) does not exist."}</Markdown>
       </ChatLinkProvider>,
     );
@@ -84,7 +84,7 @@ describe("Markdown lens: links", () => {
 
   it("leaves non-lens links as ordinary anchors", () => {
     const { container } = render(
-      <ChatLinkProvider targets={{ lenses: INDEX, collections: [] }}>
+      <ChatLinkProvider targets={{ lenses: INDEX, collections: [], brands: [] }}>
         <Markdown>{"[Official site](https://example.com)"}</Markdown>
       </ChatLinkProvider>,
     );
@@ -105,7 +105,7 @@ describe("Markdown lens: links in tables", () => {
       `| [Sigma 12mm F1.4 DC | Contemporary](lens:${ref}) | 235g | $579 |`,
     ].join("\n");
     const { container } = render(
-      <ChatLinkProvider targets={{ lenses: index, collections: [] }}>
+      <ChatLinkProvider targets={{ lenses: index, collections: [], brands: [] }}>
         <Markdown>{table}</Markdown>
       </ChatLinkProvider>,
     );
@@ -138,7 +138,7 @@ describe("Markdown lens: links across the catalogue", () => {
       ...lenses.map((lens, i) => `| [${names[i]}](lens:${lensRef(lens.id)}) | ok |`),
     ].join("\n");
     const { container } = render(
-      <ChatLinkProvider targets={{ lenses: index, collections: [] }}>
+      <ChatLinkProvider targets={{ lenses: index, collections: [], brands: [] }}>
         <Markdown>{table}</Markdown>
       </ChatLinkProvider>,
     );
@@ -160,6 +160,7 @@ describe("Markdown chat links", () => {
       [GFX]: { id: "fujifilm-gf-45mm-f28-r-wr-g", mount: "G" as const },
     },
     collections: ["pancake"],
+    brands: ["sigma"],
   };
   const renderLinks = (markdown: string) =>
     render(
@@ -189,6 +190,13 @@ describe("Markdown chat links", () => {
   it("links a known collection on the current mount", () => {
     const link = renderLinks("[pancakes](collection:pancake)").querySelector("a");
     expect(link!.getAttribute("href")).toBe("/lenses/x/collections/pancake");
+  });
+
+  it("links a known brand page and a chart on the current mount", () => {
+    expect(renderLinks("[Sigma](brand:sigma)").querySelector("a")!.getAttribute("href")).toBe("/lenses/x/brands/sigma");
+    expect(renderLinks("[ladder](chart:weight)").querySelector("a")!.getAttribute("href")).toBe("/lenses/x/charts/weight");
+    expect(renderLinks("[Canon](brand:canon)").querySelector("a")).toBeNull();
+    expect(renderLinks("[nope](chart:price)").querySelector("a")).toBeNull();
   });
 
   it("opens the sign-in dialog from a sign-in action", () => {

@@ -2,12 +2,13 @@ import "server-only";
 import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
 import { routing } from "@/i18n/routing";
-import { collectionLink, factLinkMarkdown, type FactLink } from "@/lib/askiris/inline-links";
+import { brandLink, chartLink, collectionLink, factLinkMarkdown, type FactLink } from "@/lib/askiris/inline-links";
+import { BRANDS, getBrandLenses } from "@/lib/brands";
 import { COLLECTIONS } from "@/lib/collections";
 import { CATALOG_COVERAGE, type CoverageState } from "@/lib/lens/catalog-coverage";
 import { getLensesByMount, lensCountsByBrand, meta } from "@/lib/lens/data";
 import { MAX_COMPARE } from "@/lib/lens/lens";
-import { mountHasCollections } from "@/lib/mount";
+import { mountHasCharts, mountHasCollections } from "@/lib/mount";
 import { priceMarket, type Market } from "@/lib/lens/pricing";
 import { isPurchaseLocale } from "@/lib/purchase/links";
 import { donationChannels } from "@/lib/support";
@@ -26,6 +27,8 @@ export const SITE_TOPICS = [
   "privacy",
   "usage",
   "collections",
+  "brands",
+  "charts",
 ] as const;
 export type SiteTopic = (typeof SITE_TOPICS)[number];
 
@@ -116,6 +119,7 @@ function features(locale: string): string[] {
     `Main features and their names on the site: ${list([
       named(m.Nav.lenses, "browse and filter every lens of the current mount"),
       named(m.Nav.collections, "curated lens lists by theme"),
+      named(m.Nav.charts, "release timeline, weight ladder and lineups, across brands"),
       named(m.Nav.compare, `compare up to ${MAX_COMPARE} lenses spec by spec`),
       named(m.Nav.askIris, "chat with Iris to choose lenses"),
       named(m.RecentlyAdded.pageTitle, "lenses added to the data, by date"),
@@ -148,6 +152,35 @@ function collections(locale: string, mount: Mount): string[] {
   ];
 }
 
+function brands(locale: string, mount: Mount): string[] {
+  if (!mountHasCollections(mount)) {
+    return ["Brand pages are not available for the current mount yet."];
+  }
+  const names = MESSAGES[locale].Brands as Record<string, string>;
+  const lang = locale === "zh" ? "zh" : "en";
+  const lenses = getLensesByMount(mount, locale);
+  return [
+    "Each brand has a page with every photo lens it makes for the current mount: its lineup by focal length, its release timeline where years are known, and the full list. Each line: a link to the brand page, its lens count, then its summary.",
+    ...BRANDS.map(
+      (b) => `[${names[b.slug] ?? b.slug}](${brandLink(b.slug)}): ${getBrandLenses(lenses, b.slug).length} lenses. ${b.shortDescription[lang]}`,
+    ),
+  ];
+}
+
+function charts(locale: string, mount: Mount): string[] {
+  const m = MESSAGES[locale];
+  if (!mountHasCharts(mount)) {
+    return [`"${m.Nav.charts}" are not available for the current mount yet.`];
+  }
+  return [
+    `"${m.Nav.charts}" draw every brand's photo lenses together; cinema lenses are left out. Each line: a link to the chart, then what it shows.`,
+    `[${m.Charts.tabTimeline}](${chartLink("timeline")}): each lens by release year and focal length; a brand can be highlighted.`,
+    `[${m.Charts.tabWeight}](${chartLink("weight")}): every lens ranked heaviest to lightest in five tiers, with everyday things of known weight set among them; filterable by brand.`,
+    `[${m.Charts.tabLineup}](${chartLink("lineups")}): each brand's lenses side by side by focal length.`,
+    "A lens page links its weight to the weight ladder and its release year to the timeline, each opened on that lens.",
+  ];
+}
+
 const GENERATED: Partial<Record<SiteTopic, (locale: string, mount: Mount) => string[]>> = {
   business: commercialTies,
   data: coverage,
@@ -155,6 +188,8 @@ const GENERATED: Partial<Record<SiteTopic, (locale: string, mount: Mount) => str
   account: accountFeatures,
   usage: features,
   collections,
+  brands,
+  charts,
 };
 
 /** What Iris may tell anyone about Atlens itself, for the given topics. */

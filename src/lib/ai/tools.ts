@@ -444,7 +444,7 @@ export function buildLensTools(
 
     siteInfo: tool({
       description:
-        "Facts about Atlens and about you — the site, its story, data and prices, collections, what you can do, accounts, privacy — and the only source " +
+        "Facts about Atlens and about you — the site, its story, data and prices, collections, brand pages, charts, what you can do, accounts, privacy — and the only source " +
         "for answering questions about them. Ask for every topic the question touches in one call.",
       inputSchema: z.object({ topics: z.array(z.enum(SITE_TOPICS)).min(1) }),
       execute: ({ topics }) => ({ topics: siteFacts(topics, locale, mount) }),
