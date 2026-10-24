@@ -444,6 +444,11 @@ export default function AskIrisChat({
               messages={renderMessages}
               debug={debug}
               busy={isBusy}
+              onExpand={
+                shell.variant === "panel" && shell.layout === "side" && !shell.expanded
+                  ? () => shell.onExpandedChange(true)
+                  : undefined
+              }
               cards={{
                 lenses,
                 answerGear: (toolCallId, output) =>

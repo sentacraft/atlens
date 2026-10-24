@@ -188,7 +188,8 @@
       "focus": "Focus",
       "auto": "Autofocus",
       "manual": "Manual",
-      "used": "used"
+      "used": "used",
+      "expand": "Expand"
     },
     "thinking": "Thinking…",
     "starters": {

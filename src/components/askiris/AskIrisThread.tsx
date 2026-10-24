@@ -85,12 +85,14 @@ function ToolPart({
   debug,
   cards,
   latest,
+  onExpand,
 }: {
   part: ToolUIPart | DynamicToolUIPart;
   debug: boolean;
   cards?: ChatCardBinding;
   /** The part belongs to the newest message and no reply is streaming. */
   latest: boolean;
+  onExpand?: () => void;
 }) {
   if (getToolName(part) === ASK_FOR_GEAR && cards && (part.state === "input-available" || part.state === "output-available")) {
     return (
@@ -139,7 +141,7 @@ function ToolPart({
         };
         return (
           <div className="mb-4 w-full">
-            <LensTable lenses={lenses} columns={columns} caption={caption} />
+            <LensTable lenses={lenses} columns={columns} caption={caption} onExpand={onExpand} />
           </div>
         );
       }
@@ -185,11 +187,14 @@ export default function AskIrisThread({
   debug = false,
   busy = false,
   cards,
+  onExpand,
 }: {
   messages: AskIrisUIMessage[];
   debug?: boolean;
   busy?: boolean;
   cards?: ChatCardBinding;
+  /** Widens the chat for content that does not fit; absent where the chat cannot widen. */
+  onExpand?: () => void;
 }) {
   const t = useTranslations("AskIris");
   const activeKey = activityKey(messages, busy, debug);
@@ -240,7 +245,7 @@ export default function AskIrisThread({
               }
               if (isToolUIPart(part)) {
                 return (
-                  <ToolPart key={key} part={part} debug={debug} cards={cards} latest={isLatest && !busy} />
+                  <ToolPart key={key} part={part} debug={debug} cards={cards} latest={isLatest && !busy} onExpand={onExpand} />
                 );
               }
               return null;
