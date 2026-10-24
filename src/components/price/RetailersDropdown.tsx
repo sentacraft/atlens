@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { Popover } from "@base-ui/react/popover";
-import { ArrowUpRight, ChevronDown, Info } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Info, ShoppingBag } from "lucide-react";
 import { buildPurchaseLinks, purchaseDisclosureKey, shouldShowDisclosure } from "@/lib/purchase/links";
 import type { PurchaseLink } from "@/lib/purchase/links";
 import type { Lens } from "@/lib/types";
@@ -40,6 +40,7 @@ export function RetailersDropdown({ lens, customId }: Props) {
         data-testid="lens-detail-price-trigger"
         className={cn(PANEL_ACTION_CLS, "cursor-pointer")}
       >
+        <ShoppingBag className="size-4" aria-hidden="true" />
         <span className="inline-flex items-baseline gap-1.5">
           {t("buyAt")}
           {/* The lens page's actions are its @container, and this button takes half their width:

@@ -51,7 +51,7 @@ export default function FavoritesSection({
           {favoriteLenses.map((lens) => (
             <li
               key={lens.id}
-              className="relative flex flex-col gap-2 rounded-2xl border border-zinc-200 p-2.5 transition-colors hover:bg-zinc-50 md:gap-0 md:overflow-hidden md:p-0"
+              className="group relative flex flex-col gap-2 rounded-2xl border border-zinc-200 p-2.5 transition-colors hover:bg-zinc-50 md:gap-0 md:overflow-hidden md:p-0"
             >
               <div className="flex items-center gap-3 md:flex-col md:items-stretch md:gap-0">
                 <FavoriteImage lensId={lens.id} />

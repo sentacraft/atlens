@@ -213,7 +213,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
             </td>
           </tr>
           {alternatives.map((l, index) => (
-            <tr key={l.id} className={cn("relative border-t border-zinc-100 transition-colors hover:bg-zinc-50", index >= ALTERNATIVES_SHOWN && EXTRA_ROW_CLS)}>
+            <tr key={l.id} className={cn("group relative border-t border-zinc-100 transition-colors hover:bg-zinc-50", index >= ALTERNATIVES_SHOWN && EXTRA_ROW_CLS)}>
               <td className="py-3 pr-2 pl-4">
                 <Link href={lensPath(l)} prefetch={false} className="flex items-center gap-3 after:absolute after:inset-0 after:content-['']">
                   <Thumb lens={l} size="table" />
@@ -255,7 +255,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
         {alternatives.map((l, index) => (
           <li
             key={l.id}
-            className={cn("relative flex flex-col gap-2 border-t border-zinc-100 px-4 py-3 transition-colors hover:bg-zinc-50", index >= ALTERNATIVES_SHOWN && EXTRA_ITEM_CLS)}
+            className={cn("group relative flex flex-col gap-2 border-t border-zinc-100 px-4 py-3 transition-colors hover:bg-zinc-50", index >= ALTERNATIVES_SHOWN && EXTRA_ITEM_CLS)}
           >
             <Link href={lensPath(l)} prefetch={false} className="flex min-w-0 items-center gap-3 after:absolute after:inset-0 after:content-['']">
               <Thumb lens={l} size="list" />

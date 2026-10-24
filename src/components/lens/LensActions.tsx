@@ -14,6 +14,11 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { COMPARE_CHIP_LABEL_KEY, compareChipState } from "@/lib/lens/lens";
 import { cn } from "@/lib/utils";
 
+const ROW_IDLE_STAR_CLS =
+  "border-transparent bg-transparent text-zinc-500 group-hover:border-zinc-200 group-hover:bg-white group-hover:text-zinc-700 group-focus-within:border-zinc-200 group-focus-within:text-zinc-700 hover:text-zinc-900";
+const ROW_IDLE_COMPARE_CLS =
+  "border-zinc-100 bg-white text-zinc-500 group-hover:border-zinc-200 group-hover:text-zinc-700 group-focus-within:border-zinc-200 group-focus-within:text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50";
+
 /** A lens's place in the compare list, from whichever source the caller keeps it in. */
 export interface CompareControl {
   selected: boolean;
@@ -82,7 +87,8 @@ export default function LensActions({
   }
 
   if (tier === "row") {
-    // The buttons look 36px but take taps 4px beyond their edges, for a 44px target.
+    // The buttons look 36px but take taps 4px beyond their edges, for a 44px target. Unselected,
+    // they stay light until the pointer is on their card or row (the caller's `group`).
     return (
       <div className={cn("relative z-10 flex shrink-0 items-center gap-2", className)}>
         <button
@@ -93,8 +99,7 @@ export default function LensActions({
           title={favoriteLabel}
           className={cn(
             "relative inline-flex size-9 items-center justify-center rounded-full border transition-colors after:absolute after:-inset-1",
-            COMPARE_CHIP_STATE_CLS.idle,
-            favorited ? "text-zinc-900" : "text-zinc-600",
+            favorited ? "border-zinc-200 bg-white text-zinc-900" : ROW_IDLE_STAR_CLS,
           )}
         >
           {star("size-4")}
@@ -105,7 +110,11 @@ export default function LensActions({
           aria-pressed={compare.selected}
           aria-label={`${compareLabel}: ${lensName}`}
           title={compare.hint ?? compareLabel}
-          className={cn(COMPARE_CHIP_CLS, COMPARE_CHIP_STATE_CLS[state], "relative h-9 pr-3 pl-2.5 text-[13px] after:absolute after:-inset-1")}
+          className={cn(
+            COMPARE_CHIP_CLS,
+            state === "idle" ? ROW_IDLE_COMPARE_CLS : COMPARE_CHIP_STATE_CLS[state],
+            "relative h-9 pr-3 pl-2.5 text-[13px] after:absolute after:-inset-1",
+          )}
         >
           {compareIcon("size-3.5")}
           {compare.selected ? tList("compared") : tList("compareShort")}
