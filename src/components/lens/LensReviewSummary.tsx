@@ -2,7 +2,7 @@
 
 import { Popover } from "@base-ui/react/popover";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeftRight, ArrowUpRight, Clock, Scale, ThumbsDown, ThumbsUp } from "lucide-react";
+import { ArrowUpRight, CircleAlert, CircleCheck, Clock, Contrast, MessagesSquare } from "lucide-react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { CitationsProvider, SourceList, SourceMarker } from "@/components/askiris/ReviewSources";
@@ -19,9 +19,9 @@ import { layoutReviews, type ReviewClaimView } from "@/lib/lens/reviews-view";
 import { cn } from "@/lib/utils";
 
 const POLARITY_ICON = {
-  positive: { Icon: ThumbsUp, cls: REVIEW_POSITIVE_CLS },
-  negative: { Icon: ThumbsDown, cls: REVIEW_NEGATIVE_CLS },
-  mixed: { Icon: Scale, cls: "text-zinc-500" },
+  positive: { Icon: CircleCheck, cls: REVIEW_POSITIVE_CLS },
+  negative: { Icon: CircleAlert, cls: REVIEW_NEGATIVE_CLS },
+  mixed: { Icon: Contrast, cls: "text-zinc-500" },
 } as const;
 
 const QUIET_TRIGGER_CLS =
@@ -257,7 +257,7 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         {!expanded && disputed.length > 0 ? (
           <p className="flex items-center gap-1.5 text-[13px] text-zinc-600">
-            <ArrowLeftRight className="size-3.5 shrink-0 text-zinc-500" aria-hidden />
+            <MessagesSquare className="size-3.5 shrink-0 text-zinc-500" aria-hidden />
             {t("disagree", { aspects: format.list(disputed, { type: "conjunction" }) })}
           </p>
         ) : (

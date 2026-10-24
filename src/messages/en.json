@@ -527,8 +527,8 @@
       "subtitle": "Summarized from {count} published reviews",
       "summary": "Overall",
       "conflict": "Mixed views",
-      "pros": "Strengths",
-      "cons": "Weaknesses",
+      "pros": "Highlights",
+      "cons": "Worth knowing",
       "count": "{count}",
       "expand": "Show all {count}",
       "collapse": "Show less",
@@ -539,8 +539,8 @@
       "disagree": "Reviewers disagree on {aspects}",
       "otherMount": "Tested on another mount",
       "polarity": {
-        "positive": "Positive",
-        "negative": "Negative",
+        "positive": "Highlight",
+        "negative": "Worth knowing",
         "mixed": "Mixed"
       },
       "staleness": {

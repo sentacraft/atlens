@@ -527,8 +527,8 @@
       "subtitle": "根据 {count} 篇公开评测整理",
       "summary": "整体",
       "conflict": "看法不一",
-      "pros": "优点",
-      "cons": "不足",
+      "pros": "亮点",
+      "cons": "需要留意",
       "count": "{count} 条",
       "expand": "展开全部 {count} 条",
       "collapse": "收起",
@@ -539,8 +539,8 @@
       "disagree": "各家看法不一：{aspects}",
       "otherMount": "在其他卡口上测试",
       "polarity": {
-        "positive": "正面",
-        "negative": "负面",
+        "positive": "亮点",
+        "negative": "需要留意",
         "mixed": "褒贬不一"
       },
       "staleness": {
