@@ -24,7 +24,7 @@ import Breadcrumb from "@/components/nav/Breadcrumb";
 import SpecialtyBadges from "@/components/lens/SpecialtyBadges";
 import { deriveSpecialty } from "@/lib/lens/specialty";
 import { getBrandInfo } from "@/lib/brands";
-import { getMemberCollections } from "@/lib/collections";
+import { getMemberCollections, seriesCollection } from "@/lib/collections";
 import { getCollectionPreviews } from "@/lib/collection-stats";
 import CollectionLinks from "@/components/collection/CollectionLinks";
 import SameFocalAlternatives from "@/components/lens/SameFocalAlternatives";
@@ -38,7 +38,7 @@ import { lensDisplayName, brandLabel } from "@/lib/lens/format";
 import { buildLensDescription, buildLensProductSchema } from "@/lib/lens/seo";
 import { PriceSection } from "@/components/price/PriceSection";
 import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
-import { brandPath, browsePath, chartPath, lensPath } from "@/lib/url/routes";
+import { brandPath, browsePath, chartPath, collectionPath, lensPath } from "@/lib/url/routes";
 import { chartHref } from "@/lib/url/charts";
 import { DataSourceBar } from "@/components/lens/DataSource";
 import { PAGE_GUTTER_CLS, PAGE_SECTION_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
@@ -178,6 +178,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   const displayName = lensDisplayName(brandName, lens.series, lens.model);
   const description = buildLensDescription({ lens, mount: resolvedMount, brandName, t });
   const hasBrandPage = mountHasCollections(resolvedMount) && getBrandInfo(lens.brand) !== undefined;
+  const seriesPage = mountHasCollections(resolvedMount) ? seriesCollection(lens, locale) : undefined;
   const onCharts = mountHasCharts(resolvedMount) && isOnCharts(lens);
   const canonicalUrl = `${SITE.url}/${locale}${lensPath(lens)}`;
   const productSchema = buildLensProductSchema({
@@ -262,18 +263,28 @@ export default async function LensDetailPage({ params }: { params: Params }) {
         <div className="flex-1 flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-xs font-normal text-zinc-500">
+              <span className="flex items-center gap-1.5 text-xs font-normal text-zinc-500">
                 {hasBrandPage ? (
-                  <Link
-                    href={brandPath(resolvedMount, lens.brand)}
-                    className="underline-offset-4 transition-colors hover:text-zinc-900 hover:underline"
-                  >
+                  <Link href={brandPath(resolvedMount, lens.brand)} className={TEXT_LINK_CLS}>
                     {brandName}
                   </Link>
                 ) : (
                   brandName
                 )}
-                {lens.series && ` · ${lens.series}`}
+                {lens.series && (
+                  <>
+                    <span aria-hidden="true" className="text-zinc-300">
+                      ›
+                    </span>
+                    {seriesPage ? (
+                      <Link href={collectionPath(resolvedMount, seriesPage.slug)} className={TEXT_LINK_CLS}>
+                        {lens.series}
+                      </Link>
+                    ) : (
+                      lens.series
+                    )}
+                  </>
+                )}
               </span>
               <SpecialtyBadges {...deriveSpecialty(lens)} />
             </div>
