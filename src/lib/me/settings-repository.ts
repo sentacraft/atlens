@@ -9,15 +9,18 @@ import {
 interface SettingsRow {
   default_mount: UserSettings["defaultMount"];
   locale: UserSettings["locale"];
+  support_prompt_responded_at: number | null;
 }
 
 function toSettings(row: SettingsRow | null): UserSettings {
-  return row ? { defaultMount: row.default_mount, locale: row.locale } : { ...DEFAULT_USER_SETTINGS };
+  return row
+    ? { defaultMount: row.default_mount, locale: row.locale, supportPromptRespondedAt: row.support_prompt_responded_at }
+    : { ...DEFAULT_USER_SETTINGS };
 }
 
 export async function getUserSettings(db: D1Database, userId: string): Promise<UserSettings> {
   const row = await db
-    .prepare("SELECT default_mount, locale FROM user_settings WHERE user_id = ?")
+    .prepare("SELECT default_mount, locale, support_prompt_responded_at FROM user_settings WHERE user_id = ?")
     .bind(userId)
     .first<SettingsRow>();
   return toSettings(row);
@@ -27,16 +30,23 @@ export async function updateUserSettings(
   db: D1Database,
   input: { userId: string; patch: UserSettingsPatch; now?: number },
 ): Promise<UserSettings> {
-  const next = { ...(await getUserSettings(db, input.userId)), ...input.patch };
+  const now = input.now ?? Date.now();
+  const { supportPromptResponded, ...values } = input.patch;
+  const next: UserSettings = {
+    ...(await getUserSettings(db, input.userId)),
+    ...values,
+    ...(supportPromptResponded ? { supportPromptRespondedAt: now } : {}),
+  };
   await db
     .prepare(
-      `INSERT INTO user_settings (user_id, default_mount, locale, updated_at) VALUES (?, ?, ?, ?)
+      `INSERT INTO user_settings (user_id, default_mount, locale, support_prompt_responded_at, updated_at) VALUES (?, ?, ?, ?, ?)
       ON CONFLICT (user_id) DO UPDATE SET
         default_mount = excluded.default_mount,
         locale = excluded.locale,
+        support_prompt_responded_at = excluded.support_prompt_responded_at,
         updated_at = excluded.updated_at`,
     )
-    .bind(input.userId, next.defaultMount, next.locale, input.now ?? Date.now())
+    .bind(input.userId, next.defaultMount, next.locale, next.supportPromptRespondedAt, now)
     .run();
   return next;
 }
