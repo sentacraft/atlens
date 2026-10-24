@@ -67,8 +67,8 @@ function WechatPanel({ mode }: { mode: WechatMode }) {
     <Image
       src={WECHAT_QR_SRC}
       alt={t("wechatQrAlt")}
-      width={1152}
-      height={1152}
+      width={720}
+      height={720}
       sizes="240px"
       className="h-auto w-full rounded-lg"
     />
