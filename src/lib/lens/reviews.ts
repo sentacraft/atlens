@@ -99,8 +99,11 @@ export interface LensReviewSource {
    * @example ["X-T5"]
    */
   bodies?: string[];
-  /** Sensor resolution of the main test body in megapixels; sharpness findings are relative to it. */
-  testMegapixels?: number;
+  /**
+   * Sensor resolutions of the test bodies in megapixels; sharpness findings are relative to them.
+   * @example [26, 40]
+   */
+  testMegapixels?: number[];
   /**
    * Publication date, `YYYY-MM` or `YYYY-MM-DD`.
    * @example "2024-12"
