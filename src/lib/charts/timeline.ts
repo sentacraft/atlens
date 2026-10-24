@@ -65,3 +65,30 @@ export function assignLanes<T>(items: T[], position: (item: T) => number, minGap
     return lane;
   });
 }
+
+/** Sideways shift of a lane from its column's center: lane 0 centered, then alternating left and right. */
+export function laneOffset(lane: number, step: number): number {
+  return lane === 0 ? 0 : (lane % 2 === 1 ? -1 : 1) * Math.ceil(lane / 2) * step;
+}
+
+/** Lane step and vertical clearance, as fractions of the item size. Lens images are wider than tall. */
+export const LANE_STEP = 0.55;
+export const LANE_GAP = 0.6;
+const COLUMN_FILL = 0.7;
+
+/**
+ * Largest item size in `[min, max]` (2px steps) at which every column's lanes, spread sideways,
+ * stay within a share of `colWidth`. `columns` holds each column's item positions along the axis.
+ */
+export function fitItemSize(columns: number[][], colWidth: number, { min, max }: { min: number; max: number }): number {
+  const fits = (size: number) =>
+    columns.every((column) => {
+      const lanes = Math.max(0, ...assignLanes(column, (p) => p, size * LANE_GAP));
+      return size + 2 * Math.abs(laneOffset(lanes, size * LANE_STEP)) <= colWidth * COLUMN_FILL;
+    });
+  let size = max;
+  while (size > min && !fits(size)) {
+    size -= 2;
+  }
+  return Math.max(size, min);
+}
