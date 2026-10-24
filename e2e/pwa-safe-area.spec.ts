@@ -117,3 +117,27 @@ test.describe("Layout body bottom inset", () => {
     expect(paddingBottom).toBe(HOME_BAR);
   });
 });
+
+test.describe("Drawer bottom inset", () => {
+  test("the drawer may reach 2.5rem below the notch, on what is visible now", async ({ page }) => {
+    // A full-height iPhone screen, where the old 85% cap fell short of this one.
+    await page.setViewportSize({ width: 393, height: 852 });
+    await page.goto("/en");
+    await page.waitForLoadState("networkidle");
+    await simulateNotch(page);
+    await page.getByRole("button", { name: "Menu" }).click();
+    await page.getByRole("menuitem", { name: "Support Atlens" }).click();
+
+    const drawer = page.locator('[data-slot="dialog-content"]');
+    await expect(drawer).toBeVisible();
+    const { maxHeight, visibleHeight } = await drawer.evaluate((el) => {
+      const probe = document.createElement("div");
+      probe.style.height = "var(--visible-height)";
+      document.body.append(probe);
+      const visibleHeight = probe.getBoundingClientRect().height;
+      probe.remove();
+      return { maxHeight: parseFloat(getComputedStyle(el).maxHeight), visibleHeight };
+    });
+    expect(maxHeight).toBeCloseTo(visibleHeight - NOTCH_TOP - 40, 0);
+  });
+});

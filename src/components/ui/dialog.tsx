@@ -44,8 +44,10 @@ function Dialog({
 
 // iOS keeps fixed elements on the layout viewport, under the keyboard; VirtualKeyboardProvider
 // reports the keyboard's height, and the drawer sits on top of it and shrinks to fit above.
+// It may reach 2.5rem below the notch, measured on what is visible now: Chrome on iOS keeps a
+// toolbar at each edge, and its small viewport leaves too little for a fixed share.
 const DRAWER_KEYBOARD_CLS =
-  "fixed inset-x-0 bottom-[var(--drawer-keyboard-inset,0px)] max-h-[min(calc(var(--app-height)_*_0.85),calc(var(--app-height)_-_var(--drawer-keyboard-inset,0px)_-_var(--safe-inset-top)_-_1rem))]";
+  "fixed inset-x-0 bottom-[var(--drawer-keyboard-inset,0px)] max-h-[calc(var(--visible-height)_-_var(--drawer-keyboard-inset,0px)_-_var(--safe-inset-top)_-_2.5rem)]";
 
 function DialogPortal({ children }: { children: React.ReactNode }) {
   const mode = useDialogMode();
