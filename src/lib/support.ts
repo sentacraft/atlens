@@ -7,6 +7,7 @@ export function donationChannels(locale: string): DonationChannel[] {
 
 export const KOFI_URL = "https://ko-fi.com/sentacraft";
 
+/** 720px, three times the dialog's 240px slot; a new code replaces the file under the same name. */
 export const WECHAT_QR_SRC = "/wechat-qr.jpg";
 
 /** Where a support dialog was opened from, for analytics. */
