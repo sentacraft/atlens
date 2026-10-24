@@ -38,7 +38,7 @@ export default function RevisitPrompt() {
 
   async function markAccountDone(userId: string) {
     try {
-      queryClient.setQueryData(userSettingsQuery(userId).queryKey, await patchUserSettings({ revisitPromptDone: true }));
+      queryClient.setQueryData(userSettingsQuery(userId).queryKey, await patchUserSettings({ revisitPromptFinished: true }));
     } catch {
       // This browser still remembers; the account catches up on the next visit.
     }
@@ -55,19 +55,20 @@ export default function RevisitPrompt() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  const accountDone = settings.data?.revisitPromptDone;
+  const accountFinishedAt = settings.data?.revisitPromptFinishedAt;
+  const accountDone = accountFinishedAt === undefined ? undefined : accountFinishedAt !== null;
   useEffect(() => {
-    if (!account || accountDone === undefined) {
+    if (!account || accountFinishedAt === undefined) {
       return;
     }
     const store = browserPromptStore();
-    if (accountDone) {
-      finishRevisitPrompt(store);
+    if (accountFinishedAt !== null) {
+      finishRevisitPrompt(store, accountFinishedAt);
     } else if (revisitPromptDone(store)) {
       void markAccountDone(account.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once the account's record is known
-  }, [account?.id, accountDone]);
+  }, [account?.id, accountFinishedAt]);
 
   const visible = due && !finished && !sessionPending && (!account || accountDone === false);
 

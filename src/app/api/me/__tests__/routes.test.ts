@@ -127,11 +127,11 @@ describe("/api/me/favorites", () => {
 describe("/api/me/settings", () => {
   it("returns defaults, then the patched settings", async () => {
     await expect((await settingsRoute.GET(get())).json()).resolves.toEqual({
-      settings: { defaultMount: "X", locale: null, revisitPromptDone: false },
+      settings: { defaultMount: "X", locale: null, revisitPromptFinishedAt: null },
     });
 
     const patched = await settingsRoute.PATCH(json("PATCH", { defaultMount: "G", locale: "zh" }));
-    await expect(patched.json()).resolves.toEqual({ settings: { defaultMount: "G", locale: "zh", revisitPromptDone: false } });
+    await expect(patched.json()).resolves.toEqual({ settings: { defaultMount: "G", locale: "zh", revisitPromptFinishedAt: null } });
   });
 
   it("rejects values outside the allowed set", async () => {

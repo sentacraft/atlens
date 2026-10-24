@@ -77,13 +77,15 @@ export function revisitPromptDue(store: PromptStore, now = Date.now()): boolean 
   return done === null && visitDays(store, now).length >= REVISIT_DISTINCT_DAYS;
 }
 
+// Holds when the prompt was finished, in epoch ms; "1" from before it kept the time means the same.
 export function revisitPromptDone(store: PromptStore): boolean {
-  return read(store, REVISIT_DONE_KEY) === "1";
+  const done = read(store, REVISIT_DONE_KEY);
+  return done !== null && done !== undefined;
 }
 
 /** The visitor closed the returning-visit prompt or followed it; it does not show again. */
-export function finishRevisitPrompt(store: PromptStore): void {
-  write(store, REVISIT_DONE_KEY, "1");
+export function finishRevisitPrompt(store: PromptStore, now = Date.now()): void {
+  write(store, REVISIT_DONE_KEY, String(now));
 }
 
 /** Whether `prompt` may show now; claiming it starts its interval. */

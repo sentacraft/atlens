@@ -14,11 +14,11 @@ vi.mock("@/lib/auth-client", () => ({
   accountUser: () => auth.account,
 }));
 
-const settings = vi.hoisted(() => ({ done: false, patch: vi.fn() }));
+const settings = vi.hoisted(() => ({ finishedAt: null as number | null, patch: vi.fn() }));
 vi.mock("@/lib/me/settings-client", () => ({
   userSettingsQuery: (userId: string) => ({
     queryKey: ["me", "settings", userId],
-    queryFn: async () => ({ defaultMount: "X", locale: null, revisitPromptDone: settings.done }),
+    queryFn: async () => ({ defaultMount: "X", locale: null, revisitPromptFinishedAt: settings.finishedAt }),
   }),
   patchUserSettings: settings.patch,
 }));
@@ -56,8 +56,8 @@ async function renderPrompt() {
 beforeEach(() => {
   vi.useFakeTimers();
   auth.account = undefined;
-  settings.done = false;
-  settings.patch.mockReset().mockResolvedValue({ defaultMount: "X", locale: null, revisitPromptDone: true });
+  settings.finishedAt = null;
+  settings.patch.mockReset().mockResolvedValue({ defaultMount: "X", locale: null, revisitPromptFinishedAt: 1 });
   vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
 });
 
@@ -78,11 +78,11 @@ describe("RevisitPrompt", () => {
     const storage = returningVisitor();
     vi.stubGlobal("localStorage", storage);
     auth.account = { id: "u1" };
-    settings.done = true;
+    settings.finishedAt = 1234;
     await renderPrompt();
 
     expect(screen.queryByRole("heading", { name: "revisitTitle" })).toBeNull();
-    expect(storage.data.get("atlens_support_revisit_done")).toBe("1");
+    expect(storage.data.get("atlens_support_revisit_done")).toBe("1234");
   });
 
   it("records on the account when a signed-in visitor closes it", async () => {
@@ -91,7 +91,7 @@ describe("RevisitPrompt", () => {
     await renderPrompt();
 
     fireEvent.click(screen.getByRole("button", { name: "revisitLater" }));
-    expect(settings.patch).toHaveBeenCalledWith({ revisitPromptDone: true });
+    expect(settings.patch).toHaveBeenCalledWith({ revisitPromptFinished: true });
   });
 
   it("carries a close from before sign-in over to the account", async () => {
@@ -99,7 +99,7 @@ describe("RevisitPrompt", () => {
     auth.account = { id: "u1" };
     await renderPrompt();
 
-    expect(settings.patch).toHaveBeenCalledWith({ revisitPromptDone: true });
+    expect(settings.patch).toHaveBeenCalledWith({ revisitPromptFinished: true });
     expect(screen.queryByRole("heading", { name: "revisitTitle" })).toBeNull();
   });
 });
