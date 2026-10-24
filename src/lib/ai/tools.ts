@@ -20,6 +20,8 @@ import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
 import { SKILL_NAMES, readSkill } from "@/lib/ai/skills";
 import { favoritesOnMount } from "@/lib/ai/favorites";
 import type { GearSummary } from "@/lib/ai/gear-context";
+import { REVIEW_ASPECTS } from "@/lib/lens/reviews";
+import type { LensReviews } from "@/lib/lens/reviews-repository";
 
 const RECALL_LIMIT = 20;
 
@@ -154,12 +156,24 @@ export function seedRecalledRefs(recalledRefs: Set<string>, messages: UIMessage[
   }
 }
 
-/** What the user saved to their account, for the tools that read it. */
-export interface AccountData {
+/** Data the tools read beyond the catalogue: the user's account and the review store. */
+export interface ToolData {
   /** Favorite lens ids, newest first, or null for a guest. */
   favorites: () => Promise<string[] | null>;
   gear: GearSummary;
+  /** Review claims by lens id; a lens without any is absent. */
+  reviews: (lensIds: string[]) => Promise<Map<string, LensReviews>>;
 }
+
+// Returned with every lensReviews result, so the reading rules arrive with the data they govern.
+const REVIEWS_NOTE =
+  "Each claim summarizes the reviews it cites; it is not Atlens's own testing. Say how many reviews back it " +
+  "(reviewCount, outletCount), and who says what when agreement is conflict or basis_differs. On measurable " +
+  "aspects, measured reviews outrank hands_on ones. An otherMount claim was tested on another mount's version: " +
+  "say so, and use it as reference only. staleness names the only reviews whose body-dependent finding may not " +
+  "hold on current bodies, each with its reason: attribute age or an unstated body to those reviews alone, and " +
+  "weigh it against the user's camera. An aspect with no claim has no review findings: say so " +
+  "rather than judge it yourself. Link a review only by its url as given.";
 
 /**
  * `recalledRefs` gates every tool that takes a ref; the recall tools add to it, and
@@ -169,9 +183,25 @@ export function buildLensTools(
   mount: Mount,
   locale: string,
   tBrand: (brand: string) => string,
-  account: AccountData,
+  data: ToolData,
   recalledRefs: Set<string>,
 ) {
+  const recalledLenses = (refs: string[]) => {
+    const byRef = buildRefIndex(getLensesByMount(mount, locale));
+    return refs.map((ref) => {
+      if (!recalledRefs.has(ref)) {
+        throw new Error(
+          `Lens ref "${ref}" was not returned by any queryLenses/searchLensByName/myFavorites call ` +
+            `in this conversation. Look it up first, and pass the ref exactly as it appears.`,
+        );
+      }
+      const lens = byRef.get(ref);
+      if (!lens) {
+        throw new Error(`Unknown lens ref "${ref}".`);
+      }
+      return lens;
+    });
+  };
 
   return {
     queryLenses: tool({
@@ -236,7 +266,7 @@ export function buildLensTools(
         "refers to lenses they favorited or saved. The refs work with every other tool, like a recall result.",
       inputSchema: z.object({}),
       execute: async () => {
-        const ids = await account.favorites();
+        const ids = await data.favorites();
         // Unreachable through the sign-in gate, which pauses a guest's call until they sign in.
         if (ids === null) {
           throw new Error("The user is not signed in.");
@@ -256,7 +286,7 @@ export function buildLensTools(
         "Lens refs work with every other tool.",
       inputSchema: z.object({}),
       execute: async () => {
-        const { gear } = account;
+        const { gear } = data;
         if (!gear.known && gear.reason !== "empty") {
           throw new Error(gear.reason === "guest" ? "The user is not signed in." : "The user's gear could not be read.");
         }
@@ -284,23 +314,45 @@ export function buildLensTools(
           .max(6)
           .describe("Lens refs, each from a prior queryLenses/searchLensByName/myFavorites result."),
       }),
-      execute: ({ refs }) => {
-        const byRef = buildRefIndex(getLensesByMount(mount, locale));
+      execute: ({ refs }) => ({
+        lenses: recalledLenses(refs).map((lens) => toDetailed(resolveLens(lens, locale, tBrand))),
+        notInData: "No test results or opinions: for image quality, focusing, handling and build, call lensReviews.",
+      }),
+    }),
+
+    lensReviews: tool({
+      description:
+        "What published reviews say about lenses already in hand, by ref: image quality, focusing, handling, " +
+        "build. Call it before describing how a lens performs. Renders nothing to the user.",
+      inputSchema: z.object({
+        refs: z
+          .array(z.string())
+          .min(1)
+          .max(4)
+          .describe("Lens refs, each from a prior queryLenses/searchLensByName/myFavorites result."),
+        aspects: z
+          .array(z.enum(REVIEW_ASPECTS))
+          .nullish()
+          .describe("Only these aspects; leave out for all."),
+      }),
+      execute: async ({ refs, aspects }) => {
+        const lenses = recalledLenses(refs);
+        const reviews = await data.reviews(lenses.map((lens) => lens.id));
         return {
-          lenses: refs.map((ref) => {
-            if (!recalledRefs.has(ref)) {
-              throw new Error(
-                `Lens ref "${ref}" was not returned by any queryLenses/searchLensByName/myFavorites call ` +
-                  `in this conversation. Look it up first, and pass the ref exactly as it appears.`,
-              );
-            }
-            const lens = byRef.get(ref);
-            if (!lens) {
-              throw new Error(`Unknown lens ref "${ref}".`);
-            }
-            return toDetailed(resolveLens(lens, locale, tBrand));
+          lenses: lenses.map((lens) => {
+            const found = reviews.get(lens.id);
+            const claims = (found?.claims ?? []).filter((claim) => !aspects?.length || aspects.includes(claim.aspect));
+            const cited = new Set(
+              claims.flatMap((claim) => [...claim.sources, ...(claim.details ?? []).map((detail) => detail.id)]),
+            );
+            return {
+              ref: lensRef(lens.id),
+              name: resolveLens(lens, locale, tBrand).name,
+              claims,
+              sources: (found?.sources ?? []).filter((source) => cited.has(source.id)),
+            };
           }),
-          notInData: "No test results: sharpness, chromatic aberration, distortion and bokeh rendering are not in Atlens's data.",
+          note: REVIEWS_NOTE,
         };
       },
     }),

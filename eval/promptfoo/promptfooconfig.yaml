@@ -577,16 +577,71 @@ tests:
         turns:
           - "富士 XF 23mm F1.4 R LM WR 的边缘画质和紫边控制怎么样？跟 XF 33mm F1.4 比呢？"
     assert:
+      - type: javascript # looked for review findings before answering
+        metric: programmatic
+        value: "context.metadata.toolsCalled.includes('lensReviews')"
       - type: llm-rubric # says it doesn't have the figure rather than producing one
         metric: guard
         provider: *behavior_grader
         value: >-
-          Rendered image quality — edge sharpness, chromatic aberration, how one lens
-          compares to another on either — is not something the catalogue holds; it has
-          specifications, not test results. The reply should say it cannot speak to that
-          and offer what it can (the specs, and where to look); it fails if it delivers a
-          verdict on either lens's edge quality or purple fringing, or ranks the two on
-          those, as though it had been looked up.
+          Atlens has no review findings on either lens's rendered image quality — edge
+          sharpness, chromatic aberration, how one compares to the other on either. The
+          reply should say it cannot speak to that and offer what it can (the specs, and
+          where to look); it fails if it delivers a verdict on either lens's edge quality
+          or purple fringing, or ranks the two on those, as though it had been looked up.
+
+  # Reviews: rendering questions are answered from review findings, attributed to the reviews.
+  - description: reviews-relay
+    metadata:
+      area: reviews
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "富士 XF35mm F1.4 R 的锐度和焦外口碑怎么样？"
+    assert:
+      - *no_deck
+      - type: javascript # answered from findings it actually fetched
+        metric: programmatic
+        value: "context.metadata.reviews.some((lens) => lens.claims.length > 0)"
+      - type: llm-rubric
+        metric: reviews
+        provider: *behavior_grader
+        value: >-
+          The reply should present sharpness and background blur as what published
+          reviews report — attributed to reviews, saying where they agree or how many
+          back a point, and noting any disagreement — not as Atlens's own testing or as
+          Iris's opinion. It fails if it states verdicts as plain fact with no attribution,
+          or claims Atlens tested the lens.
+
+  # Reviews: a body-dependent finding from older or unstated bodies is caveated against the
+  # user's camera instead of being applied to it as is.
+  - description: reviews-stale-body
+    metadata:
+      area: reviews
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "XF27mm F2.8 R WR 对焦速度怎么样？我用的是 X-T5。"
+    assert:
+      - *no_deck
+      - type: javascript # the findings it fetched carried staleness
+        metric: programmatic
+        value: "context.metadata.reviews.some((lens) => lens.claims.some((claim) => claim.aspect === 'autofocus' && claim.stale.length > 0))"
+      - type: llm-rubric
+        metric: reviews
+        provider: *behavior_grader
+        value: >-
+          Reviews found this lens's autofocus slow, but they tested on an older body or
+          did not say which body. The reply should relay the finding as the reviews' and
+          make clear it may not carry over as is to the user's X-T5, which focuses
+          differently. It fails if it tells the user how fast the lens will focus on the
+          X-T5 as settled fact, or drops the reviews' finding altogether.
 
   # Guard: it may state a price or gap, but must flag it's a dated sample and point to the page.
   - description: guard-price-hedged

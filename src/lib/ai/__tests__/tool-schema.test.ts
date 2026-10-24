@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { z } from "zod";
-import { buildLensTools, type AccountData } from "../tools";
+import { buildLensTools, type ToolData } from "../tools";
 
-const GUEST: AccountData = { favorites: async () => null, gear: { known: false, reason: "guest" } };
+const GUEST: ToolData = { favorites: async () => null, gear: { known: false, reason: "guest" }, reviews: async () => new Map() };
 
 // Google's function declarations accept an OpenAPI-3.0 subset, not full JSON Schema, and
 // reject the request outright rather than degrading — a `z.tuple()` in one parameter took
