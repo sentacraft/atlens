@@ -85,6 +85,10 @@ export const FEEDBACK_LINK_CLS =
   "text-zinc-500 underline underline-offset-2 transition-colors " +
   "hover:text-zinc-900";
 
+/** A page section that a contents link or hash can jump to, clear of the sticky nav. */
+export const ANCHORED_SECTION_CLS = "flex scroll-mt-[calc(var(--nav-height)+1rem)] flex-col gap-4";
+export const SECTION_HEADING_ROW_CLS = "flex items-center justify-between gap-3 border-b border-zinc-200 pb-2";
+
 export const SECTION_VIEW_ALL_LINK_CLS =
   "shrink-0 whitespace-nowrap text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900";
 

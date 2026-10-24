@@ -187,6 +187,30 @@ export default function WeightLadderChart({ tiers, mode }: { tiers: WeightTier[]
   );
 }
 
+/** A collection's lenses ranked by weight, with the references among them, on the collection page. */
+export function WeightRankList({ rows }: { rows: LadderRow[] }) {
+  const { itemHandlers, sheet } = useChartCard();
+  const cls = LAYOUT.page;
+  const lenses = rows.flatMap((row) => (row.kind === "lens" ? [row.lens] : []));
+  const heaviest = Math.max(...lenses.map((lens) => lens.weightG));
+  return (
+    <>
+      <ol className={cls.rows}>
+        {rows.map((row) =>
+          row.kind === "reference" ? (
+            <ReferenceRow key={row.reference.key} reference={row.reference} cls={cls} />
+          ) : (
+            <li key={row.lens.id}>
+              <LensRow row={row} focused={false} barPct={weightBarPct(row.lens.weightG, heaviest)} handlers={itemHandlers(row.lens.id)} cls={cls} />
+            </li>
+          ),
+        )}
+      </ol>
+      <ChartLensSheet lens={lenses.find((lens) => lens.id === sheet.id)} open={sheet.open} onOpenChange={sheet.onOpenChange} />
+    </>
+  );
+}
+
 function ReferenceRow({ reference, cls }: { reference: WeightReference; cls: Layout }) {
   const t = useTranslations("Charts");
   const Icon = REFERENCE_ICONS[reference.key];
