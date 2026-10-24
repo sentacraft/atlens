@@ -817,7 +817,7 @@
     "disclaimerIndependent": "Atlens is an independent third-party tool, not endorsed or sponsored by Fujifilm or any other manufacturer.",
     "disclaimerCopyright": "Product images and brand trademarks are the property of their respective owners. If you are a rights holder and believe your content has been used improperly, please contact <email>{address}</email>.",
     "reuseTitle": "Sharing and reuse",
-    "reuseWelcome": "<b>Welcome:</b> images and links made with the site's share buttons, screenshots of its pages, and quotes of individual lens specs can be passed on freely, credited as \"Data from Atlens ({host})\".",
+    "reuseWelcome": "<b>Welcome:</b> images and links made with the site's share buttons, and quotes of individual lens specs can be passed on freely, credited as \"Data from Atlens ({host})\".",
     "reuseForbidden": "<b>Not allowed:</b> republishing the data as a table or dataset; bulk scraping; commercial use.",
     "reuseContact": "<b>Partnerships:</b> <email>{address}</email>",
     "reuseImages": "<b>Product images:</b> lens product images and brand trademarks belong to their brands.",

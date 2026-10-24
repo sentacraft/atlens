@@ -817,7 +817,7 @@
     "disclaimerIndependent": "Atlens 是独立的第三方工具，没有获得富士或任何其他厂商的背书或赞助。",
     "disclaimerCopyright": "本站展示的产品图片及品牌商标，版权归各自所有者所有。如您是权利人并认为存在侵权问题，请联系 <email>{address}</email>。",
     "reuseTitle": "转载与引用",
-    "reuseWelcome": "<b>欢迎：</b>用网站分享按钮生成的图片和链接、网页截图，以及引用个别镜头的参数，都可以自由转发，注明「数据来自 Atlens（{host}）」即可。",
+    "reuseWelcome": "<b>欢迎：</b>用网站分享按钮生成的图片和链接，以及引用个别镜头的参数，都可以自由转发，注明「数据来自 Atlens（{host}）」即可。",
     "reuseForbidden": "<b>禁止：</b>把数据整理成表格或数据集再发布；批量抓取；商业用途。",
     "reuseContact": "<b>合作：</b><email>{address}</email>",
     "reuseImages": "<b>产品图：</b>镜头产品图和品牌商标归各品牌所有。",
