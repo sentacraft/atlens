@@ -96,13 +96,15 @@ export default async function TimelinePage({ params }: { params: Params }) {
   const [first, second, third, ...rest] = data.undated;
   // en names three brands plus "N others", zh says "N brands in all"; message types come from en
   // only, so `total` must not be an inline literal or it is rejected as an unknown property.
-  const moreArgs = { count, first, second, third, others: rest.length, total: data.undated.length };
-  const description =
+  const moreArgs = { first, second, third, others: rest.length, total: data.undated.length };
+  const description = t("timelineDesc", { count });
+  const undatedNote =
     data.undated.length === 0
-      ? t("timelineDesc", { count })
+      ? ""
       : rest.length === 0
-        ? t("timelineDescUndated", { count, brands: data.undatedList, brandCount: data.undated.length })
-        : t("timelineDescUndatedMore", moreArgs);
+        ? t("timelineUndated", { brands: data.undatedList, brandCount: data.undated.length })
+        : t("timelineUndatedMore", moreArgs);
+  const note = t("timelineNote", { cine: t("excludesCine", { count: data.cineCount }), undated: undatedNote }).trim();
   const title = t("timelineTitle", { first: data.first, last: data.last });
   const shareProps = {
     entries: timeline.entries,
@@ -126,7 +128,7 @@ export default async function TimelinePage({ params }: { params: Params }) {
           locale={locale}
           mount={data.resolvedMount}
           active="timeline"
-          note={t("excludesCine", { count: data.cineCount })}
+          note={note}
           title={title}
           description={description}
           action={
