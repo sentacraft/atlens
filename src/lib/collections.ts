@@ -81,3 +81,8 @@ export function getSharedCollections(lenses: Lens[], locale: string): LensCollec
     lenses.every((lens) => collection.filter(lens, locale)),
   );
 }
+
+/** The series collection a lens belongs to, if its series has one. */
+export function seriesCollection(lens: Lens, locale: string): LensCollection | undefined {
+  return COLLECTION_GROUPS.find((g) => g.group === "series")?.collections.find((c) => c.filter(lens, locale));
+}
