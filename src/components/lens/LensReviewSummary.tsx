@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight, CircleAlert, CircleCheck, Clock, MessagesSquare, type LucideProps } from "lucide-react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { CitationsProvider, SourceList, SourceMarker } from "@/components/askiris/ReviewSources";
+import { CitationsProvider, SourceList, SourceMarker, SourceNumber, useSourceFacts } from "@/components/askiris/ReviewSources";
 import {
   ACTION_PRIMARY_CLS,
   ANCHORED_SECTION_CLS,
@@ -51,6 +51,7 @@ function PolarityIcon({ polarity, className }: { polarity: ReviewClaimView["pola
 /** The review count after a finding; it opens the list of the reviews behind it. */
 function ReviewsButton({ claim, citations, className }: { claim: ReviewClaimView; citations: Citations; className?: string }) {
   const t = useTranslations("LensReviews.findings");
+  const facts = useSourceFacts();
   const cited = claim.sources.map((id) => citations.byKey.get(id)).filter((entry) => entry !== undefined);
   return (
     <Popover.Root>
@@ -64,24 +65,27 @@ function ReviewsButton({ claim, citations, className }: { claim: ReviewClaimView
         <Popover.Positioner side="bottom" align="start" sideOffset={6} collisionPadding={12}>
           <Popover.Popup className={cn(MENU_POPUP_CLS, "w-72 py-1.5")}>
             <ul>
-              {cited.map(({ key, source }) => {
+              {cited.map(({ key, number, source }) => {
                 const href = sourceHref(source);
-                const meta = [source.published, source.bodies?.join(", ")].filter(Boolean).join(" · ");
+                const { when, how, bodies } = facts(source);
                 const body = (
                   <>
-                    <span className="font-medium text-zinc-900">{source.site}</span>
-                    <span className="min-w-0 flex-1 truncate text-xs text-zinc-500">{meta}</span>
-                    {href ? <ArrowUpRight className="size-3 shrink-0 text-zinc-400" aria-hidden /> : null}
+                    <SourceNumber number={number} />
+                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span className="font-medium text-zinc-900">{source.site}</span>
+                      <span className="text-xs text-zinc-500">{[when, how, bodies].filter(Boolean).join(" · ")}</span>
+                    </span>
+                    {href ? <ArrowUpRight className="mt-0.5 size-3 shrink-0 text-zinc-400" aria-hidden /> : null}
                   </>
                 );
                 return (
                   <li key={key}>
                     {href ? (
-                      <a href={href} target="_blank" rel="noopener noreferrer" className="flex min-h-9 items-center gap-2 px-3 text-[13px] hover:bg-zinc-50">
+                      <a href={href} target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-start gap-2.5 px-3 py-2 text-[13px] hover:bg-zinc-50">
                         {body}
                       </a>
                     ) : (
-                      <span className="flex min-h-9 items-center gap-2 px-3 text-[13px]">{body}</span>
+                      <span className="flex min-h-11 items-start gap-2.5 px-3 py-2 text-[13px]">{body}</span>
                     )}
                   </li>
                 );
@@ -143,10 +147,8 @@ function StaleHint({ claim }: { claim: ReviewClaimView }) {
 }
 
 function CollapsedRow({ claim, citations }: { claim: ReviewClaimView; citations: Citations }) {
-  const t = useTranslations("LensReviews.findings");
   return (
-    <li className="flex flex-col gap-0.5 border-b border-zinc-100 py-2.5 last:border-b-0">
-      <span className="text-xs text-zinc-500">{t(`aspects.${claim.aspect}`)}</span>
+    <li className="border-b border-zinc-100 py-2.5 last:border-b-0">
       <p className="text-sm leading-[22px] text-zinc-800">
         {claim.text}
         <ReviewsButton claim={claim} citations={citations} className="ml-1.5" />
@@ -156,19 +158,41 @@ function CollapsedRow({ claim, citations }: { claim: ReviewClaimView; citations:
   );
 }
 
-function ExpandedRow({ claim }: { claim: ReviewClaimView }) {
+/** Aspects whose names a general reader may not know; their label opens a one-line explanation. */
+const HINTED_ASPECTS = ["field_curvature", "coma", "astigmatism", "focus_shift", "focus_breathing"] as const;
+type HintedAspect = (typeof HINTED_ASPECTS)[number];
+const isHinted = (aspect: ReviewClaimView["aspect"]): aspect is HintedAspect => (HINTED_ASPECTS as readonly string[]).includes(aspect);
+
+function AspectLabel({ aspect }: { aspect: ReviewClaimView["aspect"] }) {
+  const t = useTranslations("LensReviews.findings");
+  if (!isHinted(aspect)) {
+    return <span className="text-xs text-zinc-500">{t(`aspects.${aspect}`)}</span>;
+  }
+  return (
+    <Popover.Root>
+      <Popover.Trigger className={cn(QUIET_TRIGGER_CLS, "self-start")}>{t(`aspects.${aspect}`)}</Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner side="top" align="start" sideOffset={6} collisionPadding={12}>
+          <Popover.Popup className={cn(MENU_POPUP_CLS, "max-w-64 px-3 py-2 text-xs leading-relaxed text-zinc-700")}>
+            {t(`aspectHint.${aspect}`)}
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}
+
+function ExpandedRow({ claim, citations }: { claim: ReviewClaimView; citations: Citations }) {
   const t = useTranslations("LensReviews.findings");
   const [open, setOpen] = useState(false);
   return (
     <li className="flex gap-2.5 border-b border-zinc-100 py-3 last:border-b-0">
       <PolarityIcon polarity={claim.polarity} className="mt-[3px]" />
       <div className="flex min-w-0 flex-col gap-0.5">
-        <span className="text-xs text-zinc-500">{t(`aspects.${claim.aspect}`)}</span>
+        <AspectLabel aspect={claim.aspect} />
         <p className="text-sm leading-[22px] text-zinc-800">
           {claim.text}
-          {claim.sources.map((id) => (
-            <SourceMarker key={id} sourceKey={id} />
-          ))}
+          <ReviewsButton claim={claim} citations={citations} className="ml-1.5" />
           <StaleHint claim={claim} />
         </p>
         {claim.details.length > 0 ? (
@@ -335,7 +359,7 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
                 </div>
                 <ul>
                   {claims.map((claim) => (
-                    <ExpandedRow key={claim.aspect + claim.text} claim={claim} />
+                    <ExpandedRow key={claim.aspect + claim.text} claim={claim} citations={citations} />
                   ))}
                 </ul>
               </div>

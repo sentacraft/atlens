@@ -10,7 +10,7 @@ const openSignIn = vi.hoisted(() => vi.fn());
 
 vi.mock("next-intl", () => ({
   useLocale: () => "zh",
-  useFormatter: () => ({ list: (items: string[]) => items.join(", ") }),
+  useFormatter: () => ({ list: (items: string[]) => items.join(", "), dateTime: (date: Date) => `${date.getFullYear()}/${date.getMonth() + 1}` }),
   useTranslations: () =>
     Object.assign(
       (key: string, values?: Record<string, string | number>) => (values ? `${key}(${Object.values(values).join(",")})` : key),
@@ -100,11 +100,38 @@ describe("LensReviewSummary", () => {
     expect(screen.queryByText(/^count\(/)).toBeNull();
   });
 
-  it("lists the reviews behind a finding from its review count", async () => {
+  it("lists the reviews behind a finding from its review count, numbered as the full view numbers them", async () => {
     renderWith(DATA);
     fireEvent.click(await screen.findByRole("button", { name: "reviewSources(2,aspects.bokeh)" }));
-    expect((await screen.findByRole("link", { name: /Site A/ })).getAttribute("href")).toBe("https://example.com/a");
-    expect(screen.getByRole("link", { name: /Site B/ })).toBeTruthy();
+    const siteA = await screen.findByRole("link", { name: /Site A/ });
+    expect(siteA.getAttribute("href")).toBe("https://example.com/a");
+    expect(siteA.textContent).toMatch(/^1/);
+    expect(screen.getByRole("link", { name: /Site B/ }).textContent).toMatch(/^2/);
+  });
+
+  it("leaves the aspect off collapsed findings, whose sentences already name it", async () => {
+    renderWith(DATA);
+    expect(await screen.findByText("背景虚化讨喜")).toBeTruthy();
+    expect(screen.queryByText("aspects.bokeh")).toBeNull();
+  });
+
+  it("cites a finding by its review count in the full view, keeping numbered markers for each review's own points", async () => {
+    renderWith({
+      ...DATA,
+      claims: [...DATA.claims, { ...claim("focus_breathing", "negative", "有呼吸效应", ["a"]), details: [{ id: "b", text: "视频里明显" }] }],
+    } as LensReviewsView);
+    fireEvent.click(await screen.findByRole("button", { name: "expand(5)" }));
+    expect(screen.getByRole("button", { name: "reviewSources(1,aspects.focus_breathing)" })).toBeTruthy();
+    expect(screen.queryAllByRole("button", { name: /^marker\(/ })).toHaveLength(0);
+    fireEvent.click(screen.getByRole("button", { name: "showDetails(1)" }));
+    expect(screen.getAllByRole("button", { name: /^marker\(/ })).toHaveLength(1);
+  });
+
+  it("explains a technical aspect from its label", async () => {
+    renderWith({ ...DATA, claims: [...DATA.claims, claim("focus_breathing", "negative", "有呼吸效应", ["a"])] } as LensReviewsView);
+    fireEvent.click(await screen.findByRole("button", { name: "expand(5)" }));
+    fireEvent.click(screen.getByRole("button", { name: "aspects.focus_breathing" }));
+    expect(await screen.findByText("aspectHint.focus_breathing")).toBeTruthy();
   });
 
   it("leads with the overall verdict, labelled by how reviewers lean", async () => {

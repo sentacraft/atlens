@@ -275,11 +275,12 @@
     },
     "sources": {
       "title": "Sources",
-      "measured": "Measured",
+      "measured": "Lab-tested",
       "handsOn": "Hands-on",
       "readOriginal": "Read the original",
       "marker": "Source {number}: {site}",
-      "bodiesSeparator": ", "
+      "bodiesSeparator": ", ",
+      "testedOn": "Shot on {bodies}"
     },
     "responseFeedback": {
       "prompt": "Was this helpful?",
@@ -554,6 +555,13 @@
         "positive": "Highlight",
         "negative": "Worth knowing",
         "mixed": "Mixed"
+      },
+      "aspectHint": {
+        "field_curvature": "The plane of focus curves, so a flat subject can't be sharp in the centre and at the edges at once.",
+        "coma": "Point lights near the edge of the frame smear into little wings; it shows in night and astro shots.",
+        "astigmatism": "Point lights near the edge stretch into short lines, sharp in one direction but not the other.",
+        "focus_shift": "Focus moves when you stop down after focusing wide open.",
+        "focus_breathing": "The framing grows or shrinks slightly as focus distance changes; it is most visible in video."
       },
       "staleNote": "Some reviewers {causes}, so results may differ on your camera.",
       "staleCause": {

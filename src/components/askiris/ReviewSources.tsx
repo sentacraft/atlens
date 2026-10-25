@@ -2,10 +2,11 @@
 
 import { Popover } from "@base-ui/react/popover";
 import { ArrowUpRight } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { createContext, useContext, type ReactNode } from "react";
 import { MENU_POPUP_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
-import { sourceHref, type CitedSource, type Citations } from "@/lib/askiris/review-citations";
+import { publishedMonth, sourceHref, type CitedSource, type Citations } from "@/lib/askiris/review-citations";
+import { cn } from "@/lib/utils";
 
 const CitationsContext = createContext<Citations | undefined>(undefined);
 
@@ -14,27 +15,44 @@ export function CitationsProvider({ citations, children }: { citations: Citation
   return <CitationsContext.Provider value={citations}>{children}</CitationsContext.Provider>;
 }
 
-function useSourceMeta(): (source: CitedSource["source"], withKind: boolean) => string {
+/** How a source reads to a visitor: when it was published, how it tested, and on which bodies. */
+export function useSourceFacts(): (source: CitedSource["source"]) => { when?: string; how: string; bodies?: string } {
   const t = useTranslations("AskIris.sources");
-  return (source, withKind) =>
-    [
-      source.published,
-      withKind ? t(source.kind === "measured" ? "measured" : "handsOn") : undefined,
-      source.bodies?.join(t("bodiesSeparator")),
-    ]
-      .filter(Boolean)
-      .join(" · ");
+  const format = useFormatter();
+  return (source) => {
+    const month = source.published ? publishedMonth(source.published) : undefined;
+    return {
+      when: month ? format.dateTime(month, { year: "numeric", month: "long" }) : source.published,
+      how: t(source.kind === "measured" ? "measured" : "handsOn"),
+      bodies: source.bodies?.length ? t("testedOn", { bodies: source.bodies.join(t("bodiesSeparator")) }) : undefined,
+    };
+  };
+}
+
+/** A source's number as its markers show it, for lists and cards that name the source. */
+export function SourceNumber({ number, emphasis = false }: { number: number; emphasis?: boolean }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex min-w-4 shrink-0 items-center justify-center rounded px-1 text-[10px] leading-4 font-semibold",
+        emphasis ? "bg-zinc-900 text-white" : "bg-zinc-100 text-zinc-600",
+      )}
+    >
+      {number}
+    </span>
+  );
 }
 
 /** A citation marker: a superscript number that opens the source's card. Unknown keys render nothing. */
 export function SourceMarker({ sourceKey }: { sourceKey: string }) {
   const t = useTranslations("AskIris.sources");
-  const meta = useSourceMeta();
+  const facts = useSourceFacts();
   const cited = useContext(CitationsContext)?.byKey.get(sourceKey);
   if (!cited) {
     return null;
   }
   const href = sourceHref(cited.source);
+  const { when, how, bodies } = facts(cited.source);
   return (
     <Popover.Root>
       <Popover.Trigger
@@ -46,8 +64,12 @@ export function SourceMarker({ sourceKey }: { sourceKey: string }) {
       <Popover.Portal>
         <Popover.Positioner side="top" align="center" sideOffset={6} collisionPadding={12}>
           <Popover.Popup className={`${MENU_POPUP_CLS} flex w-64 flex-col gap-1 px-3 py-2.5`}>
-            <span className="text-sm font-semibold text-zinc-900">{cited.source.site}</span>
-            <span className="text-xs text-zinc-500">{meta(cited.source, true)}</span>
+            <span className="flex items-center gap-2 text-sm font-semibold text-zinc-900">
+              <SourceNumber number={cited.number} emphasis />
+              {cited.source.site}
+            </span>
+            <span className="text-xs text-zinc-500">{[when, how].filter(Boolean).join(" · ")}</span>
+            {bodies ? <span className="text-xs text-zinc-500">{bodies}</span> : null}
             {href ? (
               <a
                 href={href}
@@ -69,7 +91,7 @@ export function SourceMarker({ sourceKey }: { sourceKey: string }) {
 /** The sources a reply cited or fetched, numbered as its markers are. */
 export function SourceList({ list }: { list: CitedSource[] }) {
   const t = useTranslations("AskIris.sources");
-  const meta = useSourceMeta();
+  const facts = useSourceFacts();
   if (list.length === 0) {
     return null;
   }
@@ -79,6 +101,7 @@ export function SourceList({ list }: { list: CitedSource[] }) {
       <ol className="mt-1 flex flex-col gap-0.5 text-[11px] leading-4">
         {list.map(({ number, key, source }) => {
           const href = sourceHref(source);
+          const { when, bodies } = facts(source);
           return (
             <li key={key} className="flex min-h-5 items-baseline gap-1.5 sm:min-h-0">
               <span className="min-w-3.5 text-center font-semibold text-zinc-600">{number}</span>
@@ -89,7 +112,7 @@ export function SourceList({ list }: { list: CitedSource[] }) {
               ) : (
                 <span className="text-zinc-700">{source.site}</span>
               )}
-              <span className="text-zinc-500">{meta(source, false)}</span>
+              <span className="text-zinc-500">{[when, bodies].filter(Boolean).join(" · ")}</span>
             </li>
           );
         })}

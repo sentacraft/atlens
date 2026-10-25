@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { UIMessage } from "ai";
 import { parseChatLink } from "@/lib/askiris/inline-links";
-import { messageCitations, sourceHref } from "@/lib/askiris/review-citations";
+import { messageCitations, publishedMonth, sourceHref } from "@/lib/askiris/review-citations";
 
 const source = (id: string, url = `https://example.com/${id}`) => ({ id, url, site: `Site ${id}`, lang: "en", kind: "measured" as const });
 
@@ -90,5 +90,14 @@ describe("sourceHref", () => {
     expect(sourceHref(source("a"))).toBe("https://example.com/a");
     expect(sourceHref(source("b", "javascript:alert(1)"))).toBeUndefined();
     expect(sourceHref(source("c", "not a url"))).toBeUndefined();
+  });
+});
+
+describe("publishedMonth", () => {
+  it("reads a year-month or a full date as that month, and nothing else", () => {
+    expect(publishedMonth("2021-05")).toEqual(new Date(2021, 4, 1));
+    expect(publishedMonth("2024-11-03")).toEqual(new Date(2024, 10, 1));
+    expect(publishedMonth("2021")).toBeUndefined();
+    expect(publishedMonth("May 2021")).toBeUndefined();
   });
 });
