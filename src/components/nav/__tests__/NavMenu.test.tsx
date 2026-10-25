@@ -6,6 +6,9 @@ import NavMenu from "../NavMenu";
 
 const session = vi.hoisted(() => ({ current: { data: null as unknown } }));
 const sendVerificationOtp = vi.hoisted(() => vi.fn());
+const track = vi.hoisted(() => vi.fn());
+
+vi.mock("@/lib/analytics/analytics", () => ({ track }));
 
 vi.mock("@/lib/auth-client", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/auth-client")>()),
@@ -113,6 +116,19 @@ describe("NavMenu", () => {
     fireEvent.click(screen.getByRole("button", { name: "sendCode" }));
 
     expect(await screen.findByText("tooManyRequests")).toBeInTheDocument();
+  });
+
+  it("records opening the menu and the item picked in it", async () => {
+    session.current = { data: user(true) };
+
+    render(menu, { wrapper: SignInDialogProvider });
+    await openMenu();
+    fireEvent.click(screen.getByRole("menuitem", { name: "charts" }));
+
+    expect(track.mock.calls).toEqual([
+      ["nav_click", { item: "menu", place: "bar" }],
+      ["nav_click", { item: "charts", place: "menu" }],
+    ]);
   });
 
   it("shows the account's picture in the menu button", () => {

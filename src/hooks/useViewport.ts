@@ -1,21 +1,13 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
-
-type Breakpoint = "sm" | "md" | "lg" | "xl" | "2xl";
-
-function getMediaQuery(bp: Breakpoint): MediaQueryList | null {
-  const value = getComputedStyle(document.documentElement)
-    .getPropertyValue(`--breakpoint-${bp}`)
-    .trim();
-  return value ? window.matchMedia(`(min-width: ${value})`) : null;
-}
+import { breakpointQuery, matchesBreakpoint, type Breakpoint } from "@/lib/breakpoints";
 
 // A viewport check, not a device check: see useIsMobileDevice.
 export function useBreakpoint(bp: Breakpoint): boolean {
   const subscribe = useCallback(
     (onChange: () => void) => {
-      const mq = getMediaQuery(bp);
+      const mq = breakpointQuery(bp);
       if (!mq) {
         return () => {};
       }
@@ -25,7 +17,7 @@ export function useBreakpoint(bp: Breakpoint): boolean {
     [bp],
   );
 
-  const getSnapshot = useCallback(() => getMediaQuery(bp)?.matches ?? false, [bp]);
+  const getSnapshot = useCallback(() => matchesBreakpoint(bp), [bp]);
 
   return useSyncExternalStore(subscribe, getSnapshot, () => false);
 }
