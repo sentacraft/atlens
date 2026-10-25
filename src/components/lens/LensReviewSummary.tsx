@@ -4,7 +4,7 @@ import { Popover } from "@base-ui/react/popover";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight, CircleAlert, CircleCheck, Clock, MessagesSquare, type LucideProps } from "lucide-react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { CitationsProvider, SourceList, SourceMarker } from "@/components/askiris/ReviewSources";
 import {
   ACTION_PRIMARY_CLS,
@@ -264,6 +264,28 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
     }
   }, [autoOpen]);
   const open = expanded || autoOpen;
+  // Where the section's top sat on screen before the findings opened or closed. Chrome's scroll
+  // anchoring otherwise anchors on a node below the section and scrolls the page as the findings grow.
+  const pinnedTop = useRef<number | null>(null);
+  useLayoutEffect(() => {
+    const top = pinnedTop.current;
+    if (top === null) {
+      return;
+    }
+    pinnedTop.current = null;
+    const restore = () => {
+      const section = sectionRef.current;
+      if (section) {
+        window.scrollBy(0, section.getBoundingClientRect().top - top);
+      }
+    };
+    restore();
+    const frame = requestAnimationFrame(restore);
+    return () => cancelAnimationFrame(frame);
+  }, [open]);
+  const pinPlace = () => {
+    pinnedTop.current = sectionRef.current?.getBoundingClientRect().top ?? null;
+  };
   if (!data || !layout || !citations || layout.total === 0) {
     return null;
   }
@@ -295,8 +317,7 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
       id={REVIEWS_ANCHOR}
       aria-labelledby="lens-review-findings"
       data-nosnippet=""
-      // Without this, Chrome anchors on the tapped button and scrolls the expanded findings up out of view.
-      className={cn(PAGE_SECTION_CLS, ANCHORED_SECTION_CLS, "[overflow-anchor:none]")}
+      className={cn(PAGE_SECTION_CLS, ANCHORED_SECTION_CLS)}
     >
       <div className="flex flex-col gap-1">
         <h2 id="lens-review-findings" className={SECTION_HEADING_CLS}>{t("title")}</h2>
@@ -350,7 +371,14 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
           {total > layout.pros.length + layout.cons.length ? (
             <button
               type="button"
-              onClick={() => (open ? collapse() : setExpanded(true))}
+              onClick={() => {
+                pinPlace();
+                if (open) {
+                  collapse();
+                } else {
+                  setExpanded(true);
+                }
+              }}
               aria-expanded={open}
               className="min-h-11 shrink-0 rounded-lg border border-zinc-200 bg-white px-3 text-[13px] font-medium text-zinc-700 transition-colors hover:bg-zinc-50 sm:min-h-8"
             >
