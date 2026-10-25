@@ -310,7 +310,6 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
               <div key={group} className="flex flex-col">
                 <div className="flex items-baseline gap-1.5 border-b border-zinc-200 pb-2">
                   <h3 className="text-sm font-semibold text-zinc-900">{t(`groups.${group}`)}</h3>
-                  <span className="text-xs text-zinc-500">{t("count", { count: String(claims.length) })}</span>
                 </div>
                 <ul>
                   {claims.map((claim) => (

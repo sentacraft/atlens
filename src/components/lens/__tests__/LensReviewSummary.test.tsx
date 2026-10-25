@@ -97,6 +97,7 @@ describe("LensReviewSummary", () => {
     fireEvent.click(screen.getByRole("button", { name: "expand(4)" }));
     expect(screen.getByText("全开有暗角")).toBeTruthy();
     expect(screen.getByText("groups.image")).toBeTruthy();
+    expect(screen.queryByText(/^count\(/)).toBeNull();
   });
 
   it("lists the reviews behind a finding from its review count", async () => {
