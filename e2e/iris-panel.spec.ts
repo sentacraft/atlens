@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { LENS_CARD_LINK } from "./helpers";
+import { LENS_CARD_LINK, irisToggle } from "./helpers";
 
 test.describe("Ask Iris side panel", () => {
   test.beforeEach(({ page }, testInfo) => {
@@ -9,7 +9,7 @@ test.describe("Ask Iris side panel", () => {
 
   test("opens from the nav beside the page, follows navigation, and closes", async ({ page }) => {
     await page.goto("/en/lenses/x/browse");
-    const toggle = page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ });
+    const toggle = irisToggle(page);
     await toggle.click();
 
     const panel = page.getByRole("complementary", { name: "Iris" });
@@ -43,7 +43,7 @@ test.describe("Ask Iris side panel", () => {
 
   test("keeps the nav menu above the panel", async ({ page }) => {
     await page.goto("/en/lenses/x/browse");
-    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    await irisToggle(page).click();
     const panel = page.getByRole("complementary", { name: "Iris" });
     await expect(panel).toBeVisible();
 
@@ -62,7 +62,7 @@ test.describe("Ask Iris side panel", () => {
 
   test("opens History as a popover under its button, leaving the panel its width", async ({ page }) => {
     await page.goto("/en/lenses/x/browse");
-    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    await irisToggle(page).click();
     const panel = page.getByRole("complementary", { name: "Iris" });
     // The panel slides in; its left edge is only its own once the slide has finished.
     await expect.poll(() => panel.evaluate((aside) => aside.getAnimations().length)).toBe(0);
@@ -98,7 +98,7 @@ test.describe("Ask Iris side panel", () => {
     await expect(page.getByRole("heading", { level: 3 }).first()).toBeVisible();
     const [leftBefore] = await edges();
 
-    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    await irisToggle(page).click();
     const panel = page.getByRole("complementary", { name: "Iris" });
     await expect(panel).toBeVisible();
     await expect
@@ -112,7 +112,7 @@ test.describe("Ask Iris side panel", () => {
 
   test("collapses when a nav link is clicked, even one to the page it covers", async ({ page }) => {
     await page.goto("/en/lenses/x/browse");
-    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    await irisToggle(page).click();
     const panel = page.getByRole("complementary", { name: "Iris" });
     const panelLeft = () => panel.evaluate((aside) => aside.getBoundingClientRect().left);
     await panel.getByRole("button", { name: "Open full screen" }).click();
@@ -126,7 +126,7 @@ test.describe("Ask Iris side panel", () => {
   test("expands over the page in place, and Back or the button collapses it", async ({ page }) => {
     const browse = /\/en\/lenses\/x\/browse$/;
     await page.goto("/en/lenses/x/browse");
-    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    await irisToggle(page).click();
     const panel = page.getByRole("complementary", { name: "Iris" });
     const panelLeft = () => panel.evaluate((aside) => aside.getBoundingClientRect().left);
     await panel.getByRole("textbox").fill("Which one for travel?");
@@ -172,7 +172,7 @@ test.describe("Ask Iris page entries", () => {
 
     await page.goto(lensUrl);
     await expect(page.getByTestId("lens-detail-actions").getByRole("button")).toHaveCount(4);
-    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    await irisToggle(page).click();
 
     const sheet = page.getByRole("dialog", { name: "Iris" });
     const starters = sheet.getByRole("button", { name: /\?$/ });
@@ -186,7 +186,7 @@ test.describe("Ask Iris page entries", () => {
     testInfo.skip(!viewport || viewport.width >= 1024, "Narrow screens use the bottom sheet");
 
     await page.goto("/en/lenses/x/browse");
-    await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+    await irisToggle(page).click();
     const sheet = page.getByRole("dialog", { name: "Iris" });
     const sheetTop = () => sheet.evaluate((popup) => popup.getBoundingClientRect().top);
     await expect.poll(sheetTop).toBeGreaterThan(40);
@@ -210,7 +210,7 @@ test.describe("Ask Iris panel empty state", () => {
       await page.setViewportSize(viewport);
       // The home page gives Iris no page context, so the panel opens on its plain empty state.
       await page.goto("/en");
-      await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+      await irisToggle(page).click();
 
       const panel = page.getByRole(role, { name: "Iris" });
       await expect(panel.getByRole("heading", { level: 1 })).toBeVisible();
@@ -228,7 +228,7 @@ test.describe("Ask Iris panel empty state", () => {
     testInfo.skip(testInfo.project.name !== "chromium", "Sets its own viewport");
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto("/en");
-    const toggle = page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ });
+    const toggle = irisToggle(page);
     await toggle.click();
     const sheet = page.getByRole("dialog", { name: "Iris" });
     const hero = sheet.getByTestId("iris");

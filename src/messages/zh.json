@@ -32,6 +32,8 @@
     "getApp": "获取应用",
     "feedback": "反馈",
     "menu": "菜单",
+    "me": "我的",
+    "tabBar": "主导航",
     "signInHint": "收藏镜头、保存器材、同步对话"
   },
   "Auth": {
@@ -420,6 +422,7 @@
     "viewCompare": "查看",
     "goCompare": "查看对比（{count, number}）",
     "clearCompare": "清空",
+    "compareSelected": "已选 {count, number} 支",
     "compareShort": "对比",
     "compared": "已对比",
     "resultsCount": "<b>{count, number}</b> 支镜头",

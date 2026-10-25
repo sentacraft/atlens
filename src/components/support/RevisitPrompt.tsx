@@ -119,7 +119,7 @@ export default function RevisitPrompt() {
       aria-labelledby="revisit-prompt-title"
       className={cn(
         "fixed flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-lg",
-        "inset-x-3 bottom-[calc(var(--compare-bar-height,0px)+var(--safe-inset-bottom)+0.75rem)]",
+        "inset-x-3 bottom-[calc(var(--compare-bar-height,0px)+var(--page-bottom-inset)+0.75rem)]",
         "sm:inset-x-auto sm:right-[calc(var(--iris-panel-width,0px)+1.5rem)] sm:bottom-[calc(var(--compare-bar-height,0px)+1.5rem)] sm:w-90",
         "animate-in fade-in-0 slide-in-from-bottom-2 duration-300 motion-reduce:animate-none",
         Z.fixed,

@@ -52,7 +52,8 @@ const SECTION_CLS = "flex scroll-mt-[calc(var(--nav-height)+72px)] flex-col gap-
 const SECTION_TITLE_CLS = "font-heading text-xl font-bold text-zinc-900";
 const SECTION_SUB_CLS = "mt-0.5 text-[13px] leading-5 text-zinc-500 md:mt-1";
 
-export default function ProfilePage({ lenses }: { lenses: LensSummary[] }) {
+/** `compareBar` shows only with the account, the one state with compare buttons (on favorites). */
+export default function ProfilePage({ lenses, compareBar }: { lenses: LensSummary[]; compareBar: ReactNode }) {
   const { data: session, isPending } = authClient.useSession();
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
@@ -64,7 +65,12 @@ export default function ProfilePage({ lenses }: { lenses: LensSummary[] }) {
   if (!user) {
     return <SignInPrompt />;
   }
-  return <Profile user={user} lenses={lenses} />;
+  return (
+    <>
+      <Profile user={user} lenses={lenses} />
+      {compareBar}
+    </>
+  );
 }
 
 function SignInPrompt() {
@@ -117,7 +123,7 @@ function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] })
   }, [gearFetched, favoritesFetched, scrollTo]);
 
   return (
-    <div className={`mx-auto flex w-full max-w-[1040px] gap-12 pt-6 pb-12 md:pt-10 md:pb-16 ${PAGE_GUTTER_CLS}`}>
+    <div className={`mx-auto flex w-full max-w-[1040px] gap-12 pt-6 pb-[max(3rem,calc(var(--compare-bar-height,0px)+2rem))] md:pt-10 md:pb-[max(4rem,calc(var(--compare-bar-height,0px)+2rem))] ${PAGE_GUTTER_CLS}`}>
       <nav
         aria-label={t("sectionsLabel")}
         className="sticky top-[calc(var(--nav-height)+40px)] mt-[104px] hidden w-[168px] shrink-0 flex-col gap-0.5 self-start md:flex"

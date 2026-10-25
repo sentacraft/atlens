@@ -72,7 +72,7 @@ style strings across components. Inline only genuinely one-off local styles.
 A dialog with something to fill in or pick puts its Cancel in `DialogCancel`, which phone drawers
 leave out (they close by swipe or the backdrop); a yes-or-no confirmation keeps its Cancel.
 
-The Atlens design system (https://claude.ai/artifact/4HmVRpfNHU5zsrhynoCceH) mirrors the theme,
+The Atlens design system (https://claude.ai/artifact/B71r29pU5DfmVSWxybdApP) mirrors the theme,
 fonts, `ui-tokens.ts` and a set of components; `scripts/hooks/ui-token-review.mjs` lists those
 files. It is re-synced on demand, not per change: a PR that alters how any of them looks says
 which part of the design system it affects. Before building mockups on it, diff those files

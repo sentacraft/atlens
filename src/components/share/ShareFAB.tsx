@@ -29,7 +29,7 @@ export default function ShareFAB({ lenses, presetTitle, presetSubtitle }: Props)
     <div
       data-visible={show}
       aria-hidden={!show}
-      style={{ bottom: `calc(1.5rem + var(--compare-bar-height, 0px))` }}
+      style={{ bottom: `calc(1.5rem + var(--compare-bar-height, 0px) + var(--tab-bar-height))` }}
       className={`fixed right-6 ${Z.fixed} opacity-0 scale-[0.8] pointer-events-none transition-[opacity,transform] duration-200 ease-out motion-reduce:transition-none data-[visible=true]:opacity-100 data-[visible=true]:scale-100 data-[visible=true]:pointer-events-auto`}
       data-testid="share-fab"
     >

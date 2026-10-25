@@ -30,7 +30,7 @@ function isUiFile(relative) {
 }
 
 // Files the design system artifact mirrors; keep in sync with its component list.
-const DESIGN_SYSTEM_URL = "https://claude.ai/artifact/4HmVRpfNHU5zsrhynoCceH";
+const DESIGN_SYSTEM_URL = "https://claude.ai/artifact/B71r29pU5DfmVSWxybdApP";
 const DESIGN_SOURCES = new Set([
   "src/app/theme.css",
   "src/app/globals.css",

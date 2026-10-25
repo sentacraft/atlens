@@ -35,7 +35,7 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-const menu = <NavMenu compareHref="/lenses/x/compare" chartsHref="/lenses/x/charts" onCompareClick={vi.fn()} showGetApp onFeedback={vi.fn()} />;
+const menu = <NavMenu showGetApp onFeedback={vi.fn()} />;
 
 async function openMenu() {
   fireEvent.click(screen.getByRole("button", { name: "menu" }));
@@ -123,12 +123,22 @@ describe("NavMenu", () => {
 
     render(menu, { wrapper: SignInDialogProvider });
     await openMenu();
-    fireEvent.click(screen.getByRole("menuitem", { name: "charts" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "about" }));
 
     expect(track.mock.calls).toEqual([
       ["nav_click", { item: "menu", place: "bar" }],
-      ["nav_click", { item: "charts", place: "menu" }],
+      ["nav_click", { item: "about", place: "menu" }],
     ]);
+  });
+
+  it("leaves the site's sections to the header and the tab bar", async () => {
+    session.current = { data: user(true) };
+
+    render(menu, { wrapper: SignInDialogProvider });
+    await openMenu();
+
+    expect(screen.queryByRole("menuitem", { name: "compare" })).toBeNull();
+    expect(screen.queryByRole("menuitem", { name: "charts" })).toBeNull();
   });
 
   it("shows the account's picture in the menu button", () => {

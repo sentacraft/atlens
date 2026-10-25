@@ -56,7 +56,7 @@ type MessageSource = { method: "typed" | "handoff" } | { method: "starter"; pool
 const TOP_BAR_BTN_CLS = cn(ICON_NAV_BTN_CLS, "h-9 gap-1.5 px-2.5 text-sm");
 
 const SHELL_CLS = {
-  page: "mx-auto flex h-[calc(var(--app-height)-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4",
+  page: "mx-auto flex h-[calc(var(--app-height)-var(--nav-height)-var(--page-bottom-inset))] w-full max-w-[800px] flex-col px-4",
   panel: "flex h-full w-full flex-col px-4",
   expandedPanel: "mx-auto flex h-full w-full max-w-[800px] flex-col px-4",
 };

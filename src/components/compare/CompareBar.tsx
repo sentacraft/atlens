@@ -30,8 +30,9 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
   const search = useCompareLensSearch();
   const clearCompareWithUndo = useClearCompareWithUndo();
 
+  const mountLenses = allLenses.filter((lens) => lens.mount === mount);
   const selectedLenses = compareIds
-    .map((id) => allLenses.find((l) => l.id === id))
+    .map((id) => mountLenses.find((l) => l.id === id))
     .filter((lens) => lens !== undefined);
 
   const chipsRef = useRef<HTMLDivElement>(null);
@@ -71,13 +72,16 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
           transition={spring.snappy}
           ref={barRef}
           data-testid="compare-bar"
-          className={`fixed bottom-0 left-0 right-[var(--iris-panel-width,0px)] pl-[var(--iris-page-start,0px)] transition-[right,padding] duration-300 ease-out motion-reduce:transition-none ${Z.fixed} border-t border-zinc-200 bg-white/95 backdrop-blur-sm pb-[var(--safe-inset-bottom)]`}
+          className={`fixed bottom-[var(--tab-bar-height)] left-0 right-[var(--iris-panel-width,0px)] pl-[var(--iris-page-start,0px)] transition-[right,padding] duration-300 ease-out motion-reduce:transition-none ${Z.fixed} border-t border-zinc-200 bg-white/95 backdrop-blur-sm pb-[var(--safe-inset-bottom)] max-sm:pb-0`}
         >
-          <div className={`mx-auto flex max-w-7xl flex-col gap-3 py-3 sm:flex-row sm:items-center sm:gap-4 ${PAGE_GUTTER_CLS}`}>
+          <div className={`mx-auto flex max-w-7xl items-center gap-3 py-2.5 sm:gap-4 sm:py-3 ${PAGE_GUTTER_CLS}`}>
+            <p className="min-w-0 flex-1 truncate text-sm font-medium text-zinc-900 sm:hidden">
+              {t("compareSelected", { count: selectedLenses.length })}
+            </p>
             <HorizontalScrollRail
               scrollRef={chipsRef}
-              className="min-w-0 flex-1 px-5 sm:px-0 gap-2 pb-1 sm:pb-0"
-              wrapperClassName="flex min-w-0 flex-1 -mx-5 sm:mx-0"
+              className="min-w-0 flex-1 gap-2"
+              wrapperClassName="hidden min-w-0 flex-1 sm:flex"
               fadeBg="from-white"
               deps={[compareIds.length]}
               renderOverlay={({ canScrollLeft, canScrollRight }) => (
@@ -138,7 +142,7 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
                 })}
               </AnimatePresence>
             </HorizontalScrollRail>
-            <div className="flex items-center justify-end gap-3 sm:shrink-0">
+            <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
               <button
                 onClick={clearCompareWithUndo}
                 className="shrink-0 inline-flex h-9 items-center text-sm font-medium px-3 rounded-xl text-zinc-500 hover:bg-zinc-100/70 hover:text-zinc-800 transition-colors"
@@ -153,7 +157,7 @@ export default function CompareBar({ allLenses }: { allLenses: Lens[] }) {
               >
                 <Plus className="h-4 w-4" />
               </button>
-              <LensSearchDialog {...search.dialogProps} lenses={allLenses} />
+              <LensSearchDialog {...search.dialogProps} lenses={mountLenses} />
               <button
                 onClick={handleCompare}
                 className={`shrink-0 inline-flex h-9 items-center text-sm font-medium px-4 rounded-xl ${ACTION_PRIMARY_CLS}`}

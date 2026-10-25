@@ -76,7 +76,7 @@ A lens shown as an item to browse gets favorite and compare from `LensActions`, 
 matches how the lens is shown (its own panel, one card or row among many, a chart tile). Don't build
 these buttons anywhere else; `e2e/lens-actions.spec.ts` checks that list pages carry both.
 
-The Atlens design system (https://claude.ai/artifact/4HmVRpfNHU5zsrhynoCceH) mirrors the theme,
+The Atlens design system (https://claude.ai/artifact/B71r29pU5DfmVSWxybdApP) mirrors the theme,
 fonts, `ui-tokens.ts` and a set of components; `scripts/hooks/ui-token-review.mjs` lists those
 files. It is re-synced on demand, not per change: a PR that alters how any of them looks says
 which part of the design system it affects. Before building mockups on it, diff those files
