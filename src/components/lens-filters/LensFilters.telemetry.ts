@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useEffectEvent, useRef } from "react";
 import { defaultFilters, type FilterState } from "@/lib/lens/lens";
 import { track } from "@/lib/analytics/analytics";
 
-// Skips the initial mount, which would emit a phantom filter_reset.
+// Compares with the last recorded filters instead of skipping the first render: Strict Mode runs
+// the effect twice on mount, and a skip-once ref then recorded a phantom filter_reset.
 export function useFiltersTelemetry(filters: FilterState) {
-  const firstRenderRef = useRef(true);
-  useEffect(() => {
-    if (firstRenderRef.current) {
-      firstRenderRef.current = false;
-      return;
-    }
+  const key = JSON.stringify({ ...filters, sort: undefined, sortDir: undefined });
+  const recordedRef = useRef(key);
+
+  const record = useEffectEvent(() => {
+    recordedRef.current = key;
     const isEmpty =
       filters.brands.length === 0 &&
       filters.focalCategories.length === 0 &&
@@ -21,13 +21,18 @@ export function useFiltersTelemetry(filters: FilterState) {
       filters.usage === defaultFilters.usage &&
       filters.opticalTrait === null &&
       filters.focusMotorClass === null;
-    const timer = setTimeout(() => {
-      if (isEmpty) {
-        track("filter_reset");
-      } else {
-        track("filter_apply", { filters_json: JSON.stringify(filters) });
-      }
-    }, 1000);
+    if (isEmpty) {
+      track("filter_reset");
+    } else {
+      track("filter_apply", { filters_json: JSON.stringify(filters) });
+    }
+  });
+
+  useEffect(() => {
+    if (key === recordedRef.current) {
+      return;
+    }
+    const timer = setTimeout(record, 1000);
     return () => clearTimeout(timer);
-  }, [filters]);
+  }, [key]);
 }

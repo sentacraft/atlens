@@ -2,7 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { track } from "../analytics";
 
-const sendBeacon = vi.fn((_url: string, _body: Blob) => true);
+const sendBeacon = vi.fn<(url: string, body: Blob) => boolean>(() => true);
 
 function setWidth(width: number) {
   vi.stubGlobal("matchMedia", (query: string) => ({
