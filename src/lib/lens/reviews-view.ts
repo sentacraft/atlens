@@ -87,6 +87,7 @@ export const REVIEW_GROUPS = {
 export type ReviewGroup = keyof typeof REVIEW_GROUPS;
 
 const COLLAPSED_PER_SIDE = 4;
+const GUEST_PER_SIDE = 2;
 const HIDDEN_ASPECTS_NAMED = 3;
 
 // Within a group, findings more reviews agree on come first; ties keep the group's aspect order.
@@ -137,12 +138,13 @@ export function layoutReviews(view: LensReviewsView): ReviewLayout {
   };
 }
 
-/** What a guest gets: the collapsed findings without their details, and only the sources those cite. */
+/** What a guest gets: the overall verdict and the top two strengths and weaknesses without their details, and only the sources those cite. */
 export function previewReviews(view: LensReviewsView): LensReviewsView {
   const layout = layoutReviews(view);
-  const claims = [...(layout.overall ? [layout.overall] : []), ...layout.pros, ...layout.cons].map((claim) => ({ ...claim, details: [] }));
+  const sample = [...layout.pros.slice(0, GUEST_PER_SIDE), ...layout.cons.slice(0, GUEST_PER_SIDE)];
+  const claims = [...(layout.overall ? [layout.overall] : []), ...sample].map((claim) => ({ ...claim, details: [] }));
   const cited = new Set(claims.flatMap((claim) => claim.sources));
-  const shown = new Set([...layout.pros, ...layout.cons]);
+  const shown = new Set(sample);
   const allAspects = Object.values(REVIEW_GROUPS).flat() as ReviewAspect[];
   const hidden = layout.groups
     .flatMap(({ claims }) => claims)

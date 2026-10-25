@@ -112,8 +112,8 @@ describe("previewReviews", () => {
   const full = toLensReviewsView(row, "en");
   const preview = previewReviews(full);
 
-  it("keeps the summary and the collapsed strengths and weaknesses, without their details", () => {
-    expect(preview.claims.map((c) => c.aspect)).toEqual(["overall", "resolution_center", "bokeh", "flare", "color", "autofocus"]);
+  it("keeps the overall verdict and the top two strengths and weaknesses, without their details", () => {
+    expect(preview.claims.map((c) => c.aspect)).toEqual(["overall", "resolution_center", "bokeh", "autofocus"]);
     expect(preview.claims.every((c) => c.details.length === 0)).toBe(true);
   });
 
@@ -126,7 +126,7 @@ describe("previewReviews", () => {
       total: 9,
       sourceCount: 6,
       disputed: ["manual_focus"],
-      hiddenAspects: ["manual_focus", "vignetting", "sunstar"],
+      hiddenAspects: ["manual_focus", "flare", "vignetting"],
     });
     expect(full.locked).toBeUndefined();
   });

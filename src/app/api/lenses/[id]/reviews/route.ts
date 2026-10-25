@@ -9,7 +9,7 @@ import { isRateLimited, rateLimitedResponse } from "@/lib/rate-limit";
 
 const NO_REVIEWS: LensReviewsView = { sources: [], claims: [] };
 
-/** Review findings for one catalogue lens, in the requested locale; empty when it has none. Public; a guest gets only the collapsed findings; 400 for a bad locale, 404 for an unknown lens, 429 past the per-IP rate, 503 without the review store. */
+/** Review findings for one catalogue lens, in the requested locale; empty when it has none. Public; a guest gets the overall verdict and the top two strengths and weaknesses; 400 for a bad locale, 404 for an unknown lens, 429 past the per-IP rate, 503 without the review store. */
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }): Promise<NextResponse> {
   const { id } = await params;
   const locale = new URL(request.url).searchParams.get("locale");
