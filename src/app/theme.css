@@ -76,7 +76,7 @@
 
 @media (width < 40rem) {
   :root {
-    --tab-bar-height: calc(3.5rem + var(--safe-inset-bottom));
+    --tab-bar-height: calc(3.75rem + var(--safe-inset-bottom));
   }
 }
 

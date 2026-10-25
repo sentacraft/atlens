@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 
 function itemCls(current: boolean) {
   return cn(
-    "flex flex-col items-center justify-center gap-0.5 text-[11px] transition-colors",
+    "flex flex-col items-center justify-center gap-1 text-[11px] leading-none transition-colors",
     current ? "font-semibold text-zinc-900" : "font-medium text-zinc-500 hover:text-zinc-900",
   );
 }
@@ -45,7 +45,7 @@ export default function TabBar() {
         onClick={() => trackTab("lenses")}
         className={itemCls(section === "lenses")}
       >
-        <LayoutGrid className="size-[22px]" aria-hidden="true" />
+        <LayoutGrid className="size-5" aria-hidden="true" />
         {t("lenses")}
       </Link>
       <Link
@@ -54,7 +54,7 @@ export default function TabBar() {
         onClick={() => trackTab("charts")}
         className={itemCls(section === "charts")}
       >
-        <ChartColumn className="size-[22px]" aria-hidden="true" />
+        <ChartColumn className="size-5" aria-hidden="true" />
         {t("charts")}
       </Link>
       <button
@@ -71,7 +71,7 @@ export default function TabBar() {
         className={itemCls(irisCurrent)}
       >
         <span className="relative flex">
-          <Iris config={IRIS_NAV} uid="tab-bar" size={22} />
+          <Iris config={IRIS_NAV} uid="tab-bar" size={20} />
           <AiTag className="absolute -top-1.5 -right-5 ring-2 ring-white" />
         </span>
         {t("askIris")}
@@ -82,7 +82,7 @@ export default function TabBar() {
         onClick={() => trackTab("profile")}
         className={itemCls(section === "me")}
       >
-        <UserRound className="size-[22px]" aria-hidden="true" />
+        <UserRound className="size-5" aria-hidden="true" />
         {t("me")}
       </Link>
     </nav>

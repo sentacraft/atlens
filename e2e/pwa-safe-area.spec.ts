@@ -58,7 +58,7 @@ test.describe("Compare phantom header top inset", () => {
   });
 });
 
-const TAB_BAR = 56; // the phone tab bar above the home indicator
+const TAB_BAR = 60; // the phone tab bar above the home indicator
 
 test.describe("Tab bar and compare bar bottom inset", () => {
   test.beforeEach(async ({ page }) => {
