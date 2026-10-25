@@ -92,6 +92,10 @@ export default function Nav() {
   const isBrowseActive = pathname.startsWith("/lenses") && !isCompareActive && !isChartsActive;
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
 
+  function trackBar(item: string) {
+    track("nav_click", { item, place: "bar" });
+  }
+
   function handleCompareLinkClick(e: React.MouseEvent) {
     if (!isCompareActive || compareIds.length === 0) {
       return;
@@ -117,6 +121,7 @@ export default function Nav() {
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           <Link
             href="/"
+            onClick={() => trackBar("home")}
             className="flex items-center gap-1.5 font-bold font-heading text-zinc-900 text-base sm:text-lg tracking-tight whitespace-nowrap"
             aria-label="Home"
           >
@@ -132,17 +137,20 @@ export default function Nav() {
         </div>
 
         <div className="flex items-center gap-1 sm:gap-2">
-          <Link href={browseHref} className={cn(linkCls(isBrowseActive), "whitespace-nowrap")}>
+          <Link href={browseHref} onClick={() => trackBar("lenses")} className={cn(linkCls(isBrowseActive), "whitespace-nowrap")}>
             {t("lenses")}
           </Link>
           <Link
             href={compareHref}
-            onClick={handleCompareLinkClick}
+            onClick={(e) => {
+              trackBar("compare");
+              handleCompareLinkClick(e);
+            }}
             className={cn(linkCls(isCompareActive), "hidden whitespace-nowrap sm:inline")}
           >
             {t("compare")}
           </Link>
-          <Link href={chartsHref} className={cn(linkCls(isChartsActive), "hidden whitespace-nowrap sm:inline")}>
+          <Link href={chartsHref} onClick={() => trackBar("charts")} className={cn(linkCls(isChartsActive), "hidden whitespace-nowrap sm:inline")}>
             {t("charts")}
           </Link>
           <a
@@ -150,6 +158,7 @@ export default function Nav() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t("starOnGitHub")}
+            onClick={() => trackBar("github")}
             className={cn(linkCls(false), "hidden items-center gap-1.5 whitespace-nowrap sm:inline-flex")}
           >
             <GitHubMark size={15} />
@@ -159,7 +168,14 @@ export default function Nav() {
           <button
             type="button"
             aria-pressed={irisShown}
-            onClick={() => (irisShown ? closeIris() : openIris({ from: "nav" }))}
+            onClick={() => {
+              trackBar("iris");
+              if (irisShown) {
+                closeIris();
+              } else {
+                openIris({ from: "nav" });
+              }
+            }}
             className={cn(
               // The ::after widens the hit area to 44px tall on phones without growing the button.
               "relative mr-1.5 inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 text-[13px] font-medium text-zinc-900 transition-colors after:absolute after:inset-x-0 after:-inset-y-1.5",

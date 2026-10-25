@@ -12,9 +12,14 @@ import { useSupportDialog } from "@/context/SupportDialogProvider";
 import Avatar from "@/components/auth/Avatar";
 import GitHubMark from "@/components/logos/GitHubMark";
 import { SITE } from "@/config/site";
+import { track } from "@/lib/analytics/analytics";
 import { ABOUT_PATH, GET_APP_PATH, PROFILE_PATH } from "@/lib/url/routes";
 
 const SEPARATOR_CLS = "my-1 h-px bg-zinc-200";
+
+function trackMenu(item: string) {
+  track("nav_click", { item, place: "menu" });
+}
 
 /** The nav's one menu: the account, the pages the bar has no room for, and feedback. */
 export default function NavMenu({
@@ -38,7 +43,13 @@ export default function NavMenu({
   const user = accountUser(session);
 
   return (
-    <Menu.Root>
+    <Menu.Root
+      onOpenChange={(open) => {
+        if (open) {
+          track("nav_click", { item: "menu", place: "bar" });
+        }
+      }}
+    >
       <Menu.Trigger aria-label={tNav("menu")} className={NAV_CAPSULE_CLS}>
         <MenuIcon className="h-4 w-4 text-zinc-600" />
         {user ? (
@@ -63,7 +74,7 @@ export default function NavMenu({
                     <p className="truncate text-xs text-zinc-500">{user.email}</p>
                   </div>
                 </div>
-                <Menu.Item render={<Link href={PROFILE_PATH} />} className={MENU_ITEM_CLS}>
+                <Menu.Item render={<Link href={PROFILE_PATH} />} onClick={() => trackMenu("profile")} className={MENU_ITEM_CLS}>
                   <UserRound className="h-4 w-4 shrink-0" />
                   {t("profile")}
                 </Menu.Item>
@@ -71,7 +82,13 @@ export default function NavMenu({
               </>
             ) : (
               <>
-                <Menu.Item onClick={() => openSignIn("account_menu")} className={cn(MENU_ITEM_CLS, "items-start")}>
+                <Menu.Item
+                  onClick={() => {
+                    trackMenu("sign_in");
+                    openSignIn("account_menu");
+                  }}
+                  className={cn(MENU_ITEM_CLS, "items-start")}
+                >
                   <LogIn className="mt-0.5 h-4 w-4 shrink-0" />
                   <span className="flex flex-col gap-0.5">
                     <span className="font-medium text-zinc-900">{t("login")}</span>
@@ -81,34 +98,54 @@ export default function NavMenu({
                 <Menu.Separator className={SEPARATOR_CLS} />
               </>
             )}
-            <Menu.Item render={<Link href={compareHref} />} onClick={onCompareClick} className={cn(MENU_ITEM_CLS, "sm:hidden")}>
+            <Menu.Item
+              render={<Link href={compareHref} />}
+              onClick={(e) => {
+                trackMenu("compare");
+                onCompareClick(e);
+              }}
+              className={cn(MENU_ITEM_CLS, "sm:hidden")}
+            >
               <Columns2 className="h-4 w-4 shrink-0" />
               {tNav("compare")}
             </Menu.Item>
-            <Menu.Item render={<Link href={chartsHref} />} className={cn(MENU_ITEM_CLS, "sm:hidden")}>
+            <Menu.Item render={<Link href={chartsHref} />} onClick={() => trackMenu("charts")} className={cn(MENU_ITEM_CLS, "sm:hidden")}>
               <ChartColumn className="h-4 w-4 shrink-0" />
               {tNav("charts")}
             </Menu.Item>
-            <Menu.Item render={<Link href={ABOUT_PATH} />} className={MENU_ITEM_CLS}>
+            <Menu.Item render={<Link href={ABOUT_PATH} />} onClick={() => trackMenu("about")} className={MENU_ITEM_CLS}>
               <Info className="h-4 w-4 shrink-0" />
               {tNav("about")}
             </Menu.Item>
-            <Menu.Item onClick={() => openSupport("menu")} className={MENU_ITEM_CLS}>
+            <Menu.Item
+              onClick={() => {
+                trackMenu("support");
+                openSupport("menu");
+              }}
+              className={MENU_ITEM_CLS}
+            >
               <Heart className="h-4 w-4 shrink-0" />
               {tNav("support")}
             </Menu.Item>
             {showGetApp && (
-              <Menu.Item render={<Link href={GET_APP_PATH} />} className={MENU_ITEM_CLS}>
+              <Menu.Item render={<Link href={GET_APP_PATH} />} onClick={() => trackMenu("get_app")} className={MENU_ITEM_CLS}>
                 <Download className="h-4 w-4 shrink-0" />
                 {tNav("getApp")}
               </Menu.Item>
             )}
-            <Menu.Item onClick={onFeedback} className={MENU_ITEM_CLS}>
+            <Menu.Item
+              onClick={() => {
+                trackMenu("feedback");
+                onFeedback();
+              }}
+              className={MENU_ITEM_CLS}
+            >
               <Flag className="h-4 w-4 shrink-0" />
               {tNav("feedback")}
             </Menu.Item>
             <Menu.Item
               render={<a href={SITE.repoUrl} target="_blank" rel="noopener noreferrer" />}
+              onClick={() => trackMenu("github")}
               className={cn(MENU_ITEM_CLS, "sm:hidden")}
             >
               <GitHubMark size={16} className="shrink-0" />
@@ -117,7 +154,13 @@ export default function NavMenu({
             {user && (
               <>
                 <Menu.Separator className={SEPARATOR_CLS} />
-                <Menu.Item onClick={() => authClient.signOut()} className={MENU_ITEM_CLS}>
+                <Menu.Item
+                  onClick={() => {
+                    trackMenu("sign_out");
+                    void authClient.signOut();
+                  }}
+                  className={MENU_ITEM_CLS}
+                >
                   <LogOut className="h-4 w-4 shrink-0" />
                   {t("logout")}
                 </Menu.Item>

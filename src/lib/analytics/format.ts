@@ -75,6 +75,33 @@ export function formatFilterSnapshot(json: string): string {
   return parts.length > 0 ? parts.join(" · ") : "(no filters)";
 }
 
+/** The most-used filter combinations, merging rows that show the same filters in different recorded shapes. */
+export function topFilterSnapshots(
+  rows: Array<{ filters_json?: unknown; n?: unknown }>,
+  limit: number,
+): Array<{ display: string; filters_json: string; n: number }> {
+  const merged = new Map<string, { display: string; filters_json: string; n: number; largest: number }>();
+  for (const row of rows) {
+    const json = String(row.filters_json ?? "");
+    const n = typeof row.n === "number" ? row.n : Number(row.n) || 0;
+    const display = formatFilterSnapshot(json);
+    const entry = merged.get(display);
+    if (!entry) {
+      merged.set(display, { display, filters_json: json, n, largest: n });
+    } else {
+      entry.n += n;
+      if (n > entry.largest) {
+        entry.filters_json = json;
+        entry.largest = n;
+      }
+    }
+  }
+  return [...merged.values()]
+    .sort((a, b) => b.n - a.n)
+    .slice(0, limit)
+    .map(({ display, filters_json, n }) => ({ display, filters_json, n }));
+}
+
 // Order is the tie-break.
 const FILTER_DIMENSIONS: {
   label: string;

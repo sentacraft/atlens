@@ -161,6 +161,15 @@ export const defaultFilters: FilterState = {
   sortDir: "asc",
 };
 
+/** The fields that differ from defaultFilters. */
+export function changedFilters(filters: FilterState): Partial<FilterState> {
+  return Object.fromEntries(
+    Object.entries(filters).filter(
+      ([key, value]) => JSON.stringify(value) !== JSON.stringify(defaultFilters[key as keyof FilterState]),
+    ),
+  );
+}
+
 export function filterLenses(lenses: Lens[], filters: FilterState): Lens[] {
   return lenses.filter((lens) => {
     if (filters.brands.length > 0 && !filters.brands.includes(lens.brand)) {

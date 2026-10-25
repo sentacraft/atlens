@@ -1,5 +1,6 @@
 "use client";
 
+import { matchesBreakpoint } from "@/lib/breakpoints";
 import type { EventName, EventProps, TrackPayload } from "@/lib/analytics/events";
 
 const ENDPOINT = "/api/track";
@@ -13,7 +14,7 @@ export function track<E extends EventName>(event: E, props?: EventProps<E>): voi
     event,
     locale: document.documentElement.lang || undefined,
     path: window.location.pathname,
-    props,
+    props: { ...props, viewport: viewport() },
   };
   const body = JSON.stringify(payload);
 
@@ -31,4 +32,11 @@ export function track<E extends EventName>(event: E, props?: EventProps<E>): voi
     }).catch(() => {});
   } catch {
   }
+}
+
+function viewport(): "phone" | "tablet" | "desktop" {
+  if (matchesBreakpoint("lg")) {
+    return "desktop";
+  }
+  return matchesBreakpoint("sm") ? "tablet" : "phone";
 }

@@ -3,7 +3,10 @@ import { z } from "zod";
 type FieldKind = "string" | "number" | "boolean";
 type FieldValue = { string: string; number: number; boolean: boolean };
 
-/** The props each event may carry; anything else is dropped before it is stored. */
+/** Props `track` adds to every client event; callers don't pass them. */
+const COMMON_FIELDS = { viewport: "string" } as const satisfies Record<string, FieldKind>;
+
+/** The props each event may carry, besides the common ones; anything else is dropped before it is stored. */
 const EVENT_FIELDS = {
   search: { query: "string", results_count: "number" },
   filter_apply: { filters_json: "string" },
@@ -32,6 +35,7 @@ const EVENT_FIELDS = {
   sign_in_submit: { method: "string" },
   support_open: { entry: "string" },
   support_prompt: { prompt: "string", action: "string" },
+  nav_click: { item: "string", place: "string" },
 } as const satisfies Record<string, Record<string, FieldKind>>;
 
 export type EventName = keyof typeof EVENT_FIELDS;
@@ -60,7 +64,7 @@ const PROPS_SCHEMAS = Object.fromEntries(
     event,
     z.object(
       Object.fromEntries(
-        Object.entries(fields as Record<string, FieldKind>).map(([key, kind]) => [key, FIELD_SCHEMAS[kind]]),
+        Object.entries({ ...COMMON_FIELDS, ...(fields as Record<string, FieldKind>) }).map(([key, kind]) => [key, FIELD_SCHEMAS[kind]]),
       ),
     ),
   ]),
@@ -141,6 +145,18 @@ const MOUNT_VALUES: Record<string, ValueDoc> = {
   G: { label: "GF mount", description: "Fujifilm G (medium format)" },
 };
 
+/** What the common props hold; they apply to every client event. */
+const COMMON_FIELD_DOCS: Record<keyof typeof COMMON_FIELDS, FieldDoc> = {
+  viewport: {
+    description: "The window's width class when the event was sent, at the site's layout breakpoints. Recorded since late October 2026.",
+    values: {
+      phone: { label: "Phone width", description: "Under 640px: the phone layout, with most header links in the menu" },
+      tablet: { label: "Tablet width", description: "640–1023px: the full header, with narrower page layouts" },
+      desktop: { label: "Desktop width", description: "1024px and up" },
+    },
+  },
+};
+
 /** Plain-language definitions the admin dashboard shows beside every metric. */
 export const EVENT_DOCS: EventDocs = {
   search: {
@@ -149,7 +165,7 @@ export const EVENT_DOCS: EventDocs = {
   },
   filter_apply: {
     description: "The browse filters changed and stayed put for a second.",
-    fields: { filters_json: { description: "Every filter set at that moment." } },
+    fields: { filters_json: { description: "The filters that differ from the defaults at that moment, sort order included. Before late October 2026 it held every filter and was cut off at 256 characters." } },
   },
   filter_reset: { description: "The browse filters went back to their defaults." },
   compare_add: { description: "A lens was added to the comparison tray." },
@@ -403,6 +419,37 @@ export const EVENT_DOCS: EventDocs = {
       },
     },
   },
+  nav_click: {
+    description: "A click on the site header: one of its links or buttons, the menu button, or an item in that menu. Some items also record their own event (Ask Iris, support, feedback, sign-in).",
+    fields: {
+      item: {
+        description: "What was clicked.",
+        values: {
+          home: { label: "Logo", description: "The Atlens logo, to the home page" },
+          lenses: { label: "Lenses", description: "The lens library" },
+          compare: { label: "Compare", description: "The compare page" },
+          charts: { label: "Charts", description: "The charts pages" },
+          github: { label: "GitHub", description: "The repository on GitHub" },
+          iris: { label: "Ask Iris", description: "The Ask Iris button, opening or closing the panel" },
+          menu: { label: "Menu button", description: "Opened the header menu" },
+          profile: { label: "Profile", description: "The profile page, for signed-in visitors" },
+          sign_in: { label: "Sign in", description: "Sign in, for signed-out visitors" },
+          about: { label: "About", description: "The about page" },
+          support: { label: "Support", description: "The support dialog" },
+          get_app: { label: "Get the app", description: "The install page; hidden in the installed app" },
+          feedback: { label: "Feedback", description: "The feedback form" },
+          sign_out: { label: "Sign out", description: "Signed out" },
+        },
+      },
+      place: {
+        description: "Where the item was.",
+        values: {
+          bar: { label: "Header bar", description: "Shown in the header itself" },
+          menu: { label: "Menu", description: "Inside the header menu; on phone widths this holds compare, charts and GitHub too" },
+        },
+      },
+    },
+  },
   sign_in_submit: {
     description: "A sign-in was sent, counted when the button is pressed and before it finishes.",
     fields: {
@@ -461,7 +508,7 @@ export function eventDefinitions(
   return {
     description: doc.description,
     fields: fields.flatMap((field) => {
-      const fieldDoc = doc.fields?.[field];
+      const fieldDoc = doc.fields?.[field] ?? commonFieldDoc(field);
       if (!fieldDoc) {
         return [];
       }
@@ -474,5 +521,9 @@ export function eventDefinitions(
 /** The dashboard's name for a stored value; the raw value when it has none. */
 export function valueLabel(event: keyof EventDocs, field: string, value: string): string {
   const fields: Record<string, FieldDoc> | undefined = EVENT_DOCS[event].fields;
-  return fields?.[field]?.values?.[value]?.label ?? value;
+  return (fields?.[field] ?? commonFieldDoc(field))?.values?.[value]?.label ?? value;
+}
+
+function commonFieldDoc(field: string): FieldDoc | undefined {
+  return Object.hasOwn(COMMON_FIELD_DOCS, field) ? COMMON_FIELD_DOCS[field as keyof typeof COMMON_FIELDS] : undefined;
 }
