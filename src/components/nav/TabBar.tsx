@@ -68,13 +68,11 @@ export default function TabBar() {
             openIris({ from: "tab_bar" });
           }
         }}
-        className={itemCls(irisCurrent)}
+        className={cn(itemCls(irisCurrent), "relative")}
       >
-        <span className="relative flex">
-          <Iris config={IRIS_NAV} uid="tab-bar" size={20} />
-          <AiTag className="absolute -top-1.5 -right-5 ring-2 ring-white" />
-        </span>
+        <Iris config={IRIS_NAV} uid="tab-bar" size={20} />
         {t("askIris")}
+        <AiTag className="absolute top-[7px] left-[calc(50%+0.75rem)] ring-2 ring-white" />
       </button>
       <Link
         href={PROFILE_PATH}

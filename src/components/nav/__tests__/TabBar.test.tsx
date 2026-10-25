@@ -47,6 +47,12 @@ describe("TabBar", () => {
     expect(track).toHaveBeenCalledWith("nav_click", { item: "iris", place: "tab_bar" });
   });
 
+  it("names the Iris button as the header does, with its AI tag after the label", () => {
+    render(<TabBar />);
+
+    expect(screen.getByRole("button")).toHaveAccessibleName(/^askIris/);
+  });
+
   it("closes Iris when it is already open", () => {
     env.irisShown = true;
     render(<TabBar />);
