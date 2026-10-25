@@ -295,7 +295,8 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
       id={REVIEWS_ANCHOR}
       aria-labelledby="lens-review-findings"
       data-nosnippet=""
-      className={cn(PAGE_SECTION_CLS, ANCHORED_SECTION_CLS)}
+      // Without this, Chrome anchors on the tapped button and scrolls the expanded findings up out of view.
+      className={cn(PAGE_SECTION_CLS, ANCHORED_SECTION_CLS, "[overflow-anchor:none]")}
     >
       <div className="flex flex-col gap-1">
         <h2 id="lens-review-findings" className={SECTION_HEADING_CLS}>{t("title")}</h2>
