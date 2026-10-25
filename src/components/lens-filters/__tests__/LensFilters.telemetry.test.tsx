@@ -37,9 +37,18 @@ describe("useFiltersTelemetry", () => {
     rerender({ filters: { ...defaultFilters, brands: ["sigma"] } });
     act(() => vi.advanceTimersByTime(1000));
 
-    expect(track).toHaveBeenCalledExactlyOnceWith("filter_apply", {
-      filters_json: JSON.stringify({ ...defaultFilters, brands: ["sigma"] }),
-    });
+    expect(track).toHaveBeenCalledExactlyOnceWith("filter_apply", { filters_json: '{"brands":["sigma"]}' });
+  });
+
+  it("keeps every brand of a long selection within the prop length limit", () => {
+    const brands = ["fujifilm", "sigma", "tamron", "viltrox", "ttartisan", "7artisans", "laowa", "sgimage", "meike"];
+    const { rerender } = render(defaultFilters);
+    rerender({ filters: { ...defaultFilters, brands, features: ["ois", "wr"], typeFilter: "prime", sort: "weightG" } });
+    act(() => vi.advanceTimersByTime(1000));
+
+    const json = track.mock.calls[0][1].filters_json;
+    expect(json.length).toBeLessThanOrEqual(256);
+    expect(JSON.parse(json)).toEqual({ brands, typeFilter: "prime", features: ["ois", "wr"], sort: "weightG" });
   });
 
   it("records a reset when the filters go back to their defaults", () => {

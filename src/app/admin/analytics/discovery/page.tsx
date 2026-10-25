@@ -3,7 +3,7 @@ import Card from "@/components/admin/AnalyticsCard";
 import { COUNT_WIDTH, EventDefinitions, Table } from "@/components/admin/AnalyticsUi";
 import { Funnel } from "@/components/admin/Breakdown";
 import { countBy, dashboardWindows, dayOf, loadFirstEventTs, loadSearchFunnel } from "@/lib/analytics/dashboard";
-import { aggregateFilterDimensions, formatFilterSnapshot, formatHref, formatLensSlug, formatLensSlugList } from "@/lib/analytics/format";
+import { aggregateFilterDimensions, formatHref, formatLensSlug, formatLensSlugList, topFilterSnapshots } from "@/lib/analytics/format";
 import { resolveAnalyticsRange } from "@/lib/url/admin-analytics";
 
 export const dynamic = "force-dynamic";
@@ -21,14 +21,13 @@ export default async function AnalyticsDiscoveryPage({
   const picksSince = await loadFirstEventTs(events, "page_view");
   const pickWindow = { from: Math.max(current.from, picksSince ?? current.to), to: current.to };
 
-  const [searchZero, searchTop, lensViews, referrers, compareCombos, filterSnapshots, filterAll, searchFunnel, searchPicks, pageViews, pagePaths] =
+  const [searchZero, searchTop, lensViews, referrers, compareCombos, filterAll, searchFunnel, searchPicks, pageViews, pagePaths] =
     await Promise.all([
       countBy(events, current, "search", ["query"], { where: { results_count: 0 } }),
       countBy(events, current, "search", ["query"]),
       countBy(events, current, "lens_view", ["lens_slug"]),
       countBy(events, current, "lens_view", ["referrer"], { limit: 15 }),
       countBy(events, current, "compare_view", ["lens_slugs"]),
-      countBy(events, current, "filter_apply", ["filters_json"], { limit: 10 }),
       countBy(events, current, "filter_apply", ["filters_json"], { limit: 1000 }),
       loadSearchFunnel(events, pickWindow),
       countBy(events, current, "search_select", ["lens_id"]),
@@ -128,7 +127,7 @@ export default async function AnalyticsDiscoveryPage({
         info={<EventDefinitions event="filter_apply" fields={["filters_json"]} />}
       >
         <Table
-          rows={filterSnapshots.map((r) => ({ ...r, display: formatFilterSnapshot(String(r.filters_json ?? "")) }))}
+          rows={topFilterSnapshots(filterAll, 10)}
           columns={[{ key: "display", label: "Filters", titleKey: "filters_json" }, { key: "n", label: "Changes", align: "right", widthClass: COUNT_WIDTH }]}
         />
       </Card>

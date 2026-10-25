@@ -165,7 +165,7 @@ export const EVENT_DOCS: EventDocs = {
   },
   filter_apply: {
     description: "The browse filters changed and stayed put for a second.",
-    fields: { filters_json: { description: "Every filter set at that moment." } },
+    fields: { filters_json: { description: "The filters that differ from the defaults at that moment, sort order included. Before late October 2026 it held every filter and was cut off at 256 characters." } },
   },
   filter_reset: { description: "The browse filters went back to their defaults." },
   compare_add: { description: "A lens was added to the comparison tray." },

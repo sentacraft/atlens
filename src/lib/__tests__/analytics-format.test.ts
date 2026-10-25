@@ -3,6 +3,7 @@ import { describe, it, expect } from "vitest";
 import {
   aggregateFilterDimensions,
   formatFilterSnapshot,
+  topFilterSnapshots,
 } from "../analytics/format";
 
 describe("formatFilterSnapshot", () => {
@@ -82,5 +83,30 @@ describe("aggregateFilterDimensions", () => {
       (r) => r.dimension === "Lens type (prime/zoom)",
     );
     expect(type?.n).toBe(7);
+  });
+});
+
+describe("topFilterSnapshots", () => {
+  it("merges snapshots that show the same filters, whatever their recorded shape", () => {
+    const rows = [
+      { filters_json: JSON.stringify({ brands: ["sigma"], typeFilter: null, usage: "photo", sort: "focalLength" }), n: 3 },
+      { filters_json: JSON.stringify({ brands: ["sigma"] }), n: 2 },
+      { filters_json: JSON.stringify({ brands: ["sigma"], sort: "weightG" }), n: 1 },
+      { filters_json: JSON.stringify({ typeFilter: "zoom" }), n: 4 },
+    ];
+
+    expect(topFilterSnapshots(rows, 10)).toEqual([
+      { display: "Brand: sigma", filters_json: rows[0].filters_json, n: 6 },
+      { display: "Zoom", filters_json: rows[3].filters_json, n: 4 },
+    ]);
+  });
+
+  it("keeps only the top rows", () => {
+    const rows = [
+      { filters_json: JSON.stringify({ typeFilter: "zoom" }), n: 1 },
+      { filters_json: JSON.stringify({ typeFilter: "prime" }), n: 5 },
+    ];
+
+    expect(topFilterSnapshots(rows, 1).map((r) => r.display)).toEqual(["Prime"]);
   });
 });
