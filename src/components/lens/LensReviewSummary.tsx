@@ -2,7 +2,7 @@
 
 import { Popover } from "@base-ui/react/popover";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowUpRight, CircleAlert, CircleCheck, Clock, MessagesSquare, type LucideProps } from "lucide-react";
+import { ArrowUpRight, CircleAlert, CircleCheck, Clock, Lock, MessagesSquare, type LucideProps } from "lucide-react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { CitationsProvider, SourceList, SourceMarker, SourceNumber, useSourceFacts } from "@/components/askiris/ReviewSources";
@@ -20,7 +20,7 @@ import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { numberSources, sourceHref, type Citations } from "@/lib/askiris/review-citations";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { lensReviewsQuery } from "@/lib/lens/reviews-client";
-import { layoutReviews, type ReviewClaimView } from "@/lib/lens/reviews-view";
+import { layoutReviews, type LensReviewsView, type ReviewClaimView } from "@/lib/lens/reviews-view";
 import { cn } from "@/lib/utils";
 
 // A ring with its right half filled, drawn like the Lucide circles beside it; Lucide's Contrast nests a second ring.
@@ -247,19 +247,54 @@ function SideList({
 
 const REVIEWS_ANCHOR = "reviews";
 
-const SKELETON_WIDTHS = ["w-3/5", "w-1/2", "w-2/3"];
+const SKELETON_WIDTHS = ["w-4/5", "w-3/5", "w-11/12", "w-1/2", "w-3/4", "w-2/3"];
 
-/** The aspects a guest's view leaves out, named over placeholder bars that fade out: the text itself is never sent. */
-function LockedTeaser({ aspects }: { aspects: ReviewClaimView["aspect"][] }) {
+/**
+ * What a guest sees past the overall verdict: the groups and aspect names over placeholder bars, blurred, under a card that
+ * counts the findings per group and asks them to sign in. Nothing of what the findings say, or which way they lean, is sent.
+ */
+function LockedFindings({ groups, onSignIn }: { groups: NonNullable<LensReviewsView["locked"]>["groups"]; onSignIn: () => void }) {
   const t = useTranslations("LensReviews.findings");
+  const total = groups.reduce((sum, { count }) => sum + count, 0);
   return (
-    <div aria-hidden className="-mt-2 flex flex-col border-t border-zinc-200 [mask-image:linear-gradient(to_bottom,black,transparent)]">
-      {aspects.map((aspect, i) => (
-        <div key={aspect} className="flex flex-col gap-2 py-2.5">
-          <span className="text-xs text-zinc-500">{t(`aspects.${aspect}`)}</span>
-          <div className={cn("h-2.5 rounded-full bg-zinc-200", SKELETON_WIDTHS[i % SKELETON_WIDTHS.length])} />
+    <div className="grid">
+      <div aria-hidden className="grid max-h-[520px] gap-6 overflow-hidden opacity-75 blur-[3px] [grid-area:1/1] sm:max-h-[400px] sm:grid-cols-3">
+        {groups.map(({ group, aspects }) => (
+          <div key={group} className="flex flex-col">
+            <h3 className="border-b border-zinc-200 pb-2 text-sm font-semibold text-zinc-900">{t(`groups.${group}`)}</h3>
+            {aspects.map((aspect, i) => (
+              <div key={aspect} className="flex flex-col gap-2 border-b border-zinc-100 py-2.5">
+                <span className="text-xs text-zinc-500">{t(`aspects.${aspect}`)}</span>
+                <div className={cn("h-2.5 rounded-full bg-zinc-200", SKELETON_WIDTHS[i % SKELETON_WIDTHS.length])} />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      {/* `relative` on the two layers above: the blurred layer's opacity otherwise paints it over unpositioned siblings. */}
+      <div aria-hidden className="relative bg-gradient-to-b from-white/10 via-white/85 to-white [grid-area:1/1]" />
+      <div className="relative flex items-center justify-center py-6 [grid-area:1/1]">
+        <div className="flex w-full flex-col items-center gap-2.5 rounded-2xl border border-zinc-200 bg-white p-5 text-center shadow-lg sm:w-[420px]">
+          <div className="flex size-9 items-center justify-center rounded-full bg-zinc-100">
+            <Lock className="size-4 text-zinc-900" aria-hidden />
+          </div>
+          <p className="text-[15px] font-semibold text-zinc-900">{t("lockedTitle", { count: total })}</p>
+          <ul className="flex flex-wrap justify-center gap-1.5">
+            {groups.map(({ group, count }) => (
+              <li key={group} className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-700">
+                {t("groupCount", { group: t(`groups.${group}`), count: String(count) })}
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            onClick={onSignIn}
+            className={cn(ACTION_PRIMARY_CLS, "mt-1 h-11 self-stretch rounded-lg px-5 text-sm font-medium sm:h-10 sm:self-center")}
+          >
+            {t("signIn")}
+          </button>
         </div>
-      ))}
+      </div>
     </div>
   );
 }
@@ -310,23 +345,19 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
   const pinPlace = () => {
     pinnedTop.current = sectionRef.current?.getBoundingClientRect().top ?? null;
   };
-  if (!data || !layout || !citations || layout.total === 0) {
+  const locked = data?.locked;
+  if (!data || !layout || !citations || (layout.total === 0 && !locked?.groups.length)) {
     return null;
   }
-  const locked = data.locked;
   const collapse = () => {
     setExpanded(false);
     setAskedToSignIn(false);
     setLinked(false);
   };
-  const total = locked?.total ?? layout.total;
-  const disputed = (
-    locked?.disputed ??
-    layout.groups
+  const disputed = layout.groups
       .flatMap(({ claims }) => claims)
       .filter((claim) => claim.agreement === "conflict")
-      .map((claim) => claim.aspect)
-  ).map((aspect) => t(`aspects.${aspect}`).toLowerCase());
+    .map((claim) => t(`aspects.${claim.aspect}`).toLowerCase());
   const disputedLine =
     disputed.length > 0 ? (
       <p className="flex items-center gap-1.5 text-[13px] text-zinc-600">
@@ -350,7 +381,15 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
       <CitationsProvider citations={citations}>
         {layout.overall ? <OverallVerdict claim={layout.overall} citations={citations} /> : null}
 
-        {open ? (
+        {locked ? (
+          <LockedFindings
+            groups={locked.groups}
+            onSignIn={() => {
+              setAskedToSignIn(true);
+              openSignIn("reviews", { returnTo: `${window.location.href.split("#")[0]}#${REVIEWS_ANCHOR}` });
+            }}
+          />
+        ) : open ? (
           <>
             {layout.groups.map(({ group, claims }) => (
               <div key={group} className="flex flex-col">
@@ -372,27 +411,12 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
             {layout.cons.length > 0 ? <SideList polarity="negative" claims={layout.cons} citations={citations} /> : null}
           </div>
         )}
-        {locked && locked.hiddenAspects.length > 0 ? <LockedTeaser aspects={locked.hiddenAspects} /> : null}
       </CitationsProvider>
 
-      {locked ? (
-        <div className="flex flex-col gap-3">
-          {disputedLine}
-          <button
-            type="button"
-            onClick={() => {
-              setAskedToSignIn(true);
-              openSignIn("reviews", { returnTo: `${window.location.href.split("#")[0]}#${REVIEWS_ANCHOR}` });
-            }}
-            className={cn(ACTION_PRIMARY_CLS, "-mt-1 h-11 self-stretch rounded-lg px-4 text-sm font-medium sm:h-10 sm:self-center")}
-          >
-            {t("expandSignIn", { count: String(total) })}
-          </button>
-        </div>
-      ) : (
+      {locked ? null : (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           {open ? <span className="hidden sm:block" /> : (disputedLine ?? <span className="hidden sm:block" />)}
-          {total > layout.pros.length + layout.cons.length ? (
+          {layout.total > layout.pros.length + layout.cons.length ? (
             <button
               type="button"
               onClick={() => {
@@ -406,7 +430,7 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
               aria-expanded={open}
               className="min-h-11 shrink-0 rounded-lg border border-zinc-200 bg-white px-3 text-[13px] font-medium text-zinc-700 transition-colors hover:bg-zinc-50 sm:min-h-8"
             >
-              {open ? t("collapse") : t("expand", { count: String(total) })}
+              {open ? t("collapse") : t("expand", { count: String(layout.total) })}
             </button>
           ) : null}
         </div>

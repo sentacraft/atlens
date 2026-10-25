@@ -112,21 +112,22 @@ describe("previewReviews", () => {
   const full = toLensReviewsView(row, "en");
   const preview = previewReviews(full);
 
-  it("keeps the overall verdict and the top two strengths and weaknesses, without their details", () => {
-    expect(preview.claims.map((c) => c.aspect)).toEqual(["overall", "resolution_center", "bokeh", "autofocus"]);
-    expect(preview.claims.every((c) => c.details.length === 0)).toBe(true);
+  it("keeps only the overall verdict, without its details", () => {
+    expect(preview.claims.map((c) => c.aspect)).toEqual(["overall"]);
+    expect(preview.claims[0].details).toEqual([]);
   });
 
-  it("sends only the sources the kept findings cite", () => {
-    expect(preview.sources.map((s) => s.id)).toEqual(["a", "b", "c"]);
+  it("sends only the sources the overall verdict cites", () => {
+    expect(preview.sources.map((s) => s.id)).toEqual(["a"]);
   });
 
-  it("says how much the full view holds", () => {
+  it("counts the findings per group and names their aspects, never their text or lean", () => {
     expect(preview.locked).toEqual({
-      total: 9,
       sourceCount: 6,
-      disputed: ["manual_focus"],
-      hiddenAspects: ["manual_focus", "flare", "vignetting"],
+      groups: [
+        { group: "image", count: 6, aspects: ["resolution_center", "bokeh", "flare", "vignetting", "color", "sunstar"] },
+        { group: "focus", count: 2, aspects: ["manual_focus", "autofocus"] },
+      ],
     });
     expect(full.locked).toBeUndefined();
   });

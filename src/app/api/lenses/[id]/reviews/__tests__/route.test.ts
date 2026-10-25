@@ -49,7 +49,7 @@ describe("GET /api/lenses/[id]/reviews", () => {
     expect(body.sources[0]).not.toHaveProperty("publisher");
   });
 
-  it("gives a guest only the collapsed findings, and an account all of them", async () => {
+  it("gives a guest only the overall verdict, and an account all of the findings", async () => {
     const claim = (aspect: string, polarity: string, sources: string[]) => ({
       aspect, polarity, agreement: "single_source", text: aspect, textZh: aspect, sources, reviewCount: sources.length, outletCount: sources.length,
       details: [{ id: sources[0], text: "Detail.", textZh: "细节。" }],
@@ -60,7 +60,7 @@ describe("GET /api/lenses/[id]/reviews", () => {
           lensId,
           {
             sources: ["a", "b"].map((id) => ({ id, url: `https://example.com/${id}`, site: id, lang: "en", kind: "measured", publisher: id })),
-            claims: [claim("bokeh", "positive", ["a"]), claim("vignetting", "mixed", ["b"])],
+            claims: [claim("overall", "positive", ["a"]), claim("bokeh", "positive", ["a"]), claim("vignetting", "mixed", ["b"])],
           },
         ],
       ]),
@@ -70,14 +70,14 @@ describe("GET /api/lenses/[id]/reviews", () => {
     const guest = await call(lensId);
     expect(guest.headers.get("Cache-Control")).toContain("private");
     const preview = (await guest.json()) as { claims: { aspect: string; details: object[] }[]; sources: { id: string }[]; locked: object };
-    expect(preview.claims.map((c) => c.aspect)).toEqual(["bokeh"]);
+    expect(preview.claims.map((c) => c.aspect)).toEqual(["overall"]);
     expect(preview.claims[0].details).toEqual([]);
     expect(preview.sources.map((s) => s.id)).toEqual(["a"]);
-    expect(preview.locked).toEqual({ total: 2, sourceCount: 2, disputed: [], hiddenAspects: ["vignetting"] });
+    expect(preview.locked).toEqual({ sourceCount: 2, groups: [{ group: "image", count: 2, aspects: ["bokeh", "vignetting"] }] });
 
     mocks.hasAccountSession.mockResolvedValue(true);
     const full = (await (await call(lensId)).json()) as { claims: object[]; locked?: object };
-    expect(full.claims).toHaveLength(2);
+    expect(full.claims).toHaveLength(3);
     expect(full.locked).toBeUndefined();
   });
 

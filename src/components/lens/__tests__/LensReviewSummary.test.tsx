@@ -59,10 +59,15 @@ function renderWith(data: LensReviewsView, client = new QueryClient()) {
   );
 }
 
+const LOCKED_GROUPS = [
+  { group: "image", count: 2, aspects: ["bokeh", "vignetting"] },
+  { group: "focus", count: 2, aspects: ["autofocus", "manual_focus"] },
+];
+
 const LOCKED = {
-  sources: [DATA_SOURCES()[1]],
-  claims: [claim("autofocus", "negative", "对焦偏慢", ["b"])],
-  locked: { total: 4, sourceCount: 2, disputed: ["manual_focus"], hiddenAspects: ["vignetting", "manual_focus"] },
+  sources: [DATA_SOURCES()[0]],
+  claims: [claim("overall", "positive", "整体表现扎实", ["a"])],
+  locked: { sourceCount: 2, groups: LOCKED_GROUPS },
 } as LensReviewsView;
 
 function DATA_SOURCES() {
@@ -156,27 +161,34 @@ describe("LensReviewSummary", () => {
     expect(await screen.findByRole("button", { name: "staleNote(staleCause.pre_x_trans_iv_body, staleCause.unknown_body, staleCause.other_mount)" })).toBeTruthy();
   });
 
-  it("asks a guest to sign in for the rest, counting what the full view holds", async () => {
-    renderWith({
-      sources: [DATA.sources[1]],
-      claims: [DATA.claims[1]],
-      locked: { total: 4, sourceCount: 2, disputed: ["manual_focus"], hiddenAspects: ["vignetting", "manual_focus"] },
-    } as LensReviewsView);
-    expect(await screen.findByText("对焦偏慢")).toBeTruthy();
+  it("shows a guest only the overall verdict, and counts what signing in adds per group", async () => {
+    renderWith(LOCKED);
+    expect(await screen.findByText("整体表现扎实")).toBeTruthy();
     expect(screen.getByText("subtitle(2)")).toBeTruthy();
-    expect(screen.getByText("disagree(aspects.manual_focus)")).toBeTruthy();
-
+    expect(screen.getByText("lockedTitle(4)")).toBeTruthy();
+    expect(screen.getByText("groupCount(groups.image,2)")).toBeTruthy();
+    expect(screen.getByText("groupCount(groups.focus,2)")).toBeTruthy();
     expect(screen.getByText("aspects.vignetting")).toBeTruthy();
 
-    fireEvent.click(screen.getByRole("button", { name: "expandSignIn(4)" }));
+    expect(screen.queryByText("pros")).toBeNull();
+    expect(screen.queryByText("cons")).toBeNull();
+    expect(screen.queryByText(/^disagree\(/)).toBeNull();
+    expect(screen.queryByRole("button", { name: /^expand\(/ })).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "signIn" }));
     expect(openSignIn).toHaveBeenCalledWith("reviews", { returnTo: expect.stringMatching(/#reviews$/) });
-    expect(screen.queryByText("groups.image")).toBeNull();
+  });
+
+  it("asks a guest to sign in even when the lens has no overall verdict", async () => {
+    renderWith({ sources: [], claims: [], locked: { sourceCount: 2, groups: LOCKED_GROUPS } } as LensReviewsView);
+    expect(await screen.findByText("lockedTitle(4)")).toBeTruthy();
+    expect(screen.queryByText("summary")).toBeNull();
   });
 
   it("opens the findings it asked to sign in for once the full set arrives", async () => {
     const client = new QueryClient();
     renderWith(LOCKED, client);
-    fireEvent.click(await screen.findByRole("button", { name: "expandSignIn(4)" }));
+    fireEvent.click(await screen.findByRole("button", { name: "signIn" }));
 
     act(() => client.setQueryData(["lens-reviews", "lens"], DATA));
     expect(await screen.findByText("全开有暗角")).toBeTruthy();
@@ -193,8 +205,9 @@ describe("LensReviewSummary", () => {
   it("leaves a guest's findings collapsed even when linked to them", async () => {
     window.history.replaceState(null, "", "/#reviews");
     renderWith(LOCKED);
-    expect(await screen.findByText("对焦偏慢")).toBeTruthy();
-    expect(screen.queryByText("groups.image")).toBeNull();
+    expect(await screen.findByText("整体表现扎实")).toBeTruthy();
+    expect(screen.queryByText("全开有暗角")).toBeNull();
+    expect(scrollIntoView).not.toHaveBeenCalled();
   });
 
   it("renders nothing for a lens without findings", async () => {
