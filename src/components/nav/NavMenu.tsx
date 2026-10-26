@@ -40,15 +40,13 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
     >
       <Menu.Trigger aria-label={tNav("menu")} className={NAV_CAPSULE_CLS}>
         <MenuIcon className="h-4 w-4 text-zinc-600" />
-        <span className="hidden sm:inline-flex">
-          {user ? (
-            <Avatar name={user.name} email={user.email} image={user.image} className="h-7 w-7 text-[11px]" />
-          ) : (
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-100">
-              <UserRound className="h-4 w-4 text-zinc-500" />
-            </span>
-          )}
-        </span>
+        {user ? (
+          <Avatar name={user.name} email={user.email} image={user.image} className="h-7 w-7 text-[11px]" />
+        ) : (
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-100">
+            <UserRound className="h-4 w-4 text-zinc-500" />
+          </span>
+        )}
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner side="bottom" align="end" sideOffset={6}>

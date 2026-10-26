@@ -143,10 +143,9 @@ export const REVIEW_VERDICT_CHIP_CLS = {
 // Surface of a card Iris shows in the chat for the user to act on: gear, sign-in.
 export const CHAT_CARD_CLS = "w-full max-w-[560px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm";
 
-/** The menu button: a round icon button on phones, where the tab bar holds the account; a capsule with the avatar from sm up. */
 export const NAV_CAPSULE_CLS =
-  "inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-zinc-200 bg-white transition-colors " +
-  "sm:w-auto sm:justify-start sm:gap-2 sm:pr-1 sm:pl-3 hover:bg-zinc-50";
+  "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-zinc-200 bg-white pr-1 pl-2.5 transition-colors sm:gap-2 sm:pl-3 " +
+  "hover:bg-zinc-50";
 
 export const POPUP_SURFACE_CLS =
   "rounded-lg border border-zinc-200 bg-white shadow-lg";
