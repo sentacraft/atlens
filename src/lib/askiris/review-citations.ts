@@ -61,6 +61,12 @@ export function messageCitations(messages: UIMessage[], index: number): Citation
   return numberSources([...new Set(cited)], [...known.values()]);
 }
 
+/** The month a source was published, from its `YYYY-MM` or `YYYY-MM-DD` date; undefined for anything else. */
+export function publishedMonth(published: string): Date | undefined {
+  const match = /^(\d{4})-(\d{2})(?:-\d{2})?$/.exec(published);
+  return match ? new Date(Number(match[1]), Number(match[2]) - 1, 1) : undefined;
+}
+
 /** The source's own page, or undefined for anything but an http(s) URL. */
 export function sourceHref(source: CitedReviewSource): string | undefined {
   try {

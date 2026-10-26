@@ -4,7 +4,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import AskIrisThread from "../AskIrisThread";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 
-vi.mock("next-intl", () => ({ useTranslations: () => (key: string) => key }));
+vi.mock("next-intl", () => ({ useTranslations: () => (key: string) => key, useFormatter: () => ({ dateTime: (date: Date) => date.toISOString() }) }));
 vi.mock("@/components/iris/Iris", () => ({ default: () => null }));
 vi.mock("@/components/askiris/ResponseFeedback", () => ({ default: () => null }));
 vi.mock("@/components/askiris/Markdown", () => ({ default: ({ children }: { children: string }) => <p>{children}</p> }));

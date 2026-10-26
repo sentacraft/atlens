@@ -275,11 +275,12 @@
     },
     "sources": {
       "title": "参考来源",
-      "measured": "实测",
-      "handsOn": "实拍",
+      "measured": "实验室实测",
+      "handsOn": "上手实拍",
       "readOriginal": "阅读原文",
       "marker": "来源 {number}：{site}",
-      "bodiesSeparator": "、"
+      "bodiesSeparator": "、",
+      "testedOn": "用 {bodies} 测试"
     },
     "responseFeedback": {
       "prompt": "这个回答有帮助吗？",
@@ -530,31 +531,46 @@
   },
   "LensReviews": {
     "findings": {
-      "title": "评测",
+      "title": "评测怎么说",
       "subtitle": "根据 {count} 篇公开评测整理",
-      "summary": "整体",
+      "summary": "整体评价",
+      "verdict": {
+        "positive": "评价正面",
+        "mixed": "褒贬不一",
+        "negative": "评价偏负面"
+      },
+      "overallFrom": "<reviews></reviews>这样总结",
       "conflict": "看法不一",
       "pros": "亮点",
       "cons": "需要留意",
-      "count": "{count} 条",
       "expand": "展开全部 {count} 条",
-      "expandSignIn": "免费登录，查看全部 {count} 条",
+      "lockedTitle": "登录查看 {count} 条分项结论",
+      "groupCount": "{group} {count}",
+      "signIn": "免费登录查看",
       "collapse": "收起",
-      "showDetails": "展开 {count} 条细节",
-      "hideDetails": "收起细节",
+      "showDetails": "各家具体说法（{count}）",
+      "hideDetails": "收起各家具体说法",
       "reviewCount": "{count} 篇评测",
       "reviewSources": "{aspect}的 {count} 篇评测",
       "disagree": "各家看法不一：{aspects}",
-      "otherMount": "在其他卡口上测试",
       "polarity": {
         "positive": "亮点",
         "negative": "需要留意",
         "mixed": "褒贬不一"
       },
-      "staleness": {
-        "pre_x_trans_iv_body": "部分来源用较老机身测试",
-        "unknown_body": "部分来源未注明机身",
-        "pre_production": "部分来源用工程样品"
+      "aspectHint": {
+        "field_curvature": "焦平面是弯的：拍平整的物体时，中间清楚边缘就虚，或者反过来。",
+        "coma": "画面边缘的点光源被拉出小尾巴，拍星空、夜景时明显。",
+        "astigmatism": "画面边缘的点光源被拉成短线，横竖两个方向的清晰度不一样。",
+        "focus_shift": "大光圈对好焦后再收小光圈拍，焦点会前后跑偏。",
+        "focus_breathing": "对焦距离变化时，画面视角跟着轻微变大变小，拍视频时最明显。"
+      },
+      "staleNote": "部分评测{causes}，结论不一定适用于你的机身。",
+      "staleCause": {
+        "pre_x_trans_iv_body": "用的是较老机身",
+        "unknown_body": "没有注明机身",
+        "pre_production": "用的是工程样品",
+        "other_mount": "是在其他卡口上测的"
       },
       "groups": {
         "image": "画质",
@@ -573,7 +589,7 @@
         "sunstar": "星芒",
         "coma": "彗差",
         "astigmatism": "像散",
-        "focus_shift": "焦点偏移",
+        "focus_shift": "收光圈跑焦",
         "autofocus": "自动对焦",
         "manual_focus": "手动对焦",
         "focus_breathing": "呼吸效应",
@@ -584,13 +600,13 @@
         "size_weight": "尺寸重量",
         "close_focus": "最近对焦",
         "compatibility": "兼容性",
-        "sample_variation": "个体差异",
+        "sample_variation": "品控 / 个体差异",
         "color": "色彩",
         "award": "奖项",
         "overall": "整体评价"
       }
     },
-    "title": "评测与样张",
+    "title": "搜索更多评测与样张",
     "subtitle": "在其他平台搜索这支镜头的评测和样张，结果由各平台提供",
     "searchKeyword": "评测",
     "kind": {
