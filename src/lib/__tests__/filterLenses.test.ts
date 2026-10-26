@@ -13,13 +13,11 @@ import { getAllLenses } from "../lens/data";
 // adding a FilterState field but forgetting to wire it into filterLenses, so the
 // filter silently does nothing.
 //
-// `Refinement` is every FilterState field except the sort axis and the usage
-// view (usage is never "off", so "activating it narrows" doesn't apply — it gets
-// its own partition test below). Typing SAMPLES as Record<Refinement, …> makes a
-// new FilterState field a COMPILE error here until it gets a sample; the test
-// then runs that sample through filterLenses, so a dimension that isn't wired in
-// fails at RUNTIME too.
-type Refinement = Exclude<keyof FilterState, "sort" | "sortDir" | "usage">;
+// `Refinement` is every FilterState field except the sort axis. Typing SAMPLES as
+// Record<Refinement, …> makes a new FilterState field a COMPILE error here until
+// it gets a sample; the test then runs that sample through filterLenses, so a
+// dimension that isn't wired in fails at RUNTIME too.
+type Refinement = Exclude<keyof FilterState, "sort" | "sortDir">;
 
 const all = getAllLenses("en");
 const baseline = filterLenses(all, defaultFilters);
@@ -48,11 +46,9 @@ describe("filterLenses wires up every refinement dimension", () => {
     },
   );
 
-  it("usage partitions photo and cine", () => {
-    const photo = filterLenses(all, { ...defaultFilters, usage: "photo" });
-    const cine = filterLenses(all, { ...defaultFilters, usage: "cine" });
-    expect(photo.length).toBeGreaterThan(0);
-    expect(cine.length).toBeGreaterThan(0);
-    expect(photo.length + cine.length).toBeLessThanOrEqual(all.length);
+  it("lists photo lenses only, leaving cine lenses to the cine collection", () => {
+    expect(baseline.length).toBeGreaterThan(0);
+    expect(baseline.some((lens) => lens.isCine)).toBe(false);
+    expect(all.some((lens) => lens.isCine)).toBe(true);
   });
 });

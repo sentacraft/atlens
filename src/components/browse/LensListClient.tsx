@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import {
   filterLenses,
   sortLenses,
-  selectByUsage,
+  selectPhotoLenses,
   getAvailableFilterOptions,
   defaultFilters,
   MAX_COMPARE,
@@ -18,11 +18,11 @@ import { serializeFilters, parseFilters, FILTER_PARAM_KEYS } from "@/lib/url/fil
 import { projectToUrl } from "@/lib/url/projection";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
+import { useEffectiveMount } from "@/hooks/useMountParam";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import LensCard from "@/components/lens/LensCard";
 import LensFilters from "@/components/lens-filters/LensFilters";
 import LensIndexShell from "@/components/browse/LensIndexShell";
-import LensUsageSwitch from "@/components/browse/LensUsageSwitch";
 import LensSortControl from "@/components/browse/LensSortControl";
 import LensSearchDialog, { suggestMissingLens } from "@/components/browse/LensSearchDialog";
 import AskIrisEntry from "@/components/iris/AskIrisEntry";
@@ -43,6 +43,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   const tIris = useTranslations("IrisEntry");
   const irisQuestions = usePageQuestions();
   const hookAttr = useUiHookAttr();
+  const mount = useEffectiveMount();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
@@ -51,11 +52,8 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   const { compareIds, toggle } = useCompare();
   const gridRef = useRef<HTMLDivElement>(null);
 
-  const scopedLenses = useMemo(
-    () => selectByUsage(lenses, filters.usage),
-    [lenses, filters.usage],
-  );
-  const available = useMemo(() => getAvailableFilterOptions(scopedLenses), [scopedLenses]);
+  const photoLenses = useMemo(() => selectPhotoLenses(lenses), [lenses]);
+  const available = useMemo(() => getAvailableFilterOptions(photoLenses), [photoLenses]);
 
   const displayed = useMemo(
     () =>
@@ -79,7 +77,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   }
 
   function clearAllFilters() {
-    setFilters((current) => ({ ...defaultFilters, usage: current.usage }));
+    setFilters(defaultFilters);
   }
 
   useEffect(() => {
@@ -109,19 +107,8 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   return (
     <>
       <LensIndexShell
-        navRightSlot={
-          <LensUsageSwitch
-            value={filters.usage}
-            onChange={(usage) =>
-              setFilters((current) => ({
-                ...defaultFilters,
-                usage,
-                sort: current.sort,
-                sortDir: current.sortDir,
-              }))
-            }
-          />
-        }
+        mount={mount}
+        active="browse"
         className="pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))]"
       >
         <div className="pt-4">

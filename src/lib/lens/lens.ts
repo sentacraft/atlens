@@ -132,14 +132,10 @@ export function classifyFocusMotor(lens: Lens): FocusMotorClass | undefined {
   return "other";
 }
 
-export const USAGE_VALUES = ["photo", "cine"] as const;
-export type UsageFilter = (typeof USAGE_VALUES)[number];
-
 export interface FilterState {
   brands: string[]; // empty = all brands
   typeFilter: LensType | null; // null = all types
   focusFilter: FocusFilter | null; // null = all
-  usage: UsageFilter;
   opticalTrait: OpticalTrait | null; // null = no filter
   focusMotorClass: FocusMotorClass | null; // null = no filter
   features: FilterFeatureKey[]; // empty = no requirement
@@ -152,7 +148,6 @@ export const defaultFilters: FilterState = {
   brands: [],
   typeFilter: null,
   focusFilter: null,
-  usage: "photo",
   opticalTrait: null,
   focusMotorClass: null,
   features: [],
@@ -170,6 +165,7 @@ export function changedFilters(filters: FilterState): Partial<FilterState> {
   );
 }
 
+/** Filters the lens library, which lists photo lenses only: cine lenses live in the cine collection. */
 export function filterLenses(lenses: Lens[], filters: FilterState): Lens[] {
   return lenses.filter((lens) => {
     if (filters.brands.length > 0 && !filters.brands.includes(lens.brand)) {
@@ -189,10 +185,7 @@ export function filterLenses(lenses: Lens[], filters: FilterState): Lens[] {
     }
 
     const { isCine, opticalTraits } = deriveSpecialty(lens);
-    if (filters.usage === "photo" && isCine) {
-      return false;
-    }
-    if (filters.usage === "cine" && !isCine) {
+    if (isCine) {
       return false;
     }
     if (filters.opticalTrait !== null && !opticalTraits.includes(filters.opticalTrait)) {
@@ -245,11 +238,8 @@ export function getAvailableOpticalTraits(lenses: { isCine?: boolean; opticalTra
   return OPTICAL_TRAITS.filter((trait) => present.has(trait));
 }
 
-export function selectByUsage(lenses: Lens[], usage: UsageFilter): Lens[] {
-  return lenses.filter((lens) => {
-    const { isCine } = deriveSpecialty(lens);
-    return usage === "cine" ? isCine : !isCine;
-  });
+export function selectPhotoLenses(lenses: Lens[]): Lens[] {
+  return lenses.filter((lens) => !deriveSpecialty(lens).isCine);
 }
 
 export function getOrderedUniqueBrands(lenses: Lens[]): string[] {

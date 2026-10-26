@@ -109,7 +109,7 @@ export default async function CollectionsIndexPage({
   const totalLenses = mountLenses.length;
 
   return (
-    <LensIndexShell className="pb-16">
+    <LensIndexShell mount={resolvedMount} active="collections" className="pb-16">
       <main className="pt-5">
       <header id="collections-top" className="pb-3">
         <h1 className="sr-only">{t("indexTitle")}</h1>

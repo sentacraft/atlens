@@ -68,6 +68,9 @@ for (const slug of Object.keys(FILTERS)) {
   }
 }
 
+/** The collection that holds the cine lenses the lens library and charts leave out. */
+export const CINE_COLLECTION_SLUG = "cine";
+
 export const FEATURED_COLLECTION_SLUGS = ["pancake", "under-200g", "fast-aperture-primes", "travel-zoom"] as const;
 
 for (const slug of FEATURED_COLLECTION_SLUGS) {

@@ -1,4 +1,3 @@
-import { defaultFilters } from "@/lib/lens/lens";
 import { getAllLenses } from "@/lib/lens/data";
 import { lensDisplayName } from "@/lib/lens/format";
 
@@ -54,7 +53,7 @@ export function formatFilterSnapshot(json: string): string {
   if (typeof f.focusFilter === "string" && f.focusFilter) {
     parts.push(f.focusFilter === "auto" ? "AF" : "MF");
   }
-  if (typeof f.usage === "string" && f.usage !== defaultFilters.usage) {
+  if (f.usage === "cine") {
     parts.push(`Usage: ${f.usage}`);
   }
   if (typeof f.focusMotorClass === "string" && f.focusMotorClass) {
@@ -110,7 +109,8 @@ const FILTER_DIMENSIONS: {
   { label: "Lens type (prime/zoom)", isActive: (f) => typeof f.typeFilter === "string" && !!f.typeFilter },
   { label: "Focus (AF/MF)", isActive: (f) => typeof f.focusFilter === "string" && !!f.focusFilter },
   { label: "Brand", isActive: (f) => Array.isArray(f.brands) && f.brands.length > 0 },
-  { label: "Usage (photo/cine)", isActive: (f) => typeof f.usage === "string" && f.usage !== defaultFilters.usage },
+  // Recorded until late October 2026, when the lens library dropped its photo/cine switch.
+  { label: "Usage (photo/cine)", isActive: (f) => f.usage === "cine" },
   { label: "Focal range", isActive: (f) => Array.isArray(f.focalCategories) && f.focalCategories.length > 0 },
   { label: "Focus motor", isActive: (f) => typeof f.focusMotorClass === "string" && !!f.focusMotorClass },
   { label: "Features", isActive: (f) => Array.isArray(f.features) && f.features.length > 0 },

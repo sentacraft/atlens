@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Flag } from "lucide-react";
 import { localized } from "@/i18n/localized";
 import BrandPicker from "@/components/brand/BrandPicker";
+import { cineCollectionTag } from "@/components/collection/CineCollectionLink";
 import { BrandShare } from "@/components/charts/ChartShare";
 import LineupChart from "@/components/charts/LineupChart";
 import ScopeNote from "@/components/charts/ScopeNote";
@@ -163,7 +164,7 @@ export default async function BrandPage({ params }: { params: Params }) {
           <DataSourcePill className="mt-2" />
           {data.cineCount > 0 && (
             <div className="mt-1">
-              <ScopeNote>{t("cineNote", { brand: data.name, count: data.cineCount })}</ScopeNote>
+              <ScopeNote>{t.rich("cineNote", { brand: data.name, count: data.cineCount, cine: cineCollectionTag(data.resolvedMount) })}</ScopeNote>
             </div>
           )}
           <p className="mt-3 text-sm leading-relaxed text-zinc-700 sm:text-base">{description}</p>
