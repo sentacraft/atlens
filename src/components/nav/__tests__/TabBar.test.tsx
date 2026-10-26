@@ -18,7 +18,6 @@ vi.mock("@/hooks/useMountParam", () => ({ useEffectiveMount: () => "X" }));
 vi.mock("@/context/IrisPanelProvider", () => ({
   useIris: () => ({ openIris, closeIris, irisShown: env.irisShown }),
 }));
-vi.mock("@/components/iris/Iris", () => ({ default: () => <span /> }));
 
 afterEach(() => {
   cleanup();
