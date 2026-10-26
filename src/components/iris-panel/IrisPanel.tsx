@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
@@ -14,8 +14,9 @@ import { cn } from "@/lib/utils";
 
 /**
  * Ask Iris beside the page: a side panel below the nav on wide screens, which the page makes
- * room for, and a bottom sheet on narrow ones. Both stay mounted while closed, keeping the chat,
- * and expand in place over the page.
+ * room for and which expands in place over it; on narrow ones, a full-screen sheet above the tab
+ * bar, so the tab bar shows Iris as the current section. Both stay mounted while closed, keeping
+ * the chat.
  */
 export default function IrisPanel({
   layout,
@@ -32,12 +33,14 @@ export default function IrisPanel({
   const locale = useLocale();
   const data = useQuery(askIrisChatDataQuery(locale));
   const pagePath = useCurrentPagePath();
-  const { expanded, setExpanded } = useExpanded(shown);
+  const side = useExpanded(shown && layout === "side");
+  useBackCloses(shown && layout === "sheet", onClose);
+  const expanded = layout === "sheet" || side.expanded;
   const openCount = useOpenCount(shown);
 
   const chat = data.data ? (
     <AskIrisChat
-      shell={{ variant: "panel", layout, openCount, pagePath, request, onClose, expanded, onExpandedChange: setExpanded }}
+      shell={{ variant: "panel", layout, openCount, pagePath, request, onClose, expanded, onExpandedChange: side.setExpanded }}
       linkTargets={data.data.linkTargets}
       lenses={data.data.lenses}
     />
@@ -71,38 +74,27 @@ export default function IrisPanel({
   }
 
   return (
-    <Drawer.Root open={shown} onOpenChange={(open) => !open && onClose()} swipeDirection="down">
+    // Not modal and not dismissed by outside presses: the tab bar below stays usable, and its own
+    // Ask Iris button closes the sheet.
+    <Drawer.Root open={shown} onOpenChange={(open) => !open && onClose()} modal={false} disablePointerDismissal swipeDirection="down">
       <Drawer.VirtualKeyboardProvider>
         <Drawer.Portal keepMounted>
-          <Drawer.Backdrop
-            className={cn(
-              "fixed inset-0 bg-zinc-950/40 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0",
-            )}
-          />
-          {/* No z-index, like every portaled popup (see Z): popups opened from the sheet, History among them, stack above it. */}
-          <Drawer.Viewport className="fixed inset-0">
+          {/* No z-index, like every portaled popup (see Z): popups opened from the sheet, History among them, stack above it.
+              The viewport spans only the sheet, so it leaves the tab bar below it clickable. iOS leaves fixed
+              elements under the keyboard; the provider reports its height, and the sheet ends on top of it
+              while it is open, else on top of the tab bar. */}
+          <Drawer.Viewport className="fixed inset-x-0 top-0 bottom-[max(var(--drawer-keyboard-inset,0px),var(--tab-bar-height))]">
             <Drawer.Popup
               aria-label="Iris"
               data-iris=""
               className={cn(
-                "fixed inset-x-0 flex flex-col bg-white pb-[var(--safe-inset-bottom)] shadow-2xl ring-1 ring-zinc-200",
-                // iOS leaves fixed elements under the keyboard; the provider reports its height, and the
-                // sheet sits on top of it, shrinking so the composer stays above.
-                "bottom-[var(--drawer-keyboard-inset,0px)]",
-                expanded
-                  ? "h-[calc(var(--app-height)_-_var(--drawer-keyboard-inset,0px))] pt-[var(--safe-inset-top)]"
-                  : "h-[min(calc(var(--app-height)_*_0.85),calc(var(--app-height)_-_var(--drawer-keyboard-inset,0px)_-_var(--safe-inset-top)_-_1rem))] rounded-t-3xl",
-                "[transform:translateY(var(--drawer-swipe-movement-y,0px))] transition-[transform,translate,height] duration-300 ease-out data-[swiping]:transition-none",
+                "absolute inset-0 flex flex-col bg-white pt-[var(--safe-inset-top)]",
+                "[transform:translateY(var(--drawer-swipe-movement-y,0px))] transition-[transform,translate] duration-300 ease-out data-[swiping]:transition-none",
                 "data-ending-style:translate-y-full data-starting-style:translate-y-full",
                 // A drawer opened from the sheet (History) is nested and gets no backdrop of its own, so the sheet dims itself.
-                "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:bg-zinc-950/40 after:opacity-0 after:transition-opacity after:duration-200 data-[nested-drawer-open]:after:opacity-100",
+                "after:pointer-events-none after:absolute after:inset-0 after:bg-zinc-950/40 after:opacity-0 after:transition-opacity after:duration-200 data-[nested-drawer-open]:after:opacity-100",
               )}
             >
-              {!expanded && (
-                <div className="flex shrink-0 touch-none justify-center pt-2.5 pb-0.5">
-                  <div className="h-1.5 w-10 rounded-full bg-zinc-300" />
-                </div>
-              )}
               <div className="flex min-h-0 flex-1 flex-col">{chat}</div>
             </Drawer.Popup>
           </Drawer.Viewport>
@@ -110,6 +102,53 @@ export default function IrisPanel({
       </Drawer.VirtualKeyboardProvider>
     </Drawer.Root>
   );
+}
+
+/**
+ * The phone's Back closes the open sheet: opening adds a history entry, which closing takes back.
+ * Moving to another page (a tab, a link in a reply) closes it and leaves the entry, which now sits
+ * under the page left behind.
+ */
+function useBackCloses(active: boolean, onClose: () => void) {
+  const pathname = usePathname();
+  const pushedEntry = useRef(false);
+  const openedOn = useRef(pathname);
+  const close = useEffectEvent(onClose);
+
+  // Push and take back in one place, not in an effect's cleanup: React may tear an effect down and
+  // set it up again while the sheet stays open, and Back from that cleanup would close it.
+  useEffect(() => {
+    if (active && !pushedEntry.current) {
+      window.history.pushState(null, "", window.location.href);
+      pushedEntry.current = true;
+    } else if (!active && pushedEntry.current) {
+      pushedEntry.current = false;
+      window.history.back();
+    }
+  }, [active]);
+
+  useEffect(() => {
+    if (!active) {
+      return;
+    }
+    const onPopState = () => {
+      pushedEntry.current = false;
+      close();
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [active]);
+
+  useEffect(() => {
+    if (openedOn.current === pathname) {
+      return;
+    }
+    openedOn.current = pathname;
+    if (active) {
+      pushedEntry.current = false;
+      close();
+    }
+  }, [pathname, active]);
 }
 
 /**

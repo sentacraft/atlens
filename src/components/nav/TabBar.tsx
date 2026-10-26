@@ -31,6 +31,15 @@ export default function TabBar() {
   const { openIris, closeIris, irisShown } = useIris();
   const irisCurrent = irisShown || section === "iris";
 
+  // Iris covers the page; its section's tab closes it, where following the link would go nowhere.
+  function onSectionClick(event: React.MouseEvent, item: string, current: boolean) {
+    trackTab(item);
+    if (irisShown && current) {
+      event.preventDefault();
+      closeIris();
+    }
+  }
+
   return (
     <nav
       aria-label={t("tabBar")}
@@ -41,18 +50,18 @@ export default function TabBar() {
     >
       <Link
         href={browseHref}
-        aria-current={section === "lenses" ? "page" : undefined}
-        onClick={() => trackTab("lenses")}
-        className={itemCls(section === "lenses")}
+        aria-current={section === "lenses" && !irisShown ? "page" : undefined}
+        onClick={(event) => onSectionClick(event, "lenses", section === "lenses")}
+        className={itemCls(section === "lenses" && !irisShown)}
       >
         <LayoutGrid className="size-5" aria-hidden="true" />
         {t("lenses")}
       </Link>
       <Link
         href={chartsHref}
-        aria-current={section === "charts" ? "page" : undefined}
-        onClick={() => trackTab("charts")}
-        className={itemCls(section === "charts")}
+        aria-current={section === "charts" && !irisShown ? "page" : undefined}
+        onClick={(event) => onSectionClick(event, "charts", section === "charts")}
+        className={itemCls(section === "charts" && !irisShown)}
       >
         <ChartColumn className="size-5" aria-hidden="true" />
         {t("charts")}
@@ -76,9 +85,9 @@ export default function TabBar() {
       </button>
       <Link
         href={PROFILE_PATH}
-        aria-current={section === "me" ? "page" : undefined}
-        onClick={() => trackTab("profile")}
-        className={itemCls(section === "me")}
+        aria-current={section === "me" && !irisShown ? "page" : undefined}
+        onClick={(event) => onSectionClick(event, "profile", section === "me")}
+        className={itemCls(section === "me" && !irisShown)}
       >
         <UserRound className="size-5" aria-hidden="true" />
         {t("me")}

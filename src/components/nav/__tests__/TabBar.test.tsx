@@ -53,6 +53,32 @@ describe("TabBar", () => {
     expect(screen.getByRole("button")).toHaveAccessibleName(/^askIris/);
   });
 
+  it("marks Iris rather than the page's section while Iris covers the page", () => {
+    env.irisShown = true;
+    render(<TabBar />);
+
+    expect(screen.getByRole("button", { name: /askIris/ })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("link", { name: "lenses" })).not.toHaveAttribute("aria-current");
+  });
+
+  it("closes Iris without navigating when the current section's tab is tapped over it", () => {
+    env.irisShown = true;
+    render(<TabBar />);
+    const event = fireEvent.click(screen.getByRole("link", { name: "lenses" }));
+
+    expect(closeIris).toHaveBeenCalled();
+    expect(event).toBe(false);
+  });
+
+  it("follows another section's tab and leaves closing Iris to the page change", () => {
+    env.irisShown = true;
+    render(<TabBar />);
+    const event = fireEvent.click(screen.getByRole("link", { name: "charts" }));
+
+    expect(closeIris).not.toHaveBeenCalled();
+    expect(event).toBe(true);
+  });
+
   it("closes Iris when it is already open", () => {
     env.irisShown = true;
     render(<TabBar />);

@@ -363,15 +363,17 @@ export default function AskIrisChat({
             <Plus className="size-4" />
           </button>
         )}
-        <button
-          type="button"
-          onClick={() => shell.onExpandedChange(!shell.expanded)}
-          aria-label={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
-          title={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
-          className={cn(ICON_NAV_BTN_CLS, "h-8 w-8")}
-        >
-          {shell.expanded ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
-        </button>
+        {shell.layout === "side" && (
+          <button
+            type="button"
+            onClick={() => shell.onExpandedChange(!shell.expanded)}
+            aria-label={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
+            title={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
+            className={cn(ICON_NAV_BTN_CLS, "h-8 w-8")}
+          >
+            {shell.expanded ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+          </button>
+        )}
         <button type="button" onClick={shell.onClose} aria-label={t("closePanel")} className={cn(ICON_CLOSE_BTN_CLS, "h-8 w-8")}>
           <X className="size-4" />
         </button>
