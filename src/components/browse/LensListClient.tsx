@@ -26,10 +26,12 @@ import LensIndexShell from "@/components/browse/LensIndexShell";
 import LensSortControl from "@/components/browse/LensSortControl";
 import LensSearchDialog, { suggestMissingLens } from "@/components/browse/LensSearchDialog";
 import AskIrisEntry from "@/components/iris/AskIrisEntry";
-import { Search } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ACTION_OUTLINE_CLS, LENS_GRID_CLS, SEARCH_TRIGGER_CLS } from "@/config/ui-tokens";
-import { aboutPath, lensPath } from "@/lib/url/routes";
+import { aboutPath, collectionPath, lensPath } from "@/lib/url/routes";
+import { CINE_COLLECTION_SLUG } from "@/lib/collections";
+import { mountHasCollections } from "@/lib/mount";
 import { usePageQuestions } from "@/components/iris/usePageQuestions";
 import { tagIris } from "@/components/iris/AiTag";
 
@@ -53,6 +55,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   const gridRef = useRef<HTMLDivElement>(null);
 
   const photoLenses = useMemo(() => selectPhotoLenses(lenses), [lenses]);
+  const cineCount = lenses.length - photoLenses.length;
   const available = useMemo(() => getAvailableFilterOptions(photoLenses), [photoLenses]);
 
   const displayed = useMemo(
@@ -225,9 +228,29 @@ export default function LensListClient({ lenses }: LensListClientProps) {
             ))}
           </div>
         )}
+        {cineCount > 0 && mountHasCollections(mount) && (
+          <CineCollectionPrompt count={cineCount} href={collectionPath(mount, CINE_COLLECTION_SLUG)} />
+        )}
       </LensIndexShell>
 
       <BackToTopButton />
     </>
+  );
+}
+
+/** Where the cine lenses went: the list holds photo lenses only. Seen when filters shorten the list, or match nothing. */
+function CineCollectionPrompt({ count, href }: { count: number; href: string }) {
+  const t = useTranslations("LensList");
+  return (
+    <Link
+      href={href}
+      className="mt-6 flex items-center justify-between gap-3 rounded-2xl border border-dashed border-zinc-300 px-4 py-3.5 transition-colors hover:bg-zinc-50"
+    >
+      <span className="flex flex-col gap-0.5">
+        <span className="text-sm font-medium text-zinc-900">{t("cinePromptTitle")}</span>
+        <span className="text-xs text-zinc-500">{t("cinePromptBody", { count })}</span>
+      </span>
+      <ArrowRight className="size-4 shrink-0 text-zinc-500" aria-hidden="true" />
+    </Link>
   );
 }

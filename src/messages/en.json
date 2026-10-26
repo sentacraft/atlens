@@ -419,6 +419,8 @@
     "viewCompare": "View",
     "goCompare": "Compare ({count, number})",
     "clearCompare": "Clear",
+    "cinePromptTitle": "Looking for cine lenses?",
+    "cinePromptBody": "This list holds photo lenses; the {count, number} cine lenses are in the Cinema Lenses collection",
     "compareShort": "Compare",
     "compared": "Added",
     "resultsCount": "<b>{count, number}</b> lenses",

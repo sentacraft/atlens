@@ -419,6 +419,8 @@
     "viewCompare": "查看",
     "goCompare": "查看对比（{count, number}）",
     "clearCompare": "清空",
+    "cinePromptTitle": "找电影镜头？",
+    "cinePromptBody": "这里只列摄影镜头，{count, number} 支电影镜头在「电影镜头」合集里",
     "compareShort": "对比",
     "compared": "已对比",
     "resultsCount": "<b>{count, number}</b> 支镜头",
