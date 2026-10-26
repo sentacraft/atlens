@@ -8,7 +8,9 @@ import TimelineChart, { TimelineChartFromUrl } from "@/components/charts/Timelin
 import JsonLd from "@/components/seo/JsonLd";
 import SupportNote from "@/components/support/SupportNote";
 import { SITE } from "@/config/site";
-import { BROWSE_PAGE_MAIN_CLS } from "@/config/ui-tokens";
+import { cineCollectionTag } from "@/components/collection/CineCollectionLink";
+import { BROWSE_PAGE_MAIN_CLS, SECTION_TOP_CLS } from "@/config/ui-tokens";
+import { cn } from "@/lib/utils";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildTimeline } from "@/lib/charts/timeline";
 import { formatDataDate } from "@/lib/charts/data-date";
@@ -121,12 +123,12 @@ export default async function TimelinePage({ params }: { params: Params }) {
   return (
     <>
       <JsonLd data={itemList} />
-      <main className={BROWSE_PAGE_MAIN_CLS}>
+      <main className={cn(BROWSE_PAGE_MAIN_CLS, SECTION_TOP_CLS)}>
         <ChartsHeader
           locale={locale}
           mount={data.resolvedMount}
           active="timeline"
-          note={t("excludesCine", { count: data.cineCount })}
+          note={t.rich("excludesCine", { count: data.cineCount, cine: cineCollectionTag(data.resolvedMount) })}
           title={title}
           description={description}
           action={

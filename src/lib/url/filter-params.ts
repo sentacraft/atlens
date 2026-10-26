@@ -7,7 +7,6 @@ import {
   FOCUS_MOTOR_CLASSES,
   LENS_TYPES,
   SORT_KEYS,
-  USAGE_VALUES,
   type FilterState,
   type FocalCategory,
 } from "@/lib/lens/lens";
@@ -15,10 +14,10 @@ import { isOneOf } from "@/lib/utils";
 
 const FOCAL_KEYS = FOCAL_CATEGORIES.map((c) => c.key) as FocalCategory[];
 
-export const FILTER_PARAM_KEYS = ["b", "t", "f", "u", "ot", "m", "feat", "fc", "sort", "dir"] as const;
+export const FILTER_PARAM_KEYS = ["b", "t", "f", "ot", "m", "feat", "fc", "sort", "dir"] as const;
 type FilterParamKey = (typeof FILTER_PARAM_KEYS)[number];
 
-// b=brands, t=typeFilter, f=focusFilter, u=usage, m=focusMotorClass,
+// b=brands, t=typeFilter, f=focusFilter, m=focusMotorClass,
 // feat=features, fc=focalCategories, sort=sortKey, dir=sortDir
 export function serializeFilters(filters: FilterState): URLSearchParams {
   const p = new URLSearchParams();
@@ -30,9 +29,6 @@ export function serializeFilters(filters: FilterState): URLSearchParams {
   }
   if (filters.focusFilter) {
     p.set("f", filters.focusFilter);
-  }
-  if (filters.usage !== defaultFilters.usage) {
-    p.set("u", filters.usage);
   }
   if (filters.opticalTrait) {
     p.set("ot", filters.opticalTrait);
@@ -64,8 +60,6 @@ export function parseFilters(params: URLSearchParams): FilterState {
     brands: raw.b ? raw.b.split(",").filter(Boolean) : [],
     typeFilter: raw.t && isOneOf(raw.t, LENS_TYPES) ? raw.t : null,
     focusFilter: raw.f && isOneOf(raw.f, FOCUS_FILTERS) ? raw.f : null,
-    // Legacy `?u=all` and unknown values fall back to photo.
-    usage: raw.u && isOneOf(raw.u, USAGE_VALUES) ? raw.u : defaultFilters.usage,
     opticalTrait: raw.ot && isOneOf(raw.ot, OPTICAL_TRAITS) ? raw.ot : null,
     focusMotorClass: raw.m && isOneOf(raw.m, FOCUS_MOTOR_CLASSES) ? raw.m : null,
     features: raw.feat ? raw.feat.split(",").filter((k) => isOneOf(k, FILTER_FEATURE_KEYS)) : [],

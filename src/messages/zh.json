@@ -25,6 +25,7 @@
     "starOnGitHub": "在 GitHub 上给 Atlens 点 Star",
     "allLenses": "全部镜头",
     "collections": "主题合集",
+    "collectionsAndBrands": "合集与品牌",
     "compare": "对比",
     "charts": "图鉴",
     "about": "关于",
@@ -277,11 +278,12 @@
     },
     "sources": {
       "title": "参考来源",
-      "measured": "实测",
-      "handsOn": "实拍",
+      "measured": "实验室实测",
+      "handsOn": "上手实拍",
       "readOriginal": "阅读原文",
       "marker": "来源 {number}：{site}",
-      "bodiesSeparator": "、"
+      "bodiesSeparator": "、",
+      "testedOn": "用 {bodies} 测试"
     },
     "responseFeedback": {
       "prompt": "这个回答有帮助吗？",
@@ -393,8 +395,6 @@
     "usage": "用途",
     "usagePhoto": "摄影",
     "usageCine": "电影",
-    "usagePhotoMobile": "摄影用途",
-    "usageCineMobile": "电影用途",
     "primesMobile": "定焦",
     "zoomsMobile": "变焦",
     "focusAutoMobile": "自动",
@@ -423,6 +423,8 @@
     "goCompare": "查看对比（{count, number}）",
     "clearCompare": "清空",
     "compareSelected": "已选 {count, number} 支",
+    "cinePromptTitle": "找电影镜头？",
+    "cinePromptBody": "这里只列摄影镜头，{count, number} 支电影镜头在「电影镜头」合集里",
     "compareShort": "对比",
     "compared": "已对比",
     "resultsCount": "<b>{count, number}</b> 支镜头",
@@ -533,31 +535,46 @@
   },
   "LensReviews": {
     "findings": {
-      "title": "评测",
+      "title": "评测怎么说",
       "subtitle": "根据 {count} 篇公开评测整理",
-      "summary": "整体",
+      "summary": "整体评价",
+      "verdict": {
+        "positive": "评价正面",
+        "mixed": "褒贬不一",
+        "negative": "评价偏负面"
+      },
+      "overallFrom": "<reviews></reviews>这样总结",
       "conflict": "看法不一",
       "pros": "亮点",
       "cons": "需要留意",
-      "count": "{count} 条",
       "expand": "展开全部 {count} 条",
-      "expandSignIn": "免费登录，查看全部 {count} 条",
+      "lockedTitle": "登录查看 {count} 条分项结论",
+      "groupCount": "{group} {count}",
+      "signIn": "免费登录查看",
       "collapse": "收起",
-      "showDetails": "展开 {count} 条细节",
-      "hideDetails": "收起细节",
+      "showDetails": "各家具体说法（{count}）",
+      "hideDetails": "收起各家具体说法",
       "reviewCount": "{count} 篇评测",
       "reviewSources": "{aspect}的 {count} 篇评测",
       "disagree": "各家看法不一：{aspects}",
-      "otherMount": "在其他卡口上测试",
       "polarity": {
         "positive": "亮点",
         "negative": "需要留意",
         "mixed": "褒贬不一"
       },
-      "staleness": {
-        "pre_x_trans_iv_body": "部分来源用较老机身测试",
-        "unknown_body": "部分来源未注明机身",
-        "pre_production": "部分来源用工程样品"
+      "aspectHint": {
+        "field_curvature": "焦平面是弯的：拍平整的物体时，中间清楚边缘就虚，或者反过来。",
+        "coma": "画面边缘的点光源被拉出小尾巴，拍星空、夜景时明显。",
+        "astigmatism": "画面边缘的点光源被拉成短线，横竖两个方向的清晰度不一样。",
+        "focus_shift": "大光圈对好焦后再收小光圈拍，焦点会前后跑偏。",
+        "focus_breathing": "对焦距离变化时，画面视角跟着轻微变大变小，拍视频时最明显。"
+      },
+      "staleNote": "部分评测{causes}，结论不一定适用于你的机身。",
+      "staleCause": {
+        "pre_x_trans_iv_body": "用的是较老机身",
+        "unknown_body": "没有注明机身",
+        "pre_production": "用的是工程样品",
+        "other_mount": "是在其他卡口上测的"
       },
       "groups": {
         "image": "画质",
@@ -576,7 +593,7 @@
         "sunstar": "星芒",
         "coma": "彗差",
         "astigmatism": "像散",
-        "focus_shift": "焦点偏移",
+        "focus_shift": "收光圈跑焦",
         "autofocus": "自动对焦",
         "manual_focus": "手动对焦",
         "focus_breathing": "呼吸效应",
@@ -587,13 +604,13 @@
         "size_weight": "尺寸重量",
         "close_focus": "最近对焦",
         "compatibility": "兼容性",
-        "sample_variation": "个体差异",
+        "sample_variation": "品控 / 个体差异",
         "color": "色彩",
         "award": "奖项",
         "overall": "整体评价"
       }
     },
-    "title": "评测与样张",
+    "title": "搜索更多评测与样张",
     "subtitle": "在其他平台搜索这支镜头的评测和样张，结果由各平台提供",
     "searchKeyword": "评测",
     "kind": {
@@ -1066,7 +1083,7 @@
     "lineupsMetaTitle": "富士 X 卡口镜头有哪些品牌：{brandCount, number} 个品牌 {count, number} 支一览",
     "lineupsMetaDesc": "富士 X 卡口目前有 {brandCount, number} 个品牌出镜头：{brands}。每个品牌的定焦和变焦按焦段排开，一页看全。",
     "lineupsCta": "看全家福 →",
-    "excludesCine": "不含 {count} 支电影镜头。",
+    "excludesCine": "不含 {count} 支<cine>电影镜头</cine>。",
     "lineupPrimes": "定焦",
     "lineupZooms": "变焦",
     "seeBrand": "看{brand}的全部 {count} 支镜头 →",
@@ -1078,7 +1095,7 @@
     "timelineMetaDesc": "{count, number} 支富士 X 卡口镜头按发布年份排列，{first} 年到 {last} 年，含{brands}。最新的一支是{latest}（{latestYear} 年）。",
     "weightTitle": "富士 X 卡口全品牌镜头重量天梯",
     "weightDesc": "最重的 {model} 有 {weight}g，是最轻那支的 {ratio} 倍。",
-    "weightNote": "重量为官方标称值，含已停产镜头，不含 {count} 支电影镜头。",
+    "weightNote": "重量为官方标称值，含已停产镜头，不含 {count} 支<cine>电影镜头</cine>。",
     "weightMetaTitle": "富士镜头重量天梯图：X 卡口 {count, number} 支从重到轻排行",
     "weightMetaDesc": "富士 X 卡口全部 {count, number} 支镜头按重量排行，含{brands}等 {brandCount, number} 个品牌。最轻的{lightest}只有 {min, number}g，最重的{heaviest}有 {max, number}g，可按品牌查看。",
     "tier-cannon": "大炮",
@@ -1133,7 +1150,7 @@
     "lineupHeading": "全家福",
     "timelinePosterTitle": "{brand, select, fujifilm {富士原厂 X 卡口镜头发布时间轴 · {first}–{last}} other {{label}的富士 X 卡口镜头发布时间轴 · {first}–{last}}}",
     "timelinePosterSubtitle": "{count} 支镜头，按发布年份和焦段排开。",
-    "cineNote": "不含{brand}的 {count} 支电影镜头。",
+    "cineNote": "不含{brand}的 {count} 支<cine>电影镜头</cine>。",
     "lensList": "镜头列表",
     "lensCount": "{count} 支",
     "relatedCollections": "包含{brand}镜头的合集",

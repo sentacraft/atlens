@@ -23,11 +23,6 @@ describe("serializeFilters", () => {
     expect(p.get("f")).toBe("manual");
   });
 
-  it("serializes usage only when non-default", () => {
-    expect(serializeFilters(defaultFilters).has("u")).toBe(false);
-    expect(serializeFilters({ ...defaultFilters, usage: "cine" }).get("u")).toBe("cine");
-  });
-
   it("serializes opticalTrait", () => {
     const p = serializeFilters({ ...defaultFilters, opticalTrait: "macro" });
     expect(p.get("ot")).toBe("macro");
@@ -87,11 +82,8 @@ describe("parseFilters", () => {
     expect(parseFilters(new URLSearchParams("f=laser")).focusFilter).toBeNull();
   });
 
-  it("parses usage correctly", () => {
-    expect(parseFilters(new URLSearchParams("u=all")).usage).toBe("photo");
-    expect(parseFilters(new URLSearchParams("u=cine")).usage).toBe("cine");
-    expect(parseFilters(new URLSearchParams("u=photo")).usage).toBe("photo");
-    expect(parseFilters(new URLSearchParams("u=bogus")).usage).toBe("photo");
+  it("ignores the retired photo/cine param", () => {
+    expect(parseFilters(new URLSearchParams("u=cine"))).toEqual(defaultFilters);
   });
 
   it("validates opticalTrait", () => {
@@ -138,7 +130,6 @@ describe("round-trip", () => {
       brands: ["fujifilm", "viltrox"],
       typeFilter: "prime",
       focusFilter: "auto",
-      usage: "cine",
       opticalTrait: "macro",
       focusMotorClass: "stepping",
       features: ["wr", "ois"],
@@ -150,11 +141,6 @@ describe("round-trip", () => {
     expect(result).toEqual(state);
   });
 
-  it("serialize → parse preserves usage=cine", () => {
-    const state: FilterState = { ...defaultFilters, usage: "cine" };
-    const result = parseFilters(serializeFilters(state));
-    expect(result.usage).toBe("cine");
-  });
 });
 
 describe("FILTER_PARAM_KEYS", () => {
@@ -166,7 +152,6 @@ describe("FILTER_PARAM_KEYS", () => {
       brands: ["fujifilm"],
       typeFilter: "prime",
       focusFilter: "auto",
-      usage: "cine",
       opticalTrait: "macro",
       focusMotorClass: "linear",
       features: ["ois"],

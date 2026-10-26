@@ -7,7 +7,9 @@ import ChartsHeader from "@/components/charts/ChartsHeader";
 import JsonLd from "@/components/seo/JsonLd";
 import SupportNote from "@/components/support/SupportNote";
 import { SITE } from "@/config/site";
-import { BROWSE_PAGE_MAIN_CLS } from "@/config/ui-tokens";
+import { cineCollectionTag } from "@/components/collection/CineCollectionLink";
+import { BROWSE_PAGE_MAIN_CLS, SECTION_TOP_CLS } from "@/config/ui-tokens";
+import { cn } from "@/lib/utils";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildLineup, type Lineup } from "@/lib/charts/lineup";
 import { getLensesByMount } from "@/lib/lens/data";
@@ -81,12 +83,12 @@ export default async function LineupsPage({ params }: { params: Params }) {
   return (
     <>
       <JsonLd data={itemList} />
-      <main className={BROWSE_PAGE_MAIN_CLS}>
+      <main className={cn(BROWSE_PAGE_MAIN_CLS, SECTION_TOP_CLS)}>
         <ChartsHeader
           locale={locale}
           mount={data.resolvedMount}
           active="lineups"
-          note={t("excludesCine", { count: data.cineCount })}
+          note={t.rich("excludesCine", { count: data.cineCount, cine: cineCollectionTag(data.resolvedMount) })}
           title={data.title}
           description={data.description}
           action={<ChartLinkShare title={data.title} />}

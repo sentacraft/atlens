@@ -64,7 +64,6 @@ const MOTOR_LABEL = { linear: "motorLinear", stepping: "motorStepping", dc: "mot
 /** The active filters in the filter panel's own words. */
 export function describeFilters(filters: FilterState, { list, badge, brand }: FilterLabels): string[] {
   return [
-    filters.usage === "cine" ? list("usageCine") : undefined,
     filters.brands.length > 0 ? filters.brands.map(brand).join(" / ") : undefined,
     filters.typeFilter ? list(TYPE_LABEL[filters.typeFilter]) : undefined,
     filters.focusFilter ? list(FOCUS_LABEL[filters.focusFilter]) : undefined,

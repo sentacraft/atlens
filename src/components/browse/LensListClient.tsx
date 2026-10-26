@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import {
   filterLenses,
   sortLenses,
-  selectByUsage,
+  selectPhotoLenses,
   getAvailableFilterOptions,
   defaultFilters,
   MAX_COMPARE,
@@ -18,18 +18,20 @@ import { serializeFilters, parseFilters, FILTER_PARAM_KEYS } from "@/lib/url/fil
 import { projectToUrl } from "@/lib/url/projection";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
+import { useEffectiveMount } from "@/hooks/useMountParam";
 import BackToTopButton from "@/components/nav/BackToTopButton";
 import LensCard from "@/components/lens/LensCard";
 import LensFilters from "@/components/lens-filters/LensFilters";
 import LensIndexShell from "@/components/browse/LensIndexShell";
-import LensUsageSwitch from "@/components/browse/LensUsageSwitch";
 import LensSortControl from "@/components/browse/LensSortControl";
 import LensSearchDialog, { suggestMissingLens } from "@/components/browse/LensSearchDialog";
 import AskIrisEntry from "@/components/iris/AskIrisEntry";
-import { Search } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ACTION_OUTLINE_CLS, LENS_GRID_CLS, SEARCH_TRIGGER_CLS } from "@/config/ui-tokens";
-import { aboutPath, lensPath } from "@/lib/url/routes";
+import { aboutPath, collectionPath, lensPath } from "@/lib/url/routes";
+import { CINE_COLLECTION_SLUG } from "@/lib/collections";
+import { mountHasCollections } from "@/lib/mount";
 import { usePageQuestions } from "@/components/iris/usePageQuestions";
 import { tagIris } from "@/components/iris/AiTag";
 
@@ -43,6 +45,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   const tIris = useTranslations("IrisEntry");
   const irisQuestions = usePageQuestions();
   const hookAttr = useUiHookAttr();
+  const mount = useEffectiveMount();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
@@ -51,11 +54,9 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   const { compareIds, toggle } = useCompare();
   const gridRef = useRef<HTMLDivElement>(null);
 
-  const scopedLenses = useMemo(
-    () => selectByUsage(lenses, filters.usage),
-    [lenses, filters.usage],
-  );
-  const available = useMemo(() => getAvailableFilterOptions(scopedLenses), [scopedLenses]);
+  const photoLenses = useMemo(() => selectPhotoLenses(lenses), [lenses]);
+  const cineCount = lenses.length - photoLenses.length;
+  const available = useMemo(() => getAvailableFilterOptions(photoLenses), [photoLenses]);
 
   const displayed = useMemo(
     () =>
@@ -79,7 +80,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   }
 
   function clearAllFilters() {
-    setFilters((current) => ({ ...defaultFilters, usage: current.usage }));
+    setFilters(defaultFilters);
   }
 
   useEffect(() => {
@@ -109,19 +110,8 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   return (
     <>
       <LensIndexShell
-        navRightSlot={
-          <LensUsageSwitch
-            value={filters.usage}
-            onChange={(usage) =>
-              setFilters((current) => ({
-                ...defaultFilters,
-                usage,
-                sort: current.sort,
-                sortDir: current.sortDir,
-              }))
-            }
-          />
-        }
+        mount={mount}
+        active="browse"
         className="pb-[max(6rem,calc(var(--compare-bar-height,0px)+2rem))]"
       >
         <div className="pt-4">
@@ -238,9 +228,29 @@ export default function LensListClient({ lenses }: LensListClientProps) {
             ))}
           </div>
         )}
+        {cineCount > 0 && mountHasCollections(mount) && (
+          <CineCollectionPrompt count={cineCount} href={collectionPath(mount, CINE_COLLECTION_SLUG)} />
+        )}
       </LensIndexShell>
 
       <BackToTopButton />
     </>
+  );
+}
+
+/** Where the cine lenses went: the list holds photo lenses only. Seen when filters shorten the list, or match nothing. */
+function CineCollectionPrompt({ count, href }: { count: number; href: string }) {
+  const t = useTranslations("LensList");
+  return (
+    <Link
+      href={href}
+      className="mt-6 flex items-center justify-between gap-3 rounded-2xl border border-dashed border-zinc-300 px-4 py-3.5 transition-colors hover:bg-zinc-50"
+    >
+      <span className="flex flex-col gap-0.5">
+        <span className="text-sm font-medium text-zinc-900">{t("cinePromptTitle")}</span>
+        <span className="text-xs text-zinc-500">{t("cinePromptBody", { count })}</span>
+      </span>
+      <ArrowRight className="size-4 shrink-0 text-zinc-500" aria-hidden="true" />
+    </Link>
   );
 }
