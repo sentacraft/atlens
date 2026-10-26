@@ -19,6 +19,15 @@ test.describe("Lens list page", () => {
     await expect(page.getByText(RESULT_COUNT_RE)).toBeVisible();
   });
 
+  test("points to the cine collection after the photo lenses", async ({ page }) => {
+    await page.goto("/en/lenses/x/browse?b=sigma");
+    const prompt = page.getByRole("link", { name: /Looking for cine lenses/ });
+    await expect(prompt).toHaveAttribute("href", "/en/lenses/x/collections/cine");
+    // Below the last card, so only a short (filtered) list brings it into view.
+    const lastCard = page.locator(LENS_CARD_LINK).last();
+    expect((await prompt.boundingBox())!.y).toBeGreaterThan((await lastCard.boundingBox())!.y);
+  });
+
   test("brand filter narrows results", async ({ page }) => {
     const countText = await page.getByText(RESULT_COUNT_RE).textContent();
     const totalCount = parseInt(countText!.match(/\d+/)![0], 10);

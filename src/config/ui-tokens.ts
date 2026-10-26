@@ -1,5 +1,8 @@
 export const PAGE_GUTTER_CLS = "px-5 sm:px-8 lg:px-12";
 
+/** Room between the nav and a section's tab row (SectionTabs), the same in every section. */
+export const SECTION_TOP_CLS = "pt-6 sm:pt-8";
+
 export const LENS_INDEX_SHELL_CLS = `mx-auto w-full max-w-7xl ${PAGE_GUTTER_CLS}`;
 
 /** A page under the browse layout: the bottom padding clears the compare bar when it shows. */

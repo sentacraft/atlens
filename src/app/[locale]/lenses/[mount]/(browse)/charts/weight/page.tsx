@@ -8,7 +8,9 @@ import WeightLadderChart, { WeightLadderChartFromUrl } from "@/components/charts
 import JsonLd from "@/components/seo/JsonLd";
 import SupportNote from "@/components/support/SupportNote";
 import { SITE } from "@/config/site";
-import { BROWSE_PAGE_MAIN_CLS } from "@/config/ui-tokens";
+import { cineCollectionTag } from "@/components/collection/CineCollectionLink";
+import { BROWSE_PAGE_MAIN_CLS, SECTION_TOP_CLS } from "@/config/ui-tokens";
+import { cn } from "@/lib/utils";
 import { chartBrands, countCineLenses, type ChartLens } from "@/lib/charts/catalog";
 import { buildWeightLadder } from "@/lib/charts/weight";
 import { formatDataDate } from "@/lib/charts/data-date";
@@ -97,12 +99,12 @@ export default async function WeightPage({ params }: { params: Params }) {
   return (
     <>
       <JsonLd data={itemList} />
-      <main className={BROWSE_PAGE_MAIN_CLS}>
+      <main className={cn(BROWSE_PAGE_MAIN_CLS, SECTION_TOP_CLS)}>
         <ChartsHeader
           locale={locale}
           mount={data.resolvedMount}
           active="weight"
-          note={t("weightNote", { count: data.cineCount })}
+          note={t.rich("weightNote", { count: data.cineCount, cine: cineCollectionTag(data.resolvedMount) })}
           title={t("weightTitle")}
           description={t("weightDesc", {
             model: ladder.heaviest?.model ?? "",
