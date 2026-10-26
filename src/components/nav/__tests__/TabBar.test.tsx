@@ -15,6 +15,7 @@ vi.mock("@/i18n/navigation", () => ({
   usePathname: () => env.pathname,
 }));
 vi.mock("@/hooks/useMountParam", () => ({ useEffectiveMount: () => "X" }));
+vi.mock("@/components/iris/Iris", () => ({ default: () => <span /> }));
 vi.mock("@/context/IrisPanelProvider", () => ({
   useIris: () => ({ openIris, closeIris, irisShown: env.irisShown }),
 }));

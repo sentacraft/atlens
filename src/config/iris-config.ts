@@ -105,6 +105,13 @@ export const IRIS_NAV: IrisConfig = {
   strokeWidth: 5,
 };
 
+/** The nav mark in the tab bar's colours: the blades follow the tab's text colour, grey or current. */
+export const IRIS_TAB_BAR: IrisConfig = {
+  ...IRIS_NAV,
+  size: 20,
+  bladeColor: "currentColor",
+};
+
 // No strokeColor: the stroke-background class cuts between blades; without it the translucent
 // fills blend into one scalloped shape.
 export const IRIS_PLACEHOLDER: IrisConfig = {
