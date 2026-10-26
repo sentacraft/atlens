@@ -10,7 +10,7 @@ import { Z } from "@/config/ui";
 import { useIris } from "@/context/IrisPanelProvider";
 import { useNavLinks } from "@/hooks/useNavLinks";
 import { track } from "@/lib/analytics/analytics";
-import { PROFILE_PATH } from "@/lib/url/routes";
+import { ASK_IRIS_PATH, PROFILE_PATH } from "@/lib/url/routes";
 import { cn } from "@/lib/utils";
 
 function itemCls(current: boolean) {
@@ -28,17 +28,7 @@ function trackTab(item: string) {
 export default function TabBar() {
   const t = useTranslations("Nav");
   const { section, browseHref, chartsHref } = useNavLinks();
-  const { openIris, closeIris, irisShown } = useIris();
-  const irisCurrent = irisShown || section === "iris";
-
-  // Iris covers the page; its section's tab closes it, where following the link would go nowhere.
-  function onSectionClick(event: React.MouseEvent, item: string, current: boolean) {
-    trackTab(item);
-    if (irisShown && current) {
-      event.preventDefault();
-      closeIris();
-    }
-  }
+  const { openIris } = useIris();
 
   return (
     <nav
@@ -50,44 +40,44 @@ export default function TabBar() {
     >
       <Link
         href={browseHref}
-        aria-current={section === "lenses" && !irisShown ? "page" : undefined}
-        onClick={(event) => onSectionClick(event, "lenses", section === "lenses")}
-        className={itemCls(section === "lenses" && !irisShown)}
+        aria-current={section === "lenses" ? "page" : undefined}
+        onClick={() => trackTab("lenses")}
+        className={itemCls(section === "lenses")}
       >
         <LayoutGrid className="size-5" aria-hidden="true" />
         {t("lenses")}
       </Link>
       <Link
         href={chartsHref}
-        aria-current={section === "charts" && !irisShown ? "page" : undefined}
-        onClick={(event) => onSectionClick(event, "charts", section === "charts")}
-        className={itemCls(section === "charts" && !irisShown)}
+        aria-current={section === "charts" ? "page" : undefined}
+        onClick={() => trackTab("charts")}
+        className={itemCls(section === "charts")}
       >
         <ChartColumn className="size-5" aria-hidden="true" />
         {t("charts")}
       </Link>
-      <button
-        type="button"
-        aria-pressed={irisShown}
-        onClick={() => {
+      <Link
+        href={ASK_IRIS_PATH}
+        aria-current={section === "iris" ? "page" : undefined}
+        onClick={(event) => {
           trackTab("iris");
-          if (irisShown) {
-            closeIris();
-          } else {
+          // openIris adds the page left behind, which picks Iris's first example questions.
+          event.preventDefault();
+          if (section !== "iris") {
             openIris({ from: "tab_bar" });
           }
         }}
-        className={cn(itemCls(irisCurrent), "relative")}
+        className={cn(itemCls(section === "iris"), "relative")}
       >
         <Iris config={IRIS_TAB_BAR} uid="tab-bar" size={20} />
         {t("askIris")}
         <AiTag className="absolute top-[7px] left-[calc(50%+0.75rem)] ring-2 ring-white" />
-      </button>
+      </Link>
       <Link
         href={PROFILE_PATH}
-        aria-current={section === "me" && !irisShown ? "page" : undefined}
-        onClick={(event) => onSectionClick(event, "profile", section === "me")}
-        className={itemCls(section === "me" && !irisShown)}
+        aria-current={section === "me" ? "page" : undefined}
+        onClick={() => trackTab("profile")}
+        className={itemCls(section === "me")}
       >
         <UserRound className="size-5" aria-hidden="true" />
         {t("me")}

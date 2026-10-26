@@ -46,7 +46,7 @@ import AiTag from "@/components/iris/AiTag";
 import { ConversationHistoryPopover, ConversationHistoryView } from "@/components/askiris/ConversationHistory";
 import { useBreakpoint } from "@/hooks/useViewport";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
-import { openChat, setModelPreset } from "@/components/askiris/live-chats";
+import { openChat, replyingConversationId, setModelPreset } from "@/components/askiris/live-chats";
 
 type ConversationSwitch = { kind: "select"; id: string } | { kind: "new"; reason: "manual" | "reopen" };
 
@@ -69,7 +69,6 @@ export type AskIrisShell =
   | { variant: "page"; entry: AskIrisEntry; starterSeed: number }
   | {
       variant: "panel";
-      layout: "side" | "sheet";
       /** Counts the panel's openings; the empty state replays its hero on each. */
       openCount: number;
       pagePath: string;
@@ -107,13 +106,17 @@ export default function AskIrisChat({
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
   // The conversation an opening left for a new one, offered back until another is picked.
   const [resumeId, setResumeId] = useState<string | null>(null);
-  const pageStarters = usePageStarters(shell.variant === "panel" ? shell.pagePath : null, lenses);
+  const pageStarters = usePageStarters(shell.variant === "panel" ? shell.pagePath : (entry.from ?? null), lenses);
   const { data: session } = authClient.useSession();
   // Guests have a session too, and their own stored conversations.
   const userId = session?.user.id;
   const isAccount = Boolean(accountUser(session));
+  // Read once: a turn sent here makes this page's own conversation the replying one.
+  const [replyingOnOpen] = useState(() =>
+    shell.variant === "page" && !entry.question && !entry.conversationId ? replyingConversationId() : undefined,
+  );
   const conversation = useConversation({
-    initialConversationId: entry.conversationId,
+    initialConversationId: entry.conversationId ?? replyingOnOpen,
     userId,
     onNotice: (notice) => {
       if (notice === "unavailable") {
@@ -363,17 +366,15 @@ export default function AskIrisChat({
             <Plus className="size-4" />
           </button>
         )}
-        {shell.layout === "side" && (
-          <button
-            type="button"
-            onClick={() => shell.onExpandedChange(!shell.expanded)}
-            aria-label={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
-            title={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
-            className={cn(ICON_NAV_BTN_CLS, "h-8 w-8")}
-          >
-            {shell.expanded ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => shell.onExpandedChange(!shell.expanded)}
+          aria-label={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
+          title={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
+          className={cn(ICON_NAV_BTN_CLS, "h-8 w-8")}
+        >
+          {shell.expanded ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+        </button>
         <button type="button" onClick={shell.onClose} aria-label={t("closePanel")} className={cn(ICON_CLOSE_BTN_CLS, "h-8 w-8")}>
           <X className="size-4" />
         </button>
@@ -418,7 +419,7 @@ export default function AskIrisChat({
         {topBar}
         {resume}
         <AskIrisEmptyState
-          variant={shell.variant === "page" ? "page" : shell.layout}
+          variant={shell.variant}
           openCount={shell.variant === "page" ? 1 : shell.openCount}
           input={input}
           onInputChange={setInput}
@@ -447,7 +448,7 @@ export default function AskIrisChat({
               debug={debug}
               busy={isBusy}
               onExpand={
-                shell.variant === "panel" && shell.layout === "side" && !shell.expanded
+                shell.variant === "panel" && !shell.expanded
                   ? () => shell.onExpandedChange(true)
                   : undefined
               }

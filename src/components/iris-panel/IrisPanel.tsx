@@ -1,10 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
-import { Drawer } from "@base-ui/react/drawer";
 import AskIrisChat from "@/components/askiris/AskIrisChat";
 import type { IrisPanelRequest } from "@/context/IrisPanelProvider";
 import { useCurrentPagePath } from "@/hooks/useCurrentPagePath";
@@ -13,18 +12,15 @@ import { askIrisChatDataQuery } from "@/lib/askiris/chat-data";
 import { cn } from "@/lib/utils";
 
 /**
- * Ask Iris beside the page: a side panel below the nav on wide screens, which the page makes
- * room for and which expands in place over it; on narrow ones, a full-screen sheet above the tab
- * bar, so the tab bar shows Iris as the current section. Both stay mounted while closed, keeping
- * the chat.
+ * Ask Iris beside the page on wide screens: a side panel below the nav, which the page makes room
+ * for and which expands in place over it. It stays mounted while closed, keeping the chat. Narrow
+ * screens show Iris on the Ask Iris page instead.
  */
 export default function IrisPanel({
-  layout,
   shown,
   request,
   onClose,
 }: {
-  layout: "side" | "sheet";
   shown: boolean;
   request: IrisPanelRequest | null;
   onClose: () => void;
@@ -33,14 +29,12 @@ export default function IrisPanel({
   const locale = useLocale();
   const data = useQuery(askIrisChatDataQuery(locale));
   const pagePath = useCurrentPagePath();
-  const side = useExpanded(shown && layout === "side");
-  useBackCloses(shown && layout === "sheet", onClose);
-  const expanded = layout === "sheet" || side.expanded;
+  const { expanded, setExpanded } = useExpanded(shown);
   const openCount = useOpenCount(shown);
 
   const chat = data.data ? (
     <AskIrisChat
-      shell={{ variant: "panel", layout, openCount, pagePath, request, onClose, expanded, onExpandedChange: side.setExpanded }}
+      shell={{ variant: "panel", openCount, pagePath, request, onClose, expanded, onExpandedChange: setExpanded }}
       linkTargets={data.data.linkTargets}
       lenses={data.data.lenses}
     />
@@ -50,115 +44,28 @@ export default function IrisPanel({
     </p>
   );
 
-  if (layout === "side") {
-    return (
-      <aside
-        aria-label="Iris"
-        data-iris=""
-        // Expanding moves the left edge, so the width animates instead of jumping.
-        style={{ left: expanded ? 0 : `calc(100% - ${IRIS_PANEL_WIDTH}px)` }}
-        className={cn(
-          "fixed right-0 bottom-0 flex flex-col bg-white",
-          !expanded && "border-l border-zinc-200",
-          // --nav-height leaves out the nav's 1px bottom border, which the panel would cover: it stacks above the nav.
-          "top-[calc(var(--nav-height)+1px)] pb-[var(--safe-inset-bottom)]",
-          // Hidden by sliding out, not `hidden`, so closing can animate; visibility keeps it out of focus and the accessibility tree once out.
-          "transition-[left,translate,visibility] duration-300 ease-out motion-reduce:transition-none starting:translate-x-full",
-          !shown && "invisible translate-x-full",
-          Z.fixed,
-        )}
-      >
-        {chat}
-      </aside>
-    );
-  }
-
   return (
-    // Not modal and not dismissed by outside presses: the tab bar below stays usable, and its own
-    // Ask Iris button closes the sheet. It switches in and out like the other tabs' pages, so it
-    // neither slides nor closes on a swipe, which Base UI's drawer has no switch to turn off.
-    <Drawer.Root
-      open={shown}
-      onOpenChange={(open, details) => !open && details.reason !== "swipe" && onClose()}
-      modal={false}
-      disablePointerDismissal
+    <aside
+      aria-label="Iris"
+      data-iris=""
+      // Expanding moves the left edge, so the width animates instead of jumping.
+      style={{ left: expanded ? 0 : `calc(100% - ${IRIS_PANEL_WIDTH}px)` }}
+      className={cn(
+        "fixed right-0 bottom-0 flex flex-col bg-white",
+        !expanded && "border-l border-zinc-200",
+        // --nav-height leaves out the nav's 1px bottom border, which the panel would cover: it stacks above the nav.
+        "top-[calc(var(--nav-height)+1px)] pb-[var(--safe-inset-bottom)]",
+        // Hidden by sliding out, not `hidden`, so closing can animate; visibility keeps it out of focus and the accessibility tree once out.
+        "transition-[left,translate,visibility] duration-300 ease-out motion-reduce:transition-none starting:translate-x-full",
+        !shown && "invisible translate-x-full",
+        Z.fixed,
+      )}
     >
-      <Drawer.VirtualKeyboardProvider>
-        <Drawer.Portal keepMounted>
-          {/* No z-index, like every portaled popup (see Z): popups opened from the sheet, History among them, stack above it.
-              The viewport spans only the sheet, so it leaves the tab bar below it clickable. iOS leaves fixed
-              elements under the keyboard; the provider reports its height, and the sheet ends on top of it
-              while it is open, else on top of the tab bar. */}
-          <Drawer.Viewport className="fixed inset-x-0 top-0 bottom-[max(var(--drawer-keyboard-inset,0px),var(--tab-bar-height))]">
-            <Drawer.Popup
-              aria-label="Iris"
-              data-iris=""
-              className={cn(
-                "absolute inset-0 flex flex-col bg-white pt-[var(--safe-inset-top)]",
-                // A drawer opened from the sheet (History) is nested and gets no backdrop of its own, so the sheet dims itself.
-                "after:pointer-events-none after:absolute after:inset-0 after:bg-zinc-950/40 after:opacity-0 after:transition-opacity after:duration-200 data-[nested-drawer-open]:after:opacity-100",
-              )}
-            >
-              <div className="flex min-h-0 flex-1 flex-col">{chat}</div>
-            </Drawer.Popup>
-          </Drawer.Viewport>
-        </Drawer.Portal>
-      </Drawer.VirtualKeyboardProvider>
-    </Drawer.Root>
+      {chat}
+    </aside>
   );
 }
 
-/**
- * The phone's Back closes the open sheet: opening adds a history entry, which closing takes back.
- * Moving to another page (a tab, a link in a reply) closes it and leaves the entry, which now sits
- * under the page left behind.
- */
-function useBackCloses(active: boolean, onClose: () => void) {
-  const pathname = usePathname();
-  const pushedEntry = useRef(false);
-  const openedOn = useRef(pathname);
-  const close = useEffectEvent(onClose);
-
-  // Push and take back in one place, not in an effect's cleanup: React may tear an effect down and
-  // set it up again while the sheet stays open, and Back from that cleanup would close it.
-  useEffect(() => {
-    if (active && !pushedEntry.current) {
-      window.history.pushState(null, "", window.location.href);
-      pushedEntry.current = true;
-    } else if (!active && pushedEntry.current) {
-      pushedEntry.current = false;
-      window.history.back();
-    }
-  }, [active]);
-
-  useEffect(() => {
-    if (!active) {
-      return;
-    }
-    const onPopState = () => {
-      pushedEntry.current = false;
-      close();
-    };
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
-  }, [active]);
-
-  useEffect(() => {
-    if (openedOn.current === pathname) {
-      return;
-    }
-    openedOn.current = pathname;
-    if (active) {
-      pushedEntry.current = false;
-      close();
-    }
-  }, [pathname, active]);
-}
-
-/**
- * Whether Iris covers the page. Expanding adds a history entry, so Back collapses it instead of
- * leaving the page; closing Iris or moving to another page collapses it.
- */
 /** How many times the panel has been shown; stays mounted while closed, so this marks each opening. */
 function useOpenCount(shown: boolean) {
   const [opens, setOpens] = useState({ shown, count: shown ? 1 : 0 });
@@ -168,6 +75,10 @@ function useOpenCount(shown: boolean) {
   return opens.count;
 }
 
+/**
+ * Whether Iris covers the page. Expanding adds a history entry, so Back collapses it instead of
+ * leaving the page; closing Iris or moving to another page collapses it.
+ */
 function useExpanded(shown: boolean) {
   const pathname = usePathname();
   const [expanded, setExpandedState] = useState(false);

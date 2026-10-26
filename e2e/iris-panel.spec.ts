@@ -167,81 +167,65 @@ test.describe("Ask Iris page entries", () => {
 
   test("leaves the lens page's actions to the nav, which opens Iris with this lens's questions first", async ({ page }, testInfo) => {
     const viewport = page.viewportSize();
-    testInfo.skip(!viewport || viewport.width >= 1024, "Narrow screens use the bottom sheet");
+    testInfo.skip(!viewport || viewport.width >= 1024, "Narrow screens open the Ask Iris page");
     const lensUrl = "/en/lenses/x/fujifilm-xf-33mmf14-r-lm-wr-x";
 
     await page.goto(lensUrl);
     await expect(page.getByTestId("lens-detail-actions").getByRole("button")).toHaveCount(4);
     await irisToggle(page).click();
 
-    const sheet = page.getByRole("dialog", { name: "Iris" });
-    const starters = sheet.getByRole("button", { name: /\?$/ });
+    await expect(page).toHaveURL(/\/en\/askiris\?from=/);
+    const starters = page.getByRole("button", { name: /\?$/ });
     await expect(starters.first()).toHaveText(/^What is the .*XF 33mm F1\.4 R LM WR good for\?$/);
-    await expect(sheet.getByRole("textbox")).toBeInViewport();
+    await expect(page.getByRole("textbox")).toBeInViewport();
+    await page.goBack();
     await expect(page).toHaveURL(new RegExp(`${lensUrl}$`));
   });
 
-  test("opens full screen above the tab bar on phones, where Back and the current tab close it", async ({ page }, testInfo) => {
+  test("opens Iris as a page of the tab bar on phones, with no close button, and Back returns", async ({ page }, testInfo) => {
     const viewport = page.viewportSize();
     testInfo.skip(!viewport || viewport.width >= 640, "The tab bar is for screens below 640px");
 
     await page.goto("/en/lenses/x/browse");
     await irisToggle(page).click();
-    const sheet = page.getByRole("dialog", { name: "Iris" });
+    await expect(page).toHaveURL(/\/en\/askiris/);
     const tabBar = page.getByRole("navigation", { name: "Main" });
-    await expect(sheet).toBeVisible();
-    await expect(tabBar).toBeVisible();
-    const [sheetBox, tabBarBox] = [(await sheet.boundingBox())!, (await tabBar.boundingBox())!];
-    expect(sheetBox.y).toBe(0);
-    expect(Math.abs(sheetBox.y + sheetBox.height - tabBarBox.y)).toBeLessThanOrEqual(1);
-    await expect(tabBar.getByRole("button", { name: /^Ask Iris/ })).toHaveAttribute("aria-pressed", "true");
-    await expect(sheet.getByRole("button", { name: "Open full screen" })).toHaveCount(0);
+    await expect(tabBar.getByRole("link", { name: /^Ask Iris/ })).toHaveAttribute("aria-current", "page");
+    await expect(tabBar.getByRole("link", { name: "Browse" })).not.toHaveAttribute("aria-current");
+    await expect(page.getByRole("button", { name: "Close" })).toHaveCount(0);
 
     await page.goBack();
-    await expect(sheet).toBeHidden();
-    await expect(page).toHaveURL(/\/en\/lenses\/x\/browse$/);
-
-    await irisToggle(page).click();
-    await expect(sheet).toBeVisible();
-    await tabBar.getByRole("link", { name: "Browse" }).click();
-    await expect(sheet).toBeHidden();
     await expect(page).toHaveURL(/\/en\/lenses\/x\/browse$/);
   });
 });
 
 test.describe("Ask Iris panel empty state", () => {
-  for (const { name, viewport, role, heroSize } of [
-    { name: "side panel", viewport: { width: 1280, height: 800 }, role: "complementary", heroSize: 56 },
-    { name: "phone sheet", viewport: { width: 375, height: 812 }, role: "dialog", heroSize: 64 },
-    { name: "short phone sheet", viewport: { width: 375, height: 667 }, role: "dialog", heroSize: 64 },
-  ] as const) {
-    test(`shows the Iris hero at its size in the ${name}`, async ({ page }, testInfo) => {
-      testInfo.skip(testInfo.project.name !== "chromium", "Sets its own viewports");
-      await page.setViewportSize(viewport);
-      // The home page gives Iris no page context, so the panel opens on its plain empty state.
-      await page.goto("/en");
-      await irisToggle(page).click();
-
-      const panel = page.getByRole(role, { name: "Iris" });
-      await expect(panel.getByRole("heading", { level: 1 })).toBeVisible();
-      const hero = panel.getByTestId("iris");
-      await expect(hero).toBeVisible();
-      expect((await hero.boundingBox())!.width).toBe(heroSize);
-    });
-  }
-
-  test("replays the hero's opening sweep each time the panel opens again", async ({ page }, testInfo) => {
+  test.beforeEach(async ({ page }, testInfo) => {
     testInfo.skip(testInfo.project.name !== "chromium", "Sets its own viewport");
-    await page.setViewportSize({ width: 375, height: 812 });
+    await page.setViewportSize({ width: 1280, height: 800 });
+    // The home page gives Iris no page context, so the panel opens on its plain empty state.
     await page.goto("/en");
+  });
+
+  test("shows the Iris hero at its size in the side panel", async ({ page }) => {
+    await irisToggle(page).click();
+
+    const panel = page.getByRole("complementary", { name: "Iris" });
+    await expect(panel.getByRole("heading", { level: 1 })).toBeVisible();
+    const hero = panel.getByTestId("iris");
+    await expect(hero).toBeVisible();
+    expect((await hero.boundingBox())!.width).toBe(56);
+  });
+
+  test("replays the hero's opening sweep each time the panel opens again", async ({ page }) => {
     const toggle = irisToggle(page);
     await toggle.click();
-    const sheet = page.getByRole("dialog", { name: "Iris" });
-    const hero = sheet.getByTestId("iris");
+    const panel = page.getByRole("complementary", { name: "Iris" });
+    const hero = panel.getByTestId("iris");
     await expect(hero).toHaveAttribute("data-animating", "false", { timeout: 10_000 });
 
-    await page.keyboard.press("Escape");
-    await expect(sheet).toBeHidden();
+    await toggle.click();
+    await expect(panel).toBeHidden();
     await toggle.click();
     await expect(hero).toHaveAttribute("data-animating", "true");
   });
