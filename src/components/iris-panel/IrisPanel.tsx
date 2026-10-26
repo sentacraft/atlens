@@ -75,8 +75,14 @@ export default function IrisPanel({
 
   return (
     // Not modal and not dismissed by outside presses: the tab bar below stays usable, and its own
-    // Ask Iris button closes the sheet.
-    <Drawer.Root open={shown} onOpenChange={(open) => !open && onClose()} modal={false} disablePointerDismissal swipeDirection="down">
+    // Ask Iris button closes the sheet. It switches in and out like the other tabs' pages, so it
+    // neither slides nor closes on a swipe, which Base UI's drawer has no switch to turn off.
+    <Drawer.Root
+      open={shown}
+      onOpenChange={(open, details) => !open && details.reason !== "swipe" && onClose()}
+      modal={false}
+      disablePointerDismissal
+    >
       <Drawer.VirtualKeyboardProvider>
         <Drawer.Portal keepMounted>
           {/* No z-index, like every portaled popup (see Z): popups opened from the sheet, History among them, stack above it.
@@ -89,8 +95,6 @@ export default function IrisPanel({
               data-iris=""
               className={cn(
                 "absolute inset-0 flex flex-col bg-white pt-[var(--safe-inset-top)]",
-                "[transform:translateY(var(--drawer-swipe-movement-y,0px))] transition-[transform,translate] duration-300 ease-out data-[swiping]:transition-none",
-                "data-ending-style:translate-y-full data-starting-style:translate-y-full",
                 // A drawer opened from the sheet (History) is nested and gets no backdrop of its own, so the sheet dims itself.
                 "after:pointer-events-none after:absolute after:inset-0 after:bg-zinc-950/40 after:opacity-0 after:transition-opacity after:duration-200 data-[nested-drawer-open]:after:opacity-100",
               )}
