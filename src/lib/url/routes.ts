@@ -59,3 +59,19 @@ export function brandPath(mount: Mount, brand: string): string {
 export function lensPath(lens: { mount: Mount; id: string }): string {
   return `/lenses/${mountToUrlSegment(lens.mount)}/${lens.id}`;
 }
+
+export type NavSection = "lenses" | "charts" | "iris" | "me";
+
+/** Which site section a locale-free path belongs to, for the nav's current item; null outside them. */
+export function navSection(pathname: string): NavSection | null {
+  if (pathname.startsWith("/lenses")) {
+    if (/^\/lenses\/[^/]+\/charts(\/|$)/.test(pathname)) {
+      return "charts";
+    }
+    return /^\/lenses\/[^/]+\/compare(\/|$)/.test(pathname) ? null : "lenses";
+  }
+  if (pathname.startsWith(ASK_IRIS_PATH)) {
+    return "iris";
+  }
+  return pathname.startsWith(PROFILE_PATH) ? "me" : null;
+}

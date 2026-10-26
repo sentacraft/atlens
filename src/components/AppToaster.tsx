@@ -13,9 +13,9 @@ export default function AppToaster() {
       position={isDesktop ? "top-center" : "bottom-center"}
       offset={isDesktop
         ? { top: "calc(var(--nav-height) + 1rem)" }
-        : { bottom: "calc(8rem + var(--safe-inset-bottom))" }}
+        : { bottom: "calc(8rem + var(--page-bottom-inset))" }}
       // Fixed, not tied to --compare-bar-height, so the toast stays still while the bar exits.
-      mobileOffset={{ bottom: "calc(8rem + var(--safe-inset-bottom))" }}
+      mobileOffset={{ bottom: "calc(8rem + var(--page-bottom-inset))" }}
     />
   );
 }

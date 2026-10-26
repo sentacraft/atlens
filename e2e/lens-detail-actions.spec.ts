@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { irisToggle } from "./helpers";
 
 // Has three store links, so the price button carries its longest label.
 const LENS_PATH = "lenses/x/laowa-cf-12-24mmf56-zoom-shift-x";
@@ -52,7 +53,7 @@ for (const locale of ["en", "zh"] as const) {
 test("keeps the rows while Iris's side panel narrows the page", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto(`/en/${LENS_PATH}`);
-  await page.getByRole("banner").getByRole("button", { name: /^Ask Iris/ }).click();
+  await irisToggle(page).click();
   await expect(page.getByRole("complementary", { name: "Iris" })).toBeVisible();
   await expectTwoRows(page, "en");
 });

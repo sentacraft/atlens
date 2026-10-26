@@ -66,7 +66,7 @@ function renderPage() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={client}>
-      <ProfilePage lenses={[]} />
+      <ProfilePage lenses={[]} compareBar={<div data-testid="compare-bar" />} />
     </QueryClientProvider>,
   );
 }
@@ -84,10 +84,19 @@ afterEach(() => {
 });
 
 describe("ProfilePage", () => {
-  it("asks a signed-out visitor to sign in", () => {
+  it("asks a signed-out visitor to sign in, with no compare bar since nothing there can be compared", () => {
     renderPage();
 
     expect(screen.getByRole("heading", { name: "signInTitle" })).toBeInTheDocument();
+    expect(screen.queryByTestId("compare-bar")).toBeNull();
+  });
+
+  it("shows the compare bar beside a signed-in visitor's favorites", () => {
+    signedIn();
+    serveSettings(settingsResponse({ defaultMount: "X", locale: null }));
+    renderPage();
+
+    expect(screen.getByTestId("compare-bar")).toBeInTheDocument();
   });
 
   it("saves a new language, remembers it for the bare root, and moves to that language", async () => {

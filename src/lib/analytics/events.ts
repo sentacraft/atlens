@@ -282,7 +282,8 @@ export const EVENT_DOCS: EventDocs = {
           home: { label: "Home", description: "The ask box or an example question on the home page" },
           lens: { label: "Lens page", description: "\"Ask Iris\" on a lens's page. Removed in October 2026; kept to label earlier events" },
           alternatives: { label: "Same focal length", description: "\"Ask Iris how to choose\" above a lens page's list of other lenses at its focal length" },
-          nav: { label: "Top navigation", description: "The Iris button in the site header" },
+          nav: { label: "Top navigation", description: "The Iris button in the site header; on phones until late October 2026, when it moved to the tab bar" },
+          tab_bar: { label: "Tab bar", description: "Ask Iris in the bottom tab bar on phones" },
           browse: { label: "Browse list", description: "\"Pick for my filters\" in the lens list toolbar, shown while filters are set" },
           empty: { label: "No-results prompt", description: "The prompt shown when the filters match no lens" },
           compare: { label: "Compare page", description: "\"Explain the differences\" in the comparison header" },
@@ -420,19 +421,19 @@ export const EVENT_DOCS: EventDocs = {
     },
   },
   nav_click: {
-    description: "A click on the site header: one of its links or buttons, the menu button, or an item in that menu. Some items also record their own event (Ask Iris, support, feedback, sign-in).",
+    description: "A click on the site's navigation: the header's links and buttons, the menu button, an item in that menu, or the phone tab bar. Some items also record their own event (Ask Iris, support, feedback, sign-in).",
     fields: {
       item: {
         description: "What was clicked.",
         values: {
           home: { label: "Logo", description: "The Atlens logo, to the home page" },
           lenses: { label: "Lenses", description: "The lens library" },
-          compare: { label: "Compare", description: "The compare page" },
+          compare: { label: "Compare", description: "The compare page. Removed from the header and menu in late October 2026; kept to label earlier events" },
           charts: { label: "Charts", description: "The charts pages" },
           github: { label: "GitHub", description: "The repository on GitHub" },
           iris: { label: "Ask Iris", description: "The Ask Iris button, opening or closing the panel" },
           menu: { label: "Menu button", description: "Opened the header menu" },
-          profile: { label: "Profile", description: "The profile page, for signed-in visitors" },
+          profile: { label: "Profile", description: "The profile page: in the menu for signed-in visitors, and the tab bar's Profile" },
           sign_in: { label: "Sign in", description: "Sign in, for signed-out visitors" },
           about: { label: "About", description: "The about page" },
           support: { label: "Support", description: "The support dialog" },
@@ -445,7 +446,8 @@ export const EVENT_DOCS: EventDocs = {
         description: "Where the item was.",
         values: {
           bar: { label: "Header bar", description: "Shown in the header itself" },
-          menu: { label: "Menu", description: "Inside the header menu; on phone widths this holds compare, charts and GitHub too" },
+          menu: { label: "Menu", description: "Inside the header menu; on phone widths it holds GitHub too" },
+          tab_bar: { label: "Tab bar", description: "The bottom tab bar on phone widths: lenses, charts, Ask Iris, profile" },
         },
       },
     },

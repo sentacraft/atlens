@@ -56,7 +56,7 @@ type MessageSource = { method: "typed" | "handoff" } | { method: "starter"; pool
 const TOP_BAR_BTN_CLS = cn(ICON_NAV_BTN_CLS, "h-9 gap-1.5 px-2.5 text-sm");
 
 const SHELL_CLS = {
-  page: "mx-auto flex h-[calc(var(--app-height)-var(--nav-height)-var(--safe-inset-bottom))] w-full max-w-[800px] flex-col px-4",
+  page: "mx-auto flex h-[calc(var(--app-height)-var(--nav-height)-var(--page-bottom-inset))] w-full max-w-[800px] flex-col px-4",
   panel: "flex h-full w-full flex-col px-4",
   expandedPanel: "mx-auto flex h-full w-full max-w-[800px] flex-col px-4",
 };
@@ -363,15 +363,17 @@ export default function AskIrisChat({
             <Plus className="size-4" />
           </button>
         )}
-        <button
-          type="button"
-          onClick={() => shell.onExpandedChange(!shell.expanded)}
-          aria-label={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
-          title={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
-          className={cn(ICON_NAV_BTN_CLS, "h-8 w-8")}
-        >
-          {shell.expanded ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
-        </button>
+        {shell.layout === "side" && (
+          <button
+            type="button"
+            onClick={() => shell.onExpandedChange(!shell.expanded)}
+            aria-label={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
+            title={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
+            className={cn(ICON_NAV_BTN_CLS, "h-8 w-8")}
+          >
+            {shell.expanded ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+          </button>
+        )}
         <button type="button" onClick={shell.onClose} aria-label={t("closePanel")} className={cn(ICON_CLOSE_BTN_CLS, "h-8 w-8")}>
           <X className="size-4" />
         </button>

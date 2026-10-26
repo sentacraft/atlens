@@ -33,6 +33,8 @@
     "getApp": "Get App",
     "feedback": "Feedback",
     "menu": "Menu",
+    "me": "Profile",
+    "tabBar": "Main",
     "signInHint": "Save lenses, gear, and chats"
   },
   "Auth": {
@@ -420,6 +422,7 @@
     "viewCompare": "View",
     "goCompare": "Compare ({count, number})",
     "clearCompare": "Clear",
+    "compareSelected": "{count, number} selected",
     "cinePromptTitle": "Looking for cine lenses?",
     "cinePromptBody": "This list holds photo lenses; the {count, number} cine lenses are in the Cinema Lenses collection",
     "compareShort": "Compare",

@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Menu } from "@base-ui/react/menu";
-import { ChartColumn, Columns2, Download, Flag, Heart, Info, LogIn, LogOut, Menu as MenuIcon, UserRound } from "lucide-react";
+import { Download, Flag, Heart, Info, LogIn, LogOut, Menu as MenuIcon, UserRound } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { MENU_ITEM_CLS, MENU_POPUP_CLS, NAV_CAPSULE_CLS } from "@/config/ui-tokens";
@@ -21,20 +21,8 @@ function trackMenu(item: string) {
   track("nav_click", { item, place: "menu" });
 }
 
-/** The nav's one menu: the account, the pages the bar has no room for, and feedback. */
-export default function NavMenu({
-  compareHref,
-  chartsHref,
-  onCompareClick,
-  showGetApp,
-  onFeedback,
-}: {
-  compareHref: string;
-  chartsHref: string;
-  onCompareClick: (event: React.MouseEvent) => void;
-  showGetApp: boolean;
-  onFeedback: () => void;
-}) {
+/** The nav's one menu: the account, the site's own pages, and feedback. */
+export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolean; onFeedback: () => void }) {
   const tNav = useTranslations("Nav");
   const t = useTranslations("Auth");
   const { data: session } = authClient.useSession();
@@ -98,21 +86,6 @@ export default function NavMenu({
                 <Menu.Separator className={SEPARATOR_CLS} />
               </>
             )}
-            <Menu.Item
-              render={<Link href={compareHref} />}
-              onClick={(e) => {
-                trackMenu("compare");
-                onCompareClick(e);
-              }}
-              className={cn(MENU_ITEM_CLS, "sm:hidden")}
-            >
-              <Columns2 className="h-4 w-4 shrink-0" />
-              {tNav("compare")}
-            </Menu.Item>
-            <Menu.Item render={<Link href={chartsHref} />} onClick={() => trackMenu("charts")} className={cn(MENU_ITEM_CLS, "sm:hidden")}>
-              <ChartColumn className="h-4 w-4 shrink-0" />
-              {tNav("charts")}
-            </Menu.Item>
             <Menu.Item render={<Link href={ABOUT_PATH} />} onClick={() => trackMenu("about")} className={MENU_ITEM_CLS}>
               <Info className="h-4 w-4 shrink-0" />
               {tNav("about")}

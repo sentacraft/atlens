@@ -58,12 +58,7 @@ export default function MountSwitcher() {
         className="group flex items-center gap-0.5 -ml-1 sm:-ml-1.5 px-1 py-0.5 sm:px-1.5 rounded-md font-heading font-medium text-sm sm:text-base tracking-tight whitespace-nowrap text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 transition-all outline-none"
       >
         <SelectPrimitive.Value>
-          {(value: Mount) => (
-            <>
-              <span className="sm:hidden">{value}</span>
-              <span className="hidden sm:inline">{options.find((opt) => opt.value === value)?.label}</span>
-            </>
-          )}
+          {(value: Mount) => options.find((opt) => opt.value === value)?.label}
         </SelectPrimitive.Value>
         <SelectPrimitive.Icon
           render={

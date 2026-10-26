@@ -58,44 +58,47 @@ test.describe("Compare phantom header top inset", () => {
   });
 });
 
-test.describe("CompareBar bottom inset", () => {
+const TAB_BAR = 60; // the phone tab bar above the home indicator
+
+test.describe("Tab bar and compare bar bottom inset", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/en/lenses");
     await page.waitForLoadState("networkidle");
     await simulateNotch(page);
   });
 
-  test("compare bar paddingBottom equals --safe-inset-bottom", async ({ page }) => {
+  test("the tab bar pads the home indicator and stands that much taller", async ({ page }) => {
+    const tabBar = page.getByRole("navigation", { name: "Main" });
+    await expect(tabBar).toBeVisible();
+    const { paddingBottom, height, bottom } = await tabBar.evaluate((el) => ({
+      paddingBottom: parseFloat(getComputedStyle(el).paddingBottom),
+      height: el.getBoundingClientRect().height,
+      bottom: el.getBoundingClientRect().bottom,
+    }));
+    expect(paddingBottom).toBe(HOME_BAR);
+    expect(height).toBe(TAB_BAR + HOME_BAR);
+    expect(bottom).toBe(page.viewportSize()!.height);
+  });
+
+  test("the compare bar sits on the tab bar, which already clears the home indicator", async ({ page }) => {
     // Below 499px only the icon button is visible.
     const addBtn = page.getByRole("button", { name: /add to compare/i }).first();
     await addBtn.waitFor({ state: "visible" });
     await addBtn.click();
 
     const bar = page.locator('[data-testid="compare-bar"]');
-    await bar.waitFor({ state: "attached" });
-
-    const paddingBottom = await computedPx(page, '[data-testid="compare-bar"]', "padding-bottom");
-    expect(paddingBottom).toBe(HOME_BAR);
-  });
-
-  test("--compare-bar-height includes safe-area padding (border-box)", async ({ page }) => {
-    const addBtn = page.getByRole("button", { name: /add to compare/i }).first();
-    await addBtn.waitFor({ state: "visible" });
-    await addBtn.click();
-
-    const bar = page.locator('[data-testid="compare-bar"]');
     await bar.waitFor({ state: "visible" });
+    await expect.poll(() => bar.evaluate((el) => el.getBoundingClientRect().bottom)).toBe(
+      page.viewportSize()!.height - TAB_BAR - HOME_BAR,
+    );
 
-    const [cssVar, domHeight] = await page.evaluate(() => {
-      const el = document.querySelector('[data-testid="compare-bar"]') as HTMLElement;
-      const varVal = parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue("--compare-bar-height")
-      );
-      return [varVal, el.getBoundingClientRect().height];
-    });
-
+    const { paddingBottom, cssVar, domHeight } = await bar.evaluate((el) => ({
+      paddingBottom: parseFloat(getComputedStyle(el).paddingBottom),
+      cssVar: parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--compare-bar-height")),
+      domHeight: el.getBoundingClientRect().height,
+    }));
+    expect(paddingBottom).toBe(0);
     expect(Math.abs(cssVar - domHeight)).toBeLessThanOrEqual(1);
-    expect(cssVar).toBeGreaterThanOrEqual(HOME_BAR);
   });
 });
 
@@ -106,7 +109,7 @@ test.describe("Layout body bottom inset", () => {
     await simulateNotch(page);
   });
 
-  test("page body wrapper paddingBottom equals --safe-inset-bottom", async ({ page }) => {
+  test("page body wrapper paddingBottom clears the tab bar and the home indicator", async ({ page }) => {
     const paddingBottom = await page.evaluate(() => {
       const el = document.querySelector(".pt-\\[var\\(--nav-height\\)\\]");
       if (!el) {
@@ -114,7 +117,7 @@ test.describe("Layout body bottom inset", () => {
       }
       return parseFloat(getComputedStyle(el).paddingBottom);
     });
-    expect(paddingBottom).toBe(HOME_BAR);
+    expect(paddingBottom).toBe(TAB_BAR + HOME_BAR);
   });
 });
 

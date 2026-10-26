@@ -33,6 +33,8 @@
     "getApp": "获取应用",
     "feedback": "反馈",
     "menu": "菜单",
+    "me": "我的",
+    "tabBar": "主导航",
     "signInHint": "收藏镜头、保存器材、同步对话"
   },
   "Auth": {
@@ -420,6 +422,7 @@
     "viewCompare": "查看",
     "goCompare": "查看对比（{count, number}）",
     "clearCompare": "清空",
+    "compareSelected": "已选 {count, number} 支",
     "cinePromptTitle": "找电影镜头？",
     "cinePromptBody": "这里只列摄影镜头，{count, number} 支电影镜头在「电影镜头」合集里",
     "compareShort": "对比",

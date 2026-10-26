@@ -5,9 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import Iris from "@/components/iris/Iris";
 import { IRIS_NAV } from "@/config/iris-config";
-import { useCompare } from "@/context/CompareProvider";
-import { useClearCompareWithUndo } from "@/hooks/useClearCompareWithUndo";
-import { useEffectiveMount } from "@/hooks/useMountParam";
+import { useNavLinks } from "@/hooks/useNavLinks";
 import { useBreakpoint } from "@/hooks/useViewport";
 import { useNav } from "@/context/NavProvider";
 import { usePwa } from "@/hooks/usePwa";
@@ -17,20 +15,16 @@ import MountSwitcher from "@/components/mount/MountSwitcher";
 import FeedbackDialog from "@/components/feedback/FeedbackDialog";
 import GitHubMark from "@/components/logos/GitHubMark";
 import NavMenu from "@/components/nav/NavMenu";
+import TabBar from "@/components/nav/TabBar";
 import { useIris } from "@/context/IrisPanelProvider";
 import AiTag from "@/components/iris/AiTag";
 import { SITE } from "@/config/site";
-import { browsePath, chartsPath } from "@/lib/url/routes";
-import { mountHasCharts } from "@/lib/mount";
-import { buildComparePath } from "@/lib/url/compare";
 import { PAGE_GUTTER_CLS } from "@/config/ui-tokens";
 
 export default function Nav() {
   const t = useTranslations("Nav");
   const pathname = usePathname();
-  const { compareIds } = useCompare();
-  const clearCompareWithUndo = useClearCompareWithUndo();
-  const effectiveMount = useEffectiveMount();
+  const { section, browseHref, chartsHref } = useNavLinks();
   const { navLocked, lockNav, setNavHidden } = useNav();
   const { openIris, closeIris, irisShown } = useIris();
   const isPwa = usePwa();
@@ -76,10 +70,6 @@ export default function Nav() {
     setNavHidden(hidden);
   }, [hidden, setNavHidden]);
 
-  const browseHref = browsePath(effectiveMount);
-  const compareHref = buildComparePath(effectiveMount, compareIds);
-  const chartsHref = chartsPath(mountHasCharts(effectiveMount) ? effectiveMount : "X");
-
   const linkCls = (active: boolean) =>
     `text-sm transition-colors px-1.5 sm:px-2 ${
       active
@@ -87,21 +77,10 @@ export default function Nav() {
         : "text-zinc-500 hover:text-zinc-900"
     }`;
 
-  const isCompareActive = pathname.includes("/compare");
-  const isChartsActive = pathname.includes("/charts");
-  const isBrowseActive = pathname.startsWith("/lenses") && !isCompareActive && !isChartsActive;
   const showMountSwitcher = pathname === "/" || pathname.startsWith("/lenses");
 
   function trackBar(item: string) {
     track("nav_click", { item, place: "bar" });
-  }
-
-  function handleCompareLinkClick(e: React.MouseEvent) {
-    if (!isCompareActive || compareIds.length === 0) {
-      return;
-    }
-    e.preventDefault();
-    clearCompareWithUndo();
   }
 
   return (
@@ -137,20 +116,10 @@ export default function Nav() {
         </div>
 
         <div className="flex items-center gap-1 sm:gap-2">
-          <Link href={browseHref} onClick={() => trackBar("lenses")} className={cn(linkCls(isBrowseActive), "whitespace-nowrap")}>
+          <Link href={browseHref} onClick={() => trackBar("lenses")} className={cn(linkCls(section === "lenses"), "hidden whitespace-nowrap sm:inline")}>
             {t("lenses")}
           </Link>
-          <Link
-            href={compareHref}
-            onClick={(e) => {
-              trackBar("compare");
-              handleCompareLinkClick(e);
-            }}
-            className={cn(linkCls(isCompareActive), "hidden whitespace-nowrap sm:inline")}
-          >
-            {t("compare")}
-          </Link>
-          <Link href={chartsHref} onClick={() => trackBar("charts")} className={cn(linkCls(isChartsActive), "hidden whitespace-nowrap sm:inline")}>
+          <Link href={chartsHref} onClick={() => trackBar("charts")} className={cn(linkCls(section === "charts"), "hidden whitespace-nowrap sm:inline")}>
             {t("charts")}
           </Link>
           <a
@@ -177,8 +146,7 @@ export default function Nav() {
               }
             }}
             className={cn(
-              // The ::after widens the hit area to 44px tall on phones without growing the button.
-              "relative mr-1.5 inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 text-[13px] font-medium text-zinc-900 transition-colors after:absolute after:inset-x-0 after:-inset-y-1.5",
+              "relative mr-1.5 hidden h-8 items-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 text-[13px] font-medium text-zinc-900 transition-colors sm:inline-flex",
               irisShown ? "border-zinc-400 bg-zinc-100" : "border-zinc-200 bg-white hover:bg-zinc-50",
             )}
           >
@@ -188,16 +156,12 @@ export default function Nav() {
               <AiTag />
             </span>
           </button>
-          <NavMenu
-            compareHref={compareHref}
-            chartsHref={chartsHref}
-            onCompareClick={handleCompareLinkClick}
-            showGetApp={!isPwa}
-            onFeedback={openFeedback}
-          />
+          <NavMenu showGetApp={!isPwa} onFeedback={openFeedback} />
         </div>
       </nav>
     </header>
+
+    <TabBar />
 
     <FeedbackDialog
       open={feedbackOpen}
