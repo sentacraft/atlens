@@ -17,17 +17,6 @@ WORKTREE_ROOT=$(git rev-parse --show-toplevel)
 cd "$WORKTREE_ROOT"
 mkdir -p .claude
 
-# Reuse the main checkout's ignored local environment in newly created worktrees.
-# Keep an existing worktree-specific file untouched.
-COMMON_GIT_DIR=$(git rev-parse --path-format=absolute --git-common-dir)
-MAIN_REPO_ROOT=$(dirname "$COMMON_GIT_DIR")
-SOURCE_ENV="$MAIN_REPO_ROOT/.env.local"
-if [ -f "$SOURCE_ENV" ] && [ ! -e .env.local ]; then
-  cp "$SOURCE_ENV" .env.local
-  chmod 600 .env.local
-  echo "Copied .env.local from the main checkout."
-fi
-
 # ── pnpm install (skip if node_modules is up to date) ────────────────────────
 # Guard on pnpm's install marker (node_modules/.modules.yaml), not on the
 # directory itself: tools like vitest and turbopack drop caches under
