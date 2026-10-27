@@ -25,6 +25,10 @@ export async function rasterizePoster(
     backgroundColor: "#ffffff",
     width: naturalWidth,
     height: naturalHeight,
+    // On WebKit and Firefox this redraws the whole poster once per embedded image, waiting longer
+    // each time: minutes on a phone for a 179-lens ladder. The lens images are decoded above.
+    // https://github.com/qq15725/modern-screenshot/issues/173
+    features: { fixSvgXmlDecode: false },
   });
 }
 
