@@ -10,7 +10,6 @@ import { weightDisplay } from "@/lib/lens/format";
 import { formatPrice } from "@/lib/lens/pricing";
 import Markdown from "@/components/askiris/Markdown";
 import LensActions from "@/components/lens/LensActions";
-import { useCompareToggle } from "@/hooks/useCompareToggle";
 import type { Recommendation } from "@/lib/ai/recall";
 import { lensPath } from "@/lib/url/routes";
 
@@ -37,7 +36,6 @@ const REASON_CLS =
 // EVAL MIRROR: `formatCard` in eval/promptfoo/provider.mjs hand-writes what the judges read
 // for a card.
 function RecommendationCard({ rec }: { rec: Recommendation }) {
-  const compare = useCompareToggle(rec);
   const tPricing = useTranslations("Pricing");
   const weight = rec.weightG != null ? weightDisplay(rec.weightG, "g") : null;
   const price = rec.price ? formatPrice(tPricing, rec.price.amount, rec.price.currency) : null;
@@ -97,7 +95,7 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
       <LensActions
         lensId={rec.id}
         lensName={rec.name}
-        compare={compare}
+        compare={null}
         tier="row"
         className="mx-3.5 justify-end border-t border-zinc-100 pt-2.5 pb-3"
       />

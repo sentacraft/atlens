@@ -74,7 +74,9 @@ leave out (they close by swipe or the backdrop); a yes-or-no confirmation keeps 
 
 A lens shown as an item to browse gets favorite and compare from `LensActions`, in the tier that
 matches how the lens is shown (its own panel, one card or row among many, a chart tile). Don't build
-these buttons anywhere else; `e2e/lens-actions.spec.ts` checks that list pages carry both.
+these buttons anywhere else; `e2e/lens-actions.spec.ts` checks that list pages carry both. Compare
+appears only where the page shows the compare bar; Ask Iris has none, so its cards carry favorite
+alone and comparing is Iris's job there.
 
 The Atlens design system (https://claude.ai/artifact/B71r29pU5DfmVSWxybdApP) mirrors the theme,
 fonts, `ui-tokens.ts` and a set of components; `scripts/hooks/ui-token-review.mjs` lists those

@@ -69,6 +69,20 @@ describe("LensActions", () => {
     expect(control.onToggle).toHaveBeenCalledOnce();
   });
 
+  it("shows favorite alone when the place has no compare bar", () => {
+    for (const tier of ["panel", "row", "dense"] as const) {
+      render(
+        <NextIntlClientProvider locale="en" messages={en}>
+          <LensActions lensId="lens-a" lensName="XF 33mm" compare={null} tier={tier} />
+        </NextIntlClientProvider>,
+      );
+      const names = screen.getAllByRole("button").map((button) => button.getAttribute("aria-label") ?? button.textContent);
+      expect(names, tier).toHaveLength(1);
+      expect(names[0], tier).toMatch(/Favorite/);
+      cleanup();
+    }
+  });
+
   it("shows the selected states", () => {
     mocks.favorited = true;
     renderActions("panel", { selected: true });
