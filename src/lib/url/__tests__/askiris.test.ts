@@ -23,18 +23,10 @@ describe("resolveAskIrisEntry", () => {
 
 describe("askIrisPagePath", () => {
   it("round-trips through resolveAskIrisEntry", () => {
-    for (const entry of [
-      { conversationId: "conv-a" },
-      { question: "Which 23mm?" },
-      { question: "Which 23mm?", from: "/en/lenses/x/compare?ids=a,b" },
-    ]) {
+    for (const entry of [{ conversationId: "conv-a" }, { question: "Which 23mm?" }]) {
       const params = Object.fromEntries(new URL(askIrisPagePath(entry), "https://atlens.test").searchParams);
       expect(resolveAskIrisEntry(params)).toEqual(entry);
     }
-  });
-
-  it("keeps only a path as the page it was opened from", () => {
-    expect(resolveAskIrisEntry({ from: "https://example.com/x" })).toEqual({});
   });
 
   it("is the bare page for an empty entry", () => {

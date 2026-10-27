@@ -64,13 +64,15 @@ const SHELL_CLS = {
 };
 
 /**
- * Where the chat lives: the Ask Iris page, or the side panel that follows the user across
- * pages; `pagePath` is the page beside the panel, which picks its first example questions.
+ * Where the chat lives: the Ask Iris page, or the panel that follows the user across pages, beside
+ * the page on wide screens (`side`) and a full-screen sheet on narrow ones; `pagePath` is the page
+ * beside the panel, which picks its first example questions.
  */
 export type AskIrisShell =
   | { variant: "page"; entry: AskIrisEntry; starterSeed: number }
   | {
       variant: "panel";
+      layout: "side" | "sheet";
       /** Counts the panel's openings; the empty state replays its hero on each. */
       openCount: number;
       pagePath: string;
@@ -124,7 +126,7 @@ export default function AskIrisChat({
   const [resumeId, setResumeId] = useState<string | null>(() =>
     pageOpening?.kind === "fresh" ? pageOpening.resumeId : null,
   );
-  const pageStarters = usePageStarters(shell.variant === "panel" ? shell.pagePath : (entry.from ?? null), lenses);
+  const pageStarters = usePageStarters(shell.variant === "panel" ? shell.pagePath : null, lenses);
   const { data: session } = authClient.useSession();
   // Guests have a session too, and their own stored conversations.
   const userId = session?.user.id;
@@ -396,15 +398,17 @@ export default function AskIrisChat({
             <Plus className="size-4" />
           </button>
         )}
-        <button
-          type="button"
-          onClick={() => shell.onExpandedChange(!shell.expanded)}
-          aria-label={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
-          title={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
-          className={cn(ICON_NAV_BTN_CLS, "h-8 w-8")}
-        >
-          {shell.expanded ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
-        </button>
+        {shell.layout === "side" && (
+          <button
+            type="button"
+            onClick={() => shell.onExpandedChange(!shell.expanded)}
+            aria-label={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
+            title={shell.expanded ? t("exitFullScreen") : t("fullScreen")}
+            className={cn(ICON_NAV_BTN_CLS, "h-8 w-8")}
+          >
+            {shell.expanded ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+          </button>
+        )}
         <button type="button" onClick={shell.onClose} aria-label={t("closePanel")} className={cn(ICON_CLOSE_BTN_CLS, "h-8 w-8")}>
           <X className="size-4" />
         </button>
@@ -478,7 +482,7 @@ export default function AskIrisChat({
               debug={debug}
               busy={isBusy}
               onExpand={
-                shell.variant === "panel" && !shell.expanded
+                shell.variant === "panel" && shell.layout === "side" && !shell.expanded
                   ? () => shell.onExpandedChange(true)
                   : undefined
               }

@@ -1,12 +1,11 @@
 import type { Locator, Page } from "@playwright/test";
 
-/** Ask Iris in the nav: the header's toggle from the sm breakpoint up, the phone tab bar's link below it. */
+/** The Ask Iris toggle: in the header from the sm breakpoint up, in the phone tab bar below it. */
 export function irisToggle(page: Page): Locator {
-  const name = /^Ask Iris/;
   return page
     .getByRole("banner")
-    .getByRole("button", { name })
-    .or(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name }));
+    .or(page.getByRole("navigation", { name: "Main" }))
+    .getByRole("button", { name: /^Ask Iris/ });
 }
 
 // Lens ids end in the mount suffix, so nav links under /lenses/x/ (browse, charts, compare, ...) never match.

@@ -3,7 +3,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { IrisPanelProvider, useIris } from "../IrisPanelProvider";
 import { track } from "@/lib/analytics/analytics";
-import { askIrisPagePath } from "@/lib/url/askiris";
 
 const push = vi.fn();
 const env = vi.hoisted(() => ({ wide: true, pathname: "/lenses/x/browse" }));
@@ -16,14 +15,17 @@ vi.mock("@/hooks/useViewport", () => ({ useBreakpoint: () => env.wide }));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
 vi.mock("@/components/iris-panel/IrisPanel", () => ({
   default: ({
+    layout,
     shown,
     request,
   }: {
+    layout: string;
     shown: boolean;
     request: { id: number; kind: string; text?: string; conversationId?: string } | null;
   }) => (
     <div
       data-testid="panel"
+      data-layout={layout}
       data-shown={String(shown)}
       data-request={request ? `${request.id}:${request.kind}` : ""}
     >
@@ -94,27 +96,28 @@ describe("IrisPanelProvider", () => {
     expect(track).toHaveBeenLastCalledWith("askiris_open", { entry: "alternatives", surface: "panel", pool: undefined });
   });
 
-  it("opens the Ask Iris page on a narrow screen, with the question and the page it was opened from", () => {
+  it("opens a bottom sheet on a narrow screen, without making room beside the page", () => {
     env.wide = false;
-    window.history.replaceState(null, "", "/en/lenses/x/compare?ids=a,b");
     renderProvider();
     fireEvent.click(screen.getByRole("button", { name: "ask" }));
 
-    expect(push).toHaveBeenCalledWith(askIrisPagePath({ question: "Which 23mm?", from: "/en/lenses/x/compare?ids=a,b" }));
-    expect(screen.queryByTestId("panel")).toBeNull();
+    expect(screen.getByTestId("panel")).toHaveAttribute("data-layout", "sheet");
+    expect(screen.getByTestId("panel")).toHaveAttribute("data-shown", "true");
+    expect(screen.getByTestId("panel")).toHaveTextContent("Which 23mm?");
     expect(document.documentElement.style.getPropertyValue("--iris-panel-width")).toBe("0px");
-    expect(track).toHaveBeenLastCalledWith("askiris_open", { entry: "alternatives", surface: "page", pool: undefined });
+    expect(push).not.toHaveBeenCalled();
+    expect(track).toHaveBeenLastCalledWith("askiris_open", { entry: "alternatives", surface: "sheet", pool: undefined });
   });
 
-  it("opens the Ask Iris page from the nav on a narrow screen, with nothing to hand in", () => {
+  it("opens the sheet from the nav on a narrow screen, as on a wide one", () => {
     env.wide = false;
-    window.history.replaceState(null, "", "/en/lenses/x/browse");
     renderProvider();
     fireEvent.click(screen.getByRole("button", { name: "nav" }));
 
-    expect(push).toHaveBeenCalledWith(askIrisPagePath({ from: "/en/lenses/x/browse" }));
-    expect(screen.queryByTestId("panel")).toBeNull();
-    expect(track).toHaveBeenLastCalledWith("askiris_open", { entry: "nav", surface: "page", pool: undefined });
+    expect(push).not.toHaveBeenCalled();
+    expect(screen.getByTestId("panel")).toHaveAttribute("data-shown", "true");
+    expect(screen.getByTestId("shown")).toHaveTextContent("true");
+    expect(track).toHaveBeenLastCalledWith("askiris_open", { entry: "nav", surface: "sheet", pool: undefined });
   });
 
   it("hands the panel a new opening each time the nav opens it, so the chat starts fresh", () => {

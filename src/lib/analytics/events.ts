@@ -294,9 +294,9 @@ export const EVENT_DOCS: EventDocs = {
       surface: {
         description: "How Iris appeared.",
         values: {
-          page: { label: "Full page", description: "The Ask Iris page; every opening below 1024px wide since late October 2026" },
+          page: { label: "Full page", description: "The Ask Iris page" },
           panel: { label: "Side panel", description: "The panel beside the page on wide screens" },
-          sheet: { label: "Phone sheet", description: "The same panel on a phone, rising from the bottom. Replaced by the Ask Iris page in late October 2026; kept to label earlier events" },
+          sheet: { label: "Phone sheet", description: "The same panel on a phone, rising from the bottom" },
         },
       },
       pool: { description: "Which kind of example question was clicked on the home page; empty when typed.", values: STARTER_POOLS },

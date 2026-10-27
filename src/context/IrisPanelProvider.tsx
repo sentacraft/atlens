@@ -15,17 +15,16 @@ import { IRIS_PANEL_WIDTH, PAGE_MAX_WIDTH } from "@/config/ui";
 export type IrisPanelRequest = (IrisRequest | { kind: "open" }) & { id: number };
 
 /**
- * Opens Iris: a side panel beside the page on wide screens, the Ask Iris page on narrow ones,
- * where Iris is a section of its own. Each opening starts a new conversation, sending the
- * request's question at once.
+ * Opens Iris beside the page: a side panel on wide screens, a bottom sheet on narrow ones. Each
+ * opening starts a new conversation, sending the request's question at once.
  */
 export type OpenIris = (open: { from: IrisEntryPoint; request?: IrisRequest; pool?: StarterPool }) => void;
 
 export interface IrisControls {
   openIris: OpenIris;
-  /** Hides the panel; on the Ask Iris page, goes back to the last page before it. */
+  /** Hides the panel or sheet; on the Ask Iris page, goes back to the last page before it. */
   closeIris: () => void;
-  /** Whether Iris is on screen: the panel or the Ask Iris page. */
+  /** Whether Iris is on screen: the panel, the sheet or the Ask Iris page. */
   irisShown: boolean;
 }
 
@@ -40,7 +39,7 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const [request, setRequest] = useState<IrisPanelRequest | null>(null);
   const nextRequestId = useRef(0);
-  const shown = open && wide && !onAskIrisPage;
+  const shown = open && !onAskIrisPage;
 
   const routeRef = useRef({ wide, onAskIrisPage, router });
   useEffect(() => {
@@ -56,20 +55,19 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
 
   const openIris = useCallback<OpenIris>(({ from, request: next, pool }) => {
     const route = routeRef.current;
-    const opened = (surface: "page" | "panel") => track("askiris_open", { entry: from, surface, pool });
-    if (route.onAskIrisPage || !route.wide) {
+    const opened = (surface: "page" | "panel" | "sheet") => track("askiris_open", { entry: from, surface, pool });
+    if (route.onAskIrisPage) {
       opened("page");
       route.router.push(
-        askIrisPagePath({
-          ...(next?.kind === "conversation"
+        askIrisPagePath(
+          next?.kind === "conversation"
             ? { conversationId: next.conversationId }
-            : { question: next?.kind === "question" ? next.text : undefined }),
-          from: route.onAskIrisPage ? undefined : window.location.pathname + window.location.search,
-        }),
+            : { question: next?.kind === "question" ? next.text : undefined },
+        ),
       );
       return;
     }
-    opened("panel");
+    opened(route.wide ? "panel" : "sheet");
     setMounted(true);
     setOpen(true);
     nextRequestId.current += 1;
@@ -106,9 +104,9 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
       {children}
       {/* Stays mounted while closed, so reopening continues the conversation. Suspense, as the
           panel reads useSearchParams, which would otherwise bail static pages out to client rendering. */}
-      {mounted && wide && (
+      {mounted && (
         <Suspense fallback={null}>
-          <IrisPanel shown={shown} request={request} onClose={close} />
+          <IrisPanel layout={wide ? "side" : "sheet"} shown={shown} request={request} onClose={close} />
         </Suspense>
       )}
     </IrisPanelContext>

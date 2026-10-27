@@ -90,7 +90,7 @@ function renderChat(shell: AskIrisShell = { variant: "page", entry: {}, starterS
 
 const expandedChange = vi.hoisted(() => vi.fn());
 const panel = (pagePath: string, request: AskIrisShell & { variant: "panel" } extends { request: infer R } ? R : never = null) =>
-  ({ variant: "panel", openCount: 1, pagePath, request, onClose: () => {}, expanded: false, onExpandedChange: expandedChange }) as const;
+  ({ variant: "panel", layout: "side", openCount: 1, pagePath, request, onClose: () => {}, expanded: false, onExpandedChange: expandedChange }) as const;
 
 /** `stored` is the conversation list the server answers with. */
 function captureChatBodies(stored: () => unknown[] = () => []) {

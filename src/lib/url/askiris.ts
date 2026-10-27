@@ -4,8 +4,6 @@ import { ASK_IRIS_PATH } from "@/lib/url/routes";
 export const ASKIRIS_PARAMS = {
   question: "q",
   conversation: "conversation",
-  // The page Iris was opened from, which picks its first example questions.
-  from: "from",
   // On any page but the Ask Iris page: the conversation to reopen in the panel on load.
   panelConversation: "iris",
 } as const;
@@ -20,13 +18,11 @@ export type IrisEntryPoint = "nav" | "tab_bar" | "home" | "alternatives" | "brow
 export interface AskIrisEntry {
   conversationId?: string;
   question?: string;
-  /** The page it was opened from, as a locale-prefixed path with its query. */
-  from?: string;
 }
 
 export function askIrisPagePath(entry: AskIrisEntry): string {
   const params = new URLSearchParams();
-  for (const key of ["question", "conversation", "from"] as const) {
+  for (const key of ["question", "conversation"] as const) {
     const value = key === "conversation" ? entry.conversationId : entry[key];
     if (value) {
       params.set(ASKIRIS_PARAMS[key], value);
@@ -42,11 +38,9 @@ export function resolveAskIrisEntry(params: Record<string, SearchParamValue>): A
   const read = (key: string) => firstSearchParam(params[key])?.trim() || undefined;
   const question = read(ASKIRIS_PARAMS.question);
   const conversationId = question ? undefined : read(ASKIRIS_PARAMS.conversation);
-  const from = read(ASKIRIS_PARAMS.from);
   return {
     ...(conversationId ? { conversationId } : {}),
     ...(question ? { question } : {}),
-    ...(from?.startsWith("/") ? { from } : {}),
   };
 }
 
