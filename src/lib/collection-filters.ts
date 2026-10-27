@@ -76,6 +76,8 @@ export const FILTERS = {
     xPhoto(lens) && lens.brand === "viltrox" && lens.series === "Pro",
   "voigtlander-nokton": (lens) =>
     xPhoto(lens) && lens.brand === "voigtlander" && lens.series === "Nokton",
+  "sirui-sniper": (lens) =>
+    xPhoto(lens) && lens.brand === "sirui" && lens.series === "Sniper",
 
   "under-200": (lens, locale) => {
     if (locale === "zh") {

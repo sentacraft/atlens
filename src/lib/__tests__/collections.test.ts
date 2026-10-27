@@ -454,8 +454,12 @@ describe("seriesCollection", () => {
     expect(seriesCollection(byId("fujifilm-xf-56mmf12-r-wr-x"), "en")?.slug).toBe("fujifilm-xf");
   });
 
+  it("finds the Sirui Sniper page for a Sniper lens", () => {
+    expect(seriesCollection(byId("sirui-sniper-33mmf12-aps-c-frame-autofocus-lens-x"), "en")?.slug).toBe("sirui-sniper");
+  });
+
   it("finds none for a series without a page, or a lens without a series", () => {
-    expect(seriesCollection(byId("sirui-sniper-33mmf12-aps-c-frame-autofocus-lens-x"), "en")).toBeUndefined();
+    expect(seriesCollection(byId("sirui-aurora-35mmf14-full-frame-autofocus-lens-x"), "en")).toBeUndefined();
     expect(seriesCollection(byId("7artisans-af-35mm-f14-x"), "en")).toBeUndefined();
   });
 });

@@ -255,6 +255,21 @@
           "zh": "大光圈手动定焦的经典序列"
         },
         "chart": "timeline"
+      },
+      {
+        "slug": "sirui-sniper",
+        "title": {
+          "en": "Sirui Sniper Series",
+          "zh": "思锐 Sniper 系列镜头"
+        },
+        "description": {
+          "en": "Sirui's f/1.2 autofocus primes, priced well below most other f/1.2 autofocus lenses on X-mount. Many aperture blades keep out-of-focus highlights round as you stop down. They skip the aperture ring and weather sealing, keeping the focus on a fast aperture for the money.",
+          "zh": "思锐的 F1.2 自动对焦定焦，价格明显低于 X 卡口上大多数 F1.2 自动对焦镜头。光圈叶片多，收小光圈后焦外光斑依然圆润。没有光圈环，也不防尘防滴，钱都花在了大光圈上。"
+        },
+        "shortDescription": {
+          "en": "Affordable f/1.2 autofocus primes",
+          "zh": "平价的 F1.2 自动对焦定焦"
+        }
       }
     ],
     "prime": [
