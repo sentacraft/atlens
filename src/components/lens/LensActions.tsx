@@ -16,6 +16,8 @@ import { cn } from "@/lib/utils";
 
 const ROW_IDLE_STAR_CLS =
   "border-zinc-100 bg-white text-zinc-500 group-hover:border-zinc-200 group-hover:text-zinc-700 group-focus-within:border-zinc-200 group-focus-within:text-zinc-700 hover:border-zinc-300 hover:text-zinc-900";
+const INLINE_ACTION_CLS =
+  "relative inline-flex size-8 items-center justify-center rounded-full transition-colors after:absolute after:-inset-1.5 hover:bg-zinc-100 hover:text-zinc-900";
 const ROW_IDLE_COMPARE_CLS =
   "border-zinc-100 bg-white text-zinc-500 group-hover:border-zinc-200 group-hover:text-zinc-700 group-focus-within:border-zinc-200 group-focus-within:text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50";
 
@@ -29,10 +31,11 @@ export interface CompareControl {
 }
 
 /**
- * Favorite and compare for one lens, in one of three tiers chosen by how the lens is shown:
+ * Favorite and compare for one lens, in one of four tiers chosen by how the lens is shown:
  * `panel` when it has a panel to itself (lens page, chart sheet), `row` when it is one card or row
- * among many, `dense` in a packed chart row, where they are icons that appear on hover and stay off
- * touch screens, which open the chart's lens sheet instead. Favorite comes first, compare second.
+ * among many, `inline` as plain icons in spare room the card already has, `dense` in a packed chart
+ * row, where they are icons that appear on hover and stay off touch screens, which open the chart's
+ * lens sheet instead. Favorite comes first, compare second.
  * `compare` is null where the page has no compare bar, so a lens added there would go nowhere visible.
  */
 export default function LensActions({
@@ -45,7 +48,7 @@ export default function LensActions({
   lensId: string;
   lensName: string;
   compare: CompareControl | null;
-  tier: "panel" | "row" | "dense";
+  tier: "panel" | "row" | "inline" | "dense";
   className?: string;
 }) {
   const t = useTranslations("LensActions");
@@ -123,6 +126,36 @@ export default function LensActions({
           >
             {compareIcon("size-3.5")}
             <span className="@max-[230px]/lens-row:hidden">{compare.selected ? tList("compared") : tList("compareShort")}</span>
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  if (tier === "inline") {
+    // 32px icons that take taps 6px beyond their edges, for a 44px target.
+    return (
+      <div className={cn("relative z-10 flex items-center gap-1", className)}>
+        <button
+          type="button"
+          onClick={() => favorites.toggle(lensId)}
+          aria-pressed={favorited}
+          aria-label={`${favoriteLabel}: ${lensName}`}
+          title={favoriteLabel}
+          className={cn(INLINE_ACTION_CLS, favorited ? "text-zinc-900" : "text-zinc-500")}
+        >
+          {star("size-[18px]")}
+        </button>
+        {compare && (
+          <button
+            type="button"
+            onClick={onCompare}
+            aria-pressed={compare.selected}
+            aria-label={`${compareLabel}: ${lensName}`}
+            title={compare.hint ?? compareLabel}
+            className={cn(INLINE_ACTION_CLS, compare.selected ? "text-zinc-900" : "text-zinc-500")}
+          >
+            {compareIcon("size-[18px]")}
           </button>
         )}
       </div>

@@ -42,15 +42,7 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
 
   return (
     <div className="group border-border bg-background hover:border-foreground/20 relative rounded-xl border transition-colors">
-      <Link
-        href={lensPath(rec)}
-        prefetch={false}
-        onClick={() => track("askiris_rec_click", { lens_id: rec.id, source: "askiris" })}
-        // New tab: a same-tab navigation would discard the conversation.
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex flex-col gap-2 p-3.5"
-      >
+      <div className="flex flex-col gap-2 p-3.5">
         <div className="flex gap-3.5">
           <div className="bg-muted relative size-24 shrink-0 rounded-xl">
             <Image
@@ -59,46 +51,52 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
               fill
               sizes="96px"
               style={lensImageStyle}
-              className="object-contain p-3.5"
+              className="object-contain p-1.5"
               loading="lazy"
             />
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-            <h4 className="line-clamp-2 text-sm leading-snug font-semibold" title={rec.name}>
-              {rec.name}
-            </h4>
-            {price || weight ? (
-              <div className="text-foreground flex flex-wrap items-center gap-x-2 text-xs font-medium">
-                {price ? (
-                  <span className="inline-flex items-baseline gap-1">
-                    {price}
-                    {rec.price?.condition === "used" && (
-                      <span className="text-muted-foreground">{tPricing("conditionUsed")}</span>
-                    )}
-                  </span>
-                ) : null}
-                {price && weight ? <span className="text-muted-foreground">·</span> : null}
-                {weight ? (
-                  <span className="inline-flex items-center gap-1">
-                    <Weight className="text-muted-foreground size-3" aria-hidden />
-                    {weight}
-                  </span>
-                ) : null}
-              </div>
-            ) : null}
+          <div className="flex min-w-0 flex-1 flex-col justify-between">
+            <div className="flex flex-col gap-1.5">
+              <h4 className="line-clamp-2 text-sm leading-snug font-semibold" title={rec.name}>
+                <Link
+                  href={lensPath(rec)}
+                  prefetch={false}
+                  onClick={() => track("askiris_rec_click", { lens_id: rec.id, source: "askiris" })}
+                  // New tab: a same-tab navigation would discard the conversation.
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="after:absolute after:inset-0 after:content-['']"
+                >
+                  {rec.name}
+                </Link>
+              </h4>
+              {price || weight ? (
+                <div className="text-foreground flex flex-wrap items-center gap-x-2 text-xs font-medium">
+                  {price ? (
+                    <span className="inline-flex items-baseline gap-1">
+                      {price}
+                      {rec.price?.condition === "used" && (
+                        <span className="text-muted-foreground">{tPricing("conditionUsed")}</span>
+                      )}
+                    </span>
+                  ) : null}
+                  {price && weight ? <span className="text-muted-foreground">·</span> : null}
+                  {weight ? (
+                    <span className="inline-flex items-center gap-1">
+                      <Weight className="text-muted-foreground size-3" aria-hidden />
+                      {weight}
+                    </span>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+            <LensActions lensId={rec.id} lensName={rec.name} compare={null} tier="inline" className="self-end" />
           </div>
         </div>
 
         <Markdown className={REASON_CLS}>{rec.reason}</Markdown>
-      </Link>
-      <LensActions
-        lensId={rec.id}
-        lensName={rec.name}
-        compare={null}
-        tier="row"
-        className="mx-3.5 justify-end border-t border-zinc-100 pt-2.5 pb-3"
-      />
+      </div>
     </div>
   );
 }

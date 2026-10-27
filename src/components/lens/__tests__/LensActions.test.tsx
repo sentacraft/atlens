@@ -18,7 +18,7 @@ afterEach(() => {
   mocks.favorited = false;
 });
 
-function renderActions(tier: "panel" | "row" | "dense", compare: Partial<CompareControl> = {}) {
+function renderActions(tier: "panel" | "row" | "inline" | "dense", compare: Partial<CompareControl> = {}) {
   const control: CompareControl = { selected: false, full: false, onToggle: vi.fn(), ...compare };
   render(
     <NextIntlClientProvider locale="en" messages={en}>
@@ -30,7 +30,7 @@ function renderActions(tier: "panel" | "row" | "dense", compare: Partial<Compare
 
 describe("LensActions", () => {
   it("puts favorite before compare in every tier", () => {
-    for (const tier of ["panel", "row", "dense"] as const) {
+    for (const tier of ["panel", "row", "inline", "dense"] as const) {
       renderActions(tier);
       const names = screen.getAllByRole("button").map((button) => button.getAttribute("aria-label") ?? button.textContent);
       expect(names[0], tier).toMatch(/Favorite/);
@@ -70,7 +70,7 @@ describe("LensActions", () => {
   });
 
   it("shows favorite alone when the place has no compare bar", () => {
-    for (const tier of ["panel", "row", "dense"] as const) {
+    for (const tier of ["panel", "row", "inline", "dense"] as const) {
       render(
         <NextIntlClientProvider locale="en" messages={en}>
           <LensActions lensId="lens-a" lensName="XF 33mm" compare={null} tier={tier} />
