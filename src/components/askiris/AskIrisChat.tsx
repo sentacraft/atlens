@@ -409,9 +409,11 @@ export default function AskIrisChat({
             {shell.expanded ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
           </button>
         )}
-        <button type="button" onClick={shell.onClose} aria-label={t("closePanel")} className={cn(ICON_CLOSE_BTN_CLS, "h-8 w-8")}>
-          <X className="size-4" />
-        </button>
+        {shell.layout === "side" && (
+          <button type="button" onClick={shell.onClose} aria-label={t("closePanel")} className={cn(ICON_CLOSE_BTN_CLS, "h-8 w-8")}>
+            <X className="size-4" />
+          </button>
+        )}
       </div>
     </div>
   ) : (
@@ -453,7 +455,7 @@ export default function AskIrisChat({
         {topBar}
         {resume}
         <AskIrisEmptyState
-          variant={shell.variant}
+          variant={shell.variant === "page" ? "page" : shell.layout}
           openCount={shell.variant === "page" ? 1 : shell.openCount}
           input={input}
           onInputChange={setInput}

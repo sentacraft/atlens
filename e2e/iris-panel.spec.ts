@@ -196,6 +196,32 @@ test.describe("Ask Iris page entries", () => {
     expect(Math.abs(sheetBox.y + sheetBox.height - tabBarBox.y)).toBeLessThanOrEqual(1);
     await expect(tabBar.getByRole("button", { name: /^Ask Iris/ })).toHaveAttribute("aria-pressed", "true");
     await expect(sheet.getByRole("button", { name: "Open full screen" })).toHaveCount(0);
+    await expect(sheet.getByRole("button", { name: "Close", exact: true })).toHaveCount(0);
+
+    // A vertical drag neither moves the sheet nor closes it.
+    const moved = await sheet.evaluate(async (el) => {
+      const target = el.querySelector("h1") ?? el;
+      const touch = (y: number) => new Touch({ identifier: 1, target, clientX: 180, clientY: y });
+      const fire = (type: string, y: number) =>
+        target.dispatchEvent(
+          new TouchEvent(type, {
+            bubbles: true,
+            cancelable: true,
+            touches: type === "touchend" ? [] : [touch(y)],
+            changedTouches: [touch(y)],
+          }),
+        );
+      fire("touchstart", 300);
+      for (const y of [340, 400, 480]) {
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        fire("touchmove", y);
+      }
+      const transform = getComputedStyle(el).transform;
+      fire("touchend", 480);
+      return transform;
+    });
+    expect(moved).toBe("none");
+    await expect(sheet).toBeVisible();
 
     await page.goBack();
     await expect(sheet).toBeHidden();

@@ -10,6 +10,8 @@ import ExampleQuestion from "@/components/askiris/ExampleQuestion";
 import { useStarters } from "@/components/askiris/useStarters";
 import type { PageStarter, Starter } from "@/lib/askiris/starter-questions";
 
+const HERO_SIZE = { page: IRIS_ASSISTANT.size, side: IRIS_ASSISTANT.size, sheet: 64 } as const;
+
 export default function AskIrisEmptyState({
   variant,
   openCount,
@@ -21,8 +23,8 @@ export default function AskIrisEmptyState({
   pageStarters,
   disabled,
 }: {
-  /** panel: the Iris panel beside the page, more compact than the Ask Iris page. */
-  variant: "page" | "panel";
+  /** side and sheet: the Iris panel, more compact than the Ask Iris page. */
+  variant: "page" | "side" | "sheet";
   /** A new count replays the hero's opening sweep. */
   openCount: number;
   input: string;
@@ -37,7 +39,7 @@ export default function AskIrisEmptyState({
   disabled: boolean;
 }) {
   const t = useTranslations("AskIris");
-  const panel = variant === "panel";
+  const panel = variant !== "page";
   const general = useStarters({ compact: panel, seed: starterSeed });
   const starters = [...pageStarters, ...general].slice(0, Math.max(general.length, pageStarters.length));
 
@@ -53,7 +55,7 @@ export default function AskIrisEmptyState({
       )}
     >
       <div className="shrink-0 [@container(max-height:480px)]:hidden">
-        <Iris key={openCount} config={IRIS_ASSISTANT} size={IRIS_ASSISTANT.size} uid="askiris-hero" />
+        <Iris key={openCount} config={IRIS_ASSISTANT} size={HERO_SIZE[variant]} uid="askiris-hero" />
       </div>
 
       <div className={cn("[@container(max-height:320px)]:hidden", panel ? "space-y-2" : "space-y-3")}>

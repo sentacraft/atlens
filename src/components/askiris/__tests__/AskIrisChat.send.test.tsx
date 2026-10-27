@@ -330,6 +330,14 @@ describe("AskIrisChat send", () => {
     expect(screen.getByRole("button", { name: "fullScreen" })).toBeInTheDocument();
   });
 
+  it("leaves out close and full screen in the phone sheet, which acts as a page", () => {
+    captureChatBodies();
+    renderChat({ ...panel("/en/lenses/x/xf-56"), layout: "sheet" });
+
+    expect(screen.queryByRole("button", { name: "closePanel" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "fullScreen" })).toBeNull();
+  });
+
   it("expands in place from the full-screen button, keeping the unsent input", () => {
     captureChatBodies();
     const { container, rerenderChat } = renderChat(panel("/en/lenses/x/xf-56"));
