@@ -46,6 +46,17 @@ export function replyingChat(id: string): Chat<AskIrisUIMessage> | undefined {
   return entry && isReplying(entry.chat) ? entry.chat : undefined;
 }
 
+let lastConversationId: string | undefined;
+
+/** Records the conversation last shown with messages in this tab, which the Ask Iris page offers back. */
+export function rememberConversation(id: string) {
+  lastConversationId = id;
+}
+
+export function rememberedConversationId(): string | undefined {
+  return lastConversationId;
+}
+
 /**
  * The conversation still replying in this tab, if any. Opening the Ask Iris page with nothing to
  * hand in shows it rather than a new conversation, as reopening the panel does.

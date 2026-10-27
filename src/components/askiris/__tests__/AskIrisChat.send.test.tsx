@@ -233,6 +233,25 @@ describe("AskIrisChat send", () => {
     await waitFor(() => expect(screen.queryByRole("button", { name: "resume" })).toBeNull());
   });
 
+  it("offers the last conversation back when the Ask Iris page opens again with nothing to hand in", async () => {
+    auth.account = { id: "u1" };
+    const STORED = "22222222-2222-4222-8222-222222222222";
+    vi.spyOn(crypto, "randomUUID").mockReturnValueOnce(STORED);
+    const bodies = captureChatBodies(() => [{ id: STORED, title: "Which lens?", createdAt: 1, updatedAt: 1 }]);
+    const first = renderChat();
+    submit(first.container, "Which lens?");
+    await waitFor(() => expect(bodies).toHaveLength(1));
+    await waitFor(() => expect(screen.getByText("Which lens?")).toBeInTheDocument());
+
+    // Leaving the page unmounts it; coming back from the tab bar mounts a fresh one.
+    first.unmount();
+    window.history.replaceState(null, "", "/en/askiris");
+    renderChat();
+
+    expect(await screen.findByRole("button", { name: "resume" })).toBeInTheDocument();
+    expect(screen.queryByText("Which lens?")).toBeNull();
+  });
+
   it("offers nothing back for a conversation that was never stored", async () => {
     const bodies = captureChatBodies();
     const { container, rerenderChat } = renderChat(panel("/en/lenses/x/browse"));

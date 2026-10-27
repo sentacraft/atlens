@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChartColumn, LayoutGrid, UserRound } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -24,15 +25,62 @@ function trackTab(item: string) {
   track("nav_click", { item, place: "tab_bar" });
 }
 
+// Fields that raise the on-screen keyboard; checkboxes and the like do not.
+const TEXT_FIELD = "input:not([type=checkbox],[type=radio],[type=button],[type=submit],[type=reset],[type=range],[type=file]), textarea, [contenteditable='true'], [contenteditable='']";
+
+function isTextField(target: EventTarget | null) {
+  return target instanceof Element && target.matches(TEXT_FIELD);
+}
+
+// A keyboard takes far more than browser toolbars do; this tells the two apart.
+const KEYBOARD_MIN_PX = 150;
+
+/**
+ * Whether the on-screen keyboard is up for a text field: one has focus and the visible viewport
+ * has shrunk. iOS 26 Safari lifts fixed elements by the keyboard's height (WebKit bug 297779),
+ * which put the tab bar over the focused field. Focus alone is not enough: an autofocused field
+ * raises no keyboard.
+ */
+function useKeyboardUp() {
+  const [up, setUp] = useState(false);
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    let field: EventTarget | null = document.activeElement;
+    const update = () => {
+      const shrunk = !viewport || window.innerHeight - viewport.height > KEYBOARD_MIN_PX;
+      setUp(isTextField(field) && shrunk);
+    };
+    const onFocusIn = (event: FocusEvent) => {
+      field = event.target;
+      update();
+    };
+    const onFocusOut = (event: FocusEvent) => {
+      field = event.relatedTarget;
+      update();
+    };
+    document.addEventListener("focusin", onFocusIn);
+    document.addEventListener("focusout", onFocusOut);
+    viewport?.addEventListener("resize", update);
+    return () => {
+      document.removeEventListener("focusin", onFocusIn);
+      document.removeEventListener("focusout", onFocusOut);
+      viewport?.removeEventListener("resize", update);
+    };
+  }, []);
+  return up;
+}
+
 /** The site's sections on phones, fixed to the bottom below the sm breakpoint; `--tab-bar-height` is its height. */
 export default function TabBar() {
   const t = useTranslations("Nav");
   const { section, browseHref, chartsHref } = useNavLinks();
   const { openIris } = useIris();
+  const keyboardUp = useKeyboardUp();
 
   return (
     <nav
       aria-label={t("tabBar")}
+      hidden={keyboardUp}
       className={cn(
         "fixed inset-x-0 bottom-0 grid h-[var(--tab-bar-height)] grid-cols-4 border-t border-zinc-200 bg-white pb-[var(--safe-inset-bottom)] sm:hidden",
         Z.shell,

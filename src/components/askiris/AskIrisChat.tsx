@@ -46,7 +46,7 @@ import AiTag from "@/components/iris/AiTag";
 import { ConversationHistoryPopover, ConversationHistoryView } from "@/components/askiris/ConversationHistory";
 import { useBreakpoint } from "@/hooks/useViewport";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
-import { openChat, replyingConversationId, setModelPreset } from "@/components/askiris/live-chats";
+import { openChat, rememberConversation, rememberedConversationId, replyingConversationId, setModelPreset } from "@/components/askiris/live-chats";
 
 type ConversationSwitch = { kind: "select"; id: string } | { kind: "new"; reason: "manual" | "reopen" };
 
@@ -104,19 +104,23 @@ export default function AskIrisChat({
   const [signingIn, setSigningIn] = useState(false);
   const [pendingSwitch, setPendingSwitch] = useState<ConversationSwitch | null>(null);
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
+  // The Ask Iris page mounts afresh on each visit, so it opens as the panel reopens: over a reply
+  // still being written, else on a new conversation that offers the last one back. Read once: a
+  // turn sent here makes this page's own conversation the replying and the remembered one.
+  const [opening] = useState(() =>
+    shell.variant === "page" && !entry.conversationId
+      ? { replying: entry.question ? undefined : replyingConversationId(), previous: rememberedConversationId() }
+      : { replying: undefined, previous: undefined },
+  );
   // The conversation an opening left for a new one, offered back until another is picked.
-  const [resumeId, setResumeId] = useState<string | null>(null);
+  const [resumeId, setResumeId] = useState<string | null>(() => (opening.replying ? null : (opening.previous ?? null)));
   const pageStarters = usePageStarters(shell.variant === "panel" ? shell.pagePath : (entry.from ?? null), lenses);
   const { data: session } = authClient.useSession();
   // Guests have a session too, and their own stored conversations.
   const userId = session?.user.id;
   const isAccount = Boolean(accountUser(session));
-  // Read once: a turn sent here makes this page's own conversation the replying one.
-  const [replyingOnOpen] = useState(() =>
-    shell.variant === "page" && !entry.question && !entry.conversationId ? replyingConversationId() : undefined,
-  );
   const conversation = useConversation({
-    initialConversationId: entry.conversationId ?? replyingOnOpen,
+    initialConversationId: entry.conversationId ?? opening.replying,
     userId,
     onNotice: (notice) => {
       if (notice === "unavailable") {
@@ -150,6 +154,12 @@ export default function AskIrisChat({
     }
   }, [chat]);
   const isBusy = signingIn || status === "submitted" || status === "streaming";
+  const hasMessages = messages.length > 0;
+  useEffect(() => {
+    if (hasMessages) {
+      rememberConversation(conversationId);
+    }
+  }, [conversationId, hasMessages]);
   useTurnSync({
     conversationId,
     userId,
