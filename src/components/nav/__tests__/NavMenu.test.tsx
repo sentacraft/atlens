@@ -1,12 +1,13 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { SignInDialogProvider } from "@/context/SignInDialogProvider";
 import NavMenu from "../NavMenu";
 
 const session = vi.hoisted(() => ({ current: { data: null as unknown } }));
 const sendVerificationOtp = vi.hoisted(() => vi.fn());
 const track = vi.hoisted(() => vi.fn());
+const switchLocale = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/analytics/analytics", () => ({ track }));
 
@@ -28,6 +29,7 @@ vi.mock("next-intl", () => ({
 vi.mock("@/i18n/navigation", () => ({
   Link: ({ href, ...props }: { href: string }) => <a href={href} {...props} />,
 }));
+vi.mock("@/hooks/useSwitchLocale", () => ({ useSwitchLocale: () => switchLocale }));
 
 afterEach(() => {
   cleanup();
@@ -129,6 +131,29 @@ describe("NavMenu", () => {
       ["nav_click", { item: "menu", place: "bar" }],
       ["nav_click", { item: "about", place: "menu" }],
     ]);
+  });
+
+  it("switches the language for any visitor, showing the current one checked", async () => {
+    session.current = { data: null };
+
+    render(menu, { wrapper: SignInDialogProvider });
+    await openMenu();
+    const languages = within(screen.getByRole("group", { name: "language" }));
+    expect(languages.getByRole("menuitemradio", { name: "中文" })).toHaveAttribute("aria-checked", "true");
+    fireEvent.click(languages.getByRole("menuitemradio", { name: "English" }));
+
+    expect(switchLocale).toHaveBeenCalledWith("en");
+    expect(track).toHaveBeenLastCalledWith("nav_click", { item: "language", place: "menu" });
+  });
+
+  it("groups feedback and support after the site's own pages", async () => {
+    session.current = { data: null };
+
+    render(menu, { wrapper: SignInDialogProvider });
+    await openMenu();
+
+    const names = screen.getAllByRole("menuitem").map((item) => item.textContent);
+    expect(names.slice(-5)).toEqual(["about", "getApp", "GitHub", "feedback", "support"]);
   });
 
   it("leaves the site's sections to the header and the tab bar", async () => {

@@ -439,6 +439,7 @@ export const EVENT_DOCS: EventDocs = {
           support: { label: "Support", description: "The support dialog" },
           get_app: { label: "Get the app", description: "The install page; hidden in the installed app" },
           feedback: { label: "Feedback", description: "The feedback form" },
+          language: { label: "Language", description: "Switched the site's language in the menu. Recorded since late October 2026" },
           sign_out: { label: "Sign out", description: "Signed out" },
         },
       },
