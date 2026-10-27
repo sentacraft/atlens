@@ -48,9 +48,16 @@ export function replyingChat(id: string): Chat<AskIrisUIMessage> | undefined {
 
 let lastConversationId: string | undefined;
 
-/** Records the conversation last shown with messages in this tab, which the Ask Iris page offers back. */
+/** Records the conversation last shown with messages in this tab, which Iris picks up on opening. */
 export function rememberConversation(id: string) {
   lastConversationId = id;
+}
+
+/** Drops a deleted conversation, so no opening picks it up. */
+export function forgetConversation(id: string) {
+  if (lastConversationId === id) {
+    lastConversationId = undefined;
+  }
 }
 
 export function rememberedConversationId(): string | undefined {

@@ -67,7 +67,7 @@ function HomeContent({
 
   return (
     <HomeIrisStage>
-      <div className="flex min-h-[calc(var(--app-height)-var(--nav-height)-var(--page-bottom-inset))] flex-col overflow-x-clip">
+      <div className="flex min-h-[var(--page-height)] flex-col overflow-x-clip">
         {/* sm:pt-18 adds back the 40px the tighter gaps below take out, so the centered hero moves
             down by half of it and the data line stays where it was. */}
         <section className="relative flex flex-1 flex-col items-center justify-center px-4 py-8 text-center sm:pt-18">

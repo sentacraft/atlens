@@ -11,7 +11,7 @@ import {
   fetchConversationList,
   renameConversation,
 } from "@/lib/askiris/conversation-client";
-import { replyingChat } from "@/components/askiris/live-chats";
+import { forgetConversation, replyingChat } from "@/components/askiris/live-chats";
 import type { ConversationLocation } from "@/lib/url/askiris";
 
 export type ConversationNotice = "unavailable" | "loadFailed" | "saveFailed";
@@ -173,6 +173,7 @@ export function useConversation({
   // Deleting the open conversation leaves the user on a new, empty one.
   function deleteConversationById(id: string) {
     remove.mutate(id);
+    forgetConversation(id);
     if (id === activeIdRef.current) {
       resetToNew();
       location.write(null, "replace");

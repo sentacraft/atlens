@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import TabBar from "../TabBar";
 
 const env = vi.hoisted(() => ({ pathname: "/lenses/x/browse" }));
@@ -54,33 +54,6 @@ describe("TabBar", () => {
 
     expect(screen.getByRole("link", { name: /^askIris/ })).toHaveAttribute("aria-current", "page");
     expect(openIris).not.toHaveBeenCalled();
-  });
-
-  it("steps aside while the keyboard is up for a text field, so it is not lifted over the field", () => {
-    const viewport = Object.assign(new EventTarget(), { height: window.innerHeight });
-    vi.stubGlobal("visualViewport", viewport);
-    render(
-      <>
-        <textarea aria-label="composer" />
-        <input type="checkbox" aria-label="option" />
-        <TabBar />
-      </>,
-    );
-    const tabBar = () => screen.queryByRole("navigation", { name: "tabBar" });
-
-    act(() => screen.getByRole("checkbox", { name: "option" }).focus());
-    expect(tabBar()).not.toBeNull();
-    // Focused but no keyboard yet, as with an autofocused field.
-    act(() => screen.getByRole("textbox", { name: "composer" }).focus());
-    expect(tabBar()).not.toBeNull();
-    act(() => {
-      viewport.height = window.innerHeight - 300;
-      viewport.dispatchEvent(new Event("resize"));
-    });
-    expect(tabBar()).toBeNull();
-    act(() => screen.getByRole("textbox", { name: "composer" }).blur());
-    expect(tabBar()).not.toBeNull();
-    vi.unstubAllGlobals();
   });
 
   it("names Ask Iris as the header does, with its AI tag after the label", () => {

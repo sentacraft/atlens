@@ -13,19 +13,22 @@ function isTextField(target: EventTarget | null) {
 }
 
 /**
- * How much of the layout viewport the on-screen keyboard covers, 0 while it is down. iOS Safari
- * keeps the layout viewport, and with it `svh` and fixed elements, at full height under the
- * keyboard, so a one-screen layout must take this off itself. Focus alone is not enough: an
- * autofocused field raises no keyboard.
+ * The height left above the on-screen keyboard, null while it is down. Read by `KeyboardInsets`,
+ * which hands it to layouts as CSS; components use that, not this. Measured on the visual
+ * viewport alone: `innerHeight` and `svh` disagree with it by the toolbars on iOS 26. Focus alone
+ * is not enough: an autofocused field raises no keyboard.
  */
-export function useKeyboardInset(): number {
-  const [inset, setInset] = useState(0);
+export function useKeyboardViewport(): number | null {
+  const [height, setHeight] = useState<number | null>(null);
   useEffect(() => {
     const viewport = window.visualViewport;
+    if (!viewport) {
+      return;
+    }
     let field: EventTarget | null = document.activeElement;
     const update = () => {
-      const covered = viewport ? window.innerHeight - viewport.height : 0;
-      setInset(isTextField(field) && (!viewport || covered > KEYBOARD_MIN_PX) ? Math.max(0, Math.round(covered)) : 0);
+      const up = isTextField(field) && window.innerHeight - viewport.height > KEYBOARD_MIN_PX;
+      setHeight(up ? Math.floor(viewport.height) : null);
     };
     const onFocusIn = (event: FocusEvent) => {
       field = event.target;
@@ -37,22 +40,24 @@ export function useKeyboardInset(): number {
     };
     document.addEventListener("focusin", onFocusIn);
     document.addEventListener("focusout", onFocusOut);
-    viewport?.addEventListener("resize", update);
+    viewport.addEventListener("resize", update);
     return () => {
       document.removeEventListener("focusin", onFocusIn);
       document.removeEventListener("focusout", onFocusOut);
-      viewport?.removeEventListener("resize", update);
+      viewport.removeEventListener("resize", update);
     };
   }, []);
-  return inset;
+  return height;
 }
 
 /**
- * Scrolls the page so `ref`'s bottom meets the visible viewport's bottom while `active`. Safari
- * pans the page on focus to reveal the field, measured against the full-height layout; once the
- * layout has shrunk for the keyboard that pan leaves the top bar off screen and a gap below.
+ * For a layout one `--page-height` tall: while the keyboard is up, scrolls the page so `ref`'s
+ * bottom meets the visible bottom. Safari pans the page on focus to reveal the field, measured
+ * against the full-height layout, which leaves the top bar off screen and a gap below once the
+ * layout has fitted itself above the keyboard.
  */
-export function useBottomAtKeyboard(ref: RefObject<HTMLElement | null>, active: boolean) {
+export function useFitAboveKeyboard(ref: RefObject<HTMLElement | null>, enabled: boolean) {
+  const active = useKeyboardViewport() !== null && enabled;
   useEffect(() => {
     const viewport = window.visualViewport;
     if (!active || !viewport) {

@@ -1,6 +1,5 @@
 "use client";
 
-import { type Ref } from "react";
 import { ArrowUp, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +12,6 @@ export default function AskIrisComposer({
   sendLabel,
   size = "md",
   autoFocus = false,
-  inputRef,
   streaming = false,
   onStop,
   stopLabel,
@@ -26,7 +24,6 @@ export default function AskIrisComposer({
   sendLabel: string;
   size?: "lg" | "md";
   autoFocus?: boolean;
-  inputRef?: Ref<HTMLInputElement>;
   streaming?: boolean;
   onStop?: () => void;
   stopLabel?: string;
@@ -46,23 +43,31 @@ export default function AskIrisComposer({
     >
       <div
         className={cn(
-          "border-input bg-background flex flex-1 items-center rounded-2xl border shadow-sm",
+          "border-input bg-background flex flex-1 items-end rounded-2xl border shadow-sm",
           "focus-within:border-ring focus-within:ring-ring/40 transition-colors focus-within:ring-2",
           lg ? "gap-3 px-3.5 py-3" : "gap-2 px-3 py-2",
         )}
       >
-        <input
-          ref={inputRef}
+        <textarea
+          rows={1}
+          enterKeyHint="send"
           className={cn(
-            "placeholder:text-muted-foreground min-w-0 flex-1 bg-transparent outline-none",
+            "placeholder:text-muted-foreground min-w-0 flex-1 resize-none self-center bg-transparent outline-none [field-sizing:content]",
             // 16px minimum on mobile: iOS and Android zoom into smaller inputs on focus.
-            lg ? "text-base" : "text-base sm:text-sm",
+            lg ? "max-h-40 text-base" : "max-h-32 text-base sm:text-sm",
           )}
           value={value}
           placeholder={placeholder}
           disabled={disabled}
           autoFocus={autoFocus}
           onChange={(event) => onChange(event.currentTarget.value)}
+          onKeyDown={(event) => {
+            // Shift+Enter breaks the line; Enter that confirms an IME composition is not a send.
+            if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+              event.preventDefault();
+              event.currentTarget.form?.requestSubmit();
+            }
+          }}
         />
         {streaming && onStop ? (
           <button

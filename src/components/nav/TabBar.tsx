@@ -8,7 +8,6 @@ import AiTag from "@/components/iris/AiTag";
 import { IRIS_TAB_BAR } from "@/config/iris-config";
 import { Z } from "@/config/ui";
 import { useIris } from "@/context/IrisPanelProvider";
-import { useKeyboardInset } from "@/hooks/useKeyboardInset";
 import { useNavLinks } from "@/hooks/useNavLinks";
 import { track } from "@/lib/analytics/analytics";
 import { ASK_IRIS_PATH, PROFILE_PATH } from "@/lib/url/routes";
@@ -30,16 +29,12 @@ export default function TabBar() {
   const t = useTranslations("Nav");
   const { section, browseHref, chartsHref } = useNavLinks();
   const { openIris } = useIris();
-  // iOS 26 Safari lifts fixed elements by the keyboard's height (WebKit bug 297779), which put
-  // the tab bar over the focused field.
-  const keyboardUp = useKeyboardInset() > 0;
 
   return (
     <nav
       aria-label={t("tabBar")}
-      hidden={keyboardUp}
       className={cn(
-        "fixed inset-x-0 bottom-0 grid h-[var(--tab-bar-height)] grid-cols-4 border-t border-zinc-200 bg-white pb-[var(--safe-inset-bottom)] sm:hidden",
+        "fixed inset-x-0 bottom-0 grid h-[var(--tab-bar-height)] in-data-keyboard:hidden grid-cols-4 border-t border-zinc-200 bg-white pb-[var(--safe-inset-bottom)] sm:hidden",
         Z.shell,
       )}
     >
