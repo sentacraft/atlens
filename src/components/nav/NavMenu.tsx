@@ -113,7 +113,7 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
                     className={cn(
                       "rounded-md px-2.5 py-1.5 text-xs font-medium outline-none transition-colors sm:py-1",
                       "data-[checked]:bg-white data-[checked]:text-zinc-900 data-[checked]:shadow-sm",
-                      "data-[unchecked]:text-zinc-500 data-[highlighted]:text-zinc-900 data-[highlighted]:ring-2 data-[highlighted]:ring-zinc-300",
+                      "data-[unchecked]:text-zinc-500 data-[unchecked]:data-[highlighted]:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-400",
                     )}
                   >
                     {new Intl.DisplayNames([code], { type: "language" }).of(code)}
