@@ -5,13 +5,12 @@ import { useLocale, useTranslations } from "next-intl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
 import { toast } from "sonner";
-import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { linkedProvidersQuery, updateDisplayName } from "@/lib/me/account-client";
 import { userFavoritesQuery } from "@/lib/me/favorites-client";
 import { userGearQuery } from "@/lib/me/gear-client";
-import { writeLocalePreference } from "@/lib/locale-preference";
+import { useSwitchLocale } from "@/hooks/useSwitchLocale";
 import { patchUserSettings, userSettingsQuery } from "@/lib/me/settings-client";
 import { DEFAULT_USER_SETTINGS, type UserSettings, type UserSettingsPatch } from "@/lib/me/settings-schema";
 import type { LensSummary } from "@/lib/lens/data";
@@ -321,12 +320,11 @@ function SettingsSection({ userId }: { userId: string }) {
   const t = useTranslations("Profile");
   const m = useTranslations("MountSwitcher");
   const locale = useLocale() as Locale;
-  const router = useRouter();
-  const pathname = usePathname();
   const queryClient = useQueryClient();
   const { setPreference } = useMountPreference();
   const query = userSettingsQuery(userId);
   const { data: settings } = useQuery(query);
+  const switchLocale = useSwitchLocale();
 
   const save = useMutation({
     mutationFn: patchUserSettings,
@@ -347,14 +345,8 @@ function SettingsSection({ userId }: { userId: string }) {
       }
       toast.error(t("saveError"));
     },
-    onSuccess: (saved, patch) => {
+    onSuccess: (saved) => {
       queryClient.setQueryData(query.queryKey, saved);
-      if (patch.locale !== undefined) {
-        writeLocalePreference(saved.locale);
-        if (saved.locale && saved.locale !== locale) {
-          router.replace(pathname, { locale: saved.locale });
-        }
-      }
     },
   });
 
@@ -375,7 +367,7 @@ function SettingsSection({ userId }: { userId: string }) {
               value: code,
               label: { default: new Intl.DisplayNames([code], { type: "language" }).of(code) ?? code },
             }))}
-            onChange={(next) => save.mutate({ locale: next })}
+            onChange={switchLocale}
             disabled={!settings}
             layout="equal"
           />

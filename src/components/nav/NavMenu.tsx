@@ -1,9 +1,11 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Menu } from "@base-ui/react/menu";
-import { Download, Flag, Heart, Info, LogIn, LogOut, Menu as MenuIcon, UserRound } from "lucide-react";
+import { Download, Flag, Heart, Info, Languages, LogIn, LogOut, Menu as MenuIcon, UserRound } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { routing, type Locale } from "@/i18n/routing";
+import { useSwitchLocale } from "@/hooks/useSwitchLocale";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { MENU_ITEM_CLS, MENU_POPUP_CLS, NAV_CAPSULE_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
@@ -21,7 +23,7 @@ function trackMenu(item: string) {
   track("nav_click", { item, place: "menu" });
 }
 
-/** The nav's one menu: the account, the site's own pages, and feedback. */
+/** The nav's one menu: the account, the language, the site's own pages, then feedback and support. */
 export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolean; onFeedback: () => void }) {
   const tNav = useTranslations("Nav");
   const t = useTranslations("Auth");
@@ -29,6 +31,8 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
   const openSignIn = useSignInDialog();
   const openSupport = useSupportDialog();
   const user = accountUser(session);
+  const locale = useLocale() as Locale;
+  const switchLocale = useSwitchLocale();
 
   return (
     <Menu.Root
@@ -86,19 +90,41 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
                 <Menu.Separator className={SEPARATOR_CLS} />
               </>
             )}
+            <div className="flex items-center justify-between gap-2.5 py-1.5 pr-3 pl-4 text-sm text-zinc-600">
+              <span className="flex items-center gap-2.5">
+                <Languages className="h-4 w-4 shrink-0" />
+                {tNav("language")}
+              </span>
+              <Menu.RadioGroup
+                value={locale}
+                onValueChange={(next: Locale) => {
+                  track("nav_click", { item: "language", place: "menu" });
+                  switchLocale(next);
+                }}
+                aria-label={tNav("language")}
+                className="flex rounded-lg bg-zinc-100 p-0.5"
+              >
+                {routing.locales.map((code) => (
+                  <Menu.RadioItem
+                    key={code}
+                    value={code}
+                    closeOnClick
+                    lang={code}
+                    className={cn(
+                      "rounded-md px-2.5 py-1.5 text-xs font-medium outline-none transition-colors sm:py-1",
+                      "data-[checked]:bg-white data-[checked]:text-zinc-900 data-[checked]:shadow-sm",
+                      "data-[unchecked]:text-zinc-500 data-[highlighted]:text-zinc-900 data-[highlighted]:ring-2 data-[highlighted]:ring-zinc-300",
+                    )}
+                  >
+                    {new Intl.DisplayNames([code], { type: "language" }).of(code)}
+                  </Menu.RadioItem>
+                ))}
+              </Menu.RadioGroup>
+            </div>
+            <Menu.Separator className={SEPARATOR_CLS} />
             <Menu.Item render={<Link href={ABOUT_PATH} />} onClick={() => trackMenu("about")} className={MENU_ITEM_CLS}>
               <Info className="h-4 w-4 shrink-0" />
               {tNav("about")}
-            </Menu.Item>
-            <Menu.Item
-              onClick={() => {
-                trackMenu("support");
-                openSupport("menu");
-              }}
-              className={MENU_ITEM_CLS}
-            >
-              <Heart className="h-4 w-4 shrink-0" />
-              {tNav("support")}
             </Menu.Item>
             {showGetApp && (
               <Menu.Item render={<Link href={GET_APP_PATH} />} onClick={() => trackMenu("get_app")} className={MENU_ITEM_CLS}>
@@ -106,6 +132,15 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
                 {tNav("getApp")}
               </Menu.Item>
             )}
+            <Menu.Item
+              render={<a href={SITE.repoUrl} target="_blank" rel="noopener noreferrer" />}
+              onClick={() => trackMenu("github")}
+              className={cn(MENU_ITEM_CLS, "sm:hidden")}
+            >
+              <GitHubMark size={16} className="shrink-0" />
+              GitHub
+            </Menu.Item>
+            <Menu.Separator className={SEPARATOR_CLS} />
             <Menu.Item
               onClick={() => {
                 trackMenu("feedback");
@@ -117,12 +152,14 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
               {tNav("feedback")}
             </Menu.Item>
             <Menu.Item
-              render={<a href={SITE.repoUrl} target="_blank" rel="noopener noreferrer" />}
-              onClick={() => trackMenu("github")}
-              className={cn(MENU_ITEM_CLS, "sm:hidden")}
+              onClick={() => {
+                trackMenu("support");
+                openSupport("menu");
+              }}
+              className={MENU_ITEM_CLS}
             >
-              <GitHubMark size={16} className="shrink-0" />
-              GitHub
+              <Heart className="h-4 w-4 shrink-0" />
+              {tNav("support")}
             </Menu.Item>
             {user && (
               <>
