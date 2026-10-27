@@ -346,7 +346,11 @@
     "irisSend": "发送",
     "irisClose": "收起",
     "orBrowse": "或者浏览全部镜头",
-    "allCollections": "查看全部 {count, number} 个合集"
+    "allCollections": "查看全部 {count, number} 个主题合集",
+    "chartsLink": "进入图鉴",
+    "chartsTimeline": "{count, number} 支镜头按发布年份和焦段排开，{first}–{last}",
+    "chartsWeight": "{count, number} 支镜头从重到轻，{heaviest}g 到 {lightest}g",
+    "chartsLineups": "{brands, number} 个品牌，每家的定焦和变焦按焦段排开"
   },
   "LensList": {
     "title": "镜头库",
