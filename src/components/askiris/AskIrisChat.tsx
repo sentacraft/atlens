@@ -4,11 +4,12 @@ import { useChat } from "@ai-sdk/react";
 import { toast } from "sonner";
 import { track } from "@/lib/analytics/analytics";
 import type { PageStarter, Starter } from "@/lib/askiris/starter-questions";
-import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { useEffectiveMount } from "@/hooks/useMountParam";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
+import { useBottomAtKeyboard, useKeyboardInset } from "@/hooks/useKeyboardInset";
 import { useTestHookOption } from "@/context/TestHookProvider";
 import type { IrisPanelRequest } from "@/context/IrisPanelProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
@@ -57,7 +58,7 @@ type MessageSource = { method: "typed" | "handoff" } | { method: "starter"; pool
 const TOP_BAR_BTN_CLS = cn(ICON_NAV_BTN_CLS, "h-9 gap-1.5 px-2.5 text-sm");
 
 const SHELL_CLS = {
-  page: "mx-auto flex h-[calc(var(--app-height)-var(--nav-height)-var(--page-bottom-inset))] w-full max-w-[800px] flex-col px-4",
+  page: "mx-auto flex h-[calc(var(--app-height)-var(--nav-height)-max(var(--page-bottom-inset),var(--keyboard-inset)))] w-full max-w-[800px] flex-col px-4",
   panel: "flex h-full w-full flex-col px-4",
   expandedPanel: "mx-auto flex h-full w-full max-w-[800px] flex-col px-4",
 };
@@ -333,8 +334,16 @@ export default function AskIrisChat({
     requestSwitch({ kind: "new", reason: "manual" });
   }
 
+  const keyboardInset = useKeyboardInset();
+  const shellRef = useRef<HTMLDivElement>(null);
+  useBottomAtKeyboard(shellRef, shell.variant === "page" && keyboardInset > 0);
   const shellCls =
     shell.variant === "page" ? SHELL_CLS.page : shell.expanded ? SHELL_CLS.expandedPanel : SHELL_CLS.panel;
+  const shellProps = {
+    ref: shellRef,
+    className: shellCls,
+    style: { "--keyboard-inset": `${keyboardInset}px` } as CSSProperties,
+  };
   const historyProps = {
     conversations: conversation.conversations,
     listState: conversation.listState,
@@ -418,7 +427,7 @@ export default function AskIrisChat({
 
   if (historyOpen && !historyAsPopover) {
     return (
-      <div className={shellCls}>
+      <div {...shellProps}>
         <ConversationHistoryView {...historyProps} onBack={() => setHistoryOpen(false)} />
       </div>
     );
@@ -426,7 +435,7 @@ export default function AskIrisChat({
 
   if (conversation.loading) {
     return (
-      <div className={shellCls}>
+      <div {...shellProps}>
         {topBar}
         <div className="grid flex-1 place-items-center text-sm text-zinc-500">
           {t("loadingConversation")}
@@ -437,7 +446,7 @@ export default function AskIrisChat({
 
   if (renderMessages.length === 0 && !entry.question && !pendingQuestion) {
     return (
-      <div className={shellCls}>
+      <div {...shellProps}>
         {topBar}
         {resume}
         <AskIrisEmptyState
@@ -457,7 +466,7 @@ export default function AskIrisChat({
 
   return (
     <ChatLinkProvider targets={linkTargets}>
-      <div className={shellCls}>
+      <div {...shellProps}>
         {topBar}
         <div className="relative min-h-0 flex-1">
           <div
