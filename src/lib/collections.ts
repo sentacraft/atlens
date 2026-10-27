@@ -58,6 +58,13 @@ export const COLLECTION_GROUPS: CollectionGroupBlock[] = COLLECTION_GROUP_ORDER.
   collections: collectionsData.groups[group].map(toCollection),
 }));
 
+export type ThemeGroup = Exclude<CollectionGroup, "series">;
+
+/** The collections chosen by theme; a series is one brand's own line and is listed under its brand. */
+export const THEME_GROUPS = COLLECTION_GROUPS.filter(
+  (block): block is CollectionGroupBlock & { group: ThemeGroup } => block.group !== "series",
+);
+
 export const COLLECTIONS: Record<string, LensCollection> = Object.fromEntries(
   COLLECTION_GROUPS.flatMap((g) => g.collections).map((c) => [c.slug, c]),
 );

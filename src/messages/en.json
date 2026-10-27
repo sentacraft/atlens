@@ -346,7 +346,11 @@
     "irisSend": "Send",
     "irisClose": "Close",
     "orBrowse": "Or browse all lenses",
-    "allCollections": "See all {count, number} collections"
+    "allCollections": "See all {count, number} themed collections",
+    "chartsLink": "Open the charts",
+    "chartsTimeline": "{count, number} lenses by release year and focal length, {first}–{last}",
+    "chartsWeight": "{count, number} lenses from heaviest to lightest, {heaviest}g to {lightest}g",
+    "chartsLineups": "{brands, number} brands, each one's primes and zooms laid out by focal length"
   },
   "LensList": {
     "title": "Lenses",

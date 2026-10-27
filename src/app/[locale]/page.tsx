@@ -3,13 +3,15 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
 import { buildAlternates } from "@/lib/seo";
 import { getLensesByMount } from "@/lib/lens/data";
-import { COLLECTIONS } from "@/lib/collections";
+import { THEME_GROUPS } from "@/lib/collections";
+import { buildChartPreviews, type ChartPreviews } from "@/lib/charts/previews";
 import { getFeaturedCollectionsWithStats } from "@/lib/collection-stats";
 import DataInfo from "@/components/DataFooter";
 import HeroBrand from "@/components/mount/MountTag";
 import HeroIris from "@/components/iris/HeroIris";
 import Tagline from "@/components/Tagline";
 import HomeHeroActions from "@/components/home/HomeHeroActions";
+import HomeCharts from "@/components/home/HomeCharts";
 import HomeCollections, { type FeaturedCollection } from "@/components/home/HomeCollections";
 import { HomeFold, HomeIrisStage } from "@/components/home/HomeIrisStage";
 
@@ -49,25 +51,36 @@ export default async function HomePage({ params }: { params: Params }) {
     statsLabel: tCollection("stats", { count: lensCount, brandCount }),
   }));
 
-  return <HomeContent mountStats={mountStats} lastAddedAt={lastAddedAt} featured={featured} locale={locale} />;
+  return (
+    <HomeContent
+      mountStats={mountStats}
+      lastAddedAt={lastAddedAt}
+      featured={featured}
+      chartPreviews={buildChartPreviews(xLenses)}
+      locale={locale}
+    />
+  );
 }
 
 function HomeContent({
   mountStats,
   lastAddedAt,
   featured,
+  chartPreviews,
   locale,
 }: {
   mountStats: { X: { lensCount: number; brandCount: number }; G: { lensCount: number; brandCount: number } };
   lastAddedAt: string | null;
   featured: FeaturedCollection[];
+  chartPreviews: ChartPreviews | undefined;
   locale: string;
 }) {
   const t = useTranslations("Common");
 
   return (
     <HomeIrisStage>
-      <div className="flex min-h-[var(--page-height)] flex-col overflow-x-clip">
+      {/* 3.5rem short of a full screen, so the charts heading shows below the hero and invites a scroll. */}
+      <div className="flex min-h-[calc(var(--page-height)-3.5rem)] flex-col overflow-x-clip">
         {/* sm:pt-18 adds back the 40px the tighter gaps below take out, so the centered hero moves
             down by half of it and the data line stays where it was. */}
         <section className="relative flex flex-1 flex-col items-center justify-center px-4 py-8 text-center sm:pt-18">
@@ -91,14 +104,15 @@ function HomeContent({
             <DataInfo mountStats={mountStats} lastAddedAt={lastAddedAt} />
           </HomeFold>
         </section>
-
-        <HomeFold mode="move">
-          <HomeCollections featured={featured} total={Object.keys(COLLECTIONS).length} locale={locale} />
-          <div className="flex justify-center pt-5 pb-6">
-            <Tagline />
-          </div>
-        </HomeFold>
       </div>
+
+      <HomeFold mode="move" className="flex flex-col gap-10 pb-8 sm:gap-12">
+        {chartPreviews && <HomeCharts previews={chartPreviews} />}
+        <HomeCollections featured={featured} total={THEME_GROUPS.reduce((n, group) => n + group.collections.length, 0)} locale={locale} />
+        <div className="flex justify-center">
+          <Tagline />
+        </div>
+      </HomeFold>
     </HomeIrisStage>
   );
 }

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { COLLECTION_GROUPS, type CollectionGroup } from "@/lib/collections";
+import { THEME_GROUPS, type ThemeGroup } from "@/lib/collections";
 import { getCollectionStats, getSeries } from "@/lib/collection-stats";
 import { getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount, mountHasCollections } from "@/lib/mount";
@@ -45,8 +45,6 @@ export async function generateMetadata({
   };
 }
 
-type ThemeGroup = Exclude<CollectionGroup, "series">;
-
 const GROUP_META = {
   portability: { key: "category_portability", marker: ["G"] },
   aperture: { key: "category_aperture", marker: ["ƒ"], markerItalic: true },
@@ -57,10 +55,6 @@ const GROUP_META = {
   trait: { key: "category_trait", marker: ["WR"] },
   dedicated: { key: "category_dedicated", marker: ["✦"] },
 } as const satisfies Record<ThemeGroup, { key: string; marker: readonly string[]; markerItalic?: boolean }>;
-
-function isThemeGroup(group: CollectionGroup): group is ThemeGroup {
-  return group !== "series";
-}
 
 export default async function CollectionsIndexPage({
   params,
@@ -84,25 +78,19 @@ export default async function CollectionsIndexPage({
     name: brandLabel(tBrand, brand.slug),
     count: getBrandLenses(mountLenses, brand.slug).length,
   }));
-  const categories = COLLECTION_GROUPS.flatMap(({ group, collections }) =>
-    isThemeGroup(group)
-      ? [
-          {
-            id: `section-${group}`,
-            ...GROUP_META[group],
-            label: t(GROUP_META[group].key),
-            count: collections.length,
-            items: collections.map((collection) => ({
-              key: collection.slug,
-              href: collectionPath(resolvedMount, collection.slug),
-              title: localized(collection.title, locale),
-              summary: localized(collection.shortDescription, locale),
-              count: getCollectionStats(collection.slug, locale)?.lensCount ?? 0,
-            })),
-          },
-        ]
-      : [],
-  );
+  const categories = THEME_GROUPS.map(({ group, collections }) => ({
+    id: `section-${group}`,
+    ...GROUP_META[group],
+    label: t(GROUP_META[group].key),
+    count: collections.length,
+    items: collections.map((collection) => ({
+      key: collection.slug,
+      href: collectionPath(resolvedMount, collection.slug),
+      title: localized(collection.title, locale),
+      summary: localized(collection.shortDescription, locale),
+      count: getCollectionStats(collection.slug, locale)?.lensCount ?? 0,
+    })),
+  }));
   const themeCount = categories.reduce((n, cat) => n + cat.count, 0);
 
   return (
