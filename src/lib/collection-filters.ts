@@ -57,6 +57,9 @@ export const FILTERS = {
   "tele-zoom": (lens) =>
     xPhoto(lens) && isZoom(lens) && lens.focalLengthMin >= 50,
 
+  "internal-zoom": (lens) =>
+    xPhoto(lens) && isZoom(lens) && !isSpecialOptic(lens) && lens.internalZoom === true,
+
   "super-tele": (lens) =>
     xPhoto(lens) &&
     (isZoom(lens) ? lens.focalLengthMax >= 300 : lens.focalLengthMin >= 200),

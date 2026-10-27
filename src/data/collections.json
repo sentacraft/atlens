@@ -414,6 +414,21 @@
           "zh": "长焦变焦，运动与生态"
         },
         "chart": "weight"
+      },
+      {
+        "slug": "internal-zoom",
+        "title": {
+          "en": "Internal Zoom Lenses",
+          "zh": "内变焦镜头"
+        },
+        "description": {
+          "en": "Zooms that keep the same length from one end of the range to the other: the barrel never extends, so the balance stays put on a gimbal, nothing pumps air or dust in as you zoom, and the lens cannot creep out when pointed down. Most of them are weather-sealed professional zooms, from ultra-wide to long telephoto.",
+          "zh": "变焦时镜身长度不变的变焦镜头：镜筒不伸缩，装在稳定器上重心不跑，变焦时不会把空气和灰尘吸进镜身，朝下拿时也不会自己滑出来。这里多是带防滴防尘的专业变焦，从超广角到长焦都有。"
+        },
+        "shortDescription": {
+          "en": "Zooms that never change length",
+          "zh": "变焦不伸缩，稳定器友好"
+        }
       }
     ],
     "trait": [
