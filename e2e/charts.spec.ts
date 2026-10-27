@@ -232,4 +232,41 @@ test.describe("Charts", () => {
     await page.goto("/en/lenses/x/sigma-contemporary-18-50mm-f28-dc-dn-x");
     await expect(page.getByRole("link", { name: "Sigma", exact: true })).toHaveAttribute("href", `${BRANDS}/sigma`);
   });
+  // WebKit can paint an image embedded in the poster's SVG before decoding it, leaving it blank.
+  test("the enlarged weight ladder poster draws its lens images", async ({ page }) => {
+    await page.goto(`${WEIGHT}?brand=sirui`, { waitUntil: "networkidle" });
+    const trigger = page.getByRole("button", { name: /^Share$/ }).locator("visible=true").first();
+    const preview = page.locator(".cursor-zoom-in");
+    await expect(async () => {
+      await trigger.click();
+      await expect(preview).toBeVisible({ timeout: 1000 });
+    }).toPass();
+    await preview.click();
+    await expect(page.locator('img[src^="data:image/png"]')).toBeVisible({ timeout: 30_000 });
+
+    const darkShare = await page.evaluate(async () => {
+      const poster = document.querySelector<HTMLElement>('.cursor-zoom-in [style*="scale("] > div')!;
+      const lens = poster.querySelector("img")!;
+      const p = poster.getBoundingClientRect();
+      const r = lens.getBoundingClientRect();
+      const png = document.querySelector<HTMLImageElement>('img[src^="data:image/png"]')!;
+      await png.decode();
+      const sx = png.naturalWidth / p.width;
+      const sy = png.naturalHeight / p.height;
+      const canvas = document.createElement("canvas");
+      canvas.width = png.naturalWidth;
+      canvas.height = png.naturalHeight;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(png, 0, 0);
+      const { data } = ctx.getImageData((r.left - p.left) * sx, (r.top - p.top) * sy, r.width * sx, r.height * sy);
+      let dark = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        if (data[i] + data[i + 1] + data[i + 2] < 300) {
+          dark++;
+        }
+      }
+      return dark / (data.length / 4);
+    });
+    expect(darkShare).toBeGreaterThan(0.02);
+  });
 });

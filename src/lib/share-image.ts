@@ -1,4 +1,4 @@
-import { domToPng } from "modern-screenshot";
+import { createContext, domToPng } from "modern-screenshot";
 
 interface RasterizeOptions {
   // 1280 is the long-axis threshold of the most aggressive IM compressors.
@@ -8,6 +8,9 @@ interface RasterizeOptions {
 // iOS Safari refuses canvases over about 16.7 megapixels, which a long poster at 3x exceeds.
 // https://pqina.nl/blog/canvas-area-exceeds-the-maximum-limit/
 const MAX_PIXELS = 16_000_000;
+
+const MAX_REDRAWS = 4;
+const REDRAW_INTERVAL_MS = 200;
 
 export async function rasterizePoster(
   node: HTMLElement,
@@ -20,12 +23,20 @@ export async function rasterizePoster(
   const cap = opts.maxWidth ?? Infinity;
   const scale = Math.min(3, cap / naturalWidth, Math.sqrt(MAX_PIXELS / (naturalWidth * naturalHeight)));
   // getBoundingClientRect() returns the transformed size inside a CSS transform.
-  return domToPng(node, {
+  const context = await createContext(node, {
     scale,
     backgroundColor: "#ffffff",
     width: naturalWidth,
     height: naturalHeight,
+    drawImageInterval: REDRAW_INTERVAL_MS,
+    // WebKit paints images embedded in the SVG blank until they decode, so the library redraws;
+    // left alone it redraws once per image, minutes on a phone for a 179-lens ladder.
+    // https://github.com/qq15725/modern-screenshot/issues/173
+    onCreateForeignObjectSvg: () => {
+      context.drawImageCount = Math.min(context.drawImageCount, MAX_REDRAWS);
+    },
   });
+  return domToPng(context);
 }
 
 /**
