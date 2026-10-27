@@ -2,7 +2,15 @@ import { describe, it, expect } from "vitest";
 import { chartBrands } from "../charts/catalog";
 import { BRANDS, getBrandInfo, getBrandLenses } from "../brands";
 import { COLLECTIONS, getSharedCollections, seriesCollection } from "../collections";
-import { getBrandCollectionsWithStats, getCollectionPreviews, getCollectionStats, getRelatedCollectionsWithStats } from "../collection-stats";
+import {
+  getBrandCollectionsWithStats,
+  getBrandSeries,
+  getCollectionPreviews,
+  getCollectionStats,
+  getRelatedCollectionsWithStats,
+  getSeries,
+  getSeriesBrand,
+} from "../collection-stats";
 import { isZoom } from "../lens/lens";
 import { getAllLenses, getLensesByMount } from "../lens/data";
 import type { Lens } from "../types";
@@ -439,5 +447,29 @@ describe("seriesCollection", () => {
   it("finds none for a series without a page, or a lens without a series", () => {
     expect(seriesCollection(byId("sirui-sniper-33mmf12-aps-c-frame-autofocus-lens-x"), "en")).toBeUndefined();
     expect(seriesCollection(byId("7artisans-af-35mm-f14-x"), "en")).toBeUndefined();
+  });
+});
+
+describe("series", () => {
+  it("are each one brand's single line, so they can be listed under that brand", () => {
+    for (const { collection, brand, name } of getSeries("en")) {
+      const lenses = matchingLenses(collection.slug);
+      expect(new Set(lenses.map((l) => l.brand)), collection.slug).toEqual(new Set([brand]));
+      expect(new Set(lenses.map((l) => l.series)), collection.slug).toEqual(new Set([name]));
+      expect(getBrandInfo(brand), collection.slug).toBeDefined();
+    }
+  });
+
+  it("are found from their brand and lead back to it", () => {
+    expect(getBrandSeries("fujifilm", "en").map((s) => s.name).sort()).toEqual(["XC", "XF"]);
+    expect(getBrandSeries("7artisans", "en")).toEqual([]);
+    expect(getSeriesBrand("fujifilm-xf", "en")).toBe("fujifilm");
+    expect(getSeriesBrand("pancake", "en")).toBeUndefined();
+  });
+
+  it("are left out of a brand's related collections, which its series section already lists", () => {
+    const related = getBrandCollectionsWithStats("fujifilm", "en").map((s) => s.collection.slug);
+    expect(related).not.toContain("fujifilm-xf");
+    expect(related).not.toContain("fujifilm-xc");
   });
 });

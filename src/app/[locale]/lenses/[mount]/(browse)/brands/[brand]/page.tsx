@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Flag } from "lucide-react";
+import { ArrowRight, Flag } from "lucide-react";
 import { localized } from "@/i18n/localized";
+import { Link } from "@/i18n/navigation";
 import BrandPicker from "@/components/brand/BrandPicker";
 import { cineCollectionTag } from "@/components/collection/CineCollectionLink";
 import { BrandShare } from "@/components/charts/ChartShare";
@@ -23,7 +24,7 @@ import { BRANDS, getBrandInfo, getBrandLenses } from "@/lib/brands";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildLineup } from "@/lib/charts/lineup";
 import { buildTimeline } from "@/lib/charts/timeline";
-import { getBrandCollectionsWithStats } from "@/lib/collection-stats";
+import { getBrandCollectionsWithStats, getBrandSeries } from "@/lib/collection-stats";
 import { formatDataDate } from "@/lib/charts/data-date";
 import { getLensesByMount, meta } from "@/lib/lens/data";
 import { brandLabel, focalRangeDisplay } from "@/lib/lens/format";
@@ -31,7 +32,7 @@ import { buildItemListSchema, lensListItems } from "@/lib/lens/seo";
 import { mountHasCollections, urlSegmentToMount } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { chartHref } from "@/lib/url/charts";
-import { brandPath, browsePath, chartPath } from "@/lib/url/routes";
+import { brandPath, browsePath, chartPath, collectionPath, collectionsPath } from "@/lib/url/routes";
 import { cn } from "@/lib/utils";
 
 type Params = Promise<{ locale: string; mount: string; brand: string }>;
@@ -119,6 +120,13 @@ export default async function BrandPage({ params }: { params: Params }) {
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const description = localized(data.info.description, locale);
   const related = getBrandCollectionsWithStats(data.info.slug, locale);
+  const series = mountHasCollections(data.resolvedMount) ? getBrandSeries(data.info.slug, locale) : [];
+  const breadcrumb = [
+    { label: tNav("lenses"), href: browsePath(data.resolvedMount) },
+    ...(mountHasCollections(data.resolvedMount)
+      ? [{ label: tNav("collectionsAndBrands"), href: collectionsPath(data.resolvedMount) }]
+      : []),
+  ];
   const tCharts = await getTranslations({ locale, namespace: "Charts" });
   const hasTimeline = data.timeline.entries.length > 0;
   const contents = [
@@ -150,7 +158,7 @@ export default async function BrandPage({ params }: { params: Params }) {
       <main className={BROWSE_PAGE_MAIN_CLS}>
         <header className="mb-8">
           <div className="mb-4 flex items-center justify-between gap-3">
-            <Breadcrumb segments={[{ label: tNav("lenses"), href: browsePath(data.resolvedMount) }]} current={data.name} />
+            <Breadcrumb segments={breadcrumb} current={data.name} />
             <div className="flex shrink-0 items-center gap-1">
               <BrandShare {...share} posters={["lineup", "timeline"]} trigger="utility" />
               <FeedbackTrigger type="general" className={UTILITY_BTN_CLS}>
@@ -168,6 +176,32 @@ export default async function BrandPage({ params }: { params: Params }) {
             </div>
           )}
           <p className="mt-3 text-sm leading-relaxed text-zinc-700 sm:text-base">{description}</p>
+          {series.length > 0 && (
+            <section aria-labelledby="series-heading" className="mt-5">
+              <h2 id="series-heading" className="mb-2.5 text-[13px] font-semibold text-zinc-900">
+                {t("seriesHeading")}
+              </h2>
+              <ul className="grid max-w-3xl gap-2 sm:grid-cols-2 sm:gap-3">
+                {series.map(({ collection, name, lensCount }) => (
+                  <li key={collection.slug}>
+                    <Link
+                      href={collectionPath(data.resolvedMount, collection.slug)}
+                      className="grid grid-cols-[1fr_auto] items-center gap-3 rounded-xl border border-zinc-200 px-3.5 py-3 transition-colors hover:border-zinc-400 hover:bg-zinc-50 sm:px-4"
+                    >
+                      <span className="min-w-0">
+                        <span className="block text-sm font-semibold text-zinc-900">{t("seriesName", { name })}</span>
+                        <span className="mt-0.5 block text-xs text-zinc-500">{localized(collection.shortDescription, locale)}</span>
+                      </span>
+                      <span className="inline-flex items-center gap-1 font-mono text-[11px] whitespace-nowrap text-zinc-500">
+                        {tCollection("lensCountShort", { count: lensCount })}
+                        <ArrowRight className="size-3" aria-hidden="true" />
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
           <nav aria-label={t("contents")} className="mt-4 flex flex-wrap gap-1.5">
             {contents.map(({ id, label }) => (
               <a key={id} href={`#${id}`} className={cn(CHIP_BASE_CLS, CHIP_IDLE_CLS)}>

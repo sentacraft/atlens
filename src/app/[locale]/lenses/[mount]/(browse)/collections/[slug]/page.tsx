@@ -6,7 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight, Flag } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { COLLECTIONS } from "@/lib/collections";
-import { getCollectionStats, getRelatedCollectionsWithStats } from "@/lib/collection-stats";
+import { getCollectionStats, getRelatedCollectionsWithStats, getSeriesBrand } from "@/lib/collection-stats";
 import { getLensesByMount } from "@/lib/lens/data";
 import { urlSegmentToMount, mountSeoLabel, mountHasCharts, mountHasCollections } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
@@ -27,7 +27,7 @@ import { ShareButton } from "@/components/share/ShareButton";
 import Breadcrumb from "@/components/nav/Breadcrumb";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import { DataSourcePill } from "@/components/lens/DataSource";
-import { browsePath, chartPath, collectionPath, collectionsPath } from "@/lib/url/routes";
+import { brandPath, browsePath, chartPath, collectionPath, collectionsPath } from "@/lib/url/routes";
 
 type Params = Promise<{ locale: string; mount: string; slug: string }>;
 
@@ -97,6 +97,7 @@ export default async function CollectionPage({
   const t = await getTranslations({ locale, namespace: "Collection" });
   const tNav = await getTranslations({ locale, namespace: "Nav" });
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
+  const seriesBrand = getSeriesBrand(slug, locale);
   const tShare = await getTranslations({ locale, namespace: "Share" });
 
   const title = localized(collection.title, locale);
@@ -125,7 +126,8 @@ export default async function CollectionPage({
             <Breadcrumb
               segments={[
                 { label: tNav("lenses"), href: browsePath(resolvedMount) },
-                { label: t("breadcrumbCollections"), href: collectionsPath(resolvedMount) },
+                { label: tNav("collectionsAndBrands"), href: collectionsPath(resolvedMount) },
+                ...(seriesBrand ? [{ label: brandLabel(tBrand, seriesBrand), href: brandPath(resolvedMount, seriesBrand) }] : []),
               ]}
               current={title}
             />
