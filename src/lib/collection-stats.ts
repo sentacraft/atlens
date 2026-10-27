@@ -1,6 +1,6 @@
 import "server-only";
 import { FILTERS, type CollectionSlug } from "@/lib/collection-filters";
-import { COLLECTIONS, FEATURED_COLLECTION_SLUGS, type LensCollection } from "@/lib/collections";
+import { COLLECTION_GROUPS, COLLECTIONS, FEATURED_COLLECTION_SLUGS, type LensCollection } from "@/lib/collections";
 import { getAllLenses } from "@/lib/lens/data";
 import { routing } from "@/i18n/routing";
 import type { Lens } from "@/lib/types";
@@ -153,7 +153,9 @@ export function getFeaturedCollectionsWithStats(locale: string): CollectionSumma
 /** Theme collections holding a brand's lenses, those with the most of them first, each previewed by a different one of them where it can. */
 export function getBrandCollectionsWithStats(brand: string, locale: string, limit = 6): CollectionSummary[] {
   const used = new Set<string>();
+  const ownSeries = new Set(getBrandSeries(brand, locale).map((series) => series.collection.slug));
   return Object.values(COLLECTIONS)
+    .filter((collection) => !ownSeries.has(collection.slug))
     .map((collection) => ({ collection, own: membersOf(collection.slug, locale).filter((l) => l.brand === brand) }))
     .filter(({ own }) => own.length > 0)
     .sort((a, b) => b.own.length - a.own.length)
@@ -163,4 +165,34 @@ export function getBrandCollectionsWithStats(brand: string, locale: string, limi
       used.add(cover.id);
       return { ...summarize(collection, locale), previewLens: preview(cover) };
     });
+}
+
+/** A series collection: one brand's own line, listed under that brand rather than among the themes. */
+export interface SeriesSummary {
+  collection: LensCollection;
+  brand: string;
+  /** The line's name as the maker writes it, such as "XF". */
+  name: string;
+  lensCount: number;
+}
+
+/** Every series that has lenses in this locale. Its brand and name are the ones its lenses share. */
+export function getSeries(locale: string): SeriesSummary[] {
+  const series = COLLECTION_GROUPS.find(({ group }) => group === "series")?.collections ?? [];
+  return series.flatMap((collection) => {
+    const [first, ...rest] = membersOf(collection.slug, locale);
+    if (!first?.series) {
+      return [];
+    }
+    return [{ collection, brand: first.brand, name: first.series, lensCount: rest.length + 1 }];
+  });
+}
+
+export function getBrandSeries(brand: string, locale: string): SeriesSummary[] {
+  return getSeries(locale).filter((series) => series.brand === brand);
+}
+
+/** The brand a series collection belongs to; undefined for any other collection. */
+export function getSeriesBrand(slug: string, locale: string): string | undefined {
+  return getSeries(locale).find((series) => series.collection.slug === slug)?.brand;
 }
