@@ -14,9 +14,10 @@ function isTextField(target: EventTarget | null) {
 
 /**
  * The height left above the on-screen keyboard, null while it is down. Read by `KeyboardInsets`,
- * which hands it to layouts as CSS; components use that, not this. Measured on the visual
- * viewport alone: `innerHeight` and `svh` disagree with it by the toolbars on iOS 26. Focus alone
- * is not enough: an autofocused field raises no keyboard.
+ * which hands it to layouts as CSS; components use that, not this. Measured against the tallest
+ * visible height seen at this width, not `innerHeight`: some iOS keyboards shrink the window
+ * along with the visible area, and `innerHeight` and `svh` disagree with it by the toolbars on
+ * iOS 26. Focus alone is not enough: an autofocused field raises no keyboard.
  */
 export function useKeyboardViewport(): number | null {
   const [height, setHeight] = useState<number | null>(null);
@@ -26,8 +27,15 @@ export function useKeyboardViewport(): number | null {
       return;
     }
     let field: EventTarget | null = document.activeElement;
+    let width = viewport.width;
+    let tallest = Math.max(viewport.height, window.innerHeight);
     const update = () => {
-      const up = isTextField(field) && window.innerHeight - viewport.height > KEYBOARD_MIN_PX;
+      if (viewport.width !== width) {
+        width = viewport.width;
+        tallest = Math.max(viewport.height, window.innerHeight);
+      }
+      tallest = Math.max(tallest, viewport.height);
+      const up = isTextField(field) && tallest - viewport.height > KEYBOARD_MIN_PX;
       setHeight(up ? Math.floor(viewport.height) : null);
     };
     const onFocusIn = (event: FocusEvent) => {

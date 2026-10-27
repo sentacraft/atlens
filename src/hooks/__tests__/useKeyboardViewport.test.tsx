@@ -38,6 +38,21 @@ describe("useKeyboardViewport", () => {
     expect(result.current).toBeNull();
   });
 
+  it("still sees the keyboard when the browser shrinks the window along with it", () => {
+    const viewport = stubViewport();
+    const fullHeight = window.innerHeight;
+    render(<textarea aria-label="composer" />);
+    const { result } = renderHook(() => useKeyboardViewport());
+
+    act(() => screen.getByRole("textbox").focus());
+    act(() => {
+      vi.stubGlobal("innerHeight", fullHeight - 320);
+      viewport.height = fullHeight - 320;
+      viewport.dispatchEvent(new Event("resize"));
+    });
+    expect(result.current).toBe(fullHeight - 320);
+  });
+
   it("ignores toolbars that change the visible height by less than a keyboard", () => {
     const viewport = stubViewport();
     render(<textarea aria-label="composer" />);

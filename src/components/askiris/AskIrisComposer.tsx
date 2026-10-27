@@ -1,7 +1,16 @@
 "use client";
 
+import { useRef } from "react";
 import { ArrowUp, Square } from "lucide-react";
+import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { cn } from "@/lib/utils";
+
+function fadeMask(top: boolean, bottom: boolean) {
+  if (!top && !bottom) {
+    return undefined;
+  }
+  return `linear-gradient(to bottom, ${top ? "transparent" : "black"}, black 1.25em, black calc(100% - 1.25em), ${bottom ? "transparent" : "black"})`;
+}
 
 export default function AskIrisComposer({
   value,
@@ -30,6 +39,8 @@ export default function AskIrisComposer({
 }) {
   const lg = size === "lg";
   const canSend = !disabled && value.trim().length > 0;
+  const fieldRef = useRef<HTMLTextAreaElement>(null);
+  const { canScrollUp, canScrollDown } = useScrollAffordance(fieldRef, [value]);
 
   return (
     <form
@@ -49,13 +60,15 @@ export default function AskIrisComposer({
         )}
       >
         <textarea
+          ref={fieldRef}
           rows={1}
           enterKeyHint="send"
           className={cn(
-            "placeholder:text-muted-foreground min-w-0 flex-1 resize-none self-center bg-transparent outline-none [field-sizing:content]",
+            "placeholder:text-muted-foreground max-h-[3lh] min-w-0 flex-1 resize-none self-center bg-transparent outline-none [field-sizing:content] sm:max-h-[2lh]",
             // 16px minimum on mobile: iOS and Android zoom into smaller inputs on focus.
-            lg ? "max-h-40 text-base" : "max-h-32 text-base sm:text-sm",
+            lg ? "text-base" : "text-base sm:text-sm",
           )}
+          style={{ maskImage: fadeMask(canScrollUp, canScrollDown) }}
           value={value}
           placeholder={placeholder}
           disabled={disabled}
