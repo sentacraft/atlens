@@ -47,6 +47,7 @@ import { ConversationHistoryPopover, ConversationHistoryView } from "@/component
 import { useBreakpoint } from "@/hooks/useViewport";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { openChat, rememberConversation, rememberedConversationId, replyingConversationId, setModelPreset } from "@/components/askiris/live-chats";
+import { resolveOpening } from "@/lib/askiris/opening";
 
 type ConversationSwitch = { kind: "select"; id: string } | { kind: "new"; reason: "manual" | "reopen" };
 
@@ -97,30 +98,38 @@ export default function AskIrisChat({
   const debug = useTestHookOption("askIrisTrace") === "on";
   const modelPreset = useTestHookOption("askIrisModel");
   useEffect(() => setModelPreset(modelPreset), [modelPreset]);
-  const [input, setInput] = useState("");
+  // The Ask Iris page mounts afresh on each visit and opens as the panel reopens. Read once: a turn
+  // sent here makes this page's own conversation the replying and the remembered one.
+  const [pageOpening] = useState(() =>
+    shell.variant === "page"
+      ? resolveOpening(
+          entry.conversationId
+            ? { kind: "conversation", conversationId: entry.conversationId }
+            : entry.question
+              ? { kind: "question", text: entry.question }
+              : { kind: "open" },
+          { shown: null, replyingId: replyingConversationId(), lastId: rememberedConversationId() },
+        )
+      : null,
+  );
+  const [input, setInput] = useState(pageOpening?.kind === "replying" ? (pageOpening.draft ?? "") : "");
   const [historyOpen, setHistoryOpen] = useState(false);
   // From lg up Iris sits beside the page, with room for History as a popover over the chat.
   const historyAsPopover = useBreakpoint("lg");
   const [signingIn, setSigningIn] = useState(false);
   const [pendingSwitch, setPendingSwitch] = useState<ConversationSwitch | null>(null);
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
-  // The Ask Iris page mounts afresh on each visit, so it opens as the panel reopens: over a reply
-  // still being written, else on a new conversation that offers the last one back. Read once: a
-  // turn sent here makes this page's own conversation the replying and the remembered one.
-  const [opening] = useState(() =>
-    shell.variant === "page" && !entry.conversationId
-      ? { replying: entry.question ? undefined : replyingConversationId(), previous: rememberedConversationId() }
-      : { replying: undefined, previous: undefined },
-  );
   // The conversation an opening left for a new one, offered back until another is picked.
-  const [resumeId, setResumeId] = useState<string | null>(() => (opening.replying ? null : (opening.previous ?? null)));
+  const [resumeId, setResumeId] = useState<string | null>(() =>
+    pageOpening?.kind === "fresh" ? pageOpening.resumeId : null,
+  );
   const pageStarters = usePageStarters(shell.variant === "panel" ? shell.pagePath : (entry.from ?? null), lenses);
   const { data: session } = authClient.useSession();
   // Guests have a session too, and their own stored conversations.
   const userId = session?.user.id;
   const isAccount = Boolean(accountUser(session));
   const conversation = useConversation({
-    initialConversationId: entry.conversationId ?? opening.replying,
+    initialConversationId: pageOpening && pageOpening.kind !== "fresh" ? pageOpening.conversationId : undefined,
     userId,
     onNotice: (notice) => {
       if (notice === "unavailable") {
@@ -206,8 +215,8 @@ export default function AskIrisChat({
   const entryHandled = useRef(false);
   const handleEntry = useEffectEvent(() => {
     clearEntryParams();
-    if (entry.question) {
-      void send(entry.question, { method: "handoff" });
+    if (pageOpening?.kind === "fresh" && pageOpening.question) {
+      void send(pageOpening.question, { method: "handoff" });
     }
   });
   useEffect(() => {
@@ -218,28 +227,31 @@ export default function AskIrisChat({
     handleEntry();
   }, [entry.question]);
 
-  // Each opening starts a new conversation, except over a reply still being written.
   const receiveRequest = useEffectEvent((request: IrisPanelRequest) => {
-    if (request.kind === "conversation") {
-      requestSwitch({ kind: "select", id: request.conversationId });
+    const opening = resolveOpening(request, {
+      shown: { id: conversationId, hasMessages },
+      replyingId: isBusy ? conversationId : undefined,
+      lastId: rememberedConversationId(),
+    });
+    if (opening.kind === "conversation") {
+      requestSwitch({ kind: "select", id: opening.conversationId });
       return;
     }
-    if (isBusy) {
-      if (request.kind === "question") {
-        setInput(request.text);
+    if (opening.kind === "replying") {
+      if (opening.draft) {
+        setInput(opening.draft);
       }
       return;
     }
-    const fresh = messages.length > 0;
-    if (fresh) {
+    if (opening.startNew) {
       switchConversation({ kind: "new", reason: "reopen" });
-      setResumeId(conversationId);
     }
-    if (request.kind === "question") {
-      if (fresh) {
-        setPendingQuestion(request.text);
+    setResumeId(opening.resumeId);
+    if (opening.question) {
+      if (opening.startNew) {
+        setPendingQuestion(opening.question);
       } else {
-        void send(request.text, { method: "handoff" });
+        void send(opening.question, { method: "handoff" });
       }
     }
   });
