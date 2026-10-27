@@ -64,7 +64,7 @@ export default function AskIrisComposer({
           rows={1}
           enterKeyHint="send"
           className={cn(
-            "placeholder:text-muted-foreground max-h-[3lh] min-w-0 flex-1 resize-none self-center bg-transparent outline-none [field-sizing:content] sm:max-h-[2lh]",
+            "placeholder:text-muted-foreground max-h-[3lh] min-w-0 flex-1 resize-none self-center bg-transparent outline-none [field-sizing:content] [scrollbar-width:none] sm:max-h-[2lh] [&::-webkit-scrollbar]:hidden",
             // 16px minimum on mobile: iOS and Android zoom into smaller inputs on focus.
             lg ? "text-base" : "text-base sm:text-sm",
           )}
