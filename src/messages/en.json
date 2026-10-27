@@ -13,7 +13,7 @@
   },
   "Metadata": {
     "seoTitle": "Atlens | Fujifilm Lens Database: Specs, Comparison & AI Advice",
-    "seoDescription": "Every Fujifilm X-mount lens, first- and third-party: normalized specs, side-by-side comparison, reference prices, and Iris, an AI advisor that answers from the data."
+    "seoDescription": "Every Fujifilm X-mount lens, first- and third-party: normalized specs, side-by-side comparison, reference prices, release and weight charts, and Iris, an AI advisor that answers from the data."
   },
   "Rename": {
     "toast": "X-Glass is now Atlens — same lens database, just a new name. Welcome back 👋"
@@ -558,7 +558,6 @@
       "signIn": "Sign in free",
       "collapse": "Show less",
       "showDetails": "What each review says ({count})",
-      "hideDetails": "Hide what each review says",
       "reviewCount": "{count, plural, one {# review} other {# reviews}}",
       "reviewSources": "{count, plural, one {# review} other {# reviews}} on {aspect}",
       "disagree": "Reviewers disagree on {aspects}",
@@ -885,7 +884,7 @@
   },
   "RecentlyAdded": {
     "pageTitle": "Recently Added",
-    "metaDescription": "Fujifilm lenses newly added to Atlens, by date.",
+    "metaDescription": "Fujifilm lenses newly added to Atlens, newest first: first- and third-party, each with normalized specs and reference prices.",
     "intro": "Tracking the expanding scope of the database.",
     "added": "+{count, number}",
     "lensesCount": "{count, number} lenses",
@@ -973,8 +972,8 @@
     "stats": "{count, number} lenses · {brandCount, number} brands",
     "metaPrefix": "{count, number} lenses from {brandCount, number} brands.",
     "relatedCollections": "Related collections",
-    "indexTitle": "Fujifilm X-Mount Lens Collections",
-    "indexDescription": "Fujifilm X-mount lenses grouped by theme, across every brand: pancakes, fast primes, lightweight, weather-sealed, by focal length and by brand.",
+    "indexTitle": "Fujifilm X-Mount Lens Collections & Brands",
+    "indexDescription": "Fujifilm X-mount lenses by brand and by theme: a page for each brand with its full lineup and release dates, and cross-brand collections of pancakes, fast primes, lightweight and weather-sealed lenses, and focal ranges.",
     "indexStats": "{count, number} collections · {lensCount, number} lenses",
     "brandsHeading": "Brands",
     "brandsStats": "{brands, number} brands · {series, number} series",

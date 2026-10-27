@@ -13,7 +13,7 @@
   },
   "Metadata": {
     "seoTitle": "Atlens | 富士镜头图鉴：X 卡口规格对比与 AI 选镜",
-    "seoDescription": "富士 X 卡口原厂与副厂镜头全收录：规格统一标准，跨品牌横向对比，附各渠道参考价；还有基于这些数据回答的 AI 选镜助手 Iris。"
+    "seoDescription": "富士 X 卡口原厂与副厂镜头全收录：规格统一标准，跨品牌横向对比，附各渠道参考价；有发布时间轴、重量天梯和品牌全家福三张图鉴，还有基于这些数据回答的 AI 选镜助手 Iris。"
   },
   "Rename": {
     "toast": "X-Glass 已更名为 Atlens——还是那个镜头图鉴，只是换了个名字。欢迎回来 👋"
@@ -557,8 +557,7 @@
       "groupCount": "{group} {count}",
       "signIn": "免费登录查看",
       "collapse": "收起",
-      "showDetails": "各家具体说法（{count}）",
-      "hideDetails": "收起各家具体说法",
+      "showDetails": "看每篇评测怎么说（{count}）",
       "reviewCount": "{count} 篇评测",
       "reviewSources": "{aspect}的 {count} 篇评测",
       "disagree": "各家看法不一：{aspects}",
@@ -885,7 +884,7 @@
   },
   "RecentlyAdded": {
     "pageTitle": "新增镜头",
-    "metaDescription": "Atlens 新收录的富士镜头，按日期排列。",
+    "metaDescription": "Atlens 最近收录的富士镜头，新的在前，原厂和副厂都有，每支附统一标准的规格和参考价。",
     "intro": "记录数据库收录范围的持续扩展。",
     "added": "+{count, number}",
     "lensesCount": "{count, number} 支镜头",
@@ -973,8 +972,8 @@
     "stats": "{count, number} 支镜头 · {brandCount, number} 个品牌",
     "metaPrefix": "{count, number} 支镜头，{brandCount, number} 个品牌。",
     "relatedCollections": "相关合集",
-    "indexTitle": "富士 X 卡口镜头合集",
-    "indexDescription": "按主题整理的富士 X 卡口镜头合集：饼干头、大光圈定焦、轻量镜头、防滴防尘、各焦段与各品牌，每个合集都跨品牌收录。",
+    "indexTitle": "富士 X 卡口镜头合集与品牌",
+    "indexDescription": "富士 X 卡口镜头按品牌和主题整理：每个品牌一页，看它的全部镜头和发布时间；主题合集跨品牌收录饼干头、大光圈定焦、轻量镜头、防滴防尘和各焦段。",
     "indexStats": "共 {count, number} 个合集 · {lensCount, number} 支镜头",
     "brandsHeading": "品牌",
     "brandsStats": "{brands, number} 个品牌 · {series, number} 个系列",
