@@ -146,9 +146,9 @@ test.describe("Charts", () => {
     const line = page.locator("h1").locator("xpath=preceding-sibling::*[1]");
     await expect(line.getByRole("link", { name: "Fujifilm" })).toHaveAttribute("href", /\/brands\/fujifilm$/);
     await expect(line.getByRole("link", { name: "XF" })).toHaveAttribute("href", /\/collections\/fujifilm-xf$/);
-    await page.goto("/en/lenses/x/sirui-sniper-33mmf12-aps-c-frame-autofocus-lens-x");
+    await page.goto("/en/lenses/x/sirui-aurora-35mmf14-full-frame-autofocus-lens-x");
     await expect(line.getByRole("link")).toHaveCount(1);
-    await expect(line).toContainText("Sniper");
+    await expect(line).toContainText("Aurora");
   });
 
   test("the weight ladder sets everyday references among the lenses by weight", async ({ page }) => {
