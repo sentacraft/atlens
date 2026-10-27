@@ -1,6 +1,6 @@
 export default function HomeLoading() {
   return (
-    <div className="relative h-[calc(var(--app-height)-var(--nav-height)-var(--page-bottom-inset))] overflow-clip grid place-items-center">
+    <div className="relative h-[var(--page-height)] overflow-clip grid place-items-center">
       <section className="flex flex-col items-center text-center px-4">
         <div className="h-[102px] w-[102px] rounded-full bg-zinc-100 animate-pulse" />
 

@@ -5,6 +5,7 @@ import { ensureSession } from "@/lib/auth-client";
 import { track } from "@/lib/analytics/analytics";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AskIrisChat, { type AskIrisShell } from "../AskIrisChat";
+import { forgetConversation, rememberedConversationId } from "../live-chats";
 import type { LensSummary } from "@/lib/lens/data";
 
 vi.mock("next-intl", () => {
@@ -46,6 +47,7 @@ const emptyStream = () =>
   });
 
 beforeEach(() => {
+  forgetConversation(rememberedConversationId() ?? "");
   auth.order = [];
   auth.account = undefined;
   vi.stubGlobal(
@@ -110,7 +112,7 @@ function captureChatBodies(stored: () => unknown[] = () => []) {
 }
 
 function submit(container: HTMLElement, text: string) {
-  const input = container.querySelector("form input")!;
+  const input = container.querySelector("form textarea")!;
   fireEvent.change(input, { target: { value: text } });
   fireEvent.submit(input.closest("form")!);
 }
@@ -162,7 +164,7 @@ describe("AskIrisChat send", () => {
 
     await waitFor(() => expect(ensureSession).toHaveBeenCalled());
     expect(fetchMock.mock.calls.some(([input]) => String(input).includes("/api/chat"))).toBe(false);
-    expect((container.querySelector("form input") as HTMLInputElement).value).toBe("Which lens?");
+    expect((container.querySelector("form textarea") as HTMLTextAreaElement).value).toBe("Which lens?");
   });
 
   it("asks before a new chat stops a reply in progress", async () => {
@@ -214,7 +216,7 @@ describe("AskIrisChat send", () => {
     expect(track).toHaveBeenCalledWith("askiris_message", { method: "starter", pool: "terms" });
   });
 
-  it("starts a new conversation each time the panel opens, and offers the stored one back", async () => {
+  it("keeps the panel's conversation on a plain reopen, and gives a question a new one that offers it back", async () => {
     auth.account = { id: "u1" };
     const STORED = "11111111-1111-4111-8111-111111111111";
     vi.spyOn(crypto, "randomUUID").mockReturnValueOnce(STORED);
@@ -225,12 +227,44 @@ describe("AskIrisChat send", () => {
     await waitFor(() => expect(screen.getByText("Which lens?")).toBeInTheDocument());
 
     rerenderChat(panel("/en/lenses/x/browse", { id: 1, kind: "open" }));
+    expect(screen.getByText("Which lens?")).toBeInTheDocument();
 
+    rerenderChat(panel("/en/lenses/x/browse", { id: 2, kind: "question", text: "And for video?" }));
     const resume = await screen.findByRole("button", { name: "resume" });
     expect(screen.queryByText("Which lens?")).toBeNull();
     expect(track).toHaveBeenCalledWith("askiris_new_conversation", { reason: "reopen" });
+    await waitFor(() => expect(bodies).toHaveLength(2));
     fireEvent.click(resume);
     await waitFor(() => expect(screen.queryByRole("button", { name: "resume" })).toBeNull());
+  });
+
+  it("picks up the last conversation when the Ask Iris page opens again with nothing to hand in", async () => {
+    auth.account = { id: "u1" };
+    const STORED = "22222222-2222-4222-8222-222222222222";
+    vi.spyOn(crypto, "randomUUID").mockReturnValueOnce(STORED);
+    const bodies = captureChatBodies(() => [{ id: STORED, title: "Which lens?", createdAt: 1, updatedAt: 1 }]);
+    const first = renderChat();
+    submit(first.container, "Which lens?");
+    await waitFor(() => expect(bodies).toHaveLength(1));
+    await waitFor(() => expect(screen.getByText("Which lens?")).toBeInTheDocument());
+
+    // Leaving the page unmounts it; coming back from the tab bar mounts a fresh one.
+    first.unmount();
+    const fetchChat = vi.mocked(fetch);
+    const stored = { id: "m1", role: "user", parts: [{ type: "text", text: "Which lens?" }] };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) =>
+        String(input).endsWith(`/api/askiris/conversations/${STORED}`)
+          ? Response.json({ messages: [{ message: stored }] })
+          : fetchChat(input, init),
+      ),
+    );
+    window.history.replaceState(null, "", "/en/askiris");
+    renderChat();
+
+    expect(await screen.findByText("Which lens?")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "resume" })).toBeNull();
   });
 
   it("offers nothing back for a conversation that was never stored", async () => {
@@ -239,7 +273,7 @@ describe("AskIrisChat send", () => {
     submit(container, "Which lens?");
     await waitFor(() => expect(bodies).toHaveLength(1));
 
-    rerenderChat(panel("/en/lenses/x/browse", { id: 1, kind: "open" }));
+    rerenderChat(panel("/en/lenses/x/browse", { id: 1, kind: "question", text: "And for video?" }));
 
     await waitFor(() => expect(screen.queryByText("Which lens?")).toBeNull());
     expect(screen.queryByRole("button", { name: "resume" })).toBeNull();
@@ -296,16 +330,24 @@ describe("AskIrisChat send", () => {
     expect(screen.getByRole("button", { name: "fullScreen" })).toBeInTheDocument();
   });
 
+  it("leaves out close and full screen in the phone sheet, which acts as a page", () => {
+    captureChatBodies();
+    renderChat({ ...panel("/en/lenses/x/xf-56"), layout: "sheet" });
+
+    expect(screen.queryByRole("button", { name: "closePanel" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "fullScreen" })).toBeNull();
+  });
+
   it("expands in place from the full-screen button, keeping the unsent input", () => {
     captureChatBodies();
     const { container, rerenderChat } = renderChat(panel("/en/lenses/x/xf-56"));
-    fireEvent.change(container.querySelector("form input")!, { target: { value: "And the 50mm?" } });
+    fireEvent.change(container.querySelector("form textarea")!, { target: { value: "And the 50mm?" } });
 
     fireEvent.click(screen.getByRole("button", { name: "fullScreen" }));
     expect(expandedChange).toHaveBeenLastCalledWith(true);
 
     rerenderChat({ ...panel("/en/lenses/x/xf-56"), expanded: true });
-    expect(container.querySelector("form input")).toHaveValue("And the 50mm?");
+    expect(container.querySelector("form textarea")).toHaveValue("And the 50mm?");
     fireEvent.click(screen.getByRole("button", { name: "exitFullScreen" }));
     expect(expandedChange).toHaveBeenLastCalledWith(false);
   });

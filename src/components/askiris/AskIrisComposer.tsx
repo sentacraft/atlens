@@ -1,8 +1,16 @@
 "use client";
 
-import { type Ref } from "react";
+import { useRef } from "react";
 import { ArrowUp, Square } from "lucide-react";
+import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { cn } from "@/lib/utils";
+
+function fadeMask(top: boolean, bottom: boolean) {
+  if (!top && !bottom) {
+    return undefined;
+  }
+  return `linear-gradient(to bottom, ${top ? "transparent" : "black"}, black 1.25em, black calc(100% - 1.25em), ${bottom ? "transparent" : "black"})`;
+}
 
 export default function AskIrisComposer({
   value,
@@ -13,7 +21,6 @@ export default function AskIrisComposer({
   sendLabel,
   size = "md",
   autoFocus = false,
-  inputRef,
   streaming = false,
   onStop,
   stopLabel,
@@ -26,13 +33,14 @@ export default function AskIrisComposer({
   sendLabel: string;
   size?: "lg" | "md";
   autoFocus?: boolean;
-  inputRef?: Ref<HTMLInputElement>;
   streaming?: boolean;
   onStop?: () => void;
   stopLabel?: string;
 }) {
   const lg = size === "lg";
   const canSend = !disabled && value.trim().length > 0;
+  const fieldRef = useRef<HTMLTextAreaElement>(null);
+  const { canScrollUp, canScrollDown } = useScrollAffordance(fieldRef, [value]);
 
   return (
     <form
@@ -46,23 +54,33 @@ export default function AskIrisComposer({
     >
       <div
         className={cn(
-          "border-input bg-background flex flex-1 items-center rounded-2xl border shadow-sm",
+          "border-input bg-background flex flex-1 items-end rounded-2xl border shadow-sm",
           "focus-within:border-ring focus-within:ring-ring/40 transition-colors focus-within:ring-2",
           lg ? "gap-3 px-3.5 py-3" : "gap-2 px-3 py-2",
         )}
       >
-        <input
-          ref={inputRef}
+        <textarea
+          ref={fieldRef}
+          rows={1}
+          enterKeyHint="send"
           className={cn(
-            "placeholder:text-muted-foreground min-w-0 flex-1 bg-transparent outline-none",
+            "placeholder:text-muted-foreground max-h-[3lh] min-w-0 flex-1 resize-none self-center bg-transparent outline-none [field-sizing:content] [scrollbar-width:none] sm:max-h-[2lh] [&::-webkit-scrollbar]:hidden",
             // 16px minimum on mobile: iOS and Android zoom into smaller inputs on focus.
             lg ? "text-base" : "text-base sm:text-sm",
           )}
+          style={{ maskImage: fadeMask(canScrollUp, canScrollDown) }}
           value={value}
           placeholder={placeholder}
           disabled={disabled}
           autoFocus={autoFocus}
           onChange={(event) => onChange(event.currentTarget.value)}
+          onKeyDown={(event) => {
+            // Shift+Enter breaks the line; Enter that confirms an IME composition is not a send.
+            if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+              event.preventDefault();
+              event.currentTarget.form?.requestSubmit();
+            }
+          }}
         />
         {streaming && onStop ? (
           <button

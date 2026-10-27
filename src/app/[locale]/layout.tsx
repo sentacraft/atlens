@@ -12,6 +12,7 @@ import SiteJsonLd from "@/components/seo/SiteJsonLd";
 import { routing } from "@/i18n/routing";
 import Nav from "@/components/nav/Nav";
 import ConsoleEgg from "@/components/ConsoleEgg";
+import KeyboardInsets from "@/components/KeyboardInsets";
 import { meta, brandCount } from "@/lib/lens/data";
 import Redaction from "@/components/Redaction";
 import TestHookPanel from "@/components/TestHookPanel";
@@ -144,6 +145,7 @@ export default async function LocaleLayout({
             <IrisPanelProvider>
               <ConsoleEgg version={meta.version} lensCount={meta.lensCount} brandCount={brandCount} />
               <RevisitPrompt />
+              <KeyboardInsets />
               {/* Redaction uses useSearchParams, which would force a CSR bailout on prerendered pages. */}
               <Suspense fallback={null}>
                 <Redaction />

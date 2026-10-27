@@ -51,4 +51,22 @@ describe("AskIrisComposer", () => {
 
     expect(onSubmit).not.toHaveBeenCalled();
   });
+
+  it("sends on Enter and breaks the line on Shift+Enter", () => {
+    const { onSubmit } = renderComposer();
+    const field = screen.getByRole("textbox");
+
+    fireEvent.keyDown(field, { key: "Enter", shiftKey: true });
+    expect(onSubmit).not.toHaveBeenCalled();
+    fireEvent.keyDown(field, { key: "Enter" });
+    expect(onSubmit).toHaveBeenCalledOnce();
+  });
+
+  it("does not send on the Enter that confirms an IME composition", () => {
+    const { onSubmit } = renderComposer();
+
+    fireEvent.keyDown(screen.getByRole("textbox"), { key: "Enter", isComposing: true });
+
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
 });

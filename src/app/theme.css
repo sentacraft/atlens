@@ -40,6 +40,8 @@
   --tab-bar-height: 0px;
   /* What fixed bottom chrome takes from the page: the tab bar on phones, else the home indicator. */
   --page-bottom-inset: max(var(--safe-inset-bottom), var(--tab-bar-height));
+  /* One screen of page content, between the top bar and the bottom chrome. */
+  --page-height: calc(var(--app-height) - var(--nav-height) - var(--page-bottom-inset));
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -78,6 +80,15 @@
   :root {
     --tab-bar-height: calc(3.75rem + var(--safe-inset-bottom));
   }
+}
+
+/* While the on-screen keyboard is up (KeyboardInsets). iOS Safari keeps the layout viewport, svh
+   and fixed elements at full height under it, with no way to opt out:
+   https://bugs.webkit.org/show_bug.cgi?id=259770. iOS 26 also lifts fixed elements by the
+   keyboard's height (https://bugs.webkit.org/show_bug.cgi?id=297779), so the tab bar steps aside. */
+:root[data-keyboard] {
+  --tab-bar-height: 0px;
+  --page-height: calc(var(--keyboard-visible-height) - var(--nav-height));
 }
 
 @media (display-mode: standalone) {

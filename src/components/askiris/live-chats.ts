@@ -46,6 +46,37 @@ export function replyingChat(id: string): Chat<AskIrisUIMessage> | undefined {
   return entry && isReplying(entry.chat) ? entry.chat : undefined;
 }
 
+let lastConversationId: string | undefined;
+
+/** Records the conversation last shown with messages in this tab, which Iris picks up on opening. */
+export function rememberConversation(id: string) {
+  lastConversationId = id;
+}
+
+/** Drops a deleted conversation, so no opening picks it up. */
+export function forgetConversation(id: string) {
+  if (lastConversationId === id) {
+    lastConversationId = undefined;
+  }
+}
+
+export function rememberedConversationId(): string | undefined {
+  return lastConversationId;
+}
+
+/**
+ * The conversation still replying in this tab, if any. Opening the Ask Iris page with nothing to
+ * hand in shows it rather than a new conversation, as reopening the panel does.
+ */
+export function replyingConversationId(): string | undefined {
+  for (const [id, entry] of entries) {
+    if (isReplying(entry.chat)) {
+      return id;
+    }
+  }
+  return undefined;
+}
+
 /** The chat for a conversation shown from `seed`: the one replying, else a new one. */
 export function openChat(id: string, seed: AskIrisUIMessage[]): Chat<AskIrisUIMessage> {
   // Module state outlives a request on the server; only the browser tab keeps chats.

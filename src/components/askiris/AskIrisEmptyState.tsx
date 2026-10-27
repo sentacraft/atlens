@@ -23,7 +23,7 @@ export default function AskIrisEmptyState({
   pageStarters,
   disabled,
 }: {
-  /** side and sheet: the Iris panel beside the page, which drops the hero on a short screen. */
+  /** side and sheet: the Iris panel, more compact than the Ask Iris page. */
   variant: "page" | "side" | "sheet";
   /** A new count replays the hero's opening sweep. */
   openCount: number;
@@ -49,15 +49,16 @@ export default function AskIrisEmptyState({
         // Safe centering: when the content is taller than the room left (a short screen, the
         // keyboard), it starts at the top and scrolls instead of spilling over the top bar.
         // -mx-2 px-2: the scroll box clips sideways too, and would cut off the composer's shadow.
-        "-mx-2 flex min-h-0 flex-1 flex-col items-center justify-center-safe overflow-y-auto px-2 text-center",
-        panel ? "gap-4 pb-6 [container-type:size]" : "gap-6 pb-10",
+        // On a short screen or above the keyboard the hero, then the heading, make way for the composer.
+        "-mx-2 flex min-h-0 flex-1 flex-col items-center justify-center-safe overflow-y-auto px-2 text-center [container-type:size]",
+        panel ? "gap-4 pb-6" : "gap-6 pb-10",
       )}
     >
-      <div className={cn("shrink-0", panel && "[@container(max-height:480px)]:hidden")}>
+      <div className="shrink-0 [@container(max-height:480px)]:hidden">
         <Iris key={openCount} config={IRIS_ASSISTANT} size={HERO_SIZE[variant]} uid="askiris-hero" />
       </div>
 
-      <div className={panel ? "space-y-2" : "space-y-3"}>
+      <div className={cn("[@container(max-height:320px)]:hidden", panel ? "space-y-2" : "space-y-3")}>
         <h1
           className={cn(
             "font-heading leading-tight font-bold whitespace-pre-line",

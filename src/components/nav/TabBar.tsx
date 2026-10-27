@@ -44,7 +44,7 @@ export default function TabBar() {
     <nav
       aria-label={t("tabBar")}
       className={cn(
-        "fixed inset-x-0 bottom-0 grid h-[var(--tab-bar-height)] grid-cols-4 border-t border-zinc-200 bg-white pb-[var(--safe-inset-bottom)] sm:hidden",
+        "fixed inset-x-0 bottom-0 grid h-[var(--tab-bar-height)] in-data-keyboard:hidden grid-cols-4 border-t border-zinc-200 bg-white pb-[var(--safe-inset-bottom)] sm:hidden",
         Z.shell,
       )}
     >

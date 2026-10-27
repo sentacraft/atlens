@@ -74,9 +74,10 @@ export default function IrisPanel({
   }
 
   return (
-    // Not modal and not dismissed by outside presses: the tab bar below stays usable, and its own
-    // Ask Iris button closes the sheet. It switches in and out like the other tabs' pages, so it
-    // neither slides nor closes on a swipe, which Base UI's drawer has no switch to turn off.
+    // A Base UI drawer only for its keyboard handling; otherwise it acts as a page. Not modal and
+    // not dismissed by outside presses: the tab bar below stays usable, and its Ask Iris button
+    // and Back close it. Base UI has no switch to turn off swiping, so a swipe neither closes it
+    // nor, with the transform pinned, moves it.
     <Drawer.Root
       open={shown}
       onOpenChange={(open, details) => !open && details.reason !== "swipe" && onClose()}
@@ -94,7 +95,7 @@ export default function IrisPanel({
               aria-label="Iris"
               data-iris=""
               className={cn(
-                "absolute inset-0 flex flex-col bg-white pt-[var(--safe-inset-top)]",
+                "absolute inset-0 flex flex-col bg-white pt-[var(--safe-inset-top)] transform-none!",
                 // A drawer opened from the sheet (History) is nested and gets no backdrop of its own, so the sheet dims itself.
                 "after:pointer-events-none after:absolute after:inset-0 after:bg-zinc-950/40 after:opacity-0 after:transition-opacity after:duration-200 data-[nested-drawer-open]:after:opacity-100",
               )}

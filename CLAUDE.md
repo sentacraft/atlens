@@ -87,6 +87,10 @@ Device insets (iOS notch, home indicator, Window Controls Overlay) are consumed 
 `env(safe-area-inset-*)` directly in a component. Cover any new inset in
 `e2e/pwa-safe-area.spec.ts`.
 
+The on-screen keyboard reaches layouts the same way: `KeyboardInsets` sets `data-keyboard` and
+`--page-height` (one screen of content, above the keyboard while it is up). Size one-screen pages
+with `--page-height`; never read `visualViewport` in a component.
+
 Chinese text belongs only in the files `scripts/hooks/cjk-guard.mjs` allows: UI copy in `zh.json`,
 model-facing wording in `system-prompt.ts`, data, tests, and a few listed exceptions.
 
