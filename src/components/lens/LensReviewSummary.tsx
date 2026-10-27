@@ -202,7 +202,7 @@ function ExpandedRow({ claim, citations }: { claim: ReviewClaimView; citations: 
             aria-expanded={open}
             className="self-start text-xs text-zinc-500 hover:text-zinc-900"
           >
-            {open ? t("hideDetails") : t("showDetails", { count: String(claim.details.length) })}
+            {open ? t("collapse") : t("showDetails", { count: String(claim.details.length) })}
           </button>
         ) : null}
         {open ? (

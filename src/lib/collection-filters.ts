@@ -57,6 +57,9 @@ export const FILTERS = {
   "tele-zoom": (lens) =>
     xPhoto(lens) && isZoom(lens) && lens.focalLengthMin >= 50,
 
+  "internal-zoom": (lens) =>
+    xPhoto(lens) && isZoom(lens) && !isSpecialOptic(lens) && lens.internalZoom === true,
+
   "super-tele": (lens) =>
     xPhoto(lens) &&
     (isZoom(lens) ? lens.focalLengthMax >= 300 : lens.focalLengthMin >= 200),
@@ -73,6 +76,8 @@ export const FILTERS = {
     xPhoto(lens) && lens.brand === "viltrox" && lens.series === "Pro",
   "voigtlander-nokton": (lens) =>
     xPhoto(lens) && lens.brand === "voigtlander" && lens.series === "Nokton",
+  "sirui-sniper": (lens) =>
+    xPhoto(lens) && lens.brand === "sirui" && lens.series === "Sniper",
 
   "under-200": (lens, locale) => {
     if (locale === "zh") {

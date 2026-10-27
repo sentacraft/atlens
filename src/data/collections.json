@@ -255,6 +255,21 @@
           "zh": "大光圈手动定焦的经典序列"
         },
         "chart": "timeline"
+      },
+      {
+        "slug": "sirui-sniper",
+        "title": {
+          "en": "Sirui Sniper Series",
+          "zh": "思锐 Sniper 系列镜头"
+        },
+        "description": {
+          "en": "Sirui's f/1.2 autofocus primes, priced well below most other f/1.2 autofocus lenses on X-mount. Many aperture blades keep out-of-focus highlights round as you stop down. They skip the aperture ring and weather sealing, keeping the focus on a fast aperture for the money.",
+          "zh": "思锐的 F1.2 自动对焦定焦，价格明显低于 X 卡口上大多数 F1.2 自动对焦镜头。光圈叶片多，收小光圈后焦外光斑依然圆润。没有光圈环，也不防尘防滴，钱都花在了大光圈上。"
+        },
+        "shortDescription": {
+          "en": "Affordable f/1.2 autofocus primes",
+          "zh": "平价的 F1.2 自动对焦定焦"
+        }
       }
     ],
     "prime": [
@@ -414,6 +429,21 @@
           "zh": "长焦变焦，运动与生态"
         },
         "chart": "weight"
+      },
+      {
+        "slug": "internal-zoom",
+        "title": {
+          "en": "Internal Zoom Lenses",
+          "zh": "内变焦镜头"
+        },
+        "description": {
+          "en": "Zooms that keep the same length from one end of the range to the other: the barrel never extends, so the balance stays put on a gimbal, nothing pumps air or dust in as you zoom, and the lens cannot creep out when pointed down. Most of them are weather-sealed professional zooms, from ultra-wide to long telephoto.",
+          "zh": "变焦时镜身长度不变的变焦镜头：镜筒不伸缩，装在稳定器上重心不跑，变焦时不会把空气和灰尘吸进镜身，朝下拿时也不会自己滑出来。这里多是带防滴防尘的专业变焦，从超广角到长焦都有。"
+        },
+        "shortDescription": {
+          "en": "Zooms that never change length",
+          "zh": "变焦不伸缩，稳定器友好"
+        }
       }
     ],
     "trait": [
