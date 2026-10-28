@@ -1,17 +1,22 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const limit = vi.fn<(options: { key: string }) => Promise<{ success: boolean }>>();
+const kv = new Map<string, string>();
 const env = {
   RL_FEEDBACK: { limit },
   RL_ASKIRIS_FEEDBACK: { limit },
   RL_CHAT: { limit },
+  RATE_KV: {
+    get: async (key: string) => kv.get(key) ?? null,
+    put: async (key: string, value: string) => void kv.set(key, value),
+  },
 };
 
 vi.mock("@opennextjs/cloudflare", () => ({
   getCloudflareContext: () => ({ env }),
 }));
 
-const { isRateLimited, rateLimitedResponse } = await import("../rate-limit");
+const { DAILY_CAPS, isOverDailyCap, isRateLimited, rateLimitedResponse } = await import("../rate-limit");
 
 function request(headers: Record<string, string>): Request {
   return new Request("https://atlens.app/api/feedback", { method: "POST", headers });
@@ -81,6 +86,41 @@ describe("isRateLimited", () => {
     );
 
     expect(limit).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("isOverDailyCap", () => {
+  beforeEach(() => {
+    kv.clear();
+    vi.useFakeTimers({ now: new Date("2026-10-28T12:00:00Z") });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllEnvs();
+  });
+
+  const req = (ip = "203.0.113.1", cookie?: string) =>
+    request({ "cf-connecting-ip": ip, ...(cookie ? { cookie } : {}) });
+
+  it("lets a client through up to the cap, then holds it until the next UTC day", async () => {
+    for (let i = 0; i < DAILY_CAPS.feedback; i++) {
+      expect(await isOverDailyCap(req(), "feedback")).toBe(false);
+    }
+    expect(await isOverDailyCap(req(), "feedback")).toBe(true);
+    expect(await isOverDailyCap(req("203.0.113.2"), "feedback")).toBe(false);
+
+    vi.setSystemTime(new Date("2026-10-29T00:00:01Z"));
+    expect(await isOverDailyCap(req(), "feedback")).toBe(false);
+  });
+
+  it("skips requests without a Cloudflare IP and the bypass cookie", async () => {
+    vi.stubEnv("RATE_LIMIT_BYPASS", "s3cret");
+    for (let i = 0; i <= DAILY_CAPS.feedback; i++) {
+      expect(await isOverDailyCap(request({}), "feedback")).toBe(false);
+      expect(await isOverDailyCap(req(undefined, "rate_bypass=s3cret"), "feedback")).toBe(false);
+    }
+    expect(kv.size).toBe(0);
   });
 });
 

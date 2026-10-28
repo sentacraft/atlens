@@ -17,7 +17,7 @@ change the JSDoc, then run `node --experimental-strip-types scripts/api-docs.mts
 | `/api/auth/[...all]` | GET, POST, PATCH, PUT, DELETE | Better Auth: sign-in, email codes, session, sign-out, account deletion. See https://www.better-auth.com/docs/concepts/api |
 | `/api/chat` | POST | Runs one Ask Iris turn and streams the reply, saving it to the conversation. Any session, guests included; 401 without one, 429 when over the rate limit or a daily or global usage quota. |
 | `/api/feedback` | GET | Reports whether site feedback is configured (GitHub token and repository). Public. |
-| `/api/feedback` | POST | Files site feedback as a GitHub issue. Public; 400 with the failing rule as the error code, 429 when rate limited. |
+| `/api/feedback` | POST | Files site feedback as a GitHub issue. Public; 400 with the failing rule as the error code, 429 when rate limited or past the daily cap. |
 | `/api/lenses` | GET | Filters, sorts and pages one mount's lens catalog. No consumers: 404 in production. |
 | `/api/lenses/[id]/reviews` | GET | Review findings for one catalogue lens, in the requested locale; empty when it has none. Public; a guest gets the overall verdict and per-group finding counts; 400 for a bad locale, 404 for an unknown lens, 429 past the per-IP rate, 503 without the review store. |
 | `/api/lenses/search` | GET | Ranks one mount's lenses against a search query. No consumers (search runs in the browser): 404 in production. |
@@ -29,5 +29,5 @@ change the JSDoc, then run `node --experimental-strip-types scripts/api-docs.mts
 | `/api/me/gear/[gearId]` | DELETE | Removes one of the caller's gear items. Accounts only; 404 when missing or not the caller's. |
 | `/api/me/settings` | GET | Returns the caller's settings, or the defaults when none are saved. Accounts only; 401 for guests. |
 | `/api/me/settings` | PATCH | Updates the given settings and returns them all. Accounts only; 400 for an empty patch or a value outside the allowed set. |
-| `/api/telemetry` | POST | Logs a browser asset failure or slow asset load to Workers Logs. Public. |
-| `/api/track` | POST | Records one product analytics event and sets the anonymous visitor cookie. Public; 400 on a malformed event, 413 on an oversized body. |
+| `/api/telemetry` | POST | Logs a browser asset failure or slow asset load to Workers Logs. Public; 429 past the per-IP rate. |
+| `/api/track` | POST | Records one product analytics event and sets the anonymous visitor cookie. Public; 400 on a malformed event, 413 on an oversized body, 429 past the per-IP rate. |

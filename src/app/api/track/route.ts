@@ -4,13 +4,16 @@ import { parseEventProps, trackPayloadSchema } from "@/lib/analytics/events";
 import { VID_COOKIE, VID_TTL_SECONDS, isInternalBrowser, readVid } from "@/lib/analytics/session";
 import { insertEvent } from "@/lib/analytics/store";
 import { hasAccountSession } from "@/lib/auth-session";
-import { isBypassed } from "@/lib/rate-limit";
+import { isBypassed, isRateLimited } from "@/lib/rate-limit";
 
 const MAX_BODY_BYTES = 4096;
 const MAX_PATH_LENGTH = 256;
 
-/** Records one product analytics event and sets the anonymous visitor cookie. Public; 400 on a malformed event, 413 on an oversized body. */
+/** Records one product analytics event and sets the anonymous visitor cookie. Public; 400 on a malformed event, 413 on an oversized body, 429 past the per-IP rate. */
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  if (await isRateLimited(req, "analytics")) {
+    return new NextResponse(null, { status: 429 });
+  }
   const raw = await req.text();
   if (raw.length > MAX_BODY_BYTES) {
     return new NextResponse(null, { status: 413 });
