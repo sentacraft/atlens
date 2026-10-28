@@ -15,11 +15,13 @@ import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildTimeline } from "@/lib/charts/timeline";
 import { formatDataDate } from "@/lib/charts/data-date";
 import { getLensesByMount, meta } from "@/lib/lens/data";
-import { brandLabel, lensDisplayName } from "@/lib/lens/format";
+import { brandLabel } from "@/lib/lens/format";
 import { buildItemListSchema, lensListItems } from "@/lib/lens/seo";
 import { mountHasCharts, urlSegmentToMount } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { chartPath } from "@/lib/url/routes";
+import { timelineMetaDescription } from "@/lib/seo/meta-description";
+import type { Locale } from "@/i18n/routing";
 
 type Params = Promise<{ locale: string; mount: string }>;
 
@@ -37,18 +39,10 @@ async function load(params: Params) {
   const brandName = (brand: string) => brandLabel(tBrand, brand);
   const first = String(timeline.years[0]?.year ?? "");
   const last = String(timeline.years.at(-1)?.year ?? "");
-  const latest = timeline.entries.at(-1);
   const t = await getTranslations({ locale, namespace: "Charts" });
   const seo = {
     title: t("timelineMetaTitle", { first, last }),
-    description: t("timelineMetaDesc", {
-      count: timeline.entries.length,
-      first,
-      last,
-      brands: list(timeline.brands.map((b) => brandName(b.brand))),
-      latest: latest ? lensDisplayName(brandName(latest.lens.brand), latest.lens.series, latest.lens.model) : "",
-      latestYear: String(latest?.year ?? ""),
-    }),
+    description: timelineMetaDescription(t, tBrand, locale as Locale, timeline),
     items: lensListItems(
       timeline.entries.map((e) => e.lens),
       brandName,

@@ -18,6 +18,8 @@ import { buildItemListSchema } from "@/lib/lens/seo";
 import { mountHasCharts, urlSegmentToMount } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { brandPath, chartPath } from "@/lib/url/routes";
+import { lineupsMetaDescription } from "@/lib/seo/meta-description";
+import type { Locale } from "@/i18n/routing";
 
 type Params = Promise<{ locale: string; mount: string }>;
 
@@ -37,7 +39,7 @@ async function load(params: Params) {
   const names = lineups.map((l) => brandLabel(tBrand, l.brand));
   const seo = {
     title: t("lineupsMetaTitle", { brandCount: lineups.length, count }),
-    description: t("lineupsMetaDesc", { brandCount: lineups.length, brands: new Intl.ListFormat(locale, { type: "conjunction" }).format(names) }),
+    description: lineupsMetaDescription(t, tBrand, locale as Locale, lineups),
     items: lineups.map((l, i) => ({ name: names[i], url: `${SITE.url}/${locale}${brandPath(resolvedMount, l.brand)}` })),
   };
   return {

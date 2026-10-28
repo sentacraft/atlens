@@ -94,7 +94,7 @@ function statsFor(collection: LensCollection, locale: string) {
   return { lenses, lensCount: lenses.length, brandCount: new Set(lenses.map((l) => l.brand)).size };
 }
 
-interface CollectionStats {
+export interface CollectionStats {
   collection: LensCollection;
   lenses: Lens[];
   lensCount: number;

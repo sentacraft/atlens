@@ -11,15 +11,17 @@ import { SITE } from "@/config/site";
 import { cineCollectionTag } from "@/components/collection/CineCollectionLink";
 import { BROWSE_PAGE_MAIN_CLS, SECTION_TOP_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
-import { chartBrands, countCineLenses, type ChartLens } from "@/lib/charts/catalog";
+import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildWeightLadder } from "@/lib/charts/weight";
 import { formatDataDate } from "@/lib/charts/data-date";
 import { getLensesByMount, meta } from "@/lib/lens/data";
-import { brandLabel, lensDisplayName } from "@/lib/lens/format";
+import { brandLabel } from "@/lib/lens/format";
 import { buildItemListSchema, lensListItems } from "@/lib/lens/seo";
 import { mountHasCharts, urlSegmentToMount } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { chartPath } from "@/lib/url/routes";
+import { weightMetaDescription } from "@/lib/seo/meta-description";
+import type { Locale } from "@/i18n/routing";
 
 type Params = Promise<{ locale: string; mount: string }>;
 
@@ -35,18 +37,9 @@ async function load(params: Params) {
   const t = await getTranslations({ locale, namespace: "Charts" });
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const brandName = (brand: string) => brandLabel(tBrand, brand);
-  const lensName = (lens: ChartLens | undefined) => (lens ? lensDisplayName(brandName(lens.brand), lens.series, lens.model) : "");
   const seo = {
     title: t("weightMetaTitle", { count: ladder.count }),
-    description: t("weightMetaDesc", {
-      count: ladder.count,
-      brandCount: brands.length,
-      brands: new Intl.ListFormat(locale, { type: "conjunction" }).format(brands.slice(0, 4).map((b) => brandName(b.brand))),
-      lightest: lensName(ladder.lightest),
-      min: ladder.lightest?.weightG ?? 0,
-      heaviest: lensName(ladder.heaviest),
-      max: ladder.heaviest?.weightG ?? 0,
-    }),
+    description: weightMetaDescription(t, tBrand, locale as Locale, ladder, brands),
     items: lensListItems(
       ladder.tiers.flatMap((tier) => tier.lenses),
       brandName,
