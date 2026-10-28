@@ -202,6 +202,11 @@ export default function AuthDialog({
     }
   }
 
+  // display:none would stop the invisible check from running, so it is parked outside the flow.
+  const turnstileSlot = (
+    <div ref={turnstileContainer} className={cn(!turnstileShown && "absolute size-0 overflow-hidden")} />
+  );
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogPopup className="max-w-md">
@@ -260,6 +265,7 @@ export default function AuthDialog({
                     className="h-10 rounded-lg border border-zinc-200 bg-white px-3 max-sm:h-11 max-sm:text-base outline-none transition-colors placeholder:text-zinc-400 focus:border-zinc-500"
                   />
                 </label>
+                {turnstileSlot}
                 <button
                   type="submit"
                   disabled={pending}
@@ -287,6 +293,7 @@ export default function AuthDialog({
                   className="h-10 rounded-lg border border-zinc-200 bg-white px-3 max-sm:h-11 max-sm:text-base tracking-[0.3em] outline-none transition-colors placeholder:tracking-normal placeholder:text-zinc-400 focus:border-zinc-500"
                 />
               </label>
+              {turnstileSlot}
               <button
                 type="submit"
                 disabled={pending}
@@ -315,8 +322,6 @@ export default function AuthDialog({
               </button>
             </form>
           )}
-          {/* display:none would stop the invisible check from running, so park it outside the flow. */}
-          <div ref={turnstileContainer} className={cn(!turnstileShown && "absolute size-0 overflow-hidden")} />
           {error && <p className="text-sm text-red-600">{error}</p>}
         </div>
       </DialogPopup>
