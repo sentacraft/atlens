@@ -15,14 +15,15 @@ interface TurnstileApi {
       sitekey: string;
       action: string;
       appearance: "interaction-only";
+      execution: "execute";
       size: "flexible";
       callback: (token: string) => void;
-      "expired-callback": () => void;
       "error-callback": () => void;
       "before-interactive-callback": () => void;
       "after-interactive-callback": () => void;
     },
   ): string;
+  execute(container: HTMLElement): void;
   reset(widgetId: string): void;
   remove(widgetId: string): void;
 }
@@ -54,22 +55,29 @@ function loadTurnstile(): Promise<TurnstileApi> {
   return loading;
 }
 
+type Widget = { api: TurnstileApi; id: string; element: HTMLElement };
+
 /**
- * A Turnstile widget that stays invisible unless Cloudflare wants the visitor to interact. Pass
- * `container` as the ref of the element to render it in, and keep that element out of the layout
- * until `interactive`; `takeToken` resolves with a token for one request, or null when the check
- * can't complete.
+ * A Turnstile widget that checks the visitor only when `takeToken` asks, and stays invisible
+ * unless Cloudflare wants them to interact. Pass `container` as the ref of the element to render
+ * it in, and keep that element out of the layout until `interactive`. `takeToken` resolves with a
+ * token for one request, or null when the check can't complete.
  */
 export function useTurnstile(action: string) {
-  const widget = useRef<{ api: TurnstileApi; id: string } | null>(null);
-  const token = useRef<string | null>(null);
-  const waiters = useRef<((token: string | null) => void)[]>([]);
+  const widget = useRef<Promise<Widget | null> | null>(null);
+  const pending = useRef<{ resolve: (token: string | null) => void; timer?: ReturnType<typeof setTimeout> } | null>(
+    null,
+  );
   const [interactive, setInteractive] = useState(false);
 
-  const settle = useCallback((value: string | null) => {
-    for (const resolve of waiters.current.splice(0)) {
-      resolve(value);
+  const finish = useCallback((token: string | null) => {
+    const current = pending.current;
+    if (!current) {
+      return;
     }
+    pending.current = null;
+    clearTimeout(current.timer);
+    current.resolve(token);
   }, []);
 
   const container = useCallback(
@@ -78,69 +86,58 @@ export function useTurnstile(action: string) {
         return;
       }
       let removed = false;
-      loadTurnstile()
-        .then((api) => {
+      const rendered = loadTurnstile()
+        .then((api): Widget | null => {
           if (removed) {
-            return;
+            return null;
           }
           const local = LOCAL_HOSTS.includes(window.location.hostname);
           const id = api.render(element, {
             sitekey: local ? TURNSTILE_TEST_SITE_KEY : TURNSTILE_SITE_KEY,
             action,
             appearance: "interaction-only",
+            execution: "execute",
             size: "flexible",
-            callback: (value) => {
-              if (waiters.current.length > 0) {
-                settle(value);
-                api.reset(id);
-              } else {
-                token.current = value;
-              }
+            callback: (token) => finish(token),
+            "error-callback": () => finish(null),
+            // A person may take a while with a challenge; the timeout is only for a stalled check.
+            "before-interactive-callback": () => {
+              clearTimeout(pending.current?.timer);
+              setInteractive(true);
             },
-            "expired-callback": () => {
-              token.current = null;
-            },
-            "error-callback": () => settle(null),
-            "before-interactive-callback": () => setInteractive(true),
             "after-interactive-callback": () => setInteractive(false),
           });
-          widget.current = { api, id };
+          return { api, id, element };
         })
-        .catch(() => settle(null));
+        .catch(() => null);
+      widget.current = rendered;
       return () => {
         removed = true;
-        if (widget.current) {
-          widget.current.api.remove(widget.current.id);
-          widget.current = null;
-        }
-        token.current = null;
+        widget.current = null;
+        void rendered.then((rendered) => rendered?.api.remove(rendered.id));
         setInteractive(false);
-        settle(null);
+        finish(null);
       };
     },
-    [action, settle],
+    [action, finish],
   );
 
-  const takeToken = useCallback((): Promise<string | null> => {
-    const ready = token.current;
-    if (ready && widget.current) {
-      token.current = null;
-      // Each token is accepted once; start on the next one for a retry or a resend.
-      widget.current.api.reset(widget.current.id);
-      return Promise.resolve(ready);
+  const takeToken = useCallback(async (): Promise<string | null> => {
+    const rendered = await widget.current;
+    if (!rendered) {
+      return null;
     }
-    return new Promise((resolve) => {
-      const timer = setTimeout(() => {
-        waiters.current = waiters.current.filter((waiter) => waiter !== done);
-        resolve(null);
-      }, TOKEN_TIMEOUT_MS);
-      const done = (value: string | null) => {
-        clearTimeout(timer);
-        resolve(value);
-      };
-      waiters.current.push(done);
+    finish(null);
+    const token = new Promise<string | null>((resolve) => {
+      pending.current = { resolve, timer: setTimeout(() => finish(null), TOKEN_TIMEOUT_MS) };
     });
-  }, []);
+    rendered.api.execute(rendered.element);
+    const value = await token;
+    setInteractive(false);
+    // Each token is accepted once; reset so a retry or a resend can run the check again.
+    rendered.api.reset(rendered.id);
+    return value;
+  }, [finish]);
 
   return { container, interactive, takeToken };
 }

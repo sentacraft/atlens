@@ -47,6 +47,7 @@
     "emailPlaceholder": "you@example.com",
     "sendCode": "发送验证码",
     "sending": "发送中…",
+    "verifying": "验证中…",
     "codeSent": "验证码已发送到 {email}。",
     "codeLabel": "验证码",
     "codePlaceholder": "6 位验证码",

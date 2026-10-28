@@ -47,6 +47,7 @@
     "emailPlaceholder": "you@example.com",
     "sendCode": "Send code",
     "sending": "Sending…",
+    "verifying": "Verifying…",
     "codeSent": "We sent a verification code to {email}.",
     "codeLabel": "Verification code",
     "codePlaceholder": "6-digit code",

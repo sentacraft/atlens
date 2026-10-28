@@ -103,6 +103,7 @@ export default function AuthDialog({
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"email" | "otp">("email");
   const [pending, setPending] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resendSeconds, startResendCooldown] = useCountdown(RESEND_COOLDOWN_MS);
   const { container: turnstileContainer, interactive: turnstileShown, takeToken } = useTurnstile("email-otp");
@@ -155,7 +156,9 @@ export default function AuthDialog({
     setPending(true);
     setError(null);
     try {
+      setVerifying(true);
       const token = await takeToken();
+      setVerifying(false);
       if (!token) {
         setError(t("botCheckFailed"));
         setPending(false);
@@ -262,7 +265,7 @@ export default function AuthDialog({
                   disabled={pending}
                   className={cn(ACTION_PRIMARY_CLS, "h-10 rounded-lg text-sm max-sm:h-11")}
                 >
-                  {pending ? t("sending") : t("sendCode")}
+                  {verifying ? t("verifying") : pending ? t("sending") : t("sendCode")}
                 </button>
               </form>
             </>
