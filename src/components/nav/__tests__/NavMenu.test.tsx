@@ -30,11 +30,18 @@ vi.mock("@/i18n/navigation", () => ({
   Link: ({ href, ...props }: { href: string }) => <a href={href} {...props} />,
 }));
 vi.mock("@/hooks/useSwitchLocale", () => ({ useSwitchLocale: () => switchLocale }));
+const turnstileToken = vi.hoisted(() => ({
+  current: Promise.resolve("turnstile-token") as Promise<string | null>,
+}));
+vi.mock("@/hooks/useTurnstile", () => ({
+  useTurnstile: () => ({ container: () => {}, interactive: false, takeToken: () => turnstileToken.current }),
+}));
 
 afterEach(() => {
   cleanup();
   vi.useRealTimers();
   vi.clearAllMocks();
+  turnstileToken.current = Promise.resolve("turnstile-token");
 });
 
 const menu = <NavMenu showGetApp onFeedback={vi.fn()} />;
@@ -101,6 +108,72 @@ describe("NavMenu", () => {
 
     await waitFor(() => expect(sendVerificationOtp).toHaveBeenCalledTimes(2));
     expect(await screen.findByRole("button", { name: /^resendIn/ })).toBeDisabled();
+  });
+
+  it("sends the Turnstile token with the request for a code", async () => {
+    session.current = { data: user(true) };
+    sendVerificationOtp.mockResolvedValue({ error: null });
+
+    render(menu, { wrapper: SignInDialogProvider });
+    await openMenu();
+    fireEvent.click(screen.getByText("login"));
+    fireEvent.change(await screen.findByLabelText("emailLabel"), {
+      target: { value: "iris@example.test" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "sendCode" }));
+
+    await waitFor(() =>
+      expect(sendVerificationOtp).toHaveBeenCalledWith({
+        email: "iris@example.test",
+        type: "sign-in",
+        fetchOptions: { headers: { "x-captcha-response": "turnstile-token" } },
+      }),
+    );
+  });
+
+  it.each([
+    ["Turnstile gives no token", null, undefined],
+    ["the server rejects the token", "turnstile-token", { status: 403, code: "VERIFICATION_FAILED", message: "Captcha verification failed" }],
+  ])("explains a failed bot check when %s", async (_case, token, error) => {
+    turnstileToken.current = Promise.resolve(token);
+    session.current = { data: user(true) };
+    sendVerificationOtp.mockResolvedValue({ error });
+
+    render(menu, { wrapper: SignInDialogProvider });
+    await openMenu();
+    fireEvent.click(screen.getByText("login"));
+    fireEvent.change(await screen.findByLabelText("emailLabel"), {
+      target: { value: "iris@example.test" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "sendCode" }));
+
+    expect(await screen.findByText("botCheckFailed")).toBeInTheDocument();
+    if (token === null) {
+      expect(sendVerificationOtp).not.toHaveBeenCalled();
+    }
+  });
+
+  it("holds the send button while the bot check runs", async () => {
+    let pass!: (token: string) => void;
+    turnstileToken.current = new Promise((resolve) => {
+      pass = resolve;
+    });
+    session.current = { data: user(true) };
+    sendVerificationOtp.mockResolvedValue({ error: null });
+
+    render(menu, { wrapper: SignInDialogProvider });
+    await openMenu();
+    fireEvent.click(screen.getByText("login"));
+    fireEvent.change(await screen.findByLabelText("emailLabel"), {
+      target: { value: "iris@example.test" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "sendCode" }));
+
+    expect(await screen.findByRole("button", { name: "verifying" })).toBeDisabled();
+    expect(sendVerificationOtp).not.toHaveBeenCalled();
+
+    await act(async () => pass("turnstile-token"));
+    await waitFor(() => expect(sendVerificationOtp).toHaveBeenCalledTimes(1));
   });
 
   it("explains a rate-limited request in the UI language", async () => {

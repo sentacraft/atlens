@@ -6,9 +6,9 @@ test.describe("account access", () => {
 
     await page.getByRole("button", { name: "Menu" }).click();
     await expect(page.getByRole("menuitem", { name: "About" })).toBeVisible();
-    await page.getByRole("menuitem", { name: /^Log in/ }).click();
+    await page.getByRole("menuitem", { name: /^Sign in \/ Sign up/ }).click();
 
-    const dialog = page.getByRole("dialog", { name: "Sign in to Atlens" });
+    const dialog = page.getByRole("dialog", { name: "Sign in or sign up to Atlens" });
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole("button", { name: "Continue with Google" })).toBeVisible();
     await expect(dialog.getByRole("textbox", { name: "Email" })).toBeVisible();

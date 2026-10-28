@@ -2,7 +2,7 @@ import "server-only";
 
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { betterAuth } from "better-auth";
-import { anonymous, emailOTP, oAuthProxy, oneTap } from "better-auth/plugins";
+import { anonymous, captcha, emailOTP, oAuthProxy, oneTap } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { D1Dialect } from "kysely-d1";
 import { cookieReader } from "@/lib/analytics/session";
@@ -127,6 +127,11 @@ export function createAuth() {
       }),
       // Google and GitHub accept only the production callback, so previews sign in through it;
       // the proxy secret is the one secret previews share with production.
+      captcha({
+        provider: "cloudflare-turnstile",
+        secretKey: process.env.TURNSTILE_SECRET_KEY,
+        endpoints: ["/email-otp/send-verification-otp"],
+      }),
       oAuthProxy({ productionURL: siteURL, secret: process.env.OAUTH_PROXY_SECRET }),
       oneTap(),
       nextCookies(),
