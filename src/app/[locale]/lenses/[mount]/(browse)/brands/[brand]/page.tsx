@@ -27,13 +27,15 @@ import { buildTimeline } from "@/lib/charts/timeline";
 import { getBrandCollectionsWithStats, getBrandSeries } from "@/lib/collection-stats";
 import { formatDataDate } from "@/lib/charts/data-date";
 import { getLensesByMount, meta } from "@/lib/lens/data";
-import { brandLabel, focalRangeDisplay } from "@/lib/lens/format";
+import { brandLabel } from "@/lib/lens/format";
 import { buildItemListSchema, lensListItems } from "@/lib/lens/seo";
 import { mountHasCollections, urlSegmentToMount } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { chartHref } from "@/lib/url/charts";
 import { brandPath, browsePath, chartPath, collectionPath, collectionsPath } from "@/lib/url/routes";
 import { cn } from "@/lib/utils";
+import { brandMetaDescription, brandSummary } from "@/lib/seo/meta-description";
+import type { Locale } from "@/i18n/routing";
 
 type Params = Promise<{ locale: string; mount: string; brand: string }>;
 
@@ -71,12 +73,7 @@ async function load(params: Params) {
     brands: chartBrands(mountLenses),
     cineCount: countCineLenses(mountLenses, brand),
     title: t("title", { brand, label: name }),
-    summary: t("summary", {
-      count: lineup.count,
-      primes: lineup.primes.reduce((n, column) => n + column.lenses.length, 0),
-      zooms: lineup.zooms.length,
-      focal: focalRangeDisplay(lineup.focalMin, lineup.focalMax),
-    }),
+    summary: brandSummary(t, lineup),
   };
 }
 
@@ -93,11 +90,11 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     base: tPage("metaTitle", { brand, label: data.name, count: data.lenses.length }),
     year: String(new Date().getFullYear()),
   });
-  const description = tPage("metaDescription", {
+  const description = brandMetaDescription(tPage, data.locale as Locale, {
     brand,
     label: data.name,
     summary: data.summary,
-    intro: localized(data.info.description, data.locale),
+    tagline: localized(data.info.shortDescription, data.locale),
   });
   return {
     title: seoTitle,

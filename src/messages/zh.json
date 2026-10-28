@@ -13,7 +13,7 @@
   },
   "Metadata": {
     "seoTitle": "Atlens | 富士镜头图鉴：X 卡口规格对比与 AI 选镜",
-    "seoDescription": "富士 X 卡口原厂与副厂镜头全收录：规格统一标准，跨品牌横向对比，附各渠道参考价；有发布时间轴、重量天梯和品牌全家福三张图鉴，还有基于这些数据回答的 AI 选镜助手 Iris。"
+    "seoDescription": "富士 X 卡口原厂与副厂镜头全收录：规格统一标准，跨品牌对比，附参考价；有发布时间轴、重量天梯等图鉴，还有 AI 选镜助手 Iris。"
   },
   "Rename": {
     "toast": "X-Glass 已更名为 Atlens——还是那个镜头图鉴，只是换了个名字。欢迎回来 👋"
@@ -970,7 +970,8 @@
   },
   "Collection": {
     "stats": "{count, number} 支镜头 · {brandCount, number} 个品牌",
-    "metaPrefix": "{count, number} 支镜头，{brandCount, number} 个品牌。",
+    "metaDescription": "{title}：{count, number} 支富士 X 卡口镜头{brands, select, none {} other {，来自{brands}}}。{tagline, select, none {} other {{tagline}。}}",
+    "metaBrandsMore": "{names}等 {total, number} 个品牌",
     "relatedCollections": "相关合集",
     "indexTitle": "富士 X 卡口镜头合集与品牌",
     "indexDescription": "富士 X 卡口镜头按品牌和主题整理：每个品牌一页，看它的全部镜头和发布时间；主题合集跨品牌收录饼干头、大光圈定焦、轻量镜头、防滴防尘和各焦段。",
@@ -1085,7 +1086,7 @@
     "lineupsTitle": "富士 X 卡口镜头品牌全家福",
     "lineupsDesc": "{brandCount} 个品牌的 {count} 支镜头，每个品牌按焦段从广到长排开。",
     "lineupsMetaTitle": "富士 X 卡口镜头有哪些品牌：{brandCount, number} 个品牌 {count, number} 支一览",
-    "lineupsMetaDesc": "富士 X 卡口目前有 {brandCount, number} 个品牌出镜头：{brands}。每个品牌的定焦和变焦按焦段排开，一页看全。",
+    "lineupsMetaDesc": "富士 X 卡口目前有 {brandCount, number} 个品牌出镜头，包括{brands}等。每个品牌的定焦和变焦按焦段排开，一页看全。",
     "lineupsCta": "看全家福 →",
     "excludesCine": "不含 {count} 支<cine>电影镜头</cine>。",
     "lineupPrimes": "定焦",
@@ -1096,12 +1097,12 @@
     "timelineDescUndated": "{count, number} 支镜头，按发布年份和焦段排开，含原厂和副厂。{brands}暂无准确发布年份，未列入。",
     "timelineDescUndatedMore": "{count, number} 支镜头，按发布年份和焦段排开，含原厂和副厂。{first}、{second}、{third}等 {total, number} 个品牌暂无准确发布年份，未列入。",
     "timelineMetaTitle": "富士 X 卡口镜头发布时间表：{first}–{last} 全品牌",
-    "timelineMetaDesc": "{count, number} 支富士 X 卡口镜头按发布年份排列，{first} 年到 {last} 年，含{brands}。最新的一支是{latest}（{latestYear} 年）。",
+    "timelineMetaDesc": "{count, number} 支富士 X 卡口镜头按发布年份排列，{first} 年到 {last} 年，含{brands}。",
     "weightTitle": "富士 X 卡口全品牌镜头重量天梯",
     "weightDesc": "最重的 {model} 有 {weight}g，是最轻那支的 {ratio} 倍。",
     "weightNote": "重量为官方标称值，含已停产镜头，不含 {count} 支<cine>电影镜头</cine>。",
     "weightMetaTitle": "富士镜头重量天梯图：X 卡口 {count, number} 支从重到轻排行",
-    "weightMetaDesc": "富士 X 卡口全部 {count, number} 支镜头按重量排行，含{brands}等 {brandCount, number} 个品牌。最轻的{lightest}只有 {min, number}g，最重的{heaviest}有 {max, number}g，可按品牌查看。",
+    "weightMetaDesc": "富士 X 卡口全部 {count, number} 支镜头按重量排行，含{brands}等 {brandCount, number} 个品牌，从 {max, number}g 到 {min, number}g，可按品牌查看。",
     "tier-cannon": "大炮",
     "tier-cannon-tagline": "出门先做心理建设",
     "tier-heavy": "重装",
@@ -1152,7 +1153,7 @@
     "summary": "{zooms, plural, =0 {{count} 支定焦镜头} other {{primes, plural, =0 {{count} 支变焦镜头} other {{count} 支镜头：{primes} 支定焦、{zooms} 支变焦}}}}，焦段 {focal}。",
     "contents": "本页内容",
     "metaTitle": "{brand, select, fujifilm {富士原厂 X 卡口镜头有哪些：全部 {count, number} 支一览} other {{label}富士 X 卡口镜头有哪些：全部 {count, number} 支一览}}",
-    "metaDescription": "{brand, select, fujifilm {富士原厂为 X 卡口出了 } other {{label}为富士 X 卡口出了 }}{summary}{intro}",
+    "metaDescription": "{brand, select, fujifilm {富士原厂为 X 卡口出了 } other {{label}为富士 X 卡口出了 }}{summary}{tagline, select, none {} other {{tagline}。}}",
     "lineupHeading": "全家福",
     "timelinePosterTitle": "{brand, select, fujifilm {富士原厂 X 卡口镜头发布时间轴 · {first}–{last}} other {{label}的富士 X 卡口镜头发布时间轴 · {first}–{last}}}",
     "timelinePosterSubtitle": "{count} 支镜头，按发布年份和焦段排开。",
