@@ -20,3 +20,18 @@ test("the lens list heading names how many lenses it holds", async ({ page }) =>
     await expect(page.getByRole("heading", { level: 1 }), path).toHaveText(pattern);
   }
 });
+
+// Regression: next-intl's middleware sent its own hreflang Link header, whose x-default (an
+// unprefixed URL that redirects) disagreed with the page's <link rel="alternate">.
+test("hreflang comes only from the page head, not a Link header", async ({ request }) => {
+  for (const path of ["/en", "/zh/lenses/x/collections/pancake"]) {
+    const response = await request.get(path);
+    expect(response.headers()["link"] ?? "", path).not.toContain("hreflang");
+  }
+});
+
+test("the charts section redirects permanently to its first chart", async ({ request }) => {
+  const response = await request.get("/en/lenses/x/charts", { maxRedirects: 0 });
+  expect(response.status()).toBe(308);
+  expect(response.headers()["location"]).toMatch(/\/en\/lenses\/x\/charts\/timeline$/);
+});

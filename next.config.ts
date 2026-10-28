@@ -58,7 +58,7 @@ const nextConfig: NextConfig = {
       {
         source: "/:locale(en|zh)/lenses/x/charts",
         destination: "/:locale/lenses/x/charts/timeline",
-        permanent: false,
+        permanent: true,
       },
       {
         source: `/:locale(en|zh)/lenses/x/collections/:brand(${Object.keys(brandsData).join("|")})`,

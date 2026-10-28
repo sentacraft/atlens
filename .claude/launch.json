@@ -9,6 +9,12 @@
       "autoPort": true
     },
     {
+      "name": "Workers Preview",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["run", "preview"],
+      "port": 8787
+    },
+    {
       "name": "Playwright UI",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["run", "test:e2e:ui"],
