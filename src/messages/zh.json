@@ -1062,6 +1062,7 @@
     "posterAction": "支持"
   },
   "Charts": {
+    "close": "关闭",
     "tabsLabel": "图鉴",
     "tabTimeline": "发布时间轴",
     "tabWeight": "重量天梯",

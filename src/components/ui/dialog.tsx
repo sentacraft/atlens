@@ -34,7 +34,7 @@ function Dialog({
           <DrawerPrimitive.VirtualKeyboardProvider>{children}</DrawerPrimitive.VirtualKeyboardProvider>
         </DrawerPrimitive.Root>
       ) : (
-        <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
+        <DialogPrimitive.Root open={open} onOpenChange={onOpenChange} disablePointerDismissal>
           {children}
         </DialogPrimitive.Root>
       )}
@@ -67,17 +67,9 @@ function DialogBackdrop({ className }: { className?: string }) {
       )}
     />
   ) : (
-    // Dialog mode has no click-to-dismiss backdrop, so the backdrop is a Close trigger.
-    <DialogPrimitive.Close
-      render={<div />}
-      nativeButton={false}
+    <DialogPrimitive.Backdrop
       data-slot="dialog-backdrop"
-      className={cn(
-        `fixed inset-0 bg-zinc-950/55 backdrop-blur-sm cursor-default outline-none`,
-        className
-      )}
-      aria-label="Close"
-      tabIndex={-1}
+      className={cn(`fixed inset-0 bg-zinc-950/55 backdrop-blur-sm`, className)}
     />
   );
 }

@@ -70,7 +70,8 @@ exported from `src/config/ui-tokens.ts` and imported by components. Do not inlin
 style strings across components. Inline only genuinely one-off local styles.
 
 A dialog with something to fill in or pick puts its Cancel in `DialogCancel`, which phone drawers
-leave out (they close by swipe or the backdrop); a yes-or-no confirmation keeps its Cancel.
+leave out (they close by swipe or the backdrop); a yes-or-no confirmation keeps its Cancel. A
+centered dialog does not close on a press outside it, so each one shows a close button or a Cancel.
 
 A lens shown as an item to browse gets favorite and compare from `LensActions`, in the tier that
 matches how the lens is shown (its own panel, one card or row among many, spare room in a card, a

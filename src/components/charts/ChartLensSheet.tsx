@@ -4,8 +4,9 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { ChartLensSummary } from "@/components/charts/ChartLensCard";
 import LensActions from "@/components/lens/LensActions";
-import { Dialog, DialogPopup } from "@/components/ui/dialog";
-import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
+import { X } from "lucide-react";
+import { Dialog, DialogClose, DialogPopup } from "@/components/ui/dialog";
+import { ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { useCompareToggle } from "@/hooks/useCompareToggle";
 import type { ChartLens } from "@/lib/charts/catalog";
 import { brandLabel } from "@/lib/lens/format";
@@ -36,7 +37,14 @@ function SheetBody({ lens }: { lens: ChartLens }) {
 
   return (
     <div className="flex flex-col gap-4 px-5 pb-5 pt-2">
-      <ChartLensSummary lens={lens} size="sheet" />
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <ChartLensSummary lens={lens} size="sheet" />
+        </div>
+        <DialogClose aria-label={t("close")} className={cn(ICON_CLOSE_BTN_CLS, "-mr-2 hidden h-9 w-9 shrink-0 sm:inline-flex")}>
+          <X className="h-4 w-4" />
+        </DialogClose>
+      </div>
       <LensActions lensId={lens.id} lensName={`${brandLabel(tBrand, lens.brand)} ${lens.model}`} compare={compare} tier="panel" />
       <Link href={lensPath(lens)} className={cn(ACTION_PRIMARY_CLS, "flex h-11 items-center justify-center rounded-lg text-sm font-medium")}>
         {t("viewDetails")}

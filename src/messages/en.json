@@ -1062,6 +1062,7 @@
     "posterAction": "Support"
   },
   "Charts": {
+    "close": "Close",
     "tabsLabel": "Charts",
     "tabTimeline": "Release timeline",
     "tabWeight": "Weight ladder",
