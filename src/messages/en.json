@@ -55,6 +55,7 @@
     "resendCode": "Resend code",
     "resendIn": "Resend code in {seconds, number}s",
     "tooManyRequests": "Too many attempts. Wait a minute and try again.",
+    "botCheckFailed": "We couldn't confirm you're not a bot. Reload the page and try again.",
     "useDifferentEmail": "Use a different email",
     "genericError": "Something went wrong. Please try again.",
     "account": "Account",

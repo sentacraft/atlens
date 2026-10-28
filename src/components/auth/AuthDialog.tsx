@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { track } from "@/lib/analytics/analytics";
 import { authClient } from "@/lib/auth-client";
+import { useTurnstile } from "@/hooks/useTurnstile";
 import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { SIGN_IN_PITCHES, type SignInSource } from "@/lib/sign-in-pitch";
@@ -50,6 +51,9 @@ const SOCIAL_PROVIDERS: { id: SocialProvider; name: string; Logo: () => React.Re
   { id: "google", name: "Google", Logo: GoogleLogo },
   { id: "github", name: "GitHub", Logo: GitHubLogo },
 ];
+
+// Better Auth's captcha plugin answers these when the Turnstile token is missing or rejected.
+const BOT_CHECK_ERRORS = ["MISSING_RESPONSE", "VERIFICATION_FAILED"];
 
 // Matches the email-otp plugin's server limit: 3 sends per 60 seconds.
 const RESEND_COOLDOWN_MS = 60_000;
@@ -101,9 +105,16 @@ export default function AuthDialog({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resendSeconds, startResendCooldown] = useCountdown(RESEND_COOLDOWN_MS);
+  const { container: turnstileContainer, interactive: turnstileShown, takeToken } = useTurnstile("email-otp");
 
-  function errorMessage(error: { status?: number; message?: string }) {
-    return error.status === 429 ? t("tooManyRequests") : error.message || t("genericError");
+  function errorMessage(error: { status?: number; code?: string; message?: string }) {
+    if (error.status === 429) {
+      return t("tooManyRequests");
+    }
+    if (error.code && BOT_CHECK_ERRORS.includes(error.code)) {
+      return t("botCheckFailed");
+    }
+    return error.message || t("genericError");
   }
 
   function reset() {
@@ -144,9 +155,16 @@ export default function AuthDialog({
     setPending(true);
     setError(null);
     try {
+      const token = await takeToken();
+      if (!token) {
+        setError(t("botCheckFailed"));
+        setPending(false);
+        return;
+      }
       const result = await authClient.emailOtp.sendVerificationOtp({
         email,
         type: "sign-in",
+        fetchOptions: { headers: { "x-captcha-response": token } },
       });
       if (result.error) {
         setError(errorMessage(result.error));
@@ -294,6 +312,8 @@ export default function AuthDialog({
               </button>
             </form>
           )}
+          {/* display:none would stop the invisible check from running, so park it outside the flow. */}
+          <div ref={turnstileContainer} className={cn(!turnstileShown && "absolute size-0 overflow-hidden")} />
           {error && <p className="text-sm text-red-600">{error}</p>}
         </div>
       </DialogPopup>

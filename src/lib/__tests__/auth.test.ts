@@ -11,7 +11,14 @@ const betterAuth = vi.fn((config: unknown) => config);
 vi.mock("better-auth", () => ({ betterAuth }));
 const emailOTP = vi.fn((options: unknown) => options);
 const oAuthProxy = vi.fn((options: unknown) => options);
-vi.mock("better-auth/plugins", () => ({ anonymous: vi.fn(() => ({})), emailOTP, oAuthProxy, oneTap: vi.fn(() => ({})) }));
+const captcha = vi.fn((options: unknown) => options);
+vi.mock("better-auth/plugins", () => ({
+  anonymous: vi.fn(() => ({})),
+  captcha,
+  emailOTP,
+  oAuthProxy,
+  oneTap: vi.fn(() => ({})),
+}));
 vi.mock("better-auth/next-js", () => ({ nextCookies: vi.fn(() => ({})) }));
 vi.mock("kysely-d1", () => ({ D1Dialect: vi.fn() }));
 // `next dev` exposes only Wrangler bindings here; `.env.local` values reach process.env.
@@ -177,6 +184,18 @@ describe("createAuth", () => {
         props: JSON.stringify({ method: "email", new_account: true }),
       },
     ]);
+  });
+
+  it("asks for a Turnstile token before emailing a sign-in code", () => {
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "turnstile-secret");
+
+    createAuth();
+
+    expect(captcha).toHaveBeenLastCalledWith({
+      provider: "cloudflare-turnstile",
+      secretKey: "turnstile-secret",
+      endpoints: ["/email-otp/send-verification-otp"],
+    });
   });
 
   it("refuses to start without a secret", () => {
