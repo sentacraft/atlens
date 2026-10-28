@@ -109,6 +109,11 @@ name = "RL_LENS_REVIEWS"
 namespace_id = "4804"
 simple = { limit = 30, period = 60 }
 
+[[ratelimits]]
+name = "RL_ANALYTICS"
+namespace_id = "4805"
+simple = { limit = 120, period = 60 }
+
 # Worker Previews inherit no vars, secrets or bindings from production: each one is
 # declared again here, pointing storage at preview copies. wrangler-config.test.ts checks
 # that every production binding and var has a preview entry.
@@ -175,3 +180,8 @@ simple = { limit = 6, period = 60 }
 name = "RL_LENS_REVIEWS"
 namespace_id = "4814"
 simple = { limit = 30, period = 60 }
+
+[[previews.ratelimits]]
+name = "RL_ANALYTICS"
+namespace_id = "4815"
+simple = { limit = 120, period = 60 }

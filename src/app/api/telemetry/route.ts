@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { telemetryPayloadSchema } from "@/lib/analytics/telemetry-contract";
+import { isRateLimited } from "@/lib/rate-limit";
 
 const MAX_BODY_BYTES = 2048;
 
-/** Logs a browser asset failure or slow asset load to Workers Logs. Public. */
+/** Logs a browser asset failure or slow asset load to Workers Logs. Public; 429 past the per-IP rate. */
 export async function POST(req: Request): Promise<NextResponse> {
+  if (await isRateLimited(req, "analytics")) {
+    return new NextResponse(null, { status: 429 });
+  }
   const raw = await req.text();
   if (raw.length > MAX_BODY_BYTES) {
     return NextResponse.json({ ok: false }, { status: 413 });

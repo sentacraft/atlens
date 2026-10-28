@@ -6,13 +6,14 @@ const state = vi.hoisted(() => ({
   db: null as unknown as D1Database,
   pending: [] as Promise<unknown>[],
   hasAccountSession: vi.fn(async () => false),
+  limit: vi.fn(async () => ({ success: true })),
 }));
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/auth-session", () => ({ hasAccountSession: state.hasAccountSession }));
 vi.mock("@opennextjs/cloudflare", () => ({
   getCloudflareContext: () => ({
-    env: { ANALYTICS_DB: state.db },
+    env: { ANALYTICS_DB: state.db, RL_ANALYTICS: { limit: state.limit } },
     ctx: { waitUntil: (promise: Promise<unknown>) => state.pending.push(promise) },
   }),
 }));
@@ -21,8 +22,8 @@ const { POST } = await import("../route");
 
 let sqlite: ReturnType<typeof createSqliteD1>["sqlite"];
 
-async function post(body: unknown, cookie?: string) {
-  const headers = cookie ? { cookie } : undefined;
+async function post(body: unknown, cookie?: string, ip?: string) {
+  const headers = { ...(cookie ? { cookie } : {}), ...(ip ? { "cf-connecting-ip": ip } : {}) };
   const response = await POST(
     new NextRequest("http://localhost/api/track", { method: "POST", body: JSON.stringify(body), headers }),
   );
@@ -41,10 +42,19 @@ beforeEach(() => {
   state.db = created.d1;
   state.pending = [];
   state.hasAccountSession.mockResolvedValue(false);
+  state.limit.mockResolvedValue({ success: true });
   sqlite = created.sqlite;
 });
 
 describe("POST /api/track", () => {
+  it("drops an event past the per-IP rate without writing it", async () => {
+    state.limit.mockResolvedValue({ success: false });
+    const response = await post({ event: "search", locale: "en", props: { query: "56mm", results_count: 3 } }, undefined, "203.0.113.1");
+
+    expect(response.status).toBe(429);
+    expect(rows()).toHaveLength(0);
+  });
+
   it("stores a known event and gives a new visitor a 30-day cookie", async () => {
     state.hasAccountSession.mockResolvedValue(true);
     const response = await post({

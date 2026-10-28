@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { feedbackSubmissionSchema, type FeedbackSubmission } from "@/lib/feedback/feedback-contract";
-import { isRateLimited, rateLimitedResponse } from "@/lib/rate-limit";
+import { isOverDailyCap, isRateLimited, rateLimitedResponse } from "@/lib/rate-limit";
 
 
 const TITLE_SNIPPET_MAX = 60;
@@ -103,9 +103,9 @@ export function GET() {
   });
 }
 
-/** Files site feedback as a GitHub issue. Public; 400 with the failing rule as the error code, 429 when rate limited. */
+/** Files site feedback as a GitHub issue. Public; 400 with the failing rule as the error code, 429 when rate limited or past the daily cap. */
 export async function POST(req: Request) {
-  if (await isRateLimited(req, "feedback")) {
+  if ((await isRateLimited(req, "feedback")) || (await isOverDailyCap(req, "feedback"))) {
     return rateLimitedResponse();
   }
 
