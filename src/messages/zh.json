@@ -39,8 +39,8 @@
     "signInHint": "收藏镜头、保存器材、同步对话"
   },
   "Auth": {
-    "login": "登录",
-    "title": "登录 Atlens",
+    "login": "登录 / 注册",
+    "title": "登录或注册 Atlens",
     "continueWith": "使用 {provider} 登录",
     "orEmail": "或用邮箱",
     "emailLabel": "邮箱",

@@ -39,8 +39,8 @@
     "signInHint": "Save lenses, gear, and chats"
   },
   "Auth": {
-    "login": "Log in",
-    "title": "Sign in to Atlens",
+    "login": "Sign in / Sign up",
+    "title": "Sign in or sign up to Atlens",
     "continueWith": "Continue with {provider}",
     "orEmail": "or use email",
     "emailLabel": "Email",
