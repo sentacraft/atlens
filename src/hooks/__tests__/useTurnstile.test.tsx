@@ -8,7 +8,6 @@ type Options = Record<string, unknown> & {
   callback: (token: string) => void;
   "error-callback": () => void;
   "before-interactive-callback": () => void;
-  "after-interactive-callback": () => void;
 };
 
 let options: Options;
@@ -48,7 +47,7 @@ afterEach(() => {
 });
 
 describe("useTurnstile", () => {
-  it("runs the check only when a token is asked for, and starts over after each one", async () => {
+  it("runs the check only when a token is asked for, and starts over for the next one", async () => {
     await mount();
     expect(api.render).toHaveBeenCalledWith(expect.any(HTMLElement), expect.objectContaining({ execution: "execute" }));
     expect(api.execute).not.toHaveBeenCalled();
@@ -61,10 +60,19 @@ describe("useTurnstile", () => {
 
     act(() => options.callback("token-1"));
     await expect(token!).resolves.toBe("token-1");
+    // The widget keeps showing its success state until the next check.
+    expect(api.reset).not.toHaveBeenCalled();
+
+    await act(async () => {
+      token = turnstile.takeToken();
+    });
     expect(api.reset).toHaveBeenCalledWith("widget-1");
+    expect(api.execute).toHaveBeenCalledTimes(2);
+    act(() => options.callback("token-2"));
+    await expect(token!).resolves.toBe("token-2");
   });
 
-  it("waits as long as the visitor needs once Cloudflare shows a challenge", async () => {
+  it("waits as long as the visitor needs once Cloudflare shows a challenge, and keeps it shown", async () => {
     vi.useFakeTimers();
     await mount();
 
@@ -76,13 +84,15 @@ describe("useTurnstile", () => {
     expect(turnstile.interactive).toBe(true);
 
     await act(() => vi.advanceTimersByTimeAsync(120_000));
-    act(() => {
-      options["after-interactive-callback"]();
-      options.callback("token-1");
-    });
+    // Cloudflare's own "verifying" and success states follow the click; they stay on screen.
+    act(() => (options["after-interactive-callback"] as (() => void) | undefined)?.());
+    expect(turnstile.interactive).toBe(true);
 
-    await expect(token!).resolves.toBe("token-1");
-    expect(turnstile.interactive).toBe(false);
+    await act(async () => {
+      options.callback("token-1");
+      await expect(token!).resolves.toBe("token-1");
+    });
+    expect(turnstile.interactive).toBe(true);
   });
 
   it("gives up when the invisible check stalls or fails", async () => {

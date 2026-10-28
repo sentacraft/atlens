@@ -20,7 +20,6 @@ interface TurnstileApi {
       callback: (token: string) => void;
       "error-callback": () => void;
       "before-interactive-callback": () => void;
-      "after-interactive-callback": () => void;
     },
   ): string;
   execute(container: HTMLElement): void;
@@ -60,7 +59,8 @@ type Widget = { api: TurnstileApi; id: string; element: HTMLElement };
 /**
  * A Turnstile widget that checks the visitor only when `takeToken` asks, and stays invisible
  * unless Cloudflare wants them to interact. Pass `container` as the ref of the element to render
- * it in, and keep that element out of the layout until `interactive`. `takeToken` resolves with a
+ * it in, and keep that element out of the layout until `interactive`; once Cloudflare has shown
+ * the widget it stays in place. `takeToken` resolves with a
  * token for one request, or null when the check can't complete.
  */
 export function useTurnstile(action: string) {
@@ -68,6 +68,7 @@ export function useTurnstile(action: string) {
   const pending = useRef<{ resolve: (token: string | null) => void; timer?: ReturnType<typeof setTimeout> } | null>(
     null,
   );
+  const spent = useRef(false);
   const [interactive, setInteractive] = useState(false);
 
   const finish = useCallback((token: string | null) => {
@@ -105,7 +106,6 @@ export function useTurnstile(action: string) {
               clearTimeout(pending.current?.timer);
               setInteractive(true);
             },
-            "after-interactive-callback": () => setInteractive(false),
           });
           return { api, id, element };
         })
@@ -114,6 +114,7 @@ export function useTurnstile(action: string) {
       return () => {
         removed = true;
         widget.current = null;
+        spent.current = false;
         void rendered.then((rendered) => rendered?.api.remove(rendered.id));
         setInteractive(false);
         finish(null);
@@ -128,15 +129,17 @@ export function useTurnstile(action: string) {
       return null;
     }
     finish(null);
+    // Each token is accepted once. Resetting right after one is spent would hide the widget's
+    // success state, so the next check resets instead.
+    if (spent.current) {
+      rendered.api.reset(rendered.id);
+    }
+    spent.current = true;
     const token = new Promise<string | null>((resolve) => {
       pending.current = { resolve, timer: setTimeout(() => finish(null), TOKEN_TIMEOUT_MS) };
     });
     rendered.api.execute(rendered.element);
-    const value = await token;
-    setInteractive(false);
-    // Each token is accepted once; reset so a retry or a resend can run the check again.
-    rendered.api.reset(rendered.id);
-    return value;
+    return token;
   }, [finish]);
 
   return { container, interactive, takeToken };
