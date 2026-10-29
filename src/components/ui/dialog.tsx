@@ -109,7 +109,7 @@ function DialogPopup({ className, children, ...props }: DialogRawPopupProps) {
             DRAWER_KEYBOARD_CLS,
             "transition-[transform,opacity] data-[swipe-dismiss]:!transition-none data-[nested-drawer-open]:scale-[0.94] data-[nested-drawer-open]:opacity-40",
             className,
-            "rounded-t-2xl rounded-b-none"
+            "max-w-none rounded-t-2xl rounded-b-none"
           )}
           {...props}
         >

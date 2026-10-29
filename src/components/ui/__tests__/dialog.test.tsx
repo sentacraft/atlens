@@ -84,4 +84,20 @@ describe("Dialog", () => {
 
     expect(onOpenChange).toHaveBeenCalledWith(false, expect.anything());
   });
+
+  // A sign-in drawer kept the centered dialog's max-w-md and sat in the left 448px of a 563px window.
+  it("spans the full width as a drawer, whatever width the centered dialog asks for", () => {
+    viewport.wide = false;
+    render(
+      <Dialog open onOpenChange={() => {}}>
+        <DialogPopup className="max-w-md">
+          <DialogTitle>Sign in</DialogTitle>
+        </DialogPopup>
+      </Dialog>,
+    );
+
+    const popup = document.querySelector('[data-slot="dialog-content"]')!;
+    expect(popup).not.toHaveClass("max-w-md");
+    expect(popup).toHaveClass("max-w-none");
+  });
 });
