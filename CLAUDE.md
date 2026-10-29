@@ -48,6 +48,10 @@ call it, and its main error statuses. `docs/api.md` is generated from them, and 
 when it is stale. A request body or payload shared by a client module and its route is one Zod
 schema in `src/lib/`, imported by both.
 
+A new page, user-facing feature, or API route goes through `docs/launch-checklist.md`: the places
+outside its own code that it may need to change. The PR description says which items changed and
+which do not apply.
+
 Pure helpers and UI state used by a single component stay in its file; extract when the code does
 I/O, carries testable logic, or gains a second consumer.
 
