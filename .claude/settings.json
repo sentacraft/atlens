@@ -31,6 +31,12 @@
             "command": "node \"$(git rev-parse --show-toplevel)/scripts/hooks/cjk-guard.mjs\"",
             "timeout": 10,
             "statusMessage": "Checking for misplaced Chinese text"
+          },
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/scripts/hooks/launch-review.mjs\"",
+            "timeout": 10,
+            "statusMessage": "Checking launch checklist"
           }
         ]
       }
