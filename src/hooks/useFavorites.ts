@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { accountUser, authClient } from "@/lib/auth-client";
 import {
   addFavorite,
   FavoritesRequestError,
@@ -13,14 +12,14 @@ import {
 } from "@/lib/me/favorites-client";
 import { useRouter } from "@/i18n/navigation";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
+import { useAccountUser } from "@/context/InitialAccountProvider";
 import { profilePath } from "@/lib/url/routes";
 
 /** The signed-in user's favorite lens ids, newest first, whether they are still loading, and a toggle that asks guests to sign in. */
 export function useFavorites() {
   const t = useTranslations("LensActions");
   const tProfile = useTranslations("Profile");
-  const { data: session } = authClient.useSession();
-  const user = accountUser(session);
+  const user = useAccountUser();
   const openSignIn = useSignInDialog();
   const router = useRouter();
   const queryClient = useQueryClient();

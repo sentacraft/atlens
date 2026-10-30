@@ -6,7 +6,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { routing, type Locale } from "@/i18n/routing";
-import { accountUser, authClient } from "@/lib/auth-client";
 import { linkedProvidersQuery, updateDisplayName } from "@/lib/me/account-client";
 import { userFavoritesQuery } from "@/lib/me/favorites-client";
 import { userGearQuery } from "@/lib/me/gear-client";
@@ -14,6 +13,7 @@ import { useSwitchLocale } from "@/hooks/useSwitchLocale";
 import { patchUserSettings, userSettingsQuery } from "@/lib/me/settings-client";
 import { DEFAULT_USER_SETTINGS, type UserSettings, type UserSettingsPatch } from "@/lib/me/settings-schema";
 import type { LensSummary } from "@/lib/lens/data";
+import type { ProfileUser } from "@/lib/me/profile-data";
 import type { Mount } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
@@ -28,6 +28,7 @@ import {
 import { useMountPreference } from "@/context/MountPreferenceProvider";
 import { useNav } from "@/context/NavProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
+import { useAccountUser } from "@/context/InitialAccountProvider";
 import SignInBenefits from "@/components/auth/SignInBenefits";
 import FreeNote from "@/components/auth/FreeNote";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
@@ -53,14 +54,7 @@ const SECTION_SUB_CLS = "mt-0.5 text-[13px] leading-5 text-zinc-500 md:mt-1";
 
 /** `compareBar` shows only with the account, the one state with compare buttons (on favorites). */
 export default function ProfilePage({ lenses, compareBar }: { lenses: LensSummary[]; compareBar: ReactNode }) {
-  const { data: session, isPending } = authClient.useSession();
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => setHydrated(true), []);
-
-  if (!hydrated || isPending) {
-    return <div className="min-h-[calc(var(--app-height)*0.6)]" aria-busy="true" />;
-  }
-  const user = accountUser(session);
+  const user = useAccountUser();
   if (!user) {
     return <SignInPrompt />;
   }
@@ -91,13 +85,6 @@ function SignInPrompt() {
       </button>
     </div>
   );
-}
-
-interface ProfileUser {
-  id: string;
-  name: string;
-  email: string;
-  image?: string | null;
 }
 
 function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] }) {

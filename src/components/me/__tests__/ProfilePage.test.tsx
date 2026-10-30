@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ProfilePage from "../ProfilePage";
+import { InitialAccountProvider } from "@/context/InitialAccountProvider";
 
 const mocks = vi.hoisted(() => ({
   session: { data: null as unknown, isPending: false },
@@ -41,7 +42,7 @@ const fetchMock = vi.fn();
 
 function signedIn() {
   mocks.session = {
-    data: { user: { id: "u1", name: "Iris", email: "iris@example.test", isAnonymous: false, image: null } },
+    data: { user: { ...IRIS, isAnonymous: false } },
     isPending: false,
   };
 }
@@ -62,11 +63,15 @@ function serveSettings(...responses: Response[]) {
   });
 }
 
-function renderPage() {
+const IRIS = { id: "u1", name: "Iris", email: "iris@example.test", image: null };
+
+function renderPage(initialUser: typeof IRIS | null = (mocks.session.data as { user?: typeof IRIS } | null)?.user ?? null) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={client}>
-      <ProfilePage lenses={[]} compareBar={<div data-testid="compare-bar" />} />
+      <InitialAccountProvider user={initialUser}>
+        <ProfilePage lenses={[]} compareBar={<div data-testid="compare-bar" />} />
+      </InitialAccountProvider>
     </QueryClientProvider>,
   );
 }
@@ -97,6 +102,29 @@ describe("ProfilePage", () => {
     renderPage();
 
     expect(screen.getByTestId("compare-bar")).toBeInTheDocument();
+  });
+
+  // The page used to render an empty shell until the browser had fetched the session.
+  it("renders the account the server found while the browser's session is still loading", () => {
+    mocks.session = { data: null, isPending: true };
+    serveSettings(settingsResponse({ defaultMount: "X", locale: null }));
+    renderPage(IRIS);
+
+    expect(screen.getByRole("heading", { name: "Iris" })).toBeInTheDocument();
+    expect(screen.getByTestId("compare-bar")).toBeInTheDocument();
+  });
+
+  it("asks a guest the server found to sign in without waiting for the browser's session", () => {
+    mocks.session = { data: null, isPending: true };
+    renderPage(null);
+
+    expect(screen.getByRole("heading", { name: "signInTitle" })).toBeInTheDocument();
+  });
+
+  it("follows the browser's session once it loads, such as a sign-out in another tab", () => {
+    renderPage(IRIS);
+
+    expect(screen.getByRole("heading", { name: "signInTitle" })).toBeInTheDocument();
   });
 
   it("saves a new language, remembers it for the bare root, and moves to that language", async () => {

@@ -11,7 +11,6 @@ export const STATIC_LOCALIZED_SUBPATHS = [
   "about",
   "recently-added",
   "get",
-  "me",
   "lenses/x/browse",
   "lenses/gfx/browse",
   "lenses/x/charts/timeline",
@@ -26,6 +25,12 @@ export const INTENTIONALLY_DYNAMIC_ROUTE_PATTERNS = [
     reason:
       "Reads ?ids=A,B,C from searchParams to build server-rendered metadata, " +
       "which forces dynamic rendering. Served per request (no-store), not cached.",
+  },
+  {
+    pattern: "/[locale]/me",
+    reason:
+      "Reads the session cookie and the account's gear, favorites and settings from D1 so the " +
+      "profile arrives with its data. Private to the visitor; served per request, not cached.",
   },
   {
     pattern: "/api/feedback",
