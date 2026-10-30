@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Menu } from "@base-ui/react/menu";
 import { Ellipsis, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ import {
   ICON_NAV_BTN_CLS,
   MENU_ITEM_DANGER_CLS,
   MENU_POPUP_CLS,
+  SKELETON_CLS,
 } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { Link } from "@/i18n/navigation";
@@ -55,6 +56,7 @@ export default function GearSection({
   const queryClient = useQueryClient();
   const query = userGearQuery(userId);
   const { gear, openBodyDialog, openLensSearch, dialogs } = useGearAdders({ userId, lenses });
+  const { isPending } = useQuery(query);
 
   const lensById = useMemo(() => new Map(lenses.map((lens) => [lens.id, lens])), [lenses]);
   const bodies = gear.filter((item) => item.kind === "body");
@@ -100,7 +102,7 @@ export default function GearSection({
 
       <GearGroup
         label={t("bodies")}
-        count={bodies.length}
+        count={isPending ? null : bodies.length}
         empty={t("noBodies")}
         action={
           <button type="button" onClick={openBodyDialog} className={ADD_BUTTON_CLS}>
@@ -126,7 +128,7 @@ export default function GearSection({
 
       <GearGroup
         label={t("lenses")}
-        count={lensItems.length}
+        count={isPending ? null : lensItems.length}
         empty={t("noLenses")}
         action={
           <button type="button" onClick={openLensSearch} className={ADD_BUTTON_CLS}>
@@ -181,7 +183,7 @@ function GearGroup({
   children,
 }: {
   label: string;
-  count: number;
+  count: number | null;
   empty: string;
   action: ReactNode;
   children: ReactNode;
@@ -190,11 +192,13 @@ function GearGroup({
     <div className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between">
         <span className={GROUP_LABEL_CLS}>
-          {label} · {count}
+          {count === null ? label : `${label} · ${count}`}
         </span>
         {action}
       </div>
-      {count === 0 ? (
+      {count === null ? (
+        <div data-testid="gear-loading" aria-busy="true" className={`h-[58px] rounded-2xl ${SKELETON_CLS}`} />
+      ) : count === 0 ? (
         <p className="rounded-2xl border border-dashed border-zinc-200 px-4 py-5 text-center text-sm text-zinc-500">
           {empty}
         </p>
