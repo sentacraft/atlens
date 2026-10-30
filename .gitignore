@@ -95,3 +95,6 @@ src/messages/*.d.json.ts
 src/data/lenses.json
 src/data/lenses-gfx.json
 src/data/.lens-catalog-commit
+
+# Signed-in state for scripts/readme-shots; holds a session cookie
+scripts/readme-shots/.auth.json

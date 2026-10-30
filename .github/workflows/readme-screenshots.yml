@@ -1,0 +1,112 @@
+name: README screenshots
+
+# Weekly: keep the screenshot account's session alive (Better Auth extends a session only when it
+# is used, and it lapses after 7 idle days). First week of the month, or on demand: retake the
+# README screenshots from production and open a PR when any image changed.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: readme-screenshots
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  keepalive:
+    name: Keep the screenshot session alive
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Touch the session
+        env:
+          SHOTS_AUTH_JSON: ${{ secrets.SHOTS_AUTH_JSON }}
+        run: |
+          cookie=$(jq -r '.cookies | map("\(.name)=\(.value)") | join("; ")' <<<"$SHOTS_AUTH_JSON")
+          user=$(curl -fsS -H "Cookie: $cookie" -H "User-Agent: atlens-readme-screenshots" https://atlens.app/api/auth/get-session | jq -r '.user.email // empty')
+          if [ -z "$user" ]; then
+            echo "::error::The screenshot session has expired. Sign in as the screenshot account again and update SHOTS_AUTH_JSON."
+            exit 1
+          fi
+
+  playwright-version:
+    name: Resolve Playwright image
+    needs: keepalive
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.lock.outputs.version }}
+      due: ${{ steps.due.outputs.due }}
+    steps:
+      - id: due
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$(date -u +%-d)" -le 7 ]; then
+            echo "due=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "due=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.due.outputs.due == 'true'
+        with:
+          sparse-checkout: pnpm-lock.yaml
+          sparse-checkout-cone-mode: false
+      - id: lock
+        if: steps.due.outputs.due == 'true'
+        run: |
+          version=$(sed -n "s/^  '@playwright\/test@\([0-9.]*\)':$/\1/p" pnpm-lock.yaml | head -1)
+          test -n "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  shoot:
+    name: Retake and open a PR
+    needs: playwright-version
+    if: needs.playwright-version.outputs.due == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.playwright-version.outputs.version }}-noble
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Take the screenshots
+        env:
+          SHOTS_AUTH_JSON: ${{ secrets.SHOTS_AUTH_JSON }}
+          SHOTS_AUTH_FILE: ${{ runner.temp }}/shots-auth.json
+        run: |
+          printf '%s' "$SHOTS_AUTH_JSON" > "$SHOTS_AUTH_FILE"
+          node --experimental-strip-types scripts/readme-shots/shoot.mts
+
+      - name: Open a PR if any image changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          if git diff --quiet -- docs/screenshots; then
+            echo "No image changed."
+            exit 0
+          fi
+          apt-get update -qq && apt-get install -y -qq gh >/dev/null
+          branch="chore/readme-screenshots-$(date -u +%Y-%m-%d)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add docs/screenshots
+          git commit -m "docs(readme): retake the screenshots"
+          git push -u origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "docs(readme): retake the screenshots" \
+            --body "Monthly retake of the README screenshots from production. Look the images over before merging."
