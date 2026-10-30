@@ -16,13 +16,21 @@ Atlens is free, open source, and maintained by one person. If it helps you pick 
 
 **Desktop**
 
-![Lens browser](https://github.com/user-attachments/assets/107d9263-cf2a-4ab1-905b-ed9b6d56d523)
+![Lens browser filtered to Fujifilm, Sigma and Viltrox autofocus primes](docs/screenshots/desktop-browse.png)
 
-![Lens browser](https://github.com/user-attachments/assets/256ed68d-ccde-4961-9303-19f3899f5b36)
+![Side-by-side comparison of four 35mm-equivalent primes](docs/screenshots/desktop-compare.png)
+
+![Lens page for the Fujifilm XF 33mm F1.4 R LM WR](docs/screenshots/desktop-lens.png)
+
+![Release timeline of X-mount lenses across brands](docs/screenshots/desktop-timeline.png)
+
+![Ask Iris open beside the lens browser](docs/screenshots/desktop-iris.png)
+
+![Profile with owned gear and favorites](docs/screenshots/desktop-profile.png)
 
 **Mobile**
 
-![Mobile](https://github.com/user-attachments/assets/0d0953c5-5ed4-4f5d-88c9-38f4fd8f279e)
+![Home, weight ladder and review summary on a phone](docs/screenshots/mobile.png)
 
 ---
 
@@ -32,9 +40,12 @@ Atlens is free, open source, and maintained by one person. If it helps you pick 
 - **Clean, focused UI** — distraction-free interface designed around the comparison workflow
 - **Filter and sort** — multi-axis filtering (focal length, aperture, AF, OIS, weather resistance, specialty tags) combined with flexible sorting
 - **Curated collections** — hand-picked themes (compact primes, budget autofocus, and more), each defined by filter criteria rather than a hand-picked lens list, so the lineup stays current as the catalog grows — for when you don't know exactly what to search for
+- **Charts** — a release timeline, a weight ladder with everyday objects for scale, and every brand's lineup side by side
+- **Brand and series pages** — each brand's X-mount lineup, its series, and its release history
+- **Review summaries** — what published reviews agree on for a lens, condensed into highlights and caveats with the number of reviews behind each
 - **Side-by-side comparison** of up to 4 lenses, shareable as a link or a poster image — a single lens can be shared the same way
 - **Ask Iris** — a built-in AI assistant grounded in the catalog: describe what you shoot and it recommends and compares lenses with a reason for each, takes the gear you own into account when you're signed in, and answers questions about the site
-- **Accounts** — save favorite lenses and the gear you own, and keep Ask Iris conversations across devices
+- **Accounts** — sign in with Google, GitHub or an email code to save favorite lenses and the gear you own, read every review finding, and keep Ask Iris conversations across devices
 - **Normalized data** — specs from different manufacturers use inconsistent formats and terminology; Atlens maps everything to a consistent schema so comparisons are fair and objective
 - **Pipeline-backed accuracy** — specs come from official manufacturer sources and go through a staged pipeline, reviewed by the maintainer before publishing
 - **Progressive Web App (PWA)** — runs in any browser, and installs like a native app on a phone's home screen or a computer's dock for full-screen access — no App Store required ([get the app](https://atlens.app/en/get))
@@ -47,7 +58,7 @@ Atlens is free, open source, and maintained by one person. If it helps you pick 
 | Framework | React 19, Next.js (App Router), TypeScript |
 | Runtime & hosting | Cloudflare Workers via OpenNext |
 | Data stores | SQLite (Cloudflare D1), KV, Analytics Engine |
-| Auth | Better Auth — Google, email code, anonymous sessions |
+| Auth | Better Auth — Google, GitHub, email code, anonymous sessions |
 | AI | Vercel AI SDK |
 | Client data | TanStack Query |
 | UI | Tailwind CSS, Base UI, Motion |
