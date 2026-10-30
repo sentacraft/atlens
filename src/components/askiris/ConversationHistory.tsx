@@ -6,7 +6,7 @@ import { Popover } from "@base-ui/react/popover";
 import { ArrowLeft, Ellipsis, Pencil, SquarePen, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, ICON_NAV_BTN_CLS, LIST_ITEM_ACTIVE_CLS, MENU_ITEM_CLS, MENU_ITEM_DANGER_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
+import { ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, ICON_NAV_BTN_CLS, LIST_ITEM_ACTIVE_CLS, MENU_ITEM_CLS, MENU_ITEM_DANGER_CLS, MENU_POPUP_CLS, SKELETON_CLS } from "@/config/ui-tokens";
 import { MAX_CONVERSATION_TITLE_LENGTH } from "@/lib/askiris/conversation-contract";
 import type { AskIrisConversationRecord } from "@/lib/askiris/conversation-repository";
 import type { ConversationListState } from "@/components/askiris/useConversation";
@@ -133,7 +133,7 @@ function HistoryContent({
         {listState === "loading" ? (
           <div className="space-y-2 px-2" aria-busy="true">
             {[0, 1, 2].map((key) => (
-              <div key={key} className="h-12 animate-pulse rounded-lg bg-zinc-100" />
+              <div key={key} className={`h-12 rounded-lg ${SKELETON_CLS}`} />
             ))}
           </div>
         ) : listState === "error" ? (

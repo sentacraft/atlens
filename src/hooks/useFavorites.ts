@@ -15,7 +15,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { profilePath } from "@/lib/url/routes";
 
-/** The signed-in user's favorite lens ids, newest first, and a toggle that asks guests to sign in. */
+/** The signed-in user's favorite lens ids, newest first, whether they are still loading, and a toggle that asks guests to sign in. */
 export function useFavorites() {
   const t = useTranslations("LensActions");
   const tProfile = useTranslations("Profile");
@@ -25,7 +25,7 @@ export function useFavorites() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const query = userFavoritesQuery(user?.id ?? "");
-  const { data: lensIds = [] } = useQuery({ ...query, enabled: Boolean(user) });
+  const { data: lensIds = [], isPending } = useQuery({ ...query, enabled: Boolean(user) });
   const ids = useMemo(() => new Set(lensIds), [lensIds]);
 
   const mutation = useMutation({
@@ -71,5 +71,5 @@ export function useFavorites() {
     }
   }
 
-  return { lensIds, isFavorite: (lensId: string) => ids.has(lensId), toggle };
+  return { lensIds, isPending: Boolean(user) && isPending, isFavorite: (lensId: string) => ids.has(lensId), toggle };
 }

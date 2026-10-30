@@ -12,6 +12,7 @@ import LensActions from "@/components/lens/LensActions";
 import { LensSilhouette } from "@/components/ui/lens-silhouette";
 import { lensPath } from "@/lib/url/routes";
 import { brandLabel } from "@/lib/lens/format";
+import { SKELETON_CLS } from "@/config/ui-tokens";
 
 function equivalentRange(lens: LensSummary): string {
   const min = equivalentFocal(lens.focalLengthMin, lens.mount);
@@ -28,7 +29,7 @@ export default function FavoritesSection({
   id: string;
   className: string;
   lenses: LensSummary[];
-  heading: (count: number) => ReactNode;
+  heading: (count: number | null) => ReactNode;
 }) {
   const t = useTranslations("Profile");
   const tBrand = useTranslations("Brands");
@@ -41,8 +42,14 @@ export default function FavoritesSection({
 
   return (
     <section id={id} className={className}>
-      {heading(favoriteLenses.length)}
-      {favoriteLenses.length === 0 ? (
+      {heading(favorites.isPending ? null : favoriteLenses.length)}
+      {favorites.isPending ? (
+        <div data-testid="favorites-loading" aria-busy="true" className="flex flex-col gap-2.5 md:grid md:grid-cols-3 md:gap-4">
+          {[0, 1, 2].map((key) => (
+            <div key={key} className={`h-[76px] rounded-2xl md:h-[236px] ${SKELETON_CLS}`} />
+          ))}
+        </div>
+      ) : favoriteLenses.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-zinc-200 px-4 py-5 text-center text-sm text-zinc-500">
           {t("noFavorites")}
         </p>

@@ -12,6 +12,9 @@ export const BROWSE_PAGE_MAIN_CLS = `mx-auto max-w-6xl py-8 pb-[max(10rem,calc(v
 export const LENS_GRID_CLS =
   "grid grid-cols-1 gap-4 xs:grid-cols-[repeat(auto-fill,minmax(max(208px,calc((100%_-_72px)/4)),1fr))] md:gap-5 xl:gap-6";
 
+/** A grey block standing in for content that is still loading; the caller sets its size and radius. */
+export const SKELETON_CLS = "animate-pulse bg-zinc-100";
+
 export const ACTION_PRIMARY_CLS =
   "bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors";
 

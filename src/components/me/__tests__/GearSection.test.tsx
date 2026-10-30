@@ -94,6 +94,18 @@ describe("GearSection", () => {
     expect(screen.queryByText("coverageTitle")).toBeNull();
   });
 
+  // The profile flashed "No bodies yet" and "Bodies · 0" for a moment before the gear arrived.
+  it("shows placeholders, not empty states, while the gear loads", () => {
+    fetchMock.mockReturnValue(new Promise(() => {}));
+
+    renderSection();
+
+    expect(screen.queryByText("noBodies")).toBeNull();
+    expect(screen.queryByText("noLenses")).toBeNull();
+    expect(screen.queryByText("bodies · 0")).toBeNull();
+    expect(screen.getAllByTestId("gear-loading")).toHaveLength(2);
+  });
+
   it("adds the selected bodies in one go, with owned ones shown but not selectable", async () => {
     fetchMock.mockImplementation(async (_url: string, init?: RequestInit) =>
       init?.method === "POST"

@@ -184,7 +184,7 @@ function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] })
           className={SECTION_CLS}
           lenses={lenses}
           heading={(count) => (
-            <SectionHeading id="favorites" subtitle={count > 0 ? t("favoritesCount", { count }) : undefined} />
+            <SectionHeading id="favorites" subtitle={count ? t("favoritesCount", { count }) : undefined} />
           )}
         />
         <SettingsSection userId={user.id} />
