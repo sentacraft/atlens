@@ -16,6 +16,8 @@ const DESKTOP = { width: 1440, height: 900 };
 const PHONE = { width: 402, height: 874 };
 const STATUS_BAR = 54;
 const HOME_INDICATOR = 34;
+const DESK_CANVAS = { width: DESKTOP.width + 64, height: DESKTOP.height + 64 };
+const ROW_CANVAS = { width: 3 * (PHONE.width + 28) + 2 * 80 + 80, height: PHONE.height + 28 + 64 };
 
 const COMPARE_35 = [
   "fujifilm-xf-23mmf14-r-lm-wr-x",
@@ -158,12 +160,12 @@ function phoneHtml(src: string) {
 const COMPOSE_CSS = `
   * { box-sizing: border-box; margin: 0; }
   body { font-family: -apple-system, "SF Pro Text", "Inter", system-ui, sans-serif; }
-  .desk { width: 1600px; height: 1060px; display: grid; place-items: center; }
+  .desk { width: ${DESK_CANVAS.width}px; height: ${DESK_CANVAS.height}px; padding: 16px 32px 48px; }
   .desk img { width: ${DESKTOP.width}px; height: ${DESKTOP.height}px; border-radius: 14px; display: block;
-    box-shadow: 0 0 0 1px rgb(0 0 0 / .06), 0 30px 80px -20px rgb(0 0 0 / .35); }
-  .row { width: 1920px; height: 1280px; display: flex; align-items: center; justify-content: center; gap: 110px; }
+    box-shadow: 0 0 0 1px rgb(0 0 0 / .07), 0 14px 32px -10px rgb(0 0 0 / .28); }
+  .row { width: ${ROW_CANVAS.width}px; height: ${ROW_CANVAS.height}px; padding: 16px 40px 48px; display: flex; justify-content: center; gap: 80px; }
   .phone { width: ${PHONE.width + 28}px; height: ${PHONE.height + 28}px; padding: 14px; border-radius: 68px;
-    background: linear-gradient(145deg, #3a3a3e, #1c1c1f 40%, #2b2b2f); box-shadow: inset 0 0 0 2px #4a4a50, 0 50px 70px -30px rgb(0 0 0 / .45); position: relative; }
+    background: linear-gradient(145deg, #3a3a3e, #1c1c1f 40%, #2b2b2f); box-shadow: inset 0 0 0 2px #4a4a50, 0 18px 32px -12px rgb(0 0 0 / .4); position: relative; }
   .screen { width: 100%; height: 100%; border-radius: 54px; overflow: hidden; background: #fff; position: relative; }
   .status { position: absolute; inset: 0 0 auto; height: ${STATUS_BAR}px; display: flex; align-items: center; justify-content: space-between; padding: 6px 34px 0 46px;
     font-weight: 600; font-size: 17px; color: #000; }
@@ -191,7 +193,7 @@ async function main() {
   const desktop = await newContext(browser, false, avatar);
   for (const [name, shot] of Object.entries(DESKTOP_SCENES)) {
     const raw = await capture(desktop, shot);
-    await writeFile(path.join(outDir, `${name}.png`), await compose(browser, `<div class="desk"><img src="${dataUrl(raw)}"></div>`, { width: 1600, height: 1060 }));
+    await writeFile(path.join(outDir, `${name}.png`), await compose(browser, `<div class="desk"><img src="${dataUrl(raw)}"></div>`, DESK_CANVAS));
     console.log(`✓ ${name}`);
   }
   await desktop.close();
@@ -201,7 +203,7 @@ async function main() {
   for (const shot of PHONE_ROW) {
     shots.push(dataUrl(await capture(phone, shot)));
   }
-  await writeFile(path.join(outDir, "mobile.png"), await compose(browser, `<div class="row">${shots.map(phoneHtml).join("")}</div>`, { width: 1920, height: 1280 }));
+  await writeFile(path.join(outDir, "mobile.png"), await compose(browser, `<div class="row">${shots.map(phoneHtml).join("")}</div>`, ROW_CANVAS));
   console.log("✓ mobile");
   await phone.close();
   await browser.close();

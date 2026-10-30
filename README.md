@@ -2,7 +2,7 @@
 
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-support-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/sentacraft)
 [![微信赞赏](https://img.shields.io/badge/%E5%BE%AE%E4%BF%A1-%E8%B5%9E%E8%B5%8F-07C160?logo=wechat&logoColor=white)](https://atlens.app/zh/about#support)
-[![GitHub stars](https://img.shields.io/github/stars/sentacraft/atlens?style=flat)](https://github.com/sentacraft/atlens/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/sentacraft/atlens?style=flat&logo=github)](https://github.com/sentacraft/atlens/stargazers)
 
 > Formerly X-Glass.
 
@@ -16,17 +16,14 @@ Atlens is free, open source, and maintained by one person. If it helps you pick 
 
 **Desktop**
 
-![Lens browser filtered to Fujifilm, Sigma and Viltrox autofocus primes](docs/screenshots/desktop-browse.png)
-
-![Side-by-side comparison of four 35mm-equivalent primes](docs/screenshots/desktop-compare.png)
-
-![Lens page for the Fujifilm XF 33mm F1.4 R LM WR](docs/screenshots/desktop-lens.png)
-
-![Release timeline of X-mount lenses across brands](docs/screenshots/desktop-timeline.png)
-
-![Ask Iris open beside the lens browser](docs/screenshots/desktop-iris.png)
-
-![Profile with owned gear and favorites](docs/screenshots/desktop-profile.png)
+<p>
+  <img src="docs/screenshots/desktop-browse.png" width="49%" alt="Lens browser filtered to Fujifilm, Sigma and Viltrox autofocus primes">
+  <img src="docs/screenshots/desktop-compare.png" width="49%" alt="Side-by-side comparison of four 35mm-equivalent primes">
+  <img src="docs/screenshots/desktop-lens.png" width="49%" alt="Lens page for the Fujifilm XF 33mm F1.4 R LM WR">
+  <img src="docs/screenshots/desktop-timeline.png" width="49%" alt="Release timeline of X-mount lenses across brands">
+  <img src="docs/screenshots/desktop-iris.png" width="49%" alt="Ask Iris open beside the lens browser">
+  <img src="docs/screenshots/desktop-profile.png" width="49%" alt="Profile with owned gear and favorites">
+</p>
 
 **Mobile**
 
