@@ -1,11 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { ChartColumn, LayoutGrid, UserRound } from "lucide-react";
+import { Aperture, ChartColumn, LayoutGrid, UserRound } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import Iris from "@/components/iris/Iris";
 import AiTag from "@/components/iris/AiTag";
-import { IRIS_TAB_BAR } from "@/config/iris-config";
 import { Z } from "@/config/ui";
 import { useIris } from "@/context/IrisPanelProvider";
 import { useNavLinks } from "@/hooks/useNavLinks";
@@ -79,7 +77,7 @@ export default function TabBar() {
         }}
         className={cn(itemCls(irisCurrent), "relative")}
       >
-        <Iris config={IRIS_TAB_BAR} uid="tab-bar" size={20} />
+        <Aperture className="size-5" aria-hidden="true" />
         {t("askIris")}
         <AiTag className="absolute top-[7px] left-[calc(50%+0.75rem)] ring-2 ring-white" />
       </button>
