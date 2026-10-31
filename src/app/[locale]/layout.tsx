@@ -77,7 +77,10 @@ export async function generateMetadata({
     appleWebApp: {
       capable: true,
       title: SITE.shortName,
-      statusBarStyle: "black-translucent",
+      // Since iOS 26.1, black-translucent makes iOS blur the top of a Home Screen app over our
+      // nav, and no CSS turns it off (https://bugs.webkit.org/show_bug.cgi?id=301994). With
+      // "default" the status bar is opaque and the page starts below it.
+      statusBarStyle: "default",
       startupImage: SPLASH_DEVICES.map((device) => ({
         url: splashUrl(device.label),
         media: splashMedia(device),
