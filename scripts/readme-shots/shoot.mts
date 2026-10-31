@@ -74,7 +74,7 @@ const HIDE_CSS = `
 const PHONE_CSS = `:root { --safe-inset-top: ${STATUS_BAR}px !important; --safe-inset-bottom: ${HOME_INDICATOR}px !important; }`;
 
 // The screenshot account's drawn avatar; the others in avatars/ are alternatives to switch to.
-const AVATAR = process.env.SHOTS_AVATAR ?? "pastel";
+const AVATAR = process.env.SHOTS_AVATAR ?? "bright";
 
 async function avatarDataUrl(): Promise<string> {
   const svg = await readFile(path.join(HERE, "avatars", `${AVATAR}.svg`));
