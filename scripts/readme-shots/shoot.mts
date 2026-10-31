@@ -73,8 +73,11 @@ const HIDE_CSS = `
 // Headless Chromium reports no safe areas; set the ones an iPhone in standalone mode has.
 const PHONE_CSS = `:root { --safe-inset-top: ${STATUS_BAR}px !important; --safe-inset-bottom: ${HOME_INDICATOR}px !important; }`;
 
+// The screenshot account's drawn avatar; the others in avatars/ are alternatives to switch to.
+const AVATAR = process.env.SHOTS_AVATAR ?? "pastel";
+
 async function avatarDataUrl(): Promise<string> {
-  const svg = await readFile(path.join(HERE, "avatar.svg"));
+  const svg = await readFile(path.join(HERE, "avatars", `${AVATAR}.svg`));
   return `data:image/svg+xml;base64,${svg.toString("base64")}`;
 }
 
