@@ -368,6 +368,7 @@
   "LensList": {
     "title": "镜头库",
     "metaTitleX": "富士 X 卡口镜头库：全部 {count, number} 支",
+    "seoTitleX": "富士 X 卡口镜头库：全部 {count, number} 支",
     "metaTitleG": "富士 GFX 中画幅镜头库：全部 {count, number} 支",
     "metaDescX": "富士 X 卡口全部 {count, number} 支镜头，覆盖原厂与七工匠、铭匠、唯卓仕等 {brandCount, number} 个品牌。按焦段、光圈、对焦方式筛选，规格横向对比。",
     "metaDescG": "富士 GFX 中画幅全部 {count, number} 支镜头，原厂 GF 与副厂都在内。规格统一标准，横向对比。",
@@ -471,7 +472,7 @@
     "seeOnWeightLadder": "在重量天梯里看 →",
     "seeOnTimeline": "在时间轴里看 →",
     "metaDescPrefix": "{name}：富士 {mount} 卡口{type}镜头规格参数与横向对比。",
-    "metaTitle": "{name} 规格参数与对比",
+    "metaTitle": "{name} 重量尺寸与规格参数",
     "metaJoinSpace": "",
     "metaSep": "，",
     "metaPeriod": "。",
@@ -1016,6 +1017,7 @@
     "reportIssue": "反馈问题",
     "mountLabel": "富士 {mount} 卡口",
     "seoTitleYear": "{base}（{year} 年）",
+    "seoTitle": "{title}有哪些：富士 {mount} 卡口全部 {count, number} 支一览",
     "shareText": "在 Atlens 发现一份不错的合集：{title}（{mount}）"
   },
   "LensActions": {

@@ -36,6 +36,7 @@ import { brandPath, browsePath, chartPath, collectionPath, collectionsPath } fro
 import { cn } from "@/lib/utils";
 import { brandMetaDescription, brandSummary } from "@/lib/seo/meta-description";
 import type { Locale } from "@/i18n/routing";
+import { notFoundMetadata } from "@/lib/seo/not-found-metadata";
 
 type Params = Promise<{ locale: string; mount: string; brand: string }>;
 
@@ -80,7 +81,7 @@ async function load(params: Params) {
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const data = await load(params);
   if (!data) {
-    return {};
+    return notFoundMetadata((await params).locale);
   }
   const t = await getTranslations({ locale: data.locale, namespace: "Collection" });
   const tPage = await getTranslations({ locale: data.locale, namespace: "Brand" });

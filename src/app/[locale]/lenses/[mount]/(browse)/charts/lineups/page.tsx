@@ -20,6 +20,7 @@ import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { brandPath, chartPath } from "@/lib/url/routes";
 import { lineupsMetaDescription } from "@/lib/seo/meta-description";
 import type { Locale } from "@/i18n/routing";
+import { notFoundMetadata } from "@/lib/seo/not-found-metadata";
 
 type Params = Promise<{ locale: string; mount: string }>;
 
@@ -57,7 +58,7 @@ async function load(params: Params) {
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const data = await load(params);
   if (!data) {
-    return {};
+    return notFoundMetadata((await params).locale);
   }
   const { title, description } = data.seo;
   return {
