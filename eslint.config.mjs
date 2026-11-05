@@ -20,7 +20,7 @@ const eslintConfig = defineConfig([
       "no-restricted-syntax": [
         "error",
         {
-          selector: "JSXMemberExpression[object.name='Menu'][property.name=/^(Portal|Positioner|Popup)$/]",
+          selector: "JSXMemberExpression[object.name='Menu'][property.name=/^(Portal|Positioner|Popup|Separator)$/]",
           message: "Use MenuPopup from @/components/ui/menu instead of composing Menu.Portal, Menu.Positioner or Menu.Popup.",
         },
       ],

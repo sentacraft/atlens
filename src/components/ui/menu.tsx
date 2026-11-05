@@ -24,3 +24,8 @@ export function MenuPopup({ className, side = "bottom", align = "end", sideOffse
     </Menu.Portal>
   );
 }
+
+/** A divider between groups of rows. It has no margin: a margin leaves a white strip between the line and the next row's hover. */
+export function MenuSeparator() {
+  return <Menu.Separator className="h-px bg-zinc-200" />;
+}

@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { Menu } from "@base-ui/react/menu";
 import { MENU_ITEM_CLS } from "@/config/ui-tokens";
-import { MenuPopup } from "../menu";
+import { MenuPopup, MenuSeparator } from "../menu";
 
 afterEach(cleanup);
 
@@ -38,5 +38,21 @@ describe("MenuPopup", () => {
     const popup = renderMenu("pt-2 pb-2");
 
     expect(popup.className).not.toMatch(/(^|\s)p[tb]-2(\s|$)/);
+  });
+
+  // A margin on the divider left a white strip between the line and the next row's hover.
+  it("draws a divider with no vertical margin", () => {
+    render(
+      <Menu.Root open>
+        <Menu.Trigger>Open</Menu.Trigger>
+        <MenuPopup>
+          <Menu.Item className={MENU_ITEM_CLS}>First</Menu.Item>
+          <MenuSeparator />
+          <Menu.Item className={MENU_ITEM_CLS}>Last</Menu.Item>
+        </MenuPopup>
+      </Menu.Root>,
+    );
+
+    expect(screen.getByRole("separator").className).not.toMatch(/(^|\s)m[ytb]?-/);
   });
 });
