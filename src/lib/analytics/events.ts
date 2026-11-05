@@ -35,6 +35,7 @@ const EVENT_FIELDS = {
   sign_in_submit: { method: "string" },
   support_open: { entry: "string" },
   support_prompt: { prompt: "string", action: "string" },
+  support_channel: { channel: "string", action: "string", device: "string" },
   nav_click: { item: "string", place: "string" },
 } as const satisfies Record<string, Record<string, FieldKind>>;
 
@@ -395,6 +396,33 @@ export const EVENT_DOCS: EventDocs = {
           revisit: { label: "Returning visit", description: "The prompt shown to a visitor on their third day of visits" },
           iris_helpful: { label: "Iris, after Helpful", description: "The line under an Iris answer just rated helpful" },
           iris_limit: { label: "Iris, out of questions", description: "The card when an account or the whole site has used today's Iris questions" },
+        },
+      },
+    },
+  },
+  support_channel: {
+    description: "What a visitor did inside the support panel, in the dialog or on the About page.",
+    fields: {
+      channel: {
+        description: "The tipping channel.",
+        values: {
+          kofi: { label: "Ko-fi", description: "Tips by card or PayPal through Ko-fi" },
+          wechat: { label: "WeChat", description: "Tips by WeChat code" },
+        },
+      },
+      action: {
+        description: "What they did.",
+        values: {
+          switched: { label: "Switched to it", description: "Opened this channel's tab after the first one" },
+          clicked: { label: "Clicked through", description: "Pressed Ko-fi's button, or saved or enlarged the WeChat code" },
+        },
+      },
+      device: {
+        description: "How the WeChat code can be used on this device.",
+        values: {
+          desktop: { label: "Desktop", description: "Scanned from another phone" },
+          phone: { label: "Phone browser", description: "Saved, then scanned from the album" },
+          wechat: { label: "Inside WeChat", description: "Pressed and held in WeChat" },
         },
       },
     },

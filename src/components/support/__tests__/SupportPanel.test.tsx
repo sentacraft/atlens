@@ -7,6 +7,9 @@ import zh from "@/messages/zh.json";
 import SupportPanel from "../SupportPanel";
 
 const device = vi.hoisted(() => ({ mobile: false, wechat: false }));
+const track = vi.hoisted(() => vi.fn());
+
+vi.mock("@/lib/analytics/analytics", () => ({ track }));
 
 vi.mock("@/hooks/useViewport", () => ({
   useIsMobileDevice: () => device.mobile,
@@ -15,6 +18,7 @@ vi.mock("@/hooks/useViewport", () => ({
 
 afterEach(() => {
   cleanup();
+  track.mockClear();
   device.mobile = false;
   device.wechat = false;
 });
@@ -78,5 +82,36 @@ describe("SupportPanel", () => {
     expect(screen.getByText(zh.Support.wechatPressHint)).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: zh.Support.wechatSave })).not.toBeInTheDocument();
     expect(screen.getByRole("img", { name: zh.Support.wechatQrAlt }).closest("a")).toBeNull();
+  });
+
+  describe("analytics", () => {
+    it("records switching to the other channel, with the device", () => {
+      renderPanel("en");
+
+      fireEvent.click(screen.getByRole("tab", { name: en.Support.wechatTitle }));
+
+      expect(track).toHaveBeenCalledWith("support_channel", { channel: "wechat", action: "switched", device: "desktop" });
+    });
+
+    it("records a click on Ko-fi's button", () => {
+      device.mobile = true;
+      renderPanel("en");
+
+      const link = screen.getByRole("link", { name: /Support on Ko-fi/ });
+      link.addEventListener("click", (event) => event.preventDefault());
+      fireEvent.click(link);
+
+      expect(track).toHaveBeenCalledWith("support_channel", { channel: "kofi", action: "clicked", device: "phone" });
+    });
+
+    it("records enlarging the WeChat code", () => {
+      renderPanel("zh");
+
+      const link = screen.getByRole("link", { name: zh.Support.wechatEnlarge });
+      link.addEventListener("click", (event) => event.preventDefault());
+      fireEvent.click(link);
+
+      expect(track).toHaveBeenCalledWith("support_channel", { channel: "wechat", action: "clicked", device: "desktop" });
+    });
   });
 });

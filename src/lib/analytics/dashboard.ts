@@ -271,10 +271,25 @@ function eventList(events: string[]): string {
   return events.map((event) => `'${event}'`).join(", ");
 }
 
+const WHERE_VALUE_PATTERN = /^[a-z_]+$/;
+
+function propsSql(where: Record<string, string> | undefined): string {
+  return Object.entries(where ?? {})
+    .map(([key, value]) => {
+      if (!WHERE_VALUE_PATTERN.test(value)) {
+        throw new Error(`invalid filter value: ${value}`);
+      }
+      return ` AND ${keySql(key)} = '${value}'`;
+    })
+    .join("");
+}
+
 export interface VisitorStep {
   label: string;
   /** Events any one of which puts a visitor in this step; null for every visitor. */
   events: string[] | null;
+  /** Counts only events whose props equal these (values are lowercase words), for steps that need one action of an event. */
+  where?: Record<string, string>;
   /** Splits the step by the props of each member's first such event in the window. */
   split?: { event: DocumentedEvent; levels: string[]; missing?: Record<string, string> };
 }
@@ -284,7 +299,9 @@ export interface VisitorStep {
  * each step is a subset of the one above.
  */
 export async function loadVisitorFunnel(db: D1Database, window: TimeWindow, steps: VisitorStep[]): Promise<FunnelStep[]> {
-  const flags = steps.map((step, i) => (step.events ? `MAX(event IN (${eventList(step.events)})) AS s${i}` : `1 AS s${i}`));
+  const flags = steps.map((step, i) =>
+    step.events ? `MAX(event IN (${eventList(step.events)})${propsSql(step.where)}) AS s${i}` : `1 AS s${i}`,
+  );
   const reached = (i: number) => steps.slice(0, i + 1).map((_, j) => `s${j}`).join(" AND ");
   const visitors = `
     WITH v AS (
@@ -312,7 +329,7 @@ export async function loadVisitorFunnel(db: D1Database, window: TimeWindow, step
          FROM (
            SELECT *, ROW_NUMBER() OVER (PARTITION BY vid ORDER BY ts, id) AS rn
            FROM events
-           WHERE ${IN_WINDOW} AND event = ?3 AND vid IN (SELECT vid FROM v WHERE ${reached(i)})
+           WHERE ${IN_WINDOW} AND event = ?3${propsSql(step.where)} AND vid IN (SELECT vid FROM v WHERE ${reached(i)})
          )
          WHERE rn = 1
          GROUP BY ${levels.join(", ")}`,

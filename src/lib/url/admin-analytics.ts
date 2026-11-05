@@ -21,6 +21,7 @@ export const ANALYTICS_TABS = [
   { segment: "discovery", label: "Discovery" },
   { segment: "conversion", label: "Conversion" },
   { segment: "iris", label: "Ask Iris" },
+  { segment: "support", label: "Support" },
   { segment: "accounts", label: "Accounts & more" },
 ] as const;
 export type AnalyticsTab = (typeof ANALYTICS_TABS)[number]["segment"];

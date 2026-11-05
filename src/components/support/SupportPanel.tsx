@@ -42,7 +42,7 @@ function KofiMark() {
   );
 }
 
-function KofiPanel() {
+function KofiPanel({ mode }: { mode: WechatMode }) {
   const t = useTranslations("Support");
   return (
     <>
@@ -52,6 +52,7 @@ function KofiPanel() {
         href={KOFI_URL}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => track("support_channel", { channel: "kofi", action: "clicked", device: mode })}
         className={cn(ACTION_PRIMARY_CLS, "inline-flex h-10 items-center gap-1.5 rounded-lg px-5 text-sm font-medium")}
       >
         {t("kofiButton")}
@@ -82,7 +83,14 @@ function WechatPanel({ mode }: { mode: WechatMode }) {
     );
   }
   const enlarge = (
-    <a href={WECHAT_QR_SRC} target="_blank" rel="noopener" aria-label={t("wechatEnlarge")} className="block">
+    <a
+      href={WECHAT_QR_SRC}
+      target="_blank"
+      rel="noopener"
+      aria-label={t("wechatEnlarge")}
+      onClick={() => track("support_channel", { channel: "wechat", action: "clicked", device: mode })}
+      className="block"
+    >
       {image}
     </a>
   );
@@ -95,7 +103,10 @@ function WechatPanel({ mode }: { mode: WechatMode }) {
         {enlarge}
         <button
           type="button"
-          onClick={() => saveImage(WECHAT_QR_SRC, "atlens-wechat.jpg").catch(console.error)}
+          onClick={() => {
+            track("support_channel", { channel: "wechat", action: "clicked", device: mode });
+            saveImage(WECHAT_QR_SRC, "atlens-wechat.jpg").catch(console.error);
+          }}
           className={cn(ACTION_OUTLINE_CLS, "absolute -right-2.5 -bottom-2.5 h-8 gap-1 rounded-full px-3 text-[13px] shadow-md")}
         >
           <Download className="size-3.5" aria-hidden="true" />
@@ -140,7 +151,10 @@ export default function SupportPanel({ className }: { className?: string }) {
   return (
     <div className={cn("flex flex-col gap-4", className)}>
       <p className="text-sm leading-relaxed text-zinc-500">{t("body")}</p>
-      <Tabs.Root defaultValue={channels[0]}>
+      <Tabs.Root
+        defaultValue={channels[0]}
+        onValueChange={(channel) => track("support_channel", { channel: String(channel), action: "switched", device: mode })}
+      >
         <Tabs.List className={SEGMENTED_LIST_CLS}>
           {channels.map((channel) => (
             <Tabs.Tab key={channel} value={channel} className={SEGMENTED_TAB_CLS}>
