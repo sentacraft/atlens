@@ -15,6 +15,7 @@ import {
   brandMetaDescription,
   brandSummary,
   collectionMetaDescription,
+  collectionSeoTitle,
   lineupsMetaDescription,
   timelineMetaDescription,
   weightMetaDescription,
@@ -86,5 +87,22 @@ describe.each(routing.locales)("meta descriptions in %s fit a search result", (l
     ]) {
       expect(description.length, description).toBeLessThanOrEqual(max);
     }
+  });
+});
+
+describe("collectionSeoTitle", () => {
+  it("names the mount, the count and the collection in English", () => {
+    const t = translators("en");
+    expect(collectionSeoTitle(t.collection, "en", getCollectionStats("pancake", "en")!, "X")).toMatch(
+      /^Pancake Lenses for Fujifilm X: All \d+$/,
+    );
+  });
+
+  it("puts the collection after the count in Chinese, spaced from a number", () => {
+    const t = translators("zh");
+    expect(collectionSeoTitle(t.collection, "zh", getCollectionStats("pancake", "zh")!, "X")).toMatch(
+      /^富士 X 卡口全部 \d+ 支饼干头一览$/,
+    );
+    expect(collectionSeoTitle(t.collection, "zh", getCollectionStats("23mm", "zh")!, "X")).toMatch(/\d+ 支 23mm 定焦镜头一览$/);
   });
 });

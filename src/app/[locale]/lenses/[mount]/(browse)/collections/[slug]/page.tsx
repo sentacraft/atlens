@@ -28,7 +28,7 @@ import Breadcrumb from "@/components/nav/Breadcrumb";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import { DataSourcePill } from "@/components/lens/DataSource";
 import { brandPath, browsePath, chartPath, collectionPath, collectionsPath } from "@/lib/url/routes";
-import { collectionMetaDescription } from "@/lib/seo/meta-description";
+import { collectionMetaDescription, collectionSeoTitle } from "@/lib/seo/meta-description";
 import type { Locale } from "@/i18n/routing";
 import { notFoundMetadata } from "@/lib/seo/not-found-metadata";
 
@@ -56,8 +56,7 @@ export async function generateMetadata({
   }
 
   const t = await getTranslations({ locale, namespace: "Collection" });
-  const title = localized(stats.collection.title, locale);
-  const baseTitle = t("seoTitle", { title, mount: mountSeoLabel(resolvedMount), count: stats.lensCount });
+  const baseTitle = collectionSeoTitle(t, locale as Locale, stats, mountSeoLabel(resolvedMount));
   // The year suffix is for the SERP title only; it rolls forward on each deploy.
   const seoTitle = t("seoTitleYear", { base: baseTitle, year: String(new Date().getFullYear()) });
   const tBrand = await getTranslations({ locale, namespace: "Brands" });

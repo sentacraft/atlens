@@ -54,6 +54,19 @@ export function collectionMetaDescription(
   return fit(locale, describe(localized(stats.collection.shortDescription, locale)), describe("none"));
 }
 
+/** A collection's search title, before the year. */
+export function collectionSeoTitle(
+  t: NamespaceTranslator<"Collection">,
+  locale: Locale,
+  stats: CollectionStats,
+  mount: "X" | "GFX",
+): string {
+  const title = localized(stats.collection.title, locale);
+  // Chinese copy keeps a space between Chinese and a number or Latin word: "19 支 23mm 定焦镜头".
+  const name = locale === "zh" && /^[A-Za-z0-9]/.test(title) ? ` ${title}` : title;
+  return t("seoTitle", { title: name, mount, count: stats.lensCount });
+}
+
 /** A brand's lens count, its primes and zooms, and its focal range. */
 export function brandSummary(t: NamespaceTranslator<"Brand">, lineup: Lineup): string {
   return t("summary", {

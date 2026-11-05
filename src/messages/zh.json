@@ -1017,7 +1017,7 @@
     "reportIssue": "反馈问题",
     "mountLabel": "富士 {mount} 卡口",
     "seoTitleYear": "{base}（{year} 年）",
-    "seoTitle": "{title}有哪些：富士 {mount} 卡口全部 {count, number} 支一览",
+    "seoTitle": "富士 {mount} 卡口全部 {count, number} 支{title}一览",
     "shareText": "在 Atlens 发现一份不错的合集：{title}（{mount}）"
   },
   "LensActions": {
