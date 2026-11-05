@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import AskIrisChat from "@/components/askiris/AskIrisChat";
-import { getLensLinkIndex } from "@/lib/ai/lens-link-index";
-import { BRANDS } from "@/lib/brands";
-import { COLLECTIONS } from "@/lib/collections";
-import { getLensSummaries } from "@/lib/lens/data";
+import { buildAskIrisChatData } from "@/lib/askiris/chat-data-source";
 import { resolveAskIrisEntry } from "@/lib/url/askiris";
 
 type Params = Promise<{ locale: string }>;
@@ -28,11 +25,12 @@ export default async function AskIrisPage({
   // component renders once per request, so the purity rule's re-render concern does not apply.
   // eslint-disable-next-line react-hooks/purity
   const starterSeed = Math.floor(Math.random() * 2 ** 32);
+  const { linkTargets, lenses } = buildAskIrisChatData(locale);
   return (
     <AskIrisChat
       shell={{ variant: "page", entry: resolveAskIrisEntry(await searchParams), starterSeed }}
-      linkTargets={{ lenses: getLensLinkIndex(locale), collections: Object.keys(COLLECTIONS), brands: BRANDS.map((b) => b.slug) }}
-      lenses={getLensSummaries(locale)}
+      linkTargets={linkTargets}
+      lenses={lenses}
     />
   );
 }
