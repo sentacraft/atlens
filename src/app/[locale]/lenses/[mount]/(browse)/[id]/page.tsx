@@ -43,6 +43,7 @@ import { brandPath, browsePath, chartPath, collectionPath, lensPath } from "@/li
 import { chartHref } from "@/lib/url/charts";
 import { DataSourceBar } from "@/components/lens/DataSource";
 import { PAGE_GUTTER_CLS, PAGE_SECTION_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
+import { notFoundMetadata } from "@/lib/seo/not-found-metadata";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
 
@@ -68,12 +69,12 @@ export async function generateMetadata({
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const resolvedMount = urlSegmentToMount(mount);
   if (!resolvedMount) {
-    return { title: t("notFoundTitle") };
+    return { ...(await notFoundMetadata(locale)), title: t("notFoundTitle") };
   }
   const lenses = getLensesByMount(resolvedMount, locale);
   const lens = lenses.find((l) => l.id === id);
   if (!lens) {
-    return { title: t("notFoundTitle") };
+    return { ...(await notFoundMetadata(locale)), title: t("notFoundTitle") };
   }
 
   const brandName = brandLabel(tBrand, lens.brand);

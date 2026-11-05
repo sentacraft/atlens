@@ -28,8 +28,9 @@ import Breadcrumb from "@/components/nav/Breadcrumb";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import { DataSourcePill } from "@/components/lens/DataSource";
 import { brandPath, browsePath, chartPath, collectionPath, collectionsPath } from "@/lib/url/routes";
-import { collectionMetaDescription } from "@/lib/seo/meta-description";
+import { collectionMetaDescription, collectionSeoName } from "@/lib/seo/meta-description";
 import type { Locale } from "@/i18n/routing";
+import { notFoundMetadata } from "@/lib/seo/not-found-metadata";
 
 type Params = Promise<{ locale: string; mount: string; slug: string }>;
 
@@ -47,27 +48,25 @@ export async function generateMetadata({
   const { locale, mount, slug } = await params;
   const resolvedMount = urlSegmentToMount(mount);
   if (!resolvedMount || !mountHasCollections(resolvedMount)) {
-    return {};
+    return notFoundMetadata(locale);
   }
   const stats = getCollectionStats(slug, locale);
   if (!stats) {
-    return {};
+    return notFoundMetadata(locale);
   }
 
   const t = await getTranslations({ locale, namespace: "Collection" });
-  const title = localized(stats.collection.title, locale);
-  const mountLabel = t("mountLabel", { mount: mountSeoLabel(resolvedMount) });
-  const baseTitle = `${title} — ${mountLabel}`;
-  // The year suffix is for the SERP title only; it rolls forward on each deploy.
-  const seoTitle = t("seoTitleYear", { base: baseTitle, year: String(new Date().getFullYear()) });
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
-  const metaDesc = collectionMetaDescription(t, tBrand, locale as Locale, stats);
+  const tMeta = await getTranslations({ locale, namespace: "Metadata" });
+  const seoMount = mountSeoLabel(resolvedMount);
+  const seoTitle = tMeta("databaseTitle", { name: collectionSeoName(t, tBrand, locale as Locale, stats, seoMount) });
+  const metaDesc = collectionMetaDescription(t, tBrand, locale as Locale, stats, seoMount);
 
   return {
-    title: seoTitle,
+    title: { absolute: seoTitle },
     description: metaDesc,
     openGraph: {
-      title: `${baseTitle} | Atlens`,
+      title: seoTitle,
       description: metaDesc,
       images: defaultOgImages(),
     },

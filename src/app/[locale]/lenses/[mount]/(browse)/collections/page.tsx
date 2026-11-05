@@ -15,6 +15,7 @@ import CollectionChipRail from "@/components/collection/CollectionChipRail";
 import { BRANDS, getBrandLenses } from "@/lib/brands";
 import { brandLabel } from "@/lib/lens/format";
 import { aboutPath, brandPath, browsePath, collectionPath } from "@/lib/url/routes";
+import { notFoundMetadata } from "@/lib/seo/not-found-metadata";
 
 type Params = Promise<{ locale: string; mount: string }>;
 
@@ -26,7 +27,7 @@ export async function generateMetadata({
   const { locale, mount } = await params;
   const resolvedMount = urlSegmentToMount(mount);
   if (!resolvedMount || !mountHasCollections(resolvedMount)) {
-    return {};
+    return notFoundMetadata(locale);
   }
   const t = await getTranslations({ locale, namespace: "Collection" });
 

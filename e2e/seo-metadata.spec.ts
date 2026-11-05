@@ -35,3 +35,18 @@ test("the charts section redirects permanently to its first chart", async ({ req
   expect(response.status()).toBe(308);
   expect(response.headers()["location"]).toMatch(/\/en\/lenses\/x\/charts\/timeline$/);
 });
+
+// Regression: a missing brand or collection returned no metadata, so its 404 inherited the home
+// page's title and description.
+test("a page for a missing brand, collection or lens says it was not found", async ({ page }) => {
+  for (const [path, title] of [
+    ["/en/lenses/x/brands/no-such-brand", /^Page not found/],
+    ["/zh/lenses/x/collections/no-such-collection", /^页面不存在/],
+    ["/en/lenses/x/no-such-lens", /^Lens Not Found/],
+  ] as const) {
+    await page.goto(path);
+    await expect(page, path).toHaveTitle(title);
+    const description = await page.locator('meta[name="description"]').getAttribute("content");
+    expect(description, path).not.toContain("Iris");
+  }
+});

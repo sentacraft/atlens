@@ -40,6 +40,7 @@ export function collectionMetaDescription(
   tBrand: BrandsT,
   locale: Locale,
   stats: CollectionStats,
+  mount: SeoMount,
 ): string {
   const names = brandsByCount(stats.lenses.map((l) => l.brand)).map((b) => brandLabel(tBrand, b));
   // A series is one brand's line, already named in its title.
@@ -49,9 +50,29 @@ export function collectionMetaDescription(
       : names.length > NAMED_BRANDS
       ? t("metaBrandsMore", { names: listOf(locale, names.slice(0, NAMED_BRANDS)), total: names.length })
       : listOf(locale, names);
-  const describe = (tagline: string) =>
-    t("metaDescription", { title: localized(stats.collection.title, locale), count: stats.lensCount, brands, tagline });
-  return fit(locale, describe(localized(stats.collection.shortDescription, locale)), describe("none"));
+  const name = collectionSeoName(t, tBrand, locale, stats, mount);
+  const describe = (source: "yes" | "none") => t("metaDescription", { name, count: stats.lensCount, brands, source });
+  return fit(locale, describe("yes"), describe("none"));
+}
+
+type SeoMount = "X" | "GFX";
+
+/** What a collection is, with its mount, for its search title and description. */
+export function collectionSeoName(
+  t: NamespaceTranslator<"Collection">,
+  tBrand: BrandsT,
+  locale: Locale,
+  stats: CollectionStats,
+  mount: SeoMount,
+): string {
+  const title = localized(stats.collection.title, locale);
+  // A Fujifilm series already names the maker; the mount before it would repeat it.
+  if (title.startsWith(brandLabel(tBrand, "fujifilm"))) {
+    return title;
+  }
+  // Chinese copy keeps a space between Chinese and a number or Latin word: "卡口 23mm 定焦镜头".
+  const spaced = locale === "zh" && /^[A-Za-z0-9]/.test(title) ? ` ${title}` : title;
+  return t("seoName", { title: spaced, mount });
 }
 
 /** A brand's lens count, its primes and zooms, and its focal range. */
@@ -67,10 +88,10 @@ export function brandSummary(t: NamespaceTranslator<"Brand">, lineup: Lineup): s
 export function brandMetaDescription(
   t: NamespaceTranslator<"Brand">,
   locale: Locale,
-  { brand, label, summary, tagline }: { brand: string; label: string; summary: string; tagline: string },
+  { brand, label, summary }: { brand: string; label: string; summary: string },
 ): string {
-  const describe = (line: string) => t("metaDescription", { brand, label, summary, tagline: line });
-  return fit(locale, describe(tagline), describe("none"));
+  const describe = (source: "yes" | "none") => t("metaDescription", { brand, label, summary, source });
+  return fit(locale, describe("yes"), describe("none"));
 }
 
 export function timelineMetaDescription(t: NamespaceTranslator<"Charts">, tBrand: BrandsT, locale: Locale, timeline: Timeline): string {

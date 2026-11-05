@@ -15,6 +15,7 @@ import {
   brandMetaDescription,
   brandSummary,
   collectionMetaDescription,
+  collectionSeoName,
   lineupsMetaDescription,
   timelineMetaDescription,
   weightMetaDescription,
@@ -43,7 +44,7 @@ describe.each(routing.locales)("meta descriptions in %s fit a search result", (l
 
   it("for every collection", () => {
     for (const slug of Object.keys(COLLECTIONS)) {
-      const description = collectionMetaDescription(t.collection, t.brands, locale, getCollectionStats(slug, locale)!);
+      const description = collectionMetaDescription(t.collection, t.brands, locale, getCollectionStats(slug, locale)!, "X");
       expect(description.length, `${slug}: ${description}`).toBeLessThanOrEqual(max);
     }
   });
@@ -58,7 +59,6 @@ describe.each(routing.locales)("meta descriptions in %s fit a search result", (l
         brand: info.slug,
         label: brandLabel(t.brands, info.slug),
         summary: brandSummary(t.brand, lineup),
-        tagline: info.shortDescription[locale],
       });
       expect(description.length, `${info.slug}: ${description}`).toBeLessThanOrEqual(max);
     }
@@ -86,5 +86,31 @@ describe.each(routing.locales)("meta descriptions in %s fit a search result", (l
     ]) {
       expect(description.length, description).toBeLessThanOrEqual(max);
     }
+  });
+});
+
+describe("collection search names and descriptions", () => {
+  const stats = (slug: string, locale: Locale) => getCollectionStats(slug, locale)!;
+
+  it("names the collection with its mount", () => {
+    const en = translators("en");
+    const zh = translators("zh");
+    expect(collectionSeoName(en.collection, en.brands, "en", stats("pancake", "en"), "X")).toBe("Pancake Lenses for Fujifilm X");
+    expect(collectionSeoName(zh.collection, zh.brands, "zh", stats("pancake", "zh"), "X")).toBe("富士 X 卡口饼干头");
+    expect(collectionSeoName(zh.collection, zh.brands, "zh", stats("23mm", "zh"), "X")).toBe("富士 X 卡口 23mm 定焦镜头");
+  });
+
+  it("does not repeat the maker before a Fujifilm series", () => {
+    const en = translators("en");
+    const zh = translators("zh");
+    expect(collectionSeoName(en.collection, en.brands, "en", stats("fujifilm-xf", "en"), "X")).toBe("Fujifilm XF Lens Series");
+    expect(collectionSeoName(zh.collection, zh.brands, "zh", stats("fujifilm-xf", "zh"), "X")).toBe("富士 XF 系列镜头");
+  });
+
+  it("describes a collection as part of the database, with where its specs come from", () => {
+    const zh = translators("zh");
+    expect(collectionMetaDescription(zh.collection, zh.brands, "zh", stats("pancake", "zh"), "X")).toMatch(
+      /^Atlens 收录的富士 X 卡口饼干头共 \d+ 支，来自.+。参数取自厂商官网/,
+    );
   });
 });
