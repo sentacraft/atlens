@@ -115,6 +115,7 @@
     "avatarCropTitle": "Adjust your photo",
     "avatarCropHint": "Drag the photo into the circle and zoom to fit.",
     "avatarZoom": "Zoom",
+    "avatarPreparing": "Preparing your photo…",
     "avatarError": "Couldn't update your photo. Please try again.",
     "avatarLimit": "Too many photo changes today. Try again tomorrow.",
     "avatarUnreadable": "This image can't be opened here. Try a JPEG or PNG.",

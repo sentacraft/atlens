@@ -115,6 +115,7 @@
     "avatarCropTitle": "调整头像",
     "avatarCropHint": "拖动照片对准圆框，缩放到合适大小。",
     "avatarZoom": "缩放",
+    "avatarPreparing": "正在处理照片…",
     "avatarError": "头像没能更新，请稍后再试。",
     "avatarLimit": "今天更换头像的次数太多了，明天再试。",
     "avatarUnreadable": "这张图片在这里打不开，换一张 JPG 或 PNG 试试。",

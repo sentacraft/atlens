@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import Cropper, { type Area } from "react-easy-crop";
-import { Minus, Plus, X } from "lucide-react";
+import { Loader2, Minus, Plus, X } from "lucide-react";
 import { ACTION_PRIMARY_CLS, ACTION_QUIET_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
-import { cropToAvatar, loadImage, UnreadableImageError } from "@/lib/me/avatar-crop";
+import { cropToAvatar, prepareAvatarSource, UnreadableImageError } from "@/lib/me/avatar-crop";
 import { AvatarRequestError, uploadAvatar } from "@/lib/me/avatar-client";
 import { refreshSession } from "@/lib/me/account-client";
 import {
@@ -45,11 +45,26 @@ export default function AvatarCropDialog({ file, onClose }: { file: File | null;
       setSrc(undefined);
       return;
     }
-    const url = URL.createObjectURL(file);
-    setSrc(url);
+    let cancelled = false;
+    let prepared: string | undefined;
     // A file the browser cannot decode is reported here, before the person tries to save it.
-    loadImage(url).catch(() => setUnreadable(true));
-    return () => URL.revokeObjectURL(url);
+    prepareAvatarSource(file).then(
+      (url) => {
+        if (cancelled) {
+          URL.revokeObjectURL(url);
+          return;
+        }
+        prepared = url;
+        setSrc(url);
+      },
+      () => !cancelled && setUnreadable(true),
+    );
+    return () => {
+      cancelled = true;
+      if (prepared) {
+        URL.revokeObjectURL(prepared);
+      }
+    };
   }, [file]);
 
   async function save() {
@@ -91,6 +106,12 @@ export default function AvatarCropDialog({ file, onClose }: { file: File | null;
 
         <div className="flex flex-col gap-4 px-5 pt-3 pb-5">
           <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-zinc-950 sm:aspect-[4/3]">
+            {!src && !unreadable && (
+              <div role="status" className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm text-zinc-400">
+                <Loader2 className="size-5 motion-safe:animate-spin" aria-hidden="true" />
+                {t("avatarPreparing")}
+              </div>
+            )}
             {src && !unreadable && (
               <Cropper
                 image={src}

@@ -63,7 +63,7 @@ export default function AvatarEditor({
           </Menu.Trigger>
           <Menu.Portal>
             <Menu.Positioner side="bottom" align="start" sideOffset={8}>
-              <Menu.Popup className={cn(MENU_POPUP_CLS, "w-52 py-1")}>
+              <Menu.Popup className={cn(MENU_POPUP_CLS, "w-52")}>
                 <Menu.Item onClick={() => input.current?.click()} className={MENU_ITEM_CLS}>
                   <ImageIcon className="h-4 w-4 shrink-0" />
                   {t("avatarChange")}
