@@ -20,6 +20,7 @@ const {
   loadIrisFeedback,
   loadOverview,
   loadSignedInShare,
+  loadVisitorFunnel,
   rangeWindows,
 } = await import("../dashboard");
 
@@ -384,6 +385,38 @@ describe("loadSignInFunnel", () => {
     expect(opened.breakdown[0].children.map((node) => node.label).sort()).toEqual(["Account menu", "Before entries were recorded"]);
     expect(sent).toMatchObject({ count: 1, breakdown: [{ label: "Google", count: 1 }] });
     expect(signedIn).toMatchObject({ count: 1, breakdown: [{ label: "New account", count: 1 }] });
+  });
+});
+
+describe("loadVisitorFunnel with a prop filter", () => {
+  const steps = [
+    { label: "Opened", events: ["support_open"] },
+    {
+      label: "Clicked",
+      events: ["support_channel"],
+      where: { action: "clicked" },
+      split: { event: "support_channel" as const, levels: ["channel"] },
+    },
+  ];
+
+  it("counts only the events with that prop, and splits by the first of them", async () => {
+    seed([
+      { ts: T0, event: "support_open", vid: "a", props: { entry: "menu" } },
+      { ts: T0 + 1, event: "support_channel", vid: "a", props: { channel: "wechat", action: "switched" } },
+      { ts: T0, event: "support_open", vid: "b", props: { entry: "menu" } },
+      { ts: T0 + 1, event: "support_channel", vid: "b", props: { channel: "wechat", action: "switched" } },
+      { ts: T0 + 2, event: "support_channel", vid: "b", props: { channel: "kofi", action: "clicked" } },
+    ]);
+
+    const [, clicked] = await loadVisitorFunnel(analytics.d1, WINDOW, steps);
+
+    expect(clicked).toMatchObject({ count: 1, breakdown: [{ label: "Ko-fi", count: 1 }] });
+  });
+
+  it("refuses a filter value that is not a plain word", async () => {
+    await expect(
+      loadVisitorFunnel(analytics.d1, WINDOW, [{ label: "x", events: ["support_channel"], where: { action: "x' OR '1" } }]),
+    ).rejects.toThrow("invalid filter value");
   });
 });
 
