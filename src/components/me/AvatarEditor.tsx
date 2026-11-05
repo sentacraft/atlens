@@ -7,11 +7,11 @@ import { Camera, ImageIcon, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import Avatar from "@/components/auth/Avatar";
 import AvatarCropDialog from "@/components/me/AvatarCropDialog";
-import { MENU_ITEM_CLS, MENU_ITEM_DANGER_CLS, MENU_POPUP_CLS } from "@/config/ui-tokens";
+import { MenuPopup } from "@/components/ui/menu";
+import { MENU_ITEM_CLS, MENU_ITEM_DANGER_CLS } from "@/config/ui-tokens";
 import { refreshSession } from "@/lib/me/account-client";
 import { isUploadedAvatar } from "@/lib/me/avatar";
 import { removeAvatar } from "@/lib/me/avatar-client";
-import { cn } from "@/lib/utils";
 
 const ACCEPT = "image/jpeg,image/png,image/webp";
 
@@ -61,20 +61,16 @@ export default function AvatarEditor({
           <Menu.Trigger aria-label={t("avatarMenu")} className={buttonCls}>
             {face}
           </Menu.Trigger>
-          <Menu.Portal>
-            <Menu.Positioner side="bottom" align="start" sideOffset={8}>
-              <Menu.Popup className={cn(MENU_POPUP_CLS, "w-52")}>
-                <Menu.Item onClick={() => input.current?.click()} className={MENU_ITEM_CLS}>
-                  <ImageIcon className="h-4 w-4 shrink-0" />
-                  {t("avatarChange")}
-                </Menu.Item>
-                <Menu.Item onClick={remove} className={MENU_ITEM_DANGER_CLS}>
-                  <Trash2 className="h-4 w-4 shrink-0" />
-                  {t("avatarRemove")}
-                </Menu.Item>
-              </Menu.Popup>
-            </Menu.Positioner>
-          </Menu.Portal>
+          <MenuPopup align="start" sideOffset={8} className="w-52">
+            <Menu.Item onClick={() => input.current?.click()} className={MENU_ITEM_CLS}>
+              <ImageIcon className="h-4 w-4 shrink-0" />
+              {t("avatarChange")}
+            </Menu.Item>
+            <Menu.Item onClick={remove} className={MENU_ITEM_DANGER_CLS}>
+              <Trash2 className="h-4 w-4 shrink-0" />
+              {t("avatarRemove")}
+            </Menu.Item>
+          </MenuPopup>
         </Menu.Root>
       ) : (
         <button type="button" aria-label={t("avatarUpload")} onClick={() => input.current?.click()} className={buttonCls}>
