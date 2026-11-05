@@ -7,17 +7,16 @@ import { Link } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { useSwitchLocale } from "@/hooks/useSwitchLocale";
 import { accountUser, authClient } from "@/lib/auth-client";
-import { MENU_ITEM_CLS, MENU_POPUP_CLS, NAV_CAPSULE_CLS } from "@/config/ui-tokens";
+import { MENU_ITEM_CLS, NAV_CAPSULE_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { useSupportDialog } from "@/context/SupportDialogProvider";
 import Avatar from "@/components/auth/Avatar";
+import { MenuPopup, MenuSeparator } from "@/components/ui/menu";
 import GitHubMark from "@/components/logos/GitHubMark";
 import { SITE } from "@/config/site";
 import { track } from "@/lib/analytics/analytics";
 import { ABOUT_PATH, GET_APP_PATH, PROFILE_PATH } from "@/lib/url/routes";
-
-const SEPARATOR_CLS = "my-1 h-px bg-zinc-200";
 
 function trackMenu(item: string) {
   track("nav_click", { item, place: "menu" });
@@ -52,9 +51,7 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
           </span>
         )}
       </Menu.Trigger>
-      <Menu.Portal>
-        <Menu.Positioner side="bottom" align="end" sideOffset={6}>
-          <Menu.Popup className={cn(MENU_POPUP_CLS, "w-64 py-1")}>
+      <MenuPopup className="w-64">
             {user ? (
               <>
                 <div className="flex items-center gap-3 px-4 py-3">
@@ -70,7 +67,7 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
                   <UserRound className="h-4 w-4 shrink-0" />
                   {t("profile")}
                 </Menu.Item>
-                <Menu.Separator className={SEPARATOR_CLS} />
+                <MenuSeparator />
               </>
             ) : (
               <>
@@ -87,7 +84,7 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
                     <span className="text-xs text-zinc-500">{tNav("signInHint")}</span>
                   </span>
                 </Menu.Item>
-                <Menu.Separator className={SEPARATOR_CLS} />
+                <MenuSeparator />
               </>
             )}
             <div className="flex items-center justify-between gap-2.5 py-1.5 pr-3 pl-4 text-sm text-zinc-600">
@@ -121,7 +118,7 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
                 ))}
               </Menu.RadioGroup>
             </div>
-            <Menu.Separator className={SEPARATOR_CLS} />
+            <MenuSeparator />
             <Menu.Item render={<Link href={ABOUT_PATH} />} onClick={() => trackMenu("about")} className={MENU_ITEM_CLS}>
               <Info className="h-4 w-4 shrink-0" />
               {tNav("about")}
@@ -140,7 +137,7 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
               <GitHubMark size={16} className="shrink-0" />
               GitHub
             </Menu.Item>
-            <Menu.Separator className={SEPARATOR_CLS} />
+            <MenuSeparator />
             <Menu.Item
               onClick={() => {
                 trackMenu("feedback");
@@ -163,7 +160,7 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
             </Menu.Item>
             {user && (
               <>
-                <Menu.Separator className={SEPARATOR_CLS} />
+                <MenuSeparator />
                 <Menu.Item
                   onClick={() => {
                     trackMenu("sign_out");
@@ -176,9 +173,7 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
                 </Menu.Item>
               </>
             )}
-          </Menu.Popup>
-        </Menu.Positioner>
-      </Menu.Portal>
+      </MenuPopup>
     </Menu.Root>
   );
 }
