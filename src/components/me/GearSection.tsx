@@ -16,10 +16,10 @@ import {
   ACTION_OUTLINE_CLS,
   ICON_NAV_BTN_CLS,
   MENU_ITEM_DANGER_CLS,
-  MENU_POPUP_CLS,
   SKELETON_CLS,
 } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
+import { MenuPopup } from "@/components/ui/menu";
 import { Link } from "@/i18n/navigation";
 import CoverageChart from "@/components/me/CoverageChart";
 import { useGearAdders } from "@/components/me/useGearAdders";
@@ -278,19 +278,15 @@ function GearRow({
         <Menu.Trigger aria-label={t("moreActions")} className={cn(ICON_NAV_BTN_CLS, "h-11 w-11 md:h-8 md:w-8")}>
           <Ellipsis className="h-4 w-4" />
         </Menu.Trigger>
-        <Menu.Portal>
-          <Menu.Positioner side="bottom" align="end" sideOffset={4}>
-            <Menu.Popup className={cn(MENU_POPUP_CLS, "w-36")}>
-              <Menu.Item
-                onClick={onRemove}
-                className={MENU_ITEM_DANGER_CLS}
-              >
-                <Trash2 className="h-4 w-4 shrink-0" />
-                {t("remove")}
-              </Menu.Item>
-            </Menu.Popup>
-          </Menu.Positioner>
-        </Menu.Portal>
+        <MenuPopup sideOffset={4} className="w-36">
+          <Menu.Item
+            onClick={onRemove}
+            className={MENU_ITEM_DANGER_CLS}
+          >
+            <Trash2 className="h-4 w-4 shrink-0" />
+            {t("remove")}
+          </Menu.Item>
+        </MenuPopup>
       </Menu.Root>
     </li>
   );

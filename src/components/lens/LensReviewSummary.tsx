@@ -63,7 +63,7 @@ function ReviewsButton({ claim, citations, className }: { claim: ReviewClaimView
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner side="bottom" align="start" sideOffset={6} collisionPadding={12}>
-          <Popover.Popup className={cn(MENU_POPUP_CLS, "w-72 py-1.5")}>
+          <Popover.Popup className={cn(MENU_POPUP_CLS, "w-72")}>
             <ul>
               {cited.map(({ key, number, source }) => {
                 const href = sourceHref(source);

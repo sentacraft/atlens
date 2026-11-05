@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable no-restricted-syntax -- an inset menu on purpose: the popup pads all four sides, so each row's hover keeps the same margin everywhere; MenuPopup is for edge-to-edge rows */
 import { Menu } from "@base-ui/react/menu";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";

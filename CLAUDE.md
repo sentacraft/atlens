@@ -77,6 +77,10 @@ A dialog with something to fill in or pick puts its Cancel in `DialogCancel`, wh
 leave out (they close by swipe or the backdrop); a yes-or-no confirmation keeps its Cancel. A
 centered dialog does not close on a press outside it, so each one shows a close button or a Cancel.
 
+A menu's popup is `MenuPopup` from `components/ui/menu.tsx`, never `Menu.Popup` composed by hand: it
+clears the vertical padding that leaves a white strip beside a row's hover, and ESLint rejects the
+bare form.
+
 A lens shown as an item to browse gets favorite and compare from `LensActions`, in the tier that
 matches how the lens is shown (its own panel, one card or row among many, spare room in a card, a
 chart tile). Don't build these buttons anywhere else; `e2e/lens-actions.spec.ts` checks that list
