@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { formatDataDate } from "../data-date";
 import type { Lens } from "@/lib/types";
 import { getLensesByMount } from "@/lib/lens/data";
-import { assignLanes, buildTimeline, fitItemSize } from "@/lib/charts/timeline";
+import { assignLanes, buildTimeline, fitItemSize, lensesByYear } from "@/lib/charts/timeline";
 import { buildWeightLadder, rankedRows, weightBarPct } from "@/lib/charts/weight";
-import { buildLineup } from "@/lib/charts/lineup";
+import { buildLineup, lineupLenses } from "@/lib/charts/lineup";
 import { chartBrands, matchesChartSelection, toChartLens, type ChartLens } from "@/lib/charts/catalog";
 
 function makeLens(overrides: Partial<Lens> = {}): Lens {
@@ -64,6 +64,20 @@ describe("buildTimeline", () => {
   it("places a zoom at the geometric middle of its focal range", () => {
     const [entry] = buildTimeline([makeLens({ focalLengthMin: 10, focalLengthMax: 40, releaseYear: 2020 })]).entries;
     expect(entry.focalMid).toBe(20);
+  });
+});
+
+describe("lensesByYear", () => {
+  it("groups the lenses by year, the newest year first, and skips empty years", () => {
+    const timeline = buildTimeline([
+      makeLens({ id: "a", releaseYear: 2012 }),
+      makeLens({ id: "b", releaseYear: 2014, focalLengthMin: 56, focalLengthMax: 56 }),
+      makeLens({ id: "c", releaseYear: 2014, focalLengthMin: 16, focalLengthMax: 16 }),
+    ]);
+    expect(lensesByYear(timeline).map(({ year, lenses }) => [year, ids(lenses)])).toEqual([
+      [2014, ["c", "b"]],
+      [2012, ["a"]],
+    ]);
   });
 });
 
@@ -208,6 +222,18 @@ describe("buildLineup", () => {
     expect(ids(lineup!.zooms)).toEqual(["16-55", "16-80", "70-300"]);
     expect(lineup?.focalMin).toBe(16);
     expect(lineup?.focalMax).toBe(300);
+  });
+
+  it("lists the lineup's lenses as the chart shows them: primes from wide to long, then zooms", () => {
+    const lineup = buildLineup(
+      [
+        makeLens({ id: "16-55", focalLengthMin: 16, focalLengthMax: 55 }),
+        makeLens({ id: "56", focalLengthMin: 56, focalLengthMax: 56 }),
+        makeLens({ id: "23", focalLengthMin: 23, focalLengthMax: 23 }),
+      ],
+      "fujifilm",
+    );
+    expect(ids(lineupLenses(lineup!))).toEqual(["23", "56", "16-55"]);
   });
 
   it("returns nothing for a brand without stills lenses", () => {
