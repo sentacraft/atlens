@@ -13,7 +13,8 @@
   },
   "Metadata": {
     "seoTitle": "Atlens | Fujifilm Lens Database: Specs, Comparison & AI Advice",
-    "seoDescription": "Every Fujifilm X-mount lens, first- and third-party: normalized specs, side-by-side comparison, reference prices, lens charts, and Iris, an AI lens advisor."
+    "seoDescription": "Every Fujifilm X-mount lens, first- and third-party: normalized specs, side-by-side comparison, reference prices, lens charts, and Iris, an AI lens advisor.",
+    "databaseTitle": "{name} · Atlens Lens Database"
   },
   "Rename": {
     "toast": "X-Glass is now Atlens — same lens database, just a new name. Welcome back 👋"
@@ -368,7 +369,7 @@
   "LensList": {
     "title": "Lenses",
     "metaTitleX": "All {count, number} Fujifilm X-Mount Lenses: Specs & Comparison",
-    "seoTitleX": "All {count, number} Fujifilm X-Mount Lenses: XF, XC & Third-Party ({year})",
+    "seoTitleX": "Fujifilm X-Mount Lens Database: XF, XC & Third-Party · Atlens",
     "metaTitleG": "All {count, number} Fujifilm GFX Lenses: Specs & Comparison",
     "metaDescX": "All {count, number} Fujifilm X-mount lenses from {brandCount, number} brands. Filter by focal length, aperture and autofocus, and compare specs side by side.",
     "metaDescG": "All {count, number} lenses for Fujifilm's GFX medium-format system, Fujifilm GF and third-party: normalized specs and side-by-side comparison.",
@@ -984,7 +985,7 @@
   },
   "Collection": {
     "stats": "{count, number} lenses · {brandCount, number} brands",
-    "metaDescription": "{title} for Fujifilm X: {count, plural, one {# lens} other {# lenses}}{brands, select, none {} other { from {brands}}}.{tagline, select, none {} other { {tagline}.}}",
+    "metaDescription": "{name} in the Atlens database: {count, plural, one {# lens} other {# lenses}}{brands, select, none {} other { from {brands}}}.{source, select, none {} other { Specs from makers' official sites.}}",
     "metaBrandsMore": "{total, number} brands including {names}",
     "relatedCollections": "Related collections",
     "indexTitle": "Fujifilm X-Mount Lens Collections & Brands",
@@ -1016,8 +1017,7 @@
     "feedbackLink": "Tell me",
     "reportIssue": "Report an issue",
     "mountLabel": "Fujifilm {mount}-Mount",
-    "seoTitleYear": "{base} ({year})",
-    "seoTitle": "{title} for Fujifilm {mount}: All {count, number}",
+    "seoName": "{title} for Fujifilm {mount}",
     "shareText": "Found a nice collection on Atlens: {title} ({mount})"
   },
   "LensActions": {
@@ -1168,8 +1168,7 @@
     "title": "{brand, select, fujifilm {Fujifilm's Own X-Mount Lenses} other {{label} Lenses for Fujifilm X-Mount}}",
     "summary": "{zooms, plural, =0 {{count, plural, one {# prime lens} other {# prime lenses}}} other {{primes, plural, =0 {{count, plural, one {# zoom lens} other {# zoom lenses}}} other {{count, plural, one {# lens} other {# lenses}}, {primes, plural, one {# prime} other {# primes}} and {zooms, plural, one {# zoom} other {# zooms}}}}}}, covering {focal}.",
     "contents": "On this page",
-    "metaTitle": "{brand, select, fujifilm {Fujifilm X-Mount Lenses: All {count, number} Fujinon Lenses} other {{label} Lenses for Fujifilm X: All {count, number}}}",
-    "metaDescription": "{brand, select, fujifilm {Fujifilm's own X-mount line: } other {{label} on Fujifilm X-mount: }}{summary}{tagline, select, none {} other { {tagline}.}}",
+    "metaDescription": "{brand, select, fujifilm {Fujifilm's own X-mount lenses} other {{label} lenses for Fujifilm X}} in the Atlens database: {summary}{source, select, none {} other { Specs from makers' official sites.}}",
     "lineupHeading": "Lineup",
     "timelinePosterTitle": "{brand, select, fujifilm {Fujifilm's Own X-Mount Lenses by Release Year, {first}–{last}} other {{label}'s Fujifilm X-Mount Lenses by Release Year, {first}–{last}}}",
     "timelinePosterSubtitle": "{count, plural, one {# lens} other {# lenses}} by release year and focal length.",

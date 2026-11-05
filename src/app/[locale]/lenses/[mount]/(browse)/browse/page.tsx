@@ -30,7 +30,7 @@ export async function generateMetadata({
   const brandCount = new Set(lenses.map((l) => l.brand)).size;
   const title =
     resolvedMount === "X"
-      ? t("seoTitleX", { count: lenses.length, year: String(new Date().getFullYear()) })
+      ? { absolute: t("seoTitleX") }
       : t("metaTitleG", { count: lenses.length });
   const description =
     resolvedMount === "X"
@@ -41,7 +41,7 @@ export async function generateMetadata({
     title,
     description,
     openGraph: {
-      title: `${title} | Atlens`,
+      title: typeof title === "string" ? `${title} | Atlens` : title.absolute,
       description,
       images: defaultOgImages(),
     },
