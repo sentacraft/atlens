@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 
-type Param = string | number | null;
+type Param = string | number | null | Uint8Array;
 
 // The slice of D1's API the repositories use, backed by SQLite so tests exercise
 // real constraints (UNIQUE, foreign keys, json_valid) instead of a mock.

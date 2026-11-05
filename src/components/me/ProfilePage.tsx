@@ -31,7 +31,7 @@ import { useSignInDialog } from "@/context/SignInDialogProvider";
 import SignInBenefits from "@/components/auth/SignInBenefits";
 import FreeNote from "@/components/auth/FreeNote";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
-import Avatar from "@/components/auth/Avatar";
+import AvatarEditor from "@/components/me/AvatarEditor";
 import DeleteAccountDialog from "@/components/auth/DeleteAccountDialog";
 import FavoritesSection from "@/components/me/FavoritesSection";
 import GearSection from "@/components/me/GearSection";
@@ -206,7 +206,7 @@ function ProfileHeader({ user }: { user: ProfileUser }) {
 
   return (
     <section className="flex items-center gap-3.5 md:gap-5">
-      <Avatar
+      <AvatarEditor
         name={user.name}
         email={user.email}
         image={user.image}
