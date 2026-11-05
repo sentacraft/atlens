@@ -22,3 +22,8 @@ export async function updateDisplayName(name: string): Promise<void> {
     throw new Error("update_name_failed");
   }
 }
+
+/** Makes the browser's session read the user again, after the server changed it. */
+export function refreshSession(): void {
+  authClient.$store.notify("$sessionSignal");
+}

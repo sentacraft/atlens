@@ -22,6 +22,7 @@ const POLICY_BINDINGS = {
 
 export const DAILY_CAPS = {
   feedback: 20,
+  avatarUpload: 30,
 } as const;
 
 const DAILY_CAP_TTL_SECONDS = 2 * 24 * 60 * 60;
