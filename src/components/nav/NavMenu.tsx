@@ -7,11 +7,12 @@ import { Link } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { useSwitchLocale } from "@/hooks/useSwitchLocale";
 import { accountUser, authClient } from "@/lib/auth-client";
-import { MENU_ITEM_CLS, MENU_POPUP_CLS, NAV_CAPSULE_CLS } from "@/config/ui-tokens";
+import { MENU_ITEM_CLS, NAV_CAPSULE_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { useSupportDialog } from "@/context/SupportDialogProvider";
 import Avatar from "@/components/auth/Avatar";
+import { MenuPopup } from "@/components/ui/menu";
 import GitHubMark from "@/components/logos/GitHubMark";
 import { SITE } from "@/config/site";
 import { track } from "@/lib/analytics/analytics";
@@ -52,9 +53,7 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
           </span>
         )}
       </Menu.Trigger>
-      <Menu.Portal>
-        <Menu.Positioner side="bottom" align="end" sideOffset={6}>
-          <Menu.Popup className={cn(MENU_POPUP_CLS, "w-64 py-1")}>
+      <MenuPopup className="w-64">
             {user ? (
               <>
                 <div className="flex items-center gap-3 px-4 py-3">
@@ -176,9 +175,7 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
                 </Menu.Item>
               </>
             )}
-          </Menu.Popup>
-        </Menu.Positioner>
-      </Menu.Portal>
+      </MenuPopup>
     </Menu.Root>
   );
 }

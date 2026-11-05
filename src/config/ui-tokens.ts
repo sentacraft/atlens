@@ -157,7 +157,9 @@ export const POPUP_SCROLL_CLS =
   "overflow-x-hidden overflow-y-auto [scrollbar-width:thin] [scrollbar-color:rgb(212_212_216)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300/70";
 
 // overflow-hidden is required: it clips the edge rows' hover to the rounded corners. Rows must
-// carry no popup-level vertical padding, or the hover never reaches the edge.
+// carry no popup-level vertical padding, or the hover never reaches the edge: list menus use
+// MenuPopup (components/ui/menu.tsx), which clears it; other popups built on this give their
+// rows' hover the same room by leaving the padding off.
 export const MENU_POPUP_CLS =
   POPUP_SURFACE_CLS + " " +
   "overflow-hidden origin-(--transform-origin) duration-100 " +

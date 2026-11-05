@@ -6,6 +6,7 @@ import { Popover } from "@base-ui/react/popover";
 import { ArrowLeft, Ellipsis, Pencil, SquarePen, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
+import { MenuPopup } from "@/components/ui/menu";
 import { ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, ICON_NAV_BTN_CLS, LIST_ITEM_ACTIVE_CLS, MENU_ITEM_CLS, MENU_ITEM_DANGER_CLS, MENU_POPUP_CLS, SKELETON_CLS } from "@/config/ui-tokens";
 import { MAX_CONVERSATION_TITLE_LENGTH } from "@/lib/askiris/conversation-contract";
 import type { AskIrisConversationRecord } from "@/lib/askiris/conversation-repository";
@@ -187,20 +188,16 @@ function HistoryContent({
                     >
                       <Ellipsis className="size-4" />
                     </Menu.Trigger>
-                    <Menu.Portal>
-                      <Menu.Positioner side="bottom" align="end" sideOffset={4}>
-                        <Menu.Popup className={cn(MENU_POPUP_CLS, "w-36")}>
-                          <Menu.Item onClick={() => setEditingId(conversation.id)} className={MENU_ITEM_CLS}>
-                            <Pencil className="size-4 shrink-0" />
-                            {t("renameConversation")}
-                          </Menu.Item>
-                          <Menu.Item onClick={() => onRequestDelete(conversation)} className={MENU_ITEM_DANGER_CLS}>
-                            <Trash2 className="size-4 shrink-0" />
-                            {t("deleteConversation")}
-                          </Menu.Item>
-                        </Menu.Popup>
-                      </Menu.Positioner>
-                    </Menu.Portal>
+                    <MenuPopup sideOffset={4} className="w-36">
+                      <Menu.Item onClick={() => setEditingId(conversation.id)} className={MENU_ITEM_CLS}>
+                        <Pencil className="size-4 shrink-0" />
+                        {t("renameConversation")}
+                      </Menu.Item>
+                      <Menu.Item onClick={() => onRequestDelete(conversation)} className={MENU_ITEM_DANGER_CLS}>
+                        <Trash2 className="size-4 shrink-0" />
+                        {t("deleteConversation")}
+                      </Menu.Item>
+                    </MenuPopup>
                   </Menu.Root>
                 </li>
               );

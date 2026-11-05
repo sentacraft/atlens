@@ -12,6 +12,20 @@ const eslintConfig = defineConfig([
       "react-hooks/set-state-in-effect": "off",
     },
   },
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/components/ui/menu.tsx", "src/**/__tests__/**"],
+    rules: {
+      // MenuPopup clears the popup padding that leaves a white strip beside a row's hover.
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "JSXMemberExpression[object.name='Menu'][property.name=/^(Portal|Positioner|Popup)$/]",
+          message: "Use MenuPopup from @/components/ui/menu instead of composing Menu.Portal, Menu.Positioner or Menu.Popup.",
+        },
+      ],
+    },
+  },
   globalIgnores([
     ".next/**",
     "out/**",
