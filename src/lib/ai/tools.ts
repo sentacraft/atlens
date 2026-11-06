@@ -183,6 +183,24 @@ const REVIEWS_NOTE =
   "rather than judge it yourself or point to another Atlens page. Never write a review's url: the source " +
   "links turn into numbered notes that open it.";
 
+// What one call returns at most; longer lists are cut, not rejected, so the model needs no retry.
+const MAX_DETAIL_REFS = 6;
+const MAX_REVIEW_REFS = 6;
+
+function capRefs(refs: string[], limit: number): { kept: string[]; notReturned?: { refs: string[]; note: string } } {
+  if (refs.length <= limit) {
+    return { kept: refs };
+  }
+  const omitted = refs.slice(limit);
+  return {
+    kept: refs.slice(0, limit),
+    notReturned: {
+      refs: omitted,
+      note: `Only the first ${limit} refs are returned per call. Call again with these for the rest, if the answer needs them.`,
+    },
+  };
+}
+
 /**
  * `recalledRefs` gates every tool that takes a ref; the recall tools add to it, and
  * `seedRecalledRefs` adds the refs they returned earlier in the conversation.
@@ -319,13 +337,18 @@ export function buildLensTools(
         refs: z
           .array(z.string())
           .min(1)
-          .max(6)
-          .describe("Lens refs, each from a prior queryLenses/searchLensByName/myFavorites result."),
+          .describe(
+            `Lens refs, each from a prior queryLenses/searchLensByName/myFavorites result. At most ${MAX_DETAIL_REFS} are returned per call.`,
+          ),
       }),
-      execute: ({ refs }) => ({
-        lenses: recalledLenses(refs).map((lens) => toDetailed(resolveLens(lens, locale, tBrand))),
-        notInData: "No test results or opinions: for image quality, focusing, handling and build, call lensReviews.",
-      }),
+      execute: ({ refs }) => {
+        const { kept, notReturned } = capRefs(refs, MAX_DETAIL_REFS);
+        return {
+          lenses: recalledLenses(kept).map((lens) => toDetailed(resolveLens(lens, locale, tBrand))),
+          notInData: "No test results or opinions: for image quality, focusing, handling and build, call lensReviews.",
+          ...(notReturned ? { notReturned } : {}),
+        };
+      },
     }),
 
     lensReviews: tool({
@@ -336,15 +359,17 @@ export function buildLensTools(
         refs: z
           .array(z.string())
           .min(1)
-          .max(4)
-          .describe("Lens refs, each from a prior queryLenses/searchLensByName/myFavorites result."),
+          .describe(
+            `Lens refs, each from a prior queryLenses/searchLensByName/myFavorites result. At most ${MAX_REVIEW_REFS} are returned per call.`,
+          ),
         aspects: z
           .array(z.enum(REVIEW_ASPECTS))
           .nullish()
           .describe("Only these aspects; leave out or null for all."),
       }),
       execute: async ({ refs, aspects }) => {
-        const lenses = recalledLenses(refs);
+        const { kept, notReturned } = capRefs(refs, MAX_REVIEW_REFS);
+        const lenses = recalledLenses(kept);
         const reviews = await data.reviews(lenses.map((lens) => lens.id));
         return {
           lenses: lenses.map((lens) => {
@@ -375,6 +400,7 @@ export function buildLensTools(
             };
           }),
           note: REVIEWS_NOTE,
+          ...(notReturned ? { notReturned } : {}),
         };
       },
     }),

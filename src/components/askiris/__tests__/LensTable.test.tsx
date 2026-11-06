@@ -45,3 +45,28 @@ describe("LensTable expand button", () => {
     expect(screen.queryByRole("button", { name: "expand" })).toBeNull();
   });
 });
+
+describe("LensTable length and OIS columns", () => {
+  it("shows the barrel length in mm and the stabilization state", () => {
+    const stabilized = getLensesByMount("X", "en")
+      .filter((lens) => lens.ois && lens.length?.mm != null)
+      .slice(0, 1)
+      .map((lens) => resolveLens(lens, "en", (brand) => brand));
+    render(<LensTable lenses={stabilized} columns={["length", "ois"]} caption={null} />);
+
+    expect(screen.getByRole("columnheader", { name: "length" })).toBeTruthy();
+    expect(screen.getByRole("columnheader", { name: "ois" })).toBeTruthy();
+    expect(screen.getByText(`${stabilized[0].length!.mm}mm`)).toBeTruthy();
+    expect(screen.getByText(/^yes/)).toBeTruthy();
+  });
+
+  it("shows no for a lens without stabilization", () => {
+    const plain = getLensesByMount("X", "en")
+      .filter((lens) => !lens.ois)
+      .slice(0, 1)
+      .map((lens) => resolveLens(lens, "en", (brand) => brand));
+    render(<LensTable lenses={plain} columns={["ois"]} caption={null} />);
+
+    expect(screen.getByText("no")).toBeTruthy();
+  });
+});

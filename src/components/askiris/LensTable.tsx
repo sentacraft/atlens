@@ -11,6 +11,7 @@ import {
   filterSizeDisplay,
   focalRangeDisplay,
   mfdHeroValue,
+  oisDisplay,
   weightDisplay,
   wrDisplay,
 } from "@/lib/lens/format";
@@ -39,8 +40,9 @@ const DETAIL_HEADER_KEY = {
   apertureRing: "apertureRing",
   wr: "wr",
   filterThread: "filterSize",
+  ois: "ois",
   releaseYear: "releaseYear",
-} as const satisfies Record<Exclude<LensTableColumn, "price" | "focus">, string>;
+} as const satisfies Record<Exclude<LensTableColumn, "price" | "focus" | "length">, string>;
 
 function priceCell(price: NonNullable<ResolvedLens["price"]>, l: Labels): string {
   const amount = formatPrice(l.pricing, price.amount, price.currency);
@@ -60,6 +62,8 @@ const RENDERERS: Record<LensTableColumn, (lens: ResolvedLens, l: Labels) => stri
   apertureRing: (lens, l) => (lens.apertureRing ? l.yes : l.no),
   wr: (lens, l) => wrDisplay(lens.wr, { yes: l.yes, no: l.no, partial: l.partial }),
   filterThread: (lens) => filterSizeDisplay(lens.filterMm) ?? null,
+  length: (lens) => (lens.length?.mm != null ? `${lens.length.mm}mm` : null),
+  ois: (lens, l) => oisDisplay(lens.ois, lens.oisStops, { yes: l.yes, no: l.no }),
   releaseYear: (lens) => (lens.releaseYear != null ? String(lens.releaseYear) : null),
 };
 
@@ -102,6 +106,9 @@ export default function LensTable({
     }
     if (col === "focus") {
       return t("focus");
+    }
+    if (col === "length") {
+      return t("length");
     }
     return td(DETAIL_HEADER_KEY[col]);
   };
