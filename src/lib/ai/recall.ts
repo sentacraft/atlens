@@ -215,6 +215,8 @@ export interface RecallResult {
   totalMaybe: number;
   /** Brands behind every "maybe" lens, not only the capped list: the reason a field is missing is often a whole brand. */
   maybeBrands: string[];
+  /** Set when some returned matches have no value for the sort, so their order says nothing. */
+  sortNote?: string;
 }
 
 type Verdict =
@@ -492,11 +494,14 @@ export function recallLenses(
     locale,
   );
   const missingById = new Map(maybe.map((m) => [m.lens.id, m.missingFields]));
+  const shown = sortedMatched.slice(0, maxCount);
+  // Weight, aperture and length sort through sortLenses, which has no gap to warn about.
+  const unranked = DELEGATED_SORTS.has(key)
+    ? 0
+    : shown.filter((lens) => recallComparable(lens, key, locale) === null).length;
 
   return {
-    matches: sortedMatched
-      .slice(0, maxCount)
-      .map((lens) => toRecalled(resolveLens(lens, locale, tBrand))),
+    matches: shown.map((lens) => toRecalled(resolveLens(lens, locale, tBrand))),
     maybe: sortedMaybe.slice(0, maxCount).map((lens) => ({
       lens: toRecalled(resolveLens(lens, locale, tBrand)),
       missingFields: missingById.get(lens.id) ?? [],
@@ -504,6 +509,11 @@ export function recallLenses(
     totalMatched: matched.length,
     totalMaybe: maybe.length,
     maybeBrands: [...new Set(maybe.map((m) => tBrand(m.lens.brand)))],
+    ...(unranked > 0
+      ? {
+          sortNote: `${unranked} of these ${shown.length} lenses have no value to sort by (${constraints.sortBy ?? DEFAULT_SORT}), so they come last in no meaningful order. Do not present that order as a ranking.`,
+        }
+      : {}),
   };
 }
 

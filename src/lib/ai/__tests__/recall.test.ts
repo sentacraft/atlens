@@ -281,3 +281,17 @@ describe("recallLenses · maybeBrands", () => {
     expect(recall({ type: "prime" }, ALL).maybeBrands).toEqual([]);
   });
 });
+
+describe("recallLenses · sortNote", () => {
+  it("warns when the shown lenses have no release year to sort by", () => {
+    const undated = recall({ brands: ["ttartisan"], sortBy: "newest" }, ALL);
+
+    expect(undated.matches.length).toBeGreaterThan(0);
+    expect(undated.sortNote).toMatch(/no value to sort by \(newest\)/);
+  });
+
+  it("stays silent when every shown lens has the sort value", () => {
+    expect(recall({ type: "prime", sortBy: "lightest" }, ALL).sortNote).toBeUndefined();
+    expect(recall({ brands: ["fujifilm"], sortBy: "newest" }, 5).sortNote).toBeUndefined();
+  });
+});
