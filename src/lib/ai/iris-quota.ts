@@ -6,8 +6,8 @@ export const IRIS_QUOTA = {
   // Clearing cookies starts a new guest session, so guests on one IP share a larger cap.
   guestIpTurnsDaily: 15,
   accountTurnsDaily: 20,
-  globalDailyCny: 15,
-  globalMonthlyCny: 50,
+  globalDailyCny: 30,
+  globalMonthlyCny: 100,
 } as const;
 
 /** The model PEAK_PRICE_CNY_PER_MTOK is for; a test fails when production switches models. */
