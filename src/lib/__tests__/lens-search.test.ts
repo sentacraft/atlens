@@ -186,6 +186,35 @@ describe("searchLenses — compound token expansion", () => {
     const results = searchLenses(lenses, "af25");
     expect(results[0]?.id).toBe("artisans-25-18");
   });
+
+  it("'35f1.4' (focal and aperture typed together) hits the 35mm F1.4 lenses", () => {
+    const ids = searchLenses(lenses, "35f1.4").map((lens) => lens.id);
+    expect(ids).toEqual(expect.arrayContaining(["fuji-xf35-14", "sigma-35-14"]));
+  });
+
+  it("'23f2' and '23mmf2' hit the 23mm F2", () => {
+    expect(searchLenses(lenses, "23f2")[0]?.id).toBe("fuji-xf23-f2");
+    expect(searchLenses(lenses, "23mmf2")[0]?.id).toBe("fuji-xf23-f2");
+  });
+
+  it("'35mm1.4' (aperture glued to the mm) hits the 35mm F1.4 lenses", () => {
+    const ids = searchLenses(lenses, "35mm1.4").map((lens) => lens.id);
+    expect(ids).toEqual(expect.arrayContaining(["fuji-xf35-14", "sigma-35-14"]));
+  });
+
+  it("'xf35f1.4' splits into xf, 35 and f1.4", () => {
+    expect(searchLenses(lenses, "xf35f1.4")[0]?.id).toBe("fuji-xf35-14");
+  });
+
+  it("'18-50f2.8' and a CJK brand before it hit the 18-50 F2.8 zoom", () => {
+    expect(searchLenses(lenses, "18-50f2.8")[0]?.id).toBe("sigma-18-50-28");
+    expect(searchLenses(lenses, "适马18-50f2.8")[0]?.id).toBe("sigma-18-50-28");
+  });
+
+  it("keeps 'f1.4' and 'f28' whole", () => {
+    expect(searchLenses(lenses, "f1.4").length).toBeGreaterThan(0);
+    expect(searchLenses(lenses, "f28").length).toBeGreaterThan(0);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -298,6 +327,10 @@ describe("searchLenses — brand aliases", () => {
     const ids = results.map((l) => l.id);
     expect(ids).toContain("fuji-xf35-14");
     expect(ids).not.toContain("sigma-35-14");
+  });
+
+  it("spellings people use for 7Artisans match too", () => {
+    expect(searchLenses(lenses, "七匠")[0]?.id).toBe("artisans-25-18");
   });
 
   it("'七工匠' matches 7artisans lenses", () => {

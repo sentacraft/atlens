@@ -335,6 +335,7 @@
     "emptyDescription": "Supports model, brand, series, aperture",
     "noResults": "No matching lenses yet",
     "noResultsHint": "Try a shorter model name, a brand, or a series keyword.",
+    "brandNotListed": "Atlens doesn't list {brand} lenses yet. Open “View lens coverage” below to see which brands are covered.",
     "suggestLens": "Still can't find your lens?",
     "suggestLensLink": "Tell me",
     "suggestLensResults": "Not seeing the lens you expected?",

@@ -335,6 +335,7 @@
     "emptyDescription": "支持型号、品牌、系列、光圈",
     "noResults": "没找到匹配的镜头",
     "noResultsHint": "试试更短的型号，或者换个品牌名、系列关键词。",
+    "brandNotListed": "Atlens 暂时没有收录{brand}的镜头。已收录的品牌可点下方的“查看收录范围”。",
     "suggestLens": "没找到你想要的镜头？",
     "suggestLensLink": "告诉我",
     "suggestLensResults": "没看到你要的镜头？",

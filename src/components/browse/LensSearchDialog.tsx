@@ -12,10 +12,11 @@ import {
   useState,
 } from "react";
 import { Search, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { buildLensSearchIndex, searchLensIndex } from "@/lib/lens/search";
 import type { SearchableLens } from "@/lib/lens/search";
+import { namedUnlistedBrand } from "@/lib/lens/unlisted-brand";
 import { cn } from "@/lib/utils";
 import { lensSubtitleLine, brandLabel } from "@/lib/lens/format";
 import { trackSearchSelect, useSearchTelemetry } from "@/components/browse/LensSearchDialog.telemetry";
@@ -67,6 +68,7 @@ export default function LensSearchDialog<T extends SearchableLens>({
 }) {
   const t = useTranslations("Search");
   const tBrand = useTranslations("Brands");
+  const locale = useLocale();
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [composing, setComposing] = useState(false);
@@ -96,6 +98,7 @@ export default function LensSearchDialog<T extends SearchableLens>({
     [searchIndex, deferredQuery],
   );
 
+  const brandsWithLenses = useMemo(() => new Set(lenses.map((lens) => lens.brand)), [lenses]);
   const hasInput = query.trim().length > 0;
   const hasResults = results.length > 0;
   const context = { query: deferredQuery.trim(), hasResults };
@@ -179,13 +182,19 @@ export default function LensSearchDialog<T extends SearchableLens>({
   }
 
   function renderNoMatches() {
+    const unlisted = namedUnlistedBrand(deferredQuery, brandsWithLenses);
+    const brandName = unlisted
+      ? unlisted.kind === "catalog"
+        ? brandLabel(tBrand, unlisted.slug)
+        : unlisted.name[locale === "zh" ? "zh" : "en"]
+      : null;
     return (
       <div className="rounded-2xl border border-dashed border-zinc-200 px-5 py-10 text-center">
         <p className="text-sm font-medium text-zinc-700">
           {t("noResults")}
         </p>
         <p className="mt-2 text-sm text-zinc-500">
-          {t("noResultsHint")}
+          {brandName ? t("brandNotListed", { brand: brandName }) : t("noResultsHint")}
         </p>
       </div>
     );

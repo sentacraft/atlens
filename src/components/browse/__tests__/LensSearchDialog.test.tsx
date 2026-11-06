@@ -6,7 +6,10 @@ import LensSearchDialog from "../LensSearchDialog";
 import { track } from "@/lib/analytics/analytics";
 import type { SearchableLens } from "@/lib/lens/search";
 
-vi.mock("next-intl", () => ({ useTranslations: () => Object.assign((key: string) => key, { has: () => true }) }));
+vi.mock("next-intl", () => ({
+  useLocale: () => "en",
+  useTranslations: () => Object.assign((key: string, values?: { brand?: string }) => (values?.brand ? `${key}:${values.brand}` : key), { has: () => true }),
+}));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
 vi.mock("@/i18n/navigation", () => ({ Link: (props: object) => <a {...props} /> }));
 vi.mock("@/components/feedback/FeedbackTrigger", () => ({ default: () => null }));
@@ -93,5 +96,15 @@ describe("LensSearchDialog", () => {
     expect(listbox.parentElement!.contains(line)).toBe(true);
     expect(listbox.parentElement!.contains(footer)).toBe(false);
     expect(listbox.compareDocumentPosition(line) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("says a named brand is not listed, and uses the generic hint for anything else", () => {
+    const { input } = renderDialog();
+
+    fireEvent.change(input, { target: { value: "samyang 12" } });
+    expect(screen.getByText("brandNotListed:Samyang")).toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: "zenitar" } });
+    expect(screen.getByText("noResultsHint")).toBeInTheDocument();
   });
 });
