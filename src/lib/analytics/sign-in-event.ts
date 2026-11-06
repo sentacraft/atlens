@@ -1,7 +1,7 @@
 import "server-only";
 
 import { SIGN_IN_COMPLETE_EVENT, type SignInCompleteProps } from "@/lib/analytics/events";
-import { isInternalBrowser, readVid, type CookieReader } from "@/lib/analytics/session";
+import { isInternalBrowser, readVid, statsDbFor, type CookieReader } from "@/lib/analytics/session";
 import { insertEvent } from "@/lib/analytics/store";
 import { isBypassed } from "@/lib/rate-limit";
 
@@ -47,10 +47,11 @@ export async function recordSignIn(
   request: { cookies: CookieReader; raw: Request | undefined },
 ): Promise<void> {
   const props = signInCompleteProps(session);
-  if (!props) {
+  const statsDb = statsDbFor(request.cookies, db);
+  if (!props || !statsDb) {
     return;
   }
-  await insertEvent(db, {
+  await insertEvent(statsDb, {
     event: SIGN_IN_COMPLETE_EVENT,
     ts: session.sessionCreatedAt.getTime(),
     vid: readVid(request.cookies),

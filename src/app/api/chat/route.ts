@@ -33,7 +33,7 @@ import { clientIp, isBypassed, isRateLimited } from "@/lib/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
 import { anonymizeId } from "@/lib/analytics/anonymize";
 import { ASKIRIS_TURN_EVENT, type AskIrisTurnProps } from "@/lib/analytics/events";
-import { isInternalBrowser, readVid } from "@/lib/analytics/session";
+import { isInternalBrowser, readVid, statsDbFor } from "@/lib/analytics/session";
 import { insertEvent } from "@/lib/analytics/store";
 import {
   AskIrisTraceCollector,
@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
   try {
     const cf = getCloudflareContext();
     rateKv = cf.env.RATE_KV;
-    analyticsDb = cf.env.ANALYTICS_DB;
+    analyticsDb = statsDbFor(req.cookies, cf.env.ANALYTICS_DB);
     traceDb = cf.env.ASKIRIS_DB;
     appDb = cf.env.APP_DB;
     catalogDb = cf.env.CATALOG_DB;

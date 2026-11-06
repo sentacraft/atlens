@@ -2,7 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
-const { signInCompleteProps } = await import("../sign-in-event");
+const { recordSignIn, signInCompleteProps } = await import("../sign-in-event");
+const { cookieReader } = await import("../session");
 
 const AT = new Date("2026-10-20T10:00:00Z");
 const later = (ms: number) => new Date(AT.getTime() + ms);
@@ -29,5 +30,27 @@ describe("signInCompleteProps", () => {
     expect(signInCompleteProps({ path: "/sign-in/anonymous", user: { createdAt: AT, isAnonymous: true }, sessionCreatedAt: AT })).toBeNull();
     expect(signInCompleteProps({ path: "/sign-in/email-otp", user: { createdAt: AT, isAnonymous: true }, sessionCreatedAt: AT })).toBeNull();
     expect(signInCompleteProps({ path: "/update-user", user: { createdAt: AT }, sessionCreatedAt: AT })).toBeNull();
+  });
+});
+
+describe("recordSignIn", () => {
+  const session = { path: "/sign-in/email-otp", user: { createdAt: AT }, sessionCreatedAt: AT };
+
+  function fakeDb() {
+    const run = vi.fn(async () => ({}));
+    const prepare = vi.fn(() => ({ bind: () => ({ run }) }));
+    return { db: { prepare } as unknown as D1Database, prepare };
+  }
+
+  it("records a sign-in", async () => {
+    const { db, prepare } = fakeDb();
+    await recordSignIn(db, session, { cookies: cookieReader(null), raw: undefined });
+    expect(prepare).toHaveBeenCalledTimes(1);
+  });
+
+  it("records nothing for a device that opted out of usage statistics", async () => {
+    const { db, prepare } = fakeDb();
+    await recordSignIn(db, session, { cookies: cookieReader("atlens_no_stats=1"), raw: undefined });
+    expect(prepare).not.toHaveBeenCalled();
   });
 });

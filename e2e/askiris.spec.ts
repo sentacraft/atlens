@@ -10,8 +10,8 @@ test.describe("About content", () => {
       "href",
       "/en/askiris",
     );
-    await expect(page.locator("#privacy")).toContainText("your messages are sent to an AI provider");
-    await expect(page.locator("#privacy")).toContainText("This site uses Cloudflare Web Analytics");
+    await expect(page.locator("#privacy")).toContainText("sends your messages to an AI provider");
+    await expect(page.locator("#privacy")).toContainText("counted by Cloudflare Web Analytics");
 
     const sectionIds = await page.locator("section").evaluateAll((sections) =>
       sections.map((section) => section.id),

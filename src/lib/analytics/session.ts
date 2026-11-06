@@ -31,3 +31,29 @@ export const INTERNAL_COOKIE = "atlens_internal";
 export function isInternalBrowser(cookies: CookieReader): boolean {
   return cookies.get(INTERNAL_COOKIE)?.value === "1";
 }
+
+export const INTERNAL_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+
+/** Set when a visitor turns "Help improve Atlens" off; the track route then records nothing. */
+export const STATS_OPT_OUT_COOKIE = "atlens_no_stats";
+
+export function isOptedOutOfStats(cookies: CookieReader): boolean {
+  return cookies.get(STATS_OPT_OUT_COOKIE)?.value === "1";
+}
+
+/** The analytics database to write this request's events to; undefined when the visitor opted out. */
+export function statsDbFor<T>(cookies: CookieReader, db: T | undefined): T | undefined {
+  return isOptedOutOfStats(cookies) ? undefined : db;
+}
+
+/** Whether an email is on the comma-separated INTERNAL_EMAILS allowlist; case-insensitive. */
+export function isInternalEmail(allowlist: string | undefined, email: string | null | undefined): boolean {
+  if (!allowlist || !email) {
+    return false;
+  }
+  const target = email.trim().toLowerCase();
+  return allowlist
+    .split(",")
+    .map((entry) => entry.trim().toLowerCase())
+    .some((entry) => entry.length > 0 && entry === target);
+}

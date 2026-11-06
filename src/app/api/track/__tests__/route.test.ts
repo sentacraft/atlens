@@ -5,12 +5,12 @@ import { createSqliteD1 } from "@/lib/__tests__/support/sqlite-d1";
 const state = vi.hoisted(() => ({
   db: null as unknown as D1Database,
   pending: [] as Promise<unknown>[],
-  hasAccountSession: vi.fn(async () => false),
+  accountEmail: vi.fn(async (): Promise<string | null | undefined> => undefined),
   limit: vi.fn(async () => ({ success: true })),
 }));
 
 vi.mock("server-only", () => ({}));
-vi.mock("@/lib/auth-session", () => ({ hasAccountSession: state.hasAccountSession }));
+vi.mock("@/lib/auth-session", () => ({ getAccountEmail: state.accountEmail }));
 vi.mock("@opennextjs/cloudflare", () => ({
   getCloudflareContext: () => ({
     env: { ANALYTICS_DB: state.db, RL_ANALYTICS: { limit: state.limit } },
@@ -41,7 +41,7 @@ beforeEach(() => {
   const created = createSqliteD1("migrations/analytics");
   state.db = created.d1;
   state.pending = [];
-  state.hasAccountSession.mockResolvedValue(false);
+  state.accountEmail.mockResolvedValue(undefined);
   state.limit.mockResolvedValue({ success: true });
   sqlite = created.sqlite;
 });
@@ -56,7 +56,7 @@ describe("POST /api/track", () => {
   });
 
   it("stores a known event and gives a new visitor a 30-day cookie", async () => {
-    state.hasAccountSession.mockResolvedValue(true);
+    state.accountEmail.mockResolvedValue("user@example.com");
     const response = await post({
       event: "search",
       locale: "en",
@@ -118,9 +118,27 @@ describe("POST /api/track", () => {
   });
 
   it("still stores the event when the session lookup fails", async () => {
-    state.hasAccountSession.mockRejectedValue(new Error("db down"));
+    state.accountEmail.mockRejectedValue(new Error("db down"));
     await post({ event: "askiris_view" });
 
     expect(rows()[0]).toMatchObject({ event: "askiris_view", signed_in: 0 });
+  });
+
+  it("marks a signed-in allowlisted account as internal and marks its browser", async () => {
+    vi.stubEnv("INTERNAL_EMAILS", "me@example.com, other@example.com");
+    state.accountEmail.mockResolvedValue("Me@Example.com");
+    const response = await post({ event: "lens_view", locale: "en", path: "/en/lenses/x" });
+
+    expect(rows()[0]).toMatchObject({ internal: 1, signed_in: 1 });
+    expect(response.headers.get("set-cookie")).toMatch(/atlens_internal=1/);
+    vi.unstubAllEnvs();
+  });
+
+  it("records nothing and sets no visitor cookie when the visitor opted out", async () => {
+    const response = await post({ event: "lens_view", locale: "en", path: "/en" }, "atlens_no_stats=1");
+
+    expect(response.status).toBe(204);
+    expect(rows()).toHaveLength(0);
+    expect(response.headers.get("set-cookie")).toBeNull();
   });
 });
