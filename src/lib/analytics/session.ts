@@ -41,6 +41,11 @@ export function isOptedOutOfStats(cookies: CookieReader): boolean {
   return cookies.get(STATS_OPT_OUT_COOKIE)?.value === "1";
 }
 
+/** The analytics database to write this request's events to; undefined when the visitor opted out. */
+export function statsDbFor<T>(cookies: CookieReader, db: T | undefined): T | undefined {
+  return isOptedOutOfStats(cookies) ? undefined : db;
+}
+
 /** Whether an email is on the comma-separated INTERNAL_EMAILS allowlist; case-insensitive. */
 export function isInternalEmail(allowlist: string | undefined, email: string | null | undefined): boolean {
   if (!allowlist || !email) {

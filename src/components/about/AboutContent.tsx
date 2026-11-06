@@ -394,9 +394,6 @@ export default async function AboutContent() {
         <p className="text-sm text-zinc-600 leading-relaxed">
           {t("privacyBody")}
         </p>
-        <p className="text-sm text-zinc-600 leading-relaxed">
-          {t("privacyAnalytics")}
-        </p>
         <StatsPreference />
       </Section>
 

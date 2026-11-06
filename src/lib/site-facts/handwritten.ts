@@ -237,7 +237,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "analytics",
     topic: "privacy",
-    text: "Atlens uses Cloudflare Web Analytics and its own event statistics on Cloudflare. Usage statistics record no IP address and are not linked to accounts: they record only whether someone is signed in and a random browser identifier that expires 30 days after it is set. Ask Iris statistics are anonymized before they are recorded. Service logs keep no cookies, IP addresses, or sign-in credentials.",
+    text: "Atlens uses Cloudflare Web Analytics and its own event statistics on Cloudflare. Usage statistics record no IP address and are not linked to accounts: they record only whether someone is signed in and a random browser identifier that expires 30 days after it is set. Ask Iris statistics are anonymized before they are recorded. A switch in About > Privacy turns Atlens's own statistics off for a device; Cloudflare Web Analytics sets no cookies and is not covered by it. The statistics are never sold. Service logs keep no cookies, IP addresses, or sign-in credentials.",
     sources: ["src/lib/analytics/"],
     links: ["page:aboutPrivacy"],
   },
