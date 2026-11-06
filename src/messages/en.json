@@ -1043,7 +1043,7 @@
   },
   "IrisEntry": {
     "browseLabel": "Pick for my filters",
-    "browseQuestion": "Help me pick a lens with these filters: {filters}",
+    "browseQuestion": "I'm filtering lenses by {filters}. Help me narrow it down, starting with a pick or two.",
     "emptyHint": "Clear a few filters, or just tell <iris>Iris</iris> what you're after.",
     "emptyClear": "Clear filters",
     "emptyLabel": "Let Iris find one",
