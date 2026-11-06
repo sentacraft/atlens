@@ -515,6 +515,9 @@ tests:
       - type: javascript # at most one question
         metric: programmatic
         value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length <= 1"
+      - type: javascript # the follow-up question is on the card, not in the text
+        metric: programmatic
+        value: "context.metadata.toolsCalled.includes('askChoices')"
 
   - description: vague-sports-day
     metadata:
@@ -532,6 +535,9 @@ tests:
       - type: javascript
         metric: programmatic
         value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length <= 1"
+      - type: javascript # the follow-up question is on the card, not in the text
+        metric: programmatic
+        value: "context.metadata.toolsCalled.includes('askChoices')"
 
   - description: vague-light-kit
     metadata:
@@ -549,6 +555,29 @@ tests:
       - type: javascript
         metric: programmatic
         value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length <= 1"
+      - type: javascript # the follow-up question is on the card, not in the text
+        metric: programmatic
+        value: "context.metadata.toolsCalled.includes('askChoices')"
+
+  - description: vague-portrait
+    metadata:
+      area: vague
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "我想找个拍人的镜头。"
+    assert:
+      - type: javascript
+        metric: programmatic
+        value: "context.metadata.picks.length > 0"
+      - type: javascript
+        metric: programmatic
+        value: "context.metadata.toolsCalled.includes('askChoices')"
+      - type: javascript # no question left in the text
+        metric: programmatic
+        value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length === 0"
 
   # A named trade-off is a different case: ask it, show no lenses (see the system prompt).
   - description: vague-tradeoff-still-asks
