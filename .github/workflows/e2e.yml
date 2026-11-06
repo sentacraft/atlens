@@ -87,7 +87,19 @@ jobs:
       # --grep-invert drops @local-only tests (slow, low-gate-value animation /
       # scroll-choreography guards that still run locally) and the @text-fit sweep,
       # which runs on its own schedule (text-fit-check.yml).
+      # next start reads the local D1 that wrangler keeps under .wrangler/; without
+      # this step it is empty and every analytics or account write fails.
+      # The script finds the repo root with git, which rejects a checkout owned by another
+      # user than the container's (actions/checkout#760).
+      - name: Apply local D1 migrations
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          pnpm run d1:migrate:local
+
       - name: Run E2E
+        env:
+          # Auth refuses to start without a secret; this one only signs throwaway local sessions.
+          BETTER_AUTH_SECRET: e2e-local-only-not-a-real-secret-0000
         run: pnpm exec playwright test --project=chromium --project=ios-safari --project=ios-pwa --grep-invert "@local-only|@text-fit"
 
       - name: Upload report
