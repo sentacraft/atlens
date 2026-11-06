@@ -19,7 +19,21 @@ describe("classifyNetwork", () => {
 describe("classifyUserAgent", () => {
   it.each([
     ["Mozilla/5.0 (compatible; Googlebot/2.1)", "bot"],
-    ["Mozilla/5.0 (iPhone) MicroMessenger/8.0", "in_app"],
+    ["Mozilla/5.0 (iPhone) MicroMessenger/8.0", "wechat"],
+    ["Mozilla/5.0 (iPhone) MicroMessenger/8.0 wxwork/4.1", "wecom"],
+    ["Mozilla/5.0 (iPhone) xhsdiscover/8.40", "xiaohongshu"],
+    ["Mozilla/5.0 (iPhone) QQ/9.0.1", "qq"],
+    ["Mozilla/5.0 (Linux; Android 14) MQQBrowser/14.0 Mobile Safari", "browser"],
+    ["Mozilla/5.0 (Linux; Android 14; wv) Chrome/130 Mobile Safari", "in_app"],
+    ["Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148", "in_app"],
+    ["Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/130.0 Mobile/15E148 Safari/604.1", "browser"],
+    ["Mozilla/5.0 (iPhone) Mobile/15E148 BytedanceWebview/d8a21c6 musical_ly_36.5.0", "tiktok"],
+    ["Mozilla/5.0 (iPhone) Mobile/15E148 BytedanceWebview/d8a21c6 aweme_30.0.0", "douyin"],
+    ["Mozilla/5.0 (Linux; Android 14; wv) BytedanceWebview/d8a21c6 NewsArticle/9.9.0", "toutiao"],
+    ["Mozilla/5.0 (iPhone) Mobile/15E148 [FBAN/FBIOS;FBAV/480.0;FB_IAB/MESSENGER]", "messenger"],
+    ["Mozilla/5.0 (iPhone) Mobile/15E148 [FBAN/FBIOS;FBAV/480.0]", "facebook"],
+    ["Mozilla/5.0 (iPhone) Mobile/15E148 Barcelona 350.0 Instagram 350.0", "threads"],
+    ["Mozilla/5.0 (iPhone) Mobile/15E148 AlipayClient/10.6", "alipay"],
     ["Mozilla/5.0 (Macintosh) AppleWebKit/605 Safari/605", "browser"],
   ])("%s -> %s", (userAgent, expected) => {
     expect(classifyUserAgent(userAgent)).toBe(expected);

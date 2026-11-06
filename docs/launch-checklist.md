@@ -38,7 +38,8 @@ say in the PR description which items you changed and which do not apply.
 - **Support.** Decide whether the feature's pages show the support note
   (`src/components/support/SupportNote.tsx`).
 - **Sharing.** Decide whether the content deserves a share link or poster
-  (`src/components/share/`).
+  (`src/components/share/`). A link Atlens hands out carries a `?src=` tag from
+  `src/lib/url/source.ts`, so visits from it are not counted as direct.
 
 ## A new public page
 

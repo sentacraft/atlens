@@ -1,18 +1,18 @@
 # Atlens
 
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-support-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/sentacraft)
-[![微信赞赏](https://img.shields.io/badge/%E5%BE%AE%E4%BF%A1-%E8%B5%9E%E8%B5%8F-07C160?logo=wechat&logoColor=white)](https://atlens.app/zh/about#support)
+[![微信赞赏](https://img.shields.io/badge/%E5%BE%AE%E4%BF%A1-%E8%B5%9E%E8%B5%8F-07C160?logo=wechat&logoColor=white)](https://atlens.app/zh/about?src=github#support)
 [![GitHub stars](https://img.shields.io/github/stars/sentacraft/atlens?style=flat&logo=github)](https://github.com/sentacraft/atlens/stargazers)
 
 > Formerly X-Glass.
 
 Atlens is a lens database and comparison tool for Fujifilm shooters — X mount (APS-C) and G mount (GFX medium format), first-party and third-party. It turns specs scattered across manufacturers' sites into one normalized catalog of 200+ lenses, sourced from official pages by an agentic data pipeline, with an AI assistant, Ask Iris, built on top.
 
-**English**：[atlens.app/en](https://atlens.app/en)
+**English**：[atlens.app/en](https://atlens.app/en?src=github)
 
-**简体中文**：[atlens.app/zh](https://atlens.app/zh)
+**简体中文**：[atlens.app/zh](https://atlens.app/zh?src=github)
 
-Atlens is free, open source, and maintained by one person. If it helps you pick a lens, a ⭐ or a [coffee on Ko-fi](https://ko-fi.com/sentacraft) keeps it going ([微信赞赏](https://atlens.app/zh/about#support)).
+Atlens is free, open source, and maintained by one person. If it helps you pick a lens, a ⭐ or a [coffee on Ko-fi](https://ko-fi.com/sentacraft) keeps it going ([微信赞赏](https://atlens.app/zh/about?src=github#support)).
 
 **Desktop**
 
@@ -33,7 +33,7 @@ Atlens is free, open source, and maintained by one person. If it helps you pick 
 
 ## Features
 
-- **Growing lens database** — Fujifilm's first-party lineup plus a dozen third-party brands across X and G mount; which brands and lens types are covered is kept in one place and shown live on the [coverage table](https://atlens.app/en/about#coverage)
+- **Growing lens database** — Fujifilm's first-party lineup plus a dozen third-party brands across X and G mount; which brands and lens types are covered is kept in one place and shown live on the [coverage table](https://atlens.app/en/about?src=github#coverage)
 - **Clean, focused UI** — distraction-free interface designed around the comparison workflow
 - **Filter and sort** — multi-axis filtering (focal length, aperture, AF, OIS, weather resistance, specialty tags) combined with flexible sorting
 - **Curated collections** — hand-picked themes (compact primes, budget autofocus, and more), each defined by filter criteria rather than a hand-picked lens list, so the lineup stays current as the catalog grows — for when you don't know exactly what to search for
@@ -45,7 +45,7 @@ Atlens is free, open source, and maintained by one person. If it helps you pick 
 - **Accounts** — sign in with Google, GitHub or an email code to save favorite lenses and the gear you own, read every review finding, and keep Ask Iris conversations across devices
 - **Normalized data** — specs from different manufacturers use inconsistent formats and terminology; Atlens maps everything to a consistent schema so comparisons are fair and objective
 - **Pipeline-backed accuracy** — specs come from official manufacturer sources and go through a staged pipeline, reviewed by the maintainer before publishing
-- **Progressive Web App (PWA)** — runs in any browser, and installs like a native app on a phone's home screen or a computer's dock for full-screen access — no App Store required ([get the app](https://atlens.app/en/get))
+- **Progressive Web App (PWA)** — runs in any browser, and installs like a native app on a phone's home screen or a computer's dock for full-screen access — no App Store required ([get the app](https://atlens.app/en/get?src=github))
 - **Deep localization** — English and Chinese (中文) editions go beyond UI translation: pricing sources, used-market listings, and manufacturer links are all tailored to each audience's local market
 
 ## Tech Stack
@@ -329,7 +329,7 @@ Small fixes are welcome. For larger code changes or new features, please open an
 
 To report a data issue (wrong spec, broken image) or suggest a missing lens, use the feedback links inside the app, or open a [GitHub Issue](https://github.com/sentacraft/atlens/issues).
 
-If you find Atlens useful, a ⭐ on this repo goes a long way — and if you'd like to support the project: [donate](https://atlens.app/en/about#support) · [打赏](https://atlens.app/zh/about#support)
+If you find Atlens useful, a ⭐ on this repo goes a long way — and if you'd like to support the project: [donate](https://atlens.app/en/about?src=github#support) · [打赏](https://atlens.app/zh/about?src=github#support)
 
 ## Affiliate Disclosure
 

@@ -2,6 +2,7 @@
 
 import { matchesBreakpoint } from "@/lib/breakpoints";
 import type { EventName, EventProps, TrackPayload } from "@/lib/analytics/events";
+import { readSource, stripSource, type LandingSource } from "@/lib/url/source";
 
 const ENDPOINT = "/api/track";
 
@@ -43,23 +44,24 @@ function viewport(): "phone" | "tablet" | "desktop" {
 
 const SOURCE_KEY = "atlens_src";
 
-function sourceParams(search: string): { src?: string; campaign?: string } {
-  const params = new URLSearchParams(search);
-  const src = params.get("src") ?? params.get("utm_source") ?? undefined;
-  const campaign = params.get("utm_campaign") ?? undefined;
-  return { ...(src ? { src } : {}), ...(campaign ? { campaign } : {}) };
-}
-
-/** The `?src=` / `utm_*` tag the visit arrived with, kept for the tab so later events carry it too. */
-function landingSource(): { src?: string; campaign?: string } {
+/**
+ * The `?src=` / `utm_*` tag the visit arrived with, kept for the tab so later events carry it too.
+ * The tag is then dropped from the address bar, so a link copied from it is not credited to the
+ * source this visit came from.
+ */
+function landingSource(): LandingSource {
   try {
-    const fromUrl = sourceParams(window.location.search);
+    const fromUrl = readSource(window.location.search);
     if (fromUrl.src || fromUrl.campaign) {
       sessionStorage.setItem(SOURCE_KEY, JSON.stringify(fromUrl));
+      const clean = stripSource(window.location.href);
+      if (clean) {
+        window.history.replaceState(window.history.state, "", clean);
+      }
       return fromUrl;
     }
     const stored = sessionStorage.getItem(SOURCE_KEY);
-    return stored ? (JSON.parse(stored) as { src?: string; campaign?: string }) : {};
+    return stored ? (JSON.parse(stored) as LandingSource) : {};
   } catch {
     return {};
   }

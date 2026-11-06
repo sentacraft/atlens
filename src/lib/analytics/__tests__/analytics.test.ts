@@ -52,6 +52,7 @@ describe("track landing source", () => {
     window.history.replaceState({}, "", "/en?utm_source=hn&utm_campaign=launch");
     track("filter_reset");
     expect(await sentProps()).toMatchObject({ src: "hn", campaign: "launch" });
+    expect(window.location.search).toBe("");
 
     window.history.replaceState({}, "", "/en/lenses");
     track("filter_reset");
