@@ -20,6 +20,7 @@ const {
   loadIrisFeedback,
   loadOverview,
   loadSignedInShare,
+  loadSessionSources,
   loadVisitorFunnel,
   rangeWindows,
 } = await import("../dashboard");
@@ -42,11 +43,14 @@ type Seed = {
   weight?: number;
   origin?: string;
   path?: string;
+  uaClass?: string | null;
+  country?: string | null;
+  network?: string | null;
 };
 
 function seed(events: Seed[]) {
   const insert = analytics.sqlite.prepare(
-    "INSERT INTO events (ts, event, vid, path, signed_in, internal, weight, origin, props) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO events (ts, event, vid, path, signed_in, internal, weight, origin, props, ua_class, country, network) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
   );
   for (const e of events) {
     insert.run(
@@ -59,6 +63,9 @@ function seed(events: Seed[]) {
       e.weight ?? 1,
       e.origin ?? "live",
       JSON.stringify(e.props ?? {}),
+      e.uaClass ?? null,
+      e.country ?? null,
+      e.network ?? null,
     );
   }
 }
@@ -471,5 +478,28 @@ describe("dashboardWindows", () => {
 
     expect((await dashboardWindows(analytics.d1, "7d", T0 + 20 * DAY)).previous).toEqual({ from: T0 + 6 * DAY, to: T0 + 13 * DAY });
     expect((await dashboardWindows(analytics.d1, "7d", T0 + 10 * DAY)).previous).toBeNull();
+  });
+});
+
+describe("loadSessionSources", () => {
+  it("counts sessions by landing tag and app, country and network, skipping sessions without request data", async () => {
+    seed([
+      { ts: T0, event: "page_view", vid: "v1", props: { src: "poster" }, uaClass: "wechat", country: "CN", network: "mobile" },
+      { ts: T0 + MIN, event: "lens_view", vid: "v1", props: { src: "poster" }, uaClass: "wechat", country: "CN", network: "mobile" },
+      { ts: T0, event: "page_view", vid: "v2", uaClass: "browser", country: "US", network: "other" },
+      { ts: T0, event: "page_view", vid: "v3", props: { src: "poster" }, uaClass: "browser", country: "CN", network: "other" },
+      { ts: T0, event: "page_view", vid: "v4" },
+      { ts: T0, event: "page_view", vid: "v5", internal: 1, uaClass: "browser", country: "US" },
+    ]);
+
+    const sources = await loadSessionSources(analytics.d1, WINDOW);
+
+    expect(sources.sessions).toBe(3);
+    expect(sources.since).toBe(T0);
+    expect(sources.bySource.map((node) => [node.value, node.count])).toEqual([["poster", 2], [null, 1]]);
+    expect(sources.bySource[0].children.map((node) => [node.label, node.count]).sort()).toEqual([["Browser", 1], ["WeChat", 1]]);
+    expect(sources.bySource[1].label).toBe("Untagged");
+    expect(sources.byCountry.map((node) => [node.label, node.count])).toEqual([["China (CN)", 2], ["United States (US)", 1]]);
+    expect(sources.byNetwork.map((node) => [node.label, node.count])).toEqual([["Other network", 2], ["Mobile network", 1]]);
   });
 });
