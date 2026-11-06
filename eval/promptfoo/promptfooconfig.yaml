@@ -1427,6 +1427,42 @@ tests:
         metric: programmatic
         value: "context.metadata.picks.length > 0 && context.metadata.picks.every((p) => p.fmin === p.fmax)"
 
+  # The browse page's "Ask Iris" entry sends the filters in force. They say little about the use, so
+  # the reply should commit to a starting pick within them and ask one question, not list a table.
+  - description: handoff-browse-zh
+    metadata:
+      area: handoff
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "我在筛镜头：定焦 · 自动 · 广角。帮我缩小范围，先给我一两支合适的"
+    assert:
+      - type: javascript # cards, all primes (the filter), not only a table
+        metric: programmatic
+        value: "context.metadata.picks.length > 0 && context.metadata.picks.every((p) => p.fmin === p.fmax)"
+      - type: javascript # at most one question
+        metric: programmatic
+        value: "output.split('[Iris]').pop().split('\\n').filter((line) => /[？?]/.test(line)).length <= 1"
+
+  - description: handoff-browse-en
+    metadata:
+      area: handoff
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "I'm filtering lenses by Primes · Auto · Wide. Help me narrow it down, starting with a pick or two."
+    assert:
+      - type: javascript
+        metric: programmatic
+        value: "context.metadata.picks.length > 0 && context.metadata.picks.every((p) => p.fmin === p.fmax)"
+      - type: javascript
+        metric: programmatic
+        value: "output.split('[Iris]').pop().split('\\n').filter((line) => /[？?]/.test(line)).length <= 1"
+
   # Cine: cinema lenses are recalled only when asked for, and then they are what gets recommended.
   - description: cine-short-film
     metadata:

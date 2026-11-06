@@ -1044,7 +1044,7 @@
   },
   "IrisEntry": {
     "browseLabel": "按筛选帮我挑",
-    "browseQuestion": "按这些条件帮我挑镜头：{filters}",
+    "browseQuestion": "我在筛镜头：{filters}。帮我缩小范围，先给我一两支合适的",
     "emptyHint": "可以清除几个筛选，或者直接告诉 <iris>Iris</iris> 你想要什么。",
     "emptyClear": "清除筛选",
     "emptyLabel": "让 Iris 帮你找",
