@@ -120,16 +120,17 @@ async function check(path) {
   }
 }
 
-// Routes the sitemap leaves out. All are GETs without side effects, safe against production.
-async function extraPaths() {
-  const chatData = "/api/askiris/chat-data?locale=en";
-  const paths = [chatData, "/api/feedback", "/api/auth/get-session", "/en/askiris"];
-  try {
-    const { lenses } = JSON.parse((await fetchText(`${BASE_URL}${chatData}`)).body);
-    const ids = lenses.filter((lens) => lens.mount === "X").slice(0, 2).map((lens) => lens.id);
+// Routes the sitemap leaves out, with a compare page for two lenses the sitemap lists. All are GETs
+// without side effects, safe against production.
+function extraPaths(sitemap) {
+  const paths = ["/api/feedback", "/api/auth/get-session", "/en/askiris"];
+  // An X-mount lens id ends in "-x", which the section pages (browse, collections, charts) do not.
+  const ids = sitemap
+    .map((path) => path.match(/^\/en\/lenses\/x\/([^/]+-x)$/)?.[1])
+    .filter((id) => id !== undefined)
+    .slice(0, 2);
+  if (ids.length === 2) {
     paths.push(`/en/lenses/x/compare?ids=${ids.join(",")}`);
-  } catch {
-    // The chat-data probe itself reports the failure.
   }
   return paths;
 }
@@ -173,7 +174,7 @@ async function main() {
     console.log(`Probing all ${paths.length} sitemap URLs (concurrency ${CONCURRENCY})…\n`);
   }
 
-  targets = [...targets, ...(await extraPaths())];
+  targets = [...targets, ...extraPaths(paths)];
   const startedAt = Date.now();
   const failures = await runPool(targets, CONCURRENCY, check);
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
