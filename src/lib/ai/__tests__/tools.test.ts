@@ -361,6 +361,14 @@ describe("lists longer than one call returns", () => {
   });
 });
 
+describe("queryLenses result note", () => {
+  it("carries the rules for reading maybe and the cap with the data", async () => {
+    const result = await run(tools.queryLenses, { queries: [{ type: "prime" }] });
+    expect(result.note).toMatch(/`maybe`[\s\S]*never drop them/);
+    expect(result.note).toMatch(/totalMatched[\s\S]*no paging/);
+  });
+});
+
 describe("queryBodies", () => {
   it("returns specs with the no-prices-or-verdicts note and no catalogue ids", async () => {
     const result = await run(tools.queryBodies, { names: ["X-T5"] });

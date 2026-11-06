@@ -185,6 +185,13 @@ const REVIEWS_NOTE =
   "rather than judge it yourself or point to another Atlens page. Never write a review's url: the source " +
   "links turn into numbered notes that open it.";
 
+// Returned with every queryLenses result, so the reading rules arrive with the data they govern.
+const QUERY_LENSES_NOTE =
+  "`maybe` holds lenses with no data on a constrained or sorted field: surface them, never drop them. " +
+  `Each query returns at most ${RECALL_LIMIT} lenses by your sort; totalMatched counts the matches beyond that, and ` +
+  "there is no paging. Lenses you put forward for the user to choose from go on cards or a table; prose alone " +
+  "does not show them.";
+
 // Returned with every queryBodies result, so the boundary arrives with the data it governs.
 const BODIES_NOTE =
   "Discontinued bodies are included and say so. `maybe` holds bodies with no figure for a filtered field: " +
@@ -242,11 +249,9 @@ export function buildLensTools(
     queryLenses: tool({
       description:
         "Recall lenses by spec. Every parameter is a hard constraint, so set one only for a " +
-        "requirement the request makes; leave the rest out or null, which leaves that axis unrestricted. `maybe` " +
-        "holds lenses with no data on a constrained or sorted field — surface them, never drop them. " +
-        `Results are capped at ${RECALL_LIMIT} per query by your sort, totalMatched is the count ` +
-        "beyond the cap, and there is no paging. Independent recalls — say a standard zoom and a " +
-        "telephoto for a two-lens kit — go together in one call, one query each.",
+        "requirement the request makes; leave the rest out or null, which leaves that axis unrestricted. " +
+        "Independent recalls — say a standard zoom and a telephoto for a two-lens kit — go together in " +
+        "one call, one query each.",
       inputSchema: z.object({
         queries: z
           .array(recallConstraintsSchema)
@@ -265,7 +270,7 @@ export function buildLensTools(
           }
           return result;
         }),
-        note: "Lenses you put forward for the user to choose from go on cards or a table; prose alone does not show them.",
+        note: QUERY_LENSES_NOTE,
       }),
     }),
 
