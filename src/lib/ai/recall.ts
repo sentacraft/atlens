@@ -213,6 +213,8 @@ export interface RecallResult {
   maybe: { lens: RecalledLens; missingFields: string[] }[];
   totalMatched: number;
   totalMaybe: number;
+  /** Brands behind every "maybe" lens, not only the capped list: the reason a field is missing is often a whole brand. */
+  maybeBrands: string[];
 }
 
 type Verdict =
@@ -501,6 +503,7 @@ export function recallLenses(
     })),
     totalMatched: matched.length,
     totalMaybe: maybe.length,
+    maybeBrands: [...new Set(maybe.map((m) => tBrand(m.lens.brand)))],
   };
 }
 

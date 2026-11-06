@@ -1370,3 +1370,176 @@ tests:
       - type: javascript
         metric: programmatic
         value: "context.metadata.queries.some((q) => q.input.usage === \"cine\") && context.metadata.picks.length > 0 && context.metadata.picks.every((p) => p.isCine === true)"
+
+  # English: the Chinese cases carry most of the suite, so these cover what only an English
+  # visitor hits. Real asks from the first weeks of traffic were few, so the prompts below are
+  # typical of what an English shooter would type, plus the Italian turn that exposed a gap.
+  - description: en-budget-travel-one-lens
+    metadata:
+      area: english
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "I shoot with an X-T50 and travel a lot. I want one lens that does everything, around $600. What would you suggest?"
+    assert:
+      - *card_quality
+      - *narration
+      - *priced_prose
+      - type: javascript # the $600 reaches the recall as dollars, not as a converted or invented figure
+        metric: programmatic
+        value: "context.metadata.queries.some((q) => q.input.maxPrice != null && q.input.maxPrice >= 450 && q.input.maxPrice <= 900)"
+      - type: javascript # an all-in-one ask lands on at least one zoom
+        metric: programmatic
+        value: "context.metadata.picks.some((p) => p.fmin != null && p.fmax != null && p.fmax > p.fmin)"
+
+  - description: en-compare-two-named
+    metadata:
+      area: english
+    vars:
+      mount: X
+      locale: en
+      namesModels: true
+      dialog:
+        turns:
+          - "What's the real difference between the XF 23mm F2 and the XF 23mm F1.4? Which one would you take for street photography?"
+    assert:
+      - *no_deck
+      - type: javascript
+        metric: english
+        value: "context.metadata.toolsCalled.some((t) => ['searchLensByName', 'lensDetails', 'listLenses', 'queryLenses'].includes(t))"
+      - type: llm-rubric
+        metric: english
+        provider: *behavior_grader
+        value: >-
+          The reply compares the two lenses on at least two concrete points (such as aperture,
+          weight, size, weather resistance, or focus feel) and gives a clear pick for street
+          photography with a reason. It fails if it only restates that they are different
+          lenses, or declines to pick.
+
+  - description: en-light-weather-resistant
+    metadata:
+      area: english
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "What's the lightest weather-resistant lens you have? I hike a lot and don't care about the focal length."
+    assert:
+      - *card_quality
+      - *narration
+      - type: javascript # the weight is recalled by sorting or capping it, not guessed from names
+        metric: programmatic
+        value: "context.metadata.queries.some((q) => q.input.sortBy === 'lightest' || q.input.maxWeightG != null) && (context.metadata.queries.some((q) => (q.input.features || []).some((f) => /wr|weather/i.test(String(f)))) || context.metadata.picks.length > 0)"
+
+  - description: en-gear-kit-lens-portrait
+    metadata:
+      area: english
+    vars:
+      mount: X
+      locale: en
+      gear:
+        bodies: [fujifilm-x-e5]
+        lenses: [fujifilm-xc-15-45mmf35-56-ois-pz-x]
+      dialog:
+        turns:
+          - "I have an X-E5 with the kit lens. What should I add for portraits?"
+    assert:
+      - *card_quality
+      - *narration
+      - type: llm-rubric
+        metric: gear
+        provider: *behavior_grader
+        value: >-
+          The user's saved gear (not shown in the conversation) is a Fujifilm X-E5 body and the
+          XC 15-45mm kit zoom. The reply takes that into account: it relates its suggestions to
+          the kit lens (for example, what a portrait prime adds over it) or to the X-E5. It
+          fails if it ignores the owned gear entirely or suggests the owned kit lens.
+
+  - description: en-italian-newest-lenses
+    metadata:
+      area: english
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "lenti rilasciate negli ultimi 3 anni, lista"
+    assert:
+      - type: javascript # the "last 3 years" ask is passed to the recall as a year filter
+        metric: english
+        value: "context.metadata.queries.some((q) => q.input.minReleaseYear != null && q.input.minReleaseYear >= 2022)"
+      - type: llm-rubric
+        metric: english
+        provider: *behavior_grader
+        value: >-
+          The reply is written in Italian, the language the user wrote in, even though the
+          interface language is English. It lists lenses released in roughly the last three
+          years. It also says that some lenses have no recorded release year and so may be
+          missing from the list. It fails if it answers in English, or presents the list as
+          complete without that caveat.
+
+  - description: en-brand-all-lenses
+    metadata:
+      area: english
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "List every 7Artisans lens you have."
+    assert:
+      - type: javascript
+        metric: english
+        value: "context.metadata.queries.some((q) => (q.input.brands || []).some((b) => /7artisans/i.test(b)))"
+      - type: llm-rubric
+        metric: english
+        provider: *behavior_grader
+        value: >-
+          The reply lists the 7Artisans lenses it found, with the number it found. If the tool
+          result was cut short (the reply mentions that only the first N are shown), it says so
+          and offers to narrow or continue; it must not present a cut-short list as complete.
+
+  - description: en-newest-from-undated-brand
+    metadata:
+      area: english
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "What's the newest lens from TTArtisan?"
+    assert:
+      - type: llm-rubric
+        metric: english
+        provider: *behavior_grader
+        value: >-
+          TTArtisan lenses have no release year in the catalog. The reply says so, and does not
+          name a lens as "the newest" as if the catalog knew. Offering another way to tell (the
+          user can check the brand's own site, or the reply can list the lineup without dates)
+          is fine. It fails if it names a single lens as the newest with confidence.
+
+  - description: en-site-who-and-data
+    metadata:
+      area: english
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "Who runs this site, and is the lens data official?"
+    assert:
+      - *no_deck
+      - type: javascript
+        metric: english
+        value: "context.metadata.toolsCalled.includes('siteInfo')"
+      - type: llm-rubric
+        metric: english
+        provider: *behavior_grader
+        value: >-
+          The reply says the site is built and maintained by one person and that the specs come
+          from manufacturers' official sources through a data pipeline, with a caveat that errors
+          are possible and key specs should be confirmed with the manufacturer before buying. It
+          fails if it claims the data is guaranteed accurate or official on behalf of the brands.

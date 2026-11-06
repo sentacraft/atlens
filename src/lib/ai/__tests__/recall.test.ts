@@ -266,3 +266,18 @@ describe("recallLenses · null leaves an axis unrestricted", () => {
     expect(recall(nulled, ALL)).toEqual(expected);
   });
 });
+
+describe("recallLenses · maybeBrands", () => {
+  it("names every brand behind the lenses missing the filtered year, past the cap", () => {
+    const result = recall({ minReleaseYear: 2023 }, 3);
+    const brands = new Set(getLensesByMount(MOUNT, LOCALE).filter((l) => l.releaseYear == null).map((l) => l.brand));
+
+    expect(result.maybe).toHaveLength(3);
+    expect(new Set(result.maybeBrands)).toEqual(brands);
+    expect(result.maybeBrands.length).toBeGreaterThan(3);
+  });
+
+  it("is empty when no lens is uncertain", () => {
+    expect(recall({ type: "prime" }, ALL).maybeBrands).toEqual([]);
+  });
+});
