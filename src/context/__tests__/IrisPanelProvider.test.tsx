@@ -1,8 +1,11 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import type { ReactElement, ReactNode } from "react";
+import { cleanup, fireEvent, render as renderUi, screen, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { IrisPanelProvider, useIris } from "../IrisPanelProvider";
 import { track } from "@/lib/analytics/analytics";
+import { askIrisChatDataQuery } from "@/lib/askiris/chat-data";
 
 const push = vi.fn();
 const env = vi.hoisted(() => ({ wide: true, pathname: "/lenses/x/browse" }));
@@ -12,6 +15,7 @@ vi.mock("@/i18n/navigation", () => ({
   useRouter: () => ({ push }),
 }));
 vi.mock("@/hooks/useViewport", () => ({ useBreakpoint: () => env.wide }));
+vi.mock("next-intl", () => ({ useLocale: () => "en" }));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
 vi.mock("@/components/iris-panel/IrisPanel", () => ({
   default: ({
@@ -34,8 +38,16 @@ vi.mock("@/components/iris-panel/IrisPanel", () => ({
   ),
 }));
 
+let queryClient = new QueryClient();
+const Providers = ({ children }: { children: ReactNode }) => (
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+);
+const render = (ui: ReactElement) => renderUi(ui, { wrapper: Providers });
+
 afterEach(() => {
   cleanup();
+  queryClient = new QueryClient();
+  vi.unstubAllGlobals();
   push.mockClear();
   env.wide = true;
   env.pathname = "/lenses/x/browse";
@@ -163,5 +175,33 @@ describe("IrisPanelProvider", () => {
     fireEvent.click(screen.getByRole("button", { name: "close" }));
 
     expect(push).toHaveBeenCalledWith("/");
+  });
+
+  describe("chat data", () => {
+    const key = askIrisChatDataQuery("en").queryKey;
+
+    function idleAtOnce() {
+      vi.stubGlobal("requestIdleCallback", (run: () => void) => {
+        run();
+        return 1;
+      });
+      vi.stubGlobal("cancelIdleCallback", () => {});
+    }
+
+    it("is fetched while the page is idle, before Iris is first opened", async () => {
+      idleAtOnce();
+      renderProvider();
+
+      expect(screen.queryByTestId("panel")).toBeNull();
+      await waitFor(() => expect(queryClient.getQueryData(key)).toMatchObject({ lenses: expect.any(Array) }));
+    });
+
+    it("is not fetched on the Ask Iris page, which has it from the server", () => {
+      idleAtOnce();
+      env.pathname = "/askiris";
+      renderProvider();
+
+      expect(queryClient.getQueryState(key)).toBeUndefined();
+    });
   });
 });

@@ -1,10 +1,13 @@
 "use client";
 
 import { createContext, Suspense, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import IrisPanel from "@/components/iris-panel/IrisPanel";
 import { useBreakpoint } from "@/hooks/useViewport";
 import { track } from "@/lib/analytics/analytics";
+import { askIrisChatDataQuery } from "@/lib/askiris/chat-data";
 import type { StarterPool } from "@/lib/askiris/starter-questions";
 import { askIrisPagePath, takePanelConversationParam, type IrisEntryPoint, type IrisRequest } from "@/lib/url/askiris";
 import { ASK_IRIS_PATH } from "@/lib/url/routes";
@@ -40,6 +43,23 @@ export function IrisPanelProvider({ children }: { children: ReactNode }) {
   const [request, setRequest] = useState<IrisPanelRequest | null>(null);
   const nextRequestId = useRef(0);
   const shown = open && !onAskIrisPage;
+  const locale = useLocale();
+  const queryClient = useQueryClient();
+
+  // The panel cannot draw a chat without this data, so it is fetched while the page is idle
+  // rather than when Iris is first opened.
+  useEffect(() => {
+    if (onAskIrisPage) {
+      return;
+    }
+    const prefetch = () => void queryClient.prefetchQuery(askIrisChatDataQuery(locale));
+    if (typeof window.requestIdleCallback === "function") {
+      const id = window.requestIdleCallback(prefetch, { timeout: 5000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = window.setTimeout(prefetch, 2000);
+    return () => window.clearTimeout(id);
+  }, [queryClient, locale, onAskIrisPage]);
 
   const routeRef = useRef({ wide, onAskIrisPage, router });
   useEffect(() => {
