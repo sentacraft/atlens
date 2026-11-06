@@ -360,3 +360,11 @@ describe("lists longer than one call returns", () => {
     }
   });
 });
+
+describe("queryLenses result note", () => {
+  it("carries the rules for reading maybe and the cap with the data", async () => {
+    const result = await run(tools.queryLenses, { queries: [{ type: "prime" }] });
+    expect(result.note).toMatch(/`maybe`.*never drop them/s);
+    expect(result.note).toMatch(/totalMatched.*no paging/s);
+  });
+});
