@@ -1,10 +1,19 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import Card from "@/components/admin/AnalyticsCard";
 import { AVERAGE_DAYS, D1_CUTOVER_DAY, Definitions, fmtCompact, pct } from "@/components/admin/AnalyticsUi";
-import { Funnel } from "@/components/admin/Breakdown";
+import { BreakdownTree, Funnel } from "@/components/admin/Breakdown";
 import StatTile from "@/components/admin/StatTile";
 import TrendChart from "@/components/admin/TrendChart";
-import { DAY_MS, dashboardWindows, loadDaily, loadOverview, loadSessionFunnel, type Overview } from "@/lib/analytics/dashboard";
+import {
+  DAY_MS,
+  dashboardWindows,
+  dayOf,
+  loadDaily,
+  loadOverview,
+  loadSessionFunnel,
+  loadSessionSources,
+  type Overview,
+} from "@/lib/analytics/dashboard";
 import { movingAverage, percentChange } from "@/lib/analytics/series";
 import { ANALYTICS_RANGE_LABELS, resolveAnalyticsRange } from "@/lib/url/admin-analytics";
 
@@ -19,13 +28,14 @@ export default async function AnalyticsOverviewPage({
   const events = getCloudflareContext().env.ANALYTICS_DB;
   const { current, previous } = await dashboardWindows(events, range);
 
-  const [overview, previousOverview, paddedDaily, funnel, previousFunnel] = await Promise.all([
+  const [overview, previousOverview, paddedDaily, funnel, previousFunnel, sources] = await Promise.all([
     loadOverview(events, current),
     previous ? loadOverview(events, previous) : null,
     // The days before the range warm up the trailing average, so it starts on the range's first day.
     loadDaily(events, { from: Math.max(0, current.from - (AVERAGE_DAYS - 1) * DAY_MS), to: current.to }),
     loadSessionFunnel(events, current),
     previous ? loadSessionFunnel(events, previous) : null,
+    loadSessionSources(events, current),
   ]);
 
   const smooth = range !== "7d";
@@ -148,6 +158,41 @@ export default async function AnalyticsOverviewPage({
           }
         >
           <Funnel steps={funnel} unit="Sessions" nested={false} previous={previousFunnel} />
+        </Card>
+        <Card
+          title="Where sessions come from"
+          subtitle={
+            sources.since === null
+              ? "Not recorded yet"
+              : `${fmtCompact(sources.sessions)} sessions since ${dayOf(Math.max(sources.since, current.from))}`
+          }
+          className="lg:col-span-3"
+          info={
+            <Definitions
+              items={[
+                { term: "Tag", description: "The ?src= or utm_source on the link the session landed from; Untagged when the link had none" },
+                { term: "Opened in", description: "The app whose built-in browser opened the page, from its user agent; Browser for a regular browser" },
+                { term: "Country", description: "From Cloudflare, by IP address; the address itself is not stored" },
+                { term: "Network", description: "Data center, mobile or other, guessed from the network operator's name" },
+                { term: "Coverage", description: "Only sessions with this request data, which started being recorded on the date above" },
+              ]}
+            />
+          }
+        >
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div>
+              <h3 className="mb-2 text-sm font-medium text-zinc-700">Tag, then where it was opened</h3>
+              <BreakdownTree nodes={sources.bySource} unit="Sessions" />
+            </div>
+            <div>
+              <h3 className="mb-2 text-sm font-medium text-zinc-700">Country</h3>
+              <BreakdownTree nodes={sources.byCountry} unit="Sessions" />
+            </div>
+            <div>
+              <h3 className="mb-2 text-sm font-medium text-zinc-700">Network</h3>
+              <BreakdownTree nodes={sources.byNetwork} unit="Sessions" />
+            </div>
+          </div>
         </Card>
       </div>
     </main>

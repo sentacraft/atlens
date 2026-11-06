@@ -1,6 +1,6 @@
 import "server-only";
 
-import { buildBreakdown, type BreakdownNode, type FunnelStep, type LabelFor } from "@/lib/analytics/breakdown";
+import { buildBreakdown, type BreakdownNode, type CountRow, type FunnelStep, type LabelFor } from "@/lib/analytics/breakdown";
 import { ASKIRIS_TURN_EVENT, EVENT_DOCS, SIGN_IN_COMPLETE_EVENT, valueLabel } from "@/lib/analytics/events";
 import type { AnalyticsRange } from "@/lib/url/admin-analytics";
 
@@ -650,4 +650,92 @@ const LOCALE_LABELS: Record<string, string> = { en: "English", zh: "Chinese" };
 export async function loadLocales(db: D1Database, window: TimeWindow): Promise<BreakdownNode[]> {
   const counted = await countBy(db, window, null, ["locale"], { limit: BREAKDOWN_ROW_LIMIT });
   return buildBreakdown(counted, ["locale"], (_, value) => (value === null ? NOT_RECORDED : (LOCALE_LABELS[value] ?? value)));
+}
+
+export interface SessionSources {
+  /** When request attributes started being recorded; null before the first one. */
+  since: number | null;
+  sessions: number;
+  bySource: BreakdownNode[];
+  byCountry: BreakdownNode[];
+  byNetwork: BreakdownNode[];
+}
+
+const APP_LABELS: Record<string, string> = {
+  browser: "Browser",
+  in_app: "Other in-app browser",
+  bot: "Bot",
+  wechat: "WeChat",
+  wecom: "WeCom",
+  xiaohongshu: "Xiaohongshu",
+  qq: "QQ",
+  weibo: "Weibo",
+  douyin: "Douyin",
+  bilibili: "Bilibili",
+  zhihu: "Zhihu",
+  dingtalk: "DingTalk",
+  lark: "Lark",
+  facebook: "Facebook",
+  instagram: "Instagram",
+  x: "X",
+  line: "LINE",
+  reddit: "Reddit",
+};
+
+const NETWORK_LABELS: Record<string, string> = {
+  datacenter: "Data center",
+  mobile: "Mobile network",
+  other: "Other network",
+};
+
+const REGION_NAMES = new Intl.DisplayNames(["en"], { type: "region" });
+
+function countryLabel(code: string): string {
+  try {
+    return `${REGION_NAMES.of(code) ?? code} (${code})`;
+  } catch {
+    return code;
+  }
+}
+
+/**
+ * Sessions by the `?src=` tag they landed with and the app they were opened in, and by country and
+ * network class. Only sessions with request attributes count, so the counts start when those began.
+ */
+export async function loadSessionSources(db: D1Database, window: TimeWindow): Promise<SessionSources> {
+  const [counted, [first]] = await Promise.all([
+    rows<CountRow>(
+      db,
+      `SELECT src, ua_class, country, network, COUNT(*) AS n FROM (
+         SELECT session_id, MAX(json_extract(props, '$.src')) AS src, MAX(ua_class) AS ua_class,
+                MAX(country) AS country, MAX(network) AS network
+         FROM event_sessions WHERE ${IN_WINDOW} AND origin = 'live'
+         GROUP BY session_id
+         HAVING MAX(ua_class) IS NOT NULL OR MAX(country) IS NOT NULL
+       )
+       GROUP BY src, ua_class, country, network`,
+      window.from,
+      window.to,
+    ),
+    rows<{ first: number | null }>(db, "SELECT MIN(ts) AS first FROM events WHERE ua_class IS NOT NULL OR country IS NOT NULL"),
+  ]);
+  const label: LabelFor = (level, value) => {
+    if (level === "src") {
+      return value === null ? "Untagged" : valueLabel("page_view", "src", value);
+    }
+    if (value === null) {
+      return NOT_RECORDED;
+    }
+    if (level === "ua_class") {
+      return APP_LABELS[value] ?? value;
+    }
+    return level === "country" ? countryLabel(value) : (NETWORK_LABELS[value] ?? value);
+  };
+  return {
+    since: first?.first ?? null,
+    sessions: counted.reduce((sum, row) => sum + row.n, 0),
+    bySource: buildBreakdown(counted, ["src", "ua_class"], label),
+    byCountry: buildBreakdown(counted, ["country"], label),
+    byNetwork: buildBreakdown(counted, ["network"], label),
+  };
 }
