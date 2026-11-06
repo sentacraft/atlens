@@ -11,13 +11,16 @@ export interface EventRow {
   signedIn: boolean;
   internal: boolean;
   props: object;
+  country?: string | null;
+  network?: string | null;
+  uaClass?: string | null;
 }
 
 /** Appends one event to the analytics database. */
 export async function insertEvent(db: D1Database, row: EventRow): Promise<void> {
   await db
     .prepare(
-      "INSERT INTO events (ts, event, vid, locale, path, signed_in, internal, props) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO events (ts, event, vid, locale, path, signed_in, internal, props, country, network, ua_class) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     )
     .bind(
       row.ts,
@@ -28,6 +31,9 @@ export async function insertEvent(db: D1Database, row: EventRow): Promise<void> 
       row.signedIn ? 1 : 0,
       row.internal ? 1 : 0,
       JSON.stringify(row.props),
+      row.country ?? null,
+      row.network ?? null,
+      row.uaClass ?? null,
     )
     .run();
 }

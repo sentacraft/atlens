@@ -45,3 +45,17 @@ describe("track", () => {
     expect(await sentProps()).toEqual({ viewport: "phone" });
   });
 });
+
+describe("track landing source", () => {
+  it("adds src and campaign from the landing URL and keeps them for later events", async () => {
+    setWidth(1200);
+    window.history.replaceState({}, "", "/en?utm_source=hn&utm_campaign=launch");
+    track("filter_reset");
+    expect(await sentProps()).toMatchObject({ src: "hn", campaign: "launch" });
+
+    window.history.replaceState({}, "", "/en/lenses");
+    track("filter_reset");
+    expect(await sentProps()).toMatchObject({ src: "hn", campaign: "launch" });
+    sessionStorage.clear();
+  });
+});

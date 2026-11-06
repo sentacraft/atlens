@@ -4,7 +4,7 @@ type FieldKind = "string" | "number" | "boolean";
 type FieldValue = { string: string; number: number; boolean: boolean };
 
 /** Props `track` adds to every client event; callers don't pass them. */
-const COMMON_FIELDS = { viewport: "string" } as const satisfies Record<string, FieldKind>;
+const COMMON_FIELDS = { viewport: "string", src: "string", campaign: "string" } as const satisfies Record<string, FieldKind>;
 
 /** The props each event may carry, besides the common ones; anything else is dropped before it is stored. */
 const EVENT_FIELDS = {
@@ -155,6 +155,12 @@ const COMMON_FIELD_DOCS: Record<keyof typeof COMMON_FIELDS, FieldDoc> = {
       tablet: { label: "Tablet width", description: "640–1023px: the full header, with narrower page layouts" },
       desktop: { label: "Desktop width", description: "1024px and up" },
     },
+  },
+  src: {
+    description: "The `?src=` or `utm_source` tag the visit arrived with, kept for the tab; empty for untagged visits.",
+  },
+  campaign: {
+    description: "The `utm_campaign` tag the visit arrived with, kept for the tab; empty for untagged visits.",
   },
 };
 
