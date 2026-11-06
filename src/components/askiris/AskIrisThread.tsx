@@ -156,6 +156,7 @@ const TOOL_ACTIVITY: Record<string, ActivityKey> = {
   queryLenses: "gathering",
   searchLensByName: "gathering",
   lensDetails: "gathering",
+  queryBodies: "gathering",
   lensReviews: "gathering",
   recommendLenses: "composing",
   listLenses: "composing",

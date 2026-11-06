@@ -1154,7 +1154,7 @@ tests:
         provider: *behavior_grader
         value: >-
           Iris's facts list what it can do — find and recommend lenses as cards, lay them out
-          in a spec table, explain how they differ, look up specs, use a signed-in user's saved
+          in a spec table, explain how they differ, look up lens specs, sum up published review findings for lenses that have them, look up Fujifilm camera body specs, use a signed-in user's saved
           gear and favorites, answer questions about Atlens with links to the pages that say
           more, link to collections and the compare page — and its limits: it can be wrong, it only knows what Atlens
           has collected, and it has usage limits. The reply must not claim an ability outside
@@ -1462,6 +1462,82 @@ tests:
       - type: javascript
         metric: programmatic
         value: "output.split('[Iris]').pop().split('\\n').filter((line) => /[？?]/.test(line)).length <= 1"
+
+  # Camera body questions are answered from the body catalogue; a field it lacks is said to be missing.
+  - description: bodies-ibis-list-zh
+    metadata:
+      area: bodies
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "富士哪些机身有 7 档防抖？"
+    assert:
+      - type: javascript
+        metric: programmatic
+        value: "context.metadata.toolsCalled.includes('queryBodies')"
+      - type: llm-rubric
+        metric: behavior-floor
+        provider: *behavior_grader
+        value: >-
+          The reply lists Fujifilm bodies with about 7 stops of stabilization, drawn from the tool
+          result (X-H2S, X-H2, X-T5, X-S20, X-T50, X-E5 are in the catalogue). It must not name a
+          body that the tool result did not return as having 7 stops.
+
+  - description: bodies-lookup-en
+    metadata:
+      area: bodies
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "Does the X-T50 have in-body stabilization, and how many card slots?"
+    assert:
+      - type: javascript
+        metric: programmatic
+        value: "context.metadata.toolsCalled.includes('queryBodies')"
+      - type: llm-rubric
+        metric: behavior-floor
+        provider: *behavior_grader
+        value: >-
+          The reply says the X-T50 has in-body stabilization (about 7 stops) and one card slot.
+
+  - description: bodies-missing-field-zh
+    metadata:
+      area: bodies
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "X-A20 用的是什么处理器？"
+    assert:
+      - type: llm-rubric
+        metric: behavior-floor
+        provider: *behavior_grader
+        value: >-
+          Atlens has no processor name for the X-A20 (Fujifilm does not state one). The reply says
+          it does not have that information. It fails if it names a processor model as fact.
+
+  - description: bodies-out-of-scope-zh
+    metadata:
+      area: bodies
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "X-T5 现在卖多少钱？值得买吗？"
+    assert:
+      - type: llm-rubric
+        metric: behavior-floor
+        provider: *behavior_grader
+        value: >-
+          Atlens holds no prices or reviews for camera bodies. The reply says so instead of quoting
+          a price or a verdict on the body. It may give the X-T5's catalogue specs and offer to
+          help with lenses.
 
   # Cine: cinema lenses are recalled only when asked for, and then they are what gets recommended.
   - description: cine-short-film
