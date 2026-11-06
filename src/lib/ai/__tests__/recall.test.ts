@@ -287,7 +287,7 @@ describe("recallLenses · sortNote", () => {
     const undated = recall({ brands: ["ttartisan"], sortBy: "newest" }, ALL);
 
     expect(undated.matches.length).toBeGreaterThan(0);
-    expect(undated.sortNote).toMatch(/no value to sort by \(newest\)/);
+    expect(undated.sortNote).toMatch(/no release year on record/);
   });
 
   it("stays silent when every shown lens has the sort value", () => {

@@ -511,7 +511,7 @@ export function recallLenses(
     maybeBrands: [...new Set(maybe.map((m) => tBrand(m.lens.brand)))],
     ...(unranked > 0
       ? {
-          sortNote: `${unranked} of these ${shown.length} lenses have no value to sort by (${constraints.sortBy ?? DEFAULT_SORT}), so they come last in no meaningful order. Do not present that order as a ranking.`,
+          sortNote: `${unranked} of these ${shown.length} lenses have no ${key.replace(/[A-Z]/g, (c) => ` ${c.toLowerCase()}`)} on record, so they are listed last in no meaningful order. Do not present that order as a ranking.`,
         }
       : {}),
   };
