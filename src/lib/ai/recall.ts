@@ -68,6 +68,8 @@ export const LENS_TABLE_COLUMNS = [
   "apertureRing",
   "wr",
   "filterThread",
+  "length",
+  "ois",
   "releaseYear",
 ] as const;
 export type LensTableColumn = (typeof LENS_TABLE_COLUMNS)[number];

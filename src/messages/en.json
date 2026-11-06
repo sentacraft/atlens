@@ -210,6 +210,7 @@
     "composing": "Putting it together…",
     "table": {
       "lensHeader": "Lens",
+      "length": "Length",
       "focus": "Focus",
       "auto": "Autofocus",
       "manual": "Manual",

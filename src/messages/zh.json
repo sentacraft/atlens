@@ -210,6 +210,7 @@
     "composing": "正在整理结果…",
     "table": {
       "lensHeader": "镜头",
+      "length": "长度",
       "focus": "对焦",
       "auto": "自动",
       "manual": "手动",

@@ -315,3 +315,48 @@ describe("lensReviews", () => {
     expect(asked).toEqual([]);
   });
 });
+
+describe("lists longer than one call returns", () => {
+  async function recalledRefs(count: number) {
+    const lookup = buildLensTools("X", "zh", (brand) => brand, GUEST, new Set());
+    const recall = await run(lookup.queryLenses, { queries: [{ type: "prime" }] });
+    const refs = recall.results[0].matches.slice(0, count).map((lens: { ref: string }) => lens.ref);
+    expect(refs).toHaveLength(count);
+    return { lookup, refs };
+  }
+
+  it("lensDetails takes the first 6 and names the rest instead of rejecting the call", async () => {
+    const { lookup, refs } = await recalledRefs(9);
+    const out = await run(lookup.lensDetails, { refs });
+
+    expect(out.lenses.map((lens: { ref: string }) => lens.ref)).toEqual(refs.slice(0, 6));
+    expect(out.notReturned.refs).toEqual(refs.slice(6));
+    expect(out.notReturned.note).toMatch(/first 6/);
+  });
+
+  it("lensReviews takes the first 6 and names the rest", async () => {
+    const { lookup, refs } = await recalledRefs(8);
+    const out = await run(lookup.lensReviews, { refs });
+
+    expect(out.lenses.map((lens: { ref: string }) => lens.ref)).toEqual(refs.slice(0, 6));
+    expect(out.notReturned.refs).toEqual(refs.slice(6));
+  });
+
+  it("adds no notReturned field when everything fits", async () => {
+    const { lookup, refs } = await recalledRefs(6);
+
+    expect((await run(lookup.lensDetails, { refs })).notReturned).toBeUndefined();
+    expect((await run(lookup.lensReviews, { refs })).notReturned).toBeUndefined();
+  });
+
+  it("the tool schemas accept any number of refs, so the call is never refused before it runs", async () => {
+    const { lookup, refs } = await recalledRefs(12);
+    const many = Array.from({ length: 20 }, (_, i) => refs[i % refs.length]);
+
+    for (const tool of [lookup.lensDetails, lookup.lensReviews]) {
+      const schema = tool.inputSchema as { safeParse: (value: unknown) => { success: boolean } };
+      expect(schema.safeParse({ refs: many }).success).toBe(true);
+      expect(schema.safeParse({ refs: [] }).success).toBe(false);
+    }
+  });
+});
