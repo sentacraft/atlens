@@ -340,7 +340,7 @@ describe("loadIrisFunnel", () => {
       ["Lens page", 1],
       ["Ask Iris page directly", 1],
     ]);
-    expect(opened.breakdown[0].children.map((node) => node.label)).toEqual(["Find a lens"]);
+    expect(opened.breakdown[0].children.map((node) => node.label)).toEqual(["Scene"]);
     expect(asked.breakdown[0]).toMatchObject({ label: "Example question", count: 1 });
     expect(clicked.breakdown.map((node) => node.label)).toEqual(["Card"]);
   });
