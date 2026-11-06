@@ -1,5 +1,23 @@
 export type NetworkClass = "datacenter" | "mobile" | "other";
-export type UserAgentClass = "bot" | "in_app" | "browser";
+/** A named app's in-app browser, `in_app` for an unnamed one, `bot`, or a regular `browser`. */
+export type UserAgentClass = InAppName | "in_app" | "bot" | "browser";
+
+type InAppName =
+  | "wechat"
+  | "wecom"
+  | "xiaohongshu"
+  | "qq"
+  | "weibo"
+  | "douyin"
+  | "bilibili"
+  | "zhihu"
+  | "dingtalk"
+  | "lark"
+  | "facebook"
+  | "instagram"
+  | "x"
+  | "line"
+  | "reddit";
 
 export interface RequestAttributes {
   country: string | null;
@@ -23,7 +41,25 @@ export function classifyNetwork(organization: string | null | undefined): Networ
 }
 
 const BOT_UA = /bot|crawl|spider|headless|lighthouse|preview|monitor|curl|python-requests|go-http/i;
-const IN_APP_UA = /micromessenger|fban|fbav|instagram|line\/|twitter|weibo|dingtalk|qq\/|\bwv\b/i;
+// First match wins: WeCom's user agent also carries MicroMessenger.
+const IN_APP_UA: [InAppName, RegExp][] = [
+  ["wecom", /wxwork/i],
+  ["wechat", /micromessenger/i],
+  ["xiaohongshu", /xhsdiscover/i],
+  ["qq", /\bqq\//i],
+  ["weibo", /weibo/i],
+  ["douyin", /aweme|bytedancewebview/i],
+  ["bilibili", /biliapp/i],
+  ["zhihu", /zhihuhybrid/i],
+  ["dingtalk", /dingtalk/i],
+  ["lark", /\blark\/|feishu/i],
+  ["facebook", /fban|fbav/i],
+  ["instagram", /instagram/i],
+  ["x", /twitter/i],
+  ["line", /\bline\//i],
+  ["reddit", /reddit/i],
+];
+const WEBVIEW_UA = /\bwv\b/i;
 
 export function classifyUserAgent(userAgent: string | null | undefined): UserAgentClass | null {
   if (!userAgent) {
@@ -32,7 +68,11 @@ export function classifyUserAgent(userAgent: string | null | undefined): UserAge
   if (BOT_UA.test(userAgent)) {
     return "bot";
   }
-  return IN_APP_UA.test(userAgent) ? "in_app" : "browser";
+  const app = IN_APP_UA.find(([, pattern]) => pattern.test(userAgent));
+  if (app) {
+    return app[0];
+  }
+  return WEBVIEW_UA.test(userAgent) ? "in_app" : "browser";
 }
 
 /** The request's country, network class and user-agent class; each is null when unknown. */

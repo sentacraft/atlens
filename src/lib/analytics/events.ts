@@ -158,6 +158,13 @@ const COMMON_FIELD_DOCS: Record<keyof typeof COMMON_FIELDS, FieldDoc> = {
   },
   src: {
     description: "The `?src=` or `utm_source` tag the visit arrived with, kept for the tab; empty for untagged visits.",
+    values: {
+      share_copy: { label: "Copied share link", description: "A link copied from a share panel" },
+      share_sheet: { label: "System share", description: "A link sent through the system share sheet" },
+      poster: { label: "Poster QR code", description: "A share poster's QR code" },
+      site_link: { label: "Site link", description: "The site link shared from the support panel" },
+      github: { label: "GitHub README", description: "A link in the repository README" },
+    },
   },
   campaign: {
     description: "The `utm_campaign` tag the visit arrived with, kept for the tab; empty for untagged visits.",

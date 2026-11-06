@@ -18,6 +18,7 @@ import { LightboxDialog } from "./LightboxDialog";
 import { useSupportDialog } from "@/context/SupportDialogProvider";
 import { browserPromptStore, claimPrompt } from "@/lib/support-prompts";
 import { aboutPath } from "@/lib/url/routes";
+import { withSource } from "@/lib/url/source";
 
 const PREVIEW_W = 352;
 const PREVIEW_H = 310;
@@ -94,7 +95,7 @@ export function ShareButton({ heading, caption, shareText, posters, trigger }: S
 
   const handleCopy = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(withSource(window.location.href, "share_copy"));
       setCopyFailed(false);
       setCopied(true);
       track("share_action", { method: "copy_link" });
@@ -110,7 +111,7 @@ export function ShareButton({ heading, caption, shareText, posters, trigger }: S
     try {
       await navigator.share({
         // TODO: debug title/url field behavior across platforms before re-enabling
-        text: `${shareText}\n👉 ${window.location.href}`,
+        text: `${shareText}\n👉 ${withSource(window.location.href, "share_sheet")}`,
       });
       track("share_action", { method: "native" });
     } catch (err) {
@@ -295,7 +296,7 @@ export function ShareButton({ heading, caption, shareText, posters, trigger }: S
             inert
           >
             <div ref={attachPoster} style={{ width: poster.width }}>
-              {poster.content(shareUrl)}
+              {poster.content(shareUrl && withSource(shareUrl, "poster"))}
             </div>
           </div>
         </div>

@@ -19,7 +19,12 @@ describe("classifyNetwork", () => {
 describe("classifyUserAgent", () => {
   it.each([
     ["Mozilla/5.0 (compatible; Googlebot/2.1)", "bot"],
-    ["Mozilla/5.0 (iPhone) MicroMessenger/8.0", "in_app"],
+    ["Mozilla/5.0 (iPhone) MicroMessenger/8.0", "wechat"],
+    ["Mozilla/5.0 (iPhone) MicroMessenger/8.0 wxwork/4.1", "wecom"],
+    ["Mozilla/5.0 (iPhone) xhsdiscover/8.40", "xiaohongshu"],
+    ["Mozilla/5.0 (iPhone) QQ/9.0.1", "qq"],
+    ["Mozilla/5.0 (Linux; Android 14) MQQBrowser/14.0 Mobile Safari", "browser"],
+    ["Mozilla/5.0 (Linux; Android 14; wv) Chrome/130 Mobile Safari", "in_app"],
     ["Mozilla/5.0 (Macintosh) AppleWebKit/605 Safari/605", "browser"],
   ])("%s -> %s", (userAgent, expected) => {
     expect(classifyUserAgent(userAgent)).toBe(expected);

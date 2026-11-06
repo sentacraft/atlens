@@ -1,5 +1,6 @@
 "use client";
 
+import { withSource } from "@/lib/url/source";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -180,7 +181,7 @@ export default function SupportPanel({ className }: { className?: string }) {
           </a>
           <button
             type="button"
-            onClick={() => shareSite(`${SITE.url}/${locale}`, t("shareText"), t("linkCopied"))}
+            onClick={() => shareSite(withSource(`${SITE.url}/${locale}`, "site_link"), t("shareText"), t("linkCopied"))}
             className={HELP_BTN_CLS}
           >
             <Share className="size-3.5" aria-hidden="true" />
