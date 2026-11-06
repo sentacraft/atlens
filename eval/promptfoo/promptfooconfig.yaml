@@ -385,7 +385,7 @@ tests:
         provider: *behavior_grader
         value: >-
           The user is undecided between two focal lengths. The reply must do one of two
-          things and not both: ask which way that choice goes and name no lens at all;
+          things and not both: ask which way that choice goes (in text or on a [question card]) and name no lens at all;
           or say which way it narrowed the request, so the user can correct it, and
           offer lenses only from that side. Characterising what each focal length is
           like is how the question gets asked and is not offering a lens — only naming
@@ -497,8 +497,9 @@ tests:
           silently commits to one assumption and gives a single answer without naming
           it, it fails.
 
-  # Vague first message: real visitors typed a bare occasion ("日本旅行", "运动会适合") and left
-  # after Iris answered with a list of questions. It should commit to a starting point and ask one.
+  # Vague first message: real visitors typed a need too thin to pick a lens from ("日本旅行",
+  # "运动会适合") and left after Iris answered with a list of questions in text. It should ask on
+  # the choice card.
   - description: vague-trip
     metadata:
       area: vague
@@ -509,15 +510,12 @@ tests:
         turns:
           - "日本旅行"
     assert:
-      - type: javascript # a starting recommendation, not only questions
-        metric: programmatic
-        value: "context.metadata.picks.length > 0"
-      - type: javascript # at most one question
-        metric: programmatic
-        value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length <= 1"
-      - type: javascript # the follow-up question is on the card, not in the text
+      - type: javascript # the questions are on the card
         metric: programmatic
         value: "context.metadata.toolsCalled.includes('askChoices')"
+      - type: javascript # and not repeated in the text
+        metric: programmatic
+        value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length === 0"
 
   - description: vague-sports-day
     metadata:
@@ -529,15 +527,12 @@ tests:
         turns:
           - "运动会适合"
     assert:
-      - type: javascript
-        metric: programmatic
-        value: "context.metadata.picks.length > 0"
-      - type: javascript
-        metric: programmatic
-        value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length <= 1"
-      - type: javascript # the follow-up question is on the card, not in the text
+      - type: javascript # the questions are on the card
         metric: programmatic
         value: "context.metadata.toolsCalled.includes('askChoices')"
+      - type: javascript # and not repeated in the text
+        metric: programmatic
+        value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length === 0"
 
   - description: vague-light-kit
     metadata:
@@ -549,15 +544,12 @@ tests:
         turns:
           - "旅行精简装备"
     assert:
-      - type: javascript
-        metric: programmatic
-        value: "context.metadata.picks.length > 0"
-      - type: javascript
-        metric: programmatic
-        value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length <= 1"
-      - type: javascript # the follow-up question is on the card, not in the text
+      - type: javascript # the questions are on the card
         metric: programmatic
         value: "context.metadata.toolsCalled.includes('askChoices')"
+      - type: javascript # and not repeated in the text
+        metric: programmatic
+        value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length === 0"
 
   - description: vague-portrait
     metadata:
@@ -569,13 +561,10 @@ tests:
         turns:
           - "我想找个拍人的镜头。"
     assert:
-      - type: javascript
-        metric: programmatic
-        value: "context.metadata.picks.length > 0"
-      - type: javascript
+      - type: javascript # the questions are on the card
         metric: programmatic
         value: "context.metadata.toolsCalled.includes('askChoices')"
-      - type: javascript # no question left in the text
+      - type: javascript # and not repeated in the text
         metric: programmatic
         value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length === 0"
 
