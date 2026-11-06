@@ -574,6 +574,7 @@
       "collapse": "收起",
       "showDetails": "看每篇评测怎么说（{count}）",
       "reviewCount": "{count} 篇评测",
+      "namedMore": "{names} +{count}",
       "reviewSources": "{aspect}的 {count} 篇评测",
       "disagree": "各家看法不一：{aspects}",
       "polarity": {

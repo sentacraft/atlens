@@ -574,6 +574,7 @@
       "collapse": "Show less",
       "showDetails": "What each review says ({count})",
       "reviewCount": "{count, plural, one {# review} other {# reviews}}",
+      "namedMore": "{names} +{count}",
       "reviewSources": "{count, plural, one {# review} other {# reviews}} on {aspect}",
       "disagree": "Reviewers disagree on {aspects}",
       "polarity": {
