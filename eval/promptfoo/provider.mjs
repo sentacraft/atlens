@@ -254,6 +254,11 @@ function digest(msg) {
       pickGroups.push(group);
       transcript.push(`[cards]\n${part.output.recommendations.map(formatCard).join("\n")}`);
     }
+    if (name === "askChoices" && Array.isArray(part.input?.questions)) {
+      transcript.push(
+        `[question card]\n${part.input.questions.map((q) => `${q.question.replace(/[？?]/g, "")} (${q.options.join(" / ")})`).join("\n")}`,
+      );
+    }
     if (name === "listLenses" && Array.isArray(part.output?.lenses)) {
       const ids = part.output.lenses.map((l) => l.id);
       const columns = Array.isArray(part.output.columns) ? part.output.columns : [];

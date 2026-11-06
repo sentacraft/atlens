@@ -16,6 +16,7 @@ import {
 import { lensRef, buildRefIndex, sourceRef } from "@/lib/ai/lens-ref";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
+import { ASK_CHOICES, choiceRequestInputSchema, choiceRequestOutputSchema } from "@/lib/ai/choice-request";
 import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
 import { SKILL_NAMES, readSkill } from "@/lib/ai/skills";
 import { bodyQuerySchema, queryBodies } from "@/lib/body/query";
@@ -511,6 +512,17 @@ export function buildLensTools(
         "signing in); the user-gear note then says how to go on.",
       inputSchema: gearRequestInputSchema,
       outputSchema: gearRequestOutputSchema,
+    }),
+
+    // A client tool: the browser shows the choice card and returns the picks.
+    [ASK_CHOICES]: tool({
+      description:
+        "Ask the user up to three questions as option chips, for questions whose answers are a few short " +
+        "choices; set multiple where several can apply. The card adds its own free-text option. The turn waits " +
+        "for the result: answered (picked per question, empty where the user left a group alone) or skipped. " +
+        "Put the questions in the card only, not in your text; after a skip, go on without asking them again.",
+      inputSchema: choiceRequestInputSchema,
+      outputSchema: choiceRequestOutputSchema,
     }),
   };
 }

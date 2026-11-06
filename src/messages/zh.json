@@ -258,6 +258,18 @@
     "guestQuota": "今天的 {guestTurns, number} 次免费提问已经用完。<signIn>登录</signIn>后每天可以问更多次。",
     "errorRetry": "Iris 这边出了点问题，请<retry>重试</retry>。",
     "errorUnavailable": "Iris 暂时无法使用，请稍后再来。",
+    "choiceCard": {
+      "title": "几个小问题",
+      "pickOne": "单选",
+      "pickAny": "可多选",
+      "somethingElse": "其他",
+      "add": "添加",
+      "done": "完成",
+      "skip": "跳过",
+      "notSaid": "未说明",
+      "skipped": "已跳过这几个问题",
+      "unanswered": "这几个问题没有回答"
+    },
     "gearCard": {
       "title": "补充你的器材",
       "bodies": "机身",
