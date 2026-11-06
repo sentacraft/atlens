@@ -23,6 +23,7 @@ import { ASK_FOR_GEAR, type GearRequestInput, type GearRequestOutput } from "@/l
 import type { LensSummary } from "@/lib/lens/data";
 import type { LensTableColumn, Recommendation, ResolvedLens } from "@/lib/ai/recall";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
+import { usedCatalog } from "@/lib/askiris/catalog-source";
 import { messageCitations } from "@/lib/askiris/review-citations";
 
 function traceSummary(output: unknown): string {
@@ -251,7 +252,7 @@ export default function AskIrisThread({
               return null;
             })}
             </CitationsProvider>
-            {citations && !isStreamingResponse ? <SourceList list={citations.list} /> : null}
+            {citations && !isStreamingResponse ? <SourceList list={citations.list} catalog={usedCatalog(message)} /> : null}
             {!isUser && turnId && !isStreamingResponse && !awaitingUser ? (
               <ResponseFeedback responseMessageId={message.id} />
             ) : null}

@@ -297,6 +297,9 @@
       "measured": "实验室实测",
       "handsOn": "上手实拍",
       "readOriginal": "阅读原文",
+      "catalogName": "Atlens 镜头库",
+      "catalogScope": "规格和价格",
+      "catalogLink": "数据是怎么来的",
       "marker": "来源 {number}：{site}",
       "bodiesSeparator": "、",
       "testedOn": "用 {bodies} 测试"
