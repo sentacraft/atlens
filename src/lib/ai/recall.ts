@@ -215,8 +215,6 @@ export interface RecallResult {
   totalMaybe: number;
   /** Brands behind every "maybe" lens, not only the capped list: the reason a field is missing is often a whole brand. */
   maybeBrands: string[];
-  /** Set when some returned matches have no value for the sort, so their order says nothing. */
-  sortNote?: string;
 }
 
 type Verdict =
@@ -385,6 +383,13 @@ function recallComparable(lens: Lens, key: SortField, locale: string): number | 
   }
 }
 
+// The sorts some lenses cannot be ranked by, and the field name a "maybe" reports for each.
+const SORT_MISSING_FIELD: Partial<Record<SortField, string>> = {
+  price: "price",
+  magnification: "maxMagnification",
+  releaseYear: "releaseYear",
+};
+
 function sortRecalled(
   lenses: Lens[],
   key: SortField,
@@ -486,7 +491,24 @@ export function recallLenses(
   }
 
   const [key, dir] = RECALL_SORTS[constraints.sortBy ?? DEFAULT_SORT];
-  const sortedMatched = sortRecalled(matched, key, dir, locale);
+  // A lens with nothing to sort by cannot be ranked, so it is a "maybe" like one a filter cannot judge.
+  const sortField = SORT_MISSING_FIELD[key];
+  const ranked: Lens[] = [];
+  for (const lens of matched) {
+    if (sortField && recallComparable(lens, key, locale) === null) {
+      maybe.push({ lens, missingFields: [sortField] });
+    } else {
+      ranked.push(lens);
+    }
+  }
+  if (sortField) {
+    for (const entry of maybe) {
+      if (recallComparable(entry.lens, key, locale) === null && !entry.missingFields.includes(sortField)) {
+        entry.missingFields.push(sortField);
+      }
+    }
+  }
+  const sortedMatched = sortRecalled(ranked, key, dir, locale);
   const sortedMaybe = sortRecalled(
     maybe.map((m) => m.lens),
     key,
@@ -494,26 +516,16 @@ export function recallLenses(
     locale,
   );
   const missingById = new Map(maybe.map((m) => [m.lens.id, m.missingFields]));
-  const shown = sortedMatched.slice(0, maxCount);
-  // Weight, aperture and length sort through sortLenses, which has no gap to warn about.
-  const unranked = DELEGATED_SORTS.has(key)
-    ? 0
-    : shown.filter((lens) => recallComparable(lens, key, locale) === null).length;
 
   return {
-    matches: shown.map((lens) => toRecalled(resolveLens(lens, locale, tBrand))),
+    matches: sortedMatched.slice(0, maxCount).map((lens) => toRecalled(resolveLens(lens, locale, tBrand))),
     maybe: sortedMaybe.slice(0, maxCount).map((lens) => ({
       lens: toRecalled(resolveLens(lens, locale, tBrand)),
       missingFields: missingById.get(lens.id) ?? [],
     })),
-    totalMatched: matched.length,
+    totalMatched: ranked.length,
     totalMaybe: maybe.length,
     maybeBrands: [...new Set(maybe.map((m) => tBrand(m.lens.brand)))],
-    ...(unranked > 0
-      ? {
-          sortNote: `${unranked} of these ${shown.length} lenses have no ${key.replace(/[A-Z]/g, (c) => ` ${c.toLowerCase()}`)} on record, so they are listed last in no meaningful order. Do not present that order as a ranking.`,
-        }
-      : {}),
   };
 }
 
