@@ -10,7 +10,7 @@ const openSignIn = vi.hoisted(() => vi.fn());
 
 vi.mock("next-intl", () => ({
   useLocale: () => "zh",
-  useFormatter: () => ({ list: (items: string[]) => items.join(", "), dateTime: (date: Date) => `${date.getFullYear()}/${date.getMonth() + 1}` }),
+  useFormatter: () => ({ list: (items: string[], options?: { type: string }) => items.join(options?.type === "conjunction" ? " & " : ", "), dateTime: (date: Date) => `${date.getFullYear()}/${date.getMonth() + 1}` }),
   useTranslations: () =>
     Object.assign(
       (key: string, values?: Record<string, string | number>) => (values ? `${key}(${Object.values(values).join(",")})` : key),
@@ -105,7 +105,7 @@ describe("LensReviewSummary", () => {
     expect(screen.queryByText(/^count\(/)).toBeNull();
   });
 
-  it("lists the reviews behind a finding from its review count, numbered as the full view numbers them", async () => {
+  it("lists the reviews behind a finding from its button, numbered as the full view numbers them", async () => {
     renderWith(DATA);
     fireEvent.click(await screen.findByRole("button", { name: "reviewSources(2,aspects.bokeh)" }));
     const siteA = await screen.findByRole("link", { name: /Site A/ });
@@ -114,13 +114,42 @@ describe("LensReviewSummary", () => {
     expect(screen.getByRole("link", { name: /Site B/ }).textContent).toMatch(/^2/);
   });
 
+  it("names the sites behind a finding on its button, two at most and then how many more", async () => {
+    const sources = ["a", "b", "c", "d"].map((id) => ({ id, url: `https://example.com/${id}`, site: `Site ${id.toUpperCase()}`, kind: "measured" }));
+    renderWith({
+      sources,
+      claims: [
+        claim("bokeh", "positive", "背景虚化讨喜", ["a", "b"]),
+        claim("autofocus", "negative", "对焦偏慢", ["a", "b", "c", "d"]),
+        claim("build", "positive", "做工扎实", ["d"]),
+      ],
+    } as LensReviewsView);
+    expect(await screen.findByRole("button", { name: "reviewSources(2,aspects.bokeh)" })).toHaveProperty("textContent", "Site A & Site B");
+    expect(screen.getByRole("button", { name: "reviewSources(4,aspects.autofocus)" }).textContent).toBe("namedMore(Site A, Site B,2)");
+    expect(screen.getByRole("button", { name: "reviewSources(1,aspects.build)" }).textContent).toBe("Site D");
+  });
+
+  it("names a site once when several of its reviews back a finding", async () => {
+    const sources = [
+      { id: "a", url: "https://example.com/a", site: "Site A", kind: "measured" },
+      { id: "a2", url: "https://example.com/a2", site: "Site A", kind: "hands_on" },
+    ];
+    renderWith({ sources, claims: [claim("bokeh", "positive", "背景虚化讨喜", ["a", "a2"])] } as LensReviewsView);
+    expect((await screen.findByRole("button", { name: "reviewSources(2,aspects.bokeh)" })).textContent).toBe("Site A");
+  });
+
+  it("falls back to the review count when none of a finding's sources is known", async () => {
+    renderWith({ sources: [], claims: [claim("bokeh", "positive", "背景虚化讨喜", ["gone"])] } as LensReviewsView);
+    expect((await screen.findByRole("button", { name: "reviewSources(1,aspects.bokeh)" })).textContent).toBe("reviewCount(1)");
+  });
+
   it("leaves the aspect off collapsed findings, whose sentences already name it", async () => {
     renderWith(DATA);
     expect(await screen.findByText("背景虚化讨喜")).toBeTruthy();
     expect(screen.queryByText("aspects.bokeh")).toBeNull();
   });
 
-  it("cites a finding by its review count in the full view, keeping numbered markers for each review's own points", async () => {
+  it("cites a finding by the sites behind it in the full view, keeping numbered markers for each review's own points", async () => {
     renderWith({
       ...DATA,
       claims: [...DATA.claims, { ...claim("focus_breathing", "negative", "有呼吸效应", ["a"]), details: [{ id: "b", text: "视频里明显" }] }],
@@ -130,6 +159,8 @@ describe("LensReviewSummary", () => {
     expect(screen.queryAllByRole("button", { name: /^marker\(/ })).toHaveLength(0);
     fireEvent.click(screen.getByRole("button", { name: "showDetails(1)" }));
     expect(screen.getAllByRole("button", { name: /^marker\(/ })).toHaveLength(1);
+    // A detail names the site it comes from, before its marker.
+    expect(screen.getByText("视频里明显").textContent).toBe("视频里明显Site B2");
   });
 
   it("explains a technical aspect from its label", async () => {

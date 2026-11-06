@@ -48,18 +48,36 @@ function PolarityIcon({ polarity, className }: { polarity: ReviewClaimView["pola
   return <Icon role="img" aria-label={t(`polarity.${polarity}`)} className={cn("size-4 shrink-0", cls, className)} />;
 }
 
-/** The review count after a finding; it opens the list of the reviews behind it. */
+/** Sites a finding's button names before it falls back to "+N"; more would wrap on a phone. */
+const NAMED_SITES = 2;
+
+/** Who is behind a finding: its sites by name, as a reader who knows them wants them, else the review count. */
+function useSourceNames(claim: ReviewClaimView, cited: { source: { site: string } }[]): string {
+  const t = useTranslations("LensReviews.findings");
+  const format = useFormatter();
+  const sites = [...new Set(cited.map(({ source }) => source.site))];
+  if (sites.length === 0) {
+    return t("reviewCount", { count: claim.reviewCount });
+  }
+  if (sites.length <= NAMED_SITES) {
+    return format.list(sites, { type: "conjunction" });
+  }
+  return t("namedMore", { names: format.list(sites.slice(0, NAMED_SITES), { type: "unit" }), count: String(sites.length - NAMED_SITES) });
+}
+
+/** The sites behind a finding after it, named; it opens the list of the reviews. */
 function ReviewsButton({ claim, citations, className }: { claim: ReviewClaimView; citations: Citations; className?: string }) {
   const t = useTranslations("LensReviews.findings");
   const facts = useSourceFacts();
   const cited = claim.sources.map((id) => citations.byKey.get(id)).filter((entry) => entry !== undefined);
+  const names = useSourceNames(claim, cited);
   return (
     <Popover.Root>
       <Popover.Trigger
         aria-label={t("reviewSources", { count: claim.reviewCount, aspect: t(`aspects.${claim.aspect}`) })}
-        className={cn(QUIET_TRIGGER_CLS, "whitespace-nowrap", className)}
+        className={cn(QUIET_TRIGGER_CLS, className)}
       >
-        {t("reviewCount", { count: claim.reviewCount })}
+        {names}
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner side="bottom" align="start" sideOffset={6} collisionPadding={12}>
@@ -207,12 +225,16 @@ function ExpandedRow({ claim, citations }: { claim: ReviewClaimView; citations: 
         ) : null}
         {open ? (
           <ul className="mt-1 flex flex-col gap-1.5 rounded-lg bg-zinc-50 px-3 py-2 text-[13px] leading-5 text-zinc-700">
-            {claim.details.map((detail, i) => (
-              <li key={i}>
-                {detail.text}
-                <SourceMarker sourceKey={detail.id} />
-              </li>
-            ))}
+            {claim.details.map((detail, i) => {
+              const site = citations.byKey.get(detail.id)?.source.site;
+              return (
+                <li key={i}>
+                  {detail.text}
+                  {site ? <span className="ml-1 text-xs text-zinc-500">{site}</span> : null}
+                  <SourceMarker sourceKey={detail.id} />
+                </li>
+              );
+            })}
           </ul>
         ) : null}
       </div>
