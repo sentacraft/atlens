@@ -160,6 +160,12 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
     links: ["page:aboutDataAccuracy"],
   },
   {
+    id: "release-year",
+    topic: "data",
+    text: "A lens has a release year only where its manufacturer publishes an announcement date, so many third-party lenses have none. Sorting by newest or oldest and \"released since\" filters leave lenses without a year out; they are not known to be old.",
+    links: ["page:aboutDataAccuracy"],
+  },
+  {
     id: "corrections",
     topic: "data",
     text: "Data errors can be reported with \"{Nav.feedback}\" or the \"{LensDetail.reportIssue}\" button on a lens page. Fixes usually take 2–4 weeks, because one person maintains the site part-time.",

@@ -234,7 +234,7 @@ export function buildLensTools(
       description:
         "Recall lenses by spec. Every parameter is a hard constraint, so set one only for a " +
         "requirement the request makes; leave the rest out or null, which leaves that axis unrestricted. `maybe` " +
-        "holds lenses with no data on a constrained field — surface them, never drop them. " +
+        "holds lenses with no data on a constrained or sorted field — surface them, never drop them. " +
         `Results are capped at ${RECALL_LIMIT} per query by your sort, totalMatched is the count ` +
         "beyond the cap, and there is no paging. Independent recalls — say a standard zoom and a " +
         "telephoto for a two-lens kit — go together in one call, one query each.",
