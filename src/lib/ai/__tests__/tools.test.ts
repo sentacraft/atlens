@@ -368,3 +368,14 @@ describe("queryLenses result note", () => {
     expect(result.note).toMatch(/totalMatched[\s\S]*no paging/);
   });
 });
+
+describe("queryBodies", () => {
+  it("returns specs with the no-prices-or-verdicts note and no catalogue ids", async () => {
+    const result = await run(tools.queryBodies, { names: ["X-T5"] });
+    expect(result.matches[0].name).toBe("Fujifilm X-T5");
+    expect(result.note).toMatch(/no prices, reviews/);
+    const found: string[] = [];
+    idsIn(result, "result", found);
+    expect(found).toEqual([]);
+  });
+});

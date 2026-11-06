@@ -16,9 +16,11 @@ import { CitationsProvider, SourceList } from "@/components/askiris/ReviewSource
 import RecommendationDeck from "@/components/askiris/RecommendationDeck";
 import LensTable from "@/components/askiris/LensTable";
 import ResponseFeedback from "@/components/askiris/ResponseFeedback";
+import ChoiceCard from "@/components/askiris/ChoiceCard";
 import GearRequestCard from "@/components/askiris/GearRequestCard";
 import { SignInGate } from "@/components/askiris/SignInCard";
 import { signInGate } from "@/lib/ai/sign-in-gate";
+import { ASK_CHOICES, type ChoiceRequestInput, type ChoiceRequestOutput } from "@/lib/ai/choice-request";
 import { ASK_FOR_GEAR, type GearRequestInput, type GearRequestOutput } from "@/lib/ai/gear-request";
 import type { LensSummary } from "@/lib/lens/data";
 import type { LensTableColumn, Recommendation, ResolvedLens } from "@/lib/ai/recall";
@@ -68,6 +70,7 @@ function ToolTrace({ part }: { part: ToolUIPart | DynamicToolUIPart }) {
 export interface ChatCardBinding {
   lenses: LensSummary[];
   answerGear: (toolCallId: string, output: GearRequestOutput) => void;
+  answerChoices: (toolCallId: string, output: ChoiceRequestOutput) => void;
   answerSignIn: (approvalId: string, approved: boolean) => void;
   /** Where a sign-in that leaves the page returns, reopening this conversation. */
   signInReturnTo: () => string;
@@ -76,7 +79,7 @@ export interface ChatCardBinding {
 /** A call the turn is paused on until the user answers its card. */
 function isAwaitingUser(part: ToolUIPart | DynamicToolUIPart): boolean {
   return (
-    (getToolName(part) === ASK_FOR_GEAR && part.state === "input-available") ||
+    ((getToolName(part) === ASK_FOR_GEAR || getToolName(part) === ASK_CHOICES) && part.state === "input-available") ||
     (part.state === "approval-requested" && !part.approval.isAutomatic)
   );
 }
@@ -105,6 +108,18 @@ function ToolPart({
           lenses={cards.lenses}
           signInReturnTo={cards.signInReturnTo}
           onAnswer={(output) => cards.answerGear(part.toolCallId, output)}
+        />
+      </div>
+    );
+  }
+  if (getToolName(part) === ASK_CHOICES && cards && (part.state === "input-available" || part.state === "output-available")) {
+    return (
+      <div className="w-full px-1">
+        <ChoiceCard
+          input={(part.input ?? { questions: [] }) as ChoiceRequestInput}
+          output={part.state === "output-available" ? (part.output as ChoiceRequestOutput) : undefined}
+          active={latest}
+          onAnswer={(output) => cards.answerChoices(part.toolCallId, output)}
         />
       </div>
     );
@@ -157,6 +172,7 @@ const TOOL_ACTIVITY: Record<string, ActivityKey> = {
   queryLenses: "gathering",
   searchLensByName: "gathering",
   lensDetails: "gathering",
+  queryBodies: "gathering",
   lensReviews: "gathering",
   recommendLenses: "composing",
   listLenses: "composing",

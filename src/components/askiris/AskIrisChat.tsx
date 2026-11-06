@@ -18,6 +18,7 @@ import AskIrisThread from "@/components/askiris/AskIrisThread";
 import { ChatLinkProvider } from "@/components/askiris/ChatLinkContext";
 import type { ChatLinkTargets } from "@/lib/askiris/inline-links";
 import type { LensSummary } from "@/lib/lens/data";
+import { ASK_CHOICES } from "@/lib/ai/choice-request";
 import { ASK_FOR_GEAR } from "@/lib/ai/gear-request";
 import {
   clearEntryParams,
@@ -492,6 +493,8 @@ export default function AskIrisChat({
                 lenses,
                 answerGear: (toolCallId, output) =>
                   void addToolOutput({ tool: ASK_FOR_GEAR, toolCallId, output, options: { body: turnBody() } }),
+                answerChoices: (toolCallId, output) =>
+                  void addToolOutput({ tool: ASK_CHOICES, toolCallId, output, options: { body: turnBody() } }),
                 answerSignIn: (id, approved) =>
                   void addToolApprovalResponse({ id, approved, options: { body: turnBody() } }),
                 signInReturnTo: () =>

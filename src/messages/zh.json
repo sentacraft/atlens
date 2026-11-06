@@ -258,6 +258,18 @@
     "guestQuota": "今天的 {guestTurns, number} 次免费提问已经用完。<signIn>登录</signIn>后每天可以问更多次。",
     "errorRetry": "Iris 这边出了点问题，请<retry>重试</retry>。",
     "errorUnavailable": "Iris 暂时无法使用，请稍后再来。",
+    "choiceCard": {
+      "title": "几个小问题",
+      "pickOne": "单选",
+      "pickAny": "可多选",
+      "somethingElse": "其他",
+      "add": "添加",
+      "done": "完成",
+      "skip": "跳过",
+      "notSaid": "未说明",
+      "skipped": "已跳过这几个问题",
+      "unanswered": "这几个问题没有回答"
+    },
     "gearCard": {
       "title": "补充你的器材",
       "bodies": "机身",
@@ -824,7 +836,7 @@
     "backgroundBody3": "我是一名独立开发者，Atlens 目前完全由我一人开发并维护。对打造一个在工程质量、用户体验和美学设计上都不妥协的产品，我一直有很强的执念与热情——这份热情，同样是这个项目得以实现的重要驱动力之一。",
     "askIrisTitle": "Ask <iris>Iris</iris>",
     "askIrisTitlePlain": "Ask Iris",
-    "askIrisBody": "<askIris>Ask Iris</askIris> 是 Atlens 内置的 AI 助手，回答都基于 Atlens 收录的数据。你可以用自然语言描述拍摄需求，让它检索和推荐镜头、并排比较参数、解释几支镜头的差异；登录后，它会参考你保存的器材。它也能回答关于 Atlens 本身的问题。Iris 可能出错，涉及关键参数或购买决策时，请再到厂商官网核对。它的能力还在持续增加。",
+    "askIrisBody": "<askIris>Ask Iris</askIris> 是 Atlens 内置的 AI 助手，回答都基于 Atlens 收录的数据。你可以用自然语言描述拍摄需求，让它检索和推荐镜头、并排比较参数、解释几支镜头的差异、查询富士机身的参数；登录后，它会参考你保存的器材。它也能回答关于 Atlens 本身的问题。Iris 可能出错，涉及关键参数或购买决策时，请再到厂商官网核对。它的能力还在持续增加。",
     "coverageTitle": "收录范围与计划",
     "coverageBody": "各品牌的收录深度与停产型号覆盖情况不尽相同。其他卡口的转接镜头暂不在收录范围内。",
     "coverageBrandsX": "X 卡口",
