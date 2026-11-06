@@ -50,6 +50,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const { env, ctx, cf } = getCloudflareContext();
     const attributes = requestAttributes(req.headers, cf);
+    if (attributes.uaClass === "in_app" && event === "page_view") {
+      // Samples for naming more apps in request-class.ts; Workers Logs only, never the database.
+      console.log("[track] unnamed in-app browser", req.headers.get("user-agent")?.slice(0, 300));
+    }
     const email = await getAccountEmail(req).catch(() => undefined);
     const signedIn = email !== undefined;
     internalAccount = isInternalEmail(process.env.INTERNAL_EMAILS, email);

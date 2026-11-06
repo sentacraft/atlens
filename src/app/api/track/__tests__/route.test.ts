@@ -148,4 +148,26 @@ describe("POST /api/track", () => {
 
     expect(rows()[0]).toMatchObject({ country: "DE", network: "datacenter", ua_class: null });
   });
+
+  it("logs the user agent of an unnamed in-app browser on a page view, and nothing else", async () => {
+    const log = vi.spyOn(console, "log").mockImplementation(() => {});
+    const webview = "Mozilla/5.0 (Linux; Android 14; wv) Chrome/130 Mobile Safari/537.36";
+    const send = (event: string, userAgent: string) =>
+      POST(
+        new NextRequest("http://localhost/api/track", {
+          method: "POST",
+          body: JSON.stringify({ event, locale: "en", path: "/en" }),
+          headers: { "user-agent": userAgent },
+        }),
+      );
+
+    await send("page_view", webview);
+    await send("lens_view", webview);
+    await send("page_view", "Mozilla/5.0 (iPhone) MicroMessenger/8.0 Safari/604.1");
+    await Promise.all(state.pending);
+
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(log).toHaveBeenCalledWith("[track] unnamed in-app browser", webview);
+    log.mockRestore();
+  });
 });

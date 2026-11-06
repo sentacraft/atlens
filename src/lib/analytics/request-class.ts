@@ -9,15 +9,27 @@ type InAppName =
   | "qq"
   | "weibo"
   | "douyin"
+  | "toutiao"
+  | "tiktok"
+  | "bytedance"
+  | "kuaishou"
   | "bilibili"
   | "zhihu"
+  | "baidu"
+  | "alipay"
+  | "taobao"
   | "dingtalk"
   | "lark"
+  | "messenger"
   | "facebook"
   | "instagram"
+  | "threads"
   | "x"
   | "line"
-  | "reddit";
+  | "reddit"
+  | "snapchat"
+  | "linkedin"
+  | "pinterest";
 
 export interface RequestAttributes {
   country: string | null;
@@ -41,25 +53,41 @@ export function classifyNetwork(organization: string | null | undefined): Networ
 }
 
 const BOT_UA = /bot|crawl|spider|headless|lighthouse|preview|monitor|curl|python-requests|go-http/i;
-// First match wins: WeCom's user agent also carries MicroMessenger.
+// First match wins, so an app is listed before any app whose marker its user agent also carries:
+// WeCom carries MicroMessenger, Messenger carries FBAN, and every ByteDance app BytedanceWebview.
 const IN_APP_UA: [InAppName, RegExp][] = [
   ["wecom", /wxwork/i],
   ["wechat", /micromessenger/i],
   ["xiaohongshu", /xhsdiscover/i],
   ["qq", /\bqq\//i],
   ["weibo", /weibo/i],
-  ["douyin", /aweme|bytedancewebview/i],
+  ["tiktok", /musical_ly|trill_|tiktok/i],
+  ["douyin", /aweme/i],
+  ["toutiao", /newsarticle/i],
+  ["bytedance", /bytedancewebview/i],
+  ["kuaishou", /kwai/i],
   ["bilibili", /biliapp/i],
   ["zhihu", /zhihuhybrid/i],
+  ["baidu", /baiduboxapp/i],
+  ["alipay", /alipayclient/i],
+  ["taobao", /aliapp\(tb/i],
   ["dingtalk", /dingtalk/i],
   ["lark", /\blark\/|feishu/i],
-  ["facebook", /fban|fbav/i],
+  ["messenger", /fb_iab\/messenger|messengerforios|\borca-android/i],
+  ["threads", /\bbarcelona/i],
   ["instagram", /instagram/i],
+  ["facebook", /fban|fbav|fb_iab/i],
   ["x", /twitter/i],
   ["line", /\bline\//i],
   ["reddit", /reddit/i],
+  ["snapchat", /snapchat/i],
+  ["linkedin", /linkedinapp/i],
+  ["pinterest", /pinterest/i],
 ];
-const WEBVIEW_UA = /\bwv\b/i;
+// An Android WebView marks itself "wv"; an iOS WKWebView leaves out the "Safari/" token every iOS
+// browser, Chrome and Firefox included, sends.
+const ANDROID_WEBVIEW_UA = /\bwv\b/i;
+const IOS_UA = /iphone|ipad|ipod/i;
 
 export function classifyUserAgent(userAgent: string | null | undefined): UserAgentClass | null {
   if (!userAgent) {
@@ -72,7 +100,8 @@ export function classifyUserAgent(userAgent: string | null | undefined): UserAge
   if (app) {
     return app[0];
   }
-  return WEBVIEW_UA.test(userAgent) ? "in_app" : "browser";
+  const webview = ANDROID_WEBVIEW_UA.test(userAgent) || (IOS_UA.test(userAgent) && !/safari\//i.test(userAgent));
+  return webview ? "in_app" : "browser";
 }
 
 /** The request's country, network class and user-agent class; each is null when unknown. */
