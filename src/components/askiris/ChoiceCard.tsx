@@ -8,7 +8,9 @@ import { ACTION_PRIMARY_CLS, ACTION_QUIET_CLS, CHAT_CARD_CLS, CHIP_ACTIVE_CLS, C
 import { cn } from "@/lib/utils";
 import AnsweredLine from "@/components/askiris/AnsweredLine";
 
-const CHIP_SIZE_CLS = "min-h-9 px-4 text-sm max-sm:min-h-11";
+// The free-text row is exactly one chip tall, so opening it moves nothing below.
+const CHIP_SIZE_CLS = "min-h-8 px-3.5 text-[13px] max-sm:min-h-10";
+const CHIP_ROW_HEIGHT_CLS = "h-8 max-sm:h-10";
 
 /** The in-chat card Iris shows through the askChoices client tool. */
 export default function ChoiceCard({
@@ -115,9 +117,11 @@ function ChoicePicker({ input, onAnswer }: { input: ChoiceRequestInput; onAnswer
                     </button>
                   );
                 })}
+              </div>
+              <div>
                 {editing === group ? (
                   <form
-                    className="flex w-full items-center gap-2 rounded-full border border-zinc-900 bg-white py-1 pr-1 pl-3.5"
+                    className={cn(CHIP_ROW_HEIGHT_CLS, "flex w-full items-center gap-2 rounded-full border border-zinc-900 bg-white pr-1 pl-3.5 sm:max-w-[320px]")}
                     onSubmit={(event) => {
                       event.preventDefault();
                       addCustom(group);
@@ -134,7 +138,7 @@ function ChoicePicker({ input, onAnswer }: { input: ChoiceRequestInput; onAnswer
                     <button
                       type="submit"
                       disabled={!draft.trim()}
-                      className={cn(ACTION_PRIMARY_CLS, "h-8 rounded-full px-3.5 text-[13px] font-medium max-sm:h-9")}
+                      className={cn(ACTION_PRIMARY_CLS, "h-6 rounded-full px-3 text-xs font-medium max-sm:h-8")}
                     >
                       {t("add")}
                     </button>
