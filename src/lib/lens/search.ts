@@ -81,17 +81,39 @@ export function tokenize(normalised: string): string[] {
 
 const BRAND_KEYS_LONGEST_FIRST = [...catalogBrandByKey.keys()].sort((a, b) => b.length - a.length);
 
+// "56f1.2" and "35mmf1.4" split like "56 f1.2"; "35mm1.4" like "35mm 1.4".
+const FOCAL_THEN_APERTURE = /^(\d+)(?:mm)?(f\d+(?:\.\d+)?)$/;
+const FOCAL_MM_THEN_NUMBER = /^(\d+mm)(\d+(?:\.\d+)?)$/;
+
 // "xf35" splits like "xf 35", and so does a brand typed before digits ("7artisans12");
-// single-letter prefixes such as "f1.4" stay whole.
+// single-letter prefixes such as "f1.4" stay whole. The rest is split again, so "xf35f1.4"
+// ends as xf, 35, f1.4.
 function expandCompoundToken(token: string): string[] {
+  const focalAperture = token.match(FOCAL_THEN_APERTURE);
+  if (focalAperture) {
+    return [focalAperture[1], focalAperture[2]];
+  }
+  const focalNumber = token.match(FOCAL_MM_THEN_NUMBER);
+  if (focalNumber) {
+    return [focalNumber[1], focalNumber[2]];
+  }
   const brand = BRAND_KEYS_LONGEST_FIRST.find(
     (key) => token.startsWith(key) && /\d/.test(token.charAt(key.length)),
   );
   if (brand) {
-    return [brand, token.slice(brand.length)];
+    return [brand, ...expandCompoundToken(token.slice(brand.length))];
   }
   const match = token.match(/^([a-z]{2,})(\d.*)$/);
-  return match ? [match[1], match[2]] : [token];
+  return match ? [match[1], ...expandCompoundToken(match[2])] : [token];
+}
+
+/** The catalog brand a query opens with ("zeiss 50", "蔡司"), or null. A letter after the name is not a match. */
+export function catalogBrandAtStart(query: string): string | null {
+  const squashed = normalizeLensSearchText(query).replace(/ /g, "");
+  const key = BRAND_KEYS_LONGEST_FIRST.find(
+    (candidate) => candidate.length >= 2 && squashed.startsWith(candidate) && !/[a-z]/.test(squashed.charAt(candidate.length)),
+  );
+  return key ? (catalogBrandByKey.get(key) ?? null) : null;
 }
 
 export function tokenizeQuery(normalised: string): string[] {
