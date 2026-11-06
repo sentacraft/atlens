@@ -14,6 +14,7 @@ vi.mock("@/lib/auth-session", () => ({ getAccountEmail: state.accountEmail }));
 vi.mock("@opennextjs/cloudflare", () => ({
   getCloudflareContext: () => ({
     env: { ANALYTICS_DB: state.db, RL_ANALYTICS: { limit: state.limit } },
+    cf: { country: "DE", asOrganization: "Hetzner Online GmbH" },
     ctx: { waitUntil: (promise: Promise<unknown>) => state.pending.push(promise) },
   }),
 }));
@@ -140,5 +141,11 @@ describe("POST /api/track", () => {
     expect(response.status).toBe(204);
     expect(rows()).toHaveLength(0);
     expect(response.headers.get("set-cookie")).toBeNull();
+  });
+
+  it("stores the country, network class and user-agent class", async () => {
+    await post({ event: "lens_view", locale: "en", path: "/en" });
+
+    expect(rows()[0]).toMatchObject({ country: "DE", network: "datacenter", ua_class: null });
   });
 });

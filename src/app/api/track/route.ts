@@ -11,6 +11,7 @@ import {
   isOptedOutOfStats,
   readVid,
 } from "@/lib/analytics/session";
+import { requestAttributes } from "@/lib/analytics/request-class";
 import { insertEvent } from "@/lib/analytics/store";
 import { getAccountEmail } from "@/lib/auth-session";
 import { isBypassed, isRateLimited } from "@/lib/rate-limit";
@@ -47,7 +48,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   let internalAccount = false;
   try {
-    const { env, ctx } = getCloudflareContext();
+    const { env, ctx, cf } = getCloudflareContext();
+    const attributes = requestAttributes(req.headers, cf);
     const email = await getAccountEmail(req).catch(() => undefined);
     const signedIn = email !== undefined;
     internalAccount = isInternalEmail(process.env.INTERNAL_EMAILS, email);
@@ -60,6 +62,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       signedIn,
       internal: internalAccount || isInternalBrowser(req.cookies) || isBypassed(req),
       props: parseEventProps(event, props),
+      country: attributes.country,
+      network: attributes.network,
+      uaClass: attributes.uaClass,
     }).catch((error: unknown) => console.error("[track] failed to write event", error));
     ctx.waitUntil(write);
   } catch {
