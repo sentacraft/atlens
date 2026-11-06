@@ -1,12 +1,14 @@
 "use client";
 
 import { Popover } from "@base-ui/react/popover";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Database } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { createContext, useContext, type ReactNode } from "react";
 import { MENU_POPUP_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
+import { Link } from "@/i18n/navigation";
 import { publishedMonth, sourceHref, type CitedSource, type Citations } from "@/lib/askiris/review-citations";
 import { cn } from "@/lib/utils";
+import { aboutPath } from "@/lib/url/routes";
 
 const CitationsContext = createContext<Citations | undefined>(undefined);
 
@@ -88,17 +90,30 @@ export function SourceMarker({ sourceKey }: { sourceKey: string }) {
   );
 }
 
-/** The sources a reply cited or fetched, numbered as its markers are. */
-export function SourceList({ list }: { list: CitedSource[] }) {
+/**
+ * What a reply rests on: the lens catalog when it showed specs or prices, then the review sources
+ * it cited, numbered as its markers are.
+ */
+export function SourceList({ list, catalog = false }: { list: CitedSource[]; catalog?: boolean }) {
   const t = useTranslations("AskIris.sources");
   const facts = useSourceFacts();
-  if (list.length === 0) {
+  if (list.length === 0 && !catalog) {
     return null;
   }
   return (
     <div className="mt-1 w-full border-t border-zinc-100 px-1 pt-2">
       <p className="text-[11px] leading-4 text-zinc-500">{t("title")}</p>
       <ol className="mt-1 flex flex-col gap-0.5 text-[11px] leading-4">
+        {catalog ? (
+          <li className="flex min-h-5 flex-wrap items-baseline gap-x-1.5 sm:min-h-0">
+            <Database className="size-3 min-w-3.5 shrink-0 self-center text-zinc-500" aria-hidden />
+            <span className="text-zinc-700">{t("catalogName")}</span>
+            <span className="text-zinc-500">{t("catalogScope")} ·</span>
+            <Link href={aboutPath("data-accuracy")} className={TEXT_LINK_CLS}>
+              {t("catalogLink")}
+            </Link>
+          </li>
+        ) : null}
         {list.map(({ number, key, source }) => {
           const href = sourceHref(source);
           const { when, bodies } = facts(source);

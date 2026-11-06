@@ -17,6 +17,7 @@ vi.mock("next-intl", () => ({
       { rich: (key: string, tags: Record<string, (chunks: string) => unknown>) => [key, ...Object.values(tags).map((tag) => tag(""))] },
     ),
 }));
+vi.mock("@/i18n/navigation", () => ({ Link: ({ href, children }: { href: string; children: React.ReactNode }) => <a href={href}>{children}</a> }));
 vi.mock("@/lib/lens/reviews-client", () => ({
   lensReviewsQuery: (id: string) => ({ queryKey: ["lens-reviews", id], queryFn: async () => view.current }),
 }));

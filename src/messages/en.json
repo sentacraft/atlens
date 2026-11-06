@@ -297,6 +297,9 @@
       "measured": "Lab-tested",
       "handsOn": "Hands-on",
       "readOriginal": "Read the original",
+      "catalogName": "Atlens lens catalog",
+      "catalogScope": "specs and prices",
+      "catalogLink": "How the data is made",
       "marker": "Source {number}: {site}",
       "bodiesSeparator": ", ",
       "testedOn": "Shot on {bodies}"
