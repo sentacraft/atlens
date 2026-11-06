@@ -20,7 +20,9 @@ export function findTextProblems(): TextProblem[] {
   const clips = (style: CSSStyleDeclaration) =>
     style.overflowX !== "visible" || style.textOverflow === "ellipsis" || style.webkitLineClamp !== "none";
 
-  const hidden = (el: Element) => el.closest('[aria-hidden="true"], [inert], [hidden]') !== null;
+  // checkVisibility catches content the browser does not render though it still has a box: the
+  // body of a closed <details> sits under its summary, over whatever follows it.
+  const hidden = (el: Element) => el.closest('[aria-hidden="true"], [inert], [hidden]') !== null || !el.checkVisibility();
   const floating = (el: Element) => {
     for (let e: Element | null = el; e && e !== document.body; e = e.parentElement) {
       const position = getComputedStyle(e).position;

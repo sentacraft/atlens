@@ -19,6 +19,11 @@ export interface Lineup {
   focalMax: number;
 }
 
+/** A lineup's lenses in the chart's order: primes from wide to long, then zooms. */
+export function lineupLenses(lineup: Lineup): ChartLens[] {
+  return [...lineup.primes.flatMap((column) => column.lenses), ...lineup.zooms];
+}
+
 export function buildLineup(lenses: Lens[], brand: string): Lineup | undefined {
   const pool = chartLenses(lenses).filter((lens) => lens.brand === brand);
   if (pool.length === 0) {

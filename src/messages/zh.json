@@ -1134,6 +1134,7 @@
     "rangeBetween": "{min}–{max}g",
     "rangeUnder": "{max}g 以下",
     "lensCount": "{count} 支",
+    "listView": "以列表查看",
     "focalAxis": "焦距 / mm",
     "highlightBrand": "高亮品牌",
     "filterBrand": "品牌",

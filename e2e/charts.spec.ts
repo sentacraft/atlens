@@ -10,6 +10,19 @@ const LENS = /15mm F1\.4 DC \| Contemporary/;
 // handlers; each interaction retries until the client responds. A tap that lands too early follows
 // the link, so the tap tests also wait for the network to settle first.
 test.describe("Charts", () => {
+  test("the timeline and the lineups list every lens they chart as links under the chart", async ({ page }) => {
+    for (const [path, groups] of [
+      [TIMELINE, /^2026/],
+      [LINEUPS, /^Fujifilm/],
+    ] as const) {
+      await page.goto(path);
+      const list = page.locator("details").filter({ hasText: "View as list" });
+      await list.getByText("View as list").click();
+      await expect(list.getByRole("heading", { level: 2 }).first(), path).toHaveText(groups);
+      expect(await list.getByRole("link").count(), path).toBeGreaterThan(50);
+    }
+  });
+
   test("/charts redirects to the timeline", async ({ page }) => {
     await page.goto("/en/lenses/x/charts");
     await expect(page).toHaveURL(new RegExp(`${TIMELINE}$`));
