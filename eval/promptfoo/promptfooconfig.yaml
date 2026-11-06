@@ -497,6 +497,72 @@ tests:
           silently commits to one assumption and gives a single answer without naming
           it, it fails.
 
+  # Vague first message: real visitors typed a bare occasion ("日本旅行", "运动会适合") and left
+  # after Iris answered with a list of questions. It should commit to a starting point and ask one.
+  - description: vague-trip
+    metadata:
+      area: vague
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "日本旅行"
+    assert:
+      - type: javascript # a starting recommendation, not only questions
+        metric: programmatic
+        value: "context.metadata.picks.length > 0"
+      - type: javascript # at most one question
+        metric: programmatic
+        value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length <= 1"
+
+  - description: vague-sports-day
+    metadata:
+      area: vague
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "运动会适合"
+    assert:
+      - type: javascript
+        metric: programmatic
+        value: "context.metadata.picks.length > 0"
+      - type: javascript
+        metric: programmatic
+        value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length <= 1"
+
+  - description: vague-light-kit
+    metadata:
+      area: vague
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "旅行精简装备"
+    assert:
+      - type: javascript
+        metric: programmatic
+        value: "context.metadata.picks.length > 0"
+      - type: javascript
+        metric: programmatic
+        value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length <= 1"
+
+  # A named trade-off is a different case: ask it, show no lenses (see the system prompt).
+  - description: vague-tradeoff-still-asks
+    metadata:
+      area: vague
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "想开始扫街，不知道定焦还是变焦更适合"
+    assert:
+      - *no_deck
+
   # Guard: picks land well under budget — say the budget isn't the constraint, re-orient.
   - description: guard-budget-clear
     metadata:
