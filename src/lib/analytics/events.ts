@@ -130,14 +130,15 @@ type EventDocs = {
 } & { [ASKIRIS_TURN_EVENT]: EventDoc; [SIGN_IN_COMPLETE_EVENT]: EventDoc };
 
 const STARTER_POOLS: Record<string, ValueDoc> = {
-  need: { label: "Find a lens", description: "Find lenses for a need" },
+  need: { label: "Scene", description: "A scene in a word or two; Iris asks on the choice card" },
+  brief: { label: "Brief", description: "A need with a budget, a limit or a purpose, and no gear of the visitor's own" },
   compare: { label: "Compare", description: "Compare two lenses" },
   favorites: { label: "Favorites", description: "About the visitor's favorites; signed-in visitors with favorites only" },
   gearUnknown: { label: "Gear (unknown)", description: "About the visitor's own gear, before Iris knows it" },
   gearKnown: { label: "Gear (known)", description: "About the gear in a signed-in visitor's profile" },
   table: { label: "Spec table", description: "Ask for a spec table" },
-  terms: { label: "Terms", description: "Explain a lens term" },
-  about: { label: "About Iris", description: "What Iris is and can do" },
+  terms: { label: "Terms", description: "Retired 2026-11: explain a lens term" },
+  about: { label: "About Iris", description: "Retired 2026-11: what Iris is and can do" },
   page: { label: "This page", description: "About the lens, lenses or filters on the page Iris opened over" },
 };
 
