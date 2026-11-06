@@ -11,12 +11,39 @@
       "releaseYear": 2012,
       "megapixels": 16.3,
       "sensor": "X-Trans CMOS",
+      "processor": "EXR Pro",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "Full HD 24p",
+      "viewfinder": {
+        "type": "hybrid",
+        "dotsMillion": 1.44
+      },
+      "screen": {
+        "type": "fixed",
+        "touch": false
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 6
+      },
+      "builtInFlash": false,
       "weatherSealed": false,
       "weightGrams": 450,
+      "dimensionsMm": {
+        "width": 139.5,
+        "height": 81.8,
+        "depth": 42.5
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-Pro1"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-Pro1",
+        "https://www.fujifilm-x.com/en-us/news/fujifilm-x-pro3-announced/",
+        "https://dl.fujifilm-x.com/support/manual/x/fujifilm_xpro1_manual_en.pdf",
+        "https://www.fujifilm.com.hk/products/digital_cameras/x/fujifilm_x_pro1/pdf/index/x_pro1_catalogue_01.pdf",
+        "https://www.dpreview.com/products/fujifilm/slrs/fujifilm_xpro1/",
+        "https://www.dpreview.com/reviews/4019317027/fujifilm-x-pro1/",
+        "https://www.juzaphoto.com/recensione.php?l=en&show=7&t=fujifilm_x-pro1"
       ]
     },
     {
@@ -27,12 +54,34 @@
       "releaseYear": 2012,
       "megapixels": 16.3,
       "sensor": "X-Trans CMOS",
+      "processor": "EXR Pro",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "Full HD 24p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "fixed",
+        "touch": false
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 6
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 350,
+      "dimensionsMm": {
+        "width": 129,
+        "height": 75,
+        "depth": 38
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-E1"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-E1",
+        "https://fuji101.com/cameras/fujifilm-x-e1"
       ]
     },
     {
@@ -43,12 +92,34 @@
       "releaseYear": 2013,
       "megapixels": 16.3,
       "sensor": "X-Trans CMOS",
+      "processor": "EXR Processor II",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "Full HD 30p",
+      "viewfinder": {
+        "type": "none"
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": false
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 5.6
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 330,
+      "dimensionsMm": {
+        "width": 117,
+        "height": 67,
+        "depth": 39
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-M1"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-M1",
+        "https://www.chem-t.com/fax/images/tmp_file2_1372145232.pdf",
+        "https://fujifilmclub.com/gear/fuji-cameras/x-m1/"
       ]
     },
     {
@@ -59,12 +130,34 @@
       "releaseYear": 2013,
       "megapixels": 16.3,
       "sensor": "APS-C Bayer CMOS",
+      "processor": "EXR Processor II",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "Full HD 30p",
+      "viewfinder": {
+        "type": "none"
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": false
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 5.6
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 330,
+      "dimensionsMm": {
+        "width": 117,
+        "height": 67,
+        "depth": 39
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-A1"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-A1",
+        "https://www.imaging-resource.com/news/adobe-lightroom-camera-raw-release-candidates-support-sony-a7-a7r-rx10/",
+        "https://www.kameradb.com/cameras/fujifilm-x-a1"
       ]
     },
     {
@@ -75,12 +168,35 @@
       "releaseYear": 2013,
       "megapixels": 16.3,
       "sensor": "X-Trans CMOS II",
+      "processor": "EXR Processor II",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "Full HD 60p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "fixed",
+        "touch": false
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 7
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 350,
+      "dimensionsMm": {
+        "width": 129,
+        "height": 74.9,
+        "depth": 37.2
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-E2s"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-E2s",
+        "https://assets.minkabu.jp/news/article_media_content/urn%3Anewsml%3Atdnet.info%3A20140428048621/140120140428048621.pdf",
+        "https://apotelyt.com/camera-manual/fujifilm-x-e2-instructions"
       ]
     },
     {
@@ -91,12 +207,35 @@
       "releaseYear": 2014,
       "megapixels": 16.3,
       "sensor": "X-Trans CMOS II",
+      "processor": "EXR Processor II",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "Full HD 60p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": false
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 8
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 440,
+      "dimensionsMm": {
+        "width": 129,
+        "height": 89.8,
+        "depth": 46.7
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-T1"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-T1",
+        "https://assets.minkabu.jp/news/article_media_content/urn%3Anewsml%3Atdnet.info%3A20140428048621/140120140428048621.pdf",
+        "https://www.dpreview.com/reviews/2538274292/fujifilm-x-t1/"
       ]
     },
     {
@@ -107,12 +246,34 @@
       "releaseYear": 2015,
       "megapixels": 16.3,
       "sensor": "APS-C Bayer CMOS",
+      "processor": "EXR Processor II",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "Full HD 30p",
+      "viewfinder": {
+        "type": "none"
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": false
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 5.6
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 350,
+      "dimensionsMm": {
+        "width": 117,
+        "height": 67,
+        "depth": 40
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-A2"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-A2",
+        "https://kakaku.com/item/J0000014684/spec/",
+        "https://camerareviews.com/specs/camera/fujifilm-x-a2/"
       ]
     },
     {
@@ -123,12 +284,35 @@
       "releaseYear": 2015,
       "megapixels": 16.3,
       "sensor": "X-Trans CMOS II",
+      "processor": "EXR Processor II",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "Full HD 60p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": false
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 8
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 381,
+      "dimensionsMm": {
+        "width": 118.4,
+        "height": 82.8,
+        "depth": 40.8
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-T10"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-T10",
+        "https://www.photoreview.com.au/reviews/advanced-compact-cameras/interchangeable-lens/fujifilm-x-t10/",
+        "https://apotelyt.com/camera-manual/fujifilm-x-t10-instructions"
       ]
     },
     {
@@ -139,12 +323,34 @@
       "releaseYear": 2016,
       "megapixels": 24.3,
       "sensor": "X-Trans CMOS III",
+      "processor": "X-Processor Pro",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "4K 29.97p",
+      "viewfinder": {
+        "type": "hybrid",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "fixed"
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 8
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 495,
+      "dimensionsMm": {
+        "width": 140.5,
+        "height": 82.8,
+        "depth": 45.9
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://www.fujifilm-x.com/en-us/news/fujifilm-x-pro3-announced/",
+        "https://www.fujifilm-x.com/global/?page_id=16982&post_type=lens&preview_id=16982"
       ]
     },
     {
@@ -155,12 +361,34 @@
       "releaseYear": 2016,
       "megapixels": 16.3,
       "sensor": "X-Trans CMOS II",
+      "processor": "EXR Processor II",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "Full HD 60p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "fixed"
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 7
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 350,
+      "dimensionsMm": {
+        "width": 129,
+        "height": 74.9,
+        "depth": 37.2
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-E2s"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-E2s",
+        "https://gulfphotoplus.com/blogs/gpp-blog/fujifilm-unveils-5-new-x-series-products-at-their-5th-anniversary",
+        "https://www.camcompare.app/eu/cameras/fujifilm-x-e2s"
       ]
     },
     {
@@ -171,12 +399,37 @@
       "releaseYear": 2016,
       "megapixels": 24.3,
       "sensor": "X-Trans CMOS III",
+      "processor": "X-Processor Pro",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "4K 29.97p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "tilt"
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 8,
+        "electronic": 14
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
-      "weightGrams": 500,
+      "weightGrams": 507,
+      "dimensionsMm": {
+        "width": 132.5,
+        "height": 91.8,
+        "depth": 49.2
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://www.imaging-resource.com/cameras/fujifilm-x-t2-review/image/1025960/?section=exposure",
+        "https://www.fujifilm-x.com/en-gb/wp-content/uploads/sites/16/2018/10/BRFFUK0260-X-SERIES-TRADE-IN_A5-LEAFLET-GBP.pdf",
+        "https://www.fujifilm-x.com/global/?page_id=16982&post_type=lens&preview_id=16982",
+        "https://www.fujifilm-x.com/en-us/products/cameras/x-t2/"
       ]
     },
     {
@@ -187,12 +440,33 @@
       "releaseYear": 2016,
       "megapixels": 24.2,
       "sensor": "APS-C Bayer CMOS",
+      "processor": "EXR Processor II",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "Full HD 60p",
+      "viewfinder": {
+        "type": "none"
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 6
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 339,
+      "dimensionsMm": {
+        "width": 116.9,
+        "height": 66.9,
+        "depth": 40.4
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-A3"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-A3",
+        "https://www.imaging-resource.com/cameras/fujifilm-x-a3-review/image/840249/?section=gallery"
       ]
     },
     {
@@ -204,12 +478,32 @@
       "megapixels": 16.3,
       "sensor": "APS-C Bayer CMOS",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "Full HD 30p",
+      "viewfinder": {
+        "type": "none"
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": false
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 6
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 331,
+      "dimensionsMm": {
+        "width": 116.9,
+        "height": 67.4,
+        "depth": 40.4
+      },
       "discontinued": true,
       "sources": [
         "https://www.fujifilm-x.com/en-us/products/cameras/x-a10/",
-        "https://sansmirror.com/cameras/older-mirrorless-camera/fujifilm-x-cameras/fujifilm-x-a10-camera-speci.html"
+        "https://sansmirror.com/cameras/older-mirrorless-camera/fujifilm-x-cameras/fujifilm-x-a10-camera-speci.html",
+        "https://dc.watch.impress.co.jp/docs/news/1100783.html"
       ]
     },
     {
@@ -220,12 +514,36 @@
       "releaseYear": 2017,
       "megapixels": 24.3,
       "sensor": "X-Trans CMOS III",
+      "processor": "X-Processor Pro",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "4K 29.97p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 8,
+        "electronic": 14
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 383,
+      "dimensionsMm": {
+        "width": 118.4,
+        "height": 82.8,
+        "depth": 41.4
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-T20"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-T20",
+        "https://www.imaging-resource.com/cameras/fujifilm-x-t20-review/image/840412/?section=gallery",
+        "https://www.fujifilm-x.com/en-gb/special/masters_of_microsite/masters_of_design.php"
       ]
     },
     {
@@ -236,12 +554,36 @@
       "releaseYear": 2017,
       "megapixels": 24.3,
       "sensor": "X-Trans CMOS III",
+      "processor": "X-Processor Pro",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "4K 29.97p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "fixed",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 8,
+        "electronic": 14
+      },
+      "builtInFlash": false,
       "weatherSealed": false,
       "weightGrams": 337,
+      "dimensionsMm": {
+        "width": 121.3,
+        "height": 73.9,
+        "depth": 42.7
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-E3"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-E3",
+        "https://www.imaging-resource.com/cameras/fujifilm-x-e3-review/",
+        "https://www.fujifilm-x.com/en-gb/special/masters_of_microsite/masters_of_design.php"
       ]
     },
     {
@@ -253,11 +595,32 @@
       "megapixels": 24.2,
       "sensor": "APS-C Bayer CMOS",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "4K 15p",
+      "viewfinder": {
+        "type": "none"
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 6
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 361,
+      "dimensionsMm": {
+        "width": 116.9,
+        "height": 67.7,
+        "depth": 40.4
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-A5"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-A5",
+        "https://en.wikipedia.org/wiki/Fujifilm_X_series",
+        "https://www.fujifilm-x.com/en-gb/special/masters_of_microsite/masters_of_colour.php"
       ]
     },
     {
@@ -269,11 +632,30 @@
       "megapixels": 16.3,
       "sensor": "APS-C Bayer CMOS",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "Full HD 30p",
+      "viewfinder": {
+        "type": "none"
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 348,
+      "dimensionsMm": {
+        "width": 116.9,
+        "height": 67.4,
+        "depth": 40.4
+      },
       "discontinued": true,
       "sources": [
-        "https://fujifilm-dsc.com/en/manual/x-a20/appendix/spec/index.html"
+        "https://fujifilm-dsc.com/en/manual/x-a20/appendix/spec/index.html",
+        "https://product.yesky.com/product/1046/1046447/param.shtml",
+        "https://gearframe.net/products/fujifilm-x-a20/",
+        "https://app.fujifilm-dsc.com/en/manual/x-a20/x-a20_omw_en_s_f.pdf"
       ]
     },
     {
@@ -284,12 +666,38 @@
       "releaseYear": 2018,
       "megapixels": 24.3,
       "sensor": "X-Trans CMOS III",
+      "processor": "X-Processor Pro",
       "ibis": true,
+      "ibisStops": 5.5,
+      "subjectDetectionAF": false,
+      "maxVideo": "4K 29.97p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 3.69
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 8,
+        "electronic": 14
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 673,
+      "dimensionsMm": {
+        "width": 139.8,
+        "height": 97.3,
+        "depth": 85.5
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://en.wikipedia.org/wiki/Fujifilm_X_series",
+        "https://dl.fujifilm-x.com/global/products/cameras/x-h1/pdf/x_h1_catalogue_01.pdf",
+        "https://www.fujifilm-x.com/global/?page_id=16982&post_type=lens&preview_id=16982"
       ]
     },
     {
@@ -301,11 +709,33 @@
       "megapixels": 24.2,
       "sensor": "APS-C Bayer CMOS",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "4K 15p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 6
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 448,
+      "dimensionsMm": {
+        "width": 121.0,
+        "height": 83.0,
+        "depth": 47.4
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-T100"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-T100",
+        "https://fuji101.com/cameras/fujifilm-x-t100",
+        "https://www.fujifilm-x.com/en-gb/special/masters_of_microsite/masters_of_colour.php"
       ]
     },
     {
@@ -316,13 +746,37 @@
       "releaseYear": 2018,
       "megapixels": 26.1,
       "sensor": "X-Trans CMOS 4",
+      "processor": "X-Processor 4",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "4K 60p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 3.69
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 11,
+        "electronic": 30
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 539,
+      "dimensionsMm": {
+        "width": 132.5,
+        "height": 92.8,
+        "depth": 58.8
+      },
       "discontinued": true,
       "sources": [
         "https://en.wikipedia.org/wiki/Fujifilm_X-T3",
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://fuji101.com/cameras/fujifilm-x-t3",
+        "https://www.fujifilm-x.com/global/?page_id=16982&post_type=lens&preview_id=16982"
       ]
     },
     {
@@ -333,12 +787,36 @@
       "releaseYear": 2019,
       "megapixels": 26.1,
       "sensor": "X-Trans CMOS 4",
+      "processor": "X-Processor 4",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "DCI 4K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 8,
+        "electronic": 30
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 383,
+      "dimensionsMm": {
+        "width": 118.4,
+        "height": 82.8,
+        "depth": 46.8
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://www.fujifilm-x.com/en-us/stories/x-t30-tech-focus-videography/",
+        "https://www.fujifilm-x.com/en-gb/special/masters_of_microsite/masters_of_colour.php"
       ]
     },
     {
@@ -350,11 +828,32 @@
       "megapixels": 24.2,
       "sensor": "APS-C Bayer CMOS",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "4K 30p",
+      "viewfinder": {
+        "type": "none"
+      },
+      "screen": {
+        "type": "vari-angle",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 6
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 320,
+      "dimensionsMm": {
+        "width": 119.0,
+        "height": 67.7,
+        "depth": 41.2
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-A7"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-A7",
+        "https://fuji101.com/cameras/fujifilm-x-a7",
+        "https://www.fujifilm-x.com/en-gb/special/masters_of_microsite/masters_of_colour.php"
       ]
     },
     {
@@ -365,13 +864,36 @@
       "releaseYear": 2019,
       "megapixels": 26.1,
       "sensor": "X-Trans CMOS 4",
+      "processor": "X-Processor 4",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "DCI 4K 30p",
+      "viewfinder": {
+        "type": "hybrid",
+        "dotsMillion": 3.69
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 11,
+        "electronic": 30
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 497,
+      "dimensionsMm": {
+        "width": 140.5,
+        "height": 82.8,
+        "depth": 46.1
+      },
       "discontinued": false,
       "sources": [
         "https://en.wikipedia.org/wiki/Fujifilm_X-Pro3",
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://fuji101.com/cameras/fujifilm-x-pro3"
       ]
     },
     {
@@ -383,11 +905,33 @@
       "megapixels": 24.2,
       "sensor": "APS-C Bayer CMOS",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "4K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "vari-angle",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 8
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 370,
+      "dimensionsMm": {
+        "width": 121.0,
+        "height": 83.7,
+        "depth": 55.1
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_X-T200"
+        "https://en.wikipedia.org/wiki/Fujifilm_X-T200",
+        "https://www.digitalcameraworld.com/news/fujifilms-2020-even-with-the-world-in-lockdown-fujifilm-put-on-a-show",
+        "https://www.fujifilm-x.com/en-gb/special/masters_of_microsite/masters_of_colour.php"
       ]
     },
     {
@@ -398,13 +942,38 @@
       "releaseYear": 2020,
       "megapixels": 26.1,
       "sensor": "X-Trans CMOS 4",
+      "processor": "X-Processor 4",
       "ibis": true,
+      "ibisStops": 6.5,
+      "subjectDetectionAF": false,
+      "maxVideo": "DCI 4K 60p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 3.69
+      },
+      "screen": {
+        "type": "vari-angle",
+        "touch": true
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 15,
+        "electronic": 30
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 607,
+      "dimensionsMm": {
+        "width": 134.6,
+        "height": 92.8,
+        "depth": 63.8
+      },
       "discontinued": true,
       "sources": [
         "https://en.wikipedia.org/wiki/Fujifilm_X-T4",
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://fuji101.com/cameras/fujifilm-x-t4",
+        "https://dl.fujifilm-x.com/global/products/pdf/x-complete_guide_01.pdf"
       ]
     },
     {
@@ -415,12 +984,36 @@
       "releaseYear": 2020,
       "megapixels": 26.1,
       "sensor": "X-Trans CMOS 4",
+      "processor": "X-Processor 4",
       "ibis": true,
+      "ibisStops": 6.0,
+      "subjectDetectionAF": false,
+      "maxVideo": "4K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "vari-angle",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 8,
+        "electronic": 30
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 465,
+      "dimensionsMm": {
+        "width": 126.0,
+        "height": 85.1,
+        "depth": 65.4
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://ir.fujifilm.com/en/investors/ir-news/auto_20210512412727/pdfFile.pdf"
       ]
     },
     {
@@ -431,12 +1024,35 @@
       "releaseYear": 2021,
       "megapixels": 26.1,
       "sensor": "X-Trans CMOS 4",
+      "processor": "X-Processor 4",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "4K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 8,
+        "electronic": 30
+      },
+      "builtInFlash": false,
       "weatherSealed": false,
       "weightGrams": 364,
+      "dimensionsMm": {
+        "width": 121.3,
+        "height": 72.9,
+        "depth": 32.7
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://fuji101.com/cameras/fujifilm-x-e4"
       ]
     },
     {
@@ -447,12 +1063,35 @@
       "releaseYear": 2021,
       "megapixels": 26.1,
       "sensor": "X-Trans CMOS 4",
+      "processor": "X-Processor 4",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "4K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 8,
+        "electronic": 30
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 378,
+      "dimensionsMm": {
+        "width": 118.4,
+        "height": 82.8,
+        "depth": 46.8
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://www.photographyblog.com/reviews/fujifilm_x_t30_ii_review"
       ]
     },
     {
@@ -463,12 +1102,36 @@
       "releaseYear": 2022,
       "megapixels": 26.1,
       "sensor": "X-Trans CMOS 5 HS",
+      "processor": "X-Processor 5",
       "ibis": true,
+      "ibisStops": 7.0,
+      "subjectDetectionAF": true,
+      "maxVideo": "6.2K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 5.76
+      },
+      "screen": {
+        "type": "vari-angle",
+        "touch": true
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 15,
+        "electronic": 40
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 660,
+      "dimensionsMm": {
+        "width": 136.3,
+        "height": 92.9,
+        "depth": 84.6
+      },
       "discontinued": false,
       "sources": [
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://fuji101.com/cameras/fujifilm-x-h2s"
       ]
     },
     {
@@ -479,12 +1142,36 @@
       "releaseYear": 2022,
       "megapixels": 40.2,
       "sensor": "X-Trans CMOS 5 HR",
+      "processor": "X-Processor 5",
       "ibis": true,
+      "ibisStops": 7.0,
+      "subjectDetectionAF": true,
+      "maxVideo": "8K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 5.76
+      },
+      "screen": {
+        "type": "vari-angle",
+        "touch": true
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 15,
+        "electronic": 20
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 660,
+      "dimensionsMm": {
+        "width": 136.3,
+        "height": 92.9,
+        "depth": 84.6
+      },
       "discontinued": false,
       "sources": [
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://fuji101.com/cameras/fujifilm-x-h2"
       ]
     },
     {
@@ -495,12 +1182,36 @@
       "releaseYear": 2022,
       "megapixels": 40.2,
       "sensor": "X-Trans CMOS 5 HR",
+      "processor": "X-Processor 5",
       "ibis": true,
+      "ibisStops": 7.0,
+      "subjectDetectionAF": true,
+      "maxVideo": "6.2K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 3.69
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 15,
+        "electronic": 20
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 557,
+      "dimensionsMm": {
+        "width": 129.5,
+        "height": 91.0,
+        "depth": 63.8
+      },
       "discontinued": false,
       "sources": [
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://fuji101.com/cameras/fujifilm-x-t5"
       ]
     },
     {
@@ -511,12 +1222,36 @@
       "releaseYear": 2023,
       "megapixels": 26.1,
       "sensor": "X-Trans CMOS 4",
+      "processor": "X-Processor 5",
       "ibis": true,
+      "ibisStops": 7.0,
+      "subjectDetectionAF": true,
+      "maxVideo": "6.2K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "vari-angle",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 8,
+        "electronic": 30
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 491,
+      "dimensionsMm": {
+        "width": 127.7,
+        "height": 85.1,
+        "depth": 65.4
+      },
       "discontinued": false,
       "sources": [
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://fuji101.com/cameras/fujifilm-x-s20"
       ]
     },
     {
@@ -527,12 +1262,36 @@
       "releaseYear": 2024,
       "megapixels": 40.2,
       "sensor": "X-Trans CMOS 5 HR",
+      "processor": "X-Processor 5",
       "ibis": true,
+      "ibisStops": 7.0,
+      "subjectDetectionAF": true,
+      "maxVideo": "6.2K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 8,
+        "electronic": 20
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 438,
+      "dimensionsMm": {
+        "width": 123.8,
+        "height": 84.0,
+        "depth": 48.8
+      },
       "discontinued": false,
       "sources": [
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://www.photographyblog.com/reviews/fujifilm_x_t50_review"
       ]
     },
     {
@@ -543,9 +1302,30 @@
       "releaseYear": 2024,
       "megapixels": 26.1,
       "sensor": "X-Trans CMOS 4",
+      "processor": "X-Processor 5",
       "ibis": false,
+      "subjectDetectionAF": true,
+      "maxVideo": "6.2K 30p",
+      "viewfinder": {
+        "type": "none"
+      },
+      "screen": {
+        "type": "vari-angle",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 8,
+        "electronic": 30
+      },
+      "builtInFlash": false,
       "weatherSealed": false,
       "weightGrams": 355,
+      "dimensionsMm": {
+        "width": 111.9,
+        "height": 66.6,
+        "depth": 38.0
+      },
       "discontinued": false,
       "sources": [
         "https://en.wikipedia.org/wiki/Fujifilm_X-M5",
@@ -560,12 +1340,36 @@
       "releaseYear": 2025,
       "megapixels": 40.2,
       "sensor": "X-Trans CMOS 5 HR",
+      "processor": "X-Processor 5",
       "ibis": true,
+      "ibisStops": 7.0,
+      "subjectDetectionAF": true,
+      "maxVideo": "6.2K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 8,
+        "electronic": 20
+      },
+      "builtInFlash": false,
       "weatherSealed": false,
       "weightGrams": 445,
+      "dimensionsMm": {
+        "width": 124.9,
+        "height": 72.9,
+        "depth": 39.1
+      },
       "discontinued": false,
       "sources": [
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://fuji101.com/cameras/fujifilm-x-e5"
       ]
     },
     {
@@ -576,12 +1380,36 @@
       "releaseYear": 2025,
       "megapixels": 26.1,
       "sensor": "X-Trans CMOS 4",
+      "processor": "X-Processor 5",
       "ibis": false,
+      "subjectDetectionAF": true,
+      "maxVideo": "6.2K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 2.36
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 1,
+      "burstFps": {
+        "mechanical": 8,
+        "electronic": 30
+      },
+      "builtInFlash": true,
       "weatherSealed": false,
       "weightGrams": 378,
+      "dimensionsMm": {
+        "width": 118.4,
+        "height": 82.8,
+        "depth": 46.8
+      },
       "discontinued": false,
       "sources": [
-        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras"
+        "https://en.wikipedia.org/wiki/Comparison_of_Fujifilm_X_series_cameras",
+        "https://fuji101.com/cameras/fujifilm-x-t30-iii",
+        "https://www.stuff.tv/review/fujifilm-x-t30-iii-review/"
       ]
     },
     {
@@ -592,12 +1420,35 @@
       "releaseYear": 2017,
       "megapixels": 51.4,
       "sensor": "GFX 51.4MP CMOS",
+      "processor": "X-Processor Pro",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "Full HD 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 3.69
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 3
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 825,
+      "dimensionsMm": {
+        "width": 147.5,
+        "height": 94.2,
+        "depth": 91.4
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_GFX_50S"
+        "https://en.wikipedia.org/wiki/Fujifilm_GFX_50S",
+        "https://kakaku.com/item/K0000936465/",
+        "https://dl.fujifilm-x.com/global/products/cameras/gfx-50s/pdf/gfx_catalogue_01.pdf"
       ]
     },
     {
@@ -608,12 +1459,36 @@
       "releaseYear": 2018,
       "megapixels": 51.4,
       "sensor": "GFX 51.4MP CMOS",
+      "processor": "X-Processor Pro",
       "ibis": false,
+      "subjectDetectionAF": false,
+      "maxVideo": "Full HD 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 3.69
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 3
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 775,
+      "dimensionsMm": {
+        "width": 160.7,
+        "height": 96.5,
+        "depth": 66.4
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_GFX_50R"
+        "https://en.wikipedia.org/wiki/Fujifilm_GFX_50R",
+        "https://fuji101.com/cameras/fujifilm-gfx-50r",
+        "https://dl.fujifilm-x.com/global/products/cameras/gfx-50s/pdf/gfx_catalogue_01.pdf",
+        "https://www.fujifilm-x.com/en-gb/special/masters_of_microsite/masters_of_colour.php"
       ]
     },
     {
@@ -624,13 +1499,39 @@
       "releaseYear": 2019,
       "megapixels": 102.0,
       "sensor": "GFX 102MP BSI CMOS",
+      "processor": "X-Processor 4",
       "ibis": true,
+      "ibisStops": 5.5,
+      "subjectDetectionAF": false,
+      "maxVideo": "DCI 4K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 5.76
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 5,
+        "electronic": 2.9
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 1320,
+      "dimensionsMm": {
+        "width": 156.2,
+        "height": 144.0,
+        "depth": 75.1
+      },
       "discontinued": true,
       "sources": [
         "https://en.wikipedia.org/wiki/Fujifilm_GFX100",
-        "https://fujifilm-dsc.com/en/manual/gfx100/technical_notes/spec/index.html"
+        "https://fujifilm-dsc.com/en/manual/gfx100/technical_notes/spec/index.html",
+        "https://www.imaging-resource.com/cameras/fujifilm-gfx-100-review/image/914791/?section=thumbnails",
+        "https://www.fujifilm-x.com/en-gb/learning-centre/make-movies-with-gfx/",
+        "https://dl.fujifilm-x.com/global/products/cameras/gfx100/pdf/gfx100_catalogue_01.pdf"
       ]
     },
     {
@@ -641,12 +1542,37 @@
       "releaseYear": 2021,
       "megapixels": 102.0,
       "sensor": "GFX 102MP BSI CMOS",
+      "processor": "X-Processor 4",
       "ibis": true,
+      "ibisStops": 6.0,
+      "subjectDetectionAF": false,
+      "maxVideo": "DCI 4K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 3.69
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 5,
+        "electronic": 2.9
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 900,
+      "dimensionsMm": {
+        "width": 150.0,
+        "height": 104.2,
+        "depth": 87.2
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_GFX100S"
+        "https://en.wikipedia.org/wiki/Fujifilm_GFX100S",
+        "https://fuji101.com/cameras/fujifilm-gfx100s",
+        "https://www.fujifilm-x.com/en-gb/learning-centre/make-movies-with-gfx/"
       ]
     },
     {
@@ -657,12 +1583,36 @@
       "releaseYear": 2021,
       "megapixels": 51.4,
       "sensor": "GFX 51.4MP CMOS",
+      "processor": "X-Processor 4",
       "ibis": true,
+      "ibisStops": 6.5,
+      "subjectDetectionAF": false,
+      "maxVideo": "Full HD 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 3.69
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 3
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 900,
+      "dimensionsMm": {
+        "width": 150.0,
+        "height": 104.2,
+        "depth": 87.2
+      },
       "discontinued": true,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_GFX50S_II"
+        "https://en.wikipedia.org/wiki/Fujifilm_GFX50S_II",
+        "https://fuji101.com/cameras/fujifilm-gfx50s-ii",
+        "https://www.fujifilm-x.com/en-gb/learning-centre/make-movies-with-gfx/"
       ]
     },
     {
@@ -673,12 +1623,37 @@
       "releaseYear": 2023,
       "megapixels": 102.0,
       "sensor": "GFX 102MP CMOS II HS",
+      "processor": "X-Processor 5",
       "ibis": true,
+      "ibisStops": 8.0,
+      "subjectDetectionAF": true,
+      "maxVideo": "8K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 9.44
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 8,
+        "electronic": 5.3
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 1030,
+      "dimensionsMm": {
+        "width": 152.4,
+        "height": 117.4,
+        "depth": 98.6
+      },
       "discontinued": false,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_GFX100_II"
+        "https://en.wikipedia.org/wiki/Fujifilm_GFX100_II",
+        "https://fuji101.com/cameras/fujifilm-gfx100-ii",
+        "https://shopusa.fujifilm-x.com/gfx100-ii-body-600023590/"
       ]
     },
     {
@@ -689,12 +1664,36 @@
       "releaseYear": 2024,
       "megapixels": 102.0,
       "sensor": "GFX 102MP CMOS II",
+      "processor": "X-Processor 5",
       "ibis": true,
+      "ibisStops": 8.0,
+      "subjectDetectionAF": true,
+      "maxVideo": "DCI 4K 30p",
+      "viewfinder": {
+        "type": "evf",
+        "dotsMillion": 5.76
+      },
+      "screen": {
+        "type": "tilt",
+        "touch": true
+      },
+      "cardSlots": 2,
+      "burstFps": {
+        "mechanical": 7,
+        "electronic": 4.1
+      },
+      "builtInFlash": false,
       "weatherSealed": true,
       "weightGrams": 883,
+      "dimensionsMm": {
+        "width": 150.0,
+        "height": 104.2,
+        "depth": 87.2
+      },
       "discontinued": false,
       "sources": [
-        "https://en.wikipedia.org/wiki/Fujifilm_GFX100S_II"
+        "https://en.wikipedia.org/wiki/Fujifilm_GFX100S_II",
+        "https://ir.fujifilm.com/en/investors/ir-materials/earnings-presentations/main/01112/teaserItems2/0/linkList/00/link/ff_fy2024q1_001e_ts.pdf"
       ]
     },
     {
@@ -708,10 +1707,26 @@
       "releaseYear": 2025,
       "megapixels": 102.0,
       "sensor": "GFX 102MP CMOS II HS",
+      "processor": "X-Processor 5",
       "ibis": false,
+      "subjectDetectionAF": true,
+      "maxVideo": "8K DCI 24p",
+      "viewfinder": {
+        "type": "none"
+      },
+      "cardSlots": 2,
+      "builtInFlash": false,
+      "weatherSealed": true,
+      "dimensionsMm": {
+        "width": 110.8,
+        "height": 138.2,
+        "depth": 176.8
+      },
       "discontinued": false,
       "sources": [
-        "https://fujifilm-dsc.com/en/manual/gfx-eterna-55/technical_notes/spec/"
+        "https://fujifilm-dsc.com/en/manual/gfx-eterna-55/technical_notes/spec/",
+        "https://www.digitalcameraworld.com/cameras/cinema-cameras/in-a-win-for-filmmakers-and-fans-alike-the-102mp-open-gate-fujifilm-gfx-eterna-55-has-been-approved-for-imax-screens",
+        "https://shopusa.fujifilm-x.com/gfx-eterna-55-filmmaking-camera-16969715/"
       ]
     }
   ]

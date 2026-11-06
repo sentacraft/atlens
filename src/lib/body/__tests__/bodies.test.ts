@@ -26,6 +26,33 @@ describe("bodies.json", () => {
   });
 });
 
+describe("body spec fields", () => {
+  it("states IBIS stops only for stabilized bodies", () => {
+    for (const body of bodies) {
+      if (body.ibisStops !== undefined) {expect(body.ibis).toBe(true);}
+    }
+    expect(getBodyById("fujifilm-x-h2")?.ibisStops).toBeGreaterThan(0);
+    expect(getBodyById("fujifilm-x-t30-ii")?.ibisStops).toBeUndefined();
+  });
+
+  it("leaves a rate out when the body has no such shutter or no figure", () => {
+    expect(getBodyById("fujifilm-x-pro1")?.burstFps).toEqual({ mechanical: 6 });
+    expect(getBodyById("fujifilm-x-a20")?.burstFps).toBeUndefined();
+  });
+
+  it("has a viewfinder entry for every body, and an EVF has its resolution", () => {
+    for (const body of bodies) {
+      if (body.viewfinder.type === "evf") {expect(body.viewfinder.dotsMillion).toBeGreaterThan(0);}
+    }
+  });
+
+  it("uses 1 or 2 card slots", () => {
+    for (const body of bodies) {
+      if (body.cardSlots !== undefined) {expect([1, 2]).toContain(body.cardSlots);}
+    }
+  });
+});
+
 describe("bodyCatalogSchema", () => {
   const valid = bodies[0];
   const catalog = (list: unknown[]) => ({
@@ -36,6 +63,10 @@ describe("bodyCatalogSchema", () => {
 
   it("rejects duplicate ids", () => {
     expect(bodyCatalogSchema.safeParse(catalog([valid, valid])).success).toBe(false);
+  });
+
+  it("rejects ibisStops on a body without IBIS", () => {
+    expect(bodyCatalogSchema.safeParse(catalog([{ ...valid, ibis: false, ibisStops: 5 }])).success).toBe(false);
   });
 
   it("rejects a GFX series body on the X mount", () => {

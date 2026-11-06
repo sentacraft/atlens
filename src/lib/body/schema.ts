@@ -35,7 +35,49 @@ export const bodySchema = z
     releaseYear: z.int().min(2012).max(2100).describe("Year the body first went on sale."),
     megapixels: z.number().positive().describe("Effective megapixels, one decimal place."),
     sensor: z.enum(BODY_SENSORS).describe("Sensor generation as Fujifilm names it."),
+    processor: z
+      .string()
+      .trim()
+      .min(1)
+      .optional()
+      .describe('Image processor as Fujifilm names it, e.g. "X-Processor 5". Omit when Fujifilm does not name it.'),
     ibis: z.boolean().describe("Has in-body image stabilization. Electronic-only stabilization is false."),
+    ibisStops: z
+      .number()
+      .positive()
+      .optional()
+      .describe("CIPA stops of stabilization as Fujifilm states them. Omit when there is no IBIS or no figure."),
+    subjectDetectionAF: z
+      .boolean()
+      .describe("Autofocus detects subjects beyond face and eye: animal, bird, vehicle and so on."),
+    maxVideo: z
+      .string()
+      .trim()
+      .min(1)
+      .optional()
+      .describe('Highest recording mode, resolution and frame rate, e.g. "6.2K 30p". Omit when not stated.'),
+    viewfinder: z
+      .strictObject({
+        type: z.enum(["evf", "hybrid", "none"]).describe('"hybrid" is the X-Pro optical/electronic finder.'),
+        dotsMillion: z.number().positive().optional().describe("EVF resolution in million dots."),
+      })
+      .describe("Built-in viewfinder."),
+    screen: z
+      .strictObject({
+        type: z.enum(["fixed", "tilt", "vari-angle", "none"]).describe('"tilt" includes the three-direction screen.'),
+        touch: z.boolean().optional().describe("Touch screen. Omit when the sources do not say."),
+      })
+      .optional()
+      .describe("Rear screen. Omit when the sources do not say how it moves."),
+    cardSlots: z.int().min(1).max(2).optional().describe("Number of memory card slots. Omit when not stated."),
+    burstFps: z
+      .strictObject({
+        mechanical: z.number().positive().optional().describe("Highest mechanical-shutter rate Fujifilm lists."),
+        electronic: z.number().positive().optional().describe("Highest electronic-shutter rate Fujifilm lists."),
+      })
+      .optional()
+      .describe("Continuous shooting. A missing key means no such shutter or no figure; the rate may need a crop."),
+    builtInFlash: z.boolean().optional().describe("Pop-up or built-in flash. A bundled external flash does not count."),
     weatherSealed: z
       .boolean()
       .optional()
@@ -45,6 +87,13 @@ export const bodySchema = z
       .positive()
       .optional()
       .describe("Shooting weight including battery and memory card. Omit when no source publishes it on that basis."),
+    dimensionsMm: z
+      .strictObject({
+        width: z.number().positive(),
+        height: z.number().positive(),
+        depth: z.number().positive().describe("Body depth, not the minimum depth."),
+      })
+      .describe("Body only, in millimetres."),
     discontinued: z
       .boolean()
       .describe("Missing from Fujifilm's current camera lineup as of the file's lineupCheckedAt date."),
@@ -53,6 +102,10 @@ export const bodySchema = z
   .refine((body) => (body.mount === "G") === (body.series === "GFX"), {
     message: 'series "GFX" and mount "G" go together',
     path: ["series"],
+  })
+  .refine((body) => body.ibisStops === undefined || body.ibis, {
+    message: "ibisStops needs ibis: true",
+    path: ["ibisStops"],
   });
 
 export const bodyCatalogSchema = z

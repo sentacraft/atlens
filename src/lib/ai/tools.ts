@@ -18,6 +18,7 @@ import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
 import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
 import { SKILL_NAMES, readSkill } from "@/lib/ai/skills";
+import { bodyQuerySchema, queryBodies } from "@/lib/body/query";
 import { favoritesOnMount } from "@/lib/ai/favorites";
 import type { GearSummary } from "@/lib/ai/gear-context";
 import { REVIEW_ASPECTS } from "@/lib/lens/reviews";
@@ -182,6 +183,13 @@ const REVIEWS_NOTE =
   "weigh it against the user's camera. An aspect with no claim has no review findings anywhere on Atlens: say so " +
   "rather than judge it yourself or point to another Atlens page. Never write a review's url: the source " +
   "links turn into numbered notes that open it.";
+
+// Returned with every queryBodies result, so the boundary arrives with the data it governs.
+const BODIES_NOTE =
+  "Discontinued bodies are included and say so. `maybe` holds bodies with no figure for a filtered field: " +
+  "surface them, never drop them. A field in a record's notInData is not in the catalogue: say so, never guess it. " +
+  "The catalogue holds specs only: no prices, reviews, test results or buying advice for bodies. Asked for any of " +
+  "those, say Atlens has none and stop at the specs; do not judge a body's worth, handling or image quality from memory.";
 
 // What one call returns at most; longer lists are cut, not rejected, so the model needs no retry.
 const MAX_DETAIL_REFS = 6;
@@ -349,6 +357,14 @@ export function buildLensTools(
           ...(notReturned ? { notReturned } : {}),
         };
       },
+    }),
+
+    queryBodies: tool({
+      description:
+        "Fujifilm camera bodies by spec, or by name when `names` is set. Every filter is a hard constraint, " +
+        "so set one only for a requirement the request makes. Renders nothing to the user.",
+      inputSchema: bodyQuerySchema,
+      execute: (query) => ({ ...queryBodies(query, mount), note: BODIES_NOTE }),
     }),
 
     lensReviews: tool({

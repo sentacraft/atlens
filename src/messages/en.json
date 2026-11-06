@@ -824,7 +824,7 @@
     "backgroundBody3": "I'm an independent developer, and I currently build and maintain Atlens entirely on my own. I've always held a deep conviction about building a product that doesn't compromise on engineering quality, user experience, or visual craft — and that conviction is, in no small part, what made this project possible.",
     "askIrisTitle": "Ask <iris>Iris</iris>",
     "askIrisTitlePlain": "Ask Iris",
-    "askIrisBody": "<askIris>Ask Iris</askIris> is Atlens's built-in AI assistant, and it answers from Atlens's own data. Describe what you shoot in plain language and it finds and recommends lenses, lays out their specs side by side, and explains how they differ; signed in, it takes the gear you've saved into account. It can also answer questions about Atlens itself. Iris can be wrong, so check key specs and purchase details with the manufacturer. It keeps gaining capabilities.",
+    "askIrisBody": "<askIris>Ask Iris</askIris> is Atlens's built-in AI assistant, and it answers from Atlens's own data. Describe what you shoot in plain language and it finds and recommends lenses, lays out their specs side by side, explains how they differ, and looks up Fujifilm camera bodies' specs; signed in, it takes the gear you've saved into account. It can also answer questions about Atlens itself. Iris can be wrong, so check key specs and purchase details with the manufacturer. It keeps gaining capabilities.",
     "coverageTitle": "Coverage & Roadmap",
     "coverageBody": "Coverage depth and discontinued lens inclusion vary by brand. Adapted lenses from other mounts are out of scope.",
     "coverageBrandsX": "X Mount",

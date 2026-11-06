@@ -89,9 +89,103 @@
             ],
             "description": "Sensor generation as Fujifilm names it."
           },
+          "processor": {
+            "description": "Image processor as Fujifilm names it, e.g. \"X-Processor 5\". Omit when Fujifilm does not name it.",
+            "type": "string",
+            "minLength": 1
+          },
           "ibis": {
             "type": "boolean",
             "description": "Has in-body image stabilization. Electronic-only stabilization is false."
+          },
+          "ibisStops": {
+            "description": "CIPA stops of stabilization as Fujifilm states them. Omit when there is no IBIS or no figure.",
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "subjectDetectionAF": {
+            "type": "boolean",
+            "description": "Autofocus detects subjects beyond face and eye: animal, bird, vehicle and so on."
+          },
+          "maxVideo": {
+            "description": "Highest recording mode, resolution and frame rate, e.g. \"6.2K 30p\". Omit when not stated.",
+            "type": "string",
+            "minLength": 1
+          },
+          "viewfinder": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "evf",
+                  "hybrid",
+                  "none"
+                ],
+                "description": "\"hybrid\" is the X-Pro optical/electronic finder."
+              },
+              "dotsMillion": {
+                "description": "EVF resolution in million dots.",
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false,
+            "description": "Built-in viewfinder."
+          },
+          "screen": {
+            "description": "Rear screen. Omit when the sources do not say how it moves.",
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "fixed",
+                  "tilt",
+                  "vari-angle",
+                  "none"
+                ],
+                "description": "\"tilt\" includes the three-direction screen."
+              },
+              "touch": {
+                "description": "Touch screen. Omit when the sources do not say.",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false
+          },
+          "cardSlots": {
+            "description": "Number of memory card slots. Omit when not stated.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2
+          },
+          "burstFps": {
+            "description": "Continuous shooting. A missing key means no such shutter or no figure; the rate may need a crop.",
+            "type": "object",
+            "properties": {
+              "mechanical": {
+                "description": "Highest mechanical-shutter rate Fujifilm lists.",
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "electronic": {
+                "description": "Highest electronic-shutter rate Fujifilm lists.",
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "builtInFlash": {
+            "description": "Pop-up or built-in flash. A bundled external flash does not count.",
+            "type": "boolean"
           },
           "weatherSealed": {
             "description": "Marketed as weather resistant. Omit when the sources do not say.",
@@ -102,6 +196,31 @@
             "type": "integer",
             "exclusiveMinimum": 0,
             "maximum": 9007199254740991
+          },
+          "dimensionsMm": {
+            "type": "object",
+            "properties": {
+              "width": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "height": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "depth": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "description": "Body depth, not the minimum depth."
+              }
+            },
+            "required": [
+              "width",
+              "height",
+              "depth"
+            ],
+            "additionalProperties": false,
+            "description": "Body only, in millimetres."
           },
           "discontinued": {
             "type": "boolean",
@@ -126,6 +245,9 @@
           "megapixels",
           "sensor",
           "ibis",
+          "subjectDetectionAF",
+          "viewfinder",
+          "dimensionsMm",
           "discontinued",
           "sources"
         ],
