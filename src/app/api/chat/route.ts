@@ -22,6 +22,7 @@ import { findAgentModelPreset, MODEL_PRESET_HEADER } from "@/lib/ai/model-preset
 import { describeGear, EVAL_GEAR_HEADER, evalGear, type GearStatus } from "@/lib/ai/gear-context";
 import { EVAL_FAVORITES_HEADER, evalFavorites } from "@/lib/ai/favorites";
 import { listUserFavorites } from "@/lib/me/favorites-repository";
+import { ASK_CHOICES } from "@/lib/ai/choice-request";
 import { ASK_FOR_GEAR, gearCardDecline } from "@/lib/ai/gear-request";
 import { SIGN_IN_DECLINED, SIGN_IN_GATED_TOOL_NAMES, signInApproval } from "@/lib/ai/sign-in-gate";
 import { listUserGear } from "@/lib/me/gear-repository";
@@ -196,7 +197,7 @@ export async function POST(req: NextRequest) {
     return chatErrorResponse("unavailable", 500);
   }
   const turn = resolveTurn(stored, incoming.data[0], previousMessageId, {
-    clientTools: [ASK_FOR_GEAR],
+    clientTools: [ASK_FOR_GEAR, ASK_CHOICES],
     approvalTools: SIGN_IN_GATED_TOOL_NAMES,
     deniedReason: SIGN_IN_DECLINED,
   });

@@ -258,6 +258,18 @@
     "guestQuota": "You've used today's {guestTurns, number} free questions. <signIn>Sign in</signIn> to ask more each day.",
     "errorRetry": "Something went wrong on Iris's side — please <retry>try again</retry>.",
     "errorUnavailable": "Iris is unavailable right now — please try again later.",
+    "choiceCard": {
+      "title": "A few quick questions",
+      "pickOne": "Pick one",
+      "pickAny": "Pick any",
+      "somethingElse": "Something else",
+      "add": "Add",
+      "done": "Done",
+      "skip": "Skip",
+      "notSaid": "not said",
+      "skipped": "Questions skipped",
+      "unanswered": "Questions not answered"
+    },
     "gearCard": {
       "title": "Add your gear",
       "bodies": "Bodies",
