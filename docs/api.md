@@ -32,5 +32,6 @@ change the JSDoc, then run `node --experimental-strip-types scripts/api-docs.mts
 | `/api/me/gear/[gearId]` | DELETE | Removes one of the caller's gear items. Accounts only; 404 when missing or not the caller's. |
 | `/api/me/settings` | GET | Returns the caller's settings, or the defaults when none are saved. Accounts only; 401 for guests. |
 | `/api/me/settings` | PATCH | Updates the given settings and returns them all. Accounts only; 400 for an empty patch or a value outside the allowed set. |
+| `/api/stats-preference` | POST | Turns usage statistics on or off for this browser by setting or clearing a cookie. Public; 400 on a malformed body. |
 | `/api/telemetry` | POST | Logs a browser asset failure or slow asset load to Workers Logs. Public; 429 past the per-IP rate. |
-| `/api/track` | POST | Records one product analytics event and sets the anonymous visitor cookie. Public; 400 on a malformed event, 413 on an oversized body, 429 past the per-IP rate. |
+| `/api/track` | POST | Records one product analytics event and sets the anonymous visitor cookie. Public; 400 on a malformed event, 413 on an oversized body, 429 past the per-IP rate. Records nothing when the visitor opted out. |

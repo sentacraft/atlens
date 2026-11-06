@@ -1,3 +1,4 @@
+import { StatsPreference } from "@/components/about/StatsPreference";
 import { getTranslations, getLocale } from "next-intl/server";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -396,6 +397,7 @@ export default async function AboutContent() {
         <p className="text-sm text-zinc-600 leading-relaxed">
           {t("privacyAnalytics")}
         </p>
+        <StatsPreference />
       </Section>
 
       <Section id="support" title={t("supportTitle")}>
