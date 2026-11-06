@@ -41,10 +41,14 @@ async function signIn() {
     if (!response.ok) {
       throw new Error(`anonymous sign-in failed: ${response.status}`);
     }
-    return response.headers
-      .getSetCookie()
-      .map((cookie) => cookie.split(";")[0])
-      .join("; ");
+    const cookies = response.headers.getSetCookie().map((cookie) => cookie.split(";")[0]);
+    // A guest gets 3 turns a day (src/lib/ai/iris-quota.ts), far fewer than a run needs; the
+    // bypass cookie exempts the run and marks its events internal. Needs the same
+    // RATE_LIMIT_BYPASS in the dev server's .env.local and in this process's environment.
+    if (process.env.RATE_LIMIT_BYPASS) {
+      cookies.push(`rate_bypass=${process.env.RATE_LIMIT_BYPASS}`);
+    }
+    return cookies.join("; ");
   });
   return sessionCookie;
 }

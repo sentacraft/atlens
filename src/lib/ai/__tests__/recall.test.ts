@@ -266,3 +266,59 @@ describe("recallLenses · null leaves an axis unrestricted", () => {
     expect(recall(nulled, ALL)).toEqual(expected);
   });
 });
+
+describe("recallLenses · maybeBrands", () => {
+  it("names every brand behind the lenses missing the filtered year, past the cap", () => {
+    const result = recall({ minReleaseYear: 2023 }, 3);
+    const brands = new Set(getLensesByMount(MOUNT, LOCALE).filter((l) => l.releaseYear == null).map((l) => l.brand));
+
+    expect(result.maybe).toHaveLength(3);
+    expect(new Set(result.maybeBrands)).toEqual(brands);
+    expect(result.maybeBrands.length).toBeGreaterThan(3);
+  });
+
+  it("is empty when no lens is uncertain", () => {
+    expect(recall({ type: "prime" }, ALL).maybeBrands).toEqual([]);
+  });
+});
+
+describe("recallLenses · a sort with no value puts the lens in maybe", () => {
+  it("a brand with no release years has no matches under newest, and every lens is a maybe for releaseYear", () => {
+    const result = recall({ brands: ["ttartisan"], sortBy: "newest" }, ALL);
+
+    expect(result.matches).toEqual([]);
+    expect(result.totalMatched).toBe(0);
+    expect(result.totalMaybe).toBeGreaterThan(0);
+    expect(result.maybe.every((m) => m.missingFields.includes("releaseYear"))).toBe(true);
+    expect(result.maybeBrands).toEqual(["ttartisan"]);
+  });
+
+  it("a brand with years ranks by them: newest first, none left out", () => {
+    const result = recall({ brands: ["fujifilm"], sortBy: "newest" }, ALL);
+    const years = result.matches.map((lens) => lens.releaseYear);
+
+    expect(result.maybe).toEqual([]);
+    expect(years).toEqual([...years].sort((a, b) => (b as number) - (a as number)));
+  });
+
+  it("keeps the lenses a filter could not judge, adding the sort field when it is missing too", () => {
+    const result = recall({ minReleaseYear: 2023, sortBy: "newest" }, ALL);
+    const undated = result.maybe.filter((m) => m.lens.releaseYear == null);
+
+    expect(undated.length).toBeGreaterThan(0);
+    expect(undated.every((m) => m.missingFields.filter((f) => f === "releaseYear").length === 1)).toBe(true);
+    expect(result.matches.every((lens) => lens.releaseYear != null)).toBe(true);
+  });
+
+  it("cheapest leaves lenses with no price out of the matches", () => {
+    const result = recall({ type: "prime", sortBy: "cheapest" }, ALL);
+
+    expect(result.matches.every((lens) => lens.price != null)).toBe(true);
+    expect(result.maybe.every((m) => m.lens.price == null && m.missingFields.includes("price"))).toBe(true);
+  });
+
+  it("sorts every lens has a value for leave nothing in maybe", () => {
+    expect(recall({ type: "prime", sortBy: "lightest" }, ALL).maybe).toEqual([]);
+    expect(recall({ type: "prime", sortBy: "widest" }, ALL).maybe).toEqual([]);
+  });
+});

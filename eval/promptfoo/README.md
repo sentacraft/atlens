@@ -10,10 +10,12 @@ replay cannot.
 Needs the dev server up (`localhost:3000`) and, for the judge, `EVAL_OPENAI_API_KEY` in `.env.local` —
 its own OpenAI key, separate from the `OPENAI_API_KEY` Iris uses for GPT models.
 The `reviews` cases also need review findings in the local catalog: run `pnpm run d1:pull:catalog` first.
+The run signs in as one guest, who is capped at 3 turns a day. Put the same random `RATE_LIMIT_BYPASS` in `.env.local` (restart the dev server) and in the command's environment, and the provider sends it as the bypass cookie, which also marks the run's analytics events internal.
 
 ```bash
 # from the repo root
 OPENAI_API_KEY=$(grep '^EVAL_OPENAI_API_KEY=' .env.local | cut -d= -f2-) \
+  RATE_LIMIT_BYPASS=$(grep '^RATE_LIMIT_BYPASS=' .env.local | cut -d= -f2-) \
   pnpm dlx promptfoo@latest eval -c eval/promptfoo/promptfooconfig.yaml
 
 pnpm dlx promptfoo@latest view      # local web UI: browse results, compare runs
@@ -26,7 +28,7 @@ every LLM-graded assertion is a paid judge call. Run as little as answers the qu
 
 - Batch prompt edits and evaluate them together, not after each tweak.
 - While iterating, run only the area the change touches, once:
-  `--filter-metadata area=<area>`, where each case's `metadata.area` is one of `recommend`,
+  `--filter-metadata area=<area>`, where each case's `metadata.area` is one of `recommend`, `english`,
   `guard`, `gear`, `site`, `links`, `favorites`, `terms`, `table`, `reviews`
   (`--filter-pattern` still picks single cases by name).
 - Run the full suite once per PR when prompt or tool work is done, and when switching models.
