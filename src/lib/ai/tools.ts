@@ -186,6 +186,8 @@ const REVIEWS_NOTE =
 
 // Returned with every queryBodies result, so the boundary arrives with the data it governs.
 const BODIES_NOTE =
+  "Discontinued bodies are included and say so. `maybe` holds bodies with no figure for a filtered field: " +
+  "surface them, never drop them. A field in a record's notInData is not in the catalogue: say so, never guess it. " +
   "The catalogue holds specs only: no prices, reviews, test results or buying advice for bodies. Asked for any of " +
   "those, say Atlens has none and stop at the specs; do not judge a body's worth, handling or image quality from memory.";
 
@@ -359,11 +361,8 @@ export function buildLensTools(
 
     queryBodies: tool({
       description:
-        "Fujifilm camera bodies by spec, or by name when `names` is set: IBIS and its stops, subject detection, " +
-        "video, viewfinder, screen, card slots, burst, flash, weather sealing, weight, size, release year. " +
-        "Every filter is a hard constraint; `maybe` holds bodies with no figure for a filtered field. Discontinued " +
-        "bodies are included and say so. Fields listed in a record's notInData are not in the catalogue: say so, " +
-        "never guess them. Renders nothing to the user.",
+        "Fujifilm camera bodies by spec, or by name when `names` is set. Every filter is a hard constraint, " +
+        "so set one only for a requirement the request makes. Renders nothing to the user.",
       inputSchema: bodyQuerySchema,
       execute: (query) => ({ ...queryBodies(query, mount), note: BODIES_NOTE }),
     }),
