@@ -395,11 +395,13 @@ export default async function LensDetailPage({ params }: { params: Params }) {
       <section
         id="reviews"
         aria-labelledby="lens-reviews-heading"
-        className={cn(PAGE_SECTION_CLS, ANCHORED_SECTION_CLS, "group/reviews gap-6")}
+        className={cn(PAGE_SECTION_CLS, ANCHORED_SECTION_CLS, "group/reviews gap-3")}
       >
         <h2 id="lens-reviews-heading" className={SECTION_HEADING_CLS}>{t("sectionReviews")}</h2>
-        <LensReviewSummary lensId={lens.id} />
-        <LensReviewSearch lens={lens} locale={locale} />
+        <div className="flex flex-col gap-8">
+          <LensReviewSummary lensId={lens.id} />
+          <LensReviewSearch lens={lens} locale={locale} />
+        </div>
       </section>
 
       <SameFocalAlternatives lens={lens} lenses={lenses} />

@@ -576,8 +576,6 @@
   },
   "LensReviews": {
     "findings": {
-      "title": "评测要点",
-      "subtitle": "根据 {count} 篇公开评测整理",
       "summary": "整体评价",
       "verdict": {
         "positive": "评价正面",

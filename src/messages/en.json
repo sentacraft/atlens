@@ -576,8 +576,6 @@
   },
   "LensReviews": {
     "findings": {
-      "title": "Review highlights",
-      "subtitle": "Summarized from {count} published reviews",
       "summary": "Overall verdict",
       "verdict": {
         "positive": "Positive",

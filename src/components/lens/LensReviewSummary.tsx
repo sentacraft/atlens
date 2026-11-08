@@ -13,7 +13,6 @@ import {
   REVIEW_NEGATIVE_CLS,
   REVIEW_POSITIVE_CLS,
   REVIEW_VERDICT_CHIP_CLS,
-  SUBSECTION_HEADING_CLS,
 } from "@/config/ui-tokens";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { numberSources, sourceHref, type Citations } from "@/lib/askiris/review-citations";
@@ -388,11 +387,7 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
     ) : null;
 
   return (
-    <div ref={sectionRef} data-nosnippet="" className={ANCHORED_SECTION_CLS}>
-      <div className="flex flex-col gap-1">
-        <h3 id="lens-review-findings" className={SUBSECTION_HEADING_CLS}>{t("title")}</h3>
-        <p className="text-[13px] text-zinc-500">{t("subtitle", { count: String(locked?.sourceCount ?? citations.list.length) })}</p>
-      </div>
+    <div ref={sectionRef} id="lens-review-findings" data-nosnippet="" className={ANCHORED_SECTION_CLS}>
       <CitationsProvider citations={citations}>
         {layout.overall ? <OverallVerdict claim={layout.overall} citations={citations} /> : null}
 
