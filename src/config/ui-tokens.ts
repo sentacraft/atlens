@@ -6,7 +6,7 @@ export const SECTION_TOP_CLS = "pt-6 sm:pt-8";
 export const LENS_INDEX_SHELL_CLS = `mx-auto w-full max-w-7xl ${PAGE_GUTTER_CLS}`;
 
 /** A page under the browse layout: the bottom padding clears the compare bar when it shows. */
-export const BROWSE_PAGE_MAIN_CLS = `mx-auto max-w-6xl py-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] ${PAGE_GUTTER_CLS}`;
+export const BROWSE_PAGE_MAIN_CLS = `relative mx-auto max-w-6xl py-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] ${PAGE_GUTTER_CLS}`;
 
 // 72px is three of the widest gap (xl:gap-6): the min track never exceeds a quarter row, capping the grid at 4 columns.
 export const LENS_GRID_CLS =
@@ -83,6 +83,11 @@ export const CHIP_IDLE_CLS =
 export const CHIP_ACTIVE_CLS =
   "border-zinc-900 bg-zinc-900 text-white";
 
+/** A row of the side navigation beside a long page: the Me page, and the section rail. */
+export const SIDE_NAV_ITEM_CLS = "rounded-lg px-3 py-2 text-sm transition-colors";
+export const SIDE_NAV_ITEM_IDLE_CLS = "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900";
+export const SIDE_NAV_ITEM_ACTIVE_CLS = "bg-zinc-100 font-medium text-zinc-900";
+
 export const ICON_NAV_BTN_CLS =
   "inline-flex shrink-0 items-center justify-center rounded-lg transition-colors " +
   "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 active:bg-zinc-100 active:text-zinc-900";
@@ -92,7 +97,8 @@ export const FEEDBACK_LINK_CLS =
   "hover:text-zinc-900";
 
 /** A page section that a contents link or hash can jump to, clear of the sticky nav. */
-export const ANCHORED_SECTION_CLS = "flex scroll-mt-[calc(var(--nav-height)+1rem)] flex-col gap-4";
+/** Clears the nav and the sticky section chips above it. */
+export const ANCHORED_SECTION_CLS = "flex scroll-mt-[calc(var(--nav-height)+4.5rem)] flex-col gap-4";
 export const SECTION_HEADING_ROW_CLS = "flex items-center justify-between gap-3 border-b border-zinc-200 pb-2";
 
 export const SECTION_VIEW_ALL_LINK_CLS =

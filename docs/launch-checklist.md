@@ -52,6 +52,9 @@ say in the PR description which items you changed and which do not apply.
   `scripts/uptime-check.mjs`.
 - **Lens lists.** A page that lists lenses to browse joins the `PAGES` list in
   `e2e/lens-actions.spec.ts`.
+- **Section jump.** A long page with sections of its own puts them in `SectionNav`
+  (`src/components/nav/`), inside a `relative` box as wide as the page content, with `width` set to
+  the page's width class. Give each section an `id` and `scroll-mt` (`ANCHORED_SECTION_CLS`).
 - **After merge.** Tell the maintainer to request indexing in Google Search Console; Bing gets
   the page through IndexNow on deploy.
 

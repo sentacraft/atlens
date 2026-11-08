@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import SectionNav from "@/components/nav/SectionNav";
 import { ArrowRight, Flag } from "lucide-react";
 import { localized } from "@/i18n/localized";
 import { Link } from "@/i18n/navigation";
@@ -19,7 +20,7 @@ import Breadcrumb from "@/components/nav/Breadcrumb";
 import JsonLd from "@/components/seo/JsonLd";
 import SupportNote from "@/components/support/SupportNote";
 import { SITE } from "@/config/site";
-import { ANCHORED_SECTION_CLS, BROWSE_PAGE_MAIN_CLS, CHIP_BASE_CLS, CHIP_IDLE_CLS, PAGE_SECTION_HEADING_CLS, SECTION_HEADING_CLS, SECTION_HEADING_ROW_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
+import { ANCHORED_SECTION_CLS, BROWSE_PAGE_MAIN_CLS, PAGE_SECTION_HEADING_CLS, SECTION_HEADING_CLS, SECTION_HEADING_ROW_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { BRANDS, getBrandInfo, getBrandLenses } from "@/lib/brands";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildLineup } from "@/lib/charts/lineup";
@@ -122,6 +123,7 @@ export default async function BrandPage({ params }: { params: Params }) {
     { id: "lineup", label: t("lineupHeading") },
     ...(hasTimeline ? [{ id: "timeline", label: tCharts("timelineHeading") }] : []),
     { id: "lenses", label: t("lensList") },
+    { id: "collections", label: t("sectionCollections") },
   ];
 
   const itemListSchema = buildItemListSchema({
@@ -191,14 +193,9 @@ export default async function BrandPage({ params }: { params: Params }) {
               </ul>
             </section>
           )}
-          <nav aria-label={t("contents")} className="mt-4 flex flex-wrap gap-1.5">
-            {contents.map(({ id, label }) => (
-              <a key={id} href={`#${id}`} className={cn(CHIP_BASE_CLS, CHIP_IDLE_CLS)}>
-                {label}
-              </a>
-            ))}
-          </nav>
         </header>
+
+        <SectionNav ariaLabel={t("contents")} width="wide" items={contents} className="-mt-3 mb-6" />
 
         <section id="lineup" className={ANCHORED_SECTION_CLS} aria-labelledby="lineup-heading">
           <div className={SECTION_HEADING_ROW_CLS}>
@@ -237,6 +234,7 @@ export default async function BrandPage({ params }: { params: Params }) {
             mount={data.resolvedMount}
             locale={locale}
             title={t("relatedCollections", { brand: data.name })}
+            id="collections"
           />
           <section className="flex flex-col gap-4">
             <h2 className={SECTION_HEADING_CLS}>{t("otherBrands")}</h2>

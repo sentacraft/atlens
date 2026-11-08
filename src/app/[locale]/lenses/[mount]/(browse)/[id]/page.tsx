@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import SectionNav from "@/components/nav/SectionNav";
 import { Flag } from "lucide-react";
 import { getLensUrl } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
@@ -223,7 +224,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   return (
     <>
     <JsonLd data={productSchema} />
-    <div className={`w-full max-w-4xl mx-auto pt-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] flex flex-col gap-8 ${PAGE_GUTTER_CLS}`}>
+    <div className={`relative w-full max-w-4xl mx-auto pt-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] flex flex-col gap-8 ${PAGE_GUTTER_CLS}`}>
       <div className="flex items-center justify-between">
         <Breadcrumb
               segments={[{ label: tNav("lenses"), href: browsePath(resolvedMount) }]}
@@ -308,7 +309,19 @@ export default async function LensDetailPage({ params }: { params: Params }) {
         <PriceDisclaimer className="-mt-3 border-t border-zinc-100 pt-3" />
       )}
 
-      <div>
+      <SectionNav
+        ariaLabel={t("sectionsLabel")}
+        width="detail"
+        items={[
+          { id: "specs", label: t("sectionSpecs") },
+          { id: "reviews", label: t("sectionReviews") },
+          { id: "more-reviews", label: t("sectionMoreReviews") },
+          { id: "same-focal", label: t("sectionAlternatives") },
+          { id: "collections", label: t("sectionCollections") },
+        ]}
+      />
+
+      <div id="specs" className="scroll-mt-[calc(var(--nav-height)+4.5rem)]">
         <div className="rounded-xl border border-zinc-200 overflow-hidden">
             <DataSourceBar
               className="border-b border-zinc-200"
@@ -390,6 +403,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
         mount={resolvedMount}
         locale={locale}
         title={t("collectionsTitle")}
+        id="collections"
         className={PAGE_SECTION_CLS}
       />
       <SupportNote className="mt-6" />

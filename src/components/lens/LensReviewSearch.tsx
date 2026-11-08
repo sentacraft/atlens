@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import PlatformMark from "@/components/logos/PlatformMark";
 import { buildReviewSearchLinks } from "@/lib/lens/review-search";
 import type { Lens } from "@/lib/types";
-import { PAGE_SECTION_CLS, SECTION_HEADING_CLS } from "@/config/ui-tokens";
+import { ANCHORED_SECTION_CLS, PAGE_SECTION_CLS, SECTION_HEADING_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 
 /** Search links to other sites' reviews, samples and discussions of the lens. */
@@ -16,7 +16,7 @@ export default async function LensReviewSearch({ lens, locale }: { lens: Lens; l
   });
 
   return (
-    <section aria-labelledby="lens-review-search" className={cn(PAGE_SECTION_CLS, "flex flex-col gap-4")}>
+    <section id="more-reviews" aria-labelledby="lens-review-search" className={cn(PAGE_SECTION_CLS, ANCHORED_SECTION_CLS)}>
       <div className="flex flex-col gap-1">
         <h2 id="lens-review-search" className={SECTION_HEADING_CLS}>{t("title")}</h2>
         <p className="text-[13px] text-zinc-500">{t("subtitle")}</p>

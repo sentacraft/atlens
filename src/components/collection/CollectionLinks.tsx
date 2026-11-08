@@ -17,12 +17,15 @@ export default function CollectionLinks({
   mount,
   locale,
   title,
+  id,
   className,
 }: {
   items: CollectionSummary[];
   mount: Mount;
   locale: string;
   title: string;
+  /** The section's anchor, when a page links to it. */
+  id?: string;
   className?: string;
 }) {
   const t = useTranslations("Collection");
@@ -30,7 +33,7 @@ export default function CollectionLinks({
     return null;
   }
   return (
-    <section className={cn("flex flex-col gap-4", className)}>
+    <section id={id} className={cn("flex flex-col gap-4", id && "scroll-mt-[calc(var(--nav-height)+4.5rem)]", className)}>
       <div className="flex items-baseline justify-between gap-4">
         <h2 className={SECTION_HEADING_CLS}>{title}</h2>
         <Link href={collectionsPath(mount)} className={SECTION_VIEW_ALL_LINK_CLS}>

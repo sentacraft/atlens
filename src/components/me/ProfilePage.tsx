@@ -19,18 +19,18 @@ import { cn } from "@/lib/utils";
 import {
   ACTION_OUTLINE_CLS,
   ACTION_PRIMARY_CLS,
-  CHIP_ACTIVE_CLS,
-  CHIP_BASE_CLS,
-  CHIP_IDLE_CLS,
   ICON_NAV_BTN_CLS,
   PAGE_GUTTER_CLS,
+  SIDE_NAV_ITEM_ACTIVE_CLS,
+  SIDE_NAV_ITEM_CLS,
+  SIDE_NAV_ITEM_IDLE_CLS,
 } from "@/config/ui-tokens";
 import { useMountPreference } from "@/context/MountPreferenceProvider";
-import { useNav } from "@/context/NavProvider";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import SignInBenefits from "@/components/auth/SignInBenefits";
 import FreeNote from "@/components/auth/FreeNote";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
+import SectionChipRow from "@/components/nav/SectionChipRow";
 import AvatarEditor from "@/components/me/AvatarEditor";
 import DeleteAccountDialog from "@/components/auth/DeleteAccountDialog";
 import FavoritesSection from "@/components/me/FavoritesSection";
@@ -103,7 +103,6 @@ interface ProfileUser {
 function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] }) {
   const t = useTranslations("Profile");
   const { activeId: active, scrollTo } = useScrollSpy(SECTIONS);
-  const { navHidden } = useNav();
   const gearFetched = useQuery(userGearQuery(user.id)).isFetched;
   const favoritesFetched = useQuery(userFavoritesQuery(user.id)).isFetched;
   const hashHandled = useRef(false);
@@ -136,12 +135,7 @@ function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] })
               scrollTo(id);
             }}
             aria-current={active === id ? "true" : undefined}
-            className={cn(
-              "rounded-lg px-3 py-2 text-sm transition-colors",
-              active === id
-                ? "bg-zinc-100 font-medium text-zinc-900"
-                : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900",
-            )}
+            className={cn(SIDE_NAV_ITEM_CLS, active === id ? SIDE_NAV_ITEM_ACTIVE_CLS : SIDE_NAV_ITEM_IDLE_CLS)}
           >
             {t(SECTION_TITLE_KEY[id])}
           </a>
@@ -151,26 +145,13 @@ function Profile({ user, lenses }: { user: ProfileUser; lenses: LensSummary[] })
       <div className="flex min-w-0 flex-1 flex-col gap-10 md:gap-12">
         <ProfileHeader user={user} />
 
-        <nav
-          aria-label={t("sectionsLabel")}
-          className="sticky z-20 -mx-5 -mt-4 flex gap-2 overflow-x-auto border-b border-zinc-100 bg-white/90 px-5 py-2.5 backdrop-blur-sm transition-[top] duration-300 ease-in-out md:hidden"
-          style={{ top: navHidden ? 0 : "var(--nav-height)" }}
-        >
-          {SECTIONS.map((id) => (
-            <a
-              key={id}
-              href={`#${id}`}
-              onClick={(event) => {
-                event.preventDefault();
-                scrollTo(id);
-              }}
-              aria-current={active === id ? "true" : undefined}
-              className={cn(CHIP_BASE_CLS, "h-[34px] px-3.5 text-[13px]", active === id ? CHIP_ACTIVE_CLS : CHIP_IDLE_CLS)}
-            >
-              {t(SECTION_TITLE_KEY[id])}
-            </a>
-          ))}
-        </nav>
+        <SectionChipRow
+          ariaLabel={t("sectionsLabel")}
+          items={SECTIONS.map((id) => ({ id, label: t(SECTION_TITLE_KEY[id]) }))}
+          activeId={active}
+          onSelect={(id) => id && scrollTo(id)}
+          className="-mx-5 -mt-4 px-5 md:hidden"
+        />
 
         <GearSection
           id="gear"

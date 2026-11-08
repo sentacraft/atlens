@@ -1,4 +1,5 @@
 import { StatsPreference } from "@/components/about/StatsPreference";
+import SectionNav from "@/components/nav/SectionNav";
 import { getTranslations, getLocale } from "next-intl/server";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -120,7 +121,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="flex flex-col gap-3 scroll-mt-20">
+    <section id={id} className="flex flex-col gap-3 scroll-mt-[calc(var(--nav-height)+4.5rem)]">
       <h2 className="text-base font-semibold text-zinc-900">
         {title}
       </h2>
@@ -157,7 +158,7 @@ export default async function AboutContent() {
   ];
 
   return (
-    <div className={`w-full max-w-3xl mx-auto pt-4 sm:pt-12 pb-40 flex flex-col gap-6 ${PAGE_GUTTER_CLS}`}>
+    <div className={`relative w-full max-w-3xl mx-auto pt-4 sm:pt-12 pb-40 flex flex-col gap-6 ${PAGE_GUTTER_CLS}`}>
       <div className="flex items-center gap-3">
         <h1 className="text-2xl font-bold text-zinc-900 font-heading">
           {t("pageTitle")}
@@ -167,30 +168,21 @@ export default async function AboutContent() {
         {t("rebrandNote")}
       </p>
 
-      <nav className="flex flex-col gap-1">
-        {[
+      <SectionNav
+        ariaLabel={t("sectionsLabel")}
+        width="reading"
+        items={[
           { id: "background", label: t("backgroundTitle") },
           { id: "coverage", label: t("coverageTitle") },
           { id: "data-accuracy", label: t("dataAccuracyTitle") },
-          { id: "ask-iris", label: t.rich("askIrisTitle", { iris: tagIris }) },
+          { id: "ask-iris", label: "Ask Iris" },
           { id: "disclaimer", label: t("disclaimerTitle") },
           { id: "reuse", label: t("reuseTitle") },
           { id: "privacy", label: t("privacyTitle") },
           { id: "support", label: t("supportTitle") },
           { id: "ack", label: t("ackTitle") },
-        ].map(({ id, label }, i) => (
-          <a
-            key={id}
-            href={`#${id}`}
-            className="flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
-          >
-            <span className="text-[10px] text-zinc-300 w-4 text-right tabular-nums">
-              {String(i + 1).padStart(2, "0")}
-            </span>
-            <span>{label}</span>
-          </a>
-        ))}
-      </nav>
+        ]}
+      />
 
       <Section id="background" title={t("backgroundTitle")}>
         <p className="text-sm text-zinc-600 leading-relaxed">

@@ -21,7 +21,7 @@ import { focalRangeDisplay, lensDisplayName, lensSubtitleLine, primaryApertureDi
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import type { Lens } from "@/lib/types";
 import { lensPath } from "@/lib/url/routes";
-import { PAGE_SECTION_CLS, SECTION_HEADING_CLS } from "@/config/ui-tokens";
+import { ANCHORED_SECTION_CLS, PAGE_SECTION_CLS, SECTION_HEADING_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 
 type T = Awaited<ReturnType<typeof getTranslations<"Alternatives">>>;
@@ -276,7 +276,7 @@ export default async function SameFocalAlternatives({ lens, lenses }: { lens: Le
   );
 
   return (
-    <section className={cn(PAGE_SECTION_CLS, "flex flex-col gap-4")}>
+    <section id="same-focal" className={cn(PAGE_SECTION_CLS, ANCHORED_SECTION_CLS)}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-1">
           <h2 className={SECTION_HEADING_CLS}>{t(zoom ? "titleZoom" : "titlePrime")}</h2>
