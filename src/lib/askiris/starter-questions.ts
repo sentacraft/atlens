@@ -1,6 +1,6 @@
 /** Example questions Iris can start from, one pool per thing Iris can do. */
 export interface StarterPools {
-  /** A scene in a word or two ("Traveling"): Iris answers with the choice card. Two are shown. */
+  /** A scene in a word or two ("Traveling"): Iris answers with the choice card. Four are shown. */
   need: string[];
   /** A need with a budget, a limit or a purpose, and no gear of the visitor's own. */
   brief: string[];
@@ -55,8 +55,8 @@ function draw<T>(pool: T[], count: number, random: () => number): T[] {
 }
 
 /**
- * Two scenes, a brief, a compare (or favorites) question, and one of gear or table: five in all.
- * `compact` keeps one scene and two from the other pools, for narrow places.
+ * Four scenes, a brief, a compare (or favorites) question, and one of gear or table: seven in all.
+ * `compact` keeps the four scenes and two of the other three, for narrow places.
  */
 export function pickStarters(
   pools: StarterPools,
@@ -66,6 +66,7 @@ export function pickStarters(
 ): Starter[] {
   const from = (pool: StarterPool, count: number) =>
     draw(pools[pool], count, random).map((text) => ({ text, pool }));
+  const scenes = from("need", 4);
   const brief = from("brief", 1);
   const compare = from(audience.hasFavorites ? "favorites" : "compare", 1);
   const gearOrTable = draw(
@@ -74,7 +75,7 @@ export function pickStarters(
     random,
   ).flat();
   if (compact) {
-    return [...from("need", 1), ...draw([brief, compare, gearOrTable], 2, random).flat()];
+    return [...scenes, ...draw([brief, compare, gearOrTable], 2, random).flat()];
   }
-  return [...from("need", 2), ...brief, ...compare, ...gearOrTable];
+  return [...scenes, ...brief, ...compare, ...gearOrTable];
 }

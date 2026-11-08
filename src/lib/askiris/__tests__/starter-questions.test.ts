@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { pickStarters, seededRandom, type StarterPools } from "../starter-questions";
 
 const pools: StarterPools = {
-  need: ["need-1", "need-2", "need-3"],
+  need: ["need-1", "need-2", "need-3", "need-4", "need-5", "need-6"],
   brief: ["brief-1", "brief-2"],
   compare: ["compare-1", "compare-2"],
   favorites: ["favorites-1"],
@@ -13,12 +13,12 @@ const pools: StarterPools = {
 const guest = { hasGear: false, hasFavorites: false };
 
 describe("pickStarters", () => {
-  it("draws two scenes, a brief, a compare question, and one of gear or table", () => {
+  it("draws four scenes, a brief, a compare question, and one of gear or table", () => {
     for (const seed of [1, 2, 3, 4, 5, 6]) {
       const picked = pickStarters(pools, guest, seededRandom(seed), { compact: false }).map((s) => s.text);
 
-      expect(picked).toHaveLength(5);
-      expect(picked.filter((q) => q.startsWith("need"))).toHaveLength(2);
+      expect(picked).toHaveLength(7);
+      expect(picked.filter((q) => q.startsWith("need"))).toHaveLength(4);
       expect(picked.filter((q) => q.startsWith("brief"))).toHaveLength(1);
       expect(picked.filter((q) => q.startsWith("compare"))).toHaveLength(1);
       expect(picked.filter((q) => q === "gear-unknown" || q.startsWith("table"))).toHaveLength(1);
@@ -51,12 +51,12 @@ describe("pickStarters", () => {
     expect(seen.has("gearUnknown")).toBe(false);
   });
 
-  it("keeps three for narrow places, one of them a scene", () => {
+  it("keeps the four scenes and two other questions for narrow places", () => {
     const picked = pickStarters(pools, guest, seededRandom(3), { compact: true }).map((s) => s.text);
 
-    expect(picked).toHaveLength(3);
-    expect(picked[0]).toMatch(/^need/);
-    expect(new Set(picked).size).toBe(3);
+    expect(picked).toHaveLength(6);
+    expect(picked.filter((q) => q.startsWith("need"))).toHaveLength(4);
+    expect(new Set(picked).size).toBe(6);
   });
 
   it("tags each question with the pool it came from", () => {

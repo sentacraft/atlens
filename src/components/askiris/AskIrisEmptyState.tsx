@@ -42,6 +42,8 @@ export default function AskIrisEmptyState({
   const panel = variant !== "page";
   const general = useStarters({ compact: panel, seed: starterSeed });
   const starters = [...pageStarters, ...general].slice(0, Math.max(general.length, pageStarters.length));
+  const scenes = starters.filter((starter) => starter.pool === "need");
+  const questions = starters.filter((starter) => starter.pool !== "need");
 
   return (
     <div
@@ -86,17 +88,29 @@ export default function AskIrisEmptyState({
         />
       </div>
 
-      {/* Phones: a full-width column that may shrink and wraps the questions that no longer fit
-          into a second column clipped off to the side, so only whole questions show and the
-          page does not scroll. */}
-      <div className="flex flex-wrap items-center justify-center gap-2.5 max-sm:min-h-0 max-sm:w-full max-sm:flex-col max-sm:content-start max-sm:overflow-hidden">
-        {starters.map((starter) => (
-          <div key={starter.text} className="max-sm:flex max-sm:w-full max-sm:justify-center">
-            <ExampleQuestion tone={starter.pool === "page" ? "page" : "general"} disabled={disabled} onClick={() => onStarter(starter)}>
-              {starter.text}
-            </ExampleQuestion>
+      {/* The scenes are a word or two, so they share a row. Phones: the questions below are a
+          full-width column that may shrink and wraps the questions that no longer fit into a
+          second column clipped off to the side, so only whole questions show and the page does
+          not scroll. */}
+      <div className="flex flex-col items-center gap-2.5 max-sm:min-h-0 max-sm:w-full max-sm:overflow-hidden">
+        {scenes.length > 0 && (
+          <div className="flex flex-wrap items-center justify-center gap-2.5">
+            {scenes.map((starter) => (
+              <ExampleQuestion key={starter.text} tone="general" disabled={disabled} onClick={() => onStarter(starter)}>
+                {starter.text}
+              </ExampleQuestion>
+            ))}
           </div>
-        ))}
+        )}
+        <div className="flex flex-wrap items-center justify-center gap-2.5 max-sm:min-h-0 max-sm:w-full max-sm:flex-col max-sm:content-start">
+          {questions.map((starter) => (
+            <div key={starter.text} className="max-sm:flex max-sm:w-full max-sm:justify-center">
+              <ExampleQuestion tone={starter.pool === "page" ? "page" : "general"} disabled={disabled} onClick={() => onStarter(starter)}>
+                {starter.text}
+              </ExampleQuestion>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
