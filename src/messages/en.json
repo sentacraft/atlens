@@ -489,8 +489,7 @@
     "seeOnWeightLadder": "See it on the weight ladder →",
     "sectionsLabel": "Sections on this page",
     "sectionSpecs": "Specifications",
-    "sectionReviews": "Review highlights",
-    "sectionMoreReviews": "More reviews",
+    "sectionReviews": "Reviews",
     "sectionAlternatives": "Other lenses at this focal length",
     "sectionCollections": "Collections",
     "seeOnTimeline": "See it on the release timeline →",
@@ -577,7 +576,7 @@
   },
   "LensReviews": {
     "findings": {
-      "title": "What reviews say",
+      "title": "Review highlights",
       "subtitle": "Summarized from {count} published reviews",
       "summary": "Overall verdict",
       "verdict": {
@@ -652,7 +651,7 @@
         "overall": "Overall"
       }
     },
-    "title": "Search for more reviews & samples",
+    "title": "Search for reviews & samples",
     "subtitle": "Search other sites for reviews and sample photos of this lens. Results come from each site.",
     "searchKeyword": "review",
     "kind": {

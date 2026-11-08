@@ -10,11 +10,10 @@ import {
   ACTION_PRIMARY_CLS,
   ANCHORED_SECTION_CLS,
   MENU_POPUP_CLS,
-  PAGE_SECTION_CLS,
   REVIEW_NEGATIVE_CLS,
   REVIEW_POSITIVE_CLS,
   REVIEW_VERDICT_CHIP_CLS,
-  SECTION_HEADING_CLS,
+  SUBSECTION_HEADING_CLS,
 } from "@/config/ui-tokens";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { numberSources, sourceHref, type Citations } from "@/lib/askiris/review-citations";
@@ -332,7 +331,7 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
   const [expanded, setExpanded] = useState(false);
   const [askedToSignIn, setAskedToSignIn] = useState(false);
   const [linked, setLinked] = useState(() => typeof window !== "undefined" && window.location.hash === `#${REVIEWS_ANCHOR}`);
-  const sectionRef = useRef<HTMLElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const layout = useMemo(() => (data ? layoutReviews(data) : null), [data]);
   const citations = useMemo(
     () => (data && layout ? numberSources(layout.sourceOrder, data.sources) : null),
@@ -389,15 +388,9 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
     ) : null;
 
   return (
-    <section
-      ref={sectionRef}
-      id={REVIEWS_ANCHOR}
-      aria-labelledby="lens-review-findings"
-      data-nosnippet=""
-      className={cn(PAGE_SECTION_CLS, ANCHORED_SECTION_CLS)}
-    >
+    <div ref={sectionRef} data-nosnippet="" className={ANCHORED_SECTION_CLS}>
       <div className="flex flex-col gap-1">
-        <h2 id="lens-review-findings" className={SECTION_HEADING_CLS}>{t("title")}</h2>
+        <h3 id="lens-review-findings" className={SUBSECTION_HEADING_CLS}>{t("title")}</h3>
         <p className="text-[13px] text-zinc-500">{t("subtitle", { count: String(locked?.sourceCount ?? citations.list.length) })}</p>
       </div>
       <CitationsProvider citations={citations}>
@@ -416,7 +409,7 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
             {layout.groups.map(({ group, claims }) => (
               <div key={group} className="flex flex-col">
                 <div className="flex items-baseline gap-1.5 border-b border-zinc-200 pb-2">
-                  <h3 className="text-sm font-semibold text-zinc-900">{t(`groups.${group}`)}</h3>
+                  <h4 className="text-sm font-semibold text-zinc-900">{t(`groups.${group}`)}</h4>
                 </div>
                 <ul>
                   {claims.map((claim) => (
@@ -457,6 +450,6 @@ export default function LensReviewSummary({ lensId }: { lensId: string }) {
           ) : null}
         </div>
       )}
-    </section>
+    </div>
   );
 }

@@ -489,8 +489,7 @@
     "seeOnWeightLadder": "在重量天梯里看 →",
     "sectionsLabel": "本页分节",
     "sectionSpecs": "规格参数",
-    "sectionReviews": "评测要点",
-    "sectionMoreReviews": "更多评测",
+    "sectionReviews": "评测",
     "sectionAlternatives": "同焦段的其他选择",
     "sectionCollections": "所属合集",
     "seeOnTimeline": "在时间轴里看 →",
@@ -577,7 +576,7 @@
   },
   "LensReviews": {
     "findings": {
-      "title": "评测怎么说",
+      "title": "评测要点",
       "subtitle": "根据 {count} 篇公开评测整理",
       "summary": "整体评价",
       "verdict": {
@@ -652,7 +651,7 @@
         "overall": "整体评价"
       }
     },
-    "title": "搜索更多评测与样张",
+    "title": "搜索评测与样张",
     "subtitle": "在其他平台搜索这支镜头的评测和样张，结果由各平台提供",
     "searchKeyword": "评测",
     "kind": {

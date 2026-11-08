@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import SectionNav from "@/components/nav/SectionNav";
+import { cn } from "@/lib/utils";
 import { Flag } from "lucide-react";
 import { getLensUrl } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
@@ -43,7 +44,7 @@ import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
 import { brandPath, browsePath, chartPath, collectionPath, lensPath } from "@/lib/url/routes";
 import { chartHref } from "@/lib/url/charts";
 import { DataSourceBar } from "@/components/lens/DataSource";
-import { PAGE_GUTTER_CLS, PAGE_SECTION_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
+import { ANCHORED_SECTION_CLS, PAGE_GUTTER_CLS, PAGE_SECTION_CLS, SECTION_HEADING_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { notFoundMetadata } from "@/lib/seo/not-found-metadata";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
@@ -315,7 +316,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
         items={[
           { id: "specs", label: t("sectionSpecs") },
           { id: "reviews", label: t("sectionReviews") },
-          { id: "more-reviews", label: t("sectionMoreReviews") },
           { id: "same-focal", label: t("sectionAlternatives") },
           { id: "collections", label: t("sectionCollections") },
         ]}
@@ -392,9 +392,15 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           </p>
       </div>
 
-      <LensReviewSummary lensId={lens.id} />
-
-      <LensReviewSearch lens={lens} locale={locale} />
+      <section
+        id="reviews"
+        aria-labelledby="lens-reviews-heading"
+        className={cn(PAGE_SECTION_CLS, ANCHORED_SECTION_CLS, "group/reviews gap-6")}
+      >
+        <h2 id="lens-reviews-heading" className={SECTION_HEADING_CLS}>{t("sectionReviews")}</h2>
+        <LensReviewSummary lensId={lens.id} />
+        <LensReviewSearch lens={lens} locale={locale} />
+      </section>
 
       <SameFocalAlternatives lens={lens} lenses={lenses} />
 

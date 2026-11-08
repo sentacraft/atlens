@@ -46,6 +46,9 @@ export const PAGE_SECTION_CLS = "border-t border-zinc-200 pt-6";
 
 export const SECTION_HEADING_CLS = "text-base font-semibold text-zinc-900";
 
+/** A heading for one block inside a section that has its own SECTION_HEADING_CLS title. */
+export const SUBSECTION_HEADING_CLS = "text-sm font-semibold text-zinc-700";
+
 /** A long page's own section heading, such as a brand page's chapters or a weight tier. */
 export const PAGE_SECTION_HEADING_CLS = "font-heading text-xl font-bold text-zinc-900 md:text-2xl";
 

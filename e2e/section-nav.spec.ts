@@ -13,10 +13,10 @@ test.describe("Section navigation, lens detail", () => {
       await page.goto(LENS_PATH);
       const nav = sectionNav(page);
       await expect(nav).toBeVisible();
-      await nav.getByRole("link", { name: "More reviews" }).click();
+      await nav.getByRole("link", { name: "Reviews", exact: true }).click();
 
-      await expect(page).toHaveURL(/#more-reviews$/);
-      await expect(page.getByRole("heading", { name: /more reviews/i })).toBeInViewport();
+      await expect(page).toHaveURL(/#reviews$/);
+      await expect(page.getByRole("heading", { level: 2, name: "Reviews", exact: true })).toBeInViewport();
     });
   });
 

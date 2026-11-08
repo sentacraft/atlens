@@ -61,7 +61,7 @@ const DESKTOP_SCENES: Record<string, Shot> = {
 const PHONE_ROW: Shot[] = [
   { path: "/en" },
   { path: "/en/lenses/x/charts/weight", prepare: scrollTo("Cannons", true) },
-  { path: LENS, prepare: scrollTo("What reviews say") },
+  { path: LENS, prepare: scrollTo("Review highlights") },
 ];
 
 const HIDE_CSS = `
