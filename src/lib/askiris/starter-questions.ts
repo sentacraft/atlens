@@ -1,7 +1,9 @@
 /** Example questions Iris can start from, one pool per thing Iris can do. */
 export interface StarterPools {
-  /** Find lenses for a need: two are shown. */
+  /** A scene in a word or two ("Traveling"): Iris answers with the choice card. Four are shown. */
   need: string[];
+  /** A need with a budget, a limit or a purpose, and no gear of the visitor's own. */
+  brief: string[];
   compare: string[];
   /** Only for signed-in users with favorites, in place of a compare question. */
   favorites: string[];
@@ -10,8 +12,6 @@ export interface StarterPools {
   /** Gear questions for signed-in users with gear in their profile. */
   gearKnown: string[];
   table: string[];
-  terms: string[];
-  about: string[];
 }
 
 export type StarterPool = keyof StarterPools;
@@ -55,8 +55,8 @@ function draw<T>(pool: T[], count: number, random: () => number): T[] {
 }
 
 /**
- * One question from each pool, two from `need`: seven in all. `compact` keeps one need question
- * and two from the other pools, for narrow places.
+ * Four scenes, a brief, a compare (or favorites) question, and one of gear or table: seven in all.
+ * `compact` keeps the four scenes and two of the other three, for narrow places.
  */
 export function pickStarters(
   pools: StarterPools,
@@ -66,15 +66,16 @@ export function pickStarters(
 ): Starter[] {
   const from = (pool: StarterPool, count: number) =>
     draw(pools[pool], count, random).map((text) => ({ text, pool }));
-  const others = [
-    from(audience.hasFavorites ? "favorites" : "compare", 1),
-    from(audience.hasGear ? "gearKnown" : "gearUnknown", 1),
-    from("table", 1),
-    from("terms", 1),
-    from("about", 1),
-  ];
+  const scenes = from("need", 4);
+  const brief = from("brief", 1);
+  const compare = from(audience.hasFavorites ? "favorites" : "compare", 1);
+  const gearOrTable = draw(
+    [from(audience.hasGear ? "gearKnown" : "gearUnknown", 1), from("table", 1)],
+    1,
+    random,
+  ).flat();
   if (compact) {
-    return [...from("need", 1), ...draw(others, 2, random).flat()];
+    return [...scenes, ...draw([brief, compare, gearOrTable], 2, random).flat()];
   }
-  return [...from("need", 2), ...others.flat()];
+  return [...scenes, ...brief, ...compare, ...gearOrTable];
 }
