@@ -35,17 +35,13 @@ test.describe("Charts", () => {
     await page.goto(TIMELINE, { waitUntil: "networkidle" });
     const earlier = page.locator('[data-scroll-hint="left"]').locator("visible=true");
     const later = page.locator('[data-scroll-hint="right"]').locator("visible=true");
-    const earliest = page.getByText("2012", { exact: true }).locator("visible=true");
-    await later.scrollIntoViewIfNeeded();
-    await expect(earliest).toBeInViewport();
+    const rail = later.locator("..").locator(".overflow-x-auto");
+    const firstYear = Math.min(...datedLenses.map(({ year }) => year));
+    await expect(rail.getByText(String(firstYear), { exact: true })).toBeVisible();
+    await expect.poll(() => rail.evaluate((element) => element.scrollLeft)).toBe(0);
     await expect(earlier).toHaveCSS("opacity", "0");
     await expect(later).toHaveCSS("opacity", "1");
-    await later.evaluate((hint) => {
-      const rail = hint.parentElement?.querySelector<HTMLElement>(".overflow-x-auto");
-      if (rail) {
-        rail.scrollLeft = rail.scrollWidth;
-      }
-    });
+    await rail.evaluate((element) => { element.scrollLeft = element.scrollWidth; });
     await expect(earlier).toHaveCSS("opacity", "1");
     await expect(later).toHaveCSS("opacity", "0");
   });
