@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { datedLenses, sigmaLenses, sigmaYears, stillsBrands, stillsLenses, yearSpan } from "./support/chart-catalog";
 
 const TIMELINE = "/en/lenses/x/charts/timeline";
 const WEIGHT = "/en/lenses/x/charts/weight";
@@ -80,7 +81,7 @@ test.describe("Charts", () => {
       "true",
     );
     const rows = page.locator("main section li a").locator("visible=true");
-    await expect(rows).toHaveCount(5);
+    await expect(rows).toHaveCount(stillsLenses.filter((lens) => lens.brand === "tamron").length);
     for (const label of await rows.evaluateAll((links) => links.map((l) => l.getAttribute("aria-label")))) {
       expect(label).toMatch(/^Tamron /);
     }
@@ -207,14 +208,14 @@ test.describe("Charts", () => {
 
   test("a chart with a brand selected links to that brand's page", async ({ page }) => {
     await page.goto(`${TIMELINE}?brand=sigma`);
-    await expect(page.getByRole("link", { name: "See all 12 Sigma lenses →" })).toHaveAttribute("href", `${BRANDS}/sigma`);
+    await expect(page.getByRole("link", { name: `See all ${sigmaLenses.length} Sigma lenses →` })).toHaveAttribute("href", `${BRANDS}/sigma`);
   });
 
   test("a brand with release years has its own timeline, linked to the all-brand one", async ({ page }) => {
     await page.goto(`${BRANDS}/sigma`);
     const section = page.locator("section#timeline");
     await expect(section.getByRole("heading", { name: "Release timeline" })).toBeVisible();
-    await expect(section.getByText("2022–2026 · 12 lenses")).toBeVisible();
+    await expect(section.getByText(`${yearSpan(sigmaYears)} · ${sigmaYears.length} lenses`)).toBeVisible();
     await expect(section.getByRole("link", { name: "See it on the full timeline →" })).toHaveAttribute(
       "href",
       `${TIMELINE}?brand=sigma`,
@@ -222,7 +223,10 @@ test.describe("Charts", () => {
   });
 
   test("a brand without release years has no timeline", async ({ page }) => {
-    await page.goto(`${BRANDS}/viltrox`);
+    const datedBrands = new Set(datedLenses.map((lens) => lens.brand));
+    const undatedBrand = [...stillsBrands].find((brand) => !datedBrands.has(brand));
+    test.skip(undatedBrand === undefined, "Every stills brand in this catalog has a dated lens");
+    await page.goto(`${BRANDS}/${undatedBrand}`);
     await expect(page.getByRole("heading", { name: "Lineup" })).toBeVisible();
     await expect(page.locator("section#timeline")).toHaveCount(0);
     const nav = page.getByRole("navigation", { name: "On this page" });

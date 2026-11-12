@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import catalog from "@/data/lenses.json";
 import { formatDataDate } from "../data-date";
 import type { Lens } from "@/lib/types";
 import { getLensesByMount } from "@/lib/lens/data";
@@ -215,30 +216,48 @@ describe("buildLineup", () => {
   });
 });
 
-// The chart copy quotes these numbers; a data change that moves them should be a visible failure.
 describe("X-mount catalog", () => {
-  it("dates 83 lenses from 2012 to 2026 and names the seven brands with no dates", () => {
+  const stills = catalog.filter((lens) => !lens.isCine);
+  const brands = new Set(stills.map((lens) => lens.brand));
+
+  it("includes every dated stills lens and identifies the brands without dates", () => {
+    const dated = stills.flatMap((lens) =>
+      lens.releaseYear === undefined ? [] : [{ id: lens.id, brand: lens.brand, year: lens.releaseYear }],
+    );
+    const years = dated.map((lens) => lens.year);
+    const datedBrands = new Set(dated.map((lens) => lens.brand));
     const timeline = buildTimeline(xLenses);
-    expect(timeline.entries).toHaveLength(83);
-    expect([timeline.years[0].year, timeline.years.at(-1)?.year]).toEqual([2012, 2026]);
+    expect(timeline.entries.map((entry) => entry.lens.id).toSorted()).toEqual(dated.map((lens) => lens.id).toSorted());
+    expect([timeline.years[0].year, timeline.years.at(-1)?.year]).toEqual([Math.min(...years), Math.max(...years)]);
     expect(timeline.brandsWithoutYear.toSorted()).toEqual(
-      ["7artisans", "brightinstar", "meike", "sgimage", "sirui", "ttartisan", "viltrox"],
+      [...brands].filter((brand) => !datedBrands.has(brand)).toSorted(),
     );
   });
 
-  it("weighs 186 lenses, the heaviest 39 times the lightest", () => {
+  it("places every stills lens in the weight ladder and reports its extremes", () => {
+    const weights = stills.map(({ weightG }) => typeof weightG === "number" ? weightG : (weightG[0] + weightG[1]) / 2);
+    const heaviest = Math.max(...weights);
+    const lightest = Math.min(...weights);
     const ladder = buildWeightLadder(xLenses);
-    expect(ladder.count).toBe(186);
-    expect(ladder.heaviest?.model).toBe("XF 200mm F2 R LM OIS WR");
-    expect(ladder.ratio).toBe(39);
+    expect(ladder.count).toBe(stills.length);
+    expect(ladder.tiers.flatMap((tier) => ids(tier.lenses)).toSorted()).toEqual(stills.map((lens) => lens.id).toSorted());
+    expect(ladder.heaviest?.weightG).toBe(heaviest);
+    expect(ladder.lightest?.weightG).toBe(lightest);
+    expect(ladder.ratio).toBe(Math.round(heaviest / lightest));
   });
 
-  it("gives Fujifilm 28 primes and 21 zooms from 8mm to 600mm", () => {
+  it("places every Fujifilm lens in the right lineup group and includes all stills brands", () => {
+    const fujifilm = stills.filter((lens) => lens.brand === "fujifilm");
+    const primes = fujifilm.filter((lens) => lens.focalLengthMin === lens.focalLengthMax);
+    const zooms = fujifilm.filter((lens) => lens.focalLengthMin !== lens.focalLengthMax);
     const lineup = buildLineup(xLenses, "fujifilm")!;
-    expect(lineup.primes.flatMap((c) => c.lenses)).toHaveLength(28);
-    expect(lineup.zooms).toHaveLength(21);
-    expect([lineup.focalMin, lineup.focalMax]).toEqual([8, 600]);
-    expect(chartBrands(xLenses)).toHaveLength(12);
+    expect(lineup.primes.flatMap((column) => ids(column.lenses)).toSorted()).toEqual(primes.map((lens) => lens.id).toSorted());
+    expect(ids(lineup.zooms).toSorted()).toEqual(zooms.map((lens) => lens.id).toSorted());
+    expect([lineup.focalMin, lineup.focalMax]).toEqual([
+      Math.min(...fujifilm.map((lens) => lens.focalLengthMin)),
+      Math.max(...fujifilm.map((lens) => lens.focalLengthMax)),
+    ]);
+    expect(chartBrands(xLenses).map(({ brand }) => brand).toSorted()).toEqual([...brands].toSorted());
   });
 });
 
