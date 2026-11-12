@@ -114,6 +114,16 @@ function getRow(label: string) {
   return row!;
 }
 
+describe("dimensions notes", () => {
+  it("shows the measurement basis with the dimensions", () => {
+    const lens = makeLens({
+      fieldNotes: { lengthMm: "Length excludes the mount." },
+    });
+
+    expect(resolveSpecRow(getRow("Dimensions"), lens)?.note).toBe("Length excludes the mount.");
+  });
+});
+
 describe("rowPlainText", () => {
   it("includes secondary text for bool rows", () => {
     const lens = makeLens({ ois: true, oisStops: 5 });

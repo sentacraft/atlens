@@ -423,6 +423,7 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
         {
           kind: "text",
           label: labels.dimensions,
+          fieldNoteKey: "lengthMm",
           hasData: (l) =>
             l.diameterMm !== undefined || l.length !== undefined,
           getDisplayValue: (l) =>

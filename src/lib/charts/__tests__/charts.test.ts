@@ -217,18 +217,18 @@ describe("buildLineup", () => {
 
 // The chart copy quotes these numbers; a data change that moves them should be a visible failure.
 describe("X-mount catalog", () => {
-  it("dates 81 lenses from 2012 to 2026 and names the seven brands with no dates", () => {
+  it("dates 83 lenses from 2012 to 2026 and names the seven brands with no dates", () => {
     const timeline = buildTimeline(xLenses);
-    expect(timeline.entries).toHaveLength(81);
+    expect(timeline.entries).toHaveLength(83);
     expect([timeline.years[0].year, timeline.years.at(-1)?.year]).toEqual([2012, 2026]);
     expect(timeline.brandsWithoutYear.toSorted()).toEqual(
       ["7artisans", "brightinstar", "meike", "sgimage", "sirui", "ttartisan", "viltrox"],
     );
   });
 
-  it("weighs 179 lenses, the heaviest 39 times the lightest", () => {
+  it("weighs 186 lenses, the heaviest 39 times the lightest", () => {
     const ladder = buildWeightLadder(xLenses);
-    expect(ladder.count).toBe(179);
+    expect(ladder.count).toBe(186);
     expect(ladder.heaviest?.model).toBe("XF 200mm F2 R LM OIS WR");
     expect(ladder.ratio).toBe(39);
   });

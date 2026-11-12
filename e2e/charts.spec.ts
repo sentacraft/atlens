@@ -80,7 +80,7 @@ test.describe("Charts", () => {
       "true",
     );
     const rows = page.locator("main section li a").locator("visible=true");
-    await expect(rows).toHaveCount(4);
+    await expect(rows).toHaveCount(5);
     for (const label of await rows.evaluateAll((links) => links.map((l) => l.getAttribute("aria-label")))) {
       expect(label).toMatch(/^Tamron /);
     }
@@ -207,14 +207,14 @@ test.describe("Charts", () => {
 
   test("a chart with a brand selected links to that brand's page", async ({ page }) => {
     await page.goto(`${TIMELINE}?brand=sigma`);
-    await expect(page.getByRole("link", { name: "See all 11 Sigma lenses →" })).toHaveAttribute("href", `${BRANDS}/sigma`);
+    await expect(page.getByRole("link", { name: "See all 12 Sigma lenses →" })).toHaveAttribute("href", `${BRANDS}/sigma`);
   });
 
   test("a brand with release years has its own timeline, linked to the all-brand one", async ({ page }) => {
     await page.goto(`${BRANDS}/sigma`);
     const section = page.locator("section#timeline");
     await expect(section.getByRole("heading", { name: "Release timeline" })).toBeVisible();
-    await expect(section.getByText("2022–2026 · 11 lenses")).toBeVisible();
+    await expect(section.getByText("2022–2026 · 12 lenses")).toBeVisible();
     await expect(section.getByRole("link", { name: "See it on the full timeline →" })).toHaveAttribute(
       "href",
       `${TIMELINE}?brand=sigma`,
