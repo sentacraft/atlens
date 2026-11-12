@@ -793,10 +793,10 @@ export interface Lens {
 
   /**
    * User-facing official product links by market channel.
-   * Both at least one (cn or global) must be present.
+   * Omit when no manufacturer product page is available. If provided, include cn, global, or both.
    * @example { cn: "https://www.fujifilm-x.com/zh-cn/products/lenses/xf35mmf14-r/", global: "https://www.fujifilm-x.com/en-us/products/lenses/xf35mmf14-r/" }
    */
-  officialLinks: LensOfficialLinks;
+  officialLinks?: LensOfficialLinks;
 
   /**
    * Localized translations of user-visible free-text fields.

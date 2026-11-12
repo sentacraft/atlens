@@ -331,7 +331,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
                     {t("sourceSite", { brand: brandName })}
                   </ExternalLink>
                 ) : (
-                  <span className="font-medium text-zinc-700">{t("sourceSite", { brand: brandName })}</span>
+                  <span className="font-medium text-zinc-700">{t("sourceMaterials")}</span>
                 )
               }
             />

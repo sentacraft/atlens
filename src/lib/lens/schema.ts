@@ -238,7 +238,7 @@ const lensObjectSchema = z.strictObject({
   filterMm: z.union([positiveNumberSchema, specNaSchema]).optional(),
   lensConfiguration: lensConfigurationSchema.optional(),
   fieldNotes: fieldNotesSchema.optional(),
-  officialLinks: officialLinksSchema,
+  officialLinks: officialLinksSchema.optional(),
   translations: z.strictObject({ zh: localeTranslationsSchema.optional() }).optional(),
 });
 
@@ -487,7 +487,7 @@ export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) =
 
     seenIds.set(lens.id, index);
 
-    if (lens.officialLinks.cn) {
+    if (lens.officialLinks?.cn) {
       const previousCnIndex = seenCnLinks.get(lens.officialLinks.cn);
       if (previousCnIndex !== undefined) {
         const pairKey = makeAllowlistKey(lens.id, lenses[previousCnIndex].id);
@@ -503,7 +503,7 @@ export const lensCatalogSchema = z.array(lensSchema).superRefine((lenses, ctx) =
       }
     }
 
-    if (lens.officialLinks.global) {
+    if (lens.officialLinks?.global) {
       const previousGlobalIndex = seenGlobalLinks.get(lens.officialLinks.global);
       if (previousGlobalIndex !== undefined) {
         const pairKey = makeAllowlistKey(lens.id, lenses[previousGlobalIndex].id);
