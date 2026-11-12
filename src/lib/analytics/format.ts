@@ -67,6 +67,12 @@ export function formatFilterSnapshot(json: string): string {
   if (Array.isArray(focal) && focal.length > 0) {
     parts.push(`Focal: ${focal.join(",")}`);
   }
+  if (typeof f.focalLengthMm === "number") {
+    parts.push(`Covers ${f.focalLengthMm}mm`);
+  }
+  if (typeof f.maxAperture === "number") {
+    parts.push(`f/${f.maxAperture} or faster`);
+  }
   if (typeof f.opticalTrait === "string" && f.opticalTrait) {
     parts.push(`Trait: ${f.opticalTrait}`);
   }
@@ -112,6 +118,8 @@ const FILTER_DIMENSIONS: {
   // Recorded until late October 2026, when the lens library dropped its photo/cine switch.
   { label: "Usage (photo/cine)", isActive: (f) => f.usage === "cine" },
   { label: "Focal range", isActive: (f) => Array.isArray(f.focalCategories) && f.focalCategories.length > 0 },
+  { label: "Focal length coverage", isActive: (f) => typeof f.focalLengthMm === "number" },
+  { label: "Maximum aperture", isActive: (f) => typeof f.maxAperture === "number" },
   { label: "Focus motor", isActive: (f) => typeof f.focusMotorClass === "string" && !!f.focusMotorClass },
   { label: "Features", isActive: (f) => Array.isArray(f.features) && f.features.length > 0 },
   { label: "Optical trait", isActive: (f) => typeof f.opticalTrait === "string" && !!f.opticalTrait },

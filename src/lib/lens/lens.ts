@@ -86,6 +86,17 @@ export const FOCAL_CATEGORIES = [
 
 export type FocalCategory = (typeof FOCAL_CATEGORIES)[number]["key"];
 
+export function parseFocalLengthMm(value: string | null): number | null {
+  if (!value || !/^\d+(?:[.,]\d+)?$/.test(value)) {
+    return null;
+  }
+  const mm = Number(value.replace(",", "."));
+  return Number.isFinite(mm) && mm > 0 ? mm : null;
+}
+
+export const APERTURE_FILTER_STOPS = [1.4, 2, 2.8, 3.5, 4, 5.6] as const;
+type ApertureFilterStop = (typeof APERTURE_FILTER_STOPS)[number];
+
 export function getFocalCategoriesOf(lens: {
   focalLengthMin: number;
   focalLengthMax: number;
@@ -140,6 +151,8 @@ export interface FilterState {
   focusMotorClass: FocusMotorClass | null; // null = no filter
   features: FilterFeatureKey[]; // empty = no requirement
   focalCategories: FocalCategory[]; // empty = all categories
+  focalLengthMm: number | null;
+  maxAperture: ApertureFilterStop | null;
   sort: SortKey;
   sortDir: "asc" | "desc";
 }
@@ -152,6 +165,8 @@ export const defaultFilters: FilterState = {
   focusMotorClass: null,
   features: [],
   focalCategories: [],
+  focalLengthMm: null,
+  maxAperture: null,
   sort: "focalLength",
   sortDir: "asc",
 };
@@ -202,7 +217,11 @@ export function filterLenses(lenses: Lens[], filters: FilterState): Lens[] {
         return false;
       }
     }
-    if (filters.focalCategories.length > 0) {
+    if (filters.focalLengthMm !== null) {
+      if (filters.focalLengthMm < lens.focalLengthMin || filters.focalLengthMm > lens.focalLengthMax) {
+        return false;
+      }
+    } else if (filters.focalCategories.length > 0) {
       const matchedCats = getFocalCategoriesOf(lens);
       const hasOverlap = filters.focalCategories.some((cat) =>
         matchedCats.includes(cat)
@@ -210,6 +229,10 @@ export function filterLenses(lenses: Lens[], filters: FilterState): Lens[] {
       if (!hasOverlap) {
         return false;
       }
+    }
+    if (filters.maxAperture !== null) {
+      const wideEnd = leadingValue(lens.maxAperture);
+      return wideEnd !== undefined && wideEnd <= filters.maxAperture;
     }
     return true;
   });

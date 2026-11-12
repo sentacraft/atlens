@@ -34,6 +34,8 @@ const SAMPLES: Record<Refinement, Partial<FilterState>> = {
   focusMotorClass: { focusMotorClass: opts.focusMotorClasses[0] },
   features: { features: [opts.features[0]] },
   focalCategories: { focalCategories: [opts.focalCategories[0]] },
+  focalLengthMm: { focalLengthMm: 27 },
+  maxAperture: { maxAperture: 2.8 },
 };
 
 describe("filterLenses wires up every refinement dimension", () => {

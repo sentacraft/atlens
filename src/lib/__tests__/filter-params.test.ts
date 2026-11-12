@@ -107,6 +107,18 @@ describe("parseFilters", () => {
     expect(result.focalCategories).toEqual(["wide", "superTele"]);
   });
 
+  it("round-trips decimal focal lengths and aperture with actual focal length taking precedence", () => {
+    const parsed = parseFilters(new URLSearchParams("fc=wide&fmm=7.5&ap=3.5"));
+    expect(parsed).toMatchObject({ focalCategories: [], focalLengthMm: 7.5, maxAperture: 3.5 });
+    expect(serializeFilters(parsed).toString()).toBe("fmm=7.5&ap=3.5");
+  });
+
+  it("keeps valid categories when focal length is invalid and rejects unsupported apertures", () => {
+    expect(parseFilters(new URLSearchParams("fc=wide&fmm=Infinity&ap=2.5"))).toMatchObject({
+      focalCategories: ["wide"], focalLengthMm: null, maxAperture: null,
+    });
+  });
+
   it("validates sortKey", () => {
     expect(parseFilters(new URLSearchParams("sort=weightG")).sort).toBe("weightG");
     expect(parseFilters(new URLSearchParams("sort=price")).sort).toBe("focalLength");
@@ -134,6 +146,8 @@ describe("round-trip", () => {
       focusMotorClass: "stepping",
       features: ["wr", "ois"],
       focalCategories: ["wide", "standard"],
+      focalLengthMm: null,
+      maxAperture: 3.5,
       sort: "maxAperture",
       sortDir: "desc",
     };
@@ -156,10 +170,16 @@ describe("FILTER_PARAM_KEYS", () => {
       focusMotorClass: "linear",
       features: ["ois"],
       focalCategories: ["wide"],
+      focalLengthMm: null,
+      maxAperture: 2.8,
       sort: "maxAperture",
       sortDir: "desc",
     };
-    for (const key of serializeFilters(maximal).keys()) {
+    const keys = new Set([
+      ...serializeFilters(maximal).keys(),
+      ...serializeFilters({ ...maximal, focalCategories: [], focalLengthMm: 27 }).keys(),
+    ]);
+    for (const key of keys) {
       expect([...FILTER_PARAM_KEYS]).toContain(key);
     }
   });
