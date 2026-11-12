@@ -119,6 +119,20 @@ describe("parseFilters", () => {
     });
   });
 
+  it.each([
+    ["lt300", { kind: "preset", grams: 300 }],
+    ["300", { kind: "custom", grams: 300 }],
+    ["299.5", { kind: "custom", grams: 299.5 }],
+  ])("preserves the weight boundary encoded by %s", (value, limit) => {
+    const parsed = parseFilters(new URLSearchParams({ w: value }));
+    expect(parsed.weightLimit).toEqual(limit);
+    expect(serializeFilters(parsed).get("w")).toBe(value);
+  });
+
+  it.each(["lt250", "0", "-150", "Infinity"])("ignores invalid weight limit %s", (value) => {
+    expect(parseFilters(new URLSearchParams({ w: value })).weightLimit).toBeNull();
+  });
+
   it("validates sortKey", () => {
     expect(parseFilters(new URLSearchParams("sort=weightG")).sort).toBe("weightG");
     expect(parseFilters(new URLSearchParams("sort=price")).sort).toBe("focalLength");
@@ -148,6 +162,7 @@ describe("round-trip", () => {
       focalCategories: ["wide", "standard"],
       focalLengthMm: null,
       maxAperture: 3.5,
+      weightLimit: { kind: "preset", grams: 500 },
       sort: "maxAperture",
       sortDir: "desc",
     };
@@ -172,6 +187,7 @@ describe("FILTER_PARAM_KEYS", () => {
       focalCategories: ["wide"],
       focalLengthMm: null,
       maxAperture: 2.8,
+      weightLimit: { kind: "custom", grams: 450 },
       sort: "maxAperture",
       sortDir: "desc",
     };

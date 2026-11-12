@@ -1,16 +1,6 @@
 import { chartLenses, type ChartLens } from "@/lib/charts/catalog";
+import { WEIGHT_TIERS, type WeightTierKey } from "@/lib/lens/weight-tiers";
 import type { Lens } from "@/lib/types";
-
-/** Heaviest first. Each tier takes lenses at or above its floor and below the previous floor. */
-export const WEIGHT_TIERS = [
-  { key: "cannon", minG: 1000 },
-  { key: "heavy", minG: 500 },
-  { key: "everyday", minG: 300 },
-  { key: "light", minG: 150 },
-  { key: "pocket", minG: 0 },
-] as const;
-
-export type WeightTierKey = (typeof WEIGHT_TIERS)[number]["key"];
 
 /** Everyday things whose weight people know by hand, set among the lenses so a number reads as something held. */
 export const WEIGHT_REFERENCES = [

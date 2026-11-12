@@ -511,6 +511,21 @@ describe("filterLenses", () => {
     expect(result.map((lens) => lens.id)).toEqual(["variable", "constant", "prime"]);
   });
 
+  it("uses the upper recorded weight and keeps presets exclusive but custom limits inclusive", () => {
+    const focal = { focalLengthMin: 27, focalLengthMax: 27 };
+    const lenses = [
+      makeLens({ ...focal, id: "below", weightG: 299.5 }),
+      makeLens({ ...focal, id: "at", weightG: 300 }),
+      makeLens({ ...focal, id: "range-at", weightG: [288, 300] }),
+      makeLens({ ...focal, id: "range-over", weightG: [270, 310] }),
+    ];
+    const filterAt = (kind: "preset" | "custom") => filterLenses(lenses, {
+      ...defaultFilters, weightLimit: { kind, grams: 300 },
+    }).map((lens) => lens.id);
+    expect(filterAt("preset")).toEqual(["below"]);
+    expect(filterAt("custom")).toEqual(["below", "at", "range-at"]);
+  });
+
   it("filters by focalCategory: wide", () => {
     const result = filterLenses(lensPool, {
       ...defaultFilters,

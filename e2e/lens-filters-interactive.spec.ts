@@ -61,6 +61,38 @@ test("actual focal coverage and aperture survive reload and can be cleared indep
   await expect(page.getByRole("radio", { name: "Equiv. range" })).toBeChecked();
 });
 
+test("weight presets and custom limits combine with focal coverage and restore from links", async ({ page }) => {
+  await page.goto("/en/lenses/x/browse?fmm=27");
+  const rangeLens = page.locator('a[href$="/ttartisan-af-27mm-f28-x"]');
+  const heavyLens = page.locator('a[href$="/viltrox-af-27mm-f12-pro-x"]');
+  await expect(heavyLens).toHaveCount(1);
+
+  await openSecondaryFilters(page);
+  const weight = page.getByRole("combobox", { name: "Weight Limit" });
+  await weight.click();
+  await page.getByRole("option", { name: "Pocket · <150g" }).click();
+  await expect(page).toHaveURL(/fmm=27&w=lt150/);
+  await expect(heavyLens).toHaveCount(0);
+  await expect(rangeLens).toHaveCount(1);
+
+  await weight.click();
+  await page.getByRole("option", { name: "Custom", exact: true }).click();
+  const grams = page.getByRole("textbox", { name: "Custom weight limit in grams" });
+  await grams.fill("95");
+  await expect(rangeLens).toHaveCount(0);
+  await grams.fill("100");
+  await expect(page).toHaveURL(/fmm=27&w=100/);
+  await expect(rangeLens).toHaveCount(1);
+  await page.reload();
+  await expect(rangeLens).toHaveCount(1);
+  await openSecondaryFilters(page);
+  await expect(grams).toHaveValue("100");
+  await page.getByRole("button", { name: /fewer filters/i }).click();
+  await page.getByRole("button", { name: "Clear weight limit" }).click();
+  await expect(page).toHaveURL(/\?fmm=27$/);
+  await expect(heavyLens).toHaveCount(1);
+});
+
 test.describe("Sort controls", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/en/lenses");

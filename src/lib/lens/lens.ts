@@ -86,14 +86,6 @@ export const FOCAL_CATEGORIES = [
 
 export type FocalCategory = (typeof FOCAL_CATEGORIES)[number]["key"];
 
-export function parseFocalLengthMm(value: string | null): number | null {
-  if (!value || !/^\d+(?:[.,]\d+)?$/.test(value)) {
-    return null;
-  }
-  const mm = Number(value.replace(",", "."));
-  return Number.isFinite(mm) && mm > 0 ? mm : null;
-}
-
 export const APERTURE_FILTER_STOPS = [1.4, 2, 2.8, 3.5, 4, 5.6] as const;
 type ApertureFilterStop = (typeof APERTURE_FILTER_STOPS)[number];
 
@@ -153,6 +145,7 @@ export interface FilterState {
   focalCategories: FocalCategory[]; // empty = all categories
   focalLengthMm: number | null;
   maxAperture: ApertureFilterStop | null;
+  weightLimit: { kind: "preset" | "custom"; grams: number } | null;
   sort: SortKey;
   sortDir: "asc" | "desc";
 }
@@ -167,6 +160,7 @@ export const defaultFilters: FilterState = {
   focalCategories: [],
   focalLengthMm: null,
   maxAperture: null,
+  weightLimit: null,
   sort: "focalLength",
   sortDir: "asc",
 };
@@ -227,6 +221,13 @@ export function filterLenses(lenses: Lens[], filters: FilterState): Lens[] {
         matchedCats.includes(cat)
       );
       if (!hasOverlap) {
+        return false;
+      }
+    }
+    if (filters.weightLimit !== null) {
+      const { kind, grams } = filters.weightLimit;
+      const upper = Array.isArray(lens.weightG) ? lens.weightG[1] : lens.weightG;
+      if (kind === "preset" ? upper >= grams : upper > grams) {
         return false;
       }
     }

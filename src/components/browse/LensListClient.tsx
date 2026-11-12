@@ -72,6 +72,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
     filters.focusMotorClass !== null,
     filters.focalCategories.length > 0 || filters.focalLengthMm !== null,
     filters.maxAperture !== null,
+    filters.weightLimit !== null,
     filters.features.length > 0,
   ].filter(Boolean).length;
 
