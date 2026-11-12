@@ -732,7 +732,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                 return (
                   <td key={lens.id} className="px-3 py-2">
                     <div className="flex flex-col items-center justify-center gap-0.5">
-                      {url ? (
+                      {url && (
                         <a
                           href={url}
                           target="_blank"
@@ -742,11 +742,6 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                           <ArrowUpRight className="h-3 w-3 shrink-0" />
                           {t("officialSite")}
                         </a>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 text-zinc-300 cursor-not-allowed">
-                          <ArrowUpRight className="h-3 w-3 shrink-0" />
-                          {t("officialSite")}
-                        </span>
                       )}
                       <FeedbackTrigger
                         type="data_issue"
