@@ -123,7 +123,6 @@ describe("previewReviews", () => {
 
   it("counts the findings per group and names their aspects, never their text or lean", () => {
     expect(preview.locked).toEqual({
-      sourceCount: 6,
       groups: [
         { group: "image", count: 6, aspects: ["resolution_center", "bokeh", "flare", "vignetting", "color", "sunstar"] },
         { group: "focus", count: 2, aspects: ["manual_focus", "autofocus"] },

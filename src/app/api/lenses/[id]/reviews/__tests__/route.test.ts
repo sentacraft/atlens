@@ -73,7 +73,7 @@ describe("GET /api/lenses/[id]/reviews", () => {
     expect(preview.claims.map((c) => c.aspect)).toEqual(["overall"]);
     expect(preview.claims[0].details).toEqual([]);
     expect(preview.sources.map((s) => s.id)).toEqual(["a"]);
-    expect(preview.locked).toEqual({ sourceCount: 2, groups: [{ group: "image", count: 2, aspects: ["bokeh", "vignetting"] }] });
+    expect(preview.locked).toEqual({ groups: [{ group: "image", count: 2, aspects: ["bokeh", "vignetting"] }] });
 
     mocks.hasAccountSession.mockResolvedValue(true);
     const full = (await (await call(lensId)).json()) as { claims: object[]; locked?: object };

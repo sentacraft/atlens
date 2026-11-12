@@ -51,7 +51,6 @@ export const lensReviewsViewSchema = z.object({
   /** Set when a guest got only the overall verdict: what the full view, for an account, holds. */
   locked: z
     .object({
-      sourceCount: z.number(),
       /** Per group, how many findings it holds and on which aspects; never what they say or which way they lean. */
       groups: z.array(
         z.object({
@@ -145,12 +144,10 @@ export function previewReviews(view: LensReviewsView): LensReviewsView {
   const layout = layoutReviews(view);
   const claims = layout.overall ? [{ ...layout.overall, details: [] }] : [];
   const cited = new Set(claims.flatMap((claim) => claim.sources));
-  const known = new Set(view.sources.map((source) => source.id));
   return {
     sources: view.sources.filter((source) => cited.has(source.id)),
     claims,
     locked: {
-      sourceCount: layout.sourceOrder.filter((id) => known.has(id)).length,
       groups: layout.groups.map(({ group, claims }) => ({
         group,
         count: claims.length,

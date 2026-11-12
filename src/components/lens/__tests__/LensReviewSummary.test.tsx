@@ -68,7 +68,7 @@ const LOCKED_GROUPS = [
 const LOCKED = {
   sources: [DATA_SOURCES()[0]],
   claims: [claim("overall", "positive", "整体表现扎实", ["a"])],
-  locked: { sourceCount: 2, groups: LOCKED_GROUPS },
+  locked: { groups: LOCKED_GROUPS },
 } as LensReviewsView;
 
 function DATA_SOURCES() {
@@ -196,7 +196,6 @@ describe("LensReviewSummary", () => {
   it("shows a guest only the overall verdict, and counts what signing in adds per group", async () => {
     renderWith(LOCKED);
     expect(await screen.findByText("整体表现扎实")).toBeTruthy();
-    expect(screen.getByText("subtitle(2)")).toBeTruthy();
     expect(screen.getByText("lockedTitle(4)")).toBeTruthy();
     expect(screen.getByText("groupCount(groups.image,2)")).toBeTruthy();
     expect(screen.getByText("groupCount(groups.focus,2)")).toBeTruthy();
@@ -212,7 +211,7 @@ describe("LensReviewSummary", () => {
   });
 
   it("asks a guest to sign in even when the lens has no overall verdict", async () => {
-    renderWith({ sources: [], claims: [], locked: { sourceCount: 2, groups: LOCKED_GROUPS } } as LensReviewsView);
+    renderWith({ sources: [], claims: [], locked: { groups: LOCKED_GROUPS } } as LensReviewsView);
     expect(await screen.findByText("lockedTitle(4)")).toBeTruthy();
     expect(screen.queryByText("summary")).toBeNull();
   });

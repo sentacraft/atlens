@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import SectionNav from "@/components/nav/SectionNav";
+import { cn } from "@/lib/utils";
 import { Flag } from "lucide-react";
 import { getLensUrl } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
@@ -42,7 +44,7 @@ import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
 import { brandPath, browsePath, chartPath, collectionPath, lensPath } from "@/lib/url/routes";
 import { chartHref } from "@/lib/url/charts";
 import { DataSourceBar } from "@/components/lens/DataSource";
-import { PAGE_GUTTER_CLS, PAGE_SECTION_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
+import { ANCHORED_SECTION_CLS, PAGE_GUTTER_CLS, PAGE_SECTION_CLS, SECTION_HEADING_CLS, TEXT_LINK_CLS, UTILITY_BTN_CLS } from "@/config/ui-tokens";
 import { notFoundMetadata } from "@/lib/seo/not-found-metadata";
 
 type Params = Promise<{ locale: string; mount: string; id: string }>;
@@ -223,7 +225,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
   return (
     <>
     <JsonLd data={productSchema} />
-    <div className={`w-full max-w-4xl mx-auto pt-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] flex flex-col gap-8 ${PAGE_GUTTER_CLS}`}>
+    <div className={`relative w-full max-w-4xl mx-auto pt-8 pb-[max(10rem,calc(var(--compare-bar-height,0px)+8rem))] flex flex-col gap-8 ${PAGE_GUTTER_CLS}`}>
       <div className="flex items-center justify-between">
         <Breadcrumb
               segments={[{ label: tNav("lenses"), href: browsePath(resolvedMount) }]}
@@ -308,7 +310,18 @@ export default async function LensDetailPage({ params }: { params: Params }) {
         <PriceDisclaimer className="-mt-3 border-t border-zinc-100 pt-3" />
       )}
 
-      <div>
+      <SectionNav
+        ariaLabel={t("sectionsLabel")}
+        width="detail"
+        items={[
+          { id: "specs", label: t("sectionSpecs") },
+          { id: "reviews", label: t("sectionReviews") },
+          { id: "same-focal", label: t("sectionAlternatives") },
+          { id: "collections", label: t("sectionCollections") },
+        ]}
+      />
+
+      <div id="specs" className="scroll-mt-[calc(var(--nav-height)+4.5rem)]">
         <div className="rounded-xl border border-zinc-200 overflow-hidden">
             <DataSourceBar
               className="border-b border-zinc-200"
@@ -379,9 +392,17 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           </p>
       </div>
 
-      <LensReviewSummary lensId={lens.id} />
-
-      <LensReviewSearch lens={lens} locale={locale} />
+      <section
+        id="reviews"
+        aria-labelledby="lens-reviews-heading"
+        className={cn(PAGE_SECTION_CLS, ANCHORED_SECTION_CLS, "group/reviews gap-3")}
+      >
+        <h2 id="lens-reviews-heading" className={SECTION_HEADING_CLS}>{t("sectionReviews")}</h2>
+        <div className="flex flex-col gap-8">
+          <LensReviewSummary lensId={lens.id} />
+          <LensReviewSearch lens={lens} locale={locale} />
+        </div>
+      </section>
 
       <SameFocalAlternatives lens={lens} lenses={lenses} />
 
@@ -390,6 +411,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
         mount={resolvedMount}
         locale={locale}
         title={t("collectionsTitle")}
+        id="collections"
         className={PAGE_SECTION_CLS}
       />
       <SupportNote className="mt-6" />

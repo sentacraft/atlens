@@ -11,7 +11,7 @@ import { urlSegmentToMount, mountHasCollections } from "@/lib/mount";
 import { buildAlternates, defaultOgImages } from "@/lib/seo";
 import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
 import LensIndexShell from "@/components/browse/LensIndexShell";
-import CollectionChipRail from "@/components/collection/CollectionChipRail";
+import SectionNav from "@/components/nav/SectionNav";
 import { BRANDS, getBrandLenses } from "@/lib/brands";
 import { brandLabel } from "@/lib/lens/format";
 import { aboutPath, brandPath, browsePath, collectionPath } from "@/lib/url/routes";
@@ -160,10 +160,12 @@ export default async function CollectionsIndexPage({
             </div>
           </header>
 
-          <CollectionChipRail
-            sections={categories.map((cat) => ({ id: cat.id, label: cat.label, count: cat.count }))}
-            totalCount={themeCount}
-            allLabel={t("chipAll")}
+          <SectionNav
+            ariaLabel={t("sectionsLabel")}
+            width="none"
+            items={categories.map((cat) => ({ id: cat.id, label: cat.label, count: cat.count }))}
+            allItem={{ label: t("chipAll"), count: themeCount }}
+            topSentinelId="collections-top"
           />
 
           {categories.map((cat, catIdx) => (
