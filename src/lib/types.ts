@@ -805,6 +805,12 @@ export interface Lens {
   officialLinks?: LensOfficialLinks;
 
   /**
+   * Ordered supplemental product image IDs assigned by the image pipeline.
+   * The primary product image precedes these images in the gallery.
+   */
+  alternateImages?: string[];
+
+  /**
    * Localized translations of user-visible free-text fields.
    * Keys are language codes; currently only "zh" is produced.
    * English values live in the top-level fields (fieldNotes, lensMaterial,
