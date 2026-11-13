@@ -239,6 +239,8 @@ const lensObjectSchema = z.strictObject({
   lensConfiguration: lensConfigurationSchema.optional(),
   fieldNotes: fieldNotesSchema.optional(),
   officialLinks: officialLinksSchema.optional(),
+  alternateImages: z.array(z.string().regex(/^[0-9]{3,}$/)).min(1)
+    .refine((ids) => new Set(ids).size === ids.length, "Image IDs must be unique").optional(),
   translations: z.strictObject({ zh: localeTranslationsSchema.optional() }).optional(),
 });
 
@@ -406,7 +408,7 @@ export const KNOWN_DISTINCT_PAIRS = new Set([
 
 const SIMILARITY_EXCLUDE = new Set([
   "id", "brand", "model", "series", "officialLinks", "fieldNotes", "translations", "searchAliases", "pricing",
-  "createdAt", "updatedAt",
+  "createdAt", "updatedAt", "alternateImages",
 ]);
 
 // Calibrated: legitimate pairs score 0.895 and 0.870; the next unrelated pair 0.762.
