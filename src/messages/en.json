@@ -486,8 +486,6 @@
     "note": "These specs are not AI-generated. They come from what the manufacturer officially publishes; AI only files that text into one format and never makes up a value. The author reviews every lens before it goes live. <link>How the data is made</link>"
   },
   "LensDetail": {
-    "galleryPrimary": "Main product image",
-    "galleryImage": "Product image {number}",
     "seeOnWeightLadder": "See it on the weight ladder →",
     "sectionsLabel": "Sections on this page",
     "sectionSpecs": "Specifications",

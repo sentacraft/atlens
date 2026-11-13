@@ -486,8 +486,6 @@
     "note": "这里的参数不是 AI 生成的，取自厂商正式发布的资料。AI 只帮忙把官方资料整理成统一格式，不编造数值；每支镜头上线前由作者审核。<link>数据怎么来</link>"
   },
   "LensDetail": {
-    "galleryPrimary": "产品主图",
-    "galleryImage": "产品图 {number}",
     "seeOnWeightLadder": "在重量天梯里看 →",
     "sectionsLabel": "本页分节",
     "sectionSpecs": "规格参数",
