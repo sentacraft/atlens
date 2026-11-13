@@ -348,8 +348,14 @@ export interface Lens {
   series?: string;
 
   /**
-   * Official marketing model name.
+   * Official marketing model name from the collected manufacturer material.
+   * Check the product description as well as the title for the full name.
+   * Preserve suffixes and separators used in the model name, including a
+   * series name when it is part of that name, even if `series` is also set.
+   * Keep a standalone manufacturer name in `brand` and omit category labels
+   * that the manufacturer uses only to group products.
    * @example "XF35mmF1.4 R"
+   * @example "50-120mm F2.8 DC OS | Contemporary"
    */
   model: string;
 
