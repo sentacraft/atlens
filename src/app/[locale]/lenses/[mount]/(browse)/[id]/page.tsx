@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import LensImageGallery from "@/components/lens/LensImageGallery";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import SectionNav from "@/components/nav/SectionNav";
@@ -9,7 +9,7 @@ import { getLensUrl } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
 import { mountHasCharts, mountHasCollections, urlSegmentToMount } from "@/lib/mount";
 import { isOnCharts } from "@/lib/charts/catalog";
-import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
+import { getLensImageUrl } from "@/lib/lens/image";
 import { buildSpecGroups, buildSpecGroupLabels, resolveSpecGroups, rowPlainText } from "@/lib/lens/spec-groups";
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens/spec-groups";
 import { Link } from "@/i18n/navigation";
@@ -247,21 +247,12 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
       <div className="flex flex-col sm:flex-row gap-8">
         <div className="w-full max-w-64 mx-auto sm:mx-0 shrink-0 sm:w-64">
-          <div className="flex aspect-square items-center justify-center overflow-hidden rounded-2xl border border-zinc-100 bg-zinc-50/70 p-5">
-            <div className="relative aspect-square w-full overflow-hidden">
-              <Image
-                src={getLensImageUrl(lens.id)}
-                alt={lens.model}
-                fill
-                sizes="256px"
-                style={lensImageStyle}
-                className="object-contain"
-                // `priority` is deprecated in Next 16.
-                preload
-                fetchPriority="high"
-              />
-            </div>
-          </div>
+          <LensImageGallery
+            key={lens.id}
+            lens={lens}
+            imageLabels={lens.alternateImages?.map((_, i) => t("galleryImage", { number: String(i + 2) }))}
+            primaryLabel={t("galleryPrimary")}
+          />
         </div>
 
         <div className="flex-1 flex flex-col gap-5">
