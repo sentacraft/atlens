@@ -48,6 +48,7 @@ export type EventProps<E extends EventName> = {
 };
 
 const MAX_PROP_STRING_LENGTH = 256;
+const FILTER_SNAPSHOT_SCHEMA = z.string().max(1024).optional().catch(undefined);
 
 // Props are best-effort: a malformed prop is dropped, not a reason to lose the event.
 const FIELD_SCHEMAS: Record<FieldKind, z.ZodType> = {
@@ -65,7 +66,10 @@ const PROPS_SCHEMAS = Object.fromEntries(
     event,
     z.object(
       Object.fromEntries(
-        Object.entries({ ...COMMON_FIELDS, ...(fields as Record<string, FieldKind>) }).map(([key, kind]) => [key, FIELD_SCHEMAS[kind]]),
+        Object.entries({ ...COMMON_FIELDS, ...(fields as Record<string, FieldKind>) }).map(([key, kind]) => [
+          key,
+          key === "filters_json" ? FILTER_SNAPSHOT_SCHEMA : FIELD_SCHEMAS[kind],
+        ]),
       ),
     ),
   ]),

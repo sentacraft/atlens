@@ -493,6 +493,44 @@ describe("filterLenses", () => {
     expect(filterLenses(lensPool, defaultFilters)).toHaveLength(4);
   });
 
+  it("matches actual focal length at either zoom endpoint and for exact primes", () => {
+    const lenses = [
+      makeLens({ id: "prime", focalLengthMin: 27, focalLengthMax: 27 }),
+      makeLens({ id: "wide-end", focalLengthMin: 27, focalLengthMax: 70 }),
+      makeLens({ id: "tele-end", focalLengthMin: 18, focalLengthMax: 27 }),
+      makeLens({ id: "equivalent-only", mount: "X", focalLengthMin: 18, focalLengthMax: 18 }),
+    ];
+    const result = filterLenses(lenses, { ...defaultFilters, focalLengthMm: 27 });
+    expect(result.map((lens) => lens.id)).toEqual(["prime", "wide-end", "tele-end"]);
+  });
+
+  it("uses wide-end aperture independently of the focal length filter", () => {
+    const lenses = [
+      makeLens({ id: "variable", focalLengthMin: 15, focalLengthMax: 45, maxAperture: [3.5, 5.6] }),
+      makeLens({ id: "constant", focalLengthMin: 18, focalLengthMax: 50, maxAperture: 2.8 }),
+      makeLens({ id: "prime", focalLengthMin: 27, focalLengthMax: 27, maxAperture: 2.8 }),
+      makeLens({ id: "too-slow", focalLengthMin: 16, focalLengthMax: 50, maxAperture: [4, 5.6] }),
+      makeLens({ id: "missing", focalLengthMin: 27, focalLengthMax: 27, maxAperture: undefined }),
+    ];
+    const result = filterLenses(lenses, { ...defaultFilters, focalLengthMm: 27, maxAperture: 3.5 });
+    expect(result.map((lens) => lens.id)).toEqual(["variable", "constant", "prime"]);
+  });
+
+  it("uses the upper recorded weight and keeps presets exclusive but custom limits inclusive", () => {
+    const focal = { focalLengthMin: 27, focalLengthMax: 27 };
+    const lenses = [
+      makeLens({ ...focal, id: "below", weightG: 299.5 }),
+      makeLens({ ...focal, id: "at", weightG: 300 }),
+      makeLens({ ...focal, id: "range-at", weightG: [288, 300] }),
+      makeLens({ ...focal, id: "range-over", weightG: [270, 310] }),
+    ];
+    const filterAt = (kind: "preset" | "custom") => filterLenses(lenses, {
+      ...defaultFilters, weightLimit: { kind, grams: 300 },
+    }).map((lens) => lens.id);
+    expect(filterAt("preset")).toEqual(["below"]);
+    expect(filterAt("custom")).toEqual(["below", "at", "range-at"]);
+  });
+
   it("filters by focalCategory: wide", () => {
     const result = filterLenses(lensPool, {
       ...defaultFilters,

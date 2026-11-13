@@ -22,6 +22,22 @@ describe("parseEventProps", () => {
     expect(parseEventProps("filter_reset")).toEqual({});
   });
 
+  it("keeps a combined filter snapshot intact beyond the usual string limit", () => {
+    const filters = {
+      brands: ["fujifilm", "tamron", "sigma", "ttartisan", "7artisans", "sgimage", "viltrox", "brightinstar", "laowa"],
+      typeFilter: "zoom",
+      focusFilter: "auto",
+      features: ["apertureRing", "internalZoom", "wr", "ois"],
+      focusMotorClass: "stepping",
+      focalLengthMm: 27,
+      maxAperture: 3.5,
+      weightLimit: { kind: "custom", grams: 400 },
+      sort: "weightG",
+    };
+    const filters_json = JSON.stringify(filters);
+    expect(parseEventProps("filter_apply", { filters_json })).toEqual({ filters_json });
+  });
+
   it("keeps the common viewport prop on every event", () => {
     expect(parseEventProps("filter_reset", { viewport: "phone" })).toEqual({ viewport: "phone" });
     expect(parseEventProps("nav_click", { item: "charts", place: "menu", viewport: "tablet" })).toEqual({
