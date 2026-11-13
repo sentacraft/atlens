@@ -18,7 +18,7 @@ import {
   primaryApertureDisplay,
   secondaryApertureDisplay,
 } from "../lens/format";
-import { lensSchema } from "../lens/schema";
+import { lensCatalogSchema, lensSchema } from "../lens/schema";
 
 // Minimal Lens factory — only fill in fields relevant to each test
 function makeLens(
@@ -143,6 +143,11 @@ describe("primaryApertureDisplay / secondaryApertureDisplay", () => {
     expect(primaryApertureDisplay(lens)).toBe("f/2");
     expect(secondaryApertureDisplay(lens)).toBe("T2.1");
   });
+});
+
+it("accepts a catalog entry without official product links", () => {
+  const lens = makeLens({ focalLengthMin: 35, focalLengthMax: 35, officialLinks: undefined });
+  expect(lensCatalogSchema.safeParse([lens]).success).toBe(true);
 });
 
 describe("lensSchema aperture business rules", () => {
@@ -742,7 +747,7 @@ describe("getLensUrl", () => {
     const lens = makeLens({
       focalLengthMin: 35,
       focalLengthMax: 35,
-      officialLinks: undefined as unknown as { global: string },
+      officialLinks: undefined,
     });
     expect(getLensUrl(lens, "zh")).toBeUndefined();
     expect(getLensUrl(lens, "en")).toBeUndefined();

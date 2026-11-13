@@ -1,34 +1,35 @@
 import { describe, expect, it } from "vitest";
+import catalog from "@/data/lenses.json";
 import { getLensesByMount } from "@/lib/lens/data";
-import { buildLineup } from "../lineup";
 import { buildChartPreviews, PREVIEW_LINEUP_BRAND } from "../previews";
-import { buildTimeline } from "../timeline";
-import { buildWeightLadder } from "../weight";
 
 const lenses = getLensesByMount("X", "en");
 const previews = buildChartPreviews(lenses)!;
+const stills = catalog.filter((lens) => !lens.isCine);
 
 describe("buildChartPreviews", () => {
-  it("draws every dated lens on the timeline, as the timeline chart does", () => {
-    const timeline = buildTimeline(lenses);
-    expect(previews.timeline.count).toBe(timeline.entries.length);
-    expect(previews.timeline.marks).toHaveLength(timeline.entries.length);
-    expect(previews.timeline.first).toBe(timeline.years[0].year);
-    expect(previews.timeline.last).toBe(timeline.years.at(-1)!.year);
+  it("draws every dated stills lens on the timeline", () => {
+    const years = stills.flatMap((lens) => lens.releaseYear === undefined ? [] : [lens.releaseYear]);
+    expect(previews.timeline.count).toBe(years.length);
+    expect(previews.timeline.marks).toHaveLength(years.length);
+    expect(previews.timeline.first).toBe(Math.min(...years));
+    expect(previews.timeline.last).toBe(Math.max(...years));
   });
 
   it("samples the weight ladder from its heaviest lens down to its lightest", () => {
-    const ladder = buildWeightLadder(lenses);
-    expect(previews.weight.count).toBe(ladder.count);
-    expect(previews.weight.sampleG[0]).toBe(ladder.heaviest!.weightG);
-    expect(previews.weight.sampleG.at(-1)).toBe(ladder.lightest!.weightG);
+    const weights = stills.map(({ weightG }) => typeof weightG === "number" ? weightG : (weightG[0] + weightG[1]) / 2);
+    expect(previews.weight.count).toBe(weights.length);
+    expect(previews.weight.sampleG[0]).toBe(Math.max(...weights));
+    expect(previews.weight.sampleG.at(-1)).toBe(Math.min(...weights));
     expect(previews.weight.sampleG).toEqual([...previews.weight.sampleG].sort((a, b) => b - a));
   });
 
   it("takes one brand's lineup, primes stacked by focal length and zooms as spans", () => {
-    const lineup = buildLineup(lenses, PREVIEW_LINEUP_BRAND)!;
-    expect(previews.lineup.primes.reduce((n, column) => n + column.count, 0)).toBe(lineup.count - lineup.zooms.length);
-    expect(previews.lineup.zooms).toHaveLength(lineup.zooms.length);
+    const lineup = stills.filter((lens) => lens.brand === PREVIEW_LINEUP_BRAND);
+    const primes = lineup.filter((lens) => lens.focalLengthMin === lens.focalLengthMax);
+    const zooms = lineup.filter((lens) => lens.focalLengthMin !== lens.focalLengthMax);
+    expect(previews.lineup.primes.reduce((n, column) => n + column.count, 0)).toBe(primes.length);
+    expect(previews.lineup.zooms).toHaveLength(zooms.length);
     expect(previews.lineup.zooms.every((zoom) => zoom.focalMax > zoom.focalMin)).toBe(true);
   });
 

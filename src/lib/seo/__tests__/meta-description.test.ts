@@ -110,7 +110,7 @@ describe("collection search names and descriptions", () => {
   it("describes a collection as part of the database, with where its specs come from", () => {
     const zh = translators("zh");
     expect(collectionMetaDescription(zh.collection, zh.brands, "zh", stats("pancake", "zh"), "X")).toMatch(
-      /^Atlens 收录的富士 X 卡口饼干头共 \d+ 支，来自.+。参数取自厂商官网/,
+      /^Atlens 收录的富士 X 卡口饼干头共 \d+ 支，来自.+。参数取自厂商官方资料/,
     );
   });
 });
