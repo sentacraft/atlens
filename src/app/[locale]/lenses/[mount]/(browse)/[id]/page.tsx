@@ -250,8 +250,13 @@ export default async function LensDetailPage({ params }: { params: Params }) {
           <LensImageGallery
             key={lens.id}
             lens={lens}
-            imageLabels={lens.alternateImages?.map((_, i) => t("galleryImage", { number: String(i + 2) }))}
-            primaryLabel={t("galleryPrimary")}
+            labels={{
+              images: [t("galleryPrimary"), ...(lens.alternateImages ?? []).map((_, i) => t("galleryImage", { number: String(i + 2) }))],
+              open: t("galleryOpen"),
+              close: t("galleryClose"),
+              previous: t("galleryPrevious"),
+              next: t("galleryNext"),
+            }}
           />
         </div>
 
