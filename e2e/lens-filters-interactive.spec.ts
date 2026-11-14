@@ -34,7 +34,7 @@ test.describe("Focal range filter", () => {
 
 test("custom equivalent focal lengths match nearby primes and survive history and reload", async ({ page }) => {
   await page.goto("/en/lenses/x/browse?src=filter-test");
-  await page.getByRole("button", { name: "Custom…", exact: true }).click();
+  await page.getByRole("button", { name: "Cover a focal length", exact: true }).click();
   const input = page.getByRole("textbox", { name: "Custom focal length" });
   await input.fill("40");
   await input.press("Enter");
@@ -54,6 +54,7 @@ test("custom equivalent focal lengths match nearby primes and survive history an
   await expect(input).toHaveValue("40");
   await expect(prime).toHaveCount(1);
 
+  await page.getByRole("button", { name: "Browse focal ranges", exact: true }).click();
   await page.getByRole("button", { name: "Standard", exact: true }).click();
   await expect(input).toHaveCount(0);
   await expect(page).toHaveURL(/fc=standard/);
@@ -85,7 +86,7 @@ test("aperture and custom weight limits persist and reset together", async ({ pa
 
 test("filter menus share pill geometry and leave room after the chevron", async ({ page }) => {
   await page.goto("/en/lenses/x/browse");
-  await page.getByRole("button", { name: "Custom…", exact: true }).click();
+  await page.getByRole("button", { name: "Cover a focal length", exact: true }).click();
   await openSecondaryFilters(page);
   for (const name of ["Focal length convention", "Max Aperture", "Weight limit"]) {
     const trigger = page.getByRole("button", { name, exact: true });
@@ -104,6 +105,20 @@ test("filter menus share pill geometry and leave room after the chevron", async 
     await page.keyboard.press("Escape");
     await expect(trigger).toBeFocused();
   }
+});
+
+test("phone limit filters share a row without a persistent aperture note", async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 1280) >= 640, "Phone layout only");
+  await page.goto("/en/lenses/x/browse?b=fujifilm");
+  await openSecondaryFilters(page);
+  const aperture = await page.getByRole("button", { name: "Max Aperture", exact: true }).boundingBox();
+  const weight = await page.getByRole("button", { name: "Weight limit", exact: true }).boundingBox();
+  expect(aperture).not.toBeNull();
+  expect(weight).not.toBeNull();
+  expect(Math.abs(aperture!.y - weight!.y)).toBeLessThanOrEqual(1);
+  expect(weight!.x).toBeGreaterThan(aperture!.x);
+  await expect(page.getByText("Variable-aperture zooms use the wide-end value.", { exact: true })).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
 test.describe("Sort controls", () => {

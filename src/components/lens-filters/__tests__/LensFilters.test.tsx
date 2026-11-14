@@ -41,13 +41,16 @@ afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 describe("LensFilters", () => {
   it("makes focal presets and custom mutually exclusive", () => {
     render(<Harness initial={{ ...defaultFilters, focalCategories: ["wide"] }} />);
-    fireEvent.click(screen.getByRole("button", { name: "Custom…" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cover a focal length" }));
     expect(current().focalCategories).toEqual([]);
     expect(current().focalLength).toEqual({ value: null, reference: "equivalent" });
     const input = screen.getByRole("textbox", { name: "Custom focal length" });
     fireEvent.change(input, { target: { value: "40" } });
     fireEvent.blur(input);
     expect(current().focalLength?.value).toBe(40);
+    expect(screen.queryByRole("button", { name: "Standard" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Browse focal ranges" }));
+    expect(current().focalLength).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Standard" }));
     expect(current().focalLength).toBeNull();
     expect(current().focalCategories).toEqual(["standard"]);
@@ -59,7 +62,7 @@ describe("LensFilters", () => {
     render(<Harness initial={{ ...defaultFilters, focalLength: { value: 40, reference: "equivalent" } }} />);
     expect(current().focalLength?.reference).toBe("equivalent");
     fireEvent.click(screen.getByRole("button", { name: "Reset" }));
-    fireEvent.click(screen.getByRole("button", { name: "Custom…" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cover a focal length" }));
     expect(current().focalLength).toEqual({ value: null, reference: "actual" });
   });
 
@@ -68,7 +71,7 @@ describe("LensFilters", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Custom focal length" }), { target: { value: "55" } });
     fireEvent.click(screen.getByRole("button", { name: "Reset" }));
     expect(current().focalLength).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Custom…" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cover a focal length" }));
     expect((screen.getByRole("textbox", { name: "Custom focal length" }) as HTMLInputElement).value).toBe("");
   });
 });
