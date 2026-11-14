@@ -11,7 +11,9 @@ test.describe("Focal range filter", () => {
     const countText = await page.getByText(/\d+ lenses/).textContent();
     const totalCount = parseInt(countText!.match(/\d+/)![0], 10);
 
-    await page.getByRole("button", { name: /^Standard/ }).click();
+    const standard = page.getByRole("button", { name: /^Standard/ });
+    await standard.click();
+    await expect(standard).toHaveAttribute("aria-pressed", "true");
 
     const filteredText = await page.getByText(/\d+ lenses/).textContent();
     const filteredCount = parseInt(filteredText!.match(/\d+/)![0], 10);
@@ -24,7 +26,9 @@ test.describe("Focal range filter", () => {
     const sigmaText = await page.getByText(/\d+ lenses/).textContent();
     const sigmaCount = parseInt(sigmaText!.match(/\d+/)![0], 10);
 
-    await page.getByRole("button", { name: /^Standard/ }).click();
+    const standard = page.getByRole("button", { name: /^Standard/ });
+    await standard.click();
+    await expect(standard).toHaveAttribute("aria-pressed", "true");
     const combinedText = await page.getByText(/\d+ lenses/).textContent();
     const combinedCount = parseInt(combinedText!.match(/\d+/)![0], 10);
 
@@ -33,7 +37,7 @@ test.describe("Focal range filter", () => {
 });
 
 test("custom equivalent focal lengths match nearby primes and survive history and reload", async ({ page }) => {
-  await page.goto("/en/lenses/x/browse?src=filter-test");
+  await page.goto("/en/lenses/x/browse?filter-test=preserved");
   await page.getByRole("button", { name: "Cover a focal length", exact: true }).click();
   const input = page.getByRole("textbox", { name: "Custom focal length" });
   await input.fill("40");
@@ -59,7 +63,7 @@ test("custom equivalent focal lengths match nearby primes and survive history an
   await expect(input).toHaveCount(0);
   await expect(page).toHaveURL(/fc=standard/);
   expect(new URL(page.url()).searchParams.has("fmm")).toBe(false);
-  expect(new URL(page.url()).searchParams.get("src")).toBe("filter-test");
+  expect(new URL(page.url()).searchParams.get("filter-test")).toBe("preserved");
 });
 
 test("aperture and custom weight limits persist and reset together", async ({ page }) => {
@@ -135,13 +139,6 @@ test.describe("Sort controls", () => {
 
     await page.getByRole("button", { name: /ascending|descending/i }).click();
 
-    await page.waitForTimeout(200);
-
-    const firstCardDesc = await page
-      .locator(LENS_CARD_LINK)
-      .first()
-      .getAttribute("href");
-
-    expect(firstCardDesc).not.toBe(firstCardAsc);
+    await expect(page.locator(LENS_CARD_LINK).first()).not.toHaveAttribute("href", firstCardAsc!);
   });
 });

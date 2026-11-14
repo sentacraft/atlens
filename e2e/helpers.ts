@@ -1,4 +1,4 @@
-import type { Locator, Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 /** The Ask Iris toggle: in the header from the sm breakpoint up, in the phone tab bar below it. */
 export function irisToggle(page: Page): Locator {
@@ -25,10 +25,12 @@ async function isBelowBreakpoint(page: Page, bp: "sm" | "md" | "lg" | "xl" | "2x
 
 // Secondary filters sit behind the collapsed "More Filters" disclosure. No-op if already open.
 export async function openSecondaryFilters(page: Page) {
-  const toggle = page.getByRole("button", { name: /more filters/i });
-  if (await toggle.isVisible()) {
+  const toggle = page.getByRole("button", { name: /more filters|fewer filters/i });
+  await expect(toggle).toBeVisible();
+  if (await toggle.getAttribute("aria-expanded") !== "true") {
     await toggle.click();
   }
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
 }
 
 export async function selectBrandFilter(page: Page, brandName: string) {
@@ -36,9 +38,13 @@ export async function selectBrandFilter(page: Page, brandName: string) {
 
   if (isMobile) {
     await page.getByRole("button", { name: /^Brand/ }).click();
-    await page.getByRole("menuitemcheckbox", { name: brandName, exact: true }).click();
+    const option = page.getByRole("menuitemcheckbox", { name: brandName, exact: true });
+    await option.click();
+    await expect(option).toBeChecked();
     await page.keyboard.press("Escape");
   } else {
-    await page.getByRole("button", { name: brandName, exact: true }).click();
+    const chip = page.getByRole("button", { name: brandName, exact: true });
+    await chip.click();
+    await expect(chip).toHaveAttribute("aria-pressed", "true");
   }
 }

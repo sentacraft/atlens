@@ -42,15 +42,13 @@ test.describe("Lens list page", () => {
 
   test("clear filters restores full count", async ({ page }) => {
     const countText = await page.getByText(RESULT_COUNT_RE).textContent();
-    const totalCount = parseInt(countText!.match(/\d+/)![0], 10);
 
     await selectBrandFilter(page, "Sigma");
+    await expect(page.getByText(RESULT_COUNT_RE)).not.toHaveText(countText!);
 
     await page.getByRole("button", { name: "Reset" }).click();
 
-    const restoredText = await page.getByText(RESULT_COUNT_RE).textContent();
-    const restoredCount = parseInt(restoredText!.match(/\d+/)![0], 10);
-    expect(restoredCount).toBe(totalCount);
+    await expect(page.getByText(RESULT_COUNT_RE)).toHaveText(countText!);
   });
 
   test("clicking a lens card navigates to detail page", async ({ page }) => {
@@ -64,7 +62,6 @@ test.describe("Lens list page", () => {
     await expect(page.locator("body")).toBeVisible();
   });
 
-  // Regression: filters sync to the URL with replaceState, so refresh and Back keep them.
   test("applying a brand filter writes it into the URL synchronously", async ({
     page,
   }) => {
@@ -74,7 +71,6 @@ test.describe("Lens list page", () => {
 
     await expect(page).toHaveURL(/[?&]b=sigma\b/i, { timeout: 500 });
 
-    // No new history entry.
     await expect(page).toHaveURL(/\/lenses\/x\/browse\?/);
   });
 
