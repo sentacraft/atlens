@@ -4,7 +4,7 @@ import { useRef, useState, type TouchEvent } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Maximize, X } from "lucide-react";
 import { Dialog, DialogBackdrop, DialogClose, DialogPortal, DialogRawPopup, DialogTitle } from "@/components/ui/dialog";
-import { ACTION_OUTLINE_CLS, ACTIVE_DOT_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
+import { ACTION_OUTLINE_CLS, ACTIVE_DOT_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -80,35 +80,51 @@ export default function LensImageGallery({
     );
   }
 
+  function navigation(className: string, buttonClassName: string) {
+    return (
+      <div className={cn("pointer-events-none absolute inset-0 flex items-center justify-between", className)}>
+        <button type="button" aria-label={labels.previous} disabled={index === 0} onClick={() => step(-1)} className={cn(ICON_NAV_BTN_CLS, "pointer-events-auto cursor-pointer disabled:cursor-default disabled:opacity-40", buttonClassName)}>
+          <ChevronLeft className="size-4" />
+        </button>
+        <button type="button" aria-label={labels.next} disabled={index === images.length - 1} onClick={() => step(1)} className={cn(ICON_NAV_BTN_CLS, "pointer-events-auto cursor-pointer disabled:cursor-default disabled:opacity-40", buttonClassName)}>
+          <ChevronRight className="size-4" />
+        </button>
+      </div>
+    );
+  }
+
   return (
     <>
-      <button
-        ref={trigger}
-        type="button"
-        aria-label={labels.open}
-        aria-haspopup="dialog"
-        {...swipe}
-        onClick={event => {
-          if (event.detail === 0 || Date.now() - lastSwipe.current > 350) {setOpen(true);}
-        }}
-        className="relative flex aspect-square w-full touch-pan-y touch-pinch-zoom cursor-zoom-in items-center justify-center rounded-2xl border border-zinc-100 bg-zinc-50/70 p-5 focus-visible:outline-2 focus-visible:outline-offset-2"
-      >
-        <span className="relative aspect-square w-full">
-          <Image
-            src={currentSrc}
-            alt={lens.model}
-            fill
-            sizes="256px"
-            style={lensImageStyle}
-            className="pointer-events-none object-contain"
-            preload={index === 0}
-            draggable={false}
-          />
-        </span>
-        <span className={cn(ACTION_OUTLINE_CLS, "absolute bottom-2.5 right-2.5 size-10 justify-center px-0")} aria-hidden="true">
-          <Maximize className="size-4" />
-        </span>
-      </button>
+      <div className="relative">
+        <button
+          ref={trigger}
+          type="button"
+          aria-label={labels.open}
+          aria-haspopup="dialog"
+          {...swipe}
+          onClick={event => {
+            if (event.detail === 0 || Date.now() - lastSwipe.current > 350) {setOpen(true);}
+          }}
+          className="relative flex aspect-square w-full touch-pan-y touch-pinch-zoom cursor-zoom-in items-center justify-center rounded-2xl border border-zinc-100 bg-zinc-50/70 p-5 focus-visible:outline-2 focus-visible:outline-offset-2"
+        >
+          <span className="relative aspect-square w-full">
+            <Image
+              src={currentSrc}
+              alt={lens.model}
+              fill
+              sizes="256px"
+              style={lensImageStyle}
+              className="pointer-events-none object-contain"
+              preload={index === 0}
+              draggable={false}
+            />
+          </span>
+          <span className={cn(ACTION_OUTLINE_CLS, "absolute bottom-2.5 right-2.5 size-10 justify-center px-0")} aria-hidden="true">
+            <Maximize className="size-4" />
+          </span>
+        </button>
+        {multiple && navigation("hidden px-0.5 sm:flex", "size-8")}
+      </div>
       {multiple && (
         <>
           {thumbnails("mt-2 hidden sm:flex")}
@@ -145,28 +161,21 @@ export default function LensImageGallery({
             <DialogClose ref={close} aria-label={labels.close} className={cn(ICON_CLOSE_BTN_CLS, "absolute right-3 top-[max(0.75rem,var(--safe-inset-top))] z-10 size-11 cursor-pointer border border-zinc-200 bg-white sm:top-3")}>
               <X className="size-5" />
             </DialogClose>
-            <div className="flex min-h-0 flex-1 flex-col justify-center pt-11">
-              <div {...swipe} className="relative mx-auto aspect-square max-h-full w-full touch-pan-y touch-pinch-zoom rounded-xl border border-zinc-100 bg-zinc-50 sm:aspect-auto sm:h-full">
-                <Image
-                  src={currentSrc}
-                  alt={lens.model}
-                  fill
-                  sizes="(min-width: 640px) 708px, calc(100vw - 32px)"
-                  loading="eager"
-                  className="pointer-events-none object-contain"
-                  draggable={false}
-                />
-                {multiple && (
-                  <>
-                    <button type="button" aria-label={labels.previous} disabled={index === 0} onClick={() => step(-1)} className={cn(ACTION_OUTLINE_CLS, "absolute left-2.5 top-1/2 size-11 -translate-y-1/2 justify-center px-0 disabled:opacity-40")}>
-                      <ChevronLeft className="size-5" />
-                    </button>
-                    <button type="button" aria-label={labels.next} disabled={index === images.length - 1} onClick={() => step(1)} className={cn(ACTION_OUTLINE_CLS, "absolute right-2.5 top-1/2 size-11 -translate-y-1/2 justify-center px-0 disabled:opacity-40")}>
-                      <ChevronRight className="size-5" />
-                    </button>
-                  </>
-                )}
+            <div {...swipe} className="relative min-h-0 flex-1 touch-pan-y touch-pinch-zoom">
+              <div className="absolute inset-0 p-[clamp(2rem,8vmin,3.5rem)]">
+                <div className="relative h-full w-full">
+                  <Image
+                    src={currentSrc}
+                    alt={lens.model}
+                    fill
+                    sizes="(min-width: 640px) 596px, calc(100vw - 96px)"
+                    loading="eager"
+                    className="pointer-events-none object-contain"
+                    draggable={false}
+                  />
+                </div>
               </div>
+              {multiple && navigation("px-0 sm:px-1", "size-11")}
             </div>
             {multiple && (
               <div className="mt-3 flex flex-col items-center gap-1">

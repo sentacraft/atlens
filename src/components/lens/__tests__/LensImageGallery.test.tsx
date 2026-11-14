@@ -32,6 +32,23 @@ it("starts on the primary image and opens the selected supplemental image", asyn
   expect(within(trigger).getByRole("img").getAttribute("src")).toContain(encodeURIComponent("/lenses/example/001.webp"));
 });
 
+it("switches images from the page arrows without opening the viewer", () => {
+  render(<LensImageGallery lens={{ id: "example", model: "Example", alternateImages: ["003"] }} labels={labels} />);
+  const trigger = screen.getByRole("button", { name: labels.open });
+  const previous = screen.getByRole("button", { name: labels.previous }) as HTMLButtonElement;
+  const next = screen.getByRole("button", { name: labels.next }) as HTMLButtonElement;
+
+  expect(previous.disabled).toBe(true);
+  expect(trigger.querySelector("button")).toBeNull();
+  fireEvent.click(next);
+  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(within(trigger).getByRole("img").getAttribute("src")).toContain(encodeURIComponent("/lenses/example/003.webp"));
+  expect(next.disabled).toBe(true);
+  fireEvent.click(previous);
+  expect(within(trigger).getByRole("img").getAttribute("src")).toContain(encodeURIComponent("/lenses/example.webp"));
+  expect(screen.queryByRole("dialog")).toBeNull();
+});
+
 it("moves the shared active-dot style to the selected image", () => {
   render(<LensImageGallery lens={{ id: "example", model: "Example", alternateImages: ["003"] }} labels={labels} />);
   const dots = screen.getAllByRole("button", { name: "Main" }).filter(button => !button.querySelector("img"));
