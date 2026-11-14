@@ -4,7 +4,7 @@ import { useRef, useState, type TouchEvent } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Maximize, X } from "lucide-react";
 import { Dialog, DialogBackdrop, DialogClose, DialogPortal, DialogRawPopup, DialogTitle } from "@/components/ui/dialog";
-import { ACTION_OUTLINE_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
+import { ACTION_OUTLINE_CLS, ACTIVE_DOT_CLS, ICON_CLOSE_BTN_CLS } from "@/config/ui-tokens";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -91,7 +91,7 @@ export default function LensImageGallery({
         onClick={event => {
           if (event.detail === 0 || Date.now() - lastSwipe.current > 350) {setOpen(true);}
         }}
-        className="relative flex aspect-square w-full touch-pan-y cursor-zoom-in items-center justify-center rounded-2xl border border-zinc-100 bg-zinc-50/70 p-5 focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="relative flex aspect-square w-full touch-pan-y touch-pinch-zoom cursor-zoom-in items-center justify-center rounded-2xl border border-zinc-100 bg-zinc-50/70 p-5 focus-visible:outline-2 focus-visible:outline-offset-2"
       >
         <span className="relative aspect-square w-full">
           <Image
@@ -120,9 +120,9 @@ export default function LensImageGallery({
                 aria-label={labels.images[i]}
                 aria-pressed={index === i}
                 onClick={() => setIndex(i)}
-                className="group grid h-9 w-4 cursor-pointer place-items-center rounded focus-visible:outline-2"
+                className="grid size-11 shrink-0 cursor-pointer place-items-center rounded focus-visible:outline-2"
               >
-                <span className="size-[7px] rounded-full bg-zinc-400 group-aria-pressed:bg-zinc-900" />
+                <span className={cn("size-[7px] rounded-full", index === i ? ACTIVE_DOT_CLS : "bg-zinc-400")} />
               </button>
             ))}
           </div>
@@ -142,11 +142,11 @@ export default function LensImageGallery({
             className="fixed inset-0 flex h-dvh flex-col overflow-hidden bg-white px-4 pb-[max(1rem,var(--safe-inset-bottom))] pt-[max(1rem,var(--safe-inset-top))] sm:inset-auto sm:left-1/2 sm:top-1/2 sm:h-[min(668px,calc(100dvh-48px))] sm:w-[min(748px,calc(100vw-48px))] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl sm:p-5 sm:shadow-2xl"
           >
             <DialogTitle className="sr-only">{lens.model}</DialogTitle>
-            <DialogClose ref={close} aria-label={labels.close} className={cn(ICON_CLOSE_BTN_CLS, "absolute right-3 top-[max(0.75rem,var(--safe-inset-top))] z-10 size-11 cursor-pointer rounded-lg border border-zinc-200 bg-white sm:top-3")}>
+            <DialogClose ref={close} aria-label={labels.close} className={cn(ICON_CLOSE_BTN_CLS, "absolute right-3 top-[max(0.75rem,var(--safe-inset-top))] z-10 size-11 cursor-pointer border border-zinc-200 bg-white sm:top-3")}>
               <X className="size-5" />
             </DialogClose>
             <div className="flex min-h-0 flex-1 flex-col justify-center pt-11">
-              <div {...swipe} className="relative mx-auto aspect-square max-h-full w-full touch-pan-y rounded-xl border border-zinc-100 bg-zinc-50 sm:aspect-auto sm:h-full">
+              <div {...swipe} className="relative mx-auto aspect-square max-h-full w-full touch-pan-y touch-pinch-zoom rounded-xl border border-zinc-100 bg-zinc-50 sm:aspect-auto sm:h-full">
                 <Image
                   src={currentSrc}
                   alt={lens.model}
