@@ -38,7 +38,8 @@ test.describe("Focal range filter", () => {
 
 test("custom equivalent focal lengths match nearby primes and survive history and reload", async ({ page }) => {
   await page.goto("/en/lenses/x/browse?filter-test=preserved");
-  await page.getByRole("button", { name: "Cover a focal length", exact: true }).click();
+  await page.getByRole("button", { name: "Focal filtering", exact: true }).click();
+  await page.getByRole("menuitemradio", { name: "Cover a focal length", exact: true }).click();
   const input = page.getByRole("textbox", { name: "Custom focal length" });
   await input.fill("40");
   await input.press("Enter");
@@ -58,12 +59,33 @@ test("custom equivalent focal lengths match nearby primes and survive history an
   await expect(input).toHaveValue("40");
   await expect(prime).toHaveCount(1);
 
-  await page.getByRole("button", { name: "Browse focal ranges", exact: true }).click();
+  await page.getByRole("button", { name: "Focal filtering", exact: true }).click();
+  await page.getByRole("menuitemradio", { name: "By focal range", exact: true }).click();
   await page.getByRole("button", { name: "Standard", exact: true }).click();
   await expect(input).toHaveCount(0);
   await expect(page).toHaveURL(/fc=standard/);
   expect(new URL(page.url()).searchParams.has("fmm")).toBe(false);
   expect(new URL(page.url()).searchParams.get("filter-test")).toBe("preserved");
+});
+
+test("focal mode stays beside its label and coverage defaults to equivalent", async ({ page }) => {
+  await page.addInitScript(() => window.localStorage.setItem("atlens_focal_reference_v1", "actual"));
+  await page.goto("/en/lenses/x/browse?b=fujifilm");
+  const mode = page.getByRole("button", { name: "Focal filtering", exact: true });
+  const label = mode.locator("../..").locator("span:visible").filter({ hasText: /^Focal length$/ });
+  const modeBox = await mode.boundingBox();
+  const labelBox = await label.boundingBox();
+  expect(modeBox).not.toBeNull();
+  expect(labelBox).not.toBeNull();
+  expect(modeBox!.x - labelBox!.x).toBeLessThan(160);
+  expect(Math.abs(modeBox!.y + modeBox!.height / 2 - labelBox!.y - labelBox!.height / 2)).toBeLessThanOrEqual(1);
+  await mode.click();
+  await page.getByRole("menuitemradio", { name: "Cover a focal length", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Focal length convention" })).toHaveText("Equiv. (FF)");
+  const note = mode.locator("..").getByRole("button").nth(1);
+  await note.click();
+  await expect(page.getByText("Primes and zooms within a 5% logarithmic window of this focal length match.", { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
 test("aperture and custom weight limits persist and reset together", async ({ page }) => {
@@ -90,7 +112,8 @@ test("aperture and custom weight limits persist and reset together", async ({ pa
 
 test("filter menus share pill geometry and leave room after the chevron", async ({ page }) => {
   await page.goto("/en/lenses/x/browse");
-  await page.getByRole("button", { name: "Cover a focal length", exact: true }).click();
+  await page.getByRole("button", { name: "Focal filtering", exact: true }).click();
+  await page.getByRole("menuitemradio", { name: "Cover a focal length", exact: true }).click();
   await openSecondaryFilters(page);
   for (const name of ["Focal length convention", "Max Aperture", "Weight limit"]) {
     const trigger = page.getByRole("button", { name, exact: true });
@@ -123,6 +146,21 @@ test("phone limit filters share a row without a persistent aperture note", async
   expect(weight!.x).toBeGreaterThan(aperture!.x);
   await expect(page.getByText("Variable-aperture zooms use the wide-end value.", { exact: true })).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});
+
+test("phone filter actions use two left-aligned rows", async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 1280) >= 640, "Phone layout only");
+  await page.goto("/en/lenses/x/browse?b=fujifilm&ap=2.8");
+  const toggle = page.getByRole("button", { name: /more filters/i });
+  const assist = page.getByRole("button", { name: "Pick for my filters", exact: true });
+  await expect(assist).toBeVisible();
+  await expect(page.getByRole("button", { name: "Reset", exact: true })).toBeVisible();
+  const toggleBox = await toggle.boundingBox();
+  const assistBox = await assist.boundingBox();
+  expect(toggleBox).not.toBeNull();
+  expect(assistBox).not.toBeNull();
+  expect(Math.abs(assistBox!.x - toggleBox!.x)).toBeLessThanOrEqual(1);
+  expect(assistBox!.y).toBeGreaterThanOrEqual(toggleBox!.y + toggleBox!.height);
 });
 
 test.describe("Sort controls", () => {

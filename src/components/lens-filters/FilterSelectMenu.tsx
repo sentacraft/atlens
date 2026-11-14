@@ -3,7 +3,7 @@
 import { Menu } from "@base-ui/react/menu";
 import { Check, ChevronDown } from "lucide-react";
 import { MenuPopup } from "@/components/ui/menu";
-import { MENU_ITEM_CLS, PILL_ACTIVE_CLS, PILL_MENU_IDLE_CLS, PILL_MENU_OPTION_CLS, PILL_MENU_TRIGGER_CLS } from "@/config/ui-tokens";
+import { MENU_ITEM_CLS, PILL_ACTIVE_CLS, PILL_MENU_IDLE_CLS, PILL_MENU_OPTION_CLS, PILL_MENU_TRIGGER_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 
 interface Option<T extends string> {
@@ -15,16 +15,19 @@ interface Props<T extends string> {
   label: string;
   value: T;
   options: readonly Option<T>[];
+  appearance: "pill" | "text";
   active: boolean;
   onChange: (value: T) => void;
 }
 
-export default function FilterSelectMenu<T extends string>({ label, value, options, active, onChange }: Props<T>) {
+export default function FilterSelectMenu<T extends string>({ label, value, options, appearance, active, onChange }: Props<T>) {
   return (
     <Menu.Root>
       <Menu.Trigger
         aria-label={label}
-        className={cn(active ? PILL_ACTIVE_CLS : PILL_MENU_IDLE_CLS, PILL_MENU_TRIGGER_CLS)}
+        className={appearance === "text"
+          ? cn(TEXT_LINK_CLS, "inline-flex min-h-11 max-w-full items-center gap-1.5 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 sm:min-h-8")
+          : cn(active ? PILL_ACTIVE_CLS : PILL_MENU_IDLE_CLS, PILL_MENU_TRIGGER_CLS)}
       >
         <span className="min-w-0 truncate">{options.find((option) => option.value === value)?.label}</span>
         <ChevronDown className="size-3.5 shrink-0" />

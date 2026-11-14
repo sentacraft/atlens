@@ -250,8 +250,8 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "storage",
     topic: "privacy",
-    text: "Data is stored on Cloudflare. Conversations are linked to the account so they can be found again. The focal-length convention preference is stored only in this browser. The \"{About.privacyTitle}\" section of the \"{Nav.about}\" page describes what is stored.",
-    sources: ["src/lib/lens/focal-preference.ts"],
+    text: "Data is stored on Cloudflare. Conversations are linked to the account so they can be found again. The \"{About.privacyTitle}\" section of the \"{Nav.about}\" page describes what is stored.",
+    sources: ["src/lib/askiris/conversation-repository.ts", "src/lib/auth.ts"],
     links: ["page:aboutPrivacy"],
   },
   {
