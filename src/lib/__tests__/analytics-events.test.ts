@@ -18,6 +18,32 @@ describe("parseEventProps", () => {
     expect(parseEventProps("lens_scroll", { lens_slug: "xf-33", depth_pct: "50" })).toEqual({ lens_slug: "xf-33" });
   });
 
+  it("preserves a combined filter snapshot longer than 256 characters", () => {
+    const filters_json = JSON.stringify({
+      brands: ["fujifilm", "sigma", "tamron", "viltrox", "voigtlander"],
+      typeFilter: "prime",
+      focusFilter: "auto",
+      focusMotorClass: "linear",
+      features: ["weatherResistant", "imageStabilization"],
+      opticalTrait: "macro",
+      focalLength: { value: 50, reference: "equivalent" },
+      maxAperture: 2.8,
+      weightLimit: 500,
+      sort: "focalLength",
+    });
+    expect(filters_json.length).toBeGreaterThan(256);
+    expect(parseEventProps("filter_apply", { filters_json })).toEqual({ filters_json });
+  });
+
+  it("caps filter snapshots at 2048 characters without raising other string limits", () => {
+    expect(parseEventProps("filter_apply", {
+      filters_json: "x".repeat(2049),
+      campaign: "y".repeat(300),
+    })).toEqual({ filters_json: "x".repeat(2048), campaign: "y".repeat(256) });
+    expect(parseEventProps("search", { query: "z".repeat(300) })).toEqual({ query: "z".repeat(256) });
+    expect(parseEventProps("filter_apply", { filters_json: 50 })).toEqual({});
+  });
+
   it("accepts an event without props", () => {
     expect(parseEventProps("filter_reset")).toEqual({});
   });

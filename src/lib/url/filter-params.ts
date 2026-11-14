@@ -1,5 +1,6 @@
 import { OPTICAL_TRAITS } from "@/lib/types";
 import {
+  APERTURE_FILTER_STOPS,
   defaultFilters,
   FILTER_FEATURE_KEYS,
   FOCAL_CATEGORIES,
@@ -10,15 +11,13 @@ import {
   type FilterState,
   type FocalCategory,
 } from "@/lib/lens/lens";
-import { isOneOf } from "@/lib/utils";
+import { isOneOf, parsePositiveDecimal } from "@/lib/utils";
 
 const FOCAL_KEYS = FOCAL_CATEGORIES.map((c) => c.key) as FocalCategory[];
 
-export const FILTER_PARAM_KEYS = ["b", "t", "f", "ot", "m", "feat", "fc", "sort", "dir"] as const;
+export const FILTER_PARAM_KEYS = ["b", "t", "f", "ot", "m", "feat", "fc", "fmm", "fr", "ap", "w", "sort", "dir"] as const;
 type FilterParamKey = (typeof FILTER_PARAM_KEYS)[number];
 
-// b=brands, t=typeFilter, f=focusFilter, m=focusMotorClass,
-// feat=features, fc=focalCategories, sort=sortKey, dir=sortDir
 export function serializeFilters(filters: FilterState): URLSearchParams {
   const p = new URLSearchParams();
   if (filters.brands.length > 0) {
@@ -39,8 +38,18 @@ export function serializeFilters(filters: FilterState): URLSearchParams {
   if (filters.features.length > 0) {
     p.set("feat", filters.features.join(","));
   }
-  if (filters.focalCategories.length > 0) {
+  const focal = filters.focalLength;
+  if (focal !== null && (focal.value === null || (Number.isFinite(focal.value) && focal.value > 0))) {
+    p.set("fmm", focal.value === null ? "custom" : String(focal.value));
+    p.set("fr", focal.reference);
+  } else if (filters.focalCategories.length > 0) {
     p.set("fc", filters.focalCategories.join(","));
+  }
+  if (filters.maxAperture !== null && Number.isFinite(filters.maxAperture) && filters.maxAperture > 0) {
+    p.set("ap", String(filters.maxAperture));
+  }
+  if (filters.weightLimit !== null && Number.isFinite(filters.weightLimit) && filters.weightLimit > 0) {
+    p.set("w", String(filters.weightLimit));
   }
   if (filters.sort !== defaultFilters.sort) {
     p.set("sort", filters.sort);
@@ -51,10 +60,25 @@ export function serializeFilters(filters: FilterState): URLSearchParams {
   return p;
 }
 
+export function writeFiltersToUrl(filters: FilterState): void {
+  const url = new URL(window.location.href);
+  FILTER_PARAM_KEYS.forEach((key) => url.searchParams.delete(key));
+  const rest = url.searchParams.toString();
+  const selected = serializeFilters(filters).toString().replace(/%2C/g, ",");
+  url.search = [rest, selected].filter(Boolean).join("&");
+  if (url.href !== window.location.href) {window.history.pushState(null, "", url);}
+}
+
 export function parseFilters(params: URLSearchParams): FilterState {
   const raw = Object.fromEntries(
     FILTER_PARAM_KEYS.map((k) => [k, params.get(k)]),
   ) as Record<FilterParamKey, string | null>;
+
+  const focalValue = parsePositiveDecimal(raw.fmm);
+  const focalLength: FilterState["focalLength"] = raw.fmm === "custom" || focalValue !== null
+    ? { value: focalValue, reference: raw.fr === "actual" ? "actual" : "equivalent" }
+    : null;
+  const aperture = parsePositiveDecimal(raw.ap);
 
   return {
     brands: raw.b ? raw.b.split(",").filter(Boolean) : [],
@@ -63,7 +87,10 @@ export function parseFilters(params: URLSearchParams): FilterState {
     opticalTrait: raw.ot && isOneOf(raw.ot, OPTICAL_TRAITS) ? raw.ot : null,
     focusMotorClass: raw.m && isOneOf(raw.m, FOCUS_MOTOR_CLASSES) ? raw.m : null,
     features: raw.feat ? raw.feat.split(",").filter((k) => isOneOf(k, FILTER_FEATURE_KEYS)) : [],
-    focalCategories: raw.fc ? raw.fc.split(",").filter((k) => isOneOf(k, FOCAL_KEYS)) : [],
+    focalCategories: focalLength === null && raw.fc ? raw.fc.split(",").filter((k) => isOneOf(k, FOCAL_KEYS)) : [],
+    focalLength,
+    maxAperture: aperture !== null && APERTURE_FILTER_STOPS.some((stop) => stop === aperture) ? aperture : null,
+    weightLimit: parsePositiveDecimal(raw.w),
     sort: raw.sort && isOneOf(raw.sort, SORT_KEYS) ? raw.sort : defaultFilters.sort,
     sortDir: raw.dir === "desc" ? "desc" : "asc",
   };

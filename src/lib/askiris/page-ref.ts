@@ -70,6 +70,11 @@ export function describeFilters(filters: FilterState, { list, badge, brand }: Fi
     filters.focalCategories.length > 0
       ? filters.focalCategories.map((key) => list(`category-${key}`)).join(" / ")
       : undefined,
+    filters.focalLength?.value != null
+      ? list(filters.focalLength.reference === "equivalent" ? "focalNearEquivalent" : "focalNearActual", { mm: filters.focalLength.value })
+      : undefined,
+    filters.maxAperture !== null ? list("apertureOrFaster", { aperture: filters.maxAperture }) : undefined,
+    filters.weightLimit !== null ? list("weightAtMost", { grams: filters.weightLimit }) : undefined,
     ...filters.features.map((key) => list(FEATURE_LABEL[key])),
     filters.opticalTrait ? badge(filters.opticalTrait) : undefined,
     filters.focusMotorClass ? list(MOTOR_LABEL[filters.focusMotorClass]) : undefined,

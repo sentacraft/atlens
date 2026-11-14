@@ -4,6 +4,7 @@
 import { Menu } from "@base-ui/react/menu";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PILL_ACTIVE_CLS, PILL_MENU_IDLE_CLS, PILL_MENU_TRIGGER_CLS } from "@/config/ui-tokens";
 
 function CheckboxIndicator({ checked }: { checked: boolean }) {
   return (
@@ -47,11 +48,9 @@ export default function BrandFilterMenu({
     <Menu.Root>
       <Menu.Trigger
         className={cn(
-          // max-w-full, not a fraction: a fractional cap can fall below min-w on a narrow phone.
-          "inline-flex h-9 min-w-36 max-w-full items-center justify-between gap-1.5 rounded-full border px-3.5 text-[12px] shadow-sm shadow-zinc-950/[0.02] transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 sm:min-w-28",
-          hasSelection
-            ? "border-transparent bg-zinc-900 font-medium text-white hover:border-zinc-800 hover:bg-zinc-800"
-            : "border-zinc-200 bg-zinc-50 font-medium text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-900",
+          hasSelection ? PILL_ACTIVE_CLS : PILL_MENU_IDLE_CLS,
+          PILL_MENU_TRIGGER_CLS,
+          "min-w-36 sm:min-w-28",
         )}
       >
         <span className="min-w-0 truncate text-left">{triggerLabel}</span>

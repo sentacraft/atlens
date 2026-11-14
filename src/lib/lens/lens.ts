@@ -132,6 +132,23 @@ export function classifyFocusMotor(lens: Lens): FocusMotorClass | undefined {
   return "other";
 }
 
+export type FocalReference = "equivalent" | "actual";
+
+export interface CustomFocalFilter {
+  value: number | null;
+  reference: FocalReference;
+}
+
+export const APERTURE_FILTER_STOPS = [1.4, 2, 2.8, 3.5, 4, 5.6] as const;
+export const WEIGHT_LIMIT_PRESETS = [150, 300, 500, 1000] as const;
+
+export function convertFocalLength(value: number, from: FocalReference, to: FocalReference, mount: Mount): number {
+  if (from === to) {
+    return value;
+  }
+  return to === "equivalent" ? value * CROP_FACTOR[mount] : value / CROP_FACTOR[mount];
+}
+
 export interface FilterState {
   brands: string[]; // empty = all brands
   typeFilter: LensType | null; // null = all types
@@ -140,6 +157,9 @@ export interface FilterState {
   focusMotorClass: FocusMotorClass | null; // null = no filter
   features: FilterFeatureKey[]; // empty = no requirement
   focalCategories: FocalCategory[]; // empty = all categories
+  focalLength: CustomFocalFilter | null;
+  maxAperture: number | null;
+  weightLimit: number | null;
   sort: SortKey;
   sortDir: "asc" | "desc";
 }
@@ -152,6 +172,9 @@ export const defaultFilters: FilterState = {
   focusMotorClass: null,
   features: [],
   focalCategories: [],
+  focalLength: null,
+  maxAperture: null,
+  weightLimit: null,
   sort: "focalLength",
   sortDir: "asc",
 };
@@ -202,12 +225,36 @@ export function filterLenses(lenses: Lens[], filters: FilterState): Lens[] {
         return false;
       }
     }
-    if (filters.focalCategories.length > 0) {
+    if (filters.focalLength !== null) {
+      const { value, reference } = filters.focalLength;
+      if (value !== null && Number.isFinite(value) && value > 0) {
+        const min = convertFocalLength(lens.focalLengthMin, "actual", reference, lens.mount);
+        const max = convertFocalLength(lens.focalLengthMax, "actual", reference, lens.mount);
+        const lower = value / 1.05;
+        const upper = value * 1.05;
+        const tolerance = value * Number.EPSILON * 8;
+        if (min - upper > tolerance || lower - max > tolerance) {
+          return false;
+        }
+      }
+    } else if (filters.focalCategories.length > 0) {
       const matchedCats = getFocalCategoriesOf(lens);
       const hasOverlap = filters.focalCategories.some((cat) =>
         matchedCats.includes(cat)
       );
       if (!hasOverlap) {
+        return false;
+      }
+    }
+    if (filters.maxAperture !== null && Number.isFinite(filters.maxAperture) && filters.maxAperture > 0) {
+      const aperture = leadingValue(lens.maxAperture);
+      if (aperture === undefined || !Number.isFinite(aperture) || aperture > filters.maxAperture) {
+        return false;
+      }
+    }
+    if (filters.weightLimit !== null && Number.isFinite(filters.weightLimit) && filters.weightLimit > 0) {
+      const weight = Array.isArray(lens.weightG) ? lens.weightG[1] : lens.weightG;
+      if (weight === undefined || !Number.isFinite(weight) || weight > filters.weightLimit) {
         return false;
       }
     }

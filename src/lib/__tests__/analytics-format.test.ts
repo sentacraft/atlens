@@ -32,6 +32,34 @@ describe("formatFilterSnapshot", () => {
     expect(formatFilterSnapshot(snap)).toBe("(no filters)");
   });
 
+  it("summarises custom focal targets and numeric limits", () => {
+    expect(formatFilterSnapshot(JSON.stringify({
+      focalLength: { value: 50, reference: "equivalent" },
+      maxAperture: 2.8,
+      weightLimit: 500,
+    }))).toBe("Focal: 50mm equivalent · Max aperture: f/2.8 or faster · Weight limit: 500g");
+    expect(formatFilterSnapshot(JSON.stringify({
+      focalLength: { value: 33.3, reference: "actual" },
+    }))).toBe("Focal: 33.3mm actual");
+  });
+
+  it.each([
+    null, {}, { value: null, reference: "equivalent" },
+    { value: "50", reference: "actual" }, { value: 50, reference: "unknown" },
+    { value: 0, reference: "actual" }, { value: -1, reference: "actual" },
+    { value: true, reference: "actual" },
+  ])("ignores an inactive or malformed custom focal target: %j", (focalLength) => {
+    expect(formatFilterSnapshot(JSON.stringify({ focalLength }))).toBe("(no filters)");
+  });
+
+  it.each([null, "2.8", 0, -1, true, {}, []])("ignores malformed numeric limits: %j", (value) => {
+    expect(formatFilterSnapshot(JSON.stringify({ maxAperture: value, weightLimit: value }))).toBe("(no filters)");
+  });
+
+  it("ignores non-finite JSON numbers", () => {
+    expect(formatFilterSnapshot('{"focalLength":{"value":1e400,"reference":"actual"},"maxAperture":1e400,"weightLimit":1e400}')).toBe("(no filters)");
+  });
+
   it("falls back to the raw text on invalid JSON", () => {
     expect(formatFilterSnapshot("not json")).toBe("not json");
   });
@@ -53,6 +81,21 @@ describe("aggregateFilterDimensions", () => {
     expect(get("Brand")).toBe(0);
     // descending by count
     expect(result[0].n).toBeGreaterThanOrEqual(result[result.length - 1].n);
+  });
+
+  it("counts custom focal targets in the historical focal dimension only once", () => {
+    const rows = [
+      { filters: JSON.stringify({ focalCategories: ["standard"] }), n: 2 },
+      { filters: JSON.stringify({ focalLength: { value: 50, reference: "equivalent" }, maxAperture: 2.8 }), n: 3 },
+      { filters: JSON.stringify({ focalLength: { value: 35, reference: "actual" }, focalCategories: ["wide"], weightLimit: 500 }), n: 4 },
+      { filters: JSON.stringify({ focalLength: { value: null, reference: "actual" }, maxAperture: "2.8", weightLimit: 0 }), n: 20 },
+      { filters: JSON.stringify({ focalLength: { value: 50, reference: "unknown" }, maxAperture: -1, weightLimit: "500" }), n: 20 },
+      { filters: '{"focalLength":{"value":1e400,"reference":"actual"},"maxAperture":1e400,"weightLimit":1e400}', n: 20 },
+    ];
+    const result = aggregateFilterDimensions(rows);
+    expect(result.filter((row) => /focal/i.test(row.dimension))).toEqual([{ dimension: "Focal range", n: 9 }]);
+    expect(result.find((row) => row.dimension === "Max aperture")?.n).toBe(3);
+    expect(result.find((row) => row.dimension === "Weight limit")?.n).toBe(4);
   });
 
   it("counts non-default usage as active but default usage as inactive", () => {
@@ -99,6 +142,23 @@ describe("topFilterSnapshots", () => {
       { display: "Brand: sigma", filters_json: rows[0].filters_json, n: 6 },
       { display: "Zoom", filters_json: rows[3].filters_json, n: 4 },
     ]);
+  });
+
+  it("keeps distinct focal targets, references and thresholds separate", () => {
+    const snapshots = [
+      { focalLength: { value: 50, reference: "equivalent" } },
+      { focalLength: { value: 51, reference: "equivalent" } },
+      { focalLength: { value: 50, reference: "actual" } },
+      { maxAperture: 2.8 },
+      { maxAperture: 2.9 },
+      { weightLimit: 500 },
+      { weightLimit: 501 },
+    ];
+    const rows = snapshots.map((snapshot, index) => ({ filters_json: JSON.stringify(snapshot), n: index + 1 }));
+    const result = topFilterSnapshots(rows, 20);
+    expect(result).toHaveLength(rows.length);
+    expect(new Set(result.map((row) => row.display)).size).toBe(rows.length);
+    expect(result.map((row) => row.n)).toEqual([7, 6, 5, 4, 3, 2, 1]);
   });
 
   it("keeps only the top rows", () => {

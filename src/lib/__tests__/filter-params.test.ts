@@ -119,6 +119,56 @@ describe("parseFilters", () => {
   });
 });
 
+describe("custom browse URL params", () => {
+  it.each(["actual", "equivalent"] as const)("round-trips custom focal values in %s", (reference) => {
+    for (const value of [null, 40.5]) {
+      const state = { ...defaultFilters, focalLength: { value, reference }, maxAperture: 2.8, weightLimit: 275.5 };
+      const params = serializeFilters(state);
+      expect(params.get("fmm")).toBe(value === null ? "custom" : String(value));
+      expect(params.get("fr")).toBe(reference);
+      expect(params.get("ap")).toBe("2.8");
+      expect(params.get("w")).toBe("275.5");
+      expect(parseFilters(params)).toEqual(state);
+      for (const key of params.keys()) {
+        expect([...FILTER_PARAM_KEYS]).toContain(key);
+      }
+    }
+  });
+
+  it.each(["custom", "40.5"])("lets valid custom mode %s override categories", (fmm) => {
+    const params = new URLSearchParams({ fmm, fr: "invalid", fc: "wide" });
+    expect(parseFilters(params)).toMatchObject({
+      focalLength: { value: fmm === "custom" ? null : 40.5, reference: "equivalent" },
+      focalCategories: [],
+    });
+    params.delete("fr");
+    expect(parseFilters(params).focalLength?.reference).toBe("equivalent");
+    const serialized = serializeFilters({ ...defaultFilters, focalCategories: ["wide"],
+      focalLength: { value: null, reference: "actual" } });
+    expect(serialized.has("fc")).toBe(false);
+  });
+
+  it.each(["", "0", "-2", "NaN", "Infinity", "1e309", "abc"])("ignores invalid custom value %s without losing categories", (fmm) => {
+    expect(parseFilters(new URLSearchParams({ fmm, fc: "wide,bogus", fr: "actual", ap: fmm, w: fmm })))
+      .toMatchObject({ focalLength: null, focalCategories: ["wide"], maxAperture: null, weightLimit: null });
+  });
+
+  it("accepts aperture stops only and positive custom weight limits", () => {
+    for (const stop of [1.4, 2, 2.8, 3.5, 4, 5.6]) {
+      expect(parseFilters(new URLSearchParams({ ap: String(stop) })).maxAperture).toBe(stop);
+    }
+    expect(parseFilters(new URLSearchParams("ap=1.8&w=275.5")).maxAperture).toBeNull();
+    expect(parseFilters(new URLSearchParams("ap=1.8&w=275.5")).weightLimit).toBe(275.5);
+    expect(parseFilters(new URLSearchParams("fr=actual")).focalLength).toBeNull();
+  });
+
+  it.each([0, -1, NaN, Infinity])("does not serialize invalid maxima %s", (value) => {
+    const params = serializeFilters({ ...defaultFilters, maxAperture: value, weightLimit: value });
+    expect(params.has("ap")).toBe(false);
+    expect(params.has("w")).toBe(false);
+  });
+});
+
 describe("round-trip", () => {
   it("serialize → parse preserves default filters", () => {
     const result = parseFilters(serializeFilters(defaultFilters));
@@ -127,6 +177,7 @@ describe("round-trip", () => {
 
   it("serialize → parse preserves complex filter state", () => {
     const state: FilterState = {
+      ...defaultFilters,
       brands: ["fujifilm", "viltrox"],
       typeFilter: "prime",
       focusFilter: "auto",
@@ -149,6 +200,7 @@ describe("FILTER_PARAM_KEYS", () => {
     // all of its keys. The URL-sync merge deletes FILTER_PARAM_KEYS before
     // re-writing; a key it can emit but does not list would never get cleared.
     const maximal: FilterState = {
+      ...defaultFilters,
       brands: ["fujifilm"],
       typeFilter: "prime",
       focusFilter: "auto",
