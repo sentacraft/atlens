@@ -95,6 +95,12 @@ export const ICON_NAV_BTN_CLS =
   "inline-flex shrink-0 items-center justify-center rounded-lg transition-colors " +
   "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 active:bg-zinc-100 active:text-zinc-900";
 
+export const IMAGE_CONTROL_CLS =
+  "inline-flex size-11 shrink-0 items-center justify-center rounded-full cursor-pointer text-zinc-500 transition-colors " +
+  "hover:bg-zinc-100 hover:text-zinc-900 active:bg-zinc-100 active:text-zinc-900 " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default disabled:opacity-40 " +
+  "disabled:hover:bg-transparent disabled:hover:text-zinc-500 disabled:active:bg-transparent disabled:active:text-zinc-500";
+
 export const FEEDBACK_LINK_CLS =
   "text-zinc-500 underline underline-offset-2 transition-colors " +
   "hover:text-zinc-900";

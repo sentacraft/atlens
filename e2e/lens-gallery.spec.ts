@@ -11,9 +11,28 @@ for (const width of [375, 1280]) {
       const trigger = page.getByRole("button", { name: "Enlarge product image" });
       const image = trigger.getByRole("img");
       await expect(image).toHaveAttribute("src", /viltrox-af-28mm-f45-x\.webp/);
+      await expect(trigger).toHaveCSS("padding", "32px");
+      const expand = trigger.locator('span[aria-hidden="true"]');
+      await expect(expand).toHaveCSS("cursor", "pointer");
+      const expandBox = (await expand.boundingBox())!;
+      expect(expandBox.width).toBe(44);
+      expect(await expand.evaluate(element => parseFloat(getComputedStyle(element).borderTopLeftRadius)))
+        .toBeGreaterThanOrEqual(expandBox.width / 2);
 
       if (width >= 640) {
-        await page.getByRole("button", { name: "Next image", exact: true }).click();
+        const previous = page.getByRole("button", { name: "Previous image", exact: true });
+        const next = page.getByRole("button", { name: "Next image", exact: true });
+        const nextBox = (await next.boundingBox())!;
+        expect(nextBox.width).toBe(44);
+        expect(nextBox.height).toBe(44);
+        expect(await next.evaluate(element => parseFloat(getComputedStyle(element).borderTopLeftRadius)))
+          .toBeGreaterThanOrEqual(nextBox.width / 2);
+        await expect(page.getByRole("button", { name: "Main product image", exact: true }).locator("img"))
+          .toHaveCSS("padding", "4px");
+        await previous.hover();
+        await expect(previous).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+        await next.click();
+        await expect(next).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
       } else {
         const start = { identifier: 1, clientX: 240, clientY: 200 };
         const end = { identifier: 1, clientX: 120, clientY: 200 };

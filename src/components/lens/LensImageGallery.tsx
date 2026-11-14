@@ -4,7 +4,7 @@ import { useRef, useState, type TouchEvent } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Maximize, X } from "lucide-react";
 import { Dialog, DialogBackdrop, DialogClose, DialogPortal, DialogRawPopup, DialogTitle } from "@/components/ui/dialog";
-import { ACTION_OUTLINE_CLS, ACTIVE_DOT_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
+import { ACTIVE_DOT_CLS, ICON_CLOSE_BTN_CLS, IMAGE_CONTROL_CLS } from "@/config/ui-tokens";
 import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -73,20 +73,20 @@ export default function LensImageGallery({
             onClick={() => setIndex(i)}
             className="relative size-12 shrink-0 cursor-pointer rounded-lg border border-zinc-200 bg-zinc-50 aria-pressed:border-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-1"
           >
-            <Image src={getLensImageUrl(lens.id, id)} alt="" fill sizes="48px" className="object-contain" />
+            <Image src={getLensImageUrl(lens.id, id)} alt="" fill sizes="48px" className="object-contain p-1" />
           </button>
         ))}
       </div>
     );
   }
 
-  function navigation(className: string, buttonClassName: string) {
+  function navigation(className: string) {
     return (
       <div className={cn("pointer-events-none absolute inset-0 flex items-center justify-between", className)}>
-        <button type="button" aria-label={labels.previous} disabled={index === 0} onClick={() => step(-1)} className={cn(ICON_NAV_BTN_CLS, "pointer-events-auto cursor-pointer disabled:cursor-default disabled:opacity-40", buttonClassName)}>
+        <button type="button" aria-label={labels.previous} disabled={index === 0} onClick={() => step(-1)} className={cn(IMAGE_CONTROL_CLS, "pointer-events-auto")}>
           <ChevronLeft className="size-4" />
         </button>
-        <button type="button" aria-label={labels.next} disabled={index === images.length - 1} onClick={() => step(1)} className={cn(ICON_NAV_BTN_CLS, "pointer-events-auto cursor-pointer disabled:cursor-default disabled:opacity-40", buttonClassName)}>
+        <button type="button" aria-label={labels.next} disabled={index === images.length - 1} onClick={() => step(1)} className={cn(IMAGE_CONTROL_CLS, "pointer-events-auto")}>
           <ChevronRight className="size-4" />
         </button>
       </div>
@@ -105,25 +105,25 @@ export default function LensImageGallery({
           onClick={event => {
             if (event.detail === 0 || Date.now() - lastSwipe.current > 350) {setOpen(true);}
           }}
-          className="relative flex aspect-square w-full touch-pan-y touch-pinch-zoom cursor-zoom-in items-center justify-center rounded-2xl border border-zinc-100 bg-zinc-50/70 p-5 focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="relative flex aspect-square w-full touch-pan-y touch-pinch-zoom cursor-zoom-in items-center justify-center rounded-2xl border border-zinc-100 bg-zinc-50/70 p-8 focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           <span className="relative aspect-square w-full">
             <Image
               src={currentSrc}
               alt={lens.model}
               fill
-              sizes="256px"
+              sizes="192px"
               style={lensImageStyle}
               className="pointer-events-none object-contain"
               preload={index === 0}
               draggable={false}
             />
           </span>
-          <span className={cn(ACTION_OUTLINE_CLS, "absolute bottom-2.5 right-2.5 size-10 justify-center px-0")} aria-hidden="true">
+          <span className={cn(IMAGE_CONTROL_CLS, "absolute bottom-2.5 right-2.5")} aria-hidden="true">
             <Maximize className="size-4" />
           </span>
         </button>
-        {multiple && navigation("hidden px-0.5 sm:flex", "size-8")}
+        {multiple && navigation("hidden px-1 sm:flex")}
       </div>
       {multiple && (
         <>
@@ -175,7 +175,7 @@ export default function LensImageGallery({
                   />
                 </div>
               </div>
-              {multiple && navigation("px-0 sm:px-1", "size-11")}
+              {multiple && navigation("px-0 sm:px-1")}
             </div>
             {multiple && (
               <div className="mt-3 flex flex-col items-center gap-1">
