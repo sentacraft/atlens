@@ -15,11 +15,11 @@ for (const width of [375, 1280]) {
       if (width >= 640) {
         await page.getByRole("button", { name: "Next image", exact: true }).click();
       } else {
-        await trigger.evaluate(element => {
-          const touch = (clientX: number) => new Touch({ identifier: 1, target: element, clientX, clientY: 200 });
-          element.dispatchEvent(new TouchEvent("touchstart", { bubbles: true, touches: [touch(240)] }));
-          element.dispatchEvent(new TouchEvent("touchend", { bubbles: true, touches: [], changedTouches: [touch(120)] }));
-        });
+        const start = { identifier: 1, clientX: 240, clientY: 200 };
+        const end = { identifier: 1, clientX: 120, clientY: 200 };
+        await trigger.dispatchEvent("touchstart", { touches: [start], targetTouches: [start], changedTouches: [start] });
+        await trigger.dispatchEvent("touchmove", { touches: [end], targetTouches: [end], changedTouches: [end] });
+        await trigger.dispatchEvent("touchend", { touches: [], targetTouches: [], changedTouches: [end] });
       }
 
       await expect(image).toHaveAttribute("src", /viltrox-af-28mm-f45-x\/001\.webp/);
