@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import ChartLensList from "@/components/charts/ChartLensList";
 import ChartsHeader from "@/components/charts/ChartsHeader";
 import { TimelineShare, TimelineShareFromUrl } from "@/components/charts/ChartShare";
 import TimelineChart, { TimelineChartFromUrl } from "@/components/charts/TimelineChart";
@@ -12,7 +13,7 @@ import { cineCollectionTag } from "@/components/collection/CineCollectionLink";
 import { BROWSE_PAGE_MAIN_CLS, SECTION_TOP_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
-import { buildTimeline } from "@/lib/charts/timeline";
+import { buildTimeline, lensesByYear } from "@/lib/charts/timeline";
 import { formatDataDate } from "@/lib/charts/data-date";
 import { getLensesByMount, meta } from "@/lib/lens/data";
 import { brandLabel } from "@/lib/lens/format";
@@ -135,6 +136,10 @@ export default async function TimelinePage({ params }: { params: Params }) {
         <Suspense fallback={<TimelineChart entries={timeline.entries} years={timeline.years} mode={{ kind: "page", initial: {}, ...pageProps }} />}>
           <TimelineChartFromUrl entries={timeline.entries} years={timeline.years} {...pageProps} />
         </Suspense>
+        <ChartLensList
+          locale={locale}
+          groups={lensesByYear(timeline).map(({ year, lenses }) => ({ key: String(year), heading: String(year), lenses }))}
+        />
         <SupportNote className="mt-12" />
       </main>
     </>
