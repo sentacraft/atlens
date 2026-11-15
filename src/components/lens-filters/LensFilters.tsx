@@ -172,7 +172,7 @@ export default function LensFilters({
     { value: "actual", label: t("focalActual") },
   ];
   const focalRow = (
-    <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2 gap-y-1.5 sm:grid-cols-[7rem_minmax(0,1fr)] sm:gap-x-2.5">
+    <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2 gap-y-1.5 sm:grid-cols-[7rem_auto_minmax(0,1fr)] sm:items-start sm:gap-x-2.5">
       <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-zinc-400 sm:hidden">{t("focalLength")}</span>
       <span className={cn(rowLabelClass, "hidden sm:flex")}>{t("focalLength")}</span>
       <div className="flex min-w-0 items-center gap-1.5">
@@ -193,7 +193,7 @@ export default function LensFilters({
         />
         {customFocal && <FieldNotePopover note={t("focalTolerance")} />}
       </div>
-      <div className="col-span-2 min-w-0 sm:col-span-1 sm:col-start-2">
+      <div className="col-span-2 min-w-0 sm:col-span-1 sm:col-start-3 sm:row-start-1">
         {customFocal ? (
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-zinc-500">{t("focalCovering")}</span>

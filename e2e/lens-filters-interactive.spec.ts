@@ -88,6 +88,25 @@ test("focal mode stays beside its label and coverage defaults to equivalent", as
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
+test("desktop focal presets and coverage inputs sit beside their mode", async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 1280) < 1024, "Wide desktop layout only");
+  for (const query of ["b=fujifilm", "b=fujifilm&fmm=40&fr=equivalent"]) {
+    await page.goto(`/en/lenses/x/browse?${query}`);
+    const mode = page.getByRole("button", { name: "Focal filtering", exact: true });
+    const control = query.includes("fmm=")
+      ? page.getByRole("textbox", { name: "Custom focal length" })
+      : page.getByRole("button", { name: "Standard", exact: true });
+    await expect(control).toBeVisible();
+    const modeBox = await mode.boundingBox();
+    const controlBox = await control.boundingBox();
+    expect(modeBox).not.toBeNull();
+    expect(controlBox).not.toBeNull();
+    expect(controlBox!.x).toBeGreaterThanOrEqual(modeBox!.x + modeBox!.width);
+    expect(Math.abs(controlBox!.y + controlBox!.height / 2 - modeBox!.y - modeBox!.height / 2)).toBeLessThanOrEqual(2);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  }
+});
+
 test("aperture and custom weight limits persist and reset together", async ({ page }) => {
   await page.goto("/en/lenses/x/browse");
   await openSecondaryFilters(page);
