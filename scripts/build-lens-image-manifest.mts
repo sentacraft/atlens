@@ -1,15 +1,15 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { basename, resolve } from "node:path";
+import { resolve } from "node:path";
 
 const publicLensesDir = resolve(process.cwd(), "public/lenses");
 const outputPath = resolve(process.cwd(), "src/data/lens-images.generated.ts");
 
 const files = existsSync(publicLensesDir)
-  ? readdirSync(publicLensesDir).filter((file) => file.endsWith(".webp")).sort()
+  ? readdirSync(publicLensesDir, { recursive: true, encoding: "utf8" }).filter((file) => file.endsWith(".webp")).sort()
   : [];
 const hashes = Object.fromEntries(files.map((file) => [
-  basename(file, ".webp"),
+  file.replaceAll("\\", "/").slice(0, -".webp".length),
   createHash("sha256").update(readFileSync(resolve(publicLensesDir, file))).digest("hex").slice(0, 12),
 ]));
 

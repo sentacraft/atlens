@@ -4,7 +4,8 @@ export const lensImageStyle = {
   objectPosition: "center",
 } as const;
 
-export function getLensImageUrl(id: string): string {
-  const hash = Object.hasOwn(LENS_IMAGE_HASHES, id) ? LENS_IMAGE_HASHES[id] : undefined;
-  return `/lenses/${id}.webp${hash ? `?v=${hash}` : ""}`;
+export function getLensImageUrl(id: string, alternateId?: string): string {
+  const imageId = alternateId ? `${id}/${alternateId}` : id;
+  const hash = Object.hasOwn(LENS_IMAGE_HASHES, imageId) ? LENS_IMAGE_HASHES[imageId] : undefined;
+  return `/lenses/${imageId}.webp${hash ? `?v=${hash}` : ""}`;
 }
