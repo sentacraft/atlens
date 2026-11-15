@@ -1,6 +1,45 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type CDPSession, type Locator, type Page } from "@playwright/test";
 
 const LENS_PATH = "/en/lenses/x/viltrox-af-28mm-f45-x";
+const PRIMARY = /viltrox-af-28mm-f45-x\.webp/;
+const ALTERNATE = /viltrox-af-28mm-f45-x\/001\.webp/;
+
+async function expectSlide(viewport: Locator, source: RegExp) {
+  await expect(viewport.getByRole("img", { name: /.+/ })).toHaveAttribute("src", source);
+  const slide = viewport.locator('[data-slot="gallery-slide"][aria-hidden="false"]');
+  await expect.poll(() => slide.evaluate(element => {
+    const outer = element.closest('[data-slot="gallery-viewport"]')!;
+    return Math.abs(element.getBoundingClientRect().left - outer.getBoundingClientRect().left);
+  })).toBeLessThan(2);
+}
+
+async function mouseDrag(page: Page, viewport: Locator, reverse = false) {
+  await viewport.scrollIntoViewIfNeeded();
+  const box = (await viewport.boundingBox())!;
+  const start = box.x + box.width * (reverse ? 0.2 : 0.8);
+  const end = box.x + box.width * (reverse ? 0.8 : 0.2);
+  const y = box.y + box.height / 2;
+  await page.mouse.move(start, y);
+  await page.mouse.down();
+  await page.mouse.move(end, y, { steps: 10 });
+  await page.mouse.up();
+}
+
+async function touchSwipe(session: CDPSession, viewport: Locator, reverse = false) {
+  await viewport.scrollIntoViewIfNeeded();
+  const box = (await viewport.boundingBox())!;
+  const start = box.x + box.width * (reverse ? 0.2 : 0.8);
+  const end = box.x + box.width * (reverse ? 0.8 : 0.2);
+  const y = box.y + box.height / 2;
+  await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: start, y, id: 1 }] });
+  for (let step = 1; step <= 10; step++) {
+    await session.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [{ x: start + (end - start) * step / 10, y, id: 1 }],
+    });
+  }
+  await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+}
 
 for (const width of [375, 1280]) {
   test.describe(`lens gallery at ${width}px`, () => {
@@ -9,9 +48,8 @@ for (const width of [375, 1280]) {
     test("switches images before opening the viewer", async ({ page }) => {
       await page.goto(LENS_PATH);
       const trigger = page.getByRole("button", { name: "Enlarge product image" });
-      const image = trigger.getByRole("img");
-      await expect(image).toHaveAttribute("src", /viltrox-af-28mm-f45-x\.webp/);
-      await expect(trigger).toHaveCSS("padding", "32px");
+      await expectSlide(trigger, PRIMARY);
+      await expect(trigger.locator('[data-slot="gallery-slide"][aria-hidden="false"]')).toHaveCSS("padding", "32px");
       const expand = trigger.locator('span[aria-hidden="true"]');
       await expect(expand).toHaveCSS("cursor", "pointer");
       const expandBox = (await expand.boundingBox())!;
@@ -34,15 +72,56 @@ for (const width of [375, 1280]) {
         await next.click();
         await expect(next).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
       } else {
-        const start = { identifier: 1, clientX: 240, clientY: 200 };
-        const end = { identifier: 1, clientX: 120, clientY: 200 };
-        await trigger.dispatchEvent("touchstart", { touches: [start], targetTouches: [start], changedTouches: [start] });
-        await trigger.dispatchEvent("touchmove", { touches: [end], targetTouches: [end], changedTouches: [end] });
-        await trigger.dispatchEvent("touchend", { touches: [], targetTouches: [], changedTouches: [end] });
+        await mouseDrag(page, trigger);
       }
 
-      await expect(image).toHaveAttribute("src", /viltrox-af-28mm-f45-x\/001\.webp/);
+      await expectSlide(trigger, ALTERNATE);
       await expect(page.getByRole("dialog")).toHaveCount(0);
+    });
+
+    test("mouse dragging works in both views and keeps the selected image on reopening", async ({ page }) => {
+      await page.goto(LENS_PATH);
+      const trigger = page.getByRole("button", { name: "Enlarge product image" });
+      await expectSlide(trigger, PRIMARY);
+      await mouseDrag(page, trigger);
+      await expectSlide(trigger, ALTERNATE);
+      await expect(page.getByRole("dialog")).toHaveCount(0);
+      await trigger.click();
+      const dialog = page.getByRole("dialog");
+      const viewer = dialog.locator('[data-slot="gallery-viewport"]');
+      await expectSlide(viewer, ALTERNATE);
+      await mouseDrag(page, viewer, true);
+      await expectSlide(viewer, PRIMARY);
+      await dialog.getByRole("button", { name: "Close image viewer" }).click();
+      await expect(dialog).toHaveCount(0);
+      await expectSlide(trigger, PRIMARY);
+      await trigger.focus();
+      await page.keyboard.press("Enter");
+      await expectSlide(viewer, PRIMARY);
+    });
+
+    test.describe("native touch input", () => {
+      test.use({ hasTouch: true });
+      test("swipes both views at phone and desktop widths", async ({ page, browserName }) => {
+        test.skip(browserName !== "chromium", "Native touch injection uses Chromium's input protocol");
+        await page.goto(LENS_PATH);
+        const session = await page.context().newCDPSession(page);
+        const trigger = page.getByRole("button", { name: "Enlarge product image" });
+        await expectSlide(trigger, PRIMARY);
+        await touchSwipe(session, trigger);
+        await expectSlide(trigger, ALTERNATE);
+        await expect(page.getByRole("dialog")).toHaveCount(0);
+        await trigger.tap();
+        const dialog = page.getByRole("dialog");
+        const viewer = dialog.locator('[data-slot="gallery-viewport"]');
+        await expectSlide(viewer, ALTERNATE);
+        await touchSwipe(session, viewer, true);
+        await expectSlide(viewer, PRIMARY);
+        await dialog.getByRole("button", { name: "Close image viewer" }).tap();
+        await expect(dialog).toHaveCount(0);
+        await expectSlide(trigger, PRIMARY);
+        await session.detach();
+      });
     });
 
     for (const id of [
@@ -59,9 +138,10 @@ for (const width of [375, 1280]) {
         await expect(image).toHaveCSS("object-fit", "contain");
         const layout = await image.evaluate(element => {
           const box = element.getBoundingClientRect();
-          const stage = element.parentElement!.parentElement!.parentElement!;
-          const outer = stage.getBoundingClientRect();
-          const style = getComputedStyle(stage);
+          const slide = element.closest('[data-slot="gallery-slide"]')!;
+          const viewport = element.closest('[data-slot="gallery-viewport"]')!;
+          const outer = slide.getBoundingClientRect();
+          const style = getComputedStyle(viewport);
           return {
             left: box.left - outer.left,
             right: outer.right - box.right,

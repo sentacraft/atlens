@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState, type TouchEvent } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import useEmblaCarousel, { type UseEmblaCarouselType } from "embla-carousel-react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Maximize, X } from "lucide-react";
 import { Dialog, DialogBackdrop, DialogClose, DialogPortal, DialogRawPopup, DialogTitle } from "@/components/ui/dialog";
@@ -17,6 +18,14 @@ type GalleryLabels = {
   next: string;
 };
 
+type CarouselApi = NonNullable<UseEmblaCarouselType[1]>;
+
+const CAROUSEL_OPTIONS = {
+  align: "start",
+  loop: false,
+  breakpoints: { "(prefers-reduced-motion: reduce)": { duration: 0 } },
+} as const;
+
 export default function LensImageGallery({
   lens, labels,
 }: {
@@ -28,38 +37,48 @@ export default function LensImageGallery({
   const [open, setOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
   const close = useRef<HTMLButtonElement>(null);
-  const touchOrigin = useRef<{ x: number; y: number } | null>(null);
-  const lastSwipe = useRef(0);
   const multiple = images.length > 1;
-  const currentSrc = getLensImageUrl(lens.id, images[index]);
+  const [mainRef, mainApi] = useEmblaCarousel({ ...CAROUSEL_OPTIONS, watchDrag: multiple });
+  const [viewerRef, viewerApi] = useEmblaCarousel({ ...CAROUSEL_OPTIONS, watchDrag: multiple });
 
-  function step(direction: number) {
-    setIndex(current => Math.min(images.length - 1, Math.max(0, current + direction)));
+  const setMainRef = useCallback((node: HTMLButtonElement | null) => {
+    trigger.current = node;
+    mainRef(node);
+  }, [mainRef]);
+
+  useEffect(() => {
+    function onSelect(api: CarouselApi) {
+      setIndex(api.selectedScrollSnap());
+    }
+    for (const api of [mainApi, viewerApi]) {
+      api?.on("select", onSelect);
+      api?.on("reInit", onSelect);
+    }
+    return () => {
+      for (const api of [mainApi, viewerApi]) {
+        api?.off("select", onSelect);
+        api?.off("reInit", onSelect);
+      }
+    };
+  }, [mainApi, viewerApi]);
+
+  useEffect(() => {
+    for (const api of [mainApi, viewerApi]) {
+      if (api && api.selectedScrollSnap() !== index) {
+        api.scrollTo(index, true);
+      }
+    }
+  }, [mainApi, viewerApi, index]);
+
+  function selectImage(nextIndex: number) {
+    const next = Math.min(images.length - 1, Math.max(0, nextIndex));
+    const api = open ? viewerApi : mainApi;
+    if (api) {
+      api.scrollTo(next);
+    } else {
+      setIndex(next);
+    }
   }
-
-  function startTouch(event: TouchEvent) {
-    lastSwipe.current = 0;
-    const touch = event.touches[0];
-    touchOrigin.current = event.touches.length === 1 ? { x: touch.clientX, y: touch.clientY } : null;
-  }
-
-  function endTouch(event: TouchEvent) {
-    const origin = touchOrigin.current;
-    const touch = event.changedTouches[0];
-    touchOrigin.current = null;
-    if (!origin || !touch) {return;}
-    const dx = touch.clientX - origin.x;
-    const dy = touch.clientY - origin.y;
-    if (Math.abs(dx) < 36 || Math.abs(dx) <= Math.abs(dy)) {return;}
-    lastSwipe.current = Date.now();
-    step(dx < 0 ? 1 : -1);
-  }
-
-  const swipe = multiple ? {
-    onTouchStart: startTouch,
-    onTouchEnd: endTouch,
-    onTouchCancel: () => { touchOrigin.current = null; },
-  } : {};
 
   function thumbnails(className: string) {
     return (
@@ -70,7 +89,7 @@ export default function LensImageGallery({
             type="button"
             aria-label={labels.images[i]}
             aria-pressed={index === i}
-            onClick={() => setIndex(i)}
+            onClick={() => selectImage(i)}
             className="relative size-12 shrink-0 cursor-pointer rounded-lg border border-zinc-200 bg-zinc-50 aria-pressed:border-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-1"
           >
             <Image src={getLensImageUrl(lens.id, id)} alt="" fill sizes="48px" className="object-contain p-1" />
@@ -83,10 +102,10 @@ export default function LensImageGallery({
   function navigation(className: string) {
     return (
       <div className={cn("pointer-events-none absolute inset-0 flex items-center justify-between", className)}>
-        <button type="button" aria-label={labels.previous} disabled={index === 0} onClick={() => step(-1)} className={cn(IMAGE_CONTROL_CLS, "pointer-events-auto")}>
+        <button type="button" aria-label={labels.previous} disabled={index === 0} onClick={() => selectImage(index - 1)} className={cn(IMAGE_CONTROL_CLS, "pointer-events-auto")}>
           <ChevronLeft className="size-4" />
         </button>
-        <button type="button" aria-label={labels.next} disabled={index === images.length - 1} onClick={() => step(1)} className={cn(IMAGE_CONTROL_CLS, "pointer-events-auto")}>
+        <button type="button" aria-label={labels.next} disabled={index === images.length - 1} onClick={() => selectImage(index + 1)} className={cn(IMAGE_CONTROL_CLS, "pointer-events-auto")}>
           <ChevronRight className="size-4" />
         </button>
       </div>
@@ -97,28 +116,32 @@ export default function LensImageGallery({
     <>
       <div className="relative">
         <button
-          ref={trigger}
+          ref={setMainRef}
+          data-slot="gallery-viewport"
           type="button"
           aria-label={labels.open}
           aria-haspopup="dialog"
-          {...swipe}
-          onClick={event => {
-            if (event.detail === 0 || Date.now() - lastSwipe.current > 350) {setOpen(true);}
-          }}
-          className="relative flex aspect-square w-full touch-pan-y touch-pinch-zoom cursor-zoom-in items-center justify-center rounded-2xl border border-zinc-100 bg-zinc-50/70 p-8 focus-visible:outline-2 focus-visible:outline-offset-2"
+          onClick={() => setOpen(true)}
+          className="relative block aspect-square w-full touch-pan-y touch-pinch-zoom overflow-hidden rounded-2xl border border-zinc-100 bg-zinc-50/70 p-0 cursor-zoom-in focus-visible:outline-2 focus-visible:outline-offset-2"
         >
-          <span className="relative aspect-square w-full">
-            <Image
-              src={currentSrc}
-              alt={lens.model}
-              fill
-              sizes="192px"
-              style={lensImageStyle}
-              className="pointer-events-none object-contain"
-              preload={index === 0}
-              draggable={false}
-            />
-          </span>
+          <div className="flex h-full">
+            {images.map((id, i) => (
+              <div key={id ?? "primary"} data-slot="gallery-slide" aria-hidden={index !== i} className="h-full min-w-0 shrink-0 basis-full p-8">
+                <div className="relative h-full w-full">
+                  <Image
+                    src={getLensImageUrl(lens.id, id)}
+                    alt={lens.model}
+                    fill
+                    sizes="192px"
+                    style={lensImageStyle}
+                    className="pointer-events-none object-contain"
+                    preload={i === 0}
+                    draggable={false}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
           <span className={cn(IMAGE_CONTROL_CLS, "absolute bottom-2.5 right-2.5")} aria-hidden="true">
             <Maximize className="size-4" />
           </span>
@@ -135,7 +158,7 @@ export default function LensImageGallery({
                 type="button"
                 aria-label={labels.images[i]}
                 aria-pressed={index === i}
-                onClick={() => setIndex(i)}
+                onClick={() => selectImage(i)}
                 className="grid size-11 shrink-0 cursor-pointer place-items-center rounded focus-visible:outline-2"
               >
                 <span className={cn("size-[7px] rounded-full", index === i ? ACTIVE_DOT_CLS : "bg-zinc-400")} />
@@ -153,7 +176,7 @@ export default function LensImageGallery({
             onKeyDown={event => {
               if (!multiple || (event.key !== "ArrowLeft" && event.key !== "ArrowRight")) {return;}
               event.preventDefault();
-              step(event.key === "ArrowLeft" ? -1 : 1);
+              selectImage(index + (event.key === "ArrowLeft" ? -1 : 1));
             }}
             className="fixed inset-0 flex h-dvh flex-col overflow-hidden bg-white px-4 pb-[max(1rem,var(--safe-inset-bottom))] pt-[max(1rem,var(--safe-inset-top))] sm:inset-auto sm:left-1/2 sm:top-1/2 sm:h-[min(668px,calc(100dvh-48px))] sm:w-[min(748px,calc(100vw-48px))] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl sm:p-5 sm:shadow-2xl"
           >
@@ -161,18 +184,24 @@ export default function LensImageGallery({
             <DialogClose ref={close} aria-label={labels.close} className={cn(ICON_CLOSE_BTN_CLS, "absolute right-3 top-[max(0.75rem,var(--safe-inset-top))] z-10 size-11 cursor-pointer border border-zinc-200 bg-white sm:top-3")}>
               <X className="size-5" />
             </DialogClose>
-            <div {...swipe} className="relative min-h-0 flex-1 touch-pan-y touch-pinch-zoom">
-              <div className="absolute inset-0 p-[clamp(2rem,8vmin,3.5rem)]">
-                <div className="relative h-full w-full">
-                  <Image
-                    src={currentSrc}
-                    alt={lens.model}
-                    fill
-                    sizes="(min-width: 640px) 596px, calc(100vw - 96px)"
-                    loading="eager"
-                    className="pointer-events-none object-contain"
-                    draggable={false}
-                  />
+            <div className="relative min-h-0 flex-1">
+              <div ref={viewerRef} data-slot="gallery-viewport" className="absolute inset-0 touch-pan-y touch-pinch-zoom overflow-hidden">
+                <div className="flex h-full">
+                  {images.map((id, i) => (
+                    <div key={id ?? "primary"} data-slot="gallery-slide" aria-hidden={index !== i} className="h-full min-w-0 shrink-0 basis-full p-[clamp(2rem,8vmin,3.5rem)]">
+                      <div className="relative h-full w-full">
+                        <Image
+                          src={getLensImageUrl(lens.id, id)}
+                          alt={lens.model}
+                          fill
+                          sizes="(min-width: 640px) 596px, calc(100vw - 96px)"
+                          loading={i === index ? "eager" : "lazy"}
+                          className="pointer-events-none object-contain"
+                          draggable={false}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
               {multiple && navigation("px-0 sm:px-1")}
