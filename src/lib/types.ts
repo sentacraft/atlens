@@ -460,6 +460,36 @@ export interface Lens {
   opticalTraits?: OpticalTrait[];
 
   /**
+   * Tilt travel in degrees as [minimum, maximum], including zero.
+   * Populate only from an explicit range for this mount version; do not infer
+   * travel from the tilt trait. Requires opticalTraits to include "tilt".
+   * @example [-8.5, 8.5]
+   */
+  tiltRangeDeg?: [number, number];
+
+  /**
+   * Shift travel in millimeters as [minimum, maximum], including zero.
+   * Populate only from an explicit range for this mount version; do not infer
+   * travel from the shift trait. Requires opticalTraits to include "shift".
+   * @example [-15, 15]
+   */
+  shiftRangeMm?: [number, number];
+
+  /**
+   * Firmware update method explicitly documented for this mount version.
+   * A USB-C port or bundled cable alone is not evidence of firmware updates.
+   * Omit when unknown; "usb-c" means updating through the lens's USB-C port.
+   */
+  firmwareUpdateMethod?: "usb-c";
+
+  /**
+   * Documented exterior colorways for this mount version, not current stock.
+   * Use "black-silver" for a two-tone finish, not separate black and silver
+   * versions. Omit when unknown; do not store an empty or duplicate list.
+   */
+  colorways?: ("black" | "silver" | "black-silver")[];
+
+  /**
    * Whether the lens supports autofocus.
    * @example true
    */

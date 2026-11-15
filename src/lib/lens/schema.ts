@@ -29,6 +29,10 @@ const minApertureSchema = createApertureSchema("minAperture");
 const maxTStopSchema = createApertureSchema("maxTStop");
 const minTStopSchema = createApertureSchema("minTStop");
 const opticalTraitSchema = z.enum(OPTICAL_TRAITS);
+const movementRangeSchema = z.tuple([z.number().finite(), z.number().finite()]).refine(
+  ([min, max]) => min < max && min <= 0 && max >= 0,
+  { message: "Movement range must be [minimum, maximum], with minimum < maximum and including zero" },
+);
 export const specNaSchema = z.literal(SPEC_NA);
 const lensPriceEntrySchema = z.strictObject({
   // A source may contribute only a purchase link, with no sampled price.
@@ -72,6 +76,13 @@ const lensBaseShape = {
   minTStop: minTStopSchema.optional(),
   isCine: z.boolean().optional(),
   opticalTraits: z.array(opticalTraitSchema).min(1).optional(),
+  tiltRangeDeg: movementRangeSchema.optional(),
+  shiftRangeMm: movementRangeSchema.optional(),
+  firmwareUpdateMethod: z.literal("usb-c").optional(),
+  colorways: z.array(z.enum(["black", "silver", "black-silver"])).min(1).refine(
+    (colors) => new Set(colors).size === colors.length,
+    { message: "colorways must not contain duplicates" },
+  ).optional(),
   af: z.boolean(),
   ois: z.boolean(),
   oisStops: positiveNumberSchema.optional(),
@@ -354,6 +365,15 @@ function applyLensBusinessRules(
 
 export const lensSchema = lensObjectSchema.superRefine((value, ctx) => {
   applyLensBusinessRules(value, ctx);
+  for (const [field, trait] of [["tiltRangeDeg", "tilt"], ["shiftRangeMm", "shift"]] as const) {
+    if (value[field] !== undefined && !value.opticalTraits?.includes(trait)) {
+      ctx.addIssue({
+        code: "custom",
+        message: `${field} requires opticalTraits to include ${trait}`,
+        path: [field],
+      });
+    }
+  }
 });
 
 // Pairs of lens IDs confirmed to be distinct despite scoring above the spec

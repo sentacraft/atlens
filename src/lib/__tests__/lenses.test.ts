@@ -150,6 +150,80 @@ it("accepts a catalog entry without official product links", () => {
   expect(lensCatalogSchema.safeParse([lens]).success).toBe(true);
 });
 
+describe("lensSchema movement, firmware and colorways", () => {
+  it("accepts existing records without the optional fields", () => {
+    const parsed = lensSchema.parse(prime35);
+    for (const key of ["tiltRangeDeg", "shiftRangeMm", "firmwareUpdateMethod", "colorways"]) {
+      expect(parsed).not.toHaveProperty(key);
+    }
+  });
+
+  it("preserves all new fields in a catalog entry", () => {
+    const fields = {
+      opticalTraits: ["tilt", "shift"],
+      tiltRangeDeg: [-8.5, 8.5],
+      shiftRangeMm: [-15, 15],
+      firmwareUpdateMethod: "usb-c",
+      colorways: ["black", "silver", "black-silver"],
+    };
+    expect(lensCatalogSchema.parse([{ ...prime35, ...fields }])[0]).toMatchObject(fields);
+  });
+
+  for (const [field, trait] of [["tiltRangeDeg", "tilt"], ["shiftRangeMm", "shift"]] as const) {
+    it.each([
+      [-8.5, 8.5], [-8, 12], [0, 15], [-15, 0],
+    ])(`accepts ${field} from %s to %s`, (min, max) => {
+      expect(lensSchema.safeParse({
+        ...prime35, opticalTraits: [trait], [field]: [min, max],
+      }).success).toBe(true);
+    });
+
+    it.each([
+      { range: [0, 0] }, { range: [8, -8] }, { range: [1, 8] },
+      { range: [-8, -1] }, { range: [-8] }, { range: [-8, 0, 8] },
+      { range: [-Infinity, 8] }, { range: [-8, Infinity] },
+      { range: [NaN, 8] }, { range: ["-8", 8] }, { range: 8 },
+    ])(`rejects invalid ${field}: $range`, ({ range }) => {
+      const result = lensSchema.safeParse({
+        ...prime35, opticalTraits: [trait], [field]: range,
+      });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues.some(issue => issue.path[0] === field)).toBe(true);
+      }
+    });
+
+    it.each([undefined, [trait === "tilt" ? "shift" : "tilt"]])(
+      `rejects ${field} without its matching trait: %s`, (opticalTraits) => {
+        const result = lensSchema.safeParse({ ...prime35, opticalTraits, [field]: [-8, 8] });
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.error.issues.some(issue => issue.path[0] === field)).toBe(true);
+        }
+      },
+    );
+
+    it(`does not require ${field} for an existing ${trait} trait`, () => {
+      expect(lensSchema.safeParse({ ...prime35, opticalTraits: [trait] }).success).toBe(true);
+    });
+  }
+
+  it.each(["black", "silver", "black-silver"])("accepts a single %s colorway", (color) => {
+    expect(lensSchema.safeParse({ ...prime35, colorways: [color] }).success).toBe(true);
+  });
+
+  it.each([
+    { colorways: [] }, { colorways: ["black", "black"] },
+    { colorways: ["gold"] }, { colorways: "black" },
+  ])("rejects invalid colorways: $colorways", ({ colorways }) => {
+    expect(lensSchema.safeParse({ ...prime35, colorways }).success).toBe(false);
+  });
+
+  it.each(["usb", "camera-body", "", ["usb-c"]])("rejects unknown firmware methods: %s", (method) => {
+    expect(lensSchema.safeParse({ ...prime35, firmwareUpdateMethod: method }).success).toBe(false);
+  });
+});
+
 describe("lensSchema aperture business rules", () => {
   it("accepts matching wide and tele aperture comparisons", () => {
     const result = lensSchema.safeParse(
