@@ -30,6 +30,18 @@ export function formatLensSlugList(joined: string): string {
     .join(" · ");
 }
 
+function isPositiveFinite(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value > 0;
+}
+
+function isFocalTarget(value: unknown): value is { value: number; reference: "equivalent" | "actual" } {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+  const target = value as Record<string, unknown>;
+  return isPositiveFinite(target.value) && (target.reference === "equivalent" || target.reference === "actual");
+}
+
 export function formatFilterSnapshot(json: string): string {
   let parsed: unknown;
   try {
@@ -66,6 +78,15 @@ export function formatFilterSnapshot(json: string): string {
   const focal = f.focalCategories;
   if (Array.isArray(focal) && focal.length > 0) {
     parts.push(`Focal: ${focal.join(",")}`);
+  }
+  if (isFocalTarget(f.focalLength)) {
+    parts.push(`Focal: ${f.focalLength.value}mm ${f.focalLength.reference}`);
+  }
+  if (isPositiveFinite(f.maxAperture)) {
+    parts.push(`Max aperture: f/${f.maxAperture} or faster`);
+  }
+  if (isPositiveFinite(f.weightLimit)) {
+    parts.push(`Weight limit: ${f.weightLimit}g`);
   }
   if (typeof f.opticalTrait === "string" && f.opticalTrait) {
     parts.push(`Trait: ${f.opticalTrait}`);
@@ -111,7 +132,9 @@ const FILTER_DIMENSIONS: {
   { label: "Brand", isActive: (f) => Array.isArray(f.brands) && f.brands.length > 0 },
   // Recorded until late October 2026, when the lens library dropped its photo/cine switch.
   { label: "Usage (photo/cine)", isActive: (f) => f.usage === "cine" },
-  { label: "Focal range", isActive: (f) => Array.isArray(f.focalCategories) && f.focalCategories.length > 0 },
+  { label: "Focal range", isActive: (f) => (Array.isArray(f.focalCategories) && f.focalCategories.length > 0) || isFocalTarget(f.focalLength) },
+  { label: "Max aperture", isActive: (f) => isPositiveFinite(f.maxAperture) },
+  { label: "Weight limit", isActive: (f) => isPositiveFinite(f.weightLimit) },
   { label: "Focus motor", isActive: (f) => typeof f.focusMotorClass === "string" && !!f.focusMotorClass },
   { label: "Features", isActive: (f) => Array.isArray(f.features) && f.features.length > 0 },
   { label: "Optical trait", isActive: (f) => typeof f.opticalTrait === "string" && !!f.opticalTrait },

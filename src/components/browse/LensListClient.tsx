@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef, useLayoutEffect } from "react";
+import { useState, useMemo, useRef, useLayoutEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -11,11 +11,9 @@ import {
   getAvailableFilterOptions,
   defaultFilters,
   MAX_COMPARE,
-  type FilterState,
 } from "@/lib/lens/lens";
 import type { Lens } from "@/lib/types";
-import { serializeFilters, parseFilters, FILTER_PARAM_KEYS } from "@/lib/url/filter-params";
-import { projectToUrl } from "@/lib/url/projection";
+import { parseFilters, writeFiltersToUrl as setFilters } from "@/lib/url/filter-params";
 import { useCompare } from "@/context/CompareProvider";
 import { useUiHookAttr } from "@/context/TestHookProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
@@ -48,7 +46,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   const mount = useEffectiveMount();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [filters, setFilters] = useState<FilterState>(() => parseFilters(searchParams));
+  const filters = useMemo(() => parseFilters(searchParams), [searchParams]);
   const browseQuestion = irisQuestions.browse(filters);
   const [searchOpen, setSearchOpen] = useState(false);
   const { compareIds, toggle } = useCompare();
@@ -70,7 +68,9 @@ export default function LensListClient({ lenses }: LensListClientProps) {
     filters.focusFilter !== null,
     filters.opticalTrait !== null,
     filters.focusMotorClass !== null,
-    filters.focalCategories.length > 0,
+    filters.focalCategories.length > 0 || filters.focalLength?.value != null,
+    filters.maxAperture !== null,
+    filters.weightLimit !== null,
     filters.features.length > 0,
   ].filter(Boolean).length;
 
@@ -82,16 +82,6 @@ export default function LensListClient({ lenses }: LensListClientProps) {
   function clearAllFilters() {
     setFilters(defaultFilters);
   }
-
-  useEffect(() => {
-    projectToUrl((url) => {
-      // A string, not URLSearchParams, so commas stay unencoded (as in CompareUrlSync).
-      FILTER_PARAM_KEYS.forEach((k) => url.searchParams.delete(k));
-      const rest = url.searchParams.toString();
-      const mine = serializeFilters(filters).toString().replace(/%2C/g, ",");
-      url.search = [rest, mine].filter(Boolean).join("&");
-    });
-  }, [filters]);
 
   useLayoutEffect(() => {
     const grid = gridRef.current;
@@ -116,6 +106,7 @@ export default function LensListClient({ lenses }: LensListClientProps) {
       >
         <div className="pt-4">
           <LensFilters
+            mount={mount}
             filters={filters}
             available={available}
             onFiltersChange={setFilters}
@@ -176,15 +167,8 @@ export default function LensListClient({ lenses }: LensListClientProps) {
             <LensSortControl
               sort={filters.sort}
               sortDir={filters.sortDir}
-              onSortChange={(sort) =>
-                setFilters((current) => ({ ...current, sort }))
-              }
-              onToggleDir={() =>
-                setFilters((current) => ({
-                  ...current,
-                  sortDir: current.sortDir === "asc" ? "desc" : "asc",
-                }))
-              }
+              onSortChange={(sort) => setFilters({ ...filters, sort })}
+              onToggleDir={() => setFilters({ ...filters, sortDir: filters.sortDir === "asc" ? "desc" : "asc" })}
             />
           </div>
         </div>

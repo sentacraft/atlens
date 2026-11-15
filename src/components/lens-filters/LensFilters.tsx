@@ -1,22 +1,27 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown, type LucideIcon, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
 import type { AvailableFilterOptions, FilterState, FocusFilter, FocusMotorClass, LensType, FilterFeatureKey, FocalCategory } from "@/lib/lens/lens";
-import { OPTICAL_TRAITS, type OpticalTrait } from "@/lib/types";
+import { APERTURE_FILTER_STOPS, convertFocalLength, WEIGHT_LIMIT_PRESETS, type FocalReference } from "@/lib/lens/lens";
+import { OPTICAL_TRAITS, type Mount, type OpticalTrait } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { brandLabel } from "@/lib/lens/format";
 import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 import BrandFilterMenu from "@/components/lens-filters/BrandFilterMenu";
 import FilterRow from "@/components/lens-filters/FilterRow";
+import FilterNumberInput from "@/components/lens-filters/FilterNumberInput";
+import FilterSelectMenu from "@/components/lens-filters/FilterSelectMenu";
 import ToggleChipGroup, { type ToggleChipOption } from "@/components/ui/toggle-chip-group";
+import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import SegmentedControl, { type SegmentedLabel, type SegmentedOption } from "@/components/ui/segmented-control";
 import { rowLabelClass } from "@/components/lens-filters/styles";
 import { useFiltersTelemetry } from "@/components/lens-filters/LensFilters.telemetry";
 
 interface Props {
+  mount: Mount;
   filters: FilterState;
   available: AvailableFilterOptions;
   onFiltersChange: (filters: FilterState) => void;
@@ -28,6 +33,7 @@ interface Props {
 }
 
 export default function LensFilters({
+  mount,
   filters,
   available,
   onFiltersChange,
@@ -40,6 +46,8 @@ export default function LensFilters({
   const tBadge = useTranslations("SpecialtyBadge");
   const tBrand = useTranslations("Brands");
   const [secondaryOpen, setSecondaryOpen] = useState(false);
+  const [customWeightFor, setCustomWeightFor] = useState<number | null | undefined>(undefined);
+  const secondaryId = useId();
 
   useFiltersTelemetry(filters);
 
@@ -157,28 +165,127 @@ export default function LensFilters({
     </FilterRow>
   );
 
-  const focalOptions: ToggleChipOption<FocalCategory>[] = available.focalCategories.map((key) => ({
-    key,
-    label: t(`category-${key}`),
-    hint: t(`category-${key}Hint`),
-  }));
-
-  const focalRow =
-    available.focalCategories.length > 0 ? (
-      <FilterRow label={t("focalRange")}>
-        <ToggleChipGroup
-          allOption={{ label: allOptionLabel, onSelect: () => updateFilters("focalCategories", []) }}
-          options={focalOptions}
-          selectedKeys={filters.focalCategories}
-          onToggle={(key) =>
-            updateFilters(
-              "focalCategories",
-              toggleMultiFilter(filters.focalCategories, key, available.focalCategories),
-            )
-          }
+  const focalOptions: ToggleChipOption<FocalCategory>[] = available.focalCategories.map((key) => ({ key, label: t(`category-${key}`) }));
+  const customFocal = filters.focalLength;
+  const referenceOptions: { value: FocalReference; label: string }[] = [
+    { value: "equivalent", label: t("focalEquivalent") },
+    { value: "actual", label: t("focalActual") },
+  ];
+  const focalRow = (
+    <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2 gap-y-1.5 sm:grid-cols-[7rem_auto_minmax(0,1fr)] sm:items-start sm:gap-x-2.5">
+      <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-zinc-400 sm:hidden">{t("focalLength")}</span>
+      <span className={cn(rowLabelClass, "hidden sm:flex")}>{t("focalLength")}</span>
+      <div className="flex min-w-0 items-center gap-1.5">
+        <FilterSelectMenu
+          label={t("focalMode")}
+          value={customFocal ? "coverage" : "category"}
+          options={[
+            { value: "category", label: t("focalByCategory") },
+            { value: "coverage", label: t("focalCover") },
+          ]}
+          appearance="text"
+          active={false}
+          onChange={(mode) => onFiltersChange({
+            ...filters,
+            focalCategories: [],
+            focalLength: mode === "coverage" ? { value: null, reference: "equivalent" } : null,
+          })}
         />
-      </FilterRow>
-    ) : null;
+        {customFocal && <FieldNotePopover note={t("focalTolerance")} />}
+      </div>
+      <div className="col-span-2 min-w-0 sm:col-span-1 sm:col-start-3 sm:row-start-1">
+        {customFocal ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs text-zinc-500">{t("focalCovering")}</span>
+            <FilterNumberInput
+              key={`${customFocal.value}:${customFocal.reference}`}
+              label={t("focalInput")}
+              value={customFocal.value}
+              unit="mm"
+              placeholder={t("focalPlaceholder")}
+              invalidLabel={t("positiveNumber")}
+              onCommit={(value) => updateFilters("focalLength", { ...customFocal, value })}
+            />
+            <FilterSelectMenu
+              label={t("focalReference")}
+              value={customFocal.reference}
+              options={referenceOptions}
+              appearance="pill"
+              active={false}
+              onChange={(reference) => {
+                updateFilters("focalLength", {
+                  reference,
+                  value: customFocal.value === null ? null : convertFocalLength(customFocal.value, customFocal.reference, reference, mount),
+                });
+              }}
+            />
+          </div>
+        ) : (
+          <ToggleChipGroup
+            allOption={{ label: allOptionLabel, onSelect: () => onFiltersChange({ ...filters, focalCategories: [], focalLength: null }) }}
+            options={focalOptions}
+            selectedKeys={filters.focalCategories}
+            onToggle={(key) => onFiltersChange({ ...filters, focalLength: null, focalCategories: toggleMultiFilter(filters.focalCategories, key, available.focalCategories) })}
+          />
+        )}
+      </div>
+    </div>
+  );
+
+  const apertureOptions = [
+    { value: "all", label: t("anyAperture") },
+    ...APERTURE_FILTER_STOPS.map((value) => ({ value: String(value), label: t("apertureOrFaster", { aperture: value }) })),
+  ];
+  const apertureRow = (
+    <FilterRow label={<span className="inline-flex items-center gap-1.5">{t("sortAperture")}<FieldNotePopover note={t("apertureWideEnd")} /></span>} className="min-w-0">
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
+        <FilterSelectMenu
+          label={t("sortAperture")}
+          value={filters.maxAperture === null ? "all" : String(filters.maxAperture)}
+          options={apertureOptions}
+          appearance="pill"
+          active={filters.maxAperture !== null}
+          onChange={(value) => updateFilters("maxAperture", value === "all" ? null : Number(value))}
+        />
+      </div>
+    </FilterRow>
+  );
+  const weightLimit = filters.weightLimit;
+  const isPresetWeight = WEIGHT_LIMIT_PRESETS.some((value) => value === weightLimit);
+  const customWeight = (weightLimit !== null && !isPresetWeight) || (customWeightFor !== undefined && customWeightFor === weightLimit);
+  const weightOptions = [
+    { value: "all", label: t("noWeightLimit") },
+    ...WEIGHT_LIMIT_PRESETS.map((grams) => ({ value: String(grams), label: t("weightAtMost", { grams }) })),
+    { value: "custom", label: t("custom") },
+  ];
+  const weightRow = (
+    <FilterRow label={t("weightLimit")} className="min-w-0">
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
+        <FilterSelectMenu
+          label={t("weightLimit")}
+          value={customWeight ? "custom" : weightLimit === null ? "all" : String(weightLimit)}
+          options={weightOptions}
+          appearance="pill"
+          active={weightLimit !== null}
+          onChange={(value) => {
+            setCustomWeightFor(value === "custom" ? null : undefined);
+            updateFilters("weightLimit", value === "all" || value === "custom" ? null : Number(value));
+          }}
+        />
+        {customWeight && (
+          <FilterNumberInput
+            key={weightLimit}
+            label={t("weightInput")}
+            value={weightLimit}
+            unit="g"
+            placeholder={t("weightPlaceholder")}
+            invalidLabel={t("positiveNumber")}
+            onCommit={(value) => { setCustomWeightFor(value); updateFilters("weightLimit", value); }}
+          />
+        )}
+      </div>
+    </FilterRow>
+  );
 
   const featureMeta: Record<FilterFeatureKey, {label: string; icon: LucideIcon}> = {
     ois: { label: t("featureOis"), icon: FEATURE_ICONS.ois },
@@ -247,7 +354,8 @@ export default function LensFilters({
     ) : null;
 
   const moreFiltersCount = [
-    filters.focalCategories.length > 0,
+    filters.maxAperture !== null,
+    filters.weightLimit !== null,
     filters.features.length > 0,
     filters.opticalTrait !== null,
     filters.focusMotorClass !== null,
@@ -261,6 +369,7 @@ export default function LensFilters({
       )}
       onClick={() => setSecondaryOpen((v) => !v)}
       aria-expanded={secondaryOpen}
+      aria-controls={secondaryId}
     >
       <SlidersHorizontal className="size-3.5" />
       <span className={TEXT_LINK_CLS}>
@@ -288,7 +397,7 @@ export default function LensFilters({
           <span className="text-[12px] text-zinc-300">·</span>
           <button
             type="button"
-            onClick={onReset}
+            onClick={() => { setCustomWeightFor(undefined); onReset(); }}
             aria-label={t("reset")}
             className="inline-flex cursor-pointer items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-rose-800 hover:text-rose-900"
           >
@@ -313,13 +422,16 @@ export default function LensFilters({
           {typeRow}
           {focusRow}
         </div>
+        {focalRow}
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 sm:my-1.5">
           {filtersMetaRow}
-          <div className="ml-auto">{assistSlot}</div>
+          <div className="w-full sm:ml-auto sm:w-auto">{assistSlot}</div>
         </div>
       </div>
 
       <div
+        id={secondaryId}
+        inert={!secondaryOpen}
         className={cn(
           "grid overflow-hidden transition-[grid-template-rows] duration-500 ease-in-out",
           secondaryOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
@@ -327,7 +439,10 @@ export default function LensFilters({
       >
         <div className="min-h-0 overflow-hidden">
           <div className="flex flex-col gap-3.5 pt-3 pb-1 sm:gap-3">
-            {focalRow}
+            <div className="grid grid-cols-2 gap-2 max-sm:[&>div>span]:min-h-3.5 sm:flex sm:flex-col sm:gap-3">
+              {apertureRow}
+              {weightRow}
+            </div>
             {featuresRow}
             {opticalRow}
             {motorRow}

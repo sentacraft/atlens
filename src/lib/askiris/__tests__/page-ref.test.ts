@@ -1,5 +1,26 @@
 import { describe, expect, it } from "vitest";
-import { parsePagePath } from "../page-ref";
+import { createTranslator } from "next-intl";
+import en from "@/messages/en.json";
+import { defaultFilters } from "@/lib/lens/lens";
+import { describeFilters, parsePagePath } from "../page-ref";
+
+describe("describeFilters", () => {
+  const labels = {
+    list: createTranslator({ locale: "en", messages: en, namespace: "LensList" }),
+    badge: createTranslator({ locale: "en", messages: en, namespace: "SpecialtyBadge" }),
+    brand: (slug: string) => slug,
+  };
+
+  it("describes the custom reference and both numeric limits", () => {
+    expect(describeFilters({ ...defaultFilters, focalLength: { value: 40, reference: "equivalent" }, maxAperture: 2.8, weightLimit: 500 }, labels)).toEqual([
+      "Around 40mm equivalent", "f/2.8 or faster", "Up to 500g",
+    ]);
+  });
+
+  it("does not describe an empty custom target as a constraint", () => {
+    expect(describeFilters({ ...defaultFilters, focalLength: { value: null, reference: "actual" } }, labels)).toEqual([]);
+  });
+});
 
 describe("parsePagePath", () => {
   it("reads browse filters, compared lenses and a lens page, with or without a locale", () => {

@@ -60,12 +60,14 @@ const FIELD_SCHEMAS: Record<FieldKind, z.ZodType> = {
   boolean: z.boolean().optional().catch(undefined),
 };
 
+const FILTERS_JSON_SCHEMA = z.string().transform((value) => value.slice(0, 2048)).optional().catch(undefined);
+
 const PROPS_SCHEMAS = Object.fromEntries(
   Object.entries(EVENT_FIELDS).map(([event, fields]) => [
     event,
     z.object(
       Object.fromEntries(
-        Object.entries({ ...COMMON_FIELDS, ...(fields as Record<string, FieldKind>) }).map(([key, kind]) => [key, FIELD_SCHEMAS[kind]]),
+        Object.entries({ ...COMMON_FIELDS, ...(fields as Record<string, FieldKind>) }).map(([key, kind]) => [key, key === "filters_json" ? FILTERS_JSON_SCHEMA : FIELD_SCHEMAS[kind]]),
       ),
     ),
   ]),
@@ -180,7 +182,7 @@ export const EVENT_DOCS: EventDocs = {
   },
   filter_apply: {
     description: "The browse filters changed and stayed put for a second.",
-    fields: { filters_json: { description: "The filters that differ from the defaults at that moment, sort order included. Before late October 2026 it held every filter and was cut off at 256 characters." } },
+    fields: { filters_json: { description: "The filters that differ from the defaults at that moment, sort order included. Limited to 2048 characters; older events may be cut off at 256 characters or include default filters." } },
   },
   filter_reset: { description: "The browse filters went back to their defaults." },
   compare_add: { description: "A lens was added to the comparison tray." },

@@ -79,6 +79,14 @@ export const PILL_ALL_ACTIVE_CLS =
 export const PILL_ACTIVE_CLS =
   "inline-flex h-9 items-center rounded-full border border-transparent bg-zinc-900 px-3.5 text-[12px] font-medium text-white shadow-sm transition-all duration-200 hover:border-zinc-800 hover:bg-zinc-800";
 
+export const PILL_MENU_IDLE_CLS = `${PILL_CLS} border-zinc-200 hover:border-zinc-300`;
+export const PILL_MENU_TRIGGER_CLS =
+  "min-w-28 max-w-full justify-between gap-3 outline-none focus-visible:ring-2 focus-visible:ring-zinc-400";
+export const PILL_MENU_OPTION_CLS =
+  "min-h-11 justify-between gap-5 text-[12px] leading-[18px] sm:min-h-10";
+export const PILL_INPUT_CLS =
+  "inline-flex h-9 items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 focus-within:ring-2 focus-within:ring-zinc-400";
+
 export const CHIP_BASE_CLS =
   "flex-shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium cursor-pointer transition-all duration-150 select-none";
 export const CHIP_IDLE_CLS =

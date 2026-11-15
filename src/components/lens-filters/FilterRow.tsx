@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { miniLabelClass, rowClass, rowLabelClass } from "./styles";
 
 interface FilterRowProps {
-  label: string;
+  label: ReactNode;
   children: ReactNode;
   labelOn?: "always" | "desktop";
   className?: string;
