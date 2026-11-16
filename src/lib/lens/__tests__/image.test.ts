@@ -6,16 +6,22 @@ import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/data/lens-images.generated", () => ({
-  LENS_IMAGE_HASHES: { "example-x": "0123456789ab", "example-x/001": "abcdef012345" },
+  LENS_IMAGE_HASHES: { "example-x": "0123456789ab" },
+  LENS_SUPPLEMENTAL_IMAGES: { "example-x/001": `https://images.example.com/supplemental/example-x/001.${"a".repeat(64)}.webp` },
 }));
 
-import { getLensImageUrl } from "../image";
+import { getLensGalleryImageIds, getLensImageUrl } from "../image";
 
 const fixtures: string[] = [];
 const script = resolve("scripts/build-lens-image-manifest.mts");
+const sha = "a".repeat(64);
 
-function manifest(root: string) {
-  execFileSync(process.execPath, ["--experimental-strip-types", script], { cwd: root });
+function manifest(root: string, branch = "main") {
+  execFileSync(process.execPath, ["--experimental-strip-types", script], {
+    cwd: root,
+    env: { ...process.env, WORKERS_CI_BRANCH: branch },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
   return readFileSync(resolve(root, "src/data/lens-images.generated.ts"), "utf8");
 }
 
@@ -23,7 +29,13 @@ function fixture() {
   const root = mkdtempSync(resolve(tmpdir(), "atlens-image-manifest-"));
   fixtures.push(root);
   mkdirSync(resolve(root, "src/data"), { recursive: true });
+  writeFileSync(resolve(root, "wrangler.toml"), '[vars]\nSUPPLEMENTAL_IMAGES_URL = "https://images.example.com"\n[previews.vars]\nSUPPLEMENTAL_IMAGES_URL = "https://images-preview.example.com"\n');
+  writeFileSync(resolve(root, "src/data/lens-supplemental-images.json"), JSON.stringify({ version: 1, images: {} }));
   return root;
+}
+
+function supplemental(root: string, entries: Record<string, unknown> = { "one-x/001": { key: `supplemental/one-x/001.${sha}.webp`, sha256: sha } }) {
+  writeFileSync(resolve(root, "src/data/lens-supplemental-images.json"), JSON.stringify({ version: 1, images: entries }));
 }
 
 afterEach(() => {
@@ -33,22 +45,36 @@ afterEach(() => {
 });
 
 describe("getLensImageUrl", () => {
-  it("versions the image URL with its content hash", () => {
+  it("keeps primary images local and content-versioned", () => {
     expect(getLensImageUrl("example-x")).toBe("/lenses/example-x.webp?v=0123456789ab");
   });
 
-  it("versions supplemental images with their own content hash", () => {
-    expect(getLensImageUrl("example-x", "001")).toBe("/lenses/example-x/001.webp?v=abcdef012345");
-    expect(getLensImageUrl("example-x", "002")).toBe("/lenses/example-x/002.webp");
+  it("resolves supplemental images exclusively from the remote resource map", () => {
+    expect(getLensImageUrl("example-x", "001")).toBe(`https://images.example.com/supplemental/example-x/001.${sha}.webp`);
   });
 
-  it("does not append an undefined version for missing images", () => {
+  it("rejects missing supplemental assets instead of falling back to public Git files", () => {
+    expect(() => getLensImageUrl("example-x", "002")).toThrow(/supplemental/i);
+  });
+
+  it("does not append an undefined version for missing primary images", () => {
     expect(getLensImageUrl("missing-x")).toBe("/lenses/missing-x.webp");
   });
 });
 
+describe("gallery image selection", () => {
+  it("uses only classified product images in the product gallery", () => {
+    expect(getLensGalleryImageIds({ images: [{ id: "001", role: "mtf" }, { id: "002", role: "product" }, { id: "003", role: "optical-construction" }] })).toEqual(["002"]);
+  });
+
+  it("preserves the actual legacy image consumers until their records are classified", () => {
+    expect(getLensGalleryImageIds({ alternateImages: ["003", "1000"] })).toEqual(["003", "1000"]);
+    expect(getLensGalleryImageIds({})).toEqual([]);
+  });
+});
+
 describe("image manifest generation", () => {
-  it("changes only the replaced image's hash and keeps unchanged builds stable", () => {
+  it("changes only the replaced primary image's hash and keeps unchanged builds stable", () => {
     const root = fixture();
     const images = resolve(root, "public/lenses");
     mkdirSync(images, { recursive: true });
@@ -66,25 +92,37 @@ describe("image manifest generation", () => {
     expect(after).toContain(`"two-x": "${hash("unchanged image")}"`);
   });
 
-  it("hashes supplemental images independently of the primary image", () => {
+  it("builds immutable remote URLs without copying supplemental pixels", () => {
     const root = fixture();
-    const images = resolve(root, "public/lenses");
-    mkdirSync(resolve(images, "one-x"), { recursive: true });
-    writeFileSync(resolve(images, "one-x.webp"), "primary image");
-    writeFileSync(resolve(images, "one-x/001.webp"), "supplemental image");
-    const hash = (content: string) => createHash("sha256").update(content).digest("hex").slice(0, 12);
-    const before = manifest(root);
-    expect(before).toContain(`"one-x": "${hash("primary image")}"`);
-    expect(before).toContain(`"one-x/001": "${hash("supplemental image")}"`);
-    expect(manifest(root)).toBe(before);
-    writeFileSync(resolve(images, "one-x/001.webp"), "replacement image");
-    const after = manifest(root);
-    expect(after).toContain(`"one-x/001": "${hash("replacement image")}"`);
-    expect(after).not.toContain(hash("supplemental image"));
-    expect(after).toContain(`"one-x": "${hash("primary image")}"`);
+    supplemental(root);
+    expect(manifest(root)).toContain(`https://images.example.com/supplemental/one-x/001.${sha}.webp`);
+    expect(manifest(root, "publish/test")).toContain(`https://images-preview.example.com/supplemental/one-x/001.${sha}.webp`);
   });
 
-  it("writes an empty hash map when no image directory exists", () => {
+  it("rejects supplemental directories left in public Git output", () => {
+    const root = fixture();
+    mkdirSync(resolve(root, "public/lenses/one-x"), { recursive: true });
+    writeFileSync(resolve(root, "public/lenses/one-x/001.webp"), "supplemental image");
+    expect(() => manifest(root)).toThrow();
+  });
+
+  it.each([
+    { key: `supplemental/one-x/001.${sha}.webp`, sha256: sha, sourceUrl: "https://private.example.com" },
+    { key: "../private.webp", sha256: sha },
+    { key: `supplemental/one-x/001.${"b".repeat(64)}.webp`, sha256: sha },
+  ])("rejects private fields and inconsistent resource identities: %j", entry => {
+    const root = fixture();
+    supplemental(root, { "one-x/001": entry });
+    expect(() => manifest(root)).toThrow();
+  });
+
+  it("fails a build if the pinned catalog references a missing supplemental resource", () => {
+    const root = fixture();
+    writeFileSync(resolve(root, "src/data/lenses.json"), JSON.stringify([{ id: "one-x", images: [{ id: "001", role: "mtf" }] }]));
+    expect(() => manifest(root)).toThrow();
+  });
+
+  it("writes empty maps when the catalog has no images", () => {
     expect(manifest(fixture())).toContain("export const LENS_IMAGE_HASHES: Readonly<Record<string, string>> = {};");
   });
 });

@@ -276,6 +276,7 @@ Rules the agents cannot talk their way around live in code, not in prompts:
 - **One write path.** The `write` command limits each stage to its own fields, accepts only the fields an agent is allowed to derive, rejects empty placeholders for unknown values, checks that collected sources come from the brand's configured sites, re-validates the catalog schema before anything touches disk, and stamps which harness and model produced the data.
 - **Readiness gates.** A stage starts only when its inputs exist (Collect needs an index entry and a valid official page; Derive needs a complete collect with a real spec source). Lenses on hold are skipped by every queue and by publish.
 - **Tests in both directions.** The hooks have 24 regression cases: 11 tool calls they must block and 13 they must still allow.
+- **Separate media delivery.** Primary product images ship in this repository. Supplemental images, including alternate product views and technical figures, are hosted in dedicated R2 buckets with separate production and preview domains. A public resource manifest maps image IDs to immutable, content-hashed object keys; publication verifies the uploaded bytes before updating references. Original sources and review records stay private. Publicly displayed images remain downloadable regardless of where they are stored.
 
 ### Self-correction
 

@@ -6,7 +6,7 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, Maximize, X } from "lucide-react";
 import { Dialog, DialogBackdrop, DialogClose, DialogPortal, DialogRawPopup, DialogTitle } from "@/components/ui/dialog";
 import { ACTIVE_DOT_CLS, ICON_CLOSE_BTN_CLS, IMAGE_CONTROL_CLS } from "@/config/ui-tokens";
-import { getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
+import { getLensGalleryImageIds, getLensImageUrl, lensImageStyle } from "@/lib/lens/image";
 import type { Lens } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -29,10 +29,10 @@ const CAROUSEL_OPTIONS = {
 export default function LensImageGallery({
   lens, labels,
 }: {
-  lens: Pick<Lens, "id" | "model" | "alternateImages">;
+  lens: Pick<Lens, "id" | "model" | "images" | "alternateImages">;
   labels: GalleryLabels;
 }) {
-  const images = [undefined, ...(lens.alternateImages ?? [])];
+  const images = [undefined, ...getLensGalleryImageIds(lens)];
   const [index, setIndex] = useState(0);
   const [open, setOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);

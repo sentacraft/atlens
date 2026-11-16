@@ -9,7 +9,7 @@ import { getLensUrl } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
 import { mountHasCharts, mountHasCollections, urlSegmentToMount } from "@/lib/mount";
 import { isOnCharts } from "@/lib/charts/catalog";
-import { getLensImageUrl } from "@/lib/lens/image";
+import { getLensGalleryImageIds, getLensImageUrl } from "@/lib/lens/image";
 import { buildSpecGroups, buildSpecGroupLabels, resolveSpecGroups, rowPlainText } from "@/lib/lens/spec-groups";
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens/spec-groups";
 import { Link } from "@/i18n/navigation";
@@ -251,7 +251,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
             key={lens.id}
             lens={lens}
             labels={{
-              images: [t("galleryPrimary"), ...(lens.alternateImages ?? []).map((_, i) => t("galleryImage", { number: String(i + 2) }))],
+              images: [t("galleryPrimary"), ...getLensGalleryImageIds(lens).map((_, i) => t("galleryImage", { number: String(i + 2) }))],
               open: t("galleryOpen"),
               close: t("galleryClose"),
               previous: t("galleryPrevious"),
