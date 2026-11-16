@@ -320,16 +320,8 @@ export interface LensImageAsset {
   mtfMethod?: "geometrical" | "diffraction";
   /** Mount explicitly depicted or labelled, e.g. X, G, E, RF, M43; not an assertion about Lens.mount. */
   depictedMount?: string;
-  /** Concise English, user-facing conditions, applicability limits, or source inconsistencies. */
+  /** English, user-facing conditions or applicability limits; never embed private source URLs, credits or license records. */
   conditionsNote?: string;
-  /** Verified HTTPS source image address, including an uncropped original; never a local or guessed download path. */
-  sourceUrl?: string;
-  /** Verified HTTPS page establishing conditions that may be outside the image. */
-  conditionsSourceUrl?: string;
-  /** Explicit creator attribution; never infer from a directory or adjacent image. */
-  credit?: string;
-  /** Explicit usage terms; omission or presence alone does not establish redistribution permission. */
-  licenseUrl?: string;
 }
 
 /** Translated user-facing fields for a single locale. */
@@ -874,7 +866,8 @@ export interface Lens {
   /**
    * Ordered, classified supplemental assets. The primary product image is separate.
    * Populate only for content explicitly selected for import; omit unknown conditions.
-   * Do not copy private dispositions, reasons, file paths, hashes, crop links or processing logs.
+   * Do not copy private provenance URLs, credits, license records, dispositions, reasons,
+   * file paths, hashes, crop links or processing logs, including into conditionsNote.
    * Notes are English; translations.zh.imageNotes supplies Chinese notes by image ID.
    * Never dual-write these assets to alternateImages.
    * @example [{ id: "001", role: "mtf", focalLengthMm: 35, spatialFrequency: { values: [10, 30], unit: "lp/mm" } }]

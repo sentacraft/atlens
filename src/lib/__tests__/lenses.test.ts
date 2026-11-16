@@ -234,10 +234,6 @@ describe("lensSchema classified image assets", () => {
     mtfMethod: "geometrical",
     depictedMount: "E",
     conditionsNote: "Source chart does not identify the mount.",
-    sourceUrl: "https://example.com/mtf.png",
-    conditionsSourceUrl: "https://example.com/specifications/",
-    credit: "Example Photographer",
-    licenseUrl: "https://example.com/image-license/",
   };
 
   it("preserves typed assets and all source-backed conditions without inferring the lens mount", () => {
@@ -277,6 +273,7 @@ describe("lensSchema classified image assets", () => {
     { original: { path: "workspace/private.png" } }, { sha256: "a".repeat(64) },
     { sourceAssetId: "img-001" }, { review: { disposition: "selected" } },
     { preview: "private.webp" }, { title: "MTF" }, { crop: [0, 0, 10, 10] },
+    { provenance: { sourceUrl: "https://example.com/private-source.png" } },
   ])("rejects private provenance and redundant fields: %j", (extra) => {
     expect(lensSchema.safeParse({ ...prime35, images: [{ id: "001", role: "mtf", ...extra }] }).success).toBe(false);
   });
@@ -290,14 +287,25 @@ describe("lensSchema classified image assets", () => {
     { spatialFrequency: { values: [10], unit: "cycles/pixel" } },
     { spatialFrequency: { values: [10], unit: "lp/mm", colors: ["red"] } },
     { mtfMethod: "measured" }, { depictedMount: "../X" }, { depictedMount: "" },
-    { conditionsNote: " " }, { conditionsNote: "x".repeat(1201) }, { credit: " " },
+    { conditionsNote: " " }, { conditionsNote: "x".repeat(1201) },
   ])("rejects invalid image metadata: %j", (metadata) => {
     expect(lensSchema.safeParse({ ...prime35, images: [{ ...mtf, ...metadata }] }).success).toBe(false);
   });
 
-  it.each(["sourceUrl", "conditionsSourceUrl", "licenseUrl"])("requires safe HTTPS links for %s", (field) => {
-    for (const url of ["http://example.com/image", "javascript:alert(1)", "/local", "https://user:secret@example.com/image"]) {
-      expect(lensSchema.safeParse({ ...prime35, images: [{ ...mtf, [field]: url }] }).success).toBe(false);
+  it.each([
+    ["sourceUrl", "https://example.com/private-source.png"],
+    ["conditionsSourceUrl", "https://example.com/private-conditions/"],
+    ["credit", "Private creator attribution"],
+    ["licenseUrl", "https://example.com/private-license/"],
+  ])("rejects pipeline-private %s even when its value is otherwise valid", (field, value) => {
+    const record = { ...prime35, images: [{ ...mtf, [field]: value }] };
+    const result = lensSchema.safeParse(record);
+    expect(result.success).toBe(false);
+    expect(lensCatalogSchema.safeParse([record]).success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(expect.objectContaining({
+        code: "unrecognized_keys", path: ["images", 0], keys: [field],
+      }));
     }
   });
 
@@ -310,7 +318,7 @@ describe("lensSchema classified image assets", () => {
     expect(lensSchema.safeParse({ ...prime35, alternateImages: ["001"], images: [mtf] }).success).toBe(false);
   });
 
-  it("resolves image notes by ID without translating conditions, source links or the original lens", () => {
+  it("resolves image notes by ID without changing numeric conditions or the original lens", () => {
     const lens = lensSchema.parse({
       ...prime35,
       images: [mtf, { id: "003", role: "accessory", conditionsNote: "Hood only." }],

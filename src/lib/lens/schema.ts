@@ -240,14 +240,6 @@ type _AssertNoMissingInSchema = _AssertTrue<
 
 const imageIdSchema = z.string().regex(/^[0-9]{3,}$/);
 const imageNoteSchema = nonEmptyStringSchema.max(1200);
-const imageSourceUrlSchema = z.url({ protocol: /^https$/ }).refine((value) => {
-  try {
-    const url = new URL(value);
-    return !url.username && !url.password;
-  } catch {
-    return false;
-  }
-}, "Image source URLs must not contain credentials");
 const imageNumberListSchema = z.array(positiveNumberSchema).min(1).refine(
   (values) => new Set(values).size === values.length,
   "Image condition values must be unique",
@@ -264,10 +256,6 @@ const lensImageAssetSchema = z.strictObject({
   mtfMethod: z.enum(["geometrical", "diffraction"]).optional(),
   depictedMount: z.string().regex(/^[A-Z][A-Z0-9-]{0,15}$/).optional(),
   conditionsNote: imageNoteSchema.optional(),
-  sourceUrl: imageSourceUrlSchema.optional(),
-  conditionsSourceUrl: imageSourceUrlSchema.optional(),
-  credit: nonEmptyStringSchema.optional(),
-  licenseUrl: imageSourceUrlSchema.optional(),
 }).superRefine((image, ctx) => {
   if (image.role === "mtf") {
     return;
