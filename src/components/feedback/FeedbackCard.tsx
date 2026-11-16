@@ -35,11 +35,11 @@ export default function FeedbackCard({ draft }: { draft: FeedbackDraft }) {
   }
   return <>
     <section className={cn(CHAT_CARD_CLS, "max-w-md")} aria-label={t("draftLabel")}>
-      <div className="flex items-center justify-between gap-2 px-3 pt-1">
+      <div className="flex items-center justify-between gap-2 px-4 pt-4">
         <h3 className="flex items-center gap-1.5 text-[13px] font-semibold"><MessageSquare className="size-4 text-zinc-500" />{t(current.type === "data_issue" ? "dataIssue" : "general")}</h3>
-        <button type="button" className={cn(ICON_CLOSE_BTN_CLS, "-mr-2 size-11")} disabled={feedback.locked} aria-label={t("collapseDraft")} onClick={() => setCollapsed(true)}><X className="size-4" /></button>
+        <button type="button" className={cn(ICON_CLOSE_BTN_CLS, "size-8")} disabled={feedback.locked} aria-label={t("collapseDraft")} onClick={() => setCollapsed(true)}><X className="size-4" /></button>
       </div>
-      <div className="flex flex-col gap-2 px-3 pb-2">
+      <div className="flex flex-col gap-2 px-4 pb-1">
         {current.context?.lensModel && <div className="flex items-center gap-3 border-b border-zinc-100 pb-2">
           <div className="flex min-w-0 flex-col gap-1"><span className="text-[11px] tracking-[0.14em] text-zinc-500 uppercase">{current.context.lensBrand}</span><span className="text-xs font-medium break-words">{current.context.lensModel}</span></div>
           {current.context.field && <div className="flex shrink-0 flex-col gap-1 border-l border-zinc-200 pl-3"><span className="text-xs text-zinc-500">{t("fieldPickerLabel")}</span><span className="text-xs font-medium">{current.context.field}</span></div>}
@@ -50,9 +50,9 @@ export default function FeedbackCard({ draft }: { draft: FeedbackDraft }) {
         <FeedbackReplyFields draft={current} contact={feedback.contact} onChange={feedback.update} disabled={feedback.locked} invalid={feedback.validation === "contactRequired"} />
         <FeedbackStatusNotice feedback={feedback} />
       </div>
-      <div className="flex items-center justify-end gap-2 border-t border-zinc-100 px-3 py-1.5">
-        <Button type="button" variant="ghost" className="min-h-11 text-xs" disabled={feedback.locked} onClick={() => setEditing(true)}>{t("edit")}</Button>
-        <Button type="button" className="min-h-11 text-xs" disabled={feedback.locked || feedback.checking} onClick={() => void feedback.submit(current)}>{t(feedback.status === "pending" ? "submitting" : feedback.failed ? "retry" : "send")}</Button>
+      <div className="flex items-center justify-end gap-2 border-t border-zinc-100 px-4 py-2">
+        <Button type="button" variant="ghost" size="lg" className="px-3" disabled={feedback.locked} onClick={() => setEditing(true)}>{t("edit")}</Button>
+        <Button type="button" size="lg" className="px-4" disabled={feedback.locked || feedback.checking} onClick={() => void feedback.submit(current)}>{t(feedback.status === "pending" ? "submitting" : feedback.failed ? "retry" : "send")}</Button>
       </div>
     </section>
     <FeedbackDialog open={editing} onOpenChange={setEditing} feedback={feedback} mode="edit" />
