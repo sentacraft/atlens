@@ -3,25 +3,26 @@ import { z } from "zod";
 export const MAX_FEEDBACK_DESCRIPTION_LENGTH = 2000;
 
 export const feedbackContextSchema = z.object({
-  lensId: z.string().optional(),
-  lensModel: z.string().optional(),
-  lensBrand: z.string().optional(),
-  searchQuery: z.string().optional(),
-  field: z.string().optional(),
+  lensId: z.string().max(200).optional(),
+  lensModel: z.string().max(300).optional(),
+  lensBrand: z.string().max(100).optional(),
+  searchQuery: z.string().max(300).optional(),
+  field: z.string().max(200).optional(),
 });
 
 // Issue messages are the error codes the route returns.
 export const feedbackSubmissionSchema = z
   .object({
+    submissionId: z.uuid(),
     type: z.enum(["data_issue", "general"], { error: "invalid_type" }),
     description: z
       .string({ error: "empty_description" })
       .max(MAX_FEEDBACK_DESCRIPTION_LENGTH, { error: "description_too_long" }),
-    replyContact: z.string().optional(),
+    replyContact: z.string().trim().max(300).optional(),
     context: feedbackContextSchema
       .extend({
-        currentValue: z.string().optional(),
-        suggestedCorrection: z.string().optional(),
+        currentValue: z.string().max(2000).optional(),
+        suggestedCorrection: z.string().max(200).optional(),
       })
       .optional(),
   })
@@ -30,6 +31,11 @@ export const feedbackSubmissionSchema = z
       payload.description.trim().length > 0 || Boolean(payload.context?.suggestedCorrection?.trim()),
     { error: "empty_description" },
   );
+
+export const feedbackStatusSchema = z.object({
+  status: z.enum(["pending", "sent", "failed", "uncertain"]).nullable(),
+});
+export type FeedbackStatus = NonNullable<z.infer<typeof feedbackStatusSchema>["status"]>;
 
 export type FeedbackContext = z.infer<typeof feedbackContextSchema>;
 export type FeedbackSubmission = z.infer<typeof feedbackSubmissionSchema>;

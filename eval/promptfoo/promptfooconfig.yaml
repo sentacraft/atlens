@@ -1271,6 +1271,91 @@ tests:
         value: "context.metadata.signInCardShown"
       - *declined_sign_in
 
+  # Feedback cards prepare a draft; the visitor, not the model, submits it.
+  - description: feedback-general-suggestion
+    metadata:
+      area: feedback
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "帮我给作者提个建议：推荐时增加一个排除已有镜头的开关，不用回复我。"
+    assert:
+      - type: javascript
+        metric: feedback
+        value: "context.metadata.feedbackDrafts.some(d => d.output?.type === 'general' && d.output.wantsReply === false && !d.output.context?.searchQuery)"
+
+  - description: feedback-data-context
+    metadata:
+      area: feedback
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "富士 XF 27mm F2.8 R WR 的重量可能不对，帮我反馈给作者核对，不知道正确值。"
+    assert:
+      - type: javascript
+        metric: feedback
+        value: "context.metadata.feedbackDrafts.some(d => d.input?.field === 'weight' && d.output?.type === 'data_issue' && d.output.context?.lensId && !d.output.context?.suggestedCorrection && !d.output.context?.searchQuery)"
+
+  - description: feedback-missing-lens-search-terms
+    metadata:
+      area: feedback
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "Please send a missing-lens report for Sigma 50-100 F1.8. I cannot find it in this catalogue."
+    assert:
+      - type: javascript
+        metric: feedback
+        value: "context.metadata.feedbackDrafts.some(d => d.output?.type === 'general' && /50.?100/.test(d.input?.searchQuery ?? '') && (d.input?.searchQuery?.length ?? 1000) < 60)"
+
+  - description: feedback-explicit-reply-contact
+    metadata:
+      area: feedback
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "Please send a suggestion to the author: allow excluding my existing lenses from recommendations. I want progress updates at reader@example.com."
+    assert:
+      - type: javascript
+        metric: feedback
+        value: "context.metadata.feedbackDrafts.some(d => d.output?.wantsReply === true && d.output.replyContact === 'reader@example.com')"
+
+  - description: feedback-concept-is-not-a-complaint
+    metadata:
+      area: feedback
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "我还是不理解等效焦距是什么意思，能换个方式解释吗？"
+    assert:
+      - type: javascript
+        metric: feedback
+        value: "!context.metadata.toolsCalled.includes('prepareFeedback')"
+
+  - description: feedback-feature-question-is-not-a-request
+    metadata:
+      area: feedback
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "Can I filter lenses by weight on this website?"
+    assert:
+      - type: javascript
+        metric: feedback
+        value: "context.metadata.toolsCalled.includes('siteInfo') && !context.metadata.toolsCalled.includes('prepareFeedback')"
+
   # Terms: spec conventions and model codes come from the terms skill; general concepts from the model.
   - description: term-min-focus-distance
     metadata:

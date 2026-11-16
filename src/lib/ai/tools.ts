@@ -23,6 +23,7 @@ import { bodyQuerySchema, queryBodies } from "@/lib/body/query";
 import { favoritesOnMount } from "@/lib/ai/favorites";
 import type { GearSummary } from "@/lib/ai/gear-context";
 import { REVIEW_ASPECTS } from "@/lib/lens/reviews";
+import { prepareFeedback, prepareFeedbackInputSchema } from "@/lib/feedback/prepare-feedback";
 import type { LensReviews } from "@/lib/lens/reviews-repository";
 
 const RECALL_LIMIT = 20;
@@ -490,6 +491,18 @@ export function buildLensTools(
           `Rendered a table of ${output.lenses.length} lens(es) to the user, for: ` +
           output.lenses.map((lens) => lensRef(lens.id)).join(", "),
       }),
+    }),
+
+    prepareFeedback: tool({
+      description:
+        "Prepare an editable feedback card for an Atlens issue, suggestion, missing lens, or data correction. " +
+        "Use when the user asks to give feedback, or a concrete site issue remains after helping. Does not submit feedback.",
+      inputSchema: prepareFeedbackInputSchema,
+      execute: (input) => {
+        const lens = input.lensRef ? recalledLenses([input.lensRef])[0] : undefined;
+        return prepareFeedback(input, lens, locale, lens ? tBrand(lens.brand) : "");
+      },
+      toModelOutput: () => ({ type: "text", value: "Displayed an editable feedback draft. Nothing has been submitted. The user may submit it or continue chatting." }),
     }),
 
     skill: tool({

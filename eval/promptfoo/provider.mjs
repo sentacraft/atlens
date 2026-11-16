@@ -156,6 +156,7 @@ function digest(msg) {
   const reviews = [];
   const recalledRefs = new Set();
   const toolsCalled = [];
+  const feedbackDrafts = [];
   let steps = 0;
   const parts = msg?.parts ?? [];
   const lastToolIndex = parts.findLastIndex(
@@ -185,6 +186,10 @@ function digest(msg) {
       continue;
     }
     toolsCalled.push(name);
+    if (name === "prepareFeedback") {
+      feedbackDrafts.push({ input: part.input, output: part.output });
+      transcript.push(`[feedback draft, not submitted]\n${part.output?.description ?? ""}`);
+    }
     if (name === "queryLenses") {
       const inputs = Array.isArray(part.input?.queries) ? part.input.queries : [];
       inputs.forEach((input, i) => {
@@ -297,6 +302,7 @@ function digest(msg) {
     steps,
     preToolText,
     toolsCalled,
+    feedbackDrafts,
   };
 }
 
@@ -378,6 +384,7 @@ export default class AskIrisProvider {
         steps: d.steps,
         preToolText: d.preToolText,
         toolsCalled: d.toolsCalled,
+        feedbackDrafts: d.feedbackDrafts,
         gearCardShown,
         signInCardShown,
         turnsRun: turns.length,
