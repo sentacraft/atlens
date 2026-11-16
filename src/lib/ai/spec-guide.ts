@@ -3,7 +3,7 @@
  * General photography terms are left to the model. `{Namespace.key}` placeholders become the site's
  * own labels in the user's language.
  */
-export const TERMS_SKILL = {
+export const SPEC_GUIDE = {
   sources: ["src/lib/types.ts", "src/lib/lens/lens.ts"],
   text: `# Reading Atlens specs and lens names
 

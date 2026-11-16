@@ -1,4 +1,7 @@
 import { describe, it, expect } from "vitest";
+import en from "@/messages/en.json";
+import zh from "@/messages/zh.json";
+import { systemPrompt } from "../system-prompt";
 import type { UIMessage } from "ai";
 import { buildLensTools, type ToolData, seedRecalledRefs } from "../tools";
 import { getLensesByMount } from "@/lib/lens/data";
@@ -12,6 +15,30 @@ const tools = buildLensTools("X", "zh", (brand) => brand, GUEST, new Set());
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const run = (tool: { execute?: (...args: any[]) => any }, input: unknown) =>
   tool.execute!(input, {} as never);
+
+describe("readSpecGuide", () => {
+  it("exposes the guide directly, without the old document selector", () => {
+    expect(tools).toHaveProperty("readSpecGuide");
+    expect(tools).not.toHaveProperty("skill");
+    expect(tools.readSpecGuide.description).toContain("Atlens spec fields and lens model names");
+  });
+
+  it.each([
+    ["zh", zh.LensDetail.focusMotor],
+    ["en", en.LensDetail.focusMotor],
+  ])("returns the unchanged guide with %s UI labels on demand", async (locale, label) => {
+    const localized = buildLensTools("X", locale, (brand) => brand, GUEST, new Set());
+    const { text } = await run(localized.readSpecGuide, {});
+    expect(text).toContain("# Reading Atlens specs and lens names");
+    expect(text).toContain(`"${label}"`);
+    expect(text).toContain('"-" means the manufacturer has not published that spec');
+    expect(text).toContain('"N/A" means the spec does not apply');
+    expect(text).toContain("## Reading lens model names");
+    expect(text).not.toMatch(/\{\w+\.\w+\}/);
+    expect(systemPrompt("X", locale)).not.toContain(text);
+    expect(systemPrompt("X", locale)).not.toContain("## Spec page conventions");
+  });
+});
 
 // Walk a tool payload for the raw catalogue id. Ids are patterned (brand-model slugs), so
 // one in context is enough for a model to guess others and cite a lens it never recalled —
