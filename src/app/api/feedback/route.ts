@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { feedbackSubmissionSchema, type FeedbackSubmission } from "@/lib/feedback/feedback-contract";
 import {
@@ -65,12 +66,14 @@ function buildIssue(payload: FeedbackSubmission): {
     }
   }
 
+  const bodyLines = lines.map((line) => neutralizeMentions(line));
   if (replyContact) {
-    lines.push(`**Reply-to:** ${replyContact}`);
+    const contact = z.regexes.html5Email.test(replyContact) ? replyContact : neutralizeMentions(replyContact);
+    bodyLines.push(`**Reply-to:** ${contact}`);
   }
 
   if (description.trim()) {
-    lines.push("", "---", "", description);
+    bodyLines.push("", "---", "", neutralizeMentions(description));
   }
 
   let title: string;
@@ -94,7 +97,7 @@ function buildIssue(payload: FeedbackSubmission): {
 
   return {
     title: neutralizeMentions(title),
-    body: neutralizeMentions(lines.join("\n")),
+    body: bodyLines.join("\n"),
     labels,
     ...(assignees.length > 0 ? { assignees } : {}),
   };
@@ -111,7 +114,7 @@ function replaySubmission(record: FeedbackSubmissionRecord, payloadHash: string)
 export async function GET(req?: Request) {
   const submissionId = req ? new URL(req.url).searchParams.get("submissionId") : null;
   if (submissionId !== null) {
-    if (await isRateLimited(req!, "feedback")) {
+    if (await isRateLimited(req!, "feedbackStatus")) {
       return rateLimitedResponse();
     }
     if (!feedbackSubmissionSchema.shape.submissionId.safeParse(submissionId).success) {
@@ -179,16 +182,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "storage_unavailable" }, { status: 503 });
   }
 
-  if (claim.created) {
-    try {
-      if (await isOverDailyCap(req, "feedback")) {
-        await releaseFeedbackSubmission(db, payload.submissionId, payloadHash);
-        return rateLimitedResponse();
-      }
-    } catch {
-      await releaseFeedbackSubmission(db, payload.submissionId, payloadHash).catch(() => {});
-      return NextResponse.json({ error: "quota_unavailable" }, { status: 503 });
+  try {
+    if (await isOverDailyCap(req, "feedback")) {
+      await releaseFeedbackSubmission(db, payload.submissionId, payloadHash);
+      return rateLimitedResponse();
     }
+  } catch {
+    await releaseFeedbackSubmission(db, payload.submissionId, payloadHash).catch(() => {});
+    return NextResponse.json({ error: "quota_unavailable" }, { status: 503 });
   }
 
   try {

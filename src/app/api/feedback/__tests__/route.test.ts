@@ -17,9 +17,9 @@ let database: ReturnType<typeof createSqliteD1>;
 beforeEach(() => {
   database = createSqliteD1("migrations/app");
   mocks.getCloudflareContext.mockReturnValue({ env: { APP_DB: database.d1 } });
-  mocks.isRateLimited.mockResolvedValue(false);
-  mocks.isOverDailyCap.mockResolvedValue(false);
-  mockFetch.mockImplementation(async () => new Response(JSON.stringify({ number: 1 }), { status: 201 }));
+  mocks.isRateLimited.mockReset().mockResolvedValue(false);
+  mocks.isOverDailyCap.mockReset().mockResolvedValue(false);
+  mockFetch.mockReset().mockImplementation(async () => new Response(JSON.stringify({ number: 1 }), { status: 201 }));
   env.GITHUB_TOKEN = "test-token";
   env.GITHUB_FEEDBACK_REPO = "test/repo";
 });
@@ -207,6 +207,25 @@ describe("POST /api/feedback — replyContact", () => {
     expect(body.body).toContain("**Reply-to:** user@example.com");
   });
 
+  it.each(["support-@example.com", "support+@example.com", "support!@example.com"])("preserves the reply mailbox %s while neutralizing other fields", async (replyContact) => {
+    await POST(makeRequest({
+      type: "data_issue",
+      description: "Ask @someone",
+      replyContact,
+      context: { lensBrand: "@brand", lensModel: "@model", lensId: "@id", field: "@field", currentValue: "@old", suggestedCorrection: "@new" },
+    }));
+    const issue = JSON.parse(mockFetch.mock.calls[0][1].body as string) as { body: string; title: string };
+    expect(issue.body).toContain(`**Reply-to:** ${replyContact}`);
+    expect(issue.body.replace(`**Reply-to:** ${replyContact}`, "")).not.toMatch(/@[a-z]/i);
+    expect(issue.title).not.toMatch(/@[a-z]/i);
+  });
+
+  it("neutralizes mentions supplied alongside a reply mailbox", async () => {
+    await POST(makeRequest({ type: "general", description: "Details", replyContact: "support-@example.com @someone" }));
+    const issue = JSON.parse(mockFetch.mock.calls[0][1].body as string) as { body: string };
+    expect(issue.body).not.toContain("@someone");
+  });
+
   it("omits Reply-to line when replyContact is not provided", async () => {
     await POST(makeRequest({ type: "general", description: "Great app!" }));
     const body = JSON.parse(mockFetch.mock.calls[0][1].body as string) as { body: string };
@@ -307,7 +326,31 @@ describe("feedback submission idempotency", () => {
     const retried = await POST(makeRequest({ ...fixedPayload, description: "Edited feedback" }));
     expect(await retried.json()).toEqual({ status: "sent" });
     expect(mockFetch).toHaveBeenCalledTimes(2);
-    expect(mocks.isOverDailyCap).toHaveBeenCalledTimes(1);
+    expect(mocks.isOverDailyCap).toHaveBeenCalledTimes(2);
+  });
+
+  it("applies today's cap to a failed submission from an earlier day", async () => {
+    mockFetch.mockResolvedValueOnce(new Response("Invalid issue", { status: 422 }));
+    expect(await (await POST(makeRequest(fixedPayload))).json()).toMatchObject({ status: "failed" });
+    database.sqlite.prepare("UPDATE feedback_submissions SET created_at = ?, updated_at = ? WHERE submission_id = ?")
+      .run(Date.now() - 86_400_000, Date.now() - 86_400_000, fixedPayload.submissionId);
+    mocks.isOverDailyCap.mockResolvedValueOnce(true);
+    expect((await POST(makeRequest(fixedPayload))).status).toBe(429);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mocks.isOverDailyCap).toHaveBeenCalledTimes(2);
+    expect(await (await GET(statusRequest())).json()).toEqual({ status: null });
+    expect(await (await POST(makeRequest(fixedPayload))).json()).toEqual({ status: "sent" });
+    expect(mocks.isOverDailyCap).toHaveBeenCalledTimes(3);
+  });
+
+  it("releases a retry claim when the quota service is unavailable", async () => {
+    mockFetch.mockResolvedValueOnce(new Response("Invalid issue", { status: 422 }));
+    await POST(makeRequest(fixedPayload));
+    mocks.isOverDailyCap.mockRejectedValueOnce(new Error("KV unavailable"));
+    expect((await POST(makeRequest(fixedPayload))).status).toBe(503);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(await (await GET(statusRequest())).json()).toEqual({ status: null });
+    expect(await (await POST(makeRequest(fixedPayload))).json()).toEqual({ status: "sent" });
   });
 
   it.each(["network", "timeout", "5xx"])("blocks re-creation after an unknown %s outcome", async (failure) => {
@@ -377,14 +420,16 @@ describe("feedback readiness and status", () => {
     expect(await (await GET(statusRequest())).json()).toEqual({ status: null });
     await POST(makeRequest(fixedPayload));
     expect(await (await GET(statusRequest())).json()).toEqual({ status: "sent" });
+    expect(mocks.isRateLimited).toHaveBeenCalledWith(expect.any(Request), "feedbackStatus");
     expect(mocks.isRateLimited).toHaveBeenCalledWith(expect.any(Request), "feedback");
     expect(mocks.isOverDailyCap).toHaveBeenCalledTimes(1);
   });
 
-  it("validates UUID status lookup and rate limits it using the feedback policy", async () => {
+  it("validates UUID status lookup and rate limits it using the status policy", async () => {
     expect((await GET(statusRequest("not-a-uuid"))).status).toBe(400);
     mocks.isRateLimited.mockResolvedValueOnce(true);
     expect((await GET(statusRequest())).status).toBe(429);
+    expect(mocks.isRateLimited).toHaveBeenLastCalledWith(expect.any(Request), "feedbackStatus");
     expect(mockFetch).not.toHaveBeenCalled();
   });
 

@@ -7,6 +7,7 @@ import { buildSpecGroups, buildSpecGroupLabels, resolveSpecGroups, rowPlainText 
 import { getLensUrl } from "@/lib/lens/lens";
 import { getLensImageUrl } from "@/lib/lens/image";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens/pricing";
+import { MAX_FEEDBACK_SEARCH_QUERY_LENGTH } from "./feedback-contract";
 import { createFeedbackDraft, type FeedbackField } from "./feedback-draft";
 
 export const FEEDBACK_SPEC_FIELDS = [
@@ -22,7 +23,7 @@ export const prepareFeedbackInputSchema = z.object({
   lensRef: z.string().max(64).nullable().describe("A recalled lens ref, or null. Look up the lens first."),
   field: z.enum(FEEDBACK_SPEC_FIELDS).nullable(),
   suggestedCorrection: z.string().max(200).nullable().describe("Only a correction the user supplied or that was verified; otherwise null."),
-  searchQuery: z.string().trim().min(1).max(300).nullable().describe("Only for a missing lens: its name or actual search terms, never the full prompt. Otherwise null."),
+  searchQuery: z.string().trim().min(1).max(MAX_FEEDBACK_SEARCH_QUERY_LENGTH).nullable().describe("Only for a missing lens: its name or actual search terms, never the full prompt. Otherwise null."),
   wantsReply: z.boolean().describe("true only if the user explicitly asks for a reply or progress updates; otherwise false."),
   replyContact: z.string().trim().max(300).nullable().describe("Only a contact the user explicitly specified; otherwise null. The app prefills the account email."),
 });

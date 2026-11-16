@@ -60,14 +60,19 @@ export async function claimFeedbackSubmission(
 
   const retried = await db.prepare(`UPDATE feedback_submissions
     SET payload_hash = ?, status = 'pending', issue_number = NULL, updated_at = ?
-    WHERE submission_id = ? AND status = 'failed'`)
+    WHERE submission_id = ? AND status = 'failed'
+    RETURNING submission_id AS submissionId, payload_hash AS payloadHash,
+      status, issue_number AS issueNumber, created_at AS createdAt, updated_at AS updatedAt`)
     .bind(payloadHash, now, submissionId)
-    .run();
+    .first<FeedbackSubmissionRecord>();
+  if (retried) {
+    return { claimed: true, created: false, record: retried };
+  }
   const record = await getFeedbackSubmission(db, submissionId);
   if (!record) {
     throw new Error("Feedback claim disappeared");
   }
-  return { claimed: retried.meta.changes > 0, created: false, record };
+  return { claimed: false, created: false, record };
 }
 
 export async function updateFeedbackSubmissionStatus(

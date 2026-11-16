@@ -28,6 +28,12 @@ describe("feedback drafts shared by manual and Iris entry points", () => {
     expect(feedbackPayload({ ...draft, wantsReply: false }, "reader@example.com")).not.toHaveProperty("replyContact");
   });
 
+  it("bounds automatic search context before review so a long manual search can still be submitted", () => {
+    const draft = createFeedbackDraft({ ...seed, context: { searchQuery: "x".repeat(301) } });
+    expect(draft.context?.searchQuery).toBe("x".repeat(300));
+    expect(feedbackPayload(draft, null).context?.searchQuery).toBe(draft.context?.searchQuery);
+  });
+
   it("preserves the submission identity and structured context", () => {
     const draft = createFeedbackDraft({ type: "data_issue", description: "Check the weight.", context: { lensId: "lens", field: "Weight", currentValue: "84g" } });
     expect(feedbackPayload(draft, null)).toMatchObject({ submissionId: draft.id, type: "data_issue", context: { lensId: "lens", field: "Weight", currentValue: "84g" } });

@@ -1,12 +1,13 @@
 import { z } from "zod";
 
 export const MAX_FEEDBACK_DESCRIPTION_LENGTH = 2000;
+export const MAX_FEEDBACK_SEARCH_QUERY_LENGTH = 300;
 
 export const feedbackContextSchema = z.object({
   lensId: z.string().max(200).optional(),
   lensModel: z.string().max(300).optional(),
   lensBrand: z.string().max(100).optional(),
-  searchQuery: z.string().max(300).optional(),
+  searchQuery: z.string().max(MAX_FEEDBACK_SEARCH_QUERY_LENGTH).optional(),
   field: z.string().max(200).optional(),
 });
 

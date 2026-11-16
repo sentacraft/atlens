@@ -16,7 +16,7 @@ export default function FeedbackReplyFields({ draft, contact, onChange, disabled
   const id = useId();
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="flex min-h-11 cursor-pointer items-center gap-2 text-[13px] text-zinc-600">
+      <label htmlFor={id} className="flex min-h-11 cursor-pointer items-center gap-2 text-xs text-zinc-600">
         <Checkbox id={id} checked={draft.wantsReply} disabled={disabled} onCheckedChange={(checked) => onChange({ wantsReply: checked === true })} />
         {t("replyContactToggle")}
       </label>

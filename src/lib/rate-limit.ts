@@ -14,6 +14,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
  */
 const POLICY_BINDINGS = {
   feedback: "RL_FEEDBACK",
+  feedbackStatus: "RL_FEEDBACK",
   askirisFeedback: "RL_ASKIRIS_FEEDBACK",
   chat: "RL_CHAT",
   lensReviews: "RL_LENS_REVIEWS",
@@ -55,7 +56,7 @@ export async function isRateLimited(req: Request, policy: RateLimitPolicy): Prom
   if (!ip || isBypassed(req)) {
     return false;
   }
-  const { success } = await getCloudflareContext().env[POLICY_BINDINGS[policy]].limit({ key: ip });
+  const { success } = await getCloudflareContext().env[POLICY_BINDINGS[policy]].limit({ key: `${policy}:${ip}` });
   return !success;
 }
 

@@ -59,6 +59,22 @@ describe("feedback submissions", () => {
     expect(await getFeedbackSubmission(database.d1, submissionId)).toMatchObject({ payloadHash: "edited", status: "pending" });
   });
 
+  it("returns a reclaimed record without a separate read that can fail after the update", async () => {
+    await claimFeedbackSubmission(database.d1, submissionId, "old");
+    await updateFeedbackSubmissionStatus(database.d1, submissionId, "old", "failed");
+    const db = {
+      prepare(sql: string) {
+        if (/^SELECT/i.test(sql.trim())) {
+          throw new Error("Read unavailable after claim");
+        }
+        return database.d1.prepare(sql);
+      },
+    } as D1Database;
+    const claim = await claimFeedbackSubmission(db, submissionId, "edited");
+    expect(claim).toMatchObject({ claimed: true, record: { submissionId, payloadHash: "edited", status: "pending", issueNumber: null } });
+    expect(claim.record.createdAt).toBe((await getFeedbackSubmission(database.d1, submissionId))?.createdAt);
+  });
+
   it("stores only identifiers, hashes, status, issue number and timestamps", async () => {
     const hash = await hashFeedbackPayload(payload);
     await claimFeedbackSubmission(database.d1, submissionId, hash);

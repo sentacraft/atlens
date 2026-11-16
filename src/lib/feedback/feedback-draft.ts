@@ -1,4 +1,4 @@
-import type { FeedbackSubmission, FeedbackSubmissionContext, FeedbackType } from "./feedback-contract";
+import { MAX_FEEDBACK_SEARCH_QUERY_LENGTH, type FeedbackSubmission, type FeedbackSubmissionContext, type FeedbackType } from "./feedback-contract";
 
 export interface FeedbackField {
   label: string;
@@ -20,7 +20,10 @@ export interface FeedbackDraft {
 export type FeedbackSeed = Pick<FeedbackDraft, "type"> & Partial<Omit<FeedbackDraft, "type">>;
 
 export function createFeedbackDraft(seed: FeedbackSeed): FeedbackDraft {
-  return { id: seed.id ?? crypto.randomUUID(), type: seed.type, description: seed.description ?? "", fields: seed.fields ?? [], wantsReply: seed.wantsReply ?? false, replyContact: seed.replyContact ?? null, context: seed.context };
+  const context = seed.context?.searchQuery
+    ? { ...seed.context, searchQuery: seed.context.searchQuery.slice(0, MAX_FEEDBACK_SEARCH_QUERY_LENGTH) }
+    : seed.context;
+  return { id: seed.id ?? crypto.randomUUID(), type: seed.type, description: seed.description ?? "", fields: seed.fields ?? [], wantsReply: seed.wantsReply ?? false, replyContact: seed.replyContact ?? null, context };
 }
 
 export function feedbackContact(draft: FeedbackDraft, accountEmail: string | null): string {
